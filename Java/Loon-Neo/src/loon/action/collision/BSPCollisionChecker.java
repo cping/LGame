@@ -113,6 +113,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		this.cellSizeY = MathUtils.max(1, tsy);
 	}
 
+	@Override
 	public int numberActors() {
 		if (bspTree == null) {
 			return 0;

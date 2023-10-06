@@ -214,7 +214,7 @@ final public class CollectionUtils {
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
-	
+
 	/**
 	 * copy指定长度的数组数据
 	 * 
@@ -227,8 +227,7 @@ final public class CollectionUtils {
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
-	
-	
+
 	/**
 	 * copy指定长度的数组数据
 	 * 
@@ -513,6 +512,25 @@ final public class CollectionUtils {
 			return false;
 		}
 
+		for (int i = 0; i < length; i++) {
+			if (a1[i] != a2[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean equals(float[] a1, float[] a2) {
+		if (a1 == a2) {
+			return true;
+		}
+		if (a1 == null || a2 == null) {
+			return false;
+		}
+		int length = a1.length;
+		if (a2.length != length) {
+			return false;
+		}
 		for (int i = 0; i < length; i++) {
 			if (a1[i] != a2[i]) {
 				return false;

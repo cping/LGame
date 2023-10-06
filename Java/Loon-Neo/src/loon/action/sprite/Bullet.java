@@ -30,6 +30,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Easing.EasingMode;
@@ -262,8 +263,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
-	public boolean intersects(RectBox rect) {
-		return getCollisionArea().intersects(rect);
+	public boolean intersects(Shape shape) {
+		return getCollisionArea().collided(shape);
 	}
 
 	@Override

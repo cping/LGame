@@ -1682,8 +1682,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public boolean intersects(RectBox rect) {
-		return getCollisionBox().intersects(rect);
+	public boolean intersects(Shape s) {
+		return getCollisionBox().collided(s);
 	}
 
 	public Gravity getGravity() {

@@ -21,6 +21,7 @@
 package loon.action.collision;
 
 import loon.geom.RectBox;
+import loon.geom.Shape;
 
 public interface CollisionObject {
 
@@ -34,7 +35,7 @@ public interface CollisionObject {
 
 	public boolean intersects(CollisionObject o);
 
-	public boolean intersects(RectBox rect);
+	public boolean intersects(Shape shape);
 
 	public String getObjectFlag();
 

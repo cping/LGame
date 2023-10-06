@@ -403,6 +403,11 @@ public class Circle extends Ellipse {
 	}
 
 	@Override
+	public Circle cpy() {
+		return new Circle(getCenterX(), getCenterY(), this.boundingCircleRadius);
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 41;
 		int hashCode = 1;

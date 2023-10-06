@@ -465,6 +465,16 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
+	@Override
+	public RectBox copy(Shape s) {
+		if (s instanceof RectBox) {
+			return copy((RectBox) s);
+		} else {
+			super.copy(s);
+		}
+		return this;
+	}
+
 	public RectBox copy(RectBox other) {
 		if (other == this) {
 			return this;
@@ -1415,6 +1425,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 				cir.getZ());
 	}
 
+	@Override
 	public boolean inCircle(Circle c) {
 		if (c == null) {
 			return false;
@@ -1423,6 +1434,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 				c.getDiameter());
 	}
 
+	@Override
 	public boolean inCircle(float cx, float cy, float d) {
 		return CollisionHelper.checkAABBvsCircle(this.x, this.y, this.width, this.height, cx, cy, d);
 	}
@@ -1447,6 +1459,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 				rect.getZ(), rect.getW());
 	}
 
+	@Override
 	public boolean inRect(RectBox rect) {
 		if (rect == null) {
 			return false;
@@ -1455,6 +1468,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 				rect.getWidth(), rect.getHeight());
 	}
 
+	@Override
 	public boolean inRect(float rx, float ry, float rw, float rh) {
 		return CollisionHelper.checkAABBvsAABB(this.x, this.y, this.width, this.height, rx, ry, rw, rh);
 	}
@@ -1493,7 +1507,11 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return CollisionHelper.checkAABBvsPolygon(this.x, this.y, this.width, this.height, poly, true);
 	}
 
+	@Override
 	public boolean collided(Shape shape) {
+		if (shape == null) {
+			return false;
+		}
 		if (shape instanceof Polygon) {
 			return inPolygon((Polygon) shape);
 		} else if (shape instanceof Line) {
@@ -1507,7 +1525,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		} else if (shape instanceof Ellipse) {
 			return inEllipse((Ellipse) shape);
 		}
-		return CollisionHelper.contains(this, shape) || CollisionHelper.intersects(this, shape);
+		return super.collided(shape);
 	}
 
 	@Override

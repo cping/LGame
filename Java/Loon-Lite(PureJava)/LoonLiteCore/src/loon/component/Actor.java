@@ -46,6 +46,7 @@ import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.geom.BoxSize;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -80,7 +81,7 @@ public class Actor extends LObject<Actor>
 	private float _actorWidth, _actorHeight;
 
 	private float[] _currentPos = new float[2];
-	
+
 	private float[] _positionXs = new float[4];
 
 	private float[] _positionYs = new float[4];
@@ -854,7 +855,6 @@ public class Actor extends LObject<Actor>
 		return this;
 	}
 
-
 	public float[] toPixels() {
 		float size = gameLayer.cellSize / 2;
 		_currentPos[0] = _objectLocation.x * gameLayer.cellSize + size;
@@ -912,9 +912,9 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
-	public boolean intersects(RectBox obj) {
+	public boolean intersects(Shape s) {
 		RectBox thisBounds = this.getBoundingRect();
-		return thisBounds.intersects(obj);
+		return thisBounds.collided(s);
 	}
 
 	public boolean intersects(Actor other) {

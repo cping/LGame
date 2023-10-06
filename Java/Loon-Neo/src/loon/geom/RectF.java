@@ -445,6 +445,10 @@ public class RectF implements XY, SetXY {
 		return y + height / 2;
 	}
 
+	public RectF cpy() {
+		return new RectF(this.x, this.y, this.width, this.height);
+	}
+
 	public Range getRange() {
 		return new Range(this);
 	}

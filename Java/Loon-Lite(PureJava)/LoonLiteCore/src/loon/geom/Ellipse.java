@@ -484,6 +484,11 @@ public class Ellipse extends Shape {
 		return this;
 	}
 
+	@Override
+	public Ellipse cpy() {
+		return new Ellipse(getCenterX(), getCenterY(), this.radius1, this.radius2, this.segmentCount);
+	}
+
 	public float getMinorRadius() {
 		return MathUtils.min(this.radius1, this.radius2) / 2f;
 	}

@@ -39,6 +39,10 @@ public class Curve extends Shape {
 
 	private int _segments;
 
+	public Curve(XY start, Bezier b) {
+		this(start, b.controlPoint1, b.controlPoint2, b.endPosition);
+	}
+
 	public Curve(XY p1, XY c1, XY c2, XY p2) {
 		this(p1, c1, c2, p2, 20);
 	}
@@ -172,6 +176,11 @@ public class Curve extends Shape {
 			super.copy(e);
 		}
 		return this;
+	}
+
+	@Override
+	public Curve cpy() {
+		return new Curve(this._p1, this._c1, this._c2, this._p2, this._segments);
 	}
 
 	@Override

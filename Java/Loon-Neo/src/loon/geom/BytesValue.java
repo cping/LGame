@@ -35,6 +35,11 @@ public class BytesValue implements LRelease {
 		this.set(v);
 	}
 
+	public boolean update(ArrayByte v) {
+		set(v);
+		return v != null;
+	}
+
 	public BytesValue set(ArrayByte v) {
 		this.value = v;
 		return this;
@@ -42,6 +47,10 @@ public class BytesValue implements LRelease {
 
 	public ArrayByte result() {
 		return value;
+	}
+
+	public ArrayByte cpy() {
+		return value != null ? value.cpy() : null;
 	}
 
 	@Override

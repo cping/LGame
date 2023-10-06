@@ -85,4 +85,8 @@ public class RangeI implements XY, SetXY {
 	public float getY() {
 		return max;
 	}
+
+	public RangeI cpy() {
+		return new RangeI(this.min, this.max);
+	}
 }

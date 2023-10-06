@@ -41,6 +41,7 @@ import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Point;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
@@ -1251,8 +1252,8 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public boolean intersects(RectBox rect) {
-		return getCollisionBox().intersects(rect);
+	public boolean intersects(Shape s) {
+		return getCollisionBox().collided(s);
 	}
 
 	public Gravity getGravity() {

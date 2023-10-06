@@ -537,6 +537,17 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return result;
 	}
 
+	public boolean collided(Shape shape) {
+		if (shape == null) {
+			return false;
+		}
+		boolean result = contains(shape);
+		if (!result) {
+			result = intersects(shape);
+		}
+		return result;
+	}
+
 	public boolean hasVertex(float x, float y) {
 		if (points.length == 0) {
 			return false;
@@ -855,9 +866,9 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Shape");
-		builder.kv("pos", x + "," + y).comma().kv("scale", scaleX + "," + scaleY).comma()
-				.kv("points", "[" + StringUtils.join(',', points) + "]").comma()
-				.kv("center", "[" + StringUtils.join(',', center) + "]").comma()
+		builder.kv("pos", x + "," + y).comma().kv("size", getWidth() + "," + getHeight()).comma()
+				.kv("scale", scaleX + "," + scaleY).comma().kv("points", "[" + StringUtils.join(',', points) + "]")
+				.comma().kv("center", "[" + StringUtils.join(',', center) + "]").comma()
 				.kv("circleRadius", boundingCircleRadius).comma().kv("rotation", rotation).comma().kv("minX", minX)
 				.comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
 		return builder.toString();

@@ -298,6 +298,7 @@ public class Point extends Shape {
 		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
 	}
 
+	@Override
 	public boolean collided(Shape shape) {
 		if (shape instanceof Polygon) {
 			return inPolygon((Polygon) shape);
@@ -398,6 +399,11 @@ public class Point extends Shape {
 			super.copy(e);
 		}
 		return this;
+	}
+
+	@Override
+	public Point cpy() {
+		return new Point(this.x, this.y);
 	}
 
 	@Override

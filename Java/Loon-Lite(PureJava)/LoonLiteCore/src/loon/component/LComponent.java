@@ -54,6 +54,7 @@ import loon.geom.Dimension;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -427,8 +428,8 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean intersects(RectBox rect) {
-		return getCollisionBox().intersects(rect);
+	public boolean intersects(Shape s) {
+		return getCollisionBox().collided(s);
 	}
 
 	public boolean intersects(LComponent comp) {

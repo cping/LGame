@@ -715,6 +715,11 @@ public class Line extends Shape {
 	}
 
 	@Override
+	public Line cpy() {
+		return new Line(_currentStart, _currentEnd);
+	}
+
+	@Override
 	public Shape transform(Matrix3 transform) {
 		float[] temp = new float[4];
 		createPoints();

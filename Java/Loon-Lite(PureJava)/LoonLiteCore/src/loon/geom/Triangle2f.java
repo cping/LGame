@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LSystem;
+import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
@@ -355,6 +356,73 @@ public class Triangle2f extends Shape implements Triangle {
 
 	@Override
 	public void startHole() {
+	}
+
+	public boolean equals(Triangle2f t) {
+		if (t == null) {
+			return false;
+		}
+		if (t == this) {
+			return true;
+		}
+		if (this.x == t.x && this.y == t.y && CollectionUtils.equals(t.xpoints, this.xpoints)
+				&& CollectionUtils.equals(t.ypoints, this.ypoints)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof Triangle2f) {
+			return equals((Triangle2f) obj);
+		}
+		return false;
+	}
+
+	public Triangle2f copy(Triangle2f e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.xpoints = CollectionUtils.copyOf(e.xpoints);
+		this.ypoints = CollectionUtils.copyOf(e.ypoints);
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Triangle2f copy(Shape e) {
+		if (e instanceof Triangle2f) {
+			copy((Triangle2f) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
+	}
+
+	@Override
+	public Triangle2f cpy() {
+		return new Triangle2f(getX1(), getY1(), getX2(), getY2(), getX3(), getY3());
 	}
 
 	@Override
