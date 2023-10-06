@@ -122,15 +122,15 @@ public class Line extends Shape {
 		return new Line(x1, y1, x2, y2);
 	}
 
-	private Vector2f start;
+	private final Vector2f _currentStart = Vector2f.ZERO();
 
-	private Vector2f end;
+	private final Vector2f _currentEnd = Vector2f.ZERO();
 
-	private Vector2f vec;
+	private final Vector2f _vec = Vector2f.ZERO();
 
-	private final Vector2f loc = new Vector2f(0, 0);
+	private final Vector2f _loc = Vector2f.ZERO();
 
-	private final Vector2f closest = new Vector2f(0, 0);
+	private final Vector2f _closest = Vector2f.ZERO();
 
 	public Line() {
 		this(0f, 0f);
@@ -148,12 +148,8 @@ public class Line extends Shape {
 		this(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 
-	public Line(float x1, float y1, float x2, float y2) {
-		this(new Vector2f(x1, y1), new Vector2f(x2, y2));
-	}
-
 	public Line(float x1, float y1, float dx, float dy, boolean dummy) {
-		this(new Vector2f(x1, y1), new Vector2f(x1 + dx, y1 + dy));
+		this(new Vector2f(x1, y1), dummy ? new Vector2f(x1 + dx, y1 + dy) : new Vector2f(dx, dy));
 	}
 
 	public Line(float[] start, float[] end) {
@@ -166,9 +162,14 @@ public class Line extends Shape {
 		set(start, end);
 	}
 
+	public Line(float x1, float y1, float x2, float y2) {
+		super();
+		set(x1, y1, x2, y2);
+	}
+
 	@Override
 	public Line setLocation(float x, float y) {
-		return set(x, y, end.x, end.y);
+		return set(x, y, _currentEnd.x, _currentEnd.y);
 	}
 
 	public Line set(float[] start, float[] end) {
@@ -177,11 +178,11 @@ public class Line extends Shape {
 	}
 
 	public Vector2f getStart() {
-		return start.cpy();
+		return _currentStart.cpy();
 	}
 
 	public Vector2f getEnd() {
-		return end.cpy();
+		return _currentEnd.cpy();
 	}
 
 	public Vector2f getDirectionValue() {
@@ -189,7 +190,8 @@ public class Line extends Shape {
 	}
 
 	public int getDirection() {
-		return Field2D.getDirection(end.x() - start.x(), end.y() - start.y(), Config.EMPTY);
+		return Field2D.getDirection(_currentEnd.x() - _currentStart.x(), _currentEnd.y() - _currentStart.y(),
+				Config.EMPTY);
 	}
 
 	@Override
@@ -198,7 +200,7 @@ public class Line extends Shape {
 	}
 
 	public float lengthSquared() {
-		return vec.lengthSquared();
+		return _vec.lengthSquared();
 	}
 
 	public TArray<PointF> getPoints(float quantity, float stepRate) {
@@ -224,43 +226,28 @@ public class Line extends Shape {
 		return points;
 	}
 
-	public Line set(Vector2f start, Vector2f end) {
-		super.pointsDirty = true;
-		if (this.start == null) {
-			this.start = new Vector2f();
-		}
-		this.start.set(start);
-
-		if (this.end == null) {
-			this.end = new Vector2f();
-		}
-		this.end.set(end);
-
-		vec = new Vector2f(end);
-		vec.sub(start);
-		setX(start.x);
-		setY(start.y);
-		return this;
+	public Line set(XY start, XY end) {
+		return set(start.getX(), start.getY(), end.getX(), end.getY());
 	}
 
 	public Line set(float sx, float sy, float ex, float ey) {
 		super.pointsDirty = true;
-		start.set(sx, sy);
-		end.set(ex, ey);
+		this._currentStart.set(sx, sy);
+		this._currentEnd.set(ex, ey);
 		float dx = (ex - sx);
 		float dy = (ey - sy);
-		vec.set(dx, dy);
-		setX(start.x);
-		setY(start.y);
+		_vec.set(dx, dy);
+		setX(this._currentStart.x);
+		setY(this._currentStart.y);
 		return this;
 	}
 
 	public float getDX() {
-		return end.getX() - start.getX();
+		return _currentEnd.getX() - _currentStart.getX();
 	}
 
 	public float getDY() {
-		return end.getY() - start.getY();
+		return _currentEnd.getY() - _currentStart.getY();
 	}
 
 	@Override
@@ -274,38 +261,38 @@ public class Line extends Shape {
 	}
 
 	public float getX1() {
-		return start.getX();
+		return _currentStart.getX();
 	}
 
 	public float getY1() {
-		return start.getY();
+		return _currentStart.getY();
 	}
 
 	public float getX2() {
-		return end.getX();
+		return _currentEnd.getX();
 	}
 
 	public float getY2() {
-		return end.getY();
+		return _currentEnd.getY();
 	}
 
 	public Line setX1(float x) {
-		start.setX(x);
+		_currentStart.setX(x);
 		return this;
 	}
 
 	public Line setY1(float y) {
-		start.setY(y);
+		_currentStart.setY(y);
 		return this;
 	}
 
 	public Line setX2(float x) {
-		end.setX(x);
+		_currentEnd.setX(x);
 		return this;
 	}
 
 	public Line setY2(float y) {
-		end.setY(y);
+		_currentEnd.setY(y);
 		return this;
 	}
 
@@ -418,36 +405,36 @@ public class Line extends Shape {
 	}
 
 	public boolean on(Vector2f point) {
-		getClosestPoint(point, closest);
-		return point.equals(closest);
+		getClosestPoint(point, _closest);
+		return point.equals(_closest);
 	}
 
 	public float distanceSquared(Vector2f point) {
-		getClosestPoint(point, closest);
-		closest.sub(point);
-		float result = closest.lengthSquared();
+		getClosestPoint(point, _closest);
+		_closest.sub(point);
+		float result = _closest.lengthSquared();
 		return result;
 	}
 
 	public Line getClosestPoint(Vector2f point, Vector2f result) {
-		loc.set(point);
-		loc.sub(start);
+		_loc.set(point);
+		_loc.sub(_currentStart);
 
-		float projDistance = vec.dot(loc);
+		float projDistance = _vec.dot(_loc);
 
-		projDistance /= vec.lengthSquared();
+		projDistance /= _vec.lengthSquared();
 
 		if (projDistance < 0) {
-			result.set(start);
+			result.set(_currentStart);
 			return this;
 		}
 		if (projDistance > 1) {
-			result.set(end);
+			result.set(_currentEnd);
 			return this;
 		}
 
-		result.x = start.getX() + projDistance * vec.getX();
-		result.y = start.getY() + projDistance * vec.getY();
+		result.x = _currentStart.getX() + projDistance * _vec.getX();
+		result.y = _currentStart.getY() + projDistance * _vec.getY();
 		return this;
 	}
 
@@ -497,11 +484,11 @@ public class Line extends Shape {
 			return false;
 		}
 
-		float x1 = start.getX();
-		float y1 = start.getY();
+		float x1 = _currentStart.getX();
+		float y1 = _currentStart.getY();
 
-		float x2 = end.getX() + start.getX();
-		float y2 = end.getY() + start.getY();
+		float x2 = _currentEnd.getX() + _currentStart.getX();
+		float y2 = _currentEnd.getY() + _currentStart.getY();
 
 		float bx1 = rect.x;
 		float by1 = rect.y;
@@ -563,8 +550,8 @@ public class Line extends Shape {
 	}
 
 	public float getLineAngle(boolean degrees) {
-		final Vector2f point1 = start;
-		final Vector2f point2 = end;
+		final Vector2f point1 = _currentStart;
+		final Vector2f point2 = _currentEnd;
 
 		final float radians = MathUtils.atan2(point2.y - point1.y, point2.x - point1.x);
 		if (!degrees) {
@@ -582,7 +569,8 @@ public class Line extends Shape {
 	}
 
 	public float side(float x, float y) {
-		return (end.x - start.x) * (y - start.y) - (end.y - start.y) * (x - start.x);
+		return (_currentEnd.x - _currentStart.x) * (y - _currentStart.y)
+				- (_currentEnd.y - _currentStart.y) * (x - _currentStart.x);
 	}
 
 	public Vector2f getMidPoint() {
@@ -600,10 +588,10 @@ public class Line extends Shape {
 	}
 
 	public Vector2f project(float x, float y) {
-		float dx = end.x - start.x;
-		float dy = end.y - start.y;
-		float k = ((x - start.x) * dx + (y - start.y) * dy) / (dx * dx + dy * dy);
-		return new Vector2f(dx * k + start.x, dy * k + start.y);
+		float dx = _currentEnd.x - _currentStart.x;
+		float dy = _currentEnd.y - _currentStart.y;
+		float k = ((x - _currentStart.x) * dx + (y - _currentStart.y) * dy) / (dx * dx + dy * dy);
+		return new Vector2f(dx * k + _currentStart.x, dy * k + _currentStart.y);
 	}
 
 	@Override
@@ -667,6 +655,63 @@ public class Line extends Shape {
 			}
 		}
 		return false;
+	}
+
+	public boolean equals(Line e) {
+		if (e == null) {
+			return false;
+		}
+		if (e == this) {
+			return true;
+		}
+		if (_currentStart.equals(e._currentStart) && _currentEnd.equals(e._currentEnd) && this.rotation == e.rotation) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Line) {
+			return equals((Line) obj);
+		}
+		return false;
+	}
+
+	public Line copy(Line e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this.set(_currentStart, _currentEnd);
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Line copy(Shape e) {
+		if (e instanceof Line) {
+			copy((Line) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
 	}
 
 	@Override

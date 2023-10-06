@@ -29,35 +29,36 @@ public class Curve extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Vector2f p1;
+	private Vector2f _p1;
 
-	private Vector2f c1;
+	private Vector2f _c1;
 
-	private Vector2f c2;
+	private Vector2f _c2;
 
-	private Vector2f p2;
+	private Vector2f _p2;
 
-	private int segments;
+	private int _segments;
 
-	public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2) {
+	public Curve(XY p1, XY c1, XY c2, XY p2) {
 		this(p1, c1, c2, p2, 20);
 	}
 
-	public Curve(Vector2f p1, Vector2f c1, Vector2f c2, Vector2f p2, int segments) {
-		this.p1 = new Vector2f(p1);
-		this.c1 = new Vector2f(c1);
-		this.c2 = new Vector2f(c2);
-		this.p2 = new Vector2f(p2);
-		this.segments = segments;
+	public Curve(XY p1, XY c1, XY c2, XY p2, int segments) {
+		this._p1 = new Vector2f(p1);
+		this._c1 = new Vector2f(c1);
+		this._c2 = new Vector2f(c2);
+		this._p2 = new Vector2f(p2);
+		this._segments = segments;
 		pointsDirty = true;
 	}
 
 	public boolean intersects(Line line) {
-		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(p1, c1, c2, p2, line.getStart(), line.getEnd());
+		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(_p1, _c1, _c2, _p2, line.getStart(),
+				line.getEnd());
 	}
 
 	public boolean intersects(XY xy) {
-		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(p1, c1, c2, p2, Vector2f.at(xy),
+		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(_p1, _c1, _c2, _p2, Vector2f.at(xy),
 				Vector2f.at(x + 1f, y + 1f));
 	}
 
@@ -70,36 +71,36 @@ public class Curve extends Shape {
 		float f3 = 3 * a * b * b;
 		float f4 = b * b * b;
 
-		float nx = (p1.x * f1) + (c1.x * f2) + (c2.x * f3) + (p2.x * f4);
-		float ny = (p1.y * f1) + (c1.y * f2) + (c2.y * f3) + (p2.y * f4);
+		float nx = (_p1.x * f1) + (_c1.x * f2) + (_c2.x * f3) + (_p2.x * f4);
+		float ny = (_p1.y * f1) + (_c1.y * f2) + (_c2.y * f3) + (_p2.y * f4);
 
 		return new Vector2f(nx, ny);
 	}
 
 	@Override
 	protected void createPoints() {
-		float step = 1.0f / segments;
-		points = new float[(segments + 1) * 2];
-		for (int i = 0; i < segments + 1; i++) {
+		float step = 1.0f / _segments;
+		points = new float[(_segments + 1) * 2];
+		for (int i = 0; i < _segments + 1; i++) {
 			float t = i * step;
-
 			Vector2f p = pointAt(t);
 			points[i * 2] = p.x;
 			points[(i * 2) + 1] = p.y;
 		}
 	}
 
+	@Override
 	public Shape transform(Matrix3 transform) {
 		float[] pts = new float[8];
 		float[] dest = new float[8];
-		pts[0] = p1.x;
-		pts[1] = p1.y;
-		pts[2] = c1.x;
-		pts[3] = c1.y;
-		pts[4] = c2.x;
-		pts[5] = c2.y;
-		pts[6] = p2.x;
-		pts[7] = p2.y;
+		pts[0] = _p1.x;
+		pts[1] = _p1.y;
+		pts[2] = _c1.x;
+		pts[3] = _c1.y;
+		pts[4] = _c2.x;
+		pts[5] = _c2.y;
+		pts[6] = _p2.x;
+		pts[7] = _p2.y;
 		transform.transform(pts, 0, dest, 0, 4);
 
 		return new Curve(new Vector2f(dest[0], dest[1]), new Vector2f(dest[2], dest[3]), new Vector2f(dest[4], dest[5]),
@@ -111,21 +112,83 @@ public class Curve extends Shape {
 		return false;
 	}
 
+	public boolean equals(Curve e) {
+		if (e == null) {
+			return false;
+		}
+		if (e == this) {
+			return true;
+		}
+		if (_p1.equals(e._p1) && _p2.equals(e._p2) && _c1.equals(e._c1) && _c2.equals(e._c2) && _segments == e._segments
+				&& rotation == e.rotation) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Curve) {
+			return equals((Curve) obj);
+		}
+		return false;
+	}
+
+	public Curve copy(Curve e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this._p1.set(e._p1);
+		this._c1.set(e._c1);
+		this._c2.set(e._c2);
+		this._p2.set(e._p2);
+		this._segments = e._segments;
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Curve copy(Shape e) {
+		if (e instanceof Curve) {
+			copy((Curve) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 37;
 		int hashCode = 1;
 		hashCode = prime * LSystem.unite(hashCode, x);
 		hashCode = prime * LSystem.unite(hashCode, y);
-		hashCode = prime * LSystem.unite(hashCode, p1.getX());
-		hashCode = prime * LSystem.unite(hashCode, p1.getY());
-		hashCode = prime * LSystem.unite(hashCode, c1.getX());
-		hashCode = prime * LSystem.unite(hashCode, c1.getY());
-		hashCode = prime * LSystem.unite(hashCode, p2.getX());
-		hashCode = prime * LSystem.unite(hashCode, p2.getY());
-		hashCode = prime * LSystem.unite(hashCode, c2.getX());
-		hashCode = prime * LSystem.unite(hashCode, c2.getY());
-		hashCode = prime * LSystem.unite(hashCode, segments);
+		hashCode = prime * LSystem.unite(hashCode, _p1.getX());
+		hashCode = prime * LSystem.unite(hashCode, _p1.getY());
+		hashCode = prime * LSystem.unite(hashCode, _c1.getX());
+		hashCode = prime * LSystem.unite(hashCode, _c1.getY());
+		hashCode = prime * LSystem.unite(hashCode, _p2.getX());
+		hashCode = prime * LSystem.unite(hashCode, _p2.getY());
+		hashCode = prime * LSystem.unite(hashCode, _c2.getX());
+		hashCode = prime * LSystem.unite(hashCode, _c2.getY());
+		hashCode = prime * LSystem.unite(hashCode, _segments);
 		return hashCode;
 	}
 

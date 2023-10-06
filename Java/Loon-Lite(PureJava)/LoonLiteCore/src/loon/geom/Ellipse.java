@@ -424,6 +424,66 @@ public class Ellipse extends Shape {
 		return this;
 	}
 
+	public boolean equals(Ellipse e) {
+		if (e == null) {
+			return false;
+		}
+		if (e == this) {
+			return true;
+		}
+		if (e.x == this.x && e.y == this.y && e.radius1 == this.radius1 && e.radius2 == this.radius2
+				&& this.boundingCircleRadius == e.boundingCircleRadius) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Ellipse) {
+			return equals((Ellipse) obj);
+		}
+		return false;
+	}
+
+	public Ellipse copy(Ellipse e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.radius1 = e.radius1;
+		this.radius2 = e.radius2;
+		this.segmentCount = e.segmentCount;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Ellipse copy(Shape e) {
+		if (e instanceof Ellipse) {
+			copy((Ellipse) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
+	}
+
 	public float getMinorRadius() {
 		return MathUtils.min(this.radius1, this.radius2) / 2f;
 	}

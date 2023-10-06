@@ -1212,22 +1212,43 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public boolean equals(float x, float y) {
-		return this.x == x && this.y == y;
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(this.x)) {
+			return false;
+		}
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(this.y)) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean equals(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return equals(pos.getX(), pos.getY());
+	}
+
+	public boolean equals(Vector2f v) {
+		if (v == null) {
+			return false;
+		}
+		if (this == v) {
+			return true;
+		}
+		return equals(v.getX(), v.getY());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Vector2f other = (Vector2f) obj;
-		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
-			return false;
-		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y))
-			return false;
+		}
+		if (obj instanceof Vector2f) {
+			return equals((Vector2f) obj);
+		}
 		return true;
 	}
 

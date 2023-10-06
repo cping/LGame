@@ -196,7 +196,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public int width;
 
 	public int height;
-	
+
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -245,6 +245,18 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox setBounds(RectBox rect) {
+		if (rect == this) {
+			return this;
+		}
+		if (rect == null) {
+			return this;
+		}
+		if (equals(rect)) {
+			return this;
+		}
+		this.scaleX = rect.scaleX;
+		this.scaleY = rect.scaleY;
+		this.rotation = rect.rotation;
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 		return this;
 	}
@@ -255,7 +267,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox setBounds(float x, float y, float width, float height) {
-		if (this.x == x && this.y == y && this.width == width && this.height == height) {
+		if (equals(x, y, width, height)) {
 			return this;
 		}
 		this.x = x;
@@ -319,6 +331,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return setLocation(r.getX(), r.getY());
 	}
 
+	@Override
 	public RectBox setLocation(XY r) {
 		if (r == null) {
 			return this;
@@ -453,6 +466,12 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox copy(RectBox other) {
+		if (other == this) {
+			return this;
+		}
+		if (other == null) {
+			return this;
+		}
 		return setBounds(other);
 	}
 
@@ -508,6 +527,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return y + height / 2f;
 	}
 
+	@Override
 	public float getLeft() {
 		return this.getMinX();
 	}
@@ -518,6 +538,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	@Override
 	public float getRight() {
 		return getMaxX();
 	}
@@ -527,6 +548,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	@Override
 	public float getTop() {
 		return getMinY();
 	}
@@ -537,6 +559,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	@Override
 	public float getBottom() {
 		return getMaxY();
 	}
@@ -621,12 +644,37 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof RectBox) {
-			RectBox rect = (RectBox) obj;
-			return equals(rect.x, rect.y, rect.width, rect.height);
-		} else {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
 			return false;
 		}
+		if (obj instanceof RectBox) {
+			return equals((RectBox) obj);
+		}
+		return true;
+	}
+
+	public boolean equals(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		if (rect == this) {
+			return true;
+		}
+		return (this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height);
+	}
+
+	public boolean equals(XYZW rect) {
+		if (rect == null) {
+			return false;
+		}
+		if (rect == this) {
+			return true;
+		}
+		return (this.x == rect.getX() && this.y == rect.getY() && this.width == rect.getZ()
+				&& this.height == rect.getW());
 	}
 
 	public boolean equals(float x, float y, float width, float height) {

@@ -131,6 +131,28 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return CollisionHelper.checkPointvsPolygon(px, py, this.getPoints(), size);
 	}
 
+	public boolean inCircle(Circle c) {
+		if (c == null) {
+			return false;
+		}
+		return CollisionHelper.checkCirclevsPolygon(c.getRealX(), c.getRealY(), c.getDiameter(), this.getVertices());
+	}
+
+	public boolean inCircle(float cx, float cy, float diameter) {
+		return CollisionHelper.checkCirclevsPolygon(cx, cy, diameter, this.getVertices());
+	}
+
+	public boolean inRect(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return CollisionHelper.checkAABBvsPolygon(rect, this.getVertices());
+	}
+
+	public boolean inRect(float x, float y, float w, float h) {
+		return CollisionHelper.checkAABBvsPolygon(x, y, w, h, this.getVertices());
+	}
+
 	public boolean inShape(float[] points) {
 		if (points == null) {
 			return false;
@@ -746,13 +768,18 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (shape == null) {
 			return this;
 		}
-		this.pointsDirty = true;
-		this.checkPoints();
+		if (shape == this) {
+			return this;
+		}
 		this.x = shape.x;
 		this.y = shape.y;
 		this.rotation = shape.rotation;
-		this.points = CollectionUtils.copyOf(shape.points);
-		this.center = CollectionUtils.copyOf(shape.center);
+		if (shape.points != null) {
+			this.points = CollectionUtils.copyOf(shape.points);
+		}
+		if (shape.center != null) {
+			this.center = CollectionUtils.copyOf(shape.center);
+		}
 		this.scaleX = shape.scaleX;
 		this.scaleY = shape.scaleY;
 		this.minX = shape.minX;
@@ -772,6 +799,8 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (shape.entity != null) {
 			this.entity = shape.entity;
 		}
+		this.pointsDirty = true;
+		this.checkPoints();
 		return this;
 	}
 

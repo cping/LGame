@@ -24,6 +24,7 @@ package loon.geom;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -318,15 +319,85 @@ public class Point extends Shape {
 	public int hashCode() {
 		final int prime = 31;
 		int hashCode = 1;
-		hashCode = prime * LSystem.unite(hashCode,x);
-		hashCode = prime * LSystem.unite(hashCode,y);
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
 		return hashCode;
+	}
+
+	public boolean equals(float x, float y) {
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(this.x)) {
+			return false;
+		}
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(this.y)) {
+			return false;
+		}
+		if (NumberUtils.floatToIntBits(rotation) != NumberUtils.floatToIntBits(this.rotation)) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean equals(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return equals(pos.getX(), pos.getY());
+	}
+
+	public boolean equals(Point v) {
+		if (v == null) {
+			return false;
+		}
+		if (this == v) {
+			return true;
+		}
+		return equals(v.getX(), v.getY());
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		Point p = (Point) obj;
-		return p.x == this.x && p.y == this.y;
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Point) {
+			return equals((Point) obj);
+		}
+		return true;
+	}
+
+	public Point copy(Point e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Point copy(Shape e) {
+		if (e instanceof Point) {
+			copy((Point) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
 	}
 
 	@Override

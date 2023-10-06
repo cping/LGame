@@ -346,16 +346,6 @@ public class Circle extends Ellipse {
 		return new Vector2f(nx, ny);
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 41;
-		int hashCode = 1;
-		hashCode = prime * LSystem.unite(hashCode, x);
-		hashCode = prime * LSystem.unite(hashCode, y);
-		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
-		return hashCode;
-	}
-
 	public boolean equals(Circle other) {
 		if (other == null) {
 			return false;
@@ -367,6 +357,59 @@ public class Circle extends Ellipse {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof Circle) {
+			return equals((Circle) obj);
+		}
+		return false;
+	}
+
+	public Circle copy(Circle e) {
+		if (e == null) {
+			return this;
+		}
+		if (equals(e)) {
+			return this;
+		}
+		this.x = e.x;
+		this.y = e.y;
+		this.rotation = e.rotation;
+		this.boundingCircleRadius = e.boundingCircleRadius;
+		this.minX = e.minX;
+		this.minY = e.minY;
+		this.maxX = e.maxX;
+		this.maxY = e.maxY;
+		this.scaleX = e.scaleX;
+		this.scaleY = e.scaleY;
+		this.pointsDirty = true;
+		checkPoints();
+		return this;
+	}
+
+	@Override
+	public Circle copy(Shape e) {
+		if (e instanceof Circle) {
+			copy((Circle) e);
+		} else {
+			super.copy(e);
+		}
+		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 41;
+		int hashCode = 1;
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
+		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
+		return hashCode;
 	}
 
 }
