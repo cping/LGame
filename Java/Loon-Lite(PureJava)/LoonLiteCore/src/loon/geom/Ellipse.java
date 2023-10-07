@@ -424,6 +424,22 @@ public class Ellipse extends Shape {
 		return this;
 	}
 
+	@Override
+	public void setScale(float s) {
+		this.setScale(s, s);
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		if (scaleX != sx || scaleY != sy) {
+			this.scaleX = sx;
+			this.scaleY = sy;
+			this.radius1 = sx * radius1;
+			this.radius2 = sy * radius2;
+			this.pointsDirty = true;
+		}
+	}
+
 	public boolean equals(Ellipse e) {
 		if (e == null) {
 			return false;
@@ -522,4 +538,5 @@ public class Ellipse extends Shape {
 		hashCode = prime * LSystem.unite(hashCode, radius2);
 		return hashCode;
 	}
+	
 }

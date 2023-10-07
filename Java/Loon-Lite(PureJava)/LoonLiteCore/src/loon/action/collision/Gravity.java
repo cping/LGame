@@ -33,6 +33,8 @@ public class Gravity implements LRelease {
 
 	private static final RectBox _hitRect = new RectBox();
 
+	public RectBox bounds = new RectBox();
+
 	public Object tag;
 
 	public ActionBind bind;
@@ -61,7 +63,7 @@ public class Gravity implements LRelease {
 
 	public String name;
 
-	public RectBox bounds = new RectBox();
+	private Shape _shape;
 
 	public Gravity(ActionBind o) {
 		this(LSystem.UNKNOWN, o);
@@ -81,6 +83,18 @@ public class Gravity implements LRelease {
 		this.bind = o;
 		this.enabled = true;
 		this.setBounds(x, y, w, h);
+	}
+
+	public Shape getShape() {
+		return _shape == null ? (bind == null ? bounds : bind.getRectBox()) : _shape;
+	}
+
+	public Gravity setShape(Shape s) {
+		this._shape = s;
+		if (this.bounds != null && this._shape != null) {
+			bounds.setBounds(_shape.getX(), _shape.getY(), _shape.getWidth(), _shape.getHeight());
+		}
+		return this;
 	}
 
 	public boolean isEnabled() {
@@ -227,7 +241,7 @@ public class Gravity implements LRelease {
 		bounds.setBounds(x, y, w, h);
 		return this;
 	}
-	
+
 	public boolean collided(Shape shape) {
 		return _hitRect.collided(shape);
 	}

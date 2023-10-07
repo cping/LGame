@@ -71,7 +71,7 @@ public class GravityHandler implements LRelease {
 
 	private ObjectMap<ActionBind, Gravity> _gravityMap;
 
-	private GravityUpdate _listener;
+	private GravityUpdate _gravitylistener;
 
 	private boolean _closed;
 
@@ -81,6 +81,8 @@ public class GravityHandler implements LRelease {
 
 	private float _bindHeight;
 
+	private float _lastX = -1f, _lastY = -1f;
+
 	private float _bindX;
 
 	private float _bindY;
@@ -89,7 +91,7 @@ public class GravityHandler implements LRelease {
 
 	boolean isBounded;
 
-	boolean isListener;
+	boolean isGravityListener;
 
 	boolean isEnabled;
 
@@ -267,9 +269,6 @@ public class GravityHandler implements LRelease {
 							}
 							if (chageWidth || chageHeight) {
 								movePos(g, _bindX, _bindY);
-								if (isListener) {
-									_listener.action(g, _bindX, _bindY);
-								}
 								return;
 							}
 						}
@@ -279,9 +278,6 @@ public class GravityHandler implements LRelease {
 						_velocityY = limitValue(g, _velocityY, limitHeight);
 					}
 					movePos(g, _velocityX, _velocityY);
-					if (isListener) {
-						_listener.action(g, _velocityX, _velocityY);
-					}
 				}
 			}
 		}
@@ -805,6 +801,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public GravityHandler movePos(Gravity g, float x, float y) {
+		if (_collisionWorld == null) {
+			return movePos(g, x, y, _lastX, _lastY);
+		}
 		return movePos(g, x, y, -1f, -1f);
 	}
 
@@ -833,6 +832,11 @@ public class GravityHandler implements LRelease {
 		} else {
 			bind.setLocation(x, y);
 		}
+		if (isGravityListener) {
+			_gravitylistener.action(g, _bindX, _bindY);
+		}
+		this._lastX = x;
+		this._lastY = y;
 		return this;
 	}
 
@@ -853,16 +857,20 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean isListener() {
-		return isListener;
+		return isGravityListener;
 	}
 
 	public GravityHandler setListener(GravityUpdate listener) {
+		return setGravityListener(listener);
+	}
+
+	public GravityHandler setGravityListener(GravityUpdate listener) {
 		return onUpdate(listener);
 	}
 
 	public GravityHandler onUpdate(GravityUpdate listener) {
-		this._listener = listener;
-		this.isListener = _listener != null;
+		this._gravitylistener = listener;
+		this.isGravityListener = _gravitylistener != null;
 		return this;
 	}
 
@@ -896,8 +904,9 @@ public class GravityHandler implements LRelease {
 		return syncActionBind;
 	}
 
-	public void setSyncBind(boolean syncBind) {
+	public GravityHandler setSyncBind(boolean syncBind) {
 		this.syncActionBind = syncBind;
+		return this;
 	}
 
 	public boolean isClosed() {

@@ -315,6 +315,23 @@ public class Circle extends Ellipse {
 		}
 	}
 
+	@Override
+	public void setScale(float s) {
+		this.setScale(s, s);
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		if (scaleX != sx || scaleY != sy) {
+			this.scaleX = sx;
+			this.scaleY = sy;
+			this.boundingCircleRadius = MathUtils.max(sx, sy) * boundingCircleRadius;
+			this.setRadius1(boundingCircleRadius);
+			this.setRadius2(boundingCircleRadius);
+			this.pointsDirty = true;
+		}
+	}
+
 	public float circumferenceFloat() {
 		return MathUtils.TWO_PI * this.boundingCircleRadius;
 	}

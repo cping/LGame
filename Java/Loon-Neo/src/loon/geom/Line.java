@@ -561,6 +561,39 @@ public class Line extends Shape {
 		return MathUtils.toDegrees(radians);
 	}
 
+	@Override
+	public Line setRotation(float degrees) {
+		checkPoints();
+		return this.setRotation(degrees, center[0], center[1]);
+	}
+
+	@Override
+	public Line setRotation(float degrees, float cx, float cy) {
+		if (rotation != degrees) {
+			this.rotation = degrees;
+			_currentStart.rotateSelf(cx, cy, degrees);
+			_currentEnd.rotateSelf(cx, cy, degrees);
+			pointsDirty = true;
+		}
+		return this;
+	}
+
+	@Override
+	public void setScale(float s) {
+		this.setScale(s, s);
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		if (scaleX != sx || scaleY != sy) {
+			this.scaleX = sx;
+			this.scaleY = sy;
+			_currentStart.scaleSelf(sx, sy);
+			_currentEnd.scaleSelf(sx, sy);
+			pointsDirty = true;
+		}
+	}
+
 	public float side(XY v) {
 		if (v == null) {
 			return 0f;

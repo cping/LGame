@@ -56,8 +56,12 @@ public class Hitbox implements LRelease {
 		return this;
 	}
 
-	private boolean checkCollision(Shape src, Shape dst) {
-		return src.contains(dst) || src.intersects(dst);
+	public boolean removeShape(Shape shape) {
+		return _shapes.remove(shape);
+	}
+
+	private boolean checkCollided(Shape src, Shape dst) {
+		return src.collided(dst);
 	}
 
 	private boolean checkContainsCollision(Shape src, XY pos) {
@@ -112,7 +116,7 @@ public class Hitbox implements LRelease {
 
 	public boolean collided(Shape shape) {
 		for (Shape s : _shapes) {
-			if (checkCollision(s, shape)) {
+			if (checkCollided(s, shape)) {
 				return true;
 			}
 		}
@@ -121,7 +125,7 @@ public class Hitbox implements LRelease {
 
 	public Shape collidedResult(Shape shape) {
 		for (Shape s : _shapes) {
-			if (checkCollision(s, shape)) {
+			if (checkCollided(s, shape)) {
 				return s;
 			}
 		}

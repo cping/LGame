@@ -606,6 +606,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			float[] result = new float[points.length];
 			m.transform(points, 0, result, 0, points.length / 2);
 			this.points = result;
+			this.pointsDirty = true;
 			this.checkPoints();
 		}
 	}
@@ -630,11 +631,20 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return scaleY;
 	}
 
+	public boolean isScaled() {
+		return scaleX != 1f || scaleY != 1f;
+	}
+
 	public float getRotation() {
 		return rotation;
 	}
 
+	public boolean isRotated() {
+		return rotation != 0f;
+	}
+
 	public Shape setRotation(float r) {
+		checkPoints();
 		return this.setRotation(r, this.center[0], this.center[1]);
 	}
 
@@ -660,6 +670,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	protected final void updatePoints() {
+		this.pointsDirty = true;
 		final int size = points.length;
 		if (size > 0) {
 			maxX = points[0];
@@ -767,6 +778,46 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			entity.setShape(this);
 		}
 		return entity;
+	}
+
+	public boolean equalsRotateScale(float rotate, float sx, float sy) {
+		return rotate == this.rotation && sx == this.scaleX && sy == this.scaleY;
+	}
+
+	public boolean equals(Shape shape) {
+		if (shape == null) {
+			return false;
+		}
+		if (shape == this) {
+			return true;
+		}
+		boolean eq = shape.x == this.x && shape.y == this.y && shape.rotation == this.rotation
+				&& shape.minX == this.minX && shape.minY == this.minY && shape.maxX == this.maxX
+				&& shape.maxY == this.maxY && shape.boundingCircleRadius == this.boundingCircleRadius;
+		if (eq) {
+			checkPoints();
+			if (eq && shape.points != null) {
+				eq = CollectionUtils.equals(this.points, shape.points);
+			}
+			if (eq && shape.center != null) {
+				eq = CollectionUtils.equals(this.center, shape.center);
+			}
+		}
+		return eq;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof Shape) {
+			return equals((Shape) obj);
+		}
+		return false;
 	}
 
 	public Shape cpy() {

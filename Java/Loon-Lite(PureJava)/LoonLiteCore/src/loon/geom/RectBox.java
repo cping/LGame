@@ -36,6 +36,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static RectBox ZERO() {
+		return new RectBox(0, 0, 0, 0);
+	}
+
 	public static RectBox toPixels(final RectBox rect, final XY point) {
 		return new RectBox(rect.getX() * point.getX(), rect.getY() * point.getY(), rect.getWidth() * point.getX(),
 				rect.getHeight() * point.getY());
