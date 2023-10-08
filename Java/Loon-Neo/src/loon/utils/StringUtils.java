@@ -1746,6 +1746,22 @@ final public class StringUtils extends CharUtils {
 		return sbr.toString().trim();
 	}
 
+	public static boolean isMatch(CharSequence message, CharSequence flag) {
+		if (isEmpty(message, flag)) {
+			return false;
+		}
+		final int len = message.length();
+		for (int i = 0; i < len; i++) {
+			char ch = message.charAt(i);
+			for (int j = 0; j < flag.length(); j++) {
+				if (ch == flag.charAt(j)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	public static String unificationStrings(String mes) {
 		return unificationStrings(mes, null);
 	}

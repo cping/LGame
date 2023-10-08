@@ -200,7 +200,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public int width;
 
 	public int height;
-
+	
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -677,7 +677,8 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		if (rect == this) {
 			return true;
 		}
-		return (this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height);
+		return (this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height)
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY);
 	}
 
 	public boolean equals(XYZW rect) {

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,7 +32,7 @@ public class PathUtils {
 
 	/**
 	 * 格式化文件路径反斜杆为系统默认的反斜杠样式
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -50,7 +50,7 @@ public class PathUtils {
 
 	/**
 	 * 返回指定文件的基础文件名(不带.)
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -75,7 +75,7 @@ public class PathUtils {
 
 	/**
 	 * 返回完整文件名
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -110,7 +110,7 @@ public class PathUtils {
 
 	/**
 	 * 返回最后一级文件夹的名称
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -144,7 +144,7 @@ public class PathUtils {
 
 	/**
 	 * 获得指定路径扩展名(文件后缀)
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -162,7 +162,7 @@ public class PathUtils {
 
 	/**
 	 * 返回文件夹所在的文件夹路径
-	 * 
+	 *
 	 * @param dir
 	 * @return
 	 */
@@ -179,5 +179,59 @@ public class PathUtils {
 			size = dir.lastIndexOf(LSystem.FS) + 1;
 		}
 		return dir.substring(0, size);
+	}
+
+	/**
+	 * 检查当前文件路径是否为相对路径
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static boolean isRelativePath(String filename) {
+		return filename.charAt(0) != '/' && StringUtils.isMatch(filename, ":\\/\\/");
+	}
+
+	public static String extractPath(String filename) {
+		return extractPath(filename, '/');
+	}
+
+	/**
+	 * 返回不带文件名的路徑，如果文件名是相对路径，以'.'开头
+	 * 
+	 * @param filename
+	 * @param delimiter
+	 * @return
+	 */
+	public static String extractPath(String filename, char delimiter) {
+		if (StringUtils.isEmpty(filename)) {
+			return LSystem.EMPTY;
+		}
+		String result = LSystem.EMPTY;
+		String[] parts = StringUtils.split(filename, delimiter);
+		int i = 0;
+		if (parts.length > 1) {
+			if (isRelativePath(filename)) {
+				if (parts[0].equals(".")) {
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += (i == 0) ? parts[i] : delimiter + parts[i];
+
+					}
+				} else if (parts[0].equals("..")) {
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += (i == 0) ? parts[i] : delimiter + parts[i];
+					}
+				} else {
+					result = ".";
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += delimiter + parts[i];
+					}
+				}
+			} else {
+				for (i = 0; i < parts.length - 1; ++i) {
+					result += (i == 0) ? parts[i] : delimiter + parts[i];
+				}
+			}
+		}
+		return result;
 	}
 }

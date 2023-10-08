@@ -131,7 +131,7 @@ public class PathUtils {
 			}
 			return list[list.length - 1];
 
-		}else if (dir.indexOf(LSystem.FS) != -1) {
+		} else if (dir.indexOf(LSystem.FS) != -1) {
 			String[] list = StringUtils.split(dir, LSystem.FS);
 			if (list.length > 1) {
 				return list[list.length - 2];
@@ -179,5 +179,59 @@ public class PathUtils {
 			size = dir.lastIndexOf(LSystem.FS) + 1;
 		}
 		return dir.substring(0, size);
+	}
+
+	/**
+	 * 检查当前文件路径是否为相对路径
+	 * 
+	 * @param filename
+	 * @return
+	 */
+	public static boolean isRelativePath(String filename) {
+		return filename.charAt(0) != '/' && StringUtils.isMatch(filename, ":\\/\\/");
+	}
+
+	public static String extractPath(String filename) {
+		return extractPath(filename, '/');
+	}
+
+	/**
+	 * 返回不带文件名的路徑，如果文件名是相对路径，以'.'开头
+	 * 
+	 * @param filename
+	 * @param delimiter
+	 * @return
+	 */
+	public static String extractPath(String filename, char delimiter) {
+		if (StringUtils.isEmpty(filename)) {
+			return LSystem.EMPTY;
+		}
+		String result = LSystem.EMPTY;
+		String[] parts = StringUtils.split(filename, delimiter);
+		int i = 0;
+		if (parts.length > 1) {
+			if (isRelativePath(filename)) {
+				if (parts[0].equals(".")) {
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += (i == 0) ? parts[i] : delimiter + parts[i];
+
+					}
+				} else if (parts[0].equals("..")) {
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += (i == 0) ? parts[i] : delimiter + parts[i];
+					}
+				} else {
+					result = ".";
+					for (i = 0; i < parts.length - 1; ++i) {
+						result += delimiter + parts[i];
+					}
+				}
+			} else {
+				for (i = 0; i < parts.length - 1; ++i) {
+					result += (i == 0) ? parts[i] : delimiter + parts[i];
+				}
+			}
+		}
+		return result;
 	}
 }

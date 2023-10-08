@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
@@ -379,11 +380,7 @@ public class GravityHandler implements LRelease {
 		if (a == null || b == null) {
 			return false;
 		}
-		if (a.bounds != null && a.bounds != null) {
-			return CollisionHelper.intersects(a.bounds.x, a.bounds.y, a.bounds.getWidth(), a.bounds.getHeight(),
-					b.bounds.x, b.bounds.y, b.bounds.getWidth(), b.bounds.getHeight());
-		}
-		return false;
+		return a.getShape().intersects(b.getShape());
 	}
 
 	public Gravity intersects(float x, float y) {
@@ -394,19 +391,15 @@ public class GravityHandler implements LRelease {
 		int size = pendingAdd.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = pendingAdd.get(i);
-			if (g.bounds != null) {
-				if (g.bounds.intersects(x, y, w, h)) {
-					return g;
-				}
+			if (g.bounds.intersects(x, y, w, h)) {
+				return g;
 			}
 		}
 		size = objects.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = objects.get(i);
-			if (g.bounds != null) {
-				if (g.bounds.intersects(x, y, w, h)) {
-					return g;
-				}
+			if (g.bounds.intersects(x, y, w, h)) {
+				return g;
 			}
 		}
 		return null;
@@ -455,19 +448,57 @@ public class GravityHandler implements LRelease {
 		int size = pendingAdd.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = pendingAdd.get(i);
-			if (g.bounds != null) {
-				if (g.bounds.contains(x, y, w, h)) {
-					return g;
-				}
+			if (g.bounds.contains(x, y, w, h)) {
+				return g;
 			}
 		}
 		size = objects.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = objects.get(i);
-			if (g.bounds != null) {
-				if (g.bounds.contains(x, y, w, h)) {
-					return g;
-				}
+			if (g.bounds.contains(x, y, w, h)) {
+				return g;
+			}
+		}
+		return null;
+	}
+
+	public Gravity collided(Shape s) {
+		if (s == null) {
+			return null;
+		}
+		int size = pendingAdd.size;
+		for (int i = 0; i < size; i++) {
+			Gravity g = pendingAdd.get(i);
+			if (g.getShape().collided(s)) {
+				return g;
+			}
+		}
+		size = objects.size;
+		for (int i = 0; i < size; i++) {
+			Gravity g = objects.get(i);
+			if (g.getShape().collided(s)) {
+				return g;
+			}
+		}
+		return null;
+	}
+
+	public Gravity collided(Gravity s) {
+		if (s == null) {
+			return null;
+		}
+		int size = pendingAdd.size;
+		for (int i = 0; i < size; i++) {
+			Gravity g = pendingAdd.get(i);
+			if (g.collided(s.getShape())) {
+				return g;
+			}
+		}
+		size = objects.size;
+		for (int i = 0; i < size; i++) {
+			Gravity g = objects.get(i);
+			if (g.collided(s.getShape())) {
+				return g;
 			}
 		}
 		return null;
@@ -838,6 +869,14 @@ public class GravityHandler implements LRelease {
 		this._lastX = x;
 		this._lastY = y;
 		return this;
+	}
+
+	public float getLastX() {
+		return _lastX;
+	}
+
+	public float getLastY() {
+		return _lastY;
 	}
 
 	public boolean isEnabled() {

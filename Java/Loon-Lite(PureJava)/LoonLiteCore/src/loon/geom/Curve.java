@@ -124,7 +124,7 @@ public class Curve extends Shape {
 			return true;
 		}
 		if (_p1.equals(e._p1) && _p2.equals(e._p2) && _c1.equals(e._c1) && _c2.equals(e._c2) && _segments == e._segments
-				&& rotation == e.rotation) {
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
 		return false;

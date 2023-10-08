@@ -697,7 +697,8 @@ public class Line extends Shape {
 		if (e == this) {
 			return true;
 		}
-		if (_currentStart.equals(e._currentStart) && _currentEnd.equals(e._currentEnd) && this.rotation == e.rotation) {
+		if (_currentStart.equals(e._currentStart) && _currentEnd.equals(e._currentEnd)
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
 		return false;

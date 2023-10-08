@@ -297,13 +297,17 @@ public class Polygon extends Shape implements BoxSize {
 		return this;
 	}
 
-	public Polygon rotate(float angle) {
-		final TArray<Vector2f> result = getVertices();
-		final int len = result.size;
-		for (int i = 0; i < len; i++) {
-			result.get(i).rotateSelf(angle);
+	public Polygon rotate(float cx, float cy, float angle) {
+		if (rotation != angle) {
+			this.rotation = angle;
+			final TArray<Vector2f> result = getVertices();
+			final int len = result.size;
+			for (int i = 0; i < len; i++) {
+				result.get(i).rotateSelf(cx, cy, angle);
+			}
+			syncPoints(result);
+			this.pointsDirty = true;
 		}
-		syncPoints(result);
 		return this;
 	}
 
@@ -314,6 +318,7 @@ public class Polygon extends Shape implements BoxSize {
 			result.get(i).mulSelf(v);
 		}
 		syncPoints(result);
+		this.pointsDirty = true;
 		return this;
 	}
 

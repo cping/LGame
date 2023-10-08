@@ -163,7 +163,7 @@ public class Calculator implements LRelease{
 		currentTotal %= num % 1f == 0 ? (int) num : num;
 		return this;
 	}
-
+	
 	public Calculator equal(float num) {
 		currentTotal = num;
 		return this;

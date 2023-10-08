@@ -33,7 +33,7 @@ public class Gravity implements LRelease {
 
 	private static final RectBox _hitRect = new RectBox();
 
-	public RectBox bounds = new RectBox();
+	public final RectBox bounds = new RectBox();
 
 	public Object tag;
 
@@ -86,7 +86,7 @@ public class Gravity implements LRelease {
 	}
 
 	public Shape getShape() {
-		return _shape == null ? (bind == null ? bounds : bind.getRectBox()) : _shape;
+		return _shape == null ? bounds : _shape;
 	}
 
 	public Gravity setShape(Shape s) {

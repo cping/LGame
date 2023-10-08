@@ -366,7 +366,8 @@ public class Triangle2f extends Shape implements Triangle {
 			return true;
 		}
 		if (this.x == t.x && this.y == t.y && CollectionUtils.equals(t.xpoints, this.xpoints)
-				&& CollectionUtils.equals(t.ypoints, this.ypoints)) {
+				&& CollectionUtils.equals(t.ypoints, this.ypoints)
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
 		return false;

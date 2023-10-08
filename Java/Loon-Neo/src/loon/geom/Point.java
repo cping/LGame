@@ -352,7 +352,7 @@ public class Point extends Shape {
 		if (this == v) {
 			return true;
 		}
-		return equals(v.getX(), v.getY());
+		return equals(v.getX(), v.getY()) && equalsRotateScale(this.rotation, this.scaleX, this.scaleY);
 	}
 
 	@Override

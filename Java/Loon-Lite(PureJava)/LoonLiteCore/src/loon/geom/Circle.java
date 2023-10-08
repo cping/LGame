@@ -370,7 +370,8 @@ public class Circle extends Ellipse {
 		if (other == this) {
 			return true;
 		}
-		if (this.x == other.x && this.y == other.y && this.boundingCircleRadius == other.boundingCircleRadius) {
+		if (this.x == other.x && this.y == other.y && this.boundingCircleRadius == other.boundingCircleRadius
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
 		return false;

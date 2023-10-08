@@ -448,7 +448,8 @@ public class Ellipse extends Shape {
 			return true;
 		}
 		if (e.x == this.x && e.y == this.y && e.radius1 == this.radius1 && e.radius2 == this.radius2
-				&& this.boundingCircleRadius == e.boundingCircleRadius) {
+				&& this.boundingCircleRadius == e.boundingCircleRadius
+				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
 		return false;
@@ -538,5 +539,5 @@ public class Ellipse extends Shape {
 		hashCode = prime * LSystem.unite(hashCode, radius2);
 		return hashCode;
 	}
-	
+
 }
