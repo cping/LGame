@@ -422,6 +422,18 @@ public class LTexture extends Painter implements LRelease {
 		return _textureClip.getDisplayHeight();
 	}
 
+	public LTexture sub() {
+		return copy();
+	}
+
+	public LTexture sub(XYZW rect) {
+		return copy(rect);
+	}
+
+	public LTexture sub(final float x, final float y, final float width, final float height) {
+		return copy(x, y, width, height);
+	}
+
 	public LTexture cpy() {
 		return copy();
 	}
@@ -803,7 +815,8 @@ public class LTexture extends Painter implements LRelease {
 			if (this == tmp) {
 				return true;
 			}
-			if ((source != null && !source.equals(tmp.source)) || (tmp.width() != width()) || (tmp.height() != height())) {
+			if ((source != null && !source.equals(tmp.source)) || (tmp.width() != width())
+					|| (tmp.height() != height())) {
 				return false;
 			}
 			if (this._id == tmp._id && this._textureClip.getRegionX() == tmp._textureClip.getRegionX()

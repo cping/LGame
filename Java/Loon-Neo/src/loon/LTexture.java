@@ -566,7 +566,7 @@ public class LTexture extends Painter implements LRelease {
 		if (isClosed()) {
 			return;
 		}
-		batch.quad(this, tint,tx, x1, y1, x2, y2, x3, y3, x4, y4);
+		batch.quad(this, tint, tx, x1, y1, x2, y2, x3, y3, x4, y4);
 	}
 
 	public void closeChildAll() {
@@ -609,6 +609,18 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public float getDisplayHeight() {
 		return _textureClip.getDisplayHeight();
+	}
+
+	public LTexture sub() {
+		return copy();
+	}
+
+	public LTexture sub(XYZW rect) {
+		return copy(rect);
+	}
+
+	public LTexture sub(final float x, final float y, final float width, final float height) {
+		return copy(x, y, width, height);
 	}
 
 	public LTexture cpy() {

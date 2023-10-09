@@ -49,13 +49,14 @@ public class GameKey {
 		this.down = key.down;
 	}
 
-	public void reset() {
+	public GameKey reset() {
 		this.type = -1;
 		this.keyCode = -1;
 		this.keyChar = (char) -1;
 		this.timer = 0;
 		this.presses = 0;
 		this.down = false;
+		return this;
 	}
 
 	public double getTimer() {

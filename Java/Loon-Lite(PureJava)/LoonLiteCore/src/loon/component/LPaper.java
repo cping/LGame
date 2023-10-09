@@ -44,7 +44,7 @@ public class LPaper extends LContainer {
 		this.customRendering = true;
 		this.animation = new Animation();
 		if (background != null && (color == null || LColor.white.equals(color))) {
-			this.setBackground(background);
+			this.setBackground(background, (w != 0 && h != 0) ? false : true);
 		} else if (background == null && color != null) {
 			this.setBackground(color);
 		} else {
@@ -129,7 +129,7 @@ public class LPaper extends LContainer {
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (isVisible()) {
 			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, _component_baseColor);
+				g.draw(animation.getSpriteImage(), x, y, w, h, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);

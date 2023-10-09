@@ -40,6 +40,19 @@ public class LTimerContext {
 		return MathUtils.max(Duration.toS(timeSinceLastUpdate), LSystem.MIN_SECONE_SPEED_FIXED);
 	}
 
+	public float getDelta() {
+		return getDelta(getMilliseconds());
+	}
+
+	public float getDelta(float delta) {
+		if (delta > 0.1f) {
+			delta = 0.1f;
+		} else if (delta <= 0f) {
+			delta = LSystem.DEFAULT_EASE_DELAY;
+		}
+		return delta;
+	}
+
 	public long getTimeSinceLastUpdate() {
 		return timeSinceLastUpdate;
 	}

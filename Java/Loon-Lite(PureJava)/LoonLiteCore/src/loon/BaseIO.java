@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -65,8 +65,20 @@ public abstract class BaseIO extends DefUI {
 		return LSystem.newTexture(path);
 	}
 
+	public final static LTexture texture(String path) {
+		return LSystem.loadTexture(path);
+	}
+
 	public final static LTexture loadTexture(String path) {
 		return LSystem.loadTexture(path);
+	}
+
+	public final static Image image(String path) {
+		return loadImage(path, true);
+	}
+
+	public final static Image image(String path, boolean syn) {
+		return loadImage(path, syn);
 	}
 
 	public final static Image loadImage(String path) {
