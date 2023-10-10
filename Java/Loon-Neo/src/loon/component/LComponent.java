@@ -433,6 +433,16 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public boolean intersects(Shape rect) {
+		return getCollisionBox().intersects(rect);
+	}
+
+	@Override
+	public boolean contains(Shape rect) {
+		return getCollisionBox().contains(rect);
+	}
+
+	@Override
+	public boolean collided(Shape rect) {
 		return getCollisionBox().collided(rect);
 	}
 

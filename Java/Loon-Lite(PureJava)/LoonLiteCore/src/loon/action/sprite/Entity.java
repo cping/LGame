@@ -1062,10 +1062,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
-	public boolean collided(Shape shape) {
-		return getCollisionArea().collided(shape);
-	}
-
 	public boolean isCollision(Entity o) {
 		if (o == null) {
 			return false;
@@ -1683,7 +1679,17 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public boolean intersects(Shape s) {
-		return getCollisionBox().collided(s);
+		return getCollisionBox().intersects(s);
+	}
+
+	@Override
+	public boolean contains(Shape s) {
+		return getCollisionBox().contains(s);
+	}
+
+	@Override
+	public boolean collided(Shape shape) {
+		return getCollisionBox().collided(shape);
 	}
 
 	public Gravity getGravity() {

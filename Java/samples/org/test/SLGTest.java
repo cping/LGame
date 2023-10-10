@@ -22,6 +22,7 @@ package org.test;
 
 import loon.Counter;
 import loon.LTexture;
+import loon.Nullable;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -29,6 +30,7 @@ import loon.action.MoveTo;
 import loon.action.map.AStarFinder;
 import loon.action.map.Field2D;
 import loon.action.map.MoveDraw;
+import loon.action.map.TileAllocation;
 import loon.action.map.TileMap;
 import loon.action.map.battle.BattleProcess;
 import loon.action.map.items.Role;
@@ -912,7 +914,7 @@ public class SLGTest extends Stage {
 		// 构建一个2D的二维数组游戏地图
 		this.gameMap = new TileMap("assets/map2.txt", 32, 32);
 		// 设置切图方式
-		TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
+		/*TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
 		// 索引,名称,开始切图的x,y位置,以及切下来多少
 		clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
 		clips.add(new LTexturePackClip(1, "2", 0, 32, 32, 32));
@@ -920,7 +922,13 @@ public class SLGTest extends Stage {
 		clips.add(new LTexturePackClip(3, "4", 32, 32, 32, 32));
 
 		// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-		gameMap.setImagePack("assets/map.png", clips);
+		gameMap.setImagePack("assets/map.png", clips);*/
+		
+		gameMap.setImagePack(TileAllocation.none("assets/map.png")
+		 .clip("1", 0, 0, 32, 32)
+	     .clip("2", 0, 32, 32, 32)
+	     .clip("3", 32, 0, 32, 32)
+	     .clip("4", 32, 32, 32, 32));
 		// 限制进入区域
 		gameMap.setLimit(new int[] { 1, 2, 3, 'P', 'E' });
 		// 允许进入区域

@@ -21,6 +21,7 @@
 package loon.action.map;
 
 import loon.LObject;
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -233,6 +234,13 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		texturePack = new LTexturePack(fileName, clips);
 		texturePack.packed(format);
 		return this;
+	}
+
+	public <T extends LRelease> TileMap setImagePack(TileAllocation<T> allocation) {
+		if (allocation == null) {
+			return this;
+		}
+		return setImagePack(allocation.getPath(), allocation.getClips());
 	}
 
 	public TileMap setImagePack(String file) {

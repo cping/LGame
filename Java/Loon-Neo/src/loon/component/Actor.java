@@ -81,7 +81,7 @@ public class Actor extends LObject<Actor>
 	private float _actorWidth, _actorHeight;
 
 	private float[] _currentPos = new float[2];
-	
+
 	private float[] _positionXs = new float[4];
 
 	private float[] _positionYs = new float[4];
@@ -855,7 +855,6 @@ public class Actor extends LObject<Actor>
 		return this;
 	}
 
-
 	public float[] toPixels() {
 		float size = gameLayer.cellSize / 2;
 		_currentPos[0] = _objectLocation.x * gameLayer.cellSize + size;
@@ -914,6 +913,18 @@ public class Actor extends LObject<Actor>
 
 	@Override
 	public boolean intersects(Shape s) {
+		RectBox thisBounds = this.getBoundingRect();
+		return thisBounds.intersects(s);
+	}
+
+	@Override
+	public boolean contains(Shape s) {
+		RectBox thisBounds = this.getBoundingRect();
+		return thisBounds.contains(s);
+	}
+	
+	@Override
+	public boolean collided(Shape s) {
 		RectBox thisBounds = this.getBoundingRect();
 		return thisBounds.collided(s);
 	}

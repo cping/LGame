@@ -1253,6 +1253,16 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public boolean intersects(Shape s) {
+		return getCollisionBox().intersects(s);
+	}
+
+	@Override
+	public boolean contains(Shape s) {
+		return getCollisionBox().contains(s);
+	}
+
+	@Override
+	public boolean collided(Shape s) {
 		return getCollisionBox().collided(s);
 	}
 

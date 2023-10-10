@@ -83,7 +83,7 @@ public abstract class LComponent extends LObject<LContainer>
 	private ResizeListener<LComponent> _resizeListener;
 
 	protected LTexture[] _imageUI = null;
-	
+
 	protected float _fixedWidthOffset = 0f;
 
 	protected float _fixedHeightOffset = 0f;
@@ -429,6 +429,16 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public boolean intersects(Shape s) {
+		return getCollisionBox().intersects(s);
+	}
+
+	@Override
+	public boolean contains(Shape s) {
+		return getCollisionBox().contains(s);
+	}
+	
+	@Override
+	public boolean collided(Shape s) {
 		return getCollisionBox().collided(s);
 	}
 

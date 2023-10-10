@@ -914,6 +914,18 @@ public class Actor extends LObject<Actor>
 	@Override
 	public boolean intersects(Shape s) {
 		RectBox thisBounds = this.getBoundingRect();
+		return thisBounds.intersects(s);
+	}
+
+	@Override
+	public boolean contains(Shape s) {
+		RectBox thisBounds = this.getBoundingRect();
+		return thisBounds.contains(s);
+	}
+	
+	@Override
+	public boolean collided(Shape s) {
+		RectBox thisBounds = this.getBoundingRect();
 		return thisBounds.collided(s);
 	}
 

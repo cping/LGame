@@ -1,7 +1,7 @@
 package loon.opengl;
 
-import loon.LSystem;
 import loon.LTexture;
+import loon.LSystem;
 import loon.geom.RectBox;
 import loon.utils.TArray;
 
@@ -27,7 +27,7 @@ public class LTexturePackClip {
 		int frame = 0;
 		int wlength = width / tileWidth;
 		int hlength = height / tileHeight;
-		TArray<LTexturePackClip> clips = new TArray<>(wlength * hlength);
+		TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(wlength * hlength);
 		for (int y = 0; y < hlength; y++) {
 			for (int x = 0; x < wlength; x++) {
 				clips.add(new LTexturePackClip(frame, String.valueOf(frame), offsetX + (x * tileWidth),
@@ -70,24 +70,27 @@ public class LTexturePackClip {
 		return name;
 	}
 
-	public void setName(String name) {
+	public LTexturePackClip setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public LTexturePackClip setId(int id) {
 		this.id = id;
+		return this;
 	}
 
 	public RectBox getRect() {
 		return rect;
 	}
 
-	public void setRect(RectBox rect) {
+	public LTexturePackClip setRect(RectBox rect) {
 		this.rect.setBounds(rect);
+		return this;
 	}
 
 }

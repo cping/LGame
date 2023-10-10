@@ -376,9 +376,19 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	@Override
 	public boolean intersects(Shape s) {
-		return getCollisionBox().collided(s);
+		return getCollisionBox().intersects(s);
 	}
 
+	@Override
+	public boolean contains(Shape shape) {
+		return getCollisionBox().contains(shape);
+	}
+	
+	@Override
+	public boolean collided(Shape shape) {
+		return getCollisionBox().collided(shape);
+	}
+	
 	@Override
 	public float getContainerWidth() {
 		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();

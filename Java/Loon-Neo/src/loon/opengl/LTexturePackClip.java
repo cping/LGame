@@ -70,24 +70,27 @@ public class LTexturePackClip {
 		return name;
 	}
 
-	public void setName(String name) {
+	public LTexturePackClip setName(String name) {
 		this.name = name;
+		return this;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public LTexturePackClip setId(int id) {
 		this.id = id;
+		return this;
 	}
 
 	public RectBox getRect() {
 		return rect;
 	}
 
-	public void setRect(RectBox rect) {
+	public LTexturePackClip setRect(RectBox rect) {
 		this.rect.setBounds(rect);
+		return this;
 	}
 
 }
