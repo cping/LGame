@@ -20,16 +20,19 @@
  */
 package loon.action.camera;
 
+import loon.LSystem;
 import loon.geom.Transforms;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 
 public class OrthographicCamera extends EmptyCamera {
 
+	private final Vector3f _tempVector3f = new Vector3f();
 	private float width;
 	private float height;
 
 	public OrthographicCamera() {
+		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public OrthographicCamera(float width, float height) {
@@ -65,7 +68,6 @@ public class OrthographicCamera extends EmptyCamera {
 		_viewMatrix4.idt();
 		float x = (width / 2) - v.getX();
 		float y = (height / 2) - v.getY();
-
 		return translate(x, y);
 	}
 
@@ -90,4 +92,52 @@ public class OrthographicCamera extends EmptyCamera {
 		return this;
 	}
 
+	public Vector2f project(Vector2f worldCoords) {
+		return project(worldCoords.x, worldCoords.y, worldCoords);
+	}
+
+	public Vector3f project(Vector3f worldCoords) {
+		project(worldCoords, 0, 0, width, height);
+		return worldCoords;
+	}
+
+	public Vector3f project(Vector3f worldCoords, float viewportX, float viewportY, float viewportWidth,
+			float viewportHeight) {
+		worldCoords.prjSelf(_viewMatrix4);
+		worldCoords.x = viewportWidth * (worldCoords.x + 1f) / 2f + viewportX;
+		worldCoords.y = viewportHeight * (worldCoords.y + 1f) / 2f + viewportY;
+		worldCoords.z = (worldCoords.z + 1f) / 2f;
+		return worldCoords;
+	}
+
+	public Vector2f project(float x, float y, Vector2f dst) {
+		_tempVector3f.set(x, y, 0);
+		project(_tempVector3f);
+		return dst.set(_tempVector3f.x, _tempVector3f.y);
+	}
+
+	public Vector3f unproject(Vector3f screenCoords, float viewportX, float viewportY, float viewportWidth,
+			float viewportHeight) {
+		float x = screenCoords.x - viewportX, y = screenCoords.y - viewportY;
+		screenCoords.x = (2f * x) / viewportWidth - 1f;
+		screenCoords.y = (2f * y) / viewportHeight - 1f;
+		screenCoords.z = 2f * screenCoords.z - 1f;
+		screenCoords.prjSelf(_viewMatrix4);
+		return screenCoords;
+	}
+
+	public Vector3f unproject(Vector3f screenCoords) {
+		unproject(screenCoords, 0, 0, width, height);
+		return screenCoords;
+	}
+
+	public Vector2f unproject(Vector2f screenCoords) {
+		return unproject(screenCoords.x, screenCoords.y, screenCoords);
+	}
+
+	public Vector2f unproject(float x, float y, Vector2f dst) {
+		_tempVector3f.set(x, y, 0);
+		unproject(_tempVector3f);
+		return dst.set(_tempVector3f.x, _tempVector3f.y);
+	}
 }

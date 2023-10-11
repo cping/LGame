@@ -28,7 +28,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.TArray;
 
 /*最简化的整型体积处理类,以减少对象大小*/
-public class RectI implements XY, SetXY {
+public class RectI implements XYZW, SetXY {
 
 	public static class Range implements XY, SetXY {
 
@@ -357,6 +357,29 @@ public class RectI implements XY, SetXY {
 		return this;
 	}
 
+	public boolean intersects(int x, int y) {
+		return intersects(x, y, 1, 1);
+	}
+
+	public boolean intersects(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return intersects(MathUtils.ifloor(xy.getX()), MathUtils.ifloor(xy.getY()));
+	}
+
+	public boolean intersects(int x, int y, int width, int height) {
+		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
+				&& ((y + height) <= (this.y + this.height)));
+	}
+
+	public boolean intersects(RectI rect) {
+		if (rect == null) {
+			return false;
+		}
+		return intersects(rect.x, rect.y, rect.width, rect.height);
+	}
+
 	public boolean inside(int x, int y) {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
@@ -413,6 +436,10 @@ public class RectI implements XY, SetXY {
 		return result;
 	}
 
+	public boolean contains(int xp, int yp) {
+		return (xp >= this.getX()) && (yp >= this.getY()) && (xp < this.right()) && (yp < this.bottom());
+	}
+
 	public int left() {
 		return this.x;
 	}
@@ -448,7 +475,7 @@ public class RectI implements XY, SetXY {
 	public RectI cpy() {
 		return new RectI(this.x, this.y, this.width, this.height);
 	}
-	
+
 	public Range getRange() {
 		return new Range(this);
 	}
@@ -479,6 +506,16 @@ public class RectI implements XY, SetXY {
 
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public float getZ() {
+		return getWidth();
+	}
+
+	@Override
+	public float getW() {
+		return getHeight();
 	}
 
 	public boolean isEmpty() {
@@ -695,6 +732,16 @@ public class RectI implements XY, SetXY {
 			return inEllipse((Ellipse) shape);
 		}
 		return CollisionHelper.checkAABBvsPolygon(x, y, width, height, shape.getVertices(), true);
+	}
+
+	public TArray<Vector2f> getAllPoints() {
+		TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int i = x; i <= width; i++) {
+			for (int j = y; j <= height; j++) {
+				points.add(new Vector2f(i, j));
+			}
+		}
+		return points;
 	}
 
 	@Override

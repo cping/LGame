@@ -1542,6 +1542,16 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return super.collided(shape);
 	}
 
+	public TArray<Vector2f> getAllPoints() {
+		TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int i = MathUtils.ifloor(x); i <= MathUtils.ifloor(width); i++) {
+			for (int j = MathUtils.ifloor(y); j <= MathUtils.ifloor(height); j++) {
+				points.add(new Vector2f(i, j));
+			}
+		}
+		return points;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

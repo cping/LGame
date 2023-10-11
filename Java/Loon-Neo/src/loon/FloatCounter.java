@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,34 +25,29 @@ import loon.geom.SetIV;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
-/**
- * 一个简单的计数器(主要用于用户跨类跨函数传参)，允许设定递增或递减值，也可以限制最大和最小取值范围.
- * 
- * 如果参数需要更多科学计算,则可以使用 @see Calculator 类.
- */
-public class Counter implements SetIV<Integer>, IV<Integer> {
+public class FloatCounter implements SetIV<Float>, IV<Float> {
 
-	private final int _min;
+	private final float _min;
 
-	private final int _max;
+	private final float _max;
 
-	private int _def_value;
+	private float _def_value;
 
-	private int _value;
+	private float _value;
 
-	public Counter() {
+	public FloatCounter() {
 		this(0);
 	}
 
-	public Counter(int v) {
+	public FloatCounter(float v) {
 		this(v, -1, -1);
 	}
 
-	public Counter(int v, int min, int max) {
+	public FloatCounter(float v, float min, float max) {
 		this(1, v, min, max);
 	}
 
-	public Counter(int defv, int v, int min, int max) {
+	public FloatCounter(float defv, float v, float min, float max) {
 		this._def_value = defv;
 		if (min != -1 || max != -1) {
 			this._value = MathUtils.clamp(v, min, max);
@@ -63,56 +58,56 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 		this._max = max;
 	}
 
-	public Counter setDefaultUpdateValue(int v) {
+	public FloatCounter setDefaultUpdateValue(float v) {
 		this._def_value = v;
 		return this;
 	}
 
-	public int getDefaultUpdateValue() {
+	public float getDefaultUpdateValue() {
 		return this._def_value;
 	}
 
-	public int next(int v) {
+	public float next(float v) {
 		return increment(v);
 	}
 
-	public int next() {
+	public float next() {
 		return increment(_def_value);
 	}
 
-	public int plus(int v) {
+	public float plus(float v) {
 		return increment(v);
 	}
 
-	public int plus() {
+	public float plus() {
 		return increment(_def_value);
 	}
 
-	public int add(int v) {
+	public float add(float v) {
 		return increment(v);
 	}
 
-	public int add() {
+	public float add() {
 		return increment(_def_value);
 	}
 
-	public int sub(int v) {
+	public float sub(float v) {
 		return reduction(v);
 	}
 
-	public int sub() {
+	public float sub() {
 		return reduction(_def_value);
 	}
 
-	public int back(int v) {
+	public float back(float v) {
 		return reduction(v);
 	}
 
-	public int back() {
+	public float back() {
 		return reduction(_def_value);
 	}
 
-	public int increment(int val) {
+	public float increment(float val) {
 		if (!(this._min == -1 && this._max == -1)) {
 			if (this._max != -1 || this._value < this._max) {
 				if (this._max != -1 && this._value + val > this._max) {
@@ -127,7 +122,7 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 		return this._value;
 	}
 
-	public int reduction(int val) {
+	public float reduction(float val) {
 		if (!(this._min == -1 && this._max == -1)) {
 			if (this._min != -1 || this._value > this._min) {
 				if (this._min != -1 && this._value - val < this._min) {
@@ -147,14 +142,14 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 	}
 
 	@Override
-	public void set(Integer v) {
+	public void set(Float v) {
 		if (v == null) {
 			return;
 		}
-		setValue(v.intValue());
+		setValue(v.floatValue());
 	}
 
-	public Counter setValue(int val) {
+	public FloatCounter setValue(float val) {
 		if (!(this._min == -1 && this._max == -1)) {
 			if (this._max != -1 && val > this._max) {
 				this._value = this._max;
@@ -169,48 +164,47 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 		return this;
 	}
 
-	public int N() {
+	public float N() {
 		return this._value;
 	}
 
 	@Override
-	public Integer get() {
-		return Integer.valueOf(this._value);
+	public Float get() {
+		return Float.valueOf(this._value);
 	}
 
-	public int getValue() {
+	public float getValue() {
 		return this._value;
 	}
 
-	public int increment() {
+	public float increment() {
 		return increment(_def_value);
 	}
 
-	public int incId(int i) {
+	public float incId(float i) {
 		return increment(i) - i;
 	}
 
-	public int incId() {
+	public float incId() {
 		return incId(_def_value);
 	}
 
-	public int reduction() {
+	public float reduction() {
 		return reduction(_def_value);
 	}
 
-	public Counter clear() {
+	public FloatCounter clear() {
 		this._value = 0;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		StringKeyValue v = new StringKeyValue("Counter");
+		StringKeyValue v = new StringKeyValue("FloatCounter");
 		v.kv("value", _value).comma()
 		       .kv("min", _min).comma()
 		       .kv("max", _max).comma()
 		       .kv("defaultUpdate", _def_value);
 		return v.toString();
 	}
-
 }

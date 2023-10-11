@@ -200,7 +200,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	public int width;
 
 	public int height;
-	
+
 	public RectBox() {
 		setBounds(0, 0, 0, 0);
 	}
@@ -1531,6 +1531,16 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 			return inEllipse((Ellipse) shape);
 		}
 		return super.collided(shape);
+	}
+
+	public TArray<Vector2f> getAllPoints() {
+		TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int i = MathUtils.ifloor(x); i <= MathUtils.ifloor(width); i++) {
+			for (int j = MathUtils.ifloor(y); j <= MathUtils.ifloor(height); j++) {
+				points.add(new Vector2f(i, j));
+			}
+		}
+		return points;
 	}
 
 	@Override

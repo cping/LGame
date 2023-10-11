@@ -41,6 +41,10 @@ public class StopwatchTimer {
 
 	private long _target;
 
+	private long _timeOn = -1;
+
+	private long _timeOff = -1;
+
 	public StopwatchTimer() {
 		this(LSystem.EMPTY);
 	}
@@ -102,7 +106,7 @@ public class StopwatchTimer {
 	}
 
 	public long start() {
-		this._from = currentTime();
+		this._from = (_timeOn == -1) ? currentTime() : _timeOn;
 		this._to = this._from;
 		this._lastStop = this._to;
 		return this._from;
@@ -118,7 +122,7 @@ public class StopwatchTimer {
 
 	public StopwatchTimer stop() {
 		this._lastStop = this._to;
-		this._to = currentTime();
+		this._to = (_timeOff == -1) ? currentTime() : _timeOff;
 		return this;
 	}
 
@@ -145,6 +149,24 @@ public class StopwatchTimer {
 
 	public String getName() {
 		return this._currentName;
+	}
+
+	public long getTimeOn() {
+		return _timeOn;
+	}
+
+	public long getTimeOff() {
+		return _timeOff;
+	}
+
+	public StopwatchTimer setTimeOn(long timeOn) {
+		_timeOn = timeOn;
+		return this;
+	}
+
+	public StopwatchTimer setTimeOff(long timeOff) {
+		_timeOff = timeOff;
+		return this;
 	}
 
 	@Override

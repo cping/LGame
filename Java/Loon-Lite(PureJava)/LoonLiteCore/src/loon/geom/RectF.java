@@ -29,7 +29,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.TArray;
 
 /*最简化的浮点体积处理类,以减少对象大小*/
-public class RectF implements XY, SetXY {
+public class RectF implements XYZW, SetXY {
 
 	public static class Range implements XY, SetXY {
 
@@ -357,6 +357,29 @@ public class RectF implements XY, SetXY {
 		return this;
 	}
 
+	public boolean intersects(float x, float y) {
+		return intersects(x, y, 1f, 1f);
+	}
+
+	public boolean intersects(XY xy) {
+		if (xy == null) {
+			return false;
+		}
+		return intersects(xy.getX(), xy.getY());
+	}
+
+	public boolean intersects(float x, float y, float width, float height) {
+		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
+				&& ((y + height) <= (this.y + this.height)));
+	}
+
+	public boolean intersects(RectF rect) {
+		if (rect == null) {
+			return false;
+		}
+		return intersects(rect.x, rect.y, rect.width, rect.height);
+	}
+
 	public boolean inside(float x, float y) {
 		return (x >= this.x) && ((x - this.x) < this.width) && (y >= this.y) && ((y - this.y) < this.height);
 	}
@@ -411,6 +434,10 @@ public class RectF implements XY, SetXY {
 			return result;
 		}
 		return result;
+	}
+
+	public boolean contains(float xp, float yp) {
+		return (xp >= this.getX()) && (yp >= this.getY()) && (xp < this.right()) && (yp < this.bottom());
 	}
 
 	public float left() {
@@ -479,6 +506,16 @@ public class RectF implements XY, SetXY {
 
 	public float getHeight() {
 		return height;
+	}
+
+	@Override
+	public float getZ() {
+		return getWidth();
+	}
+
+	@Override
+	public float getW() {
+		return getHeight();
 	}
 
 	public boolean isEmpty() {
@@ -698,6 +735,16 @@ public class RectF implements XY, SetXY {
 			return inEllipse((Ellipse) shape);
 		}
 		return CollisionHelper.checkAABBvsPolygon(x, y, width, height, shape.getVertices(), true);
+	}
+
+	public TArray<Vector2f> getAllPoints() {
+		TArray<Vector2f> points = new TArray<Vector2f>();
+		for (int i = MathUtils.ifloor(x); i <= MathUtils.ifloor(width); i++) {
+			for (int j = MathUtils.ifloor(y); j <= MathUtils.ifloor(height); j++) {
+				points.add(new Vector2f(i, j));
+			}
+		}
+		return points;
 	}
 
 	@Override

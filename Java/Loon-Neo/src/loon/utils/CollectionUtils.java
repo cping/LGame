@@ -919,6 +919,304 @@ final public class CollectionUtils {
 	}
 
 	/**
+	 * 判断两组数组是否相等后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @return
+	 */
+	public static boolean[] isEquals(float[] array1, float[] array2) {
+		return isEquals(array1, array2, null);
+	}
+
+	/**
+	 * 判断两组数组是否相等后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @param result
+	 * @return
+	 */
+	public static boolean[] isEquals(float[] array1, float[] array2, boolean[] result) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] == array2[i];
+		}
+		return result;
+	}
+
+	/**
+	 * 判断两组数组是否相等后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @return
+	 */
+	public static boolean[] isEquals(int[] array1, int[] array2) {
+		return isEquals(array1, array2, null);
+	}
+
+	/**
+	 * 判断两组数组是否相等后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @param result
+	 * @return
+	 */
+	public static boolean[] isEquals(int[] array1, int[] array2, boolean[] result) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] == array2[i];
+		}
+		return result;
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(int[] array1, int v) {
+		return isEquals(array1, null, v);
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param result
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(int[] array1, boolean[] result, int v) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] == v;
+		}
+		return result;
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(float[] array1, float v) {
+		return isEquals(array1, null, v);
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param result
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(float[] array1, boolean[] result, float v) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] == v;
+		}
+		return result;
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(boolean[] array1, boolean v) {
+		return isEquals(array1, null, v);
+	}
+
+	/**
+	 * 判断指定数组是否与指定值一致后返回
+	 * 
+	 * @param array1
+	 * @param result
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isEquals(boolean[] array1, boolean[] result, boolean v) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] == v;
+		}
+		return result;
+	}
+
+	/**
+	 * 判断两组数组是否完全一致后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @return
+	 */
+	public static boolean[] isAnd(boolean[] array1, boolean[] array2) {
+		return isAnd(array1, array2, null);
+	}
+
+	/**
+	 * 判断两组数组是否完全一致后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @param result
+	 * @return
+	 */
+	public static boolean[] isAnd(boolean[] array1, boolean[] array2, boolean[] result) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] && array2[i];
+		}
+		return result;
+	}
+
+	/**
+	 * 判断两组数据是否满足条件之一后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @return
+	 */
+	public static boolean[] isOr(boolean[] array1, boolean[] array2) {
+		return isOr(array1, array2, null);
+	}
+
+	/**
+	 * 判断两组数据是否满足条件之一后返回
+	 * 
+	 * @param array1
+	 * @param array2
+	 * @param result
+	 * @return
+	 */
+	public static boolean[] isOr(boolean[] array1, boolean[] array2, boolean[] result) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] || array2[i];
+		}
+		return result;
+	}
+
+	/**
+	 * 将指定布尔数组数据全部区反值后返回
+	 * 
+	 * @param array
+	 * @return
+	 */
+	public static boolean[] isNot(boolean[] array1) {
+		return isNot(array1, null);
+	}
+
+	/**
+	 * 将指定布尔数组数据全部区反值后返回
+	 * 
+	 * @param array
+	 * @param result
+	 * @return
+	 */
+	public static boolean[] isNot(boolean[] array1, boolean[] result) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = !array1[i];
+		}
+		return result;
+	}
+
+	/**
+	 * 将指定整型数组数据全部区反值后返回
+	 * 
+	 * @param array1
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isNot(int[] array1, int v) {
+		return isNot(array1, null, v);
+	}
+
+	/**
+	 * 将指定整型数组数据全部区反值后返回
+	 * 
+	 * @param array1
+	 * @param result
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isNot(int[] array1, boolean[] result, int v) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] != v;
+		}
+		return result;
+	}
+
+	/**
+	 * 将指定整型数组数据全部区反值后返回
+	 * 
+	 * @param array1
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isNot(float[] array1, float v) {
+		return isNot(array1, null, v);
+	}
+
+	/**
+	 * 将指定整型数组数据全部区反值后返回
+	 * 
+	 * @param array1
+	 * @param result
+	 * @param v
+	 * @return
+	 */
+	public static boolean[] isNot(float[] array1, boolean[] result, float v) {
+		final int length = array1.length;
+		if (result == null) {
+			result = new boolean[length];
+		}
+		for (int i = 0; i < length; i++) {
+			result[i] = array1[i] != v;
+		}
+		return result;
+	}
+
+	/**
 	 * 设定对象数组中指定范围内数值为统一的data
 	 * 
 	 * @param arrays

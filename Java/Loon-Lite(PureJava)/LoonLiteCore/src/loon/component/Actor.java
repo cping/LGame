@@ -504,12 +504,32 @@ public class Actor extends LObject<Actor>
 	}
 
 	/**
+	 * 设定动作触发延迟时间(秒)
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public Actor setDelayS(float s) {
+		timer.setDelayS(s);
+		return this;
+	}
+
+	/**
 	 * 返回动作触发延迟时间
 	 * 
 	 * @return
 	 */
 	public long getDelay() {
 		return timer.getDelay();
+	}
+
+	/**
+	 * 返回动作触发延迟时间(秒)
+	 * 
+	 * @return
+	 */
+	public float getDelayS() {
+		return timer.getDelayS();
 	}
 
 	/**
@@ -922,7 +942,7 @@ public class Actor extends LObject<Actor>
 		RectBox thisBounds = this.getBoundingRect();
 		return thisBounds.contains(s);
 	}
-	
+
 	@Override
 	public boolean collided(Shape s) {
 		RectBox thisBounds = this.getBoundingRect();

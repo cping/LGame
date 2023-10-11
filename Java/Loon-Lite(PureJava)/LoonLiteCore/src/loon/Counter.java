@@ -20,20 +20,24 @@
  */
 package loon;
 
+import loon.geom.IV;
+import loon.geom.SetIV;
 import loon.utils.MathUtils;
+import loon.utils.StrBuilder;
+import loon.utils.StringKeyValue;
 
 /**
  * 一个简单的计数器(主要用于用户跨类跨函数传参)，允许设定递增或递减值，也可以限制最大和最小取值范围.
  * 
  * 如果参数需要更多科学计算,则可以使用 @see Calculator 类.
  */
-public class Counter {
-
-	private final int _def_value;
+public class Counter implements SetIV<Integer>, IV<Integer> {
 
 	private final int _min;
 
 	private final int _max;
+
+	private int _def_value;
 
 	private int _value;
 
@@ -58,6 +62,15 @@ public class Counter {
 		}
 		this._min = min;
 		this._max = max;
+	}
+
+	public Counter setDefaultUpdateValue(int v) {
+		this._def_value = v;
+		return this;
+	}
+
+	public int getDefaultUpdateValue() {
+		return this._def_value;
 	}
 
 	public int next(int v) {
@@ -134,6 +147,14 @@ public class Counter {
 		return ((this._value) / (this._max)) * 100f;
 	}
 
+	@Override
+	public void set(Integer v) {
+		if (v == null) {
+			return;
+		}
+		setValue(v.intValue());
+	}
+
 	public Counter setValue(int val) {
 		if (!(this._min == -1 && this._max == -1)) {
 			if (this._max != -1 && val > this._max) {
@@ -153,8 +174,9 @@ public class Counter {
 		return this._value;
 	}
 
-	public int get() {
-		return this._value;
+	@Override
+	public Integer get() {
+		return Integer.valueOf(this._value);
 	}
 
 	public int getValue() {
@@ -184,7 +206,12 @@ public class Counter {
 
 	@Override
 	public String toString() {
-		return String.valueOf(_value);
+		StringKeyValue v = new StringKeyValue("Counter");
+		v.kv("value", _value).comma()
+		       .kv("min", _min).comma()
+		       .kv("max", _max).comma()
+		       .kv("defaultUpdate", _def_value);
+		return v.toString();
 	}
 
 }

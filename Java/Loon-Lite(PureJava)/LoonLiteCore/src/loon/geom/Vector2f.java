@@ -538,6 +538,32 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.min(this.x, this.y);
 	}
 
+	public Vector2f setMin(Vector2f t) {
+		if (t == null) {
+			return this;
+		}
+		return setMin(t.x, t.y);
+	}
+
+	public Vector2f setMax(Vector2f t) {
+		if (t == null) {
+			return this;
+		}
+		return setMax(t.x, t.y);
+	}
+
+	public Vector2f setMin(float tx, float ty) {
+		this.x = (tx < this.x) ? tx : this.x;
+		this.y = (ty < this.y) ? ty : this.y;
+		return this;
+	}
+
+	public Vector2f setMax(float tx, float ty) {
+		this.x = (tx > this.x) ? tx : this.x;
+		this.y = (ty > this.y) ? ty : this.y;
+		return this;
+	}
+
 	public Vector2f sign() {
 		return cpy().signSelf();
 	}

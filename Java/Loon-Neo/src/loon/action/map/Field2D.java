@@ -260,15 +260,22 @@ public class Field2D implements IArray, Config {
 		return ((y2 - y1) / MathUtils.pow((x2 - x1), scale) * 1f) * MathUtils.pow((x - x1), scale) + y1;
 	}
 
-	public static final float rotation(Vector2f source, Vector2f target) {
-		int nx = MathUtils.floor(target.getX() - source.getX());
-		int ny = MathUtils.floor(target.getY() - source.getY());
+	public static final float rotation(float srcX, float srcY, float dstX, float dstY) {
+		int nx = MathUtils.floor(dstX - srcX);
+		int ny = MathUtils.floor(dstY - srcY);
 		return MathUtils.toDegrees(MathUtils.atan2(ny, nx));
 	}
 
-	public static final int angle(Vector2f source, Vector2f target) {
-		float nx = target.getX() - source.getX();
-		float ny = target.getY() - source.getY();
+	public static final float rotation(Vector2f source, Vector2f target) {
+		if (source == null || target == null) {
+			return 0f;
+		}
+		return rotation(source.x, source.y, target.x, target.y);
+	}
+
+	public static final int angle(float srcX, float srcY, float dstX, float dstY) {
+		float nx = dstX - srcX;
+		float ny = dstY - srcY;
 		float r = MathUtils.sqrt(nx * nx + ny * ny);
 		float cos = nx / r;
 		int angle = MathUtils.floor(MathUtils.acos(cos) * 180 / MathUtils.PI);
@@ -276,6 +283,13 @@ public class Field2D implements IArray, Config {
 			angle = 360 - angle;
 		}
 		return angle;
+	}
+
+	public static final int angle(Vector2f source, Vector2f target) {
+		if (source == null || target == null) {
+			return 0;
+		}
+		return angle(source.x, source.y, target.x, target.y);
 	}
 
 	public static final float getDirectionToAngle(int dir) {

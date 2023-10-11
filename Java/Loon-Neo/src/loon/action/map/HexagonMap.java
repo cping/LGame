@@ -21,6 +21,7 @@
 package loon.action.map;
 
 import loon.LObject;
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -889,6 +890,13 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		texturePack = new LTexturePack(fileName, clips);
 		texturePack.packed(format);
 		return this;
+	}
+
+	public <T extends LRelease> HexagonMap setImagePack(TileAllocation<T> allocation) {
+		if (allocation == null) {
+			return this;
+		}
+		return setImagePack(allocation.getPath(), allocation.getClips());
 	}
 
 	public HexagonMap setImagePack(String file) {
