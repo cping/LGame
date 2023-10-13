@@ -349,6 +349,18 @@ public class RectI implements XYZW, SetXY {
 		return this;
 	}
 
+	public RectI setEmpty() {
+		return set(0);
+	}
+
+	public RectI set(int size) {
+		return set(size, size);
+	}
+
+	public RectI set(int w1, int h1) {
+		return set(this.x, this.y, w1, h1);
+	}
+
 	public RectI set(int x1, int y1, int w1, int h1) {
 		this.x = x1;
 		this.y = y1;

@@ -24,10 +24,8 @@ import loon.LTexture;
 import loon.Stage;
 import loon.action.collision.Gravity;
 import loon.action.collision.GravityHandler;
-import loon.action.collision.GravityHandler.GravityUpdate;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.Sprites;
-import loon.events.Touched;
 import loon.utils.Easing.EasingMode;
 
 public class GravityTest extends Stage {
@@ -64,32 +62,25 @@ public class GravityTest extends Stage {
 			// g.bounce = 10f;
 		}
 
+		Gravity solid = handler.add(addSprite(texture("a4.png")).coord(0, 200));
+		solid.isSolid = true;
 		// 监听重力对象
-		handler.setListener(new GravityUpdate() {
-
-			@Override
-			public void action(Gravity g, float x, float y) {
-				// 如果开启了边界检查(Screen中默认开启),并且触底或触顶
-				if (g.limitX || g.limitY) {
-					// 让y轴反重力(颠倒g值,正变负,负变正)
-					g.setAntiGravityY();
-				}
+		handler.setListener((g, x, y) -> {
+			// 如果开启了边界检查(Screen中默认开启),并且触底或触顶
+			if (g.isLimited()) {
+				// 让y轴反重力(颠倒g值,正变负,负变正)
+				g.setAntiGravityY();
 			}
 		});
 
-		down(new Touched() {
-
-			@Override
-			public void on(float x, float y) {
-				// 如果点击处存在重力对象
-				Gravity g = handler.contains(x, y);
-				if (g != null) {
-					// 删除重力控制
-					handler.remove(g);
-					// 删除精灵
-					remove(g.bind);
-				}
-
+		down((x, y) -> {
+			// 如果点击处存在重力对象
+			Gravity g = handler.contains(x, y);
+			if (g != null) {
+				// 删除重力控制
+				handler.remove(g);
+				// 删除精灵
+				remove(g.bind);
 			}
 		});
 

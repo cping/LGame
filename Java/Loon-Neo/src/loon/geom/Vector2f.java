@@ -630,6 +630,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
+	public Vector2f floor() {
+		return new Vector2f(MathUtils.floor(this.x), MathUtils.floor(this.y));
+	}
+
 	public float dot(Vector2f v) {
 		return x * v.x + y * v.y;
 	}
@@ -693,6 +697,21 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public float getAngle() {
 		return angleTo(this);
+	}
+
+	public boolean isArrayCheck(float px, float py) {
+		return this.x >= 0 && this.y >= 0 && this.x < px && this.y < py;
+	}
+
+	public boolean isArrayCheck(XY arraySize) {
+		if (arraySize == null) {
+			return false;
+		}
+		return isArrayCheck(arraySize.getX(), arraySize.getY());
+	}
+
+	public float area() {
+		return MathUtils.abs(this.x * this.y);
 	}
 
 	public float atan2() {
@@ -1103,6 +1122,9 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f mul(Vector2f pos) {
+		if (pos == null) {
+			return this;
+		}
 		return new Vector2f(x * pos.x, y * pos.y);
 	}
 
@@ -1122,12 +1144,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final Vector2f set(XY v) {
+		if (v == null) {
+			return this;
+		}
 		this.x = v.getX();
 		this.y = v.getY();
 		return this;
 	}
 
 	public final Vector2f set(Vector2f v) {
+		if (v == null) {
+			return this;
+		}
 		this.x = v.x;
 		this.y = v.y;
 		return this;
@@ -1165,6 +1193,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		x *= a;
 		y *= a;
 		return this;
+	}
+
+	public final Vector2f setEmpty() {
+		return set(0f);
 	}
 
 	public final Vector2f setLength(float len) {

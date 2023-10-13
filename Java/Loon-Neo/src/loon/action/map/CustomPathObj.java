@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.action.map.CustomPath.AngleType;
 import loon.action.map.CustomPath.PathType;
 import loon.geom.Vector2f;
@@ -44,7 +45,7 @@ public class CustomPathObj {
 
 	public CustomPathObj(PathType t, float startX, float startY, float endX, float endY) {
 		this._pathType = t;
-		this._sideLength = 32;
+		this._sideLength = LSystem.LAYER_TILE_SIZE;
 		this._start = new Vector2f(startX, startY);
 		this._end = new Vector2f(endX, endY);
 	}

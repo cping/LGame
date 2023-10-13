@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -40,7 +41,7 @@ import loon.utils.TArray;
 /**
  * 二维数组到地图数据的存储转化与处理用类
  */
-public class Field2D implements IArray, Config {
+public class Field2D implements IArray, Config, LRelease {
 
 	private final static int[][][] NEIGHBORS = { { { 1, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } },
 			{ { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { 0, 1 } } };
@@ -64,9 +65,9 @@ public class Field2D implements IArray, Config {
 	private int[] moveLimited;
 
 	// default size
-	private int tileWidth = 32;
+	private int tileWidth = LSystem.LAYER_TILE_SIZE;
 
-	private int tileHeight = 32;
+	private int tileHeight = LSystem.LAYER_TILE_SIZE;
 
 	private int width, height;
 
@@ -801,16 +802,20 @@ public class Field2D implements IArray, Config {
 		return this;
 	}
 
+	public boolean isLimited() {
+		return moveLimited != null && moveLimited.length > 0;
+	}
+
 	public int[] getLimit() {
 		return moveLimited;
 	}
 
-	public Field2D setLimit(int[] limit) {
+	public Field2D setLimit(int... limit) {
 		this.moveLimited = limit;
 		return this;
 	}
 
-	public Field2D setAllowMove(int[] args) {
+	public Field2D setAllowMove(int... args) {
 		this.allowMove.addAll(args);
 		return this;
 	}
@@ -1055,6 +1060,27 @@ public class Field2D implements IArray, Config {
 		return result;
 	}
 
+	public PointI getIndexToPixelPos(int idx) {
+		PointI pos = getIndexToPixelPos(idx);
+		if (pos != null) {
+			pos.set(tilesToWidthPixels(pos.x), tilesToHeightPixels(pos.y));
+		}
+		return pos;
+	}
+
+	public PointI getIndexToPos(int idx) {
+		int count = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				if (idx == count) {
+					return new PointI(x, y);
+				}
+				count++;
+			}
+		}
+		return null;
+	}
+
 	protected int get(int[][] mapArrays, int px, int py) {
 		try {
 			if (contains(px, py)) {
@@ -1217,6 +1243,13 @@ public class Field2D implements IArray, Config {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+
+	@Override
+	public void close() {
+		if (mapArrays != null) {
+			mapArrays = null;
+		}
 	}
 
 }

@@ -1258,6 +1258,14 @@ public final class MathUtils {
 		return result;
 	}
 
+	public static float wave(float time) {
+		return wave(1f, 1f, time);
+	}
+
+	public static float wave(float frequency, float amplitude, float time) {
+		return amplitude / 2f * (1f - MathUtils.cos(time * frequency * MathUtils.TWO_PI));
+	}
+
 	public static float wrapAngle(float angle) {
 		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {

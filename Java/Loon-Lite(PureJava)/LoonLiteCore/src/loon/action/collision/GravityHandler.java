@@ -70,6 +70,8 @@ public class GravityHandler implements LRelease {
 
 	protected CollisionFilter worldCollisionFilter;
 
+	private float _objectMaxSpeed;
+
 	private ObjectMap<ActionBind, Gravity> _gravityMap;
 
 	private GravityUpdate _gravitylistener;
@@ -89,6 +91,8 @@ public class GravityHandler implements LRelease {
 	private float _bindY;
 
 	private float _velocityX, _velocityY;
+
+	private float _gravityScale;
 
 	boolean isBounded;
 
@@ -135,6 +139,7 @@ public class GravityHandler implements LRelease {
 		this._easingMode = ease;
 		this._easeTimer = new EaseTimer(duration, _easingMode);
 		this._gravityMap = new ObjectMap<ActionBind, Gravity>();
+		this._gravityScale = _objectMaxSpeed = 1f;
 		this.objects = new TArray<Gravity>(10);
 		this.pendingAdd = new TArray<Gravity>(10);
 		this.pendingRemove = new TArray<Gravity>(10);
@@ -171,6 +176,41 @@ public class GravityHandler implements LRelease {
 		return this;
 	}
 
+	private float getGravity(Gravity g) {
+		return g.g * _gravityScale;
+	}
+
+	protected boolean checkCollideSolidObjects(Gravity gravityObject, float delta, float gravity, float newX,
+			float newY) {
+		if (gravityObject == null) {
+			return false;
+		}
+		if (gravityObject != null && gravityObject.collideSolid) {
+			final int size = objects.size;
+			for (int i = size - 1; i > -1; i--) {
+				Gravity g = objects.get(i);
+				if (!gravityObject.isSolid && !g.isSolid || !g.enabled || g == gravityObject) {
+					continue;
+				}
+				if (gravityObject.collided(g)) {
+					gravityObject._collisionObject = g;
+					if (gravityObject.velocityX > 1f) {
+						gravityObject.bind.setX(gravityObject.getX() - gravityObject.velocityX);
+					}
+					if (gravityObject.velocityY > 1f) {
+						gravityObject.bind.setY(gravityObject.getY() - gravityObject.velocityY);
+					}
+					if (isGravityListener) {
+						_gravitylistener.action(g, newX, newY);
+					}
+					gravityObject._collisioning = true;
+					return true;
+				}
+			}
+		}
+		return (gravityObject._collisioning = false);
+	}
+
 	public void update(long elapsedTime) {
 		if (_closed || !isEnabled) {
 			return;
@@ -183,41 +223,45 @@ public class GravityHandler implements LRelease {
 		_easeTimer.action(elapsedTime);
 
 		final float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED)
-				* _easeTimer.getProgress();
+				* _easeTimer.getProgress() * _objectMaxSpeed;
 
-		for (Gravity g : objects) {
+		final int size = objects.size;
+
+		for (int i = 0; i < size; i++) {
+
+			Gravity g = objects.get(i);
 
 			if (g.enabled && g.bind != null) {
 
-				final float accelerationX = g.accelerationX;
-				final float accelerationY = g.accelerationY;
-				final float angularVelocity = g.angularVelocity;
-				final float gravity = g.g;
+				final float accelerationX = g.getAccelerationX();
+				final float accelerationY = g.getAccelerationY();
+				final float angularVelocity = g.getAngularVelocity();
+				final float gravity = getGravity(g);
 
-				if (syncActionBind) {
-					_bindX = g.bind.getX();
-					_bindY = g.bind.getY();
-					_bindWidth = g.bind.getWidth();
-					_bindHeight = g.bind.getHeight();
-					g.bounds.setBounds(_bindX, _bindY, _bindWidth, _bindHeight);
-				} else {
-					_bindX = g.bounds.getX();
-					_bindY = g.bounds.getY();
-					_bindWidth = g.bounds.getWidth();
-					_bindHeight = g.bounds.getHeight();
-				}
-
-				if (angularVelocity != 0) {
-
-					final float rotate = g.bind.getRotation() + angularVelocity * delta;
-					int[] newObjectRect = MathUtils.getLimit(_bindX, _bindY, _bindWidth, _bindHeight, rotate);
-
-					_bindWidth = newObjectRect[2];
-					_bindHeight = newObjectRect[3];
-
-					newObjectRect = null;
-
-					g.bind.setRotation(rotate);
+				if (!g._collisioning) {
+					g.setOldPos(g.getX(), g.getY());
+					g.setOldRotation(g.getRotation());
+					if (syncActionBind) {
+						_bindX = g.bind.getX();
+						_bindY = g.bind.getY();
+						_bindWidth = g.bind.getWidth();
+						_bindHeight = g.bind.getHeight();
+						g.setArea(_bindX, _bindY, _bindWidth, _bindHeight);
+					} else {
+						_bindX = g.getX();
+						_bindY = g.getY();
+						_bindWidth = g.getWidth();
+						_bindHeight = g.getHeight();
+					}
+					if (angularVelocity != 0) {
+						final float rotate = g.bind.getRotation() + angularVelocity * delta;
+						Gravity s = g.setRotation(rotate);
+						_bindX = s.getX();
+						_bindY = s.getY();
+						_bindWidth = s.getWidth();
+						_bindHeight = s.getHeight();
+						g.bind.setRotation(rotate);
+					}
 				}
 
 				if (accelerationX != 0 || accelerationY != 0) {
@@ -227,6 +271,7 @@ public class GravityHandler implements LRelease {
 
 				_velocityX = g.velocityX;
 				_velocityY = g.velocityY;
+
 				if (_velocityX != 0 || _velocityY != 0) {
 
 					_velocityX = _bindX + (_velocityX * delta);
@@ -248,10 +293,11 @@ public class GravityHandler implements LRelease {
 							final float limitHeight = _height - _bindHeight;
 							final boolean chageWidth = _bindX >= limitWidth;
 							final boolean chageHeight = _bindY >= limitHeight;
+							final float bounce = (g.bounce + gravity);
 							if (chageWidth) {
-								_bindX -= g.bounce + gravity;
+								_bindX -= bounce;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
+									g.bounce -= (bounce * delta) + MathUtils.random(0f, bounce);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									_bindX = limitWidth;
@@ -259,9 +305,9 @@ public class GravityHandler implements LRelease {
 								}
 							}
 							if (chageHeight) {
-								_bindY -= g.bounce + gravity;
+								_bindY -= bounce;
 								if (g.bounce > 0) {
-									g.bounce -= (g.bounce + delta) + MathUtils.random(0f, 5f);
+									g.bounce -= (bounce * delta) + MathUtils.random(0f, bounce);
 								} else if (g.bounce < 0) {
 									g.bounce = 0;
 									_bindY = limitHeight;
@@ -269,7 +315,7 @@ public class GravityHandler implements LRelease {
 								}
 							}
 							if (chageWidth || chageHeight) {
-								movePos(g, _bindX, _bindY);
+								movePos(g, delta, gravity, _bindX, _bindY);
 								return;
 							}
 						}
@@ -278,7 +324,7 @@ public class GravityHandler implements LRelease {
 						_velocityX = limitValue(g, _velocityX, limitWidth);
 						_velocityY = limitValue(g, _velocityY, limitHeight);
 					}
-					movePos(g, _velocityX, _velocityY);
+					movePos(g, delta, gravity, _velocityX, _velocityY);
 				}
 			}
 		}
@@ -391,14 +437,14 @@ public class GravityHandler implements LRelease {
 		int size = pendingAdd.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = pendingAdd.get(i);
-			if (g.bounds.intersects(x, y, w, h)) {
+			if (g.intersects(x, y, w, h)) {
 				return g;
 			}
 		}
 		size = objects.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = objects.get(i);
-			if (g.bounds.intersects(x, y, w, h)) {
+			if (g.intersects(x, y, w, h)) {
 				return g;
 			}
 		}
@@ -416,10 +462,7 @@ public class GravityHandler implements LRelease {
 		if (g == null) {
 			return false;
 		}
-		if (g.bounds != null) {
-			return CollisionHelper.intersects(g.bounds, x, y);
-		}
-		return false;
+		return g.intersects(x, y);
 	}
 
 	public boolean intersect(ActionBind g, float x, float y, float width, float height) {
@@ -433,11 +476,7 @@ public class GravityHandler implements LRelease {
 		if (g == null) {
 			return false;
 		}
-		if (g.bounds != null) {
-			return CollisionHelper.intersects(g.bounds.x, g.bounds.y, g.bounds.getWidth(), g.bounds.getHeight(), x, y,
-					width, height);
-		}
-		return false;
+		return g.intersects(x, y, width, height);
 	}
 
 	public Gravity contains(float x, float y) {
@@ -448,14 +487,14 @@ public class GravityHandler implements LRelease {
 		int size = pendingAdd.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = pendingAdd.get(i);
-			if (g.bounds.contains(x, y, w, h)) {
+			if (g.contains(x, y, w, h)) {
 				return g;
 			}
 		}
 		size = objects.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = objects.get(i);
-			if (g.bounds.contains(x, y, w, h)) {
+			if (g.contains(x, y, w, h)) {
 				return g;
 			}
 		}
@@ -515,11 +554,7 @@ public class GravityHandler implements LRelease {
 		if (g == null) {
 			return false;
 		}
-		if (g.bounds != null) {
-			return CollisionHelper.contains(g.bounds.x, g.bounds.y, g.bounds.getWidth(), g.bounds.getHeight(), x, y,
-					width, height);
-		}
-		return false;
+		return g.contains(x, y, width, height);
 	}
 
 	public boolean contains(ActionBind a, ActionBind b) {
@@ -533,11 +568,7 @@ public class GravityHandler implements LRelease {
 		if (a == null || b == null) {
 			return false;
 		}
-		if (a.bounds != null && b.bounds != null) {
-			return CollisionHelper.contains(a.bounds.x, a.bounds.y, a.bounds.getWidth(), a.bounds.getHeight(),
-					b.bounds.x, b.bounds.y, b.bounds.getWidth(), b.bounds.getHeight());
-		}
-		return false;
+		return a.contains(b);
 	}
 
 	public Gravity add(ActionBind o, float vx, float vy) {
@@ -646,12 +677,13 @@ public class GravityHandler implements LRelease {
 
 		GravityResult result = resultGravity.obtain();
 
-		float remainingVX = target.velocityX * scale;
-		float remainingVY = target.velocityY * scale;
-		float positionX = target.bounds.x;
-		float positionY = target.bounds.y;
-		float halfWidth = target.bounds.width * 0.5f;
-		float halfHeight = target.bounds.height * 0.5f;
+		float remainingVX = target.velocityX * scale * _gravityScale;
+		float remainingVY = target.velocityY * scale * _gravityScale;
+
+		float positionX = target._bounds.x;
+		float positionY = target._bounds.y;
+		float halfWidth = target._bounds.width * 0.5f;
+		float halfHeight = target._bounds.height * 0.5f;
 		float moveAmountX = 0;
 		float moveAmountY = 0;
 		boolean lastIteration = false;
@@ -681,36 +713,40 @@ public class GravityHandler implements LRelease {
 
 		collisionObjects.clear();
 
-		for (Gravity b : otherObjects) {
-			if (b.bounds.overlaps(pathBounds)) {
+		final int len = otherObjects.size;
+		for (int i = 0; i < len; i++) {
+			Gravity b = otherObjects.get(i);
+			if (b._bounds.overlaps(pathBounds)) {
 				collisionObjects.add(b);
 			}
 		}
 
 		for (;;) {
 			result.steps++;
-			for (Gravity b : collisionObjects) {
-				if (CollisionHelper.intersects(positionX, positionY, target.bounds.width, target.bounds.height,
-						b.bounds.x, b.bounds.y, b.bounds.width, b.bounds.height, false)) {
+			final int size = collisionObjects.size;
+			for (int i = 0; i < size; i++) {
+				Gravity b = collisionObjects.get(i);
+				if (CollisionHelper.intersects(positionX, positionY, target._bounds.width, target._bounds.height,
+						b._bounds.x, b._bounds.y, b._bounds.width, b._bounds.height, false)) {
 
 					float overlapX = 0;
 					float overlapY = 0;
 					Vector2f normal = result.normal;
 					normal.setZero();
 
-					if (target.bounds.x <= b.bounds.x) {
-						overlapX = (target.bounds.x + target.bounds.width) - b.bounds.x;
+					if (target._bounds.x <= b._bounds.x) {
+						overlapX = (target._bounds.x + target._bounds.width) - b._bounds.x;
 						normal.x = -1;
 					} else {
-						overlapX = (b.bounds.x + b.bounds.width) - target.bounds.x;
+						overlapX = (b._bounds.x + b._bounds.width) - target._bounds.x;
 						normal.x = 1;
 					}
 
-					if (target.bounds.y <= b.bounds.y) {
-						overlapY = (target.bounds.y + target.bounds.height) - b.bounds.y;
+					if (target._bounds.y <= b._bounds.y) {
+						overlapY = (target._bounds.y + target._bounds.height) - b._bounds.y;
 						normal.y = -1;
 					} else {
-						overlapY = (b.bounds.y + b.bounds.height) - target.bounds.y;
+						overlapY = (b._bounds.y + b._bounds.height) - target._bounds.y;
 						normal.y = 1;
 					}
 
@@ -722,19 +758,19 @@ public class GravityHandler implements LRelease {
 						normal.x = 0;
 					}
 
-					if (MathUtils.abs(overlapX) > b.bounds.width && MathUtils.abs(overlapY) > b.bounds.height) {
+					if (MathUtils.abs(overlapX) > b._bounds.width && MathUtils.abs(overlapY) > b._bounds.height) {
 						continue;
 					}
 
 					if (normal.x == 1) {
-						positionX = b.bounds.x + b.bounds.width;
+						positionX = b._bounds.x + b._bounds.width;
 						remainingVX = 0;
 						if (clearVelocity) {
 							target.velocityX = 0;
 						}
 						moveAmountX = 0;
 					} else if (normal.x == -1) {
-						positionX = b.bounds.x - target.bounds.width;
+						positionX = b._bounds.x - target._bounds.width;
 						remainingVX = 0;
 						if (clearVelocity) {
 							target.velocityX = 0;
@@ -743,14 +779,14 @@ public class GravityHandler implements LRelease {
 					}
 
 					if (normal.y == 1) {
-						positionY = b.bounds.y + b.bounds.height;
+						positionY = b._bounds.y + b._bounds.height;
 						remainingVY = 0;
 						if (clearVelocity) {
 							target.velocityY = 0;
 						}
 						moveAmountY = 0;
 					} else if (normal.y == -1) {
-						positionY = b.bounds.y - target.bounds.height;
+						positionY = b._bounds.y - target._bounds.height;
 						remainingVY = 0;
 						if (clearVelocity) {
 							target.velocityY = 0;
@@ -761,13 +797,13 @@ public class GravityHandler implements LRelease {
 					result.isCollided = true;
 				}
 
-				if (positionY + target.bounds.height > b.bounds.y && positionY < b.bounds.y + b.bounds.height) {
-					if ((positionX + target.bounds.width == b.bounds.x && remainingVX > 0)
-							|| (positionX == b.bounds.x + b.bounds.width && remainingVX < 0)) {
-						if ((positionX + target.bounds.width == b.bounds.x && remainingVX > 0)
+				if (positionY + target._bounds.height > b._bounds.y && positionY < b._bounds.y + b._bounds.height) {
+					if ((positionX + target._bounds.width == b._bounds.x && remainingVX > 0)
+							|| (positionX == b._bounds.x + b._bounds.width && remainingVX < 0)) {
+						if ((positionX + target._bounds.width == b._bounds.x && remainingVX > 0)
 								&& result.normal.x == 0) {
 							result.normal.x = -1;
-						} else if ((positionX == b.bounds.x + b.bounds.width && remainingVX < 0)
+						} else if ((positionX == b._bounds.x + b._bounds.width && remainingVX < 0)
 								&& result.normal.x == 0) {
 							result.normal.x = 1;
 						}
@@ -780,14 +816,14 @@ public class GravityHandler implements LRelease {
 					}
 				}
 
-				if (positionX + target.bounds.width > b.bounds.x && positionX < b.bounds.x + b.bounds.width) {
-					if ((positionY + target.bounds.height == b.bounds.y && remainingVY > 0)
-							|| (positionY == b.bounds.y + b.bounds.height && remainingVY < 0)) {
+				if (positionX + target._bounds.width > b._bounds.x && positionX < b._bounds.x + b._bounds.width) {
+					if ((positionY + target._bounds.height == b._bounds.y && remainingVY > 0)
+							|| (positionY == b._bounds.y + b._bounds.height && remainingVY < 0)) {
 
-						if ((positionY + target.bounds.height == b.bounds.y && remainingVY > 0)
+						if ((positionY + target._bounds.height == b._bounds.y && remainingVY > 0)
 								&& result.normal.y == 0) {
 							result.normal.y = -1;
-						} else if ((positionY == b.bounds.y + b.bounds.height && remainingVY < 0)
+						} else if ((positionY == b._bounds.y + b._bounds.height && remainingVY < 0)
 								&& result.normal.y == 0) {
 							result.normal.y = 1;
 						}
@@ -831,14 +867,15 @@ public class GravityHandler implements LRelease {
 		return result;
 	}
 
-	public GravityHandler movePos(Gravity g, float x, float y) {
+	protected GravityHandler movePos(Gravity g, float delta, float gravity, float x, float y) {
 		if (_collisionWorld == null) {
-			return movePos(g, x, y, _lastX, _lastY);
+			return movePos(g, delta, gravity, x, y, _lastX, _lastY);
 		}
-		return movePos(g, x, y, -1f, -1f);
+		return movePos(g, delta, gravity, x, y, -1f, -1f);
 	}
 
-	public GravityHandler movePos(Gravity g, float x, float y, float lastX, float lastY) {
+	protected GravityHandler movePos(Gravity g, float delta, float gravity, float x, float y, float lastX,
+			float lastY) {
 		if (g == null) {
 			return this;
 		}
@@ -846,29 +883,38 @@ public class GravityHandler implements LRelease {
 		if (bind == null) {
 			return this;
 		}
-		if (_collisionWorld != null) {
-			if (worldCollisionFilter == null) {
-				worldCollisionFilter = CollisionFilter.getDefault();
+		if (g.enabled) {
+			if (checkCollideSolidObjects(g, delta, gravity, x, y)) {
+				return this;
 			}
-			CollisionResult.Result result = _collisionWorld.move(bind, x, y, worldCollisionFilter);
-			if (lastX != -1 && lastY != -1) {
-				if (result.goalX != x || result.goalY != y) {
-					bind.setLocation(lastX, lastY);
+			if (_collisionWorld != null) {
+				if (worldCollisionFilter == null) {
+					worldCollisionFilter = CollisionFilter.getDefault();
+				}
+				CollisionResult.Result result = _collisionWorld.move(bind, x, y, worldCollisionFilter);
+				if (lastX != -1 && lastY != -1) {
+					if (result.goalX != x || result.goalY != y) {
+						bind.setLocation(lastX, lastY);
+					} else {
+						bind.setLocation(result.goalX, result.goalY);
+					}
 				} else {
 					bind.setLocation(result.goalX, result.goalY);
 				}
 			} else {
-				bind.setLocation(result.goalX, result.goalY);
+				bind.setLocation(x, y);
 			}
-		} else {
-			bind.setLocation(x, y);
 		}
 		if (isGravityListener) {
-			_gravitylistener.action(g, _bindX, _bindY);
+			_gravitylistener.action(g, x, y);
 		}
 		this._lastX = x;
 		this._lastY = y;
 		return this;
+	}
+
+	public boolean isOverlapping(Vector2f pA, Vector2f sA, Vector2f pB, Vector2f sB) {
+		return MathUtils.abs(pA.x - pB.x) * 2 < sA.x + sB.x && MathUtils.abs(pA.y - pB.y) * 2 < sA.y + sB.y;
 	}
 
 	public float getLastX() {
@@ -948,6 +994,15 @@ public class GravityHandler implements LRelease {
 		return this;
 	}
 
+	public float getObjectMaxSpeed() {
+		return _objectMaxSpeed;
+	}
+
+	public GravityHandler setObjectMaxSpeed(float speed) {
+		this._objectMaxSpeed = speed;
+		return this;
+	}
+	
 	public boolean isClosed() {
 		return _closed;
 	}
@@ -974,5 +1029,6 @@ public class GravityHandler implements LRelease {
 		lazyObjects = null;
 		_closed = true;
 	}
+
 
 }

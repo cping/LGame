@@ -822,6 +822,10 @@ public class LProcess implements LRelease {
 		return _currentScreen;
 	}
 
+	public boolean isCurrentScreen(Screen src) {
+		return _currentScreen == src;
+	}
+
 	public LProcess clearScreens() {
 		for (Screen screen : _screenMap) {
 			if (screen != null) {

@@ -594,7 +594,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public Vector3f mulSelf(final Quaternion quat) {
 		return quat.transformSelf(this);
 	}
-	
+
 	public Vector3f round() {
 		return new Vector3f(MathUtils.round(x), MathUtils.round(y), MathUtils.round(z));
 	}
@@ -732,6 +732,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return setLength2Self(len * len);
 	}
 
+	public final Vector3f setEmpty() {
+		return set(0f);
+	}
+	
 	public Vector3f setLength2Self(float len2) {
 		float oldLen2 = len2();
 		return (oldLen2 == 0 || oldLen2 == len2) ? this : scaleSelf(MathUtils.sqrt(len2 / oldLen2));

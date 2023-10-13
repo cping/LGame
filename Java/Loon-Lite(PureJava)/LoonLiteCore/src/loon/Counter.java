@@ -23,7 +23,6 @@ package loon;
 import loon.geom.IV;
 import loon.geom.SetIV;
 import loon.utils.MathUtils;
-import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
 
 /**

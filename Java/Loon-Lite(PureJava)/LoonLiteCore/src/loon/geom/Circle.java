@@ -158,6 +158,7 @@ public class Circle extends Ellipse {
 		return boundingCircleRadius;
 	}
 
+	@Override
 	public boolean intersects(RectBox other) {
 		return inRect(other);
 	}
@@ -167,6 +168,12 @@ public class Circle extends Ellipse {
 		center = new float[2];
 		center[0] = x + boundingCircleRadius;
 		center[1] = y + boundingCircleRadius;
+	}
+
+	@Override
+	public Circle setRect(float x, float y, float width, float height) {
+		final float radius = MathUtils.min(width / 2f, height / 2f);
+		return new Circle(x + radius, y + radius, radius);
 	}
 
 	public float side(Vector2f v) {

@@ -63,6 +63,8 @@ import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.ClickListener;
 import loon.events.DrawListener;
+import loon.events.DrawLoop;
+import loon.events.EventAction;
 import loon.events.FrameLoopEvent;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -907,15 +909,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param delay
 	 * @return
 	 */
-	public Screen setTimeout(final Updateable update, final long delay) {
+	public Screen setTimeout(final EventAction update, final long delay) {
 		return add(new Port<LTimerContext>() {
 
-			final LTimer timer = new LTimer(0);
+			final LTimer timer = new LTimer(delay);
 
 			@Override
 			public void onEmit(LTimerContext event) {
-				if (timer.action(delay) && update != null) {
-					update.action(event);
+				if (timer.action(event) && update != null) {
+					callEventAction(update, this, event.getTimeSinceLastUpdate());
 				}
 			}
 		}, true);
@@ -5590,8 +5592,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param drawListener
 	 */
-	public void setDrawListener(DrawListener<Screen> drawListener) {
+	public Screen setDrawListener(DrawListener<Screen> drawListener) {
 		this._drawListener = drawListener;
+		return this;
+	}
+
+	/**
+	 * 设定当前Screen的渲染监听器
+	 * 
+	 * @param draw
+	 * @return
+	 */
+	public Screen drawable(DrawLoop.Drawable draw) {
+		return setDrawListener(new DrawLoop<Screen>(this, draw));
 	}
 
 	/**

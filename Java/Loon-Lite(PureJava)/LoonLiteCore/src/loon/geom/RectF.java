@@ -349,6 +349,18 @@ public class RectF implements XYZW, SetXY {
 		return this;
 	}
 
+	public RectF setEmpty() {
+		return set(0f);
+	}
+
+	public RectF set(float size) {
+		return set(size, size);
+	}
+
+	public RectF set(float w1, float h1) {
+		return set(this.x, this.y, w1, h1);
+	}
+
 	public RectF set(float x1, float y1, float w1, float h1) {
 		this.x = x1;
 		this.y = y1;

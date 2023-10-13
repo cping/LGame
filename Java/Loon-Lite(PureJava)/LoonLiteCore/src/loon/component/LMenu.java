@@ -391,8 +391,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	public float maxscroll;
 	public float scrollspeed = 25f;
 	private LMenu selected;
-	private float cellWidth = 32f;
-	private float cellHeight = 32f;
+	private float cellWidth = LSystem.LAYER_TILE_SIZE;
+	private float cellHeight = LSystem.LAYER_TILE_SIZE;
 	private float paddingx = 2f;
 	private float paddingy = 50f;
 	private float alphaMenu = 0.7f;

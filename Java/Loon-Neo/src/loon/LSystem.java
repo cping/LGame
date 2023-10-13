@@ -121,7 +121,7 @@ public class LSystem {
 	public static final char COLON = ':';
 
 	public static final char BRANCH = ';';
-	
+
 	public static final char DOUBLE_QUOTES = '"';
 
 	public static final char SINGLE_QUOTE = '\'';
@@ -159,6 +159,9 @@ public class LSystem {
 	 * 还有多少速度值用于累加[保底],不让画面完全卡死)
 	 */
 	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
+
+	// 默认的layer瓦片大小
+	public static final int LAYER_TILE_SIZE = 32;
 
 	// 兆秒
 	public static final long MSEC = 1;

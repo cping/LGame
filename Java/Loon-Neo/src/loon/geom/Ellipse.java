@@ -156,6 +156,12 @@ public class Ellipse extends Shape {
 		set(centerPointX, centerPointY, radius1, radius2, segmentCount);
 	}
 
+	public Ellipse setRect(float x, float y, float width, float height) {
+		final float r1 = width / 2f;
+		final float r2 = height / 2f;
+		return set(x + r1, y + r2, r1, r2);
+	}
+
 	public Ellipse set(float centerPointX, float centerPointY, float radius1, float radius2) {
 		return set(centerPointX, centerPointY, radius1, radius2, DEFAULT_SEGMENT_MAX_COUNT);
 	}
@@ -178,6 +184,7 @@ public class Ellipse extends Shape {
 				ellipse.getRealX(), ellipse.getRealY(), ellipse.getRadius1(), ellipse.getRadius2());
 	}
 
+	@Override
 	public boolean inRect(RectBox rect) {
 		if (rect == null) {
 			return false;
@@ -186,6 +193,7 @@ public class Ellipse extends Shape {
 				rect.width, rect.height);
 	}
 
+	@Override
 	public boolean inCircle(Circle circle) {
 		if (circle == null) {
 			return false;
@@ -202,6 +210,7 @@ public class Ellipse extends Shape {
 				getRealY(), getDiameter1(), getDiameter2());
 	}
 
+	@Override
 	public boolean inPoint(XY pos) {
 		if (pos == null) {
 			return false;

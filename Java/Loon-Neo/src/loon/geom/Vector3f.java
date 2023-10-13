@@ -800,6 +800,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return setLength2Self(len * len);
 	}
 
+	public final Vector3f setEmpty() {
+		return set(0f);
+	}
+	
 	public Vector3f setLength2Self(float len2) {
 		float oldLen2 = len2();
 		return (oldLen2 == 0 || oldLen2 == len2) ? this : scaleSelf(MathUtils.sqrt(len2 / oldLen2));

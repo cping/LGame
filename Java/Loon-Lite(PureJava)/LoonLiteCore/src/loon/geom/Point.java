@@ -124,11 +124,12 @@ public class Point extends Shape {
 		boundingCircleRadius = 0;
 	}
 
+	public Point setEmpty() {
+		return setLocation(0f, 0f);
+	}
+
 	public Point set(float x, float y) {
-		this.x = x;
-		this.y = y;
-		this.pointsDirty = true;
-		return this;
+		return setLocation(x, y);
 	}
 
 	@Override

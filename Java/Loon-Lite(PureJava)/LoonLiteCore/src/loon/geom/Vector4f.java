@@ -421,6 +421,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return this;
 	}
 
+	public Vector4f setEmpty() {
+		return set(0f);
+	}
+
 	public Vector4f set(float v) {
 		return set(v, v, v, v);
 	}

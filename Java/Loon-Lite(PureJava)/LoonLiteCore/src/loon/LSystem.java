@@ -73,7 +73,7 @@ public class LSystem {
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';
-	
+
 	public static final char EQUAL = '=';
 
 	public static final char COMMA = ',';
@@ -81,7 +81,7 @@ public class LSystem {
 	public static final char DELIM_START = '{';
 
 	public static final char DELIM_END = '}';
-	
+
 	public static final char PAREN_START = '(';
 
 	public static final char PAREN_END = ')';
@@ -93,7 +93,7 @@ public class LSystem {
 	public static final char COLON = ':';
 
 	public static final char BRANCH = ';';
-	
+
 	public static final char DOUBLE_QUOTES = '"';
 
 	public static final char SINGLE_QUOTE = '\'';
@@ -153,6 +153,10 @@ public class LSystem {
 	public static final int MODE_ALPHA_ADD = 13;
 
 	public static final int MODE_MULTIPLY = 14;
+
+	// 默认的layer瓦片大小
+	public static final int LAYER_TILE_SIZE = 32;
+
 	// 兆秒
 	public static final long MSEC = 1;
 

@@ -24,6 +24,7 @@ package loon.component;
 import java.util.Iterator;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
@@ -48,8 +49,6 @@ import loon.utils.TArray;
 
 public abstract class ActorLayer extends LContainer {
 
-	private final static int LAYER_MIN_SIZE = 32;
-
 	private Field2D tmpField;
 
 	private boolean isBounded;
@@ -62,7 +61,7 @@ public abstract class ActorLayer extends LContainer {
 
 	protected long elapsedTime;
 
-	private int tileSize = 32;
+	private int tileSize = LSystem.LAYER_TILE_SIZE;
 
 	private final static Actor collisionObjectToActor(CollisionObject o) {
 		if (o instanceof Actor) {
@@ -594,8 +593,8 @@ public abstract class ActorLayer extends LContainer {
 		}
 		int layerWidth = (int) getWidth();
 		int layerHeight = (int) getHeight();
-		int actorWidth = nw > LAYER_MIN_SIZE ? nw : LAYER_MIN_SIZE;
-		int actorHeight = nh > LAYER_MIN_SIZE ? nh : LAYER_MIN_SIZE;
+		int actorWidth = nw > tileSize ? nw : tileSize;
+		int actorHeight = nh > tileSize ? nh : tileSize;
 		int x = nx / actorWidth;
 		int y = ny / actorHeight;
 		int row = layerWidth / actorWidth;

@@ -23,23 +23,44 @@ package loon.action.collision;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
+import loon.geom.Circle;
+import loon.geom.Ellipse;
+import loon.geom.Line;
 import loon.geom.RectBox;
 import loon.geom.Shape;
+import loon.geom.Triangle2f;
+import loon.geom.Vector2f;
 
 /**
  * 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引操作。
  */
 public class Gravity implements LRelease {
 
-	private static final RectBox _hitRect = new RectBox();
+	private final RectBox _hitRect = new RectBox();
 
-	public final RectBox bounds = new RectBox();
+	protected final Vector2f _oldPos = new Vector2f();
+
+	protected final RectBox _bounds = new RectBox();
+
+	protected float _oldRotate = 0f;
+
+	private final Vector2f _offsetPos = new Vector2f();
+
+	protected boolean _collisioning;
+
+	protected Gravity _collisionObject;
+
+	private Shape _shape;
 
 	public Object tag;
 
 	public ActionBind bind;
 
+	public boolean collideSolid;
+
 	public boolean enabled;
+
+	public boolean isSolid;
 
 	public float bounce;
 
@@ -61,9 +82,9 @@ public class Gravity implements LRelease {
 
 	public float angularVelocity;
 
-	public String name;
+	private float damping;
 
-	private Shape _shape;
+	public String name;
 
 	public Gravity(ActionBind o) {
 		this(LSystem.UNKNOWN, o);
@@ -81,20 +102,179 @@ public class Gravity implements LRelease {
 		this.name = name;
 		this.tag = tag;
 		this.bind = o;
-		this.enabled = true;
+		this.damping = 1f;
+		this.enabled = collideSolid = true;
 		this.setBounds(x, y, w, h);
 	}
 
+	public Gravity getCollisionObject() {
+		return _collisionObject;
+	}
+
+	public RectBox getRect() {
+		Shape shape = getShape();
+		_hitRect.setBounds(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
+		return _hitRect;
+	}
+
+	protected void initPosRotation() {
+		Shape shape = getShape();
+		this.setOldPos(shape.getX(), shape.getY());
+		this.setOldRotation(shape.getRotation());
+	}
+
+	protected void setOldRotation(float angle) {
+		this._oldRotate = angle;
+	}
+
+	protected void setOldPos(float x, float y) {
+		this._oldPos.set(x, y);
+	}
+
+	public float getOldRotation() {
+		return this._oldRotate;
+	}
+
+	public boolean isCollide() {
+		return collideSolid;
+	}
+
+	public Gravity setCollide(boolean c) {
+		this.collideSolid = c;
+		return this;
+	}
+
+	public float getAccelerationX() {
+		return this.accelerationX * this.damping;
+	}
+
+	public float getAccelerationY() {
+		return this.accelerationY * this.damping;
+	}
+
 	public Shape getShape() {
-		return _shape == null ? bounds : _shape;
+		return _shape == null ? _bounds : _shape;
 	}
 
 	public Gravity setShape(Shape s) {
 		this._shape = s;
-		if (this.bounds != null && this._shape != null) {
-			bounds.setBounds(_shape.getX(), _shape.getY(), _shape.getWidth(), _shape.getHeight());
+		if (this._bounds != null && this._shape != null) {
+			_bounds.setBounds(_shape.getX(), _shape.getY(), _shape.getWidth(), _shape.getHeight());
 		}
 		return this;
+	}
+
+	public float getX() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getX() + _offsetPos.x;
+		}
+		return 0f + _offsetPos.x;
+	}
+
+	public float getY() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getY() + _offsetPos.y;
+		}
+		return 0f + _offsetPos.y;
+	}
+
+	public float getWidth() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getWidth();
+		}
+		return 0f;
+	}
+
+	public float getHeight() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getHeight();
+		}
+		return 0f;
+	}
+
+	public float getRotation() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getRotation();
+		}
+		return 0f;
+	}
+
+	public Gravity setRotation(float angle) {
+		Shape s = getShape();
+		if (s != null) {
+			s.setRotation(angle);
+		}
+		return this;
+	}
+
+	public Gravity setLocation(float x, float y) {
+		getShape().setLocation(_offsetPos.x + x, _offsetPos.y + y);
+		return this;
+	}
+
+	public Gravity setArea(float x, float y, float w, float h) {
+		Shape s = getShape();
+		if (s instanceof RectBox) {
+			((RectBox) s).setBounds(_offsetPos.x + x, _offsetPos.y + y, w, h);
+		} else if (s instanceof Ellipse) {
+			((Ellipse) s).setRect(_offsetPos.x + x, _offsetPos.y + y, w, h);
+		} else if (s instanceof Circle) {
+			((Circle) s).setRect(_offsetPos.x + x, _offsetPos.y + y, w, h);
+		} else if (s instanceof Line) {
+			((Line) s).set(_offsetPos.x + x, _offsetPos.y + y, w, h);
+		} else if (s instanceof Triangle2f) {
+			((Triangle2f) s).set(_offsetPos.x + x, _offsetPos.y + y, w, h);
+		} else {
+			s.setLocation(_offsetPos.x + x, _offsetPos.y + y);
+		}
+		return this;
+	}
+
+	public boolean intersects(float x, float y, float size) {
+		return getShape().inPoint(x, y, size);
+	}
+
+	public boolean intersects(float x, float y) {
+		return getShape().inPoint(x, y, 1f);
+	}
+
+	public boolean intersects(float x, float y, float w, float h) {
+		return getShape().inRect(x, y, w, h);
+	}
+
+	public boolean contains(float x, float y) {
+		return getShape().contains(x, y);
+	}
+
+	public boolean contains(float x, float y, float w, float h) {
+		_hitRect.setBounds(x, y, w, h);
+		return getShape().contains(_hitRect);
+	}
+
+	public boolean intersects(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		return getShape().intersects(g.getShape());
+	}
+
+	public boolean contains(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		return getShape().contains(g.getShape());
+	}
+
+	public boolean collided(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		return getShape().collided(g.getShape());
 	}
 
 	public boolean isEnabled() {
@@ -134,12 +314,24 @@ public class Gravity implements LRelease {
 		return this;
 	}
 
-	public float getAccelerationX() {
-		return this.accelerationX;
+	public boolean isMovingLeft() {
+		return this.velocityX < 0f;
 	}
 
-	public float getAccelerationY() {
-		return this.accelerationY;
+	public boolean isMovingRight() {
+		return this.velocityX > 0f;
+	}
+
+	public boolean isMovingUp() {
+		return this.velocityY < 0f;
+	}
+
+	public boolean isMovingDown() {
+		return this.velocityY > 0f;
+	}
+
+	public boolean isLimited() {
+		return this.limitX || this.limitY;
 	}
 
 	public Gravity setAccelerationX(final float accelerationX) {
@@ -170,7 +362,7 @@ public class Gravity implements LRelease {
 	}
 
 	public float getAngularVelocity() {
-		return this.angularVelocity;
+		return this.angularVelocity * this.damping;
 	}
 
 	public void setAngularVelocity(final float angularVelocity) {
@@ -238,23 +430,35 @@ public class Gravity implements LRelease {
 	}
 
 	public Gravity setBounds(float x, float y, float w, float h) {
-		bounds.setBounds(x, y, w, h);
+		_bounds.setBounds(x, y, w, h);
 		return this;
 	}
 
+	public boolean contains(Shape shape) {
+		return getShape().contains(shape);
+	}
+
+	public boolean intersects(Shape shape) {
+		return getShape().intersects(shape);
+	}
+
 	public boolean collided(Shape shape) {
-		return _hitRect.collided(shape);
+		return getShape().collided(shape);
 	}
 
 	public boolean hitInPath(float scale, Gravity other) {
 		_hitRect.setBounds(other.getAreaOfTravel(scale));
-		return bounds.overlaps(_hitRect) || _hitRect.overlaps(bounds);
+		return intersects(_hitRect) || _hitRect.overlaps(_bounds);
 	}
 
 	public RectBox getAreaOfTravel(float scale) {
-		_hitRect.setBounds(bounds.x, bounds.y, velocityX * scale + bounds.width, velocityY * scale + bounds.height);
-		bounds.normalize(_hitRect);
+		_hitRect.setBounds(getX(), getY(), velocityX * scale + getWidth(), velocityY * scale + getHeight());
+		_bounds.normalize(_hitRect);
 		return _hitRect;
+	}
+
+	public boolean isCollisioning() {
+		return _collisioning;
 	}
 
 	public Gravity reset() {
@@ -266,7 +470,14 @@ public class Gravity implements LRelease {
 		this.velocityX = 0;
 		this.velocityY = 0;
 		this.angularVelocity = 0;
+		this._hitRect.setEmpty();
+		this._offsetPos.set(0f);
+		this._oldPos.set(0f);
+		this._bounds.setEmpty();
+		this._oldRotate = 0f;
+		this._collisioning = false;
 		this.limitX = this.limitY = false;
+		this.enabled = true;
 		return this;
 	}
 

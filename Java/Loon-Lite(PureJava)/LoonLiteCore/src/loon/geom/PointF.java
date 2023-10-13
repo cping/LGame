@@ -54,6 +54,10 @@ public class PointF implements XY, SetXY {
 		this.y = p.y;
 	}
 
+	public PointF setEmpty() {
+		return set(0f, 0f);
+	}
+
 	public PointF set(float v) {
 		return set(v, v);
 	}
@@ -315,8 +319,8 @@ public class PointF implements XY, SetXY {
 	public int hashCode() {
 		final int prime = 31;
 		int hashCode = 1;
-		hashCode = prime * LSystem.unite(hashCode,x);
-		hashCode = prime * LSystem.unite(hashCode,y);
+		hashCode = prime * LSystem.unite(hashCode, x);
+		hashCode = prime * LSystem.unite(hashCode, y);
 		return hashCode;
 	}
 

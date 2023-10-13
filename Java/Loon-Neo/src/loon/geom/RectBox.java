@@ -296,6 +296,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return setBounds(size.getX(), size.getY(), size.getWidth(), size.getHeight());
 	}
 
+	public RectBox set(float v) {
+		return setBounds(v, v, v, v);
+	}
+
 	public RectBox set(float x, float y, float width, float height) {
 		return setBounds(x, y, width, height);
 	}
@@ -401,6 +405,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 			setBounds(minX, minY, (maxX - minX), (maxY - minY));
 		}
 		return this;
+	}
+
+	public RectBox setSize(float size) {
+		return setSize(size, size);
 	}
 
 	public RectBox setSize(float width, float height) {
