@@ -981,10 +981,11 @@ public class HelperUtils {
 		if (elapsedTime != null) {
 			if (e instanceof EventActionTN) {
 				((EventActionTN<T, N>) e).update(obj, elapsedTime);
+			} else if (e instanceof Updateable) {
+				((Updateable) e).action(elapsedTime);
 			}
 		} else {
 			callEventAction(e, obj);
 		}
-
 	}
 }

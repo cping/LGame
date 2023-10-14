@@ -34,8 +34,8 @@ public class CollisionBaseQuery implements CollisionQuery {
 
 	private RectBox _collisionRect = new RectBox(0, 0, 0, 0);
 
-	public void init(String _flag, CollisionObject actor, Vector2f offset) {
-		this._flag = _flag;
+	public void init(String flag, CollisionObject actor, Vector2f offset) {
+		this._flag = flag;
 		this._compareObject = actor;
 		this._offsetLocation = offset;
 	}
@@ -58,9 +58,9 @@ public class CollisionBaseQuery implements CollisionQuery {
 		if (!_offsetLocation.isZero()) {
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
-			return (this._compareObject == null ? true : other.intersects(_collisionRect));
+			return (this._compareObject == null ? true : other.contains(_collisionRect));
 		}
-		return (this._compareObject == null ? true : other.intersects(this._compareObject));
+		return (this._compareObject == null ? true : other.contains(this._compareObject));
 	}
 
 	@Override
@@ -69,10 +69,10 @@ public class CollisionBaseQuery implements CollisionQuery {
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
 			return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
-					: (this._compareObject == null ? true : other.intersects(_collisionRect));
+					: (this._compareObject == null ? true : other.contains(_collisionRect));
 		}
 		return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
-				: (this._compareObject == null ? true : other.intersects(this._compareObject));
+				: (this._compareObject == null ? true : other.contains(this._compareObject));
 	}
 
 	@Override

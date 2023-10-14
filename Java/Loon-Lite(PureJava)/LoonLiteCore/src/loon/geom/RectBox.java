@@ -758,7 +758,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean contains(float x, float y, float width, float height) {
-		return x >= this.x && x < this.x + this.width && y >= this.y && y < this.y + this.height;
+		return x + width > this.x && x < this.x + this.width && y + height > this.y && y < this.y + this.height;
 	}
 
 	/**
@@ -769,6 +769,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 */
 	public boolean contains(RectBox rect) {
 		return contains(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	@Override
+	public boolean contains(Shape shape) {
+		if (shape instanceof RectBox) {
+			return contains((RectBox) shape);
+		}
+		return super.contains(shape);
 	}
 
 	public <T> boolean contains(LObject<T> rect) {
@@ -813,6 +821,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 */
 	public boolean intersects(RectBox rect) {
 		return intersects(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	@Override
+	public boolean intersects(Shape shape) {
+		if (shape instanceof RectBox) {
+			return intersects((RectBox) shape);
+		}
+		return super.intersects(shape);
 	}
 
 	/**

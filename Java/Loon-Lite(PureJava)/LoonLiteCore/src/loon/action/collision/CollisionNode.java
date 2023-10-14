@@ -32,16 +32,15 @@ public class CollisionNode {
 
 	private boolean _mark;
 
-	public CollisionNode(CollisionObject _actor, BSPCollisionNode _node) {
-		this._actor = _actor;
-		this._node = _node;
+	public CollisionNode(CollisionObject actor, BSPCollisionNode node) {
+		this._actor = actor;
+		this._node = node;
 		CollisionNode first = BSPCollisionChecker.getNodeForActor(_actor);
 		this._next = first;
 		BSPCollisionChecker.setNodeForActor(_actor, this);
 		if (this._next != null) {
 			this._next._prev = this;
 		}
-
 		this._mark = true;
 	}
 

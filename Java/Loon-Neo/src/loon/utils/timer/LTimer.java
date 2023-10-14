@@ -129,11 +129,11 @@ public class LTimer implements LRelease {
 	private final String _name;
 
 	public LTimer() {
-		this(450);
+		this(160);
 	}
 
 	public LTimer(String name) {
-		this(name, 450);
+		this(name, 160);
 	}
 
 	public LTimer(String name, Duration d) {

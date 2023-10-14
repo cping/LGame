@@ -258,6 +258,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	}
 
 	@Override
+	public boolean contains(CollisionObject o) {
+		return getCollisionArea().contains(o.getRectBox());
+	}
+
+	@Override
 	public boolean intersects(CollisionObject o) {
 		return getCollisionArea().intersects(o.getRectBox());
 	}
@@ -271,12 +276,12 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBi
 	public boolean contains(Shape shape) {
 		return getCollisionArea().contains(shape);
 	}
-	
+
 	@Override
 	public boolean collided(Shape shape) {
 		return getCollisionArea().collided(shape);
 	}
-	
+
 	@Override
 	public float getWidth() {
 		return width * scaleX;

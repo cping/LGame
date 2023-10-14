@@ -510,6 +510,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 						if (res != null) {
 							return res;
 						}
+			
 						BSPCollisionNode left = node.getLeft();
 						BSPCollisionNode right = node.getRight();
 						if (left != null) {

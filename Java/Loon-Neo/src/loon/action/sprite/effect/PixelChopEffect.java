@@ -155,8 +155,8 @@ public class PixelChopEffect extends PixelBaseEffect {
 	}
 
 	private void paintChop(GLEx g, ChopDirection dir, float tx, float ty) {
-		float x = viewX - tx;
-		float y = viewY - ty;
+		final float x = viewX - tx;
+		final float y = viewY - ty;
 		int f = super.frame;
 		if (f > limit) {
 			f = limit - f;

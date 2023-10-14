@@ -932,6 +932,17 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
+	public boolean contains(CollisionObject obj) {
+		if (obj instanceof Actor) {
+			return contains((Actor) obj);
+		} else {
+			RectBox thisBounds = this.getBoundingRect();
+			RectBox otherBounds = obj.getBoundingRect();
+			return thisBounds.contains(otherBounds);
+		}
+	}
+
+	@Override
 	public boolean intersects(Shape s) {
 		RectBox thisBounds = this.getBoundingRect();
 		return thisBounds.intersects(s);
@@ -949,7 +960,7 @@ public class Actor extends LObject<Actor>
 		return thisBounds.collided(s);
 	}
 
-	public boolean intersects(Actor other) {
+	protected boolean checkActorContains(Actor other, boolean inc) {
 		int thisBounds1;
 		if (this.image == null) {
 			if (other.image != null) {
@@ -966,18 +977,33 @@ public class Actor extends LObject<Actor>
 		} else {
 			RectBox thisBounds = this.getBoundingRect();
 			RectBox otherBounds = other.getBoundingRect();
-			if (this._objectRotation == 0 && other._objectRotation == 0) {
-				return thisBounds.intersects(otherBounds);
-			} else if (!thisBounds.intersects(otherBounds)) {
-				return false;
+			if (inc) {
+				if (this._objectRotation == 0 && other._objectRotation == 0) {
+					return thisBounds.contains(otherBounds);
+				} else if (!thisBounds.contains(otherBounds)) {
+					return false;
+				}
 			} else {
-				float[] myX = this._positionXs;
-				float[] myY = this._positionYs;
-				float[] otherX = other._positionXs;
-				float[] otherY = other._positionYs;
-				return checkOutside(myX, myY, otherX, otherY) ? false : !checkOutside(otherX, otherY, myX, myY);
+				if (this._objectRotation == 0 && other._objectRotation == 0) {
+					return thisBounds.intersects(otherBounds);
+				} else if (!thisBounds.intersects(otherBounds)) {
+					return false;
+				}
 			}
+			final float[] myX = this._positionXs;
+			final float[] myY = this._positionYs;
+			final float[] otherX = other._positionXs;
+			final float[] otherY = other._positionYs;
+			return checkOutside(myX, myY, otherX, otherY) ? false : !checkOutside(otherX, otherY, myX, myY);
 		}
+	}
+
+	public boolean contains(Actor other) {
+		return checkActorContains(other, true);
+	}
+
+	public boolean intersects(Actor other) {
+		return checkActorContains(other, false);
 	}
 
 	public TArray<Actor> getNeighbours(float distance, boolean diagonal, String flag) {

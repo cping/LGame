@@ -37,9 +37,11 @@ public interface CollisionObject {
 
 	public boolean intersects(Shape shape);
 
+	public boolean contains(CollisionObject o);
+
 	public boolean contains(Shape shape);
-	
-    public boolean collided(Shape shape);
+
+	public boolean collided(Shape shape);
 
 	public String getObjectFlag();
 

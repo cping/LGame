@@ -1155,6 +1155,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._height = MathUtils.max(1f, h);
 	}
 
+	public IEntity setSize(float size) {
+		return setSize(size, size);
+	}
+
 	@Override
 	public IEntity setSize(float w, float h) {
 		if (this._width != w || this._height != h) {
@@ -1676,6 +1680,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public boolean containsPoint(float x, float y) {
 		return inContains(x, y, 1, 1);
+	}
+
+	@Override
+	public boolean contains(CollisionObject o) {
+		return getCollisionBox().contains(o.getRectBox());
 	}
 
 	@Override

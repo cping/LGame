@@ -940,7 +940,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public Screen setTimeout(final EventAction update, final long delay) {
 		return add(new Port<LTimerContext>() {
 
-			final LTimer timer = new LTimer(delay);
+			final LTimer timer = new LTimer(delay > 0l ? delay / 60l : 0l);
 
 			@Override
 			public void onEmit(LTimerContext event) {
@@ -949,6 +949,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				}
 			}
 		}, true);
+	}
+
+	/**
+	 * 作用近似于js的同名函数,以指定的延迟执行Updateable
+	 * 
+	 * @param update
+	 * @param second
+	 * @return
+	 */
+	public Screen setTimeout(final EventAction update, final float second) {
+		return setTimeout(update, Duration.ofS(second));
+	}
+
+	/**
+	 * 作用近似于js的同名函数,以指定的延迟执行Updateable
+	 * 
+	 * @param update
+	 * @return
+	 */
+	public Screen setTimeout(final EventAction update) {
+		return setTimeout(update, 0l);
 	}
 
 	/**

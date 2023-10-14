@@ -33,13 +33,15 @@ public interface CollisionObject {
 
 	public boolean containsPoint(float x, float y);
 
+	public boolean contains(CollisionObject o);
+
+	public boolean contains(Shape shape);
+
+	public boolean collided(Shape shape);
+
 	public boolean intersects(CollisionObject o);
 
 	public boolean intersects(Shape shape);
-
-	public boolean contains(Shape shape);
-	
-	public boolean collided(Shape shape);
 
 	public String getObjectFlag();
 
