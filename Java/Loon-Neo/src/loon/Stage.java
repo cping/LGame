@@ -27,6 +27,7 @@ import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
 import loon.action.sprite.MoveObject;
 import loon.action.sprite.effect.ScrollEffect;
+import loon.component.LLayer;
 import loon.events.GameTouch;
 import loon.events.UpdateListener;
 import loon.geom.Vector2f;
@@ -319,6 +320,16 @@ public abstract class Stage extends Screen {
 		if (_existing) {
 			_stateManager.load();
 		}
+	}
+
+	public LLayer createLayer(int w, int h) {
+		final LLayer llayer = new LLayer(w, h);
+		add(llayer);
+		return llayer;
+	}
+
+	public LLayer createLayer() {
+		return createLayer(getWidth(), getHeight());
 	}
 
 	@Override

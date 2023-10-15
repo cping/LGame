@@ -1124,7 +1124,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(), getHeight());
+		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
+				_objectRect));
+	}
+
+	public float getScalePixelX() {
+		if (_scaleCenterX != -1f) {
+			return getX() + _scaleCenterX;
+		}
+		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
+	}
+
+	public float getScalePixelY() {
+		if (_scaleCenterY != -1f) {
+			return getY() + _scaleCenterY;
+		}
+		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
 	}
 
 	@Override

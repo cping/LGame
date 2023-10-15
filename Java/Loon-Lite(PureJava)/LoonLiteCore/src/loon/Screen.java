@@ -282,6 +282,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _desktopPenetrate = false;
 
+	// 是否允许穿透UI组件点击在Screen上
+	private boolean _isAllowThroughUItoScreenTouch = false;
+
 	private boolean _isLoad, _isLock, _isClose;
 
 	private boolean _isTranslate, _isGravity;
@@ -1411,6 +1414,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean isClickLimit(int x, int y) {
+		if (_isAllowThroughUItoScreenTouch) {
+			return false;
+		}
 		if (_rectLimits.size == 0 && _actionLimits.size == 0) {
 			return false;
 		}
@@ -1426,6 +1432,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * 是否允许穿透UI组件直接触发Screen点击(此项默认为false,不能穿透已有UI组件触发Screen的touch事件)
+	 * 
+	 * @return
+	 */
+	public boolean isAllowThroughUItoScreenTouch() {
+		return _isAllowThroughUItoScreenTouch;
+	}
+
+	public Screen setAllowThroughUItoScreenTouch(boolean a) {
+		this._isAllowThroughUItoScreenTouch = a;
+		return this;
 	}
 
 	final public void resetSize() {
@@ -1496,7 +1516,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._halfWidth = this._currentWidth / 2;
 		this._halfHeight = this._currentHeight / 2;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
-		this._isScreenFrom = _isTimerPaused = false;
+		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
 		this._isLoad = _isLock = _isClose = _isTranslate = _isGravity = false;
 		this._isProcessing = true;
 		if (_currentSprites != null) {
@@ -5820,6 +5840,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_isLock = true;
 				_isTimerPaused = false;
 				_isProcessing = false;
+				_isAllowThroughUItoScreenTouch = false;
 				_desktopPenetrate = false;
 				if (_currentSprites != null) {
 					_curSpriteRun = false;

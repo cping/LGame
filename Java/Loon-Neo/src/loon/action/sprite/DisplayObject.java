@@ -35,6 +35,7 @@ import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 public abstract class DisplayObject extends EventDispatcher implements CollisionObject, ISprite, XY, BoxSize {
 
@@ -79,9 +80,9 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	protected Vector2f _pivotValue = new Vector2f(-1, -1);
 
 	protected Sprites _sprites = null;
-	
+
 	private boolean _createShadow;
-	
+
 	private boolean _xySort;
 
 	public DisplayObject() {
@@ -230,8 +231,10 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	public RectBox getBounds() {
-		float x = _objectLocation.x;
-		float y = _objectLocation.y;
+		float x = getScalePixelX();
+		float y = getScalePixelY();
+		final float w = getWidth();
+		final float h = getHeight();
 		switch (_anchor) {
 		case ANCHOR_TOP_LEFT:
 		default:
@@ -239,11 +242,19 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 			y -= _anchorValue.y;
 			break;
 		case ANCHOR_CENTER:
-			x -= ((int) (_width * _scaleX) >> 1);
-			y -= ((int) (_height * _scaleY) >> 1);
+			x -= ((int) (w) >> 1);
+			y -= ((int) (h) >> 1);
 			break;
 		}
-		return getRect(x, y, _width * _scaleX, _height * _scaleY);
+		return setRect(MathUtils.getBounds(x, y, w, h, _objectRotation, _objectRect));
+	}
+
+	public float getScalePixelX() {
+		return ((_scaleX == 1f) ? getX() : getCenterY());
+	}
+
+	public float getScalePixelY() {
+		return ((_scaleY == 1f) ? getY() : getCenterY());
 	}
 
 	public PointF local2Global(float x, float y) {
@@ -298,7 +309,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		this._height = h;
 		return this;
 	}
-	
+
 	abstract protected void enterFrame(long time);
 
 	abstract protected void addedToStage();
@@ -373,7 +384,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public boolean contains(CollisionObject o) {
 		return getCollisionBox().contains(o.getRectBox());
 	}
-	
+
 	@Override
 	public boolean intersects(CollisionObject o) {
 		return getCollisionBox().intersects(o.getRectBox());
@@ -388,12 +399,12 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public boolean contains(Shape shape) {
 		return getCollisionBox().contains(shape);
 	}
-	
+
 	@Override
 	public boolean collided(Shape shape) {
 		return getCollisionBox().collided(shape);
 	}
-	
+
 	@Override
 	public float getContainerWidth() {
 		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
@@ -504,12 +515,12 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public float getOffsetY() {
 		return _offset.y;
 	}
-	
+
 	public DisplayObject setAutoXYSort(boolean a) {
 		this._xySort = a;
 		return this;
 	}
-	
+
 	@Override
 	public boolean autoXYSort() {
 		return _xySort;

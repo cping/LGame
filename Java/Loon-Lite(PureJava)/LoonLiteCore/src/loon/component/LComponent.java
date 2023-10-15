@@ -324,8 +324,8 @@ public abstract class LComponent extends LObject<LContainer>
 			g.setAlpha(_objectAlpha * screenAlpha);
 			final int newX = MathUtils.floor(this._screenX + _offset.x);
 			final int newY = MathUtils.floor(this._screenY + _offset.y);
-			final int width = MathUtils.floor(this.getWidth());
-			final int height = MathUtils.floor(this.getHeight());
+			final int width = MathUtils.floor(this._width);
+			final int height = MathUtils.floor(this._height);
 			if (this._component_elastic) {
 				g.setClip(newX, newY, width, height);
 			}
@@ -397,15 +397,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this._component_visible && (x >= this.getDrawScrollX() && y >= this.getDrawScrollY()
-				&& ((x + width) <= (this.getDrawScrollX() + this._width * _scaleX))
-				&& ((y + height) <= (this.getDrawScrollY() + this._height * _scaleY))));
+		return (this._component_visible && getCollisionBox().contains(x, y, width, height));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this._component_visible)
-				&& (x1 >= this.getDrawScrollX() && x1 <= this.getDrawScrollX() + this._width * _scaleX
-						&& y1 >= this.getDrawScrollY() && y1 <= this.getDrawScrollY() + this._height * _scaleY);
+		return (this._component_visible) && getCollisionBox().intersects(x1, y1);
 	}
 
 	protected float getDrawScrollX() {
@@ -423,36 +419,33 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean contains(CollisionObject o) {
-		return getCollisionBox().contains(o.getRectBox());
-	}
-	
-	@Override
 	public boolean intersects(CollisionObject obj) {
 		return intersects(obj.getRectBox());
 	}
 
 	@Override
-	public boolean intersects(Shape s) {
-		return getCollisionBox().intersects(s);
+	public boolean intersects(Shape rect) {
+		return getCollisionBox().intersects(rect);
 	}
 
 	@Override
-	public boolean contains(Shape s) {
-		return getCollisionBox().contains(s);
+	public boolean contains(CollisionObject o) {
+		return getCollisionBox().contains(o.getRectBox());
 	}
-	
+
 	@Override
-	public boolean collided(Shape s) {
-		return getCollisionBox().collided(s);
+	public boolean contains(Shape rect) {
+		return getCollisionBox().contains(rect);
+	}
+
+	@Override
+	public boolean collided(Shape rect) {
+		return getCollisionBox().collided(rect);
 	}
 
 	public boolean intersects(LComponent comp) {
-		return (this._component_visible) && (comp.isVisible())
-				&& (this.getDrawScrollX() + this._width * _scaleX >= comp.getDrawScrollX()
-						&& this.getDrawScrollX() <= comp.getDrawScrollX() + comp._width
-						&& this.getDrawScrollY() + this._height * _scaleY >= comp.getDrawScrollY()
-						&& this.getDrawScrollY() <= comp.getDrawScrollY() + comp._height);
+		return (this._component_visible) && (comp != null && comp.isVisible())
+				&& getCollisionBox().intersects(comp.getCollisionBox());
 	}
 
 	@Override
@@ -690,8 +683,22 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public RectBox getCollisionBox() {
 		validatePosition();
-		return setRect(MathUtils.getBounds(getDrawScrollX(), getDrawScrollY(), getWidth() * _scaleX,
-				getHeight() * _scaleY, _objectRotation, _objectRect));
+		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
+				_objectRect));
+	}
+
+	public float getScalePixelX() {
+		if (_pivotX != -1f) {
+			return getDrawScrollX() + _pivotX;
+		}
+		return ((_scaleX == 1f) ? getDrawScrollX() : (getDrawScrollX() + _origin.ox(getWidth())));
+	}
+
+	public float getScalePixelY() {
+		if (_pivotY != -1f) {
+			return getDrawScrollY() + _pivotY;
+		}
+		return ((_scaleY == 1f) ? getDrawScrollY() : (getDrawScrollY() + _origin.oy(getHeight())));
 	}
 
 	public LComponent getToolTipParent() {

@@ -74,8 +74,8 @@ public class ButtleTest extends Stage {
 				CollisionObject obj = bullets.getOnlyIntersectingButtle(fish);
 				// 存在
 				if (obj != null) {
-					//调用缓动动画,fish变红,震动,还原颜色
-					fish.selfAction().colorTo(LColor.red).shakeTo(5f).colorTo(LColor.white).start();
+					//调用缓动动画,缩放到50%,fish变红,震动幅度5像素,还原颜色
+					fish.selfAction().scaleTo(0.5f).colorTo(LColor.red).shakeTo(5f).colorTo(LColor.white).start();
 			
 				}
 

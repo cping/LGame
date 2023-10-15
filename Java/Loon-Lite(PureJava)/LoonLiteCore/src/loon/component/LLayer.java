@@ -283,11 +283,10 @@ public class LLayer extends ActorLayer {
 					thing.update(elapsedTime);
 				}
 
-				RectBox rect = thing.getRectBox();
 				actorX = minX + thing.getX();
 				actorY = minY + thing.getY();
-				actorWidth = rect.width;
-				actorHeight = rect.height;
+				actorWidth = thing.pixelWidth();
+				actorHeight = thing.pixelHeight();
 				if (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY || actorY > maxY) {
 					continue;
 				}
@@ -295,8 +294,8 @@ public class LLayer extends ActorLayer {
 				final float alpha = g.alpha();
 				LTexture actorImage = thing.getImage();
 				if (actorImage != null) {
-					final float width = thing.getWidth();
-					final float height = thing.getHeight();
+					final float width = thing.pixelWidth();
+					final float height = thing.pixelHeight();
 					thing.setLastPaintSeqNum(paintSeq++);
 					float oldAlpha = g.alpha();
 					colorAlpha = thing.getAlpha();

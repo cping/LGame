@@ -626,8 +626,24 @@ public class Sprite extends LObject<ISprite>
 	 * 
 	 * @return
 	 */
+	@Override
 	public RectBox getCollisionBox() {
-		return getRect(x(), y(), getWidth(), getHeight());
+		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
+				_objectRect));
+	}
+
+	public float getScalePixelX() {
+		if (_pivot.x != -1f) {
+			return getX() + _pivot.x;
+		}
+		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
+	}
+
+	public float getScalePixelY() {
+		if (_pivot.y != -1f) {
+			return getY() + _pivot.y;
+		}
+		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
 	}
 
 	/**
@@ -938,6 +954,11 @@ public class Sprite extends LObject<ISprite>
 		this._scaleY = sy;
 	}
 
+	public Sprite setSize(float size) {
+		return setSize(size, size);
+	}
+
+	@Override
 	public Sprite setSize(float width, float height) {
 		this._scaleX = getWidth() / width;
 		this._scaleY = getHeight() / height;
@@ -1250,7 +1271,7 @@ public class Sprite extends LObject<ISprite>
 	public boolean contains(CollisionObject o) {
 		return getCollisionBox().contains(o.getRectBox());
 	}
-	
+
 	@Override
 	public boolean intersects(CollisionObject o) {
 		return getCollisionBox().intersects(o.getRectBox());

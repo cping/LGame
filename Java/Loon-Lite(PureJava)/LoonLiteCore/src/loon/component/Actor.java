@@ -76,7 +76,7 @@ public class Actor extends LObject<Actor>
 
 	private LTexture image;
 
-	private RectBox boundingRect;
+	private RectBox _boundingRect;
 
 	private float _actorWidth, _actorHeight;
 
@@ -161,15 +161,17 @@ public class Actor extends LObject<Actor>
 		return this;
 	}
 
+	public Actor setSize(float size) {
+		return setSize(size, size);
+	}
+
 	@Override
 	public Actor setSize(float w, float h) {
-		if (boundingRect != null) {
-			boundingRect.setBounds(_objectLocation.x, _objectLocation.y, w, h);
-		} else {
-			boundingRect = new RectBox(_objectLocation.x, _objectLocation.y, w, h);
+		if (w != _actorWidth || h != _actorHeight) {
+			_actorWidth = w;
+			_actorHeight = h;
+			_boundingRect = getRectBox();
 		}
-		_actorWidth = w;
-		_actorHeight = h;
 		return this;
 	}
 
@@ -541,31 +543,6 @@ public class Actor extends LObject<Actor>
 
 	}
 
-	@Override
-	public int x() {
-		return _objectLocation.x();
-	}
-
-	@Override
-	public int y() {
-		return _objectLocation.y();
-	}
-
-	@Override
-	public float getX() {
-		return _objectLocation.x;
-	}
-
-	@Override
-	public float getY() {
-		return _objectLocation.y;
-	}
-
-	@Override
-	public float getRotation() {
-		return this._objectRotation;
-	}
-
 	/**
 	 * 决定当前对象旋转方向
 	 * 
@@ -588,7 +565,7 @@ public class Actor extends LObject<Actor>
 		}
 		if (this._objectRotation != r) {
 			this._objectRotation = r;
-			this.boundingRect = null;
+			this._boundingRect = null;
 			this.sizeChanged();
 		}
 	}
@@ -601,15 +578,22 @@ public class Actor extends LObject<Actor>
 		return (int) getHeight();
 	}
 
+	protected float pixelWidth() {
+		float width = 0f;
+		if (_actorWidth > 0) {
+			width = _actorWidth;
+		} else if (image != null) {
+			width = (image.getWidth());
+		}
+		if (width == 0) {
+			width = getBoundingRect().getWidth();
+		}
+		return width;
+	}
+
 	@Override
 	public float getWidth() {
-		if (_actorWidth > 0) {
-			return _actorWidth;
-		}
-		if (image != null) {
-			return (image.getWidth());
-		}
-		return (getRectBox().width);
+		return pixelWidth() * scaleX;
 	}
 
 	@Override
@@ -617,15 +601,22 @@ public class Actor extends LObject<Actor>
 		setSize(w, this._actorHeight);
 	}
 
+	protected float pixelHeight() {
+		float height = 0f;
+		if (_actorHeight > 0) {
+			height = _actorHeight;
+		} else if (image != null) {
+			height = (image.getHeight());
+		}
+		if (height == 0) {
+			height = getBoundingRect().getHeight();
+		}
+		return height;
+	}
+
 	@Override
 	public float getHeight() {
-		if (_actorHeight > 0) {
-			return (int) _actorHeight;
-		}
-		if (image != null) {
-			return (int) (image.getHeight());
-		}
-		return (int) (getRectBox().height);
+		return pixelHeight() * scaleY;
 	}
 
 	@Override
@@ -708,11 +699,11 @@ public class Actor extends LObject<Actor>
 			_objectLocation.y = y;
 		}
 		if (_objectLocation.x != oldX || _objectLocation.y != oldY) {
-			if (this.boundingRect != null) {
+			if (this._boundingRect != null) {
 				float dx = (_objectLocation.getX() - oldX) * this.gameLayer.cellSize;
 				float dy = (_objectLocation.getY() - oldY) * this.gameLayer.cellSize;
-				this.boundingRect.setX(this.boundingRect.getX() + dx);
-				this.boundingRect.setY(this.boundingRect.getY() + dy);
+				this._boundingRect.setX(this._boundingRect.getX() + dx);
+				this._boundingRect.setY(this._boundingRect.getY() + dy);
 				for (int i = 0; i < 4; ++i) {
 					this._positionXs[i] += dx;
 					this._positionYs[i] += dy;
@@ -762,7 +753,7 @@ public class Actor extends LObject<Actor>
 			}
 			this.image = img;
 			if (sizeChanged) {
-				this.boundingRect = null;
+				this._boundingRect = null;
 				this.sizeChanged();
 			}
 		}
@@ -787,7 +778,7 @@ public class Actor extends LObject<Actor>
 			x = this.limitValue(x, gameLayer.getWidth() - getWidth());
 			y = this.limitValue(y, gameLayer.getHeight() - getHeight());
 		}
-		this.boundingRect = null;
+		this._boundingRect = null;
 		this.setLayer(gameLayer);
 		this.setLocation(x, y);
 	}
@@ -797,13 +788,17 @@ public class Actor extends LObject<Actor>
 	 * 
 	 * @return
 	 */
-	@Override
 	public RectBox getRectBox() {
-		RectBox tmp = getBoundingRect();
-		if (tmp == null) {
-			return getRect(_objectLocation.x, _objectLocation.y, getWidth() * scaleX, getHeight() * scaleY);
-		}
-		return getRect(_objectLocation.x, _objectLocation.y, tmp.width * scaleX, tmp.height * scaleY);
+		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
+				_objectRect));
+	}
+
+	public float getScalePixelX() {
+		return ((scaleX == 1f) ? getX() : getCenterX());
+	}
+
+	public float getScalePixelY() {
+		return ((scaleY == 1f) ? getY() : getCenterY());
 	}
 
 	/**
@@ -813,10 +808,10 @@ public class Actor extends LObject<Actor>
 	 */
 	@Override
 	public RectBox getBoundingRect() {
-		if (this.boundingRect == null) {
+		if (this._boundingRect == null) {
 			this.calcBounds();
 		}
-		return this.boundingRect;
+		return this._boundingRect;
 	}
 
 	/**
@@ -842,14 +837,13 @@ public class Actor extends LObject<Actor>
 			if (this.image == null) {
 				width = _objectLocation.x() * cellSize + cellSize;
 				height = _objectLocation.y() * cellSize + cellSize;
-				this.boundingRect = new RectBox(width, height, 0, 0);
+				this._boundingRect = new RectBox(width, height, 0, 0);
 				for (minY = 0; minY < 4; ++minY) {
 					this._positionXs[minY] = width;
 					this._positionYs[minY] = height;
 				}
 			} else {
-				this.boundingRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, this.image.getWidth(),
-						this.image.getHeight(), _objectRotation);
+				this._boundingRect = getRectBox();
 			}
 		}
 	}
@@ -886,6 +880,7 @@ public class Actor extends LObject<Actor>
 		if (this.gameLayer != null) {
 			this.gameLayer.updateObjectSize(this);
 		}
+		this._boundingRect = getRectBox();
 	}
 
 	private void locationChanged(float oldX, float oldY) {
@@ -1064,7 +1059,7 @@ public class Actor extends LObject<Actor>
 		if (this.image == null) {
 			return false;
 		} else {
-			if (this.boundingRect == null) {
+			if (this._boundingRect == null) {
 				this.calcBounds();
 			}
 			if (this._objectRotation != 0 && this._objectRotation != 90 && this._objectRotation != 270) {
@@ -1083,8 +1078,8 @@ public class Actor extends LObject<Actor>
 
 				return true;
 			} else {
-				return px >= this.boundingRect.getX() && px < this.boundingRect.getRight()
-						&& py >= this.boundingRect.getY() && py < this.boundingRect.getBottom();
+				return px >= this._boundingRect.getX() && px < this._boundingRect.getRight()
+						&& py >= this._boundingRect.getY() && py < this._boundingRect.getBottom();
 			}
 		}
 	}
