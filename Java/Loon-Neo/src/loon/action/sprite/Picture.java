@@ -72,12 +72,14 @@ public class Picture extends Entity {
 		return false;
 	}
 
-	public void setImage(String fileName) {
+	public Picture setImage(String fileName) {
 		this.setTexture(fileName);
+		return this;
 	}
 
-	public void setImage(LTexture image) {
+	public Picture setImage(LTexture image) {
 		this.setTexture(image);
+		return this;
 	}
 
 }

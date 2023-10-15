@@ -38,11 +38,11 @@ import loon.opengl.TextureUtils;
  */
 public class LButton extends LComponent implements FontSet<LButton> {
 
-	private final ActionKey onTouch = new ActionKey();
+	private final ActionKey _onTouch = new ActionKey();
 
-	private String text = null;
+	private String _currentText = null;
 
-	private boolean over, exception;
+	private boolean _clickOver, _clickException;
 
 	private int pressedTime, offsetLeft, offsetTop, type;
 
@@ -68,6 +68,10 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		this(fileName, null, color, row, col, 0, 0);
 	}
 
+	public LButton(LTexture texture, int row, int col) {
+		this(TextureUtils.getSplitTextures(texture, row, col), null, LColor.white, row, col, 0, 0);
+	}
+
 	public LButton(String fileName, String text, LColor color, int row, int col, int x, int y) {
 		this(LSystem.loadTexture(fileName), text, color, row, col, x, y);
 	}
@@ -84,7 +88,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		super(x, y, row, col);
 		this.setFontColor(color);
 		this.font = font;
-		this.text = text;
+		this._currentText = text;
 		if (img != null) {
 			this.setImages(img);
 		}
@@ -92,7 +96,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	}
 
 	public LButton(int x, int y) {
-		this(LSystem.getSystemGameFont(), "", x, y, 1, 1);
+		this(LSystem.getSystemGameFont(), LSystem.EMPTY, x, y, 1, 1);
 	}
 
 	public LButton(String text, int x, int y, int w, int h) {
@@ -107,7 +111,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		super(x, y, w, h);
 		this.setFontColor(color);
 		this.font = font;
-		this.text = text;
+		this._currentText = text;
 	}
 
 	public LButton setDefAndPress(LTexture defImage, LTexture pressImage) {
@@ -144,13 +148,13 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			} else if (size == 4) {
 				buttons = images;
 			} else {
-				exception = true;
+				_clickException = true;
 			}
 		}
-		if (!exception) {
+		if (!_clickException) {
 			this.setImageUI(buttons, true);
 		} else {
-			throw new LSysException("LButton setImages exception, buttons size =" + this.type);
+			throw new LSysException("LButton setImages _clickException, buttons size =" + this.type);
 		}
 		return this;
 	}
@@ -173,10 +177,10 @@ public class LButton extends LComponent implements FontSet<LButton> {
 				}
 			}
 		}
-		if (text != null) {
+		if (_currentText != null) {
 			int tmp = g.color();
 			g.setColor(fontColor);
-			font.drawString(g, text, x + getOffsetLeft() + (getWidth() - font.stringWidth(text)) / 2,
+			font.drawString(g, _currentText, x + getOffsetLeft() + (getWidth() - font.stringWidth(_currentText)) / 2,
 					y + getOffsetTop() + (getHeight() - font.getHeight() - font.getAscent()) / 2);
 			g.setColor(tmp);
 		}
@@ -189,51 +193,51 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		}
 		super.update(elapsedTime);
 		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
-			onTouch.release();
+			_onTouch.release();
 		}
 	}
 
 	public boolean isTouchOver() {
-		return this.over;
+		return this._clickOver;
 	}
 
 	public boolean isTouchPressed() {
-		return onTouch.isPressed();
+		return _onTouch.isPressed();
 	}
 
 	public String getText() {
-		return this.text;
+		return this._currentText;
 	}
 
 	public LButton setText(String st) {
-		this.text = st;
+		this._currentText = st;
 		return this;
 	}
 
 	public LButton checked() {
-		onTouch.press();
+		_onTouch.press();
 		return this;
 	}
 
 	public LButton unchecked() {
-		onTouch.release();
+		_onTouch.release();
 		return this;
 	}
 
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		this.over = this.intersects(getUITouchX(), getUITouchY());
-		if (!onTouch.isPressed()) {
-			this.onTouch.press();
+		this._clickOver = this.intersects(getUITouchX(), getUITouchY());
+		if (!_onTouch.isPressed()) {
+			this._onTouch.press();
 		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		if (!onTouch.isPressed()) {
-			onTouch.press();
+		if (!_onTouch.isPressed()) {
+			_onTouch.press();
 		}
 	}
 
@@ -244,33 +248,33 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			try {
 				_function.call(this);
 			} catch (Throwable t) {
-				LSystem.error("LClickButton call() exception", t);
+				LSystem.error("LClickButton call() _clickException", t);
 			}
 		}
-		if (onTouch.isPressed()) {
-			onTouch.release();
+		if (_onTouch.isPressed()) {
+			_onTouch.release();
 		}
 	}
 
 	@Override
 	protected void processTouchEntered() {
-		this.over = true;
+		this._clickOver = true;
 	}
 
 	@Override
 	protected void processTouchExited() {
-		this.over = false;
-		if (onTouch.isPressed()) {
-			onTouch.release();
+		this._clickOver = false;
+		if (_onTouch.isPressed()) {
+			_onTouch.release();
 		}
 	}
 
 	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && SysKey.isKeyPressed(SysKey.ENTER)) {
-			if (!onTouch.isPressed()) {
+			if (!_onTouch.isPressed()) {
 				this.pressedTime = 5;
-				this.onTouch.press();
+				this._onTouch.press();
 				this.doClick();
 			}
 		}
@@ -279,14 +283,14 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected() && SysKey.isKeyRelease(SysKey.ENTER)) {
-			if (onTouch.isPressed()) {
-				onTouch.release();
+			if (_onTouch.isPressed()) {
+				_onTouch.release();
 			}
 		}
 	}
 
 	public boolean isException() {
-		return exception;
+		return _clickException;
 	}
 
 	@Override

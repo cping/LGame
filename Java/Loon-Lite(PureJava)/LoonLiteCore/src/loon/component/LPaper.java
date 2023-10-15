@@ -25,22 +25,23 @@ import loon.LSystem;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 public class LPaper extends LContainer {
 
 	private Animation animation;
 
-	public LPaper(LTexture background, int x, int y) {
+	public LPaper(LTexture background, float x, float y) {
 		this(background, x, y, background == null ? 0 : background.getWidth(),
 				background == null ? 0 : background.getHeight());
 	}
 
-	public LPaper(LTexture background, int x, int y, int w, int h) {
+	public LPaper(LTexture background, float x, float y, float w, float h) {
 		this(background, null, x, y, w, h);
 	}
 
-	public LPaper(LTexture background, LColor color, int x, int y, int w, int h) {
-		super(x, y, w, h);
+	public LPaper(LTexture background, LColor color, float x, float y, float w, float h) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		this.customRendering = true;
 		this.animation = new Animation();
 		if (background != null && (color == null || LColor.white.equals(color))) {

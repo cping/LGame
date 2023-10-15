@@ -28,11 +28,15 @@ import loon.EmptyObject;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.LimitedCounter;
+import loon.TextureNodeMaker;
+import loon.TextureNodeType;
 import loon.ZIndex;
 import loon.Director.Origin;
 import loon.Director.Position;
 import loon.Log.Level;
+import loon.action.ActionBind;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
 import loon.canvas.LColor;
@@ -50,6 +54,9 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.RectF;
 import loon.geom.RectI;
+import loon.geom.Shape;
+import loon.geom.ShapeNodeMaker;
+import loon.geom.ShapeNodeType;
 import loon.geom.Vector2f;
 import loon.utils.reply.Pair;
 import loon.utils.reply.Triple;
@@ -988,4 +995,37 @@ public class HelperUtils {
 			callEventAction(e, obj);
 		}
 	}
+
+	public final static <T extends ActionBind> T create(TextureNodeType nodeType, String path) {
+		return TextureNodeMaker.create(nodeType, path);
+	}
+
+	public final static <T extends ActionBind> T create(TextureNodeType nodeType, String path, float x, float y) {
+		return TextureNodeMaker.create(nodeType, path, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(TextureNodeType nodeType, LTexture texture) {
+		return TextureNodeMaker.create(nodeType, texture);
+	}
+
+	public final static <T extends ActionBind> T create(TextureNodeType nodeType, LTexture texture, float x, float y) {
+		return TextureNodeMaker.create(nodeType, texture, x, y);
+	}
+
+	public final static <T extends Shape> T create(ShapeNodeType nodeType, float[] points) {
+		return ShapeNodeMaker.create(nodeType, points);
+	}
+
+	public final static <T extends Shape> T create(ShapeNodeType nodeType, TArray<Vector2f> polys) {
+		return ShapeNodeMaker.create(nodeType, polys);
+	}
+
+	public final static <T extends Shape> T create(ShapeNodeType nodeType, float x, float y, float w, float h) {
+		return ShapeNodeMaker.create(nodeType, x, y, w, h);
+	}
+
+	public final static <T extends Shape> T create(ShapeNodeType nodeType, float x, float y) {
+		return ShapeNodeMaker.create(nodeType, x, y);
+	}
+
 }

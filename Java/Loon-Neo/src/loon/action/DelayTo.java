@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.timer.Duration;
 
@@ -28,13 +29,13 @@ public class DelayTo extends ActionEvent {
 	private float delay;
 
 	public DelayTo(float d) {
-		this.delay = d;
+		this.delay = MathUtils.max(0f, d);
 	}
 
 	@Override
 	public DelayTo reset() {
 		super.reset();
-		setDelay(Duration.ofS(this.delay));
+		setDelay(Duration.ofS(this.delay) / 2);
 		return this;
 	}
 
@@ -49,7 +50,7 @@ public class DelayTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		setDelay(Duration.ofS(this.delay));
+		setDelay(Duration.ofS(this.delay) / 2);
 	}
 
 	@Override

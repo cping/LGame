@@ -4510,13 +4510,27 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
-			_rectBox.setBounds(MathUtils.getBounds(getX(), getY(), getWidth() * _scaleX, getHeight() * _scaleY,
-					_rotation, _rectBox));
+			_rectBox.setBounds(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScreenWidth(),
+					getScreenHeight(), _rotation, _rectBox));
 		} else {
-			_rectBox = MathUtils.getBounds(getX(), getY(), getWidth() * _scaleX, getHeight() * _scaleY, _rotation,
-					_rectBox);
+			_rectBox = MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScreenWidth(), getScreenHeight(),
+					_rotation, _rectBox);
 		}
 		return _rectBox;
+	}
+
+	public float getScalePixelX() {
+		if (_pivotX != -1f) {
+			return getX() + _pivotX;
+		}
+		return ((_scaleX == 1f) ? getX() : (getX() + getScreenWidth() / 2));
+	}
+
+	public float getScalePixelY() {
+		if (_pivotY != -1f) {
+			return getY() + _pivotY;
+		}
+		return ((_scaleY == 1f) ? getY() : (getY() + getScreenHeight() / 2));
 	}
 
 	public ScreenAction getScreenAction() {
