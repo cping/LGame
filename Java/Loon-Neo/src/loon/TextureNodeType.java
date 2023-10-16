@@ -21,5 +21,5 @@
 package loon;
 
 public enum TextureNodeType {
-	Entity, Sprite, Picture, Actor, Paper,Button
+	Entity, Sprite, Texture, Picture, Actor, Paper, Button
 }

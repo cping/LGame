@@ -152,11 +152,14 @@ public class Director extends SoundBox {
 	}
 
 	public enum Position {
-		SAME, CENTER, LEFT, TOP_LEFT, TOP_LEFT_CENTER, TOP_RIGHT, TOP_RIGHT_CENTER, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_LEFT_CENTER, BOTTOM_RIGHT, BOTTOM_RIGHT_CENTER, RIGHT_CENTER, TOP_CENTER
+		SAME, CENTER, LEFT, TOP_LEFT, TOP_LEFT_CENTER, TOP_RIGHT, TOP_RIGHT_CENTER, BOTTOM_CENTER, BOTTOM_LEFT,
+		BOTTOM_LEFT_CENTER, BOTTOM_RIGHT, BOTTOM_RIGHT_CENTER, RIGHT_CENTER, TOP_CENTER
 	}
 
-	RectBox renderRect;
-	RectBox viewRect;
+	private int[] _tempPoint = new int[2];
+
+	private RectBox _renderRect;
+	private RectBox _viewRect;
 
 	public Director() {
 		this(LSystem.viewSize);
@@ -164,73 +167,75 @@ public class Director extends SoundBox {
 
 	public Director(Dimension rect) {
 		if (rect != null) {
-			this.renderRect = new RectBox(0, 0, rect.width, rect.height);
-			this.viewRect = new RectBox(0, 0, rect.width, rect.height);
+			this._renderRect = new RectBox(0, 0, rect.width, rect.height);
+			this._viewRect = new RectBox(0, 0, rect.width, rect.height);
 		} else {
-			this.renderRect = new RectBox();
-			this.viewRect = new RectBox();
+			this._renderRect = new RectBox();
+			this._viewRect = new RectBox();
 		}
 	}
 
 	public void setSize(int width, int height) {
-		this.renderRect.setBounds(0, 0, width, height);
-		this.viewRect = new RectBox(0, 0, width, height);
+		this._renderRect.setBounds(0, 0, width, height);
+		this._viewRect = new RectBox(0, 0, width, height);
 	}
 
 	public RectBox getRenderRect() {
-		return renderRect;
+		return _renderRect;
 	}
 
 	public RectBox getViewRect() {
-		return viewRect;
+		return _viewRect;
 	}
 
 	public int getViewLeft() {
-		return viewRect.Left();
+		return _viewRect.Left();
 	}
 
 	public int getViewTop() {
-		return viewRect.Top();
+		return _viewRect.Top();
 	}
 
-	public void view(RectBox rect) {
-		rect.offset(-viewRect.Left(), -viewRect.Top());
+	public Director view(RectBox rect) {
+		rect.offset(-_viewRect.Left(), -_viewRect.Top());
+		return this;
 	}
 
-	public void view(int[] point) {
-		point[0] -= viewRect.Left();
-		point[1] -= viewRect.Top();
+	public Director view(int[] point) {
+		point[0] -= _viewRect.Left();
+		point[1] -= _viewRect.Top();
+		return this;
 	}
-
-	int[] point = new int[2];
 
 	public int[] view(int x, int y) {
-		point[0] = x - viewRect.Left();
-		point[1] = y - viewRect.Top();
-		return point;
+		_tempPoint[0] = x - _viewRect.Left();
+		_tempPoint[1] = y - _viewRect.Top();
+		return _tempPoint;
 	}
 
 	public boolean canView(RectBox rect) {
-		return viewRect.contains(rect);
+		return _viewRect.contains(rect);
 	}
 
 	public boolean canView(int x, int y) {
-		return viewRect.contains(x, y);
+		return _viewRect.contains(x, y);
 	}
 
-	public void move(int dx, int dy) {
-		viewRect.offset(dx, dy);
+	public Director move(int dx, int dy) {
+		_viewRect.offset(dx, dy);
+		return this;
 	}
 
-	public void center(int x, int y, RectBox world) {
-		x -= (int) renderRect.getWidth() >> 1;
-		y -= (int) renderRect.getHeight() >> 1;
-		viewRect.offset(x, y);
-		CollisionHelper.confine(viewRect, world);
+	public Director center(int x, int y, RectBox world) {
+		x -= _renderRect.width() >> 1;
+		y -= _renderRect.height() >> 1;
+		_viewRect.offset(x, y);
+		CollisionHelper.confine(_viewRect, world);
+		return this;
 	}
 
 	public boolean isOrientationPortrait() {
-		if (viewRect.width <= viewRect.height) {
+		if (_viewRect.width <= _viewRect.height) {
 			return true;
 		} else {
 			return false;

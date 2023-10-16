@@ -24,6 +24,7 @@ import loon.action.ActionBind;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Picture;
 import loon.action.sprite.Sprite;
+import loon.action.sprite.TextureObject;
 import loon.component.Actor;
 import loon.component.LButton;
 import loon.component.LPaper;
@@ -66,6 +67,9 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 			break;
 		case Sprite:
 			_value = (T) new Sprite(texture, x, y);
+			break;
+		case Texture:
+			_value = (T) new TextureObject(x, y, texture);
 			break;
 		case Picture:
 			_value = (T) new Picture(texture, x, y);

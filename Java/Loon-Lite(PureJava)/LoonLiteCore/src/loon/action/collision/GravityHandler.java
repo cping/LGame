@@ -194,11 +194,22 @@ public class GravityHandler implements LRelease {
 				}
 				if (gravityObject.collided(g)) {
 					gravityObject._collisionObject = g;
-					if (gravityObject.velocityX > 1f) {
-						gravityObject.bind.setX(gravityObject.getX() - gravityObject.velocityX);
+					_velocityX = gravityObject.velocityX;
+					_velocityY = gravityObject.velocityY;
+					if (gravityObject.isMovingDown()) {
+						gravityObject.bounce = MathUtils.max(gravityObject.bounce, g.bounce);
+						if (gravityObject.bounce > 0f) {
+							gravityObject.bounce -= (gravityObject.bounce * delta);
+							_velocityY = +gravityObject.bounce;
+						} else {
+							gravityObject.bounce = 0f;
+						}
 					}
-					if (gravityObject.velocityY > 1f) {
-						gravityObject.bind.setY(gravityObject.getY() - gravityObject.velocityY);
+					if (_velocityX > 1f) {
+						gravityObject.bind.setX(gravityObject.getX() - _velocityX);
+					}
+					if (_velocityY > 1f) {
+						gravityObject.bind.setY(gravityObject.getY() - _velocityY);
 					}
 					if (isGravityListener) {
 						_gravitylistener.action(g, newX, newY);
@@ -208,6 +219,7 @@ public class GravityHandler implements LRelease {
 				}
 			}
 		}
+		gravityObject._collisionObject = null;
 		return (gravityObject._collisioning = false);
 	}
 
@@ -239,8 +251,9 @@ public class GravityHandler implements LRelease {
 				final float gravity = getGravity(g);
 
 				if (!g._collisioning) {
-					g.setOldPos(g.getX(), g.getY());
-					g.setOldRotation(g.getRotation());
+
+					g.initPosRotation();
+
 					if (syncActionBind) {
 						_bindX = g.bind.getX();
 						_bindY = g.bind.getY();
@@ -1002,7 +1015,7 @@ public class GravityHandler implements LRelease {
 		this._objectMaxSpeed = speed;
 		return this;
 	}
-	
+
 	public boolean isClosed() {
 		return _closed;
 	}
@@ -1029,6 +1042,5 @@ public class GravityHandler implements LRelease {
 		lazyObjects = null;
 		_closed = true;
 	}
-
 
 }

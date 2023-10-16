@@ -31,6 +31,8 @@ import loon.action.map.items.Attribute;
  */
 public abstract class ActionObject extends Entity implements Config {
 
+	protected int direction;
+
 	protected Attribute attribute;
 
 	protected Animation animation;
@@ -52,6 +54,7 @@ public abstract class ActionObject extends Entity implements Config {
 	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(animation == null ? null : animation.getSpriteImage(), x, y, dw, dh);
 		this.setTexture(animation.getSpriteImage());
+		this.direction = EMPTY;
 		this.tiles = map;
 		this.animation = animation;
 	}
@@ -102,6 +105,24 @@ public abstract class ActionObject extends Entity implements Config {
 		if (animation instanceof AnimationStorage) {
 			((AnimationStorage) animation).playIndex(index);
 		}
+		return this;
+	}
+
+	public int getDirection() {
+		return direction;
+	}
+
+	public ActionObject setDirection(int dir) {
+		this.direction = dir;
+		return this;
+	}
+
+	public TileMap getTiles() {
+		return tiles;
+	}
+
+	public ActionObject setTiles(TileMap tile) {
+		this.tiles = tile;
 		return this;
 	}
 

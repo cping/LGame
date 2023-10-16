@@ -23,6 +23,7 @@ package loon.action.collision;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.ActionBind;
+import loon.action.map.Side;
 import loon.geom.Circle;
 import loon.geom.Ellipse;
 import loon.geom.Line;
@@ -115,6 +116,12 @@ public class Gravity implements LRelease {
 		Shape shape = getShape();
 		_hitRect.setBounds(shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight());
 		return _hitRect;
+	}
+
+	protected void initPosRotation() {
+		Shape shape = getShape();
+		this.setOldPos(shape.getX(), shape.getY());
+		this.setOldRotation(shape.getRotation());
 	}
 
 	protected void setOldRotation(float angle) {
@@ -438,6 +445,53 @@ public class Gravity implements LRelease {
 
 	public boolean collided(Shape shape) {
 		return getShape().collided(shape);
+	}
+
+	public int getOppositeSide() {
+		return Side.getOppositeSide(getCollisionSide());
+	}
+
+	public int getCollisionSide() {
+		return getCollisionSide(_collisionObject);
+	}
+
+	public int getCollisionSide(Gravity g) {
+		if (g == null) {
+			return Side.EMPTY;
+		}
+		if (this.bind == null || g.bind == null) {
+			return Side.EMPTY;
+		}
+		return Side.getCollisionSide(this.bind.getRectBox(), g.bind.getRectBox());
+	}
+
+	public int getCollisionSidePos(Gravity g) {
+		return getCollisionSidePos(g, 1f);
+	}
+
+	public int getCollisionSidePos(Gravity g, float speed) {
+		if (g == null) {
+			return Side.EMPTY;
+		}
+		if (this.bind == null || g.bind == null) {
+			return Side.EMPTY;
+		}
+		return Side.getSideFromDirection(Vector2f.at(this.bind.getX(), this.bind.getY()),
+				Vector2f.at(g.bind.getX(), g.bind.getY()), speed);
+	}
+
+	public int getOverlapRect() {
+		return getCollisionSide(_collisionObject);
+	}
+
+	public RectBox getOverlapRect(Gravity g) {
+		if (g == null) {
+			return null;
+		}
+		if (this.bind == null || g.bind == null) {
+			return null;
+		}
+		return Side.getOverlapRect(this.bind.getRectBox(), g.bind.getRectBox());
 	}
 
 	public boolean hitInPath(float scale, Gravity other) {

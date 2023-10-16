@@ -203,14 +203,14 @@ public class Side implements Config {
 	}
 
 	public static int getSideFromDirection(Vector2f direction) {
-		return getSideFromDirection(Vector2f.ZERO(), direction, 1);
+		return getSideFromDirection(Vector2f.ZERO(), direction, 1f);
 	}
 
 	public static int getSideFromDirection(Vector2f initVector, Vector2f direction) {
-		return getSideFromDirection(initVector, direction, 1);
+		return getSideFromDirection(initVector, direction, 1f);
 	}
 
-	public static int getSideFromDirection(final Vector2f initVector, final Vector2f direction, final int val) {
+	public static int getSideFromDirection(final Vector2f initVector, final Vector2f direction, final float val) {
 		Vector2f[] directions = { initVector.move_left(val), initVector.move_right(val), initVector.move_up(val),
 				initVector.move_down(val) };
 		int[] directionEnum = { Side.TLEFT, Side.TRIGHT, Side.TUP, Side.TDOWN };

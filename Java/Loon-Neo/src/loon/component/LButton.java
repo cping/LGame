@@ -154,7 +154,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		if (!_clickException) {
 			this.setImageUI(buttons, true);
 		} else {
-			throw new LSysException("LButton setImages _clickException, buttons size =" + this.type);
+			throw new LSysException("LButton setImages exception, buttons size =" + this.type);
 		}
 		return this;
 	}
@@ -248,7 +248,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			try {
 				_function.call(this);
 			} catch (Throwable t) {
-				LSystem.error("LClickButton call() _clickException", t);
+				LSystem.error("LClickButton call() exception", t);
 			}
 		}
 		if (_onTouch.isPressed()) {

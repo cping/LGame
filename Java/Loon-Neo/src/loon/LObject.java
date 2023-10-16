@@ -27,6 +27,7 @@ import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.canvas.Alpha;
 import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
@@ -925,6 +926,35 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	public void setTag(Object t) {
 		this.Tag = t;
+	}
+
+	public int getOppositeSide(ActionBind spr) {
+		return Side.getOppositeSide(getCollisionSide(spr));
+	}
+
+	public int getCollisionSide(ActionBind spr) {
+		if (spr == null) {
+			return Side.EMPTY;
+		}
+		return Side.getCollisionSide(this.getCollisionArea(), spr.getRectBox());
+	}
+
+	public int getCollisionSidePos(ActionBind spr) {
+		return getCollisionSidePos(spr, 1f);
+	}
+
+	public int getCollisionSidePos(ActionBind spr, float speed) {
+		if (spr == null) {
+			return Side.EMPTY;
+		}
+		return Side.getSideFromDirection(Vector2f.at(getX(), getY()), Vector2f.at(spr.getX(), spr.getY()), speed);
+	}
+
+	public RectBox getOverlapRect(ActionBind spr) {
+		if (spr == null) {
+			return null;
+		}
+		return Side.getOverlapRect(this.getCollisionArea(), spr.getRectBox());
 	}
 
 	@Override

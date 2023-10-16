@@ -1167,6 +1167,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
+	public RectBox getCollisionArea() {
+		return getCollisionBox();
+	}
+	
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}

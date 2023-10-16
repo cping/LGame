@@ -219,6 +219,7 @@ public class GravityHandler implements LRelease {
 				}
 			}
 		}
+		gravityObject._collisionObject = null;
 		return (gravityObject._collisioning = false);
 	}
 

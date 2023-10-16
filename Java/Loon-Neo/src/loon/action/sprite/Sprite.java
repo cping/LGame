@@ -939,6 +939,11 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
+	public RectBox getCollisionArea() {
+		return getCollisionBox();
+	}
+	
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}

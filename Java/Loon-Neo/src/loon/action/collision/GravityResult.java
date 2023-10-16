@@ -76,7 +76,7 @@ public class GravityResult implements Poolable {
 		this.steps = s;
 		return this;
 	}
-
+	
 	@Override
 	public boolean equals(Object g) {
 		if (g == null) {

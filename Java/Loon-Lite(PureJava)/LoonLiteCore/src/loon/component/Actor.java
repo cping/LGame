@@ -783,11 +783,17 @@ public class Actor extends LObject<Actor>
 		this.setLocation(x, y);
 	}
 
+	@Override
+	public RectBox getCollisionArea() {
+		return getRectBox();
+	}
+
 	/**
 	 * 获得当前Actor碰撞盒
 	 * 
 	 * @return
 	 */
+	@Override
 	public RectBox getRectBox() {
 		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
 				_objectRect));

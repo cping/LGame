@@ -1118,6 +1118,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public RectBox getCollisionArea() {
+		return getCollisionBox();
+	}
+
+	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
 	}
