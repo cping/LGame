@@ -1271,5 +1271,4 @@ public class Actor extends LObject<Actor>
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
-
 }

@@ -34,9 +34,9 @@ public class Side implements Config {
 
 	public final static int BOTTOM = TDOWN;
 
-	private int _direction = EMPTY;
+	private final Vector2f _pos = new Vector2f();
 
-	private Vector2f _pos = new Vector2f();
+	private int _direction = EMPTY;
 
 	public Side() {
 		this(EMPTY);
@@ -47,7 +47,7 @@ public class Side implements Config {
 	}
 
 	protected void updateDirection() {
-		this._pos = Field2D.getDirection(_direction);
+		this._pos.set(Field2D.getDirection(_direction));
 	}
 
 	public int dx() {
@@ -56,6 +56,11 @@ public class Side implements Config {
 
 	public int dy() {
 		return this._pos.y();
+	}
+
+	public Vector2f updatePostion() {
+		updateDirection();
+		return this._pos;
 	}
 
 	public int getDirection() {

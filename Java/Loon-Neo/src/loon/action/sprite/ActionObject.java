@@ -20,18 +20,21 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.action.map.TileMap;
 import loon.action.map.items.Attribute;
+import loon.utils.StrBuilder;
 
 /**
  * 和瓦片地图绑定的动作对象,用来抽象一些简单的地图中精灵动作
  */
 public abstract class ActionObject extends Entity implements Config {
 
-	protected int direction;
+	private Side _currentSide;
 
 	protected Attribute attribute;
 
@@ -54,7 +57,7 @@ public abstract class ActionObject extends Entity implements Config {
 	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(animation == null ? null : animation.getSpriteImage(), x, y, dw, dh);
 		this.setTexture(animation.getSpriteImage());
-		this.direction = EMPTY;
+		this._currentSide = new Side();
 		this.tiles = map;
 		this.animation = animation;
 	}
@@ -98,6 +101,15 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
+	public Side getCurrentSide() {
+		return _currentSide;
+	}
+
+	public ActionObject setCurrentSide(int side) {
+		_currentSide.setDirection(side);
+		return this;
+	}
+
 	public ActionObject setIndex(int index) {
 		if (animation == null) {
 			return this;
@@ -109,11 +121,43 @@ public abstract class ActionObject extends Entity implements Config {
 	}
 
 	public int getDirection() {
-		return direction;
+		return _currentSide.getDirection();
 	}
 
 	public ActionObject setDirection(int dir) {
-		this.direction = dir;
+		this._currentSide.setDirection(dir);
+		return this;
+	}
+
+	public ActionObject updateLocation() {
+		this.setLocation(getLocation().add(this._currentSide.updatePostion()));
+		return this;
+	}
+
+	public ActionObject flipSide() {
+		if (_currentSide.getDirection() == Side.TLEFT || _currentSide.getDirection() == Side.TRIGHT) {
+			flipHorizontalSide();
+		} else {
+			flipVerticalSide();
+		}
+		return this;
+	}
+
+	public ActionObject flipHorizontalSide() {
+		if (_currentSide.getDirection() == Side.TRIGHT) {
+			_currentSide.setDirection(Side.TLEFT);
+		} else if (_currentSide.getDirection() == Side.TLEFT) {
+			_currentSide.setDirection(Side.TRIGHT);
+		}
+		return this;
+	}
+
+	private ActionObject flipVerticalSide() {
+		if (_currentSide.getDirection() == Side.TOP) {
+			_currentSide.setDirection(Side.BOTTOM);
+		} else if (_currentSide.getDirection() == Side.BOTTOM) {
+			_currentSide.setDirection(Side.TOP);
+		}
 		return this;
 	}
 
@@ -129,6 +173,22 @@ public abstract class ActionObject extends Entity implements Config {
 	@Override
 	public LTexture getBitmap() {
 		return animation.getSpriteImage();
+	}
+
+	@Override
+	public void toString(final StrBuilder s) {
+		s.append(super.toString());
+		s.append(LSystem.LS);
+		s.append(" [");
+		s.append(_currentSide);
+		s.append("]");
+	}
+
+	@Override
+	public String toString() {
+		final StrBuilder sbr = new StrBuilder();
+		this.toString(sbr);
+		return sbr.toString();
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import loon.action.ActionControl;
 import loon.action.ActionEvent;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.canvas.Alpha;
 import loon.component.layout.LayoutAlign;
 import loon.geom.RectBox;
@@ -259,7 +260,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	// 附注用的Tag标记对象(加上什么都可以,传参也行,标记对象也行)
 	public Object Tag = null;
 
-	private Object _collisionData = null;
+	private ActionBind _collisionData = null;
 
 	protected float _objectAlpha = 1f;
 
@@ -354,13 +355,6 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		}
 		this._previousRotation = this._objectRotation;
 		this._objectRotation = MathUtils.fixRotation(r);
-		if (_objectRect != null) {
-			_objectRect.setBounds(
-					MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r, _objectRect));
-		} else {
-			_objectRect = MathUtils.getBounds(_objectLocation.x, _objectLocation.y, getWidth(), getHeight(), r,
-					_objectRect);
-		}
 	}
 
 	public void rotateBy(float r) {
@@ -404,7 +398,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public RectBox getCollisionArea() {
-		return getRect(getX(), getY(), getWidth(), getHeight());
+		return setRect(MathUtils.getBounds(getX(), getY(), getWidth(), getHeight(), _objectRotation, _objectRect));
 	}
 
 	protected RectBox setRect(RectBox rect) {
@@ -883,11 +877,11 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return this;
 	}
 
-	public final void setCollisionData(Object data) {
+	public final void setCollisionData(ActionBind data) {
 		this._collisionData = data;
 	}
 
-	public final Object getCollisionData() {
+	public final ActionBind getCollisionData() {
 		return _collisionData;
 	}
 
@@ -923,8 +917,58 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return Tag;
 	}
 
-	public void setTag(Object t) {
+	public LObject<T> setTag(Object t) {
 		this.Tag = t;
+		return this;
+	}
+
+	public int getOppositeSide() {
+		return getOppositeSide(_collisionData);
+	}
+
+	public int getOppositeSide(ActionBind spr) {
+		return Side.getOppositeSide(getCollisionSide(spr));
+	}
+
+	public int getCollisionSide() {
+		return getCollisionSide(_collisionData);
+	}
+
+	public int getCollisionSide(ActionBind spr) {
+		if (spr == null) {
+			return Side.EMPTY;
+		}
+		return Side.getCollisionSide(this.getCollisionArea(), spr.getRectBox());
+	}
+
+	public int getCollisionSidePos() {
+		return getCollisionSidePos(_collisionData);
+	}
+
+	public int getCollisionSidePos(float speed) {
+		return getCollisionSidePos(_collisionData, speed);
+	}
+
+	public int getCollisionSidePos(ActionBind spr) {
+		return getCollisionSidePos(spr, 1f);
+	}
+
+	public int getCollisionSidePos(ActionBind spr, float speed) {
+		if (spr == null) {
+			return Side.EMPTY;
+		}
+		return Side.getSideFromDirection(Vector2f.at(getX(), getY()), Vector2f.at(spr.getX(), spr.getY()), speed);
+	}
+
+	public RectBox getOverlapRect() {
+		return getOverlapRect(_collisionData);
+	}
+
+	public RectBox getOverlapRect(ActionBind spr) {
+		if (spr == null) {
+			return null;
+		}
+		return Side.getOverlapRect(this.getCollisionArea(), spr.getRectBox());
 	}
 
 	@Override

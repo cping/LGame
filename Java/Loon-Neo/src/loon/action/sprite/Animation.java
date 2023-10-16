@@ -685,6 +685,10 @@ public class Animation implements IArray, LRelease {
 		reset();
 	}
 
+	public boolean hasAnimation() {
+		return !this.isEmpty();
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return this.length == 0;

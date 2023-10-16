@@ -20,7 +20,14 @@
  */
 package loon.action.collision;
 
-public class CollisionNode {
+import loon.action.ActionBind;
+import loon.action.ActionTween;
+import loon.action.map.Field2D;
+import loon.canvas.LColor;
+import loon.geom.RectBox;
+import loon.utils.MathUtils;
+
+public class CollisionNode implements ActionBind {
 
 	private CollisionObject _actor;
 
@@ -103,5 +110,151 @@ public class CollisionNode {
 			_prev = null;
 		}
 		return this;
+	}
+
+	@Override
+	public Field2D getField2D() {
+		return null;
+	}
+
+	@Override
+	public void setVisible(boolean v) {
+
+	}
+
+	@Override
+	public boolean isVisible() {
+		return false;
+	}
+
+	@Override
+	public int x() {
+		return MathUtils.ifloor(_actor.getX());
+	}
+
+	@Override
+	public int y() {
+		return MathUtils.ifloor(_actor.getY());
+	}
+
+	@Override
+	public float getX() {
+		return _actor.getX();
+	}
+
+	@Override
+	public float getY() {
+		return _actor.getY();
+	}
+
+	@Override
+	public float getScaleX() {
+		return 1f;
+	}
+
+	@Override
+	public float getScaleY() {
+		return 1f;
+	}
+
+	@Override
+	public void setColor(LColor color) {
+
+	}
+
+	@Override
+	public LColor getColor() {
+		return null;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+	}
+
+	@Override
+	public float getRotation() {
+		return 0f;
+	}
+
+	@Override
+	public void setRotation(float r) {
+	}
+
+	@Override
+	public float getWidth() {
+		return _actor.getWidth();
+	}
+
+	@Override
+	public float getHeight() {
+		return _actor.getHeight();
+	}
+
+	@Override
+	public ActionBind setSize(float w, float h) {
+		return this;
+	}
+
+	@Override
+	public float getAlpha() {
+		return 0;
+	}
+
+	@Override
+	public void setAlpha(float alpha) {
+	}
+
+	@Override
+	public void setLocation(float x, float y) {
+	}
+
+	@Override
+	public void setX(float x) {
+
+	}
+
+	@Override
+	public void setY(float y) {
+
+	}
+
+	@Override
+	public boolean isBounded() {
+		return false;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return false;
+	}
+
+	@Override
+	public boolean inContains(float x, float y, float w, float h) {
+		return _actor.getRectBox().contains(x, y, w, h);
+	}
+
+	@Override
+	public RectBox getRectBox() {
+		return _actor.getRectBox();
+	}
+
+	@Override
+	public float getContainerWidth() {
+		return 0;
+	}
+
+	@Override
+	public float getContainerHeight() {
+		return 0;
+	}
+
+	@Override
+	public ActionTween selfAction() {
+		return null;
+	}
+
+	@Override
+	public boolean isActionCompleted() {
+		return false;
 	}
 }

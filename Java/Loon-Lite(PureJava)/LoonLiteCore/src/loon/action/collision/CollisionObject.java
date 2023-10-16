@@ -20,6 +20,7 @@
  */
 package loon.action.collision;
 
+import loon.action.ActionBind;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 
@@ -27,9 +28,9 @@ public interface CollisionObject {
 
 	public RectBox getBoundingRect();
 
-	public void setCollisionData(Object data);
+	public void setCollisionData(ActionBind data);
 
-	public Object getCollisionData();
+	public ActionBind getCollisionData();
 
 	public boolean containsPoint(float x, float y);
 
