@@ -98,8 +98,8 @@ public class Point extends Shape {
 		if (points == null) {
 			points = new float[2];
 		}
-		points[0] = getX();
-		points[1] = getY();
+		points[0] = this.x;
+		points[1] = this.y;
 
 		maxX = x;
 		maxY = y;

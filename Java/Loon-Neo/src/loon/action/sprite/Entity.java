@@ -34,6 +34,7 @@ import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.PlaceActions;
 import loon.action.collision.CollisionHelper;
+import loon.action.collision.CollisionMask;
 import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
@@ -46,8 +47,10 @@ import loon.geom.Circle;
 import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
+import loon.geom.Point;
 import loon.geom.RectBox;
 import loon.geom.Shape;
+import loon.geom.ShapeNodeType;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -123,6 +126,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	private boolean _stopUpdate = false;
 
 	private Sprites _sprites = null;
+
+	private Shape _otherShape = null;
+
+	private float _oldShapeRectX, _oldShapeRectY, _oldShapeRectW, _oldShapeRectH;
+
+	private ShapeNodeType _oldNodeType;
 
 	protected float _width, _height;
 
@@ -1956,6 +1965,52 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
+	public Shape getShape() {
+		return getShape(ShapeNodeType.Rectangle);
+	}
+
+	public Shape getShape(ShapeNodeType nodeType) {
+		final RectBox rect = getCollisionBox();
+		if (_oldShapeRectX == rect.x && _oldShapeRectY == rect.y && _oldShapeRectW == rect.width
+				&& _oldShapeRectH == rect.height && _oldNodeType == nodeType && _otherShape != null) {
+			return _otherShape;
+		}
+		_oldShapeRectX = rect.x;
+		_oldShapeRectY = rect.y;
+		_oldShapeRectW = rect.width;
+		_oldShapeRectH = rect.height;
+		_oldNodeType = nodeType;
+		switch (nodeType) {
+		case Rectangle:
+		default:
+			_otherShape = rect;
+			break;
+		case Circle:
+			_otherShape = Circle.rect(rect.x, rect.y, rect.width, rect.height);
+			break;
+		case Ellipse:
+			_otherShape = Ellipse.rect(rect.x, rect.y, rect.width, rect.height);
+			break;
+		case Polygon:
+			if (_image != null) {
+				_otherShape = CollisionMask.makePolygon(_image.getImage()).setLocation(rect.x, rect.y);
+			} else {
+				_otherShape = rect;
+			}
+			break;
+		case Line:
+			_otherShape = Line.rect(rect.x, rect.y, rect.width, rect.height);
+			break;
+		case Triangle:
+			_otherShape = Triangle2f.at(rect.x, rect.y, rect.width, rect.height);
+			break;
+		case Point:
+			_otherShape = new Point(rect.x, rect.y);
+			break;
+		}
+		return _otherShape;
+	}
+
 	@Override
 	public void close() {
 		if (!isDisposed()) {
@@ -1966,6 +2021,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		_stopUpdate = false;
 		_resizeListener = null;
+		_otherShape = null;
+		_oldNodeType = null;
 		setState(State.DISPOSED);
 		removeChildren();
 		removeActionEvents(this);

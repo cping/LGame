@@ -122,6 +122,10 @@ public class Line extends Shape {
 		return new Line(x1, y1, x2, y2);
 	}
 
+	public final static Line rect(float x, float y, float w, float h) {
+		return new Line(x, y, w + x, h + y);
+	}
+
 	private final Vector2f _currentStart = Vector2f.ZERO();
 
 	private final Vector2f _currentEnd = Vector2f.ZERO();
@@ -231,6 +235,14 @@ public class Line extends Shape {
 	}
 
 	public Line set(float sx, float sy, float ex, float ey) {
+		if (ex < sx) {
+			float temp = sx;
+			sx = ex;
+			ex = temp;
+			temp = sy;
+			sy = ey;
+			ey = temp;
+		}
 		super.pointsDirty = true;
 		this._currentStart.set(sx, sy);
 		this._currentEnd.set(ex, ey);
