@@ -24,7 +24,7 @@ import loon.action.ActionBind;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 
-public interface CollisionObject {
+public interface CollisionObject extends ActionBind {
 
 	public RectBox getBoundingRect();
 

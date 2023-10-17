@@ -188,40 +188,57 @@ public class Circle extends Ellipse {
 		return boundingCircleRadius * boundingCircleRadius - (dx * dx + dy * dy);
 	}
 
-	public boolean containCircle(Circle c) {
-		float dx = x - c.x;
-		float dy = y - c.y;
+	@Override
+	public boolean collided(Shape s) {
+		if (s == null) {
+			return false;
+		}
+		if (s instanceof Circle) {
+			return collided((Circle) s);
+		}
+		if (s instanceof RectBox) {
+			return collided((RectBox) s);
+		}
+		return super.collided(s);
+	}
+
+	public boolean collided(Circle c) {
+		float dx = this.getCenterX() - c.getCenterX();
+		float dy = this.getCenterY() - c.getCenterY();
 		return dx * dx + dy * dy < (boundingCircleRadius + c.boundingCircleRadius)
 				* (boundingCircleRadius + c.boundingCircleRadius);
 	}
 
-	public boolean containBounds(RectBox size) {
-		float radiusDouble = boundingCircleRadius * boundingCircleRadius;
-		if (x < size.getX() - boundingCircleRadius) {
+	public boolean collided(RectBox size) {
+		final float radiusDouble = boundingCircleRadius * boundingCircleRadius;
+		final float centerX = getCenterX();
+		final float centerY = getCenterY();
+		if (centerX < size.getX() - boundingCircleRadius) {
 			return false;
 		}
-		if (x > size.getBottom() + boundingCircleRadius) {
+		if (centerX > size.getBottom() + boundingCircleRadius) {
 			return false;
 		}
-		if (y < size.getY() - boundingCircleRadius) {
+		if (centerY < size.getY() - boundingCircleRadius) {
 			return false;
 		}
-		if (y > size.getBottom() + boundingCircleRadius) {
+		if (centerY > size.getBottom() + boundingCircleRadius) {
 			return false;
 		}
-		if (x < size.getX() && y < size.getY() && MathUtils.distance(x - size.getX(), y - size.getY()) > radiusDouble) {
+		if (centerX < size.getX() && centerY < size.getY()
+				&& MathUtils.distance(centerX - size.getX(), centerY - size.getY()) > radiusDouble) {
 			return false;
 		}
-		if (x > size.getRight() && y < size.getY()
-				&& MathUtils.distance(x - size.getRight(), y - size.getY()) > radiusDouble) {
+		if (centerX > size.getRight() && centerY < size.getY()
+				&& MathUtils.distance(centerX - size.getRight(), centerY - size.getY()) > radiusDouble) {
 			return false;
 		}
-		if (x < size.getX() && y > size.getBottom()
-				&& MathUtils.distance(x - size.getX(), y - size.getBottom()) > radiusDouble) {
+		if (centerX < size.getX() && centerY > size.getBottom()
+				&& MathUtils.distance(centerX - size.getX(), centerY - size.getBottom()) > radiusDouble) {
 			return false;
 		}
-		if (x > size.getRight() && y > size.getBottom()
-				&& MathUtils.distance(x - size.getRight(), y - size.getBottom()) > radiusDouble) {
+		if (centerX > size.getRight() && centerY > size.getBottom()
+				&& MathUtils.distance(centerX - size.getRight(), centerY - size.getBottom()) > radiusDouble) {
 			return false;
 		}
 		return true;
@@ -260,27 +277,27 @@ public class Circle extends Ellipse {
 			return false;
 		}
 		final float r2 = this.boundingCircleRadius * this.boundingCircleRadius;
-		float dx = (this.x - x);
-		float dy = (this.y - y);
+		float dx = (this.getCenterX() - x);
+		float dy = (this.getCenterY() - y);
 		dx *= dx;
 		dy *= dy;
 		return (dx + dy <= r2);
 	}
 
-	public boolean contains(Circle c) {
+	public boolean containCircles(Circle c) {
 		final float radiusDiff = boundingCircleRadius - c.boundingCircleRadius;
 		if (radiusDiff < 0f) {
 			return false;
 		}
-		final float dx = x - c.x;
-		final float dy = y - c.y;
+		final float dx = getCenterX() - c.getCenterX();
+		final float dy = getCenterY() - c.getCenterY();
 		final float dst = dx * dx + dy * dy;
 		final float radiusSum = boundingCircleRadius + c.boundingCircleRadius;
 		return (!(radiusDiff * radiusDiff < dst) && (dst < radiusSum * radiusSum));
 	}
 
 	public boolean overlaps(Circle c) {
-		return contains(c);
+		return collided(c);
 	}
 
 	/**
@@ -299,7 +316,7 @@ public class Circle extends Ellipse {
 	@Override
 	public boolean contains(Shape other) {
 		if (other instanceof Circle) {
-			return contains((Circle) other);
+			return containCircles((Circle) other);
 		}
 		return super.contains(other);
 	}

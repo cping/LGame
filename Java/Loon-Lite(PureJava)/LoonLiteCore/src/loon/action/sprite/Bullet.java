@@ -24,7 +24,6 @@ import loon.LObject;
 import loon.LRelease;
 import loon.LTexture;
 import loon.PlayerUtils;
-import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
@@ -44,7 +43,7 @@ import loon.utils.timer.LTimerContext;
  * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
  * 
  */
-public class Bullet extends LObject<Bullet> implements CollisionObject, ActionBind, LRelease {
+public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease {
 
 	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
 

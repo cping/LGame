@@ -89,6 +89,46 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return AXIS_Y();
 	}
 
+	public final static Vector2f bezierLerp(float alpha, Vector2f... points) {
+		if (points.length < 2) {
+			return points[0];
+		}
+		final Vector2f[] next = new Vector2f[points.length - 1];
+		for (int i = 0; i < next.length; i++) {
+			next[i] = lerp(points[i], points[i + 1], alpha);
+		}
+		return bezierLerp(alpha, next);
+	}
+
+	public final static Vector2f[] getBezierPoints(int count, Vector2f... points) {
+		final Vector2f[] p1 = new Vector2f[count];
+		p1[0] = new Vector2f(points[0]);
+		for (int i = 1; i < count - 1; i++) {
+			p1[i] = bezierLerp((float) i / count, points);
+		}
+		p1[count - 1] = new Vector2f(points[points.length - 1]);
+		return p1;
+	}
+
+	public final static Vector2f reflect(Vector2f ri, Vector2f normal) {
+		final Vector2f normalized = nor(normal);
+		final float product = dot(ri, normalized);
+		final Vector2f n = mult(normalized, product);
+		return sub(ri, n.mulSelf(2));
+	}
+
+	public static Vector2f bounce(Vector2f ri, Vector2f normal, float restitution, float friction) {
+		friction = 1f - friction;
+		final Vector2f normalized = nor(normal);
+		final Vector2f axis = normalized.right();
+		final float rest = dot(ri, normalized);
+		final float fric = dot(ri, axis);
+		final Vector2f result = Vector2f.ZERO();
+		result.subtractSelf(normalized.x * rest * restitution, normalized.y * rest * restitution);
+		result.addSelf(axis.x * fric * friction, axis.y * fric * friction);
+		return result;
+	}
+
 	public final static float angleTo(Vector2f pos) {
 		float theta = MathUtils.toDegrees(MathUtils.atan2(pos.y, pos.x));
 		if ((theta < -360) || (theta > 360)) {

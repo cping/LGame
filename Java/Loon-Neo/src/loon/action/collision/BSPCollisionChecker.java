@@ -510,7 +510,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 						if (res != null) {
 							return res;
 						}
-			
+
 						BSPCollisionNode left = node.getLeft();
 						BSPCollisionNode right = node.getRight();
 						if (left != null) {
@@ -526,7 +526,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
-	private CollisionObject getOnlyIntersectingDown(RectBox r, CollisionQuery query, CollisionObject actor) {
+	private CollisionObject getOnlyIntersectingDown(RectBox rect, CollisionQuery query, CollisionObject actor) {
+		return getOnlyIntersectingDown(rect.x, rect.y, rect.width, rect.height, query, actor);
+	}
+
+	private CollisionObject getOnlyIntersectingDown(float x, float y, float w, float h, CollisionQuery query,
+			CollisionObject actor) {
 		if (this.bspTree == null) {
 			return null;
 		} else {
@@ -536,7 +541,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				int idx = 0;
 				for (; cacheNodeStack.size() != 0 && idx < MAX_SIZE;) {
 					BSPCollisionNode node = (BSPCollisionNode) cacheNodeStack.removeLast();
-					if (node.getArea().intersects(r)) {
+					if (node.getArea().intersects(x, y, w, h)) {
 						CollisionObject res = this.checkForOnlyCollision(actor, node, query);
 						if (res != null) {
 							return res;
@@ -557,9 +562,14 @@ public class BSPCollisionChecker implements CollisionChecker {
 		}
 	}
 
-	private CollisionObject getOnlyIntersectingUp(RectBox r, CollisionQuery query, CollisionObject actor,
+	private CollisionObject getOnlyIntersectingUp(RectBox rect, CollisionQuery query, CollisionObject actor,
 			BSPCollisionNode start) {
-		for (; start != null && !start.getArea().intersects(r);) {
+		return getOnlyIntersectingUp(rect.x, rect.y, rect.width, rect.height, query, actor, start);
+	}
+
+	private CollisionObject getOnlyIntersectingUp(float x, float y, float w, float h, CollisionQuery query,
+			CollisionObject actor, BSPCollisionNode start) {
+		for (; start != null && !start.getArea().intersects(x, y, w, h);) {
 			CollisionObject res = this.checkForOnlyCollision(actor, start, query);
 			if (res != null) {
 				return res;
@@ -647,12 +657,12 @@ public class BSPCollisionChecker implements CollisionChecker {
 			float px = dx * this.cellSizeX + this.cellSizeX / 2f;
 			float py = dy * this.cellSizeY + this.cellSizeY / 2f;
 			this.pointQuery.init(px, py, flag, _offsetLocation);
-			Object query = this.pointQuery;
+			CollisionQuery query = this.pointQuery;
 			if (flag != null) {
 				query = new CollisionClassQuery(flag, this.pointQuery, this._offsetLocation);
 			}
 			return getInTheLayerObject(obj.getLayer(),
-					this.getOnlyIntersectingDown(new RectBox(px, py, 1, 1), (CollisionQuery) query, obj));
+					this.getOnlyIntersectingDown(px, py, 1, 1, (CollisionQuery) query, obj));
 		}
 	}
 

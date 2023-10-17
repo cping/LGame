@@ -25,7 +25,6 @@ import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
-import loon.utils.MathUtils;
 
 public class CollisionNode implements ActionBind {
 
@@ -114,27 +113,27 @@ public class CollisionNode implements ActionBind {
 
 	@Override
 	public Field2D getField2D() {
-		return null;
+		return _actor.getField2D();
 	}
 
 	@Override
 	public void setVisible(boolean v) {
-
+		_actor.setVisible(v);
 	}
 
 	@Override
 	public boolean isVisible() {
-		return false;
+		return _actor.isVisible();
 	}
 
 	@Override
 	public int x() {
-		return MathUtils.ifloor(_actor.getX());
+		return _actor.x();
 	}
 
 	@Override
 	public int y() {
-		return MathUtils.ifloor(_actor.getY());
+		return _actor.y();
 	}
 
 	@Override
@@ -149,35 +148,37 @@ public class CollisionNode implements ActionBind {
 
 	@Override
 	public float getScaleX() {
-		return 1f;
+		return _actor.getScaleX();
 	}
 
 	@Override
 	public float getScaleY() {
-		return 1f;
+		return _actor.getScaleY();
 	}
 
 	@Override
 	public void setColor(LColor color) {
-
+		_actor.setColor(color);
 	}
 
 	@Override
 	public LColor getColor() {
-		return null;
+		return _actor.getColor();
 	}
 
 	@Override
 	public void setScale(float sx, float sy) {
+		_actor.setScale(sx, sy);
 	}
 
 	@Override
 	public float getRotation() {
-		return 0f;
+		return _actor.getRotation();
 	}
 
 	@Override
 	public void setRotation(float r) {
+		_actor.setRotation(r);
 	}
 
 	@Override
@@ -192,45 +193,48 @@ public class CollisionNode implements ActionBind {
 
 	@Override
 	public ActionBind setSize(float w, float h) {
+		_actor.setSize(w, h);
 		return this;
 	}
 
 	@Override
 	public float getAlpha() {
-		return 0;
+		return _actor.getAlpha();
 	}
 
 	@Override
 	public void setAlpha(float alpha) {
+		_actor.setAlpha(alpha);
 	}
 
 	@Override
 	public void setLocation(float x, float y) {
+		_actor.setLocation(x, y);
 	}
 
 	@Override
 	public void setX(float x) {
-
+		_actor.setX(x);
 	}
 
 	@Override
 	public void setY(float y) {
-
+		_actor.setY(y);
 	}
 
 	@Override
 	public boolean isBounded() {
-		return false;
+		return _actor.isBounded();
 	}
 
 	@Override
 	public boolean isContainer() {
-		return false;
+		return _actor.isContainer();
 	}
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		return _actor.getRectBox().contains(x, y, w, h);
+		return _actor.inContains(x, y, w, h);
 	}
 
 	@Override
@@ -240,21 +244,21 @@ public class CollisionNode implements ActionBind {
 
 	@Override
 	public float getContainerWidth() {
-		return 0;
+		return _actor.getContainerWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return 0;
+		return _actor.getContainerHeight();
 	}
 
 	@Override
 	public ActionTween selfAction() {
-		return null;
+		return _actor.selfAction();
 	}
 
 	@Override
 	public boolean isActionCompleted() {
-		return false;
+		return _actor.isActionCompleted();
 	}
 }
