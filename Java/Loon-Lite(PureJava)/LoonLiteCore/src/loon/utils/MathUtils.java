@@ -459,7 +459,7 @@ public final class MathUtils {
 		}
 		return !allowSigns && foundDigit;
 	}
-
+    
 	public static boolean isNumber(CharSequence num) {
 		if (StringUtils.isEmpty(num)) {
 			return false;

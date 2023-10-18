@@ -198,6 +198,10 @@ public class Line extends Shape {
 				Config.EMPTY);
 	}
 
+	public Vector2f getSubDirection() {
+		return _currentEnd.sub(_currentStart);
+	}
+
 	@Override
 	public float length() {
 		return MathUtils.sqrt((getX2() - getX1()) * (getX2() - getX1()) + (getY2() - getY1()) * (getY2() - getY1()));
@@ -700,6 +704,40 @@ public class Line extends Shape {
 			}
 		}
 		return false;
+	}
+
+	public Intersection intersection(Line other) {
+
+		final Vector2f pos = Vector2f.ZERO();
+
+		final Vector2f start = other.getStart();
+		final Vector2f end = other.getEnd();
+
+		final float bxax = (_currentEnd.x - _currentStart.x);
+		final float byay = (_currentEnd.y - _currentStart.y);
+		final float dycy = (end.y - start.y);
+		final float dxcx = (end.x - start.x);
+
+		final float denom = dycy * bxax - dxcx * byay;
+
+		if (denom == 0) {
+			return new Intersection(this, other, null, false);
+		}
+		final float axcx = (_currentStart.x - start.x);
+		final float aycy = (_currentStart.y - start.y);
+
+		float ua = dxcx * aycy - dycy * axcx;
+		ua /= denom;
+		float ub = bxax * aycy - byay * axcx;
+		ub /= denom;
+
+		pos.x = _currentStart.x + ua * bxax;
+		pos.y = _currentStart.y + ua * byay;
+
+		if (ua >= 0 && ua < 1 && ub >= 0 && ub < 1) {
+			return new Intersection(this, other, pos, true);
+		}
+		return new Intersection(this, other, null, false);
 	}
 
 	public boolean equals(Line e) {

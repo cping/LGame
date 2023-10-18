@@ -35,6 +35,23 @@ public class Polygon extends Shape implements BoxSize {
 	 */
 	private static final long serialVersionUID = 7491444927273846690L;
 
+	public final static Polygon rect(float x, float y, float w, float h) {
+		return rect(Vector2f.at(x + w / 2f, y + h / 2f), Vector2f.at(w / 2f, h / 2f));
+	}
+
+	public final static Polygon rect(XY center, Vector2f size) {
+		if (center == null) {
+			center = Vector2f.ZERO();
+		}
+		if (size == null) {
+			size = Vector2f.ZERO();
+		}
+		return new Polygon(new Vector2f(center.getX() - size.x, center.getY() - size.y),
+				new Vector2f(center.getX() + size.x, center.getY() - size.y),
+				new Vector2f(center.getX() + size.x, center.getY() + size.y),
+				new Vector2f(center.getX() - size.x, center.getY() + size.y));
+	}
+
 	public final static TArray<Vector2f> offsetPolygon(float[] points, float offset) {
 		final TArray<Vector2f> offsetPoints = new TArray<Vector2f>();
 		final int length = points.length;
@@ -119,6 +136,10 @@ public class Polygon extends Shape implements BoxSize {
 	private boolean allowDups = false;
 
 	private boolean closed = true;
+
+	public Polygon(Vector2f... vs) {
+		this(new TArray<Vector2f>(vs));
+	}
 
 	public Polygon(TArray<Vector2f> vectors) {
 		if (vectors == null || vectors.size < 0) {
@@ -417,6 +438,116 @@ public class Polygon extends Shape implements BoxSize {
 
 	public Polygon getOffsetPolygon(float offset) {
 		return new Polygon(offsetPolygon(getPoints(), offset));
+	}
+
+	public Vector2f distance(Vector2f point) {
+		return distance(point, true);
+	}
+
+	public Vector2f distance(Vector2f point, boolean inside) {
+		boolean outside = false;
+		float minV = Float.MAX_VALUE;
+		Vector2f minN = Vector2f.ZERO();
+		final TArray<Vector2f> vertices = getVertices();
+		int next = 0;
+		for (int current = 0; current < vertices.size; current++) {
+			next = current + 1;
+			if (next == vertices.size) {
+				next = 0;
+			}
+			final Vector2f src = vertices.get(current);
+			final Vector2f dst = vertices.get(next);
+			final Vector2f edge = dst.sub(src);
+			float len = edge.length();
+			Vector2f normal = edge.left();
+			edge.normalizeSelf();
+			normal.normalizeSelf();
+			Vector2f apos = point.sub(src);
+			float dist = normal.dot(apos);
+			float edist = edge.dot(apos);
+			edge.normalizeSelf();
+			if (MathUtils.abs(dist) < MathUtils.abs(minV) && edist > 0 && edist < len) {
+				minV = dist;
+				minN = normal;
+				minN.mulSelf(dist);
+			}
+			if (dist > 0) {
+				outside = true;
+			}
+		}
+		for (int i = 0; i < vertices.size; i++) {
+			Vector2f pos = vertices.get(i);
+			float dist = point.dist(pos);
+			if (outside && dist < MathUtils.abs(minV)) {
+				minV = dist;
+				minN = point.sub(pos);
+				minN.normalizeSelf();
+				minN.mulSelf(dist);
+			}
+		}
+		if (inside) {
+			if (!outside || minV < 0) {
+				return minN;
+			}
+			return Vector2f.ZERO();
+		} else if (!outside || minV < 0) {
+			return Vector2f.ZERO();
+		}
+		return minN;
+	}
+
+	public float intersection(Vector2f point) {
+		float minDist = Float.MAX_VALUE;
+		final TArray<Vector2f> vertices = getVertices();
+		for (int i = 1; i < vertices.size; i++) {
+			Vector2f normal = vertices.get(i).sub(vertices.get(i - 1)).left();
+			normal.normalizeSelf();
+			Vector2f relPoint = point.sub(vertices.get(i - 1));
+			float dist = normal.dot(relPoint);
+			if (dist > 0) {
+				return 1f;
+			}
+			if (dist < minDist) {
+				minDist = dist;
+			}
+		}
+		final Vector2f normal = vertices.get(0).sub(vertices.get(vertices.size - 1)).left();
+		final Vector2f relPoint = point.sub(vertices.get(vertices.size - 1));
+		float dist = normal.dot(relPoint);
+		if (dist > 0) {
+			return 1f;
+		}
+		if (dist < minDist) {
+			minDist = dist;
+		}
+		return minDist;
+	}
+
+	public Vector2f intersection(Line line) {
+		final Vector2f dir = line.getSubDirection();
+		Vector2f point = null;
+		Line edge = new Line();
+		final TArray<Vector2f> vertices = getVertices();
+		int next = 0;
+		for (int current = 0; current < vertices.size; current++) {
+			next = current + 1;
+			if (next == vertices.size) {
+				next = 0;
+			}
+			final Vector2f src = vertices.get(current);
+			final Vector2f dst = vertices.get(next);
+			float min_dot = Float.POSITIVE_INFINITY;
+			edge.set(src, dst);
+			Intersection ins = edge.intersection(line);
+			if (ins.intersected) {
+				final float dot = ins.point.sub(line.getStart()).dot(dir);
+				if (dot < min_dot) {
+					min_dot = dot;
+					point = ins.point;
+				}
+			}
+		}
+		return point;
 	}
 
 	@Override

@@ -15,7 +15,7 @@ public class SpriteBatchTest extends Screen {
 		return LTransition.newEmpty();
 	}
 
-	private LTexture texture = LTexture.createTexture("ball.png");
+	private LTexture texture;
 
 	@Override
 	public void draw(GLEx g) {
@@ -28,7 +28,7 @@ public class SpriteBatchTest extends Screen {
 
 	@Override
 	public void onLoad() {
-
+		texture = LTexture.createTexture("ball.png");
 		add(MultiScreenTest.getBackButton(this,0));
 	}
 

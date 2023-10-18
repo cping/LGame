@@ -662,4 +662,24 @@ public class ShapeUtils {
 		return lenSq;
 	}
 
+	/**
+	 * 将点投射到直线位置上并返回结果
+	 * 
+	 * @param slopeOfLine
+	 * @param interceptOfLineY
+	 * @param point
+	 * @return
+	 */
+	public static final Vector2f projectPointToLine(float slopeOfLine, float interceptOfLineY, XY point) {
+		float perpendicularSlope = -1 / slopeOfLine;
+		float boundSize = point.getY() - (perpendicularSlope * point.getX());
+		float x = (boundSize - interceptOfLineY) / (slopeOfLine - perpendicularSlope);
+		float y = (slopeOfLine * x) + interceptOfLineY;
+		float v = MathUtils.abs(slopeOfLine);
+		if (v == 0) {
+			x = point.getX();
+			y = interceptOfLineY;
+		}
+		return new Vector2f(x, y);
+	}
 }

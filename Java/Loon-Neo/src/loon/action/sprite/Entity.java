@@ -39,6 +39,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.action.sprite.Sprites.Created;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
@@ -48,6 +49,7 @@ import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
 import loon.geom.Point;
+import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.ShapeNodeType;
@@ -1975,11 +1977,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				&& _oldShapeRectH == rect.height && _oldNodeType == nodeType && _otherShape != null) {
 			return _otherShape;
 		}
-		_oldShapeRectX = rect.x;
-		_oldShapeRectY = rect.y;
-		_oldShapeRectW = rect.width;
-		_oldShapeRectH = rect.height;
-		_oldNodeType = nodeType;
 		switch (nodeType) {
 		case Rectangle:
 		default:
@@ -1993,9 +1990,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			break;
 		case Polygon:
 			if (_image != null) {
-				_otherShape = CollisionMask.makePolygon(_image.getImage()).setLocation(rect.x, rect.y);
+				Image img = _image.getImage();
+				if (img != null) {
+					_otherShape = CollisionMask.makePolygon(img).setLocation(rect.x, rect.y);
+				} else if (!_image.isImageCanvas()) {
+					_otherShape = CollisionMask.makePolygon(_image.getSource()).setLocation(rect.x, rect.y);
+				} else {
+					int[] pixels = _image.getPixels();
+					if (pixels != null) {
+						_otherShape = CollisionMask.makePolygon(pixels, _image.getWidth(), _image.getHeight())
+								.setLocation(rect.x, rect.y);
+					} else {
+						_otherShape = Polygon.rect(rect.x, rect.y, rect.width, rect.height);
+					}
+				}
 			} else {
-				_otherShape = rect;
+				_otherShape = Polygon.rect(rect.x, rect.y, rect.width, rect.height);
 			}
 			break;
 		case Line:
@@ -2008,6 +2018,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			_otherShape = new Point(rect.x, rect.y);
 			break;
 		}
+		_oldShapeRectX = rect.x;
+		_oldShapeRectY = rect.y;
+		_oldShapeRectW = rect.width;
+		_oldShapeRectH = rect.height;
+		_oldNodeType = nodeType;
 		return _otherShape;
 	}
 

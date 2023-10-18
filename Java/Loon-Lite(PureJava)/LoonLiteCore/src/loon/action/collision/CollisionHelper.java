@@ -1394,6 +1394,24 @@ public final class CollisionHelper extends ShapeUtils {
 		return false;
 	}
 
+	public static boolean pointIntersection(Vector2f min1Values, Vector2f max1Values, Vector2f min2Values,
+			Vector2f max2Values, Vector2f overlap) {
+		overlap.setZero();
+		final float overlapX1 = max1Values.getX() - min2Values.getX();
+		final float overlapX2 = max2Values.getX() - min1Values.getX();
+		if (overlapX1 < 0 || overlapX2 < 0) {
+			return false;
+		}
+		final float overlapY1 = max1Values.getY() - min2Values.getY();
+		final float overlapY2 = max2Values.getY() - min1Values.getY();
+		if (overlapY1 < 0 || overlapY2 < 0) {
+			return false;
+		}
+		overlap.setX(MathUtils.min(overlapX1, overlapX2));
+		overlap.setY(MathUtils.min(overlapY1, overlapY2));
+		return true;
+	}
+
 	/**
 	 * 填充指定瓦片的边界。瓦片从左到右，从上到下。
 	 * 

@@ -109,6 +109,7 @@ import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.StringKeyValue;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 import loon.utils.processes.Coroutine;
 import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
@@ -5797,6 +5798,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public boolean isDesktopSortableChildren() {
 		return this._currentDesktop != null ? this._currentDesktop.isSortableChildren() : false;
+	}
+
+	@Override
+	public float getCurrentTimer() {
+		return TimeUtils.currentTime();
 	}
 
 	@Override

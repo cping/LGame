@@ -94,4 +94,5 @@ public interface SysInput {
 
 	boolean isKeyType(int i);
 
+	float getCurrentTimer();
 }
