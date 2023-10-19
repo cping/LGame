@@ -25,11 +25,15 @@ import java.util.Comparator;
 import loon.ActionCounter;
 import loon.Counter;
 import loon.EmptyObject;
+import loon.FloatActionCounter;
+import loon.FloatCounter;
+import loon.FloatLimitedCounter;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
-import loon.LTextures;
 import loon.LimitedCounter;
+import loon.StringNodeMaker;
+import loon.StringNodeType;
 import loon.TextureNodeMaker;
 import loon.TextureNodeType;
 import loon.ZIndex;
@@ -45,6 +49,7 @@ import loon.events.EventActionN;
 import loon.events.EventActionT;
 import loon.events.EventActionTN;
 import loon.events.Updateable;
+import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
 import loon.geom.FloatValue;
@@ -418,8 +423,20 @@ public class HelperUtils {
 		return new LimitedCounter(limit);
 	}
 
-	public final static ActionCounter newActionCounter(int limit, Updateable update) {
+	public final static ActionCounter newActionCounter(int limit, EventAction update) {
 		return new ActionCounter(limit, update);
+	}
+
+	public final static FloatCounter newFloatCounter() {
+		return new FloatCounter();
+	}
+
+	public final static FloatLimitedCounter newFloatLimitedCounter(float limit) {
+		return new FloatLimitedCounter(limit);
+	}
+
+	public final static FloatActionCounter newFloatActionCounter(int limit, EventAction update) {
+		return new FloatActionCounter(limit, update);
 	}
 
 	public final static void debug(String msg) {
@@ -1028,4 +1045,16 @@ public class HelperUtils {
 		return ShapeNodeMaker.create(nodeType, x, y);
 	}
 
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text) {
+		return StringNodeMaker.create(nodeType, text);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text, float x, float y) {
+		return StringNodeMaker.create(nodeType, text, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, IFont font, String text, float x,
+			float y) {
+		return StringNodeMaker.create(nodeType, font, text, x, y);
+	}
 }

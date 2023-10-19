@@ -86,6 +86,50 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return set(x - width / 2f, y - height / 2f, width, height);
 	}
 
+	public AABB setTopLeft(AABB other) {
+		if (other == null) {
+			return this;
+		}
+		minX = other.minX;
+		maxX = (other.minX + other.maxX) / 2f;
+		minY = other.minY;
+		maxY = (other.minY + other.maxY) / 2f;
+		return this;
+	}
+
+	public AABB setTopRight(AABB other) {
+		if (other == null) {
+			return this;
+		}
+		minX = (other.minX + other.maxX) / 2f;
+		maxX = other.maxX;
+		minY = other.minY;
+		maxY = (other.minY + other.maxY) / 2f;
+		return this;
+	}
+
+	public AABB setBottomLeft(AABB other) {
+		if (other == null) {
+			return this;
+		}
+		minX = other.minX;
+		maxX = (other.minX + other.maxX) / 2f;
+		minY = (other.minY + other.maxY) / 2f;
+		maxY = other.maxY;
+		return this;
+	}
+
+	public AABB setBottomRight(AABB other) {
+		if (other == null) {
+			return this;
+		}
+		minX = (other.minX + other.maxX) / 2f;
+		maxX = other.maxX;
+		minY = (other.minY + other.maxY) / 2f;
+		maxY = other.maxY;
+		return this;
+	}
+
 	public int width() {
 		return (int) this.maxX;
 	}
@@ -124,10 +168,61 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return new AABB(minX * sx, minY * sy, maxX * sx, maxY * sy);
 	}
 
-	public AABB move(float cx, float cy) {
+	public AABB moveMin(float cx, float cy) {
 		this.minX += cx;
 		this.minY += cy;
 		return this;
+	}
+
+	public AABB moveMax(float cx, float cy) {
+		this.maxX += cx;
+		this.maxY += cy;
+		return this;
+	}
+
+	public AABB move(float cx, float cy) {
+		this.moveMin(cx, cy);
+		this.moveMax(cx, cy);
+		return this;
+	}
+
+	public boolean moveOut(AABB other) {
+		if (other == null) {
+			return false;
+		}
+		if (!intersects(other)) {
+			return false;
+		}
+		final float right = other.minX - maxX;
+		final float left = minX - other.maxX;
+		final float up = other.minY - maxY;
+		final float down = minY - other.maxY;
+		final float lr = right > left ? -right : left;
+		final float ud = up > down ? up : -down;
+		if (MathUtils.abs(lr) < MathUtils.abs(ud)) {
+			move(lr, 0f);
+		} else {
+			move(0f, ud);
+		}
+		return true;
+	}
+
+	public boolean intersects(float x, float y) {
+		return x > minX && x < maxX && y > minY && y < maxY;
+	}
+
+	public boolean intersects(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return pos.getX() > minX && pos.getX() < maxX && pos.getY() > minY && pos.getY() < maxY;
+	}
+
+	public boolean intersects(AABB other) {
+		if (other == null) {
+			return false;
+		}
+		return maxX > other.minX && minX < other.maxX && maxY > other.minY && minY < other.maxY;
 	}
 
 	public float distance(Vector2f other) {
@@ -177,6 +272,15 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 
 	public float getAspectRatio() {
 		return (getHeight() == 0) ? MathUtils.NaN : getWidth() / getHeight();
+	}
+
+	public Vector2f[] getBoxCoordinates() {
+		return new Vector2f[] { new Vector2f(minX, maxY), new Vector2f(maxX, maxY), new Vector2f(maxX, minY),
+				new Vector2f(minX, minY) };
+	}
+
+	public float getArea() {
+		return (maxX - minX) * (maxY - minY);
 	}
 
 	public Vector2f getCenter(Vector2f pos) {

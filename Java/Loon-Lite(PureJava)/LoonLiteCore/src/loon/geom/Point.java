@@ -299,6 +299,35 @@ public class Point extends Shape {
 		return CollisionHelper.checkPointvsPolygon(this.x, this.y, poly);
 	}
 
+	public float angle() {
+		return MathUtils.atan2(y, x);
+	}
+
+	public float mag() {
+		return MathUtils.sqrt((x * x) + (y * y));
+	}
+
+	public Point rotateSelf(float r) {
+		float rad = MathUtils.toRadians(r);
+		this.rotation += rad;
+		float angle = angle();
+		float mag = mag();
+		angle -= rad;
+		x = mag * MathUtils.cos(angle);
+		y = mag * MathUtils.sin(angle);
+		return this;
+	}
+
+	public Point restoreSelf() {
+		float angle = angle();
+		float mag = mag();
+		angle += rotation;
+		x = mag * MathUtils.cos(angle);
+		y = mag * MathUtils.sin(angle);
+		rotation = 0f;
+		return this;
+	}
+
 	@Override
 	public boolean collided(Shape shape) {
 		if (shape instanceof Polygon) {

@@ -52,33 +52,35 @@ import loon.utils.MathUtils;
  */
 public class LLabel extends LComponent implements FontSet<LLabel> {
 
-	public static LLabel make(TextOptions options, String mes, int x, int y, LColor color) {
+	public static LLabel make(TextOptions options, String mes, float x, float y, LColor color) {
 		return new LLabel(HorizontalAlign.LEFT, options, SkinManager.get().getMessageSkin().getFont(), color, null, mes,
 				x, y, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, int x, int y, LColor color) {
+	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, float x, float y,
+			LColor color) {
 		return new LLabel(alignment, options, SkinManager.get().getMessageSkin().getFont(), color, null, mes, x, y, 0,
 				0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, int x, int y) {
+	public static LLabel make(HorizontalAlign alignment, TextOptions options, String mes, float x, float y) {
 		return new LLabel(alignment, options, SkinManager.get().getMessageSkin().getFont(),
 				SkinManager.get().getMessageSkin().getFontColor(), null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int size, LTexture tex, LColor c) {
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, int size, LTexture tex,
+			LColor c) {
 		IFont font = LFont.getFont(size);
 		return new LLabel(alignment, font, c, tex, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int width, int height,
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, float width, float height,
 			String fontname, int size) {
 		return new LLabel(alignment, LFont.getFont(fontname, size), SkinManager.get().getMessageSkin().getFontColor(),
 				null, mes, x, y, width, height);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int width, int height,
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, float width, float height,
 			String fontname, int size, Style style) {
 		return new LLabel(alignment, LFont.getFont(fontname, style, size),
 				SkinManager.get().getMessageSkin().getFontColor(), null, mes, x, y, width, height);
@@ -94,58 +96,62 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 				SkinManager.get().getMessageSkin().getFontColor(), null, mes, 0, 0, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y) {
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y) {
 		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(),
 				SkinManager.get().getMessageSkin().getFontColor(), mes, x, y);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, IFont font) {
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, IFont font) {
 		return new LLabel(alignment, font, SkinManager.get().getMessageSkin().getFontColor(), mes, x, y);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, LColor color) {
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, LColor color) {
 		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(), color, null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, LTexture tex, String mes, int x, int y, LColor color) {
+	public static LLabel make(HorizontalAlign alignment, LTexture tex, String mes, float x, float y, LColor color) {
 		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(), color, tex, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, LTexture tex, String mes, int x, int y, int width, int height,
-			LColor color) {
+	public static LLabel make(HorizontalAlign alignment, LTexture tex, String mes, float x, float y, float width,
+			float height, LColor color) {
 		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(), color, tex, mes, x, y, width,
 				height);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, int x, int y, int width, int height,
+	public static LLabel make(HorizontalAlign alignment, String mes, float x, float y, float width, float height,
 			LColor color) {
 		return new LLabel(alignment, SkinManager.get().getMessageSkin().getFont(), color, null, mes, x, y, width,
 				height);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, int size, String mes, int x, int y, LColor color) {
+	public static LLabel make(HorizontalAlign alignment, int size, String mes, float x, float y, LColor color) {
 		return new LLabel(alignment, LFont.getFont(size), color, null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(int size, String mes, int x, int y, LColor color) {
+	public static LLabel make(int size, String mes, float x, float y, LColor color) {
 		return new LLabel(HorizontalAlign.LEFT, LFont.getFont(size), color, null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(int size, String mes, int x, int y) {
+	public static LLabel make(int size, String mes, float x, float y) {
 		return new LLabel(HorizontalAlign.LEFT, LFont.getFont(size), SkinManager.get().getMessageSkin().getFontColor(),
 				null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(String mes, int x, int y, LColor color) {
+	public static LLabel make(String mes, float x, float y, LColor color) {
 		return new LLabel(HorizontalAlign.LEFT, SkinManager.get().getMessageSkin().getFont(), color, null, mes, x, y, 0,
 				0);
 	}
 
-	public static LLabel make(HorizontalAlign alignment, String mes, IFont font, int x, int y, LColor color) {
+	public static LLabel make(HorizontalAlign alignment, String mes, IFont font, float x, float y, LColor color) {
 		return new LLabel(alignment, font, color, null, mes, x, y, 0, 0);
 	}
 
-	public static LLabel make(String mes, IFont font, int x, int y, LColor color) {
+	public static LLabel make(String mes, IFont font, float x, float y) {
+		return make(mes, font, x, y, LColor.white);
+	}
+
+	public static LLabel make(String mes, IFont font, float x, float y, LColor color) {
 		return new LLabel(HorizontalAlign.LEFT, font, color, null, mes, x, y, 0, 0);
 	}
 
@@ -153,15 +159,15 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		return make(mes, 0, 0);
 	}
 
-	public static LLabel make(String mes, int x, int y) {
+	public static LLabel make(String mes, float x, float y) {
 		return make(mes, x, y, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
-	public LLabel(HorizontalAlign alignment, int size, LColor c, String mes, int x, int y) {
+	public LLabel(HorizontalAlign alignment, int size, LColor c, String mes, float x, float y) {
 		this(alignment, LFont.getFont(size), c, mes, x, y);
 	}
 
-	public LLabel(HorizontalAlign alignment, IFont font, LColor c, String mes, int x, int y) {
+	public LLabel(HorizontalAlign alignment, IFont font, LColor c, String mes, float x, float y) {
 		this(alignment, font, c, null, mes, x, y, font.stringWidth(mes), font.getHeight());
 	}
 
@@ -171,19 +177,19 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 
 	private LColor _fontColor;
 
-	public LLabel(HorizontalAlign alignment, IFont font, LColor c, LTexture bg, String mes, int x, int y, int width,
-			int height) {
+	public LLabel(HorizontalAlign alignment, IFont font, LColor c, LTexture bg, String mes, float x, float y,
+			float width, float height) {
 		this(alignment, new TextOptions(), font, c, bg, mes, x, y, width, height);
 	}
 
-	public LLabel(MessageSkin skin, HorizontalAlign alignment, TextOptions opt, String mes, int x, int y, int width,
-			int height) {
+	public LLabel(MessageSkin skin, HorizontalAlign alignment, TextOptions opt, String mes, float x, float y,
+			float width, float height) {
 		this(alignment, skin.getFont(), skin.getFontColor(), skin.getBackgroundTexture(), mes, x, y, width, height);
 	}
 
-	public LLabel(HorizontalAlign alignment, TextOptions opt, IFont font, LColor c, LTexture bg, String mes, int x,
-			int y, int width, int height) {
-		super(x, y, width, height);
+	public LLabel(HorizontalAlign alignment, TextOptions opt, IFont font, LColor c, LTexture bg, String mes, float x,
+			float y, float width, float height) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(width), MathUtils.ifloor(height));
 		this._fontColor = c;
 		this._text = new Text(font, mes, opt);
 		this.setBackground(bg);
@@ -197,7 +203,7 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		draw(g, x, y);
 	}
 
-	public void draw(GLEx g, int x, int y) {
+	public void draw(GLEx g, float x, float y) {
 		_text.paintString(g, x + _offsetX, y + _offsetY, _fontColor);
 	}
 

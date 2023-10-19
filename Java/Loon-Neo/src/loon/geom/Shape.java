@@ -111,6 +111,10 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return points.length / 2;
 	}
 
+	public float getDoubleRadius() {
+		return boundingCircleRadius * boundingCircleRadius;
+	}
+
 	public Vector2f getPosition() {
 		return new Vector2f(getX(), getY());
 	}
@@ -486,6 +490,14 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			yold = ynew;
 		}
 		return result;
+	}
+
+	public boolean intersects(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		checkPoints();
+		return CollisionHelper.checkPointvsPolygon(pos, getPoints());
 	}
 
 	public boolean intersects(Shape shape) {

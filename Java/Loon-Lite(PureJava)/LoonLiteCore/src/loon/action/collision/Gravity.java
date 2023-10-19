@@ -315,6 +315,12 @@ public class Gravity implements LRelease {
 		return this;
 	}
 
+	public Gravity drag(final float drag) {
+		this.velocityX = (drag * this.velocityX);
+		this.velocityY = (drag * this.velocityY);
+		return this;
+	}
+
 	public boolean isMovingLeft() {
 		return this.velocityX < 0f;
 	}

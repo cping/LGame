@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,17 +24,22 @@ import java.util.Comparator;
 
 import loon.ActionCounter;
 import loon.Counter;
-import loon.Director.Origin;
-import loon.Director.Position;
 import loon.EmptyObject;
+import loon.FloatActionCounter;
+import loon.FloatCounter;
+import loon.FloatLimitedCounter;
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LimitedCounter;
+import loon.StringNodeMaker;
+import loon.StringNodeType;
 import loon.TextureNodeMaker;
 import loon.TextureNodeType;
-import loon.Log.Level;
 import loon.ZIndex;
+import loon.Director.Origin;
+import loon.Director.Position;
+import loon.Log.Level;
 import loon.action.ActionBind;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
@@ -44,6 +49,7 @@ import loon.events.EventActionN;
 import loon.events.EventActionT;
 import loon.events.EventActionTN;
 import loon.events.Updateable;
+import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
 import loon.geom.FloatValue;
@@ -417,8 +423,20 @@ public class HelperUtils {
 		return new LimitedCounter(limit);
 	}
 
-	public final static ActionCounter newActionCounter(int limit, Updateable update) {
+	public final static ActionCounter newActionCounter(int limit, EventAction update) {
 		return new ActionCounter(limit, update);
+	}
+
+	public final static FloatCounter newFloatCounter() {
+		return new FloatCounter();
+	}
+
+	public final static FloatLimitedCounter newFloatLimitedCounter(float limit) {
+		return new FloatLimitedCounter(limit);
+	}
+
+	public final static FloatActionCounter newFloatActionCounter(int limit, EventAction update) {
+		return new FloatActionCounter(limit, update);
 	}
 
 	public final static void debug(String msg) {
@@ -1025,5 +1043,18 @@ public class HelperUtils {
 
 	public final static <T extends Shape> T create(ShapeNodeType nodeType, float x, float y) {
 		return ShapeNodeMaker.create(nodeType, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text) {
+		return StringNodeMaker.create(nodeType, text);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text, float x, float y) {
+		return StringNodeMaker.create(nodeType, text, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, IFont font, String text, float x,
+			float y) {
+		return StringNodeMaker.create(nodeType, font, text, x, y);
 	}
 }

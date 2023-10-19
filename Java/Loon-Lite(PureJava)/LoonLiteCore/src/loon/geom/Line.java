@@ -161,6 +161,11 @@ public class Line extends Shape {
 		set(start, end);
 	}
 
+	public Line(Line line) {
+		super();
+		set(line.getStart(), line.getEnd());
+	}
+
 	public Line(Vector2f start, Vector2f end) {
 		super();
 		set(start, end);
@@ -454,6 +459,11 @@ public class Line extends Shape {
 		return this;
 	}
 
+	@Override
+	public boolean intersects(XY pos) {
+		return inPoint(pos);
+	}
+	
 	public boolean intersects(Line other) {
 		return intersects(other, null);
 	}

@@ -158,8 +158,47 @@ public class Circle extends Ellipse {
 		return boundingCircleRadius;
 	}
 
+	@Override
 	public boolean intersects(RectBox other) {
 		return inRect(other);
+	}
+
+	public Vector2f intersection(Line line) {
+		if (line == null) {
+			return Vector2f.ZERO();
+		}
+		if (!intersects(line)) {
+			return null;
+		}
+		final Vector2f pos = getPosition();
+		line = line.cpy();
+		line.getStart().subtractSelf(pos);
+		line.getEnd().subtractSelf(pos);
+		Vector2f newPos = line.getSubDirection();
+		float dx = newPos.x;
+		float dy = newPos.y;
+		float dr2 = line.getStart().dst2(line.getEnd());
+		float D = line.getStart().crs(line.getEnd());
+		float disc = getDoubleRadius() * dr2 - D * D;
+		if (disc < 0) {
+			return null;
+		}
+		disc = MathUtils.sqrt(disc);
+		Vector2f pos1 = Vector2f.ZERO();
+		pos1.x = (D * dy + MathUtils.sign(dy) * dx * disc) / dr2;
+		pos1.y = (-D * dx + Math.abs(dy) * disc) / dr2;
+		Vector2f pos2 = Vector2f.ZERO();
+		pos2.x = (D * dy - MathUtils.sign(dy) * dx * disc) / dr2;
+		pos2.y = (-D * dx - Math.abs(dy) * disc) / dr2;
+		Vector2f dir = line.getSubDirection();
+		float dot1 = dir.dot(pos1.sub(line.getStart()));
+		float dot2 = dir.dot(pos2.sub(line.getStart()));
+		if (dot1 < dot2) {
+			pos1.add(pos);
+			return pos1;
+		}
+		pos2.add(pos);
+		return pos2;
 	}
 
 	@Override

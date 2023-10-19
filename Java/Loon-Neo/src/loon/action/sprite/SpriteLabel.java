@@ -41,19 +41,19 @@ public class SpriteLabel extends Entity {
 		this(LSystem.getSystemGameFont(), label, 0, 0);
 	}
 
-	public SpriteLabel(String label, int x, int y) {
+	public SpriteLabel(String label, float x, float y) {
 		this(LSystem.getSystemGameFont(), label, x, y);
 	}
 
-	public SpriteLabel(String label, String font, Style type, int size, int x, int y) {
+	public SpriteLabel(String label, String font, Style type, int size, float x, float y) {
 		this(LFont.getFont(font, type, size), label, x, y);
 	}
 
-	public SpriteLabel(IFont font, String label, int x, int y) {
+	public SpriteLabel(IFont font, String label, float x, float y) {
 		this(font, TextOptions.LEFT(), label, x, y);
 	}
 
-	public SpriteLabel(IFont font, TextOptions opt, String label, int x, int y) {
+	public SpriteLabel(IFont font, TextOptions opt, String label, float x, float y) {
 		this._text = new Text(font, label, opt);
 		this.setSize(_text.getWidth(), _text.getHeight());
 		this.setRepaint(true);
@@ -84,7 +84,7 @@ public class SpriteLabel extends Entity {
 		return _text.getText();
 	}
 
-	public SpriteLabel setLabel(int label) {
+	public SpriteLabel setLabel(float label) {
 		return setLabel(String.valueOf(label));
 	}
 

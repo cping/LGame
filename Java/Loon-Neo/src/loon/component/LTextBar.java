@@ -46,7 +46,7 @@ public class LTextBar extends LComponent {
 
 	private LTexture left, right, body;
 
-	private int _maxWidth = -1;
+	private float _maxWidth = -1;
 
 	private LColor _fontColor;
 
@@ -74,50 +74,51 @@ public class LTextBar extends LComponent {
 
 	protected char cursor = '_';
 
-	private int pressedTime;
+	private float pressedTime;
 
-	public LTextBar(String txt, int x, int y, LColor c) {
+	public LTextBar(String txt, float x, float y, LColor c) {
 		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
 				SkinManager.get().getTextBarSkin().getRightTexture(),
 				SkinManager.get().getTextBarSkin().getBodyTexture(), x, y, c,
 				SkinManager.get().getTextBarSkin().getFont());
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c) {
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, float x, float y, LColor c) {
 		this(txt, left, right, body, x, y, c, SkinManager.get().getTextBarSkin().getFont());
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y) {
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, float x, float y) {
 		this(txt, left, right, body, x, y, SkinManager.get().getTextBarSkin().getFontColor());
 	}
 
-	public LTextBar(IFont font, String txt, int x, int y) {
+	public LTextBar(IFont font, String txt, float x, float y) {
 		this(SkinManager.get().getTextBarSkin(), txt, x, y, font);
 	}
 
-	public LTextBar(String txt, int x, int y) {
+	public LTextBar(String txt, float x, float y) {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor());
 	}
 
-	public LTextBar(TextBarSkin skin, String txt, int x, int y, IFont font) {
+	public LTextBar(TextBarSkin skin, String txt, float x, float y, IFont font) {
 		this(txt, skin.getLeftTexture(), skin.getRightTexture(), skin.getBodyTexture(), x, y, skin.getFontColor(),
 				font);
 	}
 
-	public LTextBar(TextBarSkin skin, String txt, int x, int y) {
+	public LTextBar(TextBarSkin skin, String txt, float x, float y) {
 		this(txt, skin.getLeftTexture(), skin.getRightTexture(), skin.getBodyTexture(), x, y, skin.getFontColor(),
 				skin.getFont());
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c, IFont f) {
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, float x, float y, LColor c, IFont f) {
 		this(txt, left, right, body, x, y, c, f, -1);
 	}
 
-	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor c, IFont f,
-			int maxWidth) {
-		super(x, y, 0, 0);
-		int w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0) + (right != null ? right.getWidth() : 0) * 3;
-		int h = body != null ? body.getHeight() : f.getHeight();
+	public LTextBar(String txt, LTexture left, LTexture right, LTexture body, float x, float y, LColor c, IFont f,
+			float maxWidth) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), 0, 0);
+		float w = f.stringWidth(txt) + (left != null ? left.getWidth() : 0)
+				+ (right != null ? right.getWidth() : 0) * 3;
+		float h = body != null ? body.getHeight() : f.getHeight();
 		this._fontColor = c;
 		if (maxWidth == -1 && body != null) {
 			this._maxWidth = w;
@@ -134,8 +135,8 @@ public class LTextBar extends LComponent {
 		autoSize();
 	}
 
-	public LTextBar(int x, int y, int width, int height) {
-		super(x, y, width, height);
+	public LTextBar(float x, float y, float width, float height) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(width), MathUtils.ifloor(height));
 	}
 
 	public void autoSize() {
@@ -146,11 +147,12 @@ public class LTextBar extends LComponent {
 		}
 	}
 
-	public void setMaxWidth(float w) {
-		this._maxWidth = (int) w;
+	public LTextBar setMaxWidth(float w) {
+		this._maxWidth =  w;
+		return this;
 	}
 
-	public int getMaxWidth() {
+	public float getMaxWidth() {
 		return _maxWidth;
 	}
 
