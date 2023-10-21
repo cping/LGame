@@ -34,8 +34,8 @@ public class EmptyCamera extends BaseCamera {
 	}
 
 	public EmptyCamera(Matrix4 p, Matrix4 v) {
-		_projMatrix4 = p;
-		_viewMatrix4 = v;
+		this._projMatrix4 = p;
+		this._viewMatrix4 = v;
 	}
 
 	@Override

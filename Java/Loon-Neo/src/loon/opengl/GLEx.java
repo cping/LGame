@@ -2179,7 +2179,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param endAngle
 	 * @param radius
 	 * @param width
-	 * @param clockwise
+	 * @param width
 	 * @param color
 	 * @return
 	 */
@@ -3138,8 +3138,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	/**
 	 * 绘制菱形区域
-	 * 
-	 * @param g
+	 *
 	 * @param amount
 	 * @param x
 	 * @param y
@@ -3194,7 +3193,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		return this;
 	}
-	
+
 	public GLEx drawDashCircle(float x, float y, float radius) {
 		return drawDashCircle(x, y, radius, this.lastBrush.lineWidth);
 	}
@@ -3236,7 +3235,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		return this;
 	}
-	
+
 	/**
 	 * 以虚线绘制菱形区域
 	 * 
@@ -3402,10 +3401,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	/**
 	 * 绘制椭圆
 	 * 
-	 * @param centerX
-	 * @param centerY
-	 * @param r
-	 * @param Aa
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
 		final float lineWidth = this.lastBrush.lineWidth;
@@ -3438,10 +3437,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	/**
 	 * 填充椭圆
 	 * 
-	 * @param centerX
-	 * @param centerY
-	 * @param r
-	 * @param Aa
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		if (this.lastBrush.alltextures) {
@@ -3459,7 +3458,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param y1
 	 * @param width
 	 * @param height
-	 * @param color
+	 * @param c
 	 * @return
 	 */
 	public GLEx fillOval(float x1, float y1, float width, float height, LColor c) {
@@ -4106,7 +4105,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				fillRect(x, y, width, height);
 				return this;
 			}
-			int mr = (int) MathUtils.min(width, height) / 2;
+			if (MathUtils.isOdd(radius)) {
+				radius += 1;
+			}
+			int mr = MathUtils.ifloor((MathUtils.min(width, height) / 2));
 			if (radius > mr) {
 				radius = mr;
 			}
@@ -4116,10 +4118,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			fillRect(x + width - radius, y + radius, radius, height - d);
 			fillRect(x + radius, y + height - radius, width - d, radius);
 			fillRect(x + radius, y + radius, width - d, height - d);
-			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
 			fillArc(x, y + height - d, d, d, segs, 90, 90);
-			fillArc(x + width - d, y, d, d, segs, 270, 90);
 			fillArc(x, y, d, d, segs, 180, 90);
+			fillArc(x + width - d, y, d, d, segs, 270, 90);
+			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
 		}
 		return this;
 	}
@@ -4249,7 +4251,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param y
 	 * @param rotation
 	 * @param c
-	 * @param check
 	 */
 	public GLEx drawString(String text, float x, float y, float rotation, LColor c) {
 		if (isClosed) {

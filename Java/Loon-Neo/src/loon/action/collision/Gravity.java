@@ -31,6 +31,7 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 
 /**
  * 自0.3.2版起新增类，用以绑定任意一个LGame对象进行简单的重力牵引操作。
@@ -52,6 +53,8 @@ public class Gravity implements LRelease {
 	protected Gravity _collisionObject;
 
 	private Shape _shape;
+
+	private Side _curCollisionDir;
 
 	public Object tag;
 
@@ -105,6 +108,7 @@ public class Gravity implements LRelease {
 		this.bind = o;
 		this.damping = 1f;
 		this.enabled = collideSolid = true;
+		this._curCollisionDir = new Side();
 		this.setBounds(x, y, w, h);
 	}
 
@@ -179,6 +183,22 @@ public class Gravity implements LRelease {
 			return s.getY() + _offsetPos.y;
 		}
 		return 0f + _offsetPos.y;
+	}
+
+	public float getScaleX() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getScaleX();
+		}
+		return 1f;
+	}
+
+	public float getScaleY() {
+		Shape s = getShape();
+		if (s != null) {
+			return s.getScaleY();
+		}
+		return 1f;
 	}
 
 	public float getWidth() {
@@ -276,6 +296,52 @@ public class Gravity implements LRelease {
 			return false;
 		}
 		return getShape().collided(g.getShape());
+	}
+
+	public boolean collidedBind(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		if (bind == null || g.bind == null) {
+			return false;
+		}
+		return bind.getRectBox().collided(g.bind.getRectBox());
+	}
+
+	public boolean containsBind(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		if (bind == null || g.bind == null) {
+			return false;
+		}
+		return bind.getRectBox().contains(g.bind.getRectBox());
+	}
+
+	public boolean intersectsBind(Gravity g) {
+		if (g == null) {
+			return false;
+		}
+		if (bind == null || g.bind == null) {
+			return false;
+		}
+		return bind.getRectBox().intersects(g.bind.getRectBox());
+	}
+
+	public boolean contains(Shape shape) {
+		return getShape().contains(shape);
+	}
+
+	public boolean intersects(Shape shape) {
+		return getShape().intersects(shape);
+	}
+
+	public boolean collided(Shape shape) {
+		return getShape().collided(shape);
+	}
+
+	public boolean isBinded() {
+		return this.bind != null;
 	}
 
 	public boolean isEnabled() {
@@ -441,18 +507,6 @@ public class Gravity implements LRelease {
 		return this;
 	}
 
-	public boolean contains(Shape shape) {
-		return getShape().contains(shape);
-	}
-
-	public boolean intersects(Shape shape) {
-		return getShape().intersects(shape);
-	}
-
-	public boolean collided(Shape shape) {
-		return getShape().collided(shape);
-	}
-
 	public int getOppositeSide() {
 		return Side.getOppositeSide(getCollisionSide());
 	}
@@ -486,6 +540,13 @@ public class Gravity implements LRelease {
 				Vector2f.at(g.bind.getX(), g.bind.getY()), speed);
 	}
 
+	public int getPointToSelfSide(XY pos) {
+		if (pos == null) {
+			return Side.EMPTY;
+		}
+		return Side.getPointCollisionSide(bind.getRectBox(), pos);
+	}
+
 	public int getOverlapRect() {
 		return getCollisionSide(_collisionObject);
 	}
@@ -511,8 +572,32 @@ public class Gravity implements LRelease {
 		return _hitRect;
 	}
 
+	public Gravity syncGravityToBind() {
+		if (bind != null) {
+			bind.setLocation(getX(), getY());
+			bind.setScale(getScaleX(), getScaleY());
+			bind.setSize(getWidth(), getHeight());
+			bind.setRotation(getRotation());
+		}
+		return this;
+	}
+
 	public boolean isCollisioning() {
 		return _collisioning;
+	}
+
+	public Side getCollisionDirection() {
+		return _curCollisionDir;
+	}
+
+	public Gravity setDirection(int d) {
+		this._curCollisionDir.setDirection(d);
+		return this;
+	}
+
+	public Gravity updateCollisionDirection() {
+		this._curCollisionDir.setDirection(getCollisionSide());
+		return this;
 	}
 
 	public Gravity reset() {
@@ -524,6 +609,7 @@ public class Gravity implements LRelease {
 		this.velocityX = 0;
 		this.velocityY = 0;
 		this.angularVelocity = 0;
+		this._curCollisionDir.reset();
 		this._hitRect.setEmpty();
 		this._offsetPos.set(0f);
 		this._oldPos.set(0f);

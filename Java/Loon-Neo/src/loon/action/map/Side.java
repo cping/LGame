@@ -23,6 +23,7 @@ package loon.action.map;
 import loon.LSystem;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.MathUtils;
 
 /**
@@ -44,6 +45,14 @@ public class Side implements Config {
 
 	public Side(int dir) {
 		this._direction = dir;
+	}
+
+	public Side pos(Vector2f v) {
+		if (v == null) {
+			return this;
+		}
+		this._pos.set(v);
+		return this;
 	}
 
 	protected void updateDirection() {
@@ -119,6 +128,10 @@ public class Side implements Config {
 		return dir;
 	}
 
+	public int getPointToSide(RectBox rect) {
+		return getPointCollisionSide(rect, _pos);
+	}
+
 	@Override
 	public boolean equals(Object other) {
 		if (other == null) {
@@ -131,6 +144,12 @@ public class Side implements Config {
 			return (_direction == ((Side) other)._direction);
 		}
 		return false;
+	}
+	
+	public Side reset() {
+		this._direction = EMPTY;
+		this._pos.setZero();
+		return this;
 	}
 
 	public static int getOppositeSide(int side) {
@@ -159,6 +178,28 @@ public class Side implements Config {
 			return Side.LEFT;
 		}
 		return Side.EMPTY;
+	}
+
+	public static int getPointCollisionSide(final RectBox rect, final XY pos) {
+		int side = EMPTY;
+		if (pos.getX() == rect.x && pos.getY() >= rect.y && pos.getY() <= rect.height) {
+			return TLEFT;
+		} else if (pos.getX() == rect.width && pos.getY() >= rect.y && pos.getY() <= rect.height) {
+			return TRIGHT;
+		} else if (pos.getY() == rect.y && pos.getX() >= rect.x && pos.getX() <= rect.width) {
+			return TOP;
+		} else if (pos.getY() == rect.height && pos.getX() >= rect.x && pos.getX() <= rect.width) {
+			return BOTTOM;
+		} else if (pos.getX() < rect.x) {
+			side = TLEFT;
+		} else if (pos.getX() > rect.width) {
+			side = TRIGHT;
+		} else if (pos.getY() < rect.y) {
+			side = TOP;
+		} else if (pos.getY() > rect.height) {
+			side = BOTTOM;
+		}
+		return side;
 	}
 
 	public static int getCollisionSide(final RectBox r0, final RectBox r1) {

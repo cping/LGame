@@ -31,6 +31,8 @@ import loon.utils.timer.LTimer;
 
 public class OvalEffect extends Entity implements BaseEffect {
 
+	private final static float SIZE = 8f;
+	
 	private LTimer _timer;
 
 	private float _previous;
@@ -63,7 +65,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 		this._timer = new LTimer(0);
 		this._typeCode = code;
 		this._diameter = 1f;
-		this._spaceSize = 8f;
+		this._spaceSize = SIZE;
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
 		this.updateRadius();
@@ -202,7 +204,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 		this.updateRadius();
 		this._completed = false;
 		this._step = 0f;
-		this._spaceSize = 8f;
+		this._spaceSize = SIZE;
 		return this;
 	}
 

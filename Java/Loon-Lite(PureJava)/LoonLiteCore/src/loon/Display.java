@@ -456,7 +456,10 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	private void onFrame() {
-		if (_closed || !_autoRepaint) {
+		if (_closed) {
+			return;
+		}
+		if (!_autoRepaint) {
 			return;
 		}
 		final int updateTick = _game.tick();
@@ -481,6 +484,9 @@ public class Display extends BaseIO implements LRelease {
 			} else {
 				updateClock.timeSinceLastUpdate = updateLoop;
 			}
+			if (updateClock.timeSinceLastUpdate > 1024) {
+				updateClock.timeSinceLastUpdate = 0;
+			}
 			update(updateClock);
 		}
 		long paintTick = _game.tick();
@@ -488,6 +494,9 @@ public class Display extends BaseIO implements LRelease {
 			paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
 		} else {
 			paintClock.timeSinceLastUpdate = paintLoop;
+		}
+		if (paintClock.timeSinceLastUpdate > 1024) {
+			paintClock.timeSinceLastUpdate = 0;
 		}
 		paintClock.tick = paintTick;
 		paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;

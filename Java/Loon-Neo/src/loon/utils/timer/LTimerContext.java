@@ -32,8 +32,11 @@ public class LTimerContext {
 
 	public float alpha;
 
+	public float scale;
+
 	public LTimerContext() {
 		this.timeSinceLastUpdate = 0;
+		this.scale = 1f;
 	}
 
 	public float getMilliseconds() {
@@ -51,6 +54,10 @@ public class LTimerContext {
 			delta = LSystem.DEFAULT_EASE_DELAY;
 		}
 		return delta;
+	}
+
+	public long getTimeScale() {
+		return (long) (timeSinceLastUpdate * scale);
 	}
 
 	public long getTimeSinceLastUpdate() {

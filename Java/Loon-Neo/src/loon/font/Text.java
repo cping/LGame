@@ -27,7 +27,6 @@ import loon.canvas.LColor;
 import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
-import loon.opengl.LSTRFont;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -185,18 +184,6 @@ public class Text implements LRelease {
 		if (!_initNativeDraw) {
 			if (_font instanceof LFont) {
 				LSTRDictionary.get().bind((LFont) _font, _lines);
-			}
-			if (LSystem.isDesktop()) {
-				if (_font instanceof LFont) {
-					LSTRFont strfont = LSTRDictionary.get().STRFont((LFont) _font);
-					if (strfont != null) {
-						if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
-							strfont.setUpdateX(0);
-						} else {
-							strfont.setUpdateX(1);
-						}
-					}
-				}
 			}
 			_initNativeDraw = true;
 		}
@@ -468,14 +455,6 @@ public class Text implements LRelease {
 
 	@Override
 	public void close() {
-		if (LSystem.isDesktop()) {
-			if (_font instanceof LFont) {
-				LSTRFont font = LSTRDictionary.get().STRFont((LFont) _font);
-				if (font != null) {
-					font.setUpdateX(0);
-				}
-			}
-		}
 		_chars = null;
 		_lines = null;
 		_lineWidths = null;

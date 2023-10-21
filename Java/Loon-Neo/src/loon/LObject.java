@@ -960,6 +960,13 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return Side.getSideFromDirection(Vector2f.at(getX(), getY()), Vector2f.at(spr.getX(), spr.getY()), speed);
 	}
 
+	public int getPointToSelfSide(XY pos) {
+		if (pos == null) {
+			return Side.EMPTY;
+		}
+		return Side.getPointCollisionSide(getCollisionArea(), pos);
+	}
+
 	public RectBox getOverlapRect() {
 		return getOverlapRect(_collisionData);
 	}

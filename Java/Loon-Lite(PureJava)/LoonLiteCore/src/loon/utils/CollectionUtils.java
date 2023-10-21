@@ -808,6 +808,102 @@ final public class CollectionUtils {
 		return safeRange(arrays, startIndex, endIndex, false);
 	}
 
+	public static int[] sort(int[] arrays) {
+		return sort(arrays, true);
+	}
+
+	/**
+	 * 数字数组排序
+	 * 
+	 * @param arrays
+	 * @return
+	 */
+	public static int[] sort(int[] arrays, boolean positive) {
+		if (arrays == null) {
+			return null;
+		}
+		final int size = arrays.length;
+		int tmp = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if (positive && arrays[i] > arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				} else if (!positive && arrays[i] < arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				}
+			}
+		}
+		return arrays;
+	}
+
+	/**
+	 * 字符数组排序
+	 * 
+	 * @param arrays
+	 * @return
+	 */
+	public static char[] sort(char[] arrays, boolean positive) {
+		if (arrays == null) {
+			return null;
+		}
+		final int size = arrays.length;
+		char tmp = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if (positive && arrays[i] > arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				} else if (!positive && arrays[i] < arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				}
+			}
+		}
+		return arrays;
+	}
+
+	public static char[] sort(char[] arrays) {
+		return sort(arrays, true);
+	}
+
+	public static float[] sort(float[] arrays) {
+		return sort(arrays, true);
+	}
+
+	/**
+	 * 数字数组排序
+	 * 
+	 * @param arrays
+	 * @return
+	 */
+	public static float[] sort(float[] arrays, boolean positive) {
+		if (arrays == null) {
+			return null;
+		}
+		final int size = arrays.length;
+		float tmp = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = i + 1; j < size; j++) {
+				if (positive && arrays[i] > arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				} else if (!positive && arrays[i] < arrays[j]) {
+					tmp = arrays[i];
+					arrays[i] = arrays[j];
+					arrays[j] = tmp;
+				}
+			}
+		}
+		return arrays;
+	}
+
 	/**
 	 * 判定指定对象数组是否为空
 	 * 

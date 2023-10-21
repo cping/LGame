@@ -190,6 +190,10 @@ public final class MathUtils {
 		return MathUtils.abs(a - b) <= tolerance;
 	}
 
+	public static boolean isOdd(int i) {
+		return (i % 2 != 0);
+	}
+
 	public static boolean isPowerOfTwo(int w, int h) {
 		return (w > 0 && (w & (w - 1)) == 0 && h > 0 && (h & (h - 1)) == 0);
 	}
@@ -459,7 +463,7 @@ public final class MathUtils {
 		}
 		return !allowSigns && foundDigit;
 	}
-    
+
 	public static boolean isNumber(CharSequence num) {
 		if (StringUtils.isEmpty(num)) {
 			return false;
@@ -678,20 +682,12 @@ public final class MathUtils {
 		return result;
 	}
 
-	public static float abs(float n) {
-		return (n < 0) ? -n : n;
+	public static float trunc(float x) {
+		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
 	}
 
-	public static double abs(double n) {
-		return (n < 0) ? -n : n;
-	}
-
-	public static int abs(int n) {
-		return (n < 0) ? -n : n;
-	}
-
-	public static long abs(long n) {
-		return (n < 0) ? -n : n;
+	public static float tan(float angle) {
+		return (float) Math.tan(angle);
 	}
 
 	public static float asin(float value) {
@@ -730,6 +726,22 @@ public final class MathUtils {
 		return (Atan2.TABLE[yi * ATAN2_DIM + xi] + add) * mul;
 	}
 
+	public static float abs(float n) {
+		return (n < 0) ? -n : n;
+	}
+
+	public static double abs(double n) {
+		return (n < 0) ? -n : n;
+	}
+
+	public static int abs(int n) {
+		return (n < 0) ? -n : n;
+	}
+
+	public static long abs(long n) {
+		return (n < 0) ? -n : n;
+	}
+
 	public static float mag(float a, float b) {
 		return sqrt(a * a + b * b);
 	}
@@ -740,14 +752,6 @@ public final class MathUtils {
 
 	public static float median(float a, float b, float c) {
 		return (a <= b) ? ((b <= c) ? b : ((a < c) ? c : a)) : ((a <= c) ? a : ((b < c) ? c : b));
-	}
-
-	public static float trunc(float x) {
-		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
-	}
-
-	public static float tan(float angle) {
-		return (float) Math.tan(angle);
 	}
 
 	public static float distance(float x1, float x2) {
@@ -828,10 +832,6 @@ public final class MathUtils {
 			return dist(x1 + w1, y1, x2, y2 + h2);
 		}
 		return dist(x1 + w1, y1 + h1, x2, y2);
-	}
-
-	public static float oscilliate(float x, float min, float max, float period) {
-		return max - (sin(x * 2f * PI / period) * ((max - min) / 2f) + ((max - min) / 2f));
 	}
 
 	public static float sq(float a) {
@@ -1018,6 +1018,10 @@ public final class MathUtils {
 
 	public static int dip2px(float scale, float dpValue) {
 		return (int) (dpValue * scale + 0.5f);
+	}
+
+	public static float oscilliate(float x, float min, float max, float period) {
+		return max - (sin(x * 2f * PI / period) * ((max - min) / 2f) + ((max - min) / 2f));
 	}
 
 	public static float degToRad(float deg) {
@@ -1265,7 +1269,7 @@ public final class MathUtils {
 	public static float wave(float frequency, float amplitude, float time) {
 		return amplitude / 2f * (1f - MathUtils.cos(time * frequency * MathUtils.TWO_PI));
 	}
-	
+
 	public static float wrapAngle(float angle) {
 		angle = (float) IEEEremainder((double) angle, 6.2831854820251465d);
 		if (angle <= -3.141593f) {

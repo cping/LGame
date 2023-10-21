@@ -396,6 +396,11 @@ public class CharUtils {
 		return isDigitCharacter(c) || isAsciiLetter(c);
 	}
 
+	public static boolean isPunctuation(int c) {
+		return (c >= 0x20 && c <= 0x2f) || (c >= 0x3A && c <= 0x40) || (c >= 0x5B && c <= 0x60)
+				|| (c >= 0x7B && c <= 0x7F) || (c >= 65281 && c <= 65374);
+	}
+
 	public static boolean isDigit(int c) {
 		return c >= '0' && c <= '9';
 	}

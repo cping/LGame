@@ -40,9 +40,9 @@ public class OrthographicCamera extends EmptyCamera {
 	}
 
 	public OrthographicCamera(float left, float right, float bottom, float top) {
-		width = right - left;
-		height = bottom - top;
-		_viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0, 100);
+		this.width = right - left;
+		this.height = bottom - top;
+		this._viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0, 100f);
 	}
 
 	public OrthographicCamera translate(Vector2f v) {

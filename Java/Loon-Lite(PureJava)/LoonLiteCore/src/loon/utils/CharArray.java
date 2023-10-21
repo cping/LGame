@@ -1,17 +1,18 @@
 package loon.utils;
 
 import java.util.Arrays;
+import java.util.Comparator;
 
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.events.QueryEvent;
 
-public class CharArray implements IArray,LRelease {
+public class CharArray implements IArray, LRelease {
 
 	/**
 	 * 产生一组指定范围的数据
-	 *
+	 * 
 	 * @param start
 	 * @param end
 	 * @return
@@ -26,7 +27,7 @@ public class CharArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 *
+	 * 
 	 * @param begin
 	 * @param end
 	 * @return
@@ -37,7 +38,7 @@ public class CharArray implements IArray,LRelease {
 
 	/**
 	 * 产生一组指定范围的随机数据
-	 *
+	 * 
 	 * @param begin
 	 * @param end
 	 * @param size
@@ -60,8 +61,8 @@ public class CharArray implements IArray,LRelease {
 		for (int i = 0; i < size; i++) {
 			final int len = randSeed.length - i - 1;
 			int j = MathUtils.random(len);
-			charArrays[i] = randSeed[j];
-			randSeed[j] = randSeed[len];
+			charArrays[i] = (char) randSeed[j];
+			randSeed[j] = (char) randSeed[len];
 		}
 		return new CharArray(charArrays);
 	}
@@ -94,7 +95,7 @@ public class CharArray implements IArray,LRelease {
 		this(true, array, 0, array.length);
 	}
 
-	public CharArray(char[] array,int size) {
+	public CharArray(char[] array, int size) {
 		this(true, array, 0, size);
 	}
 
@@ -119,6 +120,14 @@ public class CharArray implements IArray,LRelease {
 
 	public void push(char value) {
 		add(value);
+	}
+
+	public void add(int value) {
+		char[] items = this.items;
+		if (length == items.length) {
+			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
+		}
+		items[length++] = (char) value;
 	}
 
 	public void add(char value) {
@@ -341,6 +350,59 @@ public class CharArray implements IArray,LRelease {
 		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
 		return newItems;
+	}
+
+	public CharArray newSortAscii() {
+		final CharArray al = new CharArray();
+		final CharArray au = new CharArray();
+		final CharArray num = new CharArray();
+		final CharArray cn = new CharArray();
+		final CharArray pun = new CharArray();
+		final CharArray other = new CharArray();
+		for (int i = 0; i < length; i++) {
+			char ch = this.items[i];
+			if (CharUtils.isAlphabetLower(ch)) {
+				al.add(ch);
+			} else if (CharUtils.isAlphabetUpper(ch)) {
+				au.add(ch);
+			} else if (CharUtils.isDigit(ch)) {
+				num.add(ch);
+			} else if (CharUtils.isPunctuation(ch)) {
+				pun.add(ch);
+			} else if (CharUtils.isChinese(ch)) {
+				cn.add(ch);
+			} else {
+				other.add(ch);
+			}
+		}
+		StrBuilder sbr = new StrBuilder();
+		sbr.append(au.toArray());
+		sbr.append(al.toArray());
+		sbr.append(pun.toArray());
+		sbr.append(other.toArray());
+		sbr.append(num.toArray());
+		sbr.append(cn.toArray());
+		final String text = sbr.toString();
+		sbr = null;
+		al.close();
+		au.close();
+		num.close();
+		cn.close();
+		pun.close();
+		other.close();
+		return new CharArray(text.toCharArray());
+	}
+
+	public CharArray sort(Comparator<Character> c) {
+		final Character[] newItems = new Character[length];
+		for (int i = 0; i < length; i++) {
+			newItems[i] = this.items[i];
+		}
+		SortUtils.quickSort(newItems, c);
+		for (int i = 0; i < length; i++) {
+			this.items[i] = newItems[i].charValue();
+		}
+		return this;
 	}
 
 	public CharArray sort() {

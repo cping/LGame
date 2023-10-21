@@ -35,7 +35,7 @@ public class PerspectiveCamera extends EmptyCamera {
 	private Vector3f up;
 
 	public PerspectiveCamera() {
-		this(70, 1f, 0.01f, 100);
+		this(70f, 1f, 0.01f, 100f);
 	}
 
 	public PerspectiveCamera(float fovy, float aspect, float zNear, float zFar) {

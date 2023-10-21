@@ -194,6 +194,7 @@ public class GravityHandler implements LRelease {
 				}
 				if (gravityObject.collided(g)) {
 					gravityObject._collisionObject = g;
+					gravityObject.updateCollisionDirection();
 					_velocityX = gravityObject.velocityX;
 					_velocityY = gravityObject.velocityY;
 					if (gravityObject.isMovingDown()) {
