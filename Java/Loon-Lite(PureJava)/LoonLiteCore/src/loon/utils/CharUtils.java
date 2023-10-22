@@ -382,6 +382,10 @@ public class CharUtils {
 		return c >= 0x4e00 && c <= 0x9fa5;
 	}
 
+	public static boolean isCJK(int c) {
+		return isChinese(c) || isJapanese(c) || isKorean(c);
+	}
+
 	public static boolean isEnglishAndNumeric(int letter) {
 		return isAsciiLetterDiait(letter);
 	}
@@ -398,7 +402,8 @@ public class CharUtils {
 
 	public static boolean isPunctuation(int c) {
 		return (c >= 0x20 && c <= 0x2f) || (c >= 0x3A && c <= 0x40) || (c >= 0x5B && c <= 0x60)
-				|| (c >= 0x7B && c <= 0x7F) || (c >= 65281 && c <= 65374);
+				|| (c >= 0x7B && c <= 0x7F) || (c >= 0xff01 && c <= 0xff5e) || (c >= 0x2000 && c <= 0x2e44)
+				|| (c >= 0x3000 && c <= 0x303f);
 	}
 
 	public static boolean isDigit(int c) {

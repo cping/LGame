@@ -352,42 +352,91 @@ public class CharArray implements IArray, LRelease {
 		return newItems;
 	}
 
+	private CharArray getFilterAllChar(int idx) {
+		final int size = length;
+		final CharArray result = new CharArray(size);
+		for (int i = 0; i < size; i++) {
+			char ch = this.items[i];
+			switch (idx) {
+			case 0:
+				if (CharUtils.isAlphabet(ch)) {
+					result.add(ch);
+				}
+				break;
+			case 1:
+				if (CharUtils.isCJK(ch)) {
+					result.add(ch);
+				}
+				break;
+			case 2:
+				if (CharUtils.isDigit(ch)) {
+					result.add(ch);
+				}
+				break;
+			case 3:
+				if (CharUtils.isPunctuation(ch)) {
+					result.add(ch);
+				}
+				break;
+			}
+
+		}
+		return result;
+	}
+
+	public CharArray getAllAlphabet() {
+		return getFilterAllChar(0);
+	}
+
+	public CharArray getAllCJK() {
+		return getFilterAllChar(1);
+	}
+
+	public CharArray getAllNumber() {
+		return getFilterAllChar(2);
+	}
+
+	public CharArray getAllPunctuation() {
+		return getFilterAllChar(3);
+	}
+
 	public CharArray newSortAscii() {
-		final CharArray al = new CharArray();
-		final CharArray au = new CharArray();
-		final CharArray num = new CharArray();
-		final CharArray cn = new CharArray();
-		final CharArray pun = new CharArray();
-		final CharArray other = new CharArray();
+		final int size = length / 4;
+		final CharArray eal = new CharArray(size);
+		final CharArray eau = new CharArray(size);
+		final CharArray num = new CharArray(size);
+		final CharArray cjk = new CharArray(size);
+		final CharArray pun = new CharArray(size);
+		final CharArray other = new CharArray(size);
 		for (int i = 0; i < length; i++) {
 			char ch = this.items[i];
 			if (CharUtils.isAlphabetLower(ch)) {
-				al.add(ch);
+				eal.add(ch);
 			} else if (CharUtils.isAlphabetUpper(ch)) {
-				au.add(ch);
+				eau.add(ch);
 			} else if (CharUtils.isDigit(ch)) {
 				num.add(ch);
 			} else if (CharUtils.isPunctuation(ch)) {
 				pun.add(ch);
-			} else if (CharUtils.isChinese(ch)) {
-				cn.add(ch);
+			} else if (CharUtils.isCJK(ch)) {
+				cjk.add(ch);
 			} else {
 				other.add(ch);
 			}
 		}
 		StrBuilder sbr = new StrBuilder();
-		sbr.append(au.toArray());
-		sbr.append(al.toArray());
 		sbr.append(pun.toArray());
-		sbr.append(other.toArray());
+		sbr.append(cjk.toArray());
+		sbr.append(eau.toArray());
+		sbr.append(eal.toArray());
 		sbr.append(num.toArray());
-		sbr.append(cn.toArray());
+		sbr.append(other.toArray());
 		final String text = sbr.toString();
 		sbr = null;
-		al.close();
-		au.close();
+		eal.close();
+		eau.close();
 		num.close();
-		cn.close();
+		cjk.close();
 		pun.close();
 		other.close();
 		return new CharArray(text.toCharArray());
@@ -621,6 +670,10 @@ public class CharArray implements IArray, LRelease {
 		}
 		buffer.append(']');
 		return buffer.toString();
+	}
+	
+	public String newString() {
+		return new StrBuilder(this).toString();
 	}
 
 	public String getString() {

@@ -87,6 +87,9 @@ public class OvalEffect extends Entity implements BaseEffect {
 			this._endRadius = MathUtils
 					.ceil(MathUtils.sqrt(MathUtils.pow(getWidth(), 2) + MathUtils.pow(getHeight(), 2)));
 		}
+		if (MathUtils.isOdd(_endRadius)) {
+			_endRadius += 1;
+		}
 		this._previous = _endRadius;
 		return this;
 	}

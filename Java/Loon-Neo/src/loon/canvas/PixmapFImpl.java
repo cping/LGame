@@ -243,7 +243,7 @@ public abstract class PixmapFImpl {
 	 * @param arcAngle
 	 */
 	protected void fillArcImpl(float x, float y, float width, float height, float start, float arcAngle) {
-		fillArcImpl(x, y, width, height, start, arcAngle, false);
+		fillArcImpl(x, y, width, height, start, arcAngle, true);
 	}
 
 	/**
@@ -494,10 +494,10 @@ public abstract class PixmapFImpl {
 		float d = radius * 2;
 		float w = width - d;
 		float h = height - d;
-		fillArcImpl(x + width - d, y + height - d, d, d, 0, 90);
-		fillArcImpl(x, y + height - d, d, d, 90, 180);
-		fillArcImpl(x + width - d, y, d, d, 270, 360);
-		fillArcImpl(x, y, d, d, 180, 270);
+		fillArcImpl(x, y + height - d, d - 2, d - 2, 90, 90);
+		fillArcImpl(x, y, d - 2, d - 2, 180, 90);
+		fillArcImpl(x + width - d - 2, y, d - 1, d - 1, 270, 90);
+		fillArcImpl(x + width - d - 2, y + height - d, d - 1, d - 1, 0, 90);
 		if (w > 0) {
 			fillRectNative(x + radius, y, w, radius);
 			fillRectNative(x, y + radius, radius, h);

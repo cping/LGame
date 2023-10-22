@@ -3407,12 +3407,26 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param height
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
+		return drawOval(x1, y1, width, height, 32);
+	}
+
+	/**
+	 * 绘制椭圆
+	 * 
+	 * @param x1
+	 * @param y1
+	 * @param width
+	 * @param height
+	 * @param seg
+	 * @return
+	 */
+	public GLEx drawOval(float x1, float y1, float width, float height, int seg) {
 		final float lineWidth = this.lastBrush.lineWidth;
 		if (this.lastBrush.alltextures || lineWidth != 1f) {
 			oval(x1, y1, width, height, lineWidth);
 			return this;
 		} else {
-			return this.drawArc(x1, y1, width, height, 32, 0, 360);
+			return this.drawArc(x1, y1, width, height, seg, 0, 360);
 		}
 	}
 

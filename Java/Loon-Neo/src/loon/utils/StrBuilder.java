@@ -97,6 +97,16 @@ public class StrBuilder implements CharSequence, Appendable {
 		this.reset(cap);
 	}
 
+	public StrBuilder(CharArray chars) {
+		this(chars != null ? chars.length : CollectionUtils.INITIAL_CAPACITY);
+		if (chars != null) {
+			final int size = chars.length;
+			for (int i = 0; i < size; i++) {
+				append(chars.get(i));
+			}
+		}
+	}
+
 	public StrBuilder(CharSequence... strs) {
 		this(StringUtils.isEmpty(strs) ? CollectionUtils.INITIAL_CAPACITY
 				: (totalSize(strs) + CollectionUtils.INITIAL_CAPACITY));

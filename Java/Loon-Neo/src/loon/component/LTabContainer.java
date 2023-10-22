@@ -30,6 +30,10 @@ public class LTabContainer extends LContainer {
 
 	protected int _curTabIndex = 0;
 
+	private LComponent _mainComp = null;
+
+	private boolean _active;
+
 	public LTabContainer(LTexture background, int x, int y) {
 		this(background, x, y, background == null ? 0 : background.getWidth(),
 				background == null ? 0 : background.getHeight());
@@ -48,6 +52,7 @@ public class LTabContainer extends LContainer {
 		} else {
 			this.setBackground(LColor.black);
 		}
+		this._active = true;
 	}
 
 	public LTabContainer(LTexture background) {
@@ -75,6 +80,9 @@ public class LTabContainer extends LContainer {
 	}
 
 	public LComponent setCurTab(int i) {
+		if (!_active) {
+			return (_mainComp != null) ? _mainComp : getCurTab();
+		}
 		if (i == _curTabIndex) {
 			return getCurTab();
 		}
@@ -109,6 +117,23 @@ public class LTabContainer extends LContainer {
 
 	public LComponent prevTab() {
 		return setCurTab(_curTabIndex - 1);
+	}
+
+	public LComponent beginTab() {
+		return setCurTab(0);
+	}
+
+	public LComponent endTab() {
+		return setCurTab(getComponentCount() - 1);
+	}
+
+	public LTabContainer setActive(boolean a) {
+		this._active = a;
+		return this;
+	}
+
+	public boolean isActive() {
+		return this._active;
 	}
 
 	@Override
@@ -168,6 +193,15 @@ public class LTabContainer extends LContainer {
 		if (node != null) {
 			node.processResize();
 		}
+	}
+
+	public LComponent getMainComponent() {
+		return _mainComp;
+	}
+
+	public LTabContainer setMainComponent(LComponent mc) {
+		this._mainComp = mc;
+		return this;
 	}
 
 	@Override

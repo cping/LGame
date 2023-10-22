@@ -88,6 +88,9 @@ public class OvalEffect extends Entity implements BaseEffect {
 			this._endRadius = MathUtils
 					.ceil(MathUtils.sqrt(MathUtils.pow(getWidth(), 2) + MathUtils.pow(getHeight(), 2)));
 		}
+		if (MathUtils.isOdd(_endRadius)) {
+			_endRadius += 1;
+		}
 		this._previous = _endRadius;
 		return this;
 	}
@@ -154,7 +157,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 		float line = g.getLineWidth();
 		g.setColor(_baseColor);
 		g.setLineWidth(_spaceSize);
-		if (_spaceSize == SIZE) {
+		if (_spaceSize == 1f) {
 			g.beginBatchRenderer(GLType.Line);
 		}
 		if (_typeCode == ISprite.TYPE_FADE_IN) {
@@ -180,7 +183,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 			}
 		}
 		g.setLineWidth(line);
-		if (_spaceSize == SIZE) {
+		if (_spaceSize == 1f) {
 			g.endBatchRenderer();
 		}
 		g.setColor(old);
