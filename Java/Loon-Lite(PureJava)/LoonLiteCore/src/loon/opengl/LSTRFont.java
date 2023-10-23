@@ -30,6 +30,7 @@ import loon.font.ITranslator;
 import loon.font.LFont;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
+import loon.utils.CharArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
@@ -81,7 +82,19 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private float fontScale = 1f;
 
+	private CharArray _chars;
+
 	public LSTRFont(LFont font) {
+		this(font, LSystem.EMPTY);
+	}
+
+	public LSTRFont(LFont font, String message) {
+		this(font, (StringUtils.isNullOrEmpty(message) ? LSystem.EMPTY : message).toCharArray());
+	}
+
+	public LSTRFont(LFont font, char[] charMessage) {
+		CharSequence chs = StringUtils.unificationChars(charMessage);
+		this._chars = new CharArray(chs.length());
 		this.font = font;
 		this.pixelFontSize = font.getSize();
 		this.fontHeight = font.getHeight();
@@ -187,24 +200,28 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return this.pixelColor;
 	}
 
-	public void setPixelColor(int pixel) {
+	public LSTRFont setPixelColor(int pixel) {
 		this.pixelColor = pixel;
+		return this;
 	}
 
-	public void setPixelColor(LColor color) {
+	public LSTRFont setPixelColor(LColor color) {
 		this.pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
+		return this;
 	}
 
 	public int getPixelFontSize() {
 		return this.pixelFontSize == 0 ? this.font.getSize() : this.pixelFontSize;
 	}
 
-	public void setPixelFontSize(int size) {
+	public LSTRFont setPixelFontSize(int size) {
 		this.pixelFontSize = size;
+		return this;
 	}
 
-	public void setFontSize(int size) {
+	public LSTRFont setFontSize(int size) {
 		this.setSize(size);
+		return this;
 	}
 
 	@Override
@@ -212,7 +229,6 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		this.fontSize = size;
 		this.fontScale = (float) size / (float) this.pixelFontSize;
 	}
-
 
 	@Override
 	public int charWidth(char c) {
@@ -273,16 +289,18 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public LSTRFont setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
+		return this;
 	}
 
 	public float getOffsetY() {
 		return offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public LSTRFont setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
 	}
 
 	public boolean isAsyn() {
@@ -382,6 +400,39 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return _outBounds;
 	}
 
+	public int getTextCount() {
+		return _chars != null ? _chars.size() : 0;
+	}
+
+	public String getChars() {
+		return _chars.getString();
+	}
+
+	public boolean containsChar(char c) {
+		return _chars.contains(c);
+	}
+
+	public boolean containsChars(String msg) {
+		return containsChars(msg, true);
+	}
+
+	public boolean containsChars(String msg, boolean filter) {
+		if (StringUtils.isEmpty(msg)) {
+			return true;
+		}
+		String newMessage = msg;
+		if (filter) {
+			newMessage = toMessage(msg);
+		}
+		int count = 0;
+		int len = newMessage.length();
+		for (int i = 0; i < len; i++) {
+			if (_chars.contains(newMessage.charAt(i))) {
+				count++;
+			}
+		}
+		return count == len;
+	}
 
 	@Override
 	public ITranslator getTranslator() {

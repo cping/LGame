@@ -194,6 +194,14 @@ public class Line extends Shape {
 		return _currentEnd.cpy();
 	}
 
+	public float getTheta() {
+		return MathUtils.atan2(_currentEnd.y - _currentStart.y, _currentEnd.x - _currentStart.x);
+	}
+
+	public float getRho() {
+		return getSubDirection().length();
+	}
+
 	public Vector2f getDirectionValue() {
 		return Field2D.getDirection(getDirection());
 	}
@@ -205,6 +213,10 @@ public class Line extends Shape {
 
 	public Vector2f getSubDirection() {
 		return _currentEnd.sub(_currentStart);
+	}
+
+	public Vector2f getSubDirectionNormalized() {
+		return getSubDirection().normalizeNew();
 	}
 
 	@Override
@@ -463,7 +475,7 @@ public class Line extends Shape {
 	public boolean intersects(XY pos) {
 		return inPoint(pos);
 	}
-	
+
 	public boolean intersects(Line other) {
 		return intersects(other, null);
 	}

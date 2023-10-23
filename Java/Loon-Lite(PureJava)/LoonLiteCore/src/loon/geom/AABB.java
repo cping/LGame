@@ -71,6 +71,29 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		this(0.0F, 0.0F, 0.0F, 0.0F);
 	}
 
+	public AABB(float radius) {
+		this(null, radius);
+	}
+
+	public AABB(Vector2f center, float radius) {
+		radius = MathUtils.max(0f, radius);
+		if (center == null) {
+			this.minX = -radius;
+			this.minY = -radius;
+			this.maxX = radius;
+			this.maxY = radius;
+		} else {
+			this.minX = center.x - radius;
+			this.minY = center.y - radius;
+			this.maxX = center.x + radius;
+			this.maxY = center.y + radius;
+		}
+	}
+
+	public AABB(AABB aabb) {
+		this(aabb.minX, aabb.minY, aabb.maxX, aabb.maxY);
+	}
+
 	public AABB(float minX, float minY, float maxX, float maxY) {
 		this.minX = minX;
 		this.minY = minY;
@@ -131,21 +154,21 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public int width() {
-		return (int) this.maxX;
+		return (int) getWidth();
 	}
 
 	public int height() {
-		return (int) this.maxY;
+		return (int) getHeight();
 	}
 
 	@Override
 	public float getWidth() {
-		return this.maxX;
+		return this.maxX - this.minX;
 	}
 
 	@Override
 	public float getHeight() {
-		return this.maxY;
+		return this.maxY - this.minY;
 	}
 
 	public AABB cpy() {
@@ -277,6 +300,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	public Vector2f[] getBoxCoordinates() {
 		return new Vector2f[] { new Vector2f(minX, maxY), new Vector2f(maxX, maxY), new Vector2f(maxX, minY),
 				new Vector2f(minX, minY) };
+	}
+
+	public float getPerimeter() {
+		return 2 * (maxX - minX + maxY - minY);
 	}
 
 	public float getArea() {
@@ -441,6 +468,14 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
+	public AABB setZero() {
+		this.minX = 0;
+		this.maxX = 0;
+		this.minY = 0;
+		this.maxY = 0;
+		return this;
+	}
+
 	@Override
 	public void setX(float x) {
 		this.minX = x;
@@ -585,6 +620,14 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 			this.maxY = _maxY > maxY ? _maxY : maxY;
 		}
 		return this;
+	}
+
+	public boolean isDegenerate() {
+		return this.minX == this.maxX || this.minY == this.maxY;
+	}
+
+	public boolean isDegenerate(float error) {
+		return MathUtils.abs(this.maxX - this.minX) <= error || MathUtils.abs(this.maxY - this.minY) <= error;
 	}
 
 	@Override

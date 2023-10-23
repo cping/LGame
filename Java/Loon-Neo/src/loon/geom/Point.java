@@ -63,14 +63,16 @@ public class Point extends Shape {
 		this(0f, 0f);
 	}
 
-	public Point(float x, float y) {
-		this.checkPoints();
-		this.setLocation(x, y);
+	public Point(XY p) {
+		this(p.getX(), p.getY());
 	}
 
 	public Point(Point p) {
-		this.checkPoints();
-		this.setLocation(p);
+		this(p.getX(), p.getY());
+	}
+
+	public Point(float x, float y) {
+		this.setLocation(x, y);
 	}
 
 	@Override
@@ -141,10 +143,7 @@ public class Point extends Shape {
 	}
 
 	public Point setLocation(Point p) {
-		this.x = p.getX();
-		this.y = p.getY();
-		this.pointsDirty = true;
-		return this;
+		return setLocation(p.getX(), p.getY());
 	}
 
 	@Override
@@ -197,10 +196,12 @@ public class Point extends Shape {
 		return CollisionHelper.checkPointvsCircle(this.x, this.y, cir);
 	}
 
+	@Override
 	public boolean inCircle(Circle c) {
 		return CollisionHelper.checkPointvsCircle(this.x, this.y, c.getRealX(), c.getRealY(), c.getDiameter());
 	}
 
+	@Override
 	public boolean inCircle(float cx, float cy, float d) {
 		return CollisionHelper.checkPointvsCircle(this.x, this.y, cx, cy, d);
 	}
@@ -235,6 +236,7 @@ public class Point extends Shape {
 		return CollisionHelper.checkPointvsAABB(this.x, this.y, rect);
 	}
 
+	@Override
 	public boolean inRect(RectBox rect) {
 		if (rect == null) {
 			return false;
@@ -243,6 +245,7 @@ public class Point extends Shape {
 				rect.getHeight());
 	}
 
+	@Override
 	public boolean inRect(float rx, float ry, float rw, float rh) {
 		return CollisionHelper.checkPointvsAABB(this.x, this.y, rx, ry, rw, rh);
 	}

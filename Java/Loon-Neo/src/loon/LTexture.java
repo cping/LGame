@@ -504,6 +504,11 @@ public class LTexture extends Painter implements LRelease {
 		GLUtils.bindTexture(gfx.gl, _id);
 	}
 
+	public void unbind(int unit) {
+		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
+		GLUtils.bindTexture(gfx.gl, 0);
+	}
+
 	public Clip getClip() {
 		return _textureClip;
 	}

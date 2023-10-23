@@ -204,9 +204,9 @@ public class Display extends BaseIO implements LRelease {
 
 	private long frameCount = 0l;
 
-	private int frameRate = 0;
+	private long frameDelta = 0l;
 
-	private float frameDelta = 0f;
+	private int frameRate = 0;
 
 	private IFont displayFont;
 
@@ -484,7 +484,7 @@ public class Display extends BaseIO implements LRelease {
 			} else {
 				updateClock.timeSinceLastUpdate = updateLoop;
 			}
-			if (updateClock.timeSinceLastUpdate > 1024) {
+			if (updateClock.timeSinceLastUpdate > LSystem.SECOND) {
 				updateClock.timeSinceLastUpdate = 0;
 			}
 			update(updateClock);
@@ -495,7 +495,7 @@ public class Display extends BaseIO implements LRelease {
 		} else {
 			paintClock.timeSinceLastUpdate = paintLoop;
 		}
-		if (paintClock.timeSinceLastUpdate > 1024) {
+		if (paintClock.timeSinceLastUpdate > LSystem.SECOND) {
 			paintClock.timeSinceLastUpdate = 0;
 		}
 		paintClock.tick = paintTick;
@@ -510,7 +510,7 @@ public class Display extends BaseIO implements LRelease {
 	 * @param setting
 	 * @param delta
 	 */
-	private final void drawDebug(final GLEx gl, final LSetting setting, final float delta) {
+	private final void drawDebug(final GLEx gl, final LSetting setting, final long delta) {
 		if (_closed) {
 			return;
 		}
@@ -522,7 +522,7 @@ public class Display extends BaseIO implements LRelease {
 
 			if (frameCount % 60 == 0) {
 				final int dstFPS = setting.fps;
-				final int newFps = MathUtils.round((1000f * frameCount) / frameDelta) + 1;
+				final int newFps = MathUtils.round((LSystem.SECOND * frameCount) / frameDelta) + 1;
 				this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
 				if (frameRate == dstFPS - 1) {
 					frameRate = MathUtils.max(dstFPS, frameRate);
@@ -533,7 +533,7 @@ public class Display extends BaseIO implements LRelease {
 				if (this.memorySelf) {
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append((((LTextures.getMemSize() * 100) >> 20) / 10f));
+					displayMessage.append(((float) ((LTextures.getMemSize() * 100) >> 20) / 10f));
 					displayMessage.append(" of ");
 					displayMessage.append('?');
 					displayMessage.append(" MB");
@@ -545,9 +545,9 @@ public class Display extends BaseIO implements LRelease {
 					long currentMemory = totalMemory - runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append((((currentMemory * 10) >> 20) / 10f));
+					displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
 					displayMessage.append(" of ");
-					displayMessage.append((((runtime.maxMemory() * 10) >> 20) / 10f));
+					displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
 					displayMessage.append(" MB");
 				}
 				displayMemony = displayMessage.toString();
@@ -577,10 +577,10 @@ public class Display extends BaseIO implements LRelease {
 				if (debug || setting.isSprites) {
 					displayFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
 				}
-			}
-			// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
-			if (debug && setting.isDisplayLog) {
-				paintLog(gl, 5, 65);
+				// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
+				if (debug && setting.isDisplayLog) {
+					paintLog(gl, 5, 65);
+				}
 			}
 		}
 	}

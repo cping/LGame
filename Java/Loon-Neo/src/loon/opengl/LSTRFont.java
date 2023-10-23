@@ -376,12 +376,13 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		this(font, (char[]) null, true);
 	}
 
-	public LSTRFont(LFont font, String strings) {
-		this(font, strings.toCharArray(), true);
+	public LSTRFont(LFont font, String message) {
+		this(font, (StringUtils.isNullOrEmpty(message) ? LSystem.EMPTY : message).toCharArray(), true);
 	}
 
-	public LSTRFont(LFont font, String strings, int width, int height, int maxWidth, int maxHeight) {
-		this(font, strings.toCharArray(), true, width, height, maxWidth, maxHeight);
+	public LSTRFont(LFont font, String message, int width, int height, int maxWidth, int maxHeight) {
+		this(font, (StringUtils.isNullOrEmpty(message) ? LSystem.EMPTY : message).toCharArray(), true, width, height,
+				maxWidth, maxHeight);
 	}
 
 	public LSTRFont(LFont font, String[] strings) {
@@ -392,12 +393,13 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		this(font, (char[]) null, asyn);
 	}
 
-	public LSTRFont(LFont font, String strings, boolean asyn) {
-		this(font, strings.toCharArray(), asyn);
+	public LSTRFont(LFont font, String message, boolean asyn) {
+		this(font, (StringUtils.isNullOrEmpty(message) ? LSystem.EMPTY : message).toCharArray(), asyn);
 	}
 
-	public LSTRFont(LFont font, String strings, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
-		this(font, strings.toCharArray(), asyn, tw, th, maxWidth, maxHeight);
+	public LSTRFont(LFont font, String message, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
+		this(font, (StringUtils.isNullOrEmpty(message) ? LSystem.EMPTY : message).toCharArray(), asyn, tw, th, maxWidth,
+				maxHeight);
 	}
 
 	public LSTRFont(LFont font, String[] strings, boolean asyn) {
@@ -1426,27 +1428,30 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return useCache;
 	}
 
-	public void setUseCache(boolean useCache) {
+	public LSTRFont setUseCache(boolean useCache) {
 		this.useCache = useCache;
 		if (checkOutBounds()) {
 			_childFont.setUseCache(useCache);
 		}
+		return this;
 	}
 
 	public float getOffsetX() {
 		return offsetX;
 	}
 
-	public void setOffsetX(float offsetX) {
+	public LSTRFont setOffsetX(float offsetX) {
 		this.offsetX = offsetX;
+		return this;
 	}
 
 	public float getOffsetY() {
 		return offsetY;
 	}
 
-	public void setOffsetY(float offsetY) {
+	public LSTRFont setOffsetY(float offsetY) {
 		this.offsetY = offsetY;
+		return this;
 	}
 
 	public boolean isAsyn() {
@@ -1542,8 +1547,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return _drawLimit;
 	}
 
-	public void setDrawLimit(int d) {
+	public LSTRFont setDrawLimit(int d) {
 		this._drawLimit = d;
+		return this;
 	}
 
 	public int getMaxTextureWidth() {

@@ -49,9 +49,12 @@ public class PointF implements XY, SetXY {
 		set(x1, y1);
 	}
 
+	public PointF(XY p) {
+		this(p.getX(), p.getY());
+	}
+
 	public PointF(PointF p) {
-		this.x = p.x;
-		this.y = p.y;
+		this(p.getX(), p.getY());
 	}
 
 	public PointF setEmpty() {

@@ -26,6 +26,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.geom.AABB;
 import loon.geom.RectBox;
+import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
@@ -40,7 +41,7 @@ public class GridEntity extends Entity {
 
 	private RectBox _gridRect;
 
-	private TArray<AABB> _gridLines;
+	private TArray<RectF> _gridLines;
 
 	private float _gridScale;
 
@@ -113,11 +114,11 @@ public class GridEntity extends Entity {
 				_gridLines.clear();
 			}
 			for (int x = 0; x < _gridRect.width() + 1; x++) {
-				_gridLines.add(new AABB(x * _cellWidth * _gridScale, 0, x * _cellWidth * _gridScale,
+				_gridLines.add(new RectF(x * _cellWidth * _gridScale, 0, x * _cellWidth * _gridScale,
 						_gridRect.height() * _cellHeight * _gridScale));
 			}
 			for (int y = 0; y < _gridRect.height() + 1; y++) {
-				_gridLines.add(new AABB(0, y * _cellHeight * _gridScale, _gridRect.width() * _cellWidth * _gridScale,
+				_gridLines.add(new RectF(0, y * _cellHeight * _gridScale, _gridRect.width() * _cellWidth * _gridScale,
 						y * _cellHeight * _gridScale));
 			}
 			_drity = false;
@@ -147,9 +148,9 @@ public class GridEntity extends Entity {
 		g.setStrokeWidth(_lineWidth);
 		g.setColor(_baseColor);
 		for (int i = 0; i < _gridLines.size; i++) {
-			AABB line = _gridLines.get(i);
-			g.drawLine(drawX(line.minX + offsetX), drawY(line.minY + offsetY), drawX(line.maxX + offsetX),
-					drawY(line.maxY + offsetY));
+			RectF line = _gridLines.get(i);
+			g.drawLine(drawX(line.x + offsetX), drawY(line.y + offsetY), drawX(line.width + offsetX),
+					drawY(line.height + offsetY));
 		}
 		g.setFillColor(tint);
 	}
@@ -160,15 +161,15 @@ public class GridEntity extends Entity {
 		g.setLineWidth(_lineWidth);
 		g.setColor(_baseColor);
 		for (int i = 0; i < _gridLines.size; i++) {
-			AABB line = _gridLines.get(i);
-			g.drawLine(drawX(line.minX + offsetX), drawY(line.minY + offsetY), drawX(line.maxX + offsetX),
-					drawY(line.maxY + offsetY));
+			RectF line = _gridLines.get(i);
+			g.drawLine(drawX(line.x + offsetX), drawY(line.y + offsetY), drawX(line.width + offsetX),
+					drawY(line.height + offsetY));
 		}
 		g.setLineWidth(lw);
 		g.setTint(tint);
 	}
 
-	public TArray<AABB> getGridLines() {
+	public TArray<RectF> getGridLines() {
 		return _gridLines.cpy();
 	}
 

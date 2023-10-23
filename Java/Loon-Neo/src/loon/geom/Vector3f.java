@@ -408,6 +408,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		this.set(x, y, z);
 	}
 
+	public Vector3f(final XYZ v) {
+		this.set(v);
+	}
+
 	public Vector3f(final Vector3f v) {
 		this.set(v);
 	}
@@ -433,6 +437,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		this.y = y;
 		this.z = z;
 		return this;
+	}
+
+	public Vector3f set(final XYZ v) {
+		return this.set(v.getX(), v.getY(), v.getZ());
 	}
 
 	public Vector3f set(final Vector3f v) {
@@ -803,7 +811,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public final Vector3f setEmpty() {
 		return set(0f);
 	}
-	
+
 	public Vector3f setLength2Self(float len2) {
 		float oldLen2 = len2();
 		return (oldLen2 == 0 || oldLen2 == len2) ? this : scaleSelf(MathUtils.sqrt(len2 / oldLen2));

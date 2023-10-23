@@ -405,6 +405,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public Vector3f(float x, float y, float z) {
 		this.set(x, y, z);
 	}
+	
+	public Vector3f(final XYZ v) {
+		this.set(v);
+	}
 
 	public Vector3f(final Vector3f v) {
 		this.set(v);
@@ -433,6 +437,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return this;
 	}
 
+	public Vector3f set(final XYZ v) {
+		return this.set(v.getX(), v.getY(), v.getZ());
+	}
+	
 	public Vector3f set(final Vector3f v) {
 		return this.set(v.x, v.y, v.z);
 	}

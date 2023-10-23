@@ -91,6 +91,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		this(v, v, v, v);
 	}
 
+	public Vector4f(XYZW v) {
+		this.set(v);
+	}
+
 	public Vector4f(Vector2f v, float z, float w) {
 		this(v.getX(), v.getY(), z, w);
 	}
@@ -339,6 +343,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 
 	public Vector4f scaleSelf(float s) {
 		return scaleSelf(s, s, s, s);
+	}
+
+	public Vector4f set(XYZW v) {
+		return set(v.getX(), v.getY(), v.getZ(), v.getW());
 	}
 
 	public Vector4f set(Vector4f v) {

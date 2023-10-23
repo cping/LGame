@@ -49,9 +49,12 @@ public class PointI implements XY, SetXY {
 		set(x1, y1);
 	}
 
+	public PointI(XY p) {
+		this(MathUtils.ifloor(p.getX()), MathUtils.ifloor(p.getY()));
+	}
+
 	public PointI(PointI p) {
-		this.x = p.x;
-		this.y = p.y;
+		this(MathUtils.ifloor(p.getX()), MathUtils.ifloor(p.getY()));
 	}
 
 	public PointI setEmpty() {

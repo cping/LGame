@@ -221,6 +221,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		setBounds(x, y, width, height);
 	}
 
+	public RectBox(XYZW rect) {
+		setBounds(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+
 	public RectBox(RectBox rect) {
 		setBounds(rect.x, rect.y, rect.width, rect.height);
 	}

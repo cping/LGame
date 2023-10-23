@@ -1171,6 +1171,10 @@ public final class MathUtils {
 		return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
 	}
 
+	public static int round(long x) {
+		return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
+	}
+
 	public static int roundPositive(float x) {
 		return (int) (x + 0.5f);
 	}

@@ -317,16 +317,21 @@ public class RectI implements XYZW, SetXY {
 		this(0, 0, 0, 0);
 	}
 
+	public RectI(int w, int h) {
+		this(0, 0, w, h);
+	}
+
+	public RectI(XYZW rect) {
+		this(MathUtils.ifloor(rect.getX()), MathUtils.ifloor(rect.getY()), MathUtils.ifloor(rect.getZ()),
+				MathUtils.ifloor(rect.getW()));
+	}
+
 	public RectI(RectI rect) {
 		this(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	public RectI(Range range) {
 		this(range.x(), range.y(), range.width(), range.height());
-	}
-
-	public RectI(int w, int h) {
-		this(0, 0, w, h);
 	}
 
 	public RectI(int x1, int y1, int w1, int h1) {

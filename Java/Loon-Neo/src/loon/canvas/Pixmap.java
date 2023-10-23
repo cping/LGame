@@ -476,6 +476,36 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		return multiply(pixel, _transparent);
 	}
 
+	public Pixmap distortionRand() {
+		return distortion(1f, MathUtils.random(0f, 7f) + 3f, MathUtils.random(0f, 6f));
+	}
+
+	public Pixmap distortion() {
+		return distortion(1f, 6f, 3f);
+	}
+
+	public Pixmap distortion(float dist, float period, float phase) {
+		if (dist <= 0f) {
+			dist = 1f;
+		}
+		for (int i = 0; i < _width; i++) {
+			for (int j = 0; j < _height; j++) {
+				int nX = distortionUpdate(dist, phase, period, _height, i, j);
+				int nY = j;
+				if (nX >= 0 && nX < _width && nY >= 0 && nY < _height) {
+					putPixel(nX, nY, getPixel(i, j));
+				}
+			}
+		}
+		return this;
+	}
+
+	private static int distortionUpdate(float rank, float phase, float period, int w, int y, int x) {
+		final float newX = MathUtils.PI * rank * x / w + phase;
+		final float newY = MathUtils.sin(newX);
+		return y + MathUtils.ifloor(newY * period);
+	}
+
 	/**
 	 * 向指定坐标插入像素
 	 * 

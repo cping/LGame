@@ -321,6 +321,10 @@ public class RectF implements XYZW, SetXY {
 		this(0, 0, w, h);
 	}
 
+	public RectF(XYZW rect) {
+		this(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+	
 	public RectF(RectF rect) {
 		this(rect.x, rect.y, rect.width, rect.height);
 	}
