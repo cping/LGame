@@ -29,6 +29,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.geom.Polygon;
+import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.geom.Shape;
 import loon.geom.Triangle2f;
@@ -201,10 +202,19 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	}
 
 	public void set(Pixmap pix) {
+		if (pix == null) {
+			throw new LSysException("Pixmap is null !");
+		}
 		this.set(CollectionUtils.copyOf(pix.getData()), pix.getWidth(), pix.getHeight(), pix.hasAlpha());
 	}
 
 	private void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
+		if (w < 0) {
+			throw new LSysException("Width may not be negative !");
+		}
+		if (h < 0) {
+			throw new LSysException("Height may not be negative !");
+		}
 		if (pixelsData == null) {
 			pixelsData = new int[w * h];
 		}
@@ -465,6 +475,33 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	public Pixmap multiply(LColor pixel) {
 		return multiply(pixel, _transparent);
+	}
+
+	public Pixmap noise() {
+		return noise(0.1f);
+	}
+
+	/**
+	 * 为当前pixmap增加干扰点
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Pixmap noise(float n) {
+		final float dist = MathUtils.limit(1f - n, 0f, 1f);
+		final LColor tmp = new LColor();
+		final LColor color = LColor.getRandomRGBAColor(0f, 0.5f);
+		int pixel = _transparent;
+		for (int i = 0; i < _width; i++) {
+			for (int j = 0; j < _height; j++) {
+				if (MathUtils.random() > dist) {
+					pixel = getPixel(i, j);
+					pixel = tmp.setColor(pixel).mul(color).getARGB();
+					putPixel(i, j, pixel);
+				}
+			}
+		}
+		return this;
 	}
 
 	public Pixmap distortionRand() {
@@ -2686,6 +2723,25 @@ public class Pixmap extends PixmapComposite implements LRelease {
 
 	public int getSize() {
 		return _length;
+	}
+
+	public RectBox getOpaqueBounds() {
+		final RectBox rect = new RectBox(this._width, this._height);
+		for (int i = 0; i < this._length; i++) {
+			int pixel = _drawPixels[i];
+			if (LColor.getAlpha(pixel) == 0) {
+				continue;
+			}
+			int cX = i % this._width;
+			int cY = i / this._width;
+			rect.x = MathUtils.min(rect.x, cX);
+			rect.y = MathUtils.min(rect.y, cY);
+			rect.width = MathUtils.max(rect.width, cX);
+			rect.height = MathUtils.max(rect.height, cY);
+		}
+		rect.width = MathUtils.ifloor(1 + MathUtils.max(0, rect.width - rect.x));
+		rect.height = MathUtils.ifloor(1 + MathUtils.max(0, rect.height - rect.y));
+		return rect;
 	}
 
 	public int[] getData() {

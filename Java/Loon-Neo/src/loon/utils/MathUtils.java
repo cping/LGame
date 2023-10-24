@@ -198,6 +198,19 @@ public final class MathUtils {
 		return (w > 0 && (w & (w - 1)) == 0 && h > 0 && (h & (h - 1)) == 0);
 	}
 
+	public static boolean isPowerOfTwo(int n) {
+		int i = 1;
+		for (;;) {
+			if (i > n) {
+				return false;
+			}
+			if (i == n) {
+				return true;
+			}
+			i = i * 2;
+		}
+	}
+
 	public static int previousPowerOfTwo(int value) {
 		final int power = (int) (log(value) / log(2));
 		return (int) pow(2, power);
@@ -1831,6 +1844,20 @@ public final class MathUtils {
 			angle += MathUtils.RAD_FULL;
 		}
 		return angle % MathUtils.RAD_FULL;
+	}
+
+	public static int getGreatestCommonDivisor(int a, int b) {
+		if (a < b) {
+			int t = a;
+			a = b;
+			b = t;
+		}
+		for (; b > 0;) {
+			int t = a % b;
+			a = b;
+			b = t;
+		}
+		return a;
 	}
 
 	public static boolean inAngleRange(final float angle, final float startAngle, final float endAngle) {

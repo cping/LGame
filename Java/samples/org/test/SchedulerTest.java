@@ -26,6 +26,7 @@ import loon.Stage;
 import loon.component.LLabel;
 import loon.utils.timer.Interval;
 import loon.utils.timer.Scheduler;
+import loon.utils.timer.Task;
 
 public class SchedulerTest extends Stage {
 
@@ -35,12 +36,12 @@ public class SchedulerTest extends Stage {
 		// 添加label组件,位于150,150位置
 		final LLabel label = addLabel("empty", 150, 150);
 
-		// 构建一个延迟事务管理器(remove项为true时,删除已经完成的延迟事务)
-		final Scheduler s = new Scheduler(true);
+		// 构建一个延迟事务管理器(remove项为true时,删除已经完成的延迟事务),顺序执行(上一个任务不完成不继续)
+		final Scheduler s = new Scheduler(true, true);
 		// 添加事务1,间隔0,执行3次
 		s.add(new Interval(0, 3) {
 
-			//构建计数器
+			// 构建计数器
 			Counter c = newCounter();
 
 			@Override

@@ -2542,6 +2542,14 @@ final public class StringUtils extends CharUtils {
 		return o == null ? def : o.toString();
 	}
 
+	public static String toHexString(final String cs) {
+		try {
+			return toHex(cs.getBytes(LSystem.ENCODING));
+		} catch (Exception e) {
+			return LSystem.EMPTY;
+		}
+	}
+
 	public static String getString(final CharSequence... chs) {
 		return new StrBuilder(chs).toString();
 	}

@@ -164,11 +164,26 @@ public class CharUtils {
 	}
 
 	public static String toHex(int value) {
-		byte[] bytes = new byte[4];
+		final byte[] bytes = new byte[4];
 		bytes[0] = (byte) (value >>> 24);
 		bytes[1] = (byte) ((value >> 16) & 0xff);
 		bytes[2] = (byte) ((value >> 8) & 0xff);
 		bytes[3] = (byte) (value & 0xff);
+		return toHex(bytes, true);
+	}
+
+	public static String toHex(long value) {
+		final byte[] bytes = new byte[8];
+		final int v1 = (int) (value >>> 32);
+		bytes[0] = (byte) (v1 >>> 24);
+		bytes[1] = (byte) ((v1 >> 16) & 0xff);
+		bytes[2] = (byte) ((v1 >> 8) & 0xff);
+		bytes[3] = (byte) (v1 & 0xff);
+		final int v2 = (int) (value & 0xffffffffL);
+		bytes[4] = (byte) (v2 >>> 24);
+		bytes[5] = (byte) ((v2 >> 16) & 0xff);
+		bytes[6] = (byte) ((v2 >> 8) & 0xff);
+		bytes[7] = (byte) (v2 & 0xff);
 		return toHex(bytes, true);
 	}
 

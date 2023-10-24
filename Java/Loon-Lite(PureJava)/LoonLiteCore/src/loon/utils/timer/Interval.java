@@ -21,6 +21,7 @@
 package loon.utils.timer;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.events.ActionUpdate;
 
 /**
@@ -34,32 +35,56 @@ public abstract class Interval implements ActionUpdate, LRelease {
 
 	protected final LTimer _loop_timer;
 
+	protected Runnable _runnable;
+
 	public Interval() {
-		this._loop_timer = new LTimer(0L);
+		this(0L);
 	}
 
 	public Interval(long delay) {
-		this._loop_timer = new LTimer(delay);
+		this(delay, -1);
 	}
 
 	public Interval(Duration d) {
-		this._loop_timer = new LTimer(d);
-	}
-
-	public Interval(String name, long delay) {
-		this._loop_timer = new LTimer(name, delay);
-	}
-
-	public Interval(long delay, int loopCount) {
-		this._loop_timer = new LTimer(delay, loopCount);
-	}
-
-	public Interval(String name, long delay, int loopCount) {
-		this._loop_timer = new LTimer(name, delay, loopCount);
+		this(LSystem.UNKNOWN, d);
 	}
 
 	public Interval(String name, Duration d) {
+		this(name, d, null);
+	}
+
+	public Interval(String name, long delay) {
+		this(delay, -1);
+	}
+
+	public Interval(Runnable e) {
+		this(0, e);
+	}
+
+	public Interval(long delay, Runnable e) {
+		this(delay, -1, e);
+	}
+
+	public Interval(long delay, int loopCount, Runnable e) {
+		this(LSystem.UNKNOWN, delay, loopCount, e);
+	}
+
+	public Interval(long delay, int loopCount) {
+		this(delay, loopCount, null);
+	}
+
+	public Interval(String name, long delay, int loopCount) {
+		this(name, delay, loopCount, null);
+	}
+
+	public Interval(String name, long delay, int loopCount, Runnable e) {
+		this._loop_timer = new LTimer(name, delay, loopCount);
+		this._runnable = e;
+	}
+
+	public Interval(String name, Duration d, Runnable e) {
 		this._loop_timer = new LTimer(name, d);
+		this._runnable = e;
 	}
 
 	public Interval start() {
@@ -80,9 +105,22 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return this;
 	}
 
+	public Interval resume() {
+		return unpause();
+	}
+
 	public Interval unpause() {
 		_loop_timer.unpause();
 		return this;
+	}
+
+	public Interval setDelayS(float s) {
+		_loop_timer.setDelayS(s);
+		return this;
+	}
+
+	public float getDelayS() {
+		return _loop_timer.getDelayS();
 	}
 
 	public Interval setDelay(long d) {
@@ -98,6 +136,14 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return _loop_timer.getName();
 	}
 
+	public boolean looping() {
+		return _loop_timer.looping();
+	}
+
+	public int getRepeatCount() {
+		return _loop_timer.getTimesRepeated();
+	}
+
 	public boolean isActive() {
 		return _loop_timer.isActive();
 	}
@@ -111,13 +157,31 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return _loop_timer.isCompleted();
 	}
 
-	public LTimer currentTimer() {
-		return _loop_timer;
+	protected boolean call(LTimerContext context) {
+		if (_loop_timer.action(context)) {
+			if (!_loop_timer.isCompleted()) {
+				action(this);
+			}
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void action(Object o) {
+		if (_runnable != null) {
+			_runnable.run();
+		}
 		loop();
+	}
+
+	public Runnable getRunnable() {
+		return _runnable;
+	}
+
+	public Interval setRunnable(Runnable r) {
+		this._runnable = r;
+		return this;
 	}
 
 	public abstract void loop();

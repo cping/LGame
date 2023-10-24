@@ -652,6 +652,32 @@ public class ArrayByte implements IArray, LRelease {
 		return MD5.get().encryptBytes(this);
 	}
 
+	public String toBase64() {
+		return toString();
+	}
+
+	public String toBase64Hex() {
+		return CharUtils.toHex(Base64Coder.encode(_buffer));
+	}
+
+	public String toCRC32Hex() {
+		return CRC32.toHexString(_buffer);
+	}
+
+	public String toCRC64Hex() {
+		return CRC64.toHexString(_buffer);
+	}
+
+	public String toBase64ConvertCRC32Hex() {
+		final byte[] bytes = Base64Coder.encode(_buffer);
+		return CRC32.toHexString(bytes);
+	}
+
+	public String toBase64ConvertCRC64Hex() {
+		final byte[] bytes = Base64Coder.encode(_buffer);
+		return CRC64.toHexString(bytes);
+	}
+
 	@Override
 	public int size() {
 		return length();

@@ -91,6 +91,89 @@ public class LTimer implements LRelease {
 		return _instance;
 	}
 
+	public static Task postTask(Runnable e) {
+		return postTask(LSystem.UNKNOWN, e, 0f);
+	}
+
+	public static Task postTask(String name, Runnable e) {
+		return postTask(name, e, 0f);
+	}
+
+	public static Task postTask(String name, Runnable e, float seconds) {
+		return postTask(name, e, seconds, -1);
+	}
+
+	public static Task postTask(Runnable e, float seconds) {
+		return postTask(e, seconds, -1);
+	}
+
+	public static Task postTask(Runnable e, float seconds, int loopCount) {
+		return postTask(LSystem.UNKNOWN, e, seconds, loopCount);
+	}
+
+	/**
+	 * 提交一个任务进程到游戏中去,并返回Task
+	 * 
+	 * @param name      任务名
+	 * @param e         进程事件
+	 * @param seconds   间隔描述
+	 * @param loopCount 任务循环次数
+	 * @return
+	 */
+	public static Task postTask(String name, Runnable e, float seconds, int loopCount) {
+		synchronized (RealtimeProcessManager.class) {
+			synchronized (LTimer.class) {
+				if (e != null) {
+					synchronized (e) {
+						final Task task = new Task(name, seconds, loopCount, e);
+						task.start();
+						return task;
+					}
+				} else {
+					return new Task(name, seconds, loopCount);
+				}
+			}
+		}
+	}
+
+	public static Scheduler schedulerTask(float seconds, boolean sequence, Interval... tasks) {
+		return schedulerTask(seconds, true, sequence, tasks);
+	}
+
+	public static Scheduler schedulerTask(float seconds, Interval... tasks) {
+		return schedulerTask(seconds, true, true, tasks);
+	}
+
+	public static Scheduler schedulerTask(float seconds, boolean removeTask, boolean sequence, Interval... tasks) {
+		return schedulerTask(LSystem.UNKNOWN, seconds, removeTask, sequence, tasks);
+	}
+
+	/**
+	 * 将所有指定游戏任务集中提交到一个Scheduler中去,并返回Scheduler
+	 * 
+	 * @param name       调度器名称
+	 * @param seconds    间隔秒数
+	 * @param removeTask 是否执行后删除
+	 * @param sequence   是否顺序执行
+	 * @param tasks      注入的任务集合
+	 * @return
+	 */
+	public static Scheduler schedulerTask(String name, float seconds, boolean removeTask, boolean sequence,
+			Interval... tasks) {
+		synchronized (RealtimeProcessManager.class) {
+			synchronized (LTimer.class) {
+				final Scheduler scheduler = new Scheduler(name, Duration.ofS(seconds), removeTask, sequence);
+				if (tasks != null && tasks.length > 0) {
+					synchronized (tasks) {
+						scheduler.addAll(tasks);
+					}
+					scheduler.start();
+				}
+				return scheduler;
+			}
+		}
+	}
+
 	public static LTimer get() {
 		return shared();
 	}
@@ -258,6 +341,13 @@ public class LTimer implements LRelease {
 	public LTimer addPercentage(LTimerContext context) {
 		this._currentTick += context.timeSinceLastUpdate;
 		return this;
+	}
+
+	public boolean looping() {
+		if (_completed || _maxNumberOfRepeats == -1) {
+			return false;
+		}
+		return this._numberOfTicks <= this._maxNumberOfRepeats;
 	}
 
 	public int getTimesRepeated() {

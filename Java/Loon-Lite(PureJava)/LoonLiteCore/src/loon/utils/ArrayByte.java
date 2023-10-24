@@ -218,7 +218,7 @@ public class ArrayByte implements IArray, LRelease {
 	public ArrayByte(byte[] data, int pos, int order) {
 		this.setBuffer(data, pos, order);
 	}
-	
+
 	protected void setBuffer(byte[] data, int pos, int order) {
 		this._buffer = data;
 		this.setOrder(order);
@@ -231,7 +231,7 @@ public class ArrayByte implements IArray, LRelease {
 		_byteOrder = type;
 		return this;
 	}
-	
+
 	public ArrayByte reset() {
 		return setOrder(_byteOrder);
 	}
@@ -403,8 +403,8 @@ public class ArrayByte implements IArray, LRelease {
 	public int readInt() throws LSysException {
 		checkAvailable(4);
 		if (_byteOrder == LITTLE_ENDIAN) {
-			return (_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8) | ((_buffer[_position++] & 0xff) << 16)
-					| ((_buffer[_position++] & 0xff) << 24);
+			return (_buffer[_position++] & 0xff) | ((_buffer[_position++] & 0xff) << 8)
+					| ((_buffer[_position++] & 0xff) << 16) | ((_buffer[_position++] & 0xff) << 24);
 		} else {
 			return ((_buffer[_position++] & 0xff) << 24) | ((_buffer[_position++] & 0xff) << 16)
 					| ((_buffer[_position++] & 0xff) << 8) | (_buffer[_position++] & 0xff);
@@ -650,6 +650,32 @@ public class ArrayByte implements IArray, LRelease {
 
 	public String cryptMD5Data() {
 		return MD5.get().encryptBytes(this);
+	}
+
+	public String toBase64() {
+		return toString();
+	}
+
+	public String toBase64Hex() {
+		return CharUtils.toHex(Base64Coder.encode(_buffer));
+	}
+
+	public String toCRC32Hex() {
+		return CRC32.toHexString(_buffer);
+	}
+
+	public String toCRC64Hex() {
+		return CRC64.toHexString(_buffer);
+	}
+
+	public String toBase64ConvertCRC32Hex() {
+		final byte[] bytes = Base64Coder.encode(_buffer);
+		return CRC32.toHexString(bytes);
+	}
+
+	public String toBase64ConvertCRC64Hex() {
+		final byte[] bytes = Base64Coder.encode(_buffer);
+		return CRC64.toHexString(bytes);
 	}
 
 	@Override

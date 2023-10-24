@@ -169,6 +169,10 @@ public class StopwatchTimer {
 		return this;
 	}
 
+	public long getTimestamp() {
+		return TimeUtils.millis();
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("StopwatchTimer");

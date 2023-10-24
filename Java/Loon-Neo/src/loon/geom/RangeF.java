@@ -28,7 +28,11 @@ public class RangeF implements XY, SetXY {
 
 	private float min;
 
-	private boolean enabled = false;
+	private boolean enabled = true;
+
+	public RangeF(XY pos) {
+		this(pos.getX(), pos.getY());
+	}
 
 	public RangeF(float min, float max) {
 		this.min = min;
@@ -48,11 +52,22 @@ public class RangeF implements XY, SetXY {
 		return this;
 	}
 
+	public boolean contains(float v) {
+		return this.min <= v && this.max >= v;
+	}
+
+	public boolean contains(XY v) {
+		return this.contains(v.getX()) && this.contains(v.getY());
+	}
+
 	public float getMax() {
 		return max;
 	}
 
 	public RangeF setMax(float max) {
+		if (!enabled) {
+			return this;
+		}
 		this.max = max;
 		return this;
 	}
@@ -62,17 +77,26 @@ public class RangeF implements XY, SetXY {
 	}
 
 	public RangeF setMin(float min) {
+		if (!enabled) {
+			return this;
+		}
 		this.min = min;
 		return this;
 	}
 
 	@Override
 	public void setX(float x) {
+		if (!enabled) {
+			return;
+		}
 		this.min = x;
 	}
 
 	@Override
 	public void setY(float y) {
+		if (!enabled) {
+			return;
+		}
 		this.max = y;
 	}
 
@@ -86,7 +110,58 @@ public class RangeF implements XY, SetXY {
 		return max;
 	}
 
+	public float getWidth() {
+		return this.max - this.min;
+	}
+
+	public float getCenter() {
+		return (this.max + this.min) * 0.5f;
+	}
+
+	public float lerp(float ratio) {
+		return MathUtils.lerp(this.min, this.max, ratio);
+	}
+
+	public RangeF add(float pMin, float pMax) {
+		return new RangeF(this.min + pMin, this.max + pMax);
+	}
+
+	public RangeF sub(float pMin, float pMax) {
+		return new RangeF(this.min - pMin, this.max - pMax);
+	}
+
+	public RangeF mul(float pMin, float pMax) {
+		return new RangeF(this.min * pMin, this.max * pMax);
+	}
+
+	public RangeF div(float pMin, float pMax) {
+		return new RangeF(this.min / pMin, this.max / pMax);
+	}
+
 	public RangeF cpy() {
 		return new RangeF(this.min, this.max);
+	}
+
+	public boolean equals(RangeF other) {
+		return this.min == other.min && this.max == other.max;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj instanceof RangeF) {
+			return this.equals((RangeF) obj);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return min + " to " + max;
 	}
 }

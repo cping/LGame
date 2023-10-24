@@ -1761,7 +1761,7 @@ final public class StringUtils extends CharUtils {
 		}
 		return false;
 	}
-	
+
 	public static String unificationStrings(String mes) {
 		return unificationStrings(mes, null);
 	}
@@ -2540,6 +2540,14 @@ final public class StringUtils extends CharUtils {
 
 	public static String toString(final Object o, final String def) {
 		return o == null ? def : o.toString();
+	}
+
+	public static String toHexString(final String cs) {
+		try {
+			return toHex(cs.getBytes(LSystem.ENCODING));
+		} catch (Exception e) {
+			return LSystem.EMPTY;
+		}
 	}
 
 	public static String getString(final CharSequence... chs) {

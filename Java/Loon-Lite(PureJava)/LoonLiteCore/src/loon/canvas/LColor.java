@@ -1718,6 +1718,16 @@ public class LColor implements Serializable {
 	/**
 	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
 	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor mul(int v) {
+		return multiply(v);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -1733,6 +1743,16 @@ public class LColor implements Serializable {
 	 */
 	public LColor multiply(float v) {
 		return new LColor(r * v, g * v, b * v, a * v);
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor multiply(int v) {
+		return new LColor(v);
 	}
 
 	/**
@@ -1761,6 +1781,16 @@ public class LColor implements Serializable {
 	/**
 	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
 	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor div(int v) {
+		return divide(v);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -1776,6 +1806,16 @@ public class LColor implements Serializable {
 	 */
 	public LColor divide(float v) {
 		return new LColor(r / v, g / v, b / v, a / v);
+	}
+
+	/**
+	 * 让当前色彩做除法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor divide(int v) {
+		return new LColor(v);
 	}
 
 	/**
@@ -1804,6 +1844,16 @@ public class LColor implements Serializable {
 	/**
 	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
 	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor add(int v) {
+		return addition(v);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -1819,6 +1869,16 @@ public class LColor implements Serializable {
 	 */
 	public LColor addition(float v) {
 		return new LColor(r + v, g + v, b + v, a + v);
+	}
+
+	/**
+	 * 让当前色彩做加法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor addition(int v) {
+		return new LColor(v);
 	}
 
 	/**
@@ -1847,6 +1907,16 @@ public class LColor implements Serializable {
 	/**
 	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
 	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor sub(int v) {
+		return subtraction(v);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
 	 * @param c
 	 * @return
 	 */
@@ -1862,6 +1932,16 @@ public class LColor implements Serializable {
 	 */
 	public LColor subtraction(float v) {
 		return new LColor(r - v, g - v, b - v, a - v);
+	}
+
+	/**
+	 * 让当前色彩做减法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public LColor subtraction(int v) {
+		return new LColor(v);
 	}
 
 	/**

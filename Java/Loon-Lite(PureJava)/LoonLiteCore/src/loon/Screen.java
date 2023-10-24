@@ -5727,7 +5727,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public boolean isDesktopSortableChildren() {
 		return this._currentDesktop != null ? this._currentDesktop.isSortableChildren() : false;
 	}
-	
+
 	@Override
 	public float getCurrentTimer() {
 		return TimeUtils.currentTime();
@@ -5803,8 +5803,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return true;
 	}
 
-	public void println(String msg) {
-		LSystem.info(msg);
+	public void println(Object msg) {
+		LSystem.info(toStr(msg));
 	}
 
 	public void println(String msg, Object... args) {

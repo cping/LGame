@@ -29,7 +29,7 @@ import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 
 /**
- * 一个简单的Interval游戏事务延迟管理器,可以在其中存储多个Interval并统一提交到游戏循环中,进行统一管理.
+ * 一个简单的Interval游戏事务延迟管理器(本质上依旧是LTimer封装),可以在其中存储多个Interval并统一提交到游戏循环中,进行统一管理.
  * 
  * 例如:
  * 
@@ -97,9 +97,11 @@ public class Scheduler implements LRelease {
 
 	private final LTimer _loop_timer;
 
-	private SchedulerProcess _processScheduler;
+	private final TArray<Interval> _scheduled;
 
-	private TArray<Interval> _scheduled = new TArray<Interval>(32);
+	private final TArray<Interval> _removed;
+
+	private SchedulerProcess _processScheduler;
 
 	private int _childIndex = 0;
 
@@ -151,6 +153,8 @@ public class Scheduler implements LRelease {
 	 */
 	public Scheduler(String name, long delay, boolean removeTask, boolean sequence) {
 		this._loop_timer = new LTimer(name, delay);
+		this._scheduled = new TArray<Interval>(32);
+		this._removed = new TArray<Interval>();
 		this._removeSequenceTask = removeTask;
 		this._forceWaitSequence = sequence;
 		this._closed = false;
@@ -186,16 +190,39 @@ public class Scheduler implements LRelease {
 	public Scheduler stop() {
 		this.pause();
 		this.kill();
+		_loop_timer.stop();
+		for (int i = _scheduled.size - 1; i > -1; i--) {
+			Interval u = _scheduled.get(i);
+			if (u != null) {
+				u._loop_timer.stop();
+			}
+		}
 		return this;
 	}
 
 	public Scheduler pause() {
 		this._loop_timer.pause();
+		for (int i = _scheduled.size - 1; i > -1; i--) {
+			Interval u = _scheduled.get(i);
+			if (u != null) {
+				u._loop_timer.pause();
+			}
+		}
 		return this;
+	}
+
+	public Scheduler resume() {
+		return unpause();
 	}
 
 	public Scheduler unpause() {
 		this._loop_timer.unpause();
+		for (int i = _scheduled.size - 1; i > -1; i--) {
+			Interval u = _scheduled.get(i);
+			if (u != null) {
+				u._loop_timer.unpause();
+			}
+		}
 		return this;
 	}
 
@@ -207,8 +234,17 @@ public class Scheduler implements LRelease {
 		return _scheduled.add(sched);
 	}
 
+	public Scheduler addAll(Interval... s) {
+		_scheduled.addAll(s);
+		return this;
+	}
+
 	public boolean remove(Interval sched) {
 		return _scheduled.remove(sched);
+	}
+
+	public boolean removeAll(Interval... s) {
+		return _scheduled.removeAll(new TArray<Interval>(s));
 	}
 
 	public Interval removeIndex(int idx) {
@@ -268,34 +304,48 @@ public class Scheduler implements LRelease {
 			return;
 		}
 		if (_loop_timer.action(context)) {
-			if (_scheduled.size > 0) {
-				final boolean seq = (_forceWaitSequence && _removeSequenceTask);
-				int index = seq ? 0 : MathUtils.max(0, _childIndex);
-				Interval i = _scheduled.get(index);
-				if (i != null) {
-					if (i._loop_timer.action(context)) {
-						i.loop();
-					}
-					if (_forceWaitSequence) {
-						if (i.completed()) {
+			final int size = _scheduled.size;
+			if (size > 0) {
+				Interval interval = null;
+				final boolean seq = _forceWaitSequence;
+				if (seq) {
+					final int index = seq ? 0 : MathUtils.max(0, _childIndex);
+					interval = _scheduled.get(index);
+					if (interval != null) {
+						interval.call(context);
+						final boolean over = interval.completed() || interval.isClosed();
+						if (over) {
 							if (_removeSequenceTask) {
-								_scheduled.removeFirst();
+								if (!interval.looping()) {
+									_scheduled.removeFirst();
+								}
 							} else {
 								_childIndex++;
 							}
-						} else if (i.completed() && !seq) {
-							_childIndex++;
-						}
-					} else {
-						if (_removeSequenceTask) {
-							_scheduled.removeFirst();
-						} else {
+						} else if (interval.completed() && !seq) {
 							_childIndex++;
 						}
 					}
-				}
-				if (_childIndex >= _scheduled.size) {
-					_childIndex = 0;
+					if (_childIndex >= _scheduled.size) {
+						_childIndex = 0;
+					}
+				} else {
+					_removed.clear();
+					for (int i = 0; i < size; i++) {
+						interval = _scheduled.get(i);
+						if (interval != null) {
+							interval.call(context);
+							if (!interval.looping()) {
+								final boolean over = interval.completed() || interval.isClosed();
+								if (over && _removeSequenceTask) {
+									_removed.add(interval);
+								}
+							}
+						}
+					}
+					if (_removed.size > 0) {
+						_scheduled.removeAll(_removed);
+					}
 				}
 			}
 		}
