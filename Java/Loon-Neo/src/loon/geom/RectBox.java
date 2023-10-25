@@ -1276,12 +1276,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox add(float px, float py) {
-		float x1 = MathUtils.min(x, px);
-		float x2 = MathUtils.max(x + width, px);
-		float y1 = MathUtils.min(y, py);
-		float y2 = MathUtils.max(y + height, py);
-		setBounds(x1, y1, x2 - x1, y2 - y1);
-		return this;
+		return cpy().addSelf(px, py);
 	}
 
 	public RectBox add(XY pos) {
@@ -1292,6 +1287,26 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox add(RectBox r) {
+		return cpy().addSelf(r);
+	}
+
+	public RectBox addSelf(float px, float py) {
+		float x1 = MathUtils.min(x, px);
+		float x2 = MathUtils.max(x + width, px);
+		float y1 = MathUtils.min(y, py);
+		float y2 = MathUtils.max(y + height, py);
+		setBounds(x1, y1, x2 - x1, y2 - y1);
+		return this;
+	}
+
+	public RectBox addSelf(XY pos) {
+		if (pos == null) {
+			return cpy();
+		}
+		return addSelf(pos.getX(), pos.getY());
+	}
+
+	public RectBox addSelf(RectBox r) {
 		int tx2 = this.width;
 		int ty2 = this.height;
 		if ((tx2 | ty2) < 0) {

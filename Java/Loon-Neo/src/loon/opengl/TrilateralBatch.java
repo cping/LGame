@@ -36,23 +36,25 @@ public class TrilateralBatch extends BaseBatch {
 
 	private final ExpandVertices _expandVertices;
 
-	private int _blendMode = -1;
-
 	private float _ubufWidth = 0;
 
 	private float _ubufHeight = 0;
+
+	private int _currentBlendMode = -1;
+
+	private int _currentAlpha;
+
+	private int _currentIndexCount = 0;
+
+	private int _maxSpritesInBatch = 0;
 
 	private boolean _uflip = true;
 
 	private boolean _loaded = false, _locked = false;
 
-	private int _maxSpritesInBatch = 0;
+	private ShaderProgram _currentBatchShader;
 
-	private int _indexCount = 0;
-
-	private ShaderProgram _batchShader;
-
-	private Submit _submit;
+	private Submit _currentSubmit;
 
 	public TrilateralBatch(GL20 gl) {
 		this(gl, LSystem.DEF_SOURCE);
@@ -72,12 +74,10 @@ public class TrilateralBatch extends BaseBatch {
 
 	@Override
 	public void init() {
-		this._submit = new Submit();
-		this._blendMode = -1;
-		this._alpha = 255;
+		this._currentSubmit = new Submit();
+		this._currentBlendMode = -1;
+		this._currentAlpha = 255;
 	}
-
-	private int _alpha;
 
 	protected final static float addX(float m00, float m01, float m10, float m11, float x, float y, float tx) {
 		return m00 * x + m10 * y + tx;
@@ -107,16 +107,16 @@ public class TrilateralBatch extends BaseBatch {
 		final int r = (tint & 0x00FF0000) >> 16;
 		final int g = (tint & 0x0000FF00) >> 8;
 		final int b = (tint & 0x000000FF);
-		_alpha = (tint & 0xFF000000) >> 24;
-		if (_alpha < 0) {
-			_alpha += 256;
+		_currentAlpha = (tint & 0xFF000000) >> 24;
+		if (_currentAlpha < 0) {
+			_currentAlpha += 256;
 		}
 
-		final int color = (_alpha << 24) | (b << 16) | (g << 8) | r;
+		final int color = (_currentAlpha << 24) | (b << 16) | (g << 8) | r;
 
 		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
 
-		int index = this._indexCount;
+		int index = this._currentIndexCount;
 
 		_expandVertices.setVertice(index++, nx1);
 		_expandVertices.setVertice(index++, ny1);
@@ -142,7 +142,7 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, sx3);
 		_expandVertices.setVertice(index++, sy3);
 
-		this._indexCount = index;
+		this._currentIndexCount = index;
 
 		if (lastTexId != curTexId) {
 			flush();
@@ -156,12 +156,12 @@ public class TrilateralBatch extends BaseBatch {
 		final int r = (tint & 0x00FF0000) >> 16;
 		final int g = (tint & 0x0000FF00) >> 8;
 		final int b = (tint & 0x000000FF);
-		_alpha = (tint & 0xFF000000) >> 24;
-		if (_alpha < 0) {
-			_alpha += 256;
+		_currentAlpha = (tint & 0xFF000000) >> 24;
+		if (_currentAlpha < 0) {
+			_currentAlpha += 256;
 		}
 
-		final int color = (_alpha << 24) | (b << 16) | (g << 8) | r;
+		final int color = (_currentAlpha << 24) | (b << 16) | (g << 8) | r;
 
 		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
 
@@ -183,7 +183,7 @@ public class TrilateralBatch extends BaseBatch {
 		final float nx4 = addX(m00, m01, m10, m11, x4, y4, tx);
 		final float ny4 = addY(m00, m01, m10, m11, x4, y4, ty);
 
-		int index = this._indexCount;
+		int index = this._currentIndexCount;
 
 		_expandVertices.setVertice(index++, nx1);
 		_expandVertices.setVertice(index++, ny1);
@@ -209,7 +209,7 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, u2);
 		_expandVertices.setVertice(index++, v);
 
-		this._indexCount = index;
+		this._currentIndexCount = index;
 
 		if (lastTexId != curTexId) {
 			flush();
@@ -239,29 +239,28 @@ public class TrilateralBatch extends BaseBatch {
 		}
 		final boolean dirty = isShaderDirty();
 		if (!_loaded || dirty) {
-			if (_batchShader == null || dirty) {
-				if (_batchShader != null) {
-					_batchShader.close();
-					_batchShader = null;
+			if (_currentBatchShader == null || dirty) {
+				if (_currentBatchShader != null) {
+					_currentBatchShader.close();
+					_currentBatchShader = null;
 				}
-				_batchShader = LSystem.createShader(_shader_source.vertexShader(), _shader_source.fragmentShader());
+				_currentBatchShader = createShaderProgram();
 				setShaderDirty(false);
 			}
 			_loaded = true;
 		}
-		_batchShader.begin();
+		_currentBatchShader.begin();
 		setupMatrices();
 	}
 
 	@Override
-	public void flush() {
-		super.flush();
-		if (_indexCount > 0) {
-			submit();
-		}
-		if (_batchShader != null) {
-			_batchShader.end();
-		}
+	protected ShaderProgram createShaderProgram() {
+		return GLUtils.createShaderProgram(_shader_source.vertexShader(), _shader_source.fragmentShader());
+	}
+
+	@Override
+	protected ShaderProgram getShaderProgram() {
+		return _currentBatchShader;
 	}
 
 	protected int vertexSize() {
@@ -271,8 +270,19 @@ public class TrilateralBatch extends BaseBatch {
 	@Override
 	public void end() {
 		super.end();
-		this._blendMode = -1;
-		this._alpha = 255;
+		this._currentBlendMode = -1;
+		this._currentAlpha = 255;
+	}
+
+	@Override
+	public void flush() {
+		super.flush();
+		if (_currentIndexCount > 0) {
+			submit();
+		}
+		if (_currentBatchShader != null) {
+			_currentBatchShader.end();
+		}
 	}
 
 	public int getSize() {
@@ -280,15 +290,15 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	public TrilateralBatch setShaderUniformf(String name, LColor color) {
-		if (_batchShader != null) {
-			_batchShader.setUniformf(name, color);
+		if (_currentBatchShader != null) {
+			_currentBatchShader.setUniformf(name, color);
 		}
 		return this;
 	}
 
 	public TrilateralBatch setShaderUniformf(int name, LColor color) {
-		if (_batchShader != null) {
-			_batchShader.setUniformf(name, color);
+		if (_currentBatchShader != null) {
+			_currentBatchShader.setUniformf(name, color);
 		}
 		return this;
 	}
@@ -303,68 +313,68 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	public void submit() {
-		if (_indexCount == 0) {
+		if (_currentIndexCount == 0) {
 			return;
 		}
 		try {
-			int spritesInBatch = _indexCount / 20;
+			final int spritesInBatch = _currentIndexCount / 20;
 			if (spritesInBatch > _maxSpritesInBatch) {
 				_maxSpritesInBatch = spritesInBatch;
 			}
-			int count = spritesInBatch * 6;
+			final int count = spritesInBatch * 6;
 			bindTexture();
-			GL20 gl = LSystem.base().graphics().gl;
-			int blend = GLUtils.getBlendMode();
-			if (_blendMode == -1) {
-				if (_alpha >= 240) {
+			final GL20 gl = LSystem.base().graphics().gl;
+			final int blend = GLUtils.getBlendMode();
+			if (_currentBlendMode == -1) {
+				if (_currentAlpha >= 240) {
 					GLUtils.setBlendMode(gl, BlendMethod.MODE_NORMAL);
 				} else {
 					GLUtils.setBlendMode(gl, BlendMethod.MODE_SPEED);
 				}
 			} else {
-				GLUtils.setBlendMode(gl, _blendMode);
+				GLUtils.setBlendMode(gl, _currentBlendMode);
 			}
-			_submit.post(BATCHNAME, _expandVertices.getSize(), _batchShader, _expandVertices.getVertices(), _indexCount,
-					count);
+			_currentSubmit.post(BATCHNAME, _expandVertices.getSize(), _currentBatchShader,
+					_expandVertices.getVertices(), _currentIndexCount, count);
 			GLUtils.setBlendMode(gl, blend);
 		} catch (Throwable ex) {
 			LSystem.error("Batch submit() error", ex);
 		} finally {
-			if (_expandVertices.expand(this._indexCount)) {
-				_submit.reset(BATCHNAME, _expandVertices.length());
+			if (_expandVertices.expand(this._currentIndexCount)) {
+				_currentSubmit.reset(BATCHNAME, _expandVertices.length());
 			}
 			if (!_locked) {
-				_indexCount = 0;
+				_currentIndexCount = 0;
 			}
 		}
 	}
 
 	private void setupMatrices() {
-		if (_batchShader != null) {
-			_batchShader.setUniformMatrix("u_projTrans", _viewMatrix);
-			_batchShader.setUniformi("u_texture", 0);
-			_shader_source.setupShader(_batchShader);
+		if (_currentBatchShader != null) {
+			_currentBatchShader.setUniformMatrix("u_projTrans", _viewMatrix);
+			_currentBatchShader.setUniformi("u_texture", 0);
+			_shader_source.setupShader(_currentBatchShader);
 		}
 	}
 
 	@Override
 	public BaseBatch setBlendMode(int b) {
-		this._blendMode = b;
+		this._currentBlendMode = b;
 		return this;
 	}
 
 	@Override
 	public int getBlendMode() {
-		return _blendMode;
+		return _currentBlendMode;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		if (_batchShader != null) {
-			_batchShader.close();
+		if (_currentBatchShader != null) {
+			_currentBatchShader.close();
 		}
-		this._blendMode = -1;
+		this._currentBlendMode = -1;
 	}
 
 	@Override

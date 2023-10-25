@@ -271,10 +271,18 @@ public class LTextureBatch implements LRelease {
 		return runningCache;
 	}
 
+	protected ShaderProgram createShaderProgram() {
+		return GLUtils.createShaderProgram(source.vertexShader(), source.fragmentShader());
+	}
+
+	protected ShaderProgram getShaderProgram() {
+		return shader;
+	}
+
 	public LTextureBatch begin() {
 		if (!isLoaded) {
 			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
+				shader = createShaderProgram();
 			}
 			isLoaded = true;
 		}
@@ -541,11 +549,11 @@ public class LTextureBatch implements LRelease {
 		LSystem.mainEndDraw();
 		if (baseColor == null) {
 			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
+				shader = createShaderProgram();
 			}
 			globalShader = shader;
 		} else if (globalShader == null) {
-			globalShader = LSystem.createShader(LSystem.getGLExVertexShader(), LSystem.getColorFragmentShader());
+			globalShader = GLUtils.createShaderProgram(LSystem.getGLExVertexShader(), LSystem.getColorFragmentShader());
 		}
 		globalShader.begin();
 		float oldColor = getFloatColor();

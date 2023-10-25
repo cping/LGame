@@ -21,7 +21,11 @@
 package loon.utils;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
+import loon.BaseIO;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Support;
@@ -29,13 +33,21 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
+import loon.geom.RectBox;
 import loon.opengl.BlendMethod;
 import loon.opengl.GL20;
+import loon.opengl.GlobalSource;
+import loon.opengl.ShaderProgram;
 
 public class GLUtils {
 
 	private GLUtils() {
 	}
+
+	private static final IntBuffer currentTempIntBuffer = ByteBuffer.allocateDirect(16 * Integer.SIZE / 8)
+			.order(ByteOrder.nativeOrder()).asIntBuffer();
+
+	private static final ByteBuffer currentTempByteBuffer = BufferUtils.newByteBuffer(32);
 
 	private static int currentBlendMode = -1;
 
@@ -77,6 +89,12 @@ public class GLUtils {
 		GLUtils.enableTextures = false;
 	}
 
+	public static RectBox getGLViewport(GL20 gl) {
+		IntBuffer intBuffer = currentTempIntBuffer;
+		gl.glGetIntegerv(GL20.GL_VIEWPORT, intBuffer);
+		return new RectBox(intBuffer.get(0), intBuffer.get(1), intBuffer.get(2), intBuffer.get(3));
+	}
+
 	public static int nextPOT(int value) {
 		int bit = 0x8000, highest = -1, count = 0;
 		for (int ii = 15; ii >= 0; ii--, bit >>= 1) {
@@ -110,6 +128,20 @@ public class GLUtils {
 
 	public static boolean isPowerOfTwo(int width, int height) {
 		return (width > 0 && (width & (width - 1)) == 0 && height > 0 && (height & (height - 1)) == 0);
+	}
+
+	public static boolean isGLEnabled(GL20 gl, int keyName) {
+		boolean result;
+		switch (keyName) {
+		case GL20.GL_BLEND:
+			gl.glGetBooleanv(GL20.GL_BLEND, currentTempByteBuffer);
+			result = (currentTempByteBuffer.get() == 1);
+			currentTempByteBuffer.clear();
+			break;
+		default:
+			result = false;
+		}
+		return result;
 	}
 
 	public static final int getBlendMode() {
@@ -519,4 +551,74 @@ public class GLUtils {
 		return gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER) == GL20.GL_FRAMEBUFFER_COMPLETE;
 	}
 
+	public static ShaderProgram compileShader(String vertexPath, String fragmentPath) {
+		return compileShader(vertexPath, fragmentPath, LSystem.EMPTY, LSystem.EMPTY);
+	}
+
+	public static ShaderProgram compileShader(String vertexPath, String fragmentPath, String vertDefines,
+			String pixelDefines) {
+		if (fragmentPath == null) {
+			throw new LSysException("Vertex shader cannot be null .");
+		}
+		if (vertexPath == null) {
+			throw new LSysException("Fragment shader cannot be null .");
+		}
+		if (vertDefines == null || pixelDefines == null) {
+			throw new LSysException("Defines cannot be null .");
+		}
+		final StrBuilder sbr = new StrBuilder();
+		sbr.append("Compiling \"").append(vertexPath).append('/').append(fragmentPath).append('\"');
+		if (vertDefines.length() > 0 || pixelDefines.length() > 0) {
+			sbr.append(" w/ (").append(vertDefines.replace("\n", ", ")).append(")(")
+					.append(pixelDefines.replace("\n", ", ")).append(")");
+		}
+		sbr.append("......");
+		final String prependVert = vertDefines;
+		final String prependFrag = pixelDefines;
+		final String srcVert = BaseIO.loadText(vertexPath);
+		final String srcFrag = BaseIO.loadText(fragmentPath);
+		final ShaderProgram shader = new ShaderProgram(prependVert + "\n" + srcVert, prependFrag + "\n" + srcFrag);
+		if (!shader.isCompiled()) {
+			throw new LSysException(
+					"Shader compile error : " + vertexPath + "/" + fragmentPath + "\n" + shader.getLog());
+		}
+		return shader;
+	}
+
+	public static GlobalSource loadShaderSource(String vertexPath, String fragmentPath) {
+		return loadShaderSource(vertexPath, fragmentPath, LSystem.EMPTY, LSystem.EMPTY);
+	}
+
+	public static GlobalSource loadShaderSource(String vertexPath, String fragmentPath, String vertDefines,
+			String pixelDefines) {
+		if (fragmentPath == null) {
+			throw new LSysException("Vertex shader cannot be null .");
+		}
+		if (vertexPath == null) {
+			throw new LSysException("Fragment shader cannot be null .");
+		}
+		if (vertDefines == null || pixelDefines == null) {
+			throw new LSysException("Defines cannot be null .");
+		}
+		final StrBuilder sbr = new StrBuilder();
+		sbr.append("Compiling \"").append(vertexPath).append('/').append(fragmentPath).append('\"');
+		if (vertDefines.length() > 0 || pixelDefines.length() > 0) {
+			sbr.append(" w/ (").append(vertDefines.replace("\n", ", ")).append(")(")
+					.append(pixelDefines.replace("\n", ", ")).append(")");
+		}
+		sbr.append("......");
+		final String prependVert = vertDefines;
+		final String prependFrag = pixelDefines;
+		final String srcVert = BaseIO.loadText(vertexPath);
+		final String srcFrag = BaseIO.loadText(fragmentPath);
+		return new GlobalSource(prependVert + "\n" + srcVert, prependFrag + "\n" + srcFrag);
+	}
+
+	public static ShaderProgram createShaderProgram(String ver, String fragment) {
+		final ShaderProgram shader = new ShaderProgram(ver, fragment);
+		if (shader.isCompiled() == false) {
+			throw new LSysException("Shader compile error : " + shader.getLog());
+		}
+		return shader;
+	}
 }

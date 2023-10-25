@@ -52,7 +52,7 @@ public class LLayer extends ActorLayer {
 
 	private float actorHeight;
 
-	protected boolean actorDrag, pressed;
+	protected boolean _actorDrag, _pressed;
 
 	private Actor dragActor;
 
@@ -92,7 +92,7 @@ public class LLayer extends ActorLayer {
 		super(x, y, w, h, size, bounded);
 		this.setLocation(x, y);
 		this._isLimitMove = true;
-		this.actorDrag = true;
+		this._actorDrag = true;
 		this.customRendering = true;
 		this.isTouchClick = true;
 		this.isVSync = true;
@@ -287,7 +287,8 @@ public class LLayer extends ActorLayer {
 				actorY = minY + thing.getY();
 				actorWidth = thing.pixelWidth();
 				actorHeight = thing.pixelHeight();
-				if (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY || actorY > maxY) {
+				if (_component_elastic && (actorX + actorWidth < minX || actorX > maxX || actorY + actorHeight < minY
+						|| actorY > maxY)) {
 					continue;
 				}
 				final int tint = g.color();
@@ -473,12 +474,12 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	protected void processTouchEntered() {
-		this.pressed = true;
+		this._pressed = true;
 	}
 
 	@Override
 	protected void processTouchExited() {
-		this.pressed = false;
+		this._pressed = false;
 	}
 
 	@Override
@@ -556,7 +557,7 @@ public class LLayer extends ActorLayer {
 		int dropY = 0;
 		if (!locked) {
 			boolean moveActor = false;
-			if (actorDrag) {
+			if (_actorDrag) {
 				synchronized (objects) {
 					final Vector2f pos = getUITouchXY();
 					dropX = MathUtils.floor(pos.x);
@@ -601,7 +602,7 @@ public class LLayer extends ActorLayer {
 				}
 			}
 		} else {
-			if (!actorDrag) {
+			if (!_actorDrag) {
 				return;
 			}
 			synchronized (objects) {
@@ -636,15 +637,15 @@ public class LLayer extends ActorLayer {
 	}
 
 	public boolean isTouchPressed() {
-		return this.pressed;
+		return this._pressed;
 	}
 
 	public boolean isActorDrag() {
-		return actorDrag;
+		return _actorDrag;
 	}
 
 	public LLayer setActorDrag(boolean d) {
-		this.actorDrag = d;
+		this._actorDrag = d;
 		return this;
 	}
 

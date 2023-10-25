@@ -1041,6 +1041,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return tempAffine;
 	}
 
+	public RectBox getViewport() {
+		return GLUtils.getGLViewport(this.gfx.gl);
+	}
+
 	public int combineColor(int c) {
 		int otint = this.lastBrush.baseColor;
 		if (c != LColor.DEF_COLOR) {

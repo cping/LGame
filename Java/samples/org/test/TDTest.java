@@ -1,7 +1,9 @@
 package org.test;
 
 import loon.LSystem;
+import loon.LTransition;
 import loon.Screen;
+import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.FadeTo;
@@ -15,9 +17,7 @@ import loon.component.Actor;
 import loon.component.ActorLayer;
 import loon.component.LLayer;
 import loon.component.LPaper;
-import loon.events.ActionUpdate;
 import loon.events.FrameLoopEvent;
-import loon.events.GameTouch;
 import loon.font.LFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -25,9 +25,8 @@ import loon.utils.ArrayMap;
 import loon.utils.ConfigReader;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
-import loon.utils.timer.LTimerContext;
 
-public class TDTest extends Screen {
+public class TDTest extends Stage {
 
 	private int selectTurret = -1;
 
@@ -35,6 +34,11 @@ public class TDTest extends Screen {
 
 	private String[] turrets = new String[] { "assets/td/bulletTurret.png", "assets/td/bombTurret.png",
 			"assets/td/poisonTurret.png", "assets/td/laserTurret.png", "assets/td/bullet.png" };
+
+	@Override
+	public LTransition onTransition() {
+		return LTransition.newPixelWind(LColor.white);
+	}
 
 	/**
 	 * 子弹用类
@@ -78,11 +82,13 @@ public class TDTest extends Screen {
 			}
 		}
 
+		@Override
 		protected void addLayer(ActorLayer layer) {
 			this.x = this.getX();
 			this.y = this.getY();
 		}
 
+		@Override
 		public void action(long t) {
 			if (removeFlag) {
 				return;
@@ -155,6 +161,7 @@ public class TDTest extends Screen {
 			setAlpha(0);
 		}
 
+		@Override
 		public void addLayer(ActorLayer layer) {
 			// 让角色渐进式出现
 			FadeTo fade = fadeIn();
@@ -181,6 +188,7 @@ public class TDTest extends Screen {
 
 		}
 
+		@Override
 		public void draw(GLEx g) {
 			if (selected) {
 				int tint = g.color();
@@ -194,6 +202,7 @@ public class TDTest extends Screen {
 			}
 		}
 
+		@Override
 		public void action(long t) {
 			// 遍历指定半径内所有Enemy类
 			TArray<Actor> es = this.getCollisionObjects(this.range, "Enemy");
@@ -222,7 +231,8 @@ public class TDTest extends Screen {
 				});
 
 				// 旋转炮台对准Enemy坐标
-				setRotation(Field2D.rotation(Vector2f.at(this.getX(), this.getY()), Vector2f.at(target.getX(), target.getY())));
+				setRotation(Field2D.rotation(Vector2f.at(this.getX(), this.getY()),
+						Vector2f.at(target.getX(), target.getY())));
 
 			}
 			// 延迟炮击
@@ -282,6 +292,7 @@ public class TDTest extends Screen {
 			this.hp = hp;
 		}
 
+		@Override
 		public void draw(GLEx g) {
 
 			// 绘制精灵
@@ -289,6 +300,7 @@ public class TDTest extends Screen {
 
 		}
 
+		@Override
 		public void action(long t) {
 			// 触发精灵事件
 			hpBar.update(t);
@@ -320,6 +332,7 @@ public class TDTest extends Screen {
 		}
 
 		// 首次注入Layer时调用此函数
+		@Override
 		public void addLayer(final ActorLayer layer) {
 
 			// 坐标矫正，用以让角色居于瓦片中心
@@ -417,6 +430,7 @@ public class TDTest extends Screen {
 			LPaper bulletTurret = new LPaper(turrets[0]) {
 
 				// 当选中当前按钮时，为按钮绘制选中框(以下同)
+				@Override
 				public void paint(GLEx g) {
 					if (selectTurret == 0) {
 						g.setColor(LColor.red);
@@ -425,6 +439,7 @@ public class TDTest extends Screen {
 					}
 				}
 
+				@Override
 				public void downClick() {
 					selectTurret = 0;
 				}
@@ -432,6 +447,7 @@ public class TDTest extends Screen {
 			bulletTurret.setLocation(18, 64);
 			LPaper bombTurret = new LPaper(turrets[1]) {
 
+				@Override
 				public void paint(GLEx g) {
 					if (selectTurret == 1) {
 						g.setColor(LColor.red);
@@ -440,6 +456,7 @@ public class TDTest extends Screen {
 					}
 				}
 
+				@Override
 				public void downClick() {
 					selectTurret = 1;
 				}
@@ -447,6 +464,7 @@ public class TDTest extends Screen {
 			bombTurret.setLocation(78, 64);
 			LPaper poisonTurret = new LPaper(turrets[2]) {
 
+				@Override
 				public void paint(GLEx g) {
 					if (selectTurret == 2) {
 						g.setColor(LColor.red);
@@ -455,6 +473,7 @@ public class TDTest extends Screen {
 					}
 				}
 
+				@Override
 				public void downClick() {
 					selectTurret = 2;
 				}
@@ -478,6 +497,7 @@ public class TDTest extends Screen {
 			// 用LPaper制作敌人增加按钮
 			LPaper button = new LPaper("assets/td/button.png") {
 
+				@Override
 				public void downClick() {
 					// 获得MapLayer
 					MapLayer layer = (MapLayer) getBottomLayer();
@@ -547,6 +567,7 @@ public class TDTest extends Screen {
 			setDelay(LSystem.SECOND * 2);
 		}
 
+		@Override
 		public void action(long t) {
 			// 当启动标识为true时执行以下操作
 			if (start) {
@@ -584,10 +605,11 @@ public class TDTest extends Screen {
 
 		private Actor o = null;
 
+		@Override
 		public void downClick(int x, int y) {
 			// 转换鼠标点击区域为数组地图坐标
-			int newX = x / field.getTileWidth();
-			int newY = y / field.getTileHeight();
+			int newX = field.toTileX(x);
+			int newY = field.toTileY(y);
 			// 当选中炮塔(参数不为-1)且数组地图参数为-1(不可通过)并且无其它角色在此时
 			if ((o = getClickActor()) == null && selectTurret != -1 && field.getTileType(newX, newY) == -1) {
 				// 添加炮塔
@@ -598,6 +620,7 @@ public class TDTest extends Screen {
 			}
 		}
 
+		@Override
 		public void upClick(int x, int y) {
 			if (o != null && o instanceof Turret) {
 				((Turret) o).selected = false;
@@ -610,8 +633,8 @@ public class TDTest extends Screen {
 
 	}
 
-	public void onLoad() {
-
+	@Override
+	public void create() {
 		add(MultiScreenTest.getBackButton(this, 1));
 		// 构建地图用Layer
 		MapLayer layer = new MapLayer();
@@ -627,67 +650,6 @@ public class TDTest extends Screen {
 		menu.setY(0);
 		// 添加menu到Screen
 		add(menu);
-
-	}
-
-	@Override
-	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void touchDown(GameTouch e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void touchUp(GameTouch e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void touchMove(GameTouch e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void touchDrag(GameTouch e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void resume() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void pause() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void close() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void draw(GLEx g) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void alter(LTimerContext timer) {
-		// TODO Auto-generated method stub
-
 	}
 
 }

@@ -18,21 +18,19 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.opengl;
+package loon.action.map.items;
 
-public class GlobalSource extends ShaderSource {
+import loon.LTexture;
+import loon.geom.RectBox;
 
-	public GlobalSource() {
-		super();
-	}
+public interface IItem {
 
-	public GlobalSource(String vertex, String frament) {
-		super(vertex, frament);
-	}
+	public String getName();
 
-	@Override
-	public void setupShader(ShaderProgram program) {
+	public Object getItem();
 
-	}
+	public LTexture getTexture();
+
+	public RectBox getArea();
 
 }

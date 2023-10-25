@@ -1,0 +1,638 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
+package loon.component;
+
+import java.util.Comparator;
+
+import loon.LSystem;
+import loon.LTexture;
+import loon.LTextures;
+import loon.action.map.items.IItem;
+import loon.action.map.items.Inventory;
+import loon.action.map.items.Item;
+import loon.action.map.items.ItemInfo;
+import loon.canvas.Canvas;
+import loon.canvas.Image;
+import loon.canvas.LColor;
+import loon.component.skin.SkinManager;
+import loon.geom.RectBox;
+import loon.geom.Vector2f;
+import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+
+/**
+ * 游戏背包用组件类
+ */
+public class LInventory extends LLayer {
+
+	public static class ItemUI extends Item<ItemInfo> {
+
+		protected boolean _saved;
+
+		protected LInventory _inventory;
+
+		protected Actor _actor;
+
+		public ItemUI(LInventory inv, String name, ItemInfo item, float x, float y, float w, float h) {
+			super(name, (LTexture) null, x, y, w, h, item);
+			this._inventory = inv;
+		}
+
+		protected void setInventoryUI(LInventory ui) {
+			this._inventory = ui;
+		}
+
+		protected void updateActorSize(Actor actor) {
+			if (actor.isThereparent()) {
+				actor.setLocation((_itemArea.getX() + _inventory._offsetGridActorX),
+						(_itemArea.getY() + _inventory._offsetGridActorY));
+				actor.setSize((_itemArea.getWidth() - _inventory._offsetGridActorX * 2f),
+						(_itemArea.getHeight() - _inventory._offsetGridActorY * 2f));
+			}
+		}
+
+		@Override
+		public ItemUI setArea(float x, float y, float w, float h) {
+			super.setArea(x, y, w, h);
+			resetActor();
+			return this;
+		}
+
+		public void resetActor() {
+			if (_actor != null) {
+				updateActorSize(_actor);
+			}
+		}
+
+		public ItemUI bind(LTexture tex, float x, float y, float w, float h) {
+			if (_actor == null) {
+				_actor = new Actor(tex, x, y, w, h);
+			} else {
+				_actor.setImage(tex);
+			}
+			bind(_actor);
+			return this;
+		}
+
+		public ItemUI bind(Actor act) {
+			if (act == null) {
+				if (_actor != null) {
+					_actor.setTag(null);
+					_actor = null;
+				}
+				_saved = false;
+				return this;
+			}
+			_actor = act;
+			_actor.setTag(this);
+			_image = _actor.getImage();
+			updateActorSize(_actor);
+			if (!_inventory.containsObject(act)) {
+				_inventory.addObject(act);
+			}
+			_saved = true;
+			return this;
+		}
+
+		public ItemUI swap(Actor actor) {
+			if (actor == null) {
+				return this;
+			}
+			if (actor.getTag() != null && actor.getTag() instanceof ItemUI) {
+				return swap((ItemUI) actor.getTag());
+			}
+			return this;
+		}
+
+		public ItemUI swap(ItemUI item) {
+			if (item == this) {
+				return this;
+			}
+			final LTexture srcImg = item._image;
+			final Actor srcActor = item._actor;
+			final boolean srcSaved = item._saved;
+			final RectBox srcArea = item._itemArea;
+			final String srcName = item._name;
+			final ItemInfo srcItem = item._item;
+			final LTexture dstImg = _image;
+			final Actor dstActor = _actor;
+			final boolean dstSaved = _saved;
+			final RectBox dstArea = _itemArea;
+			final String dstName = _name;
+			final ItemInfo dstItem = _item;
+			item._image = srcImg;
+			item._actor = srcActor;
+			item._saved = srcSaved;
+			item._itemArea = srcArea;
+			item._name = srcName;
+			item._item = srcItem;
+			if (srcActor != null) {
+				srcActor.setLocation((dstArea.getX() + _inventory._offsetGridActorX),
+						(dstArea.getY() + _inventory._offsetGridActorY));
+				srcActor.setSize((dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
+						(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
+			}
+			this._image = dstImg;
+			this._actor = dstActor;
+			this._saved = dstSaved;
+			this._itemArea = dstArea;
+			this._name = dstName;
+			this._item = dstItem;
+			if (dstActor != null) {
+				dstActor.setLocation((srcArea.getX() + _inventory._offsetGridActorX),
+						(srcArea.getY() + _inventory._offsetGridActorY));
+				dstActor.setSize((srcArea.getWidth() - _inventory._offsetGridActorX * 2f),
+						(srcArea.getHeight() - _inventory._offsetGridActorY * 2f));
+
+			}
+			if (srcActor != null) {
+				bind(srcActor);
+			} else {
+				bind(null);
+			}
+			if (dstActor != null) {
+				item.bind(dstActor);
+			}
+			return this;
+		}
+	}
+
+	private LColor _gridColor;
+
+	private boolean _initialization;
+
+	private boolean _isCircleGrid;
+
+	private boolean _isDisplayBar;
+
+	private int _currentRowTableSize;
+
+	private int _currentColTableSize;
+
+	private float _offsetGridActorX;
+
+	private float _offsetGridActorY;
+
+	private float _gridPaddingLeft, _gridPaddingTop;
+
+	private float _gridPaddingRight, _gridPaddingBottom;
+
+	private float _gridPaddingX, _gridPaddingY;
+
+	private boolean _displayDrawGrid;
+
+	private boolean _dirty;
+
+	private LTexture _cacheGridTexture;
+
+	private LTexture _barTexture;
+
+	private Inventory _inventory;
+
+	private Vector2f _titleSize;
+
+	public LInventory(float x, float y, float w, float h) {
+		this(x, y, w, h, false);
+	}
+
+	public LInventory(float x, float y, float w, float h, boolean limit) {
+		this((LTexture) null, (LTexture) null, LColor.gray, x, y, w, h, limit);
+	}
+
+	public LInventory(LColor grid, float x, float y, float w, float h, boolean limit) {
+		this((LTexture) null, (LTexture) null, grid, x, y, w, h, limit);
+	}
+
+	/**
+	 * 构建一个游戏用背包
+	 * 
+	 * @param bg
+	 * @param bar
+	 * @param gridColor
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
+	 * @param limit
+	 */
+	public LInventory(LTexture bg, LTexture bar, LColor gridColor, float x, float y, float w, float h, boolean limit) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h), limit);
+		this._inventory = new Inventory();
+		this._titleSize = new Vector2f(w, h);
+		this._offsetGridActorX = 2f;
+		this._offsetGridActorY = 2f;
+		if (gridColor != null) {
+			this._gridColor = gridColor.lighter();
+		}
+		this._displayDrawGrid = _isDisplayBar = true;
+		this._isCircleGrid = false;
+		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
+		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);
+		setActorDrag(true);
+		setDragLocked(false);
+		setElastic(false);
+	}
+
+	public LInventory topBottom(float top, float bottom, int row, int col) {
+		return leftTopRightBottom(_offsetGridActorX, top, _offsetGridActorY, bottom, row, col);
+	}
+
+	public LInventory rightBottom(float right, float bottom, int row, int col) {
+		return leftTopRightBottom(_offsetGridActorX, _offsetGridActorY, right, bottom, row, col);
+	}
+
+	public LInventory leftTop(float left, float top, int row, int col) {
+		return leftTopRightBottom(left, top, _offsetGridActorX, _offsetGridActorY, row, col);
+	}
+
+	public LInventory leftTopRightBottom(float left, float top, float right, float bottom, int row, int col) {
+		return update(left, top, right, bottom, row, col, _offsetGridActorX * 2f, _offsetGridActorX * 2f);
+	}
+
+	public LInventory update() {
+		return update(_gridPaddingLeft, _gridPaddingTop, _gridPaddingRight, _gridPaddingBottom, _currentRowTableSize,
+				_currentColTableSize, _gridPaddingX, _gridPaddingY);
+	}
+
+	public LInventory update(float left, float top, float right, float bottom, int row, int col, float spaceSizeX,
+			float spaceSizeY) {
+		if (row == this._currentRowTableSize && col == this._currentColTableSize && spaceSizeX == this._gridPaddingX
+				&& spaceSizeY == this._gridPaddingY && left == this._gridPaddingLeft && top == this._gridPaddingTop
+				&& right == this._gridPaddingRight && bottom == this._gridPaddingBottom) {
+			return this;
+		}
+
+		this._currentRowTableSize = row;
+		this._currentColTableSize = col;
+		this._gridPaddingLeft = left;
+		this._gridPaddingTop = top;
+		this._gridPaddingRight = right;
+		this._gridPaddingBottom = bottom;
+		this._gridPaddingX = spaceSizeX;
+		this._gridPaddingY = spaceSizeY;
+		final int tileWidth = MathUtils.ifloor(
+				getWidth() / _currentRowTableSize - ((_gridPaddingLeft + _gridPaddingRight) / _currentRowTableSize));
+		final int tileHeight = MathUtils.ifloor(
+				getHeight() / _currentRowTableSize - ((_gridPaddingTop + _gridPaddingBottom) / _currentColTableSize));
+		this._titleSize.set(tileWidth, tileHeight);
+		final float xLeft = MathUtils.min(_gridPaddingLeft, (_gridPaddingLeft + _gridPaddingRight))
+				+ _gridPaddingX / 2f;
+		final float xTop = MathUtils.min(_gridPaddingTop, (_gridPaddingTop + _gridPaddingBottom)) + _gridPaddingY / 2f;
+		if (this._initialization) {
+			this._inventory.clear();
+		}
+		final int size = _inventory.getItemCount();
+		int idx = 0;
+		if (size == 0) {
+			for (int y = 0; y < col; y++) {
+				for (int x = 0; x < row; x++) {
+					ItemUI item = new ItemUI(this, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
+							xTop + (y * tileHeight), tileWidth - spaceSizeX, tileHeight - spaceSizeY);
+					_inventory.addItem(item);
+					idx++;
+				}
+			}
+		} else {
+			ItemUI item = null;
+			for (int y = 0; y < col; y++) {
+				for (int x = 0; x < row; x++) {
+					if (idx < size) {
+						item = (ItemUI) _inventory.getItem(idx);
+						item.setArea(xLeft + (x * tileWidth), xTop + (y * tileHeight), tileWidth - spaceSizeX,
+								tileHeight - spaceSizeY);
+					} else {
+						item = new ItemUI(this, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
+								xTop + (y * tileHeight), tileWidth - spaceSizeX, tileHeight - spaceSizeY);
+						_inventory.addItem(item);
+					}
+					idx++;
+				}
+			}
+		}
+		this._initialization = true;
+		this._dirty = true;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return this._dirty;
+	}
+
+	public LInventory putItem(String path) {
+		return putItem(LTextures.loadTexture(path), new ItemInfo());
+	}
+
+	public LInventory putItem(String path, ItemInfo info) {
+		return putItem(LTextures.loadTexture(path), info);
+	}
+
+	public LInventory putItem(LTexture tex) {
+		return putItem(tex, new ItemInfo());
+	}
+
+	public LInventory putItem(LTexture tex, ItemInfo info) {
+		if (_initialization) {
+			final int size = _inventory.getItemCount();
+			for (int i = 0; i < size; i++) {
+				ItemUI item = (ItemUI) _inventory.getItem(i);
+				if (item != null && !item._saved) {
+					RectBox rect = item.getArea();
+					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
+							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+					return this;
+				}
+			}
+		} else {
+			if (info == null) {
+				info = new ItemInfo();
+			}
+			ItemUI item = new ItemUI(this, info.getName(), info, 0f, 0f, 0f, 0f);
+			item.bind(tex, 0f, 0f, 32f, 32f);
+			_inventory.addItem(item);
+		}
+		return this;
+	}
+
+	public boolean removeItem(float x, float y) {
+		IItem item = getItem(x, y);
+		if (item != null) {
+			return _inventory.removeItem(item);
+		}
+		return false;
+	}
+
+	public ItemUI getItem(int idx) {
+		return (ItemUI) _inventory.getItem(idx);
+	}
+
+	public ItemUI getItem(float x, float y) {
+		for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
+			final IItem item = _inventory.getItem(i);
+			final RectBox rect = item.getArea();
+			if (rect != null) {
+				if (rect.contains(x, y)) {
+					return (ItemUI) item;
+				}
+			}
+		}
+		return null;
+	}
+
+	public LInventory setItem(LTexture tex, ItemInfo info, float x, float y) {
+		if (_initialization) {
+			final int size = _inventory.getItemCount();
+			for (int i = 0; i < size; i++) {
+				ItemUI item = (ItemUI) _inventory.getItem(i);
+				if (item != null) {
+					RectBox rect = item.getArea();
+					if (rect.contains(x, y)) {
+						item.setItem(info);
+						item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
+								rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+					}
+					return this;
+				}
+			}
+		}
+		return this;
+	}
+
+	public LInventory setItem(LTexture tex, ItemInfo info, int idx) {
+		if (_initialization) {
+			ItemUI item = (ItemUI) _inventory.getItem(idx);
+			if (item != null) {
+				RectBox rect = item.getArea();
+				item.setItem(info);
+				if (rect != null) {
+					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
+							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+				} else {
+					item.bind(tex, 0f, 0f, 32f, 32f);
+				}
+			}
+		}
+		return this;
+	}
+
+	public int getItemCount() {
+		return this._inventory.getItemCount();
+	}
+
+	public float getGold() {
+		return this._inventory.getGold();
+	}
+
+	public LInventory addGold(float i) {
+		this._inventory.addGold(i);
+		return this;
+	}
+
+	public LInventory subGold(float i) {
+		this._inventory.subGold(i);
+		return this;
+	}
+
+	public LInventory mulGold(float i) {
+		this._inventory.mulGold(i);
+		return this;
+	}
+
+	public LInventory divGold(float i) {
+		this._inventory.divGold(i);
+		return this;
+	}
+
+	public LInventory setGold(float i) {
+		this._inventory.setGold(i);
+		return this;
+	}
+
+	public LInventory merge(LInventory inv) {
+		this._inventory.merge(inv._inventory);
+		return this;
+	}
+
+	public LInventory sort(Comparator<IItem> comp) {
+		this._inventory.sort(comp);
+		return this;
+	}
+
+	public LInventory clearInventory() {
+		this._inventory.clear();
+		return this;
+	}
+
+	public boolean containsItem(float x, float y) {
+		return getItem(x, y) != null;
+	}
+
+	public boolean isInitialized() {
+		return this._initialization;
+	}
+
+	protected LTexture createGridCache() {
+		if (_dirty) {
+			if (_cacheGridTexture != null) {
+				_cacheGridTexture.cancalSubmit();
+				_cacheGridTexture.close(true);
+				_cacheGridTexture = null;
+			}
+			Canvas g = Image.createCanvas(getWidth(), getHeight());
+			final int tint = g.getStrokeColor();
+			g.setColor(_gridColor);
+			for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
+				RectBox rect = _inventory.getItem(i).getArea();
+				if (rect != null) {
+					if (_displayDrawGrid) {
+						if (_isCircleGrid) {
+							g.drawOval(rect.x, rect.y, rect.width, rect.height);
+						} else {
+							g.strokeRect(rect.x, rect.y, rect.width, rect.height);
+						}
+					}
+				}
+			}
+			g.setStrokeColor(tint);
+			_cacheGridTexture = g.toTexture();
+			_dirty = false;
+			g = null;
+		}
+		return _cacheGridTexture;
+	}
+
+	@Override
+	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
+		if (!_component_visible) {
+			return;
+		}
+		if (_isDisplayBar) {
+			if (_gridPaddingLeft > _gridPaddingX && _barTexture != null) {
+				g.draw(_barTexture, x, y, _gridPaddingLeft, h);
+			}
+			if (_gridPaddingRight > _gridPaddingX && _barTexture != null) {
+				g.draw(_barTexture, x + getWidth() - _gridPaddingRight - _gridPaddingX, y,
+						_gridPaddingRight + _gridPaddingX, h);
+			}
+			if (_gridPaddingTop > _gridPaddingY && _barTexture != null) {
+				g.draw(_barTexture, x, y, w, _gridPaddingTop);
+			}
+			if (_gridPaddingBottom > _gridPaddingY && _barTexture != null) {
+				g.draw(_barTexture, x, y + getHeight() - _gridPaddingBottom - _gridPaddingY, w,
+						_gridPaddingBottom + _gridPaddingY);
+			}
+		}
+		createGridCache();
+		if (_cacheGridTexture != null) {
+			g.draw(_cacheGridTexture, x, y);
+		}
+		super.createCustomUI(g, x, y, w, h);
+	}
+
+	@Override
+	public void upClick(int dx, int dy) {
+		super.upClick(dx, dy);
+		final Actor act = getClickActor();
+		if (act != null) {
+			final ItemUI itemDst = getItem(dx, dy);
+			final Object o = act.getTag();
+			if (itemDst != null) {
+				if (o != itemDst) {
+					if (!itemDst._saved || o == null) {
+						itemDst.bind(act);
+					} else {
+						itemDst.swap(act);
+					}
+				}
+			}
+		}
+	}
+
+	public boolean isDisplayDrawGrid() {
+		return _displayDrawGrid;
+	}
+
+	public LInventory setDisplayDrawGrid(boolean d) {
+		this._displayDrawGrid = d;
+		this._dirty = true;
+		return this;
+	}
+
+	public boolean isCircleGrid() {
+		return _isCircleGrid;
+	}
+
+	public LInventory setCircleGrid(boolean d) {
+		this._isCircleGrid = d;
+		this._dirty = true;
+		return this;
+	}
+
+	public LTexture getBarImage() {
+		return _barTexture;
+	}
+
+	public LInventory setBarImage(LTexture bar) {
+		this._barTexture = bar;
+		return this;
+	}
+
+	public boolean isDisplayBar() {
+		return _isDisplayBar;
+	}
+
+	public LInventory setDisplayBar(boolean d) {
+		this._isDisplayBar = d;
+		return this;
+	}
+
+	public float getOffsetGridActorX() {
+		return _offsetGridActorX;
+	}
+
+	public LInventory setOffsetGridActorX(float x) {
+		this._offsetGridActorX = x;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getOffsetGridActorY() {
+		return _offsetGridActorY;
+	}
+
+	public LInventory setOffsetGridActorY(float y) {
+		this._offsetGridActorY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		if (_cacheGridTexture != null) {
+			_cacheGridTexture.close();
+			_cacheGridTexture = null;
+		}
+		if (_barTexture != null) {
+			_barTexture.close();
+			_barTexture = null;
+		}
+	}
+}

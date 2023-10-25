@@ -20,71 +20,89 @@
  */
 package loon.action.map.items;
 
-import loon.utils.ObjectMap;
-import loon.utils.ObjectMap.Keys;
+import java.util.Comparator;
 
-public class Inventory<T> {
+import loon.utils.TArray;
 
-	private final ObjectMap<String, Item<T>> _items;
+public class Inventory {
 
-	private int _gold;
+	private final TArray<IItem> _items;
+
+	private float _gold;
 
 	public Inventory() {
-		_items = new ObjectMap<String, Item<T>>(128);
+		_items = new TArray<IItem>(128);
 		_gold = 0;
 	}
 
-	public Inventory<T> subtractGold(int i) {
-		_gold -= i;
-		return this;
-	}
-
-	public Inventory<T> addGold(int i) {
+	public Inventory addGold(float i) {
 		_gold += i;
 		return this;
 	}
 
-	public int getGold() {
-		return _gold;
+	public Inventory subGold(float i) {
+		_gold -= i;
+		return this;
 	}
 
-	public Inventory<T> setGold(int i) {
+	public Inventory mulGold(float i) {
+		_gold *= i;
+		return this;
+	}
+
+	public Inventory divGold(float i) {
+		_gold /= i;
+		return this;
+	}
+
+	public Inventory setGold(float i) {
 		_gold = i;
 		return this;
 	}
 
-	public boolean addItem(String key, Item<T> obj) {
+	public float getGold() {
+		return _gold;
+	}
+
+	public boolean addItem(IItem obj) {
 		if (obj == null) {
 			return false;
 		}
-		return _items.put(key, obj) == null;
+		return _items.add(obj);
 	}
 
-	public boolean removeItem(String key) {
-		return _items.remove(key) == null;
+	public boolean removeItem(IItem obj) {
+		return _items.remove(obj);
+	}
+
+	public IItem getItem(int idx) {
+		return _items.get(idx);
 	}
 
 	public int getItemCount() {
 		return _items.size;
 	}
 
+	public Inventory sort(Comparator<IItem> comp) {
+		_items.sort(comp);
+		return this;
+	}
+
 	public String[] getItemList() {
-		Keys<String> keys = _items.keys();
 		String[] names = new String[_items.size];
-		int idx = 0;
-		for (String name : keys) {
-			names[idx++] = name;
+		for (int i = 0; i < _items.size; i++) {
+			names[i] = _items.get(i).getName();
 		}
 		return names;
 	}
 
-	public Inventory<T> merge(Inventory<T> i) {
-		_items.putAll(i._items);
+	public Inventory merge(Inventory i) {
+		_items.addAll(i._items);
 		this.addGold(i.getGold());
 		return this;
 	}
 
-	public Inventory<T> clear() {
+	public Inventory clear() {
 		_items.clear();
 		return this;
 	}

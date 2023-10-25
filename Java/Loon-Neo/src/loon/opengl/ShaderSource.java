@@ -51,12 +51,14 @@ public abstract class ShaderSource {
 		return _framentShader;
 	}
 
-	public void setVertexShader(String vertex) {
+	public ShaderSource setVertexShader(String vertex) {
 		this._vertexShader = vertex;
+		return this;
 	}
 
-	public void setFragmentShader(String fragment) {
+	public ShaderSource setFragmentShader(String fragment) {
 		this._framentShader = fragment;
+		return this;
 	}
 
 	@Override

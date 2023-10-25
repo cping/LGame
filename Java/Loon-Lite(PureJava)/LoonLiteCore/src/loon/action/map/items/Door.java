@@ -18,21 +18,44 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.opengl;
+package loon.action.map.items;
 
-public class GlobalSource extends ShaderSource {
+public class Door {
 
-	public GlobalSource() {
-		super();
+	private TileRoom _r1;
+
+	private TileRoom _r2;
+
+	private String _lockedMessage;
+
+	public Door(TileRoom r1, TileRoom r2, String dir1, String dir2) {
+		this._r1 = r1;
+		this._r2 = r2;
+		_r1.addDoor(dir1, this);
+		_r2.addDoor(dir2, this);
+		this._lockedMessage = "";
 	}
 
-	public GlobalSource(String vertex, String frament) {
-		super(vertex, frament);
+	public Door(TileRoom r1, TileRoom r2, String dir1, String dir2, String m) {
+		this(r1, r2, dir1, dir2);
+		this._lockedMessage = m;
 	}
 
-	@Override
-	public void setupShader(ShaderProgram program) {
+	public String getLockedMessage() {
+		return _lockedMessage;
+	}
 
+	public Door setLockedMessage(String m) {
+		this._lockedMessage = m;
+		return this;
+	}
+
+	public TileRoom getRoom1() {
+		return _r1;
+	}
+
+	public TileRoom getRoom2() {
+		return _r2;
 	}
 
 }

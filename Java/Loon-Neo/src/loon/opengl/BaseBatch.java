@@ -23,6 +23,7 @@ package loon.opengl;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
+import loon.utils.GLUtils;
 
 public abstract class BaseBatch extends LTextureBind {
 
@@ -30,19 +31,28 @@ public abstract class BaseBatch extends LTextureBind {
 
 	private boolean _shader_ditry = true;
 
+	abstract ShaderProgram createShaderProgram() ;
+
+	abstract ShaderProgram getShaderProgram();
+	
 	public abstract BaseBatch setBlendMode(int b);
 
 	public abstract int getBlendMode();
 
-	public void setShaderSource(ShaderSource source) {
+	public BaseBatch setShaderSource(ShaderSource source) {
 		if (source == null) {
-			return;
+			return this;
 		}
 		if (source.equals(_shader_source)) {
-			return;
+			return this;
 		}
 		this._shader_source = source;
 		this._shader_ditry = true;
+		return this;
+	}
+
+	public BaseBatch loadShader(String vertexPath, String fragmentPath) {
+		return setShaderSource(GLUtils.loadShaderSource(vertexPath, fragmentPath));
 	}
 
 	public ShaderSource getShaderSource() {

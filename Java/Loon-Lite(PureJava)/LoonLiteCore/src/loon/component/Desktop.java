@@ -1205,7 +1205,7 @@ public class Desktop implements Visible, IArray, LRelease {
 				for (int i = childs.length - 1; i > -1; i--) {
 					LComponent cc = childs[i];
 					if (cc != null) {
-						addRect(rects, cc.getCollisionBox().cpy().add(cc.getCollisionBox()));
+						addRect(rects, cc.getCollisionBox().add(cc.getCollisionBox()));
 					}
 				}
 			}

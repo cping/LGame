@@ -920,6 +920,10 @@ public class Actor extends LObject<Actor>
 		return false;
 	}
 
+	public boolean isThereparent () {
+		return gameLayer != null;
+	}
+
 	@Override
 	public boolean intersects(CollisionObject obj) {
 		if (obj instanceof Actor) {

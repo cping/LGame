@@ -876,14 +876,6 @@ public class LSystem {
 		return false;
 	}
 
-	public static ShaderProgram createShader(String ver, String fragment) {
-		ShaderProgram shader = new ShaderProgram(ver, fragment);
-		if (shader.isCompiled() == false) {
-			throw new LSysException("Error compiling shader: " + shader.getLog());
-		}
-		return shader;
-	}
-
 	public static final String format(float value) {
 		String fmt = String.valueOf(value);
 		return fmt.indexOf('.') == -1 ? (fmt + ".0") : fmt;

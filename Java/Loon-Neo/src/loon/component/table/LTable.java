@@ -545,6 +545,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (font instanceof LFont) {
 				if (model.isDirty()) {
 					if (_cacheFonts != null) {
+						_cacheFonts.cancalSubmit();
 						_cacheFonts.close();
 						_cacheFonts = null;
 					}

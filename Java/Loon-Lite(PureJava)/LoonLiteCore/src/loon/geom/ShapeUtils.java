@@ -60,7 +60,7 @@ public class ShapeUtils {
 		} else if (source == null) {
 			source = new RectBox(target);
 		} else {
-			source.add(target);
+			source.addSelf(target);
 		}
 		return source;
 	}

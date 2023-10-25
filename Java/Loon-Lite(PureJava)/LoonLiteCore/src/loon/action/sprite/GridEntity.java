@@ -24,7 +24,6 @@ import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.geom.AABB;
 import loon.geom.RectBox;
 import loon.geom.RectF;
 import loon.opengl.GLEx;

@@ -1561,7 +1561,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				for (int i = childs.size - 1; i > -1; i--) {
 					IEntity cc = childs.get(i);
 					if (cc != null) {
-						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+						addRect(rects, ns.getCollisionBox().add(cc.getCollisionBox()));
 					}
 				}
 			} else {
@@ -1574,7 +1574,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				for (int i = childs.size - 1; i > -1; i--) {
 					ISprite cc = childs.get(i);
 					if (cc != null) {
-						addRect(rects, ns.getCollisionBox().cpy().add(cc.getCollisionBox()));
+						addRect(rects, ns.getCollisionBox().add(cc.getCollisionBox()));
 					}
 				}
 			} else {

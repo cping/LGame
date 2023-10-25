@@ -347,10 +347,18 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		return this._use_ascent;
 	}
 
+	protected ShaderProgram createShaderProgram() {
+		return GLUtils.createShaderProgram(source.vertexShader(), source.fragmentShader());
+	}
+
+	protected ShaderProgram getShaderProgram() {
+		return shader;
+	}
+
 	public void begin() {
 		if (!isLoaded) {
 			if (shader == null) {
-				shader = LSystem.createShader(source.vertexShader(), source.fragmentShader());
+				shader = createShaderProgram();
 				ownsShader = true;
 			}
 			isLoaded = true;

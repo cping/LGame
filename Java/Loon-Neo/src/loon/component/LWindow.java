@@ -46,7 +46,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	private LTexture _barTexture;
 
-	private Animation animation = new Animation();
+	private Animation _animation = new Animation();
 
 	private int _barheight;
 
@@ -358,19 +358,19 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	}
 
 	public Animation getAnimation() {
-		return this.animation;
+		return this._animation;
 	}
 
 	public void setAnimation(Animation animation) {
-		this.animation = animation;
+		this._animation = animation;
 	}
 
 	public void addAnimationFrame(String fileName, long timer) {
-		animation.addFrame(fileName, timer);
+		_animation.addFrame(fileName, timer);
 	}
 
 	public void addAnimationFrame(LTexture image, long timer) {
-		animation.addFrame(image, timer);
+		_animation.addFrame(image, timer);
 	}
 
 	@Override
@@ -388,7 +388,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public void update(long elapsedTime) {
 		if (isVisible()) {
 			super.update(elapsedTime);
-			animation.update(elapsedTime);
+			_animation.update(elapsedTime);
 		}
 	}
 
@@ -426,8 +426,8 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 							y + (this._barheight - _font.getHeight()) / 2 - (LSystem.isDesktop() ? 5 : 0), _fontColor);
 				}
 			}
-			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, _component_baseColor);
+			if (_animation.getSpriteImage() != null) {
+				g.draw(_animation.getSpriteImage(), x, y, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);
@@ -499,9 +499,9 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	public void destory() {
-		if (animation != null) {
-			animation.close();
-			animation = null;
+		if (_animation != null) {
+			_animation.close();
+			_animation = null;
 		}
 	}
 

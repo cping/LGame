@@ -75,6 +75,8 @@ public class TileRoom extends RectF {
 
 	private int _roomId;
 
+	private ObjectMap<String, Door> _exits = new ObjectMap<String, Door>();
+
 	private ObjectMap<TileRoom, RoomLink> _connected = new ObjectMap<TileRoom, RoomLink>();
 
 	private TArray<TileRoom> _connectedRooms = new TArray<TileRoom>();
@@ -329,6 +331,15 @@ public class TileRoom extends RectF {
 		} else {
 			return false;
 		}
+	}
+
+	public Door getExit(String direction) {
+		return _exits.get(direction);
+	}
+
+	public TileRoom addDoor(String direction, Door d) {
+		_exits.put(direction, d);
+		return this;
 	}
 
 }
