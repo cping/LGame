@@ -303,8 +303,7 @@ class CodeBook {
 	void clear() {
 	}
 
-	private static float dist(int el, float[] ref, int index, float[] b,
-			int step) {
+	private static float dist(int el, float[] ref, int index, float[] b, int step) {
 		float acc = (float) 0.;
 		for (int i = 0; i < el; i++) {
 			float val = (ref[index + i] - b[i * step]);

@@ -21,8 +21,8 @@
 package loon.fx;
 
 public interface JavaFXCanvasListener {
-	
-	public void onFocus(boolean o,boolean n);
+
+	public void onFocus(boolean o, boolean n);
 
 	public void onWidthUpdate(int w);
 

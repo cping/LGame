@@ -22,16 +22,18 @@ package org.test;
 
 import loon.Stage;
 import loon.action.map.items.ItemInfo;
+import loon.component.LClickButton;
 import loon.component.LInventory;
 import loon.component.LLabel;
+import loon.utils.MathUtils;
 
 public class InventoryTest extends Stage {
 
 	@Override
 	public void create() {
 		setBackground("back1.png");
-		// 构建背包到位置70,40大小310x240,不限制背包物品拖拽出背包
-		LInventory inv = new LInventory(70, 40, 310, 240, false);
+		// 构建背包到位置40,40大小310x240,不限制背包物品拖拽出背包
+		final LInventory inv = new LInventory(40, 40, 310, 240, false);
 		// inv.setDisplayDrawGrid(false);
 		// 绘制圆形网格
 		// inv.setCircleGrid(true);
@@ -46,7 +48,19 @@ public class InventoryTest extends Stage {
 		inv.putItem("ball.png");
 		// 添加一个label到背包的坐标5,5
 		inv.add(LLabel.make("我是背包", 5, 5));
-		add(inv);
+		// 添加按钮1
+		LClickButton click1 = LClickButton.make("Add", getWidth() - 120, 25, 90, 50);
+		click1.up((x, y) -> {
+			// 增加物品
+			inv.putItem(MathUtils.nextChars("a4.png","ball.png").toString());
+		});
+		// 添加按钮2
+		LClickButton click2 = LClickButton.make("Del", getWidth() - 120, 85, 90, 50);
+		click2.up((x, y) -> {
+			// 删除最后一个物品
+			inv.popItem();
+		});
+		add(inv, click1, click2);
 	}
 
 }

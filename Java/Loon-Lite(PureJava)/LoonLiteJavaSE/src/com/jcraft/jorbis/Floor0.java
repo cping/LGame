@@ -51,8 +51,7 @@ class Floor0 extends FuncFloor {
 		info.ampdB = opb.read(8);
 		info.numbooks = opb.read(4) + 1;
 
-		if ((info.order < 1) || (info.rate < 1) || (info.barkmap < 1)
-				|| (info.numbooks < 1)) {
+		if ((info.order < 1) || (info.rate < 1) || (info.barkmap < 1) || (info.numbooks < 1)) {
 			return (null);
 		}
 
@@ -87,9 +86,9 @@ class Floor0 extends FuncFloor {
 		// accurate
 		look.linearmap = new int[look.n];
 		for (int j = 0; j < look.n; j++) {
-			int val = (int) Math.floor(toBARK((float) ((info.rate / 2.)
-					/ look.n * j))
-					* scale); // bark numbers represent band edges
+			int val = (int) Math.floor(toBARK((float) ((info.rate / 2.) / look.n * j)) * scale); // bark numbers
+																									// represent band
+																									// edges
 			if (val >= look.ln)
 				val = look.ln; // guard against the approximation
 			look.linearmap[j] = val;
@@ -98,8 +97,7 @@ class Floor0 extends FuncFloor {
 	}
 
 	static float toBARK(float f) {
-		return (float) (13.1 * Math.atan(.00074 * (f)) + 2.24
-				* Math.atan((f) * (f) * 1.85e-8) + 1e-4 * (f));
+		return (float) (13.1 * Math.atan(.00074 * (f)) + 2.24 * Math.atan((f) * (f) * 1.85e-8) + 1e-4 * (f));
 	}
 
 	Object state(Object i) {
@@ -167,8 +165,7 @@ class Floor0 extends FuncFloor {
 						last = lsp[j - 1];
 					}
 					// take the coefficients back to a spectral envelope curve
-					Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, lsp,
-							look.m, amp, info.ampdB);
+					Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, lsp, look.m, amp, info.ampdB);
 
 					return (1);
 				}
@@ -228,8 +225,7 @@ class Floor0 extends FuncFloor {
 			float[] lsp = (float[]) memo;
 			float amp = lsp[look.m];
 
-			Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, lsp, look.m,
-					amp, info.ampdB);
+			Lsp.lsp_to_curve(out, look.linearmap, look.n, look.ln, lsp, look.m, amp, info.ampdB);
 			return (1);
 		}
 		for (int j = 0; j < look.n; j++) {
@@ -290,8 +286,7 @@ class Floor0 extends FuncFloor {
 		}
 	}
 
-	static void lpc_to_curve(float[] curve, float[] lpc, float amp,
-			LookFloor0 l, String name, int frameno) {
+	static void lpc_to_curve(float[] curve, float[] lpc, float amp, LookFloor0 l, String name, int frameno) {
 		// l->m+1 must be less than l->ln, but guard in case we get a bad stream
 		float[] lcurve = new float[Math.max(l.ln * 2, l.m * 2 + 2)];
 

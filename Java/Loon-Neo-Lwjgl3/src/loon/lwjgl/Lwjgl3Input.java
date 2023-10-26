@@ -45,9 +45,6 @@ public class Lwjgl3Input extends InputMake {
 
 	public Lwjgl3Input(Lwjgl3Game game) {
 		this.game = game;
-		if (game.setting.emulateTouch) {
-			emulateTouch();
-		}
 	}
 
 	public void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
@@ -74,6 +71,7 @@ public class Lwjgl3Input extends InputMake {
 		mouseEvents.connect(new Port<MouseMake.Event>() {
 			@Override
 			public void onEmit(MouseMake.Event event) {
+
 				if (event instanceof MouseMake.ButtonEvent) {
 					MouseMake.ButtonEvent bevent = (MouseMake.ButtonEvent) event;
 					if (bevent.button == SysTouch.LEFT) {
@@ -111,6 +109,9 @@ public class Lwjgl3Input extends InputMake {
 	}
 
 	void init() {
+		if (game.setting.emulateTouch) {
+			emulateTouch();
+		}
 	}
 
 	void update() {

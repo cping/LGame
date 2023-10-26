@@ -45,16 +45,12 @@ public class OggClip {
 	/**
 	 * Create a new clip based on a reference into the class path
 	 * 
-	 * @param ref
-	 *            The reference into the class path which the ogg can be read
-	 *            from
-	 * @throws IOException
-	 *             Indicated a failure to find the resource
+	 * @param ref The reference into the class path which the ogg can be read from
+	 * @throws IOException Indicated a failure to find the resource
 	 */
 	public OggClip(String ref) throws IOException {
 		try {
-			init(Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream(ref));
+			init(Thread.currentThread().getContextClassLoader().getResourceAsStream(ref));
 		} catch (IOException e) {
 			throw new IOException("Couldn't find: " + ref);
 		}
@@ -63,10 +59,8 @@ public class OggClip {
 	/**
 	 * Create a new clip based on a reference into the class path
 	 * 
-	 * @param in
-	 *            The stream from which the ogg can be read from
-	 * @throws IOException
-	 *             Indicated a failure to read from the stream
+	 * @param in The stream from which the ogg can be read from
+	 * @throws IOException Indicated a failure to read from the stream
 	 */
 	public OggClip(InputStream in) throws IOException {
 		init(in);
@@ -80,18 +74,16 @@ public class OggClip {
 	}
 
 	/**
-	 * Attempt to set the global gain (volume ish) for the play back. If the
-	 * control is not supported this method has no effect. 1.0 will set maximum
-	 * gain, 0.0 minimum gain
+	 * Attempt to set the global gain (volume ish) for the play back. If the control
+	 * is not supported this method has no effect. 1.0 will set maximum gain, 0.0
+	 * minimum gain
 	 * 
-	 * @param gain
-	 *            The gain value
+	 * @param gain The gain value
 	 */
 	public void setGain(float gain) {
 		if (gain != -1) {
 			if ((gain < 0) || (gain > 1)) {
-				throw new IllegalArgumentException(
-						"Volume must be between 0.0 and 1.0");
+				throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
 			}
 		}
 
@@ -102,8 +94,7 @@ public class OggClip {
 		}
 
 		try {
-			FloatControl control = (FloatControl) outputLine
-					.getControl(FloatControl.Type.MASTER_GAIN);
+			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.MASTER_GAIN);
 			if (gain == -1) {
 				control.setValue(0);
 			} else {
@@ -121,12 +112,11 @@ public class OggClip {
 	}
 
 	/**
-	 * Attempt to set the balance between the two speakers. -1.0 is full left
-	 * speak, 1.0 if full right speaker. Anywhere in between moves between the
-	 * two speakers. If the control is not supported this method has no effect
+	 * Attempt to set the balance between the two speakers. -1.0 is full left speak,
+	 * 1.0 if full right speaker. Anywhere in between moves between the two
+	 * speakers. If the control is not supported this method has no effect
 	 * 
-	 * @param balance
-	 *            The balance value
+	 * @param balance The balance value
 	 */
 	public void setBalance(float balance) {
 		this.balance = balance;
@@ -136,8 +126,7 @@ public class OggClip {
 		}
 
 		try {
-			FloatControl control = (FloatControl) outputLine
-					.getControl(FloatControl.Type.BALANCE);
+			FloatControl control = (FloatControl) outputLine.getControl(FloatControl.Type.BALANCE);
 			control.setValue(balance);
 		} catch (IllegalArgumentException e) {
 			// balance not supported
@@ -214,10 +203,8 @@ public class OggClip {
 	/**
 	 * Initialise the ogg clip
 	 * 
-	 * @param in
-	 *            The stream we're going to read from
-	 * @throws IOException
-	 *             Indicates a failure to read from the stream
+	 * @param in The stream we're going to read from
+	 * @throws IOException Indicates a failure to read from the stream
 	 */
 	private void init(InputStream in) throws IOException {
 		if (in == null) {
@@ -324,8 +311,7 @@ public class OggClip {
 			AudioFormat audioFormat = new AudioFormat(rate, 16, channels, true, // PCM_Signed
 					false // littleEndian
 			);
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-					audioFormat, AudioSystem.NOT_SPECIFIED);
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat, AudioSystem.NOT_SPECIFIED);
 			if (!AudioSystem.isLineSupported(info)) {
 				throw new Exception("Line " + info + " not supported.");
 			}
@@ -354,8 +340,7 @@ public class OggClip {
 	 * Taken from the JOrbis Player
 	 */
 	private SourceDataLine getOutputLine(int channels, int rate) {
-		if (outputLine == null || this.rate != rate
-				|| this.channels != channels) {
+		if (outputLine == null || this.rate != rate || this.channels != channels) {
 			if (outputLine != null) {
 				outputLine.drain();
 				outputLine.stop();
@@ -417,8 +402,7 @@ public class OggClip {
 				if (oy.pageout(og) != 1) {
 					if (bytes < BUFSIZE)
 						break;
-					throw new InternalException(
-							"Input does not appear to be an Ogg bitstream.");
+					throw new InternalException("Input does not appear to be an Ogg bitstream.");
 				}
 			}
 			os.init(og.serialno());
@@ -429,20 +413,17 @@ public class OggClip {
 
 			if (os.pagein(og) < 0) {
 				// error; stream version mismatch perhaps
-				throw new InternalException(
-						"Error reading first page of Ogg bitstream data.");
+				throw new InternalException("Error reading first page of Ogg bitstream data.");
 			}
 
 			if (os.packetout(op) != 1) {
 				// no page? must not be vorbis
-				throw new InternalException(
-						"Error reading initial header packet.");
+				throw new InternalException("Error reading initial header packet.");
 			}
 
 			if (vi.synthesis_headerin(vc, op) < 0) {
 				// error case; not a vorbis header
-				throw new InternalException(
-						"This Ogg bitstream does not contain Vorbis audio data.");
+				throw new InternalException("This Ogg bitstream does not contain Vorbis audio data.");
 			}
 
 			int i = 0;
@@ -463,8 +444,7 @@ public class OggClip {
 							if (result == 0)
 								break;
 							if (result == -1) {
-								throw new InternalException(
-										"Corrupt secondary header.  Exiting.");
+								throw new InternalException("Corrupt secondary header.  Exiting.");
 							}
 							vi.synthesis_headerin(vc, op);
 							i++;
@@ -480,8 +460,7 @@ public class OggClip {
 					throw new InternalException(e);
 				}
 				if (bytes == 0 && i < 2) {
-					throw new InternalException(
-							"End of file before finding all Vorbis headers!");
+					throw new InternalException("End of file before finding all Vorbis headers!");
 				}
 				oy.wrote(bytes);
 			}
@@ -541,15 +520,13 @@ public class OggClip {
 									// success!
 									vd.synthesis_blockin(vb);
 								}
-								while ((samples = vd.synthesis_pcmout(_pcmf,
-										_index)) > 0) {
+								while ((samples = vd.synthesis_pcmout(_pcmf, _index)) > 0) {
 									if (checkState()) {
 										return;
 									}
 
 									float[][] pcmf = _pcmf[0];
-									int bout = (samples < convsize ? samples
-											: convsize);
+									int bout = (samples < convsize ? samples : convsize);
 
 									// convert doubles to 16 bit signed ints
 									// (host order) and
@@ -573,8 +550,7 @@ public class OggClip {
 											ptr += 2 * (vi.channels);
 										}
 									}
-									outputLine.write(convbuffer, 0, 2
-											* vi.channels * bout);
+									outputLine.write(convbuffer, 0, 2 * vi.channels * bout);
 									vd.synthesis_read(bout);
 								}
 							}

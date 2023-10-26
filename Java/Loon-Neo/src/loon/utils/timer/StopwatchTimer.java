@@ -45,6 +45,8 @@ public class StopwatchTimer {
 
 	private long _timeOff = -1;
 
+	private boolean _over;
+
 	public StopwatchTimer() {
 		this(LSystem.EMPTY);
 	}
@@ -109,6 +111,7 @@ public class StopwatchTimer {
 		this._from = (_timeOn == -1) ? currentTime() : _timeOn;
 		this._to = this._from;
 		this._lastStop = this._to;
+		this._over = false;
 		return this._from;
 	}
 
@@ -123,6 +126,7 @@ public class StopwatchTimer {
 	public StopwatchTimer stop() {
 		this._lastStop = this._to;
 		this._to = (_timeOff == -1) ? currentTime() : _timeOff;
+		this._over = true;
 		return this;
 	}
 
@@ -151,6 +155,10 @@ public class StopwatchTimer {
 		return this._currentName;
 	}
 
+	public boolean completed() {
+		return this._over;
+	}
+
 	public long getTimeOn() {
 		return _timeOn;
 	}
@@ -170,7 +178,7 @@ public class StopwatchTimer {
 	}
 
 	public long getTimestamp() {
-		return TimeUtils.millis();
+		return currentTime();
 	}
 
 	@Override

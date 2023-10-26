@@ -110,8 +110,7 @@ public class VorbisFile {
 		}
 	}
 
-	public VorbisFile(InputStream is, byte[] initial, int ibytes)
-			throws JOrbisException {
+	public VorbisFile(InputStream is, byte[] initial, int ibytes) throws JOrbisException {
 		super();
 		int ret = open(is, initial, ibytes);
 		if (ret == -1) {
@@ -199,8 +198,7 @@ public class VorbisFile {
 		return offst;
 	}
 
-	int bisect_forward_serialno(long begin, long searched, long end,
-			int currentno, int m) {
+	int bisect_forward_serialno(long begin, long searched, long end, int currentno, int m) {
 		long endsearched = end;
 		long next = end;
 		Page page = new Page();
@@ -236,8 +234,7 @@ public class VorbisFile {
 			offsets = new long[m + 2];
 			offsets[m + 1] = searched;
 		} else {
-			ret = bisect_forward_serialno(next, offset, end, page.serialno(),
-					m + 1);
+			ret = bisect_forward_serialno(next, offset, end, page.serialno(), m + 1);
 			if (ret == OV_EREAD)
 				return OV_EREAD;
 		}
@@ -308,8 +305,7 @@ public class VorbisFile {
 	// vorbis_info structs and PCM positions. Only called by the seekable
 	// initialization (local stream storage is hacked slightly; pay
 	// attention to how that's done)
-	void prefetch_all_headers(Info first_i, Comment first_c, int dataoffset)
-			throws JOrbisException {
+	void prefetch_all_headers(Info first_i, Comment first_c, int dataoffset) throws JOrbisException {
 		Page og = new Page();
 		int ret;
 
@@ -484,8 +480,7 @@ public class VorbisFile {
 						{
 							int oldsamples = vd.synthesis_pcmout(null, null);
 							vd.synthesis_blockin(vb);
-							samptrack += vd.synthesis_pcmout(null, null)
-									- oldsamples;
+							samptrack += vd.synthesis_pcmout(null, null) - oldsamples;
 							bittrack += op.bytes * 8;
 						}
 
@@ -729,8 +724,7 @@ public class VorbisFile {
 		} else {
 			if (seekable) {
 				// return the actual bitrate
-				return ((int) Math.rint((offsets[i + 1] - dataoffsets[i]) * 8
-						/ time_total(i)));
+				return ((int) Math.rint((offsets[i + 1] - dataoffsets[i]) * 8 / time_total(i)));
 			} else {
 				// return nominal if set
 				if (vi[i].bitrate_nominal > 0) {
@@ -1036,8 +1030,7 @@ public class VorbisFile {
 
 		// enough information to convert time offset to pcm offset
 		{
-			long target = (long) (pcm_total + (seconds - time_total)
-					* vi[link].rate);
+			long target = (long) (pcm_total + (seconds - time_total) * vi[link].rate);
 			return (pcm_seek(target));
 		}
 
@@ -1080,8 +1073,7 @@ public class VorbisFile {
 			}
 		}
 
-		return ((float) time_total + (float) (pcm_offset - pcm_total)
-				/ vi[link].rate);
+		return ((float) time_total + (float) (pcm_offset - pcm_total) / vi[link].rate);
 	}
 
 	// link: -1) return the vorbis_info struct for the bitstream section
@@ -1180,8 +1172,7 @@ public class VorbisFile {
 	//
 	// *section) set to the logical bitstream number
 
-	int read(byte[] buffer, int length, int bigendianp, int word, int sgned,
-			int[] bitstream) {
+	int read(byte[] buffer, int length, int bigendianp, int word, int sgned, int[] bitstream) {
 		int host_endian = host_is_big_endian();
 		int index = 0;
 

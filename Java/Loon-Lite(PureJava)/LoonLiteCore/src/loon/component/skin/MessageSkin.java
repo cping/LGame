@@ -42,7 +42,7 @@ public class MessageSkin implements FontSet<MessageSkin> {
 	}
 
 	public MessageSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.white, DefUI.self().getDefaultTextures(2));
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.white, DefUI.self().getDefaultTextures(1));
 	}
 
 	public MessageSkin(IFont font, LColor fontColor, LColor backColor, LTexture back) {

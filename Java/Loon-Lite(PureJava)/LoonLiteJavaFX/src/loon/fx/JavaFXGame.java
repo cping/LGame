@@ -252,6 +252,9 @@ public class JavaFXGame extends LGame {
 	}
 
 	protected void init() {
+		if (input != null) {
+			input.init();
+		}
 		if (_animationLoopRunner != null) {
 			_animationLoopRunner.stop();
 			_animationLoopRunner = null;

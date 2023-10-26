@@ -123,8 +123,8 @@ public class GobangPanel extends LPanel {
 	}
 
 	@Override
-	public void createUI(GLEx g, int x1, int y1, LComponent component,
-			LTexture[] buttonImage) {
+	public void createUI(GLEx g, int x1, int y1) {
+
 		// 保存原始画笔
 		g.saveBrush();
 		// 画棋盘
@@ -174,6 +174,7 @@ public class GobangPanel extends LPanel {
 	// 画棋盘
 	private void drawBoard(GLEx g) {
 		if (boardTexture == null) {
+
 			Image img = Image.createImage(width(), height());
 			Canvas cs = img.getCanvas();
 			cs.setColor(LColor.black);

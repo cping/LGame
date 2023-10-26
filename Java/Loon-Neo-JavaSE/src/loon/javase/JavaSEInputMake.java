@@ -45,9 +45,6 @@ public class JavaSEInputMake extends InputMake {
 
 	public JavaSEInputMake(JavaSEGame game) {
 		this.game = game;
-		if (game.setting.emulateTouch) {
-			emulateTouch();
-		}
 	}
 
 	public void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
@@ -111,6 +108,9 @@ public class JavaSEInputMake extends InputMake {
 	}
 
 	void init() {
+		if (game.setting.emulateTouch) {
+			emulateTouch();
+		}
 	}
 
 	void update() {

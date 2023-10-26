@@ -95,4 +95,8 @@ public interface SysInput {
 	boolean isKeyType(int i);
 
 	float getCurrentTimer();
+
+	boolean isLongPressed();
+
+	boolean isLongPressed(float seconds);
 }

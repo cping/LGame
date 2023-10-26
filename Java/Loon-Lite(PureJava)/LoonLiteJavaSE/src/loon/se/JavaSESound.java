@@ -87,7 +87,7 @@ public class JavaSESound extends SoundImpl<Object> {
 		stopImpl();
 		return true;
 	}
-	
+
 	@Override
 	protected synchronized void stopImpl() {
 		switch (mode) {
@@ -111,10 +111,8 @@ public class JavaSESound extends SoundImpl<Object> {
 		switch (mode) {
 		case 0:
 			if (((Clip) impl).isControlSupported(FloatControl.Type.MASTER_GAIN)) {
-				FloatControl volctrl = (FloatControl) ((Clip) impl)
-						.getControl(FloatControl.Type.MASTER_GAIN);
-				volctrl.setValue(toGain(volume, volctrl.getMinimum(),
-						volctrl.getMaximum()));
+				FloatControl volctrl = (FloatControl) ((Clip) impl).getControl(FloatControl.Type.MASTER_GAIN);
+				volctrl.setValue(toGain(volume, volctrl.getMinimum(), volctrl.getMaximum()));
 			}
 			break;
 		case 1:

@@ -666,8 +666,7 @@ public class JavaFXAssets extends Assets {
 		@Override
 		public WritableImage readImage() throws IOException {
 			javafx.scene.image.Image img = new javafx.scene.image.Image(assets.strRes(url));
-			WritableImage newImage = new WritableImage(img.getPixelReader(),
-					(int) img.getWidth(),
+			WritableImage newImage = new WritableImage(img.getPixelReader(), (int) img.getWidth(),
 					(int) img.getHeight());
 			return newImage;
 		}

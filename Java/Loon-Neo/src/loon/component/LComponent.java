@@ -64,6 +64,8 @@ import loon.opengl.TextureUtils;
 import loon.utils.Flip;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import loon.utils.timer.Duration;
+import loon.utils.timer.StopwatchTimer;
 
 /**
  * Loon桌面组件的核心,所有UI类组件基于此类产生
@@ -164,6 +166,9 @@ public abstract class LComponent extends LObject<LContainer>
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	private boolean _touchLocked = false, _keyLocked = false;
+
+	// 计算按下与松开时间用的秒表
+	private StopwatchTimer _downUpTimer = new StopwatchTimer();
 
 	public LComponent(Vector2f position, Vector2f size) {
 		this(position.x(), position.y(), size.x(), size.y());
@@ -401,11 +406,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean contains(float x, float y, float width, float height) {
-		return (this._component_visible && getRectBox().contains(x, y, width, height));
+		return (this._component_visible && getCollisionBox().contains(x, y, width, height));
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this._component_visible) && getRectBox().intersects(x1, y1);
+		return (this._component_visible) && getCollisionBox().intersects(x1, y1);
 	}
 
 	protected float getDrawScrollX() {
@@ -449,7 +454,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public boolean intersects(LComponent comp) {
 		return (this._component_visible) && (comp != null && comp.isVisible())
-				&& getRectBox().intersects(comp.getRectBox());
+				&& getCollisionBox().intersects(comp.getCollisionBox());
 	}
 
 	@Override
@@ -797,11 +802,15 @@ public abstract class LComponent extends LObject<LContainer>
 		} catch (Throwable e) {
 			LSystem.error("Component downClick() exception", e);
 		}
+		if (!this._downClick) {
+			this._downUpTimer.start();
+		}
 		this._downClick = true;
 	}
 
 	protected void processTouchReleased() {
 		if (this._downClick) {
+			this._downUpTimer.stop();
 			try {
 				this.upClick();
 			} catch (Throwable e) {
@@ -851,6 +860,64 @@ public abstract class LComponent extends LObject<LContainer>
 		} else {
 			this.transferFocusBackward();
 		}
+	}
+
+	public long getDownUpStartTimer() {
+		return _downUpTimer.getStartTime();
+	}
+
+	public long getDownUpEndTimer() {
+		return _downUpTimer.getEndTime();
+	}
+
+	public long getDownUpTimer() {
+		return _downUpTimer.getDuration();
+	}
+
+	public long getDownUpLastTimer() {
+		return _downUpTimer.getLastDuration();
+	}
+
+	public float getDownUpStartTimerSeconds() {
+		return Duration.toS(getDownUpStartTimer());
+	}
+
+	public float getDownUpEndTimerSeconds() {
+		return Duration.toS(getDownUpEndTimer());
+	}
+
+	public float getDownUpTimerSeconds() {
+		return Duration.toS(getDownUpTimer());
+	}
+
+	public float getDownUpLastTimerSeconds() {
+		return Duration.toS(getDownUpLastTimer());
+	}
+
+	public boolean isLongPressed() {
+		return isLongPressed(LSystem.LONG_PRESSED_TIME);
+	}
+
+	public boolean isLongPressed(float seconds) {
+		if (_downUpTimer.completed()) {
+			return false;
+		}
+		if (!_downClick) {
+			final long timer = getDownUpTimer();
+			if (timer >= seconds * LSystem.SECOND) {
+				return true;
+			}
+		} else {
+			long endTimer = 0;
+			if (!_downUpTimer.completed()) {
+				endTimer = _downUpTimer.getTimestamp();
+			}
+			endTimer = endTimer - getDownUpStartTimer();
+			if (endTimer >= seconds * LSystem.SECOND) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public LTexture[] getImageUI() {
@@ -1027,7 +1094,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_objectSuper != null) {
 			return _objectSuper.contains(x, y, w, h);
 		}
-		return getRectBox().contains(x, y, w, h);
+		return getCollisionBox().contains(x, y, w, h);
 	}
 
 	private float toPixelScaleX(float x) {
@@ -1170,7 +1237,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public RectBox getCollisionArea() {
 		return getCollisionBox();
 	}
-	
+
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
@@ -1377,7 +1444,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_objectSuper == null) {
 			return x;
 		}
-		RectBox bounds = _objectSuper.getRectBox();
+		RectBox bounds = _objectSuper.getCollisionBox();
 		float dw = _objectSuper.getWidth();
 		float bx = bounds.x + ((dw - this.getWidth()) / 2);
 		float bw = MathUtils.max(bx, bx + bounds.width - dw);
@@ -1393,7 +1460,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_objectSuper == null) {
 			return y;
 		}
-		RectBox bounds = _objectSuper.getRectBox();
+		RectBox bounds = _objectSuper.getCollisionBox();
 		float dh = _objectSuper.getHeight();
 		float by = bounds.y + ((dh - this.getHeight()) / 2);
 		float bh = MathUtils.max(by, by + bounds.height - dh);
@@ -1478,7 +1545,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isPointInUI(float x, float y) {
-		return getRectBox().contains(x, y);
+		return getCollisionBox().contains(x, y);
 	}
 
 	public boolean isPointInUI() {
@@ -1653,7 +1720,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (x != 0) {
 			float dx = (x - rect.getWidth() / 2 / this.getScaleX() - this.getX()) / 3;
 			if (comp != null) {
-				RectBox boundingBox = comp.getRectBox();
+				RectBox boundingBox = comp.getCollisionBox();
 				if (this.getX() + dx < boundingBox.getMinX()) {
 					setX(boundingBox.getMinX() / this.getScaleX());
 				} else if (this.getX() + dx > (boundingBox.getMaxX() - rect.getWidth()) / this.getScaleX()) {
@@ -1669,7 +1736,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (y != 0) {
 			float dy = (y - rect.getHeight() / 2 / this.getScaleY() - this.getY()) / 3;
 			if (comp != null) {
-				RectBox boundingBox = comp.getRectBox();
+				RectBox boundingBox = comp.getCollisionBox();
 				if (this.getY() + dy < boundingBox.getMinY()) {
 					this.setY(boundingBox.getMinY() / this.getScaleY());
 				} else if (this.getY() + dy > (boundingBox.getMaxY() - rect.getHeight()) / this.getScaleY()) {

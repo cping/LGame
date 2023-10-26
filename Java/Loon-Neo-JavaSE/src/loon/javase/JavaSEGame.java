@@ -227,7 +227,6 @@ public class JavaSEGame extends LGame {
 		}
 		this.graphics.init();
 		this.input.init();
-
 	}
 
 	public void setTitle(String title) {

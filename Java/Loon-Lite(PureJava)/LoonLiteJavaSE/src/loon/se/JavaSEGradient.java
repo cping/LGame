@@ -30,30 +30,30 @@ import loon.canvas.Gradient;
 
 public class JavaSEGradient extends Gradient {
 
-  static JavaSEGradient create(Linear cfg) {
-    Point2D.Float start = new Point2D.Float(cfg.x0, cfg.y0);
-    Point2D.Float end = new Point2D.Float(cfg.x1, cfg.y1);
-    Color[] javaColors = convertColors(cfg.colors);
-    return new JavaSEGradient(new LinearGradientPaint(start, end, cfg.positions, javaColors));
-  }
+	static JavaSEGradient create(Linear cfg) {
+		Point2D.Float start = new Point2D.Float(cfg.x0, cfg.y0);
+		Point2D.Float end = new Point2D.Float(cfg.x1, cfg.y1);
+		Color[] javaColors = convertColors(cfg.colors);
+		return new JavaSEGradient(new LinearGradientPaint(start, end, cfg.positions, javaColors));
+	}
 
-  static JavaSEGradient create(Radial cfg) {
-    Point2D.Float center = new Point2D.Float(cfg.x, cfg.y);
-    Color[] javaColors = convertColors(cfg.colors);
-    return new JavaSEGradient(new RadialGradientPaint(center, cfg.r, cfg.positions, javaColors));
-  }
+	static JavaSEGradient create(Radial cfg) {
+		Point2D.Float center = new Point2D.Float(cfg.x, cfg.y);
+		Color[] javaColors = convertColors(cfg.colors);
+		return new JavaSEGradient(new RadialGradientPaint(center, cfg.r, cfg.positions, javaColors));
+	}
 
-  private static Color[] convertColors(int[] colors) {
-    Color[] javaColors = new Color[colors.length];
-    for (int i = 0; i < colors.length; ++i) {
-      javaColors[i] = new Color(colors[i], true);
-    }
-    return javaColors;
-  }
+	private static Color[] convertColors(int[] colors) {
+		Color[] javaColors = new Color[colors.length];
+		for (int i = 0; i < colors.length; ++i) {
+			javaColors[i] = new Color(colors[i], true);
+		}
+		return javaColors;
+	}
 
-  Paint paint;
+	Paint paint;
 
-  private JavaSEGradient(Paint paint) {
-    this.paint = paint;
-  }
+	private JavaSEGradient(Paint paint) {
+		this.paint = paint;
+	}
 }

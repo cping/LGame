@@ -22,7 +22,6 @@ package loon.fx;
 
 import java.net.URL;
 
-
 import loon.LSystem;
 import loon.SoundImpl;
 import loon.events.Updateable;
@@ -49,7 +48,7 @@ public class JavaFXSound {
 		LSystem.unload(update);
 	}
 
-	public SoundImpl<Object> createSound(final URL path,final boolean music) {
+	public SoundImpl<Object> createSound(final URL path, final boolean music) {
 		final SoundImpl<Object> sound;
 		if (music) {
 			sound = new JavaFXMusic(path);

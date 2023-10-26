@@ -45,7 +45,7 @@ public class LogFormat {
 	private boolean show;
 
 	protected final int[] logTypeStyle;
-	
+
 	protected int logType;
 
 	public LogFormat(boolean s, int t) {

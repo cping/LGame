@@ -55,6 +55,8 @@ public class LToolTip extends LComponent {
 
 	private boolean _running;
 
+	private boolean _lockedFadeIn = false;
+	
 	private float _currentFrame = 0, _fadeTime = 60;
 
 	private Text _text;
@@ -89,43 +91,63 @@ public class LToolTip extends LComponent {
 		this.setAlpha(0);
 	}
 
+	public boolean isRunning() {
+		return _running;
+	}
+
+
+	public LToolTip setLockedFadeIn(boolean l) {
+		this._lockedFadeIn = l;
+		return this;
+	}
+
 	@Override
 	public void update(long elapsedTime) {
 		super.update(elapsedTime);
 		if (this.isVisible()) {
 			if (this._tooltip != null && !this._tooltipChanged) {
 				if (_dismissing && _running) {
-
 					if (!_fadeCompleted) {
 						_currentFrame++;
-						if (_currentFrame == _fadeTime) {
+						if (_currentFrame >= _fadeTime) {
 							setAlpha(1f);
+							if (!_lockedFadeIn) {
+								_running = false;
+							}
 							_fadeCompleted = true;
 							return;
 						}
 					}
 					_objectAlpha = (_currentFrame / _fadeTime);
-				}
-				if (this._dismiss++ >= this._dismissTime) {
+					if (_lockedFadeIn && _objectAlpha >= 1f && _currentFrame >= _fadeTime) {
+						setAlpha(1f);
+						_fadeCompleted = true;
+						return;
+					}
+				} else if (this._dismiss++ >= this._dismissTime) {
+
 					this.setToolTipComponent(null);
 					this.setVisible(false);
 					this._dismissing = false;
 					this._dismiss = 0;
 					this._reshow = 0;
+				} else {
+					this.setAlpha(1f);
+					this._running = false;
+					this._fadeCompleted = true;
 				}
+
 			} else {
 				this.setVisible(false);
+				this._running = false;
 			}
-
 		} else {
 			if (this._reshow > 0) {
 				this._reshow--;
 			}
 			if (this._tooltip != null && (this._reshow > 0 || ++this._initialFlag >= this._initialDelay)) {
 				this.showTip();
-
 			}
-
 		}
 	}
 
@@ -143,8 +165,10 @@ public class LToolTip extends LComponent {
 			return this;
 		}
 		this.setVisible(true);
+		this._reshow = 0;
 		this._initialFlag = 0;
 		this._dismiss = 0;
+		this._dismissing = true;
 		this._currentFrame = 0;
 		this._reshow = this._reshowDelay;
 		this._tooltipChanged = false;
@@ -213,10 +237,10 @@ public class LToolTip extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if ( _tooltip == null) {
+		if (_tooltip == null) {
 			return;
 		}
-		String tipText = _tooltip.getToolTipText();
+		final String tipText = _tooltip.getToolTipText();
 		if (!_text.getText().equals(tipText)) {
 			_text.setText(tipText);
 		}
@@ -237,28 +261,35 @@ public class LToolTip extends LComponent {
 				_fontColor);
 	}
 
+	public boolean isCompleted() {
+		return _fadeCompleted;
+	}
+
 	public int getDismiss() {
 		return _dismiss;
 	}
 
-	public void setDismiss(int d) {
+	public LToolTip setDismiss(int d) {
 		this._dismiss = d;
+		return this;
 	}
 
 	public int getDismissTime() {
 		return _dismissTime;
 	}
 
-	public void setDismissTime(int d) {
+	public LToolTip setDismissTime(int d) {
 		this._dismissTime = d;
+		return this;
 	}
 
 	public boolean isDismissing() {
 		return _dismissing;
 	}
 
-	public void setDismissing(boolean d) {
+	public LToolTip setDismissing(boolean d) {
 		this._dismissing = d;
+		return this;
 	}
 
 	@Override
@@ -269,6 +300,7 @@ public class LToolTip extends LComponent {
 	@Override
 	public void destory() {
 		_text.close();
+		_running = false;
 	}
 
 }

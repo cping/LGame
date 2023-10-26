@@ -40,8 +40,7 @@ class Lsp {
 
 	static final float M_PI = (float) (3.1415926539);
 
-	static void lsp_to_curve(float[] curve, int[] map, int n, int ln,
-			float[] lsp, int m, float amp, float ampoffset) {
+	static void lsp_to_curve(float[] curve, int[] map, int n, int ln, float[] lsp, int m, float amp, float ampoffset) {
 		int i;
 		float wdel = M_PI / ln;
 		for (i = 0; i < m; i++)
@@ -92,8 +91,7 @@ class Lsp {
 				q = Float.intBitsToFloat(hx);
 			}
 
-			q = Lookup.fromdBlook(amp * Lookup.invsqlook(q)
-					* Lookup.invsq2explook(qexp + m) - ampoffset);
+			q = Lookup.fromdBlook(amp * Lookup.invsqlook(q) * Lookup.invsq2explook(qexp + m) - ampoffset);
 
 			do {
 				curve[i++] *= q;

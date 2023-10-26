@@ -98,15 +98,12 @@ class JavaSEBigClip implements Clip, LineListener {
 
 	@Override
 	public void setLoopPoints(int start, int end) {
-		if (start < 0 || start > audioData.length - 1 || end < 0
-				|| end > audioData.length) {
-			throw new IllegalArgumentException("Loop points '" + start
-					+ "' and '" + end + "' cannot be set for buffer of size "
-					+ audioData.length);
+		if (start < 0 || start > audioData.length - 1 || end < 0 || end > audioData.length) {
+			throw new IllegalArgumentException("Loop points '" + start + "' and '" + end
+					+ "' cannot be set for buffer of size " + audioData.length);
 		}
 		if (start > end) {
-			throw new IllegalArgumentException("End position " + end
-					+ " preceeds start position " + start);
+			throw new IllegalArgumentException("End position " + end + " preceeds start position " + start);
 		}
 
 		loopPointStart = start;
@@ -143,16 +140,13 @@ class JavaSEBigClip implements Clip, LineListener {
 
 	@Override
 	public int getFramePosition() {
-		long timeSinceLastPositionSet = System.currentTimeMillis()
-				- timelastPositionSet;
-		int size = dataLine.getBufferSize() * (format.getChannels() / 2)
-				/ bufferUpdateFactor;
+		long timeSinceLastPositionSet = System.currentTimeMillis() - timelastPositionSet;
+		int size = dataLine.getBufferSize() * (format.getChannels() / 2) / bufferUpdateFactor;
 
 		size /= dataLine.getFormat().getFrameSize();
 		size *= dataLine.getFormat().getFrameSize();
 
-		int framesSinceLast = (int) ((timeSinceLastPositionSet / 1000f) * dataLine
-				.getFormat().getFrameRate());
+		int framesSinceLast = (int) ((timeSinceLastPositionSet / 1000f) * dataLine.getFormat().getFrameRate());
 		int framesRemainingTillTime = size - framesSinceLast;
 		return framePosition - framesRemainingTillTime;
 	}
@@ -165,15 +159,13 @@ class JavaSEBigClip implements Clip, LineListener {
 	AudioFormat format;
 
 	@Override
-	public void open(AudioInputStream stream) throws IOException,
-			LineUnavailableException {
+	public void open(AudioInputStream stream) throws IOException, LineUnavailableException {
 
 		AudioInputStream is1;
 		format = stream.getFormat();
 
 		if (format.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-			is1 = AudioSystem.getAudioInputStream(
-					AudioFormat.Encoding.PCM_SIGNED, stream);
+			is1 = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, stream);
 		} else {
 			is1 = stream;
 		}
@@ -193,8 +185,7 @@ class JavaSEBigClip implements Clip, LineListener {
 		AudioFormat afTemp;
 		if (format.getChannels() < 2) {
 			int frameSize = format.getSampleSizeInBits() * 2 / 8;
-			afTemp = new AudioFormat(format.getEncoding(),
-					format.getSampleRate(), format.getSampleSizeInBits(), 2,
+			afTemp = new AudioFormat(format.getEncoding(), format.getSampleRate(), format.getSampleSizeInBits(), 2,
 					frameSize, format.getFrameRate(), format.isBigEndian());
 		} else {
 			afTemp = format;
@@ -207,18 +198,15 @@ class JavaSEBigClip implements Clip, LineListener {
 	}
 
 	@Override
-	public void open(AudioFormat format, byte[] data, int offset, int bufferSize)
-			throws LineUnavailableException {
+	public void open(AudioFormat format, byte[] data, int offset, int bufferSize) throws LineUnavailableException {
 		byte[] input = new byte[bufferSize];
 		for (int ii = 0; ii < input.length; ii++) {
 			input[ii] = data[offset + ii];
 		}
 		ByteArrayInputStream inputStream = new ByteArrayInputStream(input);
 		try {
-			AudioInputStream ais1 = AudioSystem
-					.getAudioInputStream(inputStream);
-			AudioInputStream ais2 = AudioSystem.getAudioInputStream(format,
-					ais1);
+			AudioInputStream ais1 = AudioSystem.getAudioInputStream(inputStream);
+			AudioInputStream ais2 = AudioSystem.getAudioInputStream(format, ais1);
 			open(ais2);
 		} catch (UnsupportedAudioFileException uafe) {
 			throw new IllegalArgumentException(uafe);
@@ -318,9 +306,7 @@ class JavaSEBigClip implements Clip, LineListener {
 				bytesRead = inputStream.read(new byte[offset], 0, offset);
 				bytesRead = inputStream.read(data, 0, data.length);
 
-				while (bytesRead != -1
-						&& (loopCount == Clip.LOOP_CONTINUOUSLY || countDown > 0)
-						&& active) {
+				while (bytesRead != -1 && (loopCount == Clip.LOOP_CONTINUOUSLY || countDown > 0) && active) {
 					int framesRead;
 					byte[] tempData;
 					if (format.getChannels() < 2) {
@@ -328,8 +314,7 @@ class JavaSEBigClip implements Clip, LineListener {
 						framesRead = bytesRead / format.getFrameSize();
 						bytesRead *= 2;
 					} else {
-						framesRead = bytesRead
-								/ dataLine.getFormat().getFrameSize();
+						framesRead = bytesRead / dataLine.getFormat().getFrameSize();
 						tempData = Arrays.copyOfRange(data, 0, bytesRead);
 					}
 
@@ -354,8 +339,7 @@ class JavaSEBigClip implements Clip, LineListener {
 					}
 
 					bytesRead = inputStream.read(data, 0, data.length);
-					if (bytesRead < 0
-							&& (--countDown > 0 || loopCount == Clip.LOOP_CONTINUOUSLY)) {
+					if (bytesRead < 0 && (--countDown > 0 || loopCount == Clip.LOOP_CONTINUOUSLY)) {
 						inputStream.read(new byte[offset], 0, offset);
 						inputStream.reset();
 						bytesRead = inputStream.read(data, 0, data.length);
@@ -421,8 +405,7 @@ class JavaSEBigClip implements Clip, LineListener {
 
 	@Override
 	public void open() throws LineUnavailableException {
-		throw new IllegalArgumentException(
-				"illegal call to open() in interface Clip");
+		throw new IllegalArgumentException("illegal call to open() in interface Clip");
 	}
 
 	@Override

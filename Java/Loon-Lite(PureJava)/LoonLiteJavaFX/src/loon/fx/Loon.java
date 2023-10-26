@@ -45,11 +45,11 @@ public abstract class Loon {
 	public static void register(Class<? extends Loon> appClass, JavaFXSetting setting, LazyLoading.Data lazy,
 			String[] args) {
 		try {
-			
+
 			Loon app = newInstance(appClass);
 			register(app, setting, lazy, args);
 		} catch (Throwable e) {
-			
+
 			e.printStackTrace();
 		}
 	}

@@ -160,6 +160,9 @@ public class LSystem {
 	 */
 	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
 
+	// 长按时间
+	public static final float LONG_PRESSED_TIME = 2f;
+
 	// 默认的layer瓦片大小
 	public static final int LAYER_TILE_SIZE = 32;
 

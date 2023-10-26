@@ -478,6 +478,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	public Desktop processTouchs() {
 		// 鼠标滑动
 		this.processTouchMotionEvent();
+
 		// 鼠标事件
 		if (this.hoverComponent != null && hoverComponent.isAllowTouch()) {
 			this.processTouchEvent();
@@ -497,6 +498,17 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	/**
+	 * 强行显示提示
+	 */
+	protected void showTooltip(LComponent comp) {
+		if (tooltip != null && !tooltip.isRunning()) {
+			this.tooltip.setLockedFadeIn(true);
+			this.tooltip.setToolTipComponent(comp);
+			this.tooltip.showTip();
+		}
+	}
+
+	/**
 	 * 鼠标运动事件
 	 * 
 	 */
@@ -505,14 +517,6 @@ public class Desktop implements Visible, IArray, LRelease {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
 				this.hoverComponent.processTouchDragged();
-				if (LSystem.isMobile() || LSystem.base().setting.emulateTouch) {
-					if (tooltip != null) {
-						this.tooltip.setToolTipComponent(hoverComponent);
-						this.tooltip._reshow = 0;
-						this.tooltip._initialFlag = 0;
-						this.tooltip.showTip();
-					}
-				}
 			}
 		} else {
 			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
@@ -584,9 +588,11 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchEvent() {
+
 		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
-			if (!LSystem.isMobile() && !LSystem.base().setting.emulateTouch) {
+			final boolean mobile = LSystem.isMobile() || LSystem.base().setting.emulateTouch;
+			if (!mobile) {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
 				}
@@ -605,6 +611,11 @@ public class Desktop implements Visible, IArray, LRelease {
 						&& this.hoverComponent != this.selectedComponent) {
 					this.selectComponent(this.hoverComponent);
 				}
+			}
+			// 如果手机环境长按
+			if (mobile && this.hoverComponent != null && this.hoverComponent.isLongPressed()
+					&& this.hoverComponent.isAllowTouch()) {
+				showTooltip(this.hoverComponent);
 			}
 		}
 		if (released > Screen.NO_BUTTON) {

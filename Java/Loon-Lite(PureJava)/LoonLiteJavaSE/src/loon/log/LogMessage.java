@@ -29,8 +29,7 @@ public class LogMessage {
 
 	static private String LOG_DEFAULT_DATE = "yyyy-MM-dd HH:mm:ss,SSS";
 
-	static private SimpleDateFormat LOG_DEFAULT_DATE_FORMAT = new SimpleDateFormat(
-			LOG_DEFAULT_DATE);
+	static private SimpleDateFormat LOG_DEFAULT_DATE_FORMAT = new SimpleDateFormat(LOG_DEFAULT_DATE);
 
 	static private Date date = new Date();
 

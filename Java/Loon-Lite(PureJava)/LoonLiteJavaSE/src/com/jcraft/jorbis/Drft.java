@@ -149,8 +149,7 @@ class Drft {
 		drfti1(n, wsave, n, ifac);
 	}
 
-	static void dradf2(int ido, int l1, float[] cc, float[] ch, float[] wa1,
-			int index) {
+	static void dradf2(int ido, int l1, float[] cc, float[] ch, float[] wa1, int index) {
 		int i, k;
 		float ti2, tr2;
 		int t0, t1, t2, t3, t4, t5, t6;
@@ -181,10 +180,8 @@ class Drft {
 					t4 -= 2;
 					t5 += 2;
 					t6 += 2;
-					tr2 = wa1[index + i - 2] * cc[t3 - 1] + wa1[index + i - 1]
-							* cc[t3];
-					ti2 = wa1[index + i - 2] * cc[t3] - wa1[index + i - 1]
-							* cc[t3 - 1];
+					tr2 = wa1[index + i - 2] * cc[t3 - 1] + wa1[index + i - 1] * cc[t3];
+					ti2 = wa1[index + i - 2] * cc[t3] - wa1[index + i - 1] * cc[t3 - 1];
 					ch[t6] = cc[t5] + ti2;
 					ch[t4] = ti2 - cc[t5];
 					ch[t6 - 1] = cc[t5 - 1] + tr2;
@@ -208,8 +205,8 @@ class Drft {
 		}
 	}
 
-	static void dradf4(int ido, int l1, float[] cc, float[] ch, float[] wa1,
-			int index1, float[] wa2, int index2, float[] wa3, int index3) {
+	static void dradf4(int ido, int l1, float[] cc, float[] ch, float[] wa1, int index1, float[] wa2, int index2,
+			float[] wa3, int index3) {
 		int i, k, t0, t1, t2, t3, t4, t5, t6;
 		float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4;
 		t0 = l1 * ido;
@@ -248,20 +245,14 @@ class Drft {
 					t5 -= 2;
 
 					t3 += t0;
-					cr2 = wa1[index1 + i - 2] * cc[t3 - 1]
-							+ wa1[index1 + i - 1] * cc[t3];
-					ci2 = wa1[index1 + i - 2] * cc[t3] - wa1[index1 + i - 1]
-							* cc[t3 - 1];
+					cr2 = wa1[index1 + i - 2] * cc[t3 - 1] + wa1[index1 + i - 1] * cc[t3];
+					ci2 = wa1[index1 + i - 2] * cc[t3] - wa1[index1 + i - 1] * cc[t3 - 1];
 					t3 += t0;
-					cr3 = wa2[index2 + i - 2] * cc[t3 - 1]
-							+ wa2[index2 + i - 1] * cc[t3];
-					ci3 = wa2[index2 + i - 2] * cc[t3] - wa2[index2 + i - 1]
-							* cc[t3 - 1];
+					cr3 = wa2[index2 + i - 2] * cc[t3 - 1] + wa2[index2 + i - 1] * cc[t3];
+					ci3 = wa2[index2 + i - 2] * cc[t3] - wa2[index2 + i - 1] * cc[t3 - 1];
 					t3 += t0;
-					cr4 = wa3[index3 + i - 2] * cc[t3 - 1]
-							+ wa3[index3 + i - 1] * cc[t3];
-					ci4 = wa3[index3 + i - 2] * cc[t3] - wa3[index3 + i - 1]
-							* cc[t3 - 1];
+					cr4 = wa3[index3 + i - 2] * cc[t3 - 1] + wa3[index3 + i - 1] * cc[t3];
+					ci4 = wa3[index3 + i - 2] * cc[t3] - wa3[index3 + i - 1] * cc[t3 - 1];
 
 					tr1 = cr2 + cr4;
 					tr4 = cr4 - cr2;
@@ -314,9 +305,8 @@ class Drft {
 		}
 	}
 
-	static void dradfg(int ido, int ip, int l1, int idl1, float[] cc,
-			float[] c1, float[] c2, float[] ch, float[] ch2, float[] wa,
-			int index) {
+	static void dradfg(int ido, int ip, int l1, int idl1, float[] cc, float[] c1, float[] c2, float[] ch, float[] ch2,
+			float[] wa, int index) {
 		int idij, ipph, i, j, k, l, ic, ik, is;
 		int t0, t1, t2 = 0, t3, t4, t5, t6, t7, t8, t9, t10;
 		float dc2, ai1, ai2, ar1, ar2, ds2;
@@ -369,10 +359,8 @@ class Drft {
 							for (i = 2; i < ido; i += 2) {
 								idij += 2;
 								t3 += 2;
-								ch[t3 - 1] = wa[index + idij - 1] * c1[t3 - 1]
-										+ wa[index + idij] * c1[t3];
-								ch[t3] = wa[index + idij - 1] * c1[t3]
-										- wa[index + idij] * c1[t3 - 1];
+								ch[t3 - 1] = wa[index + idij - 1] * c1[t3 - 1] + wa[index + idij] * c1[t3];
+								ch[t3] = wa[index + idij - 1] * c1[t3] - wa[index + idij] * c1[t3 - 1];
 							}
 						}
 					}
@@ -388,10 +376,8 @@ class Drft {
 							t2 += 2;
 							t3 = t2;
 							for (k = 0; k < l1; k++) {
-								ch[t3 - 1] = wa[index + idij - 1] * c1[t3 - 1]
-										+ wa[index + idij] * c1[t3];
-								ch[t3] = wa[index + idij - 1] * c1[t3]
-										- wa[index + idij] * c1[t3 - 1];
+								ch[t3 - 1] = wa[index + idij - 1] * c1[t3 - 1] + wa[index + idij] * c1[t3];
+								ch[t3] = wa[index + idij - 1] * c1[t3] - wa[index + idij] * c1[t3 - 1];
 								t3 += ido;
 							}
 						}
@@ -665,11 +651,9 @@ class Drft {
 					ix2 = iw + ido;
 					ix3 = ix2 + ido;
 					if (na != 0)
-						dradf4(ido, l1, ch, c, wa, iw - 1, wa, ix2 - 1, wa,
-								ix3 - 1);
+						dradf4(ido, l1, ch, c, wa, iw - 1, wa, ix2 - 1, wa, ix3 - 1);
 					else
-						dradf4(ido, l1, c, ch, wa, iw - 1, wa, ix2 - 1, wa,
-								ix3 - 1);
+						dradf4(ido, l1, c, ch, wa, iw - 1, wa, ix2 - 1, wa, ix3 - 1);
 					state = 110;
 					break;
 				case 102:
@@ -712,8 +696,7 @@ class Drft {
 			c[i] = ch[i];
 	}
 
-	static void dradb2(int ido, int l1, float[] cc, float[] ch, float[] wa1,
-			int index) {
+	static void dradb2(int ido, int l1, float[] cc, float[] ch, float[] wa1, int index) {
 		int i, k, t0, t1, t2, t3, t4, t5, t6;
 		float ti2, tr2;
 
@@ -746,10 +729,8 @@ class Drft {
 					tr2 = cc[t4 - 1] - cc[t5 - 1];
 					ch[t3] = cc[t4] - cc[t5];
 					ti2 = cc[t4] + cc[t5];
-					ch[t6 - 1] = wa1[index + i - 2] * tr2 - wa1[index + i - 1]
-							* ti2;
-					ch[t6] = wa1[index + i - 2] * ti2 + wa1[index + i - 1]
-							* tr2;
+					ch[t6 - 1] = wa1[index + i - 2] * tr2 - wa1[index + i - 1] * ti2;
+					ch[t6] = wa1[index + i - 2] * ti2 + wa1[index + i - 1] * tr2;
 				}
 				t2 = (t1 += ido) << 1;
 			}
@@ -767,8 +748,7 @@ class Drft {
 		}
 	}
 
-	static void dradb3(int ido, int l1, float[] cc, float[] ch, float[] wa1,
-			int index1, float[] wa2, int index2) {
+	static void dradb3(int ido, int l1, float[] cc, float[] ch, float[] wa1, int index1, float[] wa2, int index2) {
 		int i, k, t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10;
 		float ci2, ci3, di2, di3, cr2, cr3, dr2, dr3, ti2, tr2;
 		t0 = l1 * ido;
@@ -820,19 +800,17 @@ class Drft {
 				dr3 = cr2 + ci3;
 				di2 = ci2 + cr3;
 				di3 = ci2 - cr3;
-				ch[t9 - 1] = wa1[index1 + i - 2] * dr2 - wa1[index1 + i - 1]
-						* di2;
+				ch[t9 - 1] = wa1[index1 + i - 2] * dr2 - wa1[index1 + i - 1] * di2;
 				ch[t9] = wa1[index1 + i - 2] * di2 + wa1[index1 + i - 1] * dr2;
-				ch[t10 - 1] = wa2[index2 + i - 2] * dr3 - wa2[index2 + i - 1]
-						* di3;
+				ch[t10 - 1] = wa2[index2 + i - 2] * dr3 - wa2[index2 + i - 1] * di3;
 				ch[t10] = wa2[index2 + i - 2] * di3 + wa2[index2 + i - 1] * dr3;
 			}
 			t1 += ido;
 		}
 	}
 
-	static void dradb4(int ido, int l1, float[] cc, float[] ch, float[] wa1,
-			int index1, float[] wa2, int index2, float[] wa3, int index3) {
+	static void dradb4(int ido, int l1, float[] cc, float[] ch, float[] wa1, int index1, float[] wa2, int index2,
+			float[] wa3, int index3) {
 		int i, k, t0, t1, t2, t3, t4, t5, t6, t7, t8;
 		float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4;
 		t0 = l1 * ido;
@@ -886,18 +864,12 @@ class Drft {
 					ci2 = ti1 + ti4;
 					ci4 = ti1 - ti4;
 
-					ch[(t8 = t7 + t0) - 1] = wa1[index1 + i - 2] * cr2
-							- wa1[index1 + i - 1] * ci2;
-					ch[t8] = wa1[index1 + i - 2] * ci2 + wa1[index1 + i - 1]
-							* cr2;
-					ch[(t8 += t0) - 1] = wa2[index2 + i - 2] * cr3
-							- wa2[index2 + i - 1] * ci3;
-					ch[t8] = wa2[index2 + i - 2] * ci3 + wa2[index2 + i - 1]
-							* cr3;
-					ch[(t8 += t0) - 1] = wa3[index3 + i - 2] * cr4
-							- wa3[index3 + i - 1] * ci4;
-					ch[t8] = wa3[index3 + i - 2] * ci4 + wa3[index3 + i - 1]
-							* cr4;
+					ch[(t8 = t7 + t0) - 1] = wa1[index1 + i - 2] * cr2 - wa1[index1 + i - 1] * ci2;
+					ch[t8] = wa1[index1 + i - 2] * ci2 + wa1[index1 + i - 1] * cr2;
+					ch[(t8 += t0) - 1] = wa2[index2 + i - 2] * cr3 - wa2[index2 + i - 1] * ci3;
+					ch[t8] = wa2[index2 + i - 2] * ci3 + wa2[index2 + i - 1] * cr3;
+					ch[(t8 += t0) - 1] = wa3[index3 + i - 2] * cr4 - wa3[index3 + i - 1] * ci4;
+					ch[t8] = wa3[index3 + i - 2] * ci4 + wa3[index3 + i - 1] * cr4;
 				}
 				t1 += ido;
 			}
@@ -926,9 +898,8 @@ class Drft {
 		}
 	}
 
-	static void dradbg(int ido, int ip, int l1, int idl1, float[] cc,
-			float[] c1, float[] c2, float[] ch, float[] ch2, float[] wa,
-			int index) {
+	static void dradbg(int ido, int ip, int l1, int idl1, float[] cc, float[] c1, float[] c2, float[] ch, float[] ch2,
+			float[] wa, int index) {
 
 		int idij, ipph = 0, i, j, k, l, ik, is, t0 = 0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10 = 0, t11, t12;
 		float dc2, ai1, ai2, ar1, ar2, ds2;
@@ -1232,10 +1203,8 @@ class Drft {
 						idij += 2;
 						t3 = t2;
 						for (k = 0; k < l1; k++) {
-							c1[t3 - 1] = wa[index + idij - 1] * ch[t3 - 1]
-									- wa[index + idij] * ch[t3];
-							c1[t3] = wa[index + idij - 1] * ch[t3]
-									+ wa[index + idij] * ch[t3 - 1];
+							c1[t3 - 1] = wa[index + idij - 1] * ch[t3 - 1] - wa[index + idij] * ch[t3];
+							c1[t3] = wa[index + idij - 1] * ch[t3] + wa[index + idij] * ch[t3 - 1];
 							t3 += ido;
 						}
 					}
@@ -1255,10 +1224,8 @@ class Drft {
 						for (i = 2; i < ido; i += 2) {
 							idij += 2;
 							t3 += 2;
-							c1[t3 - 1] = wa[index + idij - 1] * ch[t3 - 1]
-									- wa[index + idij] * ch[t3];
-							c1[t3] = wa[index + idij - 1] * ch[t3]
-									+ wa[index + idij] * ch[t3 - 1];
+							c1[t3 - 1] = wa[index + idij - 1] * ch[t3 - 1] - wa[index + idij] * ch[t3];
+							c1[t3] = wa[index + idij - 1] * ch[t3] + wa[index + idij] * ch[t3 - 1];
 						}
 						t2 += ido;
 					}
@@ -1268,8 +1235,7 @@ class Drft {
 		}
 	}
 
-	static void drftb1(int n, float[] c, float[] ch, float[] wa, int index,
-			int[] ifac) {
+	static void drftb1(int n, float[] c, float[] ch, float[] wa, int index, int[] ifac) {
 		int i, k1, l1, l2 = 0;
 		int na;
 		int nf, ip = 0, iw, ix2, ix3, ido = 0, idl1 = 0;
@@ -1296,11 +1262,9 @@ class Drft {
 					ix3 = ix2 + ido;
 
 					if (na != 0)
-						dradb4(ido, l1, ch, c, wa, index + iw - 1, wa, index
-								+ ix2 - 1, wa, index + ix3 - 1);
+						dradb4(ido, l1, ch, c, wa, index + iw - 1, wa, index + ix2 - 1, wa, index + ix3 - 1);
 					else
-						dradb4(ido, l1, c, ch, wa, index + iw - 1, wa, index
-								+ ix2 - 1, wa, index + ix3 - 1);
+						dradb4(ido, l1, c, ch, wa, index + iw - 1, wa, index + ix2 - 1, wa, index + ix3 - 1);
 					na = 1 - na;
 					state = 115;
 					break;
@@ -1326,21 +1290,17 @@ class Drft {
 
 					ix2 = iw + ido;
 					if (na != 0)
-						dradb3(ido, l1, ch, c, wa, index + iw - 1, wa, index
-								+ ix2 - 1);
+						dradb3(ido, l1, ch, c, wa, index + iw - 1, wa, index + ix2 - 1);
 					else
-						dradb3(ido, l1, c, ch, wa, index + iw - 1, wa, index
-								+ ix2 - 1);
+						dradb3(ido, l1, c, ch, wa, index + iw - 1, wa, index + ix2 - 1);
 					na = 1 - na;
 					state = 115;
 					break;
 				case 109:
 					if (na != 0)
-						dradbg(ido, ip, l1, idl1, ch, ch, ch, c, c, wa, index
-								+ iw - 1);
+						dradbg(ido, ip, l1, idl1, ch, ch, ch, c, c, wa, index + iw - 1);
 					else
-						dradbg(ido, ip, l1, idl1, c, c, c, ch, ch, wa, index
-								+ iw - 1);
+						dradbg(ido, ip, l1, idl1, c, c, c, ch, ch, wa, index + iw - 1);
 					if (ido == 1)
 						na = 1 - na;
 

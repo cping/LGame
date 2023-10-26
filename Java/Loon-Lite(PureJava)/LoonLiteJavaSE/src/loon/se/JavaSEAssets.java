@@ -787,13 +787,13 @@ public class JavaSEAssets extends Assets {
 		final int width = image.getWidth();
 		final int height = image.getHeight();
 		BufferedImage convertedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
-			Graphics2D g = convertedImage.createGraphics();
-			g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
-			g.fillRect(0, 0, width, height);
-			g.drawImage(image, 0, 0, null);
-			g.dispose();
-			image = null;
-		
+		Graphics2D g = convertedImage.createGraphics();
+		g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
+		g.fillRect(0, 0, width, height);
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		image = null;
+
 		return convertedImage;
 	}
 

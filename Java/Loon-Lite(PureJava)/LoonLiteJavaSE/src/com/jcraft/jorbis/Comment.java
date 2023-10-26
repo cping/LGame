@@ -32,8 +32,7 @@ import com.jcraft.jogg.*;
 // static storage
 public class Comment {
 	private static byte[] _vorbis = "vorbis".getBytes();
-	private static byte[] _vendor = "Xiphophorus libVorbis I 20000508"
-			.getBytes();
+	private static byte[] _vendor = "Xiphophorus libVorbis I 20000508".getBytes();
 
 	private static final int OV_EIMPL = -130;
 
@@ -109,8 +108,7 @@ public class Comment {
 		byte[] comment = user_comments[foo];
 		for (int i = 0; i < comment_lengths[foo]; i++) {
 			if (comment[i] == '=') {
-				return new String(comment, i + 1, comment_lengths[foo]
-						- (i + 1));
+				return new String(comment, i + 1, comment_lengths[foo] - (i + 1));
 			}
 		}
 		return null;
@@ -234,10 +232,7 @@ public class Comment {
 	public String toString() {
 		String foo = "Vendor: " + new String(vendor, 0, vendor.length - 1);
 		for (int i = 0; i < comments; i++) {
-			foo = foo
-					+ "\nComment: "
-					+ new String(user_comments[i], 0,
-							user_comments[i].length - 1);
+			foo = foo + "\nComment: " + new String(user_comments[i], 0, user_comments[i].length - 1);
 		}
 		foo = foo + "\n";
 		return foo;

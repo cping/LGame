@@ -22,6 +22,7 @@ package loon.component;
 
 import java.util.Comparator;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
@@ -51,7 +52,7 @@ public class LInventory extends LLayer {
 
 		protected Actor _actor;
 
-		public ItemUI(LInventory inv, String name, ItemInfo item, float x, float y, float w, float h) {
+		ItemUI(LInventory inv, String name, ItemInfo item, float x, float y, float w, float h) {
 			super(name, (LTexture) null, x, y, w, h, item);
 			this._inventory = inv;
 		}
@@ -74,6 +75,31 @@ public class LInventory extends LLayer {
 			super.setArea(x, y, w, h);
 			resetActor();
 			return this;
+		}
+
+		protected void removeActor() {
+			if (_actor != null) {
+				_inventory.removeObject(_actor);
+				bind(null);
+			}
+		}
+
+		protected void free() {
+			final LRelease release = new LRelease() {
+
+				@Override
+				public void close() {
+					setItem(null);
+					setName(LSystem.UNKNOWN);
+					removeActor();
+				}
+			};
+			if (_actor != null && _inventory._actorFadeTime > 0f && _actor.isActionCompleted()) {
+				this._saved = false;
+				this._actor.selfAction().fadeOut(_inventory._actorFadeTime).start().dispose(release);
+			} else {
+				release.close();
+			}
 		}
 
 		public void resetActor() {
@@ -107,6 +133,10 @@ public class LInventory extends LLayer {
 			updateActorSize(_actor);
 			if (!_inventory.containsObject(act)) {
 				_inventory.addObject(act);
+				if (_inventory._actorFadeTime > 0f && _actor.isActionCompleted()) {
+					_actor.setAlpha(0f);
+					_actor.selfAction().fadeIn(_inventory._actorFadeTime).start();
+				}
 			}
 			_saved = true;
 			return this;
@@ -173,6 +203,11 @@ public class LInventory extends LLayer {
 			}
 			return this;
 		}
+
+		public Actor getActor() {
+			return _actor;
+		}
+
 	}
 
 	private LColor _gridColor;
@@ -196,6 +231,8 @@ public class LInventory extends LLayer {
 	private float _gridPaddingRight, _gridPaddingBottom;
 
 	private float _gridPaddingX, _gridPaddingY;
+
+	private float _actorFadeTime;
 
 	private boolean _displayDrawGrid;
 
@@ -239,6 +276,7 @@ public class LInventory extends LLayer {
 		this._titleSize = new Vector2f(w, h);
 		this._offsetGridActorX = 2f;
 		this._offsetGridActorY = 2f;
+		this._actorFadeTime = 10f;
 		if (gridColor != null) {
 			this._gridColor = gridColor.lighter();
 		}
@@ -246,6 +284,7 @@ public class LInventory extends LLayer {
 		this._isCircleGrid = false;
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);
+		setLayer(1000);
 		setActorDrag(true);
 		setDragLocked(false);
 		setElastic(false);
@@ -371,12 +410,34 @@ public class LInventory extends LLayer {
 		return this;
 	}
 
-	public boolean removeItem(float x, float y) {
-		IItem item = getItem(x, y);
-		if (item != null) {
-			return _inventory.removeItem(item);
+	public ItemUI removeItemIndex(int idx) {
+		ItemUI item = getItem(idx);
+		if (item != null && item._saved) {
+			item.free();
 		}
-		return false;
+		return item;
+	}
+
+	public boolean removeItem(float x, float y) {
+		ItemUI item = getItem(x, y);
+		if (item != null && item._saved) {
+			item.free();
+		}
+		return item != null;
+	}
+
+	public ItemUI popItem() {
+		ItemUI item = null;
+		for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
+			item = (ItemUI) _inventory.getItem(i);
+			if (item != null && item._saved) {
+				break;
+			}
+		}
+		if (item != null) {
+			item.free();
+		}
+		return item;
 	}
 
 	public ItemUI getItem(int idx) {
@@ -539,9 +600,11 @@ public class LInventory extends LLayer {
 						_gridPaddingBottom + _gridPaddingY);
 			}
 		}
-		createGridCache();
-		if (_cacheGridTexture != null) {
-			g.draw(_cacheGridTexture, x, y);
+		if (_displayDrawGrid) {
+			createGridCache();
+			if (_cacheGridTexture != null) {
+				g.draw(_cacheGridTexture, x, y);
+			}
 		}
 		super.createCustomUI(g, x, y, w, h);
 	}
@@ -623,6 +686,15 @@ public class LInventory extends LLayer {
 		return this;
 	}
 
+	public float getItemFadeAlphaTime() {
+		return _actorFadeTime;
+	}
+
+	public LInventory setItemFadeAlphaTime(float a) {
+		this._actorFadeTime = a;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		super.close();
@@ -635,4 +707,5 @@ public class LInventory extends LLayer {
 			_barTexture = null;
 		}
 	}
+
 }

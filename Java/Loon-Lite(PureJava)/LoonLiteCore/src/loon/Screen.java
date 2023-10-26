@@ -120,6 +120,7 @@ import loon.utils.res.ResourceLocal;
 import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
+import loon.utils.timer.StopwatchTimer;
 
 /**
  * LGame游戏的运行与显示主体，用来显示与操作游戏基础画布，精灵，UI以及其他组件.
@@ -335,6 +336,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _isScreenFrom = false;
 
+	private final StopwatchTimer _downUpTimer = new StopwatchTimer();
 	// 每次screen处理事件循环的额外间隔时间
 	private final LTimer _delayTimer = new LTimer(0);
 	// 希望Screen中所有组件的update暂停的时间
@@ -3899,6 +3901,77 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _touchButtonReleased == button;
 	}
 
+	public boolean isTouchPressed() {
+		return isTouchPressed(SysTouch.TOUCH_DOWN);
+	}
+
+	public boolean isTouchReleased() {
+		return isTouchReleased(SysTouch.TOUCH_UP);
+	}
+
+	@Override
+	public boolean isLongPressed() {
+		return isLongPressed(LSystem.LONG_PRESSED_TIME);
+	}
+
+	@Override
+	public boolean isLongPressed(float seconds) {
+		if (isTouchReleased()) {
+			return false;
+		}
+		if (_downUpTimer.completed()) {
+			return false;
+		}
+		if (!isTouchPressed()) {
+			final long timer = getDownUpTimer();
+			if (timer >= seconds * LSystem.SECOND) {
+				return true;
+			}
+		} else {
+			long endTimer = 0;
+			if (!_downUpTimer.completed()) {
+				endTimer = _downUpTimer.getTimestamp();
+			}
+			endTimer = endTimer - getDownUpStartTimer();
+			if (endTimer >= seconds * LSystem.SECOND) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public long getDownUpStartTimer() {
+		return _downUpTimer.getStartTime();
+	}
+
+	public long getDownUpEndTimer() {
+		return _downUpTimer.getEndTime();
+	}
+
+	public long getDownUpTimer() {
+		return _downUpTimer.getDuration();
+	}
+
+	public long getDownUpLastTimer() {
+		return _downUpTimer.getLastDuration();
+	}
+
+	public float getDownUpStartTimerSeconds() {
+		return Duration.toS(getDownUpStartTimer());
+	}
+
+	public float getDownUpEndTimerSeconds() {
+		return Duration.toS(getDownUpEndTimer());
+	}
+
+	public float getDownUpTimerSeconds() {
+		return Duration.toS(getDownUpTimer());
+	}
+
+	public float getDownUpLastTimerSeconds() {
+		return Duration.toS(getDownUpLastTimer());
+	}
+
 	@Override
 	public int getTouchX() {
 		return (int) SysTouch.getX();
@@ -4070,8 +4143,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
-
 		try {
+			if (!isTouchPressed()) {
+				_downUpTimer.start();
+			}
 			_touchTypes.put(type, Boolean.TRUE);
 			_touchButtonPressed = button;
 			_touchButtonReleased = NO_BUTTON;
@@ -4101,8 +4176,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
-
 		try {
+			if (isTouchPressed()) {
+				_downUpTimer.stop();
+			}
 			_touchTypes.put(type, Boolean.FALSE);
 			_touchButtonReleased = button;
 			_touchButtonPressed = NO_BUTTON;

@@ -34,9 +34,9 @@ public class StreamState {
 
 	int[] lacing_vals; /* The values that will go to the segment table */
 	long[] granule_vals; /*
-						 * pcm_pos values for headers. Not compact this way, but
-						 * it is simple coupled to the lacing fifo
-						 */
+							 * pcm_pos values for headers. Not compact this way, but it is simple coupled to
+							 * the lacing fifo
+							 */
 	int lacing_storage;
 	int lacing_fill;
 	int lacing_packet;
@@ -46,20 +46,17 @@ public class StreamState {
 	int header_fill;
 
 	public int e_o_s; /*
-					 * set when we have buffered the last packet in the logical
-					 * bitstream
-					 */
+						 * set when we have buffered the last packet in the logical bitstream
+						 */
 	int b_o_s; /*
-				 * set after we've written the initial page of a logical
-				 * bitstream
+				 * set after we've written the initial page of a logical bitstream
 				 */
 	int serialno;
 	int pageno;
 	long packetno; /*
-					 * sequence number for decode; the framing knows where
-					 * there's a hole in the data, but we need coupling so that
-					 * the codec (which is in a seperate abstraction layer) also
-					 * knows about the gap
+					 * sequence number for decode; the framing knows where there's a hole in the
+					 * data, but we need coupling so that the codec (which is in a seperate
+					 * abstraction layer) also knows about the gap
 					 */
 	long granulepos;
 
@@ -132,15 +129,13 @@ public class StreamState {
 
 		if (body_returned != 0) {
 			/*
-			 * advance packet data according to the body_returned pointer. We
-			 * had to keep it around to return a pointer into the buffer last
-			 * call
+			 * advance packet data according to the body_returned pointer. We had to keep it
+			 * around to return a pointer into the buffer last call
 			 */
 
 			body_fill -= body_returned;
 			if (body_fill != 0) {
-				System.arraycopy(body_data, body_returned, body_data, 0,
-						body_fill);
+				System.arraycopy(body_data, body_returned, body_data, 0, body_fill);
 			}
 			body_returned = 0;
 		}
@@ -150,13 +145,12 @@ public class StreamState {
 		lacing_expand(lacing_val);
 
 		/*
-		 * Copy in the submitted packet. Yes, the copy is a waste; this is the
-		 * liability of overly clean abstraction for the time being. It will
-		 * actually be fairly easy to eliminate the extra copy in the future
+		 * Copy in the submitted packet. Yes, the copy is a waste; this is the liability
+		 * of overly clean abstraction for the time being. It will actually be fairly
+		 * easy to eliminate the extra copy in the future
 		 */
 
-		System.arraycopy(op.packet_base, op.packet, body_data, body_fill,
-				op.bytes);
+		System.arraycopy(op.packet_base, op.packet, body_data, body_fill, op.bytes);
 		body_fill += op.bytes;
 
 		/* Store lacing vals for this packet */
@@ -184,9 +178,8 @@ public class StreamState {
 	public int packetout(Packet op) {
 
 		/*
-		 * The last part of decode. We have the stream broken into packet
-		 * segments. Now we need to group them into packets (or return the out
-		 * of sync markers)
+		 * The last part of decode. We have the stream broken into packet segments. Now
+		 * we need to group them into packets (or return the out of sync markers)
 		 */
 
 		int ptr = lacing_returned;
@@ -200,8 +193,8 @@ public class StreamState {
 			lacing_returned++;
 
 			/*
-			 * we need to tell the codec there's a gap; it might need to handle
-			 * previous packet dependencies.
+			 * we need to tell the codec there's a gap; it might need to handle previous
+			 * packet dependencies.
 			 */
 			packetno++;
 			return (-1);
@@ -275,10 +268,8 @@ public class StreamState {
 			if (lr != 0) {
 				// segment table
 				if ((lacing_fill - lr) != 0) {
-					System.arraycopy(lacing_vals, lr, lacing_vals, 0,
-							lacing_fill - lr);
-					System.arraycopy(granule_vals, lr, granule_vals, 0,
-							lacing_fill - lr);
+					System.arraycopy(lacing_vals, lr, lacing_vals, 0, lacing_fill - lr);
+					System.arraycopy(granule_vals, lr, granule_vals, 0, lacing_fill - lr);
 				}
 				lacing_fill -= lr;
 				lacing_packet -= lr;
@@ -372,18 +363,18 @@ public class StreamState {
 	}
 
 	/*
-	 * This will flush remaining packets into a page (returning nonzero), even
-	 * if there is not enough data to trigger a flush normally (undersized
-	 * page). If there are no packets or partial packets to flush,
-	 * ogg_stream_flush returns 0. Note that ogg_stream_flush will try to flush
-	 * a normal sized page like ogg_stream_pageout; a call to ogg_stream_flush
-	 * does not gurantee that all packets have flushed. Only a return value of 0
-	 * from ogg_stream_flush indicates all packet data is flushed into pages.
+	 * This will flush remaining packets into a page (returning nonzero), even if
+	 * there is not enough data to trigger a flush normally (undersized page). If
+	 * there are no packets or partial packets to flush, ogg_stream_flush returns 0.
+	 * Note that ogg_stream_flush will try to flush a normal sized page like
+	 * ogg_stream_pageout; a call to ogg_stream_flush does not gurantee that all
+	 * packets have flushed. Only a return value of 0 from ogg_stream_flush
+	 * indicates all packet data is flushed into pages.
 	 * 
-	 * ogg_stream_page will flush the last page in a stream even if it's
-	 * undersized; you almost certainly want to use ogg_stream_pageout (and
-	 * *not* ogg_stream_flush) unless you need to flush an undersized page in
-	 * the middle of a stream for some reason.
+	 * ogg_stream_page will flush the last page in a stream even if it's undersized;
+	 * you almost certainly want to use ogg_stream_pageout (and *not*
+	 * ogg_stream_flush) unless you need to flush an undersized page in the middle
+	 * of a stream for some reason.
 	 */
 
 	public int flush(Page og) {
@@ -402,8 +393,8 @@ public class StreamState {
 		/* decide how many segments to include */
 
 		/*
-		 * If this is the initial header case, the first page must only include
-		 * the initial header packet
+		 * If this is the initial header case, the first page must only include the
+		 * initial header packet
 		 */
 		if (b_o_s == 0) { /* 'initial header page' case */
 			granule_pos = 0;
@@ -456,14 +447,13 @@ public class StreamState {
 		}
 
 		/*
-		 * 32 bits of page counter (we have both counter and page header because
-		 * this val can roll over)
+		 * 32 bits of page counter (we have both counter and page header because this
+		 * val can roll over)
 		 */
 		if (pageno == -1)
 			pageno = 0; /*
-						 * because someone called stream_reset; this would be a
-						 * strange thing to do in an encode stream, but it has
-						 * plausible uses
+						 * because someone called stream_reset; this would be a strange thing to do in
+						 * an encode stream, but it has plausible uses
 						 */
 		{
 			int _pageno = pageno++;
@@ -510,15 +500,15 @@ public class StreamState {
 	}
 
 	/*
-	 * This constructs pages from buffered packet segments. The pointers
-	 * returned are to static buffers; do not free. The returned buffers are
-	 * good only until the next call (using the same ogg_stream_state)
+	 * This constructs pages from buffered packet segments. The pointers returned
+	 * are to static buffers; do not free. The returned buffers are good only until
+	 * the next call (using the same ogg_stream_state)
 	 */
 	public int pageout(Page og) {
 		if ((e_o_s != 0 && lacing_fill != 0) || /* 'were done, now flush' case */
-		body_fill - body_returned > 4096 || /* 'page nominal size' case */
-		lacing_fill >= 255 || /* 'segment table full' case */
-		(lacing_fill != 0 && b_o_s == 0)) { /* 'initial header page' case */
+				body_fill - body_returned > 4096 || /* 'page nominal size' case */
+				lacing_fill >= 255 || /* 'segment table full' case */
+				(lacing_fill != 0 && b_o_s == 0)) { /* 'initial header page' case */
 			return flush(og);
 		}
 		return 0;

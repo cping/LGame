@@ -5,6 +5,7 @@ open module loon.javafx {
 	requires javafx.media;
 	requires java.prefs;
 	requires javafx.base;
+
 	exports loon.fx;
 	exports loon.log;
 }

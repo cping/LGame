@@ -74,7 +74,7 @@ public class JavaSEBlendComposite implements Composite {
 					srcR = (srcR * blendR) / 255;
 					srcG = (srcG * blendG) / 255;
 					srcB = (srcB * blendB) / 255;
-					
+
 					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
 				}
 			});

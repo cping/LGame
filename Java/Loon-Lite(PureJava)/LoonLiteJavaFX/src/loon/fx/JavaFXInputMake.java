@@ -74,8 +74,8 @@ public class JavaFXInputMake extends JavaFXInput {
 				inDragSequence = true;
 				int btn = getMouseButton(e);
 				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn, true),
-							e);
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()),
+							MathUtils.floor(e.getY()), btn, true), e);
 				}
 
 			}
@@ -91,8 +91,8 @@ public class JavaFXInputMake extends JavaFXInput {
 					inDragSequence = false;
 					int btn = getMouseButton(e);
 					if (btn != -1) {
-						dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()), MathUtils.floor(e.getY()), btn,
-								false), e);
+						dispatch(new MouseMake.ButtonEvent(0, game.time(), MathUtils.floor(e.getX()),
+								MathUtils.floor(e.getY()), btn, false), e);
 					}
 				}
 

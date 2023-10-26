@@ -29,7 +29,7 @@ import loon.SoundImpl;
 public class JavaFXMusic extends SoundImpl<Object> {
 
 	private MediaPlayer mediaPlayer;
-	
+
 	public JavaFXMusic(URL url) {
 		this.mediaPlayer = new MediaPlayer(new Media(url.toExternalForm()));
 	}
@@ -37,7 +37,7 @@ public class JavaFXMusic extends SoundImpl<Object> {
 	public JavaFXMusic(String path) {
 		this.mediaPlayer = new MediaPlayer(new Media(path));
 	}
-	
+
 	@Override
 	protected boolean playImpl() {
 		if (mediaPlayer != null) {

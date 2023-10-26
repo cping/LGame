@@ -97,6 +97,14 @@ public class Random {
 		return next(0) > 0;
 	}
 
+	public CharSequence nextChars(CharSequence... strs) {
+		if (StringUtils.isEmpty(strs)) {
+			return LSystem.EMPTY;
+		}
+		final int idx = nextInt(0, strs.length - 1);
+		return strs[idx];
+	}
+
 	public int nextInt(int min, int max) {
 		if (max <= 0) {
 			return 0;

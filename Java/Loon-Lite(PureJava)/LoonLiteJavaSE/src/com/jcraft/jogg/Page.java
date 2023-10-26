@@ -39,10 +39,8 @@ public class Page {
 		for (int i = 0; i < 8; i++) {
 			if ((r & 0x80000000) != 0) {
 				r = (r << 1) ^ 0x04c11db7; /*
-											 * The same as the ethernet
-											 * generator polynomial, although we
-											 * use an unreflected alg and an
-											 * init/final of 0, not 0xffffffff
+											 * The same as the ethernet generator polynomial, although we use an
+											 * unreflected alg and an init/final of 0, not 0xffffffff
 											 */
 			} else {
 				r <<= 1;
@@ -87,31 +85,23 @@ public class Page {
 	}
 
 	public int serialno() {
-		return (header_base[header + 14] & 0xff)
-				| ((header_base[header + 15] & 0xff) << 8)
-				| ((header_base[header + 16] & 0xff) << 16)
-				| ((header_base[header + 17] & 0xff) << 24);
+		return (header_base[header + 14] & 0xff) | ((header_base[header + 15] & 0xff) << 8)
+				| ((header_base[header + 16] & 0xff) << 16) | ((header_base[header + 17] & 0xff) << 24);
 	}
 
 	int pageno() {
-		return (header_base[header + 18] & 0xff)
-				| ((header_base[header + 19] & 0xff) << 8)
-				| ((header_base[header + 20] & 0xff) << 16)
-				| ((header_base[header + 21] & 0xff) << 24);
+		return (header_base[header + 18] & 0xff) | ((header_base[header + 19] & 0xff) << 8)
+				| ((header_base[header + 20] & 0xff) << 16) | ((header_base[header + 21] & 0xff) << 24);
 	}
 
 	void checksum() {
 		int crc_reg = 0;
 
 		for (int i = 0; i < header_len; i++) {
-			crc_reg = (crc_reg << 8)
-					^ crc_lookup[((crc_reg >>> 24) & 0xff)
-							^ (header_base[header + i] & 0xff)];
+			crc_reg = (crc_reg << 8) ^ crc_lookup[((crc_reg >>> 24) & 0xff) ^ (header_base[header + i] & 0xff)];
 		}
 		for (int i = 0; i < body_len; i++) {
-			crc_reg = (crc_reg << 8)
-					^ crc_lookup[((crc_reg >>> 24) & 0xff)
-							^ (body_base[body + i] & 0xff)];
+			crc_reg = (crc_reg << 8) ^ crc_lookup[((crc_reg >>> 24) & 0xff) ^ (body_base[body + i] & 0xff)];
 		}
 		header_base[header + 22] = (byte) crc_reg;
 		header_base[header + 23] = (byte) (crc_reg >>> 8);

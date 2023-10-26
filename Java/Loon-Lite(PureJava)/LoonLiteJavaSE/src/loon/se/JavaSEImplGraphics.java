@@ -82,7 +82,8 @@ public abstract class JavaSEImplGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		BufferedImage bitmap = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, pixelWidth, pixelHeight);
+		BufferedImage bitmap = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, pixelWidth,
+				pixelHeight);
 		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 

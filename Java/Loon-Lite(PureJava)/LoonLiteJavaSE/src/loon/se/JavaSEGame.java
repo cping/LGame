@@ -164,6 +164,12 @@ public class JavaSEGame extends LGame {
 		this.initProcess();
 	}
 
+	protected void init() {
+		if (input != null) {
+			input.init();
+		}
+	}
+
 	protected static String getProperty(String value) {
 		return getProperty(value, "");
 	}

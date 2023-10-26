@@ -461,6 +461,14 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return _objectLayer;
 	}
 
+	public void setLayerTop() {
+		this.setLayer(Integer.MAX_VALUE);
+	}
+
+	public void setLayerBottom() {
+		this.setLayer(Integer.MIN_VALUE);
+	}
+
 	public void setLayer(int z) {
 		this._objectLayer = z;
 	}

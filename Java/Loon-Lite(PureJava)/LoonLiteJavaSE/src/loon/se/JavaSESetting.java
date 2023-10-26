@@ -22,12 +22,12 @@ package loon.se;
 
 import loon.LSetting;
 
-public class JavaSESetting extends LSetting{
+public class JavaSESetting extends LSetting {
 
 	public String[] iconPaths = null;
-	
+
 	public int graphicsMode = 0;
-	
+
 	public boolean doubleBuffer = false;
-	
+
 }

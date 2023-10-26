@@ -26,9 +26,9 @@ import loon.se.JavaSEGame;
 
 public interface JavaSEApp<T> {
 
-	public JavaSEGame getGame() ;
+	public JavaSEGame getGame();
 
-	public BufferedImage snapshot() ;
+	public BufferedImage snapshot();
 
-	public T updateSize() ;
+	public T updateSize();
 }

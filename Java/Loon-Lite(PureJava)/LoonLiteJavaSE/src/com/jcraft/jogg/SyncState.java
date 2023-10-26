@@ -112,8 +112,7 @@ public class SyncState {
 				return (0); // not enough for a header
 
 			/* verify capture pattern */
-			if (data[page] != 'O' || data[page + 1] != 'g'
-					|| data[page + 2] != 'g' || data[page + 3] != 'S') {
+			if (data[page] != 'O' || data[page + 1] != 'g' || data[page + 2] != 'g' || data[page + 3] != 'S') {
 				headerbytes = 0;
 				bodybytes = 0;
 
@@ -169,8 +168,7 @@ public class SyncState {
 			log.checksum();
 
 			// Compare
-			if (chksum[0] != data[page + 22] || chksum[1] != data[page + 23]
-					|| chksum[2] != data[page + 24]
+			if (chksum[0] != data[page + 22] || chksum[1] != data[page + 23] || chksum[2] != data[page + 24]
 					|| chksum[3] != data[page + 25]) {
 				// D'oh. Mismatch! Corrupt page (or miscapture and not a page at
 				// all)

@@ -1124,6 +1124,10 @@ public final class MathUtils {
 		return random.nextLong(start, end);
 	}
 
+	public static CharSequence nextChars(CharSequence... chs) {
+		return random.nextChars(chs);
+	}
+
 	public static int random(int range) {
 		return random.nextInt(range);
 	}

@@ -31,7 +31,7 @@ public class Inventory {
 	private float _gold;
 
 	public Inventory() {
-		_items = new TArray<IItem>(128);
+		_items = new TArray<IItem>(32);
 		_gold = 0;
 	}
 
@@ -75,6 +75,18 @@ public class Inventory {
 		return _items.remove(obj);
 	}
 
+	public IItem removeItemIndex(int idx) {
+		return _items.removeIndex(idx);
+	}
+
+	public IItem popItem() {
+		return _items.pop();
+	}
+
+	public IItem peekItem() {
+		return _items.peek();
+	}
+	
 	public IItem getItem(int idx) {
 		return _items.get(idx);
 	}

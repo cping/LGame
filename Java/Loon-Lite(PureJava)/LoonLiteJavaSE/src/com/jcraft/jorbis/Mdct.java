@@ -53,10 +53,8 @@ class Mdct {
 		for (int i = 0; i < n / 4; i++) {
 			trig[AE + i * 2] = (float) Math.cos((Math.PI / n) * (4 * i));
 			trig[AO + i * 2] = (float) -Math.sin((Math.PI / n) * (4 * i));
-			trig[BE + i * 2] = (float) Math.cos((Math.PI / (2 * n))
-					* (2 * i + 1));
-			trig[BO + i * 2] = (float) Math.sin((Math.PI / (2 * n))
-					* (2 * i + 1));
+			trig[BE + i * 2] = (float) Math.cos((Math.PI / (2 * n)) * (2 * i + 1));
+			trig[BO + i * 2] = (float) Math.sin((Math.PI / (2 * n)) * (2 * i + 1));
 		}
 		for (int i = 0; i < n / 8; i++) {
 			trig[CE + i * 2] = (float) Math.cos((Math.PI / n) * (4 * i + 2));
@@ -154,8 +152,7 @@ class Mdct {
 		}
 	}
 
-	private float[] mdct_kernel(float[] x, float[] w, int n, int n2, int n4,
-			int n8) {
+	private float[] mdct_kernel(float[] x, float[] w, int n, int n2, int n4, int n8) {
 		// step 2
 
 		int xA = n4;

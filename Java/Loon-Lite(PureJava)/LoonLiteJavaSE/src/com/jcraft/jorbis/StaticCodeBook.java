@@ -149,28 +149,28 @@ class StaticCodeBook {
 			opb.write(q_quant - 1, 4);
 			opb.write(q_sequencep, 1);
 
-			{
-				int quantvals = 0;
-				switch (maptype) {
-				case 1:
-					// a single column of (c->entries/c->dim) quantized values
-					// for
-					// building a full value list algorithmically (square
-					// lattice)
-					quantvals = maptype1_quantvals();
-					break;
-				case 2:
-					// every value (c->entries*c->dim total) specified
-					// explicitly
-					quantvals = entries * dim;
-					break;
-				}
-
-				// quantized values
-				for (i = 0; i < quantvals; i++) {
-					opb.write(Math.abs(quantlist[i]), q_quant);
-				}
+		{
+			int quantvals = 0;
+			switch (maptype) {
+			case 1:
+				// a single column of (c->entries/c->dim) quantized values
+				// for
+				// building a full value list algorithmically (square
+				// lattice)
+				quantvals = maptype1_quantvals();
+				break;
+			case 2:
+				// every value (c->entries*c->dim total) specified
+				// explicitly
+				quantvals = entries * dim;
+				break;
 			}
+
+			// quantized values
+			for (i = 0; i < quantvals; i++) {
+				opb.write(Math.abs(quantlist[i]), q_quant);
+			}
+		}
 			break;
 		default:
 			// error case; we don't have any other map types now
@@ -276,28 +276,28 @@ class StaticCodeBook {
 			q_quant = opb.read(4) + 1;
 			q_sequencep = opb.read(1);
 
-			{
-				int quantvals = 0;
-				switch (maptype) {
-				case 1:
-					quantvals = maptype1_quantvals();
-					break;
-				case 2:
-					quantvals = entries * dim;
-					break;
-				}
-
-				// quantized values
-				quantlist = new int[quantvals];
-				for (i = 0; i < quantvals; i++) {
-					quantlist[i] = opb.read(q_quant);
-				}
-				if (quantlist[quantvals - 1] == -1) {
-					// goto _eofout;
-					clear();
-					return (-1);
-				}
+		{
+			int quantvals = 0;
+			switch (maptype) {
+			case 1:
+				quantvals = maptype1_quantvals();
+				break;
+			case 2:
+				quantvals = entries * dim;
+				break;
 			}
+
+			// quantized values
+			quantlist = new int[quantvals];
+			for (i = 0; i < quantvals; i++) {
+				quantlist[i] = opb.read(q_quant);
+			}
+			if (quantlist[quantvals - 1] == -1) {
+				// goto _eofout;
+				clear();
+				return (-1);
+			}
+		}
 			break;
 		default:
 			// goto _eofout;

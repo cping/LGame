@@ -160,6 +160,7 @@ public class JavaSEApplication implements Platform {
 	protected void loadScreen() {
 		try {
 			game.register(lazyData.onScreen());
+			game.init();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new LSysException(e.getMessage());
@@ -271,7 +272,7 @@ public class JavaSEApplication implements Platform {
 		_appFrame.setIcon(path);
 		return this;
 	}
-	
+
 	public JavaSEApplication setIcon(Pixmap icon) {
 		if (_appFrame == null) {
 			return this;

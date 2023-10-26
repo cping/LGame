@@ -113,6 +113,7 @@ public class LProcess implements LRelease {
 				input.keyboardEvents.clearConnections();
 			}
 			if (input != null) {
+		
 				if (!_game.setting.emulateTouch && !_game.isMobile() && !_game.input().hasTouch()) {
 					input.mouseEvents.connect(new MouseMake.ButtonSlot() {
 						@Override

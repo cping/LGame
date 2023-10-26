@@ -148,7 +148,7 @@ public class JavaSEAppCanvas extends Canvas implements JavaSEApp<JavaSEAppCanvas
 		_frame = frame;
 		return this;
 	}
-	
+
 	public JavaSEAppFrame getFrame() {
 		return _frame;
 	}

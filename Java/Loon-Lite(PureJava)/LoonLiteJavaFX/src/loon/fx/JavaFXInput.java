@@ -45,9 +45,6 @@ class JavaFXInput extends InputMake {
 
 	public JavaFXInput(JavaFXGame game) {
 		this.game = game;
-		if (game.setting.emulateTouch) {
-			emulateTouch();
-		}
 	}
 
 	public void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
@@ -111,6 +108,9 @@ class JavaFXInput extends InputMake {
 	}
 
 	void init() {
+		if (game.setting.emulateTouch) {
+			emulateTouch();
+		}
 	}
 
 	void update() {

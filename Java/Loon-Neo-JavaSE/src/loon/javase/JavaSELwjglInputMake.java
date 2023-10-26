@@ -55,6 +55,7 @@ public class JavaSELwjglInputMake extends JavaSEInputMake {
 		try {
 			Keyboard.create();
 			Mouse.create();
+			super.init();
 		} catch (LWJGLException e) {
 			throw new RuntimeException(e);
 		}
