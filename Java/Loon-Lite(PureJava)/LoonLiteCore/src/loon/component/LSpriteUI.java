@@ -94,7 +94,7 @@ public class LSpriteUI extends LContainer {
 
 	@Override
 	protected void processTouchDragged() {
-		if (!locked) {
+		if (!_dragLocked) {
 			if (_sprite != null) {
 				setLocation(_sprite.getX(), _sprite.getY());
 			}

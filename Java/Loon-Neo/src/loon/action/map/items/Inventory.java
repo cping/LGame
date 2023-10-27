@@ -60,6 +60,32 @@ public class Inventory {
 		return this;
 	}
 
+	public Inventory swap(IItem a, IItem b) {
+		int aIdx = -1;
+		int bIdx = -1;
+		for (int i = 0; i < _items.size; i++) {
+			IItem item = _items.get(i);
+			if (item == a) {
+				aIdx = i;
+			}
+			if (item == b) {
+				bIdx = i;
+			}
+			if (aIdx != -1 && bIdx != -1) {
+				break;
+			}
+		}
+		if (aIdx != -1 && bIdx != -1) {
+			_items.swap(aIdx, bIdx);
+		}
+		return this;
+	}
+
+	public Inventory swap(int a, int b) {
+		_items.swap(a, b);
+		return this;
+	}
+
 	public float getGold() {
 		return _gold;
 	}
@@ -86,7 +112,7 @@ public class Inventory {
 	public IItem peekItem() {
 		return _items.peek();
 	}
-	
+
 	public IItem getItem(int idx) {
 		return _items.get(idx);
 	}

@@ -22,6 +22,14 @@ package loon.utils;
 
 public class Properties<K, V> extends ObjectMap<K, V> {
 
+	public Properties() {
+		super();
+	}
+
+	public Properties(Properties<K, V> map) {
+		super(map);
+	}
+
 	public V getProperty(K name) {
 		return getProperty(name, null);
 	}

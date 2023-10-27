@@ -317,7 +317,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	@Override
 	protected void processTouchDragged() {
-		if (!locked) {
+		if (!_dragLocked) {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}

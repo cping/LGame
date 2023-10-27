@@ -90,6 +90,7 @@ import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.SetXY;
+import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
@@ -1517,6 +1518,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._curLastPaintFlag = true;
 	}
 
+	public boolean collided(Shape shape) {
+		return getRectBox().collided(shape);
+	}
+	
 	public boolean contains(float x, float y) {
 		return getRectBox().contains(x, y);
 	}

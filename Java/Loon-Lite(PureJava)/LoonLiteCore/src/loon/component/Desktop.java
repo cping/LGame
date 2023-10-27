@@ -136,6 +136,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		LSystem.pushDesktopPool(this);
 	}
 
+	@Override
 	public int size() {
 		return contentPane.getComponentCount();
 	}
@@ -149,13 +150,13 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LSpriteUI addSprite(ISprite sprite) {
-		LSpriteUI ui = new LSpriteUI(sprite);
+		final LSpriteUI ui = new LSpriteUI(sprite);
 		add(ui);
 		return ui;
 	}
 
 	public LSpriteUI addSpriteAt(ISprite sprite, float x, float y) {
-		LSpriteUI ui = new LSpriteUI(sprite);
+		final LSpriteUI ui = new LSpriteUI(sprite);
 		addAt(ui, x, y);
 		return ui;
 	}
@@ -215,7 +216,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (comp == null) {
 			return -1;
 		}
-		int removed = this.removeComponent(this.contentPane, comp);
+		final int removed = this.removeComponent(this.contentPane, comp);
 		if (removed != -1) {
 			this.processTouchMotionEvent();
 		}
@@ -223,7 +224,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeTag(Object tag) {
-		boolean removed = this.removeComponentTag(this.contentPane, tag);
+		final boolean removed = this.removeComponentTag(this.contentPane, tag);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -231,7 +232,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeUIName(String uiName) {
-		boolean removed = this.removeComponentUIName(this.contentPane, uiName);
+		final boolean removed = this.removeComponentUIName(this.contentPane, uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -239,7 +240,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeName(String name) {
-		boolean removed = this.removeComponentName(this.contentPane, name);
+		final boolean removed = this.removeComponentName(this.contentPane, name);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -247,7 +248,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotTag(Object tag) {
-		boolean removed = this.removeComponentNotTag(this.contentPane, tag);
+		final boolean removed = this.removeComponentNotTag(this.contentPane, tag);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -255,7 +256,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotUIName(String uiName) {
-		boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
+		final boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -263,7 +264,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotName(String name) {
-		boolean removed = this.removeComponentNotName(this.contentPane, name);
+		final boolean removed = this.removeComponentNotName(this.contentPane, name);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -296,7 +297,7 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	private int removeComponent(LContainer container, LComponent comp) {
 		int removed = container.remove(comp);
-		LComponent[] components = container._childs;
+		final LComponent[] components = container._childs;
 		int i = 0;
 		while (removed == -1 && i < components.length - 1) {
 			if (components[i].isContainer()) {
@@ -403,7 +404,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (!this.contentPane.isVisible()) {
 			return this;
 		}
-		LComponent[] components = contentPane._childs;
+		final LComponent[] components = contentPane._childs;
 		for (int i = 0; i < components.length; i++) {
 			LComponent component = components[i];
 			if (component != null && component.intersects(x, y)) {
@@ -501,7 +502,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 强行显示提示
 	 */
 	protected void showTooltip(LComponent comp) {
-		if (tooltip != null && !tooltip.isRunning()) {
+		if (comp.isTooltip() && tooltip != null && !tooltip.isRunning()) {
 			this.tooltip.setLockedFadeIn(true);
 			this.tooltip.setToolTipComponent(comp);
 			this.tooltip.showTip();
@@ -519,10 +520,10 @@ public class Desktop implements Visible, IArray, LRelease {
 				this.hoverComponent.processTouchDragged();
 			}
 		} else {
-			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
-			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
-			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
-			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
+			final int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
+			final int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
+			final int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
+			final int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = null;
 			if (SysTouch.getButton() != -1) {
@@ -531,7 +532,7 @@ public class Desktop implements Visible, IArray, LRelease {
 			if (comp != null && comp.isAllowTouch()) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
-					if (tooltip != null) {
+					if (comp.isTooltip() && tooltip != null) {
 						if (!this.tooltip._dismissing && comp.isPointInUI()) {
 							// 刷新提示
 							this.tooltip._dismiss = 0;
@@ -540,14 +541,14 @@ public class Desktop implements Visible, IArray, LRelease {
 					}
 				}
 				if (this.hoverComponent == null) {
-					if (tooltip != null) {
+					if (comp.isTooltip() && tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
 					if (SysTouch.getButton() != -1) {
 						comp.processTouchEntered();
 					}
 				} else if (comp != this.hoverComponent && this.hoverComponent.isAllowTouch()) {
-					if (tooltip != null) {
+					if (comp.isTooltip() && tooltip != null) {
 						this.tooltip.setToolTipComponent(comp);
 					}
 					this.hoverComponent.processTouchExited();
@@ -588,8 +589,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchEvent() {
-
-		int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
+		final int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
 			final boolean mobile = LSystem.isMobile() || LSystem.base().setting.emulateTouch;
 			if (!mobile) {
@@ -658,8 +658,8 @@ public class Desktop implements Visible, IArray, LRelease {
 			return null;
 		}
 		// 返回子容器
-		LContainer panel = (this.modal == null) ? this.contentPane : ((LContainer) this.modal);
-		LComponent comp = panel.findComponent(x, y);
+		final LContainer panel = (this.modal == null) ? this.contentPane : ((LContainer) this.modal);
+		final LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}
 
@@ -749,7 +749,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 	}
 
-	void clearComponentsStat(LComponent[] components) {
+	void clearComponentsStat(final LComponent[] components) {
 		if (components == null) {
 			return;
 		}
@@ -776,8 +776,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	final Desktop validateContainer(LContainer container) {
-		LComponent[] components = container._childs;
-		int size = container.getComponentCount();
+		final LComponent[] components = container._childs;
+		final int size = container.getComponentCount();
 		for (int i = 0; i < size; i++) {
 			if (components[i].isContainer()) {
 				this.validateContainer((LContainer) components[i]);
@@ -791,8 +791,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LComponent getTopComponent() {
-		LComponent[] components = contentPane._childs;
-		int size = components.length;
+		final LComponent[] components = contentPane._childs;
+		final int size = components.length;
 		if (size > 1) {
 			return components[1];
 		}
@@ -800,8 +800,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LComponent getBottomComponent() {
-		LComponent[] components = contentPane._childs;
-		int size = components.length;
+		final LComponent[] components = contentPane._childs;
+		final int size = components.length;
 		if (size > 0) {
 			return components[size - 1];
 		}
@@ -809,8 +809,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LLayer getTopLayer() {
-		LComponent[] components = contentPane._childs;
-		int size = components.length;
+		final LComponent[] components = contentPane._childs;
+		final int size = components.length;
 		for (int i = 0; i < size; i++) {
 			LComponent comp = components[i];
 			if (comp instanceof LLayer) {
@@ -821,8 +821,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LLayer getBottomLayer() {
-		LComponent[] components = contentPane._childs;
-		int size = components.length;
+		final LComponent[] components = contentPane._childs;
+		final int size = components.length;
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
 			if (comp instanceof LLayer) {

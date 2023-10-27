@@ -44,6 +44,21 @@ public class ItemInfo implements LRelease {
 		this._description = de;
 	}
 
+	public ItemInfo set(ItemInfo info) {
+		this._attributes = info._attributes;
+		this._name = info._name;
+		this._description = info._description;
+		this._gold = info._gold;
+		return this;
+	}
+
+	public ItemInfo cpy() {
+		ItemInfo info = new ItemInfo(_name, _description);
+		info._attributes = new Properties<String, Attribute>(_attributes);
+		info._gold = this._gold;
+		return info;
+	}
+
 	public Attribute putAttribute(String name, Attribute a) {
 		return _attributes.put(name, a);
 	}

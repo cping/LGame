@@ -762,7 +762,8 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean contains(float x, float y, float width, float height) {
-		return x + width > this.x && x < this.x + this.width && y + height > this.y && y < this.y + this.height;
+		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
+				&& ((y + height) <= (this.y + this.height)));
 	}
 
 	/**
@@ -852,6 +853,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @param xy
 	 * @return
 	 */
+	@Override
 	public boolean intersects(XY xy) {
 		if (xy == null) {
 			return false;
@@ -869,8 +871,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 * @return
 	 */
 	public boolean intersects(float x, float y, float width, float height) {
-		return (x >= this.x && y >= this.y && ((x + width) <= (this.x + this.width))
-				&& ((y + height) <= (this.y + this.height)));
+		return x + width > this.x && x < this.x + this.width && y + height > this.y && y < this.y + this.height;
 	}
 
 	/**
@@ -1272,7 +1273,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public RectBox add(XY pos) {
 		if (pos == null) {
-			return cpy();
+			return this;
 		}
 		return add(pos.getX(), pos.getY());
 	}
@@ -1292,7 +1293,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public RectBox addSelf(XY pos) {
 		if (pos == null) {
-			return this;
+			return cpy();
 		}
 		return addSelf(pos.getX(), pos.getY());
 	}
@@ -1339,7 +1340,6 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		setBounds(tx1, ty1, tx2, ty2);
 		return this;
 	}
-
 
 	public DirtyRect getDirtyRect() {
 		return new DirtyRect(this);

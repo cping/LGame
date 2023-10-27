@@ -328,7 +328,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	@Override
 	protected void processTouchDragged() {
 		mouseDragged(getUITouchX(), getUITouchY());
-		if (!locked) {
+		if (!_dragLocked) {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}

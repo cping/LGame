@@ -27,6 +27,7 @@ import loon.component.skin.SkinManager;
 import loon.font.IFont;
 import loon.font.Text;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 /**
@@ -35,13 +36,13 @@ import loon.utils.StringUtils;
 public class LToolTip extends LComponent {
 
 	// 默认悬浮时间
-	private int _initialDelay = 60;
+	private int _initialDelay;
 
 	// 默认关闭时间
-	private int _dismissDelay = 180;
+	private int _dismissDelay;
 
 	// 中间延迟
-	private int _reshowDelay = 30;
+	private int _reshowDelay;
 
 	protected int _initialFlag, _dismiss, _reshow, _dismissTime;
 
@@ -51,17 +52,21 @@ public class LToolTip extends LComponent {
 
 	protected boolean _tooltipChanged, _dismissing;
 
+	private boolean _drawToScreenDesktop;
+
 	private boolean _fadeCompleted;
 
 	private boolean _running;
 
-	private boolean _lockedFadeIn = false;
-	
-	private float _currentFrame = 0, _fadeTime = 60;
+	private boolean _lockedFadeIn;
+
+	private float _currentFrame, _fadeTime;
 
 	private Text _text;
 
 	private LColor _fontColor;
+
+	private IFont _tipFont;
 
 	public LToolTip() {
 		this(LSystem.EMPTY);
@@ -83,18 +88,51 @@ public class LToolTip extends LComponent {
 	}
 
 	public LToolTip(IFont font, String text, LTexture bg, LColor color) {
-		super(0, 0, 0, 0);
-		this._text = new Text(font, text);
+		this(font, text, bg, color, 0f, 0f);
+	}
+
+	public LToolTip(IFont font, String text, LTexture bg, LColor color, float x, float y) {
+		super(MathUtils.ifloor(x), MathUtils.ifloor(y), 0, 0);
+		this._tipFont = font;
 		this._fontColor = color;
-		this.onlyBackground(bg);
+		this._drawToScreenDesktop = true;
+		// 默认悬浮时间
+		this._initialDelay = 60;
+		// 默认关闭时间
+		this._dismissDelay = 180;
+		// 中间延迟
+		this._reshowDelay = 30;
+		// 淡入时间
+		this._fadeTime = 60;
+		this.setText(font, text);
+		this.setLocked(true);
 		this.setLayer(10000);
-		this.setAlpha(0);
+		this.setAlpha(0f);
+		this.onlyBackground(bg);
+	}
+
+	public LToolTip setText(String mes) {
+		return setText(_tipFont, mes);
+	}
+
+	public LToolTip setText(IFont font, String mes) {
+		if (mes != null) {
+			this._tipFont = (font == null) ? SkinManager.get().getMessageSkin().getFont() : font;
+			if (this._text == null) {
+				this._text = new Text(font, mes);
+			} else {
+				this._text.setText(font, mes);
+			}
+			final float w = _text.getWidth() + font.getSize();
+			final float h = _text.getHeight() + font.getHeight() / 2f;
+			this.setSize(w, h);
+		}
+		return this;
 	}
 
 	public boolean isRunning() {
 		return _running;
 	}
-
 
 	public LToolTip setLockedFadeIn(boolean l) {
 		this._lockedFadeIn = l;
@@ -188,19 +226,19 @@ public class LToolTip extends LComponent {
 		return this._tooltip;
 	}
 
-	public LToolTip setToolTipComponent(LComponent _tooltip) {
-		if (_tooltip != null) {
-			if (_tooltip.getToolTipParent() != null) {
-				_tooltip = _tooltip.getToolTipParent();
+	public LToolTip setToolTipComponent(LComponent tooltip) {
+		if (tooltip != null) {
+			if (tooltip.getToolTipParent() != null) {
+				tooltip = tooltip.getToolTipParent();
 			}
-			if (_tooltip.getToolTipText() == null) {
-				_tooltip = null;
+			if (tooltip.getToolTipText() == null) {
+				tooltip = null;
 			}
 		}
-		if (this._tooltip == _tooltip) {
+		if (this._tooltip == tooltip) {
 			return this;
 		}
-		this._tooltip = _tooltip;
+		this._tooltip = tooltip;
 		this._tooltipChanged = true;
 		if (!this.isVisible()) {
 			this._initialFlag = 0;
@@ -237,6 +275,43 @@ public class LToolTip extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
+		if (_objectAlpha <= 0f) {
+			return;
+		}
+		if (_tooltip == null) {
+			return;
+		}
+		if (_drawToScreenDesktop) {
+			drawToScreen(g);
+		} else {
+			drawToUI(g, x, y);
+		}
+	}
+
+	protected void drawToScreen(GLEx g) {
+		final String tipText = _tooltip.getToolTipText();
+		if (!_text.getText().equals(tipText)) {
+			_text.setText(tipText);
+		}
+		final IFont font = _text.getFont();
+		final float posX = _tooltip.getScreenX() + _tooltip.getWidth() / 2f;
+		final float posY = _tooltip.getScreenY() + _tooltip.getHeight() / 2f;
+		final float width = _text.getWidth() + font.getSize();
+		final float height = _text.getHeight() + font.getHeight() / 2f;
+		float currentX = posX;
+		if (!getScreen().contains(posX, posY, width, height)) {
+			currentX = (getScreen().getX() + getScreen().getScreenWidth()) - width - font.getSize() / 2f;
+		}
+		if (_background == null) {
+			g.fillRect(currentX, posY, width, height, LColor.darkGray);
+		} else {
+			g.draw(_background, currentX, posY, width, height);
+		}
+		_text.paintString(g, currentX + (width - _text.getWidth()) / 2f, posY + (height - _text.getHeight()) / 2f,
+				_fontColor);
+	}
+
+	protected void drawToUI(GLEx g, int x, int y) {
 		if (_tooltip == null) {
 			return;
 		}
@@ -244,21 +319,15 @@ public class LToolTip extends LComponent {
 		if (!_text.getText().equals(tipText)) {
 			_text.setText(tipText);
 		}
-		float posX = _tooltip.getScreenX() + _tooltip.getWidth() / 2;
-		float posY = _tooltip.getScreenY() + _tooltip.getHeight() / 2;
-		float width = _text.getWidth() + 6;
-		float height = _text.getHeight() + 8;
-		float currentX = posX;
-		if (!getScreen().contains(posX, posY, width, height)) {
-			currentX = posX - width;
-		}
+		final IFont font = _text.getFont();
+		final float width = _text.getWidth() + font.getSize();
+		final float height = _text.getHeight() + font.getHeight() / 2f;
 		if (_background == null) {
-			g.fillRect(currentX, posY, width, height, LColor.darkGray);
+			g.fillRect(x, y, width, height, LColor.darkGray);
 		} else {
-			g.draw(_background, currentX, posY, width, height);
+			g.draw(_background, x, y, width, height);
 		}
-		_text.paintString(g, currentX + (width - _text.getWidth()) / 2, posY + (height - _text.getHeight()) / 2,
-				_fontColor);
+		_text.paintString(g, x + (width - _text.getWidth()) / 2f, y + (height - _text.getHeight()) / 2f, _fontColor);
 	}
 
 	public boolean isCompleted() {
@@ -289,6 +358,15 @@ public class LToolTip extends LComponent {
 
 	public LToolTip setDismissing(boolean d) {
 		this._dismissing = d;
+		return this;
+	}
+
+	public boolean isDrawToScreenDesktop() {
+		return _drawToScreenDesktop;
+	}
+
+	public LToolTip setDrawToScreenDesktop(boolean d) {
+		this._drawToScreenDesktop = d;
 		return this;
 	}
 

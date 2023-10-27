@@ -34,6 +34,8 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.skin.SkinManager;
+import loon.font.IFont;
+import loon.font.Text;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -124,8 +126,22 @@ public class LInventory extends LLayer {
 					_actor.setTag(null);
 					_actor = null;
 				}
-				_saved = false;
+				this._item = new ItemInfo();
+				this._name = LSystem.UNKNOWN;
+				this._saved = false;
 				return this;
+			}
+			if (!_saved) {
+				Object o = act.getTag();
+				if (o != null && o instanceof ItemUI) {
+					final ItemUI item = ((ItemUI) o);
+					final ItemInfo tmpInfo = _item.cpy();
+					final String tmpName = _name;
+					this._item = item._item;
+					this._name = item._name;
+					item._item = tmpInfo;
+					item._name = tmpName;
+				}
 			}
 			_actor = act;
 			_actor.setTag(this);
@@ -156,24 +172,29 @@ public class LInventory extends LLayer {
 			if (item == this) {
 				return this;
 			}
+			if (item._actor == _actor) {
+				return this;
+			}
 			final LTexture srcImg = item._image;
 			final Actor srcActor = item._actor;
 			final boolean srcSaved = item._saved;
-			final RectBox srcArea = item._itemArea;
+			final RectBox srcArea = item._itemArea.cpy();
 			final String srcName = item._name;
-			final ItemInfo srcItem = item._item;
+			final ItemInfo srcItem = item._item.cpy();
+
 			final LTexture dstImg = _image;
 			final Actor dstActor = _actor;
 			final boolean dstSaved = _saved;
-			final RectBox dstArea = _itemArea;
+			final RectBox dstArea = _itemArea.cpy();
 			final String dstName = _name;
-			final ItemInfo dstItem = _item;
+			final ItemInfo dstItem = _item.cpy();
+
 			item._image = srcImg;
-			item._actor = srcActor;
 			item._saved = srcSaved;
 			item._itemArea = srcArea;
 			item._name = srcName;
-			item._item = srcItem;
+			item._item = dstItem;
+
 			if (srcActor != null) {
 				srcActor.setLocation((dstArea.getX() + _inventory._offsetGridActorX),
 						(dstArea.getY() + _inventory._offsetGridActorY));
@@ -181,17 +202,16 @@ public class LInventory extends LLayer {
 						(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
 			}
 			this._image = dstImg;
-			this._actor = dstActor;
 			this._saved = dstSaved;
 			this._itemArea = dstArea;
 			this._name = dstName;
-			this._item = dstItem;
+			this._item = srcItem;
+
 			if (dstActor != null) {
 				dstActor.setLocation((srcArea.getX() + _inventory._offsetGridActorX),
 						(srcArea.getY() + _inventory._offsetGridActorY));
 				dstActor.setSize((srcArea.getWidth() - _inventory._offsetGridActorX * 2f),
 						(srcArea.getHeight() - _inventory._offsetGridActorY * 2f));
-
 			}
 			if (srcActor != null) {
 				bind(srcActor);
@@ -200,6 +220,8 @@ public class LInventory extends LLayer {
 			}
 			if (dstActor != null) {
 				item.bind(dstActor);
+			} else {
+				item.bind(null);
 			}
 			return this;
 		}
@@ -208,6 +230,11 @@ public class LInventory extends LLayer {
 			return _actor;
 		}
 
+	}
+
+	public LInventory swap(ItemUI a, ItemUI b) {
+		_inventory.swap(a, b);
+		return this;
 	}
 
 	private LColor _gridColor;
@@ -238,7 +265,17 @@ public class LInventory extends LLayer {
 
 	private boolean _dirty;
 
+	private boolean _isMobile;
+
+	private LColor _tipFontColor;
+
+	private IFont _tipFont;
+
+	private Text _tipText;
+
 	private LTexture _cacheGridTexture;
+
+	private LTexture _tipTexture;
 
 	private LTexture _barTexture;
 
@@ -246,16 +283,28 @@ public class LInventory extends LLayer {
 
 	private Vector2f _titleSize;
 
+	private boolean _tipSelectd;
+
+	private ItemUI _tipItem;
+
 	public LInventory(float x, float y, float w, float h) {
-		this(x, y, w, h, false);
+		this(SkinManager.get().getMessageSkin().getFont(), x, y, w, h, false);
+	}
+
+	public LInventory(IFont font, float x, float y, float w, float h) {
+		this(font, x, y, w, h, false);
 	}
 
 	public LInventory(float x, float y, float w, float h, boolean limit) {
-		this((LTexture) null, (LTexture) null, LColor.gray, x, y, w, h, limit);
+		this(SkinManager.get().getMessageSkin().getFont(), x, y, w, h, limit);
 	}
 
-	public LInventory(LColor grid, float x, float y, float w, float h, boolean limit) {
-		this((LTexture) null, (LTexture) null, grid, x, y, w, h, limit);
+	public LInventory(IFont font, float x, float y, float w, float h, boolean limit) {
+		this(font, (LTexture) null, (LTexture) null, LColor.gray, x, y, w, h, limit);
+	}
+
+	public LInventory(IFont font, LColor grid, float x, float y, float w, float h, boolean limit) {
+		this(font, (LTexture) null, (LTexture) null, grid, x, y, w, h, limit);
 	}
 
 	/**
@@ -270,7 +319,8 @@ public class LInventory extends LLayer {
 	 * @param h
 	 * @param limit
 	 */
-	public LInventory(LTexture bg, LTexture bar, LColor gridColor, float x, float y, float w, float h, boolean limit) {
+	public LInventory(IFont font, LTexture bg, LTexture bar, LColor gridColor, float x, float y, float w, float h,
+			boolean limit) {
 		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h), limit);
 		this._inventory = new Inventory();
 		this._titleSize = new Vector2f(w, h);
@@ -282,12 +332,17 @@ public class LInventory extends LLayer {
 		}
 		this._displayDrawGrid = _isDisplayBar = true;
 		this._isCircleGrid = false;
+		this._tipFont = font;
+		this._tipFontColor = LColor.white;
+		this._isMobile = LSystem.isMobile() || LSystem.base().setting.emulateTouch;
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
+		setTipBackground((LTexture) null);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);
 		setLayer(1000);
 		setActorDrag(true);
 		setDragLocked(false);
 		setElastic(false);
+
 	}
 
 	public LInventory topBottom(float top, float bottom, int row, int col) {
@@ -396,6 +451,8 @@ public class LInventory extends LLayer {
 					RectBox rect = item.getArea();
 					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
 							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+					item.setName(info.getName());
+					item.setItem(info);
 					return this;
 				}
 			}
@@ -438,6 +495,19 @@ public class LInventory extends LLayer {
 			item.free();
 		}
 		return item;
+	}
+
+	public int getItemToIndex(ItemUI im) {
+		int idx = 0;
+		for (int i = 0; i < _inventory.getItemCount(); i++) {
+			final IItem item = _inventory.getItem(i);
+			if (im == item) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
+
 	}
 
 	public ItemUI getItem(int idx) {
@@ -491,6 +561,51 @@ public class LInventory extends LLayer {
 			}
 		}
 		return this;
+	}
+
+	public LInventory setTipBackground(String path) {
+		return setTipBackground(LTextures.loadTexture(path));
+	}
+
+	public LInventory setTipBackground(LTexture tex) {
+		_tipTexture = (tex == null ? this._tipTexture = SkinManager.get().getMessageSkin().getBackgroundTexture()
+				: tex);
+		return this;
+	}
+
+	protected LInventory setTipText(String message) {
+		return setTipText(_tipFont, message);
+	}
+
+	protected LInventory setTipText(IFont font, String message) {
+		if (_tipText == null) {
+			_tipText = new Text(font, message);
+		} else {
+			_tipText.setText(font, message);
+		}
+		return this;
+	}
+
+	@Override
+	public void processTouchMoved() {
+		super.processTouchMoved();
+		if (!_isMobile) {
+			checkTouchTip();
+		}
+	}
+
+	protected void checkTouchTip() {
+		final Vector2f pos = getUITouchXY();
+		_tipItem = getItem(pos.x, pos.y);
+		if (_tipItem != null && _tipItem._saved) {
+			final String name = _tipItem.getItem().getName();
+			final String des = _tipItem.getItem().getDescription();
+			final String context = name + LSystem.LF + des;
+			setTipText(context);
+			_tipSelectd = true;
+		} else {
+			_tipSelectd = false;
+		}
 	}
 
 	public int getItemCount() {
@@ -607,6 +722,31 @@ public class LInventory extends LLayer {
 			}
 		}
 		super.createCustomUI(g, x, y, w, h);
+		drawTip(g);
+	}
+
+	protected void drawTip(GLEx g) {
+		if (_tipSelectd && _tipItem != null && _tipText != null) {
+			final RectBox rect = _tipItem.getArea();
+			final IFont font = _tipText.getFont();
+			final float fontSize = font.getSize();
+			final float texW = _tipText.getWidth();
+			final float texH = _tipText.getHeight();
+			final float width = texW + fontSize;
+			final float height = texH + fontSize;
+			final float posX = rect.x + (rect.getWidth() + width) / 2f;
+			final float posY = rect.y + (rect.getHeight() + height) / 2f;
+			g.draw(_tipTexture, posX - (width - texW + fontSize) / 2f, posY, width, height);
+			_tipText.paintString(g, posX - (width - texW) / 2f, posY + (height - texH) / 2f, _tipFontColor);
+		}
+	}
+
+	@Override
+	public void downClick(int dx, int dy) {
+		super.downClick(dx, dy);
+		if (_isMobile && isLongPressed()) {
+			checkTouchTip();
+		}
 	}
 
 	@Override
@@ -626,6 +766,8 @@ public class LInventory extends LLayer {
 				}
 			}
 		}
+		_tipSelectd = false;
+		_tipItem = null;
 	}
 
 	public boolean isDisplayDrawGrid() {
@@ -693,6 +835,23 @@ public class LInventory extends LLayer {
 	public LInventory setItemFadeAlphaTime(float a) {
 		this._actorFadeTime = a;
 		return this;
+	}
+
+	public LColor getTipFontColor() {
+		return _tipFontColor.cpy();
+	}
+
+	public LInventory setTipFontColor(LColor t) {
+		this._tipFontColor = new LColor(t);
+		return this;
+	}
+
+	public Vector2f getTitleSize() {
+		return _titleSize.cpy();
+	}
+
+	public boolean isTipSelectd() {
+		return _tipSelectd;
 	}
 
 	@Override

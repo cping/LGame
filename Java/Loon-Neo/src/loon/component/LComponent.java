@@ -162,7 +162,7 @@ public abstract class LComponent extends LObject<LContainer>
 	protected boolean desktopContainer;
 
 	// 默认锁定当前组件(否则可以拖动)
-	protected boolean locked = true;
+	protected boolean _dragLocked = true;
 
 	// 组件内部变量, 用于锁定当前组件的触屏（鼠标）与键盘事件
 	private boolean _touchLocked = false, _keyLocked = false;
@@ -730,6 +730,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public boolean isTooltip() {
+		return !StringUtils.isNullOrEmpty(this.tooltip);
+	}
+
 	public void doClick() {
 		if (_click != null) {
 			try {
@@ -771,7 +775,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void processTouchDragged() {
-		if (!locked) {
+		if (!_dragLocked) {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
@@ -860,6 +864,10 @@ public abstract class LComponent extends LObject<LContainer>
 		} else {
 			this.transferFocusBackward();
 		}
+	}
+
+	protected boolean isTouchDownClick() {
+		return _downClick;
 	}
 
 	public long getDownUpStartTimer() {
@@ -1753,11 +1761,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isLocked() {
-		return locked;
+		return _dragLocked;
 	}
 
 	public LComponent setLocked(boolean locked) {
-		this.locked = locked;
+		this._dragLocked = locked;
 		return this;
 	}
 

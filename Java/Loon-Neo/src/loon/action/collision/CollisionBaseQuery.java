@@ -58,9 +58,9 @@ public class CollisionBaseQuery implements CollisionQuery {
 		if (!_offsetLocation.isZero()) {
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
-			return (this._compareObject == null ? true : other.contains(_collisionRect));
+			return (this._compareObject == null ? true : other.intersects(_collisionRect));
 		}
-		return (this._compareObject == null ? true : other.contains(this._compareObject));
+		return (this._compareObject == null ? true : other.intersects(this._compareObject));
 	}
 
 	@Override
@@ -69,10 +69,10 @@ public class CollisionBaseQuery implements CollisionQuery {
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
 			return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
-					: (this._compareObject == null ? true : other.contains(_collisionRect));
+					: (this._compareObject == null ? true : other.intersects(_collisionRect));
 		}
 		return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false
-				: (this._compareObject == null ? true : other.contains(this._compareObject));
+				: (this._compareObject == null ? true : other.intersects(this._compareObject));
 	}
 
 	@Override

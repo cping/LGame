@@ -21,7 +21,7 @@
  */
 package loon.action.collision;
 
-import loon.geom.Shape;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
@@ -39,7 +39,7 @@ public class CollisionInRangeQuery implements CollisionQuery {
 
 	private float _r;
 
-	private Shape _object;
+	private RectBox _object;
 
 	private Vector2f _offsetLocation;
 

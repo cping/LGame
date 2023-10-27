@@ -26,7 +26,7 @@ import loon.geom.RectBox;
 public interface IItem {
 
 	public String getName();
-
+	
 	public Object getItem();
 
 	public LTexture getTexture();

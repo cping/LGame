@@ -555,7 +555,7 @@ public class LLayer extends ActorLayer {
 	protected void processTouchDragged() {
 		int dropX = 0;
 		int dropY = 0;
-		if (!locked) {
+		if (!_dragLocked) {
 			boolean moveActor = false;
 			if (_actorDrag) {
 				synchronized (objects) {
