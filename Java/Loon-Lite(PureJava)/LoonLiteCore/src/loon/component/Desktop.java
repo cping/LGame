@@ -65,6 +65,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	private LComponent selectedComponent;
 
+	private LComponent clickedComponent;
+
 	private LComponent[] clickComponent;
 
 	private LToolTip tooltip;
@@ -463,6 +465,14 @@ public class Desktop implements Visible, IArray, LRelease {
 		return this;
 	}
 
+	public boolean isCurrentClicked(LComponent comp) {
+		return comp == null ? false : clickedComponent == comp;
+	}
+
+	public boolean isCurrentFocusable(LComponent comp) {
+		return isCurrentClicked(comp) && (comp != null && comp.isFocusable());
+	}
+
 	/**
 	 * 事件监听
 	 * 
@@ -591,7 +601,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	private void processTouchEvent() {
 		final int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
-			final boolean mobile = (LSystem.isMobile() || LSystem.isEmulateTouch());
+			final boolean mobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 			if (!mobile) {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);
@@ -606,9 +616,11 @@ public class Desktop implements Visible, IArray, LRelease {
 			}
 			this.clickComponent[0] = this.hoverComponent;
 			if (this.hoverComponent != null && this.hoverComponent.isAllowTouch()
-					&& this.hoverComponent.isFocusable()) {
-				if ((pressed == SysTouch.TOUCH_DOWN || pressed == SysTouch.TOUCH_UP)
-						&& this.hoverComponent != this.selectedComponent) {
+					&& this.hoverComponent.isAllowSelectOfSelf) {
+				final boolean down = pressed == SysTouch.TOUCH_DOWN;
+				final boolean up = pressed == SysTouch.TOUCH_UP;
+				if ((down || up) && this.hoverComponent != this.selectedComponent) {
+					this.setClickComponent(this.hoverComponent, down, up);
 					this.selectComponent(this.hoverComponent);
 				}
 			}
@@ -667,16 +679,39 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 清除容器焦点
 	 */
 	public Desktop clearFocus() {
-		this.deselectComponent();
+		this.deselectComponent(true);
 		return this;
 	}
 
 	void deselectComponent() {
+		this.deselectComponent(false);
+	}
+
+	void deselectComponent(boolean clearFocus) {
 		if (this.selectedComponent == null) {
 			return;
 		}
 		this.selectedComponent.setSelected(false);
+		if (clearFocus) {
+			this.selectedComponent.setFocusable(false);
+		}
 		this.selectedComponent = null;
+	}
+
+	/**
+	 * 获得当前点击的具体组件(selectComponent包含触屏拖拽和鼠标划过对象,clickedComponent只为点击对象)
+	 * 
+	 * @param comp
+	 */
+	void setClickComponent(LComponent comp, boolean down, boolean up) {
+		this.clickedComponent = comp;
+		if (this.clickedComponent != null) {
+			if (down) {
+				this.clickedComponent.setFocusable(true);
+			} else if (up) {
+				this.clickedComponent.setFocusable(false);
+			}
+		}
 	}
 
 	/**
@@ -689,7 +724,8 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (comp == null) {
 			return false;
 		}
-		if (!comp.isVisible() || !comp.isEnabled() || !comp.isFocusable()) {
+
+		if (!comp.isVisible() || !comp.isEnabled() || !comp.isAllowSelectOfSelf) {
 			return false;
 		}
 
@@ -698,6 +734,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 		// 设定选中状态
 		comp.setSelected(true);
+		comp.setFocusable(true);
+
 		this.selectedComponent = comp;
 
 		return true;
@@ -965,6 +1003,10 @@ public class Desktop implements Visible, IArray, LRelease {
 		return this.selectedComponent;
 	}
 
+	public LComponent getClickedComponent() {
+		return this.clickedComponent;
+	}
+
 	public LComponent getModal() {
 		return this.modal;
 	}
@@ -1059,6 +1101,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		this._clicked = false;
 		this.hoverComponent = null;
 		this.selectedComponent = null;
+		this.clickedComponent = null;
 		this.clickComponent[0] = null;
 		return this;
 	}

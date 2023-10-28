@@ -166,15 +166,14 @@ public class LTextField extends LTextBar {
 	@Override
 	protected void keyPressed(GameKey key) {
 		super.keyPressed(key);
-		if (!isFocusable()) {
-			return;
-		}
-		if (!isPointInUI() && (LSystem.isMobile() || LSystem.isEmulateTouch())) {
+
+		if (!isDesktopFocusable()) {
 			return;
 		}
 		if (keyLock.isPressed()) {
 			return;
 		}
+
 		char nextchar = key.getKeyChar();
 		if (nextchar == 0 && (StringUtils.isCJK(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
 			return;

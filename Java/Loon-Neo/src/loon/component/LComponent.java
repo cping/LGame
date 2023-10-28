@@ -58,6 +58,7 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.geom.XYZW;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
@@ -100,6 +101,9 @@ public abstract class LComponent extends LObject<LContainer>
 	protected boolean isFull = false;
 
 	protected boolean isSelectDraw = false;
+
+	protected boolean isAllowSelectOfSelf = true;
+
 	// 渲染状态
 	public boolean customRendering = false;
 
@@ -133,7 +137,7 @@ public abstract class LComponent extends LObject<LContainer>
 	protected boolean _component_enabled = true;
 
 	// 是否为焦点
-	protected boolean _component_focusable = true;
+	protected boolean _component_focusable = false;
 
 	// 是否已选中
 	protected boolean _component_selected = false;
@@ -174,6 +178,16 @@ public abstract class LComponent extends LObject<LContainer>
 		this(position.x(), position.y(), size.x(), size.y());
 	}
 
+	public LComponent(XY position, XY size) {
+		this(MathUtils.ifloor(position.getX()), MathUtils.ifloor(position.getY()), MathUtils.ifloor(size.getX()),
+				MathUtils.ifloor(size.getY()));
+	}
+
+	public LComponent(XYZW rect) {
+		this(MathUtils.ifloor(rect.getX()), MathUtils.ifloor(rect.getY()), MathUtils.ifloor(rect.getZ()),
+				MathUtils.ifloor(rect.getW()));
+	}
+
 	/**
 	 * 构造可用组件
 	 * 
@@ -186,6 +200,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this.setLocation(x, y);
 		this._width = MathUtils.max(1f, width);
 		this._height = MathUtils.max(1f, height);
+		this.isAllowSelectOfSelf = true;
 	}
 
 	public int getScreenWidth() {
@@ -495,6 +510,11 @@ public abstract class LComponent extends LObject<LContainer>
 
 	final LComponent setSelected(boolean b) {
 		this._component_selected = b;
+		if (_component_selected) {
+			processInFocus();
+		} else {
+			processOutFocus();
+		}
 		return this;
 	}
 
@@ -517,6 +537,16 @@ public abstract class LComponent extends LObject<LContainer>
 			this._objectSuper.transferFocusBackward(this);
 		}
 		return this;
+	}
+
+	public boolean isDesktopClicked() {
+		final Desktop desk = getDesktop();
+		return desk == null ? false : desk.isCurrentClicked(this);
+	}
+
+	public boolean isDesktopFocusable() {
+		final Desktop desk = getDesktop();
+		return desk == null ? false : desk.isCurrentFocusable(this);
 	}
 
 	public boolean isFocusable() {
@@ -847,6 +877,16 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void processResize() {
+	}
+
+	// 获得焦点
+	protected void processInFocus() {
+
+	}
+
+	// 离开焦点
+	protected void processOutFocus() {
+
 	}
 
 	void keyPressed() {
@@ -1908,6 +1948,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return !_keyLocked && _component_enabled;
 	}
 
+	protected LComponent setAllowSelectOfSelf(boolean a) {
+		this.isAllowSelectOfSelf = a;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -1953,5 +1998,4 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public abstract void destory();
-
 }
