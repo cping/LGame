@@ -20,6 +20,7 @@
  */
 package loon.action.map.items;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.geom.RectBox;
@@ -35,27 +36,54 @@ public class Item<T> implements IItem {
 
 	protected T _item;
 
+	protected int _typeId;
+
 	public Item(String name, String imagePath, XYZW rect, T item) {
-		this(name, imagePath, rect.getX(), rect.getY(), rect.getZ(), rect.getW(), item);
+		this(0, name, imagePath, rect.getX(), rect.getY(), rect.getZ(), rect.getW(), item);
+	}
+
+	public Item(int typeId, String name, String imagePath, XYZW rect, T item) {
+		this(typeId, name, imagePath, rect.getX(), rect.getY(), rect.getZ(), rect.getW(), item);
 	}
 
 	public Item(String name, String imagePath, T item) {
-		this(name, imagePath, 0f, 0f, 0f, 0f, item);
+		this(0, name, imagePath, item);
+	}
+
+	public Item(int typeId, String name, String imagePath, T item) {
+		this(typeId, name, imagePath, 0f, 0f, 0f, 0f, item);
 	}
 
 	public Item(String name, String imagePath, float x, float y, float w, float h, T item) {
-		this(name, LTextures.loadTexture(imagePath), x, y, w, h, item);
+		this(0, name, imagePath, x, y, w, h, item);
+	}
+
+	public Item(int typeId, String name, String imagePath, float x, float y, float w, float h, T item) {
+		this(typeId, name, LTextures.loadTexture(imagePath), x, y, w, h, item);
+	}
+
+	public Item(String name, float x, float y, float w, float h, T item) {
+		this(0, name, (LTexture) null, x, y, w, h, item);
 	}
 
 	public Item(String name, T item) {
-		this(name, (LTexture) null, item);
+		this(0, name, item);
+	}
+
+	public Item(int typeId, String name, T item) {
+		this(typeId, name, (LTexture) null, item);
 	}
 
 	public Item(String name, LTexture tex, T item) {
-		this(name, tex, 0f, 0f, 0f, 0f, item);
+		this(0, name, tex, item);
 	}
 
-	public Item(String name, LTexture tex, float x, float y, float w, float h, T item) {
+	public Item(int typeId, String name, LTexture tex, T item) {
+		this(typeId, name, tex, 0f, 0f, 0f, 0f, item);
+	}
+
+	public Item(int typeId, String name, LTexture tex, float x, float y, float w, float h, T item) {
+		this._typeId = typeId;
 		this._name = name;
 		this._item = item;
 		this._image = tex;
@@ -103,6 +131,24 @@ public class Item<T> implements IItem {
 	@Override
 	public RectBox getArea() {
 		return _itemArea;
+	}
+
+	public boolean isPositionOut(float posX, float posY) {
+		return _itemArea.inPoint(posX, posY);
+	}
+
+	public boolean isPositionOut(XYZW rect) {
+		return _itemArea.inRect(rect);
+	}
+
+	@Override
+	public int getItemTypeId() {
+		return _typeId;
+	}
+
+	public Item<T> setItemTypeId(int id) {
+		this._typeId = id;
+		return this;
 	}
 
 	public boolean equals(Item<T> e) {
@@ -167,7 +213,18 @@ public class Item<T> implements IItem {
 
 	@Override
 	public int hashCode() {
-		return _item == null ? super.hashCode() : _item.hashCode();
+		int hashCode = _item == null ? super.hashCode() : _item.hashCode();
+		hashCode = LSystem.unite(hashCode, _typeId);
+		if (_itemArea != null) {
+			hashCode = LSystem.unite(hashCode, _itemArea.hashCode());
+		}
+		if (_image != null) {
+			hashCode = LSystem.unite(hashCode, _image.hashCode());
+		}
+		if (_name != null) {
+			hashCode = LSystem.unite(hashCode, _name.hashCode());
+		}
+		return hashCode;
 	}
 
 }

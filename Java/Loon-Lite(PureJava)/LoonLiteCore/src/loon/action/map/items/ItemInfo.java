@@ -26,6 +26,8 @@ import loon.utils.Properties;
 
 public class ItemInfo implements LRelease {
 
+	protected ItemType _itemType;
+
 	protected float _gold;
 
 	protected String _name;
@@ -35,11 +37,19 @@ public class ItemInfo implements LRelease {
 	protected Properties<String, Attribute> _attributes;
 
 	public ItemInfo() {
-		this(LSystem.UNKNOWN, LSystem.UNKNOWN);
+		this(LSystem.UNKNOWN);
+	}
+
+	public ItemInfo(String name) {
+		this(name, name);
 	}
 
 	public ItemInfo(String name, String de) {
-		this._attributes = new Properties<String, Attribute>();
+		this(name, de, new Properties<String, Attribute>());
+	}
+
+	public ItemInfo(String name, String de, Properties<String, Attribute> attributes) {
+		this._attributes = attributes;
 		this._name = name;
 		this._description = de;
 	}
@@ -47,6 +57,7 @@ public class ItemInfo implements LRelease {
 	public ItemInfo set(ItemInfo info) {
 		this._attributes = info._attributes;
 		this._name = info._name;
+		this._itemType = info._itemType;
 		this._description = info._description;
 		this._gold = info._gold;
 		return this;
@@ -55,6 +66,11 @@ public class ItemInfo implements LRelease {
 	public ItemInfo cpy() {
 		ItemInfo info = new ItemInfo(_name, _description);
 		info._attributes = new Properties<String, Attribute>(_attributes);
+		if (this._itemType == null) {
+			info._itemType = this._itemType;
+		} else {
+			info._itemType = this._itemType.cpy();
+		}
 		info._gold = this._gold;
 		return info;
 	}
@@ -115,6 +131,15 @@ public class ItemInfo implements LRelease {
 
 	public float getGold() {
 		return _gold;
+	}
+
+	public ItemType getItemType() {
+		return _itemType;
+	}
+
+	public ItemInfo setItemType(ItemType i) {
+		this._itemType = i;
+		return this;
 	}
 
 	@Override

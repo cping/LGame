@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.Nullable;
 import loon.utils.MathUtils;
 
 public class LongValue implements LRelease{
@@ -67,6 +68,10 @@ public class LongValue implements LRelease{
 
 	public LongValue cpy() {
 		return new LongValue(value);
+	}
+
+	public Nullable<Long> toNullable(){
+		return new Nullable<Long>(value);
 	}
 	
 	@Override

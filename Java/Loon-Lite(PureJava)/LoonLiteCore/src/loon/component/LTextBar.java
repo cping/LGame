@@ -40,7 +40,7 @@ import loon.utils.timer.LTimer;
  */
 public class LTextBar extends LComponent {
 
-	private LTimer _waitTimer = new LTimer();
+	private LTimer _waitTimer;
 
 	private boolean _drawUI = false;
 
@@ -120,6 +120,7 @@ public class LTextBar extends LComponent {
 				+ (right != null ? right.getWidth() : 0) * 3;
 		float h = body != null ? body.getHeight() : f.getHeight();
 		this._fontColor = c;
+		this._waitTimer = new LTimer(500);
 		if (maxWidth == -1 && body != null) {
 			this._maxWidth = w;
 		} else {
@@ -148,7 +149,7 @@ public class LTextBar extends LComponent {
 	}
 
 	public LTextBar setMaxWidth(float w) {
-		this._maxWidth =  w;
+		this._maxWidth = w;
 		return this;
 	}
 
@@ -248,36 +249,40 @@ public class LTextBar extends LComponent {
 	}
 
 	private final void drawMessage(GLEx g, IFont font, String mes, float x, float y, LColor fontColor) {
+		if (StringUtils.isNullOrEmpty(mes)) {
+			return;
+		}
+		final float size = font.getSize() / 6f;
 		if (flashCursor) {
-			int len = mes.length() - 1;
-			char end = mes.charAt(len);
+			final int len = mes.length() - 1;
+			final char end = mes.charAt(len);
 			if (_displayFlag) {
 				if (masked) {
 					if (end == cursor) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, len) + cursor, x, y, fontColor);
+						font.drawString(g, StringUtils.cpy(maskCharacter, len) + cursor, x, y + size, fontColor);
 					} else {
-						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y, fontColor);
+						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y + size, fontColor);
 					}
 				} else {
-					font.drawString(g, mes, x, y, fontColor);
+					font.drawString(g, mes, x, y + size, fontColor);
 				}
 			} else {
 				if (end == cursor) {
 					if (masked) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, len), x, y, fontColor);
+						font.drawString(g, StringUtils.cpy(maskCharacter, len), x, y + size, fontColor);
 					} else {
-						font.drawString(g, mes.substring(0, len), x, y, fontColor);
+						font.drawString(g, mes.substring(0, len), x, y + size, fontColor);
 					}
 				} else {
 					if (masked) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y, fontColor);
+						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y + size, fontColor);
 					} else {
-						font.drawString(g, mes, x, y, fontColor);
+						font.drawString(g, mes, x, y + size, fontColor);
 					}
 				}
 			}
 		} else {
-			font.drawString(g, mes, x, y, fontColor);
+			font.drawString(g, mes, x, y + size, fontColor);
 		}
 	}
 

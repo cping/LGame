@@ -1273,7 +1273,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public RectBox add(XY pos) {
 		if (pos == null) {
-			return this;
+			return cpy();
 		}
 		return add(pos.getX(), pos.getY());
 	}
@@ -1293,7 +1293,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	public RectBox addSelf(XY pos) {
 		if (pos == null) {
-			return cpy();
+			return this;
 		}
 		return addSelf(pos.getX(), pos.getY());
 	}

@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.Nullable;
 import loon.utils.ArrayByte;
 
 public class BytesValue implements LRelease {
@@ -53,6 +54,10 @@ public class BytesValue implements LRelease {
 		return value != null ? value.cpy() : null;
 	}
 
+	public Nullable<ArrayByte> toNullable(){
+		return new Nullable<ArrayByte>(value);
+	}
+	
 	@Override
 	public String toString() {
 		return value.toString();

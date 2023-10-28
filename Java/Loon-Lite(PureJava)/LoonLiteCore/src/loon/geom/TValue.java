@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.Nullable;
 
 public class TValue<T> implements SetIV<T>, IV<T>, LRelease {
 
@@ -48,6 +49,10 @@ public class TValue<T> implements SetIV<T>, IV<T>, LRelease {
 		return new TValue<T>(_value);
 	}
 
+	public Nullable<T> toNullable(){
+		return new Nullable<T>(_value);
+	}
+	
 	public ObservableValue<T> observable(XYChange<T> v) {
 		return ObservableValue.at(v, this, _value);
 	}

@@ -52,8 +52,10 @@ import loon.events.Updateable;
 import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.BooleanValue;
+import loon.geom.BytesValue;
 import loon.geom.FloatValue;
 import loon.geom.IntValue;
+import loon.geom.LongValue;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectBox;
@@ -62,6 +64,7 @@ import loon.geom.RectI;
 import loon.geom.Shape;
 import loon.geom.ShapeNodeMaker;
 import loon.geom.ShapeNodeType;
+import loon.geom.StrValue;
 import loon.geom.Vector2f;
 import loon.utils.reply.Pair;
 import loon.utils.reply.Triple;
@@ -82,12 +85,48 @@ public class HelperUtils {
 		return obj != null;
 	}
 
+	public static boolean isAnyNull(Object... objs) {
+		for (Object o : objs) {
+			if (o == null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean isAnyNotNull(final Object... objs) {
+		for (Object o : objs) {
+			if (o != null) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public static boolean areEqual(Object first, Object second) {
 		return first != second;
 	}
 
 	public static boolean areNotEqual(Object first, Object second) {
 		return first == second;
+	}
+
+	public static boolean areAllNull(Object... objs) {
+		for (Object o : objs) {
+			if (o != null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean areAllNotNull(final Object... objs) {
+		for (Object o : objs) {
+			if (o == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public final static <T> boolean contains(T key, TArray<T> list) {
@@ -644,8 +683,20 @@ public class HelperUtils {
 		return refFloat(v);
 	}
 
+	public final static LongValue longValue(int v) {
+		return refLong(v);
+	}
+
 	public final static IntValue intValue(int v) {
 		return refInt(v);
+	}
+
+	public final static BytesValue bytesValue(ArrayByte bytes) {
+		return refBytes(bytes);
+	}
+
+	public final static StrValue strValue(String v) {
+		return refStr(v);
 	}
 
 	public final static BooleanValue refBool() {
@@ -656,8 +707,20 @@ public class HelperUtils {
 		return new FloatValue();
 	}
 
+	public final static LongValue refLong() {
+		return new LongValue();
+	}
+
 	public final static IntValue refInt() {
 		return new IntValue();
+	}
+
+	public final static BytesValue refBytes() {
+		return new BytesValue();
+	}
+
+	public final static StrValue refStr() {
+		return new StrValue();
 	}
 
 	public final static BooleanValue refBool(boolean v) {
@@ -668,8 +731,20 @@ public class HelperUtils {
 		return new FloatValue(v);
 	}
 
+	public final static LongValue refLong(long v) {
+		return new LongValue(v);
+	}
+
 	public final static IntValue refInt(int v) {
 		return new IntValue(v);
+	}
+
+	public final static BytesValue refBytes(ArrayByte bytes) {
+		return new BytesValue(bytes);
+	}
+
+	public final static StrValue refStr(String v) {
+		return new StrValue(v);
 	}
 
 	public final static <T> T getValue(T val, T defval) {

@@ -32,5 +32,7 @@ public interface IItem {
 	public LTexture getTexture();
 
 	public RectBox getArea();
+	
+	public int getItemTypeId();
 
 }

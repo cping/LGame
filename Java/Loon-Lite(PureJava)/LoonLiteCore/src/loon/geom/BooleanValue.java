@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.Nullable;
 
 public class BooleanValue implements LRelease {
 
@@ -50,6 +51,14 @@ public class BooleanValue implements LRelease {
 
 	public boolean result() {
 		return value;
+	}
+	
+	public BooleanValue cpy() {
+		return new BooleanValue(value);
+	}
+	
+	public Nullable<Boolean> toNullable(){
+		return new Nullable<Boolean>(value);
 	}
 
 	@Override

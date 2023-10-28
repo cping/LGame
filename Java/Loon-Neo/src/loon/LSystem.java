@@ -131,7 +131,11 @@ public class LSystem {
 	public static final char SPACE = ' ';
 
 	public static final char TAB = '	';
+	
+	public static final char ERRORCODE1 = 341;
 
+	public static final char ERRORCODE2 = 65535;
+	
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 

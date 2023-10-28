@@ -20,19 +20,40 @@
  */
 package loon.action.map.items;
 
-import loon.LTexture;
-import loon.geom.RectBox;
+public abstract class ItemType {
 
-public interface IItem {
+	protected int _id;
 
-	public String getName();
-	
-	public Object getItem();
+	protected String _name;
 
-	public LTexture getTexture();
+	protected String _description;
 
-	public RectBox getArea();
-	
-	public int getItemTypeId();
+	public String getName() {
+		return _name;
+	}
 
+	public ItemType setName(String n) {
+		this._name = n;
+		return this;
+	}
+
+	public String getDescription() {
+		return _description;
+	}
+
+	public ItemType setDescription(String d) {
+		this._description = d;
+		return this;
+	}
+
+	public int getId() {
+		return _id;
+	}
+
+	public ItemType setId(int i) {
+		this._id = i;
+		return this;
+	}
+
+	public abstract ItemType cpy();
 }

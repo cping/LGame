@@ -55,7 +55,7 @@ public class LInventory extends LLayer {
 		protected Actor _actor;
 
 		ItemUI(LInventory inv, String name, ItemInfo item, float x, float y, float w, float h) {
-			super(name, (LTexture) null, x, y, w, h, item);
+			super(name, x, y, w, h, item);
 			this._inventory = inv;
 		}
 
@@ -334,7 +334,7 @@ public class LInventory extends LLayer {
 		this._isCircleGrid = false;
 		this._tipFont = font;
 		this._tipFontColor = LColor.white;
-		this._isMobile = LSystem.isMobile() || LSystem.base().setting.emulateTouch;
+		this._isMobile = (LSystem.isMobile() || LSystem.isEmulateTouch());
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
 		setTipBackground((LTexture) null);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);
@@ -373,7 +373,6 @@ public class LInventory extends LLayer {
 				&& right == this._gridPaddingRight && bottom == this._gridPaddingBottom) {
 			return this;
 		}
-
 		this._currentRowTableSize = row;
 		this._currentColTableSize = col;
 		this._gridPaddingLeft = left;
@@ -424,6 +423,38 @@ public class LInventory extends LLayer {
 		this._initialization = true;
 		this._dirty = true;
 		return this;
+	}
+
+	public float getPaddingX() {
+		return _gridPaddingX;
+	}
+
+	public float getPaddingY() {
+		return _gridPaddingY;
+	}
+
+	public float getPaddingLeft() {
+		return _gridPaddingLeft;
+	}
+
+	public float getPaddingTop() {
+		return _gridPaddingTop;
+	}
+
+	public float getPaddingRight() {
+		return _gridPaddingRight;
+	}
+
+	public float getPaddingBottom() {
+		return _gridPaddingBottom;
+	}
+
+	public int getColumns() {
+		return _currentColTableSize;
+	}
+
+	public int getRows() {
+		return _currentRowTableSize;
 	}
 
 	public boolean isDirty() {
@@ -498,16 +529,7 @@ public class LInventory extends LLayer {
 	}
 
 	public int getItemToIndex(ItemUI im) {
-		int idx = 0;
-		for (int i = 0; i < _inventory.getItemCount(); i++) {
-			final IItem item = _inventory.getItem(i);
-			if (im == item) {
-				return idx;
-			}
-			idx++;
-		}
-		return -1;
-
+		return _inventory.getItemToIndex(im);
 	}
 
 	public ItemUI getItem(int idx) {
@@ -515,16 +537,7 @@ public class LInventory extends LLayer {
 	}
 
 	public ItemUI getItem(float x, float y) {
-		for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
-			final IItem item = _inventory.getItem(i);
-			final RectBox rect = item.getArea();
-			if (rect != null) {
-				if (rect.contains(x, y)) {
-					return (ItemUI) item;
-				}
-			}
-		}
-		return null;
+		return (ItemUI) _inventory.getItem(x, y);
 	}
 
 	public LInventory setItem(LTexture tex, ItemInfo info, float x, float y) {
@@ -835,6 +848,10 @@ public class LInventory extends LLayer {
 	public LInventory setItemFadeAlphaTime(float a) {
 		this._actorFadeTime = a;
 		return this;
+	}
+
+	public ItemUI getTipItem() {
+		return _tipItem;
 	}
 
 	public LColor getTipFontColor() {

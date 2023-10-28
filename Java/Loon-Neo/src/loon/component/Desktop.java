@@ -591,7 +591,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	private void processTouchEvent() {
 		final int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
-			final boolean mobile = LSystem.isMobile() || LSystem.base().setting.emulateTouch;
+			final boolean mobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 			if (!mobile) {
 				if (tooltip != null) {
 					this.tooltip.setToolTipComponent(null);

@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.Nullable;
 import loon.utils.MathUtils;
 
 public class IntValue implements LRelease{
@@ -69,6 +70,10 @@ public class IntValue implements LRelease{
 		return new IntValue(value);
 	}
 
+	public Nullable<Integer> toNullable(){
+		return new Nullable<Integer>(value);
+	}
+	
 	@Override
 	public String toString() {
 		return String.valueOf(value);

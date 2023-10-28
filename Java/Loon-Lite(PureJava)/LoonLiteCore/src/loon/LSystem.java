@@ -104,12 +104,16 @@ public class LSystem {
 
 	public static final char TAB = '	';
 
+	public static final char ERRORCODE1 = 341;
+
+	public static final char ERRORCODE2 = 65535;
+	
 	// 默认最大预加载数量
 	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
 
 	// 长按时间
 	public static final float LONG_PRESSED_TIME = 2f;
-	
+
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 
@@ -407,6 +411,13 @@ public class LSystem {
 	public static boolean isDesktop() {
 		if (base() != null) {
 			return base().isDesktop();
+		}
+		return false;
+	}
+
+	public static boolean isEmulateTouch() {
+		if (base() != null) {
+			return base().setting.emulateTouch;
 		}
 		return false;
 	}

@@ -22,6 +22,8 @@ package loon.action.map.items;
 
 import java.util.Comparator;
 
+import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.utils.TArray;
 
 public class Inventory {
@@ -60,6 +62,10 @@ public class Inventory {
 		return this;
 	}
 
+	public float getGold() {
+		return _gold;
+	}
+
 	public Inventory swap(IItem a, IItem b) {
 		int aIdx = -1;
 		int bIdx = -1;
@@ -86,8 +92,51 @@ public class Inventory {
 		return this;
 	}
 
-	public float getGold() {
-		return _gold;
+	public IItem getItem(float x, float y) {
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			final RectBox rect = item.getArea();
+			if (rect != null && rect.contains(x, y)) {
+				return item;
+			}
+		}
+		return null;
+	}
+
+	public boolean contains(float x, float y) {
+		for (int i = _items.size - 1; i > -1; i--) {
+			final RectBox rect = _items.get(i).getArea();
+			if (rect != null) {
+				return rect.contains(x, y);
+			}
+		}
+		return false;
+	}
+
+	public boolean collided(Shape shape) {
+		for (int i = _items.size - 1; i > -1; i--) {
+			final RectBox rect = _items.get(i).getArea();
+			if (rect != null) {
+				return rect.collided(shape);
+			}
+		}
+		return false;
+	}
+
+	public int getItemToIndex(IItem obj) {
+		if (obj == null) {
+			return -1;
+		}
+		int idx = 0;
+		for (int i = 0; i < _items.size; i++) {
+			final IItem item = _items.get(i);
+			if (obj == item) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
+
 	}
 
 	public boolean addItem(IItem obj) {
@@ -119,6 +168,20 @@ public class Inventory {
 
 	public int getItemCount() {
 		return _items.size;
+	}
+
+	public Inventory sort() {
+		_items.sort(new Comparator<IItem>() {
+
+			@Override
+			public int compare(final IItem o1,final IItem o2) {
+				if (o1 != null && o2 != null) {
+					return o1.getItemTypeId() - o2.getItemTypeId();
+				}
+				return 0;
+			}
+		});
+		return this;
 	}
 
 	public Inventory sort(Comparator<IItem> comp) {

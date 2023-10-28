@@ -169,15 +169,30 @@ public class LTextField extends LTextBar {
 		if (!isFocusable()) {
 			return;
 		}
-		if (!isPointInUI()) {
+		if (!isPointInUI() && (LSystem.isMobile() || LSystem.isEmulateTouch())) {
 			return;
 		}
 		if (keyLock.isPressed()) {
 			return;
 		}
+
 		char nextchar = key.getKeyChar();
-		if (nextchar == 0 && (StringUtils.isChinese(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
+		if (nextchar == 0 && (StringUtils.isCJK(nextchar) || CharUtils.isAlphaOrDigit(nextchar))) {
 			return;
+		}
+		switch (nextchar) {
+		case LSystem.BACKSLASH:
+		case LSystem.TAB:
+		case LSystem.LF:
+		case LSystem.CR:
+			break;
+		case LSystem.ERRORCODE1:
+		case LSystem.ERRORCODE2:
+			return;
+		default:
+			if (nextchar < 32) {
+				return;
+			}
 		}
 		boolean isatstart = _text.length() == startidx;
 		if (((key.getKeyCode() == SysKey.BACK) || (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0

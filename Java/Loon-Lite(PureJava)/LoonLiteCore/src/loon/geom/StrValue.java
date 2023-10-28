@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.Nullable;
 
 public class StrValue implements LRelease {
 
@@ -39,7 +40,7 @@ public class StrValue implements LRelease {
 		set(v);
 		return v != null;
 	}
-	
+
 	public StrValue set(String v) {
 		this.value = v;
 		return this;
@@ -51,6 +52,14 @@ public class StrValue implements LRelease {
 
 	public String result() {
 		return value;
+	}
+	
+	public StrValue cpy() {
+		return new StrValue(value);
+	}
+	
+	public Nullable<String> toNullable(){
+		return new Nullable<String>(value);
 	}
 
 	@Override
