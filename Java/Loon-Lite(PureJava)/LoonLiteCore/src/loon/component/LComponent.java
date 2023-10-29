@@ -203,14 +203,6 @@ public abstract class LComponent extends LObject<LContainer>
 		this.isAllowSelectOfSelf = true;
 	}
 
-	public int getScreenWidth() {
-		return getScreen().getWidth();
-	}
-
-	public int getScreenHeight() {
-		return getScreen().getHeight();
-	}
-
 	/**
 	 * 让当前组件向指定的中心点位置居中
 	 * 
@@ -663,6 +655,52 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public int getScreenY() {
 		return this._screenY;
+	}
+
+	public int getScreenWidth() {
+		return getScreen().getWidth();
+	}
+
+	public int getScreenHeight() {
+		return getScreen().getHeight();
+	}
+
+	public float getDesktopX() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this._screenX : desk.getX();
+	}
+
+	public float getDesktopY() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this._screenY : desk.getY();
+	}
+
+	public float getDesktopWidth() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this.getScreenWidth() : desk.getWidth();
+	}
+
+	public float getDesktopHeight() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this.getScreenHeight() : desk.getHeight();
+	}
+
+	public float getDesktopLeft() {
+		return getDesktopX();
+	}
+
+	public float getDesktopRight() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this.getScreenX() + this.getScreenWidth() : desk.getX() + desk.getWidth();
+	}
+
+	public float getDesktopTop() {
+		return getDesktopY();
+	}
+
+	public float getDesktopBottom() {
+		final Desktop desk = getDesktop();
+		return desk == null ? this.getScreenY() + this.getScreenHeight() : desk.getY() + desk.getHeight();
 	}
 
 	@Override

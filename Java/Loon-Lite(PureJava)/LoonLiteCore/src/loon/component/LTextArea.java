@@ -1,29 +1,29 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- *
+ * 
  *          该类效果与LInfo和LMessage近似，但与强调专用场合的前两类不同，此类的应用场合更广阔，默认效果使用上也较前两类自动化。
  *          API也更简便，并且，此并不强迫背景图的使用，缺省状态系统也提供了默认背景。
- *
+ * 
  *          Examples1:
- *
+ * 
  *          LTextArea area = new LTextArea(66, 66, 300, 100);
  *          area.put("GGGGGGGGGG",LColor.red); area.put("GGGGGGGGGG");
  *          //addString为在前一行追加数据 area.addString("1",LColor.red);
@@ -93,6 +93,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private boolean flashFont;
 	private boolean over;
 	private boolean slideMessage;
+
+	private boolean _dirty;
 
 	private int[] slideX;
 
@@ -380,7 +382,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			setColor(this.crs[this.numBak], this.cgs[this.numBak], this.cbs[this.numBak]);
 			put(this.strTemp);
 		}
-
+		_dirty = true;
 	}
 
 	private void setGetMessageLength(int d_length) {
@@ -439,7 +441,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
-
 		int oldColor = g.color();
 		this.countFrame += 1;
 		int index = amount;
@@ -566,6 +567,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	public LTextArea setWaitFlag(boolean w) {
 		this.waitFlag = w;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return this._dirty;
+	}
+
+	public LTextArea setDirty(boolean d) {
+		this._dirty = d;
 		return this;
 	}
 
