@@ -307,6 +307,10 @@ public class LInventory extends LLayer {
 		this(font, (LTexture) null, (LTexture) null, grid, x, y, w, h, limit);
 	}
 
+	public LInventory(IFont font, LTexture bg, LTexture bar, float x, float y, float w, float h, boolean limit) {
+		this(font, bg, bar, LColor.gray, x, y, w, h, limit);
+	}
+
 	/**
 	 * 构建一个游戏用背包
 	 * 
@@ -334,7 +338,7 @@ public class LInventory extends LLayer {
 		this._isCircleGrid = false;
 		this._tipFont = font;
 		this._tipFontColor = LColor.white;
-		this._isMobile = (LSystem.isMobile() || LSystem.isEmulateTouch());
+		this._isMobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
 		setTipBackground((LTexture) null);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);

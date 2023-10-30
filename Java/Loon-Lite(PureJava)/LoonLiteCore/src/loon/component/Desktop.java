@@ -654,7 +654,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()
 				&& this.input.getKeyReleased() != Screen.NO_KEY && this.selectedComponent != null) {
-			this.selectedComponent.processKeyReleased();
+			this.selectedComponent.keyReleased();
 		}
 	}
 

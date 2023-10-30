@@ -235,7 +235,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				final boolean down = SysTouch.isDown();
 				final boolean drag = SysTouch.isDrag();
 				final boolean checkd = (down || drag);
-				Vector2f pos = SysTouch.getLocation();
+				final Vector2f pos = _parent.getUITouchXY();
 				if (this._parent != null) {
 					if (!localpos) {
 						this.x = (this._parent.cellWidth * this.xslot + this._parent.cellWidth / this.itemWidth
@@ -254,8 +254,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 							y = 0;
 						}
 					}
-					if (_parent.type == LMenu.MOVE_RIGHT) {
-						float posX = _parent.getScreenWidth() - _parent.main_panel_size;
+					if (_parent._moveType == LMenu.MOVE_RIGHT) {
+						float posX = _parent.getScreenRight() - _parent.main_panel_size;
 						this.x = posX + x;
 					}
 					if (!localsize) {
@@ -335,7 +335,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		}
 
 		public RectBox bounds() {
-			if (_parent.type == LMenu.MOVE_LEFT) {
+			if (_parent._moveType == LMenu.MOVE_LEFT) {
 				if (itemrect == null) {
 					itemrect = new RectBox(this.x + _parent._leftOffsetMoveMenu + offsetX,
 							this.y + this._parent.paddingy + this._parent.scroll + offsetY, this.itemWidth,
@@ -345,7 +345,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 							this.y + this._parent.paddingy + this._parent.scroll + offsetY, this.itemWidth,
 							this.itemHeight);
 				}
-			} else if (_parent.type == LMenu.MOVE_RIGHT) {
+			} else if (_parent._moveType == LMenu.MOVE_RIGHT) {
 				if (itemrect == null) {
 					itemrect = new RectBox(this.x + _parent._leftOffsetMoveMenu + offsetX,
 							this.y + this._parent.paddingy + this._parent.scroll + offsetY, this.itemWidth,
@@ -396,11 +396,13 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		}
 	}
 
-	private boolean mouseSelect = false;
+	private boolean _mouseSelect = false;
 
 	private boolean _tabOpening;
 
 	private boolean _panelOpening;
+
+	private boolean _clickedMenu;
 
 	protected float _leftOffsetMoveMenu;
 
@@ -448,9 +450,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 
 	private int tabWidth, tabHeight;
 
-	private int type = MOVE_RIGHT;
+	private int _moveType = MOVE_RIGHT;
 
-	private String label;
+	private String _tablabel;
 
 	private boolean _itemClicked;
 
@@ -506,8 +508,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			int mainsize, boolean defUI, LColor color) {
 		super(0, 0, width, height);
 		this.fontColor = color;
-		this.type = move_type;
-		this.label = label;
+		this._moveType = move_type;
+		this._tablabel = label;
 		this.font = font;
 		this.tabY = taby;
 		this.tab = tab;
@@ -521,20 +523,21 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		}
 		this.main_panel_size += this.cellWidth + this.paddingx;
 		this._defUI = defUI;
-		if (type > MOVE_RIGHT) {
-			throw new LSysException("Type:" + type + ", The Menu display mode is not supported !");
+		if (_moveType > MOVE_RIGHT) {
+			throw new LSysException("Type:" + _moveType + ", The Menu display mode is not supported !");
 		}
+		setLocation(MathUtils.ifloor(getScreenX()), getScreenY());
 	}
 
-	private RectBox tagbounds(int type) {
-		if (type == MOVE_LEFT) {
+	private RectBox tagbounds(int _moveType) {
+		if (_moveType == MOVE_LEFT) {
 			if (tabRec == null) {
 				tabRec = new RectBox(this.width, getTaby(), tabWidth, tabHeight);
 			} else {
 				tabRec.setBounds(this.width, getTaby(), tabWidth, tabHeight);
 			}
-		} else if (type == MOVE_RIGHT) {
-			float posX = this.getScreenWidth() - this.width - this.tabWidth;
+		} else if (_moveType == MOVE_RIGHT) {
+			float posX = this.getScreenRight() - this.width - this.tabWidth;
 			if (tabRec == null) {
 				tabRec = new RectBox(posX, getTaby(), tabWidth, tabHeight);
 			} else {
@@ -544,19 +547,19 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return tabRec;
 	}
 
-	private RectBox panelbounds(int type) {
-		if (type == MOVE_LEFT) {
+	private RectBox panelbounds(int _moveType) {
+		if (_moveType == MOVE_LEFT) {
 			if (mianRec == null) {
-				mianRec = new RectBox(0, 0, this.width, getScreenHeight());
+				mianRec = new RectBox(getScreenX(), getScreenY(), this.width, getScreenHeight());
 			} else {
-				mianRec.setBounds(0, 0, this.width, getScreenHeight());
+				mianRec.setBounds(getScreenX(), getScreenY(), this.width, getScreenHeight());
 			}
-		} else if (type == MOVE_RIGHT) {
-			float posX = this.getScreenWidth() - this.width;
+		} else if (_moveType == MOVE_RIGHT) {
+			float posX = this.getScreenRight() - this.width;
 			if (mianRec == null) {
-				mianRec = new RectBox(posX, 0, this.width, getScreenHeight());
+				mianRec = new RectBox(posX, getScreenY(), this.width, getScreenHeight());
 			} else {
-				mianRec.setBounds(posX, 0, this.width, getScreenHeight());
+				mianRec.setBounds(posX, getScreenY(), this.width, getScreenHeight());
 			}
 		}
 		return mianRec;
@@ -655,20 +658,21 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		final float alpha = g.alpha();
 		try {
 			g.setAlpha(alphaMenu);
-			switch (type) {
+			switch (_moveType) {
 			case MOVE_LEFT:
 				if ((selected == this) || (selected == null)) {
 					g.draw(this.tab, this.width, getTaby(), tabWidth, tabHeight, _component_baseColor);
-					if (label != null) {
+					if (_tablabel != null) {
 						g.setAlpha(1f);
-						font.drawString(g, this.label,
-								this.width + (tabWidth / 2f - font.stringWidth(label) / 2f) + _offsetMenuTextX,
-								getTaby() + (tabHeight - font.getHeight()) / 2f + _offsetMenuTextY, fontColor);
+						font.drawString(g, this._tablabel,
+								this.width + (tabWidth / 2f - font.stringWidth(_tablabel) / 2f) + _offsetMenuTextX,
+								getTaby() + getScreenY() + (tabHeight - font.getHeight()) / 2f + _offsetMenuTextY,
+								fontColor);
 						g.setAlpha(alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
-					g.draw(mainpanel, 0, 0, this.width, getScreenHeight(), _component_baseColor);
+					g.draw(mainpanel, getScreenX(), getScreenY(), this.width, getScreenHeight(), _component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -678,19 +682,19 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				break;
 			case MOVE_RIGHT:
 				if ((selected == this) || (selected == null)) {
-					float posX = this.getScreenWidth() - this.width - this.tabWidth;
-					g.draw(this.tab, posX, getTaby(), tabWidth, tabHeight, _component_baseColor);
-					if (label != null) {
+					float posX = this.getScreenRight() - this.width - this.tabWidth;
+					g.draw(this.tab, posX, getTaby() + getScreenY(), tabWidth, tabHeight, _component_baseColor);
+					if (_tablabel != null) {
 						g.setAlpha(1f);
-						font.drawString(g, this.label,
-								posX + (tabWidth / 2 - font.stringWidth(label) / 2) + _offsetMenuTextX,
+						font.drawString(g, this._tablabel,
+								posX + (tabWidth / 2 - font.stringWidth(_tablabel) / 2) + _offsetMenuTextX,
 								getTaby() + (tabHeight - font.getHeight()) / 2f + _offsetMenuTextY, fontColor);
 						g.setAlpha(this.alphaMenu);
 					}
 				}
 				if ((this.active) || (this.width > 0)) {
-					float posX = this.getScreenWidth() - this.width;
-					g.draw(mainpanel, posX, 0, this.width, getScreenHeight(), _component_baseColor);
+					float posX = this.getScreenRight() - this.width;
+					g.draw(mainpanel, posX, getScreenY(), this.width, getScreenHeight(), _component_baseColor);
 					if (this.width == this.main_panel_size) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
@@ -716,7 +720,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		if (!this.active) {
 			if (_tabOpening && (selected == null)) {
 				this.active = true;
-				this.mouseSelect = true;
+				this._mouseSelect = true;
 				if (selected == null) {
 					selected = this;
 				}
@@ -728,7 +732,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				this.width = 0;
 			}
 		} else {
-			this.mouseSelect = true;
+			this._mouseSelect = true;
 			if (selected == this) {
 				final float menuCellHeight = this.paddingy + this.cellHeight;
 				this.maxscroll = (menuCellHeight * this.rows);
@@ -738,7 +742,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				if (this.scroll < -this.maxscroll) {
 					this.scroll = -this.maxscroll;
 				}
-				final float halfmenuHeight = menuCellHeight / 2f;
+				final float halfmenuHeight = getScreenTop() - menuCellHeight / 2f;
 				if (this.scroll > 0f && this.scroll > halfmenuHeight) {
 					this.scroll = halfmenuHeight / 2f;
 				} else if (this.scroll < 0f) {
@@ -769,7 +773,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						selected = null;
 					}
 					this.active = false;
-					this.mouseSelect = false;
+					this._mouseSelect = false;
 				}
 			}
 		}
@@ -786,11 +790,11 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public boolean touchTab(float x, float y) {
-		return tagbounds(type).contains(x, y);
+		return tagbounds(_moveType).contains(x, y);
 	}
 
 	public boolean touchPanel(float x, float y) {
-		return panelbounds(type).contains(x, y);
+		return panelbounds(_moveType).contains(x, y);
 	}
 
 	public boolean isMenuOpening() {
@@ -806,8 +810,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public boolean isNotInMenuTouchClick() {
-		return isClickDown() && !isDesktopClicked() && !isSelected()
-				&& !getCollisionBox().contains(getTouchX(), getTouchY());
+		final Vector2f pos = getUITouchXY();
+		return isClickDown() && !isDesktopClicked() && !isSelected() && !getCollisionBox().contains(pos.x, pos.y);
 	}
 
 	public boolean isDoClickMenuTab() {
@@ -815,11 +819,23 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public boolean isMouseSelect() {
-		return mouseSelect;
+		return _mouseSelect;
+	}
+
+	public boolean isClickedMenu() {
+		return _clickedMenu;
 	}
 
 	protected void checkTouchDownMenuTabPanel() {
-		if (isDoClickMenuTab()) {
+		if (_clickedMenu) {
+			return;
+		}
+		if (this._moveType == MOVE_LEFT && isDoClickMenuTab()) {
+			_clickedMenu = true;
+		} else if (!isMenuOpening() && isClickDown()) {
+			_clickedMenu = true;
+		}
+		if (_clickedMenu) {
 			final Vector2f pos = getUITouchXY();
 			_tabOpening = touchTab(pos.x, pos.y);
 			_panelOpening = touchPanel(pos.x, pos.y);
@@ -836,6 +852,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				}
 			}
 		}
+		_clickedMenu = false;
 	}
 
 	public float getPanelWidth() {
@@ -915,11 +932,11 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public String getLabel() {
-		return label;
+		return _tablabel;
 	}
 
 	public LMenu setLabel(String label) {
-		this.label = label;
+		this._tablabel = label;
 		return this;
 	}
 
@@ -989,7 +1006,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public int getTypeCode() {
-		return type;
+		return _moveType;
 	}
 
 	public boolean isSupportScroll() {
@@ -1002,7 +1019,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LMenu setTypeCode(int t) {
-		this.type = t;
+		this._moveType = t;
 		return this;
 	}
 

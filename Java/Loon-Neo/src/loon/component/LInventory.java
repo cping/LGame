@@ -307,6 +307,10 @@ public class LInventory extends LLayer {
 		this(font, (LTexture) null, (LTexture) null, grid, x, y, w, h, limit);
 	}
 
+	public LInventory(IFont font, LTexture bg, LTexture bar, float x, float y, float w, float h, boolean limit) {
+		this(font, bg, bar, LColor.gray, x, y, w, h, limit);
+	}
+
 	/**
 	 * 构建一个游戏用背包
 	 * 

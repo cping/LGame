@@ -148,6 +148,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected boolean _isLimitMove = false, _drawBackground = true;
 
+	protected boolean _keyPressedDown;
+
 	protected LTexture _background;
 
 	protected LayoutConstraints _rootConstraints = null;
@@ -665,6 +667,22 @@ public abstract class LComponent extends LObject<LContainer>
 		return getScreen().getHeight();
 	}
 
+	public int getScreenLeft() {
+		return MathUtils.ifloor(getScreen().getX());
+	}
+
+	public int getScreenTop() {
+		return MathUtils.ifloor(getScreen().getY());
+	}
+
+	public int getScreenRight() {
+		return MathUtils.ifloor(getScreen().getX() + getScreen().getWidth());
+	}
+
+	public int getScreenBottom() {
+		return MathUtils.ifloor(getScreen().getY() + getScreen().getHeight());
+	}
+
 	public float getDesktopX() {
 		final Desktop desk = getDesktop();
 		return desk == null ? this._screenX : desk.getX();
@@ -905,12 +923,6 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void processKeyReleased() {
 	}
 
-	protected void keyPressed(GameKey key) {
-	}
-
-	protected void keyReleased(GameKey key) {
-	}
-
 	protected void processResize() {
 	}
 
@@ -924,9 +936,27 @@ public abstract class LComponent extends LObject<LContainer>
 
 	}
 
+	protected void keyPressed(GameKey key) {
+	}
+
+	protected void keyReleased(GameKey key) {
+	}
+
 	void keyPressed() {
 		this.checkFocusKey();
 		this.processKeyPressed();
+		this._keyPressedDown = true;
+	}
+
+	void keyReleased() {
+		if (this._keyPressedDown) {
+			this.processKeyReleased();
+			this._keyPressedDown = false;
+		}
+	}
+
+	protected boolean isKeyPressedDown() {
+		return _keyPressedDown;
 	}
 
 	/**
@@ -1297,6 +1327,19 @@ public abstract class LComponent extends LObject<LContainer>
 				return getUITouch(SysTouch.getX(), SysTouch.getY(), _touchPoint);
 			}
 		}
+		if (getScreen() != null) {
+			final Screen screen = getScreen();
+			if (screen.getX() != 0f || screen.getY() != 0f) {
+				_touchPoint.subtractSelf(screen.getX(), screen.getY());
+			}
+			if (screen.getRotation() != 0f) {
+				_touchPoint.rotateSelf(screen.getX() + screen.getWidth() / 2f, screen.getY() + screen.getHeight() / 2f,
+						screen.getRotation());
+			}
+			if (screen.getScaleX() != 1f || screen.getScaleY() != 1f) {
+				_touchPoint.scaleSelf(screen.getScaleX(), screen.getScaleY());
+			}
+		}
 		return _touchPoint;
 	}
 
@@ -1636,14 +1679,23 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isClickDown() {
+		if (input == null) {
+			return false;
+		}
 		return input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
 	}
 
 	public boolean isClickUp() {
+		if (input == null) {
+			return false;
+		}
 		return input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
 	}
 
 	public boolean isClickDrag() {
+		if (input == null) {
+			return false;
+		}
 		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}
 

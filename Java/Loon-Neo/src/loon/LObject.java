@@ -749,6 +749,18 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
 	}
 
+	public static void middleLeftOn(final LObject<?> object, float w, float h) {
+		leftOn(object, w, h);
+	}
+
+	public static void middleCenterOn(final LObject<?> object, float w, float h) {
+		centerOn(object, w, h);
+	}
+
+	public static void middleRightOn(final LObject<?> object, float w, float h) {
+		rightOn(object, w, h);
+	}
+
 	public void moveOn(final LayoutAlign align, final LObject<?> obj) {
 		if (align != null && obj != null) {
 			switch (align) {
@@ -772,6 +784,15 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 				break;
 			case TopRight:
 				this.topRightOn(obj);
+				break;
+			case MiddleLeft:
+				this.middleLeftOn(obj);
+				break;
+			case MiddleCenter:
+				this.middleCenterOn(obj);
+				break;
+			case MiddleRight:
+				this.middleRightOn(obj);
 				break;
 			case BottomLeft:
 				this.bottomLeftOn(obj);
@@ -817,6 +838,18 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	public void bottomRightOn(final LObject<?> object) {
 		bottomRightOn(object, getWidth(), getHeight());
+	}
+
+	public void middleLeftOn(final LObject<?> object) {
+		middleLeftOn(object, getWidth(), getHeight());
+	}
+
+	public void middleCenterOn(final LObject<?> object) {
+		middleCenterOn(object, getWidth(), getHeight());
+	}
+
+	public void middleRightOn(final LObject<?> object) {
+		middleRightOn(object, getWidth(), getHeight());
 	}
 
 	/**

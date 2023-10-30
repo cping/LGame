@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -41,7 +41,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param x
@@ -56,7 +56,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param triangle
@@ -69,7 +69,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param triangle
@@ -89,7 +89,7 @@ public abstract class LayoutManager {
 		p2.pop();
 		p3.pop();
 
-		TArray<Point> list = new TArray<>(p1);
+		TArray<Point> list = new TArray<Point>(p1);
 		list.addAll(p2);
 		list.addAll(p3);
 
@@ -112,7 +112,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param x1
@@ -127,7 +127,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param x1
@@ -144,7 +144,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个线性区域,让集合中的动作元素延续这一线性对象按照指定的初始坐标到完结坐标线性排序
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param line
@@ -176,7 +176,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param cx
@@ -190,7 +190,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param circle
@@ -204,7 +204,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 构建一个圆形区域,让集合中的动作元素围绕这一圆形对象按照指定的startAngle到endAngle范围环绕
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param circle
@@ -238,7 +238,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param rectView
@@ -249,7 +249,7 @@ public abstract class LayoutManager {
 
 	/**
 	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
-	 *
+	 * 
 	 * @param root
 	 * @param objs
 	 * @param rectView
@@ -263,21 +263,14 @@ public abstract class LayoutManager {
 
 	/**
 	 * 把指定动作对象进行布局在指定的RectBox范围内部署,并注入Screen
-	 *
-	 * @param root
-	 *            Screen对象
-	 * @param objs
-	 *            要布局的对象集合
-	 * @param rectView
-	 *            显示范围
-	 * @param cellWidth
-	 *            单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param cellHeight
-	 *            单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
-	 * @param offsetX
-	 *            显示坐标偏移x轴
-	 * @param offsetY
-	 *            显示坐标偏移y轴
+	 * 
+	 * @param root       Screen对象
+	 * @param objs       要布局的对象集合
+	 * @param rectView   显示范围
+	 * @param cellWidth  单独对象的默认width(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param cellHeight 单独对象的默认height(如果对象有width,并且比cellWidth大,则以对象自己的为主)
+	 * @param offsetX    显示坐标偏移x轴
+	 * @param offsetY    显示坐标偏移y轴
 	 */
 	public final static void elements(final Screen root, final TArray<ActionBind> objs, BoxSize rectView,
 			float cellWidth, float cellHeight, float offsetX, float offsetY) {
@@ -355,9 +348,9 @@ public abstract class LayoutManager {
 			int cellWidth, int cellHeight, int offsetX, int offsetY, ClickListener listener, int maxHeight) {
 		int x = sx;
 		int y = sy;
-		TArray<LClickButton> clicks = new TArray<>(names.length);
-		for (String name : names) {
-			LClickButton click = LClickButton.make(name, cellWidth, cellHeight);
+		TArray<LClickButton> clicks = new TArray<LClickButton>(names.length);
+		for (int i = 0; i < names.length; i++) {
+			LClickButton click = LClickButton.make(names[i], cellWidth, cellHeight);
 			click.setLocation(x + offsetX, y + offsetY);
 			click.S(listener);
 			if (!root.contains(click)) {

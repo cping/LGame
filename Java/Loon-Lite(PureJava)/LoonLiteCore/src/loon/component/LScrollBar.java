@@ -25,7 +25,7 @@ import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.ScrollBarSkin;
 import loon.component.skin.SkinManager;
-import loon.events.SysTouch;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.Duration;
@@ -344,7 +344,7 @@ public class LScrollBar extends LComponent {
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		if (isPointInUI(getTouchX(), getTouchY())) {
+		if (isPointInUI()) {
 			touchDragged(getUITouchX(), getUITouchY());
 		}
 	}
@@ -352,7 +352,7 @@ public class LScrollBar extends LComponent {
 	@Override
 	protected void processTouchPressed() {
 		super.processKeyPressed();
-		if (isPointInUI(getTouchX(), getTouchY())) {
+		if (isPointInUI()) {
 			touchDown(getUITouchX(), getUITouchY());
 		}
 	}
@@ -360,7 +360,7 @@ public class LScrollBar extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		if (isPointInUI(getTouchX(), getTouchY())) {
+		if (isPointInUI()) {
 			touchUp(getUITouchX(), getUITouchY());
 		}
 	}
@@ -477,18 +477,18 @@ public class LScrollBar extends LComponent {
 	@Override
 	public void process(final long elapsedTime) {
 		if (isAllowTouch()) {
-			if (SysTouch.isDrag()) {
-				if (isPointInUI(getTouchX(), getTouchY())) {
-					touchDragged(getUITouchX(), getUITouchY());
+			final Vector2f pos = getUITouchXY();
+			if (isClickDown()) {
+				if (isPointInUI()) {
+					touchDown(pos.x, pos.y);
 				}
-			}
-			if (SysTouch.isDown()) {
-				if (isPointInUI(getTouchX(), getTouchY())) {
-					touchDown(getUITouchX(), getUITouchY());
+			} else if (isClickUp()) {
+				if (isPointInUI()) {
+					touchUp(pos.x, pos.y);
 				}
-			} else if (SysTouch.isUp()) {
-				if (isPointInUI(getTouchX(), getTouchY())) {
-					touchUp(getUITouchX(), getUITouchY());
+			} else if (isClickDrag()) {
+				if (isPointInUI()) {
+					touchDragged(pos.x, pos.y);
 				}
 			}
 		}
@@ -505,8 +505,8 @@ public class LScrollBar extends LComponent {
 			if (_maxAutoScrollY == -1f) {
 				_maxAutoScrollY = getHeight();
 			}
-			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
-			float alpha = _scrollAmountTimer / _scrollTime;
+			final float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+			final float alpha = _scrollAmountTimer / _scrollTime;
 			_autoScrollX += _velocityX * alpha * delta;
 			_autoScrollY += _velocityY * alpha * delta;
 			moveSlider(MathUtils.floor(_autoScrollX), MathUtils.floor(_autoScrollY));

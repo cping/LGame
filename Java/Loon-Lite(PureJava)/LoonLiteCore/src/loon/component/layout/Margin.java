@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -50,7 +50,7 @@ public class Margin {
 		this._size = size;
 		this._isVertical = vertical;
 		this._offset = new Vector2f();
-		this._childrens = new TArray<>();
+		this._childrens = new TArray<ActionBind>();
 		this._isSnap = snap;
 		this._marginTop = 0;
 		this._marginRight = 0;
@@ -99,7 +99,7 @@ public class Margin {
 		float w;
 		float h;
 
-		TArray<ActionBind> temp = new TArray<>(_childrens);
+		TArray<ActionBind> temp = new TArray<ActionBind>(_childrens);
 
 		for (int i = 0; i < temp.size; i++) {
 			bind = _childrens.get(i);
