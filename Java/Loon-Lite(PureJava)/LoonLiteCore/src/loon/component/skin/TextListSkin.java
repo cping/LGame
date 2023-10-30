@@ -42,7 +42,7 @@ public class TextListSkin implements FontSet<TextListSkin>{
 	}
 
 	public TextListSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(2),
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(1),
 				DefUI.self().getDefaultTextures(4), DefUI.self().getDefaultTextures(3),
 				null, null);
 	}

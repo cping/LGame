@@ -737,9 +737,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				if (this.scroll < -this.maxscroll) {
 					this.scroll = -this.maxscroll;
 				}
-				final float halfmenuHeight = getScreenTop() - menuCellHeight / 2f;
+				final float halfmenuHeight = MathUtils.abs(getScreenTop() - menuCellHeight / 2f);
 				if (this.scroll > 0f && this.scroll > halfmenuHeight) {
-					this.scroll = halfmenuHeight / 2f;
+					this.scroll = halfmenuHeight;
 				} else if (this.scroll < 0f) {
 					final float upScroll = MathUtils.abs(scroll);
 					final float upMaxScroll = MathUtils.abs((maxscroll - this.getDesktopBottom()) + menuCellHeight);

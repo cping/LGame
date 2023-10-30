@@ -663,27 +663,33 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public int getScreenWidth() {
-		return getScreen().getWidth();
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getWidth());
 	}
 
 	public int getScreenHeight() {
-		return getScreen().getHeight();
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getHeight());
 	}
 
 	public int getScreenLeft() {
-		return MathUtils.ifloor(getScreen().getX());
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getX());
 	}
 
 	public int getScreenTop() {
-		return MathUtils.ifloor(getScreen().getY());
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getY());
 	}
 
 	public int getScreenRight() {
-		return MathUtils.ifloor(getScreen().getX() + getScreen().getWidth());
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getX() + screen.getWidth());
 	}
 
 	public int getScreenBottom() {
-		return MathUtils.ifloor(getScreen().getY() + getScreen().getHeight());
+		final Screen screen = getScreen();
+		return screen == null ? 0 : MathUtils.ifloor(screen.getY() + screen.getHeight());
 	}
 
 	public float getDesktopX() {
@@ -722,6 +728,22 @@ public abstract class LComponent extends LObject<LContainer>
 	public float getDesktopBottom() {
 		final Desktop desk = getDesktop();
 		return desk == null ? this.getScreenY() + this.getScreenHeight() : desk.getY() + desk.getHeight();
+	}
+
+	public int getScreenComponentLeft() {
+		return MathUtils.ifloor(getScreenLeft() + _screenX);
+	}
+
+	public int getScreenComponentTop() {
+		return MathUtils.ifloor(getScreenTop() + _screenY);
+	}
+
+	public int getScreenComponentRight() {
+		return MathUtils.ifloor(getScreenRight() + getWidth());
+	}
+
+	public int getScreenComponentBottom() {
+		return MathUtils.ifloor(getScreenBottom() + getHeight());
 	}
 
 	@Override

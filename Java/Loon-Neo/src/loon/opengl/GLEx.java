@@ -2530,6 +2530,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return batch;
 	}
 
+	public boolean isClip() {
+		return scissorDepth != 0;
+	}
+
 	public int getClipX() {
 		if (scissorDepth == 0) {
 			return 0;

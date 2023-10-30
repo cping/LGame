@@ -529,8 +529,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		setLocation(MathUtils.ifloor(getScreenX()), getScreenY());
 	}
 
-	private RectBox tagbounds(int _moveType) {
-		if (_moveType == MOVE_LEFT) {
+	private RectBox tagbounds(int mt) {
+		if (mt == MOVE_LEFT) {
 			if (tabRec == null) {
 				tabRec = new RectBox(this.width, getTaby(), tabWidth, tabHeight);
 			} else {
@@ -547,19 +547,19 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		return tabRec;
 	}
 
-	private RectBox panelbounds(int _moveType) {
-		if (_moveType == MOVE_LEFT) {
+	private RectBox panelbounds(int mt) {
+		if (mt == MOVE_LEFT) {
 			if (mianRec == null) {
-				mianRec = new RectBox(getScreenX(), getScreenY(), this.width, getScreenHeight());
+				mianRec = new RectBox(getDesktopLeft(), getDesktopTop(), this.width, getScreenHeight());
 			} else {
-				mianRec.setBounds(getScreenX(), getScreenY(), this.width, getScreenHeight());
+				mianRec.setBounds(getDesktopLeft(), getDesktopTop(), this.width, getScreenHeight());
 			}
 		} else if (_moveType == MOVE_RIGHT) {
 			float posX = this.getScreenRight() - this.width;
 			if (mianRec == null) {
-				mianRec = new RectBox(posX, getScreenY(), this.width, getScreenHeight());
+				mianRec = new RectBox(posX, getDesktopTop(), this.width, getScreenHeight());
 			} else {
-				mianRec.setBounds(posX, getScreenY(), this.width, getScreenHeight());
+				mianRec.setBounds(posX, getDesktopTop(), this.width, getScreenHeight());
 			}
 		}
 		return mianRec;
@@ -742,9 +742,9 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				if (this.scroll < -this.maxscroll) {
 					this.scroll = -this.maxscroll;
 				}
-				final float halfmenuHeight = getScreenTop() - menuCellHeight / 2f;
+				final float halfmenuHeight = MathUtils.abs(getScreenTop() - menuCellHeight / 2f);
 				if (this.scroll > 0f && this.scroll > halfmenuHeight) {
-					this.scroll = halfmenuHeight / 2f;
+					this.scroll = halfmenuHeight;
 				} else if (this.scroll < 0f) {
 					final float upScroll = MathUtils.abs(scroll);
 					final float upMaxScroll = MathUtils.abs((maxscroll - this.getDesktopBottom()) + menuCellHeight);

@@ -706,7 +706,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		synchronized (_childs) {
 			super.createUI(g);
 			if (this._component_elastic) {
-				g.setClip(this.getScreenX(), this.getScreenY(), this.getWidth(), this.getHeight());
+				g.setClip(this.getScreenComponentLeft(), 
+						  this.getScreenComponentTop(), 
+						  this.getWidth(),
+						  this.getHeight());
 			}
 			this.renderComponents(g);
 			if (this._component_elastic) {

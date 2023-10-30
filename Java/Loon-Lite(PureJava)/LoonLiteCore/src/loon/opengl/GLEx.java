@@ -403,6 +403,10 @@ public class GLEx implements LRelease {
 		return tempAffine;
 	}
 
+	public boolean setClip(RectBox rect) {
+		return setClip(rect.x, rect.y, rect.width, rect.height);
+	}
+
 	public boolean setClip(float x, float y, float width, float height) {
 		return startClipped(x, y, width, height);
 	}
@@ -419,7 +423,7 @@ public class GLEx implements LRelease {
 		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
 		if (scissorDepth > 0) {
 			synchTransform();
-			getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
+			getCanvas().clipRect(r.x() - this.getTranslationX(), r.y() - this.getTranslationY(), r.width(), r.height());
 		}
 		return !r.isEmpty();
 	}
@@ -1622,6 +1626,10 @@ public class GLEx implements LRelease {
 		return batch;
 	}
 
+	public boolean isClip() {
+		return scissorDepth != 0;
+	}
+
 	public int getClipX() {
 		if (scissorDepth == 0) {
 			return 0;
@@ -1666,7 +1674,8 @@ public class GLEx implements LRelease {
 			r.setBounds(x, y, width, height);
 		} else {
 			RectBox pr = scissors.get(scissorDepth - 1);
-			r.setLocation(MathUtils.max(pr.x, x), MathUtils.max(pr.y, y));
+			r.setLocation(MathUtils.max(pr.x, x) - this.getTranslationX(),
+					MathUtils.max(pr.y, y) - this.getTranslationY());
 			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}

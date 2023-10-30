@@ -34,7 +34,7 @@ public class ScrollBarSkin {
 	}
 
 	public ScrollBarSkin() {
-		this(DefUI.self().getDefaultTextures(2), DefUI.self().getDefaultTextures(8));
+		this(DefUI.self().getDefaultTextures(1), DefUI.self().getDefaultTextures(8));
 	}
 
 	public ScrollBarSkin(LTexture scrollBar, LTexture slider) {

@@ -447,6 +447,15 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 	}
 
+	public Desktop setClip(boolean clip) {
+		contentPane.setElastic(clip);
+		return this;
+	}
+
+	public boolean isClip() {
+		return contentPane.isElastic();
+	}
+
 	public Desktop keyPressed(GameKey key) {
 		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
 			this.contentPane.keyPressed(key);
