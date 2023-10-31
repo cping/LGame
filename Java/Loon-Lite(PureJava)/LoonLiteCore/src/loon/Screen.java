@@ -5885,6 +5885,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return true;
 	}
 
+	public float toPixelScaleX() {
+		return toPixelScaleX(getX());
+	}
+
+	public float toPixelScaleY() {
+		return toPixelScaleY(getY());
+	}
+	
+	public float toPixelScaleX(float x) {
+		return MathUtils.iceil(x / _scaleX);
+	}
+
+	public float toPixelScaleY(float y) {
+		return MathUtils.iceil(y / _scaleY);
+	}
+	
 	public void println(Object msg) {
 		LSystem.info(toStr(msg));
 	}

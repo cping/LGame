@@ -52,24 +52,25 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
+	private final Vector2f _touchPoint = new Vector2f();
 	// 输入设备监听
 	protected final Screen input;
 
 	private ResizeListener<Desktop> _resizeListener;
 
-	private LContainer contentPane;
+	private LContainer _contentPane;
 
-	private LComponent modal;
+	private LComponent _modal;
 
-	private LComponent hoverComponent;
+	private LComponent _hoverComponent;
 
-	private LComponent selectedComponent;
+	private LComponent _selectedComponent;
 
-	private LComponent clickedComponent;
+	private LComponent _clickedComponent;
 
-	private LComponent[] clickComponent;
+	private LComponent[] _clickComponents;
 
-	private LToolTip tooltip;
+	private LToolTip _tooltip;
 
 	private boolean _clicked;
 
@@ -125,22 +126,22 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @param height
 	 */
 	public Desktop(String name, Screen screen, int width, int height) {
-		this.clickComponent = new LComponent[1];
+		this._clickComponents = new LComponent[1];
 		this._desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this._visible = true;
-		this.contentPane = new LPanel(0, 0, (int) width, (int) height);
-		this.contentPane.desktopContainer = true;
+		this._contentPane = new LPanel(0, 0, (int) width, (int) height);
+		this._contentPane.desktopContainer = true;
 		this.input = screen;
-		this.tooltip = new LToolTip();
-		this.contentPane.add(this.tooltip);
-		this.contentPane.setDesktop(this);
-		this.setDesktop(this.contentPane);
+		this._tooltip = new LToolTip();
+		this._contentPane.add(this._tooltip);
+		this._contentPane.setDesktop(this);
+		this.setDesktop(this._contentPane);
 		LSystem.pushDesktopPool(this);
 	}
 
 	@Override
 	public int size() {
-		return contentPane.getComponentCount();
+		return _contentPane.getComponentCount();
 	}
 
 	public Desktop addAt(LComponent comp, float x, float y) {
@@ -167,35 +168,35 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (_closed) {
 			return comp;
 		}
-		return contentPane.addPadding(comp, offX, offY);
+		return _contentPane.addPadding(comp, offX, offY);
 	}
 
 	public LComponent addCol(LComponent comp) {
 		if (_closed) {
 			return comp;
 		}
-		return contentPane.addCol(comp);
+		return _contentPane.addCol(comp);
 	}
 
 	public LComponent addCol(LComponent comp, float offY) {
 		if (_closed) {
 			return comp;
 		}
-		return contentPane.addCol(comp, offY);
+		return _contentPane.addCol(comp, offY);
 	}
 
 	public LComponent addRow(LComponent comp) {
 		if (_closed) {
 			return comp;
 		}
-		return contentPane.addRow(comp);
+		return _contentPane.addRow(comp);
 	}
 
 	public LComponent addRow(LComponent comp, float offX) {
 		if (_closed) {
 			return comp;
 		}
-		return contentPane.addRow(comp, offX);
+		return _contentPane.addRow(comp, offX);
 	}
 
 	public LComponent add(LComponent comp) {
@@ -209,7 +210,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (comp.isFull) {
 			this.input.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		}
-		this.contentPane.add(comp);
+		this._contentPane.add(comp);
 		this.processTouchMotionEvent();
 		return comp;
 	}
@@ -218,7 +219,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (comp == null) {
 			return -1;
 		}
-		final int removed = this.removeComponent(this.contentPane, comp);
+		final int removed = this.removeComponent(this._contentPane, comp);
 		if (removed != -1) {
 			this.processTouchMotionEvent();
 		}
@@ -226,7 +227,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeTag(Object tag) {
-		final boolean removed = this.removeComponentTag(this.contentPane, tag);
+		final boolean removed = this.removeComponentTag(this._contentPane, tag);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -234,7 +235,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeUIName(String uiName) {
-		final boolean removed = this.removeComponentUIName(this.contentPane, uiName);
+		final boolean removed = this.removeComponentUIName(this._contentPane, uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -242,7 +243,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeName(String name) {
-		final boolean removed = this.removeComponentName(this.contentPane, name);
+		final boolean removed = this.removeComponentName(this._contentPane, name);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -250,7 +251,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotTag(Object tag) {
-		final boolean removed = this.removeComponentNotTag(this.contentPane, tag);
+		final boolean removed = this.removeComponentNotTag(this._contentPane, tag);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -258,7 +259,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotUIName(String uiName) {
-		final boolean removed = this.removeComponentNotUIName(this.contentPane, uiName);
+		final boolean removed = this.removeComponentNotUIName(this._contentPane, uiName);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -266,7 +267,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public boolean removeNotName(String name) {
-		final boolean removed = this.removeComponentNotName(this.contentPane, name);
+		final boolean removed = this.removeComponentNotName(this._contentPane, name);
 		if (removed) {
 			this.processTouchMotionEvent();
 		}
@@ -319,94 +320,94 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (!this._visible) {
 			return;
 		}
-		if (!this.contentPane.isVisible()) {
+		if (!this._contentPane.isVisible()) {
 			return;
 		}
 		this.processEvents();
 		try {
 			// 刷新桌面中子容器组件
-			this.contentPane.update(elapsedTime);
+			this._contentPane.update(elapsedTime);
 		} catch (Throwable cause) {
 			LSystem.error("Desktop update() exception", cause);
 		}
 	}
 
 	public LayoutConstraints getRootConstraints() {
-		if (contentPane != null) {
-			return contentPane.getRootConstraints();
+		if (_contentPane != null) {
+			return _contentPane.getRootConstraints();
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort() {
-		if (contentPane != null) {
-			return contentPane.getLayoutPort();
+		if (_contentPane != null) {
+			return _contentPane.getLayoutPort();
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort(final RectBox newBox, final LayoutConstraints newBoxConstraints) {
-		if (contentPane != null) {
-			return contentPane.getLayoutPort(newBox, newBoxConstraints);
+		if (_contentPane != null) {
+			return _contentPane.getLayoutPort(newBox, newBoxConstraints);
 		}
 		return null;
 	}
 
 	public LayoutPort getLayoutPort(final LayoutPort src) {
-		if (contentPane != null) {
-			return contentPane.getLayoutPort(src);
+		if (_contentPane != null) {
+			return _contentPane.getLayoutPort(src);
 		}
 		return null;
 	}
 
 	public Desktop layoutElements(final LayoutManager manager, final LComponent... comps) {
-		if (contentPane != null) {
-			contentPane.layoutElements(manager, comps);
+		if (_contentPane != null) {
+			_contentPane.layoutElements(manager, comps);
 		}
 		return this;
 	}
 
 	public Desktop layoutElements(final LayoutManager manager, final LayoutPort... ports) {
-		if (contentPane != null) {
-			contentPane.layoutElements(manager, ports);
+		if (_contentPane != null) {
+			_contentPane.layoutElements(manager, ports);
 		}
 		return this;
 	}
 
 	public Desktop packLayout(final LayoutManager manager) {
-		if (contentPane != null) {
-			contentPane.packLayout(manager);
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager);
 		}
 		return this;
 	}
 
 	public Desktop packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
-		if (contentPane != null) {
-			contentPane.packLayout(manager, spacex, spacey, spaceWidth, spaceHeight);
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager, spacex, spacey, spaceWidth, spaceHeight);
 		}
 		return this;
 	}
 
 	public Desktop setAutoDestory(final boolean a) {
-		if (contentPane != null) {
-			contentPane.setAutoDestroy(a);
+		if (_contentPane != null) {
+			_contentPane.setAutoDestroy(a);
 		}
 		return this;
 	}
 
 	public boolean isAutoDestory() {
-		if (contentPane != null) {
-			return contentPane.isAutoDestroy();
+		if (_contentPane != null) {
+			return _contentPane.isAutoDestroy();
 		}
 		return false;
 	}
 
 	public Desktop doClick(int x, int y) {
-		if (!this.contentPane.isVisible()) {
+		if (!this._contentPane.isVisible()) {
 			return this;
 		}
-		final LComponent[] components = contentPane._childs;
+		final LComponent[] components = _contentPane._childs;
 		for (int i = 0; i < components.length; i++) {
 			LComponent component = components[i];
 			if (component != null && component.intersects(x, y)) {
@@ -419,10 +420,10 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public Desktop doClicked(int x, int y) {
-		if (!this.contentPane.isVisible()) {
+		if (!this._contentPane.isVisible()) {
 			return this;
 		}
-		LComponent[] components = contentPane._childs;
+		LComponent[] components = _contentPane._childs;
 		for (int i = 0; i < components.length; i++) {
 			LComponent component = components[i];
 			if (component != null && component.intersects(x, y)) {
@@ -441,41 +442,41 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		try {
 			g.saveTx();
-			this.contentPane.createUI(g);
+			this._contentPane.createUI(g);
 		} finally {
 			g.restoreTx();
 		}
 	}
 
 	public Desktop setClip(boolean clip) {
-		contentPane.setElastic(clip);
+		_contentPane.setElastic(clip);
 		return this;
 	}
 
 	public boolean isClip() {
-		return contentPane.isElastic();
+		return _contentPane.isElastic();
 	}
 
 	public Desktop keyPressed(GameKey key) {
-		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
-			this.contentPane.keyPressed(key);
-		} else if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
-			this.selectedComponent.keyPressed(key);
+		if (this._contentPane != null && this._contentPane != this._selectedComponent) {
+			this._contentPane.keyPressed(key);
+		} else if (this._selectedComponent != null && this._selectedComponent.isAllowKey()) {
+			this._selectedComponent.keyPressed(key);
 		}
 		return this;
 	}
 
 	public Desktop keyReleased(GameKey key) {
-		if (this.contentPane != null && this.contentPane != this.selectedComponent) {
-			this.contentPane.keyReleased(key);
-		} else if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
-			this.selectedComponent.keyReleased(key);
+		if (this._contentPane != null && this._contentPane != this._selectedComponent) {
+			this._contentPane.keyReleased(key);
+		} else if (this._selectedComponent != null && this._selectedComponent.isAllowKey()) {
+			this._selectedComponent.keyReleased(key);
 		}
 		return this;
 	}
 
 	public boolean isCurrentClicked(LComponent comp) {
-		return comp == null ? false : clickedComponent == comp;
+		return comp == null ? false : _clickedComponent == comp;
 	}
 
 	public boolean isCurrentFocusable(LComponent comp) {
@@ -500,7 +501,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		this.processTouchMotionEvent();
 
 		// 鼠标事件
-		if (this.hoverComponent != null && hoverComponent.isAllowTouch()) {
+		if (this._hoverComponent != null && _hoverComponent.isAllowTouch()) {
 			this.processTouchEvent();
 		}
 		return this;
@@ -511,7 +512,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 */
 	public Desktop processKeys() {
 		// 键盘事件
-		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()) {
+		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()) {
 			this.processKeyEvent();
 		}
 		return this;
@@ -521,11 +522,30 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 强行显示提示
 	 */
 	protected void showTooltip(LComponent comp) {
-		if (comp.isTooltip() && tooltip != null && !tooltip.isRunning()) {
-			this.tooltip.setLockedFadeIn(true);
-			this.tooltip.setToolTipComponent(comp);
-			this.tooltip.showTip();
+		if (comp.isTooltip() && _tooltip != null && !_tooltip.isRunning()) {
+			this._tooltip.setLockedFadeIn(true);
+			this._tooltip.setToolTipComponent(comp);
+			this._tooltip.showTip();
 		}
+	}
+
+	public Vector2f getUITouch(float x, float y, boolean cpy) {
+		return getUITouch(x, y, _touchPoint, cpy);
+	}
+
+	public Vector2f getUITouch(float x, float y, Vector2f pointResult, boolean cpy) {
+		if (pointResult == null) {
+			pointResult = new Vector2f(x, y);
+		} else {
+			pointResult.set(x, y);
+		}
+		if (input == null) {
+			return pointResult;
+		}
+		float newX = pointResult.x - input.toPixelScaleX() - getX();
+		float newY = pointResult.y - input.toPixelScaleY() - getY();
+		pointResult.set(newX, newY);
+		return cpy ? pointResult.cpy() : pointResult;
 	}
 
 	/**
@@ -533,16 +553,24 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this.hoverComponent != null && hoverComponent.isAllowTouch() && this.input.isMoving()) {
+		if (this._hoverComponent != null && _hoverComponent.isAllowTouch() && this.input.isMoving()) {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
-				this.hoverComponent.processTouchDragged();
+				this._hoverComponent.processTouchDragged();
 			}
 		} else {
-			final int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
-			final int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
-			final int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
-			final int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
+			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
+			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
+			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
+			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
+			if (input != null) {
+				final Vector2f touch = getUITouch(touchX, touchY, false);
+				touchX = touch.x();
+				touchY = touch.y();
+				final Vector2f touchDrag = getUITouch(touchDx, touchDy, false);
+				touchDx = touchDrag.x();
+				touchDy = touchDrag.y();
+			}
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = null;
 			if (SysTouch.getButton() != -1) {
@@ -551,45 +579,45 @@ public class Desktop implements Visible, IArray, LRelease {
 			if (comp != null && comp.isAllowTouch()) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
-					if (comp.isTooltip() && tooltip != null) {
-						if (!this.tooltip._dismissing && comp.isPointInUI()) {
+					if (comp.isTooltip() && _tooltip != null) {
+						if (!this._tooltip._dismissing && comp.isPointInUI()) {
 							// 刷新提示
-							this.tooltip._dismiss = 0;
-							this.tooltip._dismissing = true;
+							this._tooltip._dismiss = 0;
+							this._tooltip._dismissing = true;
 						}
 					}
 				}
-				if (this.hoverComponent == null) {
-					if (comp.isTooltip() && tooltip != null) {
-						this.tooltip.setToolTipComponent(comp);
+				if (this._hoverComponent == null) {
+					if (comp.isTooltip() && _tooltip != null) {
+						this._tooltip.setToolTipComponent(comp);
 					}
 					if (SysTouch.getButton() != -1) {
 						comp.processTouchEntered();
 					}
-				} else if (comp != this.hoverComponent && this.hoverComponent.isAllowTouch()) {
-					if (comp.isTooltip() && tooltip != null) {
-						this.tooltip.setToolTipComponent(comp);
+				} else if (comp != this._hoverComponent && this._hoverComponent.isAllowTouch()) {
+					if (comp.isTooltip() && _tooltip != null) {
+						this._tooltip.setToolTipComponent(comp);
 					}
-					this.hoverComponent.processTouchExited();
+					this._hoverComponent.processTouchExited();
 					if (SysTouch.getButton() != -1) {
 						comp.processTouchEntered();
 					}
 				}
 			} else {
 				// 如果没有对应的悬停提示数据
-				if (tooltip != null) {
-					this.tooltip.setToolTipComponent(null);
+				if (_tooltip != null) {
+					this._tooltip.setToolTipComponent(null);
 				}
-				if (this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
-					this.hoverComponent.processTouchExited();
+				if (this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+					this._hoverComponent.processTouchExited();
 				}
 			}
-			this.hoverComponent = comp;
+			this._hoverComponent = comp;
 		}
 	}
 
 	public LToolTip getToolTip() {
-		return this.tooltip;
+		return this._tooltip;
 	}
 
 	/**
@@ -598,8 +626,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @param tip
 	 */
 	public Desktop setToolTip(LToolTip tip) {
-		this.contentPane.replace(this.tooltip, tip);
-		this.tooltip = tip;
+		this._contentPane.replace(this._tooltip, tip);
+		this._tooltip = tip;
 		return this;
 	}
 
@@ -612,40 +640,40 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (pressed > Screen.NO_BUTTON) {
 			final boolean mobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 			if (!mobile) {
-				if (tooltip != null) {
-					this.tooltip.setToolTipComponent(null);
+				if (_tooltip != null) {
+					this._tooltip.setToolTipComponent(null);
 				}
 			}
-			if (tooltip != null) {
-				this.tooltip._reshow = 0;
-				this.tooltip._initialFlag = 0;
+			if (_tooltip != null) {
+				this._tooltip._reshow = 0;
+				this._tooltip._initialFlag = 0;
 			}
-			if (!_clicked && this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
-				this.hoverComponent.processTouchPressed();
+			if (!_clicked && this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+				this._hoverComponent.processTouchPressed();
 			}
-			this.clickComponent[0] = this.hoverComponent;
-			if (this.hoverComponent != null && this.hoverComponent.isAllowTouch()
-					&& this.hoverComponent.isAllowSelectOfSelf) {
+			this._clickComponents[0] = this._hoverComponent;
+			if (this._hoverComponent != null && this._hoverComponent.isAllowTouch()
+					&& this._hoverComponent.isAllowSelectOfSelf) {
 				final boolean down = pressed == SysTouch.TOUCH_DOWN;
 				final boolean up = pressed == SysTouch.TOUCH_UP;
-				if ((down || up) && this.hoverComponent != this.selectedComponent) {
-					this.setClickComponent(this.hoverComponent, down, up);
-					this.selectComponent(this.hoverComponent);
+				if ((down || up) && this._hoverComponent != this._selectedComponent) {
+					this.setClickComponent(this._hoverComponent, down, up);
+					this.selectComponent(this._hoverComponent);
 				}
 			}
 			// 如果手机环境长按
-			if (mobile && this.hoverComponent != null && this.hoverComponent.isLongPressed()
-					&& this.hoverComponent.isAllowTouch()) {
-				showTooltip(this.hoverComponent);
+			if (mobile && this._hoverComponent != null && this._hoverComponent.isLongPressed()
+					&& this._hoverComponent.isAllowTouch()) {
+				showTooltip(this._hoverComponent);
 			}
 		}
 		if (released > Screen.NO_BUTTON) {
-			if (!_clicked && this.hoverComponent != null && this.hoverComponent.isAllowTouch()) {
-				this.hoverComponent.processTouchReleased();
+			if (!_clicked && this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+				this._hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
-				if (this.clickComponent[0] == this.hoverComponent && this.hoverComponent != null
-						&& this.hoverComponent.isAllowTouch()) {
-					this.hoverComponent.processTouchClicked();
+				if (this._clickComponents[0] == this._hoverComponent && this._hoverComponent != null
+						&& this._hoverComponent.isAllowTouch()) {
+					this._hoverComponent.processTouchClicked();
 				}
 			}
 		}
@@ -657,13 +685,13 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processKeyEvent() {
-		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()
+		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
 				&& this.input.getKeyPressed() != Screen.NO_KEY) {
-			this.selectedComponent.keyPressed();
+			this._selectedComponent.keyPressed();
 		}
-		if (this.selectedComponent != null && this.selectedComponent.isAllowKey()
-				&& this.input.getKeyReleased() != Screen.NO_KEY && this.selectedComponent != null) {
-			this.selectedComponent.keyReleased();
+		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
+				&& this.input.getKeyReleased() != Screen.NO_KEY && this._selectedComponent != null) {
+			this._selectedComponent.keyReleased();
 		}
 	}
 
@@ -675,11 +703,11 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @return
 	 */
 	private LComponent findComponent(int x, int y) {
-		if (this.modal != null && !this.modal.isContainer()) {
+		if (this._modal != null && !this._modal.isContainer()) {
 			return null;
 		}
 		// 返回子容器
-		final LContainer panel = (this.modal == null) ? this.contentPane : ((LContainer) this.modal);
+		final LContainer panel = (this._modal == null) ? this._contentPane : ((LContainer) this._modal);
 		final LComponent comp = panel.findComponent(x, y);
 		return comp;
 	}
@@ -697,28 +725,28 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	void deselectComponent(boolean clearFocus) {
-		if (this.selectedComponent == null) {
+		if (this._selectedComponent == null) {
 			return;
 		}
-		this.selectedComponent.setSelected(false);
+		this._selectedComponent.setSelected(false);
 		if (clearFocus) {
-			this.selectedComponent.setFocusable(false);
+			this._selectedComponent.setFocusable(false);
 		}
-		this.selectedComponent = null;
+		this._selectedComponent = null;
 	}
 
 	/**
-	 * 获得当前点击的具体组件(selectComponent包含触屏拖拽和鼠标划过对象,clickedComponent只为点击对象)
+	 * 获得当前点击的具体组件(selectComponent包含触屏拖拽和鼠标划过对象,_clickedComponent只为点击对象)
 	 * 
 	 * @param comp
 	 */
 	void setClickComponent(LComponent comp, boolean down, boolean up) {
-		this.clickedComponent = comp;
-		if (this.clickedComponent != null) {
+		this._clickedComponent = comp;
+		if (this._clickedComponent != null) {
 			if (down) {
-				this.clickedComponent.setFocusable(true);
+				this._clickedComponent.setFocusable(true);
 			} else if (up) {
-				this.clickedComponent.setFocusable(false);
+				this._clickedComponent.setFocusable(false);
 			}
 		}
 	}
@@ -745,7 +773,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		comp.setSelected(true);
 		comp.setFocusable(true);
 
-		this.selectedComponent = comp;
+		this._selectedComponent = comp;
 
 		return true;
 	}
@@ -769,18 +797,18 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 
 		if (!active) {
-			if (this.hoverComponent == comp) {
+			if (this._hoverComponent == comp) {
 				this.processTouchMotionEvent();
 			}
 
-			if (this.selectedComponent == comp) {
+			if (this._selectedComponent == comp) {
 				this.deselectComponent();
 			}
 
-			this.clickComponent[0] = null;
+			this._clickComponents[0] = null;
 
-			if (this.modal == comp) {
-				this.modal = null;
+			if (this._modal == comp) {
+				this._modal = null;
 			}
 
 		} else {
@@ -804,13 +832,13 @@ public class Desktop implements Visible, IArray, LRelease {
 		boolean checkTouchMotion = false;
 		for (int i = 0; i < components.length; i++) {
 			LComponent comp = components[i];
-			if (this.hoverComponent == comp) {
+			if (this._hoverComponent == comp) {
 				checkTouchMotion = true;
 			}
-			if (this.selectedComponent == comp) {
+			if (this._selectedComponent == comp) {
 				this.deselectComponent();
 			}
-			this.clickComponent[0] = null;
+			this._clickComponents[0] = null;
 		}
 
 		if (checkTouchMotion) {
@@ -819,7 +847,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public Desktop validateUI() {
-		return this.validateContainer(this.contentPane);
+		return this.validateContainer(this._contentPane);
 	}
 
 	final Desktop validateContainer(LContainer container) {
@@ -834,11 +862,11 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LComponent[] getComponents() {
-		return contentPane.getComponents();
+		return _contentPane.getComponents();
 	}
 
 	public LComponent getTopComponent() {
-		final LComponent[] components = contentPane._childs;
+		final LComponent[] components = _contentPane._childs;
 		final int size = components.length;
 		if (size > 1) {
 			return components[1];
@@ -847,7 +875,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LComponent getBottomComponent() {
-		final LComponent[] components = contentPane._childs;
+		final LComponent[] components = _contentPane._childs;
 		final int size = components.length;
 		if (size > 0) {
 			return components[size - 1];
@@ -856,7 +884,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LLayer getTopLayer() {
-		final LComponent[] components = contentPane._childs;
+		final LComponent[] components = _contentPane._childs;
 		final int size = components.length;
 		for (int i = 0; i < size; i++) {
 			LComponent comp = components[i];
@@ -868,7 +896,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LLayer getBottomLayer() {
-		final LComponent[] components = contentPane._childs;
+		final LComponent[] components = _contentPane._childs;
 		final int size = components.length;
 		for (int i = size; i > 0; i--) {
 			LComponent comp = components[i - 1];
@@ -881,8 +909,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (contentPane != null) {
-			controls = contentPane.createUIControls();
+		if (_contentPane != null) {
+			controls = _contentPane.createUIControls();
 		} else {
 			controls = new UIControls();
 		}
@@ -895,8 +923,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findUINames(uiName);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findUINames(uiName);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -906,8 +934,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findNotUINamesToUIControls(String... uiName) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findNotUINames(uiName);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findNotUINames(uiName);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -917,8 +945,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findNamesToUIControls(String... name) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findNames(name);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findNames(name);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -928,8 +956,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findNameContainsToUIControls(String... name) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findNameContains(name);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findNameContains(name);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -939,8 +967,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findNotNamesToUIControls(String... name) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findNotNames(name);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findNotNames(name);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -950,8 +978,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findTagsToUIControls(Object... o) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findTags(o);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findTags(o);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -961,8 +989,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public UIControls findNotTagsToUIControls(Object... o) {
 		UIControls controls = null;
-		if (contentPane != null && contentPane._childs != null) {
-			TArray<LComponent> comps = contentPane.findNotTags(o);
+		if (_contentPane != null && _contentPane._childs != null) {
+			TArray<LComponent> comps = _contentPane.findNotTags(o);
 			controls = new UIControls(comps);
 		} else {
 			controls = new UIControls();
@@ -971,15 +999,15 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public float getWidth() {
-		return this.contentPane.getWidth();
+		return this._contentPane.getWidth();
 	}
 
 	public float getHeight() {
-		return this.contentPane.getHeight();
+		return this._contentPane.getHeight();
 	}
 
 	public Desktop setSize(int w, int h) {
-		this.contentPane.setSize(w, h);
+		this._contentPane.setSize(w, h);
 		return this;
 	}
 
@@ -994,55 +1022,55 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public LContainer getContentPane() {
-		return this.contentPane;
+		return this._contentPane;
 	}
 
 	public Desktop setContentPane(LContainer pane) {
 		pane.setBounds(0, 0, (int) this.getWidth(), (int) this.getHeight());
-		this.contentPane = pane;
-		this.setDesktop(this.contentPane);
+		this._contentPane = pane;
+		this.setDesktop(this._contentPane);
 		return this;
 	}
 
 	public LComponent getHoverComponent() {
-		return this.hoverComponent;
+		return this._hoverComponent;
 	}
 
 	public LComponent getSelectedComponent() {
-		return this.selectedComponent;
+		return this._selectedComponent;
 	}
 
 	public LComponent getClickedComponent() {
-		return this.clickedComponent;
+		return this._clickedComponent;
 	}
 
 	public LComponent getModal() {
-		return this.modal;
+		return this._modal;
 	}
 
 	public Desktop setModal(LComponent comp) {
 		if (comp != null && !comp.isVisible()) {
-			throw new LSysException("Can't set invisible component as modal component!");
+			throw new LSysException("Can't set invisible component as _modal component!");
 		}
-		this.modal = comp;
+		this._modal = comp;
 		return this;
 	}
 
 	public boolean contains(LComponent comp) {
-		return contentPane.contains(comp);
+		return _contentPane.contains(comp);
 	}
 
 	public Desktop setSortableChildren(boolean v) {
-		contentPane.setSortableChildren(v);
+		_contentPane.setSortableChildren(v);
 		return this;
 	}
 
 	public boolean isSortableChildren() {
-		return contentPane.isSortableChildren();
+		return _contentPane.isSortableChildren();
 	}
 
 	public LComponent get() {
-		return this.contentPane.get();
+		return this._contentPane.get();
 	}
 
 	public Desktop removeAll() {
@@ -1052,66 +1080,66 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	@Override
 	public void clear() {
-		if (contentPane != null) {
-			contentPane.clear();
+		if (_contentPane != null) {
+			_contentPane.clear();
 		}
 	}
 
 	public Desktop sortDesktop() {
-		if (contentPane != null) {
-			contentPane.sortComponents();
+		if (_contentPane != null) {
+			_contentPane.sortComponents();
 		}
 		return this;
 	}
 
 	public Desktop scrollBy(float x, float y) {
-		if (contentPane != null) {
-			contentPane.scrollBy(x, y);
+		if (_contentPane != null) {
+			_contentPane.scrollBy(x, y);
 		}
 		return this;
 	}
 
 	public Desktop scrollTo(float x, float y) {
-		if (contentPane != null) {
-			contentPane.scrollTo(x, y);
+		if (_contentPane != null) {
+			_contentPane.scrollTo(x, y);
 		}
 		return this;
 	}
 
 	public float scrollX() {
-		if (contentPane != null) {
-			return contentPane.scrollX();
+		if (_contentPane != null) {
+			return _contentPane.scrollX();
 		}
 		return 0f;
 	}
 
 	public float scrollY() {
-		if (contentPane != null) {
-			return contentPane.scrollY();
+		if (_contentPane != null) {
+			return _contentPane.scrollY();
 		}
 		return 0f;
 	}
 
 	public Desktop scrollX(float x) {
-		if (contentPane != null) {
-			contentPane.scrollX(x);
+		if (_contentPane != null) {
+			_contentPane.scrollX(x);
 		}
 		return this;
 	}
 
 	public Desktop scrollY(float y) {
-		if (contentPane != null) {
-			contentPane.scrollY(y);
+		if (_contentPane != null) {
+			_contentPane.scrollY(y);
 		}
 		return this;
 	}
 
 	public Desktop freeComponent() {
 		this._clicked = false;
-		this.hoverComponent = null;
-		this.selectedComponent = null;
-		this.clickedComponent = null;
-		this.clickComponent[0] = null;
+		this._hoverComponent = null;
+		this._selectedComponent = null;
+		this._clickedComponent = null;
+		this._clickComponents[0] = null;
 		return this;
 	}
 
@@ -1120,15 +1148,15 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
 		}
-		if (contentPane != null) {
-			contentPane.processResize();
+		if (_contentPane != null) {
+			_contentPane.processResize();
 		}
 		return this;
 	}
 
 	public Desktop forChildren(Callback<LComponent> callback) {
-		if (contentPane != null) {
-			contentPane.forChildren(callback);
+		if (_contentPane != null) {
+			_contentPane.forChildren(callback);
 		}
 		return this;
 	}
@@ -1140,7 +1168,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @return
 	 */
 	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
-		return contentPane.remove(query);
+		return _contentPane.remove(query);
 	}
 
 	/**
@@ -1150,7 +1178,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @return
 	 */
 	public TArray<LComponent> find(QueryEvent<LComponent> query) {
-		return contentPane.find(query);
+		return _contentPane.find(query);
 	}
 
 	/**
@@ -1160,7 +1188,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @return
 	 */
 	public TArray<LComponent> delete(QueryEvent<LComponent> query) {
-		return contentPane.delete(query);
+		return _contentPane.delete(query);
 	}
 
 	/**
@@ -1170,7 +1198,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @return
 	 */
 	public TArray<LComponent> select(QueryEvent<LComponent> query) {
-		return contentPane.select(query);
+		return _contentPane.select(query);
 	}
 
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
@@ -1178,11 +1206,11 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (_closed) {
 			return new Margin(size, vertical);
 		}
-		return contentPane.margin(vertical, left, top, right, bottom);
+		return _contentPane.margin(vertical, left, top, right, bottom);
 	}
 
 	public boolean isVisibleInParents() {
-		return isVisibleInParents(selectedComponent);
+		return isVisibleInParents(_selectedComponent);
 	}
 
 	public boolean isVisibleInParents(LComponent comp) {
@@ -1237,19 +1265,19 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public float getX() {
-		return contentPane == null ? 0 : contentPane.getX();
+		return _contentPane == null ? 0 : _contentPane.getX();
 	}
 
 	public float getY() {
-		return contentPane == null ? 0 : contentPane.getY();
+		return _contentPane == null ? 0 : _contentPane.getY();
 	}
 
 	public float getStageX() {
-		return (getX() - getScreenX()) / contentPane.getScaleX();
+		return (getX() - getScreenX()) / _contentPane.getScaleX();
 	}
 
 	public float getStageY() {
-		return (getX() - getScreenX()) / contentPane.getScaleY();
+		return (getX() - getScreenX()) / _contentPane.getScaleY();
 	}
 
 	private void addRect(TArray<RectBox> rects, RectBox rect) {
@@ -1279,7 +1307,7 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public DirtyRectList getDirtyList() {
 		final TArray<RectBox> rects = new TArray<RectBox>();
-		LComponent[] childs = contentPane._childs;
+		LComponent[] childs = _contentPane._childs;
 		if (childs != null) {
 			for (int i = childs.length - 1; i > -1; i--) {
 				LComponent comp = childs[i];
@@ -1315,12 +1343,12 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public RectBox getBoundingBox() {
-		return this.contentPane == null ? input.getRectBox().cpy() : this.contentPane.getRectBox().cpy();
+		return this._contentPane == null ? input.getRectBox().cpy() : this._contentPane.getRectBox().cpy();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return contentPane.isEmpty();
+		return _contentPane.isEmpty();
 	}
 
 	@Override
@@ -1335,7 +1363,7 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	@Override
 	public String toString() {
-		return super.toString() + " " + "[name=" + _desktop_name + ", total=" + size() + ", content=" + contentPane
+		return super.toString() + " " + "[name=" + _desktop_name + ", total=" + size() + ", content=" + _contentPane
 				+ "]";
 	}
 
@@ -1346,8 +1374,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	@Override
 	public void close() {
 		this._visible = false;
-		if (contentPane != null) {
-			contentPane.close();
+		if (_contentPane != null) {
+			_contentPane.close();
 		}
 		this._closed = true;
 		this._resizeListener = null;

@@ -1521,7 +1521,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public boolean collided(Shape shape) {
 		return getRectBox().collided(shape);
 	}
-	
+
 	public boolean contains(float x, float y) {
 		return getRectBox().contains(x, y);
 	}
@@ -5967,6 +5967,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			this._baseViewport = v;
 		}
 		return this;
+	}
+
+	public float toPixelScaleX() {
+		return toPixelScaleX(getX());
+	}
+
+	public float toPixelScaleY() {
+		return toPixelScaleY(getY());
+	}
+
+	public float toPixelScaleX(float x) {
+		return MathUtils.iceil(x / _scaleX);
+	}
+
+	public float toPixelScaleY(float y) {
+		return MathUtils.iceil(y / _scaleY);
 	}
 
 	public void println(Object msg) {

@@ -423,13 +423,18 @@ public class GLEx implements LRelease {
 		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
 		if (scissorDepth > 0) {
 			synchTransform();
-			getCanvas().clipRect(r.x() - this.getTranslationX(), r.y() - this.getTranslationY(), r.width(), r.height());
+			getCanvas().clipRect(r.x() - getScaleTransX(), r.y() - getScaleTransY(), r.width(), r.height());
 		}
 		return !r.isEmpty();
 	}
 
 	public GLEx clearClip() {
 		return endClipped();
+	}
+
+	public GLEx resetClip() {
+		getCanvas().resetClip();
+		return this;
 	}
 
 	public GLEx endClipped() {
@@ -439,10 +444,10 @@ public class GLEx implements LRelease {
 		batch.flush();
 		RectBox r = popScissorState();
 		synchTransform();
-		if (r != null) {
-			getCanvas().clipRect(r.x(), r.y(), r.width(), r.height());
+		if (r == null) {
+			resetClip();
 		} else {
-			getCanvas().resetClip();
+			getCanvas().clipRect(r.x() - getScaleTransX(), r.y() - getScaleTransY(), r.width(), r.height());
 		}
 		return this;
 	}
@@ -463,6 +468,14 @@ public class GLEx implements LRelease {
 		Canvas g = getCanvas();
 		g.clearRect(x1, y1, w1, h1, clear);
 		return this;
+	}
+
+	protected float getScaleTransX() {
+		return lastTrans.tx / scaleX;
+	}
+
+	protected float getScaleTransY() {
+		return lastTrans.ty / scaleY;
 	}
 
 	public GLEx translate(float x, float y) {
@@ -1674,8 +1687,7 @@ public class GLEx implements LRelease {
 			r.setBounds(x, y, width, height);
 		} else {
 			RectBox pr = scissors.get(scissorDepth - 1);
-			r.setLocation(MathUtils.max(pr.x, x) - this.getTranslationX(),
-					MathUtils.max(pr.y, y) - this.getTranslationY());
+			r.setLocation(MathUtils.max(pr.x, x), MathUtils.max(pr.y, y));
 			r.setSize(MathUtils.max(MathUtils.min(pr.maxX(), x + width - 1) - r.x, 0),
 					MathUtils.max(MathUtils.min(pr.maxY(), y + height - 1) - r.y, 0));
 		}

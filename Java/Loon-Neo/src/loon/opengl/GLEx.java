@@ -117,6 +117,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	protected RenderTarget target;
 
+	private boolean useBegin;
+
+	private GLRenderer glRenderer;
+
+	private boolean rendererDrawLocked = false;
+
 	private int scissorDepth;
 
 	private boolean isClosed = false;
@@ -723,6 +729,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return endClipped();
 	}
 
+	public GLEx resetClip() {
+		GLUtils.disablecissorTest(batch.gl);
+		return this;
+	}
+
 	public GLEx endClipped() {
 		if (isClosed) {
 			return this;
@@ -730,7 +741,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		batch.flush();
 		RectBox r = popScissorState();
 		if (r == null) {
-			GLUtils.disablecissorTest(batch.gl);
+			resetClip();
 		} else {
 			batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
 		}
@@ -2630,11 +2641,13 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
-	private boolean useBegin;
+	protected float getScaleTransX() {
+		return lastTrans.tx / scaleX;
+	}
 
-	private GLRenderer glRenderer;
-
-	private boolean rendererDrawLocked = false;
+	protected float getScaleTransY() {
+		return lastTrans.ty / scaleY;
+	}
 
 	public boolean isRendererLocked() {
 		return rendererDrawLocked;

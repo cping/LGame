@@ -261,6 +261,12 @@ public class JavaSECanvas extends Canvas {
 		currentState().prepareClear(context);
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
+		final AffineTransform tx = context.getTransform();
+		if (isMainCanvas() && (tx.getTranslateX() != 0f || tx.getTranslateY() != 0f)) {
+			final int posX = (int) (tx.getTranslateX() / tx.getScaleX());
+			final int posY = (int) (tx.getTranslateY() / tx.getScaleY());
+			context.clearRect(-posX, -posY, cwidth + posX, cy + posY);
+		}
 		context.clipRect(cx, cy, cwidth, cheight);
 		isDirty = true;
 		return this;

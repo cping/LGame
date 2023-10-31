@@ -28,6 +28,7 @@ import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
@@ -92,16 +93,13 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			if (owner instanceof LToast) {
 				return (LToast) owner;
 			} else if (owner instanceof LContainer) {
-				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(),
-						(int) owner.getHeight());
+				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(), (int) owner.getHeight());
 				((LContainer) owner).add(toast);
 			} else {
-				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(),
-						(int) owner.getHeight());
+				toast = new LToast(f, text, d, owner.x(), owner.y(), (int) owner.getWidth(), (int) owner.getHeight());
 			}
 		} else {
-			toast = new LToast(f, text, d, 0, 0, LSystem.viewSize.getWidth(),
-					LSystem.viewSize.getHeight());
+			toast = new LToast(f, text, d, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		}
 		if (style == Style.SUCCESS) {
 			toast._backgroundColor = SUCCESS_GRAY;
@@ -195,14 +193,19 @@ public class LToast extends LComponent implements FontSet<LToast> {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if (!isVisible()) {
+		if (!_component_visible) {
 			return;
 		}
-		int w = (int) this.getWidth();
-		int h = (int) this.getHeight();
-		int oc = g.color();
-		float alpha = g.alpha();
+		final boolean cliped = g.isClip();
+		final RectBox oldClip = g.getClip();
+		final int w = (int) this.getWidth();
+		final int h = (int) this.getHeight();
+		final int oc = g.color();
+		final float alpha = g.alpha();
 		try {
+			if (cliped) {
+				g.resetClip();
+			}
 			g.setColor(_backgroundColor);
 			g.setAlpha(_objectAlpha);
 			if (_background == null) {
@@ -216,6 +219,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
+			if (cliped) {
+				g.setClip(oldClip);
+			}
 		}
 	}
 

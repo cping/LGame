@@ -1323,9 +1323,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public Vector2f getUITouchXY() {
+		float newX = 0f;
+		float newY = 0f;
 		if (getRotation() == 0) {
-			float newX = 0f;
-			float newY = 0f;
 			if (_objectSuper == null) {
 				newX = toPixelScaleX(SysTouch.getX() - getX());
 				newY = toPixelScaleY(SysTouch.getY() - getY());
@@ -1339,28 +1339,27 @@ public abstract class LComponent extends LObject<LContainer>
 					newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
 				}
 			}
+			final Screen screen = getScreen();
+			if (screen != null) {
+				newX -= screen.toPixelScaleX();
+				newY -= screen.toPixelScaleY();
+			}
 			_touchPoint.set(newX, newY);
 		} else {
 			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 				LScrollContainer scroll = (LScrollContainer) _objectSuper;
-				return getUITouch(SysTouch.getX() + scroll.getBoxScrollX(), SysTouch.getY() + scroll.getBoxScrollY(),
-						_touchPoint);
+				newX = SysTouch.getX() + scroll.getBoxScrollX();
+				newY = SysTouch.getY() + scroll.getBoxScrollY();
 			} else {
-				return getUITouch(SysTouch.getX(), SysTouch.getY(), _touchPoint);
+				newX = SysTouch.getX();
+				newY = SysTouch.getY();
 			}
-		}
-		if (getScreen() != null) {
 			final Screen screen = getScreen();
-			if (screen.getX() != 0f || screen.getY() != 0f) {
-				_touchPoint.subtractSelf(screen.getX(), screen.getY());
+			if (screen != null) {
+				newX -= screen.toPixelScaleX();
+				newY -= screen.toPixelScaleY();
 			}
-			if (screen.getRotation() != 0f) {
-				_touchPoint.rotateSelf(screen.getX() + screen.getWidth() / 2f, screen.getY() + screen.getHeight() / 2f,
-						screen.getRotation());
-			}
-			if (screen.getScaleX() != 1f || screen.getScaleY() != 1f) {
-				_touchPoint.scaleSelf(screen.getScaleX(), screen.getScaleY());
-			}
+			return getUITouch(newX, newY, _touchPoint);
 		}
 		return _touchPoint;
 	}
