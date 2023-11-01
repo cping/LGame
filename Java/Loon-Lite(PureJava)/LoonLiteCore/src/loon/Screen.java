@@ -65,6 +65,7 @@ import loon.events.ClickListener;
 import loon.events.DrawListener;
 import loon.events.DrawLoop;
 import loon.events.EventAction;
+import loon.events.EventActionN;
 import loon.events.FrameLoopEvent;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -73,6 +74,7 @@ import loon.events.LTouchLocation;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysInput;
+import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.events.Touched;
 import loon.events.TouchedClick;
@@ -663,6 +665,52 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * 按下键盘触发事件
+	 * 
+	 * @param keyCode
+	 * @param f
+	 * @return
+	 */
+	public Screen keyPress(int keyCode, EventActionN f) {
+		addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(0));
+		return this;
+	}
+
+	/**
+	 * 松开键盘触发事件
+	 * 
+	 * @param keyCode
+	 * @param f
+	 * @return
+	 */
+	public Screen keyRelease(int keyCode, EventActionN f) {
+		addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(1));
+		return this;
+	}
+
+	/**
+	 * 按下键盘触发事件
+	 * 
+	 * @param keyName
+	 * @param f
+	 * @return
+	 */
+	public Screen keyPress(String keyName, EventActionN f) {
+		return keyPress(SysKey.toIntKey(keyName), f);
+	}
+
+	/**
+	 * 松开键盘触发事件
+	 * 
+	 * @param keyName
+	 * @param f
+	 * @return
+	 */
+	public Screen keyRelease(String keyName, EventActionN f) {
+		return keyRelease(SysKey.toIntKey(keyName), f);
 	}
 
 	public SkinManager skin() {
@@ -1493,7 +1541,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public boolean collided(Shape shape) {
 		return getRectBox().collided(shape);
 	}
-	
+
 	public boolean contains(float x, float y) {
 		return getRectBox().contains(x, y);
 	}
@@ -5892,7 +5940,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public float toPixelScaleY() {
 		return toPixelScaleY(getY());
 	}
-	
+
 	public float toPixelScaleX(float x) {
 		return MathUtils.iceil(x / _scaleX);
 	}
@@ -5900,7 +5948,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public float toPixelScaleY(float y) {
 		return MathUtils.iceil(y / _scaleY);
 	}
-	
+
 	public void println(Object msg) {
 		LSystem.info(toStr(msg));
 	}

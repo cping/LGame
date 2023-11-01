@@ -20,13 +20,292 @@
  */
 package loon.events;
 
+import loon.LSystem;
 import loon.utils.IntArray;
+import loon.utils.StringUtils;
 
 public class SysKey {
 
-	public static boolean USE_ONLY_DOWN = false;
+	public final static int toIntKey(String keyName) {
+		if (StringUtils.isNullOrEmpty(keyName)) {
+			return -1;
+		}
+		final String keyValue = StringUtils.replaces(keyName.trim().toLowerCase(), "", "_", "-", " ");
+		if (keyValue.equals(LSystem.UNKNOWN)) {
+			return UNKNOWN;
+		} else if (keyValue.equals("keydown")) {
+			return KEY_DOWN;
+		} else if (keyValue.equals("keyup")) {
+			return KEY_UP;
+		} else if (keyValue.equals("keytyped")) {
+			return KEY_TYPED;
+		} else if (keyValue.equals("anykey")) {
+			return ANY_KEY;
+		} else if (keyValue.equals("0")) {
+			return NUM_0;
+		} else if (keyValue.equals("1")) {
+			return NUM_1;
+		} else if (keyValue.equals("2")) {
+			return NUM_2;
+		} else if (keyValue.equals("3")) {
+			return NUM_3;
+		} else if (keyValue.equals("4")) {
+			return NUM_4;
+		} else if (keyValue.equals("5")) {
+			return NUM_5;
+		} else if (keyValue.equals("6")) {
+			return NUM_6;
+		} else if (keyValue.equals("7")) {
+			return NUM_7;
+		} else if (keyValue.equals("8")) {
+			return NUM_8;
+		} else if (keyValue.equals("9")) {
+			return NUM_9;
+		} else if (keyValue.equals("q")) {
+			return Q;
+		} else if (keyValue.equals("w")) {
+			return W;
+		} else if (keyValue.equals("e")) {
+			return E;
+		} else if (keyValue.equals("r")) {
+			return R;
+		} else if (keyValue.equals("t")) {
+			return T;
+		} else if (keyValue.equals("y")) {
+			return Y;
+		} else if (keyValue.equals("u")) {
+			return U;
+		} else if (keyValue.equals("i")) {
+			return I;
+		} else if (keyValue.equals("o")) {
+			return O;
+		} else if (keyValue.equals("p")) {
+			return P;
+		} else if (keyValue.equals("a")) {
+			return A;
+		} else if (keyValue.equals("s")) {
+			return S;
+		} else if (keyValue.equals("d")) {
+			return D;
+		} else if (keyValue.equals("f")) {
+			return F;
+		} else if (keyValue.equals("g")) {
+			return G;
+		} else if (keyValue.equals("h")) {
+			return H;
+		} else if (keyValue.equals("j")) {
+			return J;
+		} else if (keyValue.equals("k")) {
+			return K;
+		} else if (keyValue.equals("l")) {
+			return L;
+		} else if (keyValue.equals("z")) {
+			return Z;
+		} else if (keyValue.equals("x")) {
+			return X;
+		} else if (keyValue.equals("c")) {
+			return C;
+		} else if (keyValue.equals("b")) {
+			return B;
+		} else if (keyValue.equals("n")) {
+			return N;
+		} else if (keyValue.equals("m")) {
+			return M;
+		} else if (keyValue.equals("tab")) {
+			return TAB;
+		} else if (keyValue.equals("space")) {
+			return SPACE;
+		} else if (keyValue.equals("altleft")) {
+			return ALT_LEFT;
+		} else if (keyValue.equals("altright")) {
+			return ALT_RIGHT;
+		} else if (keyValue.equals("apostrophe")) {
+			return APOSTROPHE;
+		} else if (keyValue.equals("at") || keyValue.equals("@")) {
+			return AT;
+		} else if (keyValue.equals("back")) {
+			return BACK;
+		} else if (keyValue.equals("backslash")) {
+			return BACKSLASH;
+		} else if (keyValue.equals("call")) {
+			return CALL;
+		} else if (keyValue.equals("camera")) {
+			return CAMERA;
+		} else if (keyValue.equals("clear")) {
+			return CLEAR;
+		} else if (keyValue.equals("comma")) {
+			return COMMA;
+		} else if (keyValue.equals("del") || keyValue.equals("remove")) {
+			return DEL;
+		} else if (keyValue.equals("backspace")) {
+			return BACKSPACE;
+		} else if (keyValue.equals("forwarddel")) {
+			return FORWARD_DEL;
+		} else if (keyValue.equals("dpadcenter")) {
+			return DPAD_CENTER;
+		} else if (keyValue.equals("dpaddown")) {
+			return DPAD_DOWN;
+		} else if (keyValue.equals("dpadleft")) {
+			return DPAD_LEFT;
+		} else if (keyValue.equals("dpadright")) {
+			return DPAD_RIGHT;
+		} else if (keyValue.equals("dpadup")) {
+			return DPAD_RIGHT;
+		} else if (keyValue.equals("center")) {
+			return CENTER;
+		} else if (keyValue.equals("down")) {
+			return DOWN;
+		} else if (keyValue.equals("left")) {
+			return LEFT;
+		} else if (keyValue.equals("right")) {
+			return RIGHT;
+		} else if (keyValue.equals("up")) {
+			return UP;
+		} else if (keyValue.equals("escape") || keyValue.equals("esc")) {
+			return ESCAPE;
+		} else if (keyValue.equals("endcall")) {
+			return ENDCALL;
+		} else if (keyValue.equals("enter")) {
+			return ENTER;
+		} else if (keyValue.equals("envelope")) {
+			return ENVELOPE;
+		} else if (keyValue.equals("equals")) {
+			return EQUALS;
+		} else if (keyValue.equals("explorer")) {
+			return EXPLORER;
+		} else if (keyValue.equals("focus")) {
+			return FOCUS;
+		} else if (keyValue.equals("grave")) {
+			return GRAVE;
+		} else if (keyValue.equals("headsethook")) {
+			return HEADSETHOOK;
+		} else if (keyValue.equals("home")) {
+			return HOME;
+		} else if (keyValue.equals("leftbracket")) {
+			return LEFT_BRACKET;
+		} else if (keyValue.equals("mediafastforward")) {
+			return MEDIA_FAST_FORWARD;
+		} else if (keyValue.equals("medianext")) {
+			return MEDIA_NEXT;
+		} else if (keyValue.equals("mediaplaypause")) {
+			return MEDIA_PLAY_PAUSE;
+		} else if (keyValue.equals("mediaprevious")) {
+			return MEDIA_PREVIOUS;
+		} else if (keyValue.equals("mediarewind")) {
+			return MEDIA_REWIND;
+		} else if (keyValue.equals("mediastop")) {
+			return MEDIA_REWIND;
+		} else if (keyValue.equals("menu")) {
+			return MENU;
+		} else if (keyValue.equals("minus")) {
+			return MINUS;
+		} else if (keyValue.equals("mute")) {
+			return MUTE;
+		} else if (keyValue.equals("notification")) {
+			return NOTIFICATION;
+		} else if (keyValue.equals("num")) {
+			return NUM;
+		} else if (keyValue.equals("period")) {
+			return PERIOD;
+		} else if (keyValue.equals("plus")) {
+			return PLUS;
+		} else if (keyValue.equals("pound")) {
+			return POUND;
+		} else if (keyValue.equals("power")) {
+			return POWER;
+		} else if (keyValue.equals("rightbracket")) {
+			return RIGHT_BRACKET;
+		} else if (keyValue.equals("search")) {
+			return SEARCH;
+		} else if (keyValue.equals("semicolon")) {
+			return SEMICOLON;
+		} else if (keyValue.equals("shiftleft")) {
+			return SHIFT_LEFT;
+		} else if (keyValue.equals("shiftright")) {
+			return SHIFT_RIGHT;
+		} else if (keyValue.equals("slash")) {
+			return SLASH;
+		} else if (keyValue.equals("softleft")) {
+			return SOFT_LEFT;
+		} else if (keyValue.equals("softright")) {
+			return SOFT_RIGHT;
+		} else if (keyValue.equals("softstar") || keyValue.equals("*")) {
+			return STAR;
+		} else if (keyValue.equals("sym")) {
+			return SYM;
+		} else if (keyValue.equals("volumedown")) {
+			return VOLUME_DOWN;
+		} else if (keyValue.equals("volumeup")) {
+			return VOLUME_UP;
+		} else if (keyValue.equals("metaaltlefton")) {
+			return META_ALT_LEFT_ON;
+		} else if (keyValue.equals("metaalton")) {
+			return META_ALT_ON;
+		} else if (keyValue.equals("metaaltrighton")) {
+			return META_ALT_RIGHT_ON;
+		} else if (keyValue.equals("metashiftlefton")) {
+			return META_SHIFT_LEFT_ON;
+		} else if (keyValue.equals("metashiftrighton")) {
+			return META_SHIFT_RIGHT_ON;
+		} else if (keyValue.equals("metashifton")) {
+			return META_SHIFT_ON;
+		} else if (keyValue.equals("metasymon")) {
+			return META_SYM_ON;
+		} else if (keyValue.equals("controlleft")) {
+			return CONTROL_LEFT;
+		} else if (keyValue.equals("controlright")) {
+			return CONTROL_RIGHT;
+		} else if (keyValue.equals("end")) {
+			return END;
+		} else if (keyValue.equals("insert")) {
+			return INSERT;
+		} else if (keyValue.equals("pageup")) {
+			return PAGE_UP;
+		} else if (keyValue.equals("pagedown")) {
+			return PAGE_DOWN;
+		} else if (keyValue.equals("pictsymbols")) {
+			return PICTSYMBOLS;
+		} else if (keyValue.equals("switchcharset")) {
+			return SWITCH_CHARSET;
+		} else if (keyValue.equals("buttona")) {
+			return BUTTON_A;
+		} else if (keyValue.equals("buttonb")) {
+			return BUTTON_B;
+		} else if (keyValue.equals("buttonc")) {
+			return BUTTON_C;
+		} else if (keyValue.equals("buttonx")) {
+			return BUTTON_X;
+		} else if (keyValue.equals("buttony")) {
+			return BUTTON_Y;
+		} else if (keyValue.equals("buttonz")) {
+			return BUTTON_Z;
+		} else if (keyValue.equals("buttonl1")) {
+			return BUTTON_L1;
+		} else if (keyValue.equals("buttonr1")) {
+			return BUTTON_R1;
+		} else if (keyValue.equals("buttonl2")) {
+			return BUTTON_L2;
+		} else if (keyValue.equals("buttonr2")) {
+			return BUTTON_R2;
+		} else if (keyValue.equals("buttonthumbl")) {
+			return BUTTON_THUMBL;
+		} else if (keyValue.equals("buttonthumbr")) {
+			return BUTTON_THUMBR;
+		} else if (keyValue.equals("buttonstart")) {
+			return BUTTON_START;
+		} else if (keyValue.equals("buttonselect")) {
+			return BUTTON_SELECT;
+		} else if (keyValue.equals("buttonmode")) {
+			return BUTTON_MODE;
+		} else if (keyValue.equals("buttoncircle")) {
+			return BUTTON_CIRCLE;
+		}
+		return UNKNOWN;
+	}
 
 	final static IntArray keys = new IntArray();
+
+	public static boolean USE_ONLY_DOWN = false;
 
 	public static final int KEY_DOWN = 0;
 

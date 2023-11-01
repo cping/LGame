@@ -122,6 +122,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private final Vector2f _touchPoint = new Vector2f();
 
+	private Vector2f _touchOffset = new Vector2f();
+
 	private boolean _downClick = false;
 	// 中心点
 	protected float _pivotX = -1, _pivotY = -1;
@@ -1280,8 +1282,8 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		final float angle = getRotation();
 		if (angle == 0 || angle == 360) {
-			pointResult.x = toPixelScaleX(newX);
-			pointResult.y = toPixelScaleY(newY);
+			pointResult.x = toPixelScaleX(newX) + _touchOffset.x;
+			pointResult.y = toPixelScaleY(newY) + _touchOffset.y;
 			return pointResult;
 		}
 		float oldWidth = _width;
@@ -1319,6 +1321,7 @@ public abstract class LComponent extends LObject<LContainer>
 			pointResult.x = _width - (newX - dx2);
 			pointResult.y = _height - (newY - dy2);
 		}
+		pointResult.addSelf(_touchOffset);
 		return pointResult;
 	}
 
@@ -1344,7 +1347,7 @@ public abstract class LComponent extends LObject<LContainer>
 				newX -= screen.toPixelScaleX();
 				newY -= screen.toPixelScaleY();
 			}
-			_touchPoint.set(newX, newY);
+			_touchPoint.set(newX, newY).addSelf(_touchOffset);
 		} else {
 			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 				LScrollContainer scroll = (LScrollContainer) _objectSuper;
@@ -2059,6 +2062,21 @@ public abstract class LComponent extends LObject<LContainer>
 	protected LComponent setAllowSelectOfSelf(boolean a) {
 		this.isAllowSelectOfSelf = a;
 		return this;
+	}
+
+	public Vector2f getTouchOffset() {
+		return _touchOffset;
+	}
+
+	public LComponent setTouchOffset(Vector2f offset) {
+		if (offset != null) {
+			this._touchOffset = offset;
+		}
+		return this;
+	}
+
+	public LComponent setTouchOffset(float x, float y) {
+		return setTouchOffset(Vector2f.at(x, y));
 	}
 
 	@Override

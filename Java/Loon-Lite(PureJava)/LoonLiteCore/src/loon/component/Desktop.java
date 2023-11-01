@@ -53,6 +53,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private final Vector2f _touchPoint = new Vector2f();
+
 	// 输入设备监听
 	protected final Screen input;
 
@@ -72,6 +73,8 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	private LToolTip _tooltip;
 
+	private Vector2f _touchOffset = new Vector2f();
+	
 	private boolean _clicked;
 
 	private boolean _visible;
@@ -544,7 +547,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		float newX = pointResult.x - input.toPixelScaleX() - getX();
 		float newY = pointResult.y - input.toPixelScaleY() - getY();
-		pointResult.set(newX, newY);
+		pointResult.set(newX, newY).addSelf(_touchOffset);
 		return cpy ? pointResult.cpy() : pointResult;
 	}
 
@@ -1344,6 +1347,21 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public RectBox getBoundingBox() {
 		return this._contentPane == null ? input.getRectBox().cpy() : this._contentPane.getRectBox().cpy();
+	}
+
+	public Vector2f getTouchOffset() {
+		return _touchOffset;
+	}
+
+	public Desktop setTouchOffset(Vector2f offset) {
+		if (offset != null) {
+			this._touchOffset = offset;
+		}
+		return this;
+	}
+
+	public Desktop setTouchOffset(float x, float y) {
+		return setTouchOffset(Vector2f.at(x, y));
 	}
 
 	@Override

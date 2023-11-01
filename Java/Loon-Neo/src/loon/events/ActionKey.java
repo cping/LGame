@@ -44,15 +44,28 @@ public class ActionKey {
 
 	private int _state;
 
+	private int _keyCallFunction = -1;
+
 	private boolean _interrupt;
 
+	private boolean _keyPressDown;
+
 	public ActionKey() {
-		this(NORMAL);
+		this(null);
+	}
+
+	public ActionKey(EventAction ea) {
+		this(NORMAL, ea);
 	}
 
 	public ActionKey(int mode) {
+		this(mode, null);
+	}
+
+	public ActionKey(int mode, EventAction ea) {
 		this._mode = mode;
-		reset();
+		this._function = ea;
+		this.reset();
 	}
 
 	public void act() {
@@ -61,7 +74,25 @@ public class ActionKey {
 
 	public void act(long elapsed) {
 		this._elapsedTime = elapsed;
-		HelperUtils.callEventAction(_function, this);
+		if (isAllStateCallFun()) {
+			HelperUtils.callEventAction(_function, this);
+		} else if (_keyPressDown && isPressCallFun()) {
+			HelperUtils.callEventAction(_function, this);
+		} else if (!_keyPressDown && isReleaseCallFun()) {
+			HelperUtils.callEventAction(_function, this);
+		}
+	}
+
+	public boolean isAllStateCallFun() {
+		return _keyCallFunction == -1;
+	}
+
+	public boolean isPressCallFun() {
+		return _keyCallFunction == 0;
+	}
+
+	public boolean isReleaseCallFun() {
+		return _keyCallFunction == 1;
 	}
 
 	// user overload
@@ -88,12 +119,14 @@ public class ActionKey {
 	}
 
 	public ActionKey reset() {
-		_state = STATE_RELEASED;
-		_amount = 0;
+		this._state = STATE_RELEASED;
+		this._amount = 0;
+		this._keyCallFunction = -1;
 		return this;
 	}
 
 	public ActionKey press() {
+		this._keyPressDown = true;
 		this.onPress();
 		if (_state != STATE_WAITING_FOR_RELEASE) {
 			_amount++;
@@ -103,8 +136,9 @@ public class ActionKey {
 	}
 
 	public ActionKey release() {
+		this._keyPressDown = false;
 		this.onRelease();
-		_state = STATE_RELEASED;
+		this._state = STATE_RELEASED;
 		return this;
 	}
 
@@ -125,12 +159,21 @@ public class ActionKey {
 		return false;
 	}
 
+	public boolean isKeyPressDown() {
+		return _keyPressDown;
+	}
+
 	public EventAction getFunction() {
 		return _function;
 	}
 
-	public ActionKey setFunction(EventAction function) {
-		this._function = function;
+	public ActionKey setFunction(EventAction f) {
+		this._function = f;
+		return this;
+	}
+
+	public ActionKey setKeyCallFunState(int f) {
+		this._keyCallFunction = f;
 		return this;
 	}
 }

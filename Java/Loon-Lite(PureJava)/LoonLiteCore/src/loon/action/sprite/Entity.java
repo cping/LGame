@@ -42,6 +42,7 @@ import loon.action.sprite.Sprites.Created;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
+import loon.events.SysTouch;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Circle;
@@ -97,7 +98,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected LColor _baseColor = new LColor(LColor.white);
 	private LColor _debugDrawColor = LColor.red;
 
+	private Vector2f _touchOffset = new Vector2f();
+
 	protected Vector2f _offset = new Vector2f();
+
+	private Vector2f _touchPoint = new Vector2f();
 	private boolean _createShadow;
 	private boolean _xySort;
 
@@ -1529,8 +1534,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		final float angle = getRotation();
 		if (angle == 0 || angle == 360) {
-			pointResult.x = toPixelScaleX(newX);
-			pointResult.y = toPixelScaleY(newY);
+			pointResult.x = toPixelScaleX(newX) + _touchOffset.x;
+			pointResult.y = toPixelScaleY(newY) + _touchOffset.y;
 			return pointResult;
 		}
 		float oldWidth = _width;
@@ -1568,7 +1573,46 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			pointResult.x = _width - (newX - dx2);
 			pointResult.y = _height - (newY - dy2);
 		}
+		pointResult.addSelf(_touchOffset);
 		return pointResult;
+	}
+
+	public Vector2f getUITouchXY() {
+		float newX = 0f;
+		float newY = 0f;
+		if (getRotation() == 0) {
+			if (_objectSuper == null) {
+				newX = toPixelScaleX(SysTouch.getX() - getX());
+				newY = toPixelScaleY(SysTouch.getY() - getY());
+			} else {
+				newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
+				newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
+			}
+			final Screen screen = getScreen();
+			if (screen != null) {
+				newX -= screen.toPixelScaleX();
+				newY -= screen.toPixelScaleY();
+			}
+			_touchPoint.set(newX, newY).addSelf(_touchOffset);
+		} else {
+			newX = SysTouch.getX();
+			newY = SysTouch.getY();
+			final Screen screen = getScreen();
+			if (screen != null) {
+				newX -= screen.toPixelScaleX();
+				newY -= screen.toPixelScaleY();
+			}
+			return getUITouch(newX, newY, _touchPoint);
+		}
+		return _touchPoint;
+	}
+
+	public float getUITouchX() {
+		return getUITouchXY().x;
+	}
+
+	public float getUITouchY() {
+		return getUITouchXY().y;
 	}
 
 	protected void onRotation() {
@@ -1932,6 +1976,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public TArray<IEntity> getChildren() {
 		return _childrens;
+	}
+
+	public Vector2f getTouchOffset() {
+		return _touchOffset;
+	}
+
+	public Entity setTouchOffset(Vector2f offset) {
+		if (offset != null) {
+			this._touchOffset = offset;
+		}
+		return this;
+	}
+
+	public Entity setTouchOffset(float x, float y) {
+		return setTouchOffset(Vector2f.at(x, y));
 	}
 
 	public boolean hasChild(IEntity e) {
