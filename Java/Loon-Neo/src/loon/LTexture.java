@@ -24,6 +24,7 @@ import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.Clip;
@@ -499,6 +500,10 @@ public class LTexture extends Painter implements LRelease {
 		GLUtils.bindTexture(gfx.gl, _id);
 	}
 
+	public void unbind() {
+		GLUtils.bindTexture(gfx.gl, 0);
+	}
+
 	public void bind(int unit) {
 		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
 		GLUtils.bindTexture(gfx.gl, _id);
@@ -507,6 +512,47 @@ public class LTexture extends Painter implements LRelease {
 	public void unbind(int unit) {
 		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
 		GLUtils.bindTexture(gfx.gl, 0);
+	}
+
+	public void blit(final Pixmap pix) {
+		this.blit(pix, 0, 0);
+	}
+
+	public void blit(final Pixmap pix, final int x, final int y) {
+		if (pix == null) {
+			return;
+		}
+		blit(pix, x, y, pix.getWidth(), pix.getHeight());
+	}
+
+	public void blit(final Pixmap pix, final int x, final int y, final int w, final int h) {
+		if (pix == null) {
+			return;
+		}
+		final LGame game = gfx.game;
+		if (game == null || game.displayImpl == null) {
+			return;
+		}
+		final GLEx gl = game.displayImpl.GL();
+		if (gl == null) {
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				final BaseBatch batch = gl.batch();
+				batch.setTexture(LTexture.this);
+				bind();
+				Pixmap newPix = pix;
+				if (w != pix.getWidth() || h != pix.getHeight()) {
+					newPix = Pixmap.getResize(pix, w, h);
+				}
+				gfx.gl.glTexSubImage2D(GL20.GL_TEXTURE_2D, 0, x, y, newPix.getWidth(), newPix.getHeight(), GL20.GL_RGBA,
+						GL20.GL_UNSIGNED_BYTE, newPix.convertPixmapToByteBuffer());
+			}
+		});
+
 	}
 
 	public Clip getClip() {

@@ -1104,6 +1104,61 @@ public class HelperUtils {
 		return TextureNodeMaker.create(nodeType, texture, x, y);
 	}
 
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text) {
+		return StringNodeMaker.create(nodeType, text);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text, float x, float y) {
+		return StringNodeMaker.create(nodeType, text, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(StringNodeType nodeType, IFont font, String text, float x,
+			float y) {
+		return StringNodeMaker.create(nodeType, font, text, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, String path) {
+		if (StringNodeMaker.isType(typeName)) {
+			return StringNodeMaker.create(typeName, path);
+		}
+		return TextureNodeMaker.create(typeName, path);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, String path, float x, float y) {
+		if (StringNodeMaker.isType(typeName)) {
+			return StringNodeMaker.create(typeName, path, x, y);
+		}
+		return TextureNodeMaker.create(typeName, path, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, LTexture texture) {
+		return TextureNodeMaker.create(typeName, texture, 0f, 0f);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, LTexture texture, float x, float y) {
+		return TextureNodeMaker.create(typeName, texture, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y) {
+		return StringNodeMaker.create(typeName, font, text, x, y);
+	}
+
+	public final static <T extends Shape> T create(String typeName, float[] points) {
+		return ShapeNodeMaker.create(typeName, points);
+	}
+
+	public final static <T extends Shape> T create(String typeName, TArray<Vector2f> polys) {
+		return ShapeNodeMaker.create(typeName, polys);
+	}
+
+	public final static <T extends Shape> T create(String typeName, float x, float y, float w, float h) {
+		return ShapeNodeMaker.create(typeName, x, y, w, h);
+	}
+
+	public final static <T extends Shape> T create(String typeName, float x, float y) {
+		return ShapeNodeMaker.create(typeName, x, y);
+	}
+
 	public final static <T extends Shape> T create(ShapeNodeType nodeType, float[] points) {
 		return ShapeNodeMaker.create(nodeType, points);
 	}
@@ -1120,16 +1175,4 @@ public class HelperUtils {
 		return ShapeNodeMaker.create(nodeType, x, y);
 	}
 
-	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text) {
-		return StringNodeMaker.create(nodeType, text);
-	}
-
-	public final static <T extends ActionBind> T create(StringNodeType nodeType, String text, float x, float y) {
-		return StringNodeMaker.create(nodeType, text, x, y);
-	}
-
-	public final static <T extends ActionBind> T create(StringNodeType nodeType, IFont font, String text, float x,
-			float y) {
-		return StringNodeMaker.create(nodeType, font, text, x, y);
-	}
 }

@@ -46,6 +46,11 @@ import loon.utils.timer.LTimerContext;
 
 public class LTexture extends Painter implements LRelease {
 
+	public static LTexture createTexture(int w, int h) {
+		final Image img = Image.createImage(w, h);
+		return img.texture();
+	}
+
 	public static LTexture createTexture(final String path) {
 		return LSystem.loadTexture(path);
 	}
@@ -324,6 +329,10 @@ public class LTexture extends Painter implements LRelease {
 
 	public void bind() {
 		GLUtils.bindTexture(this);
+	}
+
+	public void unbind() {
+		GLUtils.bindTexture(0);
 	}
 
 	public Clip getClip() {

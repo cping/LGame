@@ -2502,6 +2502,88 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return null;
 	}
 
+	/**
+	 * 构建指定类名称对应的节点
+	 * 
+	 * @param <T>
+	 * @param typeName
+	 * @param path
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, String path) {
+		Object node = create(typeName, path);
+		add(node);
+		return (T) node;
+	}
+
+	/**
+	 * 构建指定类名称对应的节点
+	 * 
+	 * @param <T>
+	 * @param typeName
+	 * @param path
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, String path, float x, float y) {
+		Object node = create(typeName, path, x, y);
+		add(node);
+		return (T) node;
+	}
+
+	/**
+	 * 构建指定类名称对应的节点
+	 * 
+	 * @param <T>
+	 * @param typeName
+	 * @param texture
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, LTexture texture) {
+		Object node = create(typeName, texture);
+		add(node);
+		return (T) node;
+	}
+
+	/**
+	 * 构建指定类名称对应的节点
+	 * 
+	 * @param <T>
+	 * @param typeName
+	 * @param texture
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, LTexture texture, float x, float y) {
+		Object node = create(typeName, texture, x, y);
+		add(node);
+		return (T) node;
+	}
+
+	/**
+	 * 构建指定类名称对应的节点
+	 * 
+	 * @param <T>
+	 * @param typeName
+	 * @param font
+	 * @param text
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, IFont font, String text, float x, float y) {
+		Object node = create(typeName, font, text, x, y);
+		add(node);
+		return (T) node;
+	}
+
 	public Screen add(Object... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			add(obj[i]);

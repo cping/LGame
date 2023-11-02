@@ -34,6 +34,69 @@ import loon.utils.StringUtils;
 
 public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 
+	public final static boolean isType(String typeName) {
+		if (StringUtils.isNullOrEmpty(typeName)) {
+			return false;
+		}
+		String tName = typeName.toLowerCase().trim();
+		boolean result = false;
+		if (tName.equals("entity") || tName.equals("ent") || tName.equals("e")) {
+			result = true;
+		} else if (tName.equals("sprite") || tName.equals("spr") || tName.equals("s")) {
+			result = true;
+		} else if (tName.equals("texture") || tName.equals("t")) {
+			result = true;
+		} else if (tName.equals("picture") || tName.equals("pic")) {
+			result = true;
+		} else if (tName.equals("actor") || tName.equals("a")) {
+			result = true;
+		} else if (tName.equals("paper") || tName.equals("p")) {
+			result = true;
+		} else if (tName.equals("button") || tName.equals("b")) {
+			result = true;
+		}
+		return result;
+	}
+
+	public final static TextureNodeType toType(String typeName) {
+		if (StringUtils.isNullOrEmpty(typeName)) {
+			return TextureNodeType.Texture;
+		}
+		String tName = typeName.toLowerCase().trim();
+		if (tName.equals("entity") || tName.equals("ent") || tName.equals("e")) {
+			return TextureNodeType.Entity;
+		} else if (tName.equals("sprite") || tName.equals("spr") || tName.equals("s")) {
+			return TextureNodeType.Sprite;
+		} else if (tName.equals("texture") || tName.equals("t")) {
+			return TextureNodeType.Texture;
+		} else if (tName.equals("picture") || tName.equals("pic")) {
+			return TextureNodeType.Picture;
+		} else if (tName.equals("actor") || tName.equals("a")) {
+			return TextureNodeType.Actor;
+		} else if (tName.equals("paper") || tName.equals("p")) {
+			return TextureNodeType.Actor;
+		} else if (tName.equals("button") || tName.equals("b")) {
+			return TextureNodeType.Button;
+		}
+		return TextureNodeType.Texture;
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, String path) {
+		return create(typeName, path, 0f, 0f);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, String path, float x, float y) {
+		return create(typeName, StringUtils.isEmpty(path) ? (LTexture) null : LTextures.loadTexture(path), x, y);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, LTexture texture) {
+		return create(typeName, texture, 0f, 0f);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, LTexture texture, float x, float y) {
+		return new TextureNodeMaker<T>(toType(typeName), texture, x, y).get();
+	}
+
 	public final static <T extends ActionBind> T create(TextureNodeType nodeType, String path) {
 		return create(nodeType, path, 0f, 0f);
 	}

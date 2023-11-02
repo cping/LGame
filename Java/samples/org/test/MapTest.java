@@ -15,10 +15,8 @@ import loon.action.sprite.effect.RippleEffect.Model;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LPad;
-import loon.events.ActionKey;
 import loon.events.SysKey;
 import loon.events.Touched;
-import loon.events.Updateable;
 
 public class MapTest extends Stage {
 
@@ -37,16 +35,13 @@ public class MapTest extends Stage {
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
 			// 设置切图方式
 			/*
-			 * TArray<LTexturePackClip> clips = new
-			 * TArray<LTexturePackClip>(10); // 索引,名称,开始切图的x,y位置,以及切下来多少
-			 * clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
-			 * clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32));
-			 * clips.add(new LTexturePackClip(2, "3", 64, 0, 32, 32));
-			 * clips.add(new LTexturePackClip(3, "4", 96, 0, 32, 32));
-			 * clips.add(new LTexturePackClip(4, "5", 128, 0, 32, 32));
-			 * clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32)); //
-			 * 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-			 * map.setImagePack("assets/rpg/map.png", clips);
+			 * TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10); //
+			 * 索引,名称,开始切图的x,y位置,以及切下来多少 clips.add(new LTexturePackClip(0, "1", 0, 0, 32,
+			 * 32)); clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32)); clips.add(new
+			 * LTexturePackClip(2, "3", 64, 0, 32, 32)); clips.add(new LTexturePackClip(3,
+			 * "4", 96, 0, 32, 32)); clips.add(new LTexturePackClip(4, "5", 128, 0, 32,
+			 * 32)); clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32)); //
+			 * 注入切图用地图，以及切图方式(也可以直接注入xml配置文件) map.setImagePack("assets/rpg/map.png", clips);
 			 */
 			// 按照瓦片规格自动获取地图切片(切出来大小都是一样的,只对规则图片有效)
 			map.setImagePackAuto("assets/rpg/map.png", 32, 32);
@@ -55,12 +50,12 @@ public class MapTest extends Stage {
 
 			// 设置数组瓦片索引id和切图id的绑定关系(不设置时按照setImagePack中注入的切图id自动和地图id匹配)
 			/*
-			 * map.putTile(0, 0); map.putTile(1, 1); map.putTile(2, 2);
-			 * map.putTile(3, 3); map.putTile(4, 4); map.putTile(5, 5);
+			 * map.putTile(0, 0); map.putTile(1, 1); map.putTile(2, 2); map.putTile(3, 3);
+			 * map.putTile(4, 4); map.putTile(5, 5);
 			 */
 			// 注入地图到窗体
 			add(map);
-			
+
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
 			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
 					map.tilesToPixelsY(4), 32, 32);
@@ -93,14 +88,12 @@ public class MapTest extends Stage {
 			add(hero);
 
 			// 角色追随和地图滚动只能开一个(否则地图移动视角会乱跳),默认如果followAction注入则scroll无效化
-			/* drag(new Touched() {
+			/*
+			 * drag(new Touched() {
+			 * 
+			 * @Override public void on(float x, float y) { map.scroll(x, y); } });
+			 */
 
-				@Override
-				public void on(float x, float y) {
-					map.scroll(x, y);
-				}
-			}); */
-			
 			// ----触屏移动---
 			// 监听窗体down事件
 			down(new Touched() {
@@ -157,61 +150,34 @@ public class MapTest extends Stage {
 			putRelease(mc);
 			// ----按键移动---
 			// 构建键盘监听
-			ActionKey left = new ActionKey();
-			left.setFunction(new Updateable() {
 
-				@Override
-				public void action(Object a) {
-					if (!mc.isTLeft()) {
-						hero.animate(frames, leftIds);
-					}
-					mc.setDirection(Config.TLEFT);
-
+			keyPress(SysKey.LEFT, () -> {
+				if (!mc.isTLeft()) {
+					hero.animate(frames, leftIds);
 				}
+				mc.setDirection(Config.TLEFT);
 			});
-			addActionKey(SysKey.LEFT, left);
 
-			ActionKey right = new ActionKey();
-			right.setFunction(new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					if (!mc.isTRight()) {
-						hero.animate(frames, rightIds);
-					}
-					mc.setDirection(Config.TRIGHT);
-
+			keyPress(SysKey.RIGHT, () -> {
+				if (!mc.isTRight()) {
+					hero.animate(frames, rightIds);
 				}
+				mc.setDirection(Config.TRIGHT);
 			});
-			addActionKey(SysKey.RIGHT, right);
 
-			ActionKey up = new ActionKey();
-			up.setFunction(new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					if (!mc.isTUp()) {
-						hero.animate(frames, upIds);
-					}
-					mc.setDirection(Config.TUP);
-
+			keyPress(SysKey.UP, () -> {
+				if (!mc.isTUp()) {
+					hero.animate(frames, upIds);
 				}
+				mc.setDirection(Config.TUP);
 			});
-			addActionKey(SysKey.UP, up);
 
-			ActionKey down = new ActionKey();
-			down.setFunction(new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					if (!mc.isTDown()) {
-						hero.animate(frames, downIds);
-					}
-					mc.setDirection(Config.TDOWN);
-
+			keyPress(SysKey.DOWN, () -> {
+				if (!mc.isTDown()) {
+					hero.animate(frames, downIds);
 				}
+				mc.setDirection(Config.TDOWN);
 			});
-			addActionKey(SysKey.DOWN, down);
 
 			// ----虚拟按键移动---
 			// 创建控制按钮
@@ -264,7 +230,7 @@ public class MapTest extends Stage {
 		}
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
 		// 禁止触屏点击到click位置，也就是防止点击back时自动寻径
-		//addTouchLimit(click);
+		// addTouchLimit(click);
 		add(click);
 		// 插入网格GridEntity
 		// add(new GridEntity());

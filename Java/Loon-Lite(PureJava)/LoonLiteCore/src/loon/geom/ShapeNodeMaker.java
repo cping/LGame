@@ -20,9 +20,73 @@
  */
 package loon.geom;
 
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class ShapeNodeMaker<T extends Shape> implements IV<T> {
+
+	public final static boolean isType(String typeName) {
+		if (StringUtils.isNullOrEmpty(typeName)) {
+			return false;
+		}
+		String tName = typeName.toLowerCase().trim();
+		boolean result = false;
+		if (tName.equals("point") || tName.equals("p")) {
+			result = true;
+		} else if (tName.equals("rectangle") || tName.equals("r")) {
+			result = true;
+		} else if (tName.equals("circle") || tName.equals("c")) {
+			result = true;
+		} else if (tName.equals("ellipse") || tName.equals("e")) {
+			result = true;
+		} else if (tName.equals("line") || tName.equals("l")) {
+			result = true;
+		} else if (tName.equals("polygon") || tName.equals("poly")) {
+			result = true;
+		} else if (tName.equals("triangle") || tName.equals("t")) {
+			result = true;
+		}
+		return result;
+	}
+
+	public final static ShapeNodeType toType(String typeName) {
+		if (StringUtils.isNullOrEmpty(typeName)) {
+			return ShapeNodeType.Rectangle;
+		}
+		String tName = typeName.toLowerCase().trim();
+		if (tName.equals("point") || tName.equals("p")) {
+			return ShapeNodeType.Point;
+		} else if (tName.equals("rectangle") || tName.equals("r")) {
+			return ShapeNodeType.Rectangle;
+		} else if (tName.equals("circle") || tName.equals("c")) {
+			return ShapeNodeType.Circle;
+		} else if (tName.equals("ellipse") || tName.equals("e")) {
+			return ShapeNodeType.Ellipse;
+		} else if (tName.equals("line") || tName.equals("l")) {
+			return ShapeNodeType.Line;
+		} else if (tName.equals("polygon") || tName.equals("poly")) {
+			return ShapeNodeType.Polygon;
+		} else if (tName.equals("triangle") || tName.equals("t")) {
+			return ShapeNodeType.Triangle;
+		}
+		return ShapeNodeType.Rectangle;
+	}
+
+	public final static <T extends Shape> T create(String typeName, float[] points) {
+		return new ShapeNodeMaker<T>(toType(typeName), 0f, 0f, 0f, 0f, points, null).get();
+	}
+
+	public final static <T extends Shape> T create(String typeName, TArray<Vector2f> polys) {
+		return new ShapeNodeMaker<T>(toType(typeName), 0f, 0f, 0f, 0f, null, polys).get();
+	}
+
+	public final static <T extends Shape> T create(String typeName, float x, float y, float w, float h) {
+		return new ShapeNodeMaker<T>(toType(typeName), x, y, w, h, null, null).get();
+	}
+
+	public final static <T extends Shape> T create(String typeName, float x, float y) {
+		return new ShapeNodeMaker<T>(toType(typeName), x, y, 0f, 0f, null, null).get();
+	}
 
 	public final static <T extends Shape> T create(ShapeNodeType nodeType, float[] points) {
 		return new ShapeNodeMaker<T>(nodeType, 0f, 0f, 0f, 0f, points, null).get();
