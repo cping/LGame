@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,8 +22,51 @@ package loon.events;
 
 import loon.LSystem;
 import loon.geom.Vector2f;
+import loon.utils.StringUtils;
 
 public class SysTouch {
+
+	public final static int toIntKey(String keyName) {
+		if (StringUtils.isNullOrEmpty(keyName)) {
+			return TOUCH_UNKNOWN;
+		}
+		final String keyValue = StringUtils.replaces(keyName.trim().toLowerCase(), "", "_", "-", " ");
+		if (keyValue.equals(LSystem.UNKNOWN) || keyValue.equals("touchunknown")) {
+			return TOUCH_UNKNOWN;
+		} else if (keyValue.equals("touchdown") || keyValue.equals("down")) {
+			return TOUCH_DOWN;
+		} else if (keyValue.equals("touchup") || keyValue.equals("up")) {
+			return TOUCH_UP;
+		} else if (keyValue.equals("touchmove") || keyValue.equals("move")) {
+			return TOUCH_MOVE;
+		} else if (keyValue.equals("touchdrag") || keyValue.equals("drag")) {
+			return TOUCH_DRAG;
+		} else if (keyValue.equals("left") || keyValue.equals("l")) {
+			return LEFT;
+		} else if (keyValue.equals("middle") || keyValue.equals("m")) {
+			return MIDDLE;
+		} else if (keyValue.equals("right") || keyValue.equals("r")) {
+			return RIGHT;
+		}
+		return TOUCH_UNKNOWN;
+	}
+
+	public final static int toIntType(String keyName) {
+		if (StringUtils.isNullOrEmpty(keyName)) {
+			return -1;
+		}
+		final String keyValue = StringUtils.replaces(keyName.trim().toLowerCase(), "", "_", "-", " ");
+		if (keyValue.equals("upperleft")) {
+			return UPPER_LEFT;
+		} else if (keyValue.equals("upperright")) {
+			return UPPER_RIGHT;
+		} else if (keyValue.equals("lowerleft")) {
+			return LOWER_LEFT;
+		} else if (keyValue.equals("lowerright")) {
+			return LOWER_RIGHT;
+		}
+		return TOUCH_UNKNOWN;
+	}
 
 	public static void startTouchCollection() {
 		LSystem.getProcess().getSysInputFactory().startTouchCollection();
@@ -136,6 +179,10 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.isMove();
 	}
 
+	public static boolean isDrag() {
+		return SysInputFactory.isDraging && SysInputFactory.finalTouch.isDrag();
+	}
+
 	public static boolean lowerLeft() {
 		return SysInputFactory.finalTouch.lowerLeft();
 	}
@@ -162,10 +209,6 @@ public class SysTouch {
 
 	public static long getTimeUp() {
 		return SysInputFactory.finalTouch.timeUp;
-	}
-
-	public static boolean isDrag() {
-		return SysInputFactory.isDraging;
 	}
 
 	public static GameTouch cpy() {

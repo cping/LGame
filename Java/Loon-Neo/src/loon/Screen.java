@@ -146,14 +146,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public final static int NO_KEY = -1;
 
-	public final static int UPPER_LEFT = 0;
-
-	public final static int UPPER_RIGHT = 1;
-
-	public final static int LOWER_LEFT = 2;
-
-	public final static int LOWER_RIGHT = 3;
-
 	/**
 	 * Screen切换方式(单纯移动)
 	 *
@@ -636,13 +628,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _keyActions.containsKey(keyCode);
 	}
 
+	public boolean containsActionKey(String keyName) {
+		return containsActionKey(SysKey.toIntKey(keyName));
+	}
+
 	public Screen addActionKey(int keyCode, ActionKey e) {
 		_keyActions.put(keyCode, e);
 		return this;
 	}
 
+	public Screen addActionKey(String keyName, ActionKey e) {
+		return addActionKey(SysKey.toIntKey(keyName), e);
+	}
+
 	public ActionKey removeActionKey(int keyCode) {
 		return _keyActions.remove(keyCode);
+	}
+
+	public ActionKey removeActionKey(String keyName) {
+		return removeActionKey(SysKey.toIntKey(keyName));
 	}
 
 	public Screen pressActionKey(int keyCode) {
@@ -653,6 +657,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen pressActionKey(String keyName) {
+		return pressActionKey(SysKey.toIntKey(keyName));
+	}
+
 	public Screen releaseActionKey(int keyCode) {
 		ActionKey key = _keyActions.get(keyCode);
 		if (key != null) {
@@ -661,16 +669,33 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen releaseActionKey(String keyName) {
+		return releaseActionKey(SysKey.toIntKey(keyName));
+	}
+
 	public Screen clearActionKey() {
 		_keyActions.clear();
 		return this;
 	}
 
-	public Screen releaseActionKeys() {
-		int keySize = _keyActions.size();
+	public Screen pressActionKeys() {
+		final int keySize = _keyActions.size();
 		if (keySize > 0) {
 			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-				ActionKey act = it.next();
+				final ActionKey act = it.next();
+				if (act != null) {
+					act.press();
+				}
+			}
+		}
+		return this;
+	}
+
+	public Screen releaseActionKeys() {
+		final int keySize = _keyActions.size();
+		if (keySize > 0) {
+			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+				final ActionKey act = it.next();
 				if (act != null) {
 					act.release();
 				}
@@ -723,6 +748,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public Screen keyRelease(String keyName, EventActionN f) {
 		return keyRelease(SysKey.toIntKey(keyName), f);
+	}
+
+	/**
+	 * 多个按键设置为一个事件
+	 * 
+	 * @param f
+	 * @param keys
+	 * @return
+	 */
+	public Screen keyEachPress(EventActionN f, String... keys) {
+		final ActionKey key = new ActionKey(f).setKeyCallFunState(0);
+		for (int i = 0; i < keys.length; i++) {
+			final String keyName = keys[i];
+			addActionKey(SysKey.toIntKey(keyName), key);
+		}
+		return this;
+	}
+
+	/**
+	 * 多个按键设置为一个事件
+	 * 
+	 * @param f
+	 * @param keys
+	 * @return
+	 */
+	public Screen keyEachRelease(EventActionN f, String... keys) {
+		final ActionKey key = new ActionKey(f).setKeyCallFunState(1);
+		for (int i = 0; i < keys.length; i++) {
+			final String keyName = keys[i];
+			addActionKey(SysKey.toIntKey(keyName), key);
+		}
+		return this;
 	}
 
 	public SkinManager skin() {
@@ -4096,6 +4153,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _touchButtonReleased == button;
 	}
 
+	@Override
+	public boolean isTouchPressed(String keyName) {
+		return isTouchPressed(SysTouch.toIntKey(keyName));
+	}
+
+	@Override
+	public boolean isTouchReleased(String keyName) {
+		return isTouchReleased(SysTouch.toIntKey(keyName));
+	}
+
 	public boolean isTouchPressed() {
 		return isTouchPressed(SysTouch.TOUCH_DOWN);
 	}
@@ -4207,6 +4274,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	@Override
+	public boolean isKeyPressed(String keyName) {
+		return isKeyPressed(SysKey.toIntKey(keyName));
+	}
+
+	@Override
 	public int getKeyReleased() {
 		return _keyButtonReleased > NO_KEY ? _keyButtonReleased : NO_KEY;
 	}
@@ -4214,6 +4286,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	@Override
 	public boolean isKeyReleased(int keyCode) {
 		return _keyButtonReleased == keyCode;
+	}
+
+	@Override
+	public boolean isKeyReleased(String keyName) {
+		return isKeyReleased(SysKey.toIntKey(keyName));
 	}
 
 	@Override

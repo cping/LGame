@@ -271,7 +271,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && SysKey.isKeyPressed(SysKey.ENTER)) {
+		if (this.isSelected() && isKeyDown(SysKey.ENTER)) {
 			if (!_onTouch.isPressed()) {
 				this.pressedTime = 5;
 				this._onTouch.press();
@@ -282,7 +282,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected() && SysKey.isKeyRelease(SysKey.ENTER)) {
+		if (this.isSelected() && isKeyUp(SysKey.ENTER)) {
 			if (_onTouch.isPressed()) {
 				_onTouch.release();
 			}

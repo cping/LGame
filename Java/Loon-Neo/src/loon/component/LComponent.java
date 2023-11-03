@@ -1705,23 +1705,51 @@ public abstract class LComponent extends LObject<LContainer>
 		return isPointInUI(getTouchX(), getTouchY());
 	}
 
+	public boolean isKeyDown(int key) {
+		if (input == null) {
+			return SysKey.isKeyPressed(key);
+		}
+		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
+	}
+
+	public boolean isKeyUp(int key) {
+		if (input == null) {
+			return SysKey.isKeyReleased(key);
+		}
+		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
+	}
+
+	public boolean isKeyDown(String key) {
+		if (input == null) {
+			return SysKey.isKeyPressed(key);
+		}
+		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
+	}
+
+	public boolean isKeyUp(String key) {
+		if (input == null) {
+			return SysKey.isKeyReleased(key);
+		}
+		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
+	}
+
 	public boolean isClickDown() {
 		if (input == null) {
-			return false;
+			return SysTouch.isDown();
 		}
 		return input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
 	}
 
 	public boolean isClickUp() {
 		if (input == null) {
-			return false;
+			return SysTouch.isUp();
 		}
 		return input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
 	}
 
 	public boolean isClickDrag() {
 		if (input == null) {
-			return false;
+			return SysTouch.isDrag();
 		}
 		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}

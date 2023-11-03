@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.action.map.TileMap;
 import loon.geom.Vector2f;
 
@@ -28,21 +29,21 @@ import loon.geom.Vector2f;
  */
 public class JumpObject extends ActionObject {
 
-	public static interface JumpListener {
+	public static interface JumpCheckListener {
 
-		public void update(long elapsedTime);
-
-		public void check(int x, int y);
+		void check(int x, int y);
 
 	}
 
-	public JumpListener listener;
+	public static interface JumpListener extends JumpCheckListener {
 
-	public float GRAVITY = 0.6f;
+		void update(long elapsedTime);
 
-	protected float vx;
+	}
 
-	protected float vy;
+	public JumpCheckListener listener;
+
+	public float GRAVITY;
 
 	private float speed;
 
@@ -66,60 +67,66 @@ public class JumpObject extends ActionObject {
 
 	public JumpObject(float x, float y, Animation animation, TileMap map) {
 		super(x, y, 0, 0, animation, map);
-		vx = 0;
-		vy = 0;
-		speed = 6f;
-		jumpSpeed = 12f;
-		onGround = false;
-		forceJump = false;
-		jumperTwo = false;
-		canJumperTwo = true;
+		this.init();
 	}
 
 	public JumpObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(x, y, dw, dh, animation, map);
-		vx = 0;
-		vy = 0;
-		speed = 6f;
-		jumpSpeed = 12f;
-		onGround = false;
-		forceJump = false;
-		jumperTwo = false;
-		canJumperTwo = true;
+		this.init();
+	}
+
+	public JumpObject init() {
+		this.velocityX = 0f;
+		this.velocityY = 0f;
+		this.GRAVITY = 0.6f;
+		this.speed = 6f;
+		this.jumpSpeed = 12f;
+		this.onGround = false;
+		this.forceJump = false;
+		this.jumperTwo = false;
+		this.canJumperTwo = true;
+		return this;
+	}
+
+	@Override
+	public JumpObject reset() {
+		this.init();
+		super.reset();
+		return this;
 	}
 
 	public JumpObject stop() {
-		vx = 0;
+		velocityX = 0;
 		return this;
 	}
 
 	public JumpObject accelerateLeft() {
-		vx = -speed;
+		velocityX = -speed;
 		return this;
 	}
 
 	public JumpObject accelerateRight() {
-		vx = speed;
+		velocityX = speed;
 		return this;
 	}
 
 	public JumpObject accelerateUp() {
-		vy = speed;
+		velocityY = speed;
 		return this;
 	}
 
 	public JumpObject accelerateDown() {
-		vy = -speed;
+		velocityY = -speed;
 		return this;
 	}
 
 	public JumpObject jump() {
 		if (onGround || forceJump) {
-			vy = -jumpSpeed;
+			velocityY = -jumpSpeed;
 			onGround = false;
 			forceJump = false;
 		} else if (jumperTwo && canJumperTwo) {
-			vy = -jumpSpeed;
+			velocityY = -jumpSpeed;
 			canJumperTwo = false;
 		}
 		return this;
@@ -139,8 +146,35 @@ public class JumpObject extends ActionObject {
 		return this;
 	}
 
+	public float getJumpSpeed() {
+		return this.jumpSpeed;
+	}
+
+	public JumpObject setJumpSpeed(float js) {
+		this.jumpSpeed = js;
+		return this;
+	}
+
 	public JumpObject setJumperTwo(boolean jumperTwo) {
 		this.jumperTwo = jumperTwo;
+		return this;
+	}
+
+	public JumpObject setG(float g) {
+		this.GRAVITY = g;
+		return this;
+	}
+
+	public float getG() {
+		return this.GRAVITY;
+	}
+
+	public boolean isGround() {
+		return this.onGround;
+	}
+
+	public JumpObject setGround(boolean gd) {
+		this.onGround = gd;
 		return this;
 	}
 
@@ -151,43 +185,43 @@ public class JumpObject extends ActionObject {
 		float x = getX();
 		float y = getY();
 
-		vy += GRAVITY;
+		velocityY += GRAVITY;
 
-		float newX = x + vx;
+		float newX = x + velocityX;
 
 		Vector2f tile = map.getTileCollision(this, newX, y);
 		if (tile == null) {
 			x = newX;
 		} else {
-			if (vx > 0) {
+			if (velocityX > 0) {
 				x = map.tilesToPixelsX(tile.x) - getWidth();
-			} else if (vx < 0) {
+			} else if (velocityX < 0) {
 				x = map.tilesToPixelsY(tile.x + 1);
 			}
-			vx = 0;
+			velocityX = 0;
 		}
 
-		float newY = y + vy;
+		float newY = y + velocityY;
 		tile = map.getTileCollision(this, x, newY);
 		if (tile == null) {
 			y = newY;
 			onGround = false;
 		} else {
-			if (vy > 0) {
+			if (velocityY > 0) {
 				y = map.tilesToPixelsY(tile.y) - getHeight();
-				vy = 0;
+				velocityY = 0;
 				onGround = true;
 				canJumperTwo = true;
-			} else if (vy < 0) {
+			} else if (velocityY < 0) {
 				y = map.tilesToPixelsY(tile.y + 1);
-				vy = 0;
+				velocityY = 0;
 				isCheck(tile.x(), tile.y());
 			}
 		}
 
 		setLocation(x, y);
-		if (listener != null) {
-			listener.update(elapsedTime);
+		if (listener != null && listener instanceof JumpListener) {
+			((JumpListener) listener).update(elapsedTime);
 		}
 	}
 
@@ -198,13 +232,23 @@ public class JumpObject extends ActionObject {
 		return this;
 	}
 
-	public JumpListener getJumpListener() {
+	public JumpCheckListener getJumpListener() {
 		return listener;
 	}
 
-	public JumpObject setJumpListener(JumpListener listener) {
+	public JumpObject setJumpListener(JumpCheckListener listener) {
 		this.listener = listener;
 		return this;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 1;
+		hashCode = LSystem.unite(hashCode, super.hashCode());
+		hashCode = LSystem.unite(hashCode, speed);
+		hashCode = LSystem.unite(hashCode, jumpSpeed);
+		hashCode = LSystem.unite(hashCode, GRAVITY);
+		return hashCode;
 	}
 
 }

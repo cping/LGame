@@ -122,6 +122,10 @@ public class GameKey {
 		return type == SysKey.UP;
 	}
 
+	public boolean isKey(String keyName) {
+		return SysKey.toIntKey(keyName) == keyCode;
+	}
+
 	/**
 	 * copy当前GameKey
 	 * 

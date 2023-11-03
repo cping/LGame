@@ -25,7 +25,6 @@ import loon.action.map.AStarFindHeuristic;
 import loon.action.map.AStarFinder;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
-import loon.action.map.Side;
 import loon.action.map.TileMap;
 import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
@@ -68,8 +67,6 @@ public class MoveObject extends ActionObject {
 
 	private int movingLength;
 
-	private int direction = EMPTY;
-
 	private int lastDirection = EMPTY;
 
 	private boolean isClicked;
@@ -99,7 +96,7 @@ public class MoveObject extends ActionObject {
 		if (map == null) {
 			this.tiles = new TileMap(LSystem.viewSize.newField2D());
 		}
-		this.timer = new EaseTimer(EasingMode.Linear);
+		this.timer = EaseTimer.at(1f, EasingMode.Linear);
 		this.isCheckCollision = true;
 		this.isCompleted = false;
 		this.allDirection = false;
@@ -123,47 +120,47 @@ public class MoveObject extends ActionObject {
 	}
 
 	public MoveObject pressedLeft() {
-		direction = TLEFT;
+		setDirection(TLEFT);
 		return this;
 	}
 
 	public MoveObject pressedRight() {
-		direction = TRIGHT;
+		setDirection(TRIGHT);
 		return this;
 	}
 
 	public MoveObject pressedDown() {
-		direction = TDOWN;
+		setDirection(TDOWN);
 		return this;
 	}
 
 	public MoveObject pressedUp() {
-		direction = TUP;
+		setDirection(TUP);
 		return this;
 	}
 
 	public MoveObject pressedIsoLeft() {
-		direction = LEFT;
+		setDirection(LEFT);
 		return this;
 	}
 
 	public MoveObject pressedIsoRight() {
-		direction = RIGHT;
+		setDirection(RIGHT);
 		return this;
 	}
 
 	public MoveObject pressedIsoDown() {
-		direction = DOWN;
+		setDirection(DOWN);
 		return this;
 	}
 
 	public MoveObject pressedIsoUp() {
-		direction = UP;
+		setDirection(UP);
 		return this;
 	}
 
 	public MoveObject releaseDirection() {
-		this.direction = EMPTY;
+		setDirection(EMPTY);
 		return this;
 	}
 
@@ -173,7 +170,7 @@ public class MoveObject extends ActionObject {
 
 	private boolean moveState() {
 		this.movingLength = 0;
-		return moveTo(direction);
+		return moveTo(getDirection());
 	}
 
 	private void updateDirection(final int dir) {
@@ -464,10 +461,12 @@ public class MoveObject extends ActionObject {
 		return this;
 	}
 
+	@Override
 	public float getTouchX() {
 		return touchX;
 	}
 
+	@Override
 	public float getTouchY() {
 		return touchY;
 	}
@@ -507,7 +506,7 @@ public class MoveObject extends ActionObject {
 		}
 		if (tiles == null || findPath == null || isComplete()) {
 			if (isClicked) {
-				direction = EMPTY;
+				setDirection(EMPTY);
 			}
 			isClicked = false;
 			return;
@@ -523,14 +522,14 @@ public class MoveObject extends ActionObject {
 						startY = tiles.tilesToPixelsY(moveStart.y());
 						endX = moveEnd.x() * tiles.getTileWidth();
 						endY = moveEnd.y() * tiles.getTileHeight();
-						direction = Field2D.getDirection(startX, startY, endX, endY);
+						setDirection(Field2D.getDirection(startX, startY, endX, endY));
 						findPath.removeIndex(0);
 					} else {
 						findPath.clear();
 					}
 				}
 			}
-			switch (direction) {
+			switch (getDirection()) {
 			case Config.TUP:
 				startY -= getMoveSpeed();
 				if (startY < endY) {
@@ -617,7 +616,7 @@ public class MoveObject extends ActionObject {
 			}
 
 		}
-		updateDirection(direction);
+		updateDirection(getDirection());
 
 	}
 
@@ -634,17 +633,8 @@ public class MoveObject extends ActionObject {
 		return this;
 	}
 
-	public int getDirection() {
-		return direction;
-	}
-
 	public float getSpeed() {
 		return speed;
-	}
-
-	public MoveObject setDirection(int d) {
-		this.direction = d;
-		return this;
 	}
 
 	public MoveObject setSpeed(int speed) {
@@ -713,10 +703,6 @@ public class MoveObject extends ActionObject {
 	public MoveObject setDirectionListener(DirectionListener d) {
 		this.directionListener = d;
 		return this;
-	}
-
-	public String getDirectionString() {
-		return Side.getDirectionName(direction);
 	}
 
 	@Override

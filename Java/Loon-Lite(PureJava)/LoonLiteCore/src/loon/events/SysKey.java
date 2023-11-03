@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -609,6 +609,10 @@ public class SysKey {
 		return SysInputFactory.finalKey.isUp();
 	}
 
+	public static boolean isKey(String keyName) {
+		return SysInputFactory.finalKey.keyCode == toIntKey(keyName);
+	}
+
 	public static void clear() {
 		keys.clear();
 	}
@@ -623,6 +627,10 @@ public class SysKey {
 
 	public static ActionKey getOnlyKey() {
 		return SysInputFactory.onlyKey;
+	}
+
+	public static boolean isKeyPressed(String keyName) {
+		return isKeyPressed(toIntKey(keyName));
 	}
 
 	public static boolean isKeyPressed(int key) {
@@ -641,7 +649,11 @@ public class SysKey {
 		}
 	}
 
-	public static boolean isKeyRelease(int key) {
+	public static boolean isKeyReleased(String keyName) {
+		return isKeyReleased(toIntKey(keyName));
+	}
+
+	public static boolean isKeyReleased(int key) {
 		if (key == SysKey.ANY_KEY) {
 			return keys.length > 0 && !SysInputFactory.onlyKey.isPressed();
 		} else {

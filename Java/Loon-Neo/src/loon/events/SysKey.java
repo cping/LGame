@@ -609,6 +609,10 @@ public class SysKey {
 		return SysInputFactory.finalKey.isUp();
 	}
 
+	public static boolean isKey(String keyName) {
+		return SysInputFactory.finalKey.keyCode == toIntKey(keyName);
+	}
+
 	public static void clear() {
 		keys.clear();
 	}
@@ -623,6 +627,10 @@ public class SysKey {
 
 	public static ActionKey getOnlyKey() {
 		return SysInputFactory.onlyKey;
+	}
+
+	public static boolean isKeyPressed(String keyName) {
+		return isKeyPressed(toIntKey(keyName));
 	}
 
 	public static boolean isKeyPressed(int key) {
@@ -641,7 +649,11 @@ public class SysKey {
 		}
 	}
 
-	public static boolean isKeyRelease(int key) {
+	public static boolean isKeyReleased(String keyName) {
+		return isKeyReleased(toIntKey(keyName));
+	}
+
+	public static boolean isKeyReleased(int key) {
 		if (key == SysKey.ANY_KEY) {
 			return keys.length > 0 && !SysInputFactory.onlyKey.isPressed();
 		} else {

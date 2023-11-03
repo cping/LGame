@@ -27,6 +27,7 @@ import loon.action.map.Field2D;
 import loon.action.map.Side;
 import loon.action.map.TileMap;
 import loon.action.map.items.Attribute;
+import loon.utils.CollectionUtils;
 import loon.utils.StrBuilder;
 
 /**
@@ -41,6 +42,10 @@ public abstract class ActionObject extends Entity implements Config {
 	protected Animation animation;
 
 	protected TileMap tiles;
+
+	protected float velocityX;
+
+	protected float velocityY;
 
 	public ActionObject(float x, float y, String path) {
 		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
@@ -170,6 +175,60 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
+	public String getDirectionString() {
+		return Side.getDirectionName(getDirection());
+	}
+
+	public float getVelocityX() {
+		return this.velocityX;
+	}
+
+	public float getVelocityY() {
+		return this.velocityY;
+	}
+
+	public ActionObject setVelocityX(final float vx) {
+		this.velocityX = vx;
+		return this;
+	}
+
+	public ActionObject setVelocityY(final float vy) {
+		this.velocityY = vy;
+		return this;
+	}
+
+	public ActionObject setVelocity(final float v) {
+		return setVelocity(v, v);
+	}
+
+	public ActionObject setVelocity(final float vx, final float vy) {
+		this.setVelocityX(vx);
+		this.setVelocityY(vy);
+		return this;
+	}
+
+	public ActionObject drag(final float drag) {
+		this.velocityX = (drag * this.velocityX);
+		this.velocityY = (drag * this.velocityY);
+		return this;
+	}
+
+	public boolean isMovingLeft() {
+		return this.velocityX < 0f;
+	}
+
+	public boolean isMovingRight() {
+		return this.velocityX > 0f;
+	}
+
+	public boolean isMovingUp() {
+		return this.velocityY < 0f;
+	}
+
+	public boolean isMovingDown() {
+		return this.velocityY > 0f;
+	}
+
 	@Override
 	public LTexture getBitmap() {
 		return animation.getSpriteImage();
@@ -189,6 +248,33 @@ public abstract class ActionObject extends Entity implements Config {
 		final StrBuilder sbr = new StrBuilder();
 		this.toString(sbr);
 		return sbr.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		if (tiles == null) {
+			return super.hashCode();
+		}
+		int hashCode = 1;
+		hashCode = LSystem.unite(hashCode, super.hashCode());
+		if (attribute != null) {
+			hashCode = LSystem.unite(hashCode, attribute.hashCode());
+		}
+		if (animation != null) {
+			hashCode = LSystem.unite(hashCode, animation.hashCode());
+		}
+		if (tiles != null) {
+			hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
+			hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
+			hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(tiles.getOffset().x));
+			hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(tiles.getOffset().y));
+			hashCode = LSystem.unite(hashCode, tiles.getWidth());
+			hashCode = LSystem.unite(hashCode, tiles.getHeight());
+			hashCode = LSystem.unite(hashCode, tiles.getTileWidth());
+			hashCode = LSystem.unite(hashCode, tiles.getTileHeight());
+			hashCode = LSystem.unite(hashCode, CollectionUtils.hashCode(tiles.getMap()));
+		}
+		return hashCode;
 	}
 
 	@Override

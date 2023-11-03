@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,6 +22,7 @@ package loon.events;
 
 import loon.LSystem;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 
@@ -48,6 +49,8 @@ public class GameTouch {
 	protected long timeUp;
 
 	protected long duration;
+
+	protected boolean isDraging;
 
 	GameTouch() {
 		reset();
@@ -189,7 +192,7 @@ public class GameTouch {
 	}
 
 	public int getTileX(int tileX) {
-		return (int) (x / tileX);
+		return MathUtils.iceil(x / tileX);
 	}
 
 	public float getY() {
@@ -197,7 +200,7 @@ public class GameTouch {
 	}
 
 	public int getTileY(int tileY) {
-		return (int) (y / tileY);
+		return MathUtils.iceil(y / tileY);
 	}
 
 	public float getDX() {
@@ -207,8 +210,6 @@ public class GameTouch {
 	public float getDY() {
 		return dy;
 	}
-
-	boolean isDraging;
 
 	public boolean isLeft() {
 		return button == SysTouch.LEFT;
@@ -234,6 +235,14 @@ public class GameTouch {
 		return button == SysTouch.TOUCH_MOVE;
 	}
 
+	public boolean isDrag() {
+		return isDraging || button == SysTouch.TOUCH_DRAG;
+	}
+
+	public boolean isButton(String keyName) {
+		return SysTouch.toIntKey(keyName) == button;
+	}
+
 	public GameTouch setState(int s) {
 		this.button = s;
 		return this;
@@ -243,12 +252,12 @@ public class GameTouch {
 		return this.button;
 	}
 
-	public boolean isDrag() {
-		return isDraging;
+	public Vector2f get() {
+		return new Vector2f(x, y);
 	}
 
-	public Vector2f get() {
-		return new Vector2f((int) x, (int) y);
+	public boolean isType(String keyName) {
+		return SysTouch.toIntType(keyName) == type;
 	}
 
 	public boolean lowerLeft() {
@@ -269,7 +278,7 @@ public class GameTouch {
 
 	/**
 	 * 判断触屏按下事件是否超过了当前系统时间
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean justPressed() {
@@ -278,7 +287,7 @@ public class GameTouch {
 
 	/**
 	 * 判断触屏按下事件是否超过了指定的时间
-	 *
+	 * 
 	 * @param time
 	 * @return
 	 */
@@ -288,7 +297,7 @@ public class GameTouch {
 
 	/**
 	 * 判断触屏松开事件是否超过了当前系统时间
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean justReleased() {
@@ -297,7 +306,7 @@ public class GameTouch {
 
 	/**
 	 * 判断触屏松开事件是否超过了指定的时间
-	 *
+	 * 
 	 * @param time
 	 * @return
 	 */
@@ -307,7 +316,7 @@ public class GameTouch {
 
 	/**
 	 * 触屏（或鼠标）按下的具体时间
-	 *
+	 * 
 	 * @return
 	 */
 	public long getTimeDown() {
@@ -316,7 +325,7 @@ public class GameTouch {
 
 	/**
 	 * 触屏(或鼠标)松开的具体时间
-	 *
+	 * 
 	 * @return
 	 */
 	public long getTimeUp() {
@@ -325,7 +334,7 @@ public class GameTouch {
 
 	/**
 	 * 触屏(或鼠标)按下到松开的具体耗时
-	 *
+	 * 
 	 * @return
 	 */
 	public long getDuration() {
@@ -334,7 +343,7 @@ public class GameTouch {
 
 	/**
 	 * copy当前GameTouch
-	 *
+	 * 
 	 * @return
 	 */
 	public GameTouch cpy() {
@@ -366,14 +375,9 @@ public class GameTouch {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameTouch");
-		builder.kv("id", id).comma()
-		.kv("point", pointer).comma()
-		.kv("button", button).comma()
-		.kv("timeDown", timeDown).comma()
-		.kv("timeUp", timeUp).comma()
-		.kv("duration", duration).comma()
-		.kv("active", _active).comma()
-		.kv("orientation", _orientation);
+		builder.kv("id", id).comma().kv("point", pointer).comma().kv("button", button).comma().kv("timeDown", timeDown)
+				.comma().kv("timeUp", timeUp).comma().kv("duration", duration).comma().kv("active", _active).comma()
+				.kv("orientation", _orientation);
 		return builder.toString();
 	}
 

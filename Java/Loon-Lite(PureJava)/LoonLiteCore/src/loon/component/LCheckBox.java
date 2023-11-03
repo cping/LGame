@@ -212,7 +212,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	protected void processKeyPressed() {
-		if (this.isSelected() && SysKey.isKeyPressed(SysKey.ENTER)) {
+		if (this.isSelected() && isKeyDown(SysKey.ENTER)) {
 			this.pressedTime = 5;
 			this.pressed = true;
 			this.doClick();
@@ -221,7 +221,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	protected void processKeyReleased() {
-		if (this.isSelected() && SysKey.isKeyRelease(SysKey.ENTER)) {
+		if (this.isSelected() && isKeyUp(SysKey.ENTER)) {
 			this.pressed = false;
 		}
 	}

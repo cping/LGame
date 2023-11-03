@@ -22,6 +22,7 @@ package loon.events;
 
 import loon.LSystem;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.TimeUtils;
 
@@ -48,6 +49,8 @@ public class GameTouch {
 	protected long timeUp;
 
 	protected long duration;
+
+	protected boolean isDraging;
 
 	GameTouch() {
 		reset();
@@ -189,7 +192,7 @@ public class GameTouch {
 	}
 
 	public int getTileX(int tileX) {
-		return (int) (x / tileX);
+		return MathUtils.iceil(x / tileX);
 	}
 
 	public float getY() {
@@ -197,7 +200,7 @@ public class GameTouch {
 	}
 
 	public int getTileY(int tileY) {
-		return (int) (y / tileY);
+		return MathUtils.iceil(y / tileY);
 	}
 
 	public float getDX() {
@@ -207,8 +210,6 @@ public class GameTouch {
 	public float getDY() {
 		return dy;
 	}
-
-	boolean isDraging;
 
 	public boolean isLeft() {
 		return button == SysTouch.LEFT;
@@ -234,6 +235,14 @@ public class GameTouch {
 		return button == SysTouch.TOUCH_MOVE;
 	}
 
+	public boolean isDrag() {
+		return isDraging || button == SysTouch.TOUCH_DRAG;
+	}
+
+	public boolean isButton(String keyName) {
+		return SysTouch.toIntKey(keyName) == button;
+	}
+
 	public GameTouch setState(int s) {
 		this.button = s;
 		return this;
@@ -243,12 +252,12 @@ public class GameTouch {
 		return this.button;
 	}
 
-	public boolean isDrag() {
-		return isDraging;
+	public Vector2f get() {
+		return new Vector2f(x, y);
 	}
 
-	public Vector2f get() {
-		return new Vector2f((int) x, (int) y);
+	public boolean isType(String keyName) {
+		return SysTouch.toIntType(keyName) == type;
 	}
 
 	public boolean lowerLeft() {

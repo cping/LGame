@@ -34,10 +34,10 @@ import loon.canvas.LColor;
 import loon.component.LPad;
 import loon.events.ActionKey;
 import loon.events.SysKey;
-import loon.events.UpdateListener;
 import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
-import loon.utils.timer.LTimerContext;
+import loon.utils.timer.LTimer;
+import loon.utils.timer.Task;
 
 public class GameMapTest extends Stage {
 
@@ -46,13 +46,10 @@ public class GameMapTest extends Stage {
 
 		private static final float SPEED = 1;
 
-		protected float vx;
-		protected float vy;
-
 		public Enemy(float x, float y, Animation animation, TileMap tiles) {
 			super(x, y, 32, 32, animation, tiles);
-			vx = -SPEED;
-			vy = 0;
+			velocityX = -SPEED;
+			velocityY = 0;
 		}
 
 		@Override
@@ -61,9 +58,9 @@ public class GameMapTest extends Stage {
 			float x = getX();
 			float y = getY();
 
-			vy += 0.6f;
+			velocityY += 0.6f;
 
-			float newX = x + vx;
+			float newX = x + velocityX;
 
 			// 判断预期坐标是否与瓦片相撞(X坐标测试)
 			Vector2f tile = tiles.getTileCollision(this, newX, y);
@@ -71,27 +68,27 @@ public class GameMapTest extends Stage {
 			if (tile == null) {
 				x = newX;
 			} else {
-				if (vx > 0) {
+				if (velocityX > 0) {
 					x = tiles.tilesToPixelsX(tile.x) - getWidth();
-				} else if (vx < 0) {
+				} else if (velocityX < 0) {
 					x = tiles.tilesToPixelsY(tile.x + 1);
 				}
-				vx = -vx;
+				velocityX = -velocityX;
 			}
 
-			float newY = y + vy;
+			float newY = y + velocityY;
 
 			// 判断预期坐标是否与瓦片相撞(y坐标测试)
 			tile = tiles.getTileCollision(this, x, newY);
 			if (tile == null) {
 				y = newY;
 			} else {
-				if (vy > 0) {
+				if (velocityY > 0) {
 					y = tiles.tilesToPixelsY(tile.y) - getHeight();
-					vy = 0;
-				} else if (vy < 0) {
+					velocityY = 0;
+				} else if (velocityY < 0) {
 					y = tiles.tilesToPixelsY(tile.y + 1);
-					vy = 0;
+					velocityY = 0;
 				}
 			}
 			// 注入新坐标
@@ -237,52 +234,37 @@ public class GameMapTest extends Stage {
 		follow(hero);
 
 		// 监听跳跃事件
-		hero.listener = new JumpObject.JumpListener() {
+		hero.listener = (x, y) -> {
 
-			public void update(long elapsedTime) {
-
+			if (indexMap.getTileID(x, y) == 'C') {
+				indexMap.setTileID(x, y, 'c');
+				Enemy enemy = new Enemy(indexMap.tilesToPixelsX(x), indexMap.tilesToPixelsY(y - 1),
+						new Animation(enemyAnimation), indexMap);
+				add(enemy);
+				// 标注地图已脏，强制缓存刷新
+				indexMap.setDirty(true);
+			} else if (indexMap.getTileID(x + 1, y) == 'C') {
+				indexMap.setTileID(x + 1, y, 'c');
+				indexMap.setDirty(true);
 			}
 
-			// 检查角色与地图中瓦片的碰撞
-			public void check(int x, int y) {
-				if (indexMap.getTileID(x, y) == 'C') {
-					indexMap.setTileID(x, y, 'c');
-					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(x), indexMap.tilesToPixelsY(y - 1),
-							new Animation(enemyAnimation), indexMap);
-					add(enemy);
-					// 标注地图已脏，强制缓存刷新
-					indexMap.setDirty(true);
-				} else if (indexMap.getTileID(x + 1, y) == 'C') {
-					indexMap.setTileID(x + 1, y, 'c');
-					indexMap.setDirty(true);
-				}
-
-			}
 		};
 
 		// 对应向左行走的键盘事件
-		ActionKey goLeftKey = new ActionKey() {
-			public void act(long e) {
-				if (!heroLocked.get()) {
-					hero.setMirror(true);
-					hero.accelerateLeft();
-				}
+		keyPress("left", () -> {
+			if (!heroLocked.get()) {
+				hero.setMirror(true);
+				hero.accelerateLeft();
 			}
-		};
-
-		addActionKey(SysKey.LEFT, goLeftKey);
+		});
 
 		// 对应向右行走的键盘事件
-		ActionKey goRightKey = new ActionKey() {
-			public void act(long e) {
-				if (!heroLocked.get()) {
-					hero.setMirror(false);
-					hero.accelerateRight();
-				}
+		keyPress("right", () -> {
+			if (!heroLocked.get()) {
+				hero.setMirror(false);
+				hero.accelerateRight();
 			}
-		};
-
-		addActionKey(SysKey.RIGHT, goRightKey);
+		});
 
 		// 对应跳跃的键盘事件（DETECT_INITIAL_PRESS_ONLY表示在放开之前，此按键不会再次触发）
 		ActionKey jumpKey = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY) {
@@ -324,43 +306,47 @@ public class GameMapTest extends Stage {
 		add(pad);
 
 		// 地图中角色事件监听(每帧都会触发一次此监听)
-		UpdateListener updateListener = new UpdateListener() {
+		setUpdateListener((sprite, elapsedTime) -> {
 
-			public void act(ActionObject sprite, long elapsedTime) {
-
-				// 如果主角与地图上其它对象发生碰撞（以下分别验证）
-				if (hero.isCollision(sprite)) {
-					// 与敌人
-					if (sprite instanceof Enemy) {
-						Enemy e = (Enemy) sprite;
-						if (hero.y() < e.y()) {
-							hero.setForceJump(true);
-							hero.jump();
-							removeTileObject(e);
-						} else {
-							damage();
-						}
-						// 与金币
-					} else if (sprite instanceof Coin) {
-						Coin coin = (Coin) sprite;
-						removeTileObject(coin);
-						// 与加速道具
-					} else if (sprite instanceof Accelerator) {
-						removeTileObject(sprite);
-						Accelerator accelerator = (Accelerator) sprite;
-						accelerator.use(hero);
-						// 与二次弹跳道具
-					} else if (sprite instanceof JumperTwo) {
-						removeTileObject(sprite);
-						JumperTwo jumperTwo = (JumperTwo) sprite;
-						jumperTwo.use(hero);
+			// 如果主角与地图上其它对象发生碰撞（以下分别验证）
+			if (hero.isCollision(sprite)) {
+				// 与敌人
+				if (sprite instanceof Enemy) {
+					Enemy e = (Enemy) sprite;
+					if (hero.y() < e.y()) {
+						hero.setForceJump(true);
+						hero.jump();
+						removeTileObject(e);
+					} else {
+						damage();
 					}
+					// 与金币
+				} else if (sprite instanceof Coin) {
+					Coin coin = (Coin) sprite;
+					removeTileObject(coin);
+					// 与加速道具
+				} else if (sprite instanceof Accelerator) {
+					removeTileObject(sprite);
+					Accelerator accelerator = (Accelerator) sprite;
+					accelerator.use(hero);
+					// 与二次弹跳道具
+				} else if (sprite instanceof JumperTwo) {
+					removeTileObject(sprite);
+					JumperTwo jumperTwo = (JumperTwo) sprite;
+					jumperTwo.use(hero);
 				}
 			}
-		};
-		setUpdateListener(updateListener);
-		selfAction().shakeTo(3f, 3f).start();
 
+		});
+		selfAction().shakeTo(3f, 3f).start();
+		// 提交一个定时任务,0.1秒执行一次
+		Task task = LTimer.postTask(() -> {
+			if (hero != null) {
+				hero.stop();
+			}
+		}, 0.1f);
+		// 关闭Screen时停止任务
+		putRelease(task);
 	}
 
 	private RotateTo rotate;
@@ -397,13 +383,6 @@ public class GameMapTest extends Stage {
 			});
 			// 让角色闪烁并且翻转
 			hero.selfAction().parallelTo(new FlashTo(), rotate).start();
-		}
-	}
-
-	@Override
-	public void update(LTimerContext context) {
-		if (hero != null) {
-			hero.stop();
 		}
 	}
 

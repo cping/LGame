@@ -42,6 +42,7 @@ import loon.action.sprite.Sprites.Created;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
+import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
@@ -50,6 +51,8 @@ import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
 import loon.geom.Point;
+import loon.geom.PointF;
+import loon.geom.PointI;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Shape;
@@ -1344,6 +1347,102 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		RectBox rectDst = getRectBox();
 		return CollisionHelper.checkAABBvsAABB(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight(), 0,
 				rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
+	}
+
+	public float getTouchDX() {
+		final Screen screen = getScreen();
+		return toPixelScaleX(screen == null ? SysTouch.getDX() : screen.getTouchDX());
+	}
+
+	public float getTouchDY() {
+		final Screen screen = getScreen();
+		return toPixelScaleY(screen == null ? SysTouch.getDY() : screen.getTouchDY());
+	}
+
+	public float getTouchX() {
+		final Screen screen = getScreen();
+		return toPixelScaleX(screen == null ? SysTouch.getX() : screen.getTouchX());
+	}
+
+	public float getTouchY() {
+		final Screen screen = getScreen();
+		return toPixelScaleY(screen == null ? SysTouch.getY() : screen.getTouchY());
+	}
+
+	public boolean isPointInUI(Vector2f v) {
+		return isPointInUI(v.x, v.y);
+	}
+
+	public boolean isPointInUI(PointI p) {
+		return isPointInUI(p.x, p.y);
+	}
+
+	public boolean isPointInUI(PointF p) {
+		return isPointInUI(p.x, p.y);
+	}
+
+	public boolean isPointInUI(float x, float y) {
+		return getCollisionBox().contains(x, y);
+	}
+
+	public boolean isPointInUI() {
+		return isPointInUI(getTouchX(), getTouchY());
+	}
+
+	public boolean isKeyDown(int key) {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysKey.isKeyPressed(key);
+		}
+		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
+	}
+
+	public boolean isKeyUp(int key) {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysKey.isKeyReleased(key);
+		}
+		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
+	}
+
+	public boolean isKeyDown(String key) {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysKey.isKeyPressed(key);
+		}
+		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
+	}
+
+	public boolean isKeyUp(String key) {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysKey.isKeyReleased(key);
+		}
+		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
+	}
+
+	public boolean isClickDown() {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysTouch.isDown();
+		}
+		return screen.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
+	}
+
+	public boolean isClickUp() {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysTouch.isUp();
+		}
+		return screen.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
+	}
+
+	public boolean isClickDrag() {
+		final Screen screen = getScreen();
+		if (screen == null) {
+			return SysTouch.isDrag();
+		}
+		return screen.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}
 
 	@Override
