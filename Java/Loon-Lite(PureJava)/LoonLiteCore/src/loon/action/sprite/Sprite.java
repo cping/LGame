@@ -33,6 +33,7 @@ import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionObject;
+import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
@@ -106,6 +107,8 @@ public class Sprite extends LObject<ISprite>
 	private Vector2f _pivot = new Vector2f(-1, -1);
 
 	private Sprites _sprites = null;
+
+	private SpriteCollisionListener _collSpriteListener;
 
 	/**
 	 * 默认构造函数
@@ -935,7 +938,7 @@ public class Sprite extends LObject<ISprite>
 	public RectBox getCollisionArea() {
 		return getCollisionBox();
 	}
-	
+
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
@@ -1290,6 +1293,10 @@ public class Sprite extends LObject<ISprite>
 		return getCollisionBox().collided(s);
 	}
 
+	public Gravity getGravity() {
+		return new Gravity("Sprite", this);
+	}
+
 	private float toPixelScaleX(float x) {
 		return MathUtils.iceil(x / _scaleX);
 	}
@@ -1384,6 +1391,18 @@ public class Sprite extends LObject<ISprite>
 		}
 		this._debugDrawColor = debugColor;
 		return this;
+	}
+
+	public Sprite collision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
+
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	@Override

@@ -179,8 +179,9 @@ public class JumpObject extends ActionObject {
 	}
 
 	@Override
-	public void update(long elapsedTime) {
-		super.update(elapsedTime);
+	public void onProcess(long elapsedTime) {
+		super.onProcess(elapsedTime);
+		
 		final TileMap map = tiles;
 		float x = getX();
 		float y = getY();
@@ -218,7 +219,6 @@ public class JumpObject extends ActionObject {
 				isCheck(tile.x(), tile.y());
 			}
 		}
-
 		setLocation(x, y);
 		if (listener != null && listener instanceof JumpListener) {
 			((JumpListener) listener).update(elapsedTime);

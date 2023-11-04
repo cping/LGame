@@ -68,8 +68,7 @@ public abstract class ActionObject extends Entity implements Config {
 	}
 
 	@Override
-	public void update(long elapsedTime) {
-		super.update(elapsedTime);
+	void onProcess(long elapsedTime) {
 		if (animation != null) {
 			animation.update(elapsedTime);
 			LTexture texture = animation.getSpriteImage();
@@ -236,7 +235,6 @@ public abstract class ActionObject extends Entity implements Config {
 
 	@Override
 	public void toString(final StrBuilder s) {
-		s.append(super.toString());
 		s.append(LSystem.LS);
 		s.append(" [");
 		s.append(_currentSide);
@@ -246,6 +244,7 @@ public abstract class ActionObject extends Entity implements Config {
 	@Override
 	public String toString() {
 		final StrBuilder sbr = new StrBuilder();
+		sbr.append(super.toString());
 		this.toString(sbr);
 		return sbr.toString();
 	}

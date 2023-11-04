@@ -40,6 +40,8 @@ public class CollisionManager implements CollisionChecker {
 
 	private final CollisionChecker _collisionChecker = new BSPCollisionChecker();
 
+	private boolean _closed;
+
 	public CollisionManager() {
 		initialize(32);
 	}
@@ -232,6 +234,11 @@ public class CollisionManager implements CollisionChecker {
 	}
 
 	@Override
+	public void setOffsetPos(Vector2f offset) {
+		_collisionChecker.setOffsetPos(offset);
+	}
+
+	@Override
 	public void setOffsetPos(float x, float y) {
 		_collisionChecker.setOffsetPos(x, y);
 	}
@@ -266,6 +273,10 @@ public class CollisionManager implements CollisionChecker {
 		return _collisionChecker.getInTheLayer();
 	}
 
+	public boolean isClosed() {
+		return _closed;
+	}
+
 	@Override
 	public void dispose() {
 		if (_freeObjects != null) {
@@ -278,5 +289,6 @@ public class CollisionManager implements CollisionChecker {
 			_collisionChecker.dispose();
 			_collisionChecker.clear();
 		}
+		_closed = true;
 	}
 }

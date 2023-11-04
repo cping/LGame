@@ -81,6 +81,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	protected Sprites _sprites = null;
 
+	private SpriteCollisionListener _collSpriteListener;
+
 	private boolean _createShadow;
 
 	private boolean _xySort;
@@ -486,6 +488,18 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public DisplayObject setResizeListener(ResizeListener<DisplayObject> listener) {
 		this._resizeListener = listener;
 		return this;
+	}
+
+	public DisplayObject collision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
+	
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	public DisplayObject setOffsetX(float sx) {

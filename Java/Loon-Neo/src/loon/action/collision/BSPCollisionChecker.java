@@ -42,7 +42,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private boolean _itlayer = false;
 
-	private final Vector2f _offsetLocation = new Vector2f();
+	private Vector2f _offsetLocation = new Vector2f();
 
 	public final static CollisionNode getNodeForActor(CollisionObject obj) {
 		return (CollisionNode) obj.getCollisionData();
@@ -759,6 +759,11 @@ public class BSPCollisionChecker implements CollisionChecker {
 	@Override
 	public boolean getInTheLayer() {
 		return _itlayer;
+	}
+
+	@Override
+	public void setOffsetPos(Vector2f offset) {
+		_offsetLocation = offset;
 	}
 
 	@Override

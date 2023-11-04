@@ -170,7 +170,7 @@ public class AnimatedEntity extends Entity {
 	}
 
 	@Override
-	public void onUpdate(final long elapsedTime) {
+	void onProcess(final long elapsedTime) {
 		if (this._animationRunning) {
 
 			final int loopCount = this._animationData.getLoopCount();

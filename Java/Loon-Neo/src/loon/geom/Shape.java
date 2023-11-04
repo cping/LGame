@@ -38,6 +38,60 @@ import loon.utils.TArray;
 public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
 	/**
+	 * SAT凸多边形碰撞检测(Separating Axis Theorem)
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	public static Vector2f collideSAT(final Shape s1, final Shape s2) {
+		if (s1 == null || s2 == null) {
+			return null;
+		}
+		s1.checkPoints();
+		s2.checkPoints();
+		final float max = Float.MAX_VALUE;
+		float overlap = max;
+		Vector2f displacement = Vector2f.ZERO();
+		final TArray<Shape> list = new TArray<Shape>(s1, s2);
+		final TArray<Vector2f> s1vertices = s1.getVertices();
+		final TArray<Vector2f> s2vertices = s2.getVertices();
+		for (int n = 0; n < list.size; n++) {
+			final TArray<Vector2f> vertices = list.get(n).getVertices();
+			for (int i = 0; i < vertices.size; i++) {
+				Vector2f a = vertices.get(i);
+				Vector2f b = vertices.get((i + 1) % vertices.size);
+				Vector2f axisProj = b.sub(a).nor().unit();
+				float min1 = max;
+				float max1 = -max;
+				for (int j = 0; j < s1vertices.size; j++) {
+					final float q = s1vertices.get(j).dot(axisProj);
+					min1 = MathUtils.min(min1, q);
+					max1 = MathUtils.max(max1, q);
+				}
+				float min2 = max;
+				float max2 = -max;
+				for (int j = 0; j < s2vertices.size; j++) {
+					final float q = s2vertices.get(j).dot(axisProj);
+					min2 = MathUtils.min(min2, q);
+					max2 = MathUtils.max(max2, q);
+				}
+				final float o = MathUtils.min(max1, max2) - MathUtils.max(min1, min2);
+				if (o < 0) {
+					return null;
+				}
+				if (o < MathUtils.abs(overlap)) {
+					float o1 = max2 - min1;
+					float o2 = min2 - max1;
+					overlap = MathUtils.abs(o1) < MathUtils.abs(o2) ? o1 : o2;
+					displacement = axisProj.scale(overlap);
+				}
+			}
+		}
+		return displacement;
+	}
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -394,6 +448,19 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return new float[] { tx / len, ty / len };
 	}
 
+	private float[] getNormal(float[] start, float[] end) {
+		float dx = start[0] - end[0];
+		float dy = start[1] - end[1];
+		float len = MathUtils.sqrt((dx * dx) + (dy * dy));
+		dx /= len;
+		dy /= len;
+		return new float[] { -dy, dx };
+	}
+
+	public Vector2f collideSAT(Shape s) {
+		return collideSAT(this, s);
+	}
+
 	public boolean contains(XY xy) {
 		return xy == null ? false : contains(xy.getX(), xy.getY());
 	}
@@ -406,15 +473,6 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			}
 		}
 		return true;
-	}
-
-	private float[] getNormal(float[] start, float[] end) {
-		float dx = start[0] - end[0];
-		float dy = start[1] - end[1];
-		float len = MathUtils.sqrt((dx * dx) + (dy * dy));
-		dx /= len;
-		dy /= len;
-		return new float[] { -dy, dx };
 	}
 
 	public boolean includes(float x, float y) {

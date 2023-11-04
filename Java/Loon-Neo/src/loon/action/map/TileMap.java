@@ -1415,6 +1415,11 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	}
 
 	@Override
+	public void onCollision(ISprite coll, int dir) {
+
+	}
+
+	@Override
 	public void onResize() {
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);

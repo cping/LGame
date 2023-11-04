@@ -1356,7 +1356,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		setScale(w / getWidth(), h / getHeight());
 		return this;
 	}
-	
+
 	@Override
 	public boolean isBounded() {
 		return false;
@@ -2150,6 +2150,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		RectBox rectDst = getRectBox();
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
+	}
+
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+
 	}
 
 	@Override

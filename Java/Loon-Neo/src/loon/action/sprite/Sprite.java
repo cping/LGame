@@ -108,6 +108,8 @@ public class Sprite extends LObject<ISprite>
 
 	private Sprites _sprites = null;
 
+	private SpriteCollisionListener _collSpriteListener;
+
 	/**
 	 * 默认构造函数
 	 * 
@@ -942,7 +944,7 @@ public class Sprite extends LObject<ISprite>
 	public RectBox getCollisionArea() {
 		return getCollisionBox();
 	}
-	
+
 	@Override
 	public RectBox getRectBox() {
 		return getCollisionBox();
@@ -1395,6 +1397,18 @@ public class Sprite extends LObject<ISprite>
 		}
 		this._debugDrawColor = debugColor;
 		return this;
+	}
+
+	public Sprite collision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
+
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	@Override

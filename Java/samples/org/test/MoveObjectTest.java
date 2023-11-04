@@ -21,9 +21,9 @@
 package org.test;
 
 import loon.Stage;
+import loon.action.map.Side;
 import loon.action.sprite.MoveObject;
 import loon.component.LToast;
-import loon.events.Touched;
 import loon.utils.Easing.EasingMode;
 
 public class MoveObjectTest extends Stage {
@@ -31,9 +31,19 @@ public class MoveObjectTest extends Stage {
 	@Override
 	public void create() {
 
+		// 检查精灵集合的当前视图中是否存在对象碰撞
+		getSprites().setCheckViewCollision(true);
+
+		// 构建一个entity类,位置120,200
+		node("entity", "a4.png", 120, 200);
+		node("entity", "ccc.png", 220, 200);
 		final MoveObject o = new MoveObject(266, 99, "ball.png");
 
-		 add(o);
+		// 监听碰撞
+		o.collision((s, d) -> {
+			System.out.println("撞上了,方向" + Side.getDirectionName(d));
+		});
+		add(o);
 		// 不检查碰撞
 		// o.setAllowCheckCollision(false);
 		// 全方位移动
@@ -48,13 +58,8 @@ public class MoveObjectTest extends Stage {
 
 			}
 		});
-		down(new Touched() {
-
-			@Override
-			public void on(float x, float y) {
-				// o.pressedIsoLeft();
-				o.onTouch(x, y);
-			}
+		down((x, y) -> {
+			o.onTouch(x, y);
 		});
 	}
 

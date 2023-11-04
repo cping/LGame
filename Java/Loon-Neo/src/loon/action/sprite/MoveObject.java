@@ -49,6 +49,8 @@ public class MoveObject extends ActionObject {
 		public void onDirection(int dir);
 	}
 
+	private boolean _collisionIgnore;
+
 	private CollisionListener collisionListener;
 
 	private DirectionListener directionListener;
@@ -428,12 +430,19 @@ public class MoveObject extends ActionObject {
 			} else if (dir == DOWN) {
 				move_45D_down(moveSpeed);
 			}
-			if (collisionListener != null) {
+			if (!_collisionIgnore && collisionListener != null) {
 				collisionListener.onCollision(px, py, getX(), getY());
 			}
 		}
 		updateDirection(dir);
 		return rMoved;
+	}
+
+	@Override
+	public void onCollision(ISprite spr, int dir) {
+		if (!_collisionIgnore) {
+			super.onCollision(spr, dir);
+		}
 	}
 
 	public MoveObject onTouch(GameTouch e) {
@@ -497,8 +506,9 @@ public class MoveObject extends ActionObject {
 	}
 
 	@Override
-	public void update(long elapsedTime) {
-		super.update(elapsedTime);
+	public void onProcess(long elapsedTime) {
+		super.onProcess(elapsedTime);
+
 		timer.update(elapsedTime);
 
 		if (!isClicked) {
@@ -596,7 +606,7 @@ public class MoveObject extends ActionObject {
 				break;
 			}
 
-			Vector2f tile = isCheckCollision ? tiles.getTileCollision(this, startX, startY) : null;
+			final Vector2f tile = isCheckCollision ? tiles.getTileCollision(this, startX, startY) : null;
 
 			if (tile != null) {
 				int sx = tiles.tilesToPixelsX(tile.x);
@@ -617,7 +627,6 @@ public class MoveObject extends ActionObject {
 
 		}
 		updateDirection(getDirection());
-
 	}
 
 	protected float getMoveSpeed() {
@@ -702,6 +711,15 @@ public class MoveObject extends ActionObject {
 
 	public MoveObject setDirectionListener(DirectionListener d) {
 		this.directionListener = d;
+		return this;
+	}
+
+	public boolean isCollisionIgnore() {
+		return _collisionIgnore;
+	}
+
+	public MoveObject setCollisionIgnore(boolean c) {
+		this._collisionIgnore = c;
 		return this;
 	}
 

@@ -336,6 +336,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public void onCollision(ISprite coll, int dir) {
+
+	}
+	
+	@Override
 	public RocSSprite setOffset(Vector2f v) {
 		return this;
 	}

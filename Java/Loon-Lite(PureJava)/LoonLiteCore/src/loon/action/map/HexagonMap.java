@@ -2137,6 +2137,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
+	public void onCollision(ISprite coll, int dir) {
+
+	}
+
+	@Override
 	public void onResize() {
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);

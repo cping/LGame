@@ -1368,6 +1368,11 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return true;
 	}
 
+	public Vector2f unit() {
+		final float len = this.length();
+		return len == 0 ? new Vector2f(0) : this.scale(1f / len);
+	}
+
 	public boolean isUnit() {
 		return isUnit(0.000000001f);
 	}

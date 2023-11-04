@@ -66,7 +66,7 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	@Override
 	void setY(float y);
-	
+
 	@Override
 	void setColor(LColor c);
 
@@ -74,7 +74,7 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 	LColor getColor();
 
 	boolean showShadow();
-	
+
 	boolean autoXYSort();
 
 	void createUI(GLEx g);
@@ -83,7 +83,12 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	void update(long elapsedTime);
 
+	@Override
+	ISprite setSize(float w, float h);
+
 	void onResize();
+
+	void onCollision(ISprite coll, int dir);
 
 	@Override
 	int getLayer();

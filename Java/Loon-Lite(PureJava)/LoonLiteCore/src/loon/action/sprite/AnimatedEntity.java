@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -164,13 +164,13 @@ public class AnimatedEntity extends Entity {
 		super(ani.getSpriteImage());
 		this.setLocation(x, y);
 		this.setSize(width, height);
-		this._playEvents = new ObjectMap<>(8);
+		this._playEvents = new ObjectMap<String, AnimatedEntity.PlayIndex>(8);
 		this._animation = ani;
 		this._animationDispose = (this._animation != null);
 	}
 
 	@Override
-	public void onUpdate(final long elapsedTime) {
+	void onProcess(final long elapsedTime) {
 		if (this._animationRunning) {
 
 			final int loopCount = this._animationData.getLoopCount();

@@ -30,6 +30,7 @@ import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.PlaceActions;
+import loon.action.map.Side;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
@@ -116,6 +117,12 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private final String _sprites_name;
 
 	private boolean _autoSortLayer;
+
+	private boolean _checkViewCollision;
+
+	private RectBox _collViewSize;
+
+	private TArray<ISprite> _collisionObjects;
 
 	public Sprites(Screen screen, int w, int h) {
 		this(null, screen, w, h);
@@ -1102,6 +1109,74 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return;
 	}
 
+	public boolean isCheckViewCollision() {
+		return _checkViewCollision;
+	}
+
+	public Sprites setCheckViewCollision(boolean c) {
+		this._checkViewCollision = c;
+		return this;
+	}
+
+	protected void checkViewCollisionObjects() {
+		this.checkViewCollisionObjects(0f, 0f);
+	}
+
+	protected void checkViewCollisionObjects(float x, float y) {
+		if (!_checkViewCollision) {
+			return;
+		}
+		float minX, minY, maxX, maxY;
+		if (this._isViewWindowSet) {
+			minX = x + this.viewX;
+			maxX = minX + this.viewWidth;
+			minY = y + this.viewY;
+			maxY = minY + this.viewHeight;
+		} else {
+			minX = x;
+			maxX = x + this._width;
+			minY = y;
+			maxY = y + this._height;
+		}
+		if (_collViewSize == null) {
+			_collViewSize = new RectBox(minX, minY, maxX, maxY);
+		} else {
+			_collViewSize.setBounds(minX, minY, maxX, maxY);
+		}
+		if (_collisionObjects == null) {
+			_collisionObjects = new TArray<ISprite>();
+		} else {
+			_collisionObjects.clear();
+		}
+		for (int i = 0; i < this._size; i++) {
+			ISprite spr = this._sprites[i];
+			if (spr != null && spr.isVisible()) {
+				if (_collViewSize.collided(spr.getCollisionBox())) {
+					_collisionObjects.add(spr);
+				}
+			}
+		}
+		final int size = _collisionObjects.size;
+		for (int i = 0; i < size; i++) {
+			ISprite src = _collisionObjects.get(i);
+			for (int j = size - 1; j > -1; j--) {
+				ISprite dst = _collisionObjects.get(j);
+				if (src != dst) {
+					if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+						callCollision(src, dst);
+					}
+				}
+			}
+		}
+	}
+
+	private void callCollision(ISprite spr, ISprite dst) {
+		if (spr == null || dst == null) {
+			return;
+		}
+		spr.onCollision(dst, Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox()));
+	}
+
 	/**
 	 * 刷新事务
 	 * 
@@ -1147,6 +1222,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				_lastPosHash = _currentPoshash;
 			}
 		}
+		checkViewCollisionObjects();
 	}
 
 	/**
@@ -1873,7 +1949,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return;
 		}
 		this._visible = this._createShadow = false;
-		this._autoSortLayer = false;
+		this._autoSortLayer = this._checkViewCollision = false;
 		if (_spriteShadow != null) {
 			_spriteShadow.close();
 		}

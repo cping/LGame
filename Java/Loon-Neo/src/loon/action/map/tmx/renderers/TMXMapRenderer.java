@@ -344,7 +344,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		this.scaleX = sx;
 		this.scaleY = sy;
 	}
-	
+
 	@Override
 	public TMXMapRenderer setSize(float w, float h) {
 		setScale(w / getWidth(), h / getHeight());
@@ -469,6 +469,11 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		RectBox rectDst = getRectBox();
 		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 		return a.intersects(b);
+	}
+
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+
 	}
 
 	@Override

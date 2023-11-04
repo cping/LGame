@@ -41,6 +41,7 @@ import loon.action.map.Field2D;
 import loon.action.sprite.Sprites.Created;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.events.EventAction;
 import loon.events.ResizeListener;
 import loon.events.SysKey;
 import loon.events.SysTouch;
@@ -61,6 +62,7 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.utils.HelperUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
@@ -135,7 +137,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	private boolean _stopUpdate = false;
 
+	private SpriteCollisionListener _collSpriteListener;
+
 	private Sprites _sprites = null;
+
+	private EventAction _loopAction;
 
 	private Shape _otherShape = null;
 
@@ -906,6 +912,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		final boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
+			final int blend = g.getBlendMode();
+			g.setBlendMode(_GL_BLEND);
 			final boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
 					|| !(_skewX == 0 && _skewY == 0)) || _flipX || _flipY) && _deform;
 			final float nx = drawX(offsetX);
@@ -997,6 +1005,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				g.restoreBrush();
 				g.restoreTx();
 			}
+			g.setBlendMode(blend);
 		}
 	}
 
@@ -1068,17 +1077,47 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		onUpdate(elapsedTime);
+		if (_loopAction != null) {
+			HelperUtils.callEventAction(_loopAction, this);
+		}
+	}
+
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	protected void onUpdate(final long elapsedTime) {
 
 	}
+	
+	public Entity collision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
+
+	public Entity loop(EventAction la) {
+		this._loopAction = la;
+		return this;
+	}
 
 	@Override
 	public void update(long elapsedTime) {
 		if (!this._ignoreUpdate) {
+			this.onProcess(elapsedTime);
 			this.onManagedUpdate(elapsedTime);
 		}
+	}
+
+	/**
+	 * 内部循环用函数,不对外开放
+	 * 
+	 * @param elapsedTime
+	 */
+	void onProcess(long elapsedTime) {
+
 	}
 
 	public boolean isCollision(Entity o) {
@@ -2187,6 +2226,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		_stopUpdate = false;
+		_loopAction = null;
 		_resizeListener = null;
 		_otherShape = null;
 		_oldNodeType = null;

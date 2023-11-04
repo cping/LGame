@@ -214,7 +214,7 @@ public class BulletEntity extends Entity {
 				if (bu != null) {
 					movePos(bu);
 					bu.update(elapsedTime);
-					if (limitMoved && !getRectBox().intersects(bu.getRectBox())) {
+					if (limitMoved && !getCollisionBox().contains(bu.getRectBox())) {
 						removeWorld(bu);
 					}
 				}
@@ -266,23 +266,27 @@ public class BulletEntity extends Entity {
 		return limitMoved;
 	}
 
-	public void setLimitMoved(boolean limitMoved) {
+	public BulletEntity setLimitMoved(boolean limitMoved) {
 		this.limitMoved = limitMoved;
+		return this;
 	}
 
-	public void initializeCollision(int tileSize) {
+	public BulletEntity initializeCollision(int tileSize) {
 		getCollisionManager().initialize(tileSize);
+		return this;
 	}
 
-	public void initializeCollision(int tileSizeX, int tileSizeY) {
+	public BulletEntity initializeCollision(int tileSizeX, int tileSizeY) {
 		getCollisionManager().initialize(tileSizeX, tileSizeY);
+		return this;
 	}
 
-	public void setCollisionInTheLayer(boolean itlayer) {
+	public BulletEntity setCollisionInTheLayer(boolean itlayer) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().setInTheLayer(itlayer);
+		return this;
 	}
 
 	public boolean getCollisionInTheLayer() {
@@ -292,25 +296,36 @@ public class BulletEntity extends Entity {
 		return getCollisionManager().getInTheLayer();
 	}
 
-	public void setCollisionOffsetPos(float x, float y) {
+	public BulletEntity setCollisionOffsetPos(Vector2f offset) {
 		if (closed) {
-			return;
+			return this;
+		}
+		getCollisionManager().setOffsetPos(offset);
+		return this;
+	}
+
+	public BulletEntity setCollisionOffsetPos(float x, float y) {
+		if (closed) {
+			return this;
 		}
 		getCollisionManager().setOffsetPos(x, y);
+		return this;
 	}
 
-	public void setCollisionOffsetX(float x) {
+	public BulletEntity setCollisionOffsetX(float x) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().setOffsetX(x);
+		return this;
 	}
 
-	public void setCollisionOffsetY(float y) {
+	public BulletEntity setCollisionOffsetY(float y) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().setOffsetY(y);
+		return this;
 	}
 
 	public Vector2f getCollisionOffsetPos() {
@@ -320,25 +335,28 @@ public class BulletEntity extends Entity {
 		return getCollisionManager().getOffsetPos();
 	}
 
-	public void putCollision(CollisionObject obj) {
+	public BulletEntity putCollision(CollisionObject obj) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().addObject(obj);
+		return this;
 	}
 
-	public void removeCollision(CollisionObject obj) {
+	public BulletEntity removeCollision(CollisionObject obj) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().removeObject(obj);
+		return this;
 	}
 
-	public void removeCollision(String objFlag) {
+	public BulletEntity removeCollision(String objFlag) {
 		if (closed) {
-			return;
+			return this;
 		}
 		getCollisionManager().removeObject(objFlag);
+		return this;
 	}
 
 	public int getCollisionSize() {

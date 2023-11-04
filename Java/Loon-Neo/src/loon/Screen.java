@@ -36,6 +36,7 @@ import loon.action.collision.GravityHandler;
 import loon.action.collision.GravityResult;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.IEntity;
 import loon.action.sprite.ISprite;
@@ -5426,12 +5427,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 返回当前Touch行为的移动边界管理器
+	 * 
+	 * @return
+	 */
+	public Side getTouchDirectionSide() {
+		return new Side(getTouchDirection());
+	}
+
+	/**
+	 * 是否开启了碰撞管理器
+	 * 
+	 * @return
+	 */
+	public boolean isCollisionManagerOpen() {
+		return !_collisionClosed;
+	}
+
+	/**
 	 * 获得碰撞器实例对象(默认不启用,需要用户手动调用)
 	 * 
 	 * @return
 	 */
 	public CollisionManager getCollisionManager() {
-		if (_collisionClosed || _collisionManager == null) {
+		if (_collisionClosed || _collisionManager == null
+				|| (_collisionManager != null && _collisionManager.isClosed())) {
 			_collisionManager = new CollisionManager();
 			_collisionClosed = false;
 		}
@@ -5443,8 +5463,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param tileSize
 	 */
-	public void initializeCollision(int tileSize) {
+	public Screen initializeCollision(int tileSize) {
 		getCollisionManager().initialize(tileSize);
+		return this;
 	}
 
 	/**
@@ -5453,8 +5474,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param tileSizeX
 	 * @param tileSizeY
 	 */
-	public void initializeCollision(int tileSizeX, int tileSizeY) {
+	public Screen initializeCollision(int tileSizeX, int tileSizeY) {
 		getCollisionManager().initialize(tileSizeX, tileSizeY);
+		return this;
 	}
 
 	/**
@@ -5462,11 +5484,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param itlayer
 	 */
-	public void setCollisionInTheLayer(boolean itlayer) {
+	public Screen setCollisionInTheLayer(boolean itlayer) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.setInTheLayer(itlayer);
+		return this;
 	}
 
 	/**
@@ -5481,17 +5504,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _collisionManager.getInTheLayer();
 	}
 
+	public Screen setCollisionOffsetPos(Vector2f offset) {
+		if (_collisionClosed) {
+			return this;
+		}
+		_collisionManager.setOffsetPos(offset);
+		return this;
+	}
+
 	/**
 	 * 让碰撞器偏移指定坐标后产生碰撞
 	 * 
 	 * @param x
 	 * @param y
 	 */
-	public void setCollisionOffsetPos(float x, float y) {
+	public Screen setCollisionOffsetPos(float x, float y) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.setOffsetPos(x, y);
+		return this;
 	}
 
 	/**
@@ -5499,11 +5531,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param x
 	 */
-	public void setCollisionOffsetX(float x) {
+	public Screen setCollisionOffsetX(float x) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.setOffsetX(x);
+		return this;
 	}
 
 	/**
@@ -5511,11 +5544,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param y
 	 */
-	public void setCollisionOffsetY(float y) {
+	public Screen setCollisionOffsetY(float y) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.setOffsetY(y);
+		return this;
 	}
 
 	/**
@@ -5535,11 +5569,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param obj
 	 */
-	public void putCollision(CollisionObject obj) {
+	public Screen putCollision(CollisionObject obj) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.addObject(obj);
+		return this;
 	}
 
 	/**
@@ -5547,11 +5582,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param obj
 	 */
-	public void removeCollision(CollisionObject obj) {
+	public Screen removeCollision(CollisionObject obj) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.removeObject(obj);
+		return this;
 	}
 
 	/**
@@ -5559,11 +5595,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param objFlag
 	 */
-	public void removeCollision(String objFlag) {
+	public Screen removeCollision(String objFlag) {
 		if (_collisionClosed) {
-			return;
+			return this;
 		}
 		_collisionManager.removeObject(objFlag);
+		return this;
 	}
 
 	/**
@@ -5686,12 +5723,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 注销碰撞器
 	 * 
 	 */
-	public void disposeCollision() {
+	public Screen disposeCollision() {
 		_collisionClosed = true;
 		if (_collisionManager != null) {
 			_collisionManager.dispose();
 			_collisionManager = null;
 		}
+		return this;
 	}
 
 	/**
@@ -6241,6 +6279,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_replaceDelay.setDelay(10);
 				}
 				_currentX = _currentY = _currentFrame = 0;
+				_collisionClosed = true;
 				_isClose = true;
 				_isTranslate = false;
 				_isNext = false;

@@ -88,6 +88,8 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	void onResize();
 
+	void onCollision(ISprite coll, int dir);
+
 	@Override
 	int getLayer();
 
