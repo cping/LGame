@@ -43,7 +43,7 @@ public class GravityHandler implements LRelease {
 		public void action(Gravity g, float x, float y);
 	}
 
-	private final Pool<GravityResult> resultGravity = new Pool<GravityResult>(Integer.MAX_VALUE) {
+	private final Pool<GravityResult> resultGravity = new Pool<GravityResult>(1024) {
 
 		@Override
 		protected GravityResult newObject() {
