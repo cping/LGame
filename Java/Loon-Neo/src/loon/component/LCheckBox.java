@@ -51,6 +51,10 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return new LCheckBox(txt, x, y, c, font);
 	}
 
+	public final static LCheckBox at(IFont font, String txt, int x, int y) {
+		return new LCheckBox(txt, x, y, LColor.white, font);
+	}
+
 	private LTexture unchecked, checked;
 
 	private float boxsize;

@@ -207,7 +207,9 @@ public class StatusBar extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		drawBar(g, goalWidth, currentWidth, _width, getX() + offsetX, getY() + offsetY);
+		final float offX = drawX(offsetX);
+		final float offY = drawY(offsetY);
+		drawBar(g, goalWidth, currentWidth, _width, offX, offY);
 		if (this.showValue) {
 			String displayValue = null;
 			if (StringUtils.isEmpty(numberString)) {
@@ -222,8 +224,8 @@ public class StatusBar extends Entity {
 			g.setFont(numberFont);
 			int width = numberFont.stringWidth(displayValue);
 			int height = numberFont.getHeight();
-			g.drawString(displayValue, (x() + _width / 2 - width / 2) + _offset.x + offsetX,
-					(y() + _height / 2 - height / 2) + _offset.y + offsetY - 2, fontColor);
+			g.drawString(displayValue, offX + (_width / 2 - width / 2), offY + (_height / 2 - height / 2) - 2,
+					fontColor);
 			g.setFont(font);
 		}
 	}

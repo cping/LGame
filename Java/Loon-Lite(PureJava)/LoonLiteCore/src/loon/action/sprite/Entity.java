@@ -912,8 +912,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		final boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
 		if (exist) {
-			final int blend = g.getBlendMode();
-			g.setBlendMode(_GL_BLEND);
 			final boolean update = ((_objectRotation != 0 || !(_scaleX == 1f && _scaleY == 1f)
 					|| !(_skewX == 0 && _skewY == 0)) || _flipX || _flipY) && _deform;
 			final float nx = drawX(offsetX);
@@ -1005,7 +1003,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				g.restoreBrush();
 				g.restoreTx();
 			}
-			g.setBlendMode(blend);
 		}
 	}
 

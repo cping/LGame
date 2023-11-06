@@ -147,8 +147,7 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 				g.setColor(oval_colors[i]);
 				float w = this._width + i * this._width * 0.1f;
 				float h = this._height + i * this._height * 0.1f;
-				g.fillOval((g.getWidth() / 2 - w / 2f) + sx + _offset.x, (g.getHeight() / 2 - h / 2f) + sy + _offset.y,
-						w, h);
+				g.fillOval(drawX((g.getWidth() / 2 - w / 2f) + sx), drawY((g.getHeight() / 2 - h / 2f) + sy), w, h);
 			}
 			g.setColor(old);
 			if (usetex) {

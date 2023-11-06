@@ -2642,6 +2642,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return (T) node;
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, IFont font, String text, float x, float y, float w, float h) {
+		Object node = create(typeName, font, text, x, y, w, h);
+		add(node);
+		return (T) node;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, float x, float y, float w, float h) {
+		Object node = createPanel(typeName, x, y, w, h);
+		add(node);
+		return (T) node;
+	}
+
 	public Screen add(Object... obj) {
 		for (int i = 0; i < obj.length; i++) {
 			add(obj[i]);

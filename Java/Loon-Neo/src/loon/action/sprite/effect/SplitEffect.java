@@ -136,11 +136,11 @@ public class SplitEffect extends Entity implements BaseEffect {
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (!completed) {
-			final float x1 = movePosOne.x + getX() + offsetX + _offset.x;
-			final float y1 = movePosOne.y + getY() + offsetY + _offset.y;
+			final float x1 = movePosOne.x + drawX(offsetX);
+			final float y1 = movePosOne.y + drawY(offsetY);
 
-			final float x2 = movePosTwo.x + getX() + offsetX + _offset.x;
-			final float y2 = movePosTwo.y + getY() + offsetY + _offset.y;
+			final float x2 = movePosTwo.x + drawX(offsetX);
+			final float y2 = movePosTwo.y + drawY(offsetY);
 
 			switch (direction) {
 			case Config.LEFT:
@@ -172,7 +172,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 		this.completed = c;
 		return this;
 	}
-	
+
 	public int getMultiples() {
 		return multiples;
 	}

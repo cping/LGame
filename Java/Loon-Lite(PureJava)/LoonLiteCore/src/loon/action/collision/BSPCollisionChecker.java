@@ -21,7 +21,6 @@
  */
 package loon.action.collision;
 
-import loon.LSysException;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
@@ -35,30 +34,34 @@ public class BSPCollisionChecker implements CollisionChecker {
 
 	private final static int MAX_SIZE = 1024;
 
-	private final Pool<RectBox> _rectangles = new Pool<RectBox>(MAX_SIZE) {
+	private class BSPNodePool extends Pool<BSPCollisionNode> {
 
-		@Override
-		protected RectBox newObject() {
-			return new RectBox();
+		private BSPCollisionChecker _checker;
+
+		public BSPNodePool(BSPCollisionChecker c, int max) {
+			super(max);
+			this._checker = c;
 		}
 
 		@Override
-		public boolean isLimit(RectBox src, RectBox dst) {
+		protected BSPCollisionNode newObject() {
+			return new BSPCollisionNode(_checker, _checker.createRect(), 0, 0);
+		}
+
+		@Override
+		public boolean isLimit(BSPCollisionNode src, BSPCollisionNode dst) {
 			return false;
 		}
 
 		@Override
-		protected RectBox filterObtain(RectBox o) {
-			return o.setEmpty();
+		protected BSPCollisionNode filterObtain(BSPCollisionNode o) {
+			o.free();
+			o.setArea(_checker.createRect(), false);
+			return o;
 		}
+	}
 
-	};
-
-	private final BSPCollisionNode[] _collisionCache = new BSPCollisionNode[MAX_SIZE];
-
-	private int _tail = 0;
-
-	private int _size = 0;
+	private final Pool<BSPCollisionNode> _nodes = new BSPNodePool(this, MAX_SIZE);
 
 	private boolean _itlayer = false;
 
@@ -73,37 +76,21 @@ public class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	private final BSPCollisionNode getBSPNode() {
-		if (_size == 0) {
-			return new BSPCollisionNode(_rectangles.obtain(), 0, 0);
-		} else {
-			int ppos = _tail - _size;
-			if (ppos < 0) {
-				ppos += MAX_SIZE;
-			}
-			BSPCollisionNode node = _collisionCache[ppos];
-			node.setParent((BSPCollisionNode) null);
-			--_size;
-			return node;
+		return _nodes.obtain();
+	}
+
+	private final void freeNode(BSPCollisionNode node) {
+		if (node != null) {
+			_nodes.free(node);
 		}
 	}
 
-	private final void returnNode(BSPCollisionNode node) {
-		_collisionCache[_tail++] = node;
-		if (_tail == MAX_SIZE) {
-			_tail = 0;
-		}
-		_size = MathUtils.min(_size + 1, MAX_SIZE);
-		if (node.getLeft() != null || node.getRight() != null) {
-			throw new LSysException("Size Error !");
-		}
+	protected final RectBox createRect() {
+		return new RectBox();
 	}
 
-	public void startLoop() {
-
-	}
-
-	public void endLoop() {
-
+	protected final RectBox createRect(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
 	}
 
 	private final CollisionBaseQuery actorQuery = new CollisionBaseQuery();
@@ -179,15 +166,14 @@ public class BSPCollisionChecker implements CollisionChecker {
 		} else {
 			int idx = 0;
 			RectBox treeArea1 = this.bspTree.getArea();
-			final RectBox result1 = _rectangles.obtain();
-			final RectBox result2 = _rectangles.obtain();
+			final RectBox result1 = createRect();
+			final RectBox result2 = createRect();
 			for (; !treeArea1.contains(bounds) && idx < MAX_SIZE;) {
 				RectBox newArea;
 				BSPCollisionNode newTop;
 				if (bounds.getX() < treeArea1.getX()) {
 					by = (treeArea1.getX() - treeArea1.width);
-					newArea = _rectangles.obtain().set(by, treeArea1.getY(), treeArea1.getRight() - by,
-							treeArea1.height);
+					newArea = createRect(by, treeArea1.getY(), treeArea1.getRight() - by, treeArea1.height);
 					newTop = getBSPNode();
 					newTop.getArea().copy(newArea);
 					newTop.setSplitAxis(0);
@@ -198,8 +184,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				}
 				if (bounds.getRight() > treeArea1.getRight()) {
 					by = (treeArea1.getRight() + treeArea1.width);
-					newArea = _rectangles.obtain().set(treeArea1.getX(), treeArea1.getY(), by - treeArea1.getX(),
-							treeArea1.height);
+					newArea = createRect(treeArea1.getX(), treeArea1.getY(), by - treeArea1.getX(), treeArea1.height);
 					newTop = getBSPNode();
 					newTop.getArea().copy(newArea);
 					newTop.setSplitAxis(0);
@@ -210,8 +195,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				}
 				if (bounds.getY() < treeArea1.getY()) {
 					by = (treeArea1.getY() - treeArea1.height);
-					newArea = _rectangles.obtain().set(treeArea1.getX(), by, treeArea1.width,
-							treeArea1.getBottom() - by);
+					newArea = createRect(treeArea1.getX(), by, treeArea1.width, treeArea1.getBottom() - by);
 					newTop = getBSPNode();
 					newTop.getArea().copy(newArea);
 					newTop.setSplitAxis(1);
@@ -222,8 +206,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 				}
 				if (bounds.getBottom() > treeArea1.getBottom()) {
 					by = (treeArea1.getBottom() + treeArea1.height);
-					newArea = _rectangles.obtain().set(treeArea1.getX(), treeArea1.getY(), treeArea1.width,
-							by - treeArea1.getY());
+					newArea = createRect(treeArea1.getX(), treeArea1.getY(), treeArea1.width, by - treeArea1.getY());
 					newTop = getBSPNode();
 					newTop.getArea().copy(newArea);
 					newTop.setSplitAxis(1);
@@ -334,7 +317,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 						}
 					}
 					node.setChild(1, (BSPCollisionNode) null);
-					returnNode(node);
+					freeNode(node);
 					node = parent;
 					continue;
 				}
@@ -354,13 +337,9 @@ public class BSPCollisionChecker implements CollisionChecker {
 					}
 
 					node.setChild(0, (BSPCollisionNode) null);
-					returnNode(node);
+					freeNode(node);
 					node = parent;
 					continue;
-				}
-				if (node != null) {
-					_rectangles.free(node.getLeftArea());
-					_rectangles.free(node.getRightArea());
 				}
 			}
 			idx++;
@@ -384,8 +363,8 @@ public class BSPCollisionChecker implements CollisionChecker {
 				this.addObject(obj);
 			} else {
 				RectBox bspArea;
-				final RectBox result1 = _rectangles.obtain();
-				final RectBox result2 = _rectangles.obtain();
+				final RectBox result1 = createRect();
+				final RectBox result2 = createRect();
 				while (node != null) {
 					bspNode = node.getBSPNode();
 					bspArea = bspNode.getArea();
@@ -829,13 +808,7 @@ public class BSPCollisionChecker implements CollisionChecker {
 		if (cacheNodeStack != null) {
 			cacheNodeStack.clear();
 		}
-		if (_collisionCache != null) {
-			for (int i = 0; i < _collisionCache.length; i++) {
-				if (_collisionCache[i] != null) {
-					_collisionCache[i] = null;
-				}
-			}
-		}
+		_nodes.clear();
 	}
 
 }

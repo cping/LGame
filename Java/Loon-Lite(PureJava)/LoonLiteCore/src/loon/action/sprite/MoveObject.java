@@ -26,8 +26,6 @@ import loon.action.map.AStarFinder;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
-import loon.action.sprite.MoveObject.CollisionListener;
-import loon.action.sprite.MoveObject.DirectionListener;
 import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;

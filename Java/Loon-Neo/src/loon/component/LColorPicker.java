@@ -57,16 +57,16 @@ public class LColorPicker extends LComponent {
 		this(x, y, 20, 12, gridSize);
 	}
 
-	public LColorPicker(int x, int y, int _colorRow, int _colorCol, int gridSize) {
-		super(x, y, _colorRow * gridSize, _colorCol * gridSize);
-		if (_colorCol < 1) {
+	public LColorPicker(int x, int y, int colorRow, int colorCol, int gridSize) {
+		super(x, y, colorRow * gridSize, colorRow * gridSize);
+		if (colorCol < 1) {
 			throw new LSysException("The color column only has a minimum of 1 ！");
 		}
-		if (_colorCol > 12) {
+		if (colorCol > 12) {
 			throw new LSysException("The color column only has a maximum of 12 ！");
 		}
-		this._colorRow = _colorRow;
-		this._colorCol = _colorCol;
+		this._colorRow = colorRow;
+		this._colorCol = colorCol;
 		this._gridSize = gridSize;
 		this._selected = -1;
 	}

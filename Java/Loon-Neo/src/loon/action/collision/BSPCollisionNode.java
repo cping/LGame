@@ -21,13 +21,14 @@
  */
 package loon.action.collision;
 
+import loon.LRelease;
 import loon.geom.RectBox;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.TArray;
 
-public final class BSPCollisionNode {
+public final class BSPCollisionNode implements LRelease {
 
 	private ObjectMap<CollisionObject, CollisionNode> _actors;
 
@@ -39,13 +40,16 @@ public final class BSPCollisionNode {
 
 	private float _splitPos;
 
+	private BSPCollisionChecker _checker;
+
 	private BSPCollisionNode _left;
 
 	private BSPCollisionNode _right;
 
 	private boolean _areaRipple;
 
-	public BSPCollisionNode(RectBox area, int splitAxis, int splitPos) {
+	public BSPCollisionNode(BSPCollisionChecker checker, RectBox area, int splitAxis, int splitPos) {
+		this._checker = checker;
 		this._area = area;
 		this._splitAxis = splitAxis;
 		this._splitPos = splitPos;
@@ -79,8 +83,12 @@ public final class BSPCollisionNode {
 	}
 
 	public BSPCollisionNode setArea(RectBox area) {
+		return setArea(area, true);
+	}
+
+	public BSPCollisionNode setArea(RectBox area, boolean r) {
 		this._area = area;
-		this._areaRipple = true;
+		this._areaRipple = r;
 		return this;
 	}
 
@@ -110,17 +118,17 @@ public final class BSPCollisionNode {
 
 	public RectBox getLeftArea() {
 		return this._splitAxis == 0
-				? new RectBox(this._area.getX(), this._area.getY(), this._splitPos - this._area.getX(),
+				? _checker.createRect(this._area.getX(), this._area.getY(), this._splitPos - this._area.getX(),
 						this._area.getHeight())
-				: new RectBox(this._area.getX(), this._area.getY(), this._area.getWidth(),
+				: _checker.createRect(this._area.getX(), this._area.getY(), this._area.getWidth(),
 						this._splitPos - this._area.getY());
 	}
 
 	public RectBox getRightArea() {
 		return this._splitAxis == 0
-				? new RectBox(this._splitPos, this._area.getY(), this._area.getRight() - this._splitPos,
+				? _checker.createRect(this._splitPos, this._area.getY(), this._area.getRight() - this._splitPos,
 						this._area.getHeight())
-				: new RectBox(this._area.getX(), this._splitPos, this._area.getWidth(),
+				: _checker.createRect(this._area.getX(), this._splitPos, this._area.getWidth(),
 						this._area.getBottom() - this._splitPos);
 	}
 
@@ -132,11 +140,9 @@ public final class BSPCollisionNode {
 		if (this._left != null) {
 			this._left.setArea(this.getLeftArea());
 		}
-
 		if (this._right != null) {
 			this._right.setArea(this.getRightArea());
 		}
-
 	}
 
 	public BSPCollisionNode getLeft() {
@@ -210,6 +216,23 @@ public final class BSPCollisionNode {
 			result.add(key.next());
 		}
 		return result;
+	}
+
+	public BSPCollisionNode free() {
+		this.clear();
+		this._splitAxis = 0f;
+		this._splitPos = 0f;
+		this._left = null;
+		this._right = null;
+		this._parent = null;
+		this._area = null;
+		this._areaRipple = false;
+		return this;
+	}
+
+	@Override
+	public void close() {
+		free();
 	}
 
 }

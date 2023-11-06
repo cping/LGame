@@ -27,7 +27,9 @@ import loon.action.sprite.Sprite;
 import loon.action.sprite.TextureObject;
 import loon.component.Actor;
 import loon.component.LButton;
+import loon.component.LMessage;
 import loon.component.LPaper;
+import loon.component.LSelect;
 import loon.geom.IV;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -38,29 +40,12 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 		if (StringUtils.isNullOrEmpty(typeName)) {
 			return false;
 		}
-		String tName = typeName.toLowerCase().trim();
-		boolean result = false;
-		if (tName.equals("entity") || tName.equals("ent") || tName.equals("e")) {
-			result = true;
-		} else if (tName.equals("sprite") || tName.equals("spr") || tName.equals("s")) {
-			result = true;
-		} else if (tName.equals("texture") || tName.equals("t")) {
-			result = true;
-		} else if (tName.equals("picture") || tName.equals("pic")) {
-			result = true;
-		} else if (tName.equals("actor") || tName.equals("a")) {
-			result = true;
-		} else if (tName.equals("paper") || tName.equals("p")) {
-			result = true;
-		} else if (tName.equals("button") || tName.equals("b")) {
-			result = true;
-		}
-		return result;
+		return toType(typeName) != TextureNodeType.Unknown;
 	}
 
 	public final static TextureNodeType toType(String typeName) {
 		if (StringUtils.isNullOrEmpty(typeName)) {
-			return TextureNodeType.Texture;
+			return TextureNodeType.Unknown;
 		}
 		String tName = typeName.toLowerCase().trim();
 		if (tName.equals("entity") || tName.equals("ent") || tName.equals("e")) {
@@ -74,11 +59,15 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 		} else if (tName.equals("actor") || tName.equals("a")) {
 			return TextureNodeType.Actor;
 		} else if (tName.equals("paper") || tName.equals("p")) {
-			return TextureNodeType.Actor;
+			return TextureNodeType.Paper;
 		} else if (tName.equals("button") || tName.equals("b")) {
 			return TextureNodeType.Button;
+		} else if (tName.equals("select") || tName.equals("sel")) {
+			return TextureNodeType.Select;
+		} else if (tName.equals("message") || tName.equals("mes")) {
+			return TextureNodeType.Message;
 		}
-		return TextureNodeType.Texture;
+		return TextureNodeType.Unknown;
 	}
 
 	public final static <T extends ActionBind> T create(String typeName, String path) {
@@ -124,8 +113,8 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 		}
 		this._nodeType = nodeType;
 		switch (_nodeType) {
-		case Entity:
 		default:
+		case Entity:
 			_value = (T) new Entity(texture, x, y);
 			break;
 		case Sprite:
@@ -145,6 +134,10 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 			break;
 		case Button:
 			_value = (T) new LButton(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
+		case Select:
+			_value = (T) new LSelect(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
+		case Message:
+			_value = (T) new LMessage(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
 		}
 	}
 

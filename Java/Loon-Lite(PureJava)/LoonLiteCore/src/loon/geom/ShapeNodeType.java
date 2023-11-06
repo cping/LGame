@@ -22,6 +22,6 @@ package loon.geom;
 
 public enum ShapeNodeType {
 
-	Point, Rectangle, Circle, Ellipse, Line, Polygon, Triangle
+	Unknown, Point, Rectangle, Circle, Ellipse, Line, Polygon, Triangle
 
 }

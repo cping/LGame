@@ -18,10 +18,23 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon;
 
-public enum ShapeNodeType {
-
-	Unknown, Point, Rectangle, Circle, Ellipse, Line, Polygon, Triangle
-
+public enum PanelNodeType {
+	Unknown, 
+	Layer, 
+	Gesture, 
+	Progress, 
+	ScrollContainer, 
+	MenuSelect, 
+	Radar, 
+	Slider, 
+	TabContainer,
+	Inventory,
+	TextArea,
+	TextBar,
+	TextList,
+	TextTree,
+	StatusBar,
+	TextEffect
 }

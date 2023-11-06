@@ -101,6 +101,10 @@ public class ScrollText extends Entity {
 		this(LSystem.getSystemGameFont(), new TextOptions(), text, x, y, width, height);
 	}
 
+	public ScrollText(String text, IFont font, int x, int y, int width, int height) {
+		this(font, new TextOptions(), text, x, y, width, height);
+	}
+
 	public ScrollText(TextOptions opt, String text, int x, int y, int width, int height) {
 		this(LSystem.getSystemGameFont(), opt, text, x, y, width, height);
 	}
@@ -118,8 +122,8 @@ public class ScrollText extends Entity {
 			this._text = new Text(font, text[0], opt);
 		} else {
 			StrBuilder sbr = new StrBuilder();
-			for (String element : text) {
-				sbr.append(element);
+			for (int i = 0, size = text.length; i < size; i++) {
+				sbr.append(text[i]);
 				sbr.append(LSystem.LS);
 			}
 			this._text = new Text(font, sbr.toString(), opt);
@@ -178,8 +182,8 @@ public class ScrollText extends Entity {
 		if (_stop) {
 			return;
 		}
-		_textX = _textMove.x + getX() + _offset.x + offsetX;
-		_textY = _textMove.y + getY() + _offset.y + offsetY;
+		_textX = _textMove.x + drawX(offsetX);
+		_textY = _textMove.y + drawY(offsetY);
 		_text.paintString(g, _textX, _textY, _baseColor);
 	}
 

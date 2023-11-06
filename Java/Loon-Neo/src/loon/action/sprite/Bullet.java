@@ -63,10 +63,10 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 	private boolean visible;
 	private boolean active;
 
-	private float width;
-	private float height;
-	private float scaleX;
-	private float scaleY;
+	private float _width;
+	private float _height;
+	private float _scaleX;
+	private float _scaleY;
 
 	private LColor baseColor;
 
@@ -127,15 +127,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 		this.direction = dir;
 		this.initSpeed = bulletInitSpeed;
 		this.bulletType = bulletType;
-		this.scaleX = this.scaleY = 1f;
+		this._scaleX = this._scaleY = 1f;
 		this.visible = true;
 		this.dirToAngle = true;
 		this.active = true;
 		this.closed = false;
-		this.width = w;
-		this.height = h;
+		this._width = w;
+		this._height = h;
 		this.setDirection(this.direction);
-		this.getRect(x, y, w, h);
 	}
 
 	public void draw(GLEx g) {
@@ -152,8 +151,6 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 			if (texture != null) {
 				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(),
 						baseColor.setAlpha(_objectAlpha), _objectRotation);
-				width = MathUtils.max(width, texture.width());
-				height = MathUtils.max(height, texture.height());
 			}
 			baseColor.a = tmp;
 		}
@@ -242,6 +239,20 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 	}
 
 	@Override
+	public RectBox getCollisionArea() {
+		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
+				_objectRect));
+	}
+
+	public float getScalePixelX() {
+		return ((_scaleX == 1f) ? getX() : (getX() + getWidth() / 2f));
+	}
+
+	public float getScalePixelY() {
+		return ((_scaleY == 1f) ? getY() : (getY() + getHeight() / 2f));
+	}
+
+	@Override
 	public RectBox getBoundingRect() {
 		return getCollisionArea();
 	}
@@ -283,12 +294,12 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	@Override
 	public float getWidth() {
-		return width * scaleX;
+		return _width > 1 ? (_width * this._scaleX) : animation == null ? 0 : (animation.getWidth() * this._scaleX);
 	}
 
 	@Override
 	public float getHeight() {
-		return height * scaleY;
+		return _height > 1 ? (_height * this._scaleY) : animation == null ? 0 : (animation.getHeight() * this._scaleY);
 	}
 
 	@Override
@@ -318,12 +329,12 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	@Override
 	public float getScaleX() {
-		return scaleX;
+		return _scaleX;
 	}
 
 	@Override
 	public float getScaleY() {
-		return scaleY;
+		return _scaleY;
 	}
 
 	public Bullet setScale(float scale) {
@@ -333,14 +344,24 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	@Override
 	public void setScale(float sx, float sy) {
-		this.scaleX = sx;
-		this.scaleY = sy;
+		this._scaleX = sx;
+		this._scaleY = sy;
 	}
 
 	@Override
 	public Bullet setSize(float w, float h) {
-		this.width = w;
-		this.height = h;
+		this._width = w;
+		this._height = h;
+		return this;
+	}
+
+	public Bullet setWidth(float w) {
+		this._width = w;
+		return this;
+	}
+
+	public Bullet setHeight(float h) {
+		this._height = h;
 		return this;
 	}
 

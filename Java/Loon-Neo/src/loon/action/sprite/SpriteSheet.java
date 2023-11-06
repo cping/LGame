@@ -156,28 +156,32 @@ public class SpriteSheet implements LRelease {
 		}
 	}
 
-	public void glBegin() {
+	public SpriteSheet glBegin() {
 		target.glBegin();
+		return this;
 	}
 
-	public void glEnd() {
+	public SpriteSheet glEnd() {
 		target.glEnd();
+		return this;
 	}
 
 	public int getMargin() {
 		return margin;
 	}
 
-	public void setMargin(int margin) {
+	public SpriteSheet setMargin(int margin) {
 		this.margin = margin;
+		return this;
 	}
 
 	public int getSpacing() {
 		return spacing;
 	}
 
-	public void setSpacing(int spacing) {
+	public SpriteSheet setSpacing(int spacing) {
 		this.spacing = spacing;
+		return this;
 	}
 
 	public Cache newCache() {
@@ -188,50 +192,56 @@ public class SpriteSheet implements LRelease {
 		return target;
 	}
 
-	public void setTarget(LTexture target) {
+	public SpriteSheet setTarget(LTexture target) {
 		if (this.target != null) {
 			this.target.close();
 			this.target = null;
 		}
 		this.target = target;
+		return this;
 	}
 
 	public int getTileWidth() {
 		return tw;
 	}
 
-	public void setTileWidth(int tw) {
+	public SpriteSheet setTileWidth(int tw) {
 		this.tw = tw;
+		return this;
 	}
 
 	public int getTileHeight() {
 		return th;
 	}
 
-	public void setTileHeight(int th) {
+	public SpriteSheet setTileHeight(int th) {
 		this.th = th;
+		return this;
 	}
 
 	public int getWidth() {
 		return width;
 	}
 
-	public void setWidth(int width) {
+	public SpriteSheet setWidth(int width) {
 		this.width = width;
+		return this;
 	}
 
 	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
+	public SpriteSheet setHeight(int height) {
 		this.height = height;
+		return this;
 	}
 
 	public boolean isClosed() {
 		return target == null || target.isClosed();
 	}
 
+	@Override
 	public void close() {
 		if (subImages != null) {
 			synchronized (subImages) {

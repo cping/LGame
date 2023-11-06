@@ -32,6 +32,8 @@ import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LimitedCounter;
+import loon.PanelNodeMaker;
+import loon.PanelNodeType;
 import loon.StringNodeMaker;
 import loon.StringNodeType;
 import loon.TextureNodeMaker;
@@ -1117,6 +1119,23 @@ public class HelperUtils {
 		return StringNodeMaker.create(nodeType, font, text, x, y);
 	}
 
+	public final static <T extends ActionBind> T create(PanelNodeType nodeType, float x, float y, float w, float h) {
+		return PanelNodeMaker.create(nodeType, x, y, w, h);
+	}
+
+	public final static <T extends ActionBind> T createPanel(String typeName, float x, float y, float w, float h) {
+		return PanelNodeMaker.create(typeName, x, y, w, h);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y) {
+		return StringNodeMaker.create(typeName, font, text, x, y);
+	}
+
+	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y,
+			float w, float h) {
+		return StringNodeMaker.create(typeName, font, text, x, y, w, h);
+	}
+
 	public final static <T extends ActionBind> T create(String typeName, String path) {
 		if (StringNodeMaker.isType(typeName)) {
 			return StringNodeMaker.create(typeName, path);
@@ -1137,10 +1156,6 @@ public class HelperUtils {
 
 	public final static <T extends ActionBind> T create(String typeName, LTexture texture, float x, float y) {
 		return TextureNodeMaker.create(typeName, texture, x, y);
-	}
-
-	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y) {
-		return StringNodeMaker.create(typeName, font, text, x, y);
 	}
 
 	public final static <T extends Shape> T create(String typeName, float[] points) {

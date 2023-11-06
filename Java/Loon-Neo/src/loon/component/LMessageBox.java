@@ -385,6 +385,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this(messages, null, SkinManager.get().getMessageSkin().getFont(), null, null, x, y, width, height);
 	}
 
+	public LMessageBox(String[] messages, IFont font, int x, int y, int width, int height) {
+		this(messages, null, font, null, null, x, y, width, height);
+	}
+
 	public LMessageBox(String[] messages, LTexture texture, IFont font, int x, int y, int width, int height) {
 		this(messages, null, font, null, texture, x, y, width, height);
 	}

@@ -125,7 +125,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		this.completed = finished;
 		return this;
 	}
-	
+
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (completed) {
@@ -258,20 +258,19 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		g.setColor(back);
 		for (int x = 0; x < tileWidth; x++) {
 			for (int y = 0; y < tileHeight; y++) {
+				final float offX = x * _width + offsetX;
+				final float offY = y * _height + offsetY;
 				if (usefore) {
 					if (conversions[x][y]) {
 						g.setColor(back);
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
-								_height);
+						g.fillRect(drawX(offX), drawY(offY), _width, _height);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
 						g.setColor(fore);
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
-								_height);
+						g.fillRect(drawX(offX), drawY(offY), _width, _height);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect((x * _width) + offsetX + _offset.x, (y * _height) + offsetY + _offset.y, _width,
-								_height);
+						g.fillRect(drawX(offX), drawY(offY), _width, _height);
 					}
 				}
 			}

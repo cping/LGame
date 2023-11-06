@@ -96,7 +96,7 @@ public final class StatusBars extends Entity {
 				for (int i = 0; i < size; i++) {
 					StatusBar bar = barCaches.get(i);
 					if (bar != null && bar.isVisible()) {
-						bar.createUI(g);
+						bar.createUI(g, offsetX, offsetY);
 					}
 				}
 			}

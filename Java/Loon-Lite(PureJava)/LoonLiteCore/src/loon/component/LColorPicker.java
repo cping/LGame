@@ -35,7 +35,7 @@ public class LColorPicker extends LComponent {
 	private final static int[] DefaultColors = new int[] { 0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF,
 			0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF };
 
-	private final TArray<LColor> _colors = new TArray<>();
+	private final TArray<LColor> _colors = new TArray<LColor>();
 
 	private final int _colorRow;
 
@@ -57,16 +57,16 @@ public class LColorPicker extends LComponent {
 		this(x, y, 20, 12, gridSize);
 	}
 
-	public LColorPicker(int x, int y, int _colorRow, int _colorCol, int gridSize) {
-		super(x, y, _colorRow * gridSize, _colorCol * gridSize);
-		if (_colorCol < 1) {
+	public LColorPicker(int x, int y, int colorRow, int colorCol, int gridSize) {
+		super(x, y, colorRow * gridSize, colorRow * gridSize);
+		if (colorCol < 1) {
 			throw new LSysException("The color column only has a minimum of 1 ！");
 		}
-		if (_colorCol > 12) {
+		if (colorCol > 12) {
 			throw new LSysException("The color column only has a maximum of 12 ！");
 		}
-		this._colorRow = _colorRow;
-		this._colorCol = _colorCol;
+		this._colorRow = colorRow;
+		this._colorCol = colorCol;
 		this._gridSize = gridSize;
 		this._selected = -1;
 	}
@@ -89,8 +89,10 @@ public class LColorPicker extends LComponent {
 				_colors.add(newColor);
 				final int tx = j * _gridSize;
 				final int ty = i * _gridSize;
-				g.fillRect(tx, ty, _gridSize, _gridSize, newColor);
-				g.drawRect(tx, ty, _gridSize - 1, _gridSize - 1, LColor.white);
+				g.setColor(newColor);
+				g.fillRect(tx, ty, _gridSize, _gridSize);
+				g.setColor(LColor.white);
+				g.strokeRect(tx, ty, _gridSize - 1, _gridSize - 1);
 			}
 		}
 		return img.texture();
@@ -118,10 +120,10 @@ public class LColorPicker extends LComponent {
 						g.fillRect(nx, ny, newTile, newTile, _colors.get(getColorIndex(tx, ty)));
 						g.drawRect(nx, ny, newTile, newTile, LColor.lightGray);
 					}
+
 				}
 			}
 		}
-
 	}
 
 	@Override

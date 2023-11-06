@@ -29,29 +29,12 @@ public class ShapeNodeMaker<T extends Shape> implements IV<T> {
 		if (StringUtils.isNullOrEmpty(typeName)) {
 			return false;
 		}
-		String tName = typeName.toLowerCase().trim();
-		boolean result = false;
-		if (tName.equals("point") || tName.equals("p")) {
-			result = true;
-		} else if (tName.equals("rectangle") || tName.equals("r")) {
-			result = true;
-		} else if (tName.equals("circle") || tName.equals("c")) {
-			result = true;
-		} else if (tName.equals("ellipse") || tName.equals("e")) {
-			result = true;
-		} else if (tName.equals("line") || tName.equals("l")) {
-			result = true;
-		} else if (tName.equals("polygon") || tName.equals("poly")) {
-			result = true;
-		} else if (tName.equals("triangle") || tName.equals("t")) {
-			result = true;
-		}
-		return result;
+		return toType(typeName) != ShapeNodeType.Unknown;
 	}
 
 	public final static ShapeNodeType toType(String typeName) {
 		if (StringUtils.isNullOrEmpty(typeName)) {
-			return ShapeNodeType.Rectangle;
+			return ShapeNodeType.Unknown;
 		}
 		String tName = typeName.toLowerCase().trim();
 		if (tName.equals("point") || tName.equals("p")) {
@@ -69,7 +52,7 @@ public class ShapeNodeMaker<T extends Shape> implements IV<T> {
 		} else if (tName.equals("triangle") || tName.equals("t")) {
 			return ShapeNodeType.Triangle;
 		}
-		return ShapeNodeType.Rectangle;
+		return ShapeNodeType.Unknown;
 	}
 
 	public final static <T extends Shape> T create(String typeName, float[] points) {
@@ -115,6 +98,7 @@ public class ShapeNodeMaker<T extends Shape> implements IV<T> {
 		case Point:
 			_value = (T) new Point(x, y);
 			break;
+		default:
 		case Rectangle:
 			_value = (T) new RectBox(x, y, w, h);
 			break;

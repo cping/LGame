@@ -22,6 +22,6 @@ package loon;
 
 public enum StringNodeType {
 
-	Sprite, Label, TextBar
+	Unknown, Sprite, Label, TextBar, Click, Message, Select, ScrollText, Check
 
 }

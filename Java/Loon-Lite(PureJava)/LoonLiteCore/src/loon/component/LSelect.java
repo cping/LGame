@@ -27,7 +27,6 @@ import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.SysKey;
-import loon.events.SysTouch;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
@@ -38,6 +37,17 @@ import loon.utils.timer.LTimer;
  * 一个选项器UI,与LMenuSelect的最大区别在于这个的UI大小是固定的,而LMenuSelect会随着注入的内容不同而自行改变UI大小
  */
 public class LSelect extends LContainer implements FontSet<LSelect> {
+
+	private static String[] getListToStrings(TArray<String> list) {
+		if (list == null || list.size == 0) {
+			return null;
+		}
+		String[] result = new String[list.size];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = list.get(i);
+		}
+		return result;
+	}
 
 	private IFont _messageFont;
 
@@ -98,7 +108,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
 	}
 
-	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor _fontColor) {
+	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
 			this.setBackground(LSystem.createTexture(width, height));
@@ -106,7 +116,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		} else {
 			this.setBackground(formImage);
 		}
-		this._fontColor = _fontColor;
+		this._fontColor = fontColor;
 		this._messageFont = (font == null ? LSystem.getSystemGameFont() : font);
 		this.customRendering = true;
 		this.selectFlag = -1;
@@ -120,12 +130,36 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this.setLocked(true);
 	}
 
-	public void setLeftOffset(int left) {
-		this.left = left;
+	public LSelect setMessage(String message, TArray<String> list) {
+		return setMessage(message, getListToStrings(list));
 	}
 
-	public void setTopOffset(int top) {
+	public LSelect setMessage(String[] selects) {
+		return setMessage(null, selects);
+	}
+
+	public LSelect setMessage(TArray<String> list) {
+		return setMessage(null, list);
+	}
+
+	public LSelect setMessage(String message, String[] selects) {
+		this.message = message;
+		this.selects = selects;
+		this.selectSize = selects.length;
+		if (doubleSizeFont == 0) {
+			doubleSizeFont = 20;
+		}
+		return this;
+	}
+
+	public LSelect setLeftOffset(int left) {
+		this.left = left;
+		return this;
+	}
+
+	public LSelect setTopOffset(int top) {
 		this.top = top;
+		return this;
 	}
 
 	public int getLeftOffset() {
@@ -140,8 +174,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		return selectFlag - 1;
 	}
 
-	public void setDelay(long timer) {
+	public LSelect setDelay(long timer) {
 		delay.setDelay(timer);
+		return this;
 	}
 
 	public long getDelay() {
@@ -150,38 +185,6 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	public String getResult() {
 		return result;
-	}
-
-	private static String[] getListToStrings(TArray<String> list) {
-		if (list == null || list.size == 0) {
-			return null;
-		}
-		String[] result = new String[list.size];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = list.get(i);
-		}
-		return result;
-	}
-
-	public void setMessage(String message, TArray<String> list) {
-		setMessage(message, getListToStrings(list));
-	}
-
-	public void setMessage(String[] selects) {
-		setMessage(null, selects);
-	}
-
-	public void setMessage(TArray<String> list) {
-		setMessage(null, list);
-	}
-
-	public void setMessage(String message, String[] selects) {
-		this.message = message;
-		this.selects = selects;
-		this.selectSize = selects.length;
-		if (doubleSizeFont == 0) {
-			doubleSizeFont = 20;
-		}
 	}
 
 	@Override
@@ -199,9 +202,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 				}
 			}
 		}
-		if (!SysTouch.isUp()) {
+		if (!isClickUp()) {
 			if (selects != null) {
-				int touchY = input.getTouchY();
+				final int touchY = input.getTouchY();
 				selectFlag = selectSize - (((nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
 				if (selectFlag < 1) {
 					selectFlag = 0;
@@ -281,7 +284,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	@Override
 	protected void processKeyPressed() {
 		super.processKeyPressed();
-		if (this.isSelected() && this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this.isSelected() && this.isKeyDown(SysKey.ENTER)) {
 			this.clicked = true;
 		}
 	}
@@ -291,7 +294,6 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		return _fontColor.cpy();
 	}
 
-	@Override
 	public LSelect setFontColor(LColor f) {
 		this._fontColor = f;
 		return this;

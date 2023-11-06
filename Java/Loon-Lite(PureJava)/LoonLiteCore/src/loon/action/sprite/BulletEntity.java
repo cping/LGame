@@ -62,6 +62,10 @@ public class BulletEntity extends Entity {
 		this(null);
 	}
 
+	public BulletEntity(int x, int y) {
+		this(null, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
 	public BulletEntity(int x, int y, int w, int h) {
 		this(null, x, y, w, h);
 	}

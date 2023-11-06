@@ -98,8 +98,8 @@ public class TextEffect extends Entity implements BaseEffect {
 	}
 
 	public TextEffect(float x, float y, float width, float height) {
-		this.texts = new TArray<>();
-		this.tempTexts = new TArray<>();
+		this.texts = new TArray<MessageBlock>();
+		this.tempTexts = new TArray<MessageBlock>();
 		this.timer = new LTimer(0);
 		this.setLocation(x, y);
 		this.setSize(width, height);
