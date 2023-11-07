@@ -66,6 +66,7 @@ import loon.component.layout.LayoutPort;
 import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.ClickListener;
+import loon.events.DefaultFrameLoopEvent;
 import loon.events.DrawListener;
 import loon.events.DrawLoop;
 import loon.events.EventAction;
@@ -3776,6 +3777,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Screen loop(float second, FrameLoopEvent event) {
 		return addFrameLoop(second, event);
+	}
+
+	public Screen loop(final EventActionN e) {
+		addFrameLoop(new DefaultFrameLoopEvent(e));
+		return this;
+	}
+
+	public Screen loop(float second, final EventActionN e) {
+		addFrameLoop(new DefaultFrameLoopEvent(second, e));
+		return this;
 	}
 
 	public Screen addFrameLoop(TArray<FrameLoopEvent> events) {

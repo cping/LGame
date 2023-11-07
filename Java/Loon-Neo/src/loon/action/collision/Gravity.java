@@ -112,6 +112,16 @@ public class Gravity implements LRelease {
 		this.setBounds(x, y, w, h);
 	}
 
+	public Gravity clearSpeed() {
+		this.gadd = 0f;
+		this.g = 0f;
+		this.accelerationX = 0f;
+		this.accelerationY = 0f;
+		this.velocityX = 0f;
+		this.velocityY = 0f;
+		return this;
+	}
+
 	public Gravity getCollisionObject() {
 		return _collisionObject;
 	}
@@ -570,6 +580,16 @@ public class Gravity implements LRelease {
 		_hitRect.setBounds(getX(), getY(), velocityX * scale + getWidth(), velocityY * scale + getHeight());
 		_bounds.normalize(_hitRect);
 		return _hitRect;
+	}
+
+	public Gravity syncBindToGravity() {
+		if (bind != null) {
+			_bounds.setLocation(bind.getX(), bind.getY());
+			_bounds.setScale(bind.getScaleX(), bind.getScaleY());
+			_bounds.setSize(bind.getWidth(), bind.getHeight());
+			_bounds.setRotation(bind.getRotation());
+		}
+		return this;
 	}
 
 	public Gravity syncGravityToBind() {

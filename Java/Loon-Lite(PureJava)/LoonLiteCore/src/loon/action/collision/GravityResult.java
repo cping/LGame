@@ -20,14 +20,20 @@
  */
 package loon.action.collision;
 
+import loon.action.map.Field2D;
+import loon.action.map.Side;
 import loon.geom.Vector2f;
+import loon.utils.ObjectSet;
+import loon.utils.StringKeyValue;
 import loon.utils.cache.Pool.Poolable;
 
 public class GravityResult implements Poolable {
 
 	protected Vector2f normal = new Vector2f();
 	protected Vector2f position = new Vector2f();
-	protected boolean isCollided = false;
+	protected Gravity source = null;
+	protected ObjectSet<Gravity> targets = new ObjectSet<Gravity>();
+	protected boolean collided = false;
 	protected int steps = 0;
 
 	public GravityResult() {
@@ -37,46 +43,53 @@ public class GravityResult implements Poolable {
 	public void reset() {
 		normal.setZero();
 		position.setZero();
-		isCollided = false;
+		collided = false;
 		steps = 0;
+		source = null;
+		targets.clear();
+	}
+
+	public Gravity getSource() {
+		return source;
+	}
+
+	public ObjectSet<Gravity> getTargets() {
+		return targets;
+	}
+
+	public int getTargetDirection() {
+		return Field2D.getDirection(normal.x(), normal.y());
+	}
+
+	public String getTargetDirectionName() {
+		return Side.getDirectionName(getTargetDirection());
+	}
+
+	public int getSourceDirection() {
+		final int dir = Field2D.getDirection(normal.x(), normal.y());
+		return Side.getOppositeSide(dir);
+	}
+
+	public String geSourceDirectionName() {
+		return Side.getDirectionName(getSourceDirection());
 	}
 
 	public Vector2f getNormal() {
 		return normal;
 	}
 
-	public GravityResult setNormal(Vector2f n) {
-		this.normal = n;
-		return this;
-	}
-
 	public Vector2f getPosition() {
 		return position;
 	}
 
-	public GravityResult setPosition(Vector2f p) {
-		this.position = p;
-		return this;
-	}
-
 	public boolean isCollide() {
-		return isCollided;
-	}
-
-	public GravityResult setCollide(boolean c) {
-		this.isCollided = c;
-		return this;
+		return collided;
 	}
 
 	public int getSteps() {
 		return steps;
 	}
 
-	public GravityResult setSteps(int s) {
-		this.steps = s;
-		return this;
-	}
-	
 	@Override
 	public boolean equals(Object g) {
 		if (g == null) {
@@ -98,10 +111,17 @@ public class GravityResult implements Poolable {
 		if (g == this) {
 			return true;
 		}
-		if (g.normal.equals(this.normal) && g.position.equals(this.position) && g.isCollided == this.isCollided
+		if (g.normal.equals(this.normal) && g.position.equals(this.position) && g.collided == this.collided
 				&& g.steps == this.steps) {
 			return true;
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("GravityResult").kv("normal", normal).comma()
+				.kv("position", position).comma().kv("collided", collided);
+		return builder.toString();
 	}
 }

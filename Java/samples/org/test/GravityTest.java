@@ -24,6 +24,7 @@ import loon.LTexture;
 import loon.Stage;
 import loon.action.collision.Gravity;
 import loon.action.collision.GravityHandler;
+import loon.action.collision.GravityResult;
 import loon.action.sprite.Sprite;
 import loon.action.sprite.Sprites;
 import loon.utils.Easing.EasingMode;
@@ -57,12 +58,13 @@ public class GravityTest extends Stage {
 				g.g = 1f;
 			}
 			// y轴移动速度5
-			g.velocityY = 5f;
+			g.velocityY = 1f;
 			// 弹力值
-			// g.bounce = 10f;
+			// g.bounce = 5f;
 		}
 
 		Gravity solid = handler.add(addSprite(texture("a4.png")).coord(0, 200));
+
 		solid.isSolid = true;
 		// 监听重力对象
 		handler.setListener((g, x, y) -> {
@@ -70,6 +72,12 @@ public class GravityTest extends Stage {
 			if (g.isLimited()) {
 				// 让y轴反重力(颠倒g值,正变负,负变正)
 				g.setAntiGravityY();
+			}
+			// 查询指定对象碰撞结果
+			GravityResult result = handler.query(g);
+
+			if (result.isCollide()) {
+				System.out.println("撞上了,方向" + result.getSourceDirection());
 			}
 		});
 

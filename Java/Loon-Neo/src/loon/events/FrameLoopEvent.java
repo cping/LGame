@@ -20,60 +20,81 @@
  */
 package loon.events;
 
-import loon.LSystem;
+import loon.LRelease;
 import loon.Screen;
+import loon.utils.HelperUtils;
 import loon.utils.timer.LTimer;
 
 /**
  * 一个交给Screen使用的内部循环用类
  */
-public abstract class FrameLoopEvent {
+public abstract class FrameLoopEvent implements LRelease {
 
-	private boolean killSelf = false;
+	private EventAction _eventAction;
 
-	private LTimer timer = new LTimer(0);
+	private boolean _killSelf = false;
+
+	private LTimer _speedTimer = new LTimer(0);
 
 	public abstract void invoke(long elapsedTime, Screen e);
 
 	public abstract void completed();
 
 	public final void call(long elapsedTime, Screen e) {
-		if (timer.action(elapsedTime)) {
+		if (_speedTimer.action(elapsedTime)) {
 			invoke(elapsedTime, e);
+			if (_eventAction != null) {
+				HelperUtils.callEventAction(_eventAction, elapsedTime);
+			}
 		}
 	}
 
 	public FrameLoopEvent reset() {
-		this.killSelf = false;
-		this.timer.refresh();
+		this._killSelf = false;
+		this._speedTimer.reset();
 		return this;
 	}
 
 	public FrameLoopEvent setDelay(long d) {
-		timer.setDelay(d);
+		_speedTimer.setDelay(d);
 		return this;
 	}
 
 	public FrameLoopEvent setSecond(float second) {
-		timer.setDelay((long) (LSystem.SECOND * second));
+		_speedTimer.setDelayS(second);
 		return this;
 	}
 
 	public float getSecond() {
-		return (float) timer.getDelay() / (float) LSystem.SECOND;
+		return _speedTimer.getDelayS();
 	}
 
 	public LTimer getTimer() {
-		return timer;
+		return _speedTimer;
 	}
 
 	public FrameLoopEvent kill() {
-		killSelf = true;
+		_killSelf = true;
+		_speedTimer.kill();
 		return this;
 	}
 
 	public boolean isDead() {
-		return killSelf;
+		return _killSelf;
+	}
+
+	public EventAction getEventAction() {
+		return _eventAction;
+	}
+
+	public FrameLoopEvent setEventAction(EventAction e) {
+		this._eventAction = e;
+		return this;
+	}
+
+	@Override
+	public void close() {
+		_speedTimer.close();
 	}
 
 }
