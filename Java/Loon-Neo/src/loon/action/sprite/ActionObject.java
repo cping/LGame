@@ -27,6 +27,7 @@ import loon.action.map.Field2D;
 import loon.action.map.Side;
 import loon.action.map.TileMap;
 import loon.action.map.items.Attribute;
+import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.StrBuilder;
 
@@ -76,6 +77,50 @@ public abstract class ActionObject extends Entity implements Config {
 				_image = texture;
 			}
 		}
+	}
+
+	public Vector2f collisionTileMap() {
+		return collisionTileMap(0f, 0f);
+	}
+
+	public Vector2f collisionTileMap(float speedX, float speedY) {
+
+		float x = getX();
+		float y = getY();
+
+		velocityX += speedX;
+		velocityY += speedY;
+
+		float newX = x + velocityX;
+
+		Vector2f tile = tiles.getTileCollision(this, newX, y);
+
+		if (tile == null) {
+			x = newX;
+		} else {
+			if (velocityX > 0) {
+				x = tiles.tilesToPixelsX(tile.x) - getWidth();
+			} else if (velocityX < 0) {
+				x = tiles.tilesToPixelsY(tile.x + 1);
+			}
+			velocityX = -velocityX;
+		}
+
+		float newY = y + velocityY;
+
+		tile = tiles.getTileCollision(this, x, newY);
+		if (tile == null) {
+			y = newY;
+		} else {
+			if (velocityY > 0) {
+				y = tiles.tilesToPixelsY(tile.y) - getHeight();
+				velocityY = 0;
+			} else if (velocityY < 0) {
+				y = tiles.tilesToPixelsY(tile.y + 1);
+				velocityY = 0;
+			}
+		}
+		return tile != null ? tile.set(x, y) : Vector2f.at(x, y);
 	}
 
 	public TileMap getTileMap() {

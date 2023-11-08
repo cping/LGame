@@ -55,44 +55,10 @@ public class GameMapTest extends Stage {
 		@Override
 		public void onManagedUpdate(long e) {
 
-			float x = getX();
-			float y = getY();
-
-			velocityY += 0.6f;
-
-			float newX = x + velocityX;
-
-			// 判断预期坐标是否与瓦片相撞(X坐标测试)
-			Vector2f tile = tiles.getTileCollision(this, newX, y);
-
-			if (tile == null) {
-				x = newX;
-			} else {
-				if (velocityX > 0) {
-					x = tiles.tilesToPixelsX(tile.x) - getWidth();
-				} else if (velocityX < 0) {
-					x = tiles.tilesToPixelsY(tile.x + 1);
-				}
-				velocityX = -velocityX;
-			}
-
-			float newY = y + velocityY;
-
-			// 判断预期坐标是否与瓦片相撞(y坐标测试)
-			tile = tiles.getTileCollision(this, x, newY);
-			if (tile == null) {
-				y = newY;
-			} else {
-				if (velocityY > 0) {
-					y = tiles.tilesToPixelsY(tile.y) - getHeight();
-					velocityY = 0;
-				} else if (velocityY < 0) {
-					y = tiles.tilesToPixelsY(tile.y + 1);
-					velocityY = 0;
-				}
-			}
+			// 获得当前精灵与地图碰撞后坐标
+			Vector2f pos = collisionTileMap(0f,0.6f);
 			// 注入新坐标
-			setLocation(x, y);
+			setLocation(pos.x, pos.y);
 		}
 
 	}
@@ -188,39 +154,27 @@ public class GameMapTest extends Stage {
 		// 加载此地图到窗体中
 		putTileMap(indexMap);
 
-		// 获得地图对应的二维数组
-		final int[][] maps = indexMap.getMap();
-
-		int w = indexMap.getRow();
-		int h = indexMap.getCol();
-
 		// 遍历二维数组地图，并以此为基础添加角色到窗体之上
-		for (int i = 0; i < w; i++) {
-			for (int j = 0; j < h; j++) {
-				switch (maps[j][i]) {
-				case 'o':
-					Coin coin = new Coin(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
-							new Animation(coinAnimation), indexMap);
-					addTileObject(coin);
-					break;
-				case 'k':
-					Enemy enemy = new Enemy(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
-							new Animation(enemyAnimation), indexMap);
-					addTileObject(enemy);
-					break;
-				case 'a':
-					Accelerator accelerator = new Accelerator(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
-							new Animation(accelAnimation), indexMap);
-					addTileObject(accelerator);
-					break;
-				case 'j':
-					JumperTwo jump = new JumperTwo(indexMap.tilesToPixelsX(i), indexMap.tilesToPixelsY(j),
-							new Animation(jumpertwoAnimation), indexMap);
-					addTileObject(jump);
-					break;
-				}
+		indexMap.switchMap((mapId, x, y) -> {
+			switch (mapId) {
+			case 'o':
+				Coin coin = new Coin(x, y, new Animation(coinAnimation), indexMap);
+				addTileObject(coin);
+				break;
+			case 'k':
+				Enemy enemy = new Enemy(x, y, new Animation(enemyAnimation), indexMap);
+				addTileObject(enemy);
+				break;
+			case 'a':
+				Accelerator accelerator = new Accelerator(x, y, new Animation(accelAnimation), indexMap);
+				addTileObject(accelerator);
+				break;
+			case 'j':
+				JumperTwo jump = new JumperTwo(x, y, new Animation(jumpertwoAnimation), indexMap);
+				addTileObject(jump);
+				break;
 			}
-		}
+		});
 
 		// 获得主角动作图
 		Animation animation = Animation.getDefaultAnimation("assets/hero.png", 20, 20, 150, LColor.black);

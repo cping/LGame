@@ -70,7 +70,7 @@ public class Actor extends LObject<Actor>
 
 	public boolean isConsumerDrawing = true;
 
-	boolean visible = true, draged = true, clicked = true;
+	boolean visible = true, draged = true, clicked = false;
 
 	private ActorLayer gameLayer;
 
@@ -793,7 +793,6 @@ public class Actor extends LObject<Actor>
 	 * 
 	 * @return
 	 */
-	@Override
 	public RectBox getRectBox() {
 		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
 				_objectRect));
@@ -924,7 +923,7 @@ public class Actor extends LObject<Actor>
 	public boolean isThereparent () {
 		return gameLayer != null;
 	}
-	
+
 	@Override
 	public boolean intersects(CollisionObject obj) {
 		if (obj instanceof Actor) {
@@ -1117,11 +1116,6 @@ public class Actor extends LObject<Actor>
 		return clicked;
 	}
 
-	public Actor setClick(boolean c) {
-		this.clicked = c;
-		return this;
-	}
-
 	final void setLastPaintSeqNum(int num) {
 		this.lastPaintSequenceNumber = num;
 	}
@@ -1275,4 +1269,5 @@ public class Actor extends LObject<Actor>
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
+
 }

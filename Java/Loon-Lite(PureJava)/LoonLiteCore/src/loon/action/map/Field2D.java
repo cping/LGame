@@ -43,6 +43,12 @@ import loon.utils.TArray;
  */
 public class Field2D implements IArray, Config, LRelease {
 
+	public static interface MapSwitchMaker {
+
+		public void loop(int flag, float x, float y);
+
+	}
+
 	private final static int[][][] NEIGHBORS = { { { 1, 1 }, { 1, 0 }, { 0, -1 }, { -1, 0 }, { -1, 1 }, { 0, 1 } },
 			{ { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, -1 }, { -1, 0 }, { 0, 1 } } };
 
@@ -1194,6 +1200,21 @@ public class Field2D implements IArray, Config, LRelease {
 
 	public int offsetYPixel(int y) {
 		return y - _offset.y();
+	}
+
+	public Field2D switchMap(MapSwitchMaker s) {
+		final int w = width;
+		final int h = height;
+		for (int i = 0; i < w; i++) {
+			for (int j = 0; j < h; j++) {
+				if (s != null) {
+					final int v = mapArrays[j][i];
+					s.loop(v, tilesToWidthPixels(i), tilesToHeightPixels(j));
+				}
+
+			}
+		}
+		return this;
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.colider.TileImpl;
 import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
@@ -774,6 +775,11 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return new Vector2f(xprime, yprime);
 	}
 
+	public TileMap switchMap(MapSwitchMaker ms) {
+		field2d.switchMap(ms);
+		return this;
+	}
+
 	/**
 	 * 地图居中偏移
 	 *
@@ -1373,7 +1379,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	public void onCollision(ISprite coll, int dir) {
 
 	}
-	
+
 	@Override
 	public void onResize() {
 		if (_resizeListener != null) {

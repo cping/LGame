@@ -70,7 +70,7 @@ public class Actor extends LObject<Actor>
 
 	public boolean isConsumerDrawing = true;
 
-	boolean visible = true, draged = true, clicked = true;
+	boolean visible = true, draged = true, clicked = false;
 
 	private ActorLayer gameLayer;
 
@@ -1114,11 +1114,6 @@ public class Actor extends LObject<Actor>
 
 	public boolean isClick() {
 		return clicked;
-	}
-
-	public Actor setClick(boolean c) {
-		this.clicked = c;
-		return this;
 	}
 
 	final void setLastPaintSeqNum(int num) {

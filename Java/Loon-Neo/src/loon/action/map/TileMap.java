@@ -30,6 +30,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.colider.TileImpl;
 import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
@@ -811,6 +812,11 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		float xprime = x * field2d.getTileWidth() - offset.getX();
 		float yprime = y * field2d.getTileHeight() - offset.getY();
 		return new Vector2f(xprime, yprime);
+	}
+	
+	public TileMap switchMap(MapSwitchMaker ms) {
+		field2d.switchMap(ms);
+		return this;
 	}
 
 	/**

@@ -29,6 +29,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.colider.TileImpl;
 import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
@@ -1302,6 +1303,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		int itsX = pixelsToTilesWidth(x);
 		int itsY = pixelsToTilesHeight(y);
 		return field2d.getPixelsAtFieldType(itsX, itsY);
+	}
+
+	public HexagonMap switchMap(MapSwitchMaker ms) {
+		field2d.switchMap(ms);
+		return this;
 	}
 
 	/**

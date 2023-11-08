@@ -42,6 +42,10 @@ public class LLayer extends ActorLayer {
 
 	private Sprites _layerSprites;
 
+	private int _lastDropX;
+
+	private int _lastDropY;
+
 	private float colorAlpha;
 
 	private float actorX;
@@ -61,6 +65,8 @@ public class LLayer extends ActorLayer {
 	private boolean isTouchClick;
 
 	private Actor thing = null;
+
+	private boolean _currentDragging;
 
 	private boolean isListener = false;
 
@@ -508,11 +514,12 @@ public class LLayer extends ActorLayer {
 			int dy = MathUtils.floor(pos.y);
 			dragActor = getSynchronizedObject(dx, dy);
 			if (dragActor != null) {
-				if (dragActor.isClick()) {
+				if (!dragActor.isClick()) {
 					dragActor.downClick(dx, dy);
 					if (dragActor.actorListener != null) {
 						dragActor.actorListener.downClick(dx, dy);
 					}
+					dragActor.clicked = true;
 				}
 			}
 			try {
@@ -540,6 +547,7 @@ public class LLayer extends ActorLayer {
 					if (dragActor.actorListener != null) {
 						dragActor.actorListener.upClick(dx, dy);
 					}
+					dragActor.clicked = false;
 				}
 			}
 			try {
@@ -549,6 +557,7 @@ public class LLayer extends ActorLayer {
 			}
 			this.dragActor = null;
 		}
+		_currentDragging = false;
 	}
 
 	@Override
@@ -558,30 +567,7 @@ public class LLayer extends ActorLayer {
 		if (!_dragLocked) {
 			boolean moveActor = false;
 			if (_actorDrag) {
-				synchronized (objects) {
-					final Vector2f pos = getUITouchXY();
-					dropX = MathUtils.floor(pos.x);
-					dropY = MathUtils.floor(pos.y);
-					if (dragActor == null) {
-						dragActor = getSynchronizedObject(dropX, dropY);
-					}
-					if (dragActor != null && dragActor.isDrag()) {
-						synchronized (dragActor) {
-							objects.sendToFront(dragActor);
-							RectBox rect = dragActor.getBoundingRect();
-							int dx = dropX - (rect.width / 2);
-							int dy = dropY - (rect.height / 2);
-							if (dragActor.getLLayer() != null) {
-								dragActor.setLocation(dx, dy);
-								dragActor.drag(dropX, dropY);
-								if (dragActor.actorListener != null) {
-									dragActor.actorListener.drag(dropX, dropY);
-								}
-							}
-							moveActor = true;
-						}
-					}
-				}
+				moveActor = checkDragActor();
 			}
 			if (!moveActor) {
 				synchronized (input) {
@@ -605,14 +591,35 @@ public class LLayer extends ActorLayer {
 			if (!_actorDrag) {
 				return;
 			}
+			checkDragActor();
+		}
+		try {
+			super.dragClick();
+		} catch (Throwable e) {
+			LSystem.error("Layer dragClick() exception", e);
+		}
+		_currentDragging = true;
+	}
+
+	protected boolean checkDragActor() {
+		if (!_currentDragging) {
+			return false;
+		}
+		int dropX = 0;
+		int dropY = 0;
+		boolean moveActor = false;
+		if (_actorDrag) {
 			synchronized (objects) {
 				final Vector2f pos = getUITouchXY();
 				dropX = MathUtils.floor(pos.x);
 				dropY = MathUtils.floor(pos.y);
+				if (_lastDropX == dropX && _lastDropY == dropY) {
+					return false;
+				}
 				if (dragActor == null) {
 					dragActor = getSynchronizedObject(dropX, dropY);
 				}
-				if (dragActor != null && dragActor.isDrag()) {
+				if (dragActor != null && dragActor.isDrag() && dragActor.isClick()) {
 					synchronized (dragActor) {
 						objects.sendToFront(dragActor);
 						RectBox rect = dragActor.getBoundingRect();
@@ -625,15 +632,18 @@ public class LLayer extends ActorLayer {
 								dragActor.actorListener.drag(dropX, dropY);
 							}
 						}
+						moveActor = true;
 					}
 				}
 			}
 		}
-		try {
-			super.dragClick();
-		} catch (Throwable e) {
-			LSystem.error("Layer dragClick() exception", e);
-		}
+		_lastDropX = dropX;
+		_lastDropY = dropY;
+		return moveActor;
+	}
+
+	public boolean isCurrentDragging() {
+		return _currentDragging;
 	}
 
 	public boolean isTouchPressed() {
