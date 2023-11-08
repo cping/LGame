@@ -170,7 +170,6 @@ public class LLayer extends ActorLayer {
 		if (_click != null) {
 			_click.DownClick(this, x, y);
 		}
-		super.downClick();
 	}
 
 	public void upClick(int x, int y) {
@@ -179,7 +178,7 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
-	public void drag(int x, int y) {
+	public void dragClick(int x, int y) {
 		if (_click != null) {
 			_click.DragClick(this, x, y);
 		}
@@ -581,7 +580,7 @@ public class LLayer extends ActorLayer {
 					}
 					try {
 						this.move(dropX, dropY);
-						this.drag(dropX, dropY);
+						this.dragClick(dropX, dropY);
 					} catch (Throwable e) {
 						LSystem.error("Layer drag() exception", e);
 					}
@@ -614,7 +613,7 @@ public class LLayer extends ActorLayer {
 				dropX = MathUtils.floor(pos.x);
 				dropY = MathUtils.floor(pos.y);
 				if (_lastDropX == dropX && _lastDropY == dropY) {
-					return false;
+					return (dragActor != null && dragActor.isDrag());
 				}
 				if (dragActor == null) {
 					dragActor = getSynchronizedObject(dropX, dropY);
