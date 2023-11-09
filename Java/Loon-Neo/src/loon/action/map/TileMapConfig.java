@@ -33,12 +33,54 @@ public class TileMapConfig {
 
 	private int[][] backMap;
 
+	public TileMapConfig(String fileName) {
+		backMap = TileMapConfig.loadAthwartArray(fileName);
+	}
+
+	public TileMapConfig(String... chars) {
+		backMap = TileMapConfig.loadStringMap(chars);
+	}
+
+	public TileMapConfig(int[][] arrays) {
+		backMap = arrays;
+	}
+
 	public int[][] getBackMap() {
 		return backMap;
 	}
 
-	public void setBackMap(int[][] backMap) {
+	public TileMapConfig setBackMap(int[][] backMap) {
 		this.backMap = backMap;
+		return this;
+	}
+
+	public TileMapConfig cpy() {
+		return new TileMapConfig(CollectionUtils.copyOf(backMap));
+	}
+
+	public static int[][] loadStringMap(String... chars) {
+		int maxHeight = chars.length;
+		int maxWidth = 0;
+		for (int i = 0; i < chars.length; i++) {
+			maxWidth = MathUtils.max(maxWidth, chars[i].length());
+		}
+		int[][] maps = new int[maxHeight][maxWidth];
+		for (int i = 0; i < maxHeight; i++) {
+			String line = chars[i];
+			for (int j = 0; j < maxWidth; j++) {
+				char temp = 0;
+				if (j < line.length()) {
+					temp = line.charAt(j);
+				}
+				if (temp == LSystem.SPACE) {
+					temp = 0;
+				} else if (CharUtils.isDigit(temp)) {
+					temp = (char) CharUtils.toInt(temp);
+				}
+				maps[i][j] = temp;
+			}
+		}
+		return maps;
 	}
 
 	public static Field2D loadCharsField(String resName, int tileWidth, int tileHeight) {

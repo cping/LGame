@@ -49,8 +49,6 @@ public class JumpObject extends ActionObject {
 
 	private float jumpSpeed;
 
-	private boolean onGround;
-
 	private boolean forceJump;
 
 	private boolean jumperTwo;
@@ -81,7 +79,6 @@ public class JumpObject extends ActionObject {
 		this.GRAVITY = 0.6f;
 		this.speed = 6f;
 		this.jumpSpeed = 12f;
-		this.onGround = false;
 		this.forceJump = false;
 		this.jumperTwo = false;
 		this.canJumperTwo = true;
@@ -121,12 +118,16 @@ public class JumpObject extends ActionObject {
 	}
 
 	public JumpObject jump() {
-		if (onGround || forceJump) {
-			velocityY = -jumpSpeed;
-			onGround = false;
+		return jump(jumpSpeed);
+	}
+
+	public JumpObject jump(float force) {
+		if (isGround() || forceJump) {
+			velocityY = -force;
+			freeGround();
 			forceJump = false;
 		} else if (jumperTwo && canJumperTwo) {
-			velocityY = -jumpSpeed;
+			velocityY = -force;
 			canJumperTwo = false;
 		}
 		return this;
@@ -169,57 +170,56 @@ public class JumpObject extends ActionObject {
 		return this.GRAVITY;
 	}
 
-	public boolean isGround() {
-		return this.onGround;
+	@Override
+	public Vector2f collisionTileMap() {
+		return collisionTileMap(0f, GRAVITY);
 	}
 
-	public JumpObject setGround(boolean gd) {
-		this.onGround = gd;
-		return this;
+	@Override
+	public Vector2f collisionTileMap(float speedX, float speedY) {
+		float x = getX();
+		float y = getY();
+		velocityX += speedX;
+		velocityY += speedY;
+		float newX = x + velocityX;
+		Vector2f tile = tiles.getTileCollision(this, newX, y);
+		if (tile == null) {
+			x = newX;
+			_groundedLeftRight = false;
+		} else {
+			if (velocityX > 0) {
+				x = tiles.tilesToPixelsX(tile.x) - getWidth();
+			} else if (velocityX < 0) {
+				x = tiles.tilesToPixelsY(tile.x + 1);
+			}
+			velocityX = 0;
+			_groundedLeftRight = true;
+		}
+		float newY = y + velocityY;
+		tile = tiles.getTileCollision(this, x, newY);
+		if (tile == null) {
+			y = newY;
+			_groundedTopBottom = false;
+		} else {
+			if (velocityY > 0) {
+				y = tiles.tilesToPixelsY(tile.y) - getHeight();
+				velocityY = 0;
+				canJumperTwo = true;
+				_groundedTopBottom = true;
+			} else if (velocityY < 0) {
+				y = tiles.tilesToPixelsY(tile.y + 1);
+				velocityY = 0;
+				isCheck(tile.x(), tile.y());
+			}
+		}
+		return tile != null ? tile.set(x, y) : Vector2f.at(x, y);
 	}
 
 	@Override
 	public void onProcess(long elapsedTime) {
 		super.onProcess(elapsedTime);
-		
-		final TileMap map = tiles;
-		float x = getX();
-		float y = getY();
-
-		velocityY += GRAVITY;
-
-		float newX = x + velocityX;
-
-		Vector2f tile = map.getTileCollision(this, newX, y);
-		if (tile == null) {
-			x = newX;
-		} else {
-			if (velocityX > 0) {
-				x = map.tilesToPixelsX(tile.x) - getWidth();
-			} else if (velocityX < 0) {
-				x = map.tilesToPixelsY(tile.x + 1);
-			}
-			velocityX = 0;
-		}
-
-		float newY = y + velocityY;
-		tile = map.getTileCollision(this, x, newY);
-		if (tile == null) {
-			y = newY;
-			onGround = false;
-		} else {
-			if (velocityY > 0) {
-				y = map.tilesToPixelsY(tile.y) - getHeight();
-				velocityY = 0;
-				onGround = true;
-				canJumperTwo = true;
-			} else if (velocityY < 0) {
-				y = map.tilesToPixelsY(tile.y + 1);
-				velocityY = 0;
-				isCheck(tile.x(), tile.y());
-			}
-		}
-		setLocation(x, y);
+		final Vector2f pos = collisionTileMap();
+		setLocation(pos.x, pos.y);
 		if (listener != null && listener instanceof JumpListener) {
 			((JumpListener) listener).update(elapsedTime);
 		}

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -33,12 +33,54 @@ public class TileMapConfig {
 
 	private int[][] backMap;
 
+	public TileMapConfig(String fileName) {
+		backMap = TileMapConfig.loadAthwartArray(fileName);
+	}
+
+	public TileMapConfig(String... chars) {
+		backMap = TileMapConfig.loadStringMap(chars);
+	}
+
+	public TileMapConfig(int[][] arrays) {
+		backMap = arrays;
+	}
+
 	public int[][] getBackMap() {
 		return backMap;
 	}
 
-	public void setBackMap(int[][] backMap) {
+	public TileMapConfig setBackMap(int[][] backMap) {
 		this.backMap = backMap;
+		return this;
+	}
+
+	public TileMapConfig cpy() {
+		return new TileMapConfig(CollectionUtils.copyOf(backMap));
+	}
+
+	public static int[][] loadStringMap(String... chars) {
+		int maxHeight = chars.length;
+		int maxWidth = 0;
+		for (int i = 0; i < chars.length; i++) {
+			maxWidth = MathUtils.max(maxWidth, chars[i].length());
+		}
+		int[][] maps = new int[maxHeight][maxWidth];
+		for (int i = 0; i < maxHeight; i++) {
+			String line = chars[i];
+			for (int j = 0; j < maxWidth; j++) {
+				char temp = 0;
+				if (j < line.length()) {
+					temp = line.charAt(j);
+				}
+				if (temp == LSystem.SPACE) {
+					temp = 0;
+				} else if (CharUtils.isDigit(temp)) {
+					temp = (char) CharUtils.toInt(temp);
+				}
+				maps[i][j] = temp;
+			}
+		}
+		return maps;
 	}
 
 	public static Field2D loadCharsField(String resName, int tileWidth, int tileHeight) {
@@ -72,7 +114,7 @@ public class TileMapConfig {
 	public static TArray<int[]> loadList(final String fileName) {
 		String result = null;
 		StrTokenizer br = BaseIO.loadStrTokenizer(fileName, LSystem.NL);
-		TArray<int[]> records = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
+		TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 		for (; br.hasMoreTokens();) {
 			result = StringUtils.replace(br.nextToken().trim(), LSystem.LS, LSystem.EMPTY);
 			if (!StringUtils.isEmpty(result)) {
@@ -195,7 +237,7 @@ public class TileMapConfig {
 	}
 
 	public static String[][] stringToStringArrays(String srcStr) {
-		String[][] resArr = null;
+		String[][] resArr = (String[][]) null;
 		if ((srcStr == null) || (srcStr.length() == 0))
 			return resArr;
 		try {

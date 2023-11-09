@@ -551,6 +551,10 @@ public class Field2D implements IArray, Config, LRelease {
 		this(mapArrays, 0, 0);
 	}
 
+	public Field2D(String[] chars, int tw, int th) {
+		this.set(TileMapConfig.loadStringMap(chars), tw, th);
+	}
+
 	public Field2D(int[][] mapArrays, int tw, int th) {
 		this.set(mapArrays, tw, th);
 	}

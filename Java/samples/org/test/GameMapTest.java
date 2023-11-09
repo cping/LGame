@@ -36,8 +36,6 @@ import loon.events.ActionKey;
 import loon.events.SysKey;
 import loon.geom.BooleanValue;
 import loon.geom.Vector2f;
-import loon.utils.timer.LTimer;
-import loon.utils.timer.Task;
 
 public class GameMapTest extends Stage {
 
@@ -56,7 +54,7 @@ public class GameMapTest extends Stage {
 		public void onManagedUpdate(long e) {
 
 			// 获得当前精灵与地图碰撞后坐标
-			Vector2f pos = collisionTileMap(0f,0.6f);
+			Vector2f pos = collisionTileMap(0f, 0.6f);
 			// 注入新坐标
 			setLocation(pos.x, pos.y);
 		}
@@ -293,14 +291,12 @@ public class GameMapTest extends Stage {
 
 		});
 		selfAction().shakeTo(3f, 3f).start();
-		// 提交一个定时任务,0.1秒执行一次
-		Task task = LTimer.postTask(() -> {
+
+		loop(() -> {
 			if (hero != null) {
 				hero.stop();
 			}
-		}, 0.1f);
-		// 关闭Screen时停止任务
-		putRelease(task);
+		});
 	}
 
 	private RotateTo rotate;

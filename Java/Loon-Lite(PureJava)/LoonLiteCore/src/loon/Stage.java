@@ -21,11 +21,14 @@
 package loon;
 
 import loon.action.ActionBind;
+import loon.action.map.Field2D;
+import loon.action.map.Level;
 import loon.action.map.TileMap;
 import loon.action.sprite.ActionObject;
 import loon.action.sprite.Animation;
 import loon.action.sprite.JumpObject;
 import loon.action.sprite.MoveObject;
+import loon.action.sprite.TextureObject;
 import loon.action.sprite.effect.ScrollEffect;
 import loon.component.LLayer;
 import loon.events.GameTouch;
@@ -87,6 +90,8 @@ public abstract class Stage extends Screen {
 
 	private float _drawPosY;
 
+	private int _defTileSize = 32;
+
 	private ScrollEffect _scrollBackground;
 
 	private UpdateListener _updateListener;
@@ -100,6 +105,8 @@ public abstract class Stage extends Screen {
 	private TArray<ActionObject> _pendingRemove;
 
 	private TArray<TileMap> _childTiles;
+
+	private Level _currentLevel;
 
 	private TileMap _currentTileMap;
 
@@ -433,12 +440,108 @@ public abstract class Stage extends Screen {
 	public void pause() {
 	}
 
+	public Stage createLevel(int tw, int th, String[]... map) {
+		_currentLevel = new Level(tw, th, map);
+		return this;
+	}
+
+	public Stage createLevel(int tw, int th, int[][] map) {
+		_currentLevel = new Level(tw, th, map);
+		return this;
+	}
+
+	public Stage createLevel(Field2D map) {
+		_currentLevel = new Level(map);
+		return this;
+	}
+
+	public Stage createLevel() {
+		_currentLevel = new Level();
+		return this;
+	}
+
+	public TileMap createTileMap() {
+		if (_currentLevel != null) {
+			_currentTileMap = new TileMap(_currentLevel.getMap());
+		} else {
+			_currentTileMap = new TileMap(LSystem.viewSize.newField2D(_defTileSize, _defTileSize));
+		}
+		return _currentTileMap;
+	}
+
+	public Stage addLevel(int tw, int th, String... s) {
+		if (_currentLevel != null) {
+			_currentLevel.addMap(tw, th, s);
+		}
+		return this;
+	}
+
+	public Stage addLevel(int tw, int th, int[][] map) {
+		if (_currentLevel != null) {
+			_currentLevel.addMap(tw, th, map);
+		}
+		return this;
+	}
+
+	public Field2D removeLevel(int idx) {
+		if (_currentLevel != null) {
+			_currentLevel.removeMap(idx);
+		}
+		return null;
+	}
+
+	public Stage addLevel(Field2D map) {
+		if (_currentLevel != null) {
+			_currentLevel.addMap(map);
+		}
+		return this;
+	}
+
+	public Stage setLevelIndex(int idx) {
+		if (_currentLevel != null) {
+			_currentLevel.setCurrentIndex(idx);
+		}
+		return this;
+	}
+
+	public int getLevelIndex() {
+		if (_currentLevel != null) {
+			return _currentLevel.getCurrentIndex();
+		}
+		return -1;
+	}
+
 	public TileMap getIndexTile() {
 		return this._currentTileMap;
 	}
 
 	public Stage setIndexTile(TileMap indexTile) {
 		this._currentTileMap = indexTile;
+		return this;
+	}
+
+	public Field2D getLevelMap() {
+		if (this._currentTileMap != null) {
+			return this._currentTileMap.getField2D();
+		}
+		if (this._childTiles.size > 0) {
+			return this._childTiles.get(0).getField2D();
+		}
+		if (this._currentLevel != null) {
+			return this._currentLevel.getMap();
+		} else if (this._currentLevel == null) {
+			createLevel();
+			return this._currentLevel.getMap();
+		}
+		return null;
+	}
+
+	public int getDefaultTileSize() {
+		return _defTileSize;
+	}
+
+	public Stage setDefaultTileSize(int t) {
+		this._defTileSize = t;
 		return this;
 	}
 
@@ -474,10 +577,24 @@ public abstract class Stage extends Screen {
 		} else if (_childTiles.size > 0) {
 			o = new JumpObject(x, y, w, h, a, _childTiles.get(0));
 		} else {
-			return null;
+			o = new JumpObject(x, y, w, h, a, createTileMap());
 		}
 		addTileObject(o);
 		return o;
+	}
+
+	public JumpObject addJumpObject(float x, float y, float w, float h, String path) {
+		return addJumpObject(x, y, w, h, Animation.getDefaultAnimation(path));
+	}
+
+	public JumpObject addJumpObject(float x, float y, Animation a) {
+		Vector2f size = getTileSize();
+		return addJumpObject(x, y, size.x, size.y, a);
+	}
+
+	public JumpObject addJumpObject(float x, float y, String path) {
+		Vector2f size = getTileSize();
+		return addJumpObject(x, y, size.x, size.y, path);
 	}
 
 	public MoveObject addMoveObject(float x, float y, float w, float h, Animation a) {
@@ -487,10 +604,65 @@ public abstract class Stage extends Screen {
 		} else if (_childTiles.size > 0) {
 			o = new MoveObject(x, y, w, h, a, _childTiles.get(0));
 		} else {
-			return null;
+			o = new MoveObject(x, y, w, h, a, createTileMap());
 		}
 		addTileObject(o);
 		return o;
+	}
+
+	public MoveObject addMoveObject(float x, float y, float w, float h, String path) {
+		return addMoveObject(x, y, w, h, Animation.getDefaultAnimation(path));
+	}
+
+	public MoveObject addMoveObject(float x, float y, Animation a) {
+		Vector2f size = getTileSize();
+		return addMoveObject(x, y, size.x, size.y, a);
+	}
+
+	public MoveObject addMoveObject(float x, float y, String path) {
+		Vector2f size = getTileSize();
+		return addMoveObject(x, y, size.x, size.y, path);
+	}
+
+	public TextureObject addTextureObject(float x, float y, float w, float h, LTexture tex) {
+		TextureObject o = null;
+		if (_currentTileMap != null) {
+			o = new TextureObject(x, y, w, h, tex, _currentTileMap);
+		} else if (_childTiles.size > 0) {
+			o = new TextureObject(x, y, w, h, tex, _childTiles.get(0));
+		} else {
+			o = new TextureObject(x, y, w, h, tex, createTileMap());
+		}
+		addTileObject(o);
+		return o;
+	}
+
+	public TextureObject addTextureObject(float x, float y, float w, float h, String path) {
+		return addTextureObject(x, y, w, h, LTextures.loadTexture(path));
+	}
+
+	public TextureObject addTextureObject(float x, float y, LTexture tex) {
+		Vector2f size = getTileSize();
+		return addTextureObject(x, y, size.x, size.y, tex);
+	}
+
+	public TextureObject addTextureObject(float x, float y, String path) {
+		Vector2f size = getTileSize();
+		return addTextureObject(x, y, size.x, size.y, path);
+	}
+
+	protected Vector2f getTileSize() {
+		final Vector2f size = new Vector2f();
+		if (_currentLevel != null) {
+			size.set(_currentLevel.getMap().getTileWidth(), _currentLevel.getMap().getTileHeight());
+		} else if (_currentTileMap != null) {
+			size.set(_currentTileMap.getTileWidth(), _currentTileMap.getTileHeight());
+		} else if (_childTiles.size > 0) {
+			size.set(_childTiles.get(0).getTileWidth(), _childTiles.get(0).getTileHeight());
+		} else {
+			size.set(_defTileSize);
+		}
+		return size;
 	}
 
 	public ActionObject addTileObject(ActionObject o) {
@@ -569,6 +741,14 @@ public abstract class Stage extends Screen {
 		}
 		if (this._childTiles != null) {
 			this._childTiles.clear();
+		}
+		if (this._currentLevel != null) {
+			this._currentLevel.close();
+			this._currentLevel = null;
+		}
+		if (this._currentTileMap != null) {
+			this._currentTileMap.close();
+			this._currentTileMap = null;
 		}
 		if (_objects != null) {
 			for (int i = 0; i < _objects.size; i++) {

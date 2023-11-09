@@ -217,6 +217,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedLeftRight = true;
+				} else {
+					_groundedLeftRight = false;
 				}
 			} else if (dir == TRIGHT) {
 				int nextX = x + 1;
@@ -239,6 +242,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedLeftRight = true;
+				} else {
+					_groundedLeftRight = false;
 				}
 			} else if (dir == TUP) {
 				int nextX = x;
@@ -260,6 +266,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedTopBottom = true;
+				} else {
+					_groundedTopBottom = false;
 				}
 			} else if (dir == TDOWN) {
 				int nextX = x;
@@ -282,6 +291,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedTopBottom = true;
+				} else {
+					_groundedTopBottom = false;
 				}
 			} else if (dir == LEFT) {
 				int nextX = x - 1;
@@ -313,6 +325,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedTopBottom = true;
+				} else {
+					_groundedTopBottom = false;
 				}
 			} else if (dir == RIGHT) {
 				int nextX = x + 1;
@@ -346,6 +361,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedTopBottom = true;
+				} else {
+					_groundedTopBottom = false;
 				}
 			} else if (dir == UP) {
 				int nextX = x + 1;
@@ -378,6 +396,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedLeftRight = true;
+				} else {
+					_groundedLeftRight = false;
 				}
 			} else if (dir == DOWN) {
 				int nextX = x - 1;
@@ -410,6 +431,9 @@ public class MoveObject extends ActionObject {
 						moveObject(px, py);
 						rMoved = true;
 					}
+					_groundedLeftRight = true;
+				} else {
+					_groundedLeftRight = false;
 				}
 			}
 		} else {
@@ -613,15 +637,20 @@ public class MoveObject extends ActionObject {
 				int sy = tiles.tilesToPixelsY(tile.y);
 				if (sx > 0) {
 					sx = (int) (sx - getWidth());
+					_groundedLeftRight = true;
 				} else if (sx < 0) {
 					sx = tiles.tilesToPixelsX(tile.x);
+					_groundedLeftRight = true;
 				}
 				if (sy > 0) {
 					sy = (int) (sy - getHeight());
+					_groundedTopBottom = true;
 				} else if (sy < 0) {
 					sy = tiles.tilesToPixelsY(tile.y);
+					_groundedTopBottom = true;
 				}
 			} else {
+				freeGround();
 				moveObject(startX, startY);
 			}
 

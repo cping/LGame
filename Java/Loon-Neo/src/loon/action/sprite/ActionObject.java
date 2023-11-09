@@ -38,6 +38,10 @@ public abstract class ActionObject extends Entity implements Config {
 
 	private Side _currentSide;
 
+	protected boolean _groundedLeftRight;
+
+	protected boolean _groundedTopBottom;
+
 	protected Attribute attribute;
 
 	protected Animation animation;
@@ -84,19 +88,15 @@ public abstract class ActionObject extends Entity implements Config {
 	}
 
 	public Vector2f collisionTileMap(float speedX, float speedY) {
-
 		float x = getX();
 		float y = getY();
-
 		velocityX += speedX;
 		velocityY += speedY;
-
 		float newX = x + velocityX;
-
 		Vector2f tile = tiles.getTileCollision(this, newX, y);
-
 		if (tile == null) {
 			x = newX;
+			_groundedLeftRight = false;
 		} else {
 			if (velocityX > 0) {
 				x = tiles.tilesToPixelsX(tile.x) - getWidth();
@@ -104,23 +104,40 @@ public abstract class ActionObject extends Entity implements Config {
 				x = tiles.tilesToPixelsY(tile.x + 1);
 			}
 			velocityX = -velocityX;
+			_groundedLeftRight = true;
 		}
-
 		float newY = y + velocityY;
-
 		tile = tiles.getTileCollision(this, x, newY);
 		if (tile == null) {
 			y = newY;
+			_groundedTopBottom = false;
 		} else {
 			if (velocityY > 0) {
 				y = tiles.tilesToPixelsY(tile.y) - getHeight();
-				velocityY = 0;
 			} else if (velocityY < 0) {
 				y = tiles.tilesToPixelsY(tile.y + 1);
-				velocityY = 0;
 			}
+			velocityY = 0;
+			_groundedTopBottom = true;
 		}
 		return tile != null ? tile.set(x, y) : Vector2f.at(x, y);
+	}
+
+	public boolean isGround() {
+		return _groundedLeftRight || _groundedTopBottom;
+	}
+
+	public boolean isLeftRightGround() {
+		return _groundedLeftRight;
+	}
+
+	public boolean isTopBottomGround() {
+		return _groundedTopBottom;
+	}
+
+	public ActionObject freeGround() {
+		_groundedLeftRight = _groundedTopBottom = false;
+		return this;
 	}
 
 	public TileMap getTileMap() {
@@ -221,6 +238,14 @@ public abstract class ActionObject extends Entity implements Config {
 
 	public String getDirectionString() {
 		return Side.getDirectionName(getDirection());
+	}
+
+	public boolean isFalling() {
+		return velocityY > 0f;
+	}
+
+	public boolean isJumping() {
+		return velocityY < 0f;
 	}
 
 	public float getVelocityX() {
