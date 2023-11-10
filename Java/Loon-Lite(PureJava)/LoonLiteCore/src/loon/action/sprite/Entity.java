@@ -1089,7 +1089,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected void onUpdate(final long elapsedTime) {
 
 	}
-	
+
 	public Entity collision(SpriteCollisionListener sc) {
 		this._collSpriteListener = sc;
 		return this;
@@ -1567,6 +1567,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected float drawY(float offsetY) {
 		return offsetY + this._objectLocation.y + _offset.y;
+	}
+
+	public float getDrawX() {
+		return drawX(0);
+	}
+
+	public float getDrawY() {
+		return drawY(0);
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
+import loon.action.sprite.Arrow;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.effect.RippleEffect;
 import loon.action.sprite.effect.RippleEffect.Model;
@@ -17,10 +18,12 @@ import loon.component.LClickButton;
 import loon.component.LPad;
 import loon.events.SysKey;
 import loon.events.Touched;
+import loon.geom.Vector2f;
+import loon.utils.TArray;
 
 public class MapTest extends Stage {
 
-	// 此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动
+	// 此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动,并且有移动路径箭头显示精灵的使用
 	@Override
 	public void create() {
 		try {
@@ -93,6 +96,26 @@ public class MapTest extends Stage {
 			 * 
 			 * @Override public void on(float x, float y) { map.scroll(x, y); } });
 			 */
+			// 构建一个箭头精灵,使用图片arrow.png,箭头原图每格占16像素
+			final Arrow arrow = new Arrow("arrow.png", 16);
+			// 使用默认的模式1拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
+			arrow.getArrowSet().defaultSet1();
+			// 坐标跟随地图偏移
+			arrow.setOffset(map.getOffset());
+			// 箭头变为红色
+			arrow.setColor(LColor.red);
+			// 注入箭头精灵
+			add(arrow);
+			
+			/**
+			 * final Arrow arrow = new Arrow(TextureUtils.filterColor("assets/icon.png", new LColor(255, 0, 255)), 32);
+			// 使用默认的模式2拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
+			arrow.getArrowSet().defaultSet2();
+			// 坐标跟随地图偏移
+			arrow.setOffset(map.getOffset());
+			// 注入箭头精灵
+			add(arrow);
+			 */
 
 			// ----触屏移动---
 			// 监听窗体down事件
@@ -104,42 +127,55 @@ public class MapTest extends Stage {
 					// 角色缓动动画移动,以map中二维数组为基础,4方走法,每次移动增加8个像素(并且矫正地图的偏移位置,否则直接获得屏幕触点肯定错误),速度8(实际就是一次移动几个像素格)
 					final MoveTo move = new MoveTo(map.getField2D(), map.offsetXPixel(hero.x()),
 							map.offsetYPixel(hero.y()), map.offsetXPixel(x), map.offsetYPixel(y), false, 8);
-					// 监听MoveTo
-					move.setActionListener(new ActionListener() {
 
-						@Override
-						public void stop(ActionBind o) {
-						}
+					// 额外查询一次移动目标，用以显示移动箭头精灵
+					TArray<Vector2f> path = move.findPathBegin(map.offsetXPixel(hero.getDrawX()),
+							map.offsetYPixel(hero.getDrawY()), false);
 
-						@Override
-						public void start(ActionBind o) {
-						}
+					// 如果可以获得移动数据
+					if (path.size > 0) {
+						// 变更移动箭头数据
+						arrow.updatePath(path);
+						// 监听MoveTo
+						move.setActionListener(new ActionListener() {
 
-						@Override
-						public void process(ActionBind o) {
-							// 存储上一个移动方向，避免反复刷新动画事件
-							if (move.isDirectionUpdate()) {
-								switch (move.getDirection()) {
-								case Field2D.TUP:
-									hero.animate(frames, upIds);
-									break;
-								default:
-								case Field2D.TDOWN:
-									hero.animate(frames, downIds);
-									break;
-								case Field2D.TLEFT:
-									hero.animate(frames, leftIds);
-									break;
-								case Field2D.TRIGHT:
-									hero.animate(frames, rightIds);
-									break;
+							@Override
+							public void stop(ActionBind o) {
+								//移动箭头隐藏
+								arrow.setVisible(false);
+							}
+
+							@Override
+							public void start(ActionBind o) {
+								//显示移动箭头
+								arrow.setVisible(true);
+							}
+
+							@Override
+							public void process(ActionBind o) {
+								// 存储上一个移动方向，避免反复刷新动画事件
+								if (move.isDirectionUpdate()) {
+									switch (move.getDirection()) {
+									case Field2D.TUP:
+										hero.animate(frames, upIds);
+										break;
+									default:
+									case Field2D.TDOWN:
+										hero.animate(frames, downIds);
+										break;
+									case Field2D.TLEFT:
+										hero.animate(frames, leftIds);
+										break;
+									case Field2D.TRIGHT:
+										hero.animate(frames, rightIds);
+										break;
+									}
 								}
 							}
-						}
-					});
-					// 开始缓动动画
-					hero.selfAction().event(move).start();
-
+						});
+						// 开始缓动动画
+						hero.selfAction().event(move).start();
+					}
 				}
 			});
 

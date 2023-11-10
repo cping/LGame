@@ -238,24 +238,17 @@ public class MoveTo extends ActionEvent {
 					if (_PATH_CACHE.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
 						_PATH_CACHE.clear();
 					}
-					int key = hashCode();
+					final int key = hashCode();
 					TArray<Vector2f> final_path = _PATH_CACHE.get(key);
 					if (final_path == null) {
-						final_path = AStarFinder.find(heuristic, layerMap,
-								layerMap.pixelsToTilesWidth(startLocation.x()),
-								layerMap.pixelsToTilesHeight(startLocation.y()),
-								layerMap.pixelsToTilesWidth(endLocation.x()),
-								layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
+						final_path = findPath();
 						_PATH_CACHE.put(key, final_path);
 					}
 					pActorPath = new TArray<Vector2f>();
 					pActorPath.addAll(final_path);
 				}
 			} else {
-				pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startLocation.x()),
-						layerMap.pixelsToTilesHeight(startLocation.y()), layerMap.pixelsToTilesWidth(endLocation.x()),
-						layerMap.pixelsToTilesHeight(endLocation.y()), allDir);
-
+				findPath();
 			}
 		}
 		return this;
@@ -315,6 +308,24 @@ public class MoveTo extends ActionEvent {
 
 	public float getStartY() {
 		return startY == 0 ? startLocation.y : startY;
+	}
+
+	public TArray<Vector2f> findPath() {
+		return findPath(startLocation.getX(), startLocation.getY(), endLocation.getX(), endLocation.getY(), allDir);
+	}
+
+	public TArray<Vector2f> findPathBegin(float x, float y, boolean all) {
+		return findPath(x, y, endLocation.getX(), endLocation.getY(), all);
+	}
+
+	public TArray<Vector2f> findPathEnd(float x, float y, boolean all) {
+		return findPath(startLocation.getX(), startLocation.getY(), x, y, all);
+	}
+
+	public TArray<Vector2f> findPath(float startX, float startY, float endX, float endY, boolean all) {
+		return pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startX),
+				layerMap.pixelsToTilesHeight(startY), layerMap.pixelsToTilesWidth(endX),
+				layerMap.pixelsToTilesHeight(endY), all);
 	}
 
 	public TArray<Vector2f> getPath() {
