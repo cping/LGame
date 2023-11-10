@@ -83,7 +83,7 @@ public class AnimationStorage extends Animation {
 		if (f != null) {
 			_playAnimations = f;
 		} else {
-			_playAnimations = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
+			_playAnimations = new TArray<Animation>(CollectionUtils.INITIAL_CAPACITY);
 		}
 		for (Animation a : _playAnimations) {
 			if (a != null) {
@@ -217,28 +217,30 @@ public class AnimationStorage extends Animation {
 		return this;
 	}
 
-	@Override
-	public Animation reset() {
-		super.reset();
-		_loopOverToPlay = true;
-		_loopOverToRemove = false;
-		return this;
-	}
-
 	public boolean isLoopOverToRemove() {
 		return _loopOverToRemove;
 	}
 
-	public void _loopOverToRemove(boolean l) {
+	public AnimationStorage setLoopOverToRemove(boolean l) {
 		_loopOverToRemove = l;
+		return this;
 	}
 
 	public boolean isLoopPlay() {
 		return _loopOverToPlay;
 	}
 
-	public void setLoopPlay(boolean l) {
+	public AnimationStorage setLoopPlay(boolean l) {
 		this._loopOverToPlay = l;
+		return this;
+	}
+
+	@Override
+	public Animation reset() {
+		super.reset();
+		_loopOverToPlay = true;
+		_loopOverToRemove = false;
+		return this;
 	}
 
 }

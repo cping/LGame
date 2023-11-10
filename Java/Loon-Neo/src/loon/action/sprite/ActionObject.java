@@ -83,6 +83,39 @@ public abstract class ActionObject extends Entity implements Config {
 		}
 	}
 
+	public ActionObject animationStart() {
+		animation.start();
+		return this;
+	}
+
+	public ActionObject animationStop() {
+		animation.stop();
+		return this;
+	}
+
+	public ActionObject animationReset() {
+		animation.reset();
+		return this;
+	}
+
+	public ActionObject animationReverse(boolean r) {
+		animation.setReverse(r);
+		return this;
+	}
+
+	public int getAnimationIndex() {
+		return animation.currentFrameIndex;
+	}
+
+	public ActionObject setAnimationIndex(int idx) {
+		animation.setCurrentFrameIndex(idx);
+		return this;
+	}
+
+	public boolean isAnimationRunning() {
+		return animation.isRunning;
+	}
+
 	public Vector2f collisionTileMap() {
 		return collisionTileMap(0f, 0f);
 	}

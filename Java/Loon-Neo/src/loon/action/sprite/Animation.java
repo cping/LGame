@@ -641,6 +641,11 @@ public class Animation implements IArray, LRelease {
 		return this;
 	}
 
+	public Animation setDelayS(float s) {
+		intervalTime.setDelayS(s);
+		return this;
+	}
+
 	public Animation setInterval(long d) {
 		return setDelay(d);
 	}
@@ -665,6 +670,10 @@ public class Animation implements IArray, LRelease {
 
 	public long getDelay() {
 		return intervalTime.getDelay();
+	}
+
+	public float getDelayS() {
+		return intervalTime.getDelayS();
 	}
 
 	public long getInterval() {
@@ -751,7 +760,7 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public Animation setAnimationName(String ani) {
-		if (StringUtils.isEmpty(ani)) {
+		if (StringUtils.isNullOrEmpty(ani)) {
 			return this;
 		}
 		this.animationName = ani;

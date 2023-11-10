@@ -79,25 +79,25 @@ public interface SysInput {
 	boolean isTouchReleased(int i);
 
 	boolean isTouchReleased(String keyName);
-	
+
 	int getTouchPressed();
 
 	boolean isTouchPressed(int i);
 
 	boolean isTouchPressed(String keyName);
-	
+
 	boolean isTouchType(int i);
 
 	int getKeyReleased();
 
 	boolean isKeyReleased(String keyName);
-	
+
 	boolean isKeyReleased(int i);
 
 	int getKeyPressed();
 
 	boolean isKeyPressed(String keyName);
-	
+
 	boolean isKeyPressed(int i);
 
 	boolean isKeyType(int i);
@@ -107,4 +107,12 @@ public interface SysInput {
 	boolean isLongPressed();
 
 	boolean isLongPressed(float seconds);
+
+	boolean isAxisTouchPressed(String... keys);
+
+	boolean isAxisTouchReleased(String... keys);
+
+	boolean isAxisKeyPressed(String... keys);
+
+	boolean isAxisKeyReleased(String... keys);
 }

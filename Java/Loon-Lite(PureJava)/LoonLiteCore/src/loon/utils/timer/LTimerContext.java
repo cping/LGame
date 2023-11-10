@@ -56,6 +56,10 @@ public class LTimerContext {
 		return delta;
 	}
 
+	public float dt() {
+		return getDelta() * scale;
+	}
+
 	public long getTimeScale() {
 		return (long) (timeSinceLastUpdate * scale);
 	}

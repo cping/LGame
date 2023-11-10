@@ -90,7 +90,7 @@ public abstract class Stage extends Screen {
 
 	private float _drawPosY;
 
-	private int _defTileSize = 32;
+	private int _defTileSize = LSystem.LAYER_TILE_SIZE;
 
 	private ScrollEffect _scrollBackground;
 
@@ -458,6 +458,11 @@ public abstract class Stage extends Screen {
 	public Stage createLevel() {
 		_currentLevel = new Level();
 		return this;
+	}
+
+	public TileMap createTileMap(int tw, int th, String... s) {
+		_currentLevel = new Level(tw, th, s);
+		return createTileMap();
 	}
 
 	public TileMap createTileMap() {

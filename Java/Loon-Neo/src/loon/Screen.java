@@ -113,6 +113,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.Resolution;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.processes.Coroutine;
@@ -4180,6 +4181,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	@Override
+	public boolean isAxisTouchPressed(String... keys) {
+		if (StringUtils.isEmpty(keys)) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (isTouchPressed(keys[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isAxisTouchReleased(String... keys) {
+		if (StringUtils.isEmpty(keys)) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (isTouchReleased(keys[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public boolean isTouchPressed(String keyName) {
 		return isTouchPressed(SysTouch.toIntKey(keyName));
 	}
@@ -4317,6 +4344,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	@Override
 	public boolean isKeyReleased(String keyName) {
 		return isKeyReleased(SysKey.toIntKey(keyName));
+	}
+
+	@Override
+	public boolean isAxisKeyPressed(String... keys) {
+		if (StringUtils.isEmpty(keys)) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (isKeyPressed(keys[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean isAxisKeyReleased(String... keys) {
+		if (StringUtils.isEmpty(keys)) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (isKeyReleased(keys[i])) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

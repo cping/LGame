@@ -25,6 +25,7 @@ import loon.events.FrameListener;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.StringUtils;
 import loon.utils.timer.Duration;
 
 /**
@@ -127,6 +128,8 @@ public class AnimatedEntity extends Entity {
 	}
 
 	private static final int FRAMEINDEX_INVALID = -1;
+
+	private String _currentAnimateName;
 
 	private boolean _animationRunning;
 	private boolean _animationStartedFired;
@@ -287,68 +290,113 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
-	public AnimatedEntity animate(String key) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity play(final String key) {
+		return animate(key);
+	}
+
+	public AnimatedEntity play(final String key, final IAnimationListener animationListener) {
+		return animate(key, animationListener);
+	}
+
+	public AnimatedEntity play(final String key, final boolean loop) {
+		return animate(key, loop);
+	}
+
+	public AnimatedEntity play(final String key, final boolean loop, final IAnimationListener animationListener) {
+		return animate(key, loop, animationListener);
+	}
+
+	public AnimatedEntity play(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final boolean loop) {
+		return animate(key, firstFrameIndex, lastFrameIndex, loop);
+	}
+
+	public AnimatedEntity play(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final boolean loop, final IAnimationListener animationListener) {
+		return animate(key, firstFrameIndex, lastFrameIndex, loop, animationListener);
+	}
+
+	public AnimatedEntity play(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final int loopCount) {
+		return animate(key, firstFrameIndex, lastFrameIndex, loopCount);
+	}
+
+	public AnimatedEntity play(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final int loopCount, final IAnimationListener animationListener) {
+		return animate(key, firstFrameIndex, lastFrameIndex, loopCount, animationListener);
+	}
+
+	public AnimatedEntity animate(final String key) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, play.animates);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final IAnimationListener animationListener) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final IAnimationListener animationListener) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, play.animates, animationListener);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final boolean loop) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final boolean loop) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, play.animates, loop);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final boolean loop, final IAnimationListener animationListener) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final boolean loop, final IAnimationListener animationListener) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, play.animates, loop, animationListener);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final int firstFrameIndex, final int lastFrameIndex, final boolean loop) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final boolean loop) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, firstFrameIndex, lastFrameIndex, loop);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final int firstFrameIndex, final int lastFrameIndex, final boolean loop,
-			final IAnimationListener animationListener) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final boolean loop, final IAnimationListener animationListener) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, firstFrameIndex, lastFrameIndex, loop, animationListener);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final int firstFrameIndex, final int lastFrameIndex,
+	public AnimatedEntity animate(final String key, final int firstFrameIndex, final int lastFrameIndex,
 			final int loopCount) {
-		PlayIndex play = _playEvents.get(key);
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, firstFrameIndex, lastFrameIndex, loopCount);
 		}
 		return this;
 	}
 
-	public AnimatedEntity animate(String key, final int firstFrameIndex, final int lastFrameIndex, final int loopCount,
-			final IAnimationListener animationListener) {
-		PlayIndex play = _playEvents.get(key);
+	public AnimatedEntity animate(final String key, final int firstFrameIndex, final int lastFrameIndex,
+			final int loopCount, final IAnimationListener animationListener) {
+		final PlayIndex play = _playEvents.get(key);
 		if (play != null) {
+			this._currentAnimateName = key;
 			this.animate(play.frames, firstFrameIndex, lastFrameIndex, loopCount, animationListener);
 		}
 		return this;
@@ -479,9 +527,22 @@ public class AnimatedEntity extends Entity {
 		return this;
 	}
 
+	public AnimatedEntity setDelayS(float s) {
+		_animation.setDelayS(s);
+		return this;
+	}
+
 	public AnimatedEntity setCurrentFrameIndex(int idx) {
 		_animation.setCurrentFrameIndex(idx);
 		return this;
+	}
+
+	public long getDelay() {
+		return _animation.getDelay();
+	}
+
+	public float getDelayS() {
+		return _animation.getDelayS();
 	}
 
 	public int getCount() {
@@ -497,29 +558,48 @@ public class AnimatedEntity extends Entity {
 		return _animation.getMaxFrame();
 	}
 
-	public AnimatedEntity setPlayIndex(String key, PlayIndex play) {
+	public AnimatedEntity setPlayIndex(final String key, final PlayIndex play) {
 		_playEvents.put(key, play);
 		return this;
 	}
 
-	public AnimatedEntity setPlayIndex(String key, int[] animates) {
+	public AnimatedEntity setPlayIndex(final String key, int[] animates) {
 		return setPlayIndex(key, PlayIndex.at(animates));
 	}
 
-	public AnimatedEntity setPlayIndex(String key, long frameTime, int[] animates) {
+	public AnimatedEntity setPlayIndex(final String key, long frameTime, int[] animates) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, animates));
 	}
 
-	public AnimatedEntity setPlayIndex(String key, long frameTime, int startIdx, int endIdx) {
+	public AnimatedEntity setPlayIndex(final String key, long frameTime, int startIdx, int endIdx) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
 	}
 
-	public AnimatedEntity setPlayIndex(String key, long[] frameTime, int startIdx, int endIdx) {
+	public AnimatedEntity setPlayIndex(final String key, long[] frameTime, int startIdx, int endIdx) {
 		return setPlayIndex(key, PlayIndex.at(frameTime, startIdx, endIdx));
 	}
 
-	public PlayIndex getPlayIndex(String key) {
+	public PlayIndex getPlayIndex(final String key) {
 		return _playEvents.get(key);
+	}
+
+	public PlayIndex removePlayIndex(final String key) {
+		return _playEvents.remove(key);
+	}
+
+	public boolean containsPlayIndex(final String key) {
+		return _playEvents.containsKey(key);
+	}
+
+	public String getCurrentAnimateName() {
+		return this._currentAnimateName;
+	}
+
+	public boolean isCurrentAnimateName(final String key) {
+		if (StringUtils.isNullOrEmpty(key)) {
+			return false;
+		}
+		return key.equals(this._currentAnimateName);
 	}
 
 	public AnimatedEntity clearPlayEvents() {
