@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
+import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.PointF;
@@ -1136,6 +1137,43 @@ public class Field2D implements IArray, Config, LRelease {
 		return this;
 	}
 
+	public Vector2f moveCursor(float posX, float posY, int dir, Vector2f result) {
+		if (dir == TLEFT) {
+			if (--posX < 0f) {
+				posX = 0f;
+			}
+		} else if (dir == TRIGHT) {
+			if (++posX >= getWidth()) {
+				posX = getWidth() - 1f;
+			}
+		} else if (dir == TUP) {
+			if (--posY < 0f) {
+				posY = 0f;
+			}
+		} else if (dir == TDOWN) {
+			if (++posY >= getHeight()) {
+				posY = getHeight() - 1f;
+			}
+		}
+		if (result != null) {
+			return result.set(posX, posY);
+		}
+		return Vector2f.at(posX, posY);
+	}
+
+	public Field2D moveCursor(Vector2f cursorTilePos, int dir) {
+		moveCursor(cursorTilePos.x, cursorTilePos.y, dir, cursorTilePos);
+		return this;
+	}
+
+	public Field2D moveCursorPixel(Vector2f cursorPixelPos, int dir) {
+		float x = pixelsToTilesWidth(cursorPixelPos.x);
+		float y = pixelsToTilesHeight(cursorPixelPos.y);
+		moveCursor(x, y, dir, cursorPixelPos);
+		cursorPixelPos.set(tilesToWidthPixels(x), tilesToHeightPixels(y));
+		return this;
+	}
+
 	public int clampX(int x) {
 		return MathUtils.clamp(x, 0, this.width - 1);
 	}
@@ -1204,6 +1242,14 @@ public class Field2D implements IArray, Config, LRelease {
 
 	public int offsetYPixel(int y) {
 		return y - _offset.y();
+	}
+
+	public float freeX(float v) {
+		return tilesToWidthPixels(v + 0.5f);
+	}
+
+	public float freeY(float v) {
+		return tilesToHeightPixels(v + 0.5f);
 	}
 
 	public Field2D switchMap(MapSwitchMaker s) {
