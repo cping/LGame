@@ -1023,6 +1023,36 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
+	public float getScreenScalePixelX() {
+		if (_scaleCenterX != -1f) {
+			return getScreenX() + _scaleCenterX;
+		}
+		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
+	}
+
+	public float getScreenScalePixelY() {
+		if (_scaleCenterY != -1f) {
+			return getScreenY() + _scaleCenterY;
+		}
+		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
+	}
+
+	public Entity placeToCenter(ActionBind ab) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
+				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public Entity placeToCenterX(ActionBind ab, float x) {
+		ab.setLocation(x, getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public Entity placeToCenterY(ActionBind ab, float y) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
+		return this;
+	}
+
 	private void allocateChildren() {
 		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
@@ -1178,8 +1208,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public RectBox getCollisionBox() {
-		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
-				_objectRect));
+		return setRect(MathUtils.getBounds(getScreenScalePixelX(), getScreenScalePixelY(), getWidth(), getHeight(),
+				_objectRotation, _objectRect));
 	}
 
 	public float getScalePixelX() {

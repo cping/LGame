@@ -60,6 +60,8 @@ public class LProcess implements LRelease {
 
 	private final ListMap<CharSequence, Screen> _screenMap;
 
+	private final Vector2f _pointLocaltion = new Vector2f();
+
 	private boolean _isInstance;
 
 	private int _curId;
@@ -113,7 +115,7 @@ public class LProcess implements LRelease {
 				input.keyboardEvents.clearConnections();
 			}
 			if (input != null) {
-		
+
 				if (!_game.setting.emulateTouch && !_game.isMobile() && !_game.input().hasTouch()) {
 					input.mouseEvents.connect(new MouseMake.ButtonSlot() {
 						@Override
@@ -765,25 +767,23 @@ public class LProcess implements LRelease {
 		return 0;
 	}
 
-	private final Vector2f _pointLocaltion = new Vector2f();
-
-	public Vector2f convertXY(float x, float y) {
-		float newX = ((x - getX()) / (LSystem.getScaleWidth()));
-		float newY = ((y - getY()) / (LSystem.getScaleHeight()));
+	public Vector2f convertXY(final float fx, final float fy, float x, float y) {
+		float newX = ((x - fx) / (LSystem.getScaleWidth()));
+		float newY = ((y - fy) / (LSystem.getScaleHeight()));
 		if (_isInstance && _currentScreen.isTxUpdate()) {
 			float oldW = getWidth();
 			float oldH = getHeight();
 			float newW = getWidth() * getScaleX();
 			float newH = getHeight() * getScaleY();
-			float offX = oldW / 2f - newW / 2f;
-			float offY = oldH / 2f - newH / 2f;
+			float offX = fx + (oldW - newW) / 2f;
+			float offY = fy + (oldH - newH) / 2f;
 			float posX = (newX - offX);
 			float posY = (newY - offY);
 			final int r = (int) getRotation();
 			switch (r) {
 			case -90:
-				offX = oldH / 2f - newW / 2f;
-				offY = oldW / 2f - newH / 2f;
+				offX = fx + (oldH - newW) / 2f;
+				offY = fy + (oldW - newH) / 2f;
 				posX = (newX - offY);
 				posY = (newY - offX);
 				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
@@ -794,8 +794,8 @@ public class LProcess implements LRelease {
 				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY());
 				break;
 			case 90:
-				offX = oldH / 2f - newW / 2f;
-				offY = oldW / 2f - newH / 2f;
+				offX = fx + (oldH - newW) / 2f;
+				offY = fy + (oldW - newH) / 2f;
 				posX = (newX - offY);
 				posY = (newY - offX);
 				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
@@ -804,7 +804,7 @@ public class LProcess implements LRelease {
 			case -180:
 			case 180:
 				_pointLocaltion.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation())
-						.addSelf(getWidth(), getHeight());
+						.addSelf(getWidth() - fx / getScaleX(), getHeight() - fy / getScaleY());
 				break;
 			default: // 原则上不处理非水平角度的触点
 				float rad = MathUtils.toRadians(getRotation());
@@ -822,11 +822,16 @@ public class LProcess implements LRelease {
 			_pointLocaltion.set(newX, newY);
 		}
 		if (isFlipX() || isFlipY()) {
-			HelperUtils.local2Global(isFlipX(), isFlipY(), getWidth() / 2, getHeight() / 2, _pointLocaltion.x,
+			HelperUtils.local2Global(isFlipX(), isFlipY(), fx + getWidth() / 2, fy + getHeight() / 2, _pointLocaltion.x,
 					_pointLocaltion.y, _pointLocaltion);
 			return _pointLocaltion;
 		}
 		return _pointLocaltion;
+
+	}
+
+	public Vector2f convertXY(float x, float y) {
+		return convertXY(getX(), getY(), x, y);
 	}
 
 	public Screen getScreen() {

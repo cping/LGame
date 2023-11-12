@@ -23,6 +23,7 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.LTrans;
 import loon.Screen;
+import loon.action.ActionBind;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
@@ -233,8 +234,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	public RectBox getBounds() {
-		float x = getScalePixelX();
-		float y = getScalePixelY();
+		float x = getScreenScalePixelX();
+		float y = getScreenScalePixelY();
 		final float w = getWidth();
 		final float h = getHeight();
 		switch (_anchor) {
@@ -257,6 +258,54 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 
 	public float getScalePixelY() {
 		return ((_scaleY == 1f) ? getY() : getCenterY());
+	}
+
+	public float getScreenScalePixelX() {
+		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + getWidth() / 2f));
+	}
+
+	public float getScreenScalePixelY() {
+		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + getHeight() / 2f));
+	}
+
+	public DisplayObject placeToCenter(ActionBind ab) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
+				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public DisplayObject placeToCenterX(ActionBind ab, float x) {
+		ab.setLocation(x, getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public DisplayObject placeToCenterY(ActionBind ab, float y) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
+		return this;
+	}
+
+	public float getScreenX() {
+		float x = 0;
+		ISprite parent = _objectSuper;
+		if (parent != null) {
+			x += parent.getX();
+			for (; (parent = parent.getParent()) != null;) {
+				x += parent.getX();
+			}
+		}
+		return x + getX();
+	}
+
+	public float getScreenY() {
+		float y = 0;
+		ISprite parent = _objectSuper;
+		if (parent != null) {
+			y += parent.getY();
+			for (; (parent = parent.getParent()) != null;) {
+				y += parent.getY();
+			}
+		}
+		return y + getY();
 	}
 
 	public PointF local2Global(float x, float y) {
@@ -494,7 +543,7 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		this._collSpriteListener = sc;
 		return this;
 	}
-	
+
 	@Override
 	public void onCollision(ISprite coll, int dir) {
 		if (_collSpriteListener != null) {

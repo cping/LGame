@@ -25,7 +25,6 @@ import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
-import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileHelper;
 import loon.geom.PointF;

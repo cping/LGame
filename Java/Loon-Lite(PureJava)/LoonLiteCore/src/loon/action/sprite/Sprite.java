@@ -630,8 +630,8 @@ public class Sprite extends LObject<ISprite>
 	 */
 	@Override
 	public RectBox getCollisionBox() {
-		return setRect(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getWidth(), getHeight(), _objectRotation,
-				_objectRect));
+		return setRect(MathUtils.getBounds(getScreenScalePixelX(), getScreenScalePixelY(), getWidth(), getHeight(),
+				_objectRotation, _objectRect));
 	}
 
 	public float getScalePixelX() {
@@ -814,6 +814,36 @@ public class Sprite extends LObject<ISprite>
 			}
 		}
 		return y + getY();
+	}
+
+	public float getScreenScalePixelX() {
+		if (_pivot.x != -1f) {
+			return getScreenX() + _pivot.x;
+		}
+		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
+	}
+
+	public float getScreenScalePixelY() {
+		if (_pivot.y != -1f) {
+			return getScreenY() + _pivot.y;
+		}
+		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
+	}
+
+	public Sprite placeToCenter(ActionBind ab) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
+				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public Sprite placeToCenterX(ActionBind ab, float x) {
+		ab.setLocation(x, getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
+		return this;
+	}
+
+	public Sprite placeToCenterY(ActionBind ab, float y) {
+		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
+		return this;
 	}
 
 	@Override

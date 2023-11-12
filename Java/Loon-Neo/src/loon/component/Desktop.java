@@ -74,7 +74,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	private LToolTip _tooltip;
 
 	private Vector2f _touchOffset = new Vector2f();
-	
+
 	private boolean _clicked;
 
 	private boolean _visible;
@@ -542,12 +542,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		} else {
 			pointResult.set(x, y);
 		}
-		if (input == null) {
-			return pointResult;
-		}
-		float newX = pointResult.x - input.toPixelScaleX() - getX();
-		float newY = pointResult.y - input.toPixelScaleY() - getY();
-		pointResult.set(newX, newY).addSelf(_touchOffset);
+		pointResult.addSelf(_touchOffset);
 		return cpy ? pointResult.cpy() : pointResult;
 	}
 
@@ -562,6 +557,7 @@ public class Desktop implements Visible, IArray, LRelease {
 				this._hoverComponent.processTouchDragged();
 			}
 		} else {
+			final int typeButton = SysTouch.getButton();
 			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
 			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
 			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
@@ -576,14 +572,14 @@ public class Desktop implements Visible, IArray, LRelease {
 			}
 			// 获得当前窗体下鼠标坐标
 			LComponent comp = null;
-			if (SysTouch.getButton() != -1) {
+			if (typeButton != -1) {
 				comp = this.findComponent(touchX, touchY);
 			}
 			if (comp != null && comp.isAllowTouch()) {
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (comp.isTooltip() && _tooltip != null) {
-						if (!this._tooltip._dismissing && comp.isPointInUI()) {
+						if (!this._tooltip._dismissing && comp.isPointInUI(touchX, touchY)) {
 							// 刷新提示
 							this._tooltip._dismiss = 0;
 							this._tooltip._dismissing = true;
@@ -594,7 +590,7 @@ public class Desktop implements Visible, IArray, LRelease {
 					if (comp.isTooltip() && _tooltip != null) {
 						this._tooltip.setToolTipComponent(comp);
 					}
-					if (SysTouch.getButton() != -1) {
+					if (typeButton != -1) {
 						comp.processTouchEntered();
 					}
 				} else if (comp != this._hoverComponent && this._hoverComponent.isAllowTouch()) {
@@ -602,7 +598,7 @@ public class Desktop implements Visible, IArray, LRelease {
 						this._tooltip.setToolTipComponent(comp);
 					}
 					this._hoverComponent.processTouchExited();
-					if (SysTouch.getButton() != -1) {
+					if (typeButton != -1) {
 						comp.processTouchEntered();
 					}
 				}
