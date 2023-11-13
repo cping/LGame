@@ -1761,20 +1761,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 				newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
 				newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
 			}
-			final Screen screen = getScreen();
-			if (screen != null) {
-				newX -= screen.toPixelScaleX();
-				newY -= screen.toPixelScaleY();
-			}
 			_touchPoint.set(newX, newY).addSelf(_touchOffset);
 		} else {
 			newX = SysTouch.getX();
 			newY = SysTouch.getY();
-			final Screen screen = getScreen();
-			if (screen != null) {
-				newX -= screen.toPixelScaleX();
-				newY -= screen.toPixelScaleY();
-			}
 			return getUITouch(newX, newY, _touchPoint);
 		}
 		return _touchPoint;

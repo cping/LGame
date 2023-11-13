@@ -99,9 +99,9 @@ public class LLayer extends ActorLayer {
 		this.setLocation(x, y);
 		this._isLimitMove = true;
 		this._actorDrag = true;
-		this.customRendering = true;
 		this._currentLayerTouchClick = true;
 		this._currentLayerVSync = true;
+		this.customRendering = true;
 		this.setElastic(true);
 		this.setLocked(true);
 		this.setLayer(-10000);

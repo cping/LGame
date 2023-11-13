@@ -761,6 +761,8 @@ public class LInventory extends LLayer {
 	@Override
 	public void downClick(int dx, int dy) {
 		super.downClick(dx, dy);
+		_tipSelectd = false;
+		_tipItem = null;
 		if (_isMobile && isLongPressed()) {
 			checkTouchTip();
 		}
@@ -783,8 +785,15 @@ public class LInventory extends LLayer {
 				}
 			}
 		}
-		_tipSelectd = false;
-		_tipItem = null;
+		if (!_tipSelectd) {
+			final long timer = getDownUpTimer();
+			if (timer >= 2f * LSystem.SECOND) {
+				checkTouchTip();
+			}
+		} else {
+			_tipSelectd = false;
+			_tipItem = null;
+		}
 	}
 
 	public boolean isDisplayDrawGrid() {

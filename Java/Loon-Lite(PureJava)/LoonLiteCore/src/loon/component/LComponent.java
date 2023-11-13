@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.Director.Origin;
-
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
@@ -218,10 +217,12 @@ public abstract class LComponent extends LObject<LContainer>
 			setLocation(x, y);
 			return;
 		}
+		x += getScreenLeft();
+		y += getScreenTop();
 		int tempX = x;
 		int tempY = y;
-		int tempWidth = (int) (getWidth() - getScreenWidth());
-		int tempHeight = (int) (getHeight() - getScreenHeight());
+		int tempWidth =  (width() - getScreenWidth());
+		int tempHeight = (height() - getScreenHeight());
 
 		int limitX = tempX + tempWidth;
 		int limitY = tempY + tempHeight;
@@ -253,8 +254,10 @@ public abstract class LComponent extends LObject<LContainer>
 		if (!this._isLimitMove) {
 			return false;
 		}
-		int width = (int) (getWidth() - getScreenWidth());
-		int height = (int) (getHeight() - getScreenHeight());
+		x += getScreenLeft();
+		y += getScreenTop();
+		int width = (width() - getScreenWidth());
+		int height = (height() - getScreenHeight());
 		int limitX = x + width;
 		int limitY = y + height;
 		if (getWidth() >= getScreenWidth()) {
@@ -663,32 +666,32 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public int getScreenWidth() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getWidth());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScreenWidth());
 	}
 
 	public int getScreenHeight() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getHeight());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScreenHeight());
 	}
 
 	public int getScreenLeft() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getX());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScalePixelX());
 	}
 
 	public int getScreenTop() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getY());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScalePixelY());
 	}
 
 	public int getScreenRight() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getX() + screen.getWidth());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScalePixelX() + screen.getScreenWidth());
 	}
 
 	public int getScreenBottom() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getY() + screen.getHeight());
+		return screen == null ? 0 : MathUtils.ifloor(screen.getScalePixelY() + screen.getScreenHeight());
 	}
 
 	public float getDesktopX() {
@@ -1342,11 +1345,6 @@ public abstract class LComponent extends LObject<LContainer>
 					newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
 				}
 			}
-			final Screen screen = getScreen();
-			if (screen != null) {
-				newX -= screen.toPixelScaleX();
-				newY -= screen.toPixelScaleY();
-			}
 			_touchPoint.set(newX, newY).addSelf(_touchOffset);
 		} else {
 			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
@@ -1356,11 +1354,6 @@ public abstract class LComponent extends LObject<LContainer>
 			} else {
 				newX = SysTouch.getX();
 				newY = SysTouch.getY();
-			}
-			final Screen screen = getScreen();
-			if (screen != null) {
-				newX -= screen.toPixelScaleX();
-				newY -= screen.toPixelScaleY();
 			}
 			return getUITouch(newX, newY, _touchPoint);
 		}

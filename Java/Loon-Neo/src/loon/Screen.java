@@ -4889,6 +4889,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || _currentX != 0 || _currentY != 0;
 	}
 
+	public boolean isPosOffsetUpdate() {
+		return (_currentX != 0 || _currentY != 0)
+				&& (_scaleX == 1f && _scaleY == 1f && _rotation == 0 && !_flipX && !_flipY);
+	}
+
 	public Screen setAlpha(float a) {
 		this._alpha = a;
 		return this;
