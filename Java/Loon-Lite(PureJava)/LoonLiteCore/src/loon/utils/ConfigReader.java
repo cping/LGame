@@ -34,13 +34,19 @@ import loon.utils.parse.StrTokenizer;
  */
 public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
-	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<>();
+	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 
 	private String FLAG_L_TAG = "//";
 
 	private String FLAG_C_TAG = "#";
 
 	private String FLAG_I_TAG = "'";
+
+	public static ConfigReader parse(final String context) {
+		ConfigReader config = new ConfigReader();
+		config.parseMapContext(context);
+		return config;
+	}
 
 	public static ConfigReader at(final String path) {
 		return shared(path);
@@ -59,7 +65,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private boolean _closed;
 
-	private final ObjectMap<String, String> _configItems = new ObjectMap<>();
+	private final ObjectMap<String, String> _configItems = new ObjectMap<String, String>();
 
 	private TArray<StringKeyValue> _loaders;
 
@@ -67,37 +73,40 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final StrBuilder template_values = new StrBuilder();
 
+	ConfigReader() {
+		this._path = LSystem.UNKNOWN;
+	}
+
 	public ConfigReader(final String resName) {
 		if (StringUtils.isEmpty(resName)) {
 			throw new LSysException("Resource path cannot be Empty!");
 		}
 		this._path = resName;
-		parseMap(resName);
+		this.parseMap(resName);
 	}
 
 	public ObjectMap<String, String> getContent() {
-		return new ObjectMap<>(_configItems);
+		return new ObjectMap<String, String>(_configItems);
 	}
 
-	public void parseMap(final String path) {
-		if (StringUtils.isEmpty(path)) {
-			throw new LSysException("Resource path cannot be Empty !");
+	public void parseMapContext(final String context) {
+		if (StringUtils.isNullOrEmpty(context)) {
+			throw new LSysException("The Resource context cannot be Empty !");
 		}
 		if (_loaders == null) {
-			_loaders = new TArray<>();
+			_loaders = new TArray<StringKeyValue>();
 		}
-		String context = BaseIO.loadText(path);
-		if (StringUtils.isEmpty(context)) {
-			throw new LSysException("The loaded data does not exist !");
-		}
-		StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
+		final StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;
 		String result = null;
 		try {
 			for (; reader.hasMoreTokens();) {
 				result = filter(reader.nextToken());
-				if (StringUtils.isEmpty(result) || result.startsWith("\\")) {
+				if (StringUtils.isEmpty(result)) {
+					continue;
+				}
+				if (result.startsWith("\\")) {
 					continue;
 				}
 				if (result.charAt(0) == '$') {
@@ -124,6 +133,14 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		} else {
 			parseData(context);
 		}
+	}
+
+	public void parseMap(final String path) {
+		final String context = BaseIO.loadText(path);
+		if (StringUtils.isEmpty(context)) {
+			throw new LSysException("The loaded data does not exist !");
+		}
+		parseMapContext(context);
 	}
 
 	public void loadMapKey(final String name) {
@@ -373,7 +390,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			char[] chars = v.toCharArray();
 			int size = chars.length;
 			StrBuilder sbr = new StrBuilder(128);
-			TArray<int[]> records = new TArray<>(CollectionUtils.INITIAL_CAPACITY);
+			TArray<int[]> records = new TArray<int[]>(CollectionUtils.INITIAL_CAPACITY);
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
 				switch (pValue) {

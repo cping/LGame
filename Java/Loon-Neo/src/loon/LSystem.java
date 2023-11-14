@@ -689,7 +689,7 @@ public class LSystem {
 		if (name == null) {
 			return LSystem.EMPTY;
 		}
-		int idx = name.lastIndexOf('.');
+		int idx = name.lastIndexOf(DOT);
 		return idx == -1 ? name : name.substring(0, idx);
 	}
 
@@ -698,9 +698,9 @@ public class LSystem {
 			return LSystem.EMPTY;
 		}
 		int length = name.length();
-		int idx = name.lastIndexOf('/');
+		int idx = name.lastIndexOf(SLASH);
 		if (idx == -1) {
-			idx = name.lastIndexOf('\\');
+			idx = name.lastIndexOf(BACKSLASH);
 		}
 		int size = idx + 1;
 		if (size < length) {
@@ -714,7 +714,7 @@ public class LSystem {
 		if (name == null) {
 			return LSystem.EMPTY;
 		}
-		int index = name.lastIndexOf(".");
+		int index = name.lastIndexOf(DOT);
 		if (index == -1) {
 			return LSystem.EMPTY;
 		} else {
@@ -726,7 +726,7 @@ public class LSystem {
 		if (name == null) {
 			return LSystem.EMPTY;
 		}
-		int index = name.lastIndexOf(".");
+		int index = name.lastIndexOf(DOT);
 		if (index == -1) {
 			return name;
 		} else {

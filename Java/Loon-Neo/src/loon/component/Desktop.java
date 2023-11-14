@@ -554,6 +554,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		if (this._hoverComponent != null && _hoverComponent.isAllowTouch() && this.input.isMoving()) {
 			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
+				this._hoverComponent.validatePosition();
 				this._hoverComponent.processTouchDragged();
 			}
 		} else {
@@ -576,6 +577,7 @@ public class Desktop implements Visible, IArray, LRelease {
 				comp = this.findComponent(touchX, touchY);
 			}
 			if (comp != null && comp.isAllowTouch()) {
+				comp.validatePosition();
 				if (touchDx != 0 || touchDy != 0 || SysTouch.getDX() != 0 || SysTouch.getDY() != 0) {
 					comp.processTouchMoved();
 					if (comp.isTooltip() && _tooltip != null) {
@@ -608,6 +610,7 @@ public class Desktop implements Visible, IArray, LRelease {
 					this._tooltip.setToolTipComponent(null);
 				}
 				if (this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+					this._hoverComponent.validatePosition();
 					this._hoverComponent.processTouchExited();
 				}
 			}
@@ -648,6 +651,7 @@ public class Desktop implements Visible, IArray, LRelease {
 				this._tooltip._initialFlag = 0;
 			}
 			if (!_clicked && this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+				this._hoverComponent.validatePosition();
 				this._hoverComponent.processTouchPressed();
 			}
 			this._clickComponents[0] = this._hoverComponent;
@@ -668,6 +672,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		if (released > Screen.NO_BUTTON) {
 			if (!_clicked && this._hoverComponent != null && this._hoverComponent.isAllowTouch()) {
+				this._hoverComponent.validatePosition();
 				this._hoverComponent.processTouchReleased();
 				// 当释放鼠标时，点击事件生效
 				if (this._clickComponents[0] == this._hoverComponent && this._hoverComponent != null
@@ -686,10 +691,12 @@ public class Desktop implements Visible, IArray, LRelease {
 	private void processKeyEvent() {
 		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
 				&& this.input.getKeyPressed() != Screen.NO_KEY) {
+			this._selectedComponent.validatePosition();
 			this._selectedComponent.keyPressed();
 		}
 		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
 				&& this.input.getKeyReleased() != Screen.NO_KEY && this._selectedComponent != null) {
+			this._selectedComponent.validatePosition();
 			this._selectedComponent.keyReleased();
 		}
 	}

@@ -245,6 +245,8 @@ public class LInventory extends LLayer {
 
 	private boolean _isDisplayBar;
 
+	private boolean _isAllowShowTip;
+
 	private int _currentRowTableSize;
 
 	private int _currentColTableSize;
@@ -283,7 +285,7 @@ public class LInventory extends LLayer {
 
 	private Vector2f _titleSize;
 
-	private boolean _tipSelectd;
+	private boolean _tipSelected;
 
 	private ItemUI _tipItem;
 
@@ -334,11 +336,11 @@ public class LInventory extends LLayer {
 		if (gridColor != null) {
 			this._gridColor = gridColor.lighter();
 		}
-		this._displayDrawGrid = _isDisplayBar = true;
+		this._displayDrawGrid = _isDisplayBar = _isAllowShowTip = true;
 		this._isCircleGrid = false;
+		this._isMobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 		this._tipFont = font;
 		this._tipFontColor = LColor.white;
-		this._isMobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
 		setTipBackground((LTexture) null);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);
@@ -370,6 +372,10 @@ public class LInventory extends LLayer {
 				_currentColTableSize, _gridPaddingX, _gridPaddingY);
 	}
 
+	private float _gridTileWidth;
+
+	private float _gridTileHeight;
+
 	public LInventory update(float left, float top, float right, float bottom, int row, int col, float spaceSizeX,
 			float spaceSizeY) {
 		if (row == this._currentRowTableSize && col == this._currentColTableSize && spaceSizeX == this._gridPaddingX
@@ -385,10 +391,12 @@ public class LInventory extends LLayer {
 		this._gridPaddingBottom = bottom;
 		this._gridPaddingX = spaceSizeX;
 		this._gridPaddingY = spaceSizeY;
-		final int tileWidth = MathUtils.ifloor(
-				getWidth() / _currentRowTableSize - ((_gridPaddingLeft + _gridPaddingRight) / _currentRowTableSize));
-		final int tileHeight = MathUtils.ifloor(
-				getHeight() / _currentRowTableSize - ((_gridPaddingTop + _gridPaddingBottom) / _currentColTableSize));
+		this._gridTileWidth = getWidth() / _currentRowTableSize;
+		this._gridTileHeight = getHeight() / _currentColTableSize;
+		final int tileWidth = MathUtils
+				.ifloor(_gridTileWidth - ((_gridPaddingLeft + _gridPaddingRight) / _currentRowTableSize));
+		final int tileHeight = MathUtils
+				.ifloor(_gridTileHeight - ((_gridPaddingTop + _gridPaddingBottom) / _currentColTableSize));
 		this._titleSize.set(tileWidth, tileHeight);
 		final float xLeft = MathUtils.min(_gridPaddingLeft, (_gridPaddingLeft + _gridPaddingRight))
 				+ _gridPaddingX / 2f;
@@ -603,26 +611,34 @@ public class LInventory extends LLayer {
 		return this;
 	}
 
-	@Override
-	public void processTouchMoved() {
-		super.processTouchMoved();
-		if (!_isMobile) {
-			checkTouchTip();
+	protected void checkTouchTip() {
+		if (!_isAllowShowTip) {
+			return;
 		}
+		final Vector2f pos = getUITouchXY();
+		setTipItem(getItem(pos.x, pos.y));
 	}
 
-	protected void checkTouchTip() {
-		final Vector2f pos = getUITouchXY();
-		_tipItem = getItem(pos.x, pos.y);
+	public LInventory setTipItem(int idx) {
+		return setTipItem(getItem(idx));
+	}
+
+	public LInventory setTipItem(ItemUI item) {
+		if (item == null) {
+			freeTipSelected();
+			return this;
+		}
+		_tipItem = item;
 		if (_tipItem != null && _tipItem._saved) {
 			final String name = _tipItem.getItem().getName();
 			final String des = _tipItem.getItem().getDescription();
 			final String context = name + LSystem.LF + des;
 			setTipText(context);
-			_tipSelectd = true;
+			_tipSelected = true;
 		} else {
-			_tipSelectd = false;
+			_tipSelected = false;
 		}
+		return this;
 	}
 
 	public int getItemCount() {
@@ -739,11 +755,14 @@ public class LInventory extends LLayer {
 			}
 		}
 		super.createCustomUI(g, x, y, w, h);
-		drawTip(g);
+		drawTip(g, x, y);
 	}
 
-	protected void drawTip(GLEx g) {
-		if (_tipSelectd && _tipItem != null && _tipText != null) {
+	protected void drawTip(GLEx g, float x, float y) {
+		if (!_isAllowShowTip) {
+			return;
+		}
+		if (_tipSelected && _tipItem != null && _tipText != null) {
 			final RectBox rect = _tipItem.getArea();
 			final IFont font = _tipText.getFont();
 			final float fontSize = font.getSize();
@@ -751,19 +770,41 @@ public class LInventory extends LLayer {
 			final float texH = _tipText.getHeight();
 			final float width = texW + fontSize;
 			final float height = texH + fontSize;
-			final float posX = rect.x + (rect.getWidth() + width) / 2f;
-			final float posY = rect.y + (rect.getHeight() + height) / 2f;
+			final float posX = x + rect.x + (rect.getWidth() + width - _gridTileWidth) / 2f - fontSize;
+			final float posY = y + rect.y + (rect.getHeight() + height - _gridTileHeight) / 2f;
 			g.draw(_tipTexture, posX - (width - texW + fontSize) / 2f, posY, width, height);
 			_tipText.paintString(g, posX - (width - texW) / 2f, posY + (height - texH) / 2f, _tipFontColor);
+		}
+	}
+
+	public LInventory freeTipSelected() {
+		_tipSelected = false;
+		_tipItem = null;
+		return this;
+	}
+
+	@Override
+	public void processTouchMoved() {
+		super.processTouchMoved();
+		if (!_isMobile) {
+			checkTouchTip();
 		}
 	}
 
 	@Override
 	public void downClick(int dx, int dy) {
 		super.downClick(dx, dy);
-		_tipSelectd = false;
-		_tipItem = null;
+		freeTipSelected();
 		if (_isMobile && isLongPressed()) {
+			checkTouchTip();
+		}
+	}
+
+	@Override
+	public void dragClick(int dx, int dy) {
+		super.dragClick(dx, dy);
+		final boolean draged = input == null ? false : (input.getTouchDX() == 0 && input.getTouchDY() == 0);
+		if (_isMobile && !_tipSelected && draged) {
 			checkTouchTip();
 		}
 	}
@@ -785,15 +826,15 @@ public class LInventory extends LLayer {
 				}
 			}
 		}
-		if (!_tipSelectd) {
-			final long timer = getDownUpTimer();
-			if (timer >= 2f * LSystem.SECOND) {
-				checkTouchTip();
-			}
-		} else {
-			_tipSelectd = false;
-			_tipItem = null;
-		}
+		freeTipSelected();
+	}
+
+	public float getGridTileWidth() {
+		return _gridTileWidth;
+	}
+
+	public float getGridTileHeight() {
+		return _gridTileHeight;
 	}
 
 	public boolean isDisplayDrawGrid() {
@@ -822,6 +863,15 @@ public class LInventory extends LLayer {
 
 	public LInventory setBarImage(LTexture bar) {
 		this._barTexture = bar;
+		return this;
+	}
+
+	public boolean isAllowShowTip() {
+		return _isAllowShowTip;
+	}
+
+	public LInventory setAllowShowTip(boolean a) {
+		this._isAllowShowTip = a;
 		return this;
 	}
 
@@ -880,8 +930,8 @@ public class LInventory extends LLayer {
 		return _titleSize.cpy();
 	}
 
-	public boolean isTipSelectd() {
-		return _tipSelectd;
+	public boolean isTipSelected() {
+		return _tipSelected;
 	}
 
 	@Override

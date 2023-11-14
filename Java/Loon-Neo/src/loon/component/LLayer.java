@@ -252,7 +252,7 @@ public class LLayer extends ActorLayer {
 	}
 
 	@Override
-	public void createCustomUI(final GLEx g, final int x,final int y,final int w,final int h) {
+	public void createCustomUI(final GLEx g, final int x, final int y, final int w, final int h) {
 		if (!_component_visible) {
 			return;
 		}
@@ -579,9 +579,10 @@ public class LLayer extends ActorLayer {
 			}
 			if (!moveActor) {
 				synchronized (input) {
+					validatePosition();
 					dropX = this.input.getTouchDX();
 					dropY = this.input.getTouchDY();
-					if (isNotMoveInScreen(dropX + this.x(), dropY + this.y())) {
+					if (isNotMoveInScreen(dropX + x(), dropY + y())) {
 						return;
 					}
 					if (getContainer() != null) {

@@ -456,38 +456,50 @@ public class LSystem {
 
 	public static String getAllFileName(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		int idx = name.lastIndexOf('.');
+		int idx = name.lastIndexOf(DOT);
 		return idx == -1 ? name : name.substring(0, idx);
 	}
 
 	public static String getFileName(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int length = name.length();
-		int idx = name.lastIndexOf('/');
+		int idx = name.lastIndexOf(SLASH);
 		if (idx == -1) {
-			idx = name.lastIndexOf('\\');
+			idx = name.lastIndexOf(BACKSLASH);
 		}
 		int size = idx + 1;
 		if (size < length) {
 			return name.substring(size, length);
 		} else {
-			return "";
+			return LSystem.EMPTY;
 		}
 	}
 
 	public static String getExtension(String name) {
 		if (name == null) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		int index = name.lastIndexOf(".");
+		int index = name.lastIndexOf(DOT);
 		if (index == -1) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return name.substring(index + 1);
+		}
+	}
+
+	public static String getNotExtension(String name) {
+		if (name == null) {
+			return LSystem.EMPTY;
+		}
+		int index = name.lastIndexOf(DOT);
+		if (index == -1) {
+			return name;
+		} else {
+			return name.substring(0, index);
 		}
 	}
 
@@ -607,18 +619,6 @@ public class LSystem {
 
 	public static final boolean isAudio(String extension) {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
-	}
-
-	public static String getNotExtension(String name) {
-		if (name == null) {
-			return LSystem.EMPTY;
-		}
-		int index = name.lastIndexOf(".");
-		if (index == -1) {
-			return name;
-		} else {
-			return name.substring(0, index);
-		}
 	}
 
 	public static final void stopRepaint() {

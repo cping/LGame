@@ -221,7 +221,7 @@ public abstract class LComponent extends LObject<LContainer>
 		y += getScreenTop();
 		int tempX = x;
 		int tempY = y;
-		int tempWidth =  (width() - getScreenWidth());
+		int tempWidth = (width() - getScreenWidth());
 		int tempHeight = (height() - getScreenHeight());
 
 		int limitX = tempX + tempWidth;
@@ -1331,29 +1331,31 @@ public abstract class LComponent extends LObject<LContainer>
 	public Vector2f getUITouchXY() {
 		float newX = 0f;
 		float newY = 0f;
+		float touchX = input == null ? SysTouch.getX() : input.getTouchX();
+		float touchY = input == null ? SysTouch.getY() : input.getTouchY();
 		if (getRotation() == 0) {
 			if (_objectSuper == null) {
-				newX = toPixelScaleX(SysTouch.getX() - getX());
-				newY = toPixelScaleY(SysTouch.getY() - getY());
+				newX = toPixelScaleX(touchX - getX());
+				newY = toPixelScaleY(touchY - getY());
 			} else {
 				if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 					LScrollContainer scroll = (LScrollContainer) _objectSuper;
-					newX = toPixelScaleX(SysTouch.getX() + scroll.getBoxScrollX() - _objectSuper.getX() - getX());
-					newY = toPixelScaleY(SysTouch.getY() + scroll.getBoxScrollY() - _objectSuper.getY() - getY());
+					newX = toPixelScaleX(touchX + scroll.getBoxScrollX() - _objectSuper.getX() - getX());
+					newY = toPixelScaleY(touchY + scroll.getBoxScrollY() - _objectSuper.getY() - getY());
 				} else {
-					newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
-					newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
+					newX = toPixelScaleX(touchX - _objectSuper.getX() - getX());
+					newY = toPixelScaleY(touchY - _objectSuper.getY() - getY());
 				}
 			}
 			_touchPoint.set(newX, newY).addSelf(_touchOffset);
 		} else {
 			if (_objectSuper.isContainer() && (_objectSuper instanceof LScrollContainer)) {
 				LScrollContainer scroll = (LScrollContainer) _objectSuper;
-				newX = SysTouch.getX() + scroll.getBoxScrollX();
-				newY = SysTouch.getY() + scroll.getBoxScrollY();
+				newX = touchX + scroll.getBoxScrollX();
+				newY = touchY + scroll.getBoxScrollY();
 			} else {
-				newX = SysTouch.getX();
-				newY = SysTouch.getY();
+				newX = touchX;
+				newY = touchY;
 			}
 			return getUITouch(newX, newY, _touchPoint);
 		}
