@@ -99,8 +99,8 @@ public class LLayer extends ActorLayer {
 		this.setLocation(x, y);
 		this._isLimitMove = true;
 		this._actorDrag = true;
-		this._currentLayerTouchClick = true;
 		this._currentLayerVSync = true;
+		this._currentLayerTouchClick = true;
 		this.customRendering = true;
 		this.setElastic(true);
 		this.setLocked(true);
@@ -512,11 +512,8 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	protected void processTouchPressed() {
-		if (!_currentLayerTouchClick) {
-			return;
-		}
-		super.processTouchPressed();
 		if (!input.isMoving()) {
+			super.processTouchPressed();
 			final Vector2f pos = getUITouchXY();
 			int dx = MathUtils.floor(pos.x);
 			int dy = MathUtils.floor(pos.y);
@@ -535,6 +532,7 @@ public class LLayer extends ActorLayer {
 			} catch (Throwable e) {
 				LSystem.error("Layer downClick() exception", e);
 			}
+			_currentLayerTouchClick = true;
 		}
 	}
 
@@ -543,8 +541,8 @@ public class LLayer extends ActorLayer {
 		if (!_currentLayerTouchClick) {
 			return;
 		}
-		super.processTouchReleased();
 		if (!input.isMoving()) {
+			super.processTouchReleased();
 			final Vector2f pos = getUITouchXY();
 			int dx = MathUtils.floor(pos.x);
 			int dy = MathUtils.floor(pos.y);
@@ -564,50 +562,56 @@ public class LLayer extends ActorLayer {
 				LSystem.error("Layer upClick() exception", e);
 			}
 			this._dragActor = null;
+			this._currentDragging = false;
+			this._currentLayerTouchClick = false;
 		}
-		_currentDragging = false;
 	}
 
 	@Override
 	protected void processTouchDragged() {
-		int dropX = 0;
-		int dropY = 0;
-		if (!_dragLocked) {
-			boolean moveActor = false;
-			if (_actorDrag) {
-				moveActor = checkDragActor();
-			}
-			if (!moveActor) {
-				synchronized (input) {
-					validatePosition();
-					dropX = this.input.getTouchDX();
-					dropY = this.input.getTouchDY();
-					if (isNotMoveInScreen(dropX + x(), dropY + y())) {
-						return;
-					}
-					if (getContainer() != null) {
-						getContainer().sendToFront(this);
-					}
-					try {
-						this.move(dropX, dropY);
-						this.dragClick(dropX, dropY);
-					} catch (Throwable e) {
-						LSystem.error("Layer drag() exception", e);
+		if (!_currentLayerTouchClick) {
+			return;
+		}
+		if (input.isMoving()) {
+			int dropX = 0;
+			int dropY = 0;
+			if (!_dragLocked) {
+				boolean moveActor = false;
+				if (_actorDrag) {
+					moveActor = checkDragActor();
+				}
+				if (!moveActor) {
+					synchronized (input) {
+						validatePosition();
+						dropX = this.input.getTouchDX();
+						dropY = this.input.getTouchDY();
+						if (isNotMoveInScreen(dropX + x(), dropY + y())) {
+							return;
+						}
+						if (getContainer() != null) {
+							getContainer().sendToFront(this);
+						}
+						try {
+							this.move(dropX, dropY);
+							this.dragClick(dropX, dropY);
+						} catch (Throwable e) {
+							LSystem.error("Layer drag() exception", e);
+						}
 					}
 				}
+			} else {
+				if (!_actorDrag) {
+					return;
+				}
+				checkDragActor();
 			}
-		} else {
-			if (!_actorDrag) {
-				return;
+			try {
+				super.dragClick();
+			} catch (Throwable e) {
+				LSystem.error("Layer dragClick() exception", e);
 			}
-			checkDragActor();
+			_currentDragging = true;
 		}
-		try {
-			super.dragClick();
-		} catch (Throwable e) {
-			LSystem.error("Layer dragClick() exception", e);
-		}
-		_currentDragging = true;
 	}
 
 	protected boolean checkDragActor() {

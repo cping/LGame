@@ -98,6 +98,10 @@ public class LSystem {
 
 	public static final char TF = '\t';
 
+	public static final char VERTICALLINE = '|';
+
+	public static final char HORIZONTALLINE = '—';
+
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';
@@ -131,11 +135,11 @@ public class LSystem {
 	public static final char SPACE = ' ';
 
 	public static final char TAB = '	';
-	
+
 	public static final char ERRORCODE1 = 341;
 
 	public static final char ERRORCODE2 = 65535;
-	
+
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
 

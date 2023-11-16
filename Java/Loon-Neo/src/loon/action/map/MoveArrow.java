@@ -28,6 +28,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.ConfigReader;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.ObjectMap.Entries;
@@ -209,6 +210,63 @@ public class MoveArrow implements LRelease {
 
 	public MoveArrow setVertRect(float x, float y, float w, float h) {
 		updateRect(vert, x, y, w, h);
+		return this;
+	}
+
+	protected void setConfigKey(ConfigReader config, String key) {
+		float[] v = config.getFloatValues(key);
+		if (v != null && v.length > 3) {
+			updateRect(key, _offsetX + v[0], _offsetY + v[1], v[3] - _offsetX, v[3] - _offsetY);
+		}
+	}
+
+	/**
+	 * 以指定字符串内容设定箭头拆分
+	 * 
+	 * @param context "left=xx,xx,xx,xx;right=xx,xx,xx,xx;..."
+	 * @return
+	 */
+	public MoveArrow setContext(String context) {
+		ConfigReader config = ConfigReader.parse(context);
+		setConfigKey(config, left);
+		setConfigKey(config, right);
+		setConfigKey(config, up);
+		setConfigKey(config, down);
+		setConfigKey(config, leftStub);
+		setConfigKey(config, rightStub);
+		setConfigKey(config, upStub);
+		setConfigKey(config, downStub);
+		setConfigKey(config, upLeft);
+		setConfigKey(config, upRight);
+		setConfigKey(config, downLeft);
+		setConfigKey(config, downRight);
+		setConfigKey(config, horiz);
+		setConfigKey(config, vert);
+		return this;
+	}
+
+	/**
+	 * 以指定配置文件设定箭头拆分
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public MoveArrow setPath(String path) {
+		ConfigReader config = ConfigReader.shared(path);
+		setConfigKey(config, left);
+		setConfigKey(config, right);
+		setConfigKey(config, up);
+		setConfigKey(config, down);
+		setConfigKey(config, leftStub);
+		setConfigKey(config, rightStub);
+		setConfigKey(config, upStub);
+		setConfigKey(config, downStub);
+		setConfigKey(config, upLeft);
+		setConfigKey(config, upRight);
+		setConfigKey(config, downLeft);
+		setConfigKey(config, downRight);
+		setConfigKey(config, horiz);
+		setConfigKey(config, vert);
 		return this;
 	}
 

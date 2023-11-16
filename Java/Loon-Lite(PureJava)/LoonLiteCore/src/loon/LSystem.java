@@ -70,6 +70,10 @@ public class LSystem {
 
 	public static final char TF = '\t';
 
+	public static final char VERTICALLINE = '|';
+
+	public static final char HORIZONTALLINE = '—';
+
 	public static final char UNDERLINE = '_';
 
 	public static final char DASHED = '-';

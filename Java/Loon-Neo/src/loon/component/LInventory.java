@@ -261,6 +261,10 @@ public class LInventory extends LLayer {
 
 	private float _gridPaddingX, _gridPaddingY;
 
+	private float _gridTileWidth;
+
+	private float _gridTileHeight;
+
 	private float _actorFadeTime;
 
 	private boolean _displayDrawGrid;
@@ -371,11 +375,7 @@ public class LInventory extends LLayer {
 		return update(_gridPaddingLeft, _gridPaddingTop, _gridPaddingRight, _gridPaddingBottom, _currentRowTableSize,
 				_currentColTableSize, _gridPaddingX, _gridPaddingY);
 	}
-
-	private float _gridTileWidth;
-
-	private float _gridTileHeight;
-
+	
 	public LInventory update(float left, float top, float right, float bottom, int row, int col, float spaceSizeX,
 			float spaceSizeY) {
 		if (row == this._currentRowTableSize && col == this._currentColTableSize && spaceSizeX == this._gridPaddingX

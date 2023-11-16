@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.canvas.LColor;
+import loon.utils.ConfigReader;
 
 /**
  * 工具类,用于缓存特定ActionBind的动作状态
@@ -142,6 +143,47 @@ public class ActionBindData {
 		offset(newOffsetX, newOffsetY);
 
 		return this;
+	}
+
+	public ActionBindData setPath(String path) {
+		setConfig(ConfigReader.shared(path));
+		return this;
+	}
+
+	public ActionBindData setContext(String context) {
+		setConfig(ConfigReader.parse(context));
+		return this;
+	}
+
+	protected void setConfig(ConfigReader config) {
+		newAlpha = config.getFloatValue("alpha", oldAlpha);
+		newRotation = config.getFloatValue("rotation", oldRotation);
+		newVisible = config.getBoolValue("visible", oldVisible);
+		final float[] pos = config.getFloatValues("location", new float[] { oldX, oldY });
+		newX = pos[0];
+		newY = pos[1];
+		final float[] scale = config.getFloatValues("scale", new float[] { oldScaleX, oldScaleY });
+		newScaleX = scale[0];
+		newScaleY = scale[1];
+		final float[] size = config.getFloatValues("size", new float[] { oldWidth, oldHeight });
+		newWidth = size[0];
+		newHeight = size[1];
+		final float[] offset = config.getFloatValues("offset", new float[] { oldOffsetX, oldOffsetY });
+		newOffsetX = offset[0];
+		newOffsetY = offset[1];
+		newColor = config.getColor("color", oldColor);
+	}
+
+	public ActionBindData sync() {
+		return syncNew();
+	}
+
+	public ActionBindData syncNew() {
+		return resetNewSaveData();
+	}
+
+	public ActionBindData syncOld() {
+		return resetInitData();
 	}
 
 	public boolean isActionCompleted() {

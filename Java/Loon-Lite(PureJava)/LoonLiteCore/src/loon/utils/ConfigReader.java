@@ -6,46 +6,59 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.action.avg.drama.Expression;
 import loon.action.map.Field2D;
+import loon.canvas.LColor;
+import loon.utils.ObjectMap.Keys;
+import loon.utils.ObjectMap.Values;
 import loon.utils.parse.StrTokenizer;
 
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
  * <p>
- *
+ * 
  * 用它可以进行一些简单的键值对(key-value)模式数据设置,不想使用xml或json配置时的帮手
  * <p>
- *
+ * 
  * 完整存储格式为(可部分使用):
- *
+ * 
  * <pre>
  * //($后是数据段名称，下面是数据，两个一组，换行符开始下一组，或者再次出现$也算一组新数据)
  * $bigdata1
- * begin name = "key1"
- * value1
- * end
- * begin name = "key2"
- * value2
- * end
- * key3 ="567"
+ * begin name = "key1" 
+ * value1 
+ * end 
+ * begin name = "key2" 
+ * value2 
+ * end 
+ * key3 ="567" 
  * key4 = "780"
  * $bigdata2
  * ......
+ * </pre>
+ * 
+ * or
+ * 
+ * <pre>
+ * String test = "key1=ds;key2=12,43,56,67;key3=fs";
+ * ConfigReader config = ConfigReader.parse(test);
+ * System.out.println(config.get("key1"));
+ * System.out.println(config.getFloatValues("key2")[1]);
  * </pre>
  */
 public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 
-	private String FLAG_L_TAG = "//";
-
-	private String FLAG_C_TAG = "#";
-
-	private String FLAG_I_TAG = "'";
-
 	public static ConfigReader parse(final String context) {
-		ConfigReader config = new ConfigReader();
-		config.parseMapContext(context);
-		return config;
+		final String defaultName = LSystem.getSystemAppName() + "_configpasertemp";
+		synchronized (ConfigReader.class) {
+			ConfigReader config = CONFIG_CACHE.get(defaultName);
+			if (config == null || config._closed) {
+				config = new ConfigReader();
+				CONFIG_CACHE.put(defaultName, config);
+			}
+			config.parseMapContext(context);
+			return config;
+		}
 	}
 
 	public static ConfigReader at(final String path) {
@@ -95,8 +108,16 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 		if (_loaders == null) {
 			_loaders = new TArray<StringKeyValue>();
+		} else {
+			_loaders.clear();
 		}
-		final StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
+		if (_configItems != null) {
+			_configItems.clear();
+		}
+		if (template_values != null) {
+			template_values.clear();
+		}
+		final StrTokenizer reader = new StrTokenizer(context, LSystem.NL + LSystem.BRANCH);
 		String curTemplate = LSystem.EMPTY;
 		StringKeyValue curBuffer = null;
 		String result = null;
@@ -106,7 +127,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				if (StringUtils.isEmpty(result)) {
 					continue;
 				}
-				if (result.startsWith("\\")) {
+				if (result.indexOf(LSystem.BACKSLASH) == 0) {
 					continue;
 				}
 				if (result.charAt(0) == '$') {
@@ -166,7 +187,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (StringUtils.isEmpty(text)) {
 			return;
 		}
-		StrTokenizer reader = new StrTokenizer(text, LSystem.NL);
+		StrTokenizer reader = new StrTokenizer(text, LSystem.NL + LSystem.BRANCH);
 		String record = null;
 		StrBuilder mapBuffer = new StrBuilder();
 		boolean mapFlag = false;
@@ -210,7 +231,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		for (int i = 0; i < size; i++) {
 			char flag = chars[i];
 			switch (flag) {
-			case '=':
+			case LSystem.EQUAL:
 				if (equals < 3) {
 					equals++;
 					if (idx == 0) {
@@ -220,12 +241,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					idx++;
 				}
 				break;
-			case '\'':
+			case LSystem.SINGLE_QUOTE:
 				if (equals > 1) {
 					sbr.append(flag);
 				}
 				break;
-			case '\"':
+			case LSystem.DOUBLE_QUOTES:
 				equals++;
 				break;
 			default:
@@ -258,6 +279,14 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		synchronized (_configItems) {
 			_configItems.remove(key);
 		}
+	}
+
+	public Keys<String> getKeys() {
+		return _configItems.keys();
+	}
+
+	public Values<String> getValues() {
+		return _configItems.values();
 	}
 
 	public boolean getBoolValue(String name) {
@@ -312,6 +341,74 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			return fallback;
 		}
 		return Float.parseFloat(v);
+	}
+
+	public float[] getFloatValues(String name) {
+		return getFloatValues(name, null);
+	}
+
+	public float[] getFloatValues(String name, float[] fallback) {
+		final String[] list = getValues(name);
+		if (list != null) {
+			final int size = list.length;
+			final float[] v = new float[size];
+			for (int i = 0; i < size; i++) {
+				v[i] = Float.parseFloat(list[i]);
+			}
+			return v;
+		}
+		return fallback;
+	}
+
+	public int[] getIntValues(String name) {
+		return getIntValues(name, null);
+	}
+
+	public int[] getIntValues(String name, int[] fallback) {
+		final String[] list = getValues(name);
+		if (list != null) {
+			final int size = list.length;
+			final int[] v = new int[size];
+			for (int i = 0; i < size; i++) {
+				v[i] = Integer.parseInt(list[i]);
+			}
+			return v;
+		}
+		return fallback;
+	}
+
+	public LColor getColor(String name) {
+		return getColor(name, LColor.white.cpy());
+	}
+
+	public LColor getColor(String name, LColor color) {
+		String result = get(name);
+		if (result != null) {
+			return new LColor(result);
+		} else {
+			return color;
+		}
+	}
+
+	public String[] getValues(String name) {
+		return getValues(name, null);
+	}
+
+	public String[] getValues(String name, String[] fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return fallback;
+		}
+		String[] list = null;
+		synchronized (_configItems) {
+			final String result = _configItems.get(filter(name));
+			if (!StringUtils.isEmpty(result)) {
+				list = StringUtils.split(result, LSystem.COMMA, LSystem.VERTICALLINE);
+			}
+		}
+		if (list == null) {
+			return fallback;
+		}
+		return list;
 	}
 
 	public String getValue(String name) {
@@ -394,10 +491,10 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			for (int i = 0; i < size; i++) {
 				char pValue = chars[i];
 				switch (pValue) {
-				case '{':
+				case LSystem.DELIM_START:
 					pFlag = true;
 					break;
-				case '}':
+				case LSystem.DELIM_END:
 					pFlag = false;
 					String row = sbr.toString();
 					String[] strings = StringUtils.split(row, LSystem.COMMA);
@@ -409,7 +506,8 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					records.add(arrays);
 					sbr.setLength(0);
 					break;
-				case ' ':
+				case LSystem.TAB:
+				case LSystem.SPACE:
 					break;
 				default:
 					if (pFlag) {
