@@ -48,12 +48,12 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 
-	public static ConfigReader parse(final String context) {
-		final String defaultName = LSystem.getSystemAppName() + "_configpasertemp";
+	public final static ConfigReader parse(final String context) {
+		final String defaultName = LSystem.getSystemAppName() + "_configpasertemp_" + CRC32.toHexString(context);
 		synchronized (ConfigReader.class) {
 			ConfigReader config = CONFIG_CACHE.get(defaultName);
 			if (config == null || config._closed) {
-				config = new ConfigReader();
+				config = create();
 				CONFIG_CACHE.put(defaultName, config);
 			}
 			config.parseMapContext(context);
@@ -61,19 +61,27 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		}
 	}
 
-	public static ConfigReader at(final String path) {
+	public final static ConfigReader at(final String path) {
 		return shared(path);
 	}
 
-	public static ConfigReader shared(final String path) {
+	public final static ConfigReader shared(final String path) {
 		synchronized (ConfigReader.class) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
 			if (reader == null || reader._closed) {
-				reader = new ConfigReader(path);
+				reader = create(path);
 				CONFIG_CACHE.put(filter(path), reader);
 			}
 			return reader;
 		}
+	}
+
+	public final static ConfigReader create(final String path) {
+		return new ConfigReader(path);
+	}
+
+	public final static ConfigReader create() {
+		return new ConfigReader();
 	}
 
 	private boolean _closed;

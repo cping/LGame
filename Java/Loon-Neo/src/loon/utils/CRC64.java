@@ -20,6 +20,9 @@
  */
 package loon.utils;
 
+import java.io.UnsupportedEncodingException;
+
+import loon.LSystem;
 import loon.geom.IV;
 
 public class CRC64 implements IV<Long> {
@@ -37,6 +40,17 @@ public class CRC64 implements IV<Long> {
 
 	public static String toHexString(byte[] bytes) {
 		return CharUtils.toHex(toHexLong(bytes));
+	}
+
+	public static String toHexString(String context) {
+		String result = StringUtils.isNullOrEmpty(context) ? LSystem.EMPTY : context.trim();
+		byte[] buffer = null;
+		try {
+			buffer = result.getBytes(LSystem.ENCODING);
+			return toHexString(buffer);
+		} catch (UnsupportedEncodingException e) {
+		}
+		return LSystem.EMPTY;
 	}
 
 	/**

@@ -220,14 +220,7 @@ public class MoveArrow implements LRelease {
 		}
 	}
 
-	/**
-	 * 以指定字符串内容设定箭头拆分
-	 * 
-	 * @param context "left=xx,xx,xx,xx;right=xx,xx,xx,xx;..."
-	 * @return
-	 */
-	public MoveArrow setContext(String context) {
-		ConfigReader config = ConfigReader.parse(context);
+	protected MoveArrow setConfig(ConfigReader config) {
 		setConfigKey(config, left);
 		setConfigKey(config, right);
 		setConfigKey(config, up);
@@ -246,28 +239,23 @@ public class MoveArrow implements LRelease {
 	}
 
 	/**
+	 * 以指定字符串内容设定箭头拆分
+	 * 
+	 * @param context "left=xx,xx,xx,xx;right=xx,xx,xx,xx;..."
+	 * @return
+	 */
+	public MoveArrow setContext(String context) {
+		return setConfig(ConfigReader.parse(context));
+	}
+
+	/**
 	 * 以指定配置文件设定箭头拆分
 	 * 
 	 * @param path
 	 * @return
 	 */
 	public MoveArrow setPath(String path) {
-		ConfigReader config = ConfigReader.shared(path);
-		setConfigKey(config, left);
-		setConfigKey(config, right);
-		setConfigKey(config, up);
-		setConfigKey(config, down);
-		setConfigKey(config, leftStub);
-		setConfigKey(config, rightStub);
-		setConfigKey(config, upStub);
-		setConfigKey(config, downStub);
-		setConfigKey(config, upLeft);
-		setConfigKey(config, upRight);
-		setConfigKey(config, downLeft);
-		setConfigKey(config, downRight);
-		setConfigKey(config, horiz);
-		setConfigKey(config, vert);
-		return this;
+		return setConfig(ConfigReader.shared(path));
 	}
 
 	/**

@@ -201,6 +201,19 @@ public class ActionControl implements LRelease {
 		return this;
 	}
 
+	public final ActionControl delayS(float s) {
+		_delayTimer.setDelayS(s);
+		return this;
+	}
+
+	public final float getDelayS() {
+		return _delayTimer.getDelayS();
+	}
+
+	public final long getDelay() {
+		return _delayTimer.getDelay();
+	}
+
 	public final LTimer getTimer() {
 		return _delayTimer;
 	}
@@ -208,6 +221,12 @@ public class ActionControl implements LRelease {
 	public static final void setDelay(long delay) {
 		if (instanceAction != null) {
 			instanceAction.delay(delay);
+		}
+	}
+
+	public static final void setDelayS(float s) {
+		if (instanceAction != null) {
+			instanceAction.delayS(s);
 		}
 	}
 

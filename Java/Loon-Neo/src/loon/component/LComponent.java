@@ -32,6 +32,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
+import loon.action.ActionBindData;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
@@ -2076,6 +2077,10 @@ public abstract class LComponent extends LObject<LContainer>
 		this._click = null;
 		this._touchListener = null;
 		return this;
+	}
+
+	public ActionBindData getActionData() {
+		return new ActionBindData((ActionBind) this);
 	}
 
 	public boolean isAllowTouch() {

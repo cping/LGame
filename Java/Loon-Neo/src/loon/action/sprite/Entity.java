@@ -30,6 +30,7 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionBindData;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.PlaceActions;
@@ -1860,6 +1861,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity rotateAroundDistance(XY point, float angle, float distance) {
 		PlaceActions.rotateAroundDistance(this, point, angle, distance);
 		return this;
+	}
+
+	public ActionBindData getActionData() {
+		return new ActionBindData((ActionBind) this);
 	}
 
 	@Override
