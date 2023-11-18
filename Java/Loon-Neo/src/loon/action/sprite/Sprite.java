@@ -30,6 +30,7 @@ import loon.LTrans;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
+import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionObject;
@@ -97,6 +98,8 @@ public class Sprite extends LObject<ISprite>
 	private Vector2f _offset = new Vector2f();
 
 	private boolean _createShadow = false;
+
+	private boolean _spritePaused = false;
 
 	private boolean _spritesVisible = true;
 
@@ -543,6 +546,30 @@ public class Sprite extends LObject<ISprite>
 		return _animation;
 	}
 
+	public boolean isPaused() {
+		return _spritePaused;
+	}
+
+	public Sprite pause() {
+		if (!this._spritePaused) {
+			ActionControl.get().paused(this._spritePaused = true, this);
+			if (_animation != null) {
+				_animation.pause();
+			}
+		}
+		return this;
+	}
+
+	public Sprite resume() {
+		if (this._spritePaused) {
+			ActionControl.get().paused(this._spritePaused = false, this);
+			if (_animation != null) {
+				_animation.resume();
+			}
+		}
+		return this;
+	}
+
 	protected void onUpdate(long elapsedTime) {
 	}
 
@@ -550,6 +577,9 @@ public class Sprite extends LObject<ISprite>
 	 * 变更动画
 	 */
 	public void update(long elapsedTime) {
+		if (_spritePaused) {
+			return;
+		}
 		if (_visible) {
 			_animation.update(elapsedTime);
 			onUpdate(elapsedTime);
@@ -1625,6 +1655,7 @@ public class Sprite extends LObject<ISprite>
 	@Override
 	public void close() {
 		this._visible = false;
+		this._spritePaused = false;
 		if (_image != null) {
 			_image.close();
 		}

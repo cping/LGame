@@ -136,9 +136,9 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		case Config.TRIGHT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					final float offX = (j * _width + backgroundLoop) + offsetX;
+					final float offX = (j * _width - backgroundLoop + _width) + offsetX;
 					final float offY = (i * _height) + offsetX;
-					g.draw(_image, drawX(offX), drawX(offY), 0, 0, _width, _height);
+					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
 			}
 			break;
@@ -147,7 +147,7 @@ public class ScrollEffect extends Entity implements BaseEffect {
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
 					final float offX = (j * _width) + offsetX;
-					final float offY = (i * _height + backgroundLoop) + offsetX;
+					final float offY = (i * _height - backgroundLoop + _height) + offsetX;
 					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
 			}

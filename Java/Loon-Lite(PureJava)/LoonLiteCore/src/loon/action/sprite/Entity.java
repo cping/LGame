@@ -31,6 +31,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionBindData;
+import loon.action.ActionControl;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.PlaceActions;
@@ -1128,6 +1129,24 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Entity loop(EventAction la) {
 		this._loopAction = la;
+		return this;
+	}
+
+	public boolean isPaused() {
+		return _ignoreUpdate;
+	}
+
+	public Entity pause() {
+		if (!this._ignoreUpdate) {
+			ActionControl.get().paused(this._ignoreUpdate = true, this);
+		}
+		return this;
+	}
+
+	public Entity resume() {
+		if (this._ignoreUpdate) {
+			ActionControl.get().paused(this._ignoreUpdate = false, this);
+		}
 		return this;
 	}
 
@@ -2256,6 +2275,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		_stopUpdate = false;
+		_ignoreUpdate = false;
 		_loopAction = null;
 		_resizeListener = null;
 		_otherShape = null;

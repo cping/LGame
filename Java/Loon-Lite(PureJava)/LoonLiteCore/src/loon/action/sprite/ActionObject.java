@@ -83,6 +83,20 @@ public abstract class ActionObject extends Entity implements Config {
 		}
 	}
 
+	@Override
+	public ActionObject pause() {
+		super.pause();
+		this.animationStop();
+		return this;
+	}
+
+	@Override
+	public ActionObject resume() {
+		super.resume();
+		this.animationResume();
+		return this;
+	}
+
 	public ActionObject animationStart() {
 		animation.start();
 		return this;
@@ -90,6 +104,11 @@ public abstract class ActionObject extends Entity implements Config {
 
 	public ActionObject animationStop() {
 		animation.stop();
+		return this;
+	}
+
+	public ActionObject animationResume() {
+		animation.resume();
 		return this;
 	}
 

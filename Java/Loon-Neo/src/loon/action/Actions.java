@@ -303,7 +303,17 @@ public class Actions {
 		}
 	}
 
+	public boolean isPaused(ActionBind actObject) {
+		if (actions.size() == 0) {
+			return false;
+		}
+		return ((ActionElement) actions.get(actObject)).paused;
+	}
+
 	public Actions paused(boolean pause, ActionBind actObject) {
+		if (actions.size() == 0) {
+			return this;
+		}
 		ActionElement element = (ActionElement) actions.get(actObject);
 		if (element != null) {
 			element.paused = pause;

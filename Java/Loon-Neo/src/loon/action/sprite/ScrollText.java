@@ -60,8 +60,8 @@ public class ScrollText extends Entity {
 	}
 
 	private Direction _direction = Direction.UP;
-	private boolean _stop = false;
-	private int speed = 1;
+
+	private float _speed = 1f;
 	private final Text _text;
 	private Vector2f _textMove = new Vector2f();
 	private float _textX = 0, _textY = 0;
@@ -146,22 +146,22 @@ public class ScrollText extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (!_stop) {
+		if (!_ignoreUpdate) {
 			if (_timer.action(elapsedTime)) {
 				switch (_direction) {
 				default:
 					break;
 				case UP:
-					_textMove.move_up(speed);
+					_textMove.move_up(_speed);
 					break;
 				case DOWN:
-					_textMove.move_down(speed);
+					_textMove.move_down(_speed);
 					break;
 				case LEFT:
-					_textMove.move_left(speed);
+					_textMove.move_left(_speed);
 					break;
 				case RIGHT:
-					_textMove.move_right(speed);
+					_textMove.move_right(_speed);
 					break;
 				}
 			}
@@ -172,14 +172,14 @@ public class ScrollText extends Entity {
 						&& LSystem.getProcess().getScreen().intersects(_textX, _textY, getHeight(), getWidth());
 			}
 			if (!intersects) {
-				_stop = true;
+				_ignoreUpdate = true;
 			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_stop) {
+		if (_ignoreUpdate) {
 			return;
 		}
 		_textX = _textMove.x + drawX(offsetX);
@@ -201,20 +201,20 @@ public class ScrollText extends Entity {
 	}
 
 	public boolean isStop() {
-		return _stop;
+		return _ignoreUpdate;
 	}
 
-	public ScrollText setStop(boolean _stop) {
-		this._stop = _stop;
+	public ScrollText setStop(boolean s) {
+		this._ignoreUpdate = s;
 		return this;
 	}
 
-	public int getSpeed() {
-		return speed;
+	public float getSpeed() {
+		return _speed;
 	}
 
-	public ScrollText setSpeed(int speed) {
-		this.speed = speed;
+	public ScrollText setSpeed(float speed) {
+		this._speed = speed;
 		return this;
 	}
 
@@ -274,7 +274,7 @@ public class ScrollText extends Entity {
 	public void close() {
 		super.close();
 		_text.close();
-		_stop = true;
+		_ignoreUpdate = true;
 	}
 
 }

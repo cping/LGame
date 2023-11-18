@@ -32,6 +32,7 @@ import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionBindData;
+import loon.action.ActionControl;
 import loon.action.ActionListener;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
@@ -91,6 +92,8 @@ public abstract class LComponent extends LObject<LContainer>
 	protected float _fixedWidthOffset = 0f;
 
 	protected float _fixedHeightOffset = 0f;
+
+	protected boolean _component_paused = false;
 
 	protected boolean _component_elastic = false;
 
@@ -286,6 +289,24 @@ public abstract class LComponent extends LObject<LContainer>
 		return false;
 	}
 
+	public LComponent pause() {
+		if (!this._component_paused) {
+			ActionControl.get().paused(this._component_paused = true, this);
+		}
+		return this;
+	}
+
+	public LComponent resume() {
+		if (this._component_paused) {
+			ActionControl.get().paused(this._component_paused = false, this);
+		}
+		return this;
+	}
+
+	public boolean isPaused() {
+		return _component_paused;
+	}
+
 	/**
 	 * 返回当前组件对象是否为容器
 	 * 
@@ -307,6 +328,9 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		if (_objectSuper != null) {
 			validatePosition();
+		}
+		if (_component_paused) {
+			return;
 		}
 		if (_call != null) {
 			_call.act(elapsedTime);
@@ -2078,7 +2102,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public ActionBindData getActionData() {
 		return new ActionBindData((ActionBind) this);
 	}
-	
+
 	public boolean isAllowTouch() {
 		return !_touchLocked && _component_enabled;
 	}
@@ -2140,6 +2164,7 @@ public abstract class LComponent extends LObject<LContainer>
 			this._freeTextures.close();
 			this._freeTextures = null;
 		}
+		this._component_paused = false;
 		this._component_selected = false;
 		this._component_visible = false;
 		this._touchListener = null;

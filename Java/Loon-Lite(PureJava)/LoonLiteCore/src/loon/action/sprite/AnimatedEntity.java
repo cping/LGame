@@ -244,6 +244,11 @@ public class AnimatedEntity extends Entity {
 		return this._animation;
 	}
 
+	public AnimatedEntity playAnimation() {
+		this._animationRunning = true;
+		return this;
+	}
+
 	public AnimatedEntity stopAnimation() {
 		this._animationRunning = false;
 		return this;
@@ -520,6 +525,20 @@ public class AnimatedEntity extends Entity {
 
 	public boolean isAnimationRunning() {
 		return this._animationRunning;
+	}
+
+	@Override
+	public AnimatedEntity pause() {
+		super.pause();
+		this.stopAnimation();
+		return this;
+	}
+
+	@Override
+	public AnimatedEntity resume() {
+		super.resume();
+		this.playAnimation();
+		return this;
 	}
 
 	public AnimatedEntity setDelay(long d) {

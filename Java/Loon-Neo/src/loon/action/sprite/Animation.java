@@ -363,12 +363,12 @@ public class Animation implements IArray, LRelease {
 	}
 
 	public Animation pause() {
-		this.isRunning = true;
+		this.isRunning = false;
 		return this;
 	}
 
 	public Animation resume() {
-		stop();
+		this.isRunning = true;
 		return this;
 	}
 
