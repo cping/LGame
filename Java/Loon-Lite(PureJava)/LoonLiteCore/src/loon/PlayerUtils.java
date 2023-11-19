@@ -309,6 +309,10 @@ public class PlayerUtils extends Director {
 		return ActionTween.call(callback);
 	}
 
+	public final static boolean hasActions(ActionBind bind) {
+		return ActionControl.get().containsKey(bind);
+	}
+
 	public final static boolean isActionCompleted(ActionBind bind) {
 		return ActionControl.get().isCompleted(bind);
 	}

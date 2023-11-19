@@ -29,6 +29,7 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Visible;
 import loon.action.ActionBind;
+import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.ArrowTo;
 import loon.action.CircleTo;
@@ -86,7 +87,7 @@ public class Actor extends LObject<Actor>
 
 	private float[] _positionYs = new float[4];
 
-	private LTimer timer = new LTimer(0);
+	private LTimer _curTimer = new LTimer(0);
 
 	private Animation animation;
 
@@ -482,7 +483,7 @@ public class Actor extends LObject<Actor>
 	 */
 	@Override
 	public void update(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
+		if (_curTimer.action(elapsedTime)) {
 			if (isAnimation) {
 				if (animation != null) {
 					animation.update(elapsedTime);
@@ -501,7 +502,7 @@ public class Actor extends LObject<Actor>
 	 * @param delay
 	 */
 	public Actor setDelay(long delay) {
-		timer.setDelay(delay);
+		_curTimer.setDelay(delay);
 		return this;
 	}
 
@@ -512,7 +513,7 @@ public class Actor extends LObject<Actor>
 	 * @return
 	 */
 	public Actor setDelayS(float s) {
-		timer.setDelayS(s);
+		_curTimer.setDelayS(s);
 		return this;
 	}
 
@@ -522,7 +523,7 @@ public class Actor extends LObject<Actor>
 	 * @return
 	 */
 	public long getDelay() {
-		return timer.getDelay();
+		return _curTimer.getDelay();
 	}
 
 	/**
@@ -531,7 +532,7 @@ public class Actor extends LObject<Actor>
 	 * @return
 	 */
 	public float getDelayS() {
-		return timer.getDelayS();
+		return _curTimer.getDelayS();
 	}
 
 	/**
@@ -920,7 +921,7 @@ public class Actor extends LObject<Actor>
 		return false;
 	}
 
-	public boolean isThereparent () {
+	public boolean isThereparent() {
 		return gameLayer != null;
 	}
 
@@ -1247,6 +1248,15 @@ public class Actor extends LObject<Actor>
 	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
+	}
+
+	public boolean hasActions() {
+		return ActionControl.get().containsKey(this);
+	}
+
+	public Actor clearActions() {
+		ActionControl.get().removeAllActions(this);
+		return this;
 	}
 
 	@Override

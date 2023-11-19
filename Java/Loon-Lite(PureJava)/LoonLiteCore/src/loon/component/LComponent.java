@@ -43,6 +43,7 @@ import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.events.ClickListener;
+import loon.events.EventAction;
 import loon.events.GameKey;
 import loon.events.ResizeListener;
 import loon.events.SysInput;
@@ -64,6 +65,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.timer.Duration;
@@ -75,17 +77,13 @@ import loon.utils.timer.StopwatchTimer;
 public abstract class LComponent extends LObject<LContainer>
 		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
-	public static interface CallListener {
-
-		public void act(long elapsedTime);
-
-	}
-
 	private Origin _origin = Origin.CENTER;
 
 	private Vector2f _offset = new Vector2f();
 
 	private ResizeListener<LComponent> _resizeListener;
+
+	private EventAction _loopAction;
 
 	protected LTexture[] _imageUI = null;
 
@@ -163,9 +161,6 @@ public abstract class LComponent extends LObject<LContainer>
 
 	// 点击事件监听
 	protected ClickListener _click;
-
-	// 循环事件监听
-	protected CallListener _call;
 
 	private TouchedClick _touchListener;
 
@@ -332,10 +327,15 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_component_paused) {
 			return;
 		}
-		if (_call != null) {
-			_call.act(elapsedTime);
-		}
 		process(elapsedTime);
+		if (_loopAction != null) {
+			HelperUtils.callEventAction(_loopAction, this);
+		}
+	}
+
+	public LComponent loop(EventAction la) {
+		this._loopAction = la;
+		return this;
 	}
 
 	public void process(long elapsedTime) {
@@ -655,7 +655,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public LComponent setBounds(float dx, float dy, int width, int height) {
+	public LComponent setBounds(float dx, float dy, float width, float height) {
 		this.setLocation(dx, dy);
 		this.setSize(width, height);
 		return this;
@@ -666,6 +666,19 @@ public abstract class LComponent extends LObject<LContainer>
 		if (this._width != w || this._height != h) {
 			this._width = MathUtils.max(1f, w);
 			this._height = MathUtils.max(1f, h);
+			this.validateResize();
+		}
+		return this;
+	}
+
+	public LComponent sizeBy(float s) {
+		return sizeBy(s, s);
+	}
+
+	public LComponent sizeBy(float w, float h) {
+		if (this._width != w || this._height != h) {
+			this._width += MathUtils.max(1f, w);
+			this._height += MathUtils.max(1f, h);
 			this.validateResize();
 		}
 		return this;
@@ -978,6 +991,9 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void processResize() {
 	}
 
+	protected void processScale() {
+	}
+
 	// 获得焦点
 	protected void processInFocus() {
 
@@ -1231,12 +1247,25 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setScale(final float sx, final float sy) {
-		if (this._scaleX == sx && this._scaleY == sy) {
-			return;
+	public void setScale(float sx, float sy) {
+		if (this._scaleX != sx || this._scaleY != sy) {
+			this._scaleX = sx;
+			this._scaleY = sy;
+			this.processScale();
 		}
-		this._scaleX = sx;
-		this._scaleY = sy;
+	}
+
+	public LComponent scaleBy(float s) {
+		return scaleBy(s, s);
+	}
+
+	public LComponent scaleBy(float sx, float sy) {
+		if (this._scaleX != sx || this._scaleY != sy) {
+			this._scaleX += sx;
+			this._scaleY += sy;
+			this.processScale();
+		}
+		return this;
 	}
 
 	@Override
@@ -1793,6 +1822,15 @@ public abstract class LComponent extends LObject<LContainer>
 		return PlayerUtils.isActionCompleted(this);
 	}
 
+	public boolean hasActions() {
+		return ActionControl.get().containsKey(this);
+	}
+
+	public LComponent clearActions() {
+		ActionControl.get().removeAllActions(this);
+		return this;
+	}
+	
 	public LComponent setDesktop(Desktop d) {
 		if (this._desktop == d) {
 			return this;
@@ -1959,6 +1997,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public boolean isTouchableListener() {
+		return _touchListener != null;
+	}
+
+	public boolean isClickedListener() {
+		return _click != null;
+	}
+
 	public boolean isLocked() {
 		return _dragLocked;
 	}
@@ -2078,23 +2124,9 @@ public abstract class LComponent extends LObject<LContainer>
 		return _click;
 	}
 
-	public LComponent SC(CallListener u) {
-		SetCall(u);
-		return this;
-	}
-
-	public LComponent SetCall(CallListener u) {
-		this._call = u;
-		return this;
-	}
-
-	public CallListener getCall() {
-		return _call;
-	}
-
 	public LComponent clearListener() {
-		this._call = null;
 		this._click = null;
+		this._loopAction = null;
 		this._touchListener = null;
 		return this;
 	}
@@ -2169,6 +2201,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_visible = false;
 		this._touchListener = null;
 		this._resizeListener = null;
+		this._loopAction = null;
 		this._click = null;
 		this.input = null;
 		setState(State.DISPOSED);

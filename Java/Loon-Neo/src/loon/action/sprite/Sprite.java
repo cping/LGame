@@ -1622,6 +1622,15 @@ public class Sprite extends LObject<ISprite>
 		return this._childrens.contains(e);
 	}
 
+	public boolean hasActions() {
+		return ActionControl.get().containsKey(this);
+	}
+
+	public Sprite clearActions() {
+		ActionControl.get().removeAllActions(this);
+		return this;
+	}
+	
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}

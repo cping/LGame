@@ -2193,6 +2193,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this._childrens.contains(e);
 	}
 
+	public boolean hasActions() {
+		return ActionControl.get().containsKey(this);
+	}
+
+	public Entity clearActions() {
+		ActionControl.get().removeAllActions(this);
+		return this;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

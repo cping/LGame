@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import loon.LSystem;
-import loon.action.sprite.ScrollText.Direction;
 import loon.canvas.LColor;
 import loon.font.AutoWrap;
 import loon.font.Font.Style;

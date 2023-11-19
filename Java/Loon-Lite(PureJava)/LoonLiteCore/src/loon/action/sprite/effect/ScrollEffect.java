@@ -93,6 +93,15 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		return timer.getDelay();
 	}
 
+	public ScrollEffect setDelayS(float s) {
+		timer.setDelayS(s);
+		return this;
+	}
+
+	public float getDelayS() {
+		return timer.getDelayS();
+	}
+
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (completed) {
