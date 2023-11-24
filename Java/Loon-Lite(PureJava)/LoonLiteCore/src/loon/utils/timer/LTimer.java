@@ -450,7 +450,7 @@ public class LTimer implements LRelease {
 	}
 
 	public float getElapsedSeconds() {
-		return this._currentTick * 0.001f;
+		return Duration.toS(this._currentTick);
 	}
 
 	public float getRemaining() {

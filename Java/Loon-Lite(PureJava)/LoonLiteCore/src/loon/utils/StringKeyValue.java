@@ -308,6 +308,10 @@ public class StringKeyValue {
 		return getKey() + left + getValue() + right;
 	}
 
+	public String toHtml() {
+		return "<html>" + toData() + "</html>";
+	}
+	
 	@Override
 	public String toString() {
 		return toData("[", "]");

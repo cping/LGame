@@ -92,7 +92,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _followScale = true;
 	protected boolean _followColor = true;
 
-	protected int _idxTag = Entity.TAG_INVALID;
+	protected int _idxTag = Integer.MIN_VALUE;
 
 	protected boolean _repaintDraw = false;
 
@@ -1252,6 +1252,34 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
 	}
 
+	public float getContextWidth() {
+		if (_childrens == null) {
+			return getWidth();
+		}
+		float max = 0f;
+		for (int i = _childrens.size - 1; i > -1; i--) {
+			IEntity comp = _childrens.get(i);
+			if (comp != null && comp.isVisible()) {
+				max = MathUtils.max(comp.getScalePixelX() + comp.getWidth(), max);
+			}
+		}
+		return max;
+	}
+
+	public float getContextHeight() {
+		if (_childrens == null) {
+			return getHeight();
+		}
+		float max = 0f;
+		for (int i = _childrens.size - 1; i > -1; i--) {
+			IEntity comp = _childrens.get(i);
+			if (comp != null && comp.isVisible()) {
+				max = MathUtils.max(comp.getScalePixelY() + comp.getHeight(), max);
+			}
+		}
+		return max;
+	}
+
 	@Override
 	public LTexture getBitmap() {
 		return _image;
@@ -2199,6 +2227,18 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	public Entity clearActions() {
 		ActionControl.get().removeAllActions(this);
+		return this;
+	}
+
+	@Override
+	public IEntity show() {
+		setVisible(true);
+		return this;
+	}
+
+	@Override
+	public IEntity hide() {
+		setVisible(false);
 		return this;
 	}
 

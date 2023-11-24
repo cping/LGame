@@ -35,9 +35,31 @@ public class JavaSEBlendComposite implements Composite {
 
 	private float alpha;
 
+	protected static JavaSEBlendComposite instanceNormal;
+
+	protected static JavaSEBlendComposite instanceLinearLight;
+
 	protected static JavaSEBlendComposite instanceMultiply;
 
+	protected static JavaSEBlendComposite instanceDifference;
+
 	protected static JavaSEBlendComposite instanceAdd;
+
+	protected static JavaSEBlendComposite instanceOverlay;
+
+	public static final JavaSEBlendComposite getNormal() {
+		if (instanceNormal == null) {
+			instanceNormal = new JavaSEBlendComposite(new Blender() {
+
+				@Override
+				protected int blend(int srcA, int srcR, int srcG, int srcB, int dstA, int dstR, int dstG, int dstB,
+						float alpha, int blendA, int blendR, int blendG, int blendB) {
+					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
+				}
+			});
+		}
+		return instanceNormal;
+	}
 
 	public static final JavaSEBlendComposite getMultiply() {
 		if (instanceMultiply == null) {
@@ -82,12 +104,74 @@ public class JavaSEBlendComposite implements Composite {
 		return instanceAdd;
 	}
 
+	public static final JavaSEBlendComposite getLinearLight() {
+		if (instanceLinearLight == null) {
+			instanceLinearLight = new JavaSEBlendComposite(new Blender() {
+
+				@Override
+				protected int blend(int srcA, int srcR, int srcG, int srcB, int dstA, int dstR, int dstG, int dstB,
+						float alpha, int blendA, int blendR, int blendG, int blendB) {
+					srcA = MathUtils.min(255, srcA + dstA);
+					srcR = blendR < 128 ? (dstR + srcR) >> 8 : (dstR + (srcR - 128)) >> 7;
+					srcG = blendG < 128 ? (dstG + srcG) >> 8 : (dstG + (srcG - 128)) >> 7;
+					srcB = blendB < 128 ? (dstB + srcB) >> 8 : (dstB + (srcB - 128)) >> 7;
+
+					srcA = (srcA * blendA) / 255;
+					srcR = (srcR * blendR) / 255;
+					srcG = (srcG * blendG) / 255;
+					srcB = (srcB * blendB) / 255;
+
+					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
+				}
+			});
+		}
+		return instanceLinearLight;
+	}
+
+	public static final JavaSEBlendComposite getDifference() {
+		if (instanceDifference == null) {
+			instanceDifference = new JavaSEBlendComposite(new Blender() {
+
+				@Override
+				protected int blend(int srcA, int srcR, int srcG, int srcB, int dstA, int dstR, int dstG, int dstB,
+						float alpha, int blendA, int blendR, int blendG, int blendB) {
+					srcA = MathUtils.min(255, dstA + srcA);
+					srcR = MathUtils.abs(dstR - srcR);
+					srcG = MathUtils.abs(dstG - srcG);
+					srcB = MathUtils.abs(dstB - srcB);
+
+					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
+				}
+			});
+		}
+		return instanceDifference;
+	}
+
+	public static final JavaSEBlendComposite getOverlay() {
+		if (instanceOverlay == null) {
+			instanceOverlay = new JavaSEBlendComposite(new Blender() {
+
+				@Override
+				protected int blend(int srcA, int srcR, int srcG, int srcB, int dstA, int dstR, int dstG, int dstB,
+						float alpha, int blendA, int blendR, int blendG, int blendB) {
+					srcA = MathUtils.min(255, srcA + dstA);
+					srcR = blendR < 128 ? (dstR + srcR) >> 7 : 255 - (((255 - dstR) * (255 - srcR)) >> 7);
+					srcG = blendG < 128 ? (dstG + srcG) >> 7 : 255 - (((255 - dstG) * (255 - srcG)) >> 7);
+					srcB = blendB < 128 ? (dstB + srcB) >> 7 : 255 - (((255 - dstB) * (255 - srcB)) >> 7);
+
+					return compose(srcA, srcR, srcG, srcB, dstA, dstR, dstG, dstB, alpha);
+				}
+			});
+		}
+		return instanceOverlay;
+	}
+
 	private final CompositeContext context = new CompositeContext() {
 		@Override
 		public void compose(Raster src, Raster dstIn, WritableRaster dstOut) {
-			int width = Math.min(src.getWidth(), dstIn.getWidth());
-			int height = Math.min(src.getHeight(), dstIn.getHeight());
-			int[] srcPixels = new int[width], dstPixels = new int[width];
+			final int width = Math.min(src.getWidth(), dstIn.getWidth());
+			final int height = Math.min(src.getHeight(), dstIn.getHeight());
+			final int[] srcPixels = new int[width], dstPixels = new int[width];
 			for (int yy = 0; yy < height; yy++) {
 				src.getDataElements(0, yy, width, 1, srcPixels);
 				dstIn.getDataElements(0, yy, width, 1, dstPixels);

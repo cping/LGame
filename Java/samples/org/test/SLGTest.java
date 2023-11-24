@@ -56,7 +56,6 @@ import loon.geom.IntValue;
 import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.opengl.LTexturePackClip;
 import loon.opengl.TextureUtils;
 import loon.utils.TArray;
 import loon.utils.Array;
@@ -350,14 +349,6 @@ public class SLGTest extends Stage {
 
 		public void resetSelect() {
 			this.select(-1, -1);
-		}
-
-		public void show() {
-			this.setVisible(true);
-		}
-
-		public void hide() {
-			this.setVisible(false);
 		}
 
 		/**
@@ -923,6 +914,12 @@ public class SLGTest extends Stage {
 
 		// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
 		gameMap.setImagePack("assets/map.png", clips);*/
+		
+		TileAllocation<Nullable<String>> v =TileAllocation.none("assets/map.png");
+				 v.clip("1", 0, 0, 32, 32)
+			     .clip("2", 0, 32, 32, 32)
+			     .clip("3", 32, 0, 32, 32)
+			     .clip("4", 32, 32, 32, 32);
 		
 		gameMap.setImagePack(TileAllocation.none("assets/map.png")
 		 .clip("1", 0, 0, 32, 32)

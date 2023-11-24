@@ -706,10 +706,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		synchronized (_childs) {
 			super.createUI(g);
 			if (this._component_elastic) {
-				g.setClip(this.getScreenComponentLeft(), 
-						  this.getScreenComponentTop(), 
-						  this.getWidth(),
-						  this.getHeight());
+				g.setClip(this.getScreenComponentLeft(), this.getScreenComponentTop(), this.getWidth(),
+						this.getHeight());
 			}
 			this.renderComponents(g);
 			if (this._component_elastic) {
@@ -911,6 +909,28 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		return CollectionUtils.copyOf(this._childs, this.childCount);
+	}
+
+	public float getContextWidth() {
+		float max = 0f;
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp._component_visible) {
+				max = MathUtils.max(comp.getScalePixelX() + comp.getWidth(), max);
+			}
+		}
+		return max;
+	}
+
+	public float getContextHeight() {
+		float max = 0f;
+		for (int i = _childs.length - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp._component_visible) {
+				max = MathUtils.max(comp.getScalePixelY() + comp.getHeight(), max);
+			}
+		}
+		return max;
 	}
 
 	public LComponent get() {
@@ -1193,7 +1213,8 @@ public abstract class LContainer extends LComponent implements IArray {
 			buffer.append(LSystem.LS);
 			for (int i = 0; i < size; i++) {
 				for (int ii = 0; ii < indent; ii++) {
-					buffer.append("|  ");
+					buffer.append(LSystem.VERTICALLINE);
+					buffer.append(LSystem.SPACE);
 				}
 				LComponent c = comps[i];
 				if (c != null && c.isContainer() && (c instanceof LContainer)) {

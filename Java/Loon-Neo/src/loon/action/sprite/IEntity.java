@@ -30,222 +30,227 @@ import loon.utils.TArray;
 
 public interface IEntity extends ISprite, Flip<IEntity> {
 
-	public static final int TAG_INVALID = Integer.MIN_VALUE;
-
-	public TArray<IEntity> getChildren();
+	TArray<IEntity> getChildren();
 
 	@Override
-	public boolean isVisible();
+	boolean isVisible();
 
 	@Override
-	public void setVisible(final boolean v);
+	void setVisible(final boolean v);
 
-	public boolean isIgnoreUpdate();
+	boolean isIgnoreUpdate();
 
-	public void setIgnoreUpdate(boolean u);
+	void setIgnoreUpdate(boolean u);
 
-	public boolean isChildrenVisible();
+	boolean isChildrenVisible();
 
-	public IEntity setChildrenVisible(final boolean v);
+	IEntity setChildrenVisible(final boolean v);
 
-	public boolean isChildrenIgnoreUpdate();
+	boolean isChildrenIgnoreUpdate();
 
-	public IEntity setChildrenIgnoreUpdate(boolean u);
+	IEntity setChildrenIgnoreUpdate(boolean u);
 
-	public int getIndexTag();
+	int getIndexTag();
 
-	public IEntity setIndexTag(final int t);
-
-	@Override
-	public int getLayer();
+	IEntity setIndexTag(final int t);
 
 	@Override
-	public void setLayer(final int l);
-
-	public boolean hasParent();
+	int getLayer();
 
 	@Override
-	public IEntity getParent();
+	void setLayer(final int l);
 
-	public void setParent(final IEntity e);
-
-	@Override
-	public float getX();
+	boolean hasParent();
 
 	@Override
-	public float getY();
+	IEntity getParent();
+
+	void setParent(final IEntity e);
 
 	@Override
-	public void setX(final float x);
+	float getX();
 
 	@Override
-	public void setY(final float y);
-
-	public boolean isRotated();
+	float getY();
 
 	@Override
-	public float getRotation();
+	void setX(final float x);
 
 	@Override
-	public void setRotation(final float pRotation);
+	void setY(final float y);
 
-	public float getRotationCenterX();
+	float getScalePixelX();
 
-	public float getRotationCenterY();
+	float getScalePixelY();
 
-	public void setRotationCenterX(final float rx);
-
-	public void setRotationCenterY(final float ry);
-
-	public void setRotationCenter(final float rx, final float ry);
-
-	public float getPivotX();
-
-	public float getPivotY();
-
-	public void setPivotX(final float rx);
-
-	public void setPivotY(final float ry);
-
-	public void setPivot(final float rx, final float ry);
-
-	public boolean isScaled();
+	boolean isRotated();
 
 	@Override
-	public float getScaleX();
+	float getRotation();
 
 	@Override
-	public float getScaleY();
+	void setRotation(final float pRotation);
 
-	public void setScaleX(final float sx);
+	float getRotationCenterX();
 
-	public void setScaleY(final float sy);
+	float getRotationCenterY();
 
-	public void setScale(final float s);
+	void setRotationCenterX(final float rx);
 
-	@Override
-	public void setScale(final float sx, final float sy);
+	void setRotationCenterY(final float ry);
 
-	public float getScaleCenterX();
+	void setRotationCenter(final float rx, final float ry);
 
-	public float getScaleCenterY();
+	float getPivotX();
 
-	public void setScaleCenterX(final float sx);
+	float getPivotY();
 
-	public void setScaleCenterY(final float sy);
+	void setPivotX(final float rx);
 
-	public void setScaleCenter(final float sx, final float sy);
+	void setPivotY(final float ry);
 
-	public boolean isSkewed();
+	void setPivot(final float rx, final float ry);
 
-	public float getSkewX();
-
-	public float getSkewY();
-
-	public void setSkewX(final float sx);
-
-	public void setSkewY(final float sy);
-
-	public void setSkew(final float pSkew);
-
-	public void setSkew(final float sx, final float sy);
-
-	public float getSkewCenterX();
-
-	public float getSkewCenterY();
-
-	public void setSkewCenterX(final float sx);
-
-	public void setSkewCenterY(final float sy);
-
-	public void setSkewCenter(final float sx, final float sy);
-
-	public boolean isRotatedOrScaledOrSkewed();
-
-	public float getRed();
-
-	public float getGreen();
-
-	public float getBlue();
+	boolean isScaled();
 
 	@Override
-	public float getAlpha();
+	float getScaleX();
 
 	@Override
-	public LColor getColor();
+	float getScaleY();
+
+	void setScaleX(final float sx);
+
+	void setScaleY(final float sy);
+
+	void setScale(final float s);
 
 	@Override
-	public void setAlpha(final float a);
+	void setScale(final float sx, final float sy);
+
+	float getScaleCenterX();
+
+	float getScaleCenterY();
+
+	void setScaleCenterX(final float sx);
+
+	void setScaleCenterY(final float sy);
+
+	void setScaleCenter(final float sx, final float sy);
+
+	boolean isSkewed();
+
+	float getSkewX();
+
+	float getSkewY();
+
+	void setSkewX(final float sx);
+
+	void setSkewY(final float sy);
+
+	void setSkew(final float pSkew);
+
+	void setSkew(final float sx, final float sy);
+
+	float getSkewCenterX();
+
+	float getSkewCenterY();
+
+	void setSkewCenterX(final float sx);
+
+	void setSkewCenterY(final float sy);
+
+	void setSkewCenter(final float sx, final float sy);
+
+	boolean isRotatedOrScaledOrSkewed();
+
+	float getRed();
+
+	float getGreen();
+
+	float getBlue();
 
 	@Override
-	public void setColor(final LColor c);
-
-	public void setColor(final int c);
-
-	public void setColor(final float r, final float g, final float b);
-
-	public void setColor(final float r, final float g, final float b,
-			final float a);
-
-	public int getChildCount();
-
-	public void onAttached();
-
-	public void onDetached();
-
-	public IEntity addChild(final IEntity e);
-
-	public IEntity addChildAt(final IEntity e, float x, float y);
-
-	public IEntity getChildByTag(final int t);
-
-	public IEntity getChildByIndex(final int idx);
-
-	public IEntity getFirstChild();
-
-	public IEntity getLastChild();
-
-	public IEntity sortChildren();
-
-	public IEntity sortChildren(final boolean i);
-
-	public IEntity sortChildren(final Comparator<IEntity> c);
-
-	public boolean removeSelf();
-
-	public boolean removeChild(final IEntity e);
-
-	public IEntity removeChild(final int t);
-
-	public IEntity removeChildren();
-
-	public IEntity setUserData(final Object u);
-
-	public Object getUserData();
-
-	public void toString(final StrBuilder s);
+	float getAlpha();
 
 	@Override
-	public void update(long elapsedTime);
-
-	public IEntity reset();
+	LColor getColor();
 
 	@Override
-	public void createUI(final GLEx gl);
+	void setAlpha(final float a);
 
 	@Override
-	public void createUI(final GLEx gl, final float offsetX, final float offsetY);
+	void setColor(final LColor c);
 
-	public IEntity setFollowRotation(boolean r);
+	void setColor(final int c);
 
-	public IEntity setFollowScale(boolean s);
+	void setColor(final float r, final float g, final float b);
 
-	public IEntity setFollowColor(boolean c);
+	void setColor(final float r, final float g, final float b, final float a);
 
-	public boolean isFollowRotation();
+	int getChildCount();
 
-	public boolean isFollowScale();
+	void onAttached();
 
-	public boolean isFollowColor();
+	void onDetached();
+
+	IEntity addChild(final IEntity e);
+
+	IEntity addChildAt(final IEntity e, float x, float y);
+
+	IEntity getChildByTag(final int t);
+
+	IEntity getChildByIndex(final int idx);
+
+	IEntity getFirstChild();
+
+	IEntity getLastChild();
+
+	IEntity sortChildren();
+
+	IEntity sortChildren(final boolean i);
+
+	IEntity sortChildren(final Comparator<IEntity> c);
+
+	boolean removeSelf();
+
+	boolean removeChild(final IEntity e);
+
+	IEntity removeChild(final int t);
+
+	IEntity removeChildren();
+
+	IEntity setUserData(final Object u);
+
+	Object getUserData();
+
+	void toString(final StrBuilder s);
+
+	@Override
+	void update(long elapsedTime);
+
+	IEntity reset();
+
+	@Override
+	void createUI(final GLEx gl);
+
+	@Override
+	void createUI(final GLEx gl, final float offsetX, final float offsetY);
+
+	IEntity setFollowRotation(boolean r);
+
+	IEntity setFollowScale(boolean s);
+
+	IEntity setFollowColor(boolean c);
+
+	boolean isFollowRotation();
+
+	boolean isFollowScale();
+
+	boolean isFollowColor();
+
+	IEntity show();
+
+	IEntity hide();
 
 }

@@ -35,7 +35,7 @@ public class StringKeyValue {
 	public final static StringKeyValue at(String name) {
 		return new StringKeyValue(name);
 	}
-	
+
 	private final int capacity;
 
 	private String key;
@@ -306,6 +306,10 @@ public class StringKeyValue {
 
 	public String toData(String left, String right) {
 		return getKey() + left + getValue() + right;
+	}
+
+	public String toHtml() {
+		return "<html>" + toData() + "</html>";
 	}
 
 	@Override

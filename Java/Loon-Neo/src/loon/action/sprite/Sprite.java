@@ -1611,6 +1611,16 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	public Sprite show() {
+		setVisible(true);
+		return this;
+	}
+
+	public Sprite hide() {
+		setVisible(false);
+		return this;
+	}
+
 	public TArray<ISprite> getChildren() {
 		return _childrens;
 	}
@@ -1630,7 +1640,7 @@ public class Sprite extends LObject<ISprite>
 		ActionControl.get().removeAllActions(this);
 		return this;
 	}
-	
+
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}
