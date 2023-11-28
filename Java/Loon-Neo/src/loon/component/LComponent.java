@@ -1511,7 +1511,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent show() {
-		if (_component_visible) {
+		if (_component_visible && _objectAlpha == 1f) {
 			return this;
 		}
 		_component_visible = true;
@@ -1522,7 +1522,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent hide() {
-		if (!_component_visible) {
+		if (!_component_visible && _objectAlpha == 0f) {
 			return this;
 		}
 		_component_visible = false;
