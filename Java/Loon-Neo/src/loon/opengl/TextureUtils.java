@@ -161,7 +161,7 @@ public class TextureUtils {
 	 * 0.3.2版起新增的分割图片方法，与上述近似作用的Split函数不同的是，可以指定个别图块大小。
 	 * 
 	 * @param fileName
-	 * @param division
+	 * @param count
 	 * @param width
 	 * @param height
 	 * @return

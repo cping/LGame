@@ -39,7 +39,6 @@ import loon.action.sprite.effect.SplitEffect;
 import loon.action.sprite.effect.SwipeEffect;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.opengl.TextureUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
@@ -307,8 +306,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newCrossRandom(LColor c) {
-		return newCross(MathUtils.random(0, 1),
-				TextureUtils.createTexture(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
+		return newCross(MathUtils.random(0, 1), c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	/**
@@ -317,7 +315,7 @@ public class LTransition {
 	 * @param c
 	 * @return
 	 */
-	public static final LTransition newCross(final int c, final LTexture texture) {
+	public static final LTransition newCross(final int c, final LColor color, final float w, final float h) {
 
 		if (LSystem.base() != null) {
 
@@ -325,7 +323,7 @@ public class LTransition {
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final CrossEffect cross = new CrossEffect(c, texture);
+				final CrossEffect cross = new CrossEffect(c, color, w, h);
 
 				@Override
 				public void draw(GLEx g) {
@@ -423,8 +421,8 @@ public class LTransition {
 	 * @param texture
 	 * @return
 	 */
-	public static final LTransition newSplitRandom(LTexture texture) {
-		return newSplit(MathUtils.random(0, Config.TDOWN), texture);
+	public static final LTransition newSplitRandom() {
+		return newSplitRandom(LColor.black);
 	}
 
 	/**
@@ -434,7 +432,8 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newSplitRandom(LColor c) {
-		return newSplitRandom(TextureUtils.createTexture(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), c));
+		return newSplit(MathUtils.random(0, Config.TDOWN), c, LSystem.viewSize.getWidth(),
+				LSystem.viewSize.getHeight());
 	}
 
 	/**
@@ -444,6 +443,53 @@ public class LTransition {
 	 * @param texture
 	 * @return
 	 */
+	public static final LTransition newSplit(final int d, final LColor color, final float w, final float h) {
+
+		if (LSystem.base() != null) {
+
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final SplitEffect split = new SplitEffect(color, w, h, d);
+
+				@Override
+				public void draw(GLEx g) {
+					split.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					split.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return split.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					split.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return split;
+				}
+
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	public static final LTransition newSplitRandom(LTexture texture) {
+		return newSplit(MathUtils.random(0, Config.TDOWN), texture);
+	}
+
 	public static final LTransition newSplit(final int d, final LTexture texture) {
 
 		if (LSystem.base() != null) {

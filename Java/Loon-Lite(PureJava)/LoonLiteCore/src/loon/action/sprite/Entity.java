@@ -2236,6 +2236,15 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
+	public boolean toggleVisible() {
+		if (_visible) {
+			hide();
+		} else {
+			show();
+		}
+		return _visible;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

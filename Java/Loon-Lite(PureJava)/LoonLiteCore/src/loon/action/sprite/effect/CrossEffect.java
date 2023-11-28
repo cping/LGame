@@ -23,7 +23,9 @@ package loon.action.sprite.effect;
 import loon.LTexture;
 import loon.LSystem;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.opengl.TextureUtils;
 import loon.utils.timer.LTimer;
 
 /**
@@ -31,9 +33,13 @@ import loon.utils.timer.LTimer;
  */
 public class CrossEffect extends Entity implements BaseEffect {
 
-	private boolean completed;
+	private boolean _createTexture;
 
-	private boolean autoRemoved;
+	private LColor _crossColor;
+
+	private boolean _completed;
+
+	private boolean _autoRemoved;
 
 	private LTexture otexture, ntexture;
 
@@ -67,8 +73,20 @@ public class CrossEffect extends Entity implements BaseEffect {
 		this.code = c;
 		this.otexture = o;
 		this.ntexture = n;
-		_width = (int) o.width();
-		_height = (int) o.height();
+		init(o.getWidth(), o.getHeight());
+	}
+
+	public CrossEffect(int c, LColor color, float w, float h) {
+		this.code = c;
+		this.otexture = this.ntexture = null;
+		this._crossColor = color;
+		this._createTexture = true;
+		this.init(w, h);
+	}
+
+	protected void init(float w, float h) {
+		this._width = w;
+		this._height = h;
 		if (_width > _height) {
 			maxcount = 16;
 		} else {
@@ -89,28 +107,31 @@ public class CrossEffect extends Entity implements BaseEffect {
 
 	@Override
 	public boolean isCompleted() {
-		return completed;
+		return _completed;
 	}
-	
+
 	@Override
 	public CrossEffect setStop(boolean c) {
-		this.completed = c;
+		this._completed = c;
 		return this;
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (_createTexture) {
+			return;
+		}
+		if (_completed) {
 			return;
 		}
 		if (this.count > this.maxcount) {
-			this.completed = true;
+			this._completed = true;
 		}
 		if (timer.action(elapsedTime)) {
 			count++;
 		}
-		if (this.completed) {
-			if (autoRemoved && getSprites() != null) {
+		if (this._completed) {
+			if (_autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
@@ -118,7 +139,14 @@ public class CrossEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (completed) {
+		if (_createTexture) {
+			if (_crossColor != null) {
+				otexture = TextureUtils.createTexture(width(), height(), _crossColor);
+			}
+			_createTexture = false;
+			return;
+		}
+		if (_completed) {
 			if (ntexture != null) {
 				g.draw(ntexture, drawX(offsetX), drawY(offsetY));
 			}
@@ -170,7 +198,7 @@ public class CrossEffect extends Entity implements BaseEffect {
 	@Override
 	public CrossEffect reset() {
 		super.reset();
-		this.completed = false;
+		this._completed = false;
 		this.count = 0;
 		return this;
 	}
@@ -190,18 +218,18 @@ public class CrossEffect extends Entity implements BaseEffect {
 	}
 
 	public boolean isAutoRemoved() {
-		return autoRemoved;
+		return _autoRemoved;
 	}
 
-	public CrossEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+	public CrossEffect setAutoRemoved(boolean a) {
+		this._autoRemoved = a;
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		completed = true;
+		_completed = true;
 		if (otexture != null) {
 			otexture.close();
 			otexture = null;

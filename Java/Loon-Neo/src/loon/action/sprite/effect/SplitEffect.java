@@ -25,9 +25,11 @@ import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.opengl.TextureUtils;
 import loon.utils.timer.LTimer;
 
 /**
@@ -40,6 +42,10 @@ public class SplitEffect extends Entity implements BaseEffect {
 	private int halfWidth, halfHeight, multiples, direction;
 
 	private boolean completed, autoRemoved, special;
+
+	private boolean _createTexture;
+
+	private LColor _splitColor;
 
 	private RectBox limit;
 
@@ -54,14 +60,31 @@ public class SplitEffect extends Entity implements BaseEffect {
 	}
 
 	public SplitEffect(LTexture t, RectBox limit, int d) {
-		this.setRepaint(true);
+		this.init(t.getWidth(), t.getHeight());
 		this._image = t;
-		this.setSize(t.width(), t.height());
+		this.direction = d;
+		this.limit = limit;
+	}
+
+	public SplitEffect(LColor color, float w, float h, int d) {
+		this(color, w, h, LSystem.viewSize.getRect(), d);
+	}
+
+	public SplitEffect(LColor color, float w, float h, RectBox limit, int d) {
+		this._image = null;
+		this._splitColor = color;
+		this._createTexture = true;
+		this.direction = d;
+		this.limit = limit;
+		this.init(w, h);
+	}
+
+	protected void init(float w, float h) {
+		this.setRepaint(true);
+		this.setSize(w, h);
 		this.halfWidth = (int) (_width / 2f);
 		this.halfHeight = (int) (_height / 2f);
 		this.multiples = 2;
-		this.direction = d;
-		this.limit = limit;
 		this.timer = new LTimer(10);
 		this.movePosOne = new Vector2f();
 		this.movePosTwo = new Vector2f();
@@ -96,6 +119,9 @@ public class SplitEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
+		if (_createTexture) {
+			return;
+		}
 		if (!completed) {
 			if (timer.action(elapsedTime)) {
 				switch (direction) {
@@ -135,6 +161,13 @@ public class SplitEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_createTexture) {
+			if (_splitColor != null) {
+				_image = TextureUtils.createTexture(width(), height(), _splitColor);
+			}
+			_createTexture = false;
+			return;
+		}
 		if (!completed) {
 			final float x1 = movePosOne.x + drawX(offsetX);
 			final float y1 = movePosOne.y + drawY(offsetY);

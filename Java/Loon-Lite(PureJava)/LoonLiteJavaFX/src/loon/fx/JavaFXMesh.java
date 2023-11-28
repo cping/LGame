@@ -344,6 +344,12 @@ public class JavaFXMesh implements Mesh {
 				float dstY = textureHeight * (st);
 				float dstWidth = textureWidth * (sr);
 				float dstHeight = textureHeight * (sb);
+				if (dstWidth > textureWidth) {
+					dstWidth = textureWidth;
+				}
+				if (dstHeight > textureHeight) {
+					dstHeight = textureHeight;
+				}
 				if (tint == -1 && alpha == 1f) {
 					context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
 							top, (right - left), (bottom - top));

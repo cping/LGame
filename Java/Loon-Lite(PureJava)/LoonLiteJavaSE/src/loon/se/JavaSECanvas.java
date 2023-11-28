@@ -224,27 +224,35 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas clear() {
-		currentState().prepareClear(context);
-		context.clearRect(0, 0, MathUtils.iceil(width), MathUtils.iceil(height));
-		isDirty = true;
+		clear(LColor.black);
+		return this;
+	}
+
+	@Override
+	public Canvas clear(LColor color) {
+		clearRect(0f, 0f, width, height, color);
 		return this;
 	}
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height, LColor color) {
-		currentState().prepareClear(context);
-		int tmp = getFillColor();
+		final int tmp = getFillColor();
 		setFillColor(color);
-		context.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
+		currentState().prepareFill(context);
+		clearRect(x, y, width, height);
 		setFillColor(tmp);
-		isDirty = true;
 		return this;
 	}
 
 	@Override
 	public Canvas clearRect(float x, float y, float width, float height) {
 		currentState().prepareClear(context);
-		context.clearRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
+		final int newX = MathUtils.ifloor(x);
+		final int newY = MathUtils.ifloor(y);
+		final int newW = MathUtils.iceil(width);
+		final int newH = MathUtils.iceil(height);
+		context.clearRect(newX, newY, newW, newH);
+		context.fillRect(newX, newY, newW, newH);
 		isDirty = true;
 		return this;
 	}
@@ -538,17 +546,6 @@ public class JavaSECanvas extends Canvas {
 
 	private JavaSECanvasState currentState() {
 		return stateStack.getFirst();
-	}
-
-	@Override
-	public Canvas clear(LColor c) {
-		int tmp = getFillColor();
-		setFillColor(c);
-		currentState().prepareFill(context);
-		context.fillRect(0, 0, MathUtils.floor(width), MathUtils.floor(height));
-		setFillColor(tmp);
-		isDirty = true;
-		return this;
 	}
 
 	@Override

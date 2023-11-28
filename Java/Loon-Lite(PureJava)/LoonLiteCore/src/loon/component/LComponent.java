@@ -1507,6 +1507,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent show() {
+		if (_component_visible) {
+			return this;
+		}
 		_component_visible = true;
 		if (!getScreen().contains(this)) {
 			getScreen().add(this);
@@ -1515,12 +1518,12 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent hide() {
+		if (!_component_visible) {
+			return this;
+		}
 		_component_visible = false;
 		if (getScreen().contains(this)) {
 			getScreen().remove(this);
-		}
-		if (_desktop != null) {
-			_desktop.remove(this);
 		}
 		return this;
 	}
@@ -1702,6 +1705,27 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public boolean isOutScreen() {
+		return getScalePixelX() < getScreenLeft() || getScalePixelX() + getWidth() > getScreenRight()
+				|| getScalePixelY() < getScreenTop() || getScalePixelY() + getHeight() > getScreenBottom();
+	}
+
+	public LComponent moveInScreen() {
+		if (getScreen() != null) {
+			if (getScalePixelX() < getScreenLeft()) {
+				setX(getScreenLeft());
+			} else if (getScalePixelX() + getWidth() > getScreenRight()) {
+				setX(getScreenRight() - getWidth());
+			}
+			if (getScalePixelY() < getScreenTop()) {
+				setY(getScreenTop());
+			} else if (getScalePixelY() + getHeight() > getScreenBottom()) {
+				setY(getScreenBottom() - getHeight());
+			}
+		}
+		return this;
+	}
+
 	@Override
 	public LComponent setFlipX(boolean x) {
 		this._flipX = x;
@@ -1830,7 +1854,7 @@ public abstract class LComponent extends LObject<LContainer>
 		ActionControl.get().removeAllActions(this);
 		return this;
 	}
-	
+
 	public LComponent setDesktop(Desktop d) {
 		if (this._desktop == d) {
 			return this;

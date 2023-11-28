@@ -361,9 +361,15 @@ public class JavaSEMesh implements Mesh {
 				float dstY = textureHeight * (st);
 				float dstWidth = textureWidth * (sr);
 				float dstHeight = textureHeight * (sb);
-				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top), MathUtils.ifloor(right),
-						MathUtils.ifloor(bottom), MathUtils.ifloor(dstX), MathUtils.ifloor(dstY),
-						MathUtils.ifloor(dstWidth), MathUtils.ifloor(dstHeight), null);
+				if (dstWidth > textureWidth) {
+					dstWidth = textureWidth;
+				}
+				if (dstHeight > textureHeight) {
+					dstHeight = textureHeight;
+				}
+				context.drawImage(display, MathUtils.ifloor(left), MathUtils.ifloor(top), MathUtils.iceil(right),
+						MathUtils.iceil(bottom), MathUtils.ifloor(dstX), MathUtils.ifloor(dstY),
+						MathUtils.iceil(dstWidth), MathUtils.iceil(dstHeight), null);
 			}
 			context.setTransform(oldTransform);
 			context.setComposite(oldComposite);

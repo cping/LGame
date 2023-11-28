@@ -136,23 +136,26 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
-	@Override
-	public Canvas clear() {
-		Paint tmp = context.getFill();
-		context.setFill(Color.BLACK);
+	protected void clearRect(Color color, boolean clear) {
+		final Paint tmp = context.getFill();
+		context.setFill(color);
+		if (clear) {
+			context.clearRect(0, 0, width, height);
+		}
 		context.fillRect(0, 0, width, height);
 		context.setFill(tmp);
 		isDirty = true;
+	}
+
+	@Override
+	public Canvas clear() {
+		clearRect(Color.BLACK, false);
 		return this;
 	}
 
 	@Override
 	public Canvas clear(LColor color) {
-		Paint tmp = context.getFill();
-		context.setFill(getLColorToFX(color));
-		context.clearRect(0, 0, width, height);
-		context.setFill(tmp);
-		isDirty = true;
+		clearRect(getLColorToFX(color), true);
 		return this;
 	}
 

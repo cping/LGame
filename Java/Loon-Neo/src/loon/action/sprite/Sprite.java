@@ -1621,6 +1621,15 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	public boolean toggleVisible() {
+		if (_visible) {
+			hide();
+		} else {
+			show();
+		}
+		return _visible;
+	}
+
 	public TArray<ISprite> getChildren() {
 		return _childrens;
 	}

@@ -841,7 +841,7 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
 	}
 
 	@Override
-	public void sysText(SysInput.TextEvent event, KeyMake.TextType textType, String label, String initialValue) {
+	public void sysText(final SysInput.TextEvent event,final KeyMake.TextType textType,final String label,final String initialValue) {
 		if (game == null) {
 			event.cancel();
 			return;
@@ -891,7 +891,7 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
 	}
 
 	@Override
-	public void sysDialog(SysInput.ClickEvent event, String title, String text, String ok, String cancel) {
+	public void sysDialog(final SysInput.ClickEvent event,final String title,final String text,final String ok,final String cancel) {
 		if (game == null) {
 			event.cancel();
 			return;

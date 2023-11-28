@@ -95,10 +95,6 @@ public class JavaANImage  extends ImageImpl {
         return bitmap;
     }
 
-    protected int bitSize(Bitmap b) {
-        return b.getRowBytes() * b.getHeight();
-    }
-
     @Override
     protected Canvas getCanvasImpl() {
         return null;
