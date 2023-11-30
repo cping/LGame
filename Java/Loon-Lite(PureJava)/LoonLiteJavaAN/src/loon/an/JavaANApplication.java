@@ -44,6 +44,12 @@ import loon.utils.Resolution;
 
 public abstract class JavaANApplication extends Activity implements JavaANPlatform {
 
+	public final static int EXCELLENT = 0;
+
+	public final static int QUALITY = 1;
+
+	public final static int SPEED = 2;
+	
 	private String btnOKText = "OK";
 	
 	private String btnCancelText = "Cancel";

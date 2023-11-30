@@ -26,8 +26,11 @@ public class JavaSESetting extends LSetting {
 
 	public String[] iconPaths = null;
 
-	public int graphicsMode = 0;
+	public int graphicsMode = Loon.SPEED;
 
 	public boolean doubleBuffer = false;
 
+	protected boolean isSpeedState() {
+		return graphicsMode == Loon.SPEED;
+	}
 }

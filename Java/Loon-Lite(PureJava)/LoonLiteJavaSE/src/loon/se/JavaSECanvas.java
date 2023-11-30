@@ -266,11 +266,15 @@ public class JavaSECanvas extends Canvas {
 
 	@Override
 	public Canvas clipRect(float x, float y, float width, final float height) {
+		return clipRect(x, y, width, height, false);
+	}
+
+	public Canvas clipRect(float x, float y, float width, final float height, boolean cleared) {
 		currentState().prepareClear(context);
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
 		final AffineTransform tx = context.getTransform();
-		if (isMainCanvas() && (tx.getTranslateX() != 0f || tx.getTranslateY() != 0f)) {
+		if (cleared && isMainCanvas() && (tx.getTranslateX() != 0f || tx.getTranslateY() != 0f)) {
 			final int posX = (int) (tx.getTranslateX() / tx.getScaleX());
 			final int posY = (int) (tx.getTranslateY() / tx.getScaleY());
 			context.clearRect(-posX, -posY, cwidth + posX, cy + posY);
