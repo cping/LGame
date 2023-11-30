@@ -150,6 +150,7 @@ public class LTextureBatch implements LRelease {
 		}
 		if (!isCacheLocked) {
 			vertexIdx = 0;
+			clear();
 		}
 		drawing = true;
 		return this;

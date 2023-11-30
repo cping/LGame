@@ -268,15 +268,16 @@ public class MoveArrow implements LRelease {
 		setRightRect(_tileSize + _offsetX, _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
 		setUpRect(_tileSize * 2 + _offsetX, _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
 		setDownRect(_tileSize * 3 + _offsetX, _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setLeftStubRect(_offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setRightStubRect(_tileSize + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setUpStubRect(_tileSize * 2 + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setDownStubRect(_tileSize * 3 + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setUpLeftRect(_offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setUpRightRect(_tileSize + _offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
-		setDownLeftRect(_tileSize * 2 + _offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
+		setLeftStubRect(_offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setRightStubRect(_tileSize + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setUpStubRect(_tileSize * 2 + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setDownStubRect(_tileSize * 3 + _offsetX, _tileSize + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setUpLeftRect(_offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setUpRightRect(_tileSize + _offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY - 1);
+		setDownLeftRect(_tileSize * 2 + _offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX,
+				_tileSize - _offsetY - 1);
 		setDownRightRect(_tileSize * 3 + _offsetX, _tileSize * 2 + _offsetY, _tileSize - _offsetX,
-				_tileSize - _offsetY);
+				_tileSize - _offsetY - 1);
 		setHorizRect(_offsetX, _tileSize * 3 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
 		setVertRect(_tileSize + _offsetX, _tileSize * 3 + _offsetY, _tileSize - _offsetX, _tileSize - _offsetY);
 		return this;

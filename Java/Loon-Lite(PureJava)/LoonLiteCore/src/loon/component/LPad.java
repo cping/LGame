@@ -197,7 +197,6 @@ public class LPad extends LComponent {
 		if (SysTouch.isUp()) {
 			freeClick();
 		}
-		pack.glBegin();
 		pack.draw(0, x, y, backWidth, backHeight, _component_baseColor);
 		if (isClick) {
 			if (angle < 360) {
@@ -209,7 +208,6 @@ public class LPad extends LComponent {
 		}
 		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y + (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
 				_component_baseColor);
-		pack.glEnd();
 	}
 
 	public boolean isLastLeft() {
