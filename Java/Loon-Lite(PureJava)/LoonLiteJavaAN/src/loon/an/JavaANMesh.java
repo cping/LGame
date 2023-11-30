@@ -1,8 +1,9 @@
 package loon.an;
 
 import android.graphics.*;
-
+import loon.LGame;
 import loon.LSysException;
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -14,26 +15,35 @@ import loon.utils.MathUtils;
 
 public class JavaANMesh implements Mesh {
 
+	private final float[] _transform = new float[9];
+
 	private final Matrix matrix = new Matrix();
+
 	private MeshData mesh;
 
 	/**
 	 * 矩阵
 	 */
-	private Affine2f transform;
-	private final Paint paint = new Paint();
+	private Affine2f _currentTransform;
+
+	private final Paint _currentPaint = new Paint();
 	/**
 	 * 绘图环境
 	 */
-	private JavaANCanvas _canvas;
-	private int mode = 0;
+	private final JavaANCanvas _canvas;
+	private final int _mode;
 	private final Rect srcR = new Rect();
 	private final RectF dstR = new RectF();
 
 	public JavaANMesh(Canvas canvas) {
+		this(0, canvas);
+	}
+
+	public JavaANMesh(int mode, Canvas canvas) {
 		if (canvas == null) {
 			throw new LSysException("Canvas is null !");
 		}
+		this._mode = mode;
 		this._canvas = (JavaANCanvas) canvas;
 	}
 
@@ -43,7 +53,7 @@ public class JavaANMesh implements Mesh {
 	@Override
 	public void paint() {
 		if (mesh != null) {
-			if (mode == 0) {
+			if (_mode == 0) {
 				renderWithIndexes(mesh);
 			} else {
 				renderNoIndexes(mesh);
@@ -54,7 +64,6 @@ public class JavaANMesh implements Mesh {
 	/**
 	 * 无顶点索引的模式
 	 *
-	 * @param mesh
 	 */
 	public void renderNoIndexes(MeshData mesh) {
 		int i, len = mesh.amount == -1 ? mesh.vertices.length / 2 : mesh.amount;
@@ -68,7 +77,6 @@ public class JavaANMesh implements Mesh {
 	/**
 	 * 使用顶点索引模式绘制
 	 *
-	 * @param mesh
 	 */
 	public void renderWithIndexes(MeshData mesh) {
 		int[] indexes = mesh.indexes;
@@ -81,7 +89,10 @@ public class JavaANMesh implements Mesh {
 		}
 	}
 
-	private final float[] _transform = new float[9];
+	public Mesh setAffine(Affine2f aff) {
+		_currentTransform = aff;
+		return this;
+	}
 
 	private float[] setArrayTransform(float m11, float m12, float m21, float m22, float dx, float dy) {
 		_transform[0] = m11;
@@ -96,6 +107,7 @@ public class JavaANMesh implements Mesh {
 		return _transform;
 	}
 
+	@Override
 	public void renderDrawTriangle(MeshData mesh, int index0, int index1, int index2) {
 
 		float[] uvs = mesh.uvs;
@@ -175,9 +187,9 @@ public class JavaANMesh implements Mesh {
 		final android.graphics.Canvas context = _canvas.context;
 
 		context.save();
-		if (transform != null) {
-			matrix.setValues(setArrayTransform(transform.m00, transform.m01, transform.m10, transform.m11, transform.tx,
-					transform.ty));
+		if (_currentTransform != null) {
+			matrix.setValues(setArrayTransform(_currentTransform.m00, _currentTransform.m01, _currentTransform.m10,
+					_currentTransform.m11, _currentTransform.tx, _currentTransform.ty));
 			matrix.setValues(_transform);
 			context.concat(matrix);
 		}
@@ -189,9 +201,10 @@ public class JavaANMesh implements Mesh {
 		path.lineTo(x2, y2);
 		path.close();
 
-		paint.setStyle(Paint.Style.FILL);
+		setPaintState(_currentPaint);
+		_currentPaint.setStyle(Paint.Style.FILL);
 
-		context.drawPath(path, paint);
+		context.drawPath(path, _currentPaint);
 
 		// 计算矩阵，将图片变形到合适的位置
 		float delta = (u0 * v1) + (v0 * u2) + (u1 * v2) - (v1 * u2) - (v0 * u1) - (u0 * v2);
@@ -213,7 +226,7 @@ public class JavaANMesh implements Mesh {
 
 		draw(context, ((JavaANImage) source).buffer, texture.widthRatio() * sourceWidth,
 				texture.heightRatio() * sourceHeight, textureWidth, textureHeight, texture.widthRatio() * sourceWidth,
-				texture.heightRatio() * sourceHeight, textureWidth, textureHeight, paint);
+				texture.heightRatio() * sourceHeight, textureWidth, textureHeight, _currentPaint);
 
 		context.restore();
 
@@ -304,17 +317,19 @@ public class JavaANMesh implements Mesh {
 			final boolean isWhiteColor = (tint == -1 || (r == 255 && g == 255 && b == 255));
 			final android.graphics.Canvas context = _canvas.context;
 
-			paint.setColor(tint);
+			setPaintState(_currentPaint);
+
+			_currentPaint.setColor(tint);
 			if (!isWhiteColor) {
-				paint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
+				_currentPaint.setColorFilter(new PorterDuffColorFilter(tint, PorterDuff.Mode.SRC_ATOP));
 			} else {
-				paint.setColorFilter(null);
+				_currentPaint.setColorFilter(null);
 			}
-			paint.setAlpha(a);
+			_currentPaint.setAlpha(a);
 			if (mesh.blend == BlendMethod.MODE_ADD) {
-				paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.ADD));
+				_currentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.ADD));
 			} else if (mesh.blend == BlendMethod.MODE_NORMAL) {
-				paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
+				_currentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_OVER));
 			}
 
 			matrix.setValues(setArrayTransform(m00, m01, m10, m11, tx, ty));
@@ -322,7 +337,7 @@ public class JavaANMesh implements Mesh {
 
 			Bitmap buffer = ((JavaANImage) img).buffer;
 			if (!texture.isChild() && sl == 0f && st == 0f && sr == 1f && sb == 1f) {
-				draw(context, buffer, left, top, (right - left), (bottom - top), paint);
+				draw(context, buffer, left, top, (right - left), (bottom - top), _currentPaint);
 			} else {
 				final float textureWidth = texture.getDisplayWidth();
 				final float textureHeight = texture.getDisplayHeight();
@@ -337,10 +352,23 @@ public class JavaANMesh implements Mesh {
 					dstHeight = textureHeight;
 				}
 				draw(context, buffer, left, top, (right - left), (bottom - top), dstX, dstY, dstWidth - dstX,
-						dstHeight - dstY, paint);
+						dstHeight - dstY, _currentPaint);
 			}
 
-			paint.setXfermode(null);
+			_currentPaint.setXfermode(null);
+		}
+	}
+
+	protected void setPaintState(Paint paint) {
+		final LGame game = LSystem.base();
+		if (game == null || ((JavaANSetting) game.setting).isSpeedState()) {
+			paint.setAntiAlias(false);
+			paint.setFilterBitmap(false);
+			paint.setDither(false);
+		} else {
+			paint.setAntiAlias(true);
+			paint.setFilterBitmap(true);
+			paint.setDither(true);
 		}
 	}
 }

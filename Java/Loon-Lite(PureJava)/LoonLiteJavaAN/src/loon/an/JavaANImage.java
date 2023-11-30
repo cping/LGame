@@ -8,7 +8,6 @@ import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
 import loon.opengl.TextureSource;
-import loon.se.JavaSECanvas;
 import loon.utils.Scale;
 
 public class JavaANImage extends ImageImpl {
