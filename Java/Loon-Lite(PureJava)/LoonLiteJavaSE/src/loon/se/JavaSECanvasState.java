@@ -26,12 +26,33 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Canvas.Composite;
 import loon.canvas.Canvas.LineCap;
 import loon.canvas.Canvas.LineJoin;
 
 public class JavaSECanvasState {
+
+	protected final static void setPaintState(final int paintTypeCode, final Graphics2D gfx) {
+		switch (paintTypeCode) {
+		case Loon.SPEED:
+		default:
+			JavaSEApplication.setGraphicsSpeed(gfx);
+			break;
+		case Loon.QUALITY:
+			JavaSEApplication.setGraphicsQuality(gfx);
+			break;
+		case Loon.EXCELLENT:
+			JavaSEApplication.setGraphicsExcellent(gfx);
+			break;
+		}
+	}
+
+	protected final static void setPaintState(final Graphics2D gfx) {
+		setPaintState((LSystem.base() == null) ? Loon.SPEED : ((JavaSESetting) LSystem.base().setting).graphicsMode,
+				gfx);
+	}
 
 	public interface Clipper {
 		void setClip(Graphics2D gfx);

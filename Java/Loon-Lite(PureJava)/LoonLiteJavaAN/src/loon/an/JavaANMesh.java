@@ -1,9 +1,7 @@
 package loon.an;
 
 import android.graphics.*;
-import loon.LGame;
 import loon.LSysException;
-import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
@@ -201,7 +199,7 @@ public class JavaANMesh implements Mesh {
 		path.lineTo(x2, y2);
 		path.close();
 
-		setPaintState(_currentPaint);
+		JavaANCanvasState.setPaintState(_currentPaint);
 		_currentPaint.setStyle(Paint.Style.FILL);
 
 		context.drawPath(path, _currentPaint);
@@ -317,7 +315,7 @@ public class JavaANMesh implements Mesh {
 			final boolean isWhiteColor = (tint == -1 || (r == 255 && g == 255 && b == 255));
 			final android.graphics.Canvas context = _canvas.context;
 
-			setPaintState(_currentPaint);
+			JavaANCanvasState.setPaintState(_currentPaint);
 
 			_currentPaint.setColor(tint);
 			if (!isWhiteColor) {
@@ -359,16 +357,4 @@ public class JavaANMesh implements Mesh {
 		}
 	}
 
-	protected void setPaintState(Paint paint) {
-		final LGame game = LSystem.base();
-		if (game == null || ((JavaANSetting) game.setting).isSpeedState()) {
-			paint.setAntiAlias(false);
-			paint.setFilterBitmap(false);
-			paint.setDither(false);
-		} else {
-			paint.setAntiAlias(true);
-			paint.setFilterBitmap(true);
-			paint.setDither(true);
-		}
-	}
 }

@@ -91,19 +91,7 @@ public class JavaSECanvas extends Canvas {
 		if (this.context != g2d) {
 			this.context = g2d;
 			if (setting != null) {
-				switch (setting.graphicsMode) {
-				case 0:
-					JavaSEApplication.setGraphicsExcellent(g2d);
-					break;
-				case 1:
-					JavaSEApplication.setGraphicsQuality(g2d);
-					break;
-				case 2:
-					JavaSEApplication.setGraphicsSpeed(g2d);
-					break;
-				default:
-					throw new IllegalArgumentException("Unexpected Graphics Mode value: " + setting.graphicsMode);
-				}
+				JavaSECanvasState.setPaintState(setting.graphicsMode, g2d);
 			}
 		}
 	}

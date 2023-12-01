@@ -10,6 +10,30 @@ import loon.canvas.Canvas;
 
 public class JavaANCanvasState {
 
+	protected final static void setPaintState(Paint paint) {
+		LGame game = LSystem.base();
+		final int paintTypeCode = (game == null) ? JavaANApplication.SPEED
+				: ((JavaANSetting) game.setting).graphicsMode;
+		switch (paintTypeCode) {
+		case JavaANApplication.SPEED:
+		default:
+			paint.setAntiAlias(false);
+			paint.setFilterBitmap(false);
+			paint.setDither(false);
+			break;
+		case JavaANApplication.QUALITY:
+			paint.setAntiAlias(false);
+			paint.setFilterBitmap(true);
+			paint.setDither(false);
+			break;
+		case JavaANApplication.EXCELLENT:
+			paint.setAntiAlias(true);
+			paint.setFilterBitmap(true);
+			paint.setDither(true);
+			break;
+		}
+	}
+
 	final static PorterDuffXfermode[] xfermodes;
 
 	static int PAINT_FLAGS = Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG;
@@ -89,18 +113,9 @@ public class JavaANCanvasState {
 		paint.setStrokeWidth(strokeWidth);
 	}
 
-	protected void setPaintState(Paint paint) {
-		LGame game = LSystem.base();
-		if (game == null || ((JavaANSetting) game.setting).isSpeedState()) {
-			paint.setAntiAlias(false);
-			paint.setFilterBitmap(false);
-			paint.setDither(false);
-		} else {
-			paint.setAntiAlias(true);
-			paint.setFilterBitmap(true);
-			paint.setDither(true);
-		}
+	Paint syncXfermode() {
 		paint.setXfermode(convertComposite(composite));
+		return paint;
 	}
 
 	Paint prepareFill() {
@@ -117,6 +132,7 @@ public class JavaANCanvasState {
 			}
 		}
 		setPaintState(paint);
+		syncXfermode();
 		return paint;
 	}
 
@@ -128,12 +144,14 @@ public class JavaANCanvasState {
 			paint.setAlpha((int) (alpha * (strokeColor >>> 24)));
 		}
 		setPaintState(paint);
+		syncXfermode();
 		return paint;
 	}
 
 	Paint prepareImage() {
 		paint.setAlpha((int) (alpha * 255));
 		setPaintState(paint);
+		syncXfermode();
 		return paint;
 	}
 

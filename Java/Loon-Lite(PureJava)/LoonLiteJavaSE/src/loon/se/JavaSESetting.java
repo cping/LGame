@@ -33,4 +33,12 @@ public class JavaSESetting extends LSetting {
 	protected boolean isSpeedState() {
 		return graphicsMode == Loon.SPEED;
 	}
+
+	protected boolean isQualityState() {
+		return graphicsMode == Loon.QUALITY;
+	}
+
+	protected boolean isExcellentState() {
+		return graphicsMode == Loon.EXCELLENT;
+	}
 }

@@ -42,6 +42,7 @@ import loon.geom.RectI;
 import loon.utils.MathUtils;
 import loon.utils.Resolution;
 
+@SuppressWarnings("deprecation")
 public abstract class JavaANApplication extends Activity implements JavaANPlatform {
 
 	public final static int EXCELLENT = 0;

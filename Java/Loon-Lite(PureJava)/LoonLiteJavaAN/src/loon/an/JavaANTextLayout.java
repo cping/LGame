@@ -3,8 +3,6 @@ package loon.an;
 import java.util.ArrayList;
 import java.util.List;
 
-import loon.LGame;
-import loon.LSystem;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
@@ -17,24 +15,13 @@ public class JavaANTextLayout extends TextLayout {
 	public final JavaANFont font;
 	private final Paint.FontMetrics metrics;
 
-	protected static void setPaintState(Paint paint) {
-		LGame game = LSystem.base();
-		if (game == null || ((JavaANSetting) game.setting).isSpeedState()) {
-			paint.setDither(false);
-			paint.setAntiAlias(false);
-		} else {
-			paint.setDither(true);
-			paint.setAntiAlias(true);
-		}
-	}
-
 	public static TextLayout layoutText(JavaANGraphics gfx, String text, TextFormat format) {
 		JavaANFont font = gfx.resolveFont(format.font);
 		Paint paint = new Paint(format.antialias ? Paint.ANTI_ALIAS_FLAG : 0);
 		paint.setTypeface(font.typeface);
 		paint.setTextSize(font.size);
 		paint.setSubpixelText(true);
-		setPaintState(paint);
+		JavaANCanvasState.setPaintState(paint);
 		Paint.FontMetrics metrics = paint.getFontMetrics();
 		font.paint = paint;
 		return new JavaANTextLayout(text, format, font, metrics, paint.measureText(text));
@@ -46,7 +33,7 @@ public class JavaANTextLayout extends TextLayout {
 		paint.setTypeface(font.typeface);
 		paint.setTextSize(font.size);
 		paint.setSubpixelText(true);
-		setPaintState(paint);
+		JavaANCanvasState.setPaintState(paint);
 		Paint.FontMetrics metrics = paint.getFontMetrics();
 		font.paint = paint;
 
@@ -137,7 +124,7 @@ public class JavaANTextLayout extends TextLayout {
 			paint.setTypeface(font.typeface);
 			paint.setTextSize(font.size);
 			paint.setSubpixelText(true);
-			setPaintState(paint);
+			JavaANCanvasState.setPaintState(paint);
 			if (font.size > 250) {
 				Path path = new Path();
 				paint.getTextPath(text, 0, text.length(), x, y - metrics.ascent, path);

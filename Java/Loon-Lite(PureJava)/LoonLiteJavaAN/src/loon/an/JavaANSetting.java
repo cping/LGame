@@ -48,4 +48,12 @@ public class JavaANSetting extends LSetting {
 	protected boolean isSpeedState() {
 		return graphicsMode == JavaANApplication.SPEED;
 	}
+
+	protected boolean isQualityState() {
+		return graphicsMode == JavaANApplication.QUALITY;
+	}
+
+	protected boolean isExcellentState() {
+		return graphicsMode == JavaANApplication.EXCELLENT;
+	}
 }

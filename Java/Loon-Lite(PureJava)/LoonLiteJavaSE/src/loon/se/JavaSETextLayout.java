@@ -88,6 +88,7 @@ public class JavaSETextLayout extends loon.font.TextLayout {
 	JavaSETextLayout(String text, TextFormat format, TextLayout layout) {
 		super(text, format, computeBounds(layout), layout.getAscent() + layout.getDescent());
 		this.g2d = (Graphics2D) new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getGraphics();
+		JavaSECanvasState.setPaintState(g2d);
 		this.fontMetrics = g2d.getFontMetrics(new java.awt.Font(format.font.name,
 				JavaSEImplGraphics.STYLE_TO_JAVA[format.font.style.ordinal()], (int) format.font.size));
 		this.layout = layout;
@@ -140,6 +141,7 @@ public class JavaSETextLayout extends loon.font.TextLayout {
 				MathUtils.floor(bounds.getWidth()), MathUtils.floor(bounds.getHeight() + layout.getDescent()));
 	}
 
+	@Override
 	public int charWidth(char ch) {
 		return fontMetrics.charWidth(ch);
 	}

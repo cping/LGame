@@ -6,7 +6,8 @@ import loon.LSystem;
 
 public class JavaANVisibilityListener {
 
-    public void createListener(final JavaANPlatform application) {
+    @SuppressWarnings("deprecation")
+	public void createListener(final JavaANPlatform application) {
         try {
             View rootView = application.getApplicationWindow().getDecorView();
             rootView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
