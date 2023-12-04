@@ -72,12 +72,25 @@ import loon.utils.reply.Pair;
 import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
 import loon.utils.timer.Interval;
+import loon.utils.timer.LTimer;
 
 /**
  * 辅助用类,实现了一些常见的数值转换功能,可以在Screen中直接调用
  *
  */
 public class HelperUtils {
+
+	public static LTimer timer() {
+		return LTimer.at();
+	}
+
+	public static LTimer timer(long d) {
+		return LTimer.at(d);
+	}
+
+	public static LTimer timer(Duration d) {
+		return LTimer.at(d);
+	}
 
 	public static boolean isNull(Object obj) {
 		return obj == null;

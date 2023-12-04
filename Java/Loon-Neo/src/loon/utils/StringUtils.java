@@ -1063,6 +1063,46 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 检查一组字符串是否完全由日文组成
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean isJapanLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			if (isJapanese(cs.charAt(i))) {
+				count++;
+			}
+		}
+		return count >= size;
+	}
+
+	/**
+	 * 检查一组字符串是否完全由韩文组成
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean isKoreanLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
+		int count = 0;
+		for (int i = 0; i < size; i++) {
+			if (isKorean(cs.charAt(i))) {
+				count++;
+			}
+		}
+		return count >= size;
+	}
+
+	/**
 	 * 判断字符串中是否包含中文
 	 * 
 	 * @param cs
@@ -1075,6 +1115,44 @@ final public class StringUtils extends CharUtils {
 		int size = cs.length();
 		for (int i = 0; i < size; i++) {
 			if (isChinese(cs.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 判断字符串中是否包含日文
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean containJapaneseLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
+		for (int i = 0; i < size; i++) {
+			if (isJapanese(cs.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 判断字符串中是否包含韩文
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean containKoreanLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
+		for (int i = 0; i < size; i++) {
+			if (isKorean(cs.charAt(i))) {
 				return true;
 			}
 		}
@@ -1095,6 +1173,46 @@ final public class StringUtils extends CharUtils {
 		for (int i = 0; i < cs.length(); i++) {
 			char ch = cs.charAt(i);
 			if (isChinese(ch)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * 返回字符序列中出现的日文字符数量
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static int getJapaneseCount(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < cs.length(); i++) {
+			char ch = cs.charAt(i);
+			if (isJapanese(ch)) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * 返回字符序列中出现的韩文字符数量
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static int getKoreanCount(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return 0;
+		}
+		int count = 0;
+		for (int i = 0; i < cs.length(); i++) {
+			char ch = cs.charAt(i);
+			if (isKorean(ch)) {
 				count++;
 			}
 		}

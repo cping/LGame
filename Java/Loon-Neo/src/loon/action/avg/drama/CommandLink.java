@@ -3,26 +3,31 @@ package loon.action.avg.drama;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
 public class CommandLink {
 
-	private StringKeyValue _commands = null;
+	private final StringKeyValue _commands;
 
 	private int _lineCount = 0;
+
+	public CommandLink() {
+		this(null);
+	}
 
 	public CommandLink(String path) {
 		this(path, LSystem.UNKNOWN);
 	}
 
 	public CommandLink(String path, String name) {
-		String context = BaseIO.loadText(path);
-		_commands = new StringKeyValue(context.length(), name);
-		_commands.addValue(context.toString());
+		if (!StringUtils.isNullOrEmpty(path)) {
+			final String context = BaseIO.loadText(path);
+			_commands = new StringKeyValue(context.length(), name);
+			_commands.addValue(context.toString());
+		} else {
+			_commands = new StringKeyValue(1024, name);
+		}
 		_lineCount = -1;
-	}
-
-	public CommandLink() {
-		_commands = new StringKeyValue(1024, LSystem.UNKNOWN);
 	}
 
 	public CommandLink line(CharSequence c) {

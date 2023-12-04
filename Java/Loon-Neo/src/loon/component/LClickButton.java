@@ -187,6 +187,7 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 	public LClickButton(String text, IFont font, LColor color, int x, int y, int width, int height, LTexture idle,
 			LTexture hover, LTexture disable) {
 		super(x, y, width, height);
+		this.setTouchDownMoved(true);
 		this.text = text;
 		this.font = font;
 		this.fontColor = color;

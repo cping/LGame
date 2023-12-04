@@ -389,6 +389,84 @@ final public class CollectionUtils {
 		return tempArr;
 	}
 
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static byte[] concat(byte[] first, byte[] second) {
+		byte[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static int[] concat(int[] first, int[] second) {
+		int[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static long[] concat(long[] first, long[] second) {
+		long[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static float[] concat(float[] first, float[] second) {
+		float[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static double[] concat(double[] first, double[] second) {
+		double[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	/**
+	 * 连接两个数组并返回为一个新数组
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public static Object[] concat(Object[] first, Object[] second) {
+		Object[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 

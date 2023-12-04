@@ -119,12 +119,16 @@ public abstract class LComponent extends LObject<LContainer>
 	protected float _scaleX = 1f, _scaleY = 1f;
 	// 屏幕位置
 	protected int _screenX, _screenY;
+	// 组件触摸后的移动值
+	protected float _touchDownMovedValue = 2f;
 
 	private LTextureFree _freeTextures;
 
 	private final Vector2f _touchPoint = new Vector2f();
 
 	private Vector2f _touchOffset = new Vector2f();
+
+	private PointF _compPosition = new PointF();
 
 	private boolean _downClick = false;
 	// 中心点
@@ -145,6 +149,9 @@ public abstract class LComponent extends LObject<LContainer>
 
 	// 是否已选中
 	protected boolean _component_selected = false;
+
+	// 按下后是否移动组件
+	protected boolean _component_downmoved = false;
 
 	protected LColor _component_baseColor = null;
 
@@ -886,6 +893,19 @@ public abstract class LComponent extends LObject<LContainer>
 		return !StringUtils.isNullOrEmpty(this.tooltip);
 	}
 
+	protected void checkDownPosition() {
+		if (_component_downmoved) {
+			_compPosition.set(getX(), getY());
+			move_down(_touchDownMovedValue);
+		}
+	}
+
+	protected void checkUpPosition() {
+		if (_component_downmoved) {
+			setLocation(_compPosition);
+		}
+	}
+
 	public void doClick() {
 		if (_click != null) {
 			try {
@@ -959,6 +979,7 @@ public abstract class LComponent extends LObject<LContainer>
 			LSystem.error("Component downClick() exception", e);
 		}
 		if (!this._downClick) {
+			checkDownPosition();
 			this._downUpTimer.start();
 		}
 		this._downClick = true;
@@ -972,6 +993,7 @@ public abstract class LComponent extends LObject<LContainer>
 			} catch (Throwable e) {
 				LSystem.error("Component upClick() exception", e);
 			}
+			checkUpPosition();
 			this._downClick = false;
 		}
 	}
@@ -1956,6 +1978,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setOffset(Vector2f offset) {
+		if (offset == null) {
+			return this;
+		}
 		this._offset = offset;
 		return this;
 	}
@@ -2191,6 +2216,24 @@ public abstract class LComponent extends LObject<LContainer>
 		return setTouchOffset(Vector2f.at(x, y));
 	}
 
+	public boolean isTouchDownMoved() {
+		return _component_downmoved;
+	}
+
+	public LComponent setTouchDownMoved(boolean m) {
+		this._component_downmoved = m;
+		return this;
+	}
+
+	public float getTouchDownMovedValue() {
+		return _touchDownMovedValue;
+	}
+
+	public LComponent setTouchDownMovedValue(float m) {
+		this._touchDownMovedValue = m;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -2199,8 +2242,11 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_component_isClose) {
 			return;
 		}
-		this._component_visible = false;
 		this._component_isClose = true;
+		this._component_visible = false;
+		this._component_paused = false;
+		this._component_selected = false;
+		this._component_downmoved = false;
 		if (_desktop != null) {
 			this._desktop.setComponentStat(this, false);
 		}
@@ -2224,9 +2270,6 @@ public abstract class LComponent extends LObject<LContainer>
 			this._freeTextures.close();
 			this._freeTextures = null;
 		}
-		this._component_paused = false;
-		this._component_selected = false;
-		this._component_visible = false;
 		this._touchListener = null;
 		this._resizeListener = null;
 		this._loopAction = null;
@@ -2238,4 +2281,5 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public abstract void destory();
+
 }

@@ -134,6 +134,7 @@ public class Command extends Conversion implements LRelease {
 	public Command(String fileName, String[] res) {
 		createCache(false);
 		formatCommand("function", res);
+		scriptName = fileName;
 	}
 
 	public static void createCache(boolean free) {
@@ -180,7 +181,7 @@ public class Command extends Conversion implements LRelease {
 
 	public Command formatCommand(CommandLink cmd) {
 		String context = cmd.getValue();
-		String key = "key" + context.length() + context.charAt(0) + "." + context.charAt(context.length() - 1);
+		String key = "key" + context.length() + context.charAt(0) + LSystem.DOT + context.charAt(context.length() - 1);
 		return formatCommand(key, Command.includeString(key, context));
 	}
 
