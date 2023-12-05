@@ -75,6 +75,7 @@ public class TMXMap implements Sized {
 
 	private String filePath;
 	private String tilesLocation;
+	private String tmxType;
 	private LColor backgroundColor;
 
 	private double version;
@@ -175,128 +176,6 @@ public class TMXMap implements Sized {
 				parseTMJ(json, local);
 			}
 		}
-	}
-
-	private void parseTMJ(Json.Object json, String tilesLocation) {
-
-		version = json.getDouble("version", 0);
-		tiledversion = json.getDouble("tiledversion", 0);
-
-		offsetX = json.getNumber("x", 0);
-		offsetY = json.getNumber("y", 0);
-		offsetX = json.getNumber("offsetx", offsetX);
-		offsetY = json.getNumber("offsety", offsetY);
-
-		width = json.getInt("width", 0);
-		height = json.getInt("height", 0);
-		tileWidth = json.getInt("tilewidth", 0);
-		tileHeight = json.getInt("tileheight", 0);
-		infinite = json.getInt("infinite", 0);
-
-		nextlayerid = json.getInt("nextlayerid", 0);
-		nextObjectID = json.getInt("nextobjectid", 0);
-
-		if (json.containsKey("background")) {
-			backgroundColor = new LColor(json.getString("background", LColor.white.toString()).trim());
-		}
-
-		orientation = Orientation.valueOf(json.getString("orientation", "ORTHOGONAL").trim().toUpperCase());
-
-		if (json.containsKey("renderorder")) {
-			switch (json.getString("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
-			case "right-down":
-				renderOrder = RenderOrder.RIGHT_DOWN;
-				break;
-			case "right-up":
-				renderOrder = RenderOrder.RIGHT_UP;
-				break;
-			case "left-down":
-				renderOrder = RenderOrder.LEFT_DOWN;
-				break;
-			case "left-up":
-				renderOrder = RenderOrder.LEFT_UP;
-				break;
-			}
-		}
-
-		if (json.containsKey("staggeraxis")) {
-			switch (json.getString("staggeraxis", LSystem.EMPTY).trim().toLowerCase()) {
-			case "x":
-				staggerAxis = StaggerAxis.AXIS_X;
-				break;
-			case "y":
-				staggerAxis = StaggerAxis.AXIS_Y;
-				break;
-			}
-		}
-
-		if (json.containsKey("staggerindex")) {
-			switch (json.getString("staggerindex", LSystem.EMPTY).trim().toLowerCase()) {
-			case "even":
-				staggerIndex = StaggerIndex.EVEN;
-				break;
-			case "odd":
-				staggerIndex = StaggerIndex.ODD;
-				break;
-			}
-		}
-
-		hexSideLength = json.getInt("hexsidelength", 0);
-
-		if (json.containsKey("properties")) {
-			Json.Array propertiesArray = json.getArray("properties", null);
-			if (propertiesArray != null) {
-				properties.parse(propertiesArray);
-			}
-		}
-
-		if (json.containsKey("tilesets")) {
-			Json.Array tilesetsArray = json.getArray("tilesets", null);
-			if (tilesetsArray != null) {
-				for (int i = 0; i < tilesetsArray.length(); i++) {
-					TMXTileSet tileSet = new TMXTileSet();
-					tileSet.parse(tilesetsArray.getObject(i), tilesLocation);
-					tileSets.add(tileSet);
-				}
-			}
-		}
-
-		if (json.containsKey("layers")) {
-			Json.Array layersArray = json.getArray("layers", null);
-			if (layersArray != null) {
-				for (int i = 0; i < layersArray.length(); i++) {
-					TMXTileLayer tileLayer = new TMXTileLayer(this);
-					tileLayer.parse(layersArray.getObject(i));
-					tileLayers.add(tileLayer);
-				}
-			}
-		}
-
-		if (json.containsKey("imagelayers")) {
-			Json.Array imagelayersArray = json.getArray("imagelayers", null);
-			if (imagelayersArray != null) {
-				for (int i = 0; i < imagelayersArray.length(); i++) {
-					TMXImageLayer imageLayer = new TMXImageLayer(this);
-					imageLayer.parse(imagelayersArray.getObject(i));
-					imageLayers.add(imageLayer);
-				}
-			}
-		}
-
-		if (json.containsKey("objectgroups")) {
-			Json.Array objectgroupsArray = json.getArray("objectgroups", null);
-			if (objectgroupsArray != null) {
-				for (int i = 0; i < objectgroupsArray.length(); i++) {
-					TMXObjectLayer objectLayer = new TMXObjectLayer(this);
-					objectLayer.parse(objectgroupsArray.getObject(i));
-					objectLayers.add(objectLayer);
-				}
-			}
-		}
-
-		layers.addAll(tileLayers);
-		layers.addAll(imageLayers);
-		layers.addAll(objectLayers);
 	}
 
 	/**
@@ -545,6 +424,139 @@ public class TMXMap implements Sized {
 		return getHeight();
 	}
 
+	private void parseTMJ(Json.Object json, String tilesLocation) {
+
+		version = json.getDouble("version", 0);
+		tiledversion = json.getDouble("tiledversion", 0);
+
+		offsetX = json.getNumber("x", 0);
+		offsetY = json.getNumber("y", 0);
+		offsetX = json.getNumber("offsetx", offsetX);
+		offsetY = json.getNumber("offsety", offsetY);
+
+		tmxType = json.getString("type", null);
+		width = json.getInt("width", 0);
+		height = json.getInt("height", 0);
+		tileWidth = json.getInt("tilewidth", 0);
+		tileHeight = json.getInt("tileheight", 0);
+		infinite = json.getInt("infinite", 0);
+
+		nextlayerid = json.getInt("nextlayerid", 0);
+		nextObjectID = json.getInt("nextobjectid", 0);
+
+		if (json.containsKey("background")) {
+			backgroundColor = new LColor(json.getString("background", LColor.white.toString()).trim());
+		}
+
+		orientation = Orientation.valueOf(json.getString("orientation", "ORTHOGONAL").trim().toUpperCase());
+
+		if (json.containsKey("renderorder")) {
+			switch (json.getString("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
+			case "right-down":
+				renderOrder = RenderOrder.RIGHT_DOWN;
+				break;
+			case "right-up":
+				renderOrder = RenderOrder.RIGHT_UP;
+				break;
+			case "left-down":
+				renderOrder = RenderOrder.LEFT_DOWN;
+				break;
+			case "left-up":
+				renderOrder = RenderOrder.LEFT_UP;
+				break;
+			}
+		}
+
+		if (json.containsKey("staggeraxis")) {
+			switch (json.getString("staggeraxis", LSystem.EMPTY).trim().toLowerCase()) {
+			case "x":
+				staggerAxis = StaggerAxis.AXIS_X;
+				break;
+			case "y":
+				staggerAxis = StaggerAxis.AXIS_Y;
+				break;
+			}
+		}
+
+		if (json.containsKey("staggerindex")) {
+			switch (json.getString("staggerindex", LSystem.EMPTY).trim().toLowerCase()) {
+			case "even":
+				staggerIndex = StaggerIndex.EVEN;
+				break;
+			case "odd":
+				staggerIndex = StaggerIndex.ODD;
+				break;
+			}
+		}
+
+		hexSideLength = json.getInt("hexsidelength", 0);
+
+		if (json.containsKey("properties")) {
+			Json.Array propertiesArray = json.getArray("properties", null);
+			if (propertiesArray != null) {
+				properties.parse(propertiesArray);
+			}
+		}
+
+		if (json.containsKey("tilesets")) {
+			Json.Array tilesetsArray = json.getArray("tilesets", null);
+			if (tilesetsArray != null) {
+				for (int i = 0; i < tilesetsArray.length(); i++) {
+					TMXTileSet tileSet = new TMXTileSet();
+					tileSet.parse(tilesetsArray.getObject(i), tilesLocation);
+					tileSets.add(tileSet);
+				}
+			}
+		}
+
+		if (json.containsKey("layers")) {
+			Json.Array layersArray = json.getArray("layers", null);
+			if (layersArray != null) {
+				for (int i = 0; i < layersArray.length(); i++) {
+					final Json.Object obj = layersArray.getObject(i);
+					TMXTileLayer tileLayer = new TMXTileLayer(this);
+					tileLayer.parse(layersArray.getObject(i));
+					tileLayers.add(tileLayer);
+					parseObjects(obj);
+					parseImages(json);
+				}
+			}
+		}
+
+		parseObjects(json);
+		parseImages(json);
+
+		layers.addAll(tileLayers);
+		layers.addAll(imageLayers);
+		layers.addAll(objectLayers);
+	}
+
+	private void parseObjects(Json.Object obj) {
+		if (obj.containsKey("objects")) {
+			Json.Array objectgroupsArray = obj.getArray("objects", null);
+			if (objectgroupsArray != null) {
+				for (int i = 0; i < objectgroupsArray.length(); i++) {
+					TMXObjectLayer objectLayer = new TMXObjectLayer(this);
+					objectLayer.parse(objectgroupsArray.getObject(i));
+					objectLayers.add(objectLayer);
+				}
+			}
+		}
+	}
+
+	private void parseImages(Json.Object obj) {
+		if (obj.containsKey("imagelayers")) {
+			Json.Array imagelayersArray = obj.getArray("imagelayers", null);
+			if (imagelayersArray != null) {
+				for (int i = 0; i < imagelayersArray.length(); i++) {
+					TMXImageLayer imageLayer = new TMXImageLayer(this);
+					imageLayer.parse(imagelayersArray.getObject(i));
+					imageLayers.add(imageLayer);
+				}
+			}
+		}
+	}
+
 	private void parseTMX(XMLElement element, String tilesLocation) {
 
 		version = element.getDoubleAttribute("version", 0);
@@ -554,6 +566,8 @@ public class TMXMap implements Sized {
 		offsetY = element.getFloatAttribute("y", 0);
 		offsetX = element.getFloatAttribute("offsetx", offsetX);
 		offsetY = element.getFloatAttribute("offsety", offsetY);
+
+		tmxType = element.getAttribute("type", null);
 
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
@@ -652,6 +666,10 @@ public class TMXMap implements Sized {
 		layers.addAll(tileLayers);
 		layers.addAll(imageLayers);
 		layers.addAll(objectLayers);
+	}
+
+	public String getTmxType() {
+		return tmxType;
 	}
 
 	public String getTilesLocation() {

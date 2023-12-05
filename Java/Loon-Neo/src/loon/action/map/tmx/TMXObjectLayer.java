@@ -67,24 +67,28 @@ public class TMXObjectLayer extends TMXMapLayer {
 		opacity = element.getNumber("opacity", 1f);
 		visible = element.getBoolean("visible", true);
 
-		Json.Array nodes = element.getArray("properties",null);
+		Json.Array nodes = element.getArray("properties", null);
 		if (nodes != null) {
 			properties.parse(nodes);
 		}
 
-		nodes = element.getArray("objects");
-		if (nodes != null) {
-			for (int i = 0; i < nodes.length(); i++) {
-				Json.Object objectNode = nodes.getObject(i);
-
-				TMXObject o = new TMXObject();
-				o.parse(objectNode);
-
-				objects.add(o);
+		if (element.containsKey("objects")) {
+			nodes = element.getArray("objects", null);
+			if (nodes != null) {
+				for (int i = 0; i < nodes.length(); i++) {
+					Json.Object objectNode = nodes.getObject(i);
+					TMXObject o = new TMXObject();
+					o.parse(objectNode);
+					objects.add(o);
+				}
 			}
+		} else if (element.containsKey("width")) {
+			TMXObject o = new TMXObject();
+			o.parse(element);
+			objects.add(o);
 		}
 	}
-	
+
 	public void parse(XMLElement element) {
 
 		id = element.getIntAttribute("id", 0);

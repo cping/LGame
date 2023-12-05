@@ -75,6 +75,7 @@ public class TMXMap implements Sized {
 
 	private String filePath;
 	private String tilesLocation;
+	private String tmxType;
 	private LColor backgroundColor;
 
 	private double version;
@@ -433,6 +434,7 @@ public class TMXMap implements Sized {
 		offsetX = json.getNumber("offsetx", offsetX);
 		offsetY = json.getNumber("offsety", offsetY);
 
+		tmxType = json.getString("type", null);
 		width = json.getInt("width", 0);
 		height = json.getInt("height", 0);
 		tileWidth = json.getInt("tilewidth", 0);
@@ -511,26 +513,27 @@ public class TMXMap implements Sized {
 			Json.Array layersArray = json.getArray("layers", null);
 			if (layersArray != null) {
 				for (int i = 0; i < layersArray.length(); i++) {
+					final Json.Object obj = layersArray.getObject(i);
 					TMXTileLayer tileLayer = new TMXTileLayer(this);
 					tileLayer.parse(layersArray.getObject(i));
 					tileLayers.add(tileLayer);
+					parseObjects(obj);
+					parseImages(json);
 				}
 			}
 		}
 
-		if (json.containsKey("imagelayers")) {
-			Json.Array imagelayersArray = json.getArray("imagelayers", null);
-			if (imagelayersArray != null) {
-				for (int i = 0; i < imagelayersArray.length(); i++) {
-					TMXImageLayer imageLayer = new TMXImageLayer(this);
-					imageLayer.parse(imagelayersArray.getObject(i));
-					imageLayers.add(imageLayer);
-				}
-			}
-		}
+		parseObjects(json);
+		parseImages(json);
 
-		if (json.containsKey("objectgroups")) {
-			Json.Array objectgroupsArray = json.getArray("objectgroups", null);
+		layers.addAll(tileLayers);
+		layers.addAll(imageLayers);
+		layers.addAll(objectLayers);
+	}
+
+	private void parseObjects(Json.Object obj) {
+		if (obj.containsKey("objects")) {
+			Json.Array objectgroupsArray = obj.getArray("objects", null);
 			if (objectgroupsArray != null) {
 				for (int i = 0; i < objectgroupsArray.length(); i++) {
 					TMXObjectLayer objectLayer = new TMXObjectLayer(this);
@@ -539,10 +542,19 @@ public class TMXMap implements Sized {
 				}
 			}
 		}
+	}
 
-		layers.addAll(tileLayers);
-		layers.addAll(imageLayers);
-		layers.addAll(objectLayers);
+	private void parseImages(Json.Object obj) {
+		if (obj.containsKey("imagelayers")) {
+			Json.Array imagelayersArray = obj.getArray("imagelayers", null);
+			if (imagelayersArray != null) {
+				for (int i = 0; i < imagelayersArray.length(); i++) {
+					TMXImageLayer imageLayer = new TMXImageLayer(this);
+					imageLayer.parse(imagelayersArray.getObject(i));
+					imageLayers.add(imageLayer);
+				}
+			}
+		}
 	}
 
 	private void parseTMX(XMLElement element, String tilesLocation) {
@@ -554,6 +566,8 @@ public class TMXMap implements Sized {
 		offsetY = element.getFloatAttribute("y", 0);
 		offsetX = element.getFloatAttribute("offsetx", offsetX);
 		offsetY = element.getFloatAttribute("offsety", offsetY);
+
+		tmxType = element.getAttribute("type", null);
 
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
@@ -652,6 +666,10 @@ public class TMXMap implements Sized {
 		layers.addAll(tileLayers);
 		layers.addAll(imageLayers);
 		layers.addAll(objectLayers);
+	}
+
+	public String getTmxType() {
+		return tmxType;
 	}
 
 	public String getTilesLocation() {

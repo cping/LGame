@@ -83,8 +83,6 @@ public class TMXTileLayer extends TMXMapLayer {
 
 		tileMap = new TMXMapTile[width * height];
 
-		final String dataContext = element.getString("data", null);
-
 		if (element.containsKey("encoding")) {
 			switch (element.getString("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
@@ -113,22 +111,26 @@ public class TMXTileLayer extends TMXMapLayer {
 			}
 		}
 
-		switch (encoding) {
-		case XML:
-			parseJSON(element);
-			break;
-
-		case BASE64:
-			try {
-				parseBase64(dataContext);
-			} catch (Throwable e) {
-				LSystem.error("TMXTile parse base64 exception", e);
+		if (element.isArray("data")) {
+			encoding = Encoding.CSV;
+			parseArray2D(element.getArray("data", null));
+		} else {
+			final String dataContext = element.getString("data", null);
+			switch (encoding) {
+			case XML:
+				parseJSON(element);
+				break;
+			case BASE64:
+				try {
+					parseBase64(dataContext);
+				} catch (Throwable e) {
+					LSystem.error("TMXTile parse base64 exception", e);
+				}
+				break;
+			case CSV:
+				parseCSV(dataContext);
+				break;
 			}
-			break;
-
-		case CSV:
-			parseCSV(dataContext);
-			break;
 		}
 	}
 
@@ -150,8 +152,9 @@ public class TMXTileLayer extends TMXMapLayer {
 		visible = element.getBoolAttribute("visible", true);
 
 		XMLElement nodes = element.getChildrenByName("properties");
-		if (nodes != null)
+		if (nodes != null) {
 			properties.parse(nodes);
+		}
 
 		tileMap = new TMXMapTile[width * height];
 
@@ -165,7 +168,6 @@ public class TMXTileLayer extends TMXMapLayer {
 			case "csv":
 				encoding = Encoding.CSV;
 				break;
-
 			default:
 				encoding = Encoding.XML;
 			}
@@ -275,6 +277,26 @@ public class TMXTileLayer extends TMXMapLayer {
 					tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 				}
 			}
+		}
+	}
+
+	private void parseArray2D(Json.Array arrays) {
+		if (arrays == null) {
+			return;
+		}
+		final int size = arrays.length();
+		int tileCount = 0;
+		for (int i = 0; i < size; i++) {
+			final String token = arrays.getString(i).trim();
+			final int gid = MathUtils.parseUnsignedInt(token);
+			final int tileSetIndex = parent.findTileSetIndex(gid);
+			if (tileSetIndex != -1) {
+				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+			} else {
+				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
+			}
+			tileCount++;
 		}
 	}
 
