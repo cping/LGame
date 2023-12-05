@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.Json;
 import loon.LSystem;
 import loon.utils.xml.XMLElement;
 
@@ -29,6 +30,35 @@ public class TMXImageLayer extends TMXMapLayer {
 
 	public TMXImageLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.IMAGE);
+	}
+
+	public TMXImageLayer parse(Json.Object element) {
+
+		id = element.getInt("id", 0);
+		name = element.getString("name", LSystem.EMPTY);
+
+		offsetX = element.getNumber("x", 0);
+		offsetY = element.getNumber("y", 0);
+
+		offsetX = element.getNumber("offsetx", offsetX);
+		offsetY = element.getNumber("offsety", offsetY);
+
+		parallaxX = element.getNumber("parallaxx", 0f);
+		parallaxY = element.getNumber("parallaxy", 0f);
+
+		opacity = element.getNumber("opacity", 1f);
+		visible = element.getBoolean("visible", true);
+
+		if (element.containsKey("image")) {
+			image = new TMXImage();
+			image.parse(element, getMap().getFilePath());
+		}
+
+		Json.Array nodes = element.getArray("properties", null);
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+		return this;
 	}
 
 	public TMXImageLayer parse(XMLElement element) {

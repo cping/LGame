@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.Json;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
@@ -43,18 +44,39 @@ public class TMXImage {
 	private int width;
 	private int height;
 
+	public void parse(Json.Object element, String tmxPath) {
+		source = element.getString("image", LSystem.EMPTY).trim();
+		width = element.getInt("imagewidth", 0);
+		height = element.getInt("imageheight", 0);
+		if (element.containsKey("trans")) {
+			trans = new LColor(element.getString("trans", LSystem.EMPTY).trim());
+		} else if (element.containsKey("transparentcolor")) {
+			trans = new LColor(element.getString("transparentcolor", LSystem.EMPTY).trim());
+		} else {
+			trans = new LColor(LColor.TRANSPARENT);
+		}
+		if (width == 0 || height == 0) {
+			LTexture image = LSystem.loadTexture(source);
+			if (width == 0) {
+				width = image.getWidth();
+			}
+			if (height == 0) {
+				height = image.getWidth();
+			}
+		}
+	}
+
 	public void parse(XMLElement element, String tmxPath) {
 		String sourcePath = element.getAttribute("source", LSystem.EMPTY);
 		source = sourcePath.trim();
 		width = element.getIntAttribute("width", 0);
 		height = element.getIntAttribute("height", 0);
-		trans = new LColor(LColor.TRANSPARENT);
 		if (element.hasAttribute("trans")) {
-			String color = element.getAttribute("trans", LSystem.EMPTY).trim();
-			if (color.startsWith("#")) {
-				color = color.substring(1);
-			}
-			trans = new LColor(Integer.parseInt(color, 16));
+			trans = new LColor(element.getAttribute("trans", LSystem.EMPTY).trim());
+		} else if (element.hasAttribute("transparentcolor")) {
+			trans = new LColor(element.getAttribute("transparentcolor", LSystem.EMPTY).trim());
+		} else {
+			trans = new LColor(LColor.TRANSPARENT);
 		}
 		if (width == 0 || height == 0) {
 			LTexture image = LSystem.loadTexture(source);

@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.tiles;
 
+import loon.Json;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
@@ -43,6 +44,33 @@ public class TMXTile {
 		this.id = id;
 		this.frames = new TArray<TMXAnimationFrame>();
 		this.properties = new TMXProperties();
+	}
+
+	public void parse(Json.Object element) {
+
+		id = element.getInt("id", id);
+		Json.Array nodes = element.getArray("properties");
+
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+		nodes = element.getArray("animation");
+
+		if (nodes != null) {
+			animated = true;
+			Json.Array tiles = element.getArray("frame");
+
+			for (int i = 0; i < tiles.length(); i++) {
+				Json.Object frame = tiles.getObject(i);
+
+				int tileID = frame.getInt("tileid", 0);
+				int duration = frame.getInt("duration", 0);
+
+				TMXAnimationFrame animation = new TMXAnimationFrame(tileID, duration);
+				frames.add(animation);
+				totalDuration += duration;
+			}
+		}
 	}
 
 	public void parse(XMLElement element) {

@@ -20,6 +20,8 @@
  */
 package loon.action.map.tmx;
 
+import loon.BaseIO;
+import loon.Json;
 import loon.LSystem;
 import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
@@ -55,17 +57,83 @@ public class TMXTileSet {
 		this.properties = new TMXProperties();
 	}
 
+	public void parse(Json.Object element, String tilesLocation) {
+
+		this.firstGID = element.getInt("firstgid", 1);
+		final String source = element.getString("source", LSystem.EMPTY);
+		final String path = tilesLocation + LSystem.FS + source;
+		if (!LSystem.EMPTY.equals(source)) {
+			try {
+				element = (Json.Object) BaseIO.loadJsonObject(path);
+			} catch (Throwable e) {
+				LSystem.error(path);
+			}
+		}
+
+		tileWidth = element.getInt("tilewidth", 0);
+		tileHeight = element.getInt("tileheight", 0);
+		margin = element.getInt("margin", 0);
+		spacing = element.getInt("spacing", 0);
+
+		name = element.getString("name", LSystem.EMPTY);
+
+		Json.Object node = element.getObject("tileoffset", null);
+
+		if (node != null) {
+			tileOffset.x = node.getNumber("x", 0);
+			tileOffset.y = node.getNumber("y", 0);
+		}
+
+		Json.Array nodes = element.getArray("terraintypes", null);
+
+		if (nodes != null) {
+			for (int i = 0; i < nodes.length(); i++) {
+				TMXTerrain terrainType = new TMXTerrain();
+				terrainType.parse(nodes.getObject(i));
+				terrainTypes.add(terrainType);
+			}
+		}
+
+		if (element.containsKey("image")) {
+			image = new TMXImage();
+			image.parse(element, tilesLocation);
+		}
+
+		int tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
+
+		for (int tID = 0; tID < tileCount; tID++) {
+			TMXTile tile = new TMXTile(tID + firstGID);
+			tiles.add(tile);
+		}
+
+		nodes = element.getArray("tiles", null);
+		if (nodes != null) {
+			for (int i = 0; i < nodes.length(); i++) {
+				Json.Object tileNode = nodes.getObject(i);
+				TMXTile tile = new TMXTile(i);
+				tile.parse(tileNode);
+				tiles.get(tile.getID()).parse(tileNode);
+			}
+		}
+
+		nodes = element.getArray("properties", null);
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+	}
+
 	public void parse(XMLElement element, String tilesLocation) {
 
 		this.firstGID = element.getIntAttribute("firstgid", 1);
-		String source = element.getAttribute("source", LSystem.EMPTY);
+		final String source = element.getAttribute("source", LSystem.EMPTY);
+		final String path = tilesLocation + LSystem.FS + source;
 		if (!LSystem.EMPTY.equals(source)) {
 			try {
-				XMLDocument doc = XMLParser.parse(tilesLocation + "/" + source);
+				XMLDocument doc = XMLParser.parse(path);
 				XMLElement docElement = doc.getRoot();
 				element = docElement;
 			} catch (Throwable e) {
-				LSystem.error(tilesLocation + "/" + source);
+				LSystem.error(path);
 			}
 		}
 

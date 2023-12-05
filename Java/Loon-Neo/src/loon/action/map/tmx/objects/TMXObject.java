@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.objects;
 
+import loon.Json;
 import loon.LSystem;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
@@ -46,6 +47,43 @@ public class TMXObject {
 
 	public TMXObject() {
 		properties = new TMXProperties();
+	}
+
+	public void parse(Json.Object element) {
+
+		name = element.containsKey("name") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+		type = element.containsKey("type") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+
+		id = element.getInt("id", 0);
+		x = element.getInt("x", 0);
+		y = element.getInt("y", 0);
+		width = element.getInt("width", 0);
+		height = element.getInt("height", 0);
+		gid = element.getInt("gid", -1);
+		rotation = element.getInt("rotation", 0);
+		visible = element.getBoolean("visible", false);
+
+		if (element.containsKey("ellipse")) {
+			ellipse = new TMXEllipse();
+			ellipse.set(x, y, width, height);
+		}
+
+		Json.Object node = element.getObject("polygon", null);
+		if (node != null) {
+			polygon = new TMXPolygon();
+			polygon.parse(node);
+		}
+
+		node = element.getObject("polyline", null);
+		if (node != null) {
+			polyLine = new TMXPolyLine();
+			polyLine.parse(node);
+		}
+
+		Json.Array nodes = element.getArray("properties", null);
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
 	}
 
 	public void parse(XMLElement element) {

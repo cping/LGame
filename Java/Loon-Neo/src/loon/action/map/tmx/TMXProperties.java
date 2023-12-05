@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.Json;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -82,7 +83,24 @@ public class TMXProperties {
 	public Values<Object> getValues() {
 		return getPropertiesMap().values();
 	}
-
+	
+	public void parse(Json.Array properties) {
+		for (int p = 0; p < properties.length(); p++) {
+			Json.Object property = properties.getObject(p);
+			String name = property.getString("name", LSystem.EMPTY);
+			String value = property.getString("value", LSystem.EMPTY);
+			if (MathUtils.isNan(value)) {
+				if (value.indexOf('.') != -1) {
+					put(name, Float.parseFloat(value));
+				} else {
+					put(name, Integer.parseInt(value));
+				}
+			} else {
+				put(name, value);
+			}
+		}
+	}
+	
 	public void parse(XMLElement element) {
 		TArray<XMLElement> properties = element.list("property");
 		if (properties == null) {

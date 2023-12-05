@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.objects;
 
+import loon.Json;
 import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -43,6 +44,20 @@ public class TMXPolygon {
 
 	public int getNumPoints() {
 		return points.size;
+	}
+
+	public void parse(Json.Object element) {
+		String pointsLine = element.getString("points", LSystem.EMPTY).trim();
+
+		for (String token : pointsLine.split(" ")) {
+			String[] subTokens = token.split(",");
+
+			TMXPoint point = new TMXPoint();
+			point.x = Integer.parseInt(subTokens[0].trim());
+			point.y = Integer.parseInt(subTokens[1].trim());
+
+			points.add(point);
+		}
 	}
 
 	public void parse(XMLElement element) {

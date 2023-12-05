@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx.objects;
 
+import loon.Json;
 import loon.LSystem;
 import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
@@ -46,6 +47,43 @@ public class TMXObject {
 
 	public TMXObject() {
 		properties = new TMXProperties();
+	}
+
+	public void parse(Json.Object element) {
+
+		name = element.containsKey("name") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+		type = element.containsKey("type") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+
+		id = element.getInt("id", 0);
+		x = element.getInt("x", 0);
+		y = element.getInt("y", 0);
+		width = element.getInt("width", 0);
+		height = element.getInt("height", 0);
+		gid = element.getInt("gid", -1);
+		rotation = element.getInt("rotation", 0);
+		visible = element.getBoolean("visible", false);
+
+		if (element.containsKey("ellipse")) {
+			ellipse = new TMXEllipse();
+			ellipse.set(x, y, width, height);
+		}
+
+		Json.Object node = element.getObject("polygon", null);
+		if (node != null) {
+			polygon = new TMXPolygon();
+			polygon.parse(node);
+		}
+
+		node = element.getObject("polyline", null);
+		if (node != null) {
+			polyLine = new TMXPolyLine();
+			polyLine.parse(node);
+		}
+
+		Json.Array nodes = element.getArray("properties", null);
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
 	}
 
 	public void parse(XMLElement element) {

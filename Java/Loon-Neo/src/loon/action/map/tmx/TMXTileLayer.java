@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.InflaterInputStream;
 
+import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
 import loon.action.map.Field2D;
@@ -56,6 +57,79 @@ public class TMXTileLayer extends TMXMapLayer {
 
 		encoding = Encoding.XML;
 		compression = Compression.NONE;
+	}
+
+	public void parse(Json.Object element) {
+
+		id = element.getInt("id", 0);
+		name = element.getString("name", LSystem.EMPTY);
+
+		offsetX = element.getNumber("x", 0);
+		offsetY = element.getNumber("y", 0);
+
+		offsetX = element.getNumber("offsetx", offsetX);
+		offsetY = element.getNumber("offsety", offsetY);
+
+		parallaxX = element.getNumber("parallaxx", 0f);
+		parallaxY = element.getNumber("parallaxy", 0f);
+
+		opacity = element.getNumber("opacity", 1f);
+		visible = element.getBoolean("visible", true);
+
+		Json.Array nodes = element.getArray("properties");
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+
+		tileMap = new TMXMapTile[width * height];
+
+		final String dataContext = element.getString("data", null);
+
+		if (element.containsKey("encoding")) {
+			switch (element.getString("encoding", LSystem.EMPTY).trim().toLowerCase()) {
+			case "base64":
+				encoding = Encoding.BASE64;
+				break;
+			case "csv":
+				encoding = Encoding.CSV;
+				break;
+			case "xml":
+			case "json":
+			default:
+				encoding = Encoding.XML;
+			}
+		}
+
+		if (element.containsKey("compression")) {
+			switch (element.getString("compression", LSystem.EMPTY).trim().toLowerCase()) {
+			case "gzip":
+				compression = Compression.GZIP;
+				break;
+			case "zlib":
+				compression = Compression.ZLIB;
+				break;
+			default:
+				compression = Compression.NONE;
+			}
+		}
+
+		switch (encoding) {
+		case XML:
+			parseJSON(element);
+			break;
+
+		case BASE64:
+			try {
+				parseBase64(dataContext);
+			} catch (Throwable e) {
+				LSystem.error("TMXTile parse base64 exception", e);
+			}
+			break;
+
+		case CSV:
+			parseCSV(dataContext);
+			break;
+		}
 	}
 
 	public void parse(XMLElement element) {
@@ -126,6 +200,20 @@ public class TMXTileLayer extends TMXMapLayer {
 		case CSV:
 			parseCSV(dataElement.getContents());
 			break;
+		}
+	}
+
+	private void parseJSON(Json.Object element) {
+		Json.Array nodes = element.getArray("tiles");
+		for (int tileCount = 0; tileCount < nodes.length(); tileCount++) {
+			Json.Object tileElement = nodes.getObject(tileCount);
+			int gid = MathUtils.parseUnsignedInt(tileElement.getString("gid", "-1"));
+			int tileSetIndex = parent.findTileSetIndex(gid);
+			if (tileSetIndex != -1) {
+				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
+				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+			} else
+				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 

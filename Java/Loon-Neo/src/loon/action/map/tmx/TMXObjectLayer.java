@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.Json;
 import loon.LSystem;
 import loon.action.map.tmx.objects.TMXObject;
 import loon.canvas.LColor;
@@ -54,17 +55,43 @@ public class TMXObjectLayer extends TMXMapLayer {
 		return objects;
 	}
 
+	public void parse(Json.Object element) {
+
+		id = element.getInt("id", 0);
+		name = element.getString("name", LSystem.EMPTY);
+
+		if (element.containsKey("color")) {
+			color = new LColor(element.getString("color", LColor.white.toString()).trim());
+		}
+
+		opacity = element.getNumber("opacity", 1f);
+		visible = element.getBoolean("visible", true);
+
+		Json.Array nodes = element.getArray("properties",null);
+		if (nodes != null) {
+			properties.parse(nodes);
+		}
+
+		nodes = element.getArray("objects");
+		if (nodes != null) {
+			for (int i = 0; i < nodes.length(); i++) {
+				Json.Object objectNode = nodes.getObject(i);
+
+				TMXObject o = new TMXObject();
+				o.parse(objectNode);
+
+				objects.add(o);
+			}
+		}
+	}
+	
 	public void parse(XMLElement element) {
 
 		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
 
 		if (element.hasAttribute("color")) {
-			String colorString = element.getAttribute("color", LColor.white.toString()).trim();
-			if (colorString.startsWith("#")) {
-				colorString = colorString.substring(1);
-			}
-			color = new LColor(Integer.decode(colorString));
+			color = new LColor(element.getAttribute("color", LColor.white.toString()).trim());
 		}
 
 		opacity = element.getFloatAttribute("opacity", 1f);
