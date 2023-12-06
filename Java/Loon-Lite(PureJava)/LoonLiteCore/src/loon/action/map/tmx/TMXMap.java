@@ -174,6 +174,8 @@ public class TMXMap implements Sized {
 					throw new LSysException("Invalid TMJ map file. The first child must be a <map> element.");
 				}
 				parseTMJ(json, local);
+			} else {
+				throw new LSysException("Invalid TMJ map file. ");
 			}
 		}
 	}
@@ -498,31 +500,8 @@ public class TMXMap implements Sized {
 			}
 		}
 
-		if (json.containsKey("tilesets")) {
-			Json.Array tilesetsArray = json.getArray("tilesets", null);
-			if (tilesetsArray != null) {
-				for (int i = 0; i < tilesetsArray.length(); i++) {
-					TMXTileSet tileSet = new TMXTileSet();
-					tileSet.parse(tilesetsArray.getObject(i), tilesLocation);
-					tileSets.add(tileSet);
-				}
-			}
-		}
-
-		if (json.containsKey("layers")) {
-			Json.Array layersArray = json.getArray("layers", null);
-			if (layersArray != null) {
-				for (int i = 0; i < layersArray.length(); i++) {
-					final Json.Object obj = layersArray.getObject(i);
-					TMXTileLayer tileLayer = new TMXTileLayer(this);
-					tileLayer.parse(layersArray.getObject(i));
-					tileLayers.add(tileLayer);
-					parseObjects(obj);
-					parseImages(json);
-				}
-			}
-		}
-
+		parseTiles(json);
+		parseLayers(json);
 		parseObjects(json);
 		parseImages(json);
 
@@ -531,28 +510,68 @@ public class TMXMap implements Sized {
 		layers.addAll(objectLayers);
 	}
 
-	private void parseObjects(Json.Object obj) {
-		if (obj.containsKey("objects")) {
-			Json.Array objectgroupsArray = obj.getArray("objects", null);
-			if (objectgroupsArray != null) {
-				for (int i = 0; i < objectgroupsArray.length(); i++) {
-					TMXObjectLayer objectLayer = new TMXObjectLayer(this);
-					objectLayer.parse(objectgroupsArray.getObject(i));
-					objectLayers.add(objectLayer);
+	private void parseLayers(Json.Object layer) {
+		if (layer.containsKey("layers")) {
+			Json.Array layersArray = layer.getArray("layers", null);
+			if (layersArray != null) {
+				for (int i = 0; i < layersArray.length(); i++) {
+					final Json.Object obj = layersArray.getObject(i);
+					TMXTileLayer tileLayer = new TMXTileLayer(this);
+					tileLayer.parse(obj);
+					tileLayers.add(tileLayer);
+
+					parseTiles(obj);
+					parseObjects(obj);
+					parseImages(obj);
 				}
 			}
 		}
 	}
 
+	private void parseTiles(Json.Object obj) {
+		Json.Array tilesetsArray = null;
+		if (obj.containsKey("tilesets")) {
+			tilesetsArray = obj.getArray("tilesets", null);
+		} else if (obj.containsKey("tiles")) {
+			tilesetsArray = obj.getArray("tiles", null);
+		}
+		if (tilesetsArray != null) {
+			for (int i = 0; i < tilesetsArray.length(); i++) {
+				TMXTileSet tileSet = new TMXTileSet();
+				tileSet.parse(tilesetsArray.getObject(i), tilesLocation);
+				tileSets.add(tileSet);
+			}
+		}
+	}
+
+	private void parseObjects(Json.Object obj) {
+		Json.Array objectgroupsArray = null;
+		if (obj.containsKey("objectgroups")) {
+			objectgroupsArray = obj.getArray("objectgroups", null);
+		} else if (obj.containsKey("objects")) {
+			objectgroupsArray = obj.getArray("objects", null);
+		}
+		if (objectgroupsArray != null) {
+			for (int i = 0; i < objectgroupsArray.length(); i++) {
+				TMXObjectLayer objectLayer = new TMXObjectLayer(this);
+				objectLayer.parse(objectgroupsArray.getObject(i));
+				objectLayers.add(objectLayer);
+			}
+		}
+	}
+
 	private void parseImages(Json.Object obj) {
+		Json.Array imagelayersArray = null;
 		if (obj.containsKey("imagelayers")) {
-			Json.Array imagelayersArray = obj.getArray("imagelayers", null);
-			if (imagelayersArray != null) {
-				for (int i = 0; i < imagelayersArray.length(); i++) {
-					TMXImageLayer imageLayer = new TMXImageLayer(this);
-					imageLayer.parse(imagelayersArray.getObject(i));
-					imageLayers.add(imageLayer);
-				}
+			imagelayersArray = obj.getArray("imagelayers", null);
+		} else if (obj.containsKey("images")) {
+			imagelayersArray = obj.getArray("images", null);
+		}
+		if (imagelayersArray != null) {
+			for (int i = 0; i < imagelayersArray.length(); i++) {
+				TMXImageLayer imageLayer = new TMXImageLayer(this);
+				imageLayer.parse(imagelayersArray.getObject(i));
+				imageLayers.add(imageLayer);
 			}
 		}
 	}

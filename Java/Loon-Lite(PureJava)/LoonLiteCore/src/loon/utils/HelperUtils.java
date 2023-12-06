@@ -73,6 +73,8 @@ import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
 import loon.utils.timer.Interval;
 import loon.utils.timer.LTimer;
+import loon.utils.timer.Scheduler;
+import loon.utils.timer.Task;
 
 /**
  * 辅助用类,实现了一些常见的数值转换功能,可以在Screen中直接调用
@@ -90,6 +92,34 @@ public class HelperUtils {
 
 	public static LTimer timer(Duration d) {
 		return LTimer.at(d);
+	}
+
+	public static Task postTask(String name, Runnable e) {
+		return LTimer.postTask(name, e, 0f);
+	}
+
+	public static Task postTask(String name, Runnable e, float seconds) {
+		return LTimer.postTask(name, e, seconds, -1);
+	}
+
+	public static Task postTask(Runnable e, float seconds) {
+		return LTimer.postTask(e, seconds, -1);
+	}
+
+	public static Task postTask(Runnable e, float seconds, int loopCount) {
+		return LTimer.postTask(e, seconds, loopCount);
+	}
+
+	public static Scheduler schedulerTask(float seconds, boolean sequence, Interval... tasks) {
+		return LTimer.schedulerTask(seconds, true, sequence, tasks);
+	}
+
+	public static Scheduler schedulerTask(float seconds, Interval... tasks) {
+		return LTimer.schedulerTask(seconds, true, true, tasks);
+	}
+
+	public static Scheduler schedulerTask(float seconds, boolean removeTask, boolean sequence, Interval... tasks) {
+		return LTimer.schedulerTask(seconds, removeTask, sequence, tasks);
 	}
 
 	public static boolean isNull(Object obj) {

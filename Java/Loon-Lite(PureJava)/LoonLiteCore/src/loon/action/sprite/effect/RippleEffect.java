@@ -195,7 +195,7 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		this.completed = c;
 		return this;
 	}
-	
+
 	public int getExistTime() {
 		return existTime;
 	}
