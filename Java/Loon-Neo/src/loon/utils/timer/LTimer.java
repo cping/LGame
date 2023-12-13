@@ -27,6 +27,7 @@ import loon.events.TimerEvent;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.TArray;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -51,7 +52,7 @@ import loon.utils.processes.RealtimeProcessManager;
  *  //time.close();
  * </pre>
  */
-public class LTimer implements LRelease {
+public class LTimer implements LTimerListener, LRelease {
 
 	private static class TimerProcess extends RealtimeProcess {
 
@@ -174,6 +175,18 @@ public class LTimer implements LRelease {
 		}
 	}
 
+	public static LTimer ZERO() {
+		return at(0);
+	}
+
+	public static LTimer ONE() {
+		return at(LSystem.SECOND);
+	}
+
+	public static LTimer HALF() {
+		return at(LSystem.SECOND / 2L);
+	}
+
 	public static LTimer get() {
 		return shared();
 	}
@@ -193,6 +206,7 @@ public class LTimer implements LRelease {
 	private static int GLOBAL_ID = 0;
 
 	private TimerProcess _process = null;
+
 	private final int _idx;
 	private int _maxNumberOfRepeats = -1;
 	private int _numberOfTicks = 0;
@@ -207,7 +221,9 @@ public class LTimer implements LRelease {
 	private long _currentTick = 0;
 	private boolean _active = true;
 
-	private EventAction _eventAction;
+	private TArray<LTimerListener> _currentListeners = null;
+
+	private EventAction _eventAction = null;
 
 	private final String _name;
 
@@ -274,6 +290,7 @@ public class LTimer implements LRelease {
 		return action((MathUtils.max(Duration.ofS(delta), 8)));
 	}
 
+	@Override
 	public boolean action(long elapsedTime) {
 		if (this._closed) {
 			return false;
@@ -284,6 +301,15 @@ public class LTimer implements LRelease {
 				this._completed = true;
 			}
 			if (!this._completed && this._currentTick >= this._delay) {
+				if (this._currentListeners != null) {
+					final int size = _currentListeners.size;
+					for (int i = 0; i < size; i++) {
+						final LTimerListener listener = _currentListeners.get(i);
+						if (listener != null) {
+							listener.action(elapsedTime);
+						}
+					}
+				}
 				if (this._eventAction != null) {
 					HelperUtils.callEventAction(_eventAction, this, elapsedTime);
 				}
@@ -520,6 +546,55 @@ public class LTimer implements LRelease {
 		return this;
 	}
 
+	public boolean addListener(LTimerListener timerListener) {
+		if (_currentListeners == null) {
+			synchronized (LTimer.class) {
+				if (_currentListeners == null) {
+					_currentListeners = new TArray<LTimerListener>();
+				}
+			}
+		}
+		if (_currentListeners != null) {
+			return _currentListeners.add(timerListener);
+		}
+		return false;
+	}
+
+	public boolean removeListener(LTimerListener timerListener) {
+		if (_currentListeners != null) {
+			synchronized (LTimer.class) {
+				return _currentListeners.remove(timerListener);
+			}
+		}
+		return false;
+	}
+
+	public LTimerListener getFirstListener() {
+		if (_currentListeners != null) {
+			synchronized (LTimer.class) {
+				return _currentListeners.first();
+			}
+		}
+		return null;
+	}
+
+	public LTimerListener getLastListener() {
+		if (_currentListeners != null) {
+			synchronized (LTimer.class) {
+				return _currentListeners.last();
+			}
+		}
+		return null;
+	}
+
+	public LTimer clearListeners() {
+		if (_currentListeners != null) {
+			_currentListeners.clear();
+			_currentListeners = null;
+		}
+		return this;
+	}
+
 	public String getName() {
 		return _name;
 	}
@@ -534,13 +609,16 @@ public class LTimer implements LRelease {
 		builder.kv("name", _name).comma().kv("currentTick", _currentTick).comma().kv("delay", _delay).comma()
 				.kv("factor", _speedFactor).comma().kv("active", _active).comma().kv("repeats", _repeats).comma()
 				.kv("maxNumberOfRepeats", _maxNumberOfRepeats).comma().kv("numberOfTicks", _numberOfTicks).comma()
+				.kv("timerListeners", _currentListeners == null ? 0 : _currentListeners.size).comma()
 				.kv("completed", _completed);
 		return builder.toString();
 	}
 
 	@Override
 	public void close() {
-		stop();
+		this.stop();
+		this.clearListeners();
+		this._eventAction = null;
 		this._closed = true;
 		if (_process != null) {
 			_process.close();

@@ -214,6 +214,14 @@ public class PageList<T> implements LRelease {
 		return _currentPage < _totalPages - 1;
 	}
 
+	public boolean isFirst() {
+		return _currentPage <= 0;
+	}
+
+	public boolean isLast() {
+		return _currentPage >= _totalPages - 1;
+	}
+
 	public int size() {
 		return _data.size;
 	}
