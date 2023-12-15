@@ -33,6 +33,7 @@ import loon.action.map.items.ItemInfo;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.component.skin.InventorySkin;
 import loon.component.skin.SkinManager;
 import loon.font.IFont;
 import loon.font.Text;
@@ -317,9 +318,21 @@ public class LInventory extends LLayer {
 		this(font, bg, bar, LColor.gray, x, y, w, h, limit);
 	}
 
+	public LInventory(InventorySkin skin, float x, float y, float w, float h, boolean limit) {
+		this(skin.getFont(), skin.getFontColor(), skin.getBackgroundTexture(), skin.getBarTexture(),
+				skin.getGridColor(), x, y, w, h, limit);
+	}
+
+	public LInventory(IFont font, LTexture bg, LTexture bar, LColor gridColor, float x, float y, float w, float h,
+			boolean limit) {
+		this(font, LColor.white, bg, bar, gridColor, x, y, w, h, limit);
+	}
+
 	/**
 	 * 构建一个游戏用背包
 	 * 
+	 * @param font
+	 * @param fontColor
 	 * @param bg
 	 * @param bar
 	 * @param gridColor
@@ -329,8 +342,8 @@ public class LInventory extends LLayer {
 	 * @param h
 	 * @param limit
 	 */
-	public LInventory(IFont font, LTexture bg, LTexture bar, LColor gridColor, float x, float y, float w, float h,
-			boolean limit) {
+	public LInventory(IFont font, LColor fontColor, LTexture bg, LTexture bar, LColor gridColor, float x, float y,
+			float w, float h, boolean limit) {
 		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h), limit);
 		this._inventory = new Inventory();
 		this._titleSize = new Vector2f(w, h);
@@ -344,7 +357,7 @@ public class LInventory extends LLayer {
 		this._isCircleGrid = false;
 		this._isMobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 		this._tipFont = font;
-		this._tipFontColor = LColor.white;
+		this._tipFontColor = fontColor;
 		this._barTexture = (bar == null ? SkinManager.get().getWindowSkin().getBarTexture() : bar);
 		setTipBackground((LTexture) null);
 		setBackground(bg == null ? SkinManager.get().getWindowSkin().getBackgroundTexture() : bg, w, h);

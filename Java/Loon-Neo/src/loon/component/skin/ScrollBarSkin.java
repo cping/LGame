@@ -23,21 +23,22 @@ package loon.component.skin;
 import loon.LTexture;
 import loon.component.DefUI;
 
-public class ScrollBarSkin {
-
-	private LTexture scrollBarTexture;
-
-	private LTexture sliderTexture;
+public class ScrollBarSkin extends SkinAbstract<ScrollBarSkin> {
 
 	public static ScrollBarSkin def() {
 		return new ScrollBarSkin();
 	}
+
+	private LTexture scrollBarTexture;
+
+	private LTexture sliderTexture;
 
 	public ScrollBarSkin() {
 		this(DefUI.self().getDefaultTextures(1), DefUI.self().getDefaultTextures(8));
 	}
 
 	public ScrollBarSkin(LTexture scrollBar, LTexture slider) {
+		super();
 		this.scrollBarTexture = scrollBar;
 		this.sliderTexture = slider;
 	}
@@ -46,16 +47,22 @@ public class ScrollBarSkin {
 		return scrollBarTexture;
 	}
 
-	public void setScrollBarTexture(LTexture scrollBarTexture) {
+	public ScrollBarSkin setScrollBarTexture(LTexture scrollBarTexture) {
 		this.scrollBarTexture = scrollBarTexture;
+		return this;
 	}
 
 	public LTexture getSliderTexture() {
 		return sliderTexture;
 	}
 
-	public void setSliderTexture(LTexture sliderTexture) {
+	public ScrollBarSkin setSliderTexture(LTexture sliderTexture) {
 		this.sliderTexture = sliderTexture;
+		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "scroll";
+	}
 }

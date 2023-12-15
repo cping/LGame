@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,46 +26,59 @@ import loon.canvas.LColor;
 import loon.component.DefUI;
 import loon.font.IFont;
 
-public class MessageSkin extends SkinAbstract<MessageSkin> {
+public class InventorySkin extends SkinAbstract<InventorySkin> {
 
-	public static MessageSkin def() {
-		return new MessageSkin();
+	public static InventorySkin def() {
+		return new InventorySkin();
 	}
 
 	private LTexture backgroundTexture;
 
-	private LColor backColor;
+	private LTexture barTexture;
 
-	public MessageSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.white, DefUI.self().getDefaultTextures(1));
+	private LColor gridColor;
+
+	public InventorySkin() {
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.gray.cpy(), DefUI.self().getDefaultTextures(1),
+				DefUI.self().getDefaultTextures(7));
 	}
 
-	public MessageSkin(IFont font, LColor fontColor, LColor backColor, LTexture back) {
+	public InventorySkin(IFont font, LColor color, LColor fontColor, LTexture back, LTexture bar) {
 		super(font, fontColor);
-		this.backColor = backColor;
+		this.gridColor = color;
 		this.backgroundTexture = back;
+		this.barTexture = bar;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public MessageSkin setBackground(LTexture background) {
+	public InventorySkin setBackground(LTexture background) {
 		this.backgroundTexture = background;
 		return this;
 	}
 
-	public LColor getBackgroundColor() {
-		return backColor.cpy();
+	public LTexture getBarTexture() {
+		return barTexture;
 	}
 
-	public MessageSkin setBackgroundColor(LColor color) {
-		this.backColor = color;
+	public InventorySkin setBarTexture(LTexture bar) {
+		this.barTexture = bar;
+		return this;
+	}
+
+	public LColor getGridColor() {
+		return gridColor;
+	}
+
+	public InventorySkin setGridColor(LColor gridColor) {
+		this.gridColor = gridColor;
 		return this;
 	}
 
 	@Override
 	public String getSkinName() {
-		return "message";
+		return "inventory";
 	}
 }

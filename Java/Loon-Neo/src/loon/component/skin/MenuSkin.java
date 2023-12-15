@@ -24,19 +24,16 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class MenuSkin implements FontSet<MenuSkin> {
+public class MenuSkin extends SkinAbstract<MenuSkin> {
 
-	private IFont font;
-	private LColor fontColor;
-	private LTexture mainTexture;
-	private LTexture tabTexture;
-
-	public final static MenuSkin def() {
+	public static MenuSkin def() {
 		return new MenuSkin();
 	}
+
+	private LTexture mainTexture;
+	private LTexture tabTexture;
 
 	public MenuSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(1),
@@ -44,48 +41,31 @@ public class MenuSkin implements FontSet<MenuSkin> {
 	}
 
 	public MenuSkin(IFont font, LColor fontColor, LTexture mainTexture, LTexture tabTexture) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.mainTexture = mainTexture;
 		this.tabTexture = tabTexture;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public MenuSkin setFont(IFont font) {
-		this.font = font;
-		return this;
-	}
-
-	@Override
-	public LColor getFontColor() {
-		return fontColor.cpy();
-	}
-
-	@Override
-	public MenuSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
-		return this;
 	}
 
 	public LTexture getMainTexture() {
 		return mainTexture;
 	}
 
-	public void setMainTexture(LTexture mainTexture) {
+	public MenuSkin setMainTexture(LTexture mainTexture) {
 		this.mainTexture = mainTexture;
+		return this;
 	}
 
 	public LTexture getTabTexture() {
 		return tabTexture;
 	}
 
-	public void setTabTexture(LTexture tabTexture) {
+	public MenuSkin setTabTexture(LTexture tabTexture) {
 		this.tabTexture = tabTexture;
+		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "menu";
+	}
 }

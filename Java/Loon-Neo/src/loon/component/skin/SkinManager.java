@@ -20,9 +20,10 @@
  */
 package loon.component.skin;
 
+import loon.LRelease;
 import loon.canvas.LColor;
 
-public class SkinManager {
+public class SkinManager implements LRelease {
 
 	private static SkinManager instance;
 
@@ -38,12 +39,14 @@ public class SkinManager {
 		if (instance != null) {
 			return instance;
 		}
-		synchronized (SkinManager.class) {
-			if (instance == null) {
-				instance = make();
+		if (instance == null) {
+			synchronized (SkinManager.class) {
+				if (instance == null) {
+					instance = make();
+				}
 			}
-			return instance;
 		}
+		return instance;
 	}
 
 	private CheckBoxSkin checkBoxSkin;
@@ -62,13 +65,19 @@ public class SkinManager {
 
 	private SliderSkin sliderSkin;
 
+	private SelectSkin selectSkin;
+
 	private TableSkin tableSkin;
 
 	private TextBarSkin textBarSkin;
 
 	private TextListSkin textListSkin;
 
+	private ToastSkin toastSkin;
+
 	private WindowSkin windowSkin;
+
+	private InventorySkin inventorySkin;
 
 	private boolean useDefUpdate = true;
 
@@ -264,6 +273,51 @@ public class SkinManager {
 		this.windowSkin = windowSkin;
 	}
 
+	public InventorySkin getInventorySkin() {
+		if (inventorySkin == null) {
+			if (useDefUpdate) {
+				return InventorySkin.def();
+			} else {
+				setTextListSkin(TextListSkin.def());
+			}
+		}
+		return inventorySkin;
+	}
+
+	public void setInventorySkin(InventorySkin inventorySkin) {
+		this.inventorySkin = inventorySkin;
+	}
+
+	public ToastSkin getToastSkin() {
+		if (toastSkin == null) {
+			if (useDefUpdate) {
+				return ToastSkin.def();
+			} else {
+				setToastSkin(ToastSkin.def());
+			}
+		}
+		return toastSkin;
+	}
+
+	public void setToastSkin(ToastSkin toastSkin) {
+		this.toastSkin = toastSkin;
+	}
+
+	public SelectSkin getSelectSkin() {
+		if (selectSkin == null) {
+			if (useDefUpdate) {
+				return SelectSkin.def();
+			} else {
+				setToastSkin(ToastSkin.def());
+			}
+		}
+		return selectSkin;
+	}
+
+	public void setSelectSkin(SelectSkin selectSkin) {
+		this.selectSkin = selectSkin;
+	}
+
 	public void set(SkinManager skin) {
 		this.checkBoxSkin = skin.checkBoxSkin;
 		this.clickButtonSkin = skin.clickButtonSkin;
@@ -273,10 +327,13 @@ public class SkinManager {
 		this.progressSkin = skin.progressSkin;
 		this.scrollBarSkin = skin.scrollBarSkin;
 		this.sliderSkin = skin.sliderSkin;
+		this.selectSkin = skin.selectSkin;
 		this.tableSkin = skin.tableSkin;
 		this.textBarSkin = skin.textBarSkin;
 		this.textListSkin = skin.textListSkin;
+		this.toastSkin = skin.toastSkin;
 		this.windowSkin = skin.windowSkin;
+		this.inventorySkin = skin.inventorySkin;
 	}
 
 	public void clear() {
@@ -288,10 +345,18 @@ public class SkinManager {
 		this.progressSkin = null;
 		this.scrollBarSkin = null;
 		this.sliderSkin = null;
+		this.selectSkin = null;
 		this.tableSkin = null;
 		this.textBarSkin = null;
 		this.textListSkin = null;
+		this.toastSkin = null;
 		this.windowSkin = null;
+		this.inventorySkin = null;
+	}
+
+	@Override
+	public void close() {
+		this.clear();
 	}
 
 }

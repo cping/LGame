@@ -24,8 +24,8 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
+import loon.component.skin.ToastSkin;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
@@ -153,7 +153,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this(font, null, fontColor, text, d, x, y, width, height);
 	}
 
-	public LToast(MessageSkin skin, String text, int d, int x, int y, int width, int height) {
+	public LToast(ToastSkin skin, String text, int d, int x, int y, int width, int height) {
 		this(skin.getFont(), skin.getBackgroundTexture(), skin.getFontColor(), text, d, x, y, width, height);
 	}
 

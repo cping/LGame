@@ -20,7 +20,10 @@
  */
 package loon.utils;
 
+import java.util.List;
+
 import loon.LRelease;
+import loon.utils.reply.Converter;
 
 /**
  * 分页用列表工具类
@@ -30,6 +33,45 @@ import loon.LRelease;
  * System.out.println(strings.getData());
  */
 public class PageList<T> implements LRelease {
+
+	public static <T> PageList<T> from(T[] objs, int pageNumber, int pageSize) {
+		pageSize = toPageSize(pageSize);
+		pageNumber = toPageNumber(pageNumber);
+		final int count = objs.length;
+		if (pageSize > count) {
+			pageSize = count;
+		}
+		final TArray<T> pageData = new TArray<T>(pageSize);
+		return new PageList<T>(pageData, pageNumber, pageSize);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> PageList<T> from(List<?> list, int pageNumber, int pageSize, Converter<T> converter) {
+		if (list == null) {
+			return null;
+		}
+		final int count = list.size();
+		final TArray<T> pageData = new TArray<T>(pageSize);
+		final int startIndex = MathUtils.min((pageNumber - 1) * pageSize, count);
+		final int endIndex = MathUtils.min(pageNumber * pageSize, count);
+		for (int i = startIndex; i < endIndex; i++) {
+			if (converter != null) {
+				pageData.add(converter.convert(list.get(i)));
+			} else {
+				pageData.add((T) list.get(i));
+			}
+
+		}
+		return new PageList<T>(pageData, pageNumber, pageSize);
+	}
+	
+	public static int toPageNumber(int n) {
+		return n <= 0 ? Integer.MAX_VALUE : n;
+	}
+
+	public static int toPageSize(int s) {
+		return s <= 0 ? 0 : s;
+	}
 
 	private boolean _dirty = false;
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,39 +21,45 @@
 package loon.component.skin;
 
 import loon.LSystem;
-import loon.LTexture;
 import loon.canvas.LColor;
-import loon.component.DefUI;
+import loon.font.FontSet;
 import loon.font.IFont;
 
-public class SelectSkin extends SkinAbstract<SelectSkin> {
+public abstract class SkinAbstract<T> implements ISkin, FontSet<SkinAbstract<T>> {
 
-	public final static SelectSkin def() {
-		return new SelectSkin();
+	private IFont font;
+
+	private LColor fontColor;
+
+	public SkinAbstract() {
+		this(LSystem.getSystemGameFont(), LColor.white.cpy());
 	}
 
-	private LTexture backgroundTexture;
-
-	public SelectSkin() {
-		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(1));
+	public SkinAbstract(IFont font, LColor fontColor) {
+		this.font = font;
+		this.fontColor = fontColor;
 	}
 
-	public SelectSkin(IFont font, LColor fontColor, LTexture backTexture) {
-		super(font, fontColor);
-		this.backgroundTexture = backTexture;
+	@Override
+	public final IFont getFont() {
+		return font;
 	}
 
-	public LTexture getBackgroundTexture() {
-		return backgroundTexture;
-	}
-
-	public SelectSkin setBackgroundTexture(LTexture background) {
-		this.backgroundTexture = background;
+	@Override
+	public final SkinAbstract<T> setFont(IFont font) {
+		this.font = font;
 		return this;
 	}
 
 	@Override
-	public String getSkinName() {
-		return "select";
+	public final LColor getFontColor() {
+		return fontColor.cpy();
 	}
+
+	@Override
+	public final SkinAbstract<T> setFontColor(LColor fontColor) {
+		this.fontColor = fontColor;
+		return this;
+	}
+
 }

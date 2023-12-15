@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,13 +20,14 @@
  */
 package loon.component.skin;
 
+import loon.LRelease;
 import loon.canvas.LColor;
 
-public class SkinManager {
+public class SkinManager implements LRelease {
 
 	private static SkinManager instance;
 
-	public static void freeStatic(){
+	public static void freeStatic() {
 		instance = null;
 	}
 
@@ -38,12 +39,14 @@ public class SkinManager {
 		if (instance != null) {
 			return instance;
 		}
-		synchronized (SkinManager.class) {
-			if (instance == null) {
-				instance = make();
+		if (instance == null) {
+			synchronized (SkinManager.class) {
+				if (instance == null) {
+					instance = make();
+				}
 			}
-			return instance;
 		}
+		return instance;
 	}
 
 	private CheckBoxSkin checkBoxSkin;
@@ -62,13 +65,19 @@ public class SkinManager {
 
 	private SliderSkin sliderSkin;
 
+	private SelectSkin selectSkin;
+
 	private TableSkin tableSkin;
 
 	private TextBarSkin textBarSkin;
 
 	private TextListSkin textListSkin;
 
+	private ToastSkin toastSkin;
+
 	private WindowSkin windowSkin;
+
+	private InventorySkin inventorySkin;
 
 	private boolean useDefUpdate = true;
 
@@ -185,8 +194,7 @@ public class SkinManager {
 		this.scrollBarSkin = scrollBarSkin;
 	}
 
-	public SliderSkin getSliderSkin(LColor sliderColor, LColor barColor,
-			boolean v) {
+	public SliderSkin getSliderSkin(LColor sliderColor, LColor barColor, boolean v) {
 		if (sliderSkin == null) {
 			if (useDefUpdate) {
 				return SliderSkin.def(sliderColor, barColor, v);
@@ -265,6 +273,51 @@ public class SkinManager {
 		this.windowSkin = windowSkin;
 	}
 
+	public InventorySkin getInventorySkin() {
+		if (inventorySkin == null) {
+			if (useDefUpdate) {
+				return InventorySkin.def();
+			} else {
+				setTextListSkin(TextListSkin.def());
+			}
+		}
+		return inventorySkin;
+	}
+
+	public void setInventorySkin(InventorySkin inventorySkin) {
+		this.inventorySkin = inventorySkin;
+	}
+
+	public ToastSkin getToastSkin() {
+		if (toastSkin == null) {
+			if (useDefUpdate) {
+				return ToastSkin.def();
+			} else {
+				setToastSkin(ToastSkin.def());
+			}
+		}
+		return toastSkin;
+	}
+
+	public void setToastSkin(ToastSkin toastSkin) {
+		this.toastSkin = toastSkin;
+	}
+
+	public SelectSkin getSelectSkin() {
+		if (selectSkin == null) {
+			if (useDefUpdate) {
+				return SelectSkin.def();
+			} else {
+				setToastSkin(ToastSkin.def());
+			}
+		}
+		return selectSkin;
+	}
+
+	public void setSelectSkin(SelectSkin selectSkin) {
+		this.selectSkin = selectSkin;
+	}
+
 	public void set(SkinManager skin) {
 		this.checkBoxSkin = skin.checkBoxSkin;
 		this.clickButtonSkin = skin.clickButtonSkin;
@@ -274,10 +327,13 @@ public class SkinManager {
 		this.progressSkin = skin.progressSkin;
 		this.scrollBarSkin = skin.scrollBarSkin;
 		this.sliderSkin = skin.sliderSkin;
+		this.selectSkin = skin.selectSkin;
 		this.tableSkin = skin.tableSkin;
 		this.textBarSkin = skin.textBarSkin;
 		this.textListSkin = skin.textListSkin;
+		this.toastSkin = skin.toastSkin;
 		this.windowSkin = skin.windowSkin;
+		this.inventorySkin = skin.inventorySkin;
 	}
 
 	public void clear() {
@@ -289,10 +345,18 @@ public class SkinManager {
 		this.progressSkin = null;
 		this.scrollBarSkin = null;
 		this.sliderSkin = null;
+		this.selectSkin = null;
 		this.tableSkin = null;
 		this.textBarSkin = null;
 		this.textListSkin = null;
+		this.toastSkin = null;
 		this.windowSkin = null;
+		this.inventorySkin = null;
+	}
+
+	@Override
+	public void close() {
+		this.clear();
 	}
 
 }

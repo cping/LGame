@@ -32,20 +32,26 @@ public class Disposes implements LRelease {
 	private final SortedList<LRelease> _disposeSelf;
 
 	public Disposes() {
-		this._disposeSelf = new SortedList<>();
+		this._disposeSelf = new SortedList<LRelease>();
 	}
 
 	public Disposes put(LRelease... rs) {
 		final int size = rs.length;
 		synchronized (_lock) {
 			for (int i = 0; i < size; i++) {
-				_disposeSelf.add(rs[i]);
+				LRelease r = rs[i];
+				if (r != null) {
+					_disposeSelf.add(r);
+				}
 			}
 		}
 		return this;
 	}
 
 	public Disposes put(LRelease release) {
+		if (release == null) {
+			return this;
+		}
 		synchronized (_lock) {
 			_disposeSelf.add(release);
 		}
@@ -53,12 +59,18 @@ public class Disposes implements LRelease {
 	}
 
 	public boolean contains(LRelease release) {
+		if (release == null) {
+			return false;
+		}
 		synchronized (_lock) {
 			return _disposeSelf.contains(release);
 		}
 	}
 
 	public Disposes remove(LRelease release) {
+		if (release == null) {
+			return this;
+		}
 		synchronized (_lock) {
 			_disposeSelf.remove(release);
 		}

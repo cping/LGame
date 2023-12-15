@@ -23,6 +23,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.IFont;
 import loon.font.Text;
@@ -73,9 +74,11 @@ public class LToolTip extends LComponent {
 	}
 
 	public LToolTip(String text) {
-		this(SkinManager.get().getMessageSkin().getFont(), text,
-				SkinManager.get().getMessageSkin().getBackgroundTexture(),
-				SkinManager.get().getMessageSkin().getFontColor());
+		this(SkinManager.get().getMessageSkin(), text);
+	}
+
+	public LToolTip(MessageSkin skin, String text) {
+		this(skin.getFont(), text, skin.getBackgroundTexture(), skin.getFontColor());
 	}
 
 	public LToolTip(IFont font, String text, LColor fontColor) {

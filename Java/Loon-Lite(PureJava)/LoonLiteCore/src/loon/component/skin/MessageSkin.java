@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,70 +24,48 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class MessageSkin implements FontSet<MessageSkin> {
+public class MessageSkin extends SkinAbstract<MessageSkin> {
 
-	private IFont font;
+	public static MessageSkin def() {
+		return new MessageSkin();
+	}
 
 	private LTexture backgroundTexture;
 
-	private LColor fontColor;
-
 	private LColor backColor;
-
-	public final static MessageSkin def() {
-		return new MessageSkin();
-	}
 
 	public MessageSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.white, DefUI.self().getDefaultTextures(1));
 	}
 
 	public MessageSkin(IFont font, LColor fontColor, LColor backColor, LTexture back) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.backColor = backColor;
 		this.backgroundTexture = back;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public MessageSkin setFont(IFont font) {
-		this.font = font;
-		return this;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public void setBackground(LTexture background) {
+	public MessageSkin setBackground(LTexture background) {
 		this.backgroundTexture = background;
+		return this;
 	}
 
 	public LColor getBackgroundColor() {
 		return backColor.cpy();
 	}
 
-	public void setBackgroundColor(LColor color) {
+	public MessageSkin setBackgroundColor(LColor color) {
 		this.backColor = color;
-	}
-
-	@Override
-	public LColor getFontColor() {
-		return fontColor.cpy();
-	}
-
-	@Override
-	public MessageSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
 		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "message";
+	}
 }

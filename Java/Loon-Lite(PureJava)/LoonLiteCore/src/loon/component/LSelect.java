@@ -23,7 +23,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
-import loon.component.skin.MessageSkin;
+import loon.component.skin.SelectSkin;
 import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.SysKey;
@@ -104,7 +104,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this(font, formImage, x, y, width, height, SkinManager.get().getMessageSkin().getFontColor());
 	}
 
-	public LSelect(MessageSkin skin, int x, int y, int width, int height) {
+	public LSelect(SelectSkin skin, int x, int y, int width, int height) {
 		this(skin.getFont(), skin.getBackgroundTexture(), x, y, width, height, skin.getFontColor());
 	}
 

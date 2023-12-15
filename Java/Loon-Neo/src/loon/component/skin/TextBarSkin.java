@@ -24,20 +24,17 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TextBarSkin implements FontSet<TextBarSkin> {
+public class TextBarSkin extends SkinAbstract<TextBarSkin> {
+
+	public static TextBarSkin def() {
+		return new TextBarSkin();
+	}
 
 	private LTexture leftTexture;
 	private LTexture rightTexture;
 	private LTexture bodyTexture;
-	private IFont font;
-	private LColor fontColor;
-
-	public final static TextBarSkin def() {
-		return new TextBarSkin();
-	}
 
 	public final static TextBarSkin defEmpty() {
 		return new TextBarSkin(LSystem.getSystemGameFont(), LColor.white.cpy(), null, null, null);
@@ -49,8 +46,7 @@ public class TextBarSkin implements FontSet<TextBarSkin> {
 	}
 
 	public TextBarSkin(IFont font, LColor fontColor, LTexture left, LTexture right, LTexture body) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.leftTexture = left;
 		this.rightTexture = right;
 		this.bodyTexture = body;
@@ -60,45 +56,31 @@ public class TextBarSkin implements FontSet<TextBarSkin> {
 		return leftTexture;
 	}
 
-	public void setLeftTexture(LTexture leftTexture) {
+	public TextBarSkin setLeftTexture(LTexture leftTexture) {
 		this.leftTexture = leftTexture;
+		return this;
 	}
 
 	public LTexture getRightTexture() {
 		return rightTexture;
 	}
 
-	public void setRightTexture(LTexture rightTexture) {
+	public TextBarSkin setRightTexture(LTexture rightTexture) {
 		this.rightTexture = rightTexture;
+		return this;
 	}
 
 	public LTexture getBodyTexture() {
 		return bodyTexture;
 	}
 
-	public void setBodyTexture(LTexture bodyTexture) {
+	public TextBarSkin setBodyTexture(LTexture bodyTexture) {
 		this.bodyTexture = bodyTexture;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public TextBarSkin setFont(IFont font) {
-		this.font = font;
 		return this;
 	}
 
 	@Override
-	public LColor getFontColor() {
-		return fontColor.cpy();
-	}
-
-	@Override
-	public TextBarSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
-		return this;
+	public String getSkinName() {
+		return "textbar";
 	}
 }

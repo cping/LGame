@@ -24,22 +24,19 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TextListSkin implements FontSet<TextListSkin> {
+public class TextListSkin extends SkinAbstract<TextListSkin> {
+
+	public static TextListSkin def() {
+		return new TextListSkin();
+	}
 
 	private LTexture backgoundTexture;
 	private LTexture choiceTexture;
 	private LTexture scrollTexture;
 	private LTexture scrollFlagATexture;
 	private LTexture scrollFlagBTexture;
-	private IFont font;
-	private LColor fontColor;
-
-	public final static TextListSkin def() {
-		return new TextListSkin();
-	}
 
 	public TextListSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(1),
@@ -48,8 +45,7 @@ public class TextListSkin implements FontSet<TextListSkin> {
 
 	public TextListSkin(IFont font, LColor fontColor, LTexture bg, LTexture choice, LTexture scroll,
 			LTexture scrollFlagA, LTexture scrollFlagB) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.backgoundTexture = bg;
 		this.choiceTexture = choice;
 		this.scrollTexture = scroll;
@@ -61,60 +57,49 @@ public class TextListSkin implements FontSet<TextListSkin> {
 		return backgoundTexture;
 	}
 
-	public void setBackgoundTexture(LTexture bgTexture) {
+	public TextListSkin setBackgoundTexture(LTexture bgTexture) {
 		this.backgoundTexture = bgTexture;
+		return this;
 	}
 
 	public LTexture getChoiceTexture() {
 		return choiceTexture;
 	}
 
-	public void setChoiceTexture(LTexture choiceTexture) {
+	public TextListSkin setChoiceTexture(LTexture choiceTexture) {
 		this.choiceTexture = choiceTexture;
+		return this;
 	}
 
 	public LTexture getScrollTexture() {
 		return scrollTexture;
 	}
 
-	public void setScrollTexture(LTexture scrollTexture) {
+	public TextListSkin setScrollTexture(LTexture scrollTexture) {
 		this.scrollTexture = scrollTexture;
+		return this;
 	}
 
 	public LTexture getScrollFlagATexture() {
 		return scrollFlagATexture;
 	}
 
-	public void setScrollFlagATexture(LTexture scrollFlagATexture) {
+	public TextListSkin setScrollFlagATexture(LTexture scrollFlagATexture) {
 		this.scrollFlagATexture = scrollFlagATexture;
+		return this;
 	}
 
 	public LTexture getScrollFlagBTexture() {
 		return scrollFlagBTexture;
 	}
 
-	public void setScrollFlagBTexture(LTexture scrollFlagBTexture) {
+	public TextListSkin setScrollFlagBTexture(LTexture scrollFlagBTexture) {
 		this.scrollFlagBTexture = scrollFlagBTexture;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public TextListSkin setFont(IFont font) {
-		this.font = font;
 		return this;
 	}
 
-	public LColor getFontColor() {
-		return fontColor;
+	@Override
+	public String getSkinName() {
+		return "textlist";
 	}
-
-	public TextListSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
-		return this;
-	}
-
 }

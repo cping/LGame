@@ -24,14 +24,15 @@ import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
 
-public class SliderSkin {
-
-	private LTexture sliderText;
-	private LTexture barText;
+public class SliderSkin extends SkinAbstract<SliderSkin> {
 
 	public static SliderSkin def(LColor sliderColor, LColor barColor, boolean vertical) {
 		return new SliderSkin(sliderColor, barColor, vertical);
 	}
+
+	private LTexture sliderText;
+
+	private LTexture barText;
 
 	public SliderSkin(LColor sliderColor, LColor barColor, boolean vertical) {
 		this(DefUI.getGameWinDiamond(100, 100, sliderColor), vertical ? DefUI.getGameWinHollow(30, 100, 12, barColor)
@@ -39,6 +40,7 @@ public class SliderSkin {
 	}
 
 	public SliderSkin(LTexture slider, LTexture bar) {
+		super();
 		this.sliderText = slider;
 		this.barText = bar;
 	}
@@ -47,15 +49,22 @@ public class SliderSkin {
 		return sliderText;
 	}
 
-	public void setSliderText(LTexture sliderText) {
+	public SliderSkin setSliderText(LTexture sliderText) {
 		this.sliderText = sliderText;
+		return this;
 	}
 
 	public LTexture getBarText() {
 		return barText;
 	}
 
-	public void setBarText(LTexture barText) {
+	public SliderSkin setBarText(LTexture barText) {
 		this.barText = barText;
+		return this;
+	}
+
+	@Override
+	public String getSkinName() {
+		return "slider";
 	}
 }

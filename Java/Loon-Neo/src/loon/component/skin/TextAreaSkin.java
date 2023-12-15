@@ -20,29 +20,40 @@
  */
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
 
-public class TextAreaSkin {
+public class TextAreaSkin extends SkinAbstract<TextAreaSkin> {
 
-	private IFont font;
+	public static TextAreaSkin def() {
+		return new TextAreaSkin();
+	}
 
 	private LTexture backgroundTexture;
 
-	public IFont getFont() {
-		return font;
+	public TextAreaSkin() {
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(1));
 	}
 
-	public void setFont(IFont font) {
-		this.font = font;
+	public TextAreaSkin(IFont font, LColor fontColor, LTexture backTexture) {
+		super(font, fontColor);
+		this.backgroundTexture = backTexture;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public void setBackgroundTexture(LTexture background) {
+	public TextAreaSkin setBackgroundTexture(LTexture background) {
 		this.backgroundTexture = background;
+		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "textarea";
+	}
 }

@@ -23,15 +23,15 @@ package loon.component.skin;
 import loon.LSystem;
 import loon.LTexture;
 
-public class ControlSkin {
-
-	private LTexture controlBaseTexture;
-
-	private LTexture controlDotTexture;
+public class ControlSkin extends SkinAbstract<ControlSkin> {
 
 	public static ControlSkin def() {
 		return new ControlSkin();
 	}
+
+	private LTexture controlBaseTexture;
+
+	private LTexture controlDotTexture;
 
 	public ControlSkin() {
 		this(LSystem.loadTexture(LSystem.getSystemImagePath() + "control_base.png"),
@@ -39,6 +39,7 @@ public class ControlSkin {
 	}
 
 	public ControlSkin(LTexture basetex, LTexture dottex) {
+		super();
 		this.controlBaseTexture = basetex;
 		this.controlDotTexture = dottex;
 	}
@@ -47,16 +48,23 @@ public class ControlSkin {
 		return controlBaseTexture;
 	}
 
-	public void setControlBaseTexture(LTexture controlBaseTexture) {
+	public ControlSkin setControlBaseTexture(LTexture controlBaseTexture) {
 		this.controlBaseTexture = controlBaseTexture;
+		return this;
 	}
 
 	public LTexture getControlDotTexture() {
 		return controlDotTexture;
 	}
 
-	public void setControlDotTexture(LTexture controlDotTexture) {
+	public ControlSkin setControlDotTexture(LTexture controlDotTexture) {
 		this.controlDotTexture = controlDotTexture;
+		return this;
+	}
+
+	@Override
+	public String getSkinName() {
+		return "control";
 	}
 
 }

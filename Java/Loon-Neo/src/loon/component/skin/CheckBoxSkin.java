@@ -24,20 +24,16 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class CheckBoxSkin implements FontSet<CheckBoxSkin> {
-
-	private IFont font;
-	private LColor fontColor;
-
-	private LTexture uncheckedTexture;
-	private LTexture checkedTexture;
+public class CheckBoxSkin extends SkinAbstract<CheckBoxSkin> {
 
 	public final static CheckBoxSkin def() {
 		return new CheckBoxSkin();
 	}
+
+	private LTexture uncheckedTexture;
+	private LTexture checkedTexture;
 
 	public CheckBoxSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(5),
@@ -45,32 +41,9 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin> {
 	}
 
 	public CheckBoxSkin(IFont font, LColor fontColor, LTexture unchecked, LTexture checked) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.uncheckedTexture = unchecked;
 		this.checkedTexture = checked;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public CheckBoxSkin setFont(IFont font) {
-		this.font = font;
-		return this;
-	}
-
-	@Override
-	public LColor getFontColor() {
-		return fontColor.cpy();
-	}
-
-	@Override
-	public CheckBoxSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
-		return this;
 	}
 
 	public LTexture getUncheckedTexture() {
@@ -87,5 +60,10 @@ public class CheckBoxSkin implements FontSet<CheckBoxSkin> {
 
 	public void setCheckedTexture(LTexture checkedTexture) {
 		this.checkedTexture = checkedTexture;
+	}
+
+	@Override
+	public String getSkinName() {
+		return "checkbox";
 	}
 }

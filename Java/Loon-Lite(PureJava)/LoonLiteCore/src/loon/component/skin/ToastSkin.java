@@ -20,40 +20,52 @@
  */
 package loon.component.skin;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.DefUI;
 import loon.font.IFont;
 
-public class ToastSkin {
+public class ToastSkin extends SkinAbstract<ToastSkin> {
 
-	private IFont font;
+	public static ToastSkin def() {
+		return new ToastSkin();
+	}
 
 	private LTexture backgroundTexture;
 
-	private LColor fontColor;
+	private LColor backColor;
 
-	public IFont getFont() {
-		return font;
+	public ToastSkin() {
+		this(LSystem.getSystemGameFont(), LColor.white.cpy(), LColor.gray, DefUI.self().getDefaultTextures(1));
 	}
 
-	public void setFont(IFont font) {
-		this.font = font;
+	public ToastSkin(IFont font, LColor fontColor, LColor backColor, LTexture back) {
+		super(font, fontColor);
+		this.backColor = backColor;
+		this.backgroundTexture = back;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public void setBackground(LTexture background) {
+	public ToastSkin setBackground(LTexture background) {
 		this.backgroundTexture = background;
+		return this;
 	}
 
-	public LColor getFontColor() {
-		return fontColor;
+	public LColor getBackgroundColor() {
+		return backColor.cpy();
 	}
 
-	public void setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+	public ToastSkin setBackgroundColor(LColor color) {
+		this.backColor = color;
+		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "toast";
+	}
 }

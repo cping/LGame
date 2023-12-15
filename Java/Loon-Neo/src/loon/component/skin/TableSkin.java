@@ -24,22 +24,17 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.component.DefUI;
-import loon.font.FontSet;
 import loon.font.IFont;
 
-public class TableSkin implements FontSet<TableSkin> {
+public class TableSkin extends SkinAbstract<TableSkin> {
 
-	private IFont font;
+	public static TableSkin def() {
+		return new TableSkin();
+	}
 
 	private LTexture backgroundTexture;
 
 	private LTexture headerTexture;
-
-	private LColor fontColor;
-
-	public final static TableSkin def() {
-		return new TableSkin();
-	}
 
 	public TableSkin() {
 		this(LSystem.getSystemGameFont(), LColor.white.cpy(), DefUI.self().getDefaultTextures(7),
@@ -47,39 +42,17 @@ public class TableSkin implements FontSet<TableSkin> {
 	}
 
 	public TableSkin(IFont font, LColor fontColor, LTexture header, LTexture background) {
-		this.font = font;
-		this.fontColor = fontColor;
+		super(font, fontColor);
 		this.headerTexture = header;
 		this.backgroundTexture = background;
-	}
-
-	@Override
-	public IFont getFont() {
-		return font;
-	}
-
-	@Override
-	public TableSkin setFont(IFont font) {
-		this.font = font;
-		return this;
 	}
 
 	public LTexture getBackgroundTexture() {
 		return backgroundTexture;
 	}
 
-	public void setBackgroundTexture(LTexture background) {
+	public TableSkin setBackgroundTexture(LTexture background) {
 		this.backgroundTexture = background;
-	}
-
-	@Override
-	public LColor getFontColor() {
-		return fontColor.cpy();
-	}
-
-	@Override
-	public TableSkin setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
 		return this;
 	}
 
@@ -87,8 +60,13 @@ public class TableSkin implements FontSet<TableSkin> {
 		return headerTexture;
 	}
 
-	public void setHeaderTexture(LTexture headerTexture) {
+	public TableSkin setHeaderTexture(LTexture headerTexture) {
 		this.headerTexture = headerTexture;
+		return this;
 	}
 
+	@Override
+	public String getSkinName() {
+		return "table";
+	}
 }

@@ -23,6 +23,7 @@ package loon.component;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.component.skin.SelectSkin;
 import loon.events.ActionKey;
 import loon.events.CallFunction;
 import loon.events.SysKey;
@@ -148,6 +149,14 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		return new LMenuSelect(font, labels, bg, x, y);
 	}
 
+	public LMenuSelect(SelectSkin skin, String[] labels) {
+		this(skin, labels, 0f, 0f);
+	}
+
+	public LMenuSelect(SelectSkin skin, String[] labels, float x, float y) {
+		this(skin.getFont(), skin.getFontColor(), labels, skin.getBackgroundTexture(), x, y);
+	}
+
 	public LMenuSelect(String labels, float x, float y) {
 		this(StringUtils.split(labels, LSystem.COMMA), x, y);
 	}
@@ -165,12 +174,16 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LMenuSelect(IFont font, String[] labels, LTexture bg, float x, float y) {
-		this((int) x, (int) y, 1, 1);
+		this(font, LColor.white, labels, bg, x, y);
+	}
+
+	public LMenuSelect(IFont font, LColor fontColor, String[] labels, LTexture bg, float x, float y) {
+		this(MathUtils.ifloor(x), MathUtils.ifloor(y), 1, 1);
 		this.selectRectColor = LColor.white;
 		this.selectedFillColor = LColor.blue;
 		this.selectBackgroundColor = LColor.blue.darker();
 		this.selectFlagColor = LColor.orange;
-		this.fontColor = LColor.white;
+		this.fontColor = fontColor;
 		this.colorUpdate = new LTimer(LSystem.SECOND * 2);
 		this._flag_text_space = 10;
 		this._showRect = false;
@@ -249,7 +262,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				lastHeight = maxHeight;
 				for (CharSequence ch : chars) {
 					maxWidth = MathUtils.max(maxWidth,
-							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space) ;
+							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
 					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
 				}
 				if (maxWidth > lastWidth) {

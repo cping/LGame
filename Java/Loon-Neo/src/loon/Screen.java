@@ -6312,6 +6312,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return MathUtils.iceil(y / _scaleY);
 	}
 
+	public Screen show() {
+		return setVisible(true);
+	}
+
+	public Screen hide() {
+		return setVisible(false);
+	}
+
 	public void println(Object msg) {
 		LSystem.info(toStr(msg));
 	}
