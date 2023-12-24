@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,48 +18,34 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.behaviors;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
+import loon.utils.MathUtils;
 
-	Screen,
+public class RandomConditional<T> extends Behavior<T> implements IConditional<T> {
 
-	View,
+	protected int _successProbability;
 
-	Net,
+	public RandomConditional(int successProbability) {
+		_successProbability = successProbability;
+	}
 
-	Initialize,
+	@Override
+	public TaskStatus update(T context) {
+		if (MathUtils.random() > _successProbability) {
+			return TaskStatus.Success;
+		}
 
-	Preload,
+		return TaskStatus.Failure;
+	}
 
-	Progress,
+	@Override
+	public void onStart() {
 
-	State,
+	}
 
-	Tween,
+	@Override
+	public void onEnd() {
 
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
-
-	TimeLine,
-
-	Behavior,
-
-	Other;
-
+	}
 }

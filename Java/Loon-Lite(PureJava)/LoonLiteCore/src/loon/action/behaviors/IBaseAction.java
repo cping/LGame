@@ -18,48 +18,10 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.behaviors;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
-
-	Screen,
-
-	View,
-
-	Net,
-
-	Initialize,
-
-	Preload,
-
-	Progress,
-
-	State,
-
-	Tween,
-
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
-
-	TimeLine,
-
-	Behavior,
-
-	Other;
+public interface IBaseAction {
+	
+	public IBaseAction getBaseAction();
 
 }

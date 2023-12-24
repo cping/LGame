@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,48 +18,27 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.behaviors;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
+public class AlwaysFail<T> extends Decorator<T> {
 
-	Screen,
+	@Override
+	public TaskStatus update(T context) {
+		TaskStatus status = child.update(context);
+		if (status == TaskStatus.Running) {
+			return TaskStatus.Running;
+		}
+		return TaskStatus.Failure;
+	}
 
-	View,
+	@Override
+	public void onStart() {
 
-	Net,
+	}
 
-	Initialize,
+	@Override
+	public void onEnd() {
 
-	Preload,
-
-	Progress,
-
-	State,
-
-	Tween,
-
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
-
-	TimeLine,
-
-	Behavior,
-
-	Other;
+	}
 
 }

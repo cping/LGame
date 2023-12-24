@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * Copyright 2008 - 2020 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,48 +18,39 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.processes;
+package loon.action.behaviors;
 
-/**
- * 默认可以标注的Loon进程类型
- *
- */
-public enum GameProcessType {
+import loon.LSystem;
 
-	Screen,
+public class LogAction<T> extends Behavior<T> {
 
-	View,
+	public String text;
 
-	Net,
+	public boolean isError;
 
-	Initialize,
+	public LogAction() {
+		this(LSystem.UNKNOWN);
+	}
 
-	Preload,
+	public LogAction(String text) {
+		this.text = text;
+	}
 
-	Progress,
+	@Override
+	public TaskStatus update(T context) {
+		if (isError) {
+			LSystem.error(text);
+		} else {
+			LSystem.info(text);
+		}
+		return TaskStatus.Success;
+	}
 
-	State,
+	@Override
+	public void onStart() {
+	}
 
-	Tween,
-
-	Sprite,
-
-	Component,
-
-	Texture,
-
-	Touch,
-
-	Orientation,
-
-	Motion,
-
-	Time,
-
-	TimeLine,
-
-	Behavior,
-
-	Other;
-
+	@Override
+	public void onEnd() {
+	}
 }

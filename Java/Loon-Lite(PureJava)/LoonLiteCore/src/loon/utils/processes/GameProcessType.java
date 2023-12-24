@@ -37,7 +37,7 @@ public enum GameProcessType {
 	Preload,
 
 	Progress,
-	
+
 	State,
 
 	Tween,
@@ -55,8 +55,10 @@ public enum GameProcessType {
 	Motion,
 
 	Time,
-	
+
 	TimeLine,
+
+	Behavior,
 
 	Other;
 
