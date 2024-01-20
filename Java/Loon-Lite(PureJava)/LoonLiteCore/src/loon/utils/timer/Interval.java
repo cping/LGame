@@ -157,8 +157,12 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return _loop_timer.isCompleted();
 	}
 
-	protected boolean call(LTimerContext context) {
-		if (_loop_timer.action(context)) {
+	public boolean call(LTimerContext context) {
+		return call(context.timeSinceLastUpdate);
+	}
+
+	public boolean call(long elapsedTime) {
+		if (_loop_timer.action(elapsedTime)) {
 			if (!_loop_timer.isCompleted()) {
 				action(this);
 			}

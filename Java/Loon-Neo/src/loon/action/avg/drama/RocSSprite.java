@@ -7,7 +7,6 @@ import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionTween;
-import loon.action.avg.drama.RocScript.ScriptException;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
@@ -16,69 +15,83 @@ import loon.events.ResizeListener;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.utils.timer.LTimer;
 
 /**
- * 这是一个特殊的精灵类，它并不执行任何渲染或者图像操作，而是用于添加一个脚本循环到游戏中去
+ * 这是一个特殊的精灵类，它并不执行任何渲染或者图像操作，而是用于添加一个脚本循环到游戏中去,也可以绑定一个已经存在的精灵
  */
 public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	private ResizeListener<RocSSprite> _resizeListener;
 
-	private boolean _visible, _loopScript;
+	private boolean _visible;
 
-	private RocScript _script;
-
-	private long _delay;
-
-	private LTimer _waitTimer;
+	private RocSTask _task;
 
 	private Object _result = null;
 
 	private Sprites _sprites = null;
 
+	private ISprite _sprite = null;
+
 	public RocSSprite(CommandLink link) {
-		this(link.getValue(), false, false);
+		this(link, null, false);
 	}
 
 	public RocSSprite(CommandLink link, boolean useScriptFile) {
-		this(link.getValue(), useScriptFile, false);
+		this(link.getValue(), null, useScriptFile, false);
 	}
 
 	public RocSSprite(String script, boolean useScriptFile) {
-		this(script, useScriptFile, false);
+		this(script, null, useScriptFile, false);
 	}
 
 	public RocSSprite(String script, boolean useScriptFile, boolean debug) {
-		this(script, useScriptFile, debug, 0);
+		this(script, null, useScriptFile, debug);
 	}
 
 	public RocSSprite(String script, boolean useScriptFile, boolean debug, long delay) {
+		this(script, null, useScriptFile, debug, delay);
+	}
+
+	public RocSSprite(CommandLink link, ISprite sprite) {
+		this(link, sprite, false);
+	}
+
+	public RocSSprite(CommandLink link, ISprite sprite, boolean useScriptFile) {
+		this(link.getValue(), sprite, useScriptFile, false);
+	}
+
+	public RocSSprite(String script, ISprite sprite, boolean useScriptFile) {
+		this(script, sprite, useScriptFile, false);
+	}
+
+	public RocSSprite(String script, ISprite sprite, boolean useScriptFile, boolean debug) {
+		this(script, sprite, useScriptFile, debug, 0);
+	}
+
+	public RocSSprite(String script, ISprite sprite, boolean useScriptFile, boolean debug, long delay) {
 		try {
-			this._script = new RocScript(script, useScriptFile);
-			this._script.call(debug);
-			this._delay = delay;
-			this._waitTimer = new LTimer(_delay);
+			this._task = new RocSTask(script, useScriptFile, debug, delay);
+			this._sprite = sprite;
 			this._visible = true;
-			this._loopScript = false;
 			this.setDelay(delay);
 			this.setName("RocSSprite");
-		} catch (ScriptException ex) {
+		} catch (Exception ex) {
 			throw new LSysException("ROC Script load exception", ex);
 		}
 	}
 
 	public long getDelay() {
-		return _waitTimer.getDelay();
+		return _task.getDelay();
 	}
 
 	public RocSSprite setDelay(long d) {
-		this._waitTimer.setDelay(this._delay = d);
+		this._task.setDelay(d);
 		return this;
 	}
 
 	public float getDelayS() {
-		return _waitTimer.getDelayS();
+		return _task.getDelayS();
 	}
 
 	public Object getResult() {
@@ -88,72 +101,58 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	@Override
 	public void update(long elapsedTime) {
 		if (_visible) {
-			if (_script != null) {
-				try {
-					if (_waitTimer.action(elapsedTime)) {
-						_script.resetWait();
-						_waitTimer.setDelay(_delay);
-						for (; !_script.isCompleted();) {
-							_result = _script.next();
-							long waitTime = _script.waitSleep();
-							if (waitTime != -1) {
-								if (waitTime == RocFunctions.JUMP_TYPE) {
-									_script.reset();
-									return;
-								}
-								_waitTimer.setDelay(waitTime);
-								return;
-							}
-						}
-						if (_loopScript && _script.isCompleted()) {
-							_script.reset();
-						}
-					}
-				} catch (ScriptException e) {
-					e.printStackTrace();
-				}
+			_task.call(elapsedTime);
+			if (_sprite != null) {
+				_sprite.update(elapsedTime);
 			}
 		}
 	}
 
 	@Override
 	public float getWidth() {
-		return 1;
+		return _sprite != null ? _sprite.getWidth() : 1f;
 	}
 
 	@Override
 	public float getHeight() {
-		return 1;
+		return _sprite != null ? _sprite.getHeight() : 1f;
 	}
 
 	@Override
 	public void setVisible(boolean v) {
 		this._visible = v;
+		if (_sprite != null) {
+			_sprite.setVisible(v);
+		}
 	}
 
 	@Override
 	public boolean isVisible() {
-		return _visible;
+		return _sprite != null ? _sprite.isVisible() : _visible;
 	}
 
 	@Override
 	public void createUI(GLEx g) {
-
+		if (_sprite != null) {
+			_sprite.createUI(g);
+		}
 	}
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-
+		if (_sprite != null) {
+			_sprite.createUI(g, offsetX, offsetY);
+		}
 	}
 
 	@Override
 	public RectBox getCollisionBox() {
-		return null;
+		return _sprite != null ? _sprite.getCollisionBox() : null;
 	}
 
 	@Override
 	public LTexture getBitmap() {
-		return null;
+		return _sprite != null ? _sprite.getBitmap() : null;
 	}
 
 	/**
@@ -162,7 +161,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	 * @return
 	 */
 	public RocScript getScript() {
-		return _script;
+		return _task.getScript();
 	}
 
 	/**
@@ -171,7 +170,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	 * @return
 	 */
 	public boolean isLoopScript() {
-		return _loopScript;
+		return _task.isLoopScript();
 	}
 
 	/**
@@ -180,37 +179,39 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	 * @param l
 	 */
 	public void setLoopScript(boolean l) {
-		this._loopScript = l;
+		this._task.setLoopScript(l);
 	}
 
 	@Override
 	public void setColor(LColor c) {
-
+		if (_sprite != null) {
+			_sprite.setColor(c);
+		}
 	}
 
 	@Override
 	public LColor getColor() {
-		return null;
+		return _sprite != null ? _sprite.getColor() : null;
 	}
 
 	@Override
 	public String toString() {
-		return _script.toString();
+		return _task.getScript().toString();
 	}
 
 	@Override
 	public Field2D getField2D() {
-		return null;
+		return _sprite != null ? _sprite.getField2D() : null;
 	}
 
 	@Override
 	public float getScaleX() {
-		return 0;
+		return _sprite != null ? _sprite.getScaleX() : 1f;
 	}
 
 	@Override
 	public float getScaleY() {
-		return 0;
+		return _sprite != null ? _sprite.getScaleY() : 1f;
 	}
 
 	public RocSSprite setScale(float scale) {
@@ -220,36 +221,39 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public void setScale(float sx, float sy) {
+		if (_sprite != null) {
+			_sprite.setScale(sx, sy);
+		}
 	}
 
 	@Override
 	public boolean isBounded() {
-		return false;
+		return _sprite != null ? _sprite.isBounded() : false;
 	}
 
 	@Override
 	public boolean isContainer() {
-		return false;
+		return _sprite != null ? _sprite.isContainer() : false;
 	}
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		return false;
+		return _sprite != null ? _sprite.inContains(x, y, w, h) : false;
 	}
 
 	@Override
 	public RectBox getRectBox() {
-		return null;
+		return _sprite != null ? _sprite.getRectBox() : null;
 	}
 
 	@Override
 	public ActionTween selfAction() {
-		return PlayerUtils.set(this);
+		return _sprite != null ? _sprite.selfAction() : PlayerUtils.set(this);
 	}
 
 	@Override
 	public boolean isActionCompleted() {
-		return PlayerUtils.isActionCompleted(this);
+		return _sprite != null ? _sprite.isActionCompleted() : PlayerUtils.isActionCompleted(this);
 	}
 
 	@Override
@@ -257,17 +261,23 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		if (this._sprites == ss) {
 			return this;
 		}
+		if (_sprite != null) {
+			_sprite.setSprites(ss);
+		}
 		this._sprites = ss;
 		return this;
 	}
 
 	@Override
 	public Sprites getSprites() {
-		return this._sprites;
+		return _sprite != null ? _sprite.getSprites() : this._sprites;
 	}
 
 	@Override
 	public Screen getScreen() {
+		if (_sprite != null) {
+			return _sprite.getScreen();
+		}
 		if (this._sprites == null) {
 			return LSystem.getProcess().getScreen();
 		}
@@ -280,47 +290,53 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 
 	@Override
 	public float getFixedWidthOffset() {
-		return 0;
+		return _sprite != null ? _sprite.getFixedWidthOffset() : 0f;
 	}
 
 	@Override
 	public ISprite setFixedWidthOffset(float widthOffset) {
+		if (_sprite != null) {
+			_sprite.setFixedWidthOffset(widthOffset);
+		}
 		return this;
 	}
 
 	@Override
 	public float getFixedHeightOffset() {
-		return 0;
+		return _sprite != null ? _sprite.getFixedHeightOffset() : 0f;
 	}
 
 	@Override
 	public ISprite setFixedHeightOffset(float heightOffset) {
+		if (_sprite != null) {
+			_sprite.setFixedHeightOffset(heightOffset);
+		}
 		return this;
 	}
 
 	@Override
 	public boolean collides(ISprite other) {
-		return false;
+		return _sprite != null ? _sprite.collides(other) : false;
 	}
 
 	@Override
 	public boolean collidesX(ISprite other) {
-		return false;
+		return _sprite != null ? _sprite.collidesX(other) : false;
 	}
 
 	@Override
 	public boolean collidesY(ISprite other) {
-		return false;
+		return _sprite != null ? _sprite.collidesY(other) : false;
 	}
 
 	@Override
 	public float getOffsetX() {
-		return 0;
+		return _sprite != null ? _sprite.getOffsetX() : 0f;
 	}
 
 	@Override
 	public float getOffsetY() {
-		return 0;
+		return _sprite != null ? _sprite.getOffsetY() : 0f;
 	}
 
 	public ResizeListener<RocSSprite> getResizeListener() {
@@ -335,38 +351,67 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	@Override
 	public void onResize() {
 		if (_resizeListener != null) {
+			if (_sprite != null) {
+				_sprite.onResize();
+			}
 			_resizeListener.onResize(this);
 		}
 	}
 
 	@Override
 	public void onCollision(ISprite coll, int dir) {
-
+		if (_sprite != null) {
+			_sprite.onCollision(coll, dir);
+		}
 	}
 
 	@Override
-	public RocSSprite setOffset(Vector2f v) {
+	public ISprite setOffset(Vector2f v) {
+		if (_sprite != null) {
+			_sprite.setOffset(v);
+		}
 		return this;
 	}
 
 	@Override
 	public ISprite setSize(float w, float h) {
+		if (_sprite != null) {
+			_sprite.setSize(w, h);
+		}
 		return this;
 	}
 
 	@Override
 	public boolean showShadow() {
+		if (_sprite != null) {
+			_sprite.showShadow();
+		}
 		return false;
 	}
 
 	@Override
 	public boolean autoXYSort() {
+		if (_sprite != null) {
+			return _sprite.autoXYSort();
+		}
 		return false;
+	}
+
+	public ISprite getSprite() {
+		return _sprite;
+	}
+
+	public ISprite setSprite(ISprite s) {
+		this._sprite = s;
+		return this;
 	}
 
 	@Override
 	public void close() {
 		setState(State.DISPOSED);
+		if (_sprite != null) {
+			_sprite.close();
+		}
 		_resizeListener = null;
 	}
 
