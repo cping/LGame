@@ -52,6 +52,14 @@ import loon.utils.StringUtils;
 
 public class JavaSEAssets extends Assets {
 
+	public static final URL convertURL(String url) throws Exception {
+		return convertURI(url).toURL();
+	}
+
+	public static final URI convertURI(String url) {
+		return URI.create(url);
+	}
+
 	private final static String DEF_RES = "assets/";
 
 	public static interface JavaFXResource extends LRelease {
@@ -197,7 +205,7 @@ public class JavaSEAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -244,7 +252,7 @@ public class JavaSEAssets extends Assets {
 				if (in != null) {
 					return in;
 				}
-				return in = new URL(path).openStream();
+				return in = convertURL(path).openStream();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -258,7 +266,7 @@ public class JavaSEAssets extends Assets {
 		@Override
 		public URI getURI() {
 			try {
-				return new URL(path).toURI();
+				return convertURI(path);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -326,7 +334,7 @@ public class JavaSEAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -444,7 +452,7 @@ public class JavaSEAssets extends Assets {
 		asyn.invokeAsync(new Runnable() {
 			public void run() {
 				try {
-					BufferedImage bmp = ImageIO.read(new URL(url));
+					BufferedImage bmp = ImageIO.read(convertURL(url));
 					image.succeed(new ImageImpl.Data(Scale.ONE, bmp, bmp.getWidth(), bmp.getHeight()));
 				} catch (Exception error) {
 					image.fail(error);

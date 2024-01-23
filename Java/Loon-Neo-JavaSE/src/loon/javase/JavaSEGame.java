@@ -293,6 +293,7 @@ public class JavaSEGame extends LGame {
 		return support;
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void browse(String url) throws Exception {
 		if (isMacOS()) {
 			Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
@@ -317,6 +318,7 @@ public class JavaSEGame extends LGame {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void openURL(String url) {
 		try {

@@ -52,6 +52,14 @@ import loon.utils.StringUtils;
 
 public class JavaSEAssets extends Assets {
 
+	public static final URL convertURL(String url) throws Exception {
+		return convertURI(url).toURL();
+	}
+
+	public static final URI convertURI(String url) {
+		return URI.create(url);
+	}
+
 	private final static String DEF_RES = "assets/";
 
 	public static interface JavaSEResource extends LRelease {
@@ -110,8 +118,7 @@ public class JavaSEAssets extends Assets {
 		public InputStream getInputStream() {
 			try {
 				if (classLoader == null) {
-					return (in = JavaSEAssets.classLoader
-							.getResourceAsStream(path));
+					return (in = JavaSEAssets.classLoader.getResourceAsStream(path));
 				} else {
 					return (in = classLoader.getResourceAsStream(path));
 				}
@@ -198,7 +205,7 @@ public class JavaSEAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -245,7 +252,7 @@ public class JavaSEAssets extends Assets {
 				if (in != null) {
 					return in;
 				}
-				return in = new URL(path).openStream();
+				return in = convertURL(path).openStream();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -259,7 +266,7 @@ public class JavaSEAssets extends Assets {
 		@Override
 		public URI getURI() {
 			try {
-				return new URL(path).toURI();
+				return convertURI(path);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -297,8 +304,7 @@ public class JavaSEAssets extends Assets {
 
 		public SDRes(String path) {
 			path = StringUtils.replaceIgnoreCase(path, "\\", "/");
-			if (StringUtils.startsWith(path, '/')
-					|| StringUtils.startsWith(path, '\\')) {
+			if (StringUtils.startsWith(path, '/') || StringUtils.startsWith(path, '\\')) {
 				path = path.substring(1, path.length());
 			}
 			this.path = path;
@@ -328,7 +334,7 @@ public class JavaSEAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -384,8 +390,7 @@ public class JavaSEAssets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path),
-						DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -409,13 +414,11 @@ public class JavaSEAssets extends Assets {
 			if (path.startsWith("sd:")) {
 				in = sdRes(path.substring(3, path.length())).getInputStream();
 			} else if (path.startsWith("class:")) {
-				in = classRes(path.substring(6, path.length()))
-						.getInputStream();
+				in = classRes(path.substring(6, path.length())).getInputStream();
 			} else if (path.startsWith("path:")) {
 				in = fileRes(path.substring(5, path.length())).getInputStream();
 			} else if (path.startsWith("url:")) {
-				in = remoteRes(path.substring(4, path.length()))
-						.getInputStream();
+				in = remoteRes(path.substring(4, path.length())).getInputStream();
 			}
 		}
 		return in;
@@ -445,14 +448,12 @@ public class JavaSEAssets extends Assets {
 
 	@Override
 	public Image getRemoteImage(final String url, int width, int height) {
-		final JavaSEImage image = new JavaSEImage(game, true, width, height,
-				url);
+		final JavaSEImage image = new JavaSEImage(game, true, width, height, url);
 		asyn.invokeAsync(new Runnable() {
 			public void run() {
 				try {
-					BufferedImage bmp = ImageIO.read(new URL(url));
-					image.succeed(new ImageImpl.Data(Scale.ONE, bmp, bmp
-							.getWidth(), bmp.getHeight()));
+					BufferedImage bmp = ImageIO.read(convertURL(url));
+					image.succeed(new ImageImpl.Data(Scale.ONE, bmp, bmp.getWidth(), bmp.getHeight()));
 				} catch (Exception error) {
 					image.fail(error);
 				}
@@ -493,8 +494,7 @@ public class JavaSEAssets extends Assets {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(path, new ByteArrayInputStream(
-							getBytesSync(soundPath)), music);
+					return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(soundPath)), music);
 				} catch (Exception e) {
 					e.printStackTrace();
 					err = e;
@@ -502,8 +502,7 @@ public class JavaSEAssets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(path, new ByteArrayInputStream(
-						getBytesSync(path)), music);
+				return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
 				err = e;
@@ -540,8 +539,7 @@ public class JavaSEAssets extends Assets {
 		if (url != null) {
 			boolean isFile = url.getProtocol().equals("file");
 			if (isFile) {
-				File file = new File(URLDecoder.decode(url.getPath(),
-						LSystem.ENCODING));
+				File file = new File(URLDecoder.decode(url.getPath(), LSystem.ENCODING));
 				if (file.exists()) {
 					return new FileResource(this, file);
 				} else {
@@ -573,15 +571,11 @@ public class JavaSEAssets extends Assets {
 				path = DEF_RES + path;
 			}
 			file = new File(path);
-			if (!file.exists()
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-				file = new File(path.substring(path.indexOf('/') + 1,
-						path.length()));
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(path.substring(path.indexOf('/') + 1, path.length()));
 			}
-			if (!file.exists()
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-				file = new File(LSystem.getFileName(path = file
-						.getAbsolutePath()));
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
 			}
 			if (!file.exists()) {
 				file = new File(LSystem.getFileName(path = (DEF_RES + path)));
@@ -611,11 +605,9 @@ public class JavaSEAssets extends Assets {
 	protected BufferedImage scaleImage(BufferedImage image, float viewImageRatio) {
 		int swidth = MathUtils.iceil(viewImageRatio * image.getWidth());
 		int sheight = MathUtils.iceil(viewImageRatio * image.getHeight());
-		BufferedImage scaled = new BufferedImage(swidth, sheight,
-				BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage scaled = new BufferedImage(swidth, sheight, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D gfx = scaled.createGraphics();
-		gfx.drawImage(image.getScaledInstance(swidth, sheight,
-				java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+		gfx.drawImage(image.getScaledInstance(swidth, sheight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
 		gfx.dispose();
 		return scaled;
 	}
@@ -677,10 +669,12 @@ public class JavaSEAssets extends Assets {
 			this.assets = assets;
 			this.file = file;
 		}
+
 		@Override
 		public InputStream openStream() throws IOException {
 			return assets.strRes(file.getPath());
 		}
+
 		@Override
 		public BufferedImage readImage() throws IOException {
 			return ImageIO.read(assets.strRes(file.getPath()));
@@ -714,7 +708,7 @@ public class JavaSEAssets extends Assets {
 		if (path == null || TextureSource.RenderCanvas.equals(path)) {
 			return null;
 		}
-		
+
 		Exception error = null;
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
 			try {
@@ -726,29 +720,23 @@ public class JavaSEAssets extends Assets {
 					imageScale = viewScale;
 				}
 				if (game.setting.convertImagesOnLoad) {
-					BufferedImage convertedImage = JavaSEGraphics
-							.convertImage(image);
+					BufferedImage convertedImage = JavaSEGraphics.convertImage(image);
 					if (convertedImage != image) {
-						game.log().debug(
-								"Converted image: " + path + " [type="
-										+ image.getType() + "]");
+						game.log().debug("Converted image: " + path + " [type=" + image.getType() + "]");
 						image = convertedImage;
 					}
 				}
-				return new ImageImpl.Data(imageScale, image, image.getWidth(),
-						image.getHeight());
+				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
 			} catch (FileNotFoundException ex) {
 				error = ex;
 			}
 		}
-		game.log().warn(
-				"Could not load image: " + path + " [error=" + error + "]");
+		game.log().warn("Could not load image: " + path + " [error=" + error + "]");
 		throw error != null ? error : new FileNotFoundException(path);
 	}
 
 	@Override
-	protected ImageImpl createImage(boolean async, int rwid, int rhei,
-			String source) {
+	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		return new JavaSEImage(game, async, rwid, rhei, source);
 	}
 

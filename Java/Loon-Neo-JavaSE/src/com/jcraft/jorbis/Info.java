@@ -465,10 +465,10 @@ public class Info {
 	}
 
 	public String toString() {
-		return "version:" + new Integer(version) + ", channels:"
-				+ new Integer(channels) + ", rate:" + new Integer(rate)
-				+ ", bitrate:" + new Integer(bitrate_upper) + ","
-				+ new Integer(bitrate_nominal) + ","
-				+ new Integer(bitrate_lower);
+		return "version:" + Integer.valueOf(version) + ", channels:"
+				+ Integer.valueOf(channels) + ", rate:" + Integer.valueOf(rate)
+				+ ", bitrate:" + Integer.valueOf(bitrate_upper) + ","
+				+ Integer.valueOf(bitrate_nominal) + ","
+				+ Integer.valueOf(bitrate_lower);
 	}
 }

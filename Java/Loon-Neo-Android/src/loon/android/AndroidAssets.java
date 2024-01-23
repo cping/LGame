@@ -50,6 +50,14 @@ import android.graphics.Typeface;
 
 public class AndroidAssets extends Assets {
 
+	public static final URL convertURL(String url) throws Exception {
+		return convertURI(url).toURL();
+	}
+
+	public static final URI convertURI(String url) {
+		return URI.create(url);
+	}
+	
 	private final static String DEF_RES = "assets/";
 
 	public static interface Resource extends LRelease {
@@ -195,7 +203,7 @@ public class AndroidAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -242,7 +250,7 @@ public class AndroidAssets extends Assets {
 				if (in != null) {
 					return in;
 				}
-				return in = new URL(path).openStream();
+				return in = convertURL(path).openStream();
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -256,7 +264,7 @@ public class AndroidAssets extends Assets {
 		@Override
 		public URI getURI() {
 			try {
-				return new URL(path).toURI();
+				return convertURI(path);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -343,7 +351,7 @@ public class AndroidAssets extends Assets {
 				if (uri != null) {
 					return uri;
 				}
-				return (uri = new URL(path).toURI());
+				return (uri = convertURI(path));
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -672,7 +680,7 @@ public class AndroidAssets extends Assets {
 
 	protected Bitmap downloadBitmap(String url, BitmapOptions options) throws Exception {
 		try {
-			URL imageurl = new URL(url);
+			URL imageurl = convertURL(url);
 			HttpURLConnection connection = (HttpURLConnection) imageurl.openConnection();
 			connection.setDoInput(true);
 			connection.setDoOutput(false);
