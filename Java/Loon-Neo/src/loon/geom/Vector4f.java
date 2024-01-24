@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.reply.TChange;
 
 public class Vector4f implements Serializable, XYZW, SetXYZW {
 
@@ -1109,7 +1110,7 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return this;
 	}
 
-	public ObservableXYZW<Vector4f> observable(XYChange<Vector4f> v) {
+	public ObservableXYZW<Vector4f> observable(TChange<Vector4f> v) {
 		return ObservableXYZW.at(v, this, this);
 	}
 

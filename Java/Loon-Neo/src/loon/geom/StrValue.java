@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.Nullable;
+import loon.utils.reply.Nullable;
 
 public class StrValue implements LRelease {
 

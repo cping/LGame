@@ -21,14 +21,15 @@
 package loon.geom;
 
 import loon.LSysException;
+import loon.utils.reply.TChange;
 
 public class ObservableXYZ<T> implements XYZ, SetXYZ {
 
-	public final static <T> ObservableXYZ<T> at(XYChange<T> change, XYZ pos, T obj) {
+	public final static <T> ObservableXYZ<T> at(TChange<T> change, XYZ pos, T obj) {
 		return new ObservableXYZ<T>(change, pos, obj);
 	}
 	
-	private XYChange<T> _change;
+	private TChange<T> _change;
 
 	private XYZ _pos;
 
@@ -36,11 +37,11 @@ public class ObservableXYZ<T> implements XYZ, SetXYZ {
 
 	private T _obj;
 
-	public ObservableXYZ(XYChange<T> v, XYZ pos) {
+	public ObservableXYZ(TChange<T> v, XYZ pos) {
 		this(v, pos, null);
 	}
 
-	public ObservableXYZ(XYChange<T> v, XYZ pos, T obj) {
+	public ObservableXYZ(TChange<T> v, XYZ pos, T obj) {
 		if (v == null) {
 			throw new LSysException("The XYZ Object cannot be null !");
 		}

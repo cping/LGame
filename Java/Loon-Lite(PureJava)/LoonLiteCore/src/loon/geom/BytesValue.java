@@ -21,8 +21,8 @@
 package loon.geom;
 
 import loon.LRelease;
-import loon.Nullable;
 import loon.utils.ArrayByte;
+import loon.utils.reply.Nullable;
 
 public class BytesValue implements LRelease {
 

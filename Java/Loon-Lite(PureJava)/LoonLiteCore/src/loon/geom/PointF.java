@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.action.collision.CollisionHelper;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.reply.TChange;
 
 /*最简化的浮点坐标处理类,以减少对象大小*/
 public class PointF implements XY, SetXY {
@@ -191,7 +192,7 @@ public class PointF implements XY, SetXY {
 		return this.x + "px " + this.y + "px";
 	}
 
-	public ObservableXY<PointF> observable(XYChange<PointF> v) {
+	public ObservableXY<PointF> observable(TChange<PointF> v) {
 		return ObservableXY.at(v, this, this);
 	}
 

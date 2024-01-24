@@ -21,8 +21,9 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.reply.TChange;
 
-public class Transform implements XYChange<Vector2f> {
+public class Transform implements TChange<Vector2f> {
 
 	protected final Affine2f _worldTransform;
 

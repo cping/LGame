@@ -22,7 +22,6 @@ package org.test;
 
 import loon.Counter;
 import loon.LTexture;
-import loon.Nullable;
 import loon.Stage;
 import loon.action.ActionBind;
 import loon.action.ActionListener;
@@ -58,6 +57,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Nullable;
 import loon.utils.Array;
 
 /**

@@ -18,9 +18,9 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.utils.reply;
 
-public interface XYChange<T> {
+public interface TChange<T> {
 
 	public void onUpdate(T obj);
 	

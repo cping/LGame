@@ -28,6 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.TChange;
 
 public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
@@ -1455,7 +1456,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
-	public ObservableXYZW<RectBox> observable(XYChange<RectBox> v) {
+	public ObservableXYZW<RectBox> observable(TChange<RectBox> v) {
 		return ObservableXYZW.at(v, this, this);
 	}
 

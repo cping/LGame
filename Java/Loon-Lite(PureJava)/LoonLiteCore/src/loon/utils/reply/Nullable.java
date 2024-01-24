@@ -18,13 +18,14 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon;
+package loon.utils.reply;
 
+import loon.LRelease;
 import loon.geom.IV;
 
 public class Nullable<T> implements IV<T>, LRelease {
 
-	private T _value;
+	protected T _value;
 
 	public Nullable() {
 		this(null);
@@ -32,6 +33,22 @@ public class Nullable<T> implements IV<T>, LRelease {
 
 	public Nullable(T v) {
 		this._value = v;
+	}
+
+	public boolean isPresent() {
+		return this._value != null;
+	}
+
+	public T orElse(T v) {
+		if (this._value != null) {
+			return this._value;
+		}
+		return v;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(this._value);
 	}
 
 	@Override

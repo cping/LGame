@@ -21,8 +21,8 @@
 package loon.geom;
 
 import loon.LRelease;
-import loon.Nullable;
 import loon.utils.MathUtils;
+import loon.utils.reply.Nullable;
 
 public class FloatValue implements LRelease {
 

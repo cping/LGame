@@ -18,22 +18,24 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.utils.reply;
 
 import loon.LRelease;
-import loon.Nullable;
+import loon.geom.IV;
+import loon.geom.SetIV;
 
-public class TValue<T> implements SetIV<T>, IV<T>, LRelease {
+public class TValue<T> extends Nullable<T> implements SetIV<T>, IV<T>, LRelease {
 
-	private T _value;
-
-	public TValue(T v) {
-		this._value = v;
+	public static final <T> TValue<T> of(T obj) {
+		return new TValue<T>(obj);
 	}
 
-	@Override
-	public T get() {
-		return _value;
+	public static final <T> Nullable<T> ofNull(T obj) {
+		return new TValue<T>(obj);
+	}
+
+	public TValue(T v) {
+		super(v);
 	}
 
 	@Override
@@ -49,22 +51,12 @@ public class TValue<T> implements SetIV<T>, IV<T>, LRelease {
 		return new TValue<T>(_value);
 	}
 
-	public Nullable<T> toNullable(){
+	public Nullable<T> toNullable() {
 		return new Nullable<T>(_value);
 	}
-	
-	public ObservableValue<T> observable(XYChange<T> v) {
+
+	public ObservableValue<T> observable(TChange<T> v) {
 		return ObservableValue.at(v, this, _value);
-	}
-
-	@Override
-	public String toString() {
-		return String.valueOf(_value);
-	}
-
-	@Override
-	public void close() {
-		this._value = null;
 	}
 
 }

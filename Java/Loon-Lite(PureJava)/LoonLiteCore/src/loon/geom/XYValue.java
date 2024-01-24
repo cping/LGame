@@ -24,14 +24,18 @@ import loon.LRelease;
 
 public class XYValue implements LRelease {
 
-	private XY value = null;
+	private XY _value = null;
 
 	public XYValue(XY v) {
 		this.set(v);
 	}
 
+	public boolean isPresent() {
+		return this._value != null;
+	}
+
 	public XYValue set(XY v) {
-		this.value = v;
+		this._value = v;
 		return this;
 	}
 
@@ -40,17 +44,17 @@ public class XYValue implements LRelease {
 	}
 
 	public XY result() {
-		return value;
+		return _value;
 	}
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return _value.toString();
 	}
 
 	@Override
 	public void close() {
-		this.value = null;
+		this._value = null;
 	}
 
 }

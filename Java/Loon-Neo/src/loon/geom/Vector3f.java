@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.reply.TChange;
 
 public class Vector3f implements Serializable, XYZ, SetXYZ {
 
@@ -1281,7 +1282,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return this;
 	}
 
-	public ObservableXYZ<Vector3f> observable(XYChange<Vector3f> v) {
+	public ObservableXYZ<Vector3f> observable(TChange<Vector3f> v) {
 		return ObservableXYZ.at(v, this, this);
 	}
 

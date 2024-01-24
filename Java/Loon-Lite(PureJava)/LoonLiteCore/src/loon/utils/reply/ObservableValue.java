@@ -18,17 +18,19 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.geom;
+package loon.utils.reply;
 
 import loon.LSysException;
+import loon.geom.IV;
+import loon.geom.SetIV;
 
 public class ObservableValue<T> implements SetIV<T>, IV<T> {
 
-	public final static <T> ObservableValue<T> at(XYChange<T> change, IV<T> v, T obj) {
+	public final static <T> ObservableValue<T> at(TChange<T> change, IV<T> v, T obj) {
 		return new ObservableValue<T>(change, v, obj);
 	}
 
-	private XYChange<T> _change;
+	private TChange<T> _change;
 
 	private IV<T> _value;
 
@@ -36,15 +38,15 @@ public class ObservableValue<T> implements SetIV<T>, IV<T> {
 
 	private T _obj;
 
-	public ObservableValue(XYChange<T> c, T v) {
+	public ObservableValue(TChange<T> c, T v) {
 		this(c, new TValue<T>(v), null);
 	}
 
-	public ObservableValue(XYChange<T> c, IV<T> v) {
+	public ObservableValue(TChange<T> c, IV<T> v) {
 		this(c, v, null);
 	}
 
-	public ObservableValue(XYChange<T> c, IV<T> v, T obj) {
+	public ObservableValue(TChange<T> c, IV<T> v, T obj) {
 		if (v == null) {
 			throw new LSysException("The Value Object cannot be null !");
 		}

@@ -21,7 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
-import loon.Nullable;
+import loon.utils.reply.Nullable;
 
 public class BooleanValue implements LRelease {
 

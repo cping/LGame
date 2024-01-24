@@ -22,10 +22,10 @@ package loon.component.layout;
 
 import loon.LSystem;
 import loon.geom.IV;
-import loon.geom.ObservableValue;
 import loon.geom.SetIV;
-import loon.geom.TValue;
-import loon.geom.XYChange;
+import loon.utils.reply.ObservableValue;
+import loon.utils.reply.TChange;
+import loon.utils.reply.TValue;
 
 public class ValueAndUnit implements IV<Number>, SetIV<Number> {
 
@@ -34,11 +34,11 @@ public class ValueAndUnit implements IV<Number>, SetIV<Number> {
 
 	TValue<Number> _value;
 
-	XYChange<Number> _onChangedObservable;
+	TChange<Number> _onChangedObservable;
 
 	int _unit;
 
-	public ValueAndUnit(XYChange<Number> c, float v) {
+	public ValueAndUnit(TChange<Number> c, float v) {
 		this._onChangedObservable = c;
 		this._value = new TValue<Number>(v);
 		this._unit = UNITMODE_PIXEL;
@@ -75,11 +75,11 @@ public class ValueAndUnit implements IV<Number>, SetIV<Number> {
 		return this;
 	}
 
-	public XYChange<Number> getChangedObservable() {
+	public TChange<Number> getChangedObservable() {
 		return _onChangedObservable;
 	}
 
-	public ValueAndUnit setChangedObservable(XYChange<Number> changedObservable) {
+	public ValueAndUnit setChangedObservable(TChange<Number> changedObservable) {
 		this._onChangedObservable = changedObservable;
 		return this;
 	}
