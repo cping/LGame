@@ -111,7 +111,7 @@ public class LSystem {
 	public static final char ERRORCODE1 = 341;
 
 	public static final char ERRORCODE2 = 65535;
-	
+
 	// 默认最大预加载数量
 	public static final float DEFAULT_MAX_PRE_SIZE = 10000f;
 
@@ -601,6 +601,9 @@ public class LSystem {
 	}
 
 	public static final int unite(int hashCode, Object value) {
+		if (value == null) {
+			return unite(hashCode, LSystem.YEAR);
+		}
 		return unite(hashCode, value.hashCode());
 	}
 

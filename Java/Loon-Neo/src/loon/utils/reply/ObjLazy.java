@@ -22,7 +22,7 @@ package loon.utils.reply;
 
 import loon.LSysException;
 
-public class ObjLazy<T> implements ObjT<T> {
+public class ObjLazy<T> extends Nullable<T> implements ObjT<T> {
 
 	public static <T> ObjLazy<T> empty() {
 		return new ObjLazy<T>(new ObjRef<T>(null));
@@ -38,9 +38,8 @@ public class ObjLazy<T> implements ObjT<T> {
 
 	private ObjT<T> _obj;
 
-	private T _value;
-
 	public ObjLazy(final ObjT<T> o) {
+		super(null);
 		this._obj = o;
 	}
 
@@ -48,14 +47,6 @@ public class ObjLazy<T> implements ObjT<T> {
 		this._obj = o;
 		this._value = null;
 		return this;
-	}
-
-	public boolean isPresent() {
-		return _value != null;
-	}
-
-	public boolean isEmpty() {
-		return _value == null;
 	}
 
 	public ObjT<T> refObj() {

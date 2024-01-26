@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2020 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,33 +20,40 @@
  */
 package loon.geom;
 
-import loon.LSystem;
+import loon.utils.MathUtils;
 import loon.utils.reply.TValue;
 
-public class StrValue extends TValue<String> {
+public class NumberValue extends TValue<Number> {
 
-	public StrValue() {
-		this(LSystem.EMPTY);
-	}
-
-	public StrValue(String v) {
+	public NumberValue(Number v) {
 		super(v);
 	}
 
-	public boolean update(String v) {
+	public boolean update(Number v) {
 		set(v);
-		return v != null;
+		return v == null ? false : (v.floatValue() != 0);
+	}
+
+	public float scaled(float length) {
+		return _value == null ? 0 : (_value.floatValue() * length);
+	}
+
+	public int scaledCeil(float length) {
+		return MathUtils.iceil(scaled(length));
+	}
+
+	public int scaledFloor(float length) {
+		return MathUtils.ifloor(scaled(length));
 	}
 
 	@Override
-	public StrValue cpy() {
-		return new StrValue(_value);
+	public NumberValue cpy() {
+		return new NumberValue(_value);
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		this._value = LSystem.EMPTY;
+		this._value = Float.valueOf(0f);
 	}
-
 }

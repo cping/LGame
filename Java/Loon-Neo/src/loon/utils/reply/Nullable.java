@@ -21,6 +21,10 @@
 package loon.utils.reply;
 
 import loon.LRelease;
+import loon.LSysException;
+import loon.LSystem;
+import loon.events.EventActionT;
+import loon.events.QueryEvent;
 import loon.geom.IV;
 
 public class Nullable<T> implements IV<T>, LRelease {
@@ -39,6 +43,15 @@ public class Nullable<T> implements IV<T>, LRelease {
 		return this._value != null;
 	}
 
+	public boolean isEmpty() {
+		return this._value == null;
+	}
+
+	public Nullable<T> reset() {
+		this._value = null;
+		return this;
+	}
+
 	public T orElse(T v) {
 		if (this._value != null) {
 			return this._value;
@@ -46,9 +59,57 @@ public class Nullable<T> implements IV<T>, LRelease {
 		return v;
 	}
 
+	public boolean orElse(QueryEvent<T> q) {
+		return q == null ? false : q.hit(_value);
+	}
+
+	public T orElseGet(IV<? extends T> v) {
+		return _value != null ? _value : v.get();
+	}
+
+	public <X extends Throwable> T orElseThrow(IV<? extends X> ex) throws X {
+		if (_value != null) {
+			return _value;
+		} else {
+			if (ex != null) {
+				throw ex.get();
+			} else {
+				throw new LSysException();
+			}
+		}
+	}
+
+	public boolean isPresent(EventActionT<T> q) {
+		boolean result = this._value != null;
+		if (result) {
+			q.update(_value);
+		}
+		return result;
+	}
+
+	public GoFuture<T> success() {
+		return GoFuture.success(_value);
+	}
+
+	public <X extends Throwable> GoFuture<T> failure(IV<? extends X> ex) {
+		return failure(ex == null ? new LSysException() : ex.get());
+	}
+
+	public GoFuture<T> failure(Throwable cause) {
+		return GoFuture.failure(cause);
+	}
+
 	@Override
 	public String toString() {
 		return String.valueOf(this._value);
+	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = LSystem.unite(hash, _value);
+		hash = LSystem.unite(hash, this);
+		return hash;
 	}
 
 	@Override
@@ -58,6 +119,9 @@ public class Nullable<T> implements IV<T>, LRelease {
 		}
 		if (v == this) {
 			return true;
+		}
+		if (getClass() != v.getClass()) {
+			return false;
 		}
 		if (v instanceof Nullable) {
 			@SuppressWarnings("unchecked")
@@ -72,6 +136,9 @@ public class Nullable<T> implements IV<T>, LRelease {
 
 	@Override
 	public T get() {
+		if (_value == null) {
+			throw new LSysException("No value present");
+		}
 		return _value;
 	}
 

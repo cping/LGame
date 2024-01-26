@@ -20,10 +20,8 @@
  */
 package loon.utils.reply;
 
-public interface ObjT<T> {
+import loon.geom.IV;
 
-	T get();
-	
-	boolean isPresent();
+public interface ObjT<T> extends IV<T> {
 
 }

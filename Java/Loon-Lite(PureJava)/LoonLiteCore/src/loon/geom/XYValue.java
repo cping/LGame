@@ -20,41 +20,17 @@
  */
 package loon.geom;
 
-import loon.LRelease;
+import loon.utils.reply.TValue;
 
-public class XYValue implements LRelease {
-
-	private XY _value = null;
+public class XYValue extends TValue<XY> {
 
 	public XYValue(XY v) {
-		this.set(v);
-	}
-
-	public boolean isPresent() {
-		return this._value != null;
-	}
-
-	public XYValue set(XY v) {
-		this._value = v;
-		return this;
-	}
-
-	public XY get() {
-		return result();
-	}
-
-	public XY result() {
-		return _value;
+		super(v);
 	}
 
 	@Override
-	public String toString() {
-		return _value.toString();
-	}
-
-	@Override
-	public void close() {
-		this._value = null;
+	public XYValue cpy() {
+		return new XYValue(_value);
 	}
 
 }

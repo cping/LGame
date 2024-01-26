@@ -20,20 +20,17 @@
  */
 package loon.geom;
 
-import loon.LRelease;
 import loon.LSystem;
-import loon.utils.reply.Nullable;
+import loon.utils.reply.TValue;
 
-public class StrValue implements LRelease {
-
-	private String value;
+public class StrValue extends TValue<String> {
 
 	public StrValue() {
 		this(LSystem.EMPTY);
 	}
 
 	public StrValue(String v) {
-		this.set(v);
+		super(v);
 	}
 
 	public boolean update(String v) {
@@ -41,35 +38,15 @@ public class StrValue implements LRelease {
 		return v != null;
 	}
 
-	public StrValue set(String v) {
-		this.value = v;
-		return this;
-	}
-
-	public String get() {
-		return result();
-	}
-
-	public String result() {
-		return value;
-	}
-	
-	public StrValue cpy() {
-		return new StrValue(value);
-	}
-	
-	public Nullable<String> toNullable(){
-		return new Nullable<String>(value);
-	}
-
 	@Override
-	public String toString() {
-		return value;
+	public StrValue cpy() {
+		return new StrValue(_value);
 	}
 
 	@Override
 	public void close() {
-		this.value = LSystem.EMPTY;
+		super.close();
+		this._value = LSystem.EMPTY;
 	}
 
 }

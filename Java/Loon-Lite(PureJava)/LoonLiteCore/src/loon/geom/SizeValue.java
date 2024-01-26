@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
-public class SizeValue {
+import loon.utils.reply.TValue;
+
+public class SizeValue extends TValue<String> {
 
 	private static final String PIXEL = "px";
 
@@ -33,8 +35,6 @@ public class SizeValue {
 	private static final String WILDCARD = "*";
 
 	private static final float MAX_PERCENT = 100.0f;
-
-	private final String value;
 
 	private final float percentValue;
 
@@ -49,18 +49,19 @@ public class SizeValue {
 	}
 
 	public SizeValue(final String valueParam) {
+		super(valueParam);
 		if (valueParam != null) {
 			if (valueParam.endsWith(PERCENT + WIDTH_SUFFIX)) {
 				hasWidthSuffix = true;
-				this.value = valueParam.substring(0, valueParam.length() - 1);
+				this._value = valueParam.substring(0, valueParam.length() - 1);
 			} else if (valueParam.endsWith(PERCENT + HEIGHT_SUFFIX)) {
 				hasHeightSuffix = true;
-				this.value = valueParam.substring(0, valueParam.length() - 1);
+				this._value = valueParam.substring(0, valueParam.length() - 1);
 			} else {
-				this.value = valueParam;
+				this._value = valueParam;
 			}
 		} else {
-			this.value = valueParam;
+			this._value = valueParam;
 		}
 		this.percentValue = getPercentValue();
 		this.pixelValue = getPixelValue();
@@ -86,7 +87,7 @@ public class SizeValue {
 
 	private float getPercentValue() {
 		if (isPercent()) {
-			String percent = value.substring(0, value.length() - PERCENT.length());
+			String percent = _value.substring(0, _value.length() - PERCENT.length());
 			return Float.parseFloat(percent);
 		} else {
 			return 0;
@@ -96,9 +97,9 @@ public class SizeValue {
 	private int getPixelValue() {
 		if (isPixel()) {
 			if (hasNoSuffix()) {
-				return Integer.parseInt(value);
+				return Integer.parseInt(_value);
 			}
-			String pixel = value.substring(0, value.length() - PIXEL.length());
+			String pixel = _value.substring(0, _value.length() - PIXEL.length());
 			return Integer.parseInt(pixel);
 		} else {
 			return 0;
@@ -106,28 +107,28 @@ public class SizeValue {
 	}
 
 	private boolean isPercent() {
-		if (value == null) {
+		if (_value == null) {
 			return false;
 		} else {
-			return value.endsWith(PERCENT);
+			return _value.endsWith(PERCENT);
 		}
 	}
 
 	public boolean isPixel() {
-		if (value == null) {
+		if (_value == null) {
 			return false;
 		} else {
-			return !value.equals(WILDCARD) && (value.endsWith(PIXEL) || hasNoSuffix());
+			return !_value.equals(WILDCARD) && (_value.endsWith(PIXEL) || hasNoSuffix());
 		}
 	}
 
 	private boolean hasNoSuffix() {
-		if (value == null) {
+		if (_value == null) {
 			return false;
 		}
 
-		if (value.endsWith(PIXEL) || value.endsWith(PERCENT) || value.endsWith(WIDTH_SUFFIX)
-				|| value.endsWith(HEIGHT_SUFFIX)) {
+		if (_value.endsWith(PIXEL) || _value.endsWith(PERCENT) || _value.endsWith(WIDTH_SUFFIX)
+				|| _value.endsWith(HEIGHT_SUFFIX)) {
 			return false;
 		}
 		return true;
@@ -142,11 +143,11 @@ public class SizeValue {
 	}
 
 	public boolean hasWildcard() {
-		return WILDCARD.equals(value);
+		return WILDCARD.equals(_value);
 	}
 
 	@Override
-	public String toString() {
-		return value;
+	public SizeValue cpy() {
+		return new SizeValue(_value);
 	}
 }

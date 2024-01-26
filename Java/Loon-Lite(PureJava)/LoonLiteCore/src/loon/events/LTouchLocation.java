@@ -186,26 +186,30 @@ public class LTouchLocation {
 
 	public boolean tryGetPreviousLocation(
 			ObjRef<LTouchLocation> aPreviousLocation) {
-		if (aPreviousLocation.argvalue == null) {
-			aPreviousLocation.argvalue = new LTouchLocation();
+		if (aPreviousLocation.isEmpty()) {
+			aPreviousLocation.set(new LTouchLocation());
+		}
+		LTouchLocation touch = aPreviousLocation.get();
+		if (touch == null) {
+			return false;
 		}
 		if (previousState == LTouchLocationState.Invalid) {
-			aPreviousLocation.argvalue.id = -1;
-			aPreviousLocation.argvalue.state = LTouchLocationState.Invalid;
-			aPreviousLocation.argvalue.position = Vector2f.ZERO();
-			aPreviousLocation.argvalue.previousState = LTouchLocationState.Invalid;
-			aPreviousLocation.argvalue.previousPosition = Vector2f.ZERO();
-			aPreviousLocation.argvalue.pressure = 0.0f;
-			aPreviousLocation.argvalue.previousPressure = 0.0f;
+			touch.id = -1;
+			touch.state = LTouchLocationState.Invalid;
+			touch.position = Vector2f.ZERO();
+			touch.previousState = LTouchLocationState.Invalid;
+			touch.previousPosition = Vector2f.ZERO();
+			touch.pressure = 0f;
+			touch.previousPressure = 0f;
 			return false;
 		} else {
-			aPreviousLocation.argvalue.id = this.id;
-			aPreviousLocation.argvalue.state = this.previousState;
-			aPreviousLocation.argvalue.position = this.previousPosition.cpy();
-			aPreviousLocation.argvalue.previousState = LTouchLocationState.Invalid;
-			aPreviousLocation.argvalue.previousPosition = Vector2f.ZERO();
-			aPreviousLocation.argvalue.pressure = this.previousPressure;
-			aPreviousLocation.argvalue.previousPressure = 0.0f;
+			touch.id = this.id;
+			touch.state = this.previousState;
+			touch.position = this.previousPosition.cpy();
+			touch.previousState = LTouchLocationState.Invalid;
+			touch.previousPosition = Vector2f.ZERO();
+			touch.pressure = this.previousPressure;
+			touch.previousPressure = 0f;
 			return true;
 		}
 	}

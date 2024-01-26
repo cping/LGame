@@ -956,6 +956,9 @@ public class LSystem {
 	}
 
 	public static final int unite(int hashCode, Object value) {
+		if (value == null) {
+			return unite(hashCode, LSystem.YEAR);
+		}
 		return unite(hashCode, value.hashCode());
 	}
 

@@ -86,11 +86,11 @@ public class LTouchCollection extends SortedList<LTouchLocation> {
 		for (int i = 0; i < this.size(); i++) {
 			LTouchLocation location = this.get(i);
 			if (location.getId() == id) {
-				touchLocation.argvalue = this.get(i);
+				touchLocation.set(this.get(i));
 				return i;
 			}
 		}
-		touchLocation.argvalue = new LTouchLocation();
+		touchLocation.set(new LTouchLocation());
 		return -1;
 	}
 

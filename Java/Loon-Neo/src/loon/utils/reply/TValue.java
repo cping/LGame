@@ -20,14 +20,17 @@
  */
 package loon.utils.reply;
 
-import loon.LRelease;
-import loon.geom.IV;
+import loon.LSysException;
 import loon.geom.SetIV;
 
-public class TValue<T> extends Nullable<T> implements SetIV<T>, IV<T>, LRelease {
+public class TValue<T> extends Nullable<T> implements SetIV<T> {
 
 	public static final <T> TValue<T> of(T obj) {
 		return new TValue<T>(obj);
+	}
+
+	public static final <T> Nullable<T> empty() {
+		return new TValue<T>(null);
 	}
 
 	public static final <T> Nullable<T> ofNull(T obj) {
@@ -45,6 +48,28 @@ public class TValue<T> extends Nullable<T> implements SetIV<T>, IV<T>, LRelease 
 
 	public T result() {
 		return _value;
+	}
+
+	public <U> Nullable<U> map(Function<? super T, ? extends U> mapper) {
+		if (mapper == null) {
+			throw new LSysException();
+		}
+		if (!isPresent()) {
+			return empty();
+		} else {
+			return ofNull(mapper.apply(_value));
+		}
+	}
+
+	public Nullable<T> filter(Function<? super T, Boolean> mapper) {
+		if (mapper == null) {
+			throw new LSysException();
+		}
+		if (!isPresent()) {
+			return this;
+		} else {
+			return mapper.apply(_value) ? this : empty();
+		}
 	}
 
 	public TValue<T> cpy() {

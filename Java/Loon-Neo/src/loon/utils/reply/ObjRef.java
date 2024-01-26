@@ -20,8 +20,8 @@
  */
 package loon.utils.reply;
 
-import loon.LRelease;
 import loon.LSystem;
+import loon.geom.SetIV;
 import loon.utils.StringUtils;
 
 /**
@@ -29,7 +29,7 @@ import loon.utils.StringUtils;
  * 
  * @param <T>
  */
-public class ObjRef<T> implements ObjT<T>, LRelease {
+public class ObjRef<T> extends Nullable<T> implements ObjT<T>, SetIV<T> {
 
 	public static <T> ObjRef<T> empty() {
 		return of(null);
@@ -43,56 +43,38 @@ public class ObjRef<T> implements ObjT<T>, LRelease {
 		return new ObjRef<T>(v);
 	}
 
-	private Callback<T> closed;
-
-	public T argvalue;
+	private Callback<T> _closed;
 
 	public ObjRef(T refarg) {
-		argvalue = refarg;
-	}
-
-	public void set(T value) {
-		this.argvalue = value;
+		super(refarg);
 	}
 
 	public boolean hasValue() {
-		return argvalue != null;
-	}
-
-	public boolean isPresent() {
-		return argvalue != null;
-	}
-
-	public boolean isEmpty() {
-		return argvalue == null;
-	}
-
-	@Override
-	public T get() {
-		return argvalue;
-	}
-
-	public T result() {
-		return argvalue;
+		return _value != null;
 	}
 
 	public Callback<T> getClosed() {
-		return closed;
+		return _closed;
 	}
 
 	public void setClosed(Callback<T> closed) {
-		this.closed = closed;
+		this._closed = closed;
+	}
+
+	@Override
+	public void set(T v) {
+		this._value = v;
 	}
 
 	@Override
 	public String toString() {
-		return StringUtils.toString(argvalue, LSystem.NULL);
+		return StringUtils.toString(_value, LSystem.NULL);
 	}
 
 	@Override
 	public void close() {
-		if (argvalue != null && closed != null) {
-			closed.onSuccess(argvalue);
+		if (_value != null && _closed != null) {
+			_closed.onSuccess(_value);
 		}
 	}
 
