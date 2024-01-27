@@ -227,6 +227,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		comp.setContainer(this);
 		comp.setDesktop(this._desktop);
 		comp.setState(State.ADDED);
+		comp.onAttached();
 		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
@@ -259,6 +260,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		comp.setContainer(this);
 		comp.setState(State.ADDED);
+		comp.onAttached();
 		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
@@ -591,6 +593,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			this._desktop.setComponentStat(comp, false);
 			comp.setContainer(null);
 			comp.setState(State.REMOVED);
+			comp.onDetached();
 			if (comp instanceof ActionBind) {
 				removeActionEvents((ActionBind) comp);
 			}
@@ -612,6 +615,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (comp != null) {
 				comp.setContainer(null);
 				comp.setState(State.REMOVED);
+				comp.onDetached();
 				if (comp instanceof ActionBind) {
 					removeActionEvents((ActionBind) comp);
 				}

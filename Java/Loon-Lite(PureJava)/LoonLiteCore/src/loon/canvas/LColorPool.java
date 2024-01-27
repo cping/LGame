@@ -29,15 +29,21 @@ import loon.utils.IntMap;
  */
 public class LColorPool implements LRelease {
 
-	private static LColorPool colorPool;
+	private static LColorPool _colorPool;
+
+	public static void freeStatic() {
+		_colorPool = null;
+	}
 
 	public static LColorPool get() {
-		synchronized (LColorPool.class) {
-			if (colorPool == null) {
-				colorPool = new LColorPool();
+		if (_colorPool == null) {
+			synchronized (LColorPool.class) {
+				if (_colorPool == null) {
+					_colorPool = new LColorPool();
+				}
 			}
 		}
-		return colorPool;
+		return _colorPool;
 	}
 
 	private final LColor _alphaColor = new LColor(0f, 0f, 0f, 0f, true);

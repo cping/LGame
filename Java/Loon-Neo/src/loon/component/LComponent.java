@@ -1036,6 +1036,12 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void keyReleased(GameKey key) {
 	}
 
+	protected void onAttached() {
+	}
+
+	protected void onDetached() {
+	}
+	
 	void keyPressed() {
 		this.checkFocusKey();
 		this.processKeyPressed();

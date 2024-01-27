@@ -47,6 +47,24 @@ public class LColor implements Serializable {
 	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0xFF000000;
 
+	public final static boolean isColorValue(String c) {
+		if (StringUtils.isNullOrEmpty(c)) {
+			return false;
+		}
+		c = c.trim().toLowerCase();
+		if (c.startsWith("#") || c.startsWith("0x") || c.startsWith("rgb") || c.startsWith("argb")
+				|| c.startsWith("transparent")) {
+			return true;
+		} else if (MathUtils.isNan(c)) {
+			return true;
+		} else if (StringUtils.isHex(c)) {
+			return true;
+		} else if (StringUtils.isAlphabet(c)) {
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * 获得24位色
 	 * 

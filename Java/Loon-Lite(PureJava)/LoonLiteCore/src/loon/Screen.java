@@ -2373,6 +2373,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
+		if (LColor.isColorValue(fileName)) {
+			return setBackgroundValue(fileName);
+		}
 		return this.setBackground(LSystem.loadTexture(fileName));
 	}
 
@@ -2404,11 +2407,29 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	/**
 	 * 设定背景颜色
 	 * 
+	 * @param colorString
+	 * @return
+	 */
+	public Screen setBackgroundString(String colorString) {
+		return setBackgroundValue(colorString);
+	}
+
+	/**
+	 * 设定背景颜色
+	 * 
 	 * @param c
 	 * @return
 	 */
-	public Screen setBackgroundString(String c) {
-		return setBackground(new LColor(c));
+	public Screen background(String c) {
+		return setBackground(c);
+	}
+
+	public Screen background(LColor c) {
+		return setBackground(c);
+	}
+
+	public Screen background(LTexture tex) {
+		return setBackground(tex);
 	}
 
 	public LColor getBackgroundColor() {

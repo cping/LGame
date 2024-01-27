@@ -30,41 +30,41 @@ import loon.utils.StringUtils;
  */
 public class LColorList implements LRelease {
 
-	private static LColorList instance;
+	private static LColorList _instance;
 
 	public final static void freeStatic() {
-		instance = null;
+		_instance = null;
 	}
 
 	public final static LColorList get() {
-		if (instance == null || instance.dirty) {
+		if (_instance == null || _instance._dirty) {
 			synchronized (LColorList.class) {
-				if (instance == null || instance.dirty) {
-					instance = new LColorList();
+				if (_instance == null || _instance._dirty) {
+					_instance = new LColorList();
 				}
 			}
 		}
-		return instance;
+		return _instance;
 	}
 
-	private final ListMap<String, LColor> colorList;
+	private final ListMap<String, LColor> _colorList;
 
-	private boolean dirty;
+	private boolean _dirty;
 
 	LColorList() {
-		this.colorList = new ListMap<>();
-		dirty = true;
+		this._colorList = new ListMap<>();
+		_dirty = true;
 	}
 
 	protected void pushColor(String name, LColor color) {
-		colorList.put(name, color);
+		_colorList.put(name, color);
 	}
 
 	public boolean putColor(String name, LColor color) {
 		if (StringUtils.isEmpty(name) || (color == null)) {
 			return false;
 		}
-		if (dirty) {
+		if (_dirty) {
 			init();
 		}
 		pushColor(name, color);
@@ -75,10 +75,10 @@ public class LColorList implements LRelease {
 		if (StringUtils.isEmpty(name)) {
 			return LColor.white.cpy();
 		}
-		if (dirty) {
+		if (_dirty) {
 			init();
 		}
-		LColor color = colorList.get(name.trim().toLowerCase());
+		LColor color = _colorList.get(name.trim().toLowerCase());
 		if (color != null) {
 			return color.cpy();
 		}
@@ -93,14 +93,14 @@ public class LColorList implements LRelease {
 	}
 
 	public String find(int pixel) {
-		if (dirty) {
+		if (_dirty) {
 			init();
 		}
-		for (int i = 0; i < colorList.size; i++) {
-			LColor c = colorList.getValueAt(i);
+		for (int i = 0; i < _colorList.size; i++) {
+			LColor c = _colorList.getValueAt(i);
 			if (c != null) {
 				if ((c.getRGB() == pixel) || (c.getARGB() == pixel)) {
-					return colorList.getKeyAt(i);
+					return _colorList.getKeyAt(i);
 				}
 			}
 		}
@@ -109,7 +109,7 @@ public class LColorList implements LRelease {
 
 	public void init() {
 
-		if (dirty) {
+		if (_dirty) {
 			LColor transparent = new LColor(0, 0, 0, 0);
 			pushColor("transparent", transparent);
 
@@ -553,31 +553,31 @@ public class LColorList implements LRelease {
 			LColor yellowgreen = new LColor(154, 205, 50);
 			pushColor("yellowgreen", yellowgreen);
 
-			dirty = false;
+			_dirty = false;
 		}
 
 	}
 
 	public boolean isDirty() {
-		return dirty;
+		return _dirty;
 	}
 
-	public LColorList setDirty(boolean dirty) {
-		if (dirty) {
-			if (colorList != null) {
-				colorList.clear();
+	public LColorList setDirty(boolean d) {
+		if (d) {
+			if (_colorList != null) {
+				_colorList.clear();
 			}
 		}
-		this.dirty = dirty;
+		this._dirty = d;
 		return this;
 	}
 
 	@Override
 	public void close() {
-		if (colorList != null) {
-			colorList.clear();
+		if (_colorList != null) {
+			_colorList.clear();
 		}
-		this.dirty = true;
+		this._dirty = true;
 	}
 
 }
