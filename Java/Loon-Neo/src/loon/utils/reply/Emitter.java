@@ -22,22 +22,24 @@ package loon.utils.reply;
 
 import loon.LRelease;
 import loon.events.ActionUpdate;
-import loon.events.Updateable;
+import loon.events.EventAction;
+import loon.events.EventActionT;
+import loon.utils.HelperUtils;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.OrderedMap;
 import loon.utils.SortedList;
 
-public class Emitter<T> implements LRelease {
+public class Emitter<T> implements EventActionT<T>, LRelease {
 
-	protected OrderedMap<T, SortedList<Updateable>> _emitterTable;
+	protected OrderedMap<T, SortedList<EventAction>> _emitterTable;
 
 	protected int _maxFrameTask;
 
 	protected boolean _active;
 
 	public Emitter(int max) {
-		this._emitterTable = new OrderedMap<T, SortedList<Updateable>>();
+		this._emitterTable = new OrderedMap<T, SortedList<EventAction>>();
 		this._active = true;
 		_maxFrameTask = max;
 	}
@@ -50,42 +52,42 @@ public class Emitter<T> implements LRelease {
 		return _emitterTable.containsKey(eventType);
 	}
 
-	public Updateable getObserverFirst(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public EventAction getObserverFirst(T eventType) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			return list.getFirst();
 		}
 		return null;
 	}
 
-	public Updateable getObserverLast(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public EventAction getObserverLast(T eventType) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			return list.getLast();
 		}
 		return null;
 	}
 
-	public Updateable removeObserverFirst(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public EventAction removeObserverFirst(T eventType) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			return list.removeFirst();
 		}
 		return null;
 	}
 
-	public Updateable removeObserverLast(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public EventAction removeObserverLast(T eventType) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			return list.removeLast();
 		}
 		return null;
 	}
 
-	public Emitter<T> addObserver(T eventType, Updateable handler) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public Emitter<T> addObserver(T eventType, EventAction handler) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list == null) {
-			list = new SortedList<Updateable>();
+			list = new SortedList<EventAction>();
 		}
 		if (!list.contains(handler)) {
 			list.add(handler);
@@ -94,8 +96,8 @@ public class Emitter<T> implements LRelease {
 		return this;
 	}
 
-	public boolean removeObserver(T eventType, Updateable handler) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+	public boolean removeObserver(T eventType, EventAction handler) {
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			return list.remove(handler);
 		}
@@ -103,7 +105,7 @@ public class Emitter<T> implements LRelease {
 	}
 
 	public Emitter<T> clearObserver(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (list != null) {
 			list.clear();
 			return this;
@@ -121,22 +123,32 @@ public class Emitter<T> implements LRelease {
 		return this;
 	}
 
+	@Override
+	public void update(T obj) {
+		onEmits();
+	}
+
 	public Emitter<T> onEmit(T eventType) {
 		if (!_active) {
 			return this;
 		}
 		int taskCount = 0;
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		if (null != list) {
-			for (LIterator<Updateable> it = list.listIterator(); it.hasNext();) {
-				Updateable update = it.next();
+			for (LIterator<EventAction> it = list.listIterator(); it.hasNext();) {
+				EventAction update = it.next();
 				if (update != null) {
-					update.action(eventType);
 					if (update instanceof ActionUpdate) {
 						ActionUpdate au = (ActionUpdate) update;
 						if (au.completed()) {
 							list.remove(au);
 						}
+					} else if (update instanceof Observer) {
+						@SuppressWarnings("unchecked")
+						Observer<T> ob = (Observer<T>) update;
+						ob.onNotify(eventType, ob);
+					} else {
+						HelperUtils.callEventAction(update, eventType);
 					}
 				}
 				taskCount++;
@@ -167,6 +179,10 @@ public class Emitter<T> implements LRelease {
 		return this;
 	}
 
+	public Emitter<T> resume() {
+		return unpause();
+	}
+
 	public Emitter<T> pause() {
 		return stop();
 	}
@@ -184,7 +200,7 @@ public class Emitter<T> implements LRelease {
 	}
 
 	public int getObserverSize(T eventType) {
-		SortedList<Updateable> list = _emitterTable.get(eventType);
+		SortedList<EventAction> list = _emitterTable.get(eventType);
 		return list == null ? 0 : list.size;
 	}
 
@@ -195,4 +211,5 @@ public class Emitter<T> implements LRelease {
 			_emitterTable.clear();
 		}
 	}
+
 }

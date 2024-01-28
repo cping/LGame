@@ -21,10 +21,11 @@
 package loon.utils.reply;
 
 import loon.LSysException;
+import loon.events.EventAction;
 import loon.geom.IV;
 import loon.geom.SetIV;
 
-public class ObservableValue<T> implements SetIV<T>, IV<T> {
+public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T> {
 
 	public final static <T> ObservableValue<T> at(TChange<T> change, IV<T> v, T obj) {
 		return new ObservableValue<T>(change, v, obj);
@@ -78,6 +79,11 @@ public class ObservableValue<T> implements SetIV<T>, IV<T> {
 				_change.onUpdate(_obj);
 			}
 		}
+	}
+
+	@Override
+	public void onNotify(T o, EventAction e) {
+
 	}
 
 	public T getObj() {
