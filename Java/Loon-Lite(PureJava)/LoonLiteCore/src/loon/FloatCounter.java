@@ -67,6 +67,10 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 		return this._def_value;
 	}
 
+	public float limit(float min, float max) {
+		return MathUtils.limit(_value, min, max);
+	}
+	
 	public float next(float v) {
 		return increment(v);
 	}

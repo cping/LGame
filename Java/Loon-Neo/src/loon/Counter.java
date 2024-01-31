@@ -72,6 +72,10 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 		return this._def_value;
 	}
 
+	public int limit(int min, int max) {
+		return MathUtils.limit(_value, min, max);
+	}
+
 	public int next(int v) {
 		return increment(v);
 	}
@@ -206,10 +210,7 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 	@Override
 	public String toString() {
 		StringKeyValue v = new StringKeyValue("Counter");
-		v.kv("value", _value).comma()
-		       .kv("min", _min).comma()
-		       .kv("max", _max).comma()
-		       .kv("defaultUpdate", _def_value);
+		v.kv("value", _value).comma().kv("min", _min).comma().kv("max", _max).comma().kv("defaultUpdate", _def_value);
 		return v.toString();
 	}
 

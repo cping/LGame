@@ -1233,4 +1233,61 @@ public class HelperUtils {
 		return ShapeNodeMaker.create(nodeType, x, y);
 	}
 
+	public final static <V> ObjectSet<V> singletonSet(V v) {
+		ObjectSet<V> result = new ObjectSet<V>();
+		result.add(v);
+		return result;
+	}
+
+	public final static <V> OrderedSet<V> singletonOrderSet(V v) {
+		OrderedSet<V> result = new OrderedSet<V>();
+		result.add(v);
+		return result;
+	}
+
+	public final static <K, V> ObjectMap<K, V> singletonMap(K key, V v) {
+		ObjectMap<K, V> result = new ObjectMap<K, V>();
+		result.put(key, v);
+		return result;
+	}
+
+	public final static <K, V> ObjectMap<K, V> singletonOrderMap(K key, V v) {
+		OrderedMap<K, V> result = new OrderedMap<K, V>();
+		result.put(key, v);
+		return result;
+	}
+
+	public final static <V> IntMap<V> singletonIntMap(int key, V v) {
+		IntMap<V> result = new IntMap<V>();
+		result.put(key, v);
+		return result;
+	}
+
+	public final static <T> ObjectSet<T> emptySet() {
+		return new ObjectSet<T>();
+	}
+
+	public final static <K, V> ObjectMap<K, V> emptyMap() {
+		return new ObjectMap<K, V>();
+	}
+
+	public final static <T> TArray<T> emptyArray() {
+		return new TArray<T>();
+	}
+
+	public final static CharArray emptyCharArray() {
+		return new CharArray();
+	}
+
+	public final static IntArray emptyIntArray() {
+		return new IntArray();
+	}
+
+	public final static FloatArray emptyFloatArray() {
+		return new FloatArray();
+	}
+
+	public final static BoolArray emptyBoolArray() {
+		return new BoolArray();
+	}
 }

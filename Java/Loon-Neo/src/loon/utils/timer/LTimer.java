@@ -461,6 +461,28 @@ public class LTimer implements LTimerListener, LRelease {
 		return this;
 	}
 
+	public float getTimeToNextS() {
+		return Duration.toS(getTimeToNext());
+	}
+
+	public long getTimeToNext() {
+		if (this._completed) {
+			return 0l;
+		}
+		return this._delay - this._currentTick;
+	}
+
+	public float getTickTowardNextS() {
+		return Duration.toS(getTickTowardNext());
+	}
+
+	public long getTickTowardNext() {
+		if (this._completed) {
+			return 0l;
+		}
+		return this._currentTick;
+	}
+
 	public float getPercentage() {
 		return (float) this._currentTick / (float) this._delay;
 	}
@@ -535,6 +557,14 @@ public class LTimer implements LTimerListener, LRelease {
 			}
 			_process.setDelay(0);
 			RealtimeProcessManager.get().addProcess(_process);
+		}
+		return this;
+	}
+
+	public LTimer cancel() {
+		this.pause();
+		synchronized (RealtimeProcessManager.class) {
+			kill();
 		}
 		return this;
 	}

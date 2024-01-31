@@ -68,7 +68,7 @@ public class LSetting {
 	 * 如果此项为true,则游戏窗体缩放时直接缩放原始画面大小,否则仅仅传递缩放数据,需要自行编码处理具体缩放内容
 	 */
 	public boolean isSimpleScaling = true;
-	
+
 	/**
 	 * 如果此项为true,则Loon会检查resize缩放行为,原本宽高比例是横屏，改成竖屏，或者竖屏改成横屏的resize将不被允许
 	 */
@@ -360,6 +360,32 @@ public class LSetting {
 				LSystem.getProcess().resize(width, height);
 			}
 		}
+		return this;
+	}
+
+	public LSetting setView(Resolution r) {
+		if (r == null) {
+			return this;
+		}
+		return setView(r.getWidth(), r.getHeight());
+	}
+
+	public LSetting setView(Resolution r, float zw, float zh) {
+		if (r == null) {
+			return this;
+		}
+		return setView(r.getWidth(), r.getHeight(), zw, zh);
+	}
+
+	public LSetting setView(float w, float h) {
+		return setView(w, h, w, h);
+	}
+
+	public LSetting setView(float w, float h, float zw, float zh) {
+		this.width = MathUtils.divTwoAbs((int) w);
+		this.height = MathUtils.divTwoAbs((int) h);
+		this.width_zoom = MathUtils.divTwoAbs((int) zw);
+		this.height_zoom = MathUtils.divTwoAbs((int) zh);
 		return this;
 	}
 

@@ -86,6 +86,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
 	protected boolean _childrenSortPending = false;
+	protected boolean _componentsIgnoreUpdate = false;
 	protected boolean _debugDraw = false;
 
 	protected boolean _followRotation = true;
@@ -100,6 +101,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _repaintAutoOffset = false;
 
 	protected TArray<IEntity> _childrens;
+	protected TArray<TComponent<ISprite>> _components;
 
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
@@ -1065,6 +1067,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
+	private void allocateComponents() {
+		this._components = new TArray<TComponent<ISprite>>(Entity.CHILDREN_CAPACITY_DEFAULT);
+	}
+
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
 		final TArray<IEntity> children = this._childrens;
 		if (!this._childrenVisible || (children == null)) {
@@ -1103,6 +1109,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected void onManagedUpdate(final long elapsedTime) {
 		if (_stopUpdate) {
 			return;
+		}
+		if ((this._components != null) && !this._componentsIgnoreUpdate) {
+			final TArray<TComponent<ISprite>> comps = this._components;
+			final int entityCount = comps.size;
+			for (int i = 0; i < entityCount; i++) {
+				comps.get(i).update(this);
+			}
 		}
 		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
 			final TArray<IEntity> entities = this._childrens;
@@ -2331,6 +2344,72 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity addComponent(TComponent<ISprite> c) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		if (c != null) {
+			_components.add(c);
+			c.onAttached(this);
+			c.setCurrentSprite(this);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean removeComponent(TComponent<ISprite> c) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		if (c != null) {
+			_components.remove(c);
+			c.onDetached(this);
+			c.setCurrentSprite(null);
+		}
+		return false;
+	}
+
+	@Override
+	public IEntity removeComponents() {
+		if (this._components == null) {
+			return this;
+		}
+		for (int i = this._components.size - 1; i >= 0; i--) {
+			final TComponent<ISprite> removed = this._components.get(i);
+			if (removed != null) {
+				removed.onDetached(this);
+				removed.setCurrentSprite(null);
+			}
+		}
+		this._components.clear();
+		return this;
+	}
+
+	@Override
+	public boolean hasComponent() {
+		return this._components != null && this._components.size > 0;
+	}
+
+	@Override
+	public int getComponentCount() {
+		if (_components == null) {
+			allocateComponents();
+		}
+		return _components.size;
+	}
+
+	@Override
+	public boolean isComponentIgnoreUpdate() {
+		return _childrenIgnoreUpdate;
+	}
+
+	@Override
+	public IEntity setComponentIgnoreUpdate(boolean c) {
+		this._childrenIgnoreUpdate = c;
+		return this;
+	}
+
+	@Override
 	public void close() {
 		if (!isDisposed()) {
 			if (_image != null) {
@@ -2340,11 +2419,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 		_stopUpdate = false;
 		_ignoreUpdate = false;
+		_childrenIgnoreUpdate = false;
+		_componentsIgnoreUpdate = false;
 		_loopAction = null;
 		_resizeListener = null;
 		_otherShape = null;
 		_oldNodeType = null;
 		setState(State.DISPOSED);
+		removeComponents();
 		removeChildren();
 		removeActionEvents(this);
 	}

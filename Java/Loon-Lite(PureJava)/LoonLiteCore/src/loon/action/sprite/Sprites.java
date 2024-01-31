@@ -1177,6 +1177,26 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		spr.onCollision(dst, Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox()));
 	}
 
+	public boolean checkAdd(ISprite spr, QueryEvent<ISprite> e) {
+		if (e == null) {
+			return false;
+		}
+		if (e.hit(spr)) {
+			return add(spr);
+		}
+		return false;
+	}
+
+	public boolean checkRemove(ISprite spr, QueryEvent<ISprite> e) {
+		if (e == null) {
+			return false;
+		}
+		if (e.hit(spr)) {
+			return remove(spr);
+		}
+		return false;
+	}
+
 	/**
 	 * 刷新事务
 	 * 

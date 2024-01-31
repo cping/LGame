@@ -21,6 +21,12 @@ import loon.utils.parse.StrTokenizer;
  * 完整存储格式为(可部分使用):
  * 
  * <pre>
+ * test = "abc"
+ * //设定子元素
+ * [abc]
+ * //获得子元素数值 get(abc.test)
+ * test = "efg"
+ * 
  * //($后是数据段名称，下面是数据，两个一组，换行符开始下一组，或者再次出现$也算一组新数据)
  * $bigdata1
  * begin name = "key1" 
@@ -65,6 +71,10 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return shared(path);
 	}
 
+	public final static ConfigReader file(final String path) {
+		return shared(path);
+	}
+
 	public final static ConfigReader shared(final String path) {
 		synchronized (ConfigReader.class) {
 			ConfigReader reader = CONFIG_CACHE.get(path);
@@ -84,15 +94,23 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return new ConfigReader();
 	}
 
-	private boolean _closed;
+	private final static String BEGIN_FLAG = "begin";
+
+	private final static String END_FLAG = "end";
+
+	private final static String NAME_FLAG = "name";
 
 	private final ObjectMap<String, String> _configItems = new ObjectMap<String, String>();
 
-	private TArray<StringKeyValue> _loaders;
+	private final TArray<String> _tables = new TArray<String>();
+
+	private final StrBuilder _template_values = new StrBuilder();
 
 	private final String _path;
 
-	private final StrBuilder template_values = new StrBuilder();
+	private TArray<StringKeyValue> _bigContexts;
+
+	private boolean _closed;
 
 	ConfigReader() {
 		this._path = LSystem.UNKNOWN;
@@ -114,16 +132,19 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (StringUtils.isNullOrEmpty(context)) {
 			throw new LSysException("The Resource context cannot be Empty !");
 		}
-		if (_loaders == null) {
-			_loaders = new TArray<StringKeyValue>();
+		if (_bigContexts == null) {
+			_bigContexts = new TArray<StringKeyValue>();
 		} else {
-			_loaders.clear();
+			_bigContexts.clear();
 		}
 		if (_configItems != null) {
 			_configItems.clear();
 		}
-		if (template_values != null) {
-			template_values.clear();
+		if (_tables != null) {
+			_tables.clear();
+		}
+		if (_template_values != null) {
+			_template_values.clear();
 		}
 		final StrTokenizer reader = new StrTokenizer(context, LSystem.NL + LSystem.BRANCH);
 		String curTemplate = LSystem.EMPTY;
@@ -140,7 +161,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				}
 				if (result.charAt(0) == '$') {
 					if (!curTemplate.equals(LSystem.EMPTY) && curBuffer != null) {
-						_loaders.add(curBuffer);
+						_bigContexts.add(curBuffer);
 					}
 					curTemplate = filter(result.substring(1));
 					curBuffer = new StringKeyValue(curTemplate);
@@ -152,13 +173,13 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				}
 			}
 			if (!curTemplate.equals(LSystem.EMPTY) && curBuffer != null) {
-				_loaders.add(curBuffer);
+				_bigContexts.add(curBuffer);
 			}
 		} catch (Throwable ex) {
 			throw new LSysException(ex.getMessage(), ex);
 		}
-		if (_loaders != null && _loaders.size > 0) {
-			loadMapKey(_loaders.get(0).getKey());
+		if (_bigContexts != null && _bigContexts.size > 0) {
+			loadMapKey(_bigContexts.get(0).getKey());
 		} else {
 			parseData(context);
 		}
@@ -173,8 +194,8 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	public void loadMapKey(final String name) {
-		if (_loaders != null) {
-			for (StringKeyValue v : _loaders) {
+		if (_bigContexts != null) {
+			for (StringKeyValue v : _bigContexts) {
 				if (v != null && v.getKey().equals(name)) {
 					parseData(v.getValue());
 					return;
@@ -200,39 +221,58 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		StrBuilder mapBuffer = new StrBuilder();
 		boolean mapFlag = false;
 		String mapName = null;
+		String itemName = null;
 		for (; reader.hasMoreTokens();) {
 			record = filter(reader.nextToken());
-			if (record.length() > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
+			final int size = record.length();
+			if (size > 0 && !record.startsWith(FLAG_L_TAG) && !record.startsWith(FLAG_C_TAG)
 					&& !record.startsWith(FLAG_I_TAG)) {
-				if (record.startsWith("begin")) {
+				final int start = record.indexOf(LSystem.BRACKET_START);
+				final int end = record.lastIndexOf(LSystem.BRACKET_END);
+				if (start == 0 && end == size - 1) {
+					itemName = record.substring(1, size - 1);
+					putTable(itemName);
+				} else if (StringUtils.isEmpty(itemName) && start == 0) {
+					itemName = record.substring(1, size);
+				} else if (!StringUtils.isEmpty(itemName) && end == size - 1) {
+					itemName += record.substring(0, size - 1);
+					putTable(itemName);
+				} else if (record.startsWith(BEGIN_FLAG)) {
 					mapBuffer.setLength(0);
-					String mes = filter(record.substring(5, record.length()));
-					if (mes.startsWith("name")) {
-						mapName = loadItem(mes, false);
+					String mes = filter(record.substring(BEGIN_FLAG.length(), size));
+					if (mes.startsWith(NAME_FLAG)) {
+						mapName = loadItem(itemName, mes, false);
 					}
 					mapFlag = true;
-				} else if (record.startsWith("end")) {
+				} else if (record.startsWith(END_FLAG)) {
 					mapFlag = false;
 					if (mapName != null) {
-						_configItems.put(filter(mapName), filter(mapBuffer.toString()));
+						_configItems.put(StringUtils.isEmpty(itemName) ? filter(mapName)
+								: filter(itemName + LSystem.DOT + mapName), filter(mapBuffer.toString()));
 					}
 				} else if (mapFlag) {
 					mapBuffer.append(record);
 				} else {
-					loadItem(record, true);
+					loadItem(itemName, record, true);
 				}
 			}
 		}
 	}
 
-	private final String loadItem(final String mes, final boolean save) {
+	protected final void putTable(final String itemName) {
+		if (!_tables.contains(itemName) && !StringUtils.isEmpty(itemName)) {
+			_tables.add(itemName);
+		}
+	}
+
+	private final String loadItem(final String itemName, final String mes, final boolean save) {
 		if (StringUtils.isEmpty(mes)) {
 			return LSystem.EMPTY;
 		}
-		char[] chars = mes.toCharArray();
-		int size = chars.length;
-		StrBuilder sbr = template_values.setLength(0);
-		String key = null;
+		final char[] chars = mes.toCharArray();
+		final int size = chars.length;
+		final StrBuilder sbr = _template_values.setLength(0);
+		String key = itemName;
 		String value = null;
 		int idx = 0;
 		int equals = 0;
@@ -243,7 +283,11 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 				if (equals < 3) {
 					equals++;
 					if (idx == 0) {
-						key = sbr.toString();
+						if (StringUtils.isEmpty(itemName)) {
+							key = sbr.toString();
+						} else {
+							key = itemName + LSystem.DOT + sbr.toString();
+						}
 						sbr.setLength(0);
 					}
 					idx++;
@@ -271,22 +315,30 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return filter(value);
 	}
 
-	public void putItem(String key, String value) {
+	public String putItem(String key, String value) {
 		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
-			return;
+			return null;
 		}
 		synchronized (_configItems) {
-			_configItems.put(filter(key), filter(value));
+			return _configItems.put(filter(key), filter(value));
 		}
 	}
 
-	public void removeItem(String key) {
+	public String removeItem(String key) {
 		if (StringUtils.isEmpty(key)) {
-			return;
+			return null;
 		}
 		synchronized (_configItems) {
-			_configItems.remove(key);
+			return _configItems.remove(key);
 		}
+	}
+
+	public int getTableCount() {
+		return _tables.size;
+	}
+
+	public TArray<String> getTables() {
+		return new TArray<String>(_tables);
 	}
 
 	public Keys<String> getKeys() {
@@ -330,7 +382,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (v == null) {
 			return fallback;
 		}
-		return Integer.parseInt(v);
+		return Integer.valueOf(v);
 	}
 
 	public float getFloatValue(String name) {
@@ -348,7 +400,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		if (v == null) {
 			return fallback;
 		}
-		return Float.parseFloat(v);
+		return Float.valueOf(v);
 	}
 
 	public float[] getFloatValues(String name) {
@@ -361,7 +413,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			final int size = list.length;
 			final float[] v = new float[size];
 			for (int i = 0; i < size; i++) {
-				v[i] = Float.parseFloat(list[i]);
+				v[i] = Float.valueOf(list[i]);
 			}
 			return v;
 		}
@@ -378,7 +430,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			final int size = list.length;
 			final int[] v = new int[size];
 			for (int i = 0; i < size; i++) {
-				v[i] = Integer.parseInt(list[i]);
+				v[i] = Integer.valueOf(list[i]);
 			}
 			return v;
 		}
@@ -432,9 +484,23 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			v = _configItems.get(filter(name));
 		}
 		if (v == null) {
-			return fallback;
+			v = fallback;
 		}
 		return v;
+	}
+
+	public Object getJson(String name, String fallback) {
+		if (StringUtils.isEmpty(name)) {
+			return BaseIO.loadJsonObjectContext(fallback);
+		}
+		String v = null;
+		synchronized (_configItems) {
+			v = _configItems.get(filter(name));
+		}
+		if (v == null) {
+			v = fallback;
+		}
+		return BaseIO.loadJsonObjectContext(v);
 	}
 
 	@Override
@@ -509,7 +575,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 					int length = strings.length;
 					int[] arrays = new int[length];
 					for (int j = 0; j < length; j++) {
-						arrays[j] = Integer.parseInt(strings[j]);
+						arrays[j] = Integer.valueOf(strings[j]);
 					}
 					records.add(arrays);
 					sbr.setLength(0);
@@ -559,8 +625,8 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public void dispose() {
 		_closed = true;
-		if (_loaders != null) {
-			_loaders.clear();
+		if (_bigContexts != null) {
+			_bigContexts.clear();
 		}
 		if (_configItems != null) {
 			_configItems.clear();

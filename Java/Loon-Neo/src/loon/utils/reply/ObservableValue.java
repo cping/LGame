@@ -20,16 +20,21 @@
  */
 package loon.utils.reply;
 
+import loon.LRelease;
 import loon.LSysException;
 import loon.events.EventAction;
 import loon.geom.IV;
 import loon.geom.SetIV;
+import loon.utils.LIterator;
+import loon.utils.OrderedSet;
 
-public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T> {
+public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T>, LRelease {
 
 	public final static <T> ObservableValue<T> at(TChange<T> change, IV<T> v, T obj) {
 		return new ObservableValue<T>(change, v, obj);
 	}
+
+	private OrderedSet<Observer<T>> _observers;
 
 	private TChange<T> _change;
 
@@ -54,6 +59,24 @@ public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T> {
 		this._change = c;
 		this._value = v;
 		this._obj = obj;
+	}
+
+	private void initObservers() {
+		if (this._observers == null) {
+			this._observers = new OrderedSet<Observer<T>>();
+		}
+	}
+
+	public ObservableValue<T> register(Observer<T> o) {
+		initObservers();
+		this._observers.add(o);
+		return this;
+	}
+
+	public ObservableValue<T> unregister(Observer<T> o) {
+		initObservers();
+		this._observers.remove(o);
+		return this;
 	}
 
 	private boolean checkUpdate() {
@@ -83,7 +106,14 @@ public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T> {
 
 	@Override
 	public void onNotify(T o, EventAction e) {
-
+		if (_observers != null) {
+			for (LIterator<Observer<T>> it = _observers.iterator(); it.hasNext();) {
+				Observer<T> ob = it.next();
+				if (ob != null) {
+					ob.onNotify(o, e);
+				}
+			}
+		}
 	}
 
 	public T getObj() {
@@ -93,6 +123,17 @@ public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T> {
 	@Override
 	public T get() {
 		return this._obj;
+	}
+
+	@Override
+	public void close() {
+		if (_observers != null) {
+			_observers.clear();
+		}
+		_value = null;
+		_obj = null;
+		_tempValue = null;
+		_change = null;
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public class LSetting {
 	 * 如果此项为true,则游戏窗体缩放时直接缩放原始画面大小,否则仅仅传递缩放数据,需要自行编码处理具体缩放内容
 	 */
 	public boolean isSimpleScaling = true;
-	
+
 	/**
 	 * 如果此项为true,则游戏窗体可以缩放大小
 	 */
@@ -134,7 +134,7 @@ public class LSetting {
 	 * 此项为true时采用全屏刷新,为false则屏幕不会自动刷新
 	 */
 	public boolean allScreenRefresh = true;
-	
+
 	public Class<?> mainClass = null;
 
 	/**
@@ -218,7 +218,7 @@ public class LSetting {
 	 * 初始化游戏时传参用，默认无数据
 	 */
 	public String[] args = new String[] { "" };
-	
+
 	/**
 	 * 强制转化图片类型
 	 */
@@ -368,6 +368,32 @@ public class LSetting {
 				LSystem.getProcess().resize(width, height);
 			}
 		}
+		return this;
+	}
+
+	public LSetting setView(Resolution r) {
+		if (r == null) {
+			return this;
+		}
+		return setView(r.getWidth(), r.getHeight());
+	}
+
+	public LSetting setView(Resolution r, float zw, float zh) {
+		if (r == null) {
+			return this;
+		}
+		return setView(r.getWidth(), r.getHeight(), zw, zh);
+	}
+
+	public LSetting setView(float w, float h) {
+		return setView(w, h, w, h);
+	}
+
+	public LSetting setView(float w, float h, float zw, float zh) {
+		this.width = MathUtils.divTwoAbs((int) w);
+		this.height = MathUtils.divTwoAbs((int) h);
+		this.width_zoom = MathUtils.divTwoAbs((int) zw);
+		this.height_zoom = MathUtils.divTwoAbs((int) zh);
 		return this;
 	}
 

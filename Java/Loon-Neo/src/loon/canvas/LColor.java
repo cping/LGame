@@ -1976,6 +1976,47 @@ public class LColor implements Serializable {
 	}
 
 	/**
+	 * 获得指定色彩比较当前色彩的浅色版本
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor screen(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		LColor c1 = c.invert();
+		LColor c2 = c.invert();
+		return c1.multiply(c2).invert();
+	}
+
+	/**
+	 * 获得指定色彩对比当前色彩的平均值
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public LColor average(LColor c) {
+		if (c == null) {
+			return cpy();
+		}
+		final float newR = (c.r + this.r) / 2f;
+		final float newG = (c.g + this.g) / 2f;
+		final float newB = (c.b + this.b) / 2f;
+		final float newA = (c.a + this.a) / 2f;
+		return new LColor(newR, newG, newB, newA);
+	}
+
+	/**
+	 * 反转当前色彩的颜色
+	 * 
+	 * @return
+	 */
+	public LColor invert() {
+		return new LColor(1f - this.r, 1f - this.g, 1f - this.b, 1f - this.a);
+	}
+
+	/**
 	 * 直接复制一个Color
 	 * 
 	 * @return

@@ -1703,6 +1703,22 @@ public final class MathUtils {
 		return (thisBits == anotherBits ? 0 : (thisBits < anotherBits ? -1 : 1));
 	}
 
+	public static boolean isCompare(float x, float y) {
+		return isCompare(x, y, EPSILON);
+	}
+
+	public static boolean isCompare(XY p1, XY p2) {
+		return isCompare(p1, p2, EPSILON);
+	}
+
+	public static boolean isCompare(float x, float y, float epsilon) {
+		return MathUtils.abs(x - y) <= epsilon * MathUtils.max(1.0f, MathUtils.max(Math.abs(x), MathUtils.abs(y)));
+	}
+
+	public static boolean isCompare(XY p1, XY p2, float epsilon) {
+		return isCompare(p1.getX(), p2.getX(), epsilon) && isCompare(p1.getY(), p2.getY(), epsilon);
+	}
+
 	public static int longOfZeros(long i) {
 		if (i == 0) {
 			return 64;

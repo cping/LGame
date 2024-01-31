@@ -78,6 +78,23 @@ final public class StringUtils extends CharUtils {
 		return b.toString();
 	}
 
+	public static String format(float v) {
+		StrBuilder result = new StrBuilder();
+		if (v < 0f) {
+			result.append(LSystem.DASHED);
+			v = -v;
+		}
+		result.append((int) v);
+		v -= (int) v;
+		result.append(LSystem.DOT);
+		for (int i = 0; i < 7 && (i <= 0 || v != 0f); i++) {
+			v *= 10f;
+			result.append((int) v);
+			v -= (int) v;
+		}
+		return result.toString();
+	}
+
 	/**
 	 * 将指定字符串为指定长度字符串
 	 * 

@@ -1022,6 +1022,9 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess setScreen(final Screen screen) {
+		if (screen == null) {
+			return this;
+		}
 		if (screen._processHandler == null) {
 			screen.resetOrder();
 			screen.resetSize();

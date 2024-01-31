@@ -194,6 +194,20 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	void onDetached();
 
+	IEntity addComponent(final TComponent<ISprite> c);
+
+	IEntity removeComponents();
+
+	boolean removeComponent(final TComponent<ISprite> c);
+
+	boolean hasComponent();
+
+	boolean isComponentIgnoreUpdate();
+
+	IEntity setComponentIgnoreUpdate(final boolean c);
+
+	int getComponentCount();
+
 	IEntity addChild(final IEntity e);
 
 	IEntity addChildAt(final IEntity e, float x, float y);

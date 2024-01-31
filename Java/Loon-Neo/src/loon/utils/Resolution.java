@@ -25,6 +25,50 @@ import loon.geom.XYZW;
 
 public class Resolution implements Comparable<Resolution> {
 
+	public static Resolution Atari2600() {
+		return new Resolution(160, 192);
+	}
+
+	public static Resolution GameBoyAdvance() {
+		return new Resolution(240, 160);
+	}
+
+	public static Resolution GameBoy() {
+		return new Resolution(160, 144);
+	}
+
+	public static Resolution Switch() {
+		return new Resolution(1920, 1080);
+	}
+
+	public static Resolution SwitchOLED() {
+		return new Resolution(1280, 720);
+	}
+
+	public static Resolution SteamDeck() {
+		return new Resolution(1280, 800);
+	}
+
+	public static Resolution SVGA() {
+		return new Resolution(800, 600);
+	}
+
+	public static Resolution NDS() {
+		return new Resolution(256, 192);
+	}
+
+	public static Resolution NES() {
+		return new Resolution(256, 224);
+	}
+
+	public static Resolution SNES() {
+		return new Resolution(256, 244);
+	}
+
+	public static Resolution PSP3000() {
+		return new Resolution(480, 272);
+	}
+
 	/**
 	 * 转换dpi为缩放比,一些已知缩放比例按照windows规则做了修正
 	 */

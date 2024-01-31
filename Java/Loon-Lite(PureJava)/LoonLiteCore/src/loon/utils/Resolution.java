@@ -25,6 +25,50 @@ import loon.geom.XYZW;
 
 public class Resolution implements Comparable<Resolution> {
 
+	public static Resolution Atari2600() {
+		return new Resolution(160, 192);
+	}
+
+	public static Resolution GameBoyAdvance() {
+		return new Resolution(240, 160);
+	}
+
+	public static Resolution GameBoy() {
+		return new Resolution(160, 144);
+	}
+
+	public static Resolution Switch() {
+		return new Resolution(1920, 1080);
+	}
+
+	public static Resolution SwitchOLED() {
+		return new Resolution(1280, 720);
+	}
+
+	public static Resolution SteamDeck() {
+		return new Resolution(1280, 800);
+	}
+
+	public static Resolution SVGA() {
+		return new Resolution(800, 600);
+	}
+
+	public static Resolution NDS() {
+		return new Resolution(256, 192);
+	}
+
+	public static Resolution NES() {
+		return new Resolution(256, 224);
+	}
+
+	public static Resolution SNES() {
+		return new Resolution(256, 244);
+	}
+
+	public static Resolution PSP3000() {
+		return new Resolution(480, 272);
+	}
+
 	/**
 	 * 转换dpi为缩放比,一些已知缩放比例按照windows规则做了修正
 	 */
@@ -79,7 +123,7 @@ public class Resolution implements Comparable<Resolution> {
 		case 480:
 			return 5f;
 		}
-		return dpiv / 96f;
+		return (float) dpiv / 96f;
 	}
 
 	private final static DPI compareDPI(Resolution source, Resolution target) {
@@ -147,17 +191,20 @@ public class Resolution implements Comparable<Resolution> {
 	}
 
 	public String matchMode() {
-		for (Resolution res : resolutions4x3) {
+		for (int i = 0; i < resolutions4x3.length; i++) {
+			Resolution res = resolutions4x3[i];
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [4 : 3] " + toString();
 			}
 		}
-		for (Resolution res : resolutions16x9) {
+		for (int i = 0; i < resolutions16x9.length; i++) {
+			Resolution res = resolutions16x9[i];
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [16 : 9] " + toString();
 			}
 		}
-		for (Resolution res : resolutions16x10) {
+		for (int i = 0; i < resolutions16x10.length; i++) {
+			Resolution res = resolutions16x10[i];
 			if (res.rectangle.width == rectangle.width && res.rectangle.height == rectangle.height) {
 				return "Mode [16 : 10] " + toString();
 			}

@@ -266,6 +266,9 @@ public class BehaviorBuilder<T> implements IBaseAction, LRelease {
 	}
 
 	public BehaviorBuilder<T> end() {
+		if (_closed) {
+			return this;
+		}
 		if (_currentBehaviorAction != null) {
 			_currentBehaviorAction.close();
 		}
