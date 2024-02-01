@@ -604,6 +604,69 @@ public abstract class LContainer extends LComponent implements IArray {
 		return comp;
 	}
 
+	/**
+	 * 交换两个组件位置
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public LContainer swap(int first, int second) {
+		if (_component_isClose) {
+			return this;
+		}
+		if (first == second) {
+			return this;
+		}
+		if (first >= childCount) {
+			throw new LSysException("first can't be >= size: " + first + " >= " + childCount);
+		}
+		if (second >= childCount) {
+			throw new LSysException("second can't be >= size: " + second + " >= " + childCount);
+		}
+		final LComponent[] cs = this._childs;
+		final LComponent firstValue = cs[first];
+		cs[first] = cs[second];
+		cs[second] = firstValue;
+		return this;
+	}
+
+	/**
+	 * 交换两个组件位置
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public LContainer swap(LComponent first, LComponent second) {
+		if (_component_isClose) {
+			return this;
+		}
+		if ((first == null && second == null) || (first == second)) {
+			return this;
+		}
+		int fi = -1;
+		int bi = -1;
+		final int size = this.childCount;
+		final LComponent[] cs = this._childs;
+		for (int i = 0; i < size; i++) {
+			final LComponent comp = cs[i];
+			if (comp == first) {
+				fi = i;
+			}
+			if (comp == second) {
+				bi = i;
+			}
+			if (fi != -1 && bi != -1) {
+				break;
+			}
+		}
+		if (fi != -1 && bi != -1) {
+			return swap(fi, bi);
+		}
+		return this;
+	}
+
 	@Override
 	public void clear() {
 		if (_component_isClose) {

@@ -22,10 +22,26 @@ package loon;
 
 import loon.action.behaviors.BehaviorBuilder;
 import loon.events.EventActionT;
-import loon.utils.HelperUtils;
 import loon.utils.reply.Emitter;
 
-public class Engine extends HelperUtils implements EventActionT<Screen>, LRelease {
+public final class Engine extends PlayerUtils implements EventActionT<Screen>, LRelease {
+
+	private static Engine instance;
+
+	public static void freeStatic() {
+		instance = null;
+	}
+
+	public static final Engine get() {
+		if (instance == null) {
+			synchronized (Engine.class) {
+				if (instance == null) {
+					instance = new Engine();
+				}
+			}
+		}
+		return instance;
+	}
 
 	private Screen _mainScreen;
 

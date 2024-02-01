@@ -103,6 +103,10 @@ public class WaitProcess implements GameProcess, LRelease {
 		return this;
 	}
 
+	public WaitProcess freeWait() {
+		return wait(null);
+	}
+
 	public boolean isDeffered() {
 		return _waitProcess != null && !_waitProcess.isDead;
 	}

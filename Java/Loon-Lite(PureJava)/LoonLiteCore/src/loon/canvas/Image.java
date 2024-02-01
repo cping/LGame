@@ -44,7 +44,9 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	protected boolean isDirty = false;
 
-	private boolean isTexture = false;
+	private boolean _isTexture = false;
+
+	private boolean _closed;
 
 	public static Canvas createCanvas(float w, float h) {
 		return createCanvas((int) w, (int) h);
@@ -156,7 +158,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (texWidth <= 0 || texHeight <= 0) {
 			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
-		this.isTexture = true;
+		this._isTexture = true;
 		LTexture tex = new LTexture(gfx, gfx.createTexture(), texWidth, texHeight, scale(), width(), height());
 		if (canvas == null) {
 			tex.update(this);
@@ -236,10 +238,8 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public abstract Image getSubImage(int x, int y, int width, int height);
 
-	private boolean closed;
-
 	public final boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	public int getWidth() {
@@ -367,10 +367,10 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	@Override
 	public final void close() {
-		if (!this.isTexture) {
+		if (!this._isTexture) {
 			this.closeImpl();
 		}
-		this.closed = true;
+		this._closed = true;
 	}
 
 	public final void destroy() {

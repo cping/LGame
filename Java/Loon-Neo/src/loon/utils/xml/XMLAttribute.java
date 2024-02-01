@@ -51,7 +51,7 @@ public class XMLAttribute {
 			return 0;
 		}
 		try {
-			return (int) Float.parseFloat(this.value);
+			return Integer.valueOf(this.value);
 		} catch (Throwable ex) {
 			throw new LSysException(
 					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an integer !");
@@ -63,7 +63,7 @@ public class XMLAttribute {
 			return 0;
 		}
 		try {
-			return Float.parseFloat(this.value);
+			return Float.valueOf(this.value);
 		} catch (Throwable ex) {
 			throw new LSysException(
 					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an float !");

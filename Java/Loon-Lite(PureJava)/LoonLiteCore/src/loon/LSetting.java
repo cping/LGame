@@ -340,19 +340,13 @@ public class LSetting {
 			nHeight = max;
 			nWidth = w / h * max;
 		}
-		this.width = MathUtils.floor(w);
-		this.height = MathUtils.floor(h);
-		this.width_zoom = MathUtils.floor(nWidth);
-		this.height_zoom = MathUtils.floor(nHeight);
+		setView(w, h, nWidth, nHeight);
 		updateScale();
 		return this;
 	}
 
 	public LSetting updateScale() {
-		width = MathUtils.divTwoAbs(width);
-		height = MathUtils.divTwoAbs(height);
-		width_zoom = MathUtils.divTwoAbs(width_zoom);
-		height_zoom = MathUtils.divTwoAbs(height_zoom);
+		setView(width, height, width_zoom, height_zoom);
 		if (scaling()) {
 			LSystem.setScaleWidth((float) width_zoom / (float) width);
 			LSystem.setScaleHeight((float) height_zoom / (float) height);
@@ -390,10 +384,10 @@ public class LSetting {
 	}
 
 	public LSetting setView(float w, float h, float zw, float zh) {
-		this.width = MathUtils.divTwoAbs((int) w);
-		this.height = MathUtils.divTwoAbs((int) h);
-		this.width_zoom = MathUtils.divTwoAbs((int) zw);
-		this.height_zoom = MathUtils.divTwoAbs((int) zh);
+		this.width = MathUtils.divTwoAbs(MathUtils.floor(w));
+		this.height = MathUtils.divTwoAbs(MathUtils.floor(h));
+		this.width_zoom = MathUtils.divTwoAbs(MathUtils.floor(zw));
+		this.height_zoom = MathUtils.divTwoAbs(MathUtils.floor(zh));
 		return this;
 	}
 

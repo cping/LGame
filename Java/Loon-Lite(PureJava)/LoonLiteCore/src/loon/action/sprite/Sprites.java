@@ -23,6 +23,7 @@ package loon.action.sprite;
 import loon.LObject.State;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.Screen;
@@ -834,6 +835,69 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return new TArray<ISprite>(0);
 		}
 		return contains(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
+	}
+
+	/**
+	 * 交换两个精灵位置
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public Sprites swapSprite(int first, int second) {
+		if (_closed) {
+			return this;
+		}
+		if (first == second) {
+			return this;
+		}
+		if (first >= _size) {
+			throw new LSysException("first can't be >= size: " + first + " >= " + _size);
+		}
+		if (second >= _size) {
+			throw new LSysException("second can't be >= size: " + second + " >= " + _size);
+		}
+		final ISprite[] sprs = this._sprites;
+		final ISprite firstValue = sprs[first];
+		sprs[first] = sprs[second];
+		sprs[second] = firstValue;
+		return this;
+	}
+
+	/**
+	 * 交换两个精灵位置
+	 * 
+	 * @param first
+	 * @param second
+	 * @return
+	 */
+	public Sprites swapSprite(ISprite first, ISprite second) {
+		if (_closed) {
+			return this;
+		}
+		if ((first == null && second == null) || (first == second)) {
+			return this;
+		}
+		int fi = -1;
+		int bi = -1;
+		final int size = this._size;
+		final ISprite[] sprs = this._sprites;
+		for (int i = 0; i < size; i++) {
+			final ISprite spr = sprs[i];
+			if (spr == first) {
+				fi = i;
+			}
+			if (spr == second) {
+				bi = i;
+			}
+			if (fi != -1 && bi != -1) {
+				break;
+			}
+		}
+		if (fi != -1 && bi != -1) {
+			return swapSprite(fi, bi);
+		}
+		return this;
 	}
 
 	/**

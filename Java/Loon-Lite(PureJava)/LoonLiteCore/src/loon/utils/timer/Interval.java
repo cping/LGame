@@ -37,6 +37,8 @@ public abstract class Interval implements ActionUpdate, LRelease {
 
 	protected Runnable _runnable;
 
+	private Interval _waitInterval;
+
 	public Interval() {
 		this(0L);
 	}
@@ -152,6 +154,15 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return _loop_timer.isClosed();
 	}
 
+	public Interval wait(Interval i) {
+		this._waitInterval = i;
+		return this;
+	}
+
+	public Interval freeWait() {
+		return wait(null);
+	}
+
 	@Override
 	public boolean completed() {
 		return _loop_timer.isCompleted();
@@ -173,6 +184,9 @@ public abstract class Interval implements ActionUpdate, LRelease {
 
 	@Override
 	public void action(Object o) {
+		if (_waitInterval != null && !_waitInterval.completed()) {
+			return;
+		}
 		if (_runnable != null) {
 			_runnable.run();
 		}
@@ -193,6 +207,7 @@ public abstract class Interval implements ActionUpdate, LRelease {
 	@Override
 	public void close() {
 		_loop_timer.close();
+		_waitInterval = null;
 	}
 
 }

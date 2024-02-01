@@ -184,7 +184,7 @@ public class XMLElement {
 				continue;
 			}
 			XMLElement ele = (XMLElement) o;
-			if (!ele.equals(ele.getName())) {
+			if (!name.equals(ele.getName())) {
 				Iterator<?> it = ele.elements(name);
 				for (; it.hasNext();) {
 					XMLElement child = (XMLElement) it.next();
@@ -192,7 +192,7 @@ public class XMLElement {
 					v.add(child);
 				}
 				continue;
-			} else if (ele.equals(ele.getName())) {
+			} else if (name.equals(ele.getName())) {
 				v.add((XMLElement) o);
 				continue;
 			}

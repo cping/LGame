@@ -67,23 +67,7 @@ public class Inventory {
 	}
 
 	public Inventory swap(IItem a, IItem b) {
-		int aIdx = -1;
-		int bIdx = -1;
-		for (int i = 0; i < _items.size; i++) {
-			IItem item = _items.get(i);
-			if (item == a) {
-				aIdx = i;
-			}
-			if (item == b) {
-				bIdx = i;
-			}
-			if (aIdx != -1 && bIdx != -1) {
-				break;
-			}
-		}
-		if (aIdx != -1 && bIdx != -1) {
-			_items.swap(aIdx, bIdx);
-		}
+		_items.swap(a, b);
 		return this;
 	}
 
@@ -174,7 +158,7 @@ public class Inventory {
 		_items.sort(new Comparator<IItem>() {
 
 			@Override
-			public int compare(final IItem o1,final IItem o2) {
+			public int compare(final IItem o1, final IItem o2) {
 				if (o1 != null && o2 != null) {
 					return o1.getItemTypeId() - o2.getItemTypeId();
 				}

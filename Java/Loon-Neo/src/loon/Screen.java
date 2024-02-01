@@ -120,7 +120,6 @@ import loon.utils.processes.Coroutine;
 import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
-import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.YieldExecute;
 import loon.utils.processes.Yielderable;
 import loon.utils.reply.Callback;
@@ -1311,7 +1310,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param _screenSwitch
 	 * @return
 	 */
-	public Screen replaceScreen(final Screen screen, ScreenSwitch _screenSwitch) {
+	public Screen replaceScreen(final Screen screen, final ScreenSwitch screenSwitch) {
 		if (_replaceLoading) {
 			return this;
 		}
@@ -1321,20 +1320,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			setLock(true);
 			screen.setLock(true);
 			this._replaceDstScreen = screen;
-			this._screenSwitch = _screenSwitch;
+			this._screenSwitch = screenSwitch;
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
-
-			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
+			addProcess(new RealtimeProcess() {
 
 				@Override
 				public void run(LTimerContext time) {
 					try {
-						screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-						screen.setClose(false);
-						screen.onLoad();
-						screen.setRepaintMode(SCREEN_NOT_REPAINT);
-						screen.onLoaded();
-						screen.setOnLoadState(true);
+						screen.restart();
 					} catch (Throwable cause) {
 						LSystem.error("Replace screen dispatch failure", cause);
 					} finally {
@@ -1342,7 +1335,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					}
 				}
 			});
-
 		}
 		return this;
 	}
@@ -1358,7 +1350,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param m
 	 * @return
 	 */
-	public Screen replaceScreen(final Screen screen, MoveMethod m) {
+	public Screen replaceScreen(final Screen screen, final MoveMethod m) {
 		if (_replaceLoading) {
 			return this;
 		}
@@ -1409,17 +1401,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				break;
 			}
 
-			RealtimeProcessManager.get().addProcess(new RealtimeProcess() {
+			addProcess(new RealtimeProcess() {
 
 				@Override
 				public void run(LTimerContext time) {
 					try {
-						screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-						screen.setClose(false);
-						screen.onLoad();
-						screen.setRepaintMode(SCREEN_NOT_REPAINT);
-						screen.onLoaded();
-						screen.setOnLoadState(true);
+						screen.restart();
 					} catch (Throwable cause) {
 						LSystem.error("Replace screen dispatch failure", cause);
 					} finally {
@@ -1695,6 +1682,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._conns.reset();
 		this._delayTimer.setDelay(0);
 		this._pauseTimer.setDelay(LSystem.SECOND);
+	}
+
+	public Screen restart() {
+		return this.restart(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public Screen restart(int w, int h) {
+		return restart(this, w, h);
+	}
+
+	public Screen restart(Screen screen, int w, int h) {
+		if (screen != null) {
+			screen.onCreate(w, h);
+			screen.setClose(false);
+			screen.onLoad();
+			screen.setRepaintMode(SCREEN_NOT_REPAINT);
+			screen.onLoaded();
+			screen.setOnLoadState(true);
+		}
+		return this;
 	}
 
 	public Screen invokeAsync(Runnable runnable) {

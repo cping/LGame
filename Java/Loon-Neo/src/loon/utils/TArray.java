@@ -286,6 +286,8 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	}
 
 	public void swap(int first, int second) {
+		if (first == second)
+			return;
 		if (first >= size)
 			throw new LSysException("first can't be >= size: " + first + " >= " + size);
 		if (second >= size)
@@ -294,6 +296,31 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		T firstValue = items[first];
 		items[first] = items[second];
 		items[second] = firstValue;
+	}
+
+	public void swap(T first, T second) {
+		if ((first == null && second == null) || (first == second)) {
+			return;
+		}
+		int fi = -1;
+		int bi = -1;
+		final int size = this.size;
+		final T[] items = this.items;
+		for (int i = 0; i < size; i++) {
+			final T item = items[i];
+			if (item == first) {
+				fi = i;
+			}
+			if (item == second) {
+				bi = i;
+			}
+			if (fi != -1 && bi != -1) {
+				break;
+			}
+		}
+		if (fi != -1 && bi != -1) {
+			swap(fi, bi);
+		}
 	}
 
 	public boolean contains(T value) {

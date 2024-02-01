@@ -42,12 +42,14 @@ import loon.utils.reply.GoFuture;
  */
 public abstract class Image extends TextureSource implements Canvas.Drawable, LRelease {
 
-	private boolean isTexture = false;
+	private boolean _isTexture = false;
 
-	private boolean haveToClose = false;
+	private boolean _haveToClose = false;
+
+	private boolean _closed;
 
 	public boolean toClose() {
-		return haveToClose;
+		return _haveToClose;
 	}
 
 	public static Canvas createCanvas(float w, float h) {
@@ -172,7 +174,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		if (texWidth <= 0 || texHeight <= 0) {
 			throw new LSysException("Invalid texture size: " + texWidth + "x" + texHeight + " from: " + this);
 		}
-		this.isTexture = true;
+		this._isTexture = true;
 		LTexture tex = new LTexture(gfx, gfx.createTexture(config), config, texWidth, texHeight, scale(), width(),
 				height());
 		tex.update(this);
@@ -320,10 +322,8 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	public abstract Image getSubImage(int x, int y, int width, int height);
 
-	private boolean closed;
-
 	public final boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	public int getWidth() {
@@ -430,7 +430,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public Image onHaveToClose(boolean c) {
-		this.haveToClose = c;
+		this._haveToClose = c;
 		return this;
 	}
 
@@ -500,12 +500,12 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 
 	@Override
 	public final void close() {
-		if (!this.isTexture) {
+		if (!this._isTexture) {
 			this.closeImpl();
 		} else {
-			this.haveToClose = true;
+			this._haveToClose = true;
 		}
-		this.closed = true;
+		this._closed = true;
 	}
 
 	public final void destroy() {
