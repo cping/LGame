@@ -225,6 +225,16 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity view(String path) {
+		return setTexture(path);
+	}
+
+	@Override
+	public IEntity view(LTexture tex) {
+		return setTexture(tex);
+	}
+
+	@Override
 	public boolean isVisible() {
 		return this._visible;
 	}
@@ -1108,7 +1118,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			final TArray<TComponent<ISprite>> comps = this._components;
 			final int entityCount = comps.size;
 			for (int i = 0; i < entityCount; i++) {
-				comps.get(i).update(this);
+				final TComponent<ISprite> c = comps.get(i);
+				if (c != null && !c._paused.get()) {
+					c.update(this);
+				}
 			}
 		}
 		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
@@ -1387,9 +1400,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public void setParent(ISprite s) {
 		if (s instanceof IEntity) {
-			setParent((IEntity) s);
-		} else if (s instanceof ISprite) {
-			setParent(new SpriteToEntity(s));
+			setSuper((IEntity) s);
+		} else {
+			setSuper(null);
 		}
 	}
 
@@ -1936,6 +1949,22 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity buildToScreen() {
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public IEntity removeParent() {
+		IEntity e = this.getSuper();
+		if (e != null) {
+			e.removeChild(this);
+			e.setParent(null);
+		}
+		return this;
+	}
+
+	@Override
 	public Screen getScreen() {
 		if (this._sprites == null) {
 			return LSystem.getProcess().getScreen();
@@ -2170,6 +2199,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return setFlipX(mirror);
 	}
 
+	/**
+	 * 判定当前Entity是否存在(后裔)下级类
+	 * 
+	 * @param actor
+	 * @return
+	 */
+	@Override
 	public boolean isDescendantOf(ISprite actor) {
 		if (actor == null) {
 			throw new LSysException("Actor cannot be null");
@@ -2186,6 +2222,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
+	/**
+	 * 判定当前Entity是否存在(祖先)上级类
+	 * 
+	 * @param actor
+	 * @return
+	 */
+	@Override
 	public boolean isAscendantOf(ISprite actor) {
 		if (actor == null) {
 			throw new LSysException("Actor cannot be null");
@@ -2204,6 +2247,45 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	@Override
 	public TArray<IEntity> getChildren() {
 		return _childrens;
+	}
+
+	/**
+	 * 返回当前Entity所有前辈(上级及其更上级)类
+	 * 
+	 * @return
+	 */
+	public TArray<IEntity> getAscendantChildren() {
+		final TArray<IEntity> result = new TArray<IEntity>();
+		IEntity current = this.getParent();
+		if (current == null) {
+			return result;
+		}
+		for (; current != null;) {
+			result.add(current);
+			current = current.getParent();
+		}
+		return result.reverse();
+	}
+
+	/**
+	 * 返回当前Entity所有后辈(下级及其更下级)类
+	 * 
+	 * @return
+	 */
+	public TArray<IEntity> getDescendantChildren() {
+		TArray<IEntity> result = new TArray<IEntity>();
+		if (_childrens == null || _childrens.size == 0) {
+			return result;
+		}
+		TArray<IEntity> queue = _childrens.cpy();
+		for (; queue.size > 0;) {
+			IEntity current = queue.pop();
+			if (current != null) {
+				queue = queue.concat(current.getChildren());
+				result = result.concat(current.getChildren());
+			}
+		}
+		return result;
 	}
 
 	public Vector2f getTouchOffset() {
@@ -2338,6 +2420,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity with(TComponent<ISprite> c) {
+		return addComponent(c);
+	}
+
+	@Override
 	public IEntity addComponent(TComponent<ISprite> c) {
 		if (_components == null) {
 			allocateComponents();
@@ -2345,7 +2432,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (c != null) {
 			_components.add(c);
 			c.onAttached(this);
-			c.setCurrentSprite(this);
+			c.setCurrent(this);
 		}
 		return null;
 	}
@@ -2358,7 +2445,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (c != null) {
 			_components.remove(c);
 			c.onDetached(this);
-			c.setCurrentSprite(null);
+			c.setCurrent(null);
 		}
 		return false;
 	}
@@ -2372,7 +2459,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			final TComponent<ISprite> removed = this._components.get(i);
 			if (removed != null) {
 				removed.onDetached(this);
-				removed.setCurrentSprite(null);
+				removed.setCurrent(null);
 			}
 		}
 		this._components.clear();
@@ -2401,6 +2488,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity setComponentIgnoreUpdate(boolean c) {
 		this._childrenIgnoreUpdate = c;
 		return this;
+	}
+
+	@Override
+	public TArray<TComponent<ISprite>> getComponents() {
+		if (_components == null) {
+			allocateComponents();
+		}
+		return new TArray<TComponent<ISprite>>(_components);
 	}
 
 	@Override

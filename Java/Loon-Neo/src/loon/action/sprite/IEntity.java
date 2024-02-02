@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import java.util.Comparator;
 
+import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.Flip;
@@ -31,6 +32,14 @@ import loon.utils.TArray;
 public interface IEntity extends ISprite, Flip<IEntity> {
 
 	TArray<IEntity> getChildren();
+
+	TArray<IEntity> getAscendantChildren();
+
+	TArray<IEntity> getDescendantChildren();
+
+	boolean isAscendantOf(ISprite actor);
+
+	boolean isDescendantOf(ISprite actor);
 
 	@Override
 	boolean isVisible();
@@ -194,6 +203,8 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	void onDetached();
 
+	IEntity with(final TComponent<ISprite> c);
+
 	IEntity addComponent(final TComponent<ISprite> c);
 
 	IEntity removeComponents();
@@ -207,6 +218,8 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity setComponentIgnoreUpdate(final boolean c);
 
 	int getComponentCount();
+
+	TArray<TComponent<ISprite>> getComponents();
 
 	IEntity addChild(final IEntity e);
 
@@ -234,6 +247,8 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	IEntity removeChildren();
 
+	IEntity removeParent();
+
 	IEntity setUserData(final Object u);
 
 	Object getUserData();
@@ -251,6 +266,10 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	@Override
 	void createUI(final GLEx gl, final float offsetX, final float offsetY);
 
+	IEntity view(LTexture tex);
+
+	IEntity view(String path);
+
 	IEntity setFollowRotation(boolean r);
 
 	IEntity setFollowScale(boolean s);
@@ -267,4 +286,5 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	IEntity hide();
 
+	IEntity buildToScreen();
 }

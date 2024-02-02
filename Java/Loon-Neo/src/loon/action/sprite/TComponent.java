@@ -23,8 +23,14 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.events.EventActionT;
+import loon.geom.BooleanValue;
 
+/**
+ * 控制Entity用的Component，具体实现后可用于注入Entity从而产生特定操作效果
+ */
 public abstract class TComponent<T extends ActionBind> implements EventActionT<T> {
+
+	protected final BooleanValue _paused = new BooleanValue();
 
 	protected ISprite _currentSprite;
 
@@ -38,6 +44,24 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 		this._name = name;
 	}
 
+	public boolean isPaused() {
+		return _paused.get();
+	}
+
+	public TComponent<T> pause() {
+		_paused.set(true);
+		return this;
+	}
+
+	public TComponent<T> resume() {
+		_paused.set(false);
+		return this;
+	}
+
+	public BooleanValue state() {
+		return _paused;
+	}
+
 	public String getName() {
 		return this._name;
 	}
@@ -46,11 +70,11 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 
 	public abstract void onDetached(ISprite on);
 
-	public ISprite getCurrentSprite() {
+	public ISprite getCurrent() {
 		return _currentSprite;
 	}
 
-	public TComponent<T> setCurrentSprite(ISprite c) {
+	public TComponent<T> setCurrent(ISprite c) {
 		this._currentSprite = c;
 		return this;
 	}

@@ -538,6 +538,19 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _sprites[index];
 	}
 
+	public ISprite getRandomSprite() {
+		return getRandomSprite(0, _size);
+	}
+
+	public ISprite getRandomSprite(int min, int max) {
+		if (_closed) {
+			return null;
+		}
+		min = MathUtils.max(0, min);
+		max = MathUtils.min(max, _size);
+		return _sprites[MathUtils.nextInt(min, max)];
+	}
+
 	/**
 	 * 返回位于顶部的精灵
 	 * 
@@ -758,7 +771,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (_sprites == null) {
 			return false;
 		}
-		for (int i = 0; i < _size; i++) {
+		final int size = this._size;
+		for (int i = size - 1; i > -1; i--) {
 			ISprite sp = _sprites[i];
 			boolean exist = (sp != null);
 			if (exist && sprite.equals(sp)) {
@@ -802,7 +816,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (_sprites == null) {
 			return sprites;
 		}
-		for (int i = 0; i < _size; i++) {
+		final int size = this._size;
+		for (int i = size - 1; i > -1; i--) {
 			ISprite sp = _sprites[i];
 			if (sp != null) {
 				if (sp.inContains(x, y, w, h)) {
@@ -888,6 +903,35 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				fi = i;
 			}
 			if (spr == second) {
+				bi = i;
+			}
+			if (fi != -1 && bi != -1) {
+				break;
+			}
+		}
+		if (fi != -1 && bi != -1) {
+			return swapSprite(fi, bi);
+		}
+		return this;
+	}
+
+	public Sprites swapSprite(String first, String second) {
+		if (_closed) {
+			return this;
+		}
+		if ((first == null || second == null) || (first.equals(second))) {
+			return this;
+		}
+		int fi = -1;
+		int bi = -1;
+		final int size = this._size;
+		final ISprite[] sprs = this._sprites;
+		for (int i = 0; i < size; i++) {
+			final ISprite spr = sprs[i];
+			if (spr != null && spr.getName().equals(first)) {
+				fi = i;
+			}
+			if (spr != null && spr.getName().equals(second)) {
 				bi = i;
 			}
 			if (fi != -1 && bi != -1) {
@@ -1270,10 +1314,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (!_visible || _closed) {
 			return;
 		}
-
-		boolean listerner = (sprListerner != null);
+		final boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i > -1; i--) {
-			ISprite child = _sprites[i];
+			final ISprite child = _sprites[i];
 			if (child != null && child.isVisible()) {
 				try {
 					child.update(elapsedTime);
@@ -1297,7 +1340,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 			if (_currentPoshash != _lastPosHash) {
 				if (this._sprites.length != this._size) {
-					ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+					final ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
 					spriteXYSorter.sort(sprs);
 					this._sprites = sprs;
 				} else {

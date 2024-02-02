@@ -538,6 +538,19 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _sprites[index];
 	}
 
+	public ISprite getRandomSprite() {
+		return getRandomSprite(0, _size);
+	}
+
+	public ISprite getRandomSprite(int min, int max) {
+		if (_closed) {
+			return null;
+		}
+		min = MathUtils.max(0, min);
+		max = MathUtils.min(max, _size);
+		return _sprites[MathUtils.nextInt(min, max)];
+	}
+
 	/**
 	 * 返回位于顶部的精灵
 	 * 
@@ -625,7 +638,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
-		for (Object tag : tags) {
+		final int len = tags.length;
+		for (int j = 0; j < len; j++) {
+			final Object tag = tags[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
 					ISprite sp = (ISprite) this._sprites[i];
@@ -650,7 +665,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
-		for (Object tag : tags) {
+		final int len = tags.length;
+		for (int j = 0; j < len; j++) {
+			final Object tag = tags[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
 					ISprite sp = this._sprites[i];
@@ -677,7 +694,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
 					ISprite sp = this._sprites[i];
@@ -698,7 +717,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (this._sprites[i] instanceof ISprite) {
 					ISprite sp = this._sprites[i];
@@ -726,7 +747,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		TArray<ISprite> list = new TArray<ISprite>();
 		final int size = this._size;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				ISprite child = this._sprites[i];
 				if (child != null) {
@@ -758,7 +781,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (_sprites == null) {
 			return false;
 		}
-		for (int i = 0; i < _size; i++) {
+		final int size = this._size;
+		for (int i = size - 1; i > -1; i--) {
 			ISprite sp = _sprites[i];
 			boolean exist = (sp != null);
 			if (exist && sprite.equals(sp)) {
@@ -802,7 +826,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (_sprites == null) {
 			return sprites;
 		}
-		for (int i = 0; i < _size; i++) {
+		final int size = this._size;
+		for (int i = size - 1; i > -1; i--) {
 			ISprite sp = _sprites[i];
 			if (sp != null) {
 				if (sp.inContains(x, y, w, h)) {
@@ -888,6 +913,35 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				fi = i;
 			}
 			if (spr == second) {
+				bi = i;
+			}
+			if (fi != -1 && bi != -1) {
+				break;
+			}
+		}
+		if (fi != -1 && bi != -1) {
+			return swapSprite(fi, bi);
+		}
+		return this;
+	}
+
+	public Sprites swapSprite(String first, String second) {
+		if (_closed) {
+			return this;
+		}
+		if ((first == null || second == null) || (first.equals(second))) {
+			return this;
+		}
+		int fi = -1;
+		int bi = -1;
+		final int size = this._size;
+		final ISprite[] sprs = this._sprites;
+		for (int i = 0; i < size; i++) {
+			final ISprite spr = sprs[i];
+			if (spr != null && spr.getName().equals(first)) {
+				fi = i;
+			}
+			if (spr != null && spr.getName().equals(second)) {
 				bi = i;
 			}
 			if (fi != -1 && bi != -1) {
@@ -1270,10 +1324,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (!_visible || _closed) {
 			return;
 		}
-
-		boolean listerner = (sprListerner != null);
+		final boolean listerner = (sprListerner != null);
 		for (int i = _size - 1; i > -1; i--) {
-			ISprite child = _sprites[i];
+			final ISprite child = _sprites[i];
 			if (child != null && child.isVisible()) {
 				try {
 					child.update(elapsedTime);
@@ -1297,7 +1350,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 			if (_currentPoshash != _lastPosHash) {
 				if (this._sprites.length != this._size) {
-					ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+					final ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
 					spriteXYSorter.sort(sprs);
 					this._sprites = sprs;
 				} else {
@@ -1757,7 +1810,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		_dirtyList.clear();
-		for (RectBox rect : rects) {
+		final int len = rects.size;
+		for (int j = 0; j < len; j++) {
+			final RectBox rect = rects.get(j);
 			if (rect.width > 1 && rect.height > 1) {
 				_dirtyList.add(rect);
 			}
@@ -1902,7 +1957,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (callback == null) {
 			return this;
 		}
-		for (ISprite child : this._sprites) {
+		final ISprite[] childs = _sprites;
+		final int size = _size;
+		for (int i = size - 1; i > -1; i--) {
+			final ISprite child = childs[i];
 			if (child != null) {
 				callback.onSuccess(child);
 			}
@@ -1917,7 +1975,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (forceResize || (this._width != (int) width && this._height != (int) height)) {
 			this._width = (int) width;
 			this._height = (int) height;
-			for (ISprite child : this._sprites) {
+			final ISprite[] childs = _sprites;
+			final int size = _size;
+			for (int i = size - 1; i > -1; i--) {
+				final ISprite child = childs[i];
 				if (child != null) {
 					child.onResize();
 				}
@@ -2038,9 +2099,12 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			_spriteShadow.close();
 		}
 		this._newLineHeight = 0;
-		for (ISprite spr : _sprites) {
-			if (spr != null) {
-				spr.close();
+		final ISprite[] childs = _sprites;
+		final int size = _size;
+		for (int i = size - 1; i > -1; i--) {
+			final ISprite child = childs[i];
+			if (child != null) {
+				child.close();
 			}
 		}
 		clear();

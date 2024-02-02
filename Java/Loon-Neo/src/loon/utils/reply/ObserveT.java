@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2020 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,20 +18,23 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.events;
+package loon.utils.reply;
+
+import loon.events.ActionUpdate;
+import loon.events.UpdateableT;
 
 /**
  * 数据异步传递用类,会返回完成状态（ActionUpdate子类,可传递泛型对象）
  *
  * @param <T>
  */
-public abstract class Observe<T> extends UpdateableT<T> implements ActionUpdate {
+public abstract class ObserveT<T> extends UpdateableT<T> implements Observer<T>, ActionUpdate {
 
-	public Observe() {
+	public ObserveT() {
 		super(null, null);
 	}
 
-	public Observe(T context, String name) {
+	public ObserveT(T context, String name) {
 		super(context, name);
 	}
 

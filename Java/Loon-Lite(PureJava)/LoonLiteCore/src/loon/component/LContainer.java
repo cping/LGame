@@ -465,6 +465,19 @@ public abstract class LContainer extends LComponent implements IArray {
 		return false;
 	}
 
+	public LComponent getRandomComponent() {
+		return getRandomComponent(0, childCount);
+	}
+
+	public LComponent getRandomComponent(int min, int max) {
+		if (_component_isClose) {
+			return null;
+		}
+		min = MathUtils.max(0, min);
+		max = MathUtils.min(max, childCount);
+		return _childs[MathUtils.nextInt(min, max)];
+	}
+
 	public int remove(LComponent comp) {
 		if (_component_isClose) {
 			return -1;
