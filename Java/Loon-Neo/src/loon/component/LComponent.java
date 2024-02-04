@@ -2239,6 +2239,11 @@ public abstract class LComponent extends LObject<LContainer>
 		this._touchDownMovedValue = m;
 		return this;
 	}
+	
+	public LComponent buildToScreen() {
+		getScreen().add(this);
+		return this;
+	}
 
 	@Override
 	public void close() {

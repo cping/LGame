@@ -110,8 +110,18 @@ public class JavaFXFontMetrics {
 			if (StringUtils.containsRegularSymbols(str)) {
 				fxtext.setText(str);
 				Bounds b = fxtext.getBoundsInLocal();
-				if (str.length() > 1 && StringUtils.isAlphabetNumeric(str)) {
-					int width = 0;
+				final int len = str.length();
+				int width = 0;
+				if (len > 1 && StringUtils.isAlphabet(str)) {
+					for (int i = 0; i < str.length(); i++) {
+						char ch = str.charAt(i);
+						String res = String.valueOf(ch);
+						fxtext.setText(res);
+						b = fxtext.getBoundsInLocal();
+						width += b.getWidth();
+					}
+					return width;
+				} else if (len > 1 && StringUtils.isAlphabetNumeric(str)) {
 					for (int i = 0; i < str.length(); i++) {
 						char ch = str.charAt(i);
 						String res = String.valueOf(ch);
@@ -132,7 +142,6 @@ public class JavaFXFontMetrics {
 					width += b.getWidth() + (StringUtils.isAlphabet(ch) ? 0 : fdescent);
 				}
 				return width;
-
 			}
 		}
 		return 0;

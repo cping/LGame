@@ -2236,6 +2236,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent buildToScreen() {
+		getScreen().add(this);
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {

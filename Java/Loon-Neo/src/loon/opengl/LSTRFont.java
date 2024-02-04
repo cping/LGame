@@ -161,6 +161,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					if (ch == 'i' && charheight > 24) {
 						charheight -= 4;
 					}
+					if (ch == 'l' && charwidth >= 10) {
+						charwidth -= 1;
+					}
 				}
 
 				if (clipFont) {
