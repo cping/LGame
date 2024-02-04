@@ -37,9 +37,6 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
-import loon.utils.processes.GameProcessType;
-import loon.utils.processes.RealtimeProcess;
-import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.res.loaders.PreloadAssets;
 import loon.utils.timer.LTimerContext;
 
@@ -48,43 +45,7 @@ import loon.utils.timer.LTimerContext;
  * 
  * 希望纯组件构建游戏时(也就是一个create接口满足一切时)可以使用此类派生画面
  */
-public abstract class Stage extends Screen {
-
-	/**
-	 * 预加载进度管理器
-	 */
-	protected class PreloadProcess extends RealtimeProcess {
-
-		private Stage _stage;
-
-		private PreloadAssets _assets;
-
-		private float _maxValue;
-
-		public PreloadProcess(Stage stage, PreloadAssets assets, float max) {
-			this._stage = stage;
-			this._assets = assets;
-			this._maxValue = max;
-		}
-
-		@Override
-		public void run(LTimerContext time) {
-
-			if (!_assets.completed()) {
-				_assets.detection();
-			}
-
-			_stage.updatePercent((_maxValue - _assets.waiting()), _maxValue);
-			_stage.preloadProgress(_stage._percent);
-
-			if (_assets.completed()) {
-				_stage.create();
-				_stage.createState();
-				kill();
-			}
-
-		}
-	}
+public abstract class Stage extends Screen implements PreloadLoader {
 
 	private float _drawPosX;
 
@@ -95,8 +56,6 @@ public abstract class Stage extends Screen {
 	private ScrollEffect _scrollBackground;
 
 	private UpdateListener _updateListener;
-
-	private PreloadAssets _preAssets;
 
 	private TArray<ActionObject> _objects;
 
@@ -116,59 +75,73 @@ public abstract class Stage extends Screen {
 
 	private StateManager _stateManager;
 
+	private PreloadControl _preload;
+
 	private boolean _existing;
 
-	private float _preMaxFileCount;
+	public abstract void create();
 
-	private float _percent;
-
-	private float _maxPercent;
-
-	private long _preloadInterval;
-
-	public final Stage setPercentMax(float max) {
-		this._maxPercent = MathUtils.clamp(max, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
-		return this;
+	@Override
+	public void onLoad() {
+		try {
+			this._objects = new TArray<ActionObject>();
+			this._pendingAdd = new TArray<ActionObject>();
+			this._pendingRemove = new TArray<ActionObject>();
+			this._childTiles = new TArray<TileMap>();
+			this._currentOffset = Vector2f.ZERO();
+			this._preload = new PreloadControl(this);
+			this._preload.prestart();
+		} catch (Throwable cause) {
+			LSystem.error("Screen create failure", cause);
+		}
 	}
 
-	public final Stage setPercent(float cur) {
-		return setPercent(cur, LSystem.DEFAULT_MAX_PRE_SIZE);
+	/**
+	 * 获得资源控制器
+	 * 
+	 * @return
+	 */
+	public PreloadControl getPreloadControl() {
+		return _preload;
 	}
 
-	public final Stage setPercent(float cur, float max) {
-		this._percent = MathUtils.clamp(cur, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
-		this._maxPercent = MathUtils.clamp(max, 0f, LSystem.DEFAULT_MAX_PRE_SIZE);
-		return this;
+	/***
+	 * 获得预加载资源
+	 * 
+	 * @return
+	 */
+	public PreloadAssets getPreloadAssets() {
+		return _preload.getPreloadAssets();
 	}
 
-	public final Stage updatePercent(float num) {
-		return updatePercent(num, _maxPercent);
+	/**
+	 * 资源预加载用函数,异步加载指定资源
+	 * 
+	 * @param assets
+	 */
+	@Override
+	public void preload(PreloadAssets assets) {
 	}
 
-	public final Stage updatePercent(float num, float max) {
-		this._percent = MathUtils.clamp(num, 0f, LSystem.DEFAULT_MAX_PRE_SIZE) / max;
-		return this;
+	/**
+	 * 预载资源已完成进度
+	 * 
+	 * @param percent
+	 */
+	@Override
+	public void preloadProgress(float percent) {
+
 	}
 
-	public final Stage addPercent() {
-		return updatePercent(_percent++);
-	}
-
-	public final Stage removePercent() {
-		return updatePercent(_percent--);
-	}
-
-	public final Stage resetPercent() {
-		this._percent = 0f;
-		return this;
-	}
-
-	public final float getMaxPercent() {
-		return _maxPercent;
-	}
-
-	public final float getPercent() {
-		return _percent;
+	/**
+	 * 资源加载完毕
+	 */
+	@Override
+	public void prefinish() {
+		this.create();
+		if (_existing) {
+			_stateManager.load();
+		}
 	}
 
 	protected StateManager createStateManager() {
@@ -264,68 +237,6 @@ public abstract class Stage extends Screen {
 				}
 				_pendingRemove.clear();
 			}
-		}
-	}
-
-	public abstract void create();
-
-	/**
-	 * 资源预加载用函数,异步加载指定资源
-	 * 
-	 * @param assets
-	 */
-	protected void preload(PreloadAssets assets) {
-	}
-
-	/**
-	 * 预载资源已完成进度
-	 * 
-	 * @param percent
-	 */
-	protected void preloadProgress(float percent) {
-
-	}
-
-	public PreloadAssets getPreloadAssets() {
-		return this._preAssets;
-	}
-
-	@Override
-	public void onLoad() {
-		try {
-			this._objects = new TArray<ActionObject>();
-			this._preAssets = new PreloadAssets();
-			this._pendingAdd = new TArray<ActionObject>();
-			this._pendingRemove = new TArray<ActionObject>();
-			this._childTiles = new TArray<TileMap>();
-			this._currentOffset = Vector2f.ZERO();
-
-			this.preload(_preAssets);
-
-			this.setPercentMax(this._preMaxFileCount = _preAssets.waiting());
-
-			if (_preMaxFileCount > LSystem.DEFAULT_MAX_PRE_SIZE) {
-				throw new LSysException(
-						"The count of preloaded data cannot be greater than " + LSystem.DEFAULT_MAX_PRE_SIZE);
-			}
-
-			if (_preMaxFileCount == 0) {
-				this.create();
-				this.createState();
-			} else {
-				PreloadProcess preload = new PreloadProcess(this, _preAssets, this._preMaxFileCount);
-				preload.setProcessType(GameProcessType.Preload);
-				preload.setDelay(this._preloadInterval);
-				RealtimeProcessManager.get().addProcess(preload);
-			}
-		} catch (Throwable cause) {
-			LSystem.error("Screen create failure", cause);
-		}
-	}
-
-	private void createState() {
-		if (_existing) {
-			_stateManager.load();
 		}
 	}
 
@@ -700,15 +611,6 @@ public abstract class Stage extends Screen {
 		return null;
 	}
 
-	public float getPreloadInterval() {
-		return _preloadInterval / LSystem.SECOND;
-	}
-
-	public Stage setPreloadInterval(float second) {
-		this._preloadInterval = (long) (LSystem.SECOND * second);
-		return this;
-	}
-
 	public UpdateListener getUpdateListener() {
 		return _updateListener;
 	}
@@ -772,12 +674,10 @@ public abstract class Stage extends Screen {
 			_scrollBackground.close();
 			_scrollBackground = null;
 		}
-		if (_preAssets != null) {
-			_preAssets.close();
-			_preAssets = null;
+		if (_preload != null) {
+			_preload.close();
+			_preload = null;
 		}
-		_preMaxFileCount = _percent = _maxPercent = 0;
-		_preloadInterval = 0;
 		dispose();
 	}
 
