@@ -861,8 +861,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public float getScreenX() {
+		ISprite parent = getParent();
+		if (parent == null) {
+			return getX();
+		}
+		if (parent instanceof SpriteEntity) {
+			return getX();
+		}
 		float x = 0;
-		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -873,8 +879,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	public float getScreenY() {
+		ISprite parent = getParent();
+		if (parent == null) {
+			return getY();
+		}
+		if (parent instanceof SpriteEntity) {
+			return getY();
+		}
 		float y = 0;
-		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1399,8 +1411,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void setParent(ISprite s) {
+		if (_objectSuper == s) {
+			return;
+		}
 		if (s instanceof IEntity) {
 			setSuper((IEntity) s);
+		} else if (s instanceof ISprite) {
+			setSuper(new SpriteEntity(s));
 		} else {
 			setSuper(null);
 		}

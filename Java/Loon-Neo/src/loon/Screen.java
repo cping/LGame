@@ -2701,6 +2701,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	@SuppressWarnings("unchecked")
+	public <T extends ActionBind> T node(String typeName, String text, float x, float y, float w, float h) {
+		Object node = create(typeName, text, x, y, w, h);
+		add(node);
+		return (T) node;
+	}
+
+	@SuppressWarnings("unchecked")
 	public <T extends ActionBind> T node(String typeName, IFont font, String text, float x, float y, float w, float h) {
 		Object node = create(typeName, font, text, x, y, w, h);
 		add(node);

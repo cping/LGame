@@ -81,6 +81,11 @@ public class StringNodeMaker<T extends ActionBind> implements IV<T> {
 		return create(toType(typeName), font, text, x, y, 0f, 0f);
 	}
 
+	public final static <T extends ActionBind> T create(String typeName, String text, float x, float y, float w,
+			float h) {
+		return new StringNodeMaker<T>(toType(typeName), LSystem.getSystemGameFont(), text, x, y, w, h).get();
+	}
+
 	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y,
 			float w, float h) {
 		return new StringNodeMaker<T>(toType(typeName), font, text, x, y, w, h).get();

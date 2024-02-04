@@ -110,6 +110,12 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public LObject<T> setSuper(T s) {
+		if (s == _objectSuper) {
+			return this;
+		}
+		if (s == this) {
+			return this;
+		}
 		this._objectSuper = s;
 		return this;
 	}

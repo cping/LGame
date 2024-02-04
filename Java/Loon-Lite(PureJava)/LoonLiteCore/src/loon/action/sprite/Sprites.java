@@ -1759,12 +1759,17 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private void addAllRect(TArray<RectBox> rects, ISprite spr) {
 		if (spr instanceof Entity) {
 			if (spr.isContainer()) {
-				Entity ns = (Entity) spr;
-				TArray<IEntity> childs = ns._childrens;
-				for (int i = childs.size - 1; i > -1; i--) {
+				final Entity ns = (Entity) spr;
+				final TArray<IEntity> childs = ns._childrens;
+				final int size = childs.size;
+				for (int i = size - 1; i > -1; i--) {
 					IEntity cc = childs.get(i);
 					if (cc != null) {
-						addRect(rects, ns.getCollisionBox().add(cc.getCollisionBox()));
+						final RectBox rect1 = ns.getCollisionBox();
+						final RectBox rect2 = cc.getCollisionBox();
+						if (rect1 != null && !rect1.equals(rect2)) {
+							addRect(rects, rect1.add(rect2));
+						}
 					}
 				}
 			} else {
@@ -1772,12 +1777,17 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		} else if (spr instanceof Sprite) {
 			if (spr.isContainer()) {
-				Sprite ns = (Sprite) spr;
-				TArray<ISprite> childs = ns._childrens;
-				for (int i = childs.size - 1; i > -1; i--) {
+				final Sprite ns = (Sprite) spr;
+				final TArray<ISprite> childs = ns._childrens;
+				final int size = childs.size;
+				for (int i = size - 1; i > -1; i--) {
 					ISprite cc = childs.get(i);
 					if (cc != null) {
-						addRect(rects, ns.getCollisionBox().add(cc.getCollisionBox()));
+						final RectBox rect1 = ns.getCollisionBox();
+						final RectBox rect2 = cc.getCollisionBox();
+						if (rect1 != null && !rect1.equals(rect2)) {
+							addRect(rects, rect1.add(rect2));
+						}
 					}
 				}
 			} else {
@@ -1790,9 +1800,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	public DirtyRectList getDirtyList() {
 		final TArray<RectBox> rects = new TArray<RectBox>();
-		ISprite[] childs = _sprites;
+		final ISprite[] childs = _sprites;
 		if (childs != null) {
-			for (int i = childs.length - 1; i > -1; i--) {
+			final int size = _size;
+			for (int i = size - 1; i > -1; i--) {
 				ISprite spr = childs[i];
 				if (spr != null) {
 					addAllRect(rects, spr);
@@ -1800,7 +1811,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		_dirtyList.clear();
-		for (RectBox rect : rects) {
+		final int len = rects.size;
+		for (int j = 0; j < len; j++) {
+			final RectBox rect = rects.get(j);
 			if (rect.width > 1 && rect.height > 1) {
 				_dirtyList.add(rect);
 			}

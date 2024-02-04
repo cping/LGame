@@ -829,8 +829,14 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public float getScreenX() {
+		ISprite parent = getParent();
+		if (parent == null) {
+			return getX();
+		}
+		if (parent instanceof SpriteEntity) {
+			return getX();
+		}
 		float x = 0;
-		ISprite parent = _objectSuper;
 		if (parent != null) {
 			x += parent.getX();
 			for (; (parent = parent.getParent()) != null;) {
@@ -841,8 +847,14 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public float getScreenY() {
+		ISprite parent = getParent();
+		if (parent == null) {
+			return getY();
+		}
+		if (parent instanceof SpriteEntity) {
+			return getY();
+		}
 		float y = 0;
-		ISprite parent = _objectSuper;
 		if (parent != null) {
 			y += parent.getY();
 			for (; (parent = parent.getParent()) != null;) {
@@ -1674,6 +1686,10 @@ public class Sprite extends LObject<ISprite>
 	public Sprite setAutoXYSort(boolean a) {
 		this._xySort = a;
 		return this;
+	}
+
+	public SpriteEntity toEntity() {
+		return new SpriteEntity(this);
 	}
 
 	public boolean isClosed() {

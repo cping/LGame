@@ -1174,6 +1174,11 @@ public class HelperUtils {
 		return StringNodeMaker.create(typeName, font, text, x, y);
 	}
 
+	public final static <T extends ActionBind> T create(String typeName, String text, float x, float y, float w,
+			float h) {
+		return StringNodeMaker.create(typeName, text, x, y, w, h);
+	}
+
 	public final static <T extends ActionBind> T create(String typeName, IFont font, String text, float x, float y,
 			float w, float h) {
 		return StringNodeMaker.create(typeName, font, text, x, y, w, h);
