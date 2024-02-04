@@ -18,9 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon;
-
-import loon.utils.res.loaders.PreloadAssets;
+package loon.utils.res.loaders;
 
 public interface PreloadLoader {
 

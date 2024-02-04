@@ -38,6 +38,8 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.loaders.PreloadAssets;
+import loon.utils.res.loaders.PreloadControl;
+import loon.utils.res.loaders.PreloadLoader;
 import loon.utils.timer.LTimerContext;
 
 /**

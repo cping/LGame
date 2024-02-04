@@ -18,13 +18,15 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon;
+package loon.utils.res.loaders;
 
+import loon.LRelease;
+import loon.LSysException;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
-import loon.utils.res.loaders.PreloadAssets;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -69,6 +71,8 @@ public class PreloadControl implements LRelease {
 
 	private PreloadAssets _preAssets;
 
+	private boolean _closedFreeResource;
+
 	private float _preMaxFileCount;
 
 	private float _percent;
@@ -80,10 +84,19 @@ public class PreloadControl implements LRelease {
 	private PreloadLoader _loader;
 
 	public PreloadControl(PreloadLoader loader) {
+		this(loader, false);
+	}
+
+	public PreloadControl(PreloadLoader loader, boolean freeRes) {
 		this._loader = loader;
+		this._closedFreeResource = freeRes;
 	}
 
 	public void createPreloadAssets() {
+		if (_closedFreeResource && this._preAssets != null) {
+			this._preAssets.close();
+			this._preAssets = null;
+		}
 		this._preAssets = new PreloadAssets();
 	}
 
@@ -131,6 +144,12 @@ public class PreloadControl implements LRelease {
 	 */
 	public void preloadProgress(float percent) {
 		_loader.preloadProgress(percent);
+	}
+
+	public PreloadControl prereload() {
+		clear();
+		prestart();
+		return this;
 	}
 
 	public PreloadAssets getPreloadAssets() {
@@ -191,6 +210,15 @@ public class PreloadControl implements LRelease {
 		return this;
 	}
 
+	public boolean isClosedFreeResource() {
+		return _closedFreeResource;
+	}
+
+	public PreloadControl setClosedFreeResource(boolean c) {
+		this._closedFreeResource = c;
+		return this;
+	}
+
 	public void dispose() {
 		if (this._preAssets != null) {
 			this._preAssets.close();
@@ -198,9 +226,21 @@ public class PreloadControl implements LRelease {
 		}
 	}
 
-	@Override
-	public void close() {
+	public void clear() {
 		_preMaxFileCount = _percent = _maxPercent = 0;
 		_preloadInterval = 0;
 	}
+
+	public boolean isFinished() {
+		return _preMaxFileCount == 0;
+	}
+
+	@Override
+	public void close() {
+		if (_closedFreeResource) {
+			dispose();
+		}
+		clear();
+	}
+
 }
