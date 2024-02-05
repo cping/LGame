@@ -61,6 +61,8 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 
 	private boolean _displayCompleted;
 
+	private boolean _moveOrbitReverse;
+
 	private boolean _inited;
 
 	private boolean _looping;
@@ -254,17 +256,33 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 			break;
 		case CURVE:
 			if (c) {
-				if (idx % 2 == 0) {
-					o.x += _orbitValue;
+				if (!_moveOrbitReverse) {
+					if (idx % 2 == 0) {
+						o.x += _orbitValue;
+					} else {
+						o.x -= _orbitValue;
+					}
 				} else {
-					o.x -= _orbitValue;
+					if (idx % 2 != 0) {
+						o.x += _orbitValue;
+					} else {
+						o.x -= _orbitValue;
+					}
 				}
 			}
 			if (r) {
-				if (idx % 2 == 0) {
-					o.y += _orbitValue;
+				if (!_moveOrbitReverse) {
+					if (idx % 2 == 0) {
+						o.y += _orbitValue;
+					} else {
+						o.y -= _orbitValue;
+					}
 				} else {
-					o.y -= _orbitValue;
+					if (idx % 2 != 0) {
+						o.y += _orbitValue;
+					} else {
+						o.y -= _orbitValue;
+					}
 				}
 			}
 			break;
@@ -316,10 +334,11 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 						this._complete = true;
 						this._playing = false;
 					} else {
-						this.setStartX(_startX + o.x);
-						this.setStartY(_startY + o.y);
 						this._playing = false;
 						this._moveDir = Side.getOppositeSide(_moveDir);
+						this._moveOrbitReverse = !_moveOrbitReverse;
+						this.setStartX(_startX + o.x);
+						this.setStartY(_startY + o.y);
 						this.restart();
 					}
 				}
@@ -340,7 +359,7 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 				final AfterObject o = _afterObjects.get(i);
 				if (o != null) {
 					g.setAlpha(o.alpha);
-					g.draw(_afterTexture, drawX(newX) + (_startX + o.x), drawY(newY) + (_startY + o.y), o.width,
+					g.draw(_afterTexture, newX + (_startX + o.x), newY + (_startY + o.y), o.width,
 							o.height);
 				}
 			}
@@ -348,7 +367,7 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		} else {
 			final AfterObject o = _afterObjects.last();
 			if (o != null) {
-				g.draw(_afterTexture, drawX(newX) + (_startX + o.x), drawY(newY) + (_startY + o.y), o.width, o.height);
+				g.draw(_afterTexture, newX + (_startX + o.x), newY + (_startY + o.y), o.width, o.height);
 			}
 		}
 	}

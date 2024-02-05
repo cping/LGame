@@ -57,6 +57,14 @@ public class LSystem {
 
 	public static final String UNKNOWN = "unknown";
 
+	public static final String SUCCESS = "success";
+
+	public static final String NONE = "none";
+
+	public static final String ERROR = "error";
+
+	public static final String INPUT = "input";
+
 	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';
 

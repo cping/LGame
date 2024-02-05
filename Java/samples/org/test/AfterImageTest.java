@@ -32,10 +32,10 @@ public class AfterImageTest extends Stage {
 
 		// 构建残像图片特效.默认向右移动,图片为ball.png,初始位置60,160,大小32x32,残像数量9
 		AfterImageEffect effect = new AfterImageEffect(Config.TRIGHT, "ball.png", 60, 160, 32, 32, 9);
-		// 残影间隔1像素
+		// 残影间隔2像素
 		effect.setInterval(2f);
 		// 曲线方式移动残影
-		// effect.setMoveOrbit(AfterImageEffect.CURVE);
+		//effect.setMoveOrbit(AfterImageEffect.CURVE);
 		// 开始播放残像动画
 		effect.start();
 		// 注入效果
