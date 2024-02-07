@@ -3,6 +3,7 @@ module loon.core {
 	exports loon.action;
 	exports loon.action.avg;
 	exports loon.action.avg.drama;
+	exports loon.action.camera;
 	exports loon.action.collision;
 	exports loon.action.map;
 	exports loon.action.map.battle;

@@ -711,60 +711,116 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return _objectLocation;
 	}
 
+	public static void centerOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2 - object.getWidth() / 2), y + (h / 2 - object.getHeight() / 2));
+	}
+
+	public static void centerTopOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2 - object.getWidth() / 2), y);
+	}
+
+	public static void centerBottomOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2 - object.getWidth() / 2), y + (h - object.getHeight()));
+	}
+
+	public static void topOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2 - object.getWidth() / 2), y);
+	}
+
+	public static void topLeftOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x, y);
+	}
+
+	public static void topRightOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w - object.getWidth()), y);
+	}
+
+	public static void bottomLeftOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x, y + (h - object.getHeight()));
+	}
+
+	public static void bottomRightOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w - object.getWidth()), y + (h - object.getHeight()));
+	}
+
+	public static void leftOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x, y + (h / 2 - object.getHeight() / 2));
+	}
+
+	public static void rightOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w - object.getWidth()), y + (h / 2 - object.getHeight() / 2));
+	}
+
+	public static void bottomOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2 - object.getWidth() / 2), y + (h - object.getHeight()));
+	}
+
+	public static void middleLeftOn(final LObject<?> object, float x, float y, float w, float h) {
+		leftOn(object, x, y, w, h);
+	}
+
+	public static void middleCenterOn(final LObject<?> object, float x, float y, float w, float h) {
+		centerOn(object, x, y, w, h);
+	}
+
+	public static void middleRightOn(final LObject<?> object, float x, float y, float w, float h) {
+		rightOn(object, x, y, w, h);
+	}
+
 	public static void centerOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2, h / 2 - object.getHeight() / 2);
+		centerOn(object, 0f, 0f, w, h);
 	}
 
 	public static void centerTopOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2, 0);
+		centerTopOn(object, 0f, 0f, w, h);
 	}
 
 	public static void centerBottomOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
+		centerBottomOn(object, 0f, 0f, w, h);
 	}
 
 	public static void topOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2, 0);
+		topOn(object, 0f, 0f, w, h);
 	}
 
 	public static void topLeftOn(final LObject<?> object, float w, float h) {
-		object.setLocation(0, 0);
+		topLeftOn(object, 0f, 0f, w, h);
 	}
 
 	public static void topRightOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w - object.getWidth(), 0);
+		topRightOn(object, 0f, 0f, w, h);
 	}
 
 	public static void bottomLeftOn(final LObject<?> object, float w, float h) {
-		object.setLocation(0, h - object.getHeight());
+		bottomLeftOn(object, 0f, 0f, w, h);
 	}
 
 	public static void bottomRightOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w - object.getWidth(), h - object.getHeight());
+		bottomRightOn(object, 0f, 0f, w, h);
 	}
 
 	public static void leftOn(final LObject<?> object, float w, float h) {
-		object.setLocation(0, h / 2 - object.getHeight() / 2);
+		leftOn(object, 0f, 0f, w, h);
 	}
 
 	public static void rightOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w - object.getWidth(), h / 2 - object.getHeight() / 2);
+		rightOn(object, 0f, 0f, w, h);
 	}
 
 	public static void bottomOn(final LObject<?> object, float w, float h) {
-		object.setLocation(w / 2 - object.getWidth() / 2, h - object.getHeight());
+		bottomOn(object, 0f, 0f, w, h);
 	}
 
 	public static void middleLeftOn(final LObject<?> object, float w, float h) {
-		leftOn(object, w, h);
+		middleLeftOn(object, 0f, 0f, w, h);
 	}
 
 	public static void middleCenterOn(final LObject<?> object, float w, float h) {
-		centerOn(object, w, h);
+		middleCenterOn(object, 0f, 0f, w, h);
 	}
 
 	public static void middleRightOn(final LObject<?> object, float w, float h) {
-		rightOn(object, w, h);
+		middleRightOn(object, 0f, 0f, w, h);
 	}
 
 	public void moveOn(final LayoutAlign align, final LObject<?> obj) {

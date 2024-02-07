@@ -571,6 +571,20 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
+	public float mag(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
+		return MathUtils.sqrt(magSquared(pos));
+	}
+
+	public float magSquared(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
+		return (pos.getX() * pos.getX()) + (pos.getY() * pos.getY());
+	}
+
 	public float max() {
 		return MathUtils.max(this.x, this.y);
 	}

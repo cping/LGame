@@ -72,6 +72,8 @@ public class LProcess implements LRelease {
 
 	private boolean _running;
 
+	private float _touchScaleX = 1f, _touchScaleY = 1f;
+
 	private Screen _currentScreen, _loadingScreen;
 
 	private LTransition _transition;
@@ -821,7 +823,7 @@ public class LProcess implements LRelease {
 		} else {
 			_pointLocaltion.set(newX, newY);
 		}
-		_pointLocaltion.addSelf(_offsetTouch);
+		_pointLocaltion.mulSelf(_touchScaleX, _touchScaleY).addSelf(_offsetTouch);
 		if (isFlipX() || isFlipY()) {
 			HelperUtils.local2Global(isFlipX(), isFlipY(), fx + getWidth() / 2, fy + getHeight() / 2, _pointLocaltion.x,
 					_pointLocaltion.y, _pointLocaltion);
@@ -1157,8 +1159,53 @@ public class LProcess implements LRelease {
 		return this;
 	}
 
+	public LProcess setOffsetTouchX(float x) {
+		_offsetTouch.x = x;
+		return this;
+	}
+
+	public LProcess setOffsetTouchY(float y) {
+		_offsetTouch.y = y;
+		return this;
+	}
+
+	public LProcess setScaleTouch(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		return setScaleTouch(pos.getX(), pos.getY());
+	}
+
+	public LProcess setScaleTouch(float sx, float sy) {
+		this._touchScaleX = sx;
+		this._touchScaleY = sy;
+		return this;
+	}
+
+	public LProcess setScaleTouchX(float sx) {
+		this._touchScaleX = sx;
+		return this;
+	}
+
+	public LProcess setScaleTouchY(float sy) {
+		this._touchScaleY = sy;
+		return this;
+	}
+
 	public Vector2f getOffsetTouch() {
 		return _offsetTouch;
+	}
+
+	public Vector2f getPointTouch() {
+		return _pointLocaltion;
+	}
+
+	public float getTouchScaleX() {
+		return _touchScaleX;
+	}
+
+	public float getTouchScaleY() {
+		return _touchScaleY;
 	}
 
 	public LGame getGame() {

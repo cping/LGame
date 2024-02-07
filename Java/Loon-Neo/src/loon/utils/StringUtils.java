@@ -1535,6 +1535,14 @@ final public class StringUtils extends CharUtils {
 		return count >= size;
 	}
 
+	public static boolean isAlphabetLower(CharSequence v) {
+		return isAllLowercaseAlpha(v);
+	}
+
+	public static boolean isAlphabetUpper(CharSequence v) {
+		return isAllUppercaseAlpha(v);
+	}
+
 	/**
 	 * 判断整个字符串是否完全有hex字符(0-f)组成
 	 * 

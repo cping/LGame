@@ -278,7 +278,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	protected LProcess _processHandler;
 
-	private int _currentWidth, _currentHeight, _halfWidth, _halfHeight;
 	// 精灵集合
 	private Sprites _currentSprites;
 
@@ -298,13 +297,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _isLoad, _isLock, _isClose;
 
-	private boolean _isTranslate, _isGravity;
+	private boolean _isGravity;
 
 	private boolean _isProcessing = true;
 
 	protected boolean _isNext;
-
-	private float _currentX, _currentY;
 
 	private float _lastTouchX, _lastTouchY, _touchDX, _touchDY;
 
@@ -1364,39 +1361,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 			switch (m) {
 			case FROM_LEFT:
-				_curDstPos.setLocation(-getWidth(), 0);
+				_curDstPos.setLocation(-getRenderWidth(), getRenderY());
 				_isScreenFrom = true;
 				break;
 			case FROM_RIGHT:
-				_curDstPos.setLocation(getWidth(), 0);
+				_curDstPos.setLocation(getRenderWidth(), getRenderY());
 				_isScreenFrom = true;
 				break;
 			case FROM_UP:
-				_curDstPos.setLocation(0, -getHeight());
+				_curDstPos.setLocation(getRenderX(), -getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			case FROM_DOWN:
-				_curDstPos.setLocation(0, getHeight());
+				_curDstPos.setLocation(getRenderX(), getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			case FROM_UPPER_LEFT:
-				_curDstPos.setLocation(-getWidth(), -getHeight());
+				_curDstPos.setLocation(-getRenderWidth(), -getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			case FROM_UPPER_RIGHT:
-				_curDstPos.setLocation(getWidth(), -getHeight());
+				_curDstPos.setLocation(getRenderWidth(), -getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			case FROM_LOWER_LEFT:
-				_curDstPos.setLocation(-getWidth(), getHeight());
+				_curDstPos.setLocation(-getRenderWidth(), getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			case FROM_LOWER_RIGHT:
-				_curDstPos.setLocation(getWidth(), getHeight());
+				_curDstPos.setLocation(getRenderWidth(), getRenderHeight());
 				_isScreenFrom = true;
 				break;
 			default:
-				_curDstPos.setLocation(0, 0);
+				_curDstPos.setLocation(getRenderX(), getRenderY());
 				_isScreenFrom = false;
 				break;
 			}
@@ -1575,30 +1572,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public void setSize(int w, int h) {
+		resetSize(w, h);
+	}
+
 	final public void resetSize() {
 		resetSize(0, 0);
 	}
 
 	final public void resetSize(int w, int h) {
+		this.updateRenderSize(0f, 0f, (w <= 0 ? LSystem.viewSize.getWidth() : w),
+				(h <= 0 ? LSystem.viewSize.getHeight() : h));
 		this._processHandler = LSystem.getProcess();
-		this._currentWidth = (w <= 0 ? LSystem.viewSize.getWidth() : w);
-		this._currentHeight = (h <= 0 ? LSystem.viewSize.getHeight() : h);
-		this._halfWidth = _currentWidth / 2;
-		this._halfHeight = _currentHeight / 2;
-		this.setSize(_currentWidth, _currentHeight);
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
 		}
 		if (_curSpriteRun && _currentSprites != null) {
-			_currentSprites.setSize(_currentWidth, _currentHeight);
+			_currentSprites.setSize(getWidth(), getHeight());
 		}
 		if (_curDesktopRun && _currentDesktop != null) {
-			_currentDesktop.setSize(_currentWidth, _currentHeight);
+			_currentDesktop.setSize(getWidth(), getHeight());
 		}
 		if (_isGravity && _gravityHandler != null) {
-			_gravityHandler.setLimit(_currentWidth, _currentHeight);
+			_gravityHandler.setLimit(getWidth(), getHeight());
 		}
-		this.resize(_currentWidth, _currentHeight);
+		this.resize(getWidth(), getHeight());
 	}
 
 	final public void resetOrder() {
@@ -1640,31 +1638,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param height
 	 */
 	public void onCreate(int width, int height) {
+		this.setDirectorSize(0f, 0f, width, height);
 		this._currentMode = SCREEN_NOT_REPAINT;
 		this._curStageRun = true;
-		this._currentWidth = width;
-		this._currentHeight = height;
-		this._halfWidth = this._currentWidth / 2;
-		this._halfHeight = this._currentHeight / 2;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
 		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
-		this._isLoad = _isLock = _isClose = _isTranslate = _isGravity = false;
+		this._isLoad = _isLock = _isClose = _isGravity = false;
 		this._isProcessing = true;
 		if (_currentSprites != null) {
 			_currentSprites.close();
 			_currentSprites.removeAll();
 			_currentSprites = null;
 		}
-		this._currentSprites = new Sprites("ScreenSprites", this, _currentWidth, _currentHeight);
+		this._currentSprites = new Sprites("ScreenSprites", this, getWidth(), getHeight());
 		if (_currentDesktop != null) {
 			_currentDesktop.close();
 			_currentDesktop.clear();
 			_currentDesktop = null;
 		}
-		this._currentDesktop = new Desktop("ScreenDesktop", this, _currentWidth, _currentHeight);
-		this._currentX = _currentY = 0;
+		this._currentDesktop = new Desktop("ScreenDesktop", this, getWidth(), getHeight());
 		this._isNext = true;
-		this._isTranslate = false;
 		this._screenIndex = 0;
 		this._lastTocuh.empty();
 		this._keyActions.clear();
@@ -1890,7 +1883,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public GravityHandler setGravity(EasingMode ease, boolean g) {
-		return setGravity(getWidth(), getHeight(), ease, 1f, g);
+		return setGravity(getViewWidth(), getViewHeight(), ease, 1f, g);
 	}
 
 	/**
@@ -1902,7 +1895,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public GravityHandler setGravity(EasingMode ease, float d, boolean g) {
-		return setGravity(getWidth(), getHeight(), ease, d, g);
+		return setGravity(getViewWidth(), getViewHeight(), ease, d, g);
 	}
 
 	/**
@@ -2316,6 +2309,44 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 偏移点击位置
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	public Screen setOffsetTouch(XY pos) {
+		if (_processHandler != null) {
+			_processHandler.setOffsetTouch(pos);
+		}
+		return this;
+	}
+
+	/**
+	 * 缩放点击位置
+	 * 
+	 * @param pos
+	 * @return
+	 */
+	public Screen setScaleTouch(XY pos) {
+		if (_processHandler != null) {
+			_processHandler.setScaleTouch(pos);
+		}
+		return this;
+	}
+
+	/**
+	 * 把director数据同步到Screen中
+	 * 
+	 * @return
+	 */
+	public Screen updateDirectorTouch() {
+		if (_processHandler != null) {
+			updateTouch(_processHandler);
+		}
+		return this;
+	}
+
+	/**
 	 * 返回精灵监听
 	 * 
 	 * @return
@@ -2406,6 +2437,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 设定指定视图范围大小的背景图片
+	 * 
+	 * @param w
+	 * @param h
+	 * @param background
+	 * @return
+	 */
+	public Screen setBackground(final float w, final float h, final LTexture background) {
+		setView(w, h);
+		setBackground(background);
+		return this;
+	}
+
+	/**
 	 * 设定背景图像
 	 */
 	public Screen setBackground(String fileName) {
@@ -2413,6 +2458,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			return setBackgroundValue(fileName);
 		}
 		return this.setBackground(LSystem.loadTexture(fileName));
+	}
+
+	/**
+	 * 设定指定视图范围大小的背景图片
+	 * 
+	 * @param w
+	 * @param h
+	 * @param fileName
+	 * @return
+	 */
+	public Screen setBackground(final float w, final float h, final String fileName) {
+		setView(w, h);
+		setBackground(fileName);
+		return this;
 	}
 
 	/**
@@ -2427,6 +2486,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		} else {
 			_backgroundColor.setColor(c.r, c.g, c.b, c.a);
 		}
+		return this;
+	}
+
+	/**
+	 * 设定指定视图范围大小的背景图片
+	 * 
+	 * @param w
+	 * @param h
+	 * @param c
+	 * @return
+	 */
+	public Screen setBackground(final float w, final float h, final LColor c) {
+		setView(w, h);
+		setBackground(c);
 		return this;
 	}
 
@@ -2466,6 +2539,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Screen background(LTexture tex) {
 		return setBackground(tex);
+	}
+
+	public Screen background(float w, float h, String c) {
+		return setBackground(w, h, c);
+	}
+
+	public Screen background(float w, float h, LColor c) {
+		return setBackground(w, h, c);
+	}
+
+	public Screen background(float w, float h, LTexture tex) {
+		return setBackground(w, h, tex);
 	}
 
 	public LColor getBackgroundColor() {
@@ -3385,10 +3470,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean containsView(ActionBind obj) {
+		if (obj == null) {
+			return false;
+		}
 		return getRectBox().contains(obj.getX(), obj.getY(), obj.getWidth(), obj.getHeight());
 	}
 
 	public boolean contains(Object obj) {
+		if (obj == null) {
+			return false;
+		}
 		if (obj instanceof ISprite) {
 			return contains((ISprite) obj, false);
 		} else if (obj instanceof LComponent) {
@@ -3484,57 +3575,57 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen centerOn(final LObject<?> object) {
-		LObject.centerOn(object, getWidth(), getHeight());
+		LObject.centerOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerTopOn(final LObject<?> object) {
-		LObject.centerTopOn(object, getWidth(), getHeight());
+		LObject.centerTopOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerBottomOn(final LObject<?> object) {
-		LObject.centerBottomOn(object, getWidth(), getHeight());
+		LObject.centerBottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topOn(final LObject<?> object) {
-		LObject.topOn(object, getWidth(), getHeight());
+		LObject.topOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topLeftOn(final LObject<?> object) {
-		LObject.topLeftOn(object, getWidth(), getHeight());
+		LObject.topLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topRightOn(final LObject<?> object) {
-		LObject.topRightOn(object, getWidth(), getHeight());
+		LObject.topRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen leftOn(final LObject<?> object) {
-		LObject.leftOn(object, getWidth(), getHeight());
+		LObject.leftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen rightOn(final LObject<?> object) {
-		LObject.rightOn(object, getWidth(), getHeight());
+		LObject.rightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomOn(final LObject<?> object) {
-		LObject.bottomOn(object, getWidth(), getHeight());
+		LObject.bottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomLeftOn(final LObject<?> object) {
-		LObject.bottomLeftOn(object, getWidth(), getHeight());
+		LObject.bottomLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomRightOn(final LObject<?> object) {
-		LObject.bottomRightOn(object, getWidth(), getHeight());
+		LObject.bottomRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
@@ -3561,9 +3652,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen pos(float x, float y) {
-		this._currentX = x;
-		this._currentY = y;
-		this._isTranslate = (_currentX != 0 || _currentY != 0);
+		this.setDirectorViewLocation(x, y);
 		return this;
 	}
 
@@ -3573,7 +3662,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen posX(float x) {
-		setLocation(x, _currentY);
+		setDirectorViewLocationX(x);
 		return this;
 	}
 
@@ -3583,18 +3672,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen posY(float y) {
-		setLocation(_currentX, y);
+		setDirectorViewLocationY(y);
 		return this;
-	}
-
-	@Override
-	public float getX() {
-		return this._currentX;
-	}
-
-	@Override
-	public float getY() {
-		return this._currentY;
 	}
 
 	protected LTextureImage createTextureImage(float w, float h) {
@@ -3666,9 +3745,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 							getY() + (_pivotY == -1 ? getHalfHeight() : _pivotY));
 				}
 				// 偏移屏幕
-				if (_isTranslate) {
-					g.translate(_currentX, _currentY);
-				}
+				offsetDirectorStart(g);
 				if (_isExistCamera) {
 					g.setCamera(_baseCamera);
 				}
@@ -3680,15 +3757,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				case Screen.SCREEN_NOT_REPAINT:
 					// 默认将background设置为和窗口一样大小
 					if (getBackground() != null) {
-						g.draw(getBackground(), 0, 0, getWidth(), getHeight());
+						g.draw(getBackground(), getRenderX(), getRenderY(), getViewWidth(), getViewHeight());
 					}
 					break;
 				case Screen.SCREEN_TEXTURE_REPAINT:
-					g.draw(getBackground(), 0, 0, getWidth(), getHeight());
+					g.draw(getBackground(), getRenderX(), getRenderY(), getViewWidth(), getViewHeight());
 					break;
 				case Screen.SCREEN_COLOR_REPAINT:
 					if (getBackground() != null) {
-						g.draw(getBackground(), 0, 0, getWidth(), getHeight());
+						g.draw(getBackground(), getRenderX(), getRenderY(), getViewWidth(), getViewHeight());
 					} else {
 						LColor c = getBackgroundColor();
 						if (c != null) {
@@ -3697,8 +3774,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					}
 					break;
 				default:
-					g.draw(getBackground(), repaintMode / 2 - MathUtils.random(repaintMode),
-							repaintMode / 2 - MathUtils.random(repaintMode), getWidth(), getHeight());
+					g.draw(getBackground(), getRenderX() + (repaintMode / 2 - MathUtils.random(repaintMode)),
+							getRenderY() + (repaintMode / 2 - MathUtils.random(repaintMode)), getViewWidth(),
+							getViewHeight());
 					break;
 				}
 				// 最下一层渲染，可重载
@@ -3754,7 +3832,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_isScreenFrom) {
 					repaint(g);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
-						g.setClip(_curDstPos.x(), _curDstPos.y(), getWidth(), getHeight());
+						g.setClip(_curDstPos.x(), _curDstPos.y(), getRenderWidth(), getRenderHeight());
 						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
 					_replaceDstScreen.createUI(g);
@@ -3765,7 +3843,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				} else {
 					_replaceDstScreen.createUI(g);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
-						g.setClip(_curDstPos.x(), _curDstPos.y(), getWidth(), getHeight());
+						g.setClip(_curDstPos.x(), _curDstPos.y(), getRenderWidth(), getRenderHeight());
 						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
 					repaint(g);
@@ -3997,56 +4075,56 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					switch (_curReplaceMethod) {
 					case FROM_LEFT:
 						_curDstPos.move_right(_replaceScreenSpeed);
-						if (_curDstPos.x() >= 0) {
+						if (_curDstPos.x() >= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_RIGHT:
 						_curDstPos.move_left(_replaceScreenSpeed);
-						if (_curDstPos.x() <= 0) {
+						if (_curDstPos.x() <= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_UP:
 						_curDstPos.move_down(_replaceScreenSpeed);
-						if (_curDstPos.y() >= 0) {
+						if (_curDstPos.y() >= getRenderY()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_DOWN:
 						_curDstPos.move_up(_replaceScreenSpeed);
-						if (_curDstPos.y() <= 0) {
+						if (_curDstPos.y() <= getRenderY()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LEFT:
 						_curDstPos.move_left(_replaceScreenSpeed);
-						if (_curDstPos.x() < -getWidth()) {
+						if (_curDstPos.x() < -getRenderWidth()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_RIGHT:
 						_curDstPos.move_right(_replaceScreenSpeed);
-						if (_curDstPos.x() > getWidth()) {
+						if (_curDstPos.x() > getRenderWidth()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UP:
 						_curDstPos.move_up(_replaceScreenSpeed);
-						if (_curDstPos.y() < -getHeight()) {
+						if (_curDstPos.y() < -getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_DOWN:
 						_curDstPos.move_down(_replaceScreenSpeed);
-						if (_curDstPos.y() > getHeight()) {
+						if (_curDstPos.y() > getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
@@ -4057,68 +4135,68 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 						} else {
 							_curDstPos.move_right(_replaceScreenSpeed);
 						}
-						if (_curDstPos.y() >= 0 && _curDstPos.x() >= 0) {
+						if (_curDstPos.y() >= getRenderY() && _curDstPos.x() >= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_UPPER_RIGHT:
-						if (_curDstPos.y() < 0) {
+						if (_curDstPos.y() < getRenderY()) {
 							_curDstPos.move_45D_down(_replaceScreenSpeed);
 						} else {
 							_curDstPos.move_left(_replaceScreenSpeed);
 						}
-						if (_curDstPos.y() >= 0 && _curDstPos.x() <= 0) {
+						if (_curDstPos.y() >= getRenderY() && _curDstPos.x() <= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_LOWER_LEFT:
-						if (_curDstPos.y() > 0) {
+						if (_curDstPos.y() > getRenderY()) {
 							_curDstPos.move_45D_up(_replaceScreenSpeed);
 						} else {
 							_curDstPos.move_right(_replaceScreenSpeed);
 						}
-						if (_curDstPos.y() <= 0 && _curDstPos.x() >= 0) {
+						if (_curDstPos.y() <= getRenderY() && _curDstPos.x() >= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case FROM_LOWER_RIGHT:
-						if (_curDstPos.y() > 0) {
+						if (_curDstPos.y() > getRenderY()) {
 							_curDstPos.move_45D_left(_replaceScreenSpeed);
 						} else {
 							_curDstPos.move_left(_replaceScreenSpeed);
 						}
-						if (_curDstPos.y() <= 0 && _curDstPos.x() <= 0) {
+						if (_curDstPos.y() <= getRenderY() && _curDstPos.x() <= getRenderX()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UPPER_LEFT:
 						_curDstPos.move_45D_left(_replaceScreenSpeed);
-						if (_curDstPos.x() < -getWidth() || _curDstPos.y() <= -getHeight()) {
+						if (_curDstPos.x() < -getRenderWidth() || _curDstPos.y() <= -getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_UPPER_RIGHT:
 						_curDstPos.move_45D_up(_replaceScreenSpeed);
-						if (_curDstPos.x() > getWidth() || _curDstPos.y() < -getHeight()) {
+						if (_curDstPos.x() > getRenderWidth() || _curDstPos.y() < -getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LOWER_LEFT:
 						_curDstPos.move_45D_down(_replaceScreenSpeed);
-						if (_curDstPos.x() < -getWidth() || _curDstPos.y() > getHeight()) {
+						if (_curDstPos.x() < -getRenderWidth() || _curDstPos.y() > getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
 						break;
 					case OUT_LOWER_RIGHT:
 						_curDstPos.move_45D_right(_replaceScreenSpeed);
-						if (_curDstPos.x() > getWidth() || _curDstPos.y() > getHeight()) {
+						if (_curDstPos.x() > getRenderWidth() || _curDstPos.y() > getRenderHeight()) {
 							submitReplaceScreen();
 							return;
 						}
@@ -4156,21 +4234,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public int getScreenWidth() {
-		return (int) (_currentWidth * this._scaleX);
+		return MathUtils.ifloor(getViewWidth() * this._scaleX);
 	}
 
 	public int getScreenHeight() {
-		return (int) (_currentHeight * this._scaleY);
-	}
-
-	@Override
-	public int getWidth() {
-		return _currentWidth;
-	}
-
-	@Override
-	public int getHeight() {
-		return _currentHeight;
+		return MathUtils.ifloor(getViewHeight() * this._scaleY);
 	}
 
 	/**
@@ -4524,8 +4592,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isNotAllowTouch()) {
 			return;
 		}
-		if (_isTranslate) {
-			e.offset(_currentX, _currentY);
+		if (isTranslate()) {
+			e.offset(getX(), getY());
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
@@ -4557,8 +4625,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isNotAllowTouch()) {
 			return;
 		}
-		if (_isTranslate) {
-			e.offset(_currentX, _currentY);
+		if (isTranslate()) {
+			e.offset(getX(), getY());
 		}
 		int type = e.getTypeCode();
 		int button = e.getButton();
@@ -4590,8 +4658,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isNotAllowTouch()) {
 			return;
 		}
-		if (_isTranslate) {
-			e.offset(_currentX, _currentY);
+		if (isTranslate()) {
+			e.offset(getX(), getY());
 		}
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.MOVE, e.getX(), e.getY());
@@ -4605,8 +4673,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isNotAllowTouch()) {
 			return;
 		}
-		if (_isTranslate) {
-			e.offset(_currentX, _currentY);
+		if (isTranslate()) {
+			e.offset(getX(), getY());
 		}
 		if (!isClickLimit(e)) {
 			updateTouchArea(Event.DRAG, e.getX(), e.getY());
@@ -4676,6 +4744,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean inBounds(GameTouch event, ISprite o) {
+		if (event == null) {
+			return false;
+		}
+		if (o == null) {
+			return false;
+		}
 		return inBounds(event, o.x(), o.y(), o.getWidth(), o.getHeight());
 	}
 
@@ -4687,6 +4761,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean inBounds(GameTouch event, LComponent o) {
+		if (event == null) {
+			return false;
+		}
+		if (o == null) {
+			return false;
+		}
 		return inBounds(event, o.x(), o.y(), o.getWidth(), o.getHeight());
 	}
 
@@ -4698,20 +4778,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean inBounds(GameTouch event, RectBox rect) {
+		if (event == null) {
+			return false;
+		}
+		if (rect == null) {
+			return false;
+		}
 		return inBounds(event, rect.x, rect.y, rect.width, rect.height);
 	}
 
 	@Override
 	public boolean isMoving() {
 		return SysTouch.isDrag();
-	}
-
-	public int getHalfWidth() {
-		return _halfWidth;
-	}
-
-	public int getHalfHeight() {
-		return _halfHeight;
 	}
 
 	public Accelerometer.SensorDirection setSensorDirection(Accelerometer.SensorDirection dir) {
@@ -4797,7 +4875,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 检查指定组件是否显示于_currentDesktop当中
+	 * 检查指定组件是否显示于currentDesktop当中
 	 * 
 	 * @param comp
 	 * @return
@@ -4921,12 +4999,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean isTxUpdate() {
-		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || _currentX != 0 || _currentY != 0;
+		return _scaleX != 1f || _scaleY != 1f || _rotation != 0 || _flipX || _flipY || isTranslate();
 	}
 
 	public boolean isPosOffsetUpdate() {
-		return (_currentX != 0 || _currentY != 0)
-				&& (_scaleX == 1f && _scaleY == 1f && _rotation == 0 && !_flipX && !_flipY);
+		return isTranslate() && (_scaleX == 1f && _scaleY == 1f && _rotation == 0 && !_flipX && !_flipY);
 	}
 
 	public Screen setAlpha(float a) {
@@ -5351,7 +5428,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public Image screenshotToImage() {
 		Image tmp = GLUtils.getScreenshot();
-		Image image = Image.getResize(tmp, getWidth(), getHeight());
+		Image image = Image.getResize(tmp, getRenderWidth(), getRenderHeight());
 		tmp.close();
 		tmp = null;
 		return image;
@@ -5364,7 +5441,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public Pixmap screenshotToPixmap() {
 		Pixmap pixmap = GLUtils.getFrameBufferRGBPixmap();
-		Pixmap image = Pixmap.getResize(pixmap, getWidth(), getHeight());
+		Pixmap image = Pixmap.getResize(pixmap, getRenderWidth(), getRenderHeight());
 		pixmap.close();
 		pixmap = null;
 		return image;
@@ -5465,14 +5542,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (LSystem.getProcess() != null) {
 			return LSystem.getProcess().getOriginResolution();
 		}
-		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		return new Resolution(getRenderWidth(), getRenderHeight());
 	}
 
 	public Resolution getDisplayResolution() {
 		if (LSystem.getProcess() != null) {
 			return LSystem.getProcess().getDisplayResolution();
 		}
-		return new Resolution(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		return new Resolution(getRenderWidth(), getRenderHeight());
 	}
 
 	public String getOriginResolutionMode() {
@@ -6404,10 +6481,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_replaceDelay != null) {
 					_replaceDelay.setDelay(10);
 				}
-				_currentX = _currentY = _currentFrame = 0;
+				clearDirector();
+				_currentFrame = 0;
 				_collisionClosed = true;
 				_isClose = true;
-				_isTranslate = false;
 				_isNext = false;
 				_isGravity = false;
 				_isLock = true;

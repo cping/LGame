@@ -571,6 +571,20 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
+	public float mag(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
+		return MathUtils.sqrt(magSquared(pos));
+	}
+
+	public float magSquared(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
+		return (pos.getX() * pos.getX()) + (pos.getY() * pos.getY());
+	}
+
 	public float max() {
 		return MathUtils.max(this.x, this.y);
 	}
@@ -1368,12 +1382,12 @@ public class Vector2f implements Serializable, SetXY, XY {
 			return false;
 		return true;
 	}
-	
+
 	public Vector2f unit() {
 		final float len = this.length();
 		return len == 0 ? new Vector2f(0) : this.scale(1f / len);
 	}
-	
+
 	public boolean isUnit() {
 		return isUnit(0.000000001f);
 	}

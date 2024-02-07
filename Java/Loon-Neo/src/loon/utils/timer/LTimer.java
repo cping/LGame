@@ -585,6 +585,12 @@ public class LTimer implements LTimerListener, LRelease {
 			}
 		}
 		if (_currentListeners != null) {
+			if (timerListener == null) {
+				return false;
+			}
+			if (timerListener == this) {
+				return false;
+			}
 			return _currentListeners.add(timerListener);
 		}
 		return false;

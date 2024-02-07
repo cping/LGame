@@ -26,6 +26,7 @@ import loon.action.ActionBind;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 /**
  * 一个最基础的矩形碰撞器
@@ -248,6 +249,20 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return maxX > other.minX && minX < other.maxX && maxY > other.minY && minY < other.maxY;
 	}
 
+	public boolean contains(XY pos) {
+		if (pos == null) {
+			return false;
+		}
+		return pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY;
+	}
+
+	public boolean overlaps(AABB other) {
+		if (other == null) {
+			return false;
+		}
+		return (minX <= other.maxX && maxX >= other.minX && maxY >= other.minY && minY <= other.maxY);
+	}
+
 	public float distance(Vector2f other) {
 		float dx = getX() - other.x;
 		float dy = getY() - other.y;
@@ -284,6 +299,41 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	public AABB setPosition(float x, float y) {
 		setX(x);
 		setY(y);
+		return this;
+	}
+
+	public AABB setVertices(TArray<Vector2f> vertices, XY velocity) {
+		minX = Float.MIN_VALUE;
+		maxX = -Float.MIN_VALUE;
+		minY = Float.MIN_VALUE;
+		maxY = -Float.MIN_VALUE;
+		for (int i = 0; i < vertices.size; i++) {
+			Vector2f vertex = vertices.get(i);
+			if (vertex.x > maxX) {
+				maxX = vertex.x;
+			}
+			if (vertex.x < minX) {
+				minX = vertex.x;
+			}
+			if (vertex.y > maxY) {
+				maxY = vertex.y;
+			}
+			if (vertex.y < minY) {
+				minY = vertex.y;
+			}
+		}
+		if (velocity != null) {
+			if (velocity.getX() > 0) {
+				maxX += velocity.getX();
+			} else {
+				minX += velocity.getX();
+			}
+			if (velocity.getY() > 0) {
+				maxY += velocity.getY();
+			} else {
+				minY += velocity.getY();
+			}
+		}
 		return this;
 	}
 
@@ -564,6 +614,31 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		rect.height = MathUtils.floor(this.maxY - this.minY);
 
 		return rect;
+	}
+
+	public AABB translate(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		minX += pos.getX();
+		maxX += pos.getX();
+		minY += pos.getY();
+		maxY += pos.getY();
+		return this;
+	}
+
+	public AABB shift(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		float deltaX = maxX - minX;
+		float deltaY = maxY - minY;
+
+		minX = pos.getX();
+		maxX = pos.getX() + deltaX;
+		minY = pos.getY();
+		maxY = pos.getY() + deltaY;
+		return this;
 	}
 
 	public RectBox toRectBox() {
