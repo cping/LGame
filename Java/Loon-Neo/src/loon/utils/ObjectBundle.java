@@ -36,7 +36,7 @@ package loon.utils;
  */
 public class ObjectBundle extends MapBundle<Object> {
 
-	public ObjectBundle add(String key, Object value) {
+	public ObjectBundle set(String key, Object value) {
 		put(key, value);
 		return this;
 	}

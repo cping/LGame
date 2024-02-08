@@ -429,7 +429,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen(String name, int w, int h) {
-		init(name, w, h);
+		initialization(name, w, h);
 	}
 
 	public Screen(String name) {
@@ -444,9 +444,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this(LSystem.UNKNOWN, 0, 0);
 	}
 
-	protected void init(String name, int w, int h) {
+	protected void initialization(String name, int w, int h) {
 		this._screenName = name;
-		resetSize(w, h);
+		this.resetSize(w, h);
 	}
 
 	public Screen setID(int id) {
@@ -1572,6 +1572,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public void setSize(int w, int h, float ratio) {
+		setSize(MathUtils.ifloor(w * ratio), MathUtils.ifloor(h * ratio));
+	}
+
 	public void setSize(int w, int h) {
 		resetSize(w, h);
 	}
@@ -1675,6 +1679,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._conns.reset();
 		this._delayTimer.setDelay(0);
 		this._pauseTimer.setDelay(LSystem.SECOND);
+		if (_processHandler != null) {
+			setting(getBundle());
+		}
+	}
+
+	public void setting(ObjectBundle bundle) {
 	}
 
 	public Screen restart() {
@@ -3370,6 +3380,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean contains(ISprite sprite, boolean canView) {
+		if (sprite == null) {
+			return false;
+		}
 		boolean can = false;
 		if (_currentSprites != null) {
 			can = _currentSprites.contains(sprite);
@@ -3386,6 +3399,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean intersects(ISprite sprite, boolean canView) {
+		if (sprite == null) {
+			return false;
+		}
 		boolean can = false;
 		if (_currentSprites != null) {
 			can = _currentSprites.contains(sprite);
@@ -3398,6 +3414,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen remove(ISprite sprite) {
+		if (sprite == null) {
+			return this;
+		}
 		if (_currentSprites != null) {
 			_currentSprites.remove(sprite);
 			removeTouchLimit(sprite);
@@ -3413,6 +3432,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean contains(LComponent comp, boolean canView) {
+		if (comp == null) {
+			return false;
+		}
 		boolean can = false;
 		if (_currentDesktop != null) {
 			can = _currentDesktop.contains(comp);
@@ -3429,6 +3451,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public boolean intersects(LComponent comp, boolean canView) {
+		if (comp == null) {
+			return false;
+		}
 		boolean can = false;
 		if (_currentDesktop != null) {
 			can = _currentDesktop.contains(comp);

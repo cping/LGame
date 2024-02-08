@@ -349,6 +349,10 @@ public class Animation implements IArray, LRelease {
 		return this;
 	}
 
+	public Animation gotoFrame(int idx) {
+		return play(idx);
+	}
+
 	/**
 	 * 停止动画播放
 	 * 

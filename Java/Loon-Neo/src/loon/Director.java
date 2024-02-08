@@ -503,4 +503,20 @@ public class Director extends SoundBox {
 			return false;
 		}
 	}
+
+	public boolean isRenderlocked() {
+		return _renderlocked;
+	}
+
+	public void setRenderlocked(boolean r) {
+		this._renderlocked = r;
+	}
+
+	public boolean isViewlocked() {
+		return _viewlocked;
+	}
+
+	public void setViewlocked(boolean v) {
+		this._viewlocked = v;
+	}
 }
