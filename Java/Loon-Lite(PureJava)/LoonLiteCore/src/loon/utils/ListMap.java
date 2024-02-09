@@ -496,7 +496,7 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 	@Override
 	public Iterator<V> iterator() {
 		if (_iterable == null) {
-			_iterable = new ListMapIterable<>(this);
+			_iterable = new ListMapIterable<V>(this);
 		}
 		return _iterable.iterator();
 	}

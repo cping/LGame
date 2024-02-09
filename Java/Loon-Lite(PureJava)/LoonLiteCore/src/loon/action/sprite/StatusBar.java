@@ -32,11 +32,13 @@ import loon.utils.StringUtils;
  */
 public class StatusBar extends Entity {
 
+	private float _offsetTextX, _offsetTextY;
+
 	private LColor colorback, colorbefore, colorafter;
 
 	protected boolean showValue, hitObject, deadObject;
 
-	private int value, maxValue, minValue;
+	private int initValue, maxValue, minValue;
 
 	private int currentWidth, goalWidth;
 
@@ -73,7 +75,7 @@ public class StatusBar extends Entity {
 
 	public StatusBar(IFont font, int value, int max, int x, int y, int width, int height, LColor back, LColor before,
 			LColor after) {
-		this.value = value;
+		this.initValue = value;
 		this.maxValue = max;
 		this.minValue = value;
 		this.currentWidth = (width * value) / maxValue;
@@ -102,18 +104,18 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar set(int v) {
-		this.value = v;
+		this.initValue = v;
 		this.maxValue = v;
 		this.minValue = v;
-		this.currentWidth = (int) ((_width * value) / maxValue);
+		this.currentWidth = (int) ((_width * initValue) / maxValue);
 		this.goalWidth = (int) ((_width * minValue) / maxValue);
 		return this;
 	}
 
 	public StatusBar empty() {
-		this.value = 0;
+		this.initValue = 0;
 		this.minValue = 0;
-		this.currentWidth = (int) ((_width * value) / maxValue);
+		this.currentWidth = (int) ((_width * initValue) / maxValue);
 		this.goalWidth = (int) ((_width * minValue) / maxValue);
 		return this;
 	}
@@ -131,7 +133,7 @@ public class StatusBar extends Entity {
 		if (cv1 < _width || cv2 < _height) {
 			g.fillRect(x, y, _width, _height, colorback.mul(_baseColor));
 		}
-		if (minValue < value) {
+		if (minValue < initValue) {
 			if (cv1 == _width) {
 				g.fillRect(x, y, cv1, _height, colorbefore.mul(_baseColor));
 			} else {
@@ -172,7 +174,7 @@ public class StatusBar extends Entity {
 	 */
 	public StatusBar setUpdate(int val) {
 		this.minValue = MathUtils.mid(0, val, maxValue);
-		this.currentWidth = (int) ((_width * value) / maxValue);
+		this.currentWidth = (int) ((_width * initValue) / maxValue);
 		this.goalWidth = (int) ((_width * minValue) / maxValue);
 		return this;
 	}
@@ -188,16 +190,16 @@ public class StatusBar extends Entity {
 		}
 		if (currentWidth > goalWidth) {
 			currentWidth--;
-			value = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), value);
+			initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
 		} else {
 			currentWidth++;
-			value = MathUtils.mid(value, (int) ((currentWidth * maxValue) / _width), minValue);
+			initValue = MathUtils.mid(initValue, (int) ((currentWidth * maxValue) / _width), minValue);
 		}
 		return true;
 	}
 
 	public float getPercentage() {
-		return (float) this.value / (float) maxValue;
+		return (float) this.initValue / (float) maxValue;
 	}
 
 	public StatusBar setPercentage(float p) {
@@ -213,9 +215,9 @@ public class StatusBar extends Entity {
 		if (this.showValue) {
 			String displayValue = null;
 			if (StringUtils.isEmpty(numberString)) {
-				displayValue = String.valueOf(value);
+				displayValue = String.valueOf(initValue);
 			} else {
-				displayValue = StringUtils.format(numberString, String.valueOf(value));
+				displayValue = StringUtils.format(numberString, String.valueOf(initValue));
 			}
 			IFont font = g.getFont();
 			if (numberFont == null) {
@@ -224,8 +226,8 @@ public class StatusBar extends Entity {
 			g.setFont(numberFont);
 			int width = numberFont.stringWidth(displayValue);
 			int height = numberFont.getHeight();
-			g.drawString(displayValue, offX + (_width / 2 - width / 2), offY + (_height / 2 - height / 2) - 2,
-					fontColor);
+			g.drawString(displayValue, offX + (_width / 2 - width / 2) + _offsetTextX,
+					offY + (_height / 2 - height / 2) - 2 + _offsetTextY, fontColor);
 			g.setFont(font);
 		}
 	}
@@ -273,7 +275,7 @@ public class StatusBar extends Entity {
 
 	public StatusBar setMaxValue(int maxValue) {
 		this.maxValue = MathUtils.min(maxValue, 0);
-		this.currentWidth = (int) ((_width * value) / maxValue);
+		this.currentWidth = (int) ((_width * initValue) / maxValue);
 		this.goalWidth = (int) ((_width * minValue) / maxValue);
 		this.state();
 		return this;
@@ -285,18 +287,18 @@ public class StatusBar extends Entity {
 
 	public StatusBar setMinValue(int minValue) {
 		this.minValue = MathUtils.min(minValue, 0);
-		this.currentWidth = (int) ((_width * value) / maxValue);
+		this.currentWidth = (int) ((_width * initValue) / maxValue);
 		this.goalWidth = (int) ((_width * minValue) / maxValue);
 		this.state();
 		return this;
 	}
 
 	public int getValue() {
-		return value;
+		return initValue;
 	}
 
 	public StatusBar setValue(int value) {
-		this.value = value;
+		this.initValue = value;
 		return this;
 	}
 
@@ -336,6 +338,44 @@ public class StatusBar extends Entity {
 		return this;
 	}
 
+	public float getOffsetTextX() {
+		return _offsetTextX;
+	}
+
+	public StatusBar setOffsetTextX(float x) {
+		this._offsetTextX = x;
+		return this;
+	}
+
+	public float getOffsetTextY() {
+		return _offsetTextY;
+	}
+
+	public StatusBar setOffsetTextY(float y) {
+		this._offsetTextY = y;
+		return this;
+	}
+
+	public String getText() {
+		return numberString;
+	}
+
+	public StatusBar setText(String text) {
+		return setText(text, 0f, 0f);
+	}
+
+	public StatusBar setText(String text, float x, float y) {
+		this.numberString = text;
+		if (StringUtils.isNullOrEmpty(text)) {
+			showValue = false;
+		} else {
+			showValue = true;
+		}
+		this._offsetTextX = x;
+		this._offsetTextY = y;
+		return this;
+	}
+
 	public String getFormatNumber() {
 		return numberString;
 	}
@@ -344,4 +384,5 @@ public class StatusBar extends Entity {
 		this.numberString = num;
 		return this;
 	}
+
 }

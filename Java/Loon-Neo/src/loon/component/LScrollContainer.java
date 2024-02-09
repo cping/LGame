@@ -430,10 +430,10 @@ public class LScrollContainer extends LContainer {
 	@Override
 	public void process(final long elapsedTime) {
 		if (!isAutoScroll() && !isAutoVelocity()) {
-			if (_verticalVisible && _verticalScrollbar != null) {
+			if (_verticalVisible && _verticalScrollbar != null && isVerticalScrolling()) {
 				_verticalScrollbar.process(elapsedTime);
 			}
-			if (_horizontalVisible && _horizontalScrollbar != null) {
+			if (_horizontalVisible && _horizontalScrollbar != null && isHorizontalScrolling()) {
 				_horizontalScrollbar.process(elapsedTime);
 			}
 		} else {

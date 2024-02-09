@@ -334,7 +334,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public boolean isScrolling() {
-		return _scrolling;
+		return _scrolling && isClickDrag();
 	}
 
 	protected void setScroll(boolean sc) {
@@ -391,6 +391,7 @@ public class LScrollBar extends LComponent {
 			rClickX -= relativeClickX;
 			rClickY -= relativeClickY;
 			moveSlider(rClickX, rClickY);
+			setScroll(true);
 			return true;
 		}
 		return false;
@@ -474,8 +475,7 @@ public class LScrollBar extends LComponent {
 		adjustSlider();
 	}
 
-	@Override
-	public void process(final long elapsedTime) {
+	public void checkClicked() {
 		if (isAllowTouch()) {
 			final Vector2f pos = getUITouchXY();
 			if (isClickDown()) {
@@ -492,6 +492,10 @@ public class LScrollBar extends LComponent {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void process(final long elapsedTime) {
 		if (_scrollAmountTimer > 0) {
 			if (_minAutoScrollX == -1f) {
 				_minAutoScrollX = 0f;
@@ -537,6 +541,8 @@ public class LScrollBar extends LComponent {
 				_velocityX = 0f;
 				_velocityY = 0f;
 			}
+		} else {
+			checkClicked();
 		}
 	}
 

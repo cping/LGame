@@ -205,6 +205,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final IntMap<ActionKey> _keyActions = new IntMap<ActionKey>();
 
+	private ReplaceEvent _revent;
+
 	private Updateable _closeUpdate;
 
 	private TouchedClick _touchListener;
@@ -2069,15 +2071,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _isLoad;
 	}
 
-	private ReplaceEvent revent;
-
 	/**
 	 * 设置一个Screen替换事件的默认布局
 	 * 
 	 * @param re
 	 */
 	public void setReplaceEvent(ReplaceEvent re) {
-		this.revent = re;
+		this._revent = re;
 	}
 
 	/**
@@ -2086,7 +2086,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public ReplaceEvent getReplaceEvent() {
-		return this.revent;
+		return this._revent;
 	}
 
 	/**
@@ -2096,10 +2096,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen getReplaceScreen(int idx) {
-		if (revent == null) {
+		if (_revent == null) {
 			return null;
 		}
-		return this.revent.getScreen(idx);
+		return this._revent.getScreen(idx);
+	}
+
+	/**
+	 * 去向一个指定索引的Screen分支
+	 * 
+	 * @param idx
+	 * @return
+	 */
+	public Screen gotoSwitchScreen(int idx) {
+		if (_revent != null) {
+			return runEventScreen(idx);
+		} else {
+			return runIndexScreen(idx);
+		}
 	}
 
 	/**
@@ -2164,7 +2178,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public Screen runIndexScreen(int index) {
 		if (_processHandler != null) {
-			_processHandler.runIndexScreen(index);
+			return _processHandler.runIndexScreen(index);
 		}
 		return this;
 	}
@@ -2243,7 +2257,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
-	public Screen clearScreen() {
+	public Screen toggleScreen(CharSequence name) {
+		if (_processHandler != null) {
+			return _processHandler.toggleScreen(name);
+		}
+		return this;
+	}
+
+	public Screen clearScreens() {
 		if (_processHandler != null) {
 			_processHandler.clearScreens();
 		}
@@ -6467,6 +6488,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_scaleX = _scaleY = _alpha = 1f;
 				_baseColor = null;
 				_visible = false;
+				_revent = null;
 				_drawListener = null;
 				_touchListener = null;
 				if (_rectLimits != null) {

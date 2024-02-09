@@ -20,6 +20,8 @@
  */
 package loon;
 
+import java.util.Iterator;
+
 import loon.canvas.LColor;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -86,8 +88,8 @@ public class LProcess implements LRelease {
 
 	public LProcess(LGame game) {
 		this._game = game;
-		this._bundle = new ObjectBundle();
 		this._screenMap = new ListMap<CharSequence, Screen>();
+		this._bundle = new ObjectBundle();
 		this.initSetting();
 	}
 
@@ -845,7 +847,8 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess clearScreens() {
-		for (Screen screen : _screenMap) {
+		for (Iterator<Screen> it = _screenMap.iterator(); it.hasNext();) {
+			Screen screen = it.next();
 			if (screen != null) {
 				screen.destroy();
 			}
@@ -888,7 +891,8 @@ public class LProcess implements LRelease {
 	}
 
 	public Screen runScreenClassName(CharSequence name) {
-		for (Screen screen : _screenMap) {
+		for (Iterator<Screen> it = _screenMap.iterator(); it.hasNext();) {
+			Screen screen = it.next();
 			if (screen != null) {
 				if (name.equals(screen.getName())) {
 					setScreen(screen, false);
@@ -896,11 +900,12 @@ public class LProcess implements LRelease {
 				}
 			}
 		}
-		return null;
+		return _currentScreen;
 	}
 
 	public Screen runScreenName(CharSequence name) {
-		for (Screen screen : _screenMap) {
+		for (Iterator<Screen> it = _screenMap.iterator(); it.hasNext();) {
+			Screen screen = it.next();
 			if (screen != null) {
 				if (name.equals(screen.getScreenName())) {
 					setScreen(screen, false);
@@ -908,7 +913,16 @@ public class LProcess implements LRelease {
 				}
 			}
 		}
-		return null;
+		return _currentScreen;
+	}
+
+	public Screen toggleScreen(CharSequence name) {
+		Screen screen = getScreen(name);
+		if (screen != null && screen != _currentScreen) {
+			setScreen(screen, false);
+			return screen;
+		}
+		return _currentScreen;
 	}
 
 	public Screen runScreen(CharSequence name) {
@@ -917,7 +931,20 @@ public class LProcess implements LRelease {
 			setScreen(screen, false);
 			return screen;
 		}
-		return null;
+		return _currentScreen;
+	}
+
+	public Screen runIndexScreen(int index) {
+		int size = _screenMap.size;
+		if (size > 0 && index > -1 && index < size) {
+			Object o = _screenMap.getValueAt(index);
+			if (_currentScreen != o) {
+				final Screen screen = _screenMap.getValueAt(index);
+				setScreen(screen, false);
+				return screen;
+			}
+		}
+		return _currentScreen;
 	}
 
 	public LProcess runPopScreen() {
@@ -982,17 +1009,6 @@ public class LProcess implements LRelease {
 						return this;
 					}
 				}
-			}
-		}
-		return this;
-	}
-
-	public LProcess runIndexScreen(int index) {
-		int size = _screenMap.size;
-		if (size > 0 && index > -1 && index < size) {
-			Object o = _screenMap.getValueAt(index);
-			if (_currentScreen != o) {
-				setScreen(_screenMap.getValueAt(index), false);
 			}
 		}
 		return this;

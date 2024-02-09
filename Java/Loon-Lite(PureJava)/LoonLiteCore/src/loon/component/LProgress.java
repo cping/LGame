@@ -113,9 +113,7 @@ public class LProgress extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		if (progressType != ProgressType.CircleUI) {
-
 			draw(g, x, y);
-
 		} else {
 			float radius = MathUtils.min(getWidth(), getHeight());
 			float size = radius / 6f;

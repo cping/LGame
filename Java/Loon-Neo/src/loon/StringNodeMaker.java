@@ -23,6 +23,7 @@ package loon;
 import loon.action.ActionBind;
 import loon.action.sprite.ScrollText;
 import loon.action.sprite.SpriteLabel;
+import loon.action.sprite.StatusBar;
 import loon.component.LCheckBox;
 import loon.component.LClickButton;
 import loon.component.LLabel;
@@ -65,6 +66,8 @@ public class StringNodeMaker<T extends ActionBind> implements IV<T> {
 		} else if (tName.equals("scrolltext") || tName.equals("scroll")
 				|| (tName.equals("st") || (tName.equals("s")))) {
 			return StringNodeType.ScrollText;
+		} else if (tName.equals("status") || tName.equals("progress")) {
+			return StringNodeType.Status;
 		}
 		return StringNodeType.Unknown;
 	}
@@ -148,7 +151,12 @@ public class StringNodeMaker<T extends ActionBind> implements IV<T> {
 			_value = (T) new ScrollText(text, font, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
 					MathUtils.ifloor(h));
 			break;
-
+		case Status:
+			StatusBar status = new StatusBar(font, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
+					MathUtils.ifloor(h));
+			status.setText(text);
+			_value = (T) status;
+			break;
 		}
 	}
 
