@@ -104,8 +104,16 @@ public class Pixmap extends PixmapComposite implements LRelease {
 		return getImage().texture();
 	}
 
+	public static Pixmap createImage(int[] pixels, int w, int h) {
+		return createImage(pixels, w, h, true);
+	}
+
+	public static Pixmap createImage(int[] pixels, int w, int h, boolean hasAlpha) {
+		return new Pixmap(pixels, w, h, hasAlpha);
+	}
+
 	public static Pixmap createImage(int w, int h) {
-		return new Pixmap(w, h, true);
+		return createImage(w, h, true);
 	}
 
 	public static Pixmap createImage(int w, int h, boolean hasAlpha) {
@@ -194,7 +202,11 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	}
 
 	public Pixmap(int w, int h, boolean hasAlpha) {
-		this.set(new int[w * h], w, h, hasAlpha);
+		this(new int[w * h], w, h, hasAlpha);
+	}
+
+	public Pixmap(int[] pixelsData, int w, int h) {
+		this(pixelsData, w, h, true);
 	}
 
 	public Pixmap(int[] pixelsData, int w, int h, boolean hasAlpha) {

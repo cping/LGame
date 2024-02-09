@@ -90,7 +90,8 @@ public class LScrollContainer extends LContainer {
 		this.setElastic(true);
 		this._minAutoScrollX = _minAutoScrollY = -1f;
 		this._maxAutoScrollX = _maxAutoScrollY = -1f;
-		this._scrollX = this._scrollY = true;
+		this._velocityX = _velocityY = -1f;
+		this._scrollX = _scrollY = true;
 		this._visibleBackground = true;
 		this._verticalVisible = this._horizontalVisible = true;
 	}
@@ -428,22 +429,31 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public void process(final long elapsedTime) {
-		if (_verticalScrollbar != null) {
-			_verticalScrollbar.process(elapsedTime);
-		}
-		if (_horizontalScrollbar != null) {
-			_horizontalScrollbar.process(elapsedTime);
+		if (!isAutoScroll() && !isAutoVelocity()) {
+			if (_verticalVisible && _verticalScrollbar != null) {
+				_verticalScrollbar.process(elapsedTime);
+			}
+			if (_horizontalVisible && _horizontalScrollbar != null) {
+				_horizontalScrollbar.process(elapsedTime);
+			}
+		} else {
+			if (_verticalScrollbar != null) {
+				_verticalScrollbar.process(elapsedTime);
+			}
+			if (_horizontalScrollbar != null) {
+				_horizontalScrollbar.process(elapsedTime);
+			}
 		}
 	}
 
 	@Override
 	protected void processTouchDragged() {
-		if (_verticalScrollbar != null) {
+		if (_verticalVisible && _verticalScrollbar != null) {
 			if (_verticalScrollbar.isAllowTouch()) {
 				_verticalScrollbar.processTouchDragged();
 			}
 		}
-		if (_horizontalScrollbar != null) {
+		if (_horizontalVisible && _horizontalScrollbar != null) {
 			if (_horizontalScrollbar.isAllowTouch()) {
 				_horizontalScrollbar.processTouchDragged();
 			}
@@ -453,12 +463,12 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchPressed() {
-		if (_verticalScrollbar != null) {
+		if (_verticalVisible && _verticalScrollbar != null) {
 			if (_verticalScrollbar.isAllowTouch()) {
 				_verticalScrollbar.processTouchPressed();
 			}
 		}
-		if (_horizontalScrollbar != null) {
+		if (_horizontalVisible && _horizontalScrollbar != null) {
 			if (_horizontalScrollbar.isAllowTouch()) {
 				_horizontalScrollbar.processTouchPressed();
 			}
@@ -468,12 +478,12 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchReleased() {
-		if (_verticalScrollbar != null) {
+		if (_verticalVisible && _verticalScrollbar != null) {
 			if (_verticalScrollbar.isAllowTouch()) {
 				_verticalScrollbar.processTouchReleased();
 			}
 		}
-		if (_horizontalScrollbar != null) {
+		if (_horizontalVisible && _horizontalScrollbar != null) {
 			if (_horizontalScrollbar.isAllowTouch()) {
 				_horizontalScrollbar.processTouchReleased();
 			}
@@ -591,6 +601,10 @@ public class LScrollContainer extends LContainer {
 
 	public boolean isAutoScroll() {
 		return _scrollAmountTimer > 0f;
+	}
+
+	public boolean isAutoVelocity() {
+		return this._velocityX != -1f || this._velocityY != -1f;
 	}
 
 	public float getScrollTime() {
