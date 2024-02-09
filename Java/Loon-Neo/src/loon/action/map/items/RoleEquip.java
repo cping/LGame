@@ -91,6 +91,91 @@ public class RoleEquip {
 		return this;
 	}
 
+	public RoleEquip setStatus(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		_baseMaxHealth = e._baseMaxHealth;
+		_baseAttack = e._baseAttack;
+		_baseDefence = e._baseDefence;
+		_baseStrength = e._baseStrength;
+		_baseIntelligence = e._baseIntelligence;
+		_baseSkillPoints = e._baseSkillPoints;
+		_baseManaPoint = e._baseManaPoint;
+		_baseFitness = e._baseFitness;
+		_baseDexterity = e._baseDexterity;
+		_baseAgility = e._baseAgility;
+		return this;
+	}
+
+	public RoleEquip setEquip(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		_equipMaxHealth = e._equipMaxHealth;
+		_equipAttack = e._equipAttack;
+		_equipDefence = e._equipDefence;
+		_equipStrength = e._equipStrength;
+		_equipIntelligence = e._equipIntelligence;
+		_equipSkillPoints = e._equipSkillPoints;
+		_equipManaPoint = e._equipManaPoint;
+		_equipFitness = e._equipFitness;
+		_equipDexterity = e._equipDexterity;
+		_equipAgility = e._equipAgility;
+		return this;
+	}
+
+	public RoleEquip subStatus(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		_baseMaxHealth -= e._equipMaxHealth;
+		_baseAttack -= e._equipAttack;
+		_baseDefence -= e._equipDefence;
+		_baseStrength -= e._equipStrength;
+		_baseIntelligence -= e._equipIntelligence;
+		_baseSkillPoints -= e._equipSkillPoints;
+		_baseManaPoint -= e._equipManaPoint;
+		_baseFitness -= e._equipFitness;
+		_baseDexterity -= e._equipDexterity;
+		_baseAgility -= e._equipAgility;
+		return this;
+	}
+
+	public RoleEquip addBase(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		_baseMaxHealth += e._baseMaxHealth;
+		_baseAttack += e._baseAttack;
+		_baseDefence += e._baseDefence;
+		_baseStrength += e._baseStrength;
+		_baseIntelligence += e._baseIntelligence;
+		_baseSkillPoints += e._baseSkillPoints;
+		_baseManaPoint += e._baseManaPoint;
+		_baseFitness += e._baseFitness;
+		_baseDexterity += e._baseDexterity;
+		_baseAgility += e._baseAgility;
+		return this;
+	}
+
+	public RoleEquip addEquip(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		_baseMaxHealth += e._equipMaxHealth;
+		_baseAttack += e._equipAttack;
+		_baseDefence += e._equipDefence;
+		_baseStrength += e._equipStrength;
+		_baseIntelligence += e._equipIntelligence;
+		_baseSkillPoints += e._equipSkillPoints;
+		_baseManaPoint += e._equipManaPoint;
+		_baseFitness += e._equipFitness;
+		_baseDexterity += e._equipDexterity;
+		_baseAgility += e._equipAgility;
+		return this;
+	}
+
 	public int updateAttack(float attackModifier) {
 		return (int) (attackModifier * (this._baseAttack + this._equipAttack));
 	}
@@ -327,6 +412,22 @@ public class RoleEquip {
 
 	public int getAgeValue() {
 		return _ageValue;
+	}
+
+	public RoleEquip clear() {
+		_baseMaxHealth = 0;
+		_baseAttack = 0;
+		_baseDefence = 0;
+		_baseStrength = 0;
+		_baseIntelligence = 0;
+		_baseSkillPoints = 0;
+		_baseManaPoint = 0;
+		_baseFitness = 0;
+		_baseDexterity = 0;
+		_baseAgility = 0;
+		_sexType = 0;
+		_ageValue = 0;
+		return this;
 	}
 
 }

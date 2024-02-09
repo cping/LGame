@@ -22,6 +22,7 @@ package loon;
 
 import java.util.Iterator;
 
+import loon.ScreenSystemManager.ScreenSystemListener;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
@@ -342,6 +343,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _isScreenFrom = false;
 
+	// Screen系统模块类管理器
+	private final ScreenSystemManager _systemManager = new ScreenSystemManager();
+	// 按下与放开时间计时
 	private final StopwatchTimer _downUpTimer = new StopwatchTimer();
 	// 每次screen处理事件循环的额外间隔时间
 	private final LTimer _delayTimer = new LTimer(0);
@@ -1682,9 +1686,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (_processHandler != null) {
 			setting(getBundle());
 		}
+		system(_systemManager.clear(false));
 	}
 
 	public void setting(ObjectBundle bundle) {
+	}
+
+	public void system(ScreenSystemManager manager) {
 	}
 
 	public Screen restart() {
@@ -4014,6 +4022,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		if (_delayTimer.action(elapsedTime)) {
 			if (_isProcessing && !_isClose) {
+				_systemManager.update(elapsedTime);
 				if (_isGravity) {
 					_gravityHandler.update(elapsedTime);
 				}
@@ -6449,6 +6458,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return MathUtils.iceil(y / _scaleY);
 	}
 
+	public ScreenSystemManager getSystemManager() {
+		return this._systemManager;
+	}
+
+	public Screen addSystemListener(ScreenSystemListener l) {
+		_systemManager.addSystemListener(l);
+		return this;
+	}
+
+	public ScreenSystemListener getSystemListener() {
+		return _systemManager.getSystemListener();
+	}
+
+	public Screen addSystem(ScreenSystem system) {
+		_systemManager.addSystem(system);
+		return this;
+	}
+
+	public Screen removeSystem(ScreenSystem system) {
+		_systemManager.removeSystem(system);
+		return this;
+	}
+
+	public Screen removeSystems() {
+		_systemManager.clear();
+		return this;
+	}
+
+	public <T extends ScreenSystem> T getSystem(Class<T> systemType) {
+		return _systemManager.getSystem(systemType);
+	}
+
 	public Screen show() {
 		return setVisible(true);
 	}
@@ -6519,6 +6560,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_isExistViewport = false;
 				_isAllowThroughUItoScreenTouch = false;
 				_desktopPenetrate = false;
+				_systemManager.close();
 				if (_currentSprites != null) {
 					_curSpriteRun = false;
 					_currentSprites.close();

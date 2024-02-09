@@ -559,4 +559,136 @@ public abstract class RoleValue {
 		return this;
 	}
 
+	public RoleValue setStatus(int v) {
+		this.maxHealth = v;
+		this.maxMana = v;
+		this.health = v;
+		this.mana = v;
+		this.attack = v;
+		this.defence = v;
+		this.strength = v;
+		this.intelligence = v;
+		this.agility = v;
+		this.fitness = v;
+		this.dexterity = v;
+		return this;
+	}
+
+	public RoleValue setStatus(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		this.maxHealth = (e.getBaseMaxHealth() + e.getEquipMaxHealth());
+		this.maxMana = (e.getBaseManaPoint() + e.getEquipManaPoint());
+		this.health = maxHealth;
+		this.mana = maxMana;
+		this.attack = (e.getBaseAttack() + e.getEquipAttack());
+		this.defence = (e.getBaseDefence() + e.getEquipDefence());
+		this.strength = (e.getBaseStrength() + e.getEquipStrength());
+		this.intelligence = (e.getBaseIntelligence() + e.getEquipIntelligence());
+		this.agility = (e.getBaseAgility() + e.getEquipAgility());
+		this.fitness = (e.getBaseFitness() + e.getEquipFitness());
+		this.dexterity = (e.getBaseDexterity() + e.getEquipDexterity());
+		return this;
+	}
+
+	public RoleValue addEquip(RoleEquip e) {
+		if (e == null) {
+			return this;
+		}
+		this.maxHealth = (e.getBaseMaxHealth() + e.getEquipMaxHealth());
+		this.maxMana = (e.getBaseManaPoint() + e.getEquipManaPoint());
+		this.health = maxHealth;
+		this.mana = maxMana;
+		this.attack += e.getEquipAttack();
+		this.defence += e.getEquipDefence();
+		this.strength += e.getEquipStrength();
+		this.intelligence += e.getEquipIntelligence();
+		this.agility += e.getEquipAgility();
+		this.fitness += e.getEquipFitness();
+		this.dexterity += e.getEquipDexterity();
+		return this;
+	}
+
+	public RoleValue mulStatus(int v) {
+		this.maxHealth *= v;
+		this.maxMana *= v;
+		this.health *= v;
+		this.mana *= v;
+		this.attack *= v;
+		this.defence *= v;
+		this.strength *= v;
+		this.intelligence *= v;
+		this.agility *= v;
+		this.fitness *= v;
+		this.dexterity *= v;
+		return this;
+	}
+
+	public RoleValue addStatus(int v) {
+		this.maxHealth += v;
+		this.maxMana += v;
+		this.health += v;
+		this.mana += v;
+		this.attack += v;
+		this.defence += v;
+		this.strength += v;
+		this.intelligence += v;
+		this.agility += v;
+		this.fitness += v;
+		this.dexterity += v;
+		return this;
+	}
+
+	public RoleValue subStatus(int v) {
+		this.maxHealth -= v;
+		this.maxMana -= v;
+		this.health -= v;
+		this.mana -= v;
+		this.attack -= v;
+		this.defence -= v;
+		this.strength -= v;
+		this.intelligence -= v;
+		this.agility -= v;
+		this.fitness -= v;
+		this.dexterity -= v;
+		return this;
+	}
+
+	public RoleValue divStatus(int v) {
+		this.maxHealth /= v;
+		this.maxMana /= v;
+		this.health /= v;
+		this.mana /= v;
+		this.attack /= v;
+		this.defence /= v;
+		this.strength /= v;
+		this.intelligence /= v;
+		this.agility /= v;
+		this.fitness /= v;
+		this.dexterity /= v;
+		return this;
+	}
+
+	public RoleValue clear() {
+		this.actionPriority = 0;
+		this.maxHealth = 0;
+		this.maxMana = 0;
+		this.health = 0;
+		this.mana = 0;
+		this.attack = 0;
+		this.defence = 0;
+		this.strength = 0;
+		this.intelligence = 0;
+		this.agility = 0;
+		this.fitness = 0;
+		this.dexterity = 0;
+		this.level = 0;
+		this.team = Team.Unknown;
+		this.movePoints = 0;
+		this.turnPoints = 0;
+		this.actionPoints = 0;
+		return this;
+	}
+
 }

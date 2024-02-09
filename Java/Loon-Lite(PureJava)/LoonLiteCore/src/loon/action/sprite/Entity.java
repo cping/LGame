@@ -2446,7 +2446,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (_components == null) {
 			allocateComponents();
 		}
-		if (c != null) {
+		if (c != null && !_components.contains(c)) {
 			_components.add(c);
 			c.onAttached(this);
 			c.setCurrent(this);

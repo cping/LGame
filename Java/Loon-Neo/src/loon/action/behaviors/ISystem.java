@@ -28,6 +28,7 @@ public interface ISystem extends LRelease {
 
 	void loop();
 
+	@Override
 	void close();
 
 }

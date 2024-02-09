@@ -29,11 +29,10 @@ import loon.FloatActionCounter;
 import loon.FloatCounter;
 import loon.FloatLimitedCounter;
 import loon.LObject;
+import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LimitedCounter;
-import loon.PanelNodeMaker;
-import loon.PanelNodeType;
 import loon.StringNodeMaker;
 import loon.StringNodeType;
 import loon.TextureNodeMaker;
@@ -42,6 +41,8 @@ import loon.ZIndex;
 import loon.Director.Origin;
 import loon.Director.Position;
 import loon.Log.Level;
+import loon.PanelNodeMaker;
+import loon.PanelNodeType;
 import loon.action.ActionBind;
 import loon.action.sprite.Entity;
 import loon.action.sprite.Sprite;
@@ -91,6 +92,9 @@ public class HelperUtils {
 	}
 
 	public static LTimer timer(Duration d) {
+		if (d == null) {
+			return timer();
+		}
 		return LTimer.at(d);
 	}
 
@@ -131,6 +135,9 @@ public class HelperUtils {
 	}
 
 	public static boolean isAnyNull(Object... objs) {
+		if (objs == null) {
+			return false;
+		}
 		for (Object o : objs) {
 			if (o == null) {
 				return true;
@@ -140,6 +147,9 @@ public class HelperUtils {
 	}
 
 	public static boolean isAnyNotNull(final Object... objs) {
+		if (objs == null) {
+			return false;
+		}
 		for (Object o : objs) {
 			if (o != null) {
 				return true;
@@ -157,6 +167,9 @@ public class HelperUtils {
 	}
 
 	public static boolean areAllNull(Object... objs) {
+		if (objs == null) {
+			return false;
+		}
 		for (Object o : objs) {
 			if (o != null) {
 				return false;
@@ -166,6 +179,9 @@ public class HelperUtils {
 	}
 
 	public static boolean areAllNotNull(final Object... objs) {
+		if (objs == null) {
+			return false;
+		}
 		for (Object o : objs) {
 			if (o == null) {
 				return false;
@@ -174,7 +190,27 @@ public class HelperUtils {
 		return true;
 	}
 
+	public static void requires(Object[] objs, String name) {
+		if (name == null) {
+			name = "array";
+		}
+		required(objs, name);
+		for (int i = 0; i < objs.length; i++) {
+			required(objs[i], name + "[" + i + "]");
+		}
+
+	}
+
+	public static void required(Object object, String name) {
+		if (object == null) {
+			throw new LSysException(name + " is required, It cannot be null !");
+		}
+	}
+
 	public final static <T> boolean contains(T key, TArray<T> list) {
+		if (list == null) {
+			return false;
+		}
 		for (T o : list) {
 			if (key == null && o == null) {
 				return true;
@@ -187,6 +223,9 @@ public class HelperUtils {
 	}
 
 	public final static boolean contains(Object key, Object... objs) {
+		if (objs == null) {
+			return false;
+		}
 		for (Object o : objs) {
 			if (key == null && o == null) {
 				return true;
