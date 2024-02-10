@@ -43,6 +43,7 @@ import loon.action.map.Field2D;
 import loon.action.sprite.Sprites.Created;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.component.layout.LayoutAlign;
 import loon.events.EventAction;
 import loon.events.ResizeListener;
 import loon.events.SysKey;
@@ -2440,6 +2441,36 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		_oldShapeRectH = rect.height;
 		_oldNodeType = nodeType;
 		return _otherShape;
+	}
+
+	/**
+	 * 以指定布局移动指定精灵对象
+	 * 
+	 * @param align
+	 * @param spr
+	 * @return
+	 */
+	public Entity move(LayoutAlign align, ISprite spr) {
+		if (spr instanceof LObject) {
+			moveOn(align, (LObject<?>) spr);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定布局移动指定精灵对象
+	 * 
+	 * @param align
+	 * @param spr
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public Entity move(LayoutAlign align, ISprite spr, float x, float y) {
+		if (spr instanceof LObject) {
+			moveOn(align, (LObject<?>) spr, x, y);
+		}
+		return this;
 	}
 
 	@Override

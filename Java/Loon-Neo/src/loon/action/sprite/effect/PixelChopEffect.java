@@ -20,6 +20,8 @@
  */
 package loon.action.sprite.effect;
 
+import loon.LSysException;
+import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -73,12 +75,51 @@ public class PixelChopEffect extends PixelBaseEffect {
 
 	private int mode;
 
+	public static PixelBaseEffect chop(ChopDirection dir, LColor color, int size, ISprite spr) {
+		return chop(dir, color, size, spr, false);
+	}
+
+	public static PixelBaseEffect chop(ChopDirection dir, LColor color, int size, ISprite spr, boolean rand) {
+		return chop(dir, color, size, spr, rand, 0f, 0f);
+	}
+
+	public static PixelBaseEffect chop(ChopDirection dir, LColor color, int size, ISprite spr, boolean rand,
+			float offsetX, float offsetY) {
+		if (spr == null) {
+			throw new LSysException("The chop target does not exist !");
+		}
+		final int frame = MathUtils.ifloor(MathUtils.max(spr.getWidth(), spr.getHeight()) / 3f);
+		final float centerX = spr.getX() + spr.getWidth() / 2 + offsetX;
+		final float centerY = spr.getY() + spr.getHeight() / 2 + offsetY;
+		if (rand) {
+			return createRandom(color, centerX, centerY, size, frame);
+		} else {
+			return create(dir, color, centerX, centerY, size, frame);
+		}
+	}
+
+	public static PixelBaseEffect chopRandom(LColor color, int size, ISprite spr) {
+		return chop(null, color, size, spr, true, 0f, 0f);
+	}
+
+	public static PixelBaseEffect chopRandom(LColor color, int size, ISprite spr, float offsetX, float offsetY) {
+		return chop(null, color, size, spr, true, offsetX, offsetY);
+	}
+
+	public static PixelBaseEffect create(ChopDirection dir, LColor color, float x, float y, int width, int frameLimit) {
+		return PixelChopEffect.get(dir, color, x, y, width, frameLimit).setAutoRemoved(true);
+	}
+
+	public static PixelBaseEffect createRandom(LColor color, float x, float y, int width, int frameLimit) {
+		return PixelChopEffect.getRandom(color, x, y, width, frameLimit).setAutoRemoved(true);
+	}
+
 	public static PixelChopEffect get(ChopDirection dir, LColor color, float x, float y, int width, int frameLimit) {
 		return new PixelChopEffect(dir, color, x, y, width, frameLimit);
 	}
 
 	public static PixelChopEffect getRandom(LColor color, float x, float y, int width, int frameLimit) {
-		int rand = MathUtils.random(0, 7);
+		final int rand = MathUtils.random(0, 6);
 		switch (rand) {
 		case 0:
 		default:

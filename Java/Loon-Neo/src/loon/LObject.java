@@ -715,6 +715,14 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return _objectLocation;
 	}
 
+	public Vector2f getCenterLocation() {
+		return getCenterLocation(0f, 0f);
+	}
+
+	public Vector2f getCenterLocation(float offsetX, float offsetY) {
+		return new Vector2f(getX() + getWidth() / 2f + offsetX, getY() + getHeight() / 2f + offsetY);
+	}
+
 	public static void centerOn(final LObject<?> object, float x, float y, float w, float h) {
 		object.setLocation(x + (w / 2f - object.getWidth() / 2f), y + (h / 2f - object.getHeight() / 2f));
 	}
@@ -825,6 +833,13 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	public static void middleRightOn(final LObject<?> object, float w, float h) {
 		middleRightOn(object, 0f, 0f, w, h);
+	}
+
+	public void moveOn(final LayoutAlign align, final LObject<?> obj, final float offsetX, final float offsetY) {
+		moveOn(align, obj);
+		if (obj != null) {
+			obj.setLocation(obj.getX() + offsetX, obj.getY() + offsetY);
+		}
 	}
 
 	public void moveOn(final LayoutAlign align, final LObject<?> obj) {

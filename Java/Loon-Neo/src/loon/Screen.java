@@ -3629,57 +3629,189 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen centerOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerTopOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerTopOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerBottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerBottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen leftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.leftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen rightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.rightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen centerOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen centerTopOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerTopOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen centerBottomOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		centerBottomOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen topOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen topLeftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topLeftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen topRightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topRightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen leftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		leftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen rightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		rightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen bottomOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen bottomLeftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomLeftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Screen bottomRightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomRightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
 		return this;
 	}
 
