@@ -53,7 +53,7 @@ public class RpgBattleTest extends Stage {
 				// 使用缓动动画,y轴震动后闪烁,开始执行,执行完毕后提交血量减少与增加战斗提示
 				e.selfAction().shakeTo(0f, 3f).flashTo().start().dispose(() -> {
 					StringEffect.up("- 100", e.getCenterLocation(-25, 0), LColor.red).buildToScreen();
-					status.setUpdate(status.getValue() - 100);
+					status.subSelf(100);
 					text.put("你使用[认真一击],\n敌人生命值-100", LColor.red);
 					process.set(true);
 				});
@@ -87,13 +87,13 @@ public class RpgBattleTest extends Stage {
 
 		// 血条状态
 		StatusBar status = node("status", 0, 0, 150, 22);
-		status.set(500);
-		status.setShowNumber(true);
+		status.setNumber(500);
 		centerOn(status, 0, 60);
 		add(status);
 
 		// 设定一个战斗进程
-		BattleProcess rpgBattleProcess = new BattleProcess();
+		BattleProcess rpgBattleProcess = getBattle();
+	//	rpgBattleProcess.reset();
 		// 添加我方战斗事件(不跳过开始与结束步骤)
 		rpgBattleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false) {
 
@@ -174,10 +174,6 @@ public class RpgBattleTest extends Stage {
 				});
 			}
 		});
-		// 注入战斗进程
-		add(rpgBattleProcess);
-		// 关闭Screen时同样关闭战斗进程
-		putRelease(rpgBattleProcess);
 
 		// 设定攻击按钮
 		LClickButton attack = node("click", "Attack", 0, 0, 120, 35);
@@ -202,6 +198,8 @@ public class RpgBattleTest extends Stage {
 		add(run.up((x, y) -> {
 			rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
 		}));
+
+		add(MultiScreenTest.getBackButton(this, 0));
 	}
 
 }

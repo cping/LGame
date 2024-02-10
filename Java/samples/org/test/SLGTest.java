@@ -605,7 +605,7 @@ public class SLGTest extends Stage {
 			public void stop(ActionBind o) {
 				remove(e);
 
-				battleProcess.set(false);
+				getBattle().set(false);
 			}
 
 			@Override
@@ -658,7 +658,7 @@ public class SLGTest extends Stage {
 						removeRole(1, enemy);
 					}
 					attacker.stop();
-					battleProcess.set(false);
+					getBattle().set(false);
 				}
 
 				@Override
@@ -674,7 +674,7 @@ public class SLGTest extends Stage {
 
 		} else {
 			attacker.stop();
-			battleProcess.set(false);
+			getBattle().set(false);
 		}
 	}
 
@@ -869,7 +869,6 @@ public class SLGTest extends Stage {
 		return randMove(map, move, role, newCounter());
 	}
 
-	final BattleProcess battleProcess = new BattleProcess();
 
 	private TArray<PointI> lockedLocation = new TArray<PointI>();
 
@@ -1026,6 +1025,8 @@ public class SLGTest extends Stage {
 				gameMap.scroll(x, y);
 			}
 		});
+		
+		final BattleProcess battleProcess = getBattle();
 
 		// 添加我方回合事件
 		battleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false) {
@@ -1212,9 +1213,6 @@ public class SLGTest extends Stage {
 			}
 		});
 
-		// 注入战斗进度管理器
-		add(battleProcess);
-
 		add(MultiScreenTest.getBackButton(this, 1));
 
 	}
@@ -1236,11 +1234,11 @@ public class SLGTest extends Stage {
 			final Counter count, final float x, final float y) {
 
 		// 敌方回合不响应触屏事件
-		if (battleProcess.isCurrentEnemy()) {
+		if (getBattle().isCurrentEnemy()) {
 			return;
 		}
 		// 如果角色在移动则不能触发事件
-		if (battleProcess.get()) {
+		if (getBattle().get()) {
 			return;
 		}
 
@@ -1313,7 +1311,7 @@ public class SLGTest extends Stage {
 
 						@Override
 						public void stop(ActionBind o) {
-							battleProcess.set(false);
+							getBattle().set(false);
 							moveState.clear();
 							menu.update(o.getX() + gameMap.getOffsetX(), o.getY() + gameMap.getOffsetY());
 							menu.show();
@@ -1324,12 +1322,12 @@ public class SLGTest extends Stage {
 
 						@Override
 						public void start(ActionBind o) {
-							battleProcess.set(true);
+							getBattle().set(true);
 						}
 
 						@Override
 						public void process(ActionBind o) {
-							battleProcess.set(true);
+							getBattle().set(true);
 							// 存储上一个移动方向，避免反复刷新动画事件
 							if (move.isDirectionUpdate()) {
 								switch (move.getDirection()) {

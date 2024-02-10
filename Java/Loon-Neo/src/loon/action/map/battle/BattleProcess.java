@@ -346,8 +346,10 @@ public class BattleProcess extends CoroutineProcess {
 
 	@Override
 	public void run(LTimerContext time) {
-		super.run(time);
-		update(time.timeSinceLastUpdate);
+		if (isCoroutineRunning()) {
+			super.run(time);
+			update(time.timeSinceLastUpdate);
+		}
 	}
 
 	protected boolean checkProcessWait() {
@@ -438,6 +440,12 @@ public class BattleProcess extends CoroutineProcess {
 		_events.add(e);
 		_events.sort(_sortEvents);
 		return this;
+	}
+
+	@Override
+	public BattleProcess reset() {
+		super.reset();
+		return clean();
 	}
 
 	public BattleProcess clean() {

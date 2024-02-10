@@ -49,6 +49,7 @@ import loon.component.LRadar.Mode;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.events.ActionUpdate;
+import loon.events.Touched;
 import loon.geom.BooleanValue;
 import loon.geom.IntValue;
 import loon.geom.PointI;
@@ -56,6 +57,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Nullable;
 import loon.utils.Array;
 
 /**
@@ -220,7 +222,7 @@ public class SLGTest extends Stage {
 				moveDraw(g, offsetX, offsetY);
 			} else if (action == 1 && actionIdx != -1) {
 				GameRole role = getRoleIdxObject(actionIdx);
-				pos = pixelsToTileMap(role.getX(), role.getY());
+				pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 				for (int j = 0; j <= maxY - 1; j++) {
 					for (int i = 0; i <= maxX - 1; i++) {
 						if (pos.x == i && pos.y == j) {
@@ -247,7 +249,7 @@ public class SLGTest extends Stage {
 						for (Role ch : team.list()) {
 							GameRole r = (GameRole) ch.getRoleObject();
 							if (r.isStop()) { // 待机
-								pos = pixelsToTileMap(r.getX(), r.getY());
+								pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 								if (pos.x == i && pos.y == j) {
 									g.draw(unitImages[3], i * tileSize + offsetX, j * tileSize + offsetY);
 								}
@@ -528,9 +530,10 @@ public class SLGTest extends Stage {
 	private GameRole createTeamRole(String name, Counter counter, int team, String path, int imageIndex, int move,
 			int x, int y) {
 		GameRole role = new GameRole(name, counter.incId(), team, path, move, x, y);
-		role.setAutoXYSort(true);
 		// 为此精灵创建阴影
 		role.createShadow(true);
+		// 让角色按照XY位置排序,以修正遮挡关系(如果不设为true,则不参与xy排序)
+		role.setAutoXYSort(true);
 		// 添加游戏角色到分组中
 		teams.add(team, role.character);
 		add(role);
@@ -543,7 +546,7 @@ public class SLGTest extends Stage {
 
 	public GameRole getRole(final int tileX, final int tileY) {
 		for (Role role : teams.all()) {
-			PointI pos = pixelsToTileMap(role.getX(), role.getY());
+			PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 			if (tileX == pos.x && tileY == pos.y) {
 				return (GameRole) role.getRoleObject();
 			}
@@ -558,7 +561,7 @@ public class SLGTest extends Stage {
 	public int getRoleIdx(final int team, final int x, final int y) {
 		TArray<Role> list = (team == -1 ? teams.all() : teams.get(team).list());
 		for (Role role : list) {
-			PointI pos = pixelsToTileMap(role.getX(), role.getY());
+			PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 			if (x == pos.x && y == pos.y) {
 				return role.getID();
 			}
@@ -582,6 +585,11 @@ public class SLGTest extends Stage {
 			type = -1; // 湖泽(不能进入)
 			break;
 		}
+		if (type != -1) { // 有人
+			if (getRole(x, y) != null) {
+				return -1;
+			}
+		}
 		return type;
 	}
 
@@ -597,7 +605,7 @@ public class SLGTest extends Stage {
 			public void stop(ActionBind o) {
 				remove(e);
 
-				battleProcess.set(false);
+				getBattle().set(false);
 			}
 
 			@Override
@@ -650,7 +658,7 @@ public class SLGTest extends Stage {
 						removeRole(1, enemy);
 					}
 					attacker.stop();
-					battleProcess.set(false);
+					getBattle().set(false);
 				}
 
 				@Override
@@ -666,7 +674,7 @@ public class SLGTest extends Stage {
 
 		} else {
 			attacker.stop();
-			battleProcess.set(false);
+			getBattle().set(false);
 		}
 	}
 
@@ -707,9 +715,9 @@ public class SLGTest extends Stage {
 		if (attacker == null) {
 			return false;
 		}
-		PointI attackPos = pixelsToTileMap(attacker.getX(), attacker.getY());
+		PointI attackPos = gameMap.pixelsToTileMap(attacker.getX(), attacker.getY());
 		for (Role r : teams.get(team).list()) {
-			PointI pos = pixelsToTileMap(r.getX(), r.getY());
+			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			boolean checkAttacker = false;
 			if (attackPos.x - 1 == tileX && attackPos.y == tileY) {
 				checkAttacker = true;
@@ -740,7 +748,7 @@ public class SLGTest extends Stage {
 	 */
 	public GameRole checkRoleExist(int tileX, int tileY, int length, int team) {
 		for (Role r : teams.get(team).list()) {
-			PointI pos = pixelsToTileMap(r.getX(), r.getY());
+			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			for (int i = 1; i <= length; i++) {
 				boolean exist = false;
 				if (tileX == pos.x + i && tileY == pos.y) {
@@ -764,13 +772,13 @@ public class SLGTest extends Stage {
 	}
 
 	public boolean checkMoveArea(Field2D field, GameRole role) {
-		PointI pos = pixelsToTileMap(role.getX(), role.getY());
+		PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 		return checkMoveArea(field, pos.x, pos.y);
 	}
 
 	public boolean checkMoveArea(Field2D field, int tileX, int tileY) {
 		for (Role r : teams.all()) {
-			PointI pos = pixelsToTileMap(r.getX(), r.getY());
+			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			if (tileX == pos.x && tileY == pos.y) {
 				return false;
 			}
@@ -788,7 +796,7 @@ public class SLGTest extends Stage {
 	 */
 	public void updateEnemyPos(Field2D field) {
 		for (Role e : teams.getEnemy().list()) {
-			PointI pos = pixelsToTileMap(e.getX(), e.getY());
+			PointI pos = gameMap.pixelsToTileMap(e.getX(), e.getY());
 			field.setTileType(pos.x, pos.y, 'E');
 		}
 	}
@@ -799,7 +807,7 @@ public class SLGTest extends Stage {
 
 	public void updatePlayerPos(Field2D field) {
 		for (Role e : teams.getPlayer().list()) {
-			PointI pos = pixelsToTileMap(e.getX(), e.getY());
+			PointI pos = gameMap.pixelsToTileMap(e.getX(), e.getY());
 			field.setTileType(pos.x, pos.y, 'P');
 		}
 	}
@@ -831,7 +839,7 @@ public class SLGTest extends Stage {
 		int x = random(-role.getMove(), role.getMove());
 		int y = random(-role.getMove(), role.getMove());
 
-		PointI pos = pixelsToTileMap(role.getX(), role.getY());
+		PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 
 		int newX = move.fixX(pos.x + x);
 		int newY = move.fixY(pos.y + y);
@@ -861,37 +869,8 @@ public class SLGTest extends Stage {
 		return randMove(map, move, role, newCounter());
 	}
 
-	/**
-	 * 转化屏幕像素到地图(不考虑地图滚动)
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public PointI pixelsToTileMap(float x, float y) {
-		int tileX = gameMap.pixelsToTilesWidth(x);
-		int tileY = gameMap.pixelsToTilesHeight(y);
-		return pointi(tileX, tileY);
-	}
-
-	final BattleProcess battleProcess = new BattleProcess();
-
-	/**
-	 * 转化地图到屏幕像素(不考虑地图滚动)
-	 * 
-	 * @param x
-	 * @param y
-	 * @return
-	 */
-	public PointI tileMapToPixels(float x, float y) {
-		int tileX = gameMap.tilesToPixelsX(x);
-		int tileY = gameMap.tilesToPixelsY(y);
-		return pointi(tileX, tileY);
-	}
 
 	private TArray<PointI> lockedLocation = new TArray<PointI>();
-
-	private BooleanValue moveLocked = new BooleanValue();
 
 	private int lastTileX, lastTileY;
 
@@ -901,14 +880,14 @@ public class SLGTest extends Stage {
 	// 默认瓦片大小
 	final static int gameTile = 32;
 	// 战斗个体图
-	private LTexture[] unitImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/unit.png", new LColor(255, 0, 255)), gameTile, gameTile);
+	private LTexture[] unitImages = TextureUtils
+			.getSplitTextures(TextureUtils.filterColor("assets/slg/unit.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
-	private LTexture[] iconImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/icon.png", new LColor(255, 0, 255)), gameTile, gameTile);
+	private LTexture[] iconImages = TextureUtils
+			.getSplitTextures(TextureUtils.filterColor("assets/slg/icon.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
-	private LTexture[] listImages = TextureUtils.getSplitTextures(
-			TextureUtils.filterColor("assets/slg/list.png", new LColor(255, 0, 255)), gameTile, gameTile);
+	private LTexture[] listImages = TextureUtils
+			.getSplitTextures(TextureUtils.filterColor("assets/slg/list.png", new LColor(255, 0, 255)), gameTile, gameTile);
 
 	private TileMap gameMap = null;
 
@@ -920,7 +899,6 @@ public class SLGTest extends Stage {
 
 		// 为分组创建两个子分组,己方与敌人
 		this.teams.createPE();
-		this.moveLocked.set(false);
 		this.lockedLocation.clear();
 
 		// 构建一个2D的二维数组游戏地图
@@ -935,7 +913,13 @@ public class SLGTest extends Stage {
 
 		// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
 		gameMap.setImagePack("assets/slg/map.png", clips);*/
-
+		
+		TileAllocation<Nullable<String>> v =TileAllocation.none("assets/slg/map.png");
+				 v.clip("1", 0, 0, 32, 32)
+			     .clip("2", 0, 32, 32, 32)
+			     .clip("3", 32, 0, 32, 32)
+			     .clip("4", 32, 32, 32, 32);
+		
 		gameMap.setImagePack(TileAllocation.none("assets/slg/map.png")
 		 .clip("1", 0, 0, 32, 32)
 	     .clip("2", 0, 32, 32, 32)
@@ -969,9 +953,10 @@ public class SLGTest extends Stage {
 		createTeamRole("躲猫兵团9", idCounter, Team.Enemy, path, 2, 3, 12, 18);
 		createTeamRole("躲猫兵团7", idCounter, Team.Enemy, path, 2, 2, 13, 18);
 
+		// 为精灵集合注入像素风阴影构建器
 		getSprites().setSpritesShadow(new PixelShadow(32, 32, LColor.black));
+		// 为精灵集合开启xy位置层级修正,按照xy位置变化渲染顺序(默认不开启,自动运算会耗费资源)
 		getSprites().setAutoSortXYLayer(true);
-
 		// 当前操作的角色索引
 		final IntValue roleIndex = refInt(-1);
 
@@ -992,16 +977,20 @@ public class SLGTest extends Stage {
 		menu.load();
 
 		// 监听菜单事件
-		menu.setListener((int index, String context) -> {
-			int idx = roleIndex.get();
-			if (idx != -1 && getRoleIdxObject(idx).getTeam() != Team.Enemy) {
-				if (index == 0) {
-					moveState.setAttackState(idx);
-				} else if (index == 1) {
-					moveState.setFinalState(idx);
+		menu.setListener(new LMenuSelect.ClickEvent() {
+
+			@Override
+			public void onSelected(int index, String context) {
+				int idx = roleIndex.get();
+				if (idx != -1 && getRoleIdxObject(idx).getTeam() != Team.Enemy) {
+					if (index == 0) {
+						moveState.setAttackState(idx);
+					} else if (index == 1) {
+						moveState.setFinalState(idx);
+					}
+					menu.hide();
+					menuState.hide();
 				}
-				menu.hide();
-				menuState.hide();
 			}
 		});
 
@@ -1020,10 +1009,24 @@ public class SLGTest extends Stage {
 		add(radar);
 
 		// 触屏up事件处理(我方角色操作)
-		up((float x, float y) -> playerTouch(moveState, menuState, menu, roleIndex, clickCount, x, y));
+		up(new Touched() {
+
+			@Override
+			public void on(float x, float y) {
+				playerTouch(moveState, menuState, menu, roleIndex, clickCount, x, y);
+			}
+		});
 
 		// 监听拖拽事件滚动地图
-		drag((float x, float y) -> gameMap.scroll(x, y));
+		drag(new Touched() {
+
+			@Override
+			public void on(float x, float y) {
+				gameMap.scroll(x, y);
+			}
+		});
+		
+		final BattleProcess battleProcess = getBattle();
 
 		// 添加我方回合事件
 		battleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false) {
@@ -1063,7 +1066,6 @@ public class SLGTest extends Stage {
 			// 刷新资源
 			@Override
 			public void onReset() {
-				moveLocked.set(true);
 				lockedLocation.clear();
 				roleIndex.set(-1);
 				moveState.clear();
@@ -1080,15 +1082,11 @@ public class SLGTest extends Stage {
 			public void onStart(long elapsedTime, BooleanValue start) {
 				final LToast toast = LToast.makeText("敌方第" + battleProcess.getTurnCount() + "回合", Style.ERROR);
 				add(toast);
-				moveLocked.set(true);
 				// 战斗进程等待回合显示事件结束
 				wait(new ActionUpdate() {
 					@Override
 					public void action(Object a) {
-						if (enemyStack.size() >= teams.getEnemy().count()) {
-							moveLocked.set(false);
-						}
-						if (moveLocked.get() && toast.isStop()) {
+						if (toast.isStop()) {
 							for (Role re : teams.all()) {
 								GameRole r = (GameRole) re.getRoleObject();
 								r.start();
@@ -1099,11 +1097,12 @@ public class SLGTest extends Stage {
 								}
 							}
 						}
+
 					}
 
 					@Override
 					public boolean completed() {
-						return !moveLocked.get() && toast.isStop();
+						return toast.isStop();
 					}
 				});
 				// 完成开始标记
@@ -1113,9 +1112,6 @@ public class SLGTest extends Stage {
 			// 每次敌方回合正式循环
 			@Override
 			public void onProcess(long elapsedTime, BooleanValue process) {
-				if (moveLocked.get()) {
-					return;
-				}
 				// 敌方全部角色移动结束
 				if (teams.getEnemy().isMoved()) {
 					// 完成敌方回合事件
@@ -1142,7 +1138,7 @@ public class SLGTest extends Stage {
 							lockedLocation.add(pointi(movePos.x, movePos.y));
 							// 转换像素坐标为地图实际坐标
 							final PointI startPos = gameMap.tilePixels(runRole.x(), runRole.y());
-							final PointI endPos = tileMapToPixels(movePos.getX(), movePos.getY());
+							final PointI endPos = gameMap.tileMapToPixels(movePos.getX(), movePos.getY());
 
 							// 四方向移动，移动角色到指定地图位置(延迟5帧触发stop事件)
 							final MoveTo move = new MoveTo(map, startPos.x, startPos.y, endPos.x, endPos.y, false, 8,
@@ -1153,7 +1149,7 @@ public class SLGTest extends Stage {
 								public void stop(ActionBind o) {
 									// 清空跟随对象
 									gameMap.followDonot();
-									final PointI endPos = pixelsToTileMap(o.getX(), o.getY());
+									final PointI endPos = gameMap.pixelsToTileMap(o.getX(), o.getY());
 									final GameRole enemy = checkRoleExist(endPos.x, endPos.y, 1, Team.Player);
 									if (enemy != null) {
 										battleProcess.set(true);
@@ -1198,7 +1194,7 @@ public class SLGTest extends Stage {
 							// 开始缓动动画
 							get(runRole).event(move).start();
 						} else { // 如果随机生成的移动位置不可用
-							PointI point = pixelsToTileMap(runRole.getX(), runRole.getY());
+							PointI point = gameMap.pixelsToTileMap(runRole.getX(), runRole.getY());
 							final GameRole enemy = checkRoleExist(point.x, point.y, 1, Team.Player);
 							if (enemy != null && runRole.isAllUnDoneAction()) {
 								moveState.clear();
@@ -1216,9 +1212,6 @@ public class SLGTest extends Stage {
 
 			}
 		});
-
-		// 注入战斗进度管理器
-		add(battleProcess);
 
 	}
 
@@ -1239,11 +1232,11 @@ public class SLGTest extends Stage {
 			final Counter count, final float x, final float y) {
 
 		// 敌方回合不响应触屏事件
-		if (battleProcess.isCurrentEnemy()) {
+		if (getBattle().isCurrentEnemy()) {
 			return;
 		}
 		// 如果角色在移动则不能触发事件
-		if (battleProcess.get()) {
+		if (getBattle().get()) {
 			return;
 		}
 
@@ -1305,7 +1298,8 @@ public class SLGTest extends Stage {
 					}
 					// 转换像素坐标为地图实际坐标
 					final PointI startPos = gameMap.tilePixels(runRole.x(), runRole.y());
-					final PointI newPos = tileMapToPixels(moveState.getMoveCourseX(), moveState.getMoveCourseY());
+					final PointI newPos = gameMap.tileMapToPixels(moveState.getMoveCourseX(),
+							moveState.getMoveCourseY());
 
 					Field2D field = toCurrentMap(true);
 
@@ -1315,7 +1309,7 @@ public class SLGTest extends Stage {
 
 						@Override
 						public void stop(ActionBind o) {
-							battleProcess.set(false);
+							getBattle().set(false);
 							moveState.clear();
 							menu.update(o.getX() + gameMap.getOffsetX(), o.getY() + gameMap.getOffsetY());
 							menu.show();
@@ -1326,12 +1320,12 @@ public class SLGTest extends Stage {
 
 						@Override
 						public void start(ActionBind o) {
-							battleProcess.set(true);
+							getBattle().set(true);
 						}
 
 						@Override
 						public void process(ActionBind o) {
-							battleProcess.set(true);
+							getBattle().set(true);
 							// 存储上一个移动方向，避免反复刷新动画事件
 							if (move.isDirectionUpdate()) {
 								switch (move.getDirection()) {
@@ -1368,7 +1362,7 @@ public class SLGTest extends Stage {
 
 	public void updateMenu(Move moveState, State menuState, Menu menu, int curTileX, int curTileY) {
 		menuState.hide();
-		PointI pos = tileMapToPixels(curTileX, curTileY);
+		PointI pos = gameMap.tileMapToPixels(curTileX, curTileY);
 		menu.update(pos.x + gameMap.getOffsetX(), pos.y + gameMap.getOffsetY());
 		menu.show();
 	}

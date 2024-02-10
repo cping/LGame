@@ -302,6 +302,22 @@ public class StatusBar extends Entity {
 		return this;
 	}
 
+	public StatusBar addSelf(float v) {
+		return setUpdate(MathUtils.iceil(getValue() + v));
+	}
+
+	public StatusBar subSelf(float v) {
+		return setUpdate(MathUtils.iceil(getValue() - v));
+	}
+
+	public StatusBar mulSelf(float v) {
+		return setUpdate(MathUtils.iceil(getValue() * v));
+	}
+
+	public StatusBar divSelf(float v) {
+		return setUpdate(MathUtils.iceil(getValue() / v));
+	}
+
 	public boolean isHit() {
 		return hitObject;
 	}
@@ -374,6 +390,11 @@ public class StatusBar extends Entity {
 		this._offsetTextX = x;
 		this._offsetTextY = y;
 		return this;
+	}
+
+	public StatusBar setNumber(float v) {
+		set(MathUtils.ifloor(v));
+		return setShowNumber(true);
 	}
 
 	public String getFormatNumber() {

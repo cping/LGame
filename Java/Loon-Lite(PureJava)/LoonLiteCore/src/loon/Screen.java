@@ -36,6 +36,7 @@ import loon.action.collision.GravityResult;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
+import loon.action.map.battle.BattleProcess;
 import loon.action.page.ScreenSwitch;
 import loon.action.sprite.IEntity;
 import loon.action.sprite.ISprite;
@@ -215,7 +216,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private ScreenAction _screenAction = null;
 
-	private final CoroutineProcess _coroutineProcess = new CoroutineProcess();
+	private final BattleProcess _battleProcess = new BattleProcess();
 
 	private final TArray<LTouchArea> _touchAreas = new TArray<LTouchArea>();
 
@@ -3606,56 +3607,89 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen centerOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerTopOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerTopOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen centerBottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.centerBottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen topRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.topRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen leftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.leftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen rightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.rightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
 
 	public Screen bottomRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
 		LObject.bottomRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
 		return this;
 	}
@@ -4159,7 +4193,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (_isClose) {
 			return;
 		}
-		_coroutineProcess.run(timer);
+		_battleProcess.run(timer);
 		if (_replaceLoading) {
 			// 无替换对象
 			if (_replaceDstScreen == null || !_replaceDstScreen.isOnLoadComplete()) {
@@ -5661,23 +5695,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Coroutine call(YieldExecute... es) {
-		return _coroutineProcess.call(es);
+		return _battleProcess.call(es);
 	}
 
 	public Coroutine startCoroutine(Yielderable y) {
-		return _coroutineProcess.startCoroutine(y);
+		return _battleProcess.startCoroutine(y);
 	}
 
-	public CoroutineProcess resetCoroutine() {
-		return _coroutineProcess.reset();
+	public BattleProcess resetCoroutine() {
+		return _battleProcess.reset();
 	}
 
 	public CoroutineProcess getCoroutine() {
-		return _coroutineProcess;
+		return _battleProcess;
+	}
+
+	public BattleProcess getBattle() {
+		return _battleProcess;
 	}
 
 	public Screen clearCoroutine() {
-		_coroutineProcess.clearCoroutine();
+		_battleProcess.clearCoroutine();
+		return this;
+	}
+
+	public Screen cleanBattle() {
+		_battleProcess.clean();
 		return this;
 	}
 
@@ -6558,6 +6601,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _systemManager.getSystem(systemType);
 	}
 
+	/**
+	 * 构建一个战斗事件进程
+	 * 
+	 * @return
+	 */
+	public BattleProcess buildNewBattleProcess() {
+		BattleProcess build = new BattleProcess();
+		add(build);
+		putRelease(build);
+		return build;
+	}
+
 	public Screen show() {
 		return setVisible(true);
 	}
@@ -6648,7 +6703,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_screenAction != null) {
 					removeAllActions(_screenAction);
 				}
-				_coroutineProcess.close();
+				_battleProcess.close();
 				_disposes.close();
 				_conns.close();
 				release();
