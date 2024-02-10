@@ -30,6 +30,10 @@ public class WaitCoroutine {
 		Frames, Time,
 	}
 
+	public static WaitCoroutine empty() {
+		return seconds(0f);
+	}
+
 	public static WaitCoroutine frames(int frames) {
 		return new WaitCoroutine(frames, WaitType.Frames);
 	}

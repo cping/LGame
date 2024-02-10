@@ -24,6 +24,7 @@ import java.util.Comparator;
 
 import loon.Director.Origin;
 import loon.LObject;
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -157,6 +158,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected float _width, _height;
 
 	protected LTexture _image;
+
+	protected LRelease _disposed;
 
 	public Entity() {
 		this((LTexture) null);
@@ -2547,7 +2550,16 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public IEntity dispose(LRelease r) {
+		_disposed = r;
+		return this;
+	}
+
+	@Override
 	public void close() {
+		if (_disposed != null) {
+			_disposed.close();
+		}
 		if (!isDisposed()) {
 			if (_image != null) {
 				_image.close();
@@ -2562,6 +2574,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		_resizeListener = null;
 		_otherShape = null;
 		_oldNodeType = null;
+		_disposed = null;
 		setState(State.DISPOSED);
 		removeComponents();
 		removeChildren();

@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import java.util.Comparator;
 
+import loon.LRelease;
 import loon.LTexture;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
@@ -287,4 +288,6 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity hide();
 
 	IEntity buildToScreen();
+
+	IEntity dispose(LRelease r);
 }

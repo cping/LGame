@@ -23,6 +23,7 @@ package loon.action.sprite;
 import java.util.Comparator;
 
 import loon.LObject.State;
+import loon.LRelease;
 import loon.LTexture;
 import loon.Screen;
 import loon.action.ActionTween;
@@ -865,6 +866,11 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public IEntity buildToScreen() {
+		return this;
+	}
+
+	@Override
+	public IEntity dispose(LRelease r) {
 		return this;
 	}
 

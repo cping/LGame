@@ -183,6 +183,8 @@ public abstract class LComponent extends LObject<LContainer>
 	// 计算按下与松开时间用的秒表
 	private StopwatchTimer _downUpTimer = new StopwatchTimer();
 
+	protected LRelease _disposed;
+
 	public LComponent(Vector2f position, Vector2f size) {
 		this(position.x(), position.y(), size.x(), size.y());
 	}
@@ -2241,6 +2243,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent dispose(LRelease r) {
+		_disposed = r;
+		return this;
+	}
+
 	@Override
 	public void close() {
 		if (!_component_autoDestroy) {
@@ -2248,6 +2255,9 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		if (_component_isClose) {
 			return;
+		}
+		if (_disposed != null) {
+			_disposed.close();
 		}
 		this._component_isClose = true;
 		this._component_visible = false;

@@ -24,9 +24,13 @@ import java.util.Comparator;
 
 import loon.LSystem;
 import loon.action.map.items.Teams;
+import loon.events.EventActionN;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
@@ -134,6 +138,8 @@ public class BattleProcess extends CoroutineProcess {
 
 	private final static EventComparator _sortEvents = new EventComparator();
 
+	private ObjectMap<String, Object> _battleVars = new ObjectMap<String, Object>();
+
 	private Teams _mainTeams;
 
 	private float _minBattleWaitSeconds = 0.1f;
@@ -186,6 +192,36 @@ public class BattleProcess extends CoroutineProcess {
 		this._mainTeams = new Teams(name);
 		this.setLoop(true);
 		this.setDelay(delay);
+	}
+
+	public BattleProcess setVar(String name, Object v) {
+		_battleVars.put(name, v);
+		return this;
+	}
+
+	public String getVar(String name) {
+		Object v = _battleVars.get(name);
+		if (v == null) {
+			return null;
+		}
+		return HelperUtils.toStr(v);
+	}
+
+	public String removeVar(String name) {
+		Object v = _battleVars.remove(name);
+		if (v == null) {
+			return null;
+		}
+		return HelperUtils.toStr(v);
+	}
+
+	public BattleProcess clearVars() {
+		_battleVars.clear();
+		return this;
+	}
+
+	public boolean isBool(String name) {
+		return StringUtils.toBoolean(getVar(name));
 	}
 
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
@@ -412,6 +448,7 @@ public class BattleProcess extends CoroutineProcess {
 				e.setMainProcess(null);
 			}
 		}
+		this.clearVars();
 		this._events.clear();
 		this._result = BattleResults.Running;
 		this._actioning.set(false);
@@ -603,6 +640,42 @@ public class BattleProcess extends CoroutineProcess {
 
 	public BattleProcess setBattleSpeed(float s) {
 		this._battleSpeed = s;
+		return this;
+	}
+
+	public BattleProcess lockProcess(BooleanValue process, EventActionN e) {
+		if (get()) {
+			set(false);
+			if (e != null) {
+				HelperUtils.callEventAction(e, process);
+			}
+		}
+		return this;
+	}
+
+	public BattleProcess unlockProcess(BooleanValue process) {
+		if (!get()) {
+			set(true);
+			process.set(true);
+		}
+		return this;
+	}
+
+	public BattleProcess lockProcessBegin(BooleanValue process, EventActionN e) {
+		if (!get()) {
+			set(true);
+			if (e != null) {
+				HelperUtils.callEventAction(e, process);
+			}
+		}
+		return this;
+	}
+
+	public BattleProcess unlockProcessEnd(BooleanValue process) {
+		if (!get()) {
+			set(false);
+			process.set(true);
+		}
 		return this;
 	}
 

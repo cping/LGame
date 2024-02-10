@@ -166,6 +166,10 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		return WaitCoroutine.frames(f, t);
 	}
 
+	public WaitCoroutine empty() {
+		return WaitCoroutine.empty();
+	}
+
 	public WaitCoroutine seconds(float s) {
 		return WaitCoroutine.seconds(s);
 	}

@@ -41,6 +41,12 @@ public class CoroutineProcess extends RealtimeProcess implements LRelease {
 		this._running = true;
 	}
 
+	public CoroutineProcess reset() {
+		this.clearCoroutine();
+		this._running = true;
+		return this;
+	}
+
 	public Coroutine call(YieldExecute... es) {
 		return startCoroutine(new Yielderable(es));
 	}

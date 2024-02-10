@@ -1648,6 +1648,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param height
 	 */
 	public void onCreate(int width, int height) {
+		this.resetCoroutine();
 		this.setDirectorSize(0f, 0f, width, height);
 		this._currentMode = SCREEN_NOT_REPAINT;
 		this._curStageRun = true;
@@ -5759,6 +5760,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Coroutine startCoroutine(Yielderable y) {
 		return _coroutineProcess.startCoroutine(y);
+	}
+
+	public CoroutineProcess resetCoroutine() {
+		return _coroutineProcess.reset();
+	}
+
+	public CoroutineProcess getCoroutine() {
+		return _coroutineProcess;
 	}
 
 	public Screen clearCoroutine() {
