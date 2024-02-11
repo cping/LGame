@@ -34,6 +34,40 @@ import loon.utils.MathUtils;
  */
 public class LScrollContainer extends LContainer {
 
+	public static LScrollContainer createVerticalScrollContainer(LComponent comp, float x, float y, float h) {
+		int newX = MathUtils.ifloor(x);
+		int newY = MathUtils.ifloor(y);
+		int newW = comp == null ? 18 : comp.width();
+		int newH = MathUtils.ifloor(h);
+		if (comp == null) {
+			return new LScrollContainer(newX, newY, newW, newH);
+		}
+		if (comp.width() >= newW) {
+			newW = comp.width() + 18;
+		}
+		if (comp.height() <= newH) {
+			newH = MathUtils.iceil(comp.height() * 0.67f);
+		}
+		return new LScrollContainer(newX, newY, newW, newH);
+	}
+
+	public static LScrollContainer createHorizontalScrollContainer(LComponent comp, float x, float y, float w) {
+		int newX = MathUtils.ifloor(x);
+		int newY = MathUtils.ifloor(y);
+		int newW = MathUtils.ifloor(w);
+		int newH = comp == null ? 18 : comp.height();
+		if (comp == null) {
+			return new LScrollContainer(newX, newY, newW, newH);
+		}
+		if (comp.width() <= newW) {
+			newW = MathUtils.iceil(comp.width() * 0.67f);
+		}
+		if (comp.height() >= newH) {
+			newH = comp.height() + 18;
+		}
+		return new LScrollContainer(newX, newY, newW, newH);
+	}
+
 	private float _scrollTime, _scrollAmountTimer;
 
 	private float _velocityX, _velocityY;
@@ -368,11 +402,14 @@ public class LScrollContainer extends LContainer {
 					addScrollbar(_verticalScrollbar);
 				}
 			}
-			if (_scrollAmountTimer > 0f) {
-				_verticalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
+			if (_verticalScrollbar != null) {
+				if (_scrollAmountTimer > 0f) {
+					_verticalScrollbar.autoScroll(_scrollAmountTimer, _velocityX, _velocityY);
+				}
+				_verticalScrollbar.setLimitAutoScroll(_minAutoScrollX, _minAutoScrollY, _maxAutoScrollX,
+						_maxAutoScrollY);
+				_verticalScrollbar.setVisible(_verticalVisible);
 			}
-			_verticalScrollbar.setLimitAutoScroll(_minAutoScrollX, _minAutoScrollY, _maxAutoScrollX, _maxAutoScrollY);
-			_verticalScrollbar.setVisible(_verticalVisible);
 		} else {
 			_verticalScrollbar = null;
 		}

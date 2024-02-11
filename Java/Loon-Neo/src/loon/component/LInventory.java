@@ -946,6 +946,34 @@ public class LInventory extends LLayer {
 		return _tipSelected;
 	}
 
+	/**
+	 * 变化当前背包为指定高度的可滚动容器(大于背包大小则背包最大值的2/3)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param h
+	 * @return
+	 */
+	public LScrollContainer toVerticalScroll(float x, float y, float h) {
+		LScrollContainer scroll = LScrollContainer.createVerticalScrollContainer(this, x, y, h);
+		scroll.add(this);
+		return scroll;
+	}
+
+	/**
+	 * 变化当前背包为指定宽度的可滚动容器(大于背包大小则背包最大值的2/3)
+	 * 
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @return
+	 */
+	public LScrollContainer toHorizontalScroll(float x, float y, float w) {
+		LScrollContainer scroll = LScrollContainer.createHorizontalScrollContainer(this, x, y, w);
+		scroll.add(this);
+		return scroll;
+	}
+
 	@Override
 	public void close() {
 		super.close();

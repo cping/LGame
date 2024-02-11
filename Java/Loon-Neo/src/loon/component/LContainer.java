@@ -966,32 +966,35 @@ public abstract class LContainer extends LComponent implements IArray {
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
 					if (comp != null) {
-						LContainer container = comp.getContainer();
-						if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-							if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
-									|| comp.getHeight() >= container.getHeight())) {
-								return findComponentChecked(comp.getContainer());
-							}
-						}
-						return findComponentChecked(comp);
+						return checkComponent(comp);
 					}
 				}
 			}
 			if (child != null && child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				if (comp != null) {
-					LContainer container = comp.getContainer();
-					if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
-								|| comp.getHeight() >= container.getHeight())) {
-							return findComponentChecked(comp.getContainer());
-						}
-					}
-					return findComponentChecked(comp);
+					return checkComponent(comp);
 				}
 			}
 		}
 		return findComponentChecked(this);
+	}
+
+	LComponent checkComponent(LComponent comp) {
+		if (comp.isContainer() && (comp instanceof LLayer)) {
+			return findComponentChecked(comp);
+		} else {
+			LContainer container = comp.getContainer();
+			if (container != null && container.isContainer()) {
+				if ((container instanceof LScrollContainer) && container.contains(comp)
+						&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
+					return findComponentChecked(comp.getContainer());
+				} else {
+					return findComponentChecked(comp);
+				}
+			}
+		}
+		return findComponentChecked(comp);
 	}
 
 	public int getComponentCount() {

@@ -295,7 +295,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (Object tag : tags) {
+		final int len = tags.length;
+		for (int j = 0; j < len; j++) {
+			final Object tag = tags[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
 					list.add(this._childs[i]);
@@ -317,7 +319,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (Object tag : tags) {
+		final int len = tags.length;
+		for (int j = 0; j < len; j++) {
+			final Object tag = tags[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (!tag.equals(this._childs[i].Tag)) {
 					list.add(this._childs[i]);
@@ -339,7 +343,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				LComponent comp = this._childs[i];
 				if (comp != null && name.equals(comp.getUIName())) {
@@ -362,7 +368,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (!name.equals(this._childs[i].getUIName())) {
 					list.add(this._childs[i]);
@@ -384,7 +392,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (name.equals(this._childs[i].getName())) {
 					list.add(this._childs[i]);
@@ -400,7 +410,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				LComponent comp = this._childs[i];
 				if (comp != null) {
@@ -426,7 +438,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
 		final int size = this.childCount;
-		for (String name : names) {
+		final int len = names.length;
+		for (int j = 0; j < len; j++) {
+			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
 				if (!name.equals(this._childs[i].getName())) {
 					list.add(this._childs[i]);
@@ -952,32 +966,35 @@ public abstract class LContainer extends LComponent implements IArray {
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
 					if (comp != null) {
-						LContainer container = comp.getContainer();
-						if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-							if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
-									|| comp.getHeight() >= container.getHeight())) {
-								return findComponentChecked(comp.getContainer());
-							}
-						}
-						return findComponentChecked(comp);
+						return checkComponent(comp);
 					}
 				}
 			}
 			if (child != null && child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				if (comp != null) {
-					LContainer container = comp.getContainer();
-					if (container != null && container.isContainer() && (container instanceof LScrollContainer)) {
-						if (container.contains(comp) && (comp.getWidth() >= container.getWidth()
-								|| comp.getHeight() >= container.getHeight())) {
-							return findComponentChecked(comp.getContainer());
-						}
-					}
-					return findComponentChecked(comp);
+					return checkComponent(comp);
 				}
 			}
 		}
 		return findComponentChecked(this);
+	}
+
+	LComponent checkComponent(LComponent comp) {
+		if (comp.isContainer() && (comp instanceof LLayer)) {
+			return findComponentChecked(comp);
+		} else {
+			LContainer container = comp.getContainer();
+			if (container != null && container.isContainer()) {
+				if ((container instanceof LScrollContainer) && container.contains(comp)
+						&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
+					return findComponentChecked(comp.getContainer());
+				} else {
+					return findComponentChecked(comp);
+				}
+			}
+		}
+		return findComponentChecked(comp);
 	}
 
 	public int getComponentCount() {
@@ -1434,7 +1451,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (callback == null) {
 			return this;
 		}
-		for (LComponent child : this._childs) {
+		final int size = this.childCount;
+		final LComponent[] comps = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			final LComponent child = comps[i];
 			if (child != null) {
 				callback.onSuccess(child);
 			}
@@ -1474,10 +1494,12 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._component_isClose = true;
 		if (_component_autoDestroy) {
 			if (_childs != null) {
-				for (LComponent c : _childs) {
-					if (c != null && !c._component_isClose) {
-						c.close();
-						c = null;
+				final int size = this.childCount;
+				final LComponent[] comps = this._childs;
+				for (int i = size - 1; i > -1; i--) {
+					final LComponent child = comps[i];
+					if (child != null && !child._component_isClose) {
+						child.close();
 					}
 				}
 			}
