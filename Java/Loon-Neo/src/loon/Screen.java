@@ -126,6 +126,7 @@ import loon.utils.processes.YieldExecute;
 import loon.utils.processes.Yielderable;
 import loon.utils.reply.Callback;
 import loon.utils.reply.Closeable;
+import loon.utils.reply.ObjLazy;
 import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
 import loon.utils.timer.Duration;
@@ -227,7 +228,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final Closeable.Set _conns = new Closeable.Set();
 
-	private LTransition _transition;
+	private ObjLazy<LTransition> _lazyTransition;
 
 	private DrawListener<Screen> _drawListener;
 
@@ -1845,14 +1846,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public LTransition onTransition() {
-		return _transition;
+		if (_lazyTransition != null) {
+			return _lazyTransition.get();
+		}
+		return LTransition.newEmpty();
 	}
 
 	/**
 	 * 设置一个空操作的过渡效果
 	 */
 	public void noopTransition() {
-		this._transition = LTransition.newEmpty();
+		setTransition(LTransition.newEmpty());
 	}
 
 	/**
@@ -1862,7 +1866,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen setTransition(LTransition t) {
-		this._transition = t;
+		if (this._lazyTransition != null && this._lazyTransition.get() == t) {
+			return this;
+		}
+		this._lazyTransition = ObjLazy.of(t);
 		return this;
 	}
 
@@ -1874,8 +1881,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen setTransition(String transName, LColor c) {
-		this._transition = LTransition.newTransition(transName, c);
-		return this;
+		return setTransition(LTransition.newTransition(transName, c));
 	}
 
 	/**
@@ -1884,7 +1890,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public LTransition getTransition() {
-		return this._transition;
+		if (_lazyTransition != null) {
+			return _lazyTransition.get();
+		}
+		return null;
 	}
 
 	/**

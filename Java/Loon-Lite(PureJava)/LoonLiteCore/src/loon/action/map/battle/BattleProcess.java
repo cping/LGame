@@ -21,6 +21,7 @@
 package loon.action.map.battle;
 
 import java.util.Comparator;
+import java.util.Iterator;
 
 import loon.LSystem;
 import loon.action.map.items.Teams;
@@ -156,6 +157,8 @@ public class BattleProcess extends CoroutineProcess {
 
 	private TArray<BattleEvent> _events;
 
+	private BattleEvent _currentBattleEvent;
+
 	private BattleEvent _enforceEvent;
 
 	private BattleState _stateCurrent;
@@ -167,6 +170,8 @@ public class BattleProcess extends CoroutineProcess {
 	private TArray<GameProcess> _waitProcess;
 
 	private int _roundAmount;
+
+	private boolean _battleEventLocked;
 
 	private boolean _pause;
 
@@ -232,6 +237,7 @@ public class BattleProcess extends CoroutineProcess {
 		this._stateCurrent = state;
 		if (_stateCompleted != state) {
 			if (turnEvent != null) {
+				this._currentBattleEvent = turnEvent;
 				if (!turnEvent.start(elapsedTime) || _waiting) {
 					return false;
 				}
@@ -263,6 +269,7 @@ public class BattleProcess extends CoroutineProcess {
 			this._stateCurrent = state;
 			if (_stateCompleted != state) {
 				if (turnEvent != null) {
+					this._currentBattleEvent = turnEvent;
 					if (!turnEvent.start(elapsedTime) || _waiting) {
 						return false;
 					}
@@ -285,6 +292,10 @@ public class BattleProcess extends CoroutineProcess {
 			}
 		}
 		return true;
+	}
+
+	public BattleEvent getCurrentBattleEvent() {
+		return this._currentBattleEvent;
 	}
 
 	public Teams getTeams() {
@@ -318,7 +329,8 @@ public class BattleProcess extends CoroutineProcess {
 
 	public BattleEvent get(String name) {
 		BattleEvent eve = null;
-		for (BattleEvent e : _events) {
+		for (Iterator<BattleEvent> it = _events.iterator(); it.hasNext();) {
+			BattleEvent e = it.next();
 			if (e != null && name.equalsIgnoreCase(e.getState().getName())) {
 				eve = e;
 			}
@@ -328,7 +340,8 @@ public class BattleProcess extends CoroutineProcess {
 
 	public BattleEvent get(BattleState state) {
 		BattleEvent eve = null;
-		for (BattleEvent e : _events) {
+		for (Iterator<BattleEvent> it = _events.iterator(); it.hasNext();) {
+			BattleEvent e = it.next();
 			if (e != null && e.getState().equals(state)) {
 				eve = e;
 			}
@@ -356,11 +369,10 @@ public class BattleProcess extends CoroutineProcess {
 		if (_waiting) {
 			if (_waitProcess.size > 0) {
 				synchronized (_waitProcess) {
-					for (GameProcess process : _waitProcess) {
-						if (process != null) {
-							if (!process.isDead()) {
-								return (_waiting = true);
-							}
+					for (Iterator<GameProcess> it = _waitProcess.iterator(); it.hasNext();) {
+						GameProcess process = it.next();
+						if (process != null && !process.isDead()) {
+							return (_waiting = true);
 						}
 					}
 					_waitProcess.clear();
@@ -394,13 +406,15 @@ public class BattleProcess extends CoroutineProcess {
 			if (!_loop) {
 				return;
 			}
-			for (BattleEvent e : _events) {
+			for (Iterator<BattleEvent> it = _events.iterator(); it.hasNext();) {
+				BattleEvent e = it.next();
 				if (e != null) {
 					if (!updateBattleEvent(e, elapsedTime)) {
 						return;
 					}
 				}
 			}
+			_actioning.set(false);
 			_roundAmount++;
 		}
 		_states.clear();
@@ -448,14 +462,45 @@ public class BattleProcess extends CoroutineProcess {
 		return clean();
 	}
 
-	public BattleProcess clean() {
-		this._waitProcess.clear();
-		this._states.clear();
-		for (BattleEvent e : _events) {
+	public void callBattleEvent(EventActionN event) {
+		if (_battleEventLocked || get()) {
+			return;
+		}
+		lockBattle();
+		if (event != null) {
+			event.update();
+		}
+	}
+
+	public boolean isBattleLocked() {
+		return _battleEventLocked;
+	}
+
+	public BattleProcess lockBattle() {
+		_battleEventLocked = true;
+		return this;
+	}
+
+	public BattleProcess unlockBattle() {
+		_battleEventLocked = false;
+		return this;
+	}
+
+	public BattleProcess clearEventMainProcess() {
+		final int size = _events.size;
+		for (int i = size - 1; i > -1; i--) {
+			BattleEvent e = _events.get(i);
 			if (e != null) {
 				e.setMainProcess(null);
 			}
 		}
+		return this;
+	}
+
+	public BattleProcess clean() {
+		this._waitProcess.clear();
+		this._states.clear();
+		this.clearEventMainProcess();
 		this.clearVars();
 		this._events.clear();
 		this._result = BattleResults.Running;
@@ -464,6 +509,7 @@ public class BattleProcess extends CoroutineProcess {
 		this._enforceEvent = null;
 		this._stateCurrent = null;
 		this._stateCompleted = null;
+		this._battleEventLocked = false;
 		this._waiting = false;
 		this._pause = false;
 		this._loop = true;
@@ -597,6 +643,16 @@ public class BattleProcess extends CoroutineProcess {
 		return _waiting;
 	}
 
+	public BattleProcess playNext() {
+		_actioning.set(true);
+		return this;
+	}
+
+	public BattleProcess stopNext() {
+		_actioning.set(false);
+		return this;
+	}
+
 	public BattleProcess setActioning(boolean a) {
 		_actioning.set(a);
 		return this;
@@ -611,12 +667,12 @@ public class BattleProcess extends CoroutineProcess {
 		return _actioning.get();
 	}
 
-	public boolean isActioning() {
+	public boolean isFighting() {
 		return _actioning.get();
 	}
 
-	public BooleanValue getActioning() {
-		return _actioning;
+	public boolean isActioning() {
+		return _actioning.get();
 	}
 
 	public float getMinBattleWaitSeconds() {
@@ -651,27 +707,50 @@ public class BattleProcess extends CoroutineProcess {
 		return this;
 	}
 
+	public BattleProcess lockProcess(EventActionN e) {
+		return lockProcess(null, e);
+	}
+
 	public BattleProcess lockProcess(BooleanValue process, EventActionN e) {
 		if (get()) {
 			set(false);
+			if (process != null) {
+				process.set(false);
+			}
+			lockBattle();
 			if (e != null) {
 				HelperUtils.callEventAction(e, process);
 			}
 		}
 		return this;
+	}
+
+	public BattleProcess unlockProcess() {
+		return unlockProcess(null);
 	}
 
 	public BattleProcess unlockProcess(BooleanValue process) {
 		if (!get()) {
 			set(true);
-			process.set(true);
+			if (process != null) {
+				process.set(true);
+			}
+			unlockBattle();
 		}
 		return this;
+	}
+
+	public BattleProcess lockProcessBegin(EventActionN e) {
+		return lockProcessBegin(null, e);
 	}
 
 	public BattleProcess lockProcessBegin(BooleanValue process, EventActionN e) {
 		if (!get()) {
 			set(true);
+			if (process != null) {
+				process.set(false);
+			}
+			lockBattle();
 			if (e != null) {
 				HelperUtils.callEventAction(e, process);
 			}
@@ -679,10 +758,17 @@ public class BattleProcess extends CoroutineProcess {
 		return this;
 	}
 
+	public BattleProcess unlockProcessEnd() {
+		return unlockProcessEnd(null);
+	}
+
 	public BattleProcess unlockProcessEnd(BooleanValue process) {
 		if (!get()) {
 			set(false);
-			process.set(true);
+			if (process != null) {
+				process.set(true);
+			}
+			unlockBattle();
 		}
 		return this;
 	}

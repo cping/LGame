@@ -114,6 +114,10 @@ public class HelperUtils {
 		return LTimer.postTask(e, seconds, loopCount);
 	}
 
+	public static Task postOnceTask(Runnable e, float seconds) {
+		return LTimer.postTask(e, seconds, 1);
+	}
+
 	public static Scheduler schedulerTask(float seconds, boolean sequence, Interval... tasks) {
 		return LTimer.schedulerTask(seconds, true, sequence, tasks);
 	}
