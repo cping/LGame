@@ -966,31 +966,27 @@ public abstract class LContainer extends LComponent implements IArray {
 				if (child.intersects(nx, ny)) {
 					LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(nx, ny);
 					if (comp != null) {
-						return checkComponent(comp);
+						return checkComponent(comp, nx, ny);
 					}
 				}
 			}
 			if (child != null && child.intersects(x1, y1)) {
 				LComponent comp = (!child.isContainer()) ? child : ((LContainer) child).findComponent(x1, y1);
 				if (comp != null) {
-					return checkComponent(comp);
+					return checkComponent(comp, x1, y1);
 				}
 			}
 		}
 		return findComponentChecked(this);
 	}
 
-	LComponent checkComponent(LComponent comp) {
-		if (comp.isContainer() && (comp instanceof LLayer)) {
-			return findComponentChecked(comp);
-		} else {
-			LContainer container = comp.getContainer();
-			if (container != null && container.isContainer()) {
-				if ((container instanceof LScrollContainer) && container.contains(comp)
-						&& (comp.getWidth() >= container.getWidth() || comp.getHeight() >= container.getHeight())) {
-					return findComponentChecked(comp.getContainer());
-				} else {
-					return findComponentChecked(comp);
+	LComponent checkComponent(LComponent comp, float x, float y) {
+		LContainer container = comp.getContainer();
+		if (container != null && container.isContainer()) {
+			if (container instanceof LScrollContainer) {
+				LScrollContainer scroll = (LScrollContainer) container;
+				if (scroll.isClickSlider(x, y)) {
+					return findComponentChecked(scroll);
 				}
 			}
 		}

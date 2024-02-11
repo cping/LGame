@@ -26,6 +26,7 @@ import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -39,8 +40,11 @@ public class LScrollContainer extends LContainer {
 		int newY = MathUtils.ifloor(y);
 		int newW = comp == null ? 18 : comp.width();
 		int newH = MathUtils.ifloor(h);
+		LScrollContainer container = null;
 		if (comp == null) {
-			return new LScrollContainer(newX, newY, newW, newH);
+			container = new LScrollContainer(newX, newY, newW, newH);
+			container.setScrollHorizontalbarVisible(false);
+			return container;
 		}
 		if (comp.width() >= newW) {
 			newW = comp.width() + 18;
@@ -48,7 +52,9 @@ public class LScrollContainer extends LContainer {
 		if (comp.height() <= newH) {
 			newH = MathUtils.iceil(comp.height() * 0.67f);
 		}
-		return new LScrollContainer(newX, newY, newW, newH);
+		container = new LScrollContainer(newX, newY, newW, newH);
+		container.setScrollHorizontalbarVisible(false);
+		return container;
 	}
 
 	public static LScrollContainer createHorizontalScrollContainer(LComponent comp, float x, float y, float w) {
@@ -56,8 +62,11 @@ public class LScrollContainer extends LContainer {
 		int newY = MathUtils.ifloor(y);
 		int newW = MathUtils.ifloor(w);
 		int newH = comp == null ? 18 : comp.height();
+		LScrollContainer container = null;
 		if (comp == null) {
-			return new LScrollContainer(newX, newY, newW, newH);
+			container = new LScrollContainer(newX, newY, newW, newH);
+			container.setScrollVerticalbarVisible(false);
+			return container;
 		}
 		if (comp.width() <= newW) {
 			newW = MathUtils.iceil(comp.width() * 0.67f);
@@ -65,7 +74,9 @@ public class LScrollContainer extends LContainer {
 		if (comp.height() >= newH) {
 			newH = comp.height() + 18;
 		}
-		return new LScrollContainer(newX, newY, newW, newH);
+		container = new LScrollContainer(newX, newY, newW, newH);
+		container.setScrollVerticalbarVisible(false);
+		return container;
 	}
 
 	private float _scrollTime, _scrollAmountTimer;
@@ -366,6 +377,39 @@ public class LScrollContainer extends LContainer {
 		return this;
 	}
 
+	public boolean isClickSlider() {
+		return isClickSlider(null);
+	}
+
+	public boolean isClickSlider(XY pos) {
+		if (pos == null) {
+			pos = getUITouchXY();
+		}
+		return isClickSlider(pos.getX(), pos.getY());
+	}
+
+	public boolean isClickSlider(float posX, float posY) {
+		boolean selected = isClickVerticalSlider(posX, posY);
+		if (!selected) {
+			selected = isClickHorizontalSlider(posX, posY);
+		}
+		return selected;
+	}
+
+	public boolean isClickVerticalSlider(float posX, float posY) {
+		if (_verticalScrollbar == null) {
+			return false;
+		}
+		return _verticalScrollbar.contains(getScalePixelX() + posX, getScalePixelY() + posY);
+	}
+
+	public boolean isClickHorizontalSlider(float posX, float posY) {
+		if (_horizontalScrollbar == null) {
+			return false;
+		}
+		return _horizontalScrollbar.contains(getScalePixelX() + posX, getScalePixelY() + posY);
+	}
+
 	public LScrollContainer scrollContainerRealSizeChanged() {
 		checkIfScrollbarIsNecessary();
 		fitScrollBarSize();
@@ -467,10 +511,11 @@ public class LScrollContainer extends LContainer {
 	@Override
 	public void process(final long elapsedTime) {
 		if (!isAutoScroll() && !isAutoVelocity()) {
-			if (_verticalVisible && _verticalScrollbar != null && isVerticalScrolling()) {
+			final Vector2f pos = getUITouchXY();
+			if (_verticalVisible && _verticalScrollbar != null && isClickVerticalSlider(pos.x, pos.y)) {
 				_verticalScrollbar.process(elapsedTime);
 			}
-			if (_horizontalVisible && _horizontalScrollbar != null && isHorizontalScrolling()) {
+			if (_horizontalVisible && _horizontalScrollbar != null && isClickHorizontalSlider(pos.x, pos.y)) {
 				_horizontalScrollbar.process(elapsedTime);
 			}
 		} else {
@@ -485,13 +530,14 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchDragged() {
+		final Vector2f pos = getUITouchXY();
 		if (_verticalVisible && _verticalScrollbar != null) {
-			if (_verticalScrollbar.isAllowTouch()) {
+			if (_verticalScrollbar.isAllowTouch() && isClickVerticalSlider(pos.x, pos.y)) {
 				_verticalScrollbar.processTouchDragged();
 			}
 		}
 		if (_horizontalVisible && _horizontalScrollbar != null) {
-			if (_horizontalScrollbar.isAllowTouch()) {
+			if (_horizontalScrollbar.isAllowTouch() && isClickHorizontalSlider(pos.x, pos.y)) {
 				_horizontalScrollbar.processTouchDragged();
 			}
 		}
@@ -500,13 +546,14 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchPressed() {
+		final Vector2f pos = getUITouchXY();
 		if (_verticalVisible && _verticalScrollbar != null) {
-			if (_verticalScrollbar.isAllowTouch()) {
+			if (_verticalScrollbar.isAllowTouch() && isClickVerticalSlider(pos.x, pos.y)) {
 				_verticalScrollbar.processTouchPressed();
 			}
 		}
 		if (_horizontalVisible && _horizontalScrollbar != null) {
-			if (_horizontalScrollbar.isAllowTouch()) {
+			if (_horizontalScrollbar.isAllowTouch() && isClickHorizontalSlider(pos.x, pos.y)) {
 				_horizontalScrollbar.processTouchPressed();
 			}
 		}
@@ -515,13 +562,14 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	protected void processTouchReleased() {
+		final Vector2f pos = getUITouchXY();
 		if (_verticalVisible && _verticalScrollbar != null) {
-			if (_verticalScrollbar.isAllowTouch()) {
+			if (_verticalScrollbar.isAllowTouch() && isClickVerticalSlider(pos.x, pos.y)) {
 				_verticalScrollbar.processTouchReleased();
 			}
 		}
 		if (_horizontalVisible && _horizontalScrollbar != null) {
-			if (_horizontalScrollbar.isAllowTouch()) {
+			if (_horizontalScrollbar.isAllowTouch() && isClickHorizontalSlider(pos.x, pos.y)) {
 				_horizontalScrollbar.processTouchReleased();
 			}
 		}
