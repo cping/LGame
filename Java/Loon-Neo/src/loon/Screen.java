@@ -1846,10 +1846,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public LTransition onTransition() {
-		if (_lazyTransition != null) {
-			return _lazyTransition.get();
-		}
-		return LTransition.newEmpty();
+		return getTransition();
 	}
 
 	/**

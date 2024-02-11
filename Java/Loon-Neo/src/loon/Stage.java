@@ -215,7 +215,11 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public LTransition onTransition() {
-		return LTransition.newEmpty();
+		LTransition transition = getTransition();
+		if (transition == null) {
+			return LTransition.newEmpty();
+		}
+		return transition;
 	}
 
 	public void commits() {
