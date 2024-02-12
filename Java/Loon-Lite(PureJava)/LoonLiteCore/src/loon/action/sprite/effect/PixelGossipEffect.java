@@ -21,7 +21,6 @@
 package loon.action.sprite.effect;
 
 import loon.LTexture;
-import loon.action.sprite.Draw;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.opengl.GLEx;
@@ -30,7 +29,7 @@ import loon.utils.MathUtils;
 /**
  * 华夏风象素特效,可以显示太极图和八卦图(这个不太好定义显示成什么样(因为无法预判用户想怎么显示),所以本身没有特效,就是可以显示八卦与太极,用户自行拼接效果吧……)
  */
-public class PixelGossipEffect extends Draw implements BaseEffect {
+public class PixelGossipEffect extends BaseAbstractEffect {
 
 	private static final int[][] trigramList = { { 0, 0, 0 }, { 1, 1, 1 }, { 0, 0, 1 }, { 1, 1, 0 }, { 0, 1, 1 },
 			{ 1, 0, 0 }, { 0, 1, 0 }, { 1, 0, 1 } };
@@ -353,8 +352,6 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 
 	private boolean fillTrigram;
 
-	private boolean completed;
-
 	private LTexture tjtexture;
 
 	public PixelGossipEffect(int x, int y, int width, int height) {
@@ -373,6 +370,7 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 		setLocation(x, y);
 		setSize(width, height);
 		setColor(color);
+		setRepaint(true);
 		this.trigramIndex = trigram;
 		this.fillTrigram = fill;
 	}
@@ -384,19 +382,13 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return completed;
+	public void onUpdate(final long elapsedTime) {
+		checkAutoRemove();
 	}
 
 	@Override
-	public PixelGossipEffect setStop(boolean c) {
-		this.completed = c;
-		return this;
-	}
-	
-	@Override
-	public void draw(GLEx g, float offsetX, float offsetY) {
-		if (completed) {
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_completed) {
 			return;
 		}
 		float x = drawX(offsetX);
@@ -437,12 +429,18 @@ public class PixelGossipEffect extends Draw implements BaseEffect {
 		return this;
 	}
 
+	@Override
+	public PixelGossipEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(true);
+		return this;
+	}
+
+	@Override
 	public void close() {
 		super.close();
 		if (tjtexture != null) {
 			tjtexture.close();
 			tjtexture = null;
 		}
-		this.completed = true;
 	}
 }

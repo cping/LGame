@@ -22,28 +22,20 @@ package loon.action.sprite.effect;
 
 import loon.LTexture;
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 0.3.2起新增类，百叶窗特效 0--竖屏,1--横屏
  */
-public class CrossEffect extends Entity implements BaseEffect {
+public class CrossEffect extends BaseAbstractEffect {
 
 	private boolean _createTexture;
 
 	private LColor _crossColor;
 
-	private boolean _completed;
-
-	private boolean _autoRemoved;
-
 	private LTexture otexture, ntexture;
-
-	private LTimer timer;
 
 	private int count, code;
 
@@ -92,28 +84,8 @@ public class CrossEffect extends Entity implements BaseEffect {
 		} else {
 			maxcount = 8;
 		}
-		this.timer = new LTimer(160);
+		this.setDelay(160);
 		this.setRepaint(true);
-	}
-
-	public CrossEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return _completed;
-	}
-
-	@Override
-	public CrossEffect setStop(boolean c) {
-		this._completed = c;
-		return this;
 	}
 
 	@Override
@@ -121,19 +93,14 @@ public class CrossEffect extends Entity implements BaseEffect {
 		if (_createTexture) {
 			return;
 		}
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (this.count > this.maxcount) {
 			this._completed = true;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			count++;
-		}
-		if (this._completed) {
-			if (_autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
 		}
 	}
 
@@ -217,19 +184,15 @@ public class CrossEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return _autoRemoved;
-	}
-
+	@Override
 	public CrossEffect setAutoRemoved(boolean a) {
-		this._autoRemoved = a;
+		super.setAutoRemoved(a);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		_completed = true;
 		if (otexture != null) {
 			otexture.close();
 			otexture = null;
@@ -238,7 +201,6 @@ public class CrossEffect extends Entity implements BaseEffect {
 			ntexture.close();
 			ntexture = null;
 		}
-
 	}
 
 }

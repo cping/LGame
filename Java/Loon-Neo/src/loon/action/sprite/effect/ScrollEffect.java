@@ -23,23 +23,17 @@ package loon.action.sprite.effect;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
-import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
-import loon.utils.timer.LTimer;
 
 /**
  * 滚屏效果类,用以实现特定图像的滚动播放(循环展示)
  */
-public class ScrollEffect extends Entity implements BaseEffect {
+public class ScrollEffect extends BaseAbstractEffect {
 
 	private int backgroundLoop;
 
 	private int count;
-
-	private boolean completed;
-
-	private LTimer timer;
 
 	private int model;
 
@@ -79,35 +73,17 @@ public class ScrollEffect extends Entity implements BaseEffect {
 		this.setSize(limit.width, limit.height);
 		this.setTexture(tex2d);
 		this.setRepaint(true);
+		this.setDelay(10);
 		this.count = 1;
-		this.timer = new LTimer(10);
 		this.model = d;
-	}
-
-	public ScrollEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
-	public ScrollEffect setDelayS(float s) {
-		timer.setDelayS(s);
-		return this;
-	}
-
-	public float getDelayS() {
-		return timer.getDelayS();
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			switch (model) {
 			case Config.DOWN:
 			case Config.TDOWN:
@@ -185,20 +161,9 @@ public class ScrollEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public ScrollEffect setStop(boolean completed) {
-		this.completed = completed;
+	public ScrollEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(true);
 		return this;
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		completed = true;
 	}
 
 }

@@ -48,6 +48,9 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * Screen的上级类,用于切换与存储多个Screen,并集中管理Screen功能
+ */
 public class LProcess implements LRelease {
 
 	protected TArray<Updateable> resumes;

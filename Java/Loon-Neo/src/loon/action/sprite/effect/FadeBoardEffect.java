@@ -22,7 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -32,31 +31,7 @@ import loon.utils.timer.Duration;
 /**
  * 瓦片(从左向右逐渐减少或增加)淡入淡出效果
  */
-public class FadeBoardEffect extends Entity implements BaseEffect {
-
-	private int countCompleted;
-
-	private LTexture blockTexture;
-
-	private int cellWidth, cellHeight;
-
-	private final float targetAngle;
-
-	private final float targetScaleX, targetScaleY;
-
-	private TArray<Block> paintBlocks;
-
-	private long blocDuration;
-
-	private long blockDelay;
-
-	private int fadeType;
-
-	private boolean _completed;
-
-	private boolean _autoRemoved;
-
-	private boolean _dirty;
+public class FadeBoardEffect extends BaseAbstractEffect {
 
 	private static class Block {
 
@@ -166,6 +141,26 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 
 	}
 
+	private int countCompleted;
+
+	private LTexture blockTexture;
+
+	private int cellWidth, cellHeight;
+
+	private final float targetAngle;
+
+	private final float targetScaleX, targetScaleY;
+
+	private TArray<Block> paintBlocks;
+
+	private long blocDuration;
+
+	private long blockDelay;
+
+	private int fadeType;
+
+	private boolean _dirty;
+
 	public FadeBoardEffect(int model, LColor c) {
 		this(model, c, 32, 32);
 	}
@@ -224,6 +219,7 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		return blocks;
 	}
 
+	@Override
 	public FadeBoardEffect setDelay(long delay) {
 		blockDelay = delay;
 		return this;
@@ -234,19 +230,17 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return _completed;
+	public FadeBoardEffect setDelayS(float s) {
+		return setDelay(Duration.ofS(s));
 	}
 
-	@Override
-	public FadeBoardEffect setStop(boolean c) {
-		this._completed = c;
-		return this;
+	public float getDelayS() {
+		return Duration.toS(blockDelay);
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (_dirty) {
@@ -284,12 +278,8 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public boolean isAutoRemoved() {
-		return _autoRemoved;
-	}
-
 	public FadeBoardEffect setAutoRemoved(boolean autoRemoved) {
-		this._autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
@@ -304,7 +294,6 @@ public class FadeBoardEffect extends Entity implements BaseEffect {
 	@Override
 	public void close() {
 		super.close();
-		this._completed = true;
 		this._dirty = true;
 		if (paintBlocks != null) {
 			this.paintBlocks.clear();

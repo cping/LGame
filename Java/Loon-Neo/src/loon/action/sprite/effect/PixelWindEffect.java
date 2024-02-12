@@ -57,11 +57,11 @@ public class PixelWindEffect extends PixelBaseEffect {
 
 	@Override
 	public void draw(GLEx g, float tx, float ty) {
-		if (super.completed) {
+		if (super._completed) {
 			return;
 		}
 		if (super.frame > limit) {
-			super.completed = true;
+			super._completed = true;
 		}
 		int tmp = g.color();
 		g.setColor(_baseColor);

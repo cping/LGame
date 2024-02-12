@@ -366,16 +366,17 @@ public class LScrollBar extends LComponent {
 	}
 
 	public boolean touchDown(float screenX, float screenY) {
-		if (_scrollContainer != null) {
+		if (_scrollContainer != null && !_scrolling) {
 			relativeClickX = MathUtils.floor(screenX - (getX() + getSliderX() + _scrollContainer.getX()));
 			relativeClickY = MathUtils.floor(screenY - (getY() + getSliderY() + _scrollContainer.getY()));
+			setScroll(true);
 			return true;
 		}
 		return false;
 	}
 
 	public boolean touchUp(float screenX, float screenY) {
-		if (_scrollContainer != null) {
+		if (_scrollContainer != null && _scrolling) {
 			relativeClickX = MathUtils.floor(screenX);
 			relativeClickY = MathUtils.floor(screenY);
 			setScroll(false);
@@ -385,7 +386,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	public boolean touchDragged(float screenX, float screenY) {
-		if (_scrollContainer != null) {
+		if (_scrollContainer != null && _scrolling) {
 			int rClickX = MathUtils.floor(screenX - (getX() + _scrollContainer.getX()));
 			int rClickY = MathUtils.floor(screenY - (getY() + _scrollContainer.getY()));
 			rClickX -= relativeClickX;
@@ -478,15 +479,15 @@ public class LScrollBar extends LComponent {
 	public void checkClicked() {
 		if (isAllowTouch()) {
 			final Vector2f pos = getUITouchXY();
-			if (isClickDown()) {
+			if (!_scrolling && isClickDown()) {
 				if (isPointInUI()) {
 					touchDown(pos.x, pos.y);
 				}
-			} else if (isClickUp()) {
+			} else if (_scrolling && isClickUp()) {
 				if (isPointInUI()) {
 					touchUp(pos.x, pos.y);
 				}
-			} else if (isClickDrag()) {
+			} else if (_scrolling && isClickDrag()) {
 				if (isPointInUI()) {
 					touchDragged(pos.x, pos.y);
 				}

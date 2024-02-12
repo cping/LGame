@@ -21,27 +21,24 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 黑幕过渡效果,画面变成圆形扩散或由圆形向中心集中最终消失
  */
-public class FadeOvalEffect extends Entity implements BaseEffect {
+public class FadeOvalEffect extends BaseAbstractEffect {
 
 	private final LColor[] oval_colors;
 
 	private float max_time;
-	private LTimer timer;
 	private float elapsed;
-	private boolean finished = false;
-	private boolean autoRemoved = false;
 
 	private int type = TYPE_FADE_IN;
 	private int maxColorSize;
+	private float _initWidth;
+	private float _initHeight;
 
 	public FadeOvalEffect(int type, LColor color) {
 		this(type, color, LSystem.viewSize.width, LSystem.viewSize.height);
@@ -60,47 +57,27 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 	}
 
 	public FadeOvalEffect(int type, LColor oc, int time, float w, float h, int maxSize) {
-		this.type = type;
-		this.elapsed = 0;
 		this.setSize(w, h);
 		this.setColor(oc);
+		this.setRepaint(true);
+		this.type = type;
 		this.elapsed = 0;
+		this._initWidth = w;
+		this._initHeight = h;
 		this.maxColorSize = maxSize;
 		this.oval_colors = new LColor[maxColorSize];
 		for (int i = 0; i < maxColorSize; i++) {
 			oval_colors[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
 		}
 		this.max_time = time;
-		this.timer = new LTimer(0);
-		this.setRepaint(true);
-	}
-
-	public FadeOvalEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return finished;
-	}
-
-	@Override
-	public FadeOvalEffect setStop(boolean finished) {
-		this.finished = finished;
-		return this;
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (finished) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			if (type == TYPE_FADE_IN) {
 				this.elapsed += elapsedTime / 20f;
 				float progress = this.elapsed / this.max_time;
@@ -109,30 +86,25 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 				if (this.elapsed >= this.max_time / 15f) {
 					this.elapsed = -1;
 					this._width = (this._height = 0f);
-					this.finished = true;
+					this._completed = true;
 				}
 			} else {
 				this.elapsed += elapsedTime;
 				float progress = this.elapsed / this.max_time;
-				this._width = (LSystem.viewSize.width * MathUtils.pow(progress, 2f));
-				this._height = (LSystem.viewSize.height * MathUtils.pow(progress, 2f));
+				this._width = (_initWidth * MathUtils.pow(progress, 2f));
+				this._height = (_initHeight * MathUtils.pow(progress, 2f));
 				if (this.elapsed >= this.max_time) {
 					this.elapsed = -1;
-					this._width = (this._height = MathUtils.max(LSystem.viewSize.width, LSystem.viewSize.height));
-					this.finished = true;
+					this._width = (this._height = MathUtils.max(_initWidth, _initHeight));
+					this._completed = true;
 				}
-			}
-		}
-		if (this.finished) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
 			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (finished) {
+		if (_completed) {
 			return;
 		}
 		if (this.elapsed > -1) {
@@ -152,19 +124,10 @@ public class FadeOvalEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
-	public FadeOvalEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
-		return this;
-	}
-
 	@Override
-	public void close() {
-		super.close();
-		this.finished = true;
+	public FadeOvalEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
 
 }

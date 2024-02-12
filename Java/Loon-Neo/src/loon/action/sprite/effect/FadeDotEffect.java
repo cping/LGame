@@ -21,37 +21,16 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
-import loon.utils.timer.LTimer;
 
 /**
  * 黑幕过渡效果,一组圆形逐渐染黑屏幕或者黑幕逐渐缩小为一群圆并最终缩小不见
  */
-public class FadeDotEffect extends Entity implements BaseEffect {
-
-	private int countCompleted = 0;
-
-	private boolean autoRemoved;
-
-	private boolean finished;
-
-	private TArray<Dot> dots;
-
-	private int count = 4;
-
-	private int type = ISprite.TYPE_FADE_IN;
-
-	private int dot_time = 0;
-	private int dot_rad = 0;
-	private int dot_width = 0;
-	private int dot_height = 0;
-
-	private LTimer timer = new LTimer(0);
+public class FadeDotEffect extends BaseAbstractEffect {
 
 	private static class Dot {
 
@@ -127,6 +106,19 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		}
 	}
 
+	private int countCompleted = 0;
+
+	private TArray<Dot> dots;
+
+	private int count = 4;
+
+	private int type = ISprite.TYPE_FADE_IN;
+
+	private int dot_time = 0;
+	private int dot_rad = 0;
+	private int dot_width = 0;
+	private int dot_height = 0;
+
 	public FadeDotEffect(LColor c, int type, int time, int count) {
 		this(type, time, time, count, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
@@ -165,7 +157,7 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		for (int i = 0; i < count; i++) {
 			dots.add(new Dot(type, dot_time, dot_rad, dot_width, dot_height));
 		}
-		finished = false;
+		_completed = false;
 	}
 
 	@Override
@@ -175,32 +167,12 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public float getDelay() {
-		return timer.getDelay();
-	}
-
-	public FadeDotEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return finished;
-	}
-
-	@Override
-	public FadeDotEffect setStop(boolean c) {
-		this.finished = c;
-		return this;
-	}
-
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (finished) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			for (int i = 0; i < dots.size; i++) {
 				Dot dot = dots.get(i);
 				if (dot != null) {
@@ -211,19 +183,14 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 				}
 			}
 			if (countCompleted >= dots.size) {
-				finished = true;
-			}
-		}
-		if (this.finished) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
+				_completed = true;
 			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (finished) {
+		if (_completed) {
 			return;
 		}
 		boolean useText = g.isAlltextures() && LSystem.isHTML5();
@@ -250,19 +217,15 @@ public class FadeDotEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public FadeDotEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		finished = true;
 		if (dots != null) {
 			dots.clear();
 			dots = null;

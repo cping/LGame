@@ -59,7 +59,7 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 
 	@Override
 	public void draw(GLEx g, float tx, float ty) {
-		if (super.completed) {
+		if (super._completed) {
 			return;
 		}
 		float x = viewX - tx;
@@ -76,7 +76,7 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 		}
 		g.setColor(tmp);
 		if (frame >= limit) {
-			super.completed = true;
+			super._completed = true;
 		}
 	}
 

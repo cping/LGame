@@ -21,19 +21,15 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.utils.timer.LTimer;
 
 /**
  * 黑幕过渡效果,瓦片从向中心处螺旋集中或向外螺旋扩散最终消失
  */
-public class FadeSpiralEffect extends Entity implements BaseEffect {
+public class FadeSpiralEffect extends BaseAbstractEffect {
 
-	private boolean finished;
-	private boolean autoRemoved;
 	private int tilewidth;
 	private int tileheight;
 	private int speed;
@@ -46,8 +42,6 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	private int state = 1;
 
 	private int type;
-
-	private LTimer timer;
 
 	public FadeSpiralEffect(int type) {
 		this(type, 1, LColor.black);
@@ -64,11 +58,11 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	public FadeSpiralEffect(int type, int speed, LColor c, int w, int h) {
 		this.type = type;
 		this.speed = speed;
-		this.timer = new LTimer(30);
 		this.tilewidth = (int) (LSystem.viewSize.getWidth() / w + 1);
 		this.tileheight = (int) (LSystem.viewSize.getHeight() / h + 1);
 		this.conversions = new boolean[tilewidth][tileheight];
 		this.reset();
+		this.setDelay(30);
 		this.setRepaint(true);
 		this.setColor(c);
 		this.setSize(w, h);
@@ -99,22 +93,13 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public float getDelay() {
-		return timer.getDelay();
-	}
-
-	public FadeSpiralEffect setDelay(int delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
 	public boolean finished() {
 		return tilescovered >= (tilewidth * tileheight);
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (finished) {
+		if (_completed) {
 			return;
 		}
 		for (int x = 0; x < tilewidth; x++) {
@@ -127,22 +112,11 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return finished;
-	}
-
-	@Override
-	public FadeSpiralEffect setStop(boolean finished) {
-		this.finished = finished;
-		return this;
-	}
-
-	@Override
 	public void onUpdate(long elapsedTime) {
-		if (finished) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			if (type == ISprite.TYPE_FADE_IN) {
 				for (int i = 0; i < speed; i++) {
 					if (conversions[cx][cy]) {
@@ -219,29 +193,20 @@ public class FadeSpiralEffect extends Entity implements BaseEffect {
 				}
 			}
 			if (finished()) {
-				finished = true;
-			}
-		}
-		if (this.finished) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
+				_completed = true;
 			}
 		}
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public FadeSpiralEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		finished = true;
 		conversions = null;
 	}
 

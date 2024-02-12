@@ -21,16 +21,14 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */
-public class ArcEffect extends Entity implements BaseEffect {
+public class ArcEffect extends BaseAbstractEffect {
 
 	private final int arcDiv;
 
@@ -41,12 +39,6 @@ public class ArcEffect extends Entity implements BaseEffect {
 	private int tmpColor;
 
 	private int[] sign = { 1, -1 };
-
-	private boolean autoRemoved;
-
-	private boolean completed;
-
-	private LTimer timer;
 
 	public ArcEffect(LColor c) {
 		this(c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -59,56 +51,29 @@ public class ArcEffect extends Entity implements BaseEffect {
 	public ArcEffect(LColor c, int x, int y, int width, int height, int div) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
-		this.timer = new LTimer(200);
+		this.setDelay(200);
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
 		this.setTurn(1);
 		arcDiv = div;
 	}
 
-	public ArcEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public ArcEffect setStop(boolean c) {
-		this.completed = c;
-		return this;
-	}
-
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
-
 		if (this.step >= this.arcDiv) {
-			this.completed = true;
+			this._completed = true;
 		}
-
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			step++;
-		}
-		if (this.completed) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (completed) {
+		if (_completed) {
 			return;
 		}
 		tmpColor = g.color();
@@ -132,7 +97,7 @@ public class ArcEffect extends Entity implements BaseEffect {
 	@Override
 	public ArcEffect reset() {
 		super.reset();
-		this.completed = false;
+		this._completed = false;
 		this.step = 0;
 		this.curTurn = 1;
 		return this;
@@ -147,19 +112,10 @@ public class ArcEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
-	public ArcEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
-		return this;
-	}
-
 	@Override
-	public void close() {
-		super.close();
-		completed = true;
+	public ArcEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
 
 }

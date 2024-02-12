@@ -21,25 +21,16 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.utils.timer.LTimer;
-
 /**
  * 折角样黑幕过渡效果
  */
-public class SwipeEffect extends Entity implements BaseEffect {
-
-	private LTimer timer = new LTimer(450);
+public class SwipeEffect extends BaseAbstractEffect {
 
 	protected int type;
 
 	protected float triangle = 90;
-
-	protected boolean finished;
-
-	protected boolean autoRemoved;
 
 	public static SwipeEffect create(int type, LColor c) {
 		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -59,21 +50,10 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	public SwipeEffect(LColor c, int delay, int type, int w, int h) {
 		this.type = type;
-		this.timer.setDelay(delay);
+		this._timer.setDelay(delay);
 		this.setColor(c);
 		this.setSize(w, h);
 		this.setRepaint(true);
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return finished;
-	}
-
-	@Override
-	public SwipeEffect setStop(boolean finished) {
-		this.finished = finished;
-		return this;
 	}
 
 	public int getEffectType() {
@@ -87,13 +67,11 @@ public class SwipeEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (finished) {
+		if (_completed) {
 			return;
 		}
-		float percent = timer.getPercentage();
-
+		float percent = _timer.getPercentage();
 		LColor tmp = g.getColor();
-
 		if (type == TYPE_FADE_IN) {
 			float width = getWidth() + (2 * triangle);
 			float height = getHeight();
@@ -111,21 +89,17 @@ public class SwipeEffect extends Entity implements BaseEffect {
 			g.fillRect(-triangle, y, width, height);
 			g.fillTriangle(x, y, x + triangle, y, x, height);
 		}
-
 		g.setColor(tmp);
-
 		return;
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
-			finished = true;
+		if (checkAutoRemove()) {
+			return;
 		}
-		if (this.finished) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
+		if (_timer.action(elapsedTime)) {
+			_completed = true;
 		}
 	}
 
@@ -142,19 +116,10 @@ public class SwipeEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
-	public SwipeEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
-		return this;
-	}
-
 	@Override
-	public void close() {
-		super.close();
-		finished = true;
+	public SwipeEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
 
 }

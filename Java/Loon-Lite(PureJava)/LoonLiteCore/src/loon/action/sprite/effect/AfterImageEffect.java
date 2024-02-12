@@ -26,16 +26,14 @@ import loon.LTextures;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.action.map.Side;
-import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
-import loon.utils.timer.LTimer;
 
 /**
  * 残像效果构建用类,就是上古游戏梦幻模拟战里骑士冲锋那类效果……
  */
-public class AfterImageEffect extends Entity implements BaseEffect {
+public class AfterImageEffect extends BaseAbstractEffect {
 
 	public final static int LINE = 0;
 
@@ -55,8 +53,6 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 
 	}
 
-	private LTimer _timer = new LTimer(0);
-
 	private LTexture _afterTexture;
 
 	private boolean _displayCompleted;
@@ -68,8 +64,6 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 	private boolean _looping;
 
 	private boolean _playing;
-
-	private boolean _complete;
 
 	private int _moveOrbit = 0;
 
@@ -131,24 +125,6 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		setStartX(x);
 		setStartY(y);
 		return this;
-	}
-
-	public AfterImageEffect setDelay(long d) {
-		this._timer.setDelay(d);
-		return this;
-	}
-
-	public AfterImageEffect setDelayS(float s) {
-		this._timer.setDelayS(s);
-		return this;
-	}
-
-	public long getDelay() {
-		return this._timer.getDelay();
-	}
-
-	public float getDelayS() {
-		return this._timer.getDelayS();
 	}
 
 	public int getModeDirection() {
@@ -314,6 +290,9 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		if (!_inited) {
 			return;
 		}
+		if (checkAutoRemove()) {
+			return;
+		}
 		if (_timer.action(e)) {
 			if (!_displayCompleted) {
 				if (_indexNext < _count - 1) {
@@ -331,7 +310,7 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 					o.alpha = 1f;
 					this._indexNext = 1;
 					if (!_looping) {
-						this._complete = true;
+						this._completed = true;
 						this._playing = false;
 					} else {
 						this._playing = false;
@@ -353,14 +332,13 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		}
 		final float newX = drawX(sx);
 		final float newY = drawY(sy);
-		if (!_complete) {
+		if (!_completed) {
 			final float oldAlpha = g.getAlpha();
 			for (int i = 0; i < _indexNext; i++) {
 				final AfterObject o = _afterObjects.get(i);
 				if (o != null) {
 					g.setAlpha(o.alpha);
-					g.draw(_afterTexture, newX + (_startX + o.x), newY + (_startY + o.y), o.width,
-							o.height);
+					g.draw(_afterTexture, newX + (_startX + o.x), newY + (_startY + o.y), o.width, o.height);
 				}
 			}
 			g.setAlpha(oldAlpha);
@@ -432,12 +410,7 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		}
 		return false;
 	}
-
-	public AfterImageEffect setComplete(boolean c) {
-		this._complete = c;
-		return this;
-	}
-
+	
 	public float getStartX() {
 		return _startX;
 	}
@@ -487,20 +460,9 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	@Override
-	public boolean isCompleted() {
-		return _complete;
-	}
-
-	@Override
-	public BaseEffect setStop(boolean s) {
-		setComplete(s);
-		return this;
-	}
-
 	public AfterImageEffect clearData() {
 		this._indexNext = 0;
-		this._complete = false;
+		this._completed = false;
 		this._displayCompleted = false;
 		this._inited = _playing = false;
 		return this;
@@ -521,6 +483,12 @@ public class AfterImageEffect extends Entity implements BaseEffect {
 
 	public AfterImageEffect setMoveOrbit(int m) {
 		this._moveOrbit = m;
+		return this;
+	}
+
+	@Override
+	public AfterImageEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

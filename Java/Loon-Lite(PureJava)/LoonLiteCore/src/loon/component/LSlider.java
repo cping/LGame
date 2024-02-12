@@ -278,7 +278,7 @@ public class LSlider extends LComponent {
 	@Override
 	protected void processTouchDragged() {
 		super.processTouchDragged();
-		if (isPointInUI(getTouchX(), getTouchY())) {
+		if (isPointInUI()) {
 			if (_vertical) {
 				_value = (getUITouchY()) / getHeight();
 			} else {

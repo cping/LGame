@@ -23,16 +23,13 @@ package loon.action.sprite.effect;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
-import loon.action.sprite.Entity;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
 /**
  * 图片从指定方向离开画面的过渡效果
  */
-public class OutEffect extends Entity implements BaseEffect {
-
-	private boolean completed;
+public class OutEffect extends BaseAbstractEffect {
 
 	private int model, multiples;
 
@@ -57,7 +54,10 @@ public class OutEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (!completed) {
+		if (checkAutoRemove()) {
+			return;
+		}
+		if (!_completed) {
 			switch (model) {
 			case Config.DOWN:
 				move_45D_down(multiples);
@@ -85,24 +85,14 @@ public class OutEffect extends Entity implements BaseEffect {
 				break;
 			}
 			if (!limit.intersects(x(), y(), _width, _height)) {
-				completed = true;
+				_completed = true;
 			}
 		}
 	}
 
-	public boolean isComplete() {
-		return completed;
-	}
-
-	@Override
-	public OutEffect setStop(boolean finished) {
-		this.completed = finished;
-		return this;
-	}
-	
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (!completed) {
+		if (!_completed) {
 			g.draw(_image, drawX(offsetX), drawY(offsetY));
 		}
 	}
@@ -116,14 +106,8 @@ public class OutEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return completed;
+	public OutEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
-
-	@Override
-	public void close() {
-		super.close();
-		completed = true;
-	}
-
 }

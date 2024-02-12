@@ -23,7 +23,6 @@ package loon.action.sprite.effect;
 import java.util.Iterator;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.events.ActionKey;
 import loon.events.LTouchArea;
@@ -32,13 +31,12 @@ import loon.utils.TArray;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
-import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
 /**
  * 指定位置出现波纹,可以选择椭圆或方形乃至三角扩散
  */
-public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
+public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 	private static class RippleProcess extends RealtimeProcess {
 
@@ -84,12 +82,6 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	private TArray<RippleProcess> processArray;
 
-	private LTimer timer;
-
-	private boolean completed;
-
-	private boolean autoRemoved;
-
 	private Model model;
 
 	private int existTime;
@@ -115,18 +107,9 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		this.ripples = new TArray<RippleKernel>();
 		this.processArray = new TArray<RippleProcess>();
 		this.existTime = time;
-		this.timer = new LTimer(60);
+		this.setDelay(60);
 		this.setColor(c);
 		setRepaint(true);
-	}
-
-	public RippleEffect setDelay(long delay) {
-		this.timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return this.timer.getDelay();
 	}
 
 	public boolean addRipplePoint(final float x, final float y) {
@@ -144,10 +127,10 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (completed) {
+		if (_completed) {
 			return;
 		}
-		int tmp = g.color();
+		final int tmp = g.color();
 		g.setColor(_baseColor);
 		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
@@ -158,10 +141,10 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
 				RippleKernel ripple = it.next();
 				if (ripple.isExpired()) {
@@ -169,33 +152,12 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 				}
 			}
 		}
-		if (completed) {
-			if (autoRemoved) {
-				if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-					LSystem.getProcess().getScreen().remove(this);
-				}
-				if (getSprites() != null) {
-					getSprites().remove(this);
-				}
-			}
-		}
 	}
 
 	public boolean checkCompleted() {
-		return completed = (ripples.size == 0);
+		return _completed = (ripples.size == 0);
 	}
 
-	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public RippleEffect setStop(boolean c) {
-		this.completed = c;
-		return this;
-	}
-	
 	public int getExistTime() {
 		return existTime;
 	}
@@ -207,6 +169,12 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 
 	@Override
 	public boolean contains(float x, float y) {
+		if (getSprites() != null && getSprites().getScreen() != null) {
+			return getSprites().getScreen().contains(x, y);
+		}
+		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
+			return LSystem.getProcess().getScreen().contains(x, y);
+		}
 		return LSystem.viewSize.contains(x, y);
 	}
 
@@ -226,12 +194,9 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 		}
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public RippleEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
@@ -248,7 +213,6 @@ public class RippleEffect extends Entity implements LTouchArea, BaseEffect {
 			processArray.clear();
 		}
 		touchLocked.release();
-		completed = true;
 	}
 
 }

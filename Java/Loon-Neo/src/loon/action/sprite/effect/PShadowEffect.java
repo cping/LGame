@@ -23,24 +23,20 @@ package loon.action.sprite.effect;
 import loon.BaseIO;
 import loon.LSystem;
 import loon.LTexture;
-import loon.action.sprite.Entity;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
-import loon.utils.timer.LTimer;
 
 /**
  * 类似于吉里吉里的图片（黑白）渐变特效,按从0-255像素的趋势逐渐把一张图片透明化,从而实现各种渐变效果.
  */
-public class PShadowEffect extends Entity {
+public class PShadowEffect extends BaseAbstractEffect {
 
 	private Pixmap _pixmap;
 
-	private LTimer timer = new LTimer(10);
-
 	private int indexD, indexW, block;
 
-	private boolean flag = true, completed = false, autoRemoved = false;
+	private boolean flag = true;
 
 	private static int[] deasilTrans, widdershinTrans;
 
@@ -70,6 +66,7 @@ public class PShadowEffect extends Entity {
 				widdershinTrans[idx++] = deasilTrans[i];
 			}
 		}
+		this.setDelay(10);
 		this.setLocation(x, y);
 		this.setSize(w, h);
 		this.setEffect(img);
@@ -95,7 +92,7 @@ public class PShadowEffect extends Entity {
 		this.indexD = 255;
 		this.indexW = 0;
 		this.block = 8;
-		this.completed = false;
+		this._completed = false;
 		img.close();
 		img = null;
 		return this;
@@ -110,10 +107,13 @@ public class PShadowEffect extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
+		if (checkAutoRemove()) {
+			return;
+		}
 		if (_pixmap == null) {
 			return;
 		}
-		if (isVisible() && timer.action(elapsedTime) && !isComplete()) {
+		if (isVisible() && _timer.action(elapsedTime) && !isCompleted()) {
 			int[] pixels = _pixmap.getData();
 			if (flag) {
 				int[] colors = new int[block];
@@ -137,20 +137,11 @@ public class PShadowEffect extends Entity {
 				setTexture(_pixmap.getImage(false).texture());
 			}
 		}
-		if (this.completed) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
-		}
 	}
 
-	public boolean isComplete() {
-		return completed || (flag ? (indexW >= 255) : (indexD <= 0));
-	}
-
-	public PShadowEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
+	@Override
+	public boolean isCompleted() {
+		return _completed || (flag ? (indexW >= 255) : (indexD <= 0));
 	}
 
 	public boolean isBlackToWhite() {
@@ -171,12 +162,9 @@ public class PShadowEffect extends Entity {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public PShadowEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
@@ -187,7 +175,6 @@ public class PShadowEffect extends Entity {
 			_pixmap.close();
 			_pixmap = null;
 		}
-		completed = true;
 	}
 
 }

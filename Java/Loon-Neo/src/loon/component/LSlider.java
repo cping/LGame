@@ -102,7 +102,7 @@ public class LSlider extends LComponent {
 		}
 		super.update(elapsedTime);
 		if (SysTouch.isDrag() || SysTouch.isDown()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
+			if (isPointInUI()) {
 				if (_vertical) {
 					_value = (getUITouchY()) / getHeight();
 				} else {

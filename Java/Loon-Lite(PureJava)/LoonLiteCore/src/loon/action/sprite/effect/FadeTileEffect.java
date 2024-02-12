@@ -21,24 +21,18 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 瓦片(向四周散开或向中心聚拢)淡入淡出效果
  *
  */
-public class FadeTileEffect extends Entity implements BaseEffect {
+public class FadeTileEffect extends BaseAbstractEffect {
 
 	private int tileWidth, tileHeight;
-
-	private boolean completed;
-
-	private boolean autoRemoved;
 
 	private int count;
 
@@ -56,8 +50,6 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 
 	private int type;
 
-	private LTimer timer;
-
 	public FadeTileEffect(int type, LColor c) {
 		this(type, 1, 1, c, LColor.white);
 	}
@@ -74,15 +66,15 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		this.type = type;
 		this.count = count;
 		this.speed = speed;
+		this.setRepaint(true);
 		this.setSize(w, h);
-		this.timer = new LTimer(60);
+		this.setDelay(60);
 		this.tileWidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
 		this.tileHeight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
 		this.conversions = new boolean[tileWidth][tileHeight];
 		this.temp = new boolean[tileWidth][tileHeight];
 		this.back = back;
 		this.fore = fore;
-		this.setRepaint(true);
 		this.reset();
 	}
 
@@ -107,31 +99,12 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		return false;
 	}
 
-	public float getDelay() {
-		return timer.getDelay();
-	}
-
-	public FadeTileEffect setDelay(int delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public FadeTileEffect setStop(boolean finished) {
-		this.completed = finished;
-		return this;
-	}
-
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			int count = 0;
 			if (ISprite.TYPE_FADE_OUT == type) {
 				for (int i = 0; i < speed; i++) {
@@ -183,7 +156,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 					}
 				}
 				if (count == 0) {
-					completed = true;
+					_completed = true;
 				}
 			} else {
 				for (int i = 0; i < speed; i++) {
@@ -234,7 +207,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 					}
 				}
 				if (tmpflag >= tileHeight) {
-					completed = true;
+					_completed = true;
 				}
 				if (count >= tileWidth) {
 					tmpflag++;
@@ -242,16 +215,11 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 
 			}
 		}
-		if (this.completed) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
-		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (completed) {
+		if (_completed) {
 			return;
 		}
 		int tmp = g.color();
@@ -281,7 +249,7 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 	@Override
 	public FadeTileEffect reset() {
 		super.reset();
-		this.completed = false;
+		this._completed = false;
 		this.tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == type) {
 			for (int x = 0; x < tileWidth; x++) {
@@ -315,19 +283,15 @@ public class FadeTileEffect extends Entity implements BaseEffect {
 		return count;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public FadeTileEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		completed = true;
 		conversions = null;
 		temp = null;
 	}

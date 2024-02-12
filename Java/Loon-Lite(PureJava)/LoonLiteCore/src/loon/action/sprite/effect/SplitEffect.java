@@ -24,32 +24,28 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 图片拆分样黑幕过渡效果
  */
-public class SplitEffect extends Entity implements BaseEffect {
+public class SplitEffect extends BaseAbstractEffect {
 
 	private Vector2f movePosOne, movePosTwo;
 
 	private int halfWidth, halfHeight, multiples, direction;
 
-	private boolean completed, autoRemoved, special;
+	private boolean special;
 
 	private boolean _createTexture;
 
 	private LColor _splitColor;
 
 	private RectBox limit;
-
-	private LTimer timer;
 
 	public SplitEffect(String fileName, int d) {
 		this(LSystem.loadTexture(fileName), d);
@@ -82,10 +78,10 @@ public class SplitEffect extends Entity implements BaseEffect {
 	protected void init(float w, float h) {
 		this.setRepaint(true);
 		this.setSize(w, h);
+		this.setDelay(10);
 		this.halfWidth = (int) (_width / 2f);
 		this.halfHeight = (int) (_height / 2f);
 		this.multiples = 2;
-		this.timer = new LTimer(10);
 		this.movePosOne = new Vector2f();
 		this.movePosTwo = new Vector2f();
 		switch (direction) {
@@ -108,22 +104,13 @@ public class SplitEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public SplitEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
 	@Override
 	public void onUpdate(long elapsedTime) {
 		if (_createTexture) {
 			return;
 		}
-		if (!completed) {
-			if (timer.action(elapsedTime)) {
+		if (!_completed) {
+			if (_timer.action(elapsedTime)) {
 				switch (direction) {
 				case Config.LEFT:
 				case Config.RIGHT:
@@ -144,19 +131,15 @@ public class SplitEffect extends Entity implements BaseEffect {
 				if (special) {
 					if (!limit.intersects(movePosOne.x, movePosOne.y, halfHeight, halfWidth)
 							&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfHeight, halfWidth)) {
-						this.completed = true;
+						this._completed = true;
 					}
 				} else if (!limit.intersects(movePosOne.x, movePosOne.y, halfWidth, halfHeight)
 						&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfWidth, halfHeight)) {
-					this.completed = true;
+					this._completed = true;
 				}
 			}
 		}
-		if (this.completed) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
-		}
+		checkAutoRemove();
 	}
 
 	@Override
@@ -168,7 +151,7 @@ public class SplitEffect extends Entity implements BaseEffect {
 			_createTexture = false;
 			return;
 		}
-		if (!completed) {
+		if (!_completed) {
 			final float x1 = movePosOne.x + drawX(offsetX);
 			final float y1 = movePosOne.y + drawY(offsetY);
 
@@ -195,17 +178,6 @@ public class SplitEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public SplitEffect setStop(boolean c) {
-		this.completed = c;
-		return this;
-	}
-
 	public int getMultiples() {
 		return multiples;
 	}
@@ -215,19 +187,10 @@ public class SplitEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
-	public SplitEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
-		return this;
-	}
-
 	@Override
-	public void close() {
-		super.close();
-		completed = true;
+	public SplitEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
 
 }

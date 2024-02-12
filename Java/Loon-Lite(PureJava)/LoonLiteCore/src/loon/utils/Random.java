@@ -106,6 +106,11 @@ public class Random {
 	}
 
 	public int nextInt(int min, int max) {
+		if (min < 0 && max < 0) {
+			max = MathUtils.abs(max);
+			min = MathUtils.abs(min);
+			return -(MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * nextFloat() + min)), min, max));
+		}
 		if (max <= 0) {
 			return 0;
 		}
@@ -136,6 +141,11 @@ public class Random {
 	}
 
 	public long nextLong(long min, long max) {
+		if (min < 0 && max < 0) {
+			max = MathUtils.abs(max);
+			min = MathUtils.abs(min);
+			return -(MathUtils.clamp(MathUtils.abs(MathUtils.floor((max - min + 1) * nextFloat() + min)), min, max));
+		}
 		if (max <= 0) {
 			return 0l;
 		}
@@ -150,6 +160,11 @@ public class Random {
 	}
 
 	public double nextDouble(double min, double max) {
+		if (min < 0 && max < 0) {
+			max = MathUtils.abs(max);
+			min = MathUtils.abs(min);
+			return -(MathUtils.clamp(MathUtils.floor((max - min + 1) * nextDouble() + min), min, max));
+		}
 		if (max <= 0) {
 			return 0d;
 		}
@@ -157,6 +172,11 @@ public class Random {
 	}
 
 	public float nextFloat(float min, float max) {
+		if (min < 0 && max < 0) {
+			max = MathUtils.abs(max);
+			min = MathUtils.abs(min);
+			return -(MathUtils.clamp((max - min) * nextFloat() + min, min, max));
+		}
 		if (max <= 0) {
 			return 0f;
 		}

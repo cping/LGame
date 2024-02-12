@@ -21,24 +21,20 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.timer.Duration;
 
 /**
  * 最基础的画面淡入淡出
  */
-public class FadeEffect extends Entity implements BaseEffect {
+public class FadeEffect extends BaseAbstractEffect {
 
-	private float time;
+	private long time;
 
 	private float currentFrame;
 
 	private int type;
-
-	private boolean finished;
-
-	private boolean autoRemoved;
 
 	public static FadeEffect create(int type, LColor c) {
 		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -56,7 +52,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 		this(c, 120, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public FadeEffect(LColor c, int delay, int type, int w, int h) {
+	public FadeEffect(LColor c, long delay, int type, int w, int h) {
 		this.type = type;
 		this.setDelay(delay);
 		this.setColor(c);
@@ -64,12 +60,30 @@ public class FadeEffect extends Entity implements BaseEffect {
 		this.setRepaint(true);
 	}
 
-	public float getDelay() {
+	@Override
+	public long getDelay() {
 		return time;
 	}
 
-	public FadeEffect setDelay(float delay) {
+	@Override
+	public float getDelayS() {
+		return Duration.ofS(time);
+	}
+
+	@Override
+	public FadeEffect setDelay(long delay) {
 		this.time = delay;
+		if (type == TYPE_FADE_IN) {
+			this.currentFrame = this.time;
+		} else {
+			this.currentFrame = 0;
+		}
+		return this;
+	}
+
+	@Override
+	public FadeEffect setDelayS(float s) {
+		this.time = Duration.ofS(s);
 		if (type == TYPE_FADE_IN) {
 			this.currentFrame = this.time;
 		} else {
@@ -87,17 +101,6 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	@Override
-	public boolean isCompleted() {
-		return finished;
-	}
-
-	@Override
-	public FadeEffect setStop(boolean finished) {
-		this.finished = finished;
-		return this;
-	}
-
 	public int getEffectType() {
 		return type;
 	}
@@ -109,7 +112,7 @@ public class FadeEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (finished) {
+		if (_completed) {
 			return;
 		}
 		g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(currentFrame / time));
@@ -118,22 +121,20 @@ public class FadeEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long timer) {
+		if (checkAutoRemove()) {
+			return;
+		}
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
 			if (currentFrame <= 0) {
 				setAlpha(0);
-				finished = true;
+				_completed = true;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame >= time) {
 				setAlpha(0);
-				finished = true;
-			}
-		}
-		if (this.finished) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
+				_completed = true;
 			}
 		}
 	}
@@ -142,19 +143,10 @@ public class FadeEffect extends Entity implements BaseEffect {
 		return type;
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
-	public FadeEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
-		return this;
-	}
-
 	@Override
-	public void close() {
-		super.close();
-		finished = true;
+	public FadeEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
+		return this;
 	}
 
 }

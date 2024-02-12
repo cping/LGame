@@ -21,7 +21,6 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.font.FontUtils;
 import loon.font.IFont;
@@ -33,12 +32,11 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.timer.Duration;
-import loon.utils.timer.LTimer;
 
 /**
  * 一个多文字用效果类,用来进行一组或以上的文字效果展示及管理(比如模拟视频弹幕之类)
  */
-public class TextEffect extends Entity implements BaseEffect {
+public class TextEffect extends BaseAbstractEffect {
 
 	protected static class MessageBlock {
 
@@ -86,12 +84,6 @@ public class TextEffect extends Entity implements BaseEffect {
 
 	private TArray<MessageBlock> tempTexts;
 
-	private final LTimer timer;
-
-	private boolean completed;
-
-	private boolean autoRemoved;
-
 	private boolean packed;
 
 	public TextEffect() {
@@ -101,7 +93,6 @@ public class TextEffect extends Entity implements BaseEffect {
 	public TextEffect(float x, float y, float width, float height) {
 		this.texts = new TArray<MessageBlock>();
 		this.tempTexts = new TArray<MessageBlock>();
-		this.timer = new LTimer(0);
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setRepaint(true);
@@ -191,7 +182,7 @@ public class TextEffect extends Entity implements BaseEffect {
 	@Override
 	public TextEffect reset() {
 		super.reset();
-		completed = false;
+		_completed = false;
 		texts.clear();
 		for (int i = 0; i < tempTexts.size; i++) {
 			MessageBlock block = tempTexts.get(i);
@@ -204,6 +195,9 @@ public class TextEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
+		if (checkAutoRemove()) {
+			return;
+		}
 		final int length = texts.size;
 		if (!packed && length > 0) {
 			LFont font = null;
@@ -228,7 +222,7 @@ public class TextEffect extends Entity implements BaseEffect {
 			}
 			packed = true;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 			for (int i = length - 1; i > -1; --i) {
 				MessageBlock text = texts.get(i);
@@ -244,12 +238,7 @@ public class TextEffect extends Entity implements BaseEffect {
 				}
 			}
 		}
-		completed = texts.isEmpty();
-		if (completed) {
-			if (autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
-		}
+		_completed = texts.isEmpty();
 	}
 
 	public int countText() {
@@ -274,31 +263,16 @@ public class TextEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public boolean isAutoRemoved() {
-		return autoRemoved;
-	}
-
+	@Override
 	public TextEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		super.setAutoRemoved(true);
 		return this;
 	}
 
-	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public TextEffect setStop(boolean c) {
-		this.completed = c;
-		return this;
-	}
-	
 	@Override
 	public void close() {
 		super.close();
 		clear();
-		completed = true;
 		packed = false;
 	}
 

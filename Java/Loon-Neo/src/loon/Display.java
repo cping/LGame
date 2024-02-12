@@ -42,6 +42,9 @@ import loon.utils.reply.Port;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * loon的最上级显示渲染与控制用类,本地api通过与此类交互实现游戏功能
+ */
 public class Display extends BaseIO implements LRelease {
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出具体类来……

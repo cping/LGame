@@ -22,18 +22,14 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.action.sprite.Entity;
-import loon.action.sprite.ISprite;
+
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
-public class OvalEffect extends Entity implements BaseEffect {
+public class OvalEffect extends BaseAbstractEffect {
 
 	private final static float SIZE = 8f;
-	
-	private LTimer _timer;
 
 	private float _previous;
 
@@ -47,10 +43,6 @@ public class OvalEffect extends Entity implements BaseEffect {
 
 	private float _spaceSize;
 
-	private boolean _completed;
-
-	private boolean _autoRemoved;
-
 	public OvalEffect(int code) {
 		this(code, LColor.black);
 	}
@@ -62,7 +54,6 @@ public class OvalEffect extends Entity implements BaseEffect {
 	public OvalEffect(int code, LColor c, int x, int y, int width, int height) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
-		this._timer = new LTimer(0);
 		this._typeCode = code;
 		this._diameter = 1f;
 		this._spaceSize = SIZE;
@@ -80,7 +71,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 	}
 
 	public OvalEffect updateRadius() {
-		if (_typeCode == ISprite.TYPE_FADE_IN) {
+		if (_typeCode == TYPE_FADE_IN) {
 			this._endRadius = MathUtils
 					.ceil(MathUtils.sqrt(MathUtils.pow(getWidth() / 2, 2) + MathUtils.pow(getHeight() / 2, 2)));
 		} else {
@@ -100,45 +91,20 @@ public class OvalEffect extends Entity implements BaseEffect {
 
 	public float getEffectDiameter() {
 		// in
-		if (_typeCode == ISprite.TYPE_FADE_IN) {
+		if (_typeCode == TYPE_FADE_IN) {
 			return _endRadius * _step * 2f;
 		} else {
 			return (_endRadius - _endRadius * _step) * 2f;
 		}
 	}
 
-	public OvalEffect setDelay(long delay) {
-		_timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return _timer.getDelay();
-	}
-
-	@Override
-	public boolean isCompleted() {
-		return _completed;
-	}
-
-	@Override
-	public OvalEffect setStop(boolean c) {
-		this._completed = c;
-		return this;
-	}
-	
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
 			_step += MathUtils.min(0.05f, (float) elapsedTime / LSystem.SECOND);
-		}
-		if (this._completed) {
-			if (_autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
 		}
 	}
 
@@ -156,7 +122,7 @@ public class OvalEffect extends Entity implements BaseEffect {
 		float line = g.getLineWidth();
 		g.setColor(_baseColor);
 		g.setLineWidth(_spaceSize);
-		if (_typeCode == ISprite.TYPE_FADE_IN) {
+		if (_typeCode == TYPE_FADE_IN) {
 			for (int i = _endRadius * 2; i >= _diameter; i -= _spaceSize) {
 				final float x = drawX(offsetX + (getWidth() / 2f - i / 2f));
 				final float y = drawY(offsetY + (getHeight() / 2f - i / 2f));
@@ -192,12 +158,9 @@ public class OvalEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return _autoRemoved;
-	}
-
+	@Override
 	public OvalEffect setAutoRemoved(boolean autoRemoved) {
-		this._autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
@@ -209,12 +172,6 @@ public class OvalEffect extends Entity implements BaseEffect {
 		this._step = 0f;
 		this._spaceSize = SIZE;
 		return this;
-	}
-
-	@Override
-	public void close() {
-		super.close();
-		_completed = true;
 	}
 
 }

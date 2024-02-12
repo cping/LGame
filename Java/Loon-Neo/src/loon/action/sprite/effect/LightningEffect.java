@@ -22,7 +22,6 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.LTexture;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.opengl.BaseBatch;
@@ -30,17 +29,14 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.TArray;
 
-public class LightningEffect extends Entity {
+public class LightningEffect extends BaseAbstractEffect {
 
 	private LTexture lightningSegment, halfCircle, pixel;
+	
 	private LTexturePack pack;
 
 	private int _countCompleted;
-
-	private boolean _completed;
-
-	private boolean _autoRemoved;
-
+	
 	private static LightningEffect instance;
 
 	public final static void freeStatic() {
@@ -130,6 +126,9 @@ public class LightningEffect extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
+		if (checkAutoRemove()) {
+			return;
+		}
 		for (ILightning bolt : lists) {
 			bolt.update(elapsedTime);
 			if (bolt.isComplete()) {
@@ -138,11 +137,6 @@ public class LightningEffect extends Entity {
 		}
 		if (_countCompleted >= lists.size) {
 			_completed = true;
-		}
-		if (_completed) {
-			if (_autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
 		}
 	}
 
@@ -158,10 +152,6 @@ public class LightningEffect extends Entity {
 		}
 		batch.flush();
 		batch.setBlendMode(-1);
-	}
-
-	public boolean isCompleted() {
-		return _completed;
 	}
 
 	public LTexture getLightningSegment() {
@@ -190,19 +180,15 @@ public class LightningEffect extends Entity {
 		return this;
 	}
 
-	public boolean isAutoRemoved() {
-		return _autoRemoved;
-	}
-
+	@Override
 	public LightningEffect setAutoRemoved(boolean autoRemoved) {
-		this._autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		_completed = true;
 		if (lists != null) {
 			for (ILightning light : lists) {
 				if (light != null) {

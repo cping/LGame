@@ -21,18 +21,16 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 自然场景特效,默认支持将雨、雪、樱花飘落、闪电等四种自然现象渲染到Screen
  */
-public class NaturalEffect extends Entity implements BaseEffect {
+public class NaturalEffect extends BaseAbstractEffect {
 
 	public static enum NaturalType {
 		Rain, Snow, Petal, Thunder;
@@ -46,11 +44,7 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	private int count;
 
-	private LTimer timer;
-
 	private IKernel[] kernels;
-
-	private boolean completed = false;
 
 	/**
 	 * 返回默认数量的雷电
@@ -247,9 +241,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		this.setRepaint(true);
 		this.count = count;
 		if (ntype == NaturalType.Thunder) {
-			this.timer = new LTimer(10);
+			this.setDelay(10);
 		} else {
-			this.timer = new LTimer(80);
+			this.setDelay(80);
 		}
 		this.pack = new LTexturePack(LSystem.getSystemImagePath() + "natural.txt");
 		switch (ntype) {
@@ -282,10 +276,10 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			if (naturalType == NaturalType.Thunder && lightningEffect != null) {
 				lightningEffect.onUpdate(elapsedTime);
 			} else {
@@ -298,6 +292,9 @@ public class NaturalEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_completed) {
+			return;
+		}
 		if (naturalType == NaturalType.Thunder && lightningEffect != null) {
 			lightningEffect.repaint(g, drawX(offsetX), drawY(offsetY));
 		} else {
@@ -311,15 +308,6 @@ public class NaturalEffect extends Entity implements BaseEffect {
 		return naturalType;
 	}
 
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
-	public NaturalEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
 	public IKernel[] getKernels() {
 		return kernels;
 	}
@@ -330,13 +318,8 @@ public class NaturalEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public NaturalEffect setStop(boolean stop) {
-		this.completed = stop;
+	public NaturalEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

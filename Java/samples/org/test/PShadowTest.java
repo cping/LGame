@@ -27,7 +27,7 @@ public class PShadowTest extends Stage {
 			@Override
 			public void invoke(long elapsedTime, Screen e) {
                 //特效播放完毕
-				if (p.isComplete()) {
+				if (p.isCompleted()) {
 					if (pshadowIndex >= list.length) {
 						// 当渐变完毕，执行退出按钮
 						click.getClick().DoClick(click);

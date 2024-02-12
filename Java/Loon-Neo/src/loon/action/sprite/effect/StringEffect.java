@@ -22,31 +22,23 @@ package loon.action.sprite.effect;
 
 import loon.LSystem;
 import loon.action.map.Field2D;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.font.Text;
 import loon.font.TextOptions;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
-import loon.utils.timer.LTimer;
 
 /**
  * 一个字符淡出效果类(主要就是减血加血之类效果用的……)
  */
-public class StringEffect extends Entity implements BaseEffect {
+public class StringEffect extends BaseAbstractEffect {
 
 	public final static float MOVE_VALUE = 1.5f;
-
-	private LTimer delayTimer = new LTimer(0);
 
 	private Vector2f _updatePos;
 
 	private Text _font;
-
-	private boolean _completed;
-
-	private boolean _autoRemoved;
 
 	/**
 	 * not Move
@@ -314,24 +306,14 @@ public class StringEffect extends Entity implements BaseEffect {
 		if (_completed) {
 			return;
 		}
-		if (delayTimer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			getLocation().addSelf(this._updatePos);
 			this._objectAlpha -= 0.0125f;
 			if (_objectAlpha <= 0) {
 				_completed = true;
 			}
-			if (_completed) {
-				if (_autoRemoved) {
-					if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-						LSystem.getProcess().getScreen().remove(this);
-					}
-					if (getSprites() != null) {
-						getSprites().remove(this);
-					}
-				}
-			}
+			checkAutoRemove();
 		}
-
 	}
 
 	@Override
@@ -342,32 +324,9 @@ public class StringEffect extends Entity implements BaseEffect {
 		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.multiply(this._objectAlpha));
 	}
 
-	public StringEffect setDelay(long d) {
-		delayTimer.setDelay(d);
-		return this;
-	}
-
-	public long getDelay() {
-		return delayTimer.getDelay();
-	}
-
 	@Override
-	public boolean isCompleted() {
-		return _completed;
-	}
-
-	@Override
-	public StringEffect setStop(boolean c) {
-		this._completed = c;
-		return this;
-	}
-	
-	public boolean isAutoRemoved() {
-		return _autoRemoved;
-	}
-
 	public StringEffect setAutoRemoved(boolean autoRemoved) {
-		this._autoRemoved = autoRemoved;
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

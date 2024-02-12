@@ -21,15 +21,13 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
-import loon.utils.timer.LTimer;
 
 /**
  * 像素风三角风格渲染具体实现用类(就是画各种成片的三角形)
  */
-public class TriangleEffect extends Entity implements BaseEffect {
+public class TriangleEffect extends BaseAbstractEffect {
 
 	private float[][] delta;
 
@@ -42,10 +40,6 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	private float vector;
 
 	private float viewSpeed;
-
-	private LTimer timer;
-
-	private boolean completed;
 
 	public TriangleEffect(float[][] res, float x, float y, float speed) {
 		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), res, null, x, y, speed);
@@ -69,8 +63,7 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		}
 		this.setRepaint(true);
 		this.setSize(w, h);
-		this.timer = new LTimer(10);
-		this.completed = false;
+		this.setDelay(10);
 	}
 
 	public void setDelta(float[][] res) {
@@ -205,19 +198,13 @@ public class TriangleEffect extends Entity implements BaseEffect {
 		}
 	}
 
-	public TriangleEffect setDelay(long delay) {
-		timer.setDelay(delay);
-		return this;
-	}
-
-	public long getDelay() {
-		return timer.getDelay();
-	}
-
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (!completed) {
-			if (timer.action(elapsedTime)) {
+		if (checkAutoRemove()) {
+			return;
+		}
+		if (!_completed) {
+			if (_timer.action(elapsedTime)) {
 				next();
 			}
 		}
@@ -229,20 +216,8 @@ public class TriangleEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return completed;
-	}
-
-	@Override
-	public TriangleEffect setStop(boolean c) {
-		this.completed = c;
+	public TriangleEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(true);
 		return this;
 	}
-	
-	@Override
-	public void close() {
-		super.close();
-		completed = true;
-	}
-
 }

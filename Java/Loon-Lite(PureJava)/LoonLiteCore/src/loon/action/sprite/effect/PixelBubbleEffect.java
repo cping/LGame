@@ -21,7 +21,6 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -30,9 +29,7 @@ import loon.utils.TArray;
 /**
  * 像素化的气泡特效,制造气泡在指定范围内飘荡
  */
-public class PixelBubbleEffect extends Entity implements BaseEffect {
-
-	private boolean _completed;
+public class PixelBubbleEffect extends BaseAbstractEffect {
 
 	private TArray<Block> _bubbleBlocks;
 
@@ -112,10 +109,10 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(color);
+		this.setRepaint(true);
 		this._radius = radius;
 		this._moveSpeed = speed;
 		this._bubbleSize = size;
-		this._repaintDraw = true;
 		_dirty = true;
 	}
 
@@ -181,20 +178,14 @@ public class PixelBubbleEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return _completed;
-	}
-
-	@Override
-	public PixelBubbleEffect setStop(boolean c) {
-		this._completed = c;
+	public PixelBubbleEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
 	public void close() {
 		super.close();
-		_completed = true;
 		_bubbleBlocks.clear();
 	}
 

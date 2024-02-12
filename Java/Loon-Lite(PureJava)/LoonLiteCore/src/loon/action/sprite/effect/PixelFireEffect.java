@@ -21,7 +21,6 @@
 package loon.action.sprite.effect;
 
 import loon.LSystem;
-import loon.action.sprite.Entity;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -36,11 +35,9 @@ import loon.utils.timer.Duration;
  * </pre>
  *
  */
-public class PixelFireEffect extends Entity implements BaseEffect {
+public class PixelFireEffect extends BaseAbstractEffect {
 
 	private int _countCompleted;
-
-	private boolean _completed;
 
 	private TArray<FireBlock> _fireBlocks;
 
@@ -146,11 +143,11 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(color);
+		this.setRepaint(true);
 		this._size = size;
 		this._speed = speed;
 		this._count = amount;
 		this._angle = angle;
-		this._repaintDraw = true;
 		_dirty = true;
 	}
 
@@ -178,7 +175,7 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (_dirty) {
@@ -222,20 +219,14 @@ public class PixelFireEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public boolean isCompleted() {
-		return _completed;
+	public PixelFireEffect setAutoRemoved(boolean autoRemoved) {
+		super.setAutoRemoved(true);
+		return this;
 	}
 
 	@Override
-	public PixelFireEffect setStop(boolean c) {
-		this._completed = c;
-		return this;
-	}
-	
-	@Override
 	public void close() {
 		super.close();
-		_completed = true;
 		_fireBlocks.clear();
 	}
 

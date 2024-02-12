@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject.State;
-
+import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -511,6 +511,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				sortSprites();
 			}
 			sprite.setState(State.ADDED);
+			if (sprite instanceof IEntity) {
+				((IEntity) sprite).onAttached();
+			}
 			sprite.setSprites(this);
 		}
 		boolean result = _sprites[index] != null;
@@ -612,6 +615,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			sortSprites();
 		}
 		sprite.setState(State.ADDED);
+		if (sprite instanceof IEntity) {
+			((IEntity) sprite).onAttached();
+		}
 		return result;
 	}
 
@@ -1019,6 +1025,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		ISprite removed = this._sprites[index];
 		if (removed != null) {
 			removed.setState(State.REMOVED);
+			if (removed instanceof IEntity) {
+				((IEntity) removed).onDetached();
+			}
 			// 删除精灵同时，删除缓动动画
 			if (removed instanceof ActionBind) {
 				ActionControl.get().removeAllActions((ActionBind) removed);
@@ -1069,6 +1078,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			ISprite spr = _sprites[i - 1];
 			if ((sprite == spr) || (sprite.equals(spr))) {
 				spr.setState(State.REMOVED);
+				if (spr instanceof IEntity) {
+					((IEntity) spr).onDetached();
+				}
 				// 删除精灵同时，删除缓动动画
 				if (spr instanceof ActionBind) {
 					ActionControl.get().removeAllActions((ActionBind) spr);
@@ -1124,6 +1136,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			ISprite spr = _sprites[i - 1];
 			if ((name.equals(spr.getName()))) {
 				spr.setState(State.REMOVED);
+				if (spr instanceof IEntity) {
+					((IEntity) spr).onDetached();
+				}
 				// 删除精灵同时，删除缓动动画
 				if (spr instanceof ActionBind) {
 					ActionControl.get().removeAllActions((ActionBind) spr);
@@ -1158,6 +1173,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				ISprite spr = _sprites[i];
 				if (spr != null) {
 					spr.setState(State.REMOVED);
+					if (spr instanceof IEntity) {
+						((IEntity) spr).onDetached();
+					}
 					// 删除精灵同时，删除缓动动画
 					if (spr instanceof ActionBind) {
 						ActionControl.get().removeAllActions((ActionBind) spr);
@@ -1216,6 +1234,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			ISprite removed = _sprites[i];
 			if (removed != null) {
 				removed.setState(State.REMOVED);
+				if (removed instanceof IEntity) {
+					((IEntity) removed).onDetached();
+				}
 				// 删除精灵同时，删除缓动动画
 				if (removed instanceof ActionBind) {
 					ActionControl.get().removeAllActions((ActionBind) removed);
@@ -2087,6 +2108,193 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	public Sprites setAutoSortXYLayer(boolean sort) {
 		this._autoSortLayer = sort;
+		return this;
+	}
+
+	public Sprites centerOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites centerTopOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerTopOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites centerBottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerBottomOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites topOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.topOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites topLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.topLeftOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites topRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.topRightOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites leftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.leftOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites rightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.rightOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites bottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.bottomOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites bottomLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.bottomLeftOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites bottomRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.bottomRightOn(object, getX(), getY(), getWidth(), getHeight());
+		return this;
+	}
+
+	public Sprites centerOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerOn(object, getX(), getY(), getWidth(), getHeight());
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites centerTopOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.centerTopOn(object, getX(), getY(), getWidth(), getHeight());
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites centerBottomOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		centerBottomOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites topOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites topLeftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topLeftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites topRightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		topRightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites leftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		leftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites rightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		rightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites bottomOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites bottomLeftOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomLeftOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
+		return this;
+	}
+
+	public Sprites bottomRightOn(final LObject<?> object, final float offsetX, final float offsetY) {
+		if (object == null) {
+			return this;
+		}
+		bottomRightOn(object);
+		object.setLocation(object.getX() + offsetX, object.getY() + offsetY);
 		return this;
 	}
 
