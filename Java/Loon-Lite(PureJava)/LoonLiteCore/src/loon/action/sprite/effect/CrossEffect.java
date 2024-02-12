@@ -168,7 +168,6 @@ public class CrossEffect extends BaseAbstractEffect {
 	@Override
 	public CrossEffect reset() {
 		super.reset();
-		this._completed = false;
 		this.count = 0;
 		return this;
 	}

@@ -249,7 +249,6 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	@Override
 	public FadeTileEffect reset() {
 		super.reset();
-		this._completed = false;
 		this.tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == type) {
 			for (int x = 0; x < tileWidth; x++) {

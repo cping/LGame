@@ -214,7 +214,6 @@ public class PixelFireEffect extends BaseAbstractEffect {
 	public PixelFireEffect reset() {
 		super.reset();
 		this._dirty = true;
-		this._completed = false;
 		return this;
 	}
 

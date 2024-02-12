@@ -29,8 +29,6 @@ import loon.utils.timer.LTimer;
 
 public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 
-	private boolean _completedAfterBlack;
-
 	private DrawLoop.Drawable _completedDrawable;
 
 	protected final LTimer _timer = new LTimer(0);
@@ -38,6 +36,12 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	protected boolean _completed;
 
 	protected boolean _autoRemoved;
+
+	private boolean _completedAfterBlack;
+
+	private boolean _completedEventOver;
+
+	private LRelease _completedDispose;
 
 	private LRelease _removedDispose;
 
@@ -69,18 +73,25 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	}
 
 	public boolean completedAfterBlackScreen(GLEx g, float x, float y) {
-		if (_completed && _completedAfterBlack) {
+		final boolean result = _completed && _completedAfterBlack;
+		if (result) {
 			if (_completedDrawable == null) {
 				g.fillRect(drawX(x), drawY(y), getWidth(), getHeight(), _baseColor);
 			} else {
 				_completedDrawable.draw(g, x, y);
 			}
 		}
-		return _completed;
+		return result;
 	}
 
 	public boolean checkAutoRemove() {
 		if (this._completed) {
+			if (!_completedEventOver) {
+				if (_completedDispose != null) {
+					_completedDispose.close();
+				}
+				_completedEventOver = false;
+			}
 			if (_autoRemoved) {
 				if (getSprites() != null) {
 					getSprites().remove(this);
@@ -93,6 +104,15 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 			}
 		}
 		return this._completed;
+	}
+
+	@Override
+	public BaseAbstractEffect reset() {
+		super.reset();
+		_completed = false;
+		_completedAfterBlack = false;
+		_completedEventOver = false;
+		return this;
 	}
 
 	@Override
@@ -120,8 +140,9 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
-	public LRelease getRemovedDispose() {
-		return _removedDispose;
+	public BaseAbstractEffect completedDispose(LRelease rd) {
+		this._completedDispose = rd;
+		return this;
 	}
 
 	public boolean isCompletedAfterBlack() {
@@ -149,6 +170,8 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	public void close() {
 		super.close();
 		_completed = true;
+		_completedAfterBlack = false;
+		_completedEventOver = false;
 	}
 
 }

@@ -106,7 +106,6 @@ public class ArcEffect extends BaseAbstractEffect {
 	@Override
 	public ArcEffect reset() {
 		super.reset();
-		this._completed = false;
 		this.step = 0;
 		this.curTurn = 1;
 		return this;

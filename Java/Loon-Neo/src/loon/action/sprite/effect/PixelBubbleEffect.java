@@ -173,7 +173,6 @@ public class PixelBubbleEffect extends BaseAbstractEffect {
 	public PixelBubbleEffect reset() {
 		super.reset();
 		this._dirty = true;
-		this._completed = false;
 		return this;
 	}
 

@@ -181,7 +181,6 @@ public class TextEffect extends BaseAbstractEffect {
 	@Override
 	public TextEffect reset() {
 		super.reset();
-		_completed = false;
 		texts.clear();
 		for (int i = 0; i < tempTexts.size; i++) {
 			MessageBlock block = tempTexts.get(i);

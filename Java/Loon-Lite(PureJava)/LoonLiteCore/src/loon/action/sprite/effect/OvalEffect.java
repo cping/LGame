@@ -168,7 +168,6 @@ public class OvalEffect extends BaseAbstractEffect {
 	public OvalEffect reset() {
 		super.reset();
 		this.updateRadius();
-		this._completed = false;
 		this._step = 0f;
 		this._spaceSize = SIZE;
 		return this;
