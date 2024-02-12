@@ -292,7 +292,7 @@ public class NaturalEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		if (naturalType == NaturalType.Thunder && lightningEffect != null) {

@@ -303,7 +303,7 @@ public class StringEffect extends BaseAbstractEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
@@ -312,13 +312,12 @@ public class StringEffect extends BaseAbstractEffect {
 			if (_objectAlpha <= 0) {
 				_completed = true;
 			}
-			checkAutoRemove();
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		_font.paintString(g, drawX(offsetX), drawY(offsetY), _baseColor.multiply(this._objectAlpha));

@@ -127,7 +127,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
 		final int tmp = g.color();

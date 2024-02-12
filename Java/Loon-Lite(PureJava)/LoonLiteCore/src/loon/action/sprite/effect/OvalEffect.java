@@ -114,7 +114,7 @@ public class OvalEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		this._diameter = getEffectDiameter();

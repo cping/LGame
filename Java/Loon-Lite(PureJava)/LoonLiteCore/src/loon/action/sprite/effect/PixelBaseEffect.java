@@ -113,6 +113,9 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 		if (!isVisible()) {
 			return;
 		}
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		draw(g, drawX(offsetX), drawY(offsetY));
 	}
 

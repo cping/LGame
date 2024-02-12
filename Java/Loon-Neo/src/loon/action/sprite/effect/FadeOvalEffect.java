@@ -104,7 +104,7 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
 		if (this.elapsed > -1) {

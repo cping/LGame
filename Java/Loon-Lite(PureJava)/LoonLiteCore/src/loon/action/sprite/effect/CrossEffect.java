@@ -90,10 +90,10 @@ public class CrossEffect extends BaseAbstractEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_createTexture) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (checkAutoRemove()) {
+		if (_createTexture) {
 			return;
 		}
 		if (this.count > this.maxcount) {
@@ -106,6 +106,9 @@ public class CrossEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		if (_createTexture) {
 			if (_crossColor != null) {
 				otexture = TextureUtils.createTexture(width(), height(), _crossColor);

@@ -114,6 +114,9 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 		if (!isVisible()) {
 			return;
 		}
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		int tmp = g.getPixSkip();
 		boolean useTex = g.isAlltextures() && LSystem.isHTML5();
 		if (useTex) {

@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
+import loon.opengl.GLEx;
 import loon.utils.BufferUtils;
 
 /**
@@ -114,7 +115,8 @@ public class PShadowEffect extends BaseAbstractEffect {
 		if (_pixmap == null) {
 			return;
 		}
-		if (isVisible() && _timer.action(elapsedTime) && !isCompleted()) {
+		_completed = isCompleted();
+		if (isVisible() && _timer.action(elapsedTime) && !_completed) {
 			int[] pixels = _pixmap.getData();
 			if (flag) {
 				int[] colors = new int[block];
@@ -138,6 +140,11 @@ public class PShadowEffect extends BaseAbstractEffect {
 				setTexture(_pixmap.getImage(false).texture());
 			}
 		}
+	}
+
+	@Override
+	public void repaint(GLEx g, float offsetX, float offsetY) {
+		completedAfterBlackScreen(g, offsetX, offsetY);
 	}
 
 	@Override

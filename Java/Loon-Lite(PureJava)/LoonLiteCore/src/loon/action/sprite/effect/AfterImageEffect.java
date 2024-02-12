@@ -287,10 +287,10 @@ public class AfterImageEffect extends BaseAbstractEffect {
 
 	@Override
 	public void onUpdate(long e) {
-		if (!_inited) {
+		if (checkAutoRemove()) {
 			return;
 		}
-		if (checkAutoRemove()) {
+		if (!_inited) {
 			return;
 		}
 		if (_timer.action(e)) {
@@ -327,6 +327,9 @@ public class AfterImageEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
+		if (completedAfterBlackScreen(g, sx, sy)) {
+			return;
+		}
 		if (!_inited) {
 			return;
 		}

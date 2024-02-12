@@ -388,7 +388,7 @@ public class PixelGossipEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		float x = drawX(offsetX);

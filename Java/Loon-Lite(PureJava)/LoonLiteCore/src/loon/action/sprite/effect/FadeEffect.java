@@ -112,11 +112,14 @@ public class FadeEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
-		g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(currentFrame / time));
-		return;
+		if (currentFrame >= time) {
+			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
+		} else {
+			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(currentFrame / time));
+		}
 	}
 
 	@Override
@@ -127,13 +130,13 @@ public class FadeEffect extends BaseAbstractEffect {
 		if (type == TYPE_FADE_IN) {
 			currentFrame--;
 			if (currentFrame <= 0) {
-				setAlpha(0);
+				setAlpha(0f);
 				_completed = true;
 			}
 		} else {
 			currentFrame++;
 			if (currentFrame >= time) {
-				setAlpha(0);
+				setAlpha(1f);
 				_completed = true;
 			}
 		}

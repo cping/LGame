@@ -142,6 +142,9 @@ public class LightningEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		if (isDisposed()) {
 			return;
 		}

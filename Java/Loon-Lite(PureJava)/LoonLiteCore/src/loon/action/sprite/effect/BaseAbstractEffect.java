@@ -23,9 +23,15 @@ package loon.action.sprite.effect;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.sprite.Entity;
+import loon.events.DrawLoop;
+import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
 
 public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
+
+	private boolean _completedAfterBlack;
+
+	private DrawLoop.Drawable _completedDrawable;
 
 	protected final LTimer _timer = new LTimer(0);
 
@@ -60,6 +66,17 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	public BaseAbstractEffect effectOver() {
 		_completed = true;
 		return this;
+	}
+
+	public boolean completedAfterBlackScreen(GLEx g, float x, float y) {
+		if (_completed && _completedAfterBlack) {
+			if (_completedDrawable == null) {
+				g.fillRect(drawX(x), drawY(y), getWidth(), getHeight(), _baseColor);
+			} else {
+				_completedDrawable.draw(g, x, y);
+			}
+		}
+		return _completed;
 	}
 
 	public boolean checkAutoRemove() {
@@ -103,14 +120,35 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 		return this;
 	}
 
+	public LRelease getRemovedDispose() {
+		return _removedDispose;
+	}
+
+	public boolean isCompletedAfterBlack() {
+		return _completedAfterBlack;
+	}
+
+	public BaseAbstractEffect setCompletedAfterBlack(boolean c) {
+		this._completedAfterBlack = c;
+		return this;
+	}
+
+	public DrawLoop.Drawable getCompletedDrawable() {
+		return _completedDrawable;
+	}
+
+	public BaseAbstractEffect setCompletedDrawable(DrawLoop.Drawable drawable) {
+		this._completedDrawable = drawable;
+		if (drawable != null) {
+			setCompletedAfterBlack(true);
+		}
+		return this;
+	}
+
 	@Override
 	public void close() {
 		super.close();
 		_completed = true;
-	}
-
-	public LRelease getRemovedDispose() {
-		return _removedDispose;
 	}
 
 }

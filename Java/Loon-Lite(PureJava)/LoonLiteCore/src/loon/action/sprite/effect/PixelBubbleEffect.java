@@ -140,7 +140,7 @@ public class PixelBubbleEffect extends BaseAbstractEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_completed) {
+		if (checkAutoRemove()) {
 			return;
 		}
 		if (_dirty) {
@@ -155,7 +155,7 @@ public class PixelBubbleEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		if (_dirty) {

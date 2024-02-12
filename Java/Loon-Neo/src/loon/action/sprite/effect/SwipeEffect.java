@@ -67,7 +67,7 @@ public class SwipeEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float sx, float sy) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
 		float percent = _timer.getPercentage();

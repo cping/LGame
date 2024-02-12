@@ -247,6 +247,9 @@ public class TextEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		for (int i = texts.size - 1; i > -1; --i) {
 			MessageBlock text = texts.get(i);
 			if (text != null) {

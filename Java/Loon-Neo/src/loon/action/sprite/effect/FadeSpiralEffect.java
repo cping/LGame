@@ -99,7 +99,7 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_completed) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
 		for (int x = 0; x < tilewidth; x++) {

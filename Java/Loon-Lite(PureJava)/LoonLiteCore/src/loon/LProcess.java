@@ -678,9 +678,9 @@ public class LProcess implements LRelease {
 		return _emulatorButtons;
 	}
 
-	public LProcess setScreenID(int _curId) {
+	public LProcess setScreenID(int curId) {
 		if (_isInstance) {
-			_currentScreen.setID(_curId);
+			_currentScreen.setID(curId);
 		}
 		return this;
 	}

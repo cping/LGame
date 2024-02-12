@@ -106,6 +106,9 @@ public class SplitEffect extends BaseAbstractEffect {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
+		if (checkAutoRemove()) {
+			return;
+		}
 		if (_createTexture) {
 			return;
 		}
@@ -139,11 +142,13 @@ public class SplitEffect extends BaseAbstractEffect {
 				}
 			}
 		}
-		checkAutoRemove();
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		if (_createTexture) {
 			if (_splitColor != null) {
 				_image = TextureUtils.createTexture(width(), height(), _splitColor);

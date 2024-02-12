@@ -212,12 +212,15 @@ public class TriangleEffect extends BaseAbstractEffect {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
+		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
 		draw(g, drawX(offsetX), drawY(offsetY));
 	}
 
 	@Override
 	public TriangleEffect setAutoRemoved(boolean autoRemoved) {
-		super.setAutoRemoved(true);
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 }
