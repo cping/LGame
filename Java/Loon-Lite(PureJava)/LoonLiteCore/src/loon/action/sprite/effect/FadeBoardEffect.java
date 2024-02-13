@@ -33,6 +33,10 @@ import loon.utils.timer.Duration;
  */
 public class FadeBoardEffect extends BaseAbstractEffect {
 
+	public final static int START_LEFT = 0;
+
+	public final static int START_RIGHT = 1;
+
 	private static class Block {
 
 		float _x, _y, _width, _height;
@@ -141,6 +145,8 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 
 	}
 
+	private int _startDirection = START_LEFT;
+
 	private int countCompleted;
 
 	private LTexture blockTexture;
@@ -162,19 +168,31 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 	private boolean _dirty;
 
 	public FadeBoardEffect(int model, LColor c) {
-		this(model, c, 32, 32);
+		this(model, START_LEFT, c);
+	}
+
+	public FadeBoardEffect(int model, int dir, LColor c) {
+		this(model, dir, c, 32, 32);
 	}
 
 	public FadeBoardEffect(int model, LColor c, int cellW, int cellH) {
-		this(model, c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), cellW, cellH);
+		this(model, START_LEFT, c, cellW, cellH);
+	}
+
+	public FadeBoardEffect(int model, int dir, LColor c, int cellW, int cellH) {
+		this(model, dir, c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), cellW, cellH);
 	}
 
 	public FadeBoardEffect(int model, LColor c, int x, int y, int width, int height, int cellW, int cellH) {
-		this(model, c, x, y, width, height, cellW, cellH, 1.5f, 1.5f, 50, 100);
+		this(model, START_LEFT, c, x, y, width, height, cellW, cellH);
 	}
 
-	public FadeBoardEffect(int model, LColor c, int x, int y, int width, int height, int cellW, int cellH, float sx,
-			float sy, long delay, long duration) {
+	public FadeBoardEffect(int model, int dir, LColor c, int x, int y, int width, int height, int cellW, int cellH) {
+		this(model, dir, c, x, y, width, height, cellW, cellH, 1.5f, 1.5f, 50, 100);
+	}
+
+	public FadeBoardEffect(int model, int dir, LColor c, int x, int y, int width, int height, int cellW, int cellH,
+			float sx, float sy, long delay, long duration) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setColor(c == null ? LColor.black : c);
@@ -200,20 +218,40 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 
 	protected TArray<Block> createBlocks(int newX, int newY, int boardWidth, int boardHeight) {
 		this.blockTexture = LSystem.base().graphics().finalColorTex();
-		int blockWidth = (boardWidth / cellWidth);
-		int blockHeight = (boardHeight / cellHeight);
-		int size = blockWidth * blockHeight;
-		TArray<Block> blocks = new TArray<Block>(size);
-		for (int x = 0; x < blockWidth; x++) {
-			for (int y = 0; y < blockHeight; y++) {
-				if (fadeType == TYPE_FADE_OUT) {
-					blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight,
-							0f, 0f, 0f, 0f, x * blockDelay));
-				} else {
-					blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth, cellHeight,
-							targetAngle, targetScaleX, targetScaleY, 1f, x * blockDelay));
+		final int blockWidth = (boardWidth / cellWidth);
+		final int blockHeight = (boardHeight / cellHeight);
+		final int size = blockWidth * blockHeight;
+		final TArray<Block> blocks = new TArray<Block>(size);
+		switch (_startDirection) {
+		default:
+		case START_LEFT:
+			for (int x = 0; x < blockWidth; x++) {
+				for (int y = 0; y < blockHeight; y++) {
+					if (fadeType == TYPE_FADE_OUT) {
+						blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth,
+								cellHeight, 0f, 0f, 0f, 0f, x * blockDelay));
+					} else {
+						blocks.add(new Block(this, newX + (x * cellWidth), newY + (y * cellHeight), cellWidth,
+								cellHeight, targetAngle, targetScaleX, targetScaleY, 1f, x * blockDelay));
+					}
 				}
 			}
+			break;
+		case START_RIGHT:
+			for (int x = blockWidth; x > -1; x--) {
+				for (int y = blockHeight; y > -1; y--) {
+					if (fadeType == TYPE_FADE_OUT) {
+						blocks.add(new Block(this, newX + (boardWidth - (x * cellWidth)),
+								newY + (boardHeight - (y * cellHeight)), cellWidth, cellHeight, 0f, 0f, 0f, 0f,
+								x * blockDelay));
+					} else {
+						blocks.add(new Block(this, newX + (boardWidth - (x * cellWidth)),
+								newY + (boardHeight - (y * cellHeight)), cellWidth, cellHeight, targetAngle,
+								targetScaleX, targetScaleY, 1f, x * blockDelay));
+					}
+				}
+			}
+			break;
 		}
 		this._dirty = true;
 		return blocks;
@@ -257,11 +295,6 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 		if (countCompleted >= paintBlocks.size) {
 			_completed = true;
 		}
-		if (this._completed) {
-			if (_autoRemoved && getSprites() != null) {
-				getSprites().remove(this);
-			}
-		}
 	}
 
 	@Override
@@ -278,6 +311,16 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 		}
 	}
 
+	public int getStartDirection() {
+		return _startDirection;
+	}
+
+	public FadeBoardEffect setStartDirection(int d) {
+		this._startDirection = d;
+		return this;
+	}
+
+	@Override
 	public FadeBoardEffect setAutoRemoved(boolean autoRemoved) {
 		super.setAutoRemoved(autoRemoved);
 		return this;

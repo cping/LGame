@@ -862,6 +862,10 @@ public class LTransition {
 		return newFadeBoard(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
+	public static final LTransition newFadeBoard(final int type, final LColor c) {
+		return newFadeBoard(type, FadeBoardEffect.START_LEFT, c);
+	}
+
 	/**
 	 * 瓦片淡出或淡入(从左到右)
 	 * 
@@ -869,13 +873,13 @@ public class LTransition {
 	 * @param c
 	 * @return
 	 */
-	public static final LTransition newFadeBoard(final int type, final LColor c) {
+	public static final LTransition newFadeBoard(final int type, final int dir, final LColor c) {
 		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final FadeBoardEffect boardEffect = new FadeBoardEffect(type, c);
+				final FadeBoardEffect boardEffect = new FadeBoardEffect(type, dir, c);
 
 				@Override
 				public void draw(GLEx g) {

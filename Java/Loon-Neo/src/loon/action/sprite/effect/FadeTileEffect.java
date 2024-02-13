@@ -32,6 +32,10 @@ import loon.utils.MathUtils;
  */
 public class FadeTileEffect extends BaseAbstractEffect {
 
+	private float sizeWidth;
+	
+	private float sizeHeight;
+
 	private int tileWidth, tileHeight;
 
 	private int count;
@@ -41,11 +45,10 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	private int tmpflag = 0;
 
 	private boolean[][] conversions;
-	private boolean[][] temp;
+	private boolean[][] boolTemps;
 
 	private boolean usefore = false;
 
-	private LColor back = LColor.black;
 	private LColor fore = LColor.white;
 
 	private int type;
@@ -62,18 +65,25 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		this(type, count, speed, back, fore, 64, 32);
 	}
 
-	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, int w, int h) {
+	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, float w, float h) {
+		this(type, count, speed, back, fore, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), w, h);
+	}
+	
+	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, float maxWidth, float maxHeight,
+			float w, float h) {
+		this.setRepaint(true);
+		this.setSize(maxWidth, maxHeight);
+		this.setDelay(60);
+		this.setColor(back);
 		this.type = type;
 		this.count = count;
 		this.speed = speed;
-		this.setRepaint(true);
-		this.setSize(w, h);
-		this.setDelay(60);
-		this.tileWidth = (int) (((LSystem.viewSize.getWidth() / w)) + 1);
-		this.tileHeight = (int) (((LSystem.viewSize.getHeight() / h)) + 1);
+		this.sizeWidth = w;
+		this.sizeHeight = h;
+		this.tileWidth = MathUtils.ifloor(((maxWidth / w)) + 1);
+		this.tileHeight = MathUtils.ifloor(((maxHeight / h)) + 1);
 		this.conversions = new boolean[tileWidth][tileHeight];
-		this.temp = new boolean[tileWidth][tileHeight];
-		this.back = back;
+		this.boolTemps = new boolean[tileWidth][tileHeight];
 		this.fore = fore;
 		this.reset();
 	}
@@ -110,35 +120,35 @@ public class FadeTileEffect extends BaseAbstractEffect {
 				for (int i = 0; i < speed; i++) {
 					for (int x = 0; x < tileWidth; x++) {
 						for (int y = 0; y < tileHeight; y++) {
-							temp[x][y] = false;
+							boolTemps[x][y] = false;
 						}
 					}
 					for (int x = 0; x < tileWidth; x++) {
 						for (int y = 0; y < tileHeight; y++) {
-							if (!temp[x][y] && conversions[x][y]) {
-								temp[x][y] = true;
+							if (!boolTemps[x][y] && conversions[x][y]) {
+								boolTemps[x][y] = true;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x - 1][y]) {
 										conversions[x - 1][y] = true;
-										temp[x - 1][y] = true;
+										boolTemps[x - 1][y] = true;
 									}
 								}
 								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x + 1][y]) {
 										conversions[x + 1][y] = true;
-										temp[x + 1][y] = true;
+										boolTemps[x + 1][y] = true;
 									}
 								}
 								if (y > 0 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x][y - 1]) {
 										conversions[x][y - 1] = true;
-										temp[x][y - 1] = true;
+										boolTemps[x][y - 1] = true;
 									}
 								}
 								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (!conversions[x][y + 1]) {
 										conversions[x][y + 1] = true;
-										temp[x][y + 1] = true;
+										boolTemps[x][y + 1] = true;
 									}
 								}
 
@@ -162,35 +172,35 @@ public class FadeTileEffect extends BaseAbstractEffect {
 				for (int i = 0; i < speed; i++) {
 					for (int x = 0; x < tileWidth; x++) {
 						for (int y = 0; y < tileHeight; y++) {
-							temp[x][y] = true;
+							boolTemps[x][y] = true;
 						}
 					}
 					for (int x = 0; x < tileWidth; x++) {
 						for (int y = 0; y < tileHeight; y++) {
-							if (temp[x][y] && !conversions[x][y]) {
-								temp[x][y] = false;
+							if (boolTemps[x][y] && !conversions[x][y]) {
+								boolTemps[x][y] = false;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x - 1][y]) {
 										conversions[x - 1][y] = false;
-										temp[x - 1][y] = false;
+										boolTemps[x - 1][y] = false;
 									}
 								}
 								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x + 1][y]) {
 										conversions[x + 1][y] = false;
-										temp[x + 1][y] = false;
+										boolTemps[x + 1][y] = false;
 									}
 								}
 								if (y > 0 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x][y - 1]) {
 										conversions[x][y - 1] = false;
-										temp[x][y - 1] = false;
+										boolTemps[x][y - 1] = false;
 									}
 								}
 								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
 									if (conversions[x][y + 1]) {
 										conversions[x][y + 1] = false;
-										temp[x][y + 1] = false;
+										boolTemps[x][y + 1] = false;
 									}
 								}
 
@@ -222,28 +232,25 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
-		int tmp = g.color();
-		g.setColor(back);
+		final int old = g.getTint();
 		for (int x = 0; x < tileWidth; x++) {
 			for (int y = 0; y < tileHeight; y++) {
-				final float offX = x * _width + offsetX;
-				final float offY = y * _height + offsetY;
+				final float offX = x * sizeWidth + offsetX;
+				final float offY = y * sizeHeight + offsetY;
 				if (usefore) {
 					if (conversions[x][y]) {
-						g.setColor(back);
-						g.fillRect(drawX(offX), drawY(offY), _width, _height);
+						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, _baseColor);
 					} else if (!conversions[x][y] && filledObject(x, y)) {
-						g.setColor(fore);
-						g.fillRect(drawX(offX), drawY(offY), _width, _height);
+						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, fore);
 					}
 				} else {
 					if (conversions[x][y]) {
-						g.fillRect(drawX(offX), drawY(offY), _width, _height);
+						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, _baseColor);
 					}
 				}
 			}
 		}
-		g.setColor(tmp);
+		g.setTint(old);
 	}
 
 	@Override
@@ -254,7 +261,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 			for (int x = 0; x < tileWidth; x++) {
 				for (int y = 0; y < tileHeight; y++) {
 					conversions[x][y] = false;
-					temp[x][y] = false;
+					boolTemps[x][y] = false;
 				}
 			}
 			for (int i = 0; i < count; i++) {
@@ -264,7 +271,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 			for (int x = 0; x < tileWidth; x++) {
 				for (int y = 0; y < tileHeight; y++) {
 					conversions[x][y] = true;
-					temp[x][y] = true;
+					boolTemps[x][y] = true;
 				}
 			}
 			for (int i = 0; i < count; i++) {
@@ -292,7 +299,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	public void close() {
 		super.close();
 		conversions = null;
-		temp = null;
+		boolTemps = null;
 	}
 
 }

@@ -23,6 +23,7 @@ package loon.action.sprite.effect;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
 import loon.events.DrawLoop;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
@@ -44,6 +45,12 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	private LRelease _completedDispose;
 
 	private LRelease _removedDispose;
+
+	public BaseAbstractEffect() {
+		super();
+		setColor(LColor.black);
+		setRepaint(true);
+	}
 
 	public LTimer getTimer() {
 		return _timer;

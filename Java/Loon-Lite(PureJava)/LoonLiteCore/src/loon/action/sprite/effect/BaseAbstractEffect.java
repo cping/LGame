@@ -23,6 +23,7 @@ package loon.action.sprite.effect;
 import loon.LRelease;
 import loon.LSystem;
 import loon.action.sprite.Entity;
+import loon.canvas.LColor;
 import loon.events.DrawLoop;
 import loon.opengl.GLEx;
 import loon.utils.timer.LTimer;
@@ -44,6 +45,12 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	private LRelease _completedDispose;
 
 	private LRelease _removedDispose;
+
+	public BaseAbstractEffect() {
+		super();
+		setColor(LColor.black);
+		setRepaint(true);
+	}
 
 	public LTimer getTimer() {
 		return _timer;
@@ -73,14 +80,15 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	}
 
 	public boolean completedAfterBlackScreen(GLEx g, float x, float y) {
-		if (_completed && _completedAfterBlack) {
+		final boolean result = _completed && _completedAfterBlack;
+		if (result) {
 			if (_completedDrawable == null) {
 				g.fillRect(drawX(x), drawY(y), getWidth(), getHeight(), _baseColor);
 			} else {
 				_completedDrawable.draw(g, x, y);
 			}
 		}
-		return _completed;
+		return result;
 	}
 
 	public boolean checkAutoRemove() {

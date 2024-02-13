@@ -51,14 +51,17 @@ public class ScreenExitEffect {
 	// 水滴点状淡出,点状淡入
 	public final static int DOT_FADE = 3;
 
-	// 瓦片堆砌样淡出，淡入
-	public final static int BOARD_FADE = 4;
+	// 瓦片堆砌样左侧淡出，右侧淡入
+	public final static int BOARD_LEFT_FADE = 4;
+
+	// 瓦片堆砌样右侧淡出，左侧淡入
+	public final static int BOARD_RIGHT_FADE = 5;
 
 	// 瓦片螺旋样淡出,淡入
-	public final static int SPIRAL_FADE = 5;
+	public final static int SPIRAL_FADE = 6;
 
 	// 瓦片淡出,淡入
-	public final static int TILES_FADE = 6;
+	public final static int TILES_FADE = 7;
 
 	static class ReleasedScreen implements LRelease {
 
@@ -134,8 +137,13 @@ public class ScreenExitEffect {
 				case DOT_FADE:
 					dstScreen.setTransition(LTransition.newFadeDot(ISprite.TYPE_FADE_IN, color));
 					break;
-				case BOARD_FADE:
-					dstScreen.setTransition(LTransition.newFadeBoard(ISprite.TYPE_FADE_IN, color));
+				case BOARD_LEFT_FADE:
+					dstScreen.setTransition(
+							LTransition.newFadeBoard(ISprite.TYPE_FADE_IN, FadeBoardEffect.START_RIGHT, color));
+					break;
+				case BOARD_RIGHT_FADE:
+					dstScreen.setTransition(
+							LTransition.newFadeBoard(ISprite.TYPE_FADE_IN, FadeBoardEffect.START_LEFT, color));
 					break;
 				case SPIRAL_FADE:
 					dstScreen.setTransition(LTransition.newFadeSpiral(ISprite.TYPE_FADE_IN, color));
@@ -165,6 +173,15 @@ public class ScreenExitEffect {
 	 */
 	public static void gotoEffectExit(final int index, final LColor color, final Screen src, final Screen dst,
 			final BooleanValue locked) {
+		if (src == null) {
+			return;
+		}
+		if (dst == null) {
+			return;
+		}
+		if (src == dst) {
+			return;
+		}
 		if (locked != null) {
 			if (locked.get()) {
 				return;
@@ -186,8 +203,11 @@ public class ScreenExitEffect {
 		case DOT_FADE:
 			baseEffect = new FadeDotEffect(ISprite.TYPE_FADE_OUT, color);
 			break;
-		case BOARD_FADE:
-			baseEffect = new FadeBoardEffect(ISprite.TYPE_FADE_OUT, color);
+		case BOARD_LEFT_FADE:
+			baseEffect = new FadeBoardEffect(ISprite.TYPE_FADE_OUT, FadeBoardEffect.START_LEFT, color);
+			break;
+		case BOARD_RIGHT_FADE:
+			baseEffect = new FadeBoardEffect(ISprite.TYPE_FADE_OUT, FadeBoardEffect.START_RIGHT, color);
 			break;
 		case SPIRAL_FADE:
 			baseEffect = new FadeSpiralEffect(ISprite.TYPE_FADE_OUT, color);
