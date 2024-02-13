@@ -65,6 +65,8 @@ public class LProcess implements LRelease {
 
 	private final ListMap<CharSequence, Screen> _screenMap;
 
+	private final ScreenExitEffect _exitEffect = new ScreenExitEffect();
+
 	private final Vector2f _pointLocaltion = new Vector2f();
 
 	private final Vector2f _offsetTouch = new Vector2f();
@@ -297,7 +299,10 @@ public class LProcess implements LRelease {
 
 	// --- UnLoad end ---//
 
-	private void setScreen(final Screen screen, boolean put) {
+	private void setScreen(final Screen screen, final boolean put) {
+		if (checkWaiting()) {
+			return;
+		}
 		if (_loadingScreen != null && _loadingScreen.isOnLoadComplete()) {
 			return;
 		}
@@ -383,7 +388,7 @@ public class LProcess implements LRelease {
 
 				screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 
-				RealtimeProcess process = new RealtimeProcess() {
+				final RealtimeProcess process = new RealtimeProcess() {
 
 					@Override
 					public void run(LTimerContext time) {
@@ -525,6 +530,9 @@ public class LProcess implements LRelease {
 						break;
 					case 1:
 						if (!_transition.completed()) {
+							if (_currentScreen != null) {
+								_currentScreen.setLock(true);
+							}
 							_transition.update(context.timeSinceLastUpdate);
 						} else {
 							endTransition();
@@ -721,6 +729,8 @@ public class LProcess implements LRelease {
 			if (_isInstance) {
 				_currentScreen.setLock(true);
 			}
+		} else if (_currentScreen != null) {
+			_currentScreen.setLock(true);
 		}
 	}
 
@@ -743,6 +753,9 @@ public class LProcess implements LRelease {
 			}
 		} else {
 			_waitTransition = false;
+			if (_currentScreen != null) {
+				_currentScreen.setLock(false);
+			}
 		}
 	}
 
@@ -1036,6 +1049,9 @@ public class LProcess implements LRelease {
 		if (screen == null) {
 			return this;
 		}
+		if (screen == _currentScreen) {
+			return this;
+		}
 		if (screen._processHandler == null) {
 			screen.resetOrder();
 			screen.resetSize();
@@ -1046,6 +1062,98 @@ public class LProcess implements LRelease {
 			setScreen(screen, true);
 		}
 		return this;
+	}
+
+	public ScreenExitEffect getExitEffect() {
+		return _exitEffect;
+	}
+
+	public LProcess gotoEffectExit(final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExit(_currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExit(final int index, final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExit(index, _currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExit(final LColor color, final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExit(color, _currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExit(final int index, final LColor color, final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExit(index, color, _currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExitRand(final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExitRand(_currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExitRand(final LColor color, final Screen dst) {
+		if (checkWaiting()) {
+			return this;
+		}
+		if (_currentScreen == null && dst != null) {
+			return setScreen(dst);
+		}
+		if (dst == _currentScreen) {
+			return this;
+		}
+		_exitEffect.gotoEffectExitRand(color, _currentScreen, dst);
+		return this;
+	}
+
+	public boolean checkWaiting() {
+		return _waitTransition;
 	}
 
 	public int getHeight() {

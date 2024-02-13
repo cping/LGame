@@ -21,6 +21,7 @@
 package loon;
 
 import loon.Log.Level;
+import loon.action.MoveTo;
 import loon.action.sprite.Sprites;
 import loon.component.DefUI;
 import loon.component.Desktop;
@@ -1089,5 +1090,6 @@ public class LSystem {
 		clearSpritesPool();
 		clearDesktopPool();
 		DefUI.selfClear();
+		MoveTo.clearPathCache();
 	}
 }

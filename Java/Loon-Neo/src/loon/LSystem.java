@@ -23,6 +23,7 @@ package loon;
 import loon.LTexture.Format;
 import loon.Log.Level;
 import loon.action.ActionControl;
+import loon.action.MoveTo;
 import loon.action.avg.AVGDialog;
 import loon.action.avg.drama.Command;
 import loon.action.collision.CollisionFilter;
@@ -312,6 +313,7 @@ public class LSystem {
 		clearSpritesPool();
 		clearDesktopPool();
 		DefUI.selfClear();
+		MoveTo.clearPathCache();
 	}
 
 	public static final boolean landscape() {

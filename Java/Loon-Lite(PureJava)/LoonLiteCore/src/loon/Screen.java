@@ -525,6 +525,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 空显示
+	 * 
+	 * @return
+	 */
+	public Screen emptyDraw() {
+		setFristOrder(null);
+		setSecondOrder(null);
+		setLastOrder(null);
+		return this;
+	}
+
+	/**
 	 * 把精灵渲染置于桌面与桌面之间
 	 */
 	public Screen centerSpriteDraw() {
@@ -1627,6 +1639,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param height
 	 */
 	public void onCreate(int width, int height) {
+		this.resetOrder();
 		this.resetCoroutine();
 		this.setDirectorSize(0f, 0f, width, height);
 		this._currentMode = SCREEN_NOT_REPAINT;
@@ -2332,6 +2345,101 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 获得一个Screen离开效果管理器
+	 * 
+	 * @return
+	 */
+	public ScreenExitEffect getScreenExitEffect() {
+		if (_processHandler != null) {
+			return _processHandler.getExitEffect();
+		}
+		return new ScreenExitEffect();
+	}
+
+	/**
+	 * 跳转去指定Screen(具体效果可以由getScreenExitEffect函数设置)
+	 * 
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定索引的效果离开当前Screen再跳转去指定Screen
+	 * 
+	 * @param index
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final int index, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(index, dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定色彩离开当前Screen再跳转去指定Screen(具体效果可以由getScreenExitEffect函数设置)
+	 * 
+	 * @param color
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final LColor color, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(color, dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定索引,指定色彩的效果,离开当前Screen再跳转去指定Screen
+	 * 
+	 * @param index
+	 * @param color
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final int index, final LColor color, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(index, color, dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以随机方式离开当前Screen跳转去指定Screen(具体效果可以由getScreenExitEffect函数设置)
+	 * 
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExitRand(final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExitRand(dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定色彩,随机方式离开当前Screen跳转去指定Screen(具体效果可以由getScreenExitEffect函数设置)
+	 * 
+	 * @param color
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExitRand(final LColor color, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExitRand(color, dst);
+		}
+		return this;
+	}
+
+	/**
 	 * 偏移点击位置
 	 * 
 	 * @param pos
@@ -2621,6 +2729,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public Sprites ELF() {
 		return getSprites();
+	}
+
+	public Screen hideUI() {
+		if (_currentDesktop != null) {
+			_currentDesktop.hide();
+		}
+		return this;
+	}
+
+	public Screen showUI() {
+		if (_currentDesktop != null) {
+			_currentDesktop.show();
+		}
+		return this;
+	}
+
+	public Screen hideELF() {
+		if (_currentSprites != null) {
+			_currentSprites.hide();
+		}
+		return this;
+	}
+
+	public Screen showELF() {
+		if (_currentSprites != null) {
+			_currentSprites.show();
+		}
+		return this;
+	}
+
+	public Screen hides() {
+		hideELF();
+		hideUI();
+		return this;
+	}
+
+	public Screen shows() {
+		showELF();
+		showUI();
+		return this;
 	}
 
 	public Screen addSpriteGroup(LTexture tex, int count) {

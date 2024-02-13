@@ -417,7 +417,7 @@ public class MoveTo extends ActionEvent {
 					float lastY = original.getY();
 					newX += offsetX;
 					newY += offsetY;
-					updateDirection((int) (newX - lastX), (int) (newY - lastY));
+					updateDirection((newX - lastX), (newY - lastY));
 					movePos(newX, newY);
 				}
 				_processed = (count == 2);
@@ -464,7 +464,7 @@ public class MoveTo extends ActionEvent {
 					newX = startX + offsetX;
 					newY = startY + offsetY;
 					if (isMoved) {
-						updateDirection((int) (newX - lastX), (int) (newY - lastY));
+						updateDirection((newX - lastX), (newY - lastY));
 					}
 					movePos(newX, newY);
 				}
@@ -758,8 +758,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public MoveTo updateDirection(float x, float y) {
-		int oldDir = direction;
-		direction = Field2D.getDirection((int) x, (int) y, oldDir);
+		final int oldDir = direction;
+		direction = Field2D.getDirection(MathUtils.ifloor(x), MathUtils.ifloor(y), oldDir);
 		isDirUpdate = (oldDir != direction);
 		return this;
 	}

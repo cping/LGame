@@ -1350,9 +1350,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		final boolean listerner = (sprListerner != null);
 		final ISprite[] childs = _sprites;
-		if (childs == null) {
-			return;
-		}
 		final int size = this._size;
 		for (int i = size - 1; i > -1; i--) {
 			final ISprite child = childs[i];
@@ -1406,9 +1403,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		float spriteWidth;
 		float spriteHeight;
 		final ISprite[] childs = _sprites;
-		if (childs == null) {
-			return;
-		}
 		final int size = this._size;
 		for (int i = 0; i < size; i++) {
 			final ISprite spr = childs[i];
@@ -1439,9 +1433,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return;
 		}
 		final ISprite[] childs = _sprites;
-		if (childs == null) {
-			return;
-		}
 		final int size = this._size;
 		for (int i = 0; i < size; i++) {
 			final ISprite spr = childs[i];

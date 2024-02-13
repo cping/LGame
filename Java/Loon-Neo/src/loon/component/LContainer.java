@@ -737,8 +737,10 @@ public abstract class LContainer extends LComponent implements IArray {
 			try {
 				super.update(elapsedTime);
 				LComponent component;
-				for (int i = 0; i < this.childCount; i++) {
-					component = _childs[i];
+				final int size = this.childCount;
+				final LComponent[] childs = this._childs;
+				for (int i = 0; i < size; i++) {
+					component = childs[i];
 					if (component != null && component != this) {
 						component.update(elapsedTime);
 					}
@@ -818,8 +820,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		for (int i = this.childCount - 1; i >= 0; i--) {
-			LComponent comp = this._childs[i];
+		final int size = this.childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i >= 0; i--) {
+			LComponent comp = childs[i];
 			if (comp != null && comp != this) {
 				comp.createUI(g);
 			}
@@ -836,10 +840,12 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs[0] == comp) {
 			return this;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			if (this._childs[i] == comp) {
-				this._childs = CollectionUtils.cut(this._childs, i);
-				this._childs = CollectionUtils.expand(this._childs, 1, false);
+		final int size = this.childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			if (childs[i] == comp) {
+				this._childs = CollectionUtils.cut(childs, i);
+				this._childs = CollectionUtils.expand(childs, 1, false);
 				this._childs[0] = comp;
 				if (_sortableChildren) {
 					this.sortComponents();
@@ -860,11 +866,13 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs[this.childCount - 1] == comp) {
 			return this;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			if (this._childs[i] == comp) {
-				this._childs = CollectionUtils.cut(this._childs, i);
-				this._childs = CollectionUtils.expand(this._childs, 1, true);
-				this._childs[this.childCount - 1] = comp;
+		final int size = this.childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			if (childs[i] == comp) {
+				this._childs = CollectionUtils.cut(childs, i);
+				this._childs = CollectionUtils.expand(childs, 1, true);
+				this._childs[size - 1] = comp;
 				if (_sortableChildren) {
 					this.sortComponents();
 				}
