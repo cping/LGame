@@ -68,6 +68,20 @@ public class Dimension {
 		return matrix4;
 	}
 
+	public float getTileWidthSize() {
+		if (isLandscape()) {
+			return width / 15f;
+		}
+		return width / 10f;
+	}
+
+	public float getTileHeightSize() {
+		if (isLandscape()) {
+			return height / 10f;
+		}
+		return height / 15f;
+	}
+
 	public boolean isDirty() {
 		return dirty;
 	}

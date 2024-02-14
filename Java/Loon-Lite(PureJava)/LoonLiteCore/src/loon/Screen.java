@@ -2439,6 +2439,34 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen gotoScreenEffectExit(final int index, final LColor color, final int dstIndex) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(index, color, dstIndex);
+		}
+		return this;
+	}
+
+	public Screen gotoScreenEffectExitName(final int index, final LColor color, final CharSequence name) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExitName(index, color, name);
+		}
+		return this;
+	}
+
+	public Screen gotoScreenEffectExit(final int index, final LColor color, final CharSequence name) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(index, color, name);
+		}
+		return this;
+	}
+
+	public Screen gotoScreenEffectExitRand(final LColor color, final CharSequence name) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExitRand(color, name);
+		}
+		return this;
+	}
+
 	/**
 	 * 偏移点击位置
 	 * 

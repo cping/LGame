@@ -510,13 +510,15 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public void process(final long elapsedTime) {
-		if (!isAutoScroll() && !isAutoVelocity()) {
+		if (!isAutoScroll()) {
 			final Vector2f pos = getUITouchXY();
 			if (_verticalVisible && _verticalScrollbar != null && isClickVerticalSlider(pos.x, pos.y)) {
 				_verticalScrollbar.process(elapsedTime);
+				_verticalScrollbar.processCheckClicked(pos);
 			}
 			if (_horizontalVisible && _horizontalScrollbar != null && isClickHorizontalSlider(pos.x, pos.y)) {
 				_horizontalScrollbar.process(elapsedTime);
+				_horizontalScrollbar.processCheckClicked(pos);
 			}
 		} else {
 			if (_verticalScrollbar != null) {
@@ -685,7 +687,14 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public boolean isAutoScroll() {
-		return _scrollAmountTimer > 0f;
+		boolean result = false;
+		if (_horizontalVisible && _horizontalScrollbar != null) {
+			result = _horizontalScrollbar.isAutoScroll();
+		}
+		if (_verticalVisible && _verticalScrollbar != null) {
+			result = _verticalScrollbar.isAutoScroll();
+		}
+		return result && _scrollAmountTimer > 0f;
 	}
 
 	public boolean isAutoVelocity() {

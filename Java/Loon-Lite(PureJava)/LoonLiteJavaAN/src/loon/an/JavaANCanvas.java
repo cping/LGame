@@ -351,7 +351,8 @@ public class JavaANCanvas extends Canvas {
 		final float top = y;
 		final float right = left + width;
 		final float bottom = top + height;
-		context.drawRect(left, top, right, bottom, currentState().prepareFill());
+		context.drawRect(left, top, MathUtils.ifloor(right + 1f), MathUtils.ifloor(bottom + 1f),
+				currentState().prepareFill());
 		isDirty = true;
 		return this;
 	}
@@ -572,7 +573,8 @@ public class JavaANCanvas extends Canvas {
 		float top = y;
 		float right = left + width;
 		float bottom = top + height;
-		context.drawRect(left, top, right, bottom, currentState().prepareStroke());
+		context.drawRect(left, top, MathUtils.ifloor(right + 1f), MathUtils.ifloor(bottom + 1f),
+				currentState().prepareStroke());
 		isDirty = true;
 		return this;
 	}

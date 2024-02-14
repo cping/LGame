@@ -172,7 +172,8 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 	}
 
 	public FadeBoardEffect(int model, int dir, LColor c) {
-		this(model, dir, c, 32, 32);
+		this(model, dir, c, MathUtils.ifloor(LSystem.viewSize.getTileWidthSize()),
+				MathUtils.ifloor(LSystem.viewSize.getTileHeightSize()));
 	}
 
 	public FadeBoardEffect(int model, LColor c, int cellW, int cellH) {

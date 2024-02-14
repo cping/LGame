@@ -28,7 +28,7 @@ import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
-import loon.action.sprite.effect.OvalEffect;
+import loon.action.sprite.effect.FadeOvalHollowEffect;
 import loon.canvas.LColor;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
@@ -129,7 +129,7 @@ public class ScreenExitEffect {
 					dstScreen.setTransition(LTransition.newFade(ISprite.TYPE_FADE_IN, color));
 					break;
 				case OVAL_HOLLOW_FADE:
-					dstScreen.setTransition(LTransition.newOval(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newOvalHollow(ISprite.TYPE_FADE_IN, color));
 					break;
 				case OVAL_SOLID_FADE:
 					dstScreen.setTransition(LTransition.newOvalFade(ISprite.TYPE_FADE_IN, color));
@@ -195,7 +195,7 @@ public class ScreenExitEffect {
 			baseEffect = FadeEffect.create(ISprite.TYPE_FADE_OUT, color);
 			break;
 		case OVAL_HOLLOW_FADE:
-			baseEffect = new OvalEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeOvalHollowEffect(ISprite.TYPE_FADE_OUT, color);
 			break;
 		case OVAL_SOLID_FADE:
 			baseEffect = new FadeOvalEffect(ISprite.TYPE_FADE_OUT, color);

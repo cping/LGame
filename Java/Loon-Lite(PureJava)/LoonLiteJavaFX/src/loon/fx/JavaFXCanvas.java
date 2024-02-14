@@ -326,7 +326,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas drawRect(float x, float y, float width, float height, LColor color) {
 		Paint tmp = context.getStroke();
 		context.setStroke(getLColorToFX(color));
-		context.strokeRect(x, y, width, height);
+		context.strokeRect(x, y, MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
 		context.setStroke(tmp);
 		isDirty = true;
 		return this;
@@ -380,7 +380,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		context.fillRect(x, y, width, height);
+		context.fillRect(x, y,MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
 		isDirty = true;
 		return this;
 	}
@@ -388,7 +388,7 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas fillRect(float x, float y, float width, float height, LColor color) {
 		Paint tmp = context.getFill();
 		context.setFill(getLColorToFX(color));
-		context.fillRect(x, y, width, height);
+		context.fillRect(x, y, MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
 		context.setFill(tmp);
 		isDirty = true;
 		return this;
@@ -687,7 +687,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas strokeRect(float x, float y, float width, float height) {
-		context.strokeRect(x, y, width, height);
+		context.strokeRect(x, y, MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
 		isDirty = true;
 		return this;
 	}

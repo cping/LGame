@@ -476,23 +476,23 @@ public class LScrollBar extends LComponent {
 		adjustSlider();
 	}
 
-	public void checkClicked() {
+	public boolean processCheckClicked(final Vector2f pos) {
 		if (isAllowTouch()) {
-			final Vector2f pos = getUITouchXY();
 			if (!_scrolling && isClickDown()) {
 				if (isPointInUI()) {
-					touchDown(pos.x, pos.y);
+					return touchDown(pos.x, pos.y);
 				}
 			} else if (_scrolling && isClickUp()) {
 				if (isPointInUI()) {
-					touchUp(pos.x, pos.y);
+					return touchUp(pos.x, pos.y);
 				}
 			} else if (_scrolling && isClickDrag()) {
 				if (isPointInUI()) {
-					touchDragged(pos.x, pos.y);
+					return touchDragged(pos.x, pos.y);
 				}
 			}
 		}
+		return false;
 	}
 
 	@Override
@@ -542,8 +542,6 @@ public class LScrollBar extends LComponent {
 				_velocityX = 0f;
 				_velocityY = 0f;
 			}
-		} else {
-			checkClicked();
 		}
 	}
 

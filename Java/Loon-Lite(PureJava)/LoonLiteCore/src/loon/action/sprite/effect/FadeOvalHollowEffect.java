@@ -27,7 +27,7 @@ import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
-public class OvalEffect extends BaseAbstractEffect {
+public class FadeOvalHollowEffect extends BaseAbstractEffect {
 
 	private final static float SIZE = 8f;
 
@@ -43,15 +43,15 @@ public class OvalEffect extends BaseAbstractEffect {
 
 	private float _spaceSize;
 
-	public OvalEffect(int code) {
+	public FadeOvalHollowEffect(int code) {
 		this(code, LColor.black);
 	}
 
-	public OvalEffect(int code, LColor c) {
+	public FadeOvalHollowEffect(int code, LColor c) {
 		this(code, c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public OvalEffect(int code, LColor c, int x, int y, int width, int height) {
+	public FadeOvalHollowEffect(int code, LColor c, int x, int y, int width, int height) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this._typeCode = code;
@@ -63,14 +63,14 @@ public class OvalEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public OvalEffect setTexture(LTexture tex) {
+	public FadeOvalHollowEffect setTexture(LTexture tex) {
 		super.setTexture(tex);
 		this.updateRadius();
 		this.setRepaint(true);
 		return this;
 	}
 
-	public OvalEffect updateRadius() {
+	public FadeOvalHollowEffect updateRadius() {
 		if (_typeCode == TYPE_FADE_IN) {
 			this._endRadius = MathUtils
 					.ceil(MathUtils.sqrt(MathUtils.pow(getWidth() / 2, 2) + MathUtils.pow(getHeight() / 2, 2)));
@@ -153,19 +153,19 @@ public class OvalEffect extends BaseAbstractEffect {
 		return _spaceSize;
 	}
 
-	public OvalEffect setSpaceSize(float s) {
+	public FadeOvalHollowEffect setSpaceSize(float s) {
 		this._spaceSize = s;
 		return this;
 	}
 
 	@Override
-	public OvalEffect setAutoRemoved(boolean autoRemoved) {
+	public FadeOvalHollowEffect setAutoRemoved(boolean autoRemoved) {
 		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 
 	@Override
-	public OvalEffect reset() {
+	public FadeOvalHollowEffect reset() {
 		super.reset();
 		this.updateRadius();
 		this._step = 0f;

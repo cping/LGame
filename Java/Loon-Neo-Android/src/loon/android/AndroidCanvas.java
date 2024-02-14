@@ -56,7 +56,7 @@ public class AndroidCanvas extends Canvas {
 	}
 
 	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
-		 srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(w1), MathUtils.floor(h1));
+		srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(w1), MathUtils.floor(h1));
 		dstR.set(x, y, x + w, y + h);
 		canvas.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
 		isDirty = true;
@@ -227,7 +227,8 @@ public class AndroidCanvas extends Canvas {
 		float top = y;
 		float right = left + width;
 		float bottom = top + height;
-		canvas.drawRect(left, top, right, bottom, currentState().prepareFill());
+		canvas.drawRect(left, top, MathUtils.ifloor(right + 1f), MathUtils.ifloor(bottom + 1f),
+				currentState().prepareFill());
 		isDirty = true;
 		return this;
 	}
@@ -361,7 +362,8 @@ public class AndroidCanvas extends Canvas {
 		float top = y;
 		float right = left + width;
 		float bottom = top + height;
-		canvas.drawRect(left, top, right, bottom, currentState().prepareStroke());
+		canvas.drawRect(left, top, MathUtils.ifloor(right + 1f), MathUtils.ifloor(bottom + 1f),
+				currentState().prepareStroke());
 		isDirty = true;
 		return this;
 	}

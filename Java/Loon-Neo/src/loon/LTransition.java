@@ -30,7 +30,7 @@ import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
 import loon.action.sprite.effect.FadeTileEffect;
-import loon.action.sprite.effect.OvalEffect;
+import loon.action.sprite.effect.FadeOvalHollowEffect;
 import loon.action.sprite.effect.PixelDarkInEffect;
 import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
@@ -63,7 +63,7 @@ public class LTransition {
 	public static enum TransType {
 		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
 		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
-		SplitRandom, PixelWind, PixelThunder, OvalIn, OvalOut;
+		SplitRandom, PixelWind, PixelThunder, FadeOvalHollowIn, FadeOvalHollowOut;
 	}
 
 	/**
@@ -87,10 +87,10 @@ public class LTransition {
 				return TransType.FadeOvalIn;
 			} else if ("fadeovalout".equals(key)) {
 				return TransType.FadeOvalOut;
-			} else if ("ovalin".equals(key)) {
-				return TransType.OvalIn;
-			} else if ("ovalout".equals(key)) {
-				return TransType.OvalOut;
+			} else if ("fadeovalfollowin".equals(key)) {
+				return TransType.FadeOvalHollowIn;
+			} else if ("fadeovalhollowout".equals(key)) {
+				return TransType.FadeOvalHollowOut;
 			} else if ("fadedotin".equals(key)) {
 				return TransType.FadeDotIn;
 			} else if ("fadedotout".equals(key)) {
@@ -177,11 +177,11 @@ public class LTransition {
 			break;
 		case FadeOvalOut:
 			transition = newFadeOvalOut(c);
-		case OvalIn:
-			transition = newOvalIn(c);
+		case FadeOvalHollowIn:
+			transition = newOvalHollowIn(c);
 			break;
-		case OvalOut:
-			transition = newOvalOut(c);
+		case FadeOvalHollowOut:
+			transition = newOvalHollowOut(c);
 			break;
 		case FadeDotIn:
 			transition = newFadeDotIn(c);
@@ -918,8 +918,8 @@ public class LTransition {
 	 * 
 	 * @return
 	 */
-	public static final LTransition newOvalIn(LColor c) {
-		return newOval(FadeEffect.TYPE_FADE_IN, c);
+	public static final LTransition newOvalHollowIn(LColor c) {
+		return newOvalHollow(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
@@ -927,17 +927,17 @@ public class LTransition {
 	 * 
 	 * @return
 	 */
-	public static final LTransition newOvalOut(LColor c) {
-		return newOval(FadeEffect.TYPE_FADE_OUT, c);
+	public static final LTransition newOvalHollowOut(LColor c) {
+		return newOvalHollow(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
-	public static final LTransition newOval(final int type, final LColor c) {
+	public static final LTransition newOvalHollow(final int type, final LColor c) {
 		if (LSystem.base() != null) {
 			final LTransition transition = new LTransition();
 
 			transition.setTransitionListener(new TransitionListener() {
 
-				final OvalEffect ovalEffect = new OvalEffect(type, c);
+				final FadeOvalHollowEffect ovalEffect = new FadeOvalHollowEffect(type, c);
 
 				@Override
 				public void draw(GLEx g) {

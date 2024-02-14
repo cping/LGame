@@ -1890,7 +1890,9 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._desktop = d;
-		this.input = d.input;
+		if (d != null) {
+			this.input = d.input;
+		}
 		return this;
 	}
 

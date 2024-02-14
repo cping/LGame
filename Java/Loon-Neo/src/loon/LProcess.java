@@ -374,7 +374,7 @@ public class LProcess implements LRelease {
 								randTransition = LTransition.newFadeBoardIn(LColor.black);
 								break;
 							case 13:
-								randTransition = LTransition.newOvalIn(LColor.black);
+								randTransition = LTransition.newOvalHollowIn(LColor.black);
 								break;
 							}
 						}
@@ -963,9 +963,8 @@ public class LProcess implements LRelease {
 	public Screen runIndexScreen(int index) {
 		int size = _screenMap.size;
 		if (size > 0 && index > -1 && index < size) {
-			Object o = _screenMap.getValueAt(index);
-			if (_currentScreen != o) {
-				final Screen screen = _screenMap.getValueAt(index);
+			Screen screen = _screenMap.getValueAt(index);
+			if (_currentScreen != screen) {
 				setScreen(screen, false);
 				return screen;
 			}
@@ -1159,6 +1158,45 @@ public class LProcess implements LRelease {
 			return this;
 		}
 		_exitEffect.gotoEffectExitRand(color, _currentScreen, dst);
+		return this;
+	}
+
+	public LProcess gotoEffectExit(final int index, final LColor color, final int dstIndex) {
+		int size = _screenMap.size;
+		if (size > 0 && dstIndex > -1 && dstIndex < size) {
+			Screen screen = _screenMap.getValueAt(dstIndex);
+			if (_currentScreen != screen) {
+				return gotoEffectExit(index, color, screen);
+			}
+		}
+		return this;
+	}
+
+	public LProcess gotoEffectExitName(final int index, final LColor color, final CharSequence name) {
+		for (Iterator<Screen> it = _screenMap.iterator(); it.hasNext();) {
+			Screen screen = it.next();
+			if (screen != null) {
+				if (name.equals(screen.getScreenName())) {
+					return gotoEffectExit(index, color, screen);
+				}
+			}
+		}
+		return this;
+	}
+
+	public LProcess gotoEffectExit(final int index, final LColor color, final CharSequence name) {
+		final Screen screen = getScreen(name);
+		if (screen != null) {
+			return gotoEffectExit(index, color, screen);
+		}
+		return this;
+	}
+
+	public LProcess gotoEffectExitRand(final LColor color, final CharSequence name) {
+		final Screen screen = getScreen(name);
+		if (screen != null) {
+			return gotoEffectExitRand(color, screen);
+		}
 		return this;
 	}
 

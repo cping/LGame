@@ -12,7 +12,7 @@ public class TitleScreen extends Stage {
 	
 	@Override
 	public LTransition onTransition() {
-		return LTransition.newOvalIn(LColor.black);
+		return LTransition.newOvalHollowIn(LColor.black);
 	}
 
 	public void create() {
@@ -25,7 +25,7 @@ public class TitleScreen extends Stage {
 		//构建开始按钮,大小191x57拆分图片,默认禁止使用,坐标[2,5],按下并离开时触发事件
 		add(start = new LButton("assets/avg/title_start.png", 191, 57).up((float x, float y) -> {
 			// 随机使用一个Screen替换效果
-			replaceScreen(new MyAVGScreen());
+			replaceScreen(new MyAVGScreen(), PageMethod.Rotate);
 			// 使用固定Screen过渡效果
 			// replaceScreen(new MyAVGScreen(), PageMethod.ZoomOut);
 			// 使用单纯Screen移动效果
