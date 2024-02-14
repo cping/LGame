@@ -24,11 +24,14 @@ import loon.LSystem;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 黑幕过渡效果,瓦片从向中心处螺旋集中或向外螺旋扩散最终消失
  */
 public class FadeSpiralEffect extends BaseAbstractEffect {
+
+	private float tileSizeWidth, tileSizeHeight;
 
 	private int tilewidth;
 	private int tileheight;
@@ -41,7 +44,7 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 
 	private int state = 1;
 
-	private int type;
+	private int _type;
 
 	public FadeSpiralEffect(int type) {
 		this(type, 1, LColor.black);
@@ -52,27 +55,33 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 	}
 
 	public FadeSpiralEffect(int type, int speed, LColor c) {
-		this(type, speed, c, 64, 32);
+		this(type, speed, c, LSystem.viewSize.getTileWidthSize(10f, 5f), LSystem.viewSize.getTileHeightSize(5f, 10f));
 	}
 
-	public FadeSpiralEffect(int type, int speed, LColor c, int w, int h) {
-		this.type = type;
+	public FadeSpiralEffect(int type, int speed, LColor c, float tw, float th) {
+		this(type, speed, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), tw, th);
+	}
+
+	public FadeSpiralEffect(int type, int speed, LColor c, float width, float height, float tw, float th) {
+		this._type = type;
 		this.speed = speed;
-		this.tilewidth = (int) (LSystem.viewSize.getWidth() / w + 1);
-		this.tileheight = (int) (LSystem.viewSize.getHeight() / h + 1);
+		this.tileSizeWidth = tw;
+		this.tileSizeHeight = th;
+		this.tilewidth = MathUtils.ifloor(width / tw) + 1;
+		this.tileheight = MathUtils.ifloor(height / th) + 1;
 		this.conversions = new boolean[tilewidth][tileheight];
 		this.reset();
 		this.setDelay(30);
 		this.setRepaint(true);
 		this.setColor(c);
-		this.setSize(w, h);
+		this.setSize(width, height);
 	}
 
 	@Override
 	public FadeSpiralEffect reset() {
 		super.reset();
 		int tmp = _baseColor.getARGB();
-		if (type == ISprite.TYPE_FADE_IN) {
+		if (_type == ISprite.TYPE_FADE_IN) {
 			for (int x = 0; x < tilewidth; x++) {
 				for (int y = 0; y < tileheight; y++) {
 					conversions[x][y] = true;
@@ -102,10 +111,18 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
+		if (_type == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), getWidth(), getHeight(), _baseColor);
+			return;
+		}
+		if (_type == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		for (int x = 0; x < tilewidth; x++) {
 			for (int y = 0; y < tileheight; y++) {
 				if (conversions[x][y]) {
-					g.fillRect(drawX(x * _width + offsetX), drawY(y * _height + offsetY), _width, _height, _baseColor);
+					g.fillRect(drawX(x * tileSizeWidth + offsetX), drawY(y * tileSizeHeight + offsetY), tileSizeWidth,
+							tileSizeHeight, _baseColor);
 				}
 			}
 		}
@@ -117,7 +134,7 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			if (type == ISprite.TYPE_FADE_IN) {
+			if (_type == ISprite.TYPE_FADE_IN) {
 				for (int i = 0; i < speed; i++) {
 					if (conversions[cx][cy]) {
 						conversions[cx][cy] = false;

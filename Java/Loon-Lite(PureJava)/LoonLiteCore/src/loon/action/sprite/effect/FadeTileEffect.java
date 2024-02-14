@@ -33,7 +33,7 @@ import loon.utils.MathUtils;
 public class FadeTileEffect extends BaseAbstractEffect {
 
 	private float sizeWidth;
-	
+
 	private float sizeHeight;
 
 	private int tileWidth, tileHeight;
@@ -62,18 +62,23 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	}
 
 	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore) {
-		this(type, count, speed, back, fore, 64, 32);
+		this(type, count, speed, back, fore, LSystem.viewSize.getTileWidthSize(), LSystem.viewSize.getTileHeightSize());
 	}
 
 	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, float w, float h) {
 		this(type, count, speed, back, fore, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), w, h);
 	}
-	
+
 	public FadeTileEffect(int type, int count, int speed, LColor back, LColor fore, float maxWidth, float maxHeight,
 			float w, float h) {
+		this(type, count, speed, 60, back, fore, maxWidth, maxHeight, w, h);
+	}
+
+	public FadeTileEffect(int type, int count, int speed, long delay, LColor back, LColor fore, float maxWidth,
+			float maxHeight, float w, float h) {
 		this.setRepaint(true);
 		this.setSize(maxWidth, maxHeight);
-		this.setDelay(60);
+		this.setDelay(delay);
 		this.setColor(back);
 		this.type = type;
 		this.count = count;
@@ -85,7 +90,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		this.conversions = new boolean[tileWidth][tileHeight];
 		this.boolTemps = new boolean[tileWidth][tileHeight];
 		this.fore = fore;
-		this.reset();
+		this.pack();
 	}
 
 	private boolean filledObject(int x, int y) {
@@ -253,9 +258,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		g.setTint(old);
 	}
 
-	@Override
-	public FadeTileEffect reset() {
-		super.reset();
+	public FadeTileEffect pack() {
 		this.tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == type) {
 			for (int x = 0; x < tileWidth; x++) {
@@ -278,6 +281,13 @@ public class FadeTileEffect extends BaseAbstractEffect {
 				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils.random(1, tileHeight) - 1] = false;
 			}
 		}
+		return this;
+	}
+
+	@Override
+	public FadeTileEffect reset() {
+		super.reset();
+		this.pack();
 		return this;
 	}
 

@@ -56,17 +56,25 @@ public class Dimension {
 	}
 
 	public float getTileWidthSize() {
+		return getTileWidthSize(15f, 10f);
+	}
+
+	public float getTileWidthSize(float landscape, float portrait) {
 		if (isLandscape()) {
-			return width / 15f;
+			return width / landscape;
 		}
-		return width / 10f;
+		return width / portrait;
 	}
 
 	public float getTileHeightSize() {
+		return getTileHeightSize(10f, 15f);
+	}
+
+	public float getTileHeightSize(float landscape, float portrait) {
 		if (isLandscape()) {
-			return height / 10f;
+			return height / landscape;
 		}
-		return height / 15f;
+		return height / portrait;
 	}
 
 	public boolean isDirty() {
