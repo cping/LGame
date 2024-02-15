@@ -28,6 +28,8 @@ import loon.utils.TArray;
  */
 public class ParallelTo extends ActionEvent {
 
+	private boolean _objectFlashDisplay;
+
 	private final TArray<ActionEvent> events;
 
 	public ParallelTo(ActionEvent... eves) {
@@ -45,13 +47,28 @@ public class ParallelTo extends ActionEvent {
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
-				currentAction.update(elapsedTime);
+				// 闪烁状态事件执行隔一帧,避免震动之类效果并发时角色隐藏时移动,出现后复原看不到变化
+				if (!_objectFlashDisplay) {
+					currentAction.update(elapsedTime);
+				}
 				if (currentAction.isComplete()) {
 					over++;
 				}
+				_objectFlashDisplay = isFlashing(currentAction);
 			}
 		}
 		this._isCompleted = (over == actions.size);
+	}
+
+	private boolean isFlashing(ActionEvent e) {
+		if (e instanceof FlashTo) {
+			FlashTo flash = (FlashTo) e;
+			if (flash.original == null) {
+				return false;
+			}
+			return !flash._isCompleted && flash.original.isVisible();
+		}
+		return false;
 	}
 
 	@Override
@@ -111,6 +128,72 @@ public class ParallelTo extends ActionEvent {
 		ParallelTo p = new ParallelTo(tmp);
 		p.set(this);
 		return p;
+	}
+
+	@Override
+	public ActionEvent pause() {
+		super.pause();
+		final TArray<ActionEvent> actions = this.events;
+		for (int i = 0; i < actions.size; i++) {
+			ActionEvent currentAction = actions.get(i);
+			if (currentAction != null) {
+				currentAction.pause();
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ActionEvent resume() {
+		super.resume();
+		final TArray<ActionEvent> actions = this.events;
+		for (int i = 0; i < actions.size; i++) {
+			ActionEvent currentAction = actions.get(i);
+			if (currentAction != null) {
+				currentAction.resume();
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ActionEvent loop(int count) {
+		super.loop(count);
+		final TArray<ActionEvent> actions = this.events;
+		for (int i = 0; i < actions.size; i++) {
+			ActionEvent currentAction = actions.get(i);
+			if (currentAction != null) {
+				currentAction.loop(count);
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ActionEvent loop(boolean l) {
+		super.loop(l);
+		final TArray<ActionEvent> actions = this.events;
+		for (int i = 0; i < actions.size; i++) {
+			ActionEvent currentAction = actions.get(i);
+			if (currentAction != null) {
+				currentAction.loop(l);
+			}
+		}
+		return this;
+	}
+
+	@Override
+	public ActionEvent reset() {
+		super.reset();
+		final TArray<ActionEvent> actions = this.events;
+		for (int i = 0; i < actions.size; i++) {
+			ActionEvent currentAction = actions.get(i);
+			if (currentAction != null) {
+				currentAction.reset();
+			}
+		}
+		_objectFlashDisplay = false;
+		return this;
 	}
 
 	@Override

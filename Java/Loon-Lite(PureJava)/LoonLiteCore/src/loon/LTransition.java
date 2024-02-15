@@ -23,6 +23,7 @@ package loon;
 import loon.action.map.Config;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
+import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.CrossEffect;
@@ -37,7 +38,7 @@ import loon.action.sprite.effect.PixelDarkOutEffect;
 import loon.action.sprite.effect.PixelThunderEffect;
 import loon.action.sprite.effect.PixelWindEffect;
 import loon.action.sprite.effect.SplitEffect;
-import loon.action.sprite.effect.SwipeEffect;
+import loon.action.sprite.effect.FadeSwipeEffect;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -57,6 +58,117 @@ import loon.utils.TArray;
  * 
  */
 public class LTransition {
+
+	public static interface TransitionListener extends LRelease {
+
+		public ISprite getSprite();
+
+		public void update(long elapsedTime);
+
+		public void draw(GLEx g);
+
+		public boolean completed();
+
+		@Override
+		public void close();
+	}
+
+	static class CombinedTransition implements TransitionListener {
+
+		final TArray<LTransition> transitions;
+
+		public CombinedTransition(TArray<LTransition> ts) {
+			this.transitions = ts;
+		}
+
+		@Override
+		public void draw(GLEx g) {
+			for (int i = 0; i < transitions.size; i++) {
+				((LTransition) transitions.get(i)).draw(g);
+			}
+		}
+
+		@Override
+		public void update(long elapsedTime) {
+			for (int i = 0; i < transitions.size; i++) {
+				LTransition t = (LTransition) transitions.get(i);
+				if (!t.completed()) {
+					t.update(elapsedTime);
+				}
+			}
+		}
+
+		@Override
+		public boolean completed() {
+			for (int i = 0; i < transitions.size; i++) {
+				if (!((LTransition) transitions.get(i)).completed()) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		@Override
+		public void close() {
+			for (int i = 0; i < transitions.size; i++) {
+				((LTransition) transitions.get(i)).close();
+			}
+		}
+
+		@Override
+		public ISprite getSprite() {
+			return null;
+		}
+
+	}
+
+	static class EffectToTransition implements TransitionListener {
+
+		private BaseAbstractEffect _effect;
+
+		public EffectToTransition(BaseAbstractEffect effect) {
+			this(effect, -1);
+		}
+
+		public EffectToTransition(BaseAbstractEffect effect, long delay) {
+			this._effect = effect;
+			if (_effect != null && delay > -1) {
+				_effect.setDelay(delay);
+			}
+		}
+
+		@Override
+		public void update(long elapsedTime) {
+			if (_effect != null) {
+				_effect.update(elapsedTime);
+			}
+		}
+
+		@Override
+		public void draw(GLEx g) {
+			if (_effect != null) {
+				_effect.createUI(g);
+			}
+		}
+
+		@Override
+		public boolean completed() {
+			return _effect == null ? true : _effect.isCompleted();
+		}
+
+		@Override
+		public ISprite getSprite() {
+			return _effect;
+		}
+
+		@Override
+		public void close() {
+			if (_effect != null) {
+				_effect.close();
+			}
+		}
+
+	}
 
 	/**
 	 * 常用特效枚举列表
@@ -250,57 +362,9 @@ public class LTransition {
 	 * @param transitions
 	 * @return
 	 */
-	public static final LTransition newCombinedTransition(final TArray<LTransition> transitions) {
-
+	public static final LTransition newCombinedTransition(final TArray<LTransition> ts) {
 		if (LSystem.base() != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				@Override
-				public void draw(GLEx g) {
-					for (int i = 0; i < transitions.size; i++) {
-						((LTransition) transitions.get(i)).draw(g);
-					}
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					for (int i = 0; i < transitions.size; i++) {
-						LTransition t = (LTransition) transitions.get(i);
-						if (!t.completed()) {
-							t.update(elapsedTime);
-						}
-					}
-				}
-
-				@Override
-				public boolean completed() {
-					for (int i = 0; i < transitions.size; i++) {
-						if (!((LTransition) transitions.get(i)).completed()) {
-							return false;
-						}
-					}
-					return true;
-				}
-
-				@Override
-				public void close() {
-					for (int i = 0; i < transitions.size; i++) {
-						((LTransition) transitions.get(i)).close();
-					}
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return null;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return new LTransition(new CombinedTransition(ts));
 		}
 		return null;
 	}
@@ -324,51 +388,24 @@ public class LTransition {
 		return newCross(MathUtils.random(0, 1), c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
+	public static final LTransition newCross(final int t, final LColor color, final float w, final float h) {
+		return newCross(t, color, w, h, -1);
+	}
+
 	/**
 	 * 百叶窗特效
 	 * 
-	 * @param c
+	 * @param t
+	 * @param color
+	 * @param w
+	 * @param h
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newCross(final int c, final LColor color, final float w, final float h) {
-
+	public static final LTransition newCross(final int t, final LColor color, final float w, final float h,
+			final long delay) {
 		if (LSystem.base() != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final CrossEffect cross = new CrossEffect(c, color, w, h);
-
-				@Override
-				public void draw(GLEx g) {
-					cross.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					cross.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return cross.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					cross.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return cross;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new CrossEffect(t, color, w, h), delay);
 		}
 		return null;
 	}
@@ -382,50 +419,20 @@ public class LTransition {
 		return newArc(LColor.black);
 	}
 
+	public static final LTransition newArc(final LColor c) {
+		return newArc(c, -1);
+	}
+
 	/**
 	 * 单一色彩的圆弧渐变特效
 	 * 
+	 * @param c
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newArc(final LColor c) {
-
+	public static final LTransition newArc(final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final ArcEffect arc = new ArcEffect(c);
-
-				@Override
-				public void draw(GLEx g) {
-					arc.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					arc.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return arc.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					arc.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return arc;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new ArcEffect(c), delay);
 		}
 		return null;
 	}
@@ -451,52 +458,24 @@ public class LTransition {
 				LSystem.viewSize.getHeight());
 	}
 
+	public static final LTransition newSplit(final int d, final LColor color, final float w, final float h) {
+		return newSplit(d, color, w, h, -1);
+	}
+
 	/**
 	 * 产生一个Screen画面向双向分裂的过渡特效(方向的静态值位于Config类中)
 	 * 
 	 * @param d
-	 * @param texture
+	 * @param color
+	 * @param w
+	 * @param h
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newSplit(final int d, final LColor color, final float w, final float h) {
-
+	public static final LTransition newSplit(final int d, final LColor color, final float w, final float h,
+			final long delay) {
 		if (LSystem.base() != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final SplitEffect split = new SplitEffect(color, w, h, d);
-
-				@Override
-				public void draw(GLEx g) {
-					split.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					split.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return split.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					split.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return split;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new SplitEffect(color, w, h, d), delay);
 		}
 		return null;
 	}
@@ -506,44 +485,12 @@ public class LTransition {
 	}
 
 	public static final LTransition newSplit(final int d, final LTexture texture) {
+		return newSplit(d, texture, -1);
+	}
 
+	public static final LTransition newSplit(final int d, final LTexture texture, final long delay) {
 		if (LSystem.base() != null) {
-
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final SplitEffect split = new SplitEffect(texture, d);
-
-				@Override
-				public void draw(GLEx g) {
-					split.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					split.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return split.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					split.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return split;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new SplitEffect(texture, d), delay);
 		}
 		return null;
 	}
@@ -591,56 +538,28 @@ public class LTransition {
 	/**
 	 * 产生一个黑色的淡入/淡出效果
 	 * 
-	 * @param type
+	 * @param t
 	 * @return
 	 */
 	public static final LTransition newFade(int type) {
 		return newFade(type, LColor.black);
 	}
 
+	public static final LTransition newFade(final int t, final LColor c) {
+		return newFade(t, c, -1);
+	}
+
 	/**
 	 * 产生一个指定色彩的淡入效果
 	 * 
+	 * @param t
 	 * @param c
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newFade(final int type, final LColor c) {
+	public static final LTransition newFade(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeEffect fade = FadeEffect.create(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					fade.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					fade.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return fade.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					fade.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return fade;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -653,43 +572,13 @@ public class LTransition {
 		return newFadeDot(FadeEffect.TYPE_FADE_IN, c);
 	}
 
-	public static final LTransition newFadeDot(final int type, final LColor c) {
+	public static final LTransition newFadeDot(final int t, final LColor c) {
+		return newFadeDot(t, c, -1);
+	}
+
+	public static final LTransition newFadeDot(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeDotEffect fadedot = new FadeDotEffect(type, -1, c);
-
-				@Override
-				public void draw(GLEx g) {
-					fadedot.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					fadedot.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return fadedot.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					fadedot.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return fadedot;
-				}
-
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeDotEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -702,42 +591,13 @@ public class LTransition {
 		return newFadeTile(FadeEffect.TYPE_FADE_IN, c);
 	}
 
-	public static final LTransition newFadeTile(final int type, final LColor c) {
+	public static final LTransition newFadeTile(final int t, final LColor c) {
+		return newFadeTile(t, c, -1);
+	}
+
+	public static final LTransition newFadeTile(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeTileEffect fadetile = new FadeTileEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					fadetile.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					fadetile.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return fadetile.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					fadetile.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return fadetile;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeTileEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -750,42 +610,13 @@ public class LTransition {
 		return newFadeSpiral(FadeEffect.TYPE_FADE_IN, c);
 	}
 
-	public static final LTransition newFadeSpiral(final int type, final LColor c) {
+	public static final LTransition newFadeSpiral(final int t, final LColor c) {
+		return newFadeSpiral(t, c, -1);
+	}
+
+	public static final LTransition newFadeSpiral(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeSpiralEffect fadespiral = new FadeSpiralEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					fadespiral.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					fadespiral.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return fadespiral.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					fadespiral.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return fadespiral;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeSpiralEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -798,42 +629,13 @@ public class LTransition {
 		return newFadeDoorIrregular(ISprite.TYPE_FADE_OUT, c);
 	}
 
-	public static final LTransition newFadeDoorIrregular(final int type, final LColor c) {
+	public static final LTransition newFadeDoorIrregular(final int t, final LColor c) {
+		return newFadeDoorIrregular(t, c, -1);
+	}
+
+	public static final LTransition newFadeDoorIrregular(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeDoorIrregularEffect door = new FadeDoorIrregularEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					door.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					door.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return door.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					door.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return door;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeDoorIrregularEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -858,49 +660,21 @@ public class LTransition {
 		return newFadeSwipe(FadeEffect.TYPE_FADE_IN, c);
 	}
 
+	public static final LTransition newFadeSwipe(final int t, final LColor c) {
+		return newFadeSwipe(t, c, -1);
+	}
+
 	/**
 	 * 斜滑过渡特效
 	 * 
-	 * @param type
+	 * @param t
 	 * @param c
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newFadeSwipe(final int type, final LColor c) {
+	public static final LTransition newFadeSwipe(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final SwipeEffect fadeswipe = new SwipeEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					fadeswipe.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					fadeswipe.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return fadeswipe.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					fadeswipe.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return fadeswipe;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeSwipeEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -929,49 +703,22 @@ public class LTransition {
 		return newFadeBoard(type, FadeBoardEffect.START_LEFT, c);
 	}
 
+	public static final LTransition newFadeBoard(final int t, final int dir, final LColor c) {
+		return newFadeBoard(t, dir, c, -1);
+	}
+
 	/**
-	 * 瓦片淡出或淡入(从左到右)
+	 * 瓦片淡出或淡入(从左到右,或从右到左)
 	 * 
-	 * @param type
+	 * @param t
+	 * @param dir
 	 * @param c
+	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newFadeBoard(final int type, final int dir, final LColor c) {
+	public static final LTransition newFadeBoard(final int t, final int dir, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeBoardEffect boardEffect = new FadeBoardEffect(type, dir, c);
-
-				@Override
-				public void draw(GLEx g) {
-					boardEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					boardEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return boardEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					boardEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return boardEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeBoardEffect(t, dir, c), delay);
 		}
 		return null;
 	}
@@ -994,42 +741,13 @@ public class LTransition {
 		return newOvalHollow(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
-	public static final LTransition newOvalHollow(final int type, final LColor c) {
+	public static final LTransition newOvalHollow(final int t, final LColor c) {
+		return newOvalHollow(t, c, -1);
+	}
+
+	public static final LTransition newOvalHollow(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeOvalHollowEffect ovalEffect = new FadeOvalHollowEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					ovalEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					ovalEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return ovalEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					ovalEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return ovalEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeOvalHollowEffect(t, c), delay);
 		}
 		return null;
 	}
@@ -1040,7 +758,7 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newFadeOvalIn(LColor c) {
-		return newOvalFade(FadeEffect.TYPE_FADE_IN, c);
+		return newFadeOval(FadeEffect.TYPE_FADE_IN, c);
 	}
 
 	/**
@@ -1049,255 +767,74 @@ public class LTransition {
 	 * @return
 	 */
 	public static final LTransition newFadeOvalOut(LColor c) {
-		return newOvalFade(FadeEffect.TYPE_FADE_OUT, c);
+		return newFadeOval(FadeEffect.TYPE_FADE_OUT, c);
 	}
 
-	public static final LTransition newOvalFade(final int type, final LColor c) {
+	public static final LTransition newFadeOval(final int t, final LColor c) {
+		return newFadeOval(t, c, -1);
+	}
+
+	public static final LTransition newFadeOval(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final FadeOvalEffect ovalEffect = new FadeOvalEffect(type, c);
-
-				@Override
-				public void draw(GLEx g) {
-					ovalEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					ovalEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return ovalEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					ovalEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return ovalEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new FadeOvalEffect(t, c), delay);
 		}
 		return null;
 	}
 
 	public static final LTransition newPixelWind(final LColor c) {
+		return newPixelWind(c, -1);
+	}
+
+	public static final LTransition newPixelWind(final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final PixelWindEffect windEffect = new PixelWindEffect(c);
-
-				@Override
-				public void draw(GLEx g) {
-					windEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					windEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return windEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					windEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return windEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new PixelWindEffect(c), delay);
 		}
 		return null;
 	}
 
 	public static final LTransition newPixelDarkIn(final LColor c) {
+		return newPixelDarkIn(c, -1);
+	}
+
+	public static final LTransition newPixelDarkIn(final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final PixelDarkInEffect darkinEffect = new PixelDarkInEffect(c);
-
-				@Override
-				public void draw(GLEx g) {
-					darkinEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					darkinEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return darkinEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					darkinEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return darkinEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new PixelDarkInEffect(c), delay);
 		}
 		return null;
 	}
 
 	public static final LTransition newPixelDarkOut(final LColor c) {
+		return newPixelDarkOut(c, -1);
+	}
+
+	public static final LTransition newPixelDarkOut(final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final PixelDarkOutEffect darkoutEffect = new PixelDarkOutEffect(c);
-
-				@Override
-				public void draw(GLEx g) {
-					darkoutEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					darkoutEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return darkoutEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					darkoutEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return darkoutEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new PixelDarkOutEffect(c), delay);
 		}
 		return null;
 	}
 
 	public static final LTransition newPixelThunder(final LColor c) {
+		return newPixelThunder(c, -1);
+	}
+
+	public static final LTransition newPixelThunder(final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			final LTransition transition = new LTransition();
-
-			transition.setTransitionListener(new TransitionListener() {
-
-				final PixelThunderEffect thunderEffect = new PixelThunderEffect(c);
-
-				@Override
-				public void draw(GLEx g) {
-					thunderEffect.createUI(g);
-				}
-
-				@Override
-				public void update(long elapsedTime) {
-					thunderEffect.update(elapsedTime);
-				}
-
-				@Override
-				public boolean completed() {
-					return thunderEffect.isCompleted();
-				}
-
-				@Override
-				public void close() {
-					thunderEffect.close();
-				}
-
-				@Override
-				public ISprite getSprite() {
-					return thunderEffect;
-				}
-			});
-			transition.setDisplayGameUI(true);
-			transition.code = 1;
-			return transition;
+			return createEffectTransition(new PixelThunderEffect(c), delay);
 		}
 		return null;
 	}
 
 	public static final LTransition newEmpty() {
-
-		final LTransition transition = new LTransition();
-
-		transition.setTransitionListener(new TransitionListener() {
-
-			@Override
-			public void draw(GLEx g) {
-			}
-
-			@Override
-			public void update(long elapsedTime) {
-			}
-
-			@Override
-			public boolean completed() {
-				return true;
-			}
-
-			@Override
-			public void close() {
-			}
-
-			@Override
-			public ISprite getSprite() {
-				return null;
-			}
-		});
-
-		transition.setDisplayGameUI(true);
-		transition.code = 1;
-		return transition;
-
+		return new LTransition(new EffectToTransition(null));
 	}
 
-	public static interface TransitionListener extends LRelease {
+	public static final LTransition createEffectTransition(BaseAbstractEffect effect) {
+		return createEffectTransition(effect, -1);
+	}
 
-		public ISprite getSprite();
-
-		public void update(long elapsedTime);
-
-		public void draw(GLEx g);
-
-		public boolean completed();
-
-		public void close();
+	public static final LTransition createEffectTransition(BaseAbstractEffect effect, long delay) {
+		return new LTransition(new EffectToTransition(effect, delay));
 	}
 
 	// 是否在在启动过渡效果同时显示游戏画面（即是否顶层绘制过渡画面，底层同时绘制标准游戏画面）
@@ -1306,6 +843,16 @@ public class LTransition {
 	int code;
 
 	TransitionListener listener;
+
+	public LTransition(TransitionListener l) {
+		this(true, 1, l);
+	}
+
+	public LTransition(boolean display, int c, TransitionListener l) {
+		this.isDisplayGameUI = display;
+		this.code = c;
+		this.listener = l;
+	}
 
 	public void setDisplayGameUI(boolean s) {
 		this.isDisplayGameUI = s;

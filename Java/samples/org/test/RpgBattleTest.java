@@ -40,9 +40,9 @@ public class RpgBattleTest extends Stage {
 		if (process.isCurrentPlayer() && e.isActionCompleted()) {
 			// 触发一个战斗进程事件(这个是有战斗进度锁的,进度锁住不能执行,避免被误触发)
 			process.callBattleEvent(() -> {
-				//提交信息
+				// 提交信息
 				text.put("我方选择攻击");
-				//调用一系列yield事件
+				// 调用一系列yield事件
 				call(yield -> {
 					// 随机使用一种像素斩机模式,颜色红,宽度2,对象为e,构建到Screen
 					PixelChopEffect.chopRandom(LColor.red, 2, e).buildToScreen();
@@ -50,12 +50,12 @@ public class RpgBattleTest extends Stage {
 					// 缺点是只有call函数里的yield会互相影响,范围外的不会被暂停,不能真正延迟整个loon系统)
 					return yield.seconds(1f);
 				}, yield -> {
-					// 使用缓动动画,y轴震动后闪烁,开始执行,执行完毕后提交血量减少与增加战斗提示
-					e.selfAction().shakeTo(0f, 3f).flashTo().start().dispose(() -> {
+					// 使用缓动动画,y轴震动后闪烁,开始执行,执行完毕后提交血量减少与增加战斗提示(并行引发特效使用.parallel().start())
+					e.selfAction().flashTo().shakeTo(0f, 3f).start().dispose(() -> {
 						StringEffect.up("- 100", e.getCenterLocation(-25, 0), LColor.red).buildToScreen();
 						status.subSelf(100);
 						text.put("你使用[认真一击],\n敌人生命值-100", LColor.red);
-						//进程继续
+						// 进程继续
 						process.playNext();
 					});
 					return yield.seconds(2f);
@@ -203,10 +203,12 @@ public class RpgBattleTest extends Stage {
 		LClickButton run = node("click", "Run", 0, 0, 120, 35);
 		bottomRightOn(run, -5, -5);
 		add(run.up((x, y) -> {
+			// 以指定特效离开当前Screen,前往指定Screen
+			// gotoScreenEffectExit(4, new MapTest());
 			rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
 		}));
 
-		add(MultiScreenTest.getBackButton(this, 0));
+		// add(MultiScreenTest.getBackButton(this, 3));
 	}
 
 }

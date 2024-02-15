@@ -27,29 +27,29 @@ import loon.opengl.GLEx;
 /**
  * 折角样黑幕过渡效果
  */
-public class SwipeEffect extends BaseAbstractEffect {
+public class FadeSwipeEffect extends BaseAbstractEffect {
 
 	protected int _type;
 
 	protected float triangle = 90;
 
-	public static SwipeEffect create(int type, LColor c) {
+	public static FadeSwipeEffect create(int type, LColor c) {
 		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public static SwipeEffect create(int type, int timer, LColor c) {
-		return new SwipeEffect(c, timer, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public static FadeSwipeEffect create(int type, int timer, LColor c) {
+		return new FadeSwipeEffect(c, timer, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public static SwipeEffect create(int type, LColor c, int w, int h) {
-		return new SwipeEffect(c, 3000, type, w, h);
+	public static FadeSwipeEffect create(int type, LColor c, int w, int h) {
+		return new FadeSwipeEffect(c, 1000, type, w, h);
 	}
 
-	public SwipeEffect(int type, LColor c) {
-		this(c, 3000, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public FadeSwipeEffect(int type, LColor c) {
+		this(c, 1000, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public SwipeEffect(LColor c, int delay, int type, int w, int h) {
+	public FadeSwipeEffect(LColor c, long delay, int type, int w, int h) {
 		this._type = type;
 		this._timer.setDelay(delay);
 		this.setColor(c);
@@ -61,7 +61,7 @@ public class SwipeEffect extends BaseAbstractEffect {
 		return _type;
 	}
 
-	public SwipeEffect setEffectType(int type) {
+	public FadeSwipeEffect setEffectType(int type) {
 		this._type = type;
 		return this;
 	}
@@ -79,7 +79,7 @@ public class SwipeEffect extends BaseAbstractEffect {
 			return;
 		}
 		float percent = _timer.getPercentage();
-		LColor tmp = g.getColor();
+		final int tmp = g.getTint();
 		if (_type == TYPE_FADE_IN) {
 			float width = getWidth() + (2 * triangle);
 			float height = getHeight();
@@ -119,13 +119,13 @@ public class SwipeEffect extends BaseAbstractEffect {
 		return triangle;
 	}
 
-	public SwipeEffect setTriangle(float triangle) {
+	public FadeSwipeEffect setTriangle(float triangle) {
 		this.triangle = triangle;
 		return this;
 	}
 
 	@Override
-	public SwipeEffect setAutoRemoved(boolean autoRemoved) {
+	public FadeSwipeEffect setAutoRemoved(boolean autoRemoved) {
 		super.setAutoRemoved(true);
 		return this;
 	}

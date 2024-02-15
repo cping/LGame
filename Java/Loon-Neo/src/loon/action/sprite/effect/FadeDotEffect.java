@@ -112,7 +112,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 
 	private int count = 4;
 
-	private int type = ISprite.TYPE_FADE_IN;
+	private int _type = ISprite.TYPE_FADE_IN;
 
 	private int dot_time = 0;
 	private int dot_rad = 0;
@@ -136,7 +136,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h) {
-		this.type = type;
+		this._type = type;
 		this.count = count;
 		this.dot_time = time;
 		this.dot_rad = rad;
@@ -155,7 +155,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		}
 		dots = new TArray<Dot>();
 		for (int i = 0; i < count; i++) {
-			dots.add(new Dot(type, dot_time, dot_rad, dot_width, dot_height));
+			dots.add(new Dot(_type, dot_time, dot_rad, dot_width, dot_height));
 		}
 		_completed = false;
 	}
@@ -193,6 +193,13 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
+		if (_type == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), getWidth(), getHeight(), _baseColor);
+			return;
+		}
+		if (_type == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		boolean useText = g.isAlltextures() && LSystem.isHTML5();
 		int skip = g.getPixSkip();
 		if (useText) {
@@ -214,7 +221,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	public int getFadeType() {
-		return type;
+		return _type;
 	}
 
 	@Override

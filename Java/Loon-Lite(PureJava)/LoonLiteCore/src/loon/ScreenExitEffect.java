@@ -28,6 +28,7 @@ import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
 import loon.action.sprite.effect.FadeSpiralEffect;
+import loon.action.sprite.effect.FadeSwipeEffect;
 import loon.action.sprite.effect.FadeTileEffect;
 import loon.action.sprite.effect.FadeOvalHollowEffect;
 import loon.canvas.LColor;
@@ -64,8 +65,11 @@ public class ScreenExitEffect {
 	// 不规则的开门,关门效果
 	public final static int DOOR_IRREGULAR_FADE = 7;
 
+	// 斜角离开,斜角进入
+	public final static int SWIPE_FADE = 8;
+
 	// 瓦片淡出,淡入
-	public final static int TILES_FADE = 8;
+	public final static int TILES_FADE = 9;
 
 	static class ReleasedScreen implements LRelease {
 
@@ -136,7 +140,7 @@ public class ScreenExitEffect {
 					dstScreen.setTransition(LTransition.newOvalHollow(ISprite.TYPE_FADE_IN, color));
 					break;
 				case OVAL_SOLID_FADE:
-					dstScreen.setTransition(LTransition.newOvalFade(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeOval(ISprite.TYPE_FADE_IN, color));
 					break;
 				case DOT_FADE:
 					dstScreen.setTransition(LTransition.newFadeDot(ISprite.TYPE_FADE_IN, color));
@@ -154,6 +158,9 @@ public class ScreenExitEffect {
 					break;
 				case DOOR_IRREGULAR_FADE:
 					dstScreen.setTransition(LTransition.newFadeDoorIrregular(ISprite.TYPE_FADE_IN, color));
+					break;
+				case SWIPE_FADE:
+					dstScreen.setTransition(LTransition.newFadeSwipe(ISprite.TYPE_FADE_IN, color));
 					break;
 				case TILES_FADE:
 					dstScreen.setTransition(LTransition.newFadeTile(ISprite.TYPE_FADE_IN, color));
@@ -221,6 +228,9 @@ public class ScreenExitEffect {
 			break;
 		case DOOR_IRREGULAR_FADE:
 			baseEffect = new FadeDoorIrregularEffect(ISprite.TYPE_FADE_OUT, color);
+			break;
+		case SWIPE_FADE:
+			baseEffect = new FadeSwipeEffect(ISprite.TYPE_FADE_OUT, color);
 			break;
 		case TILES_FADE:
 			baseEffect = new FadeTileEffect(ISprite.TYPE_FADE_OUT, color);
