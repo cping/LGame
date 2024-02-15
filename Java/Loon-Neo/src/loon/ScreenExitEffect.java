@@ -23,6 +23,7 @@ package loon;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
 import loon.action.sprite.effect.FadeOvalEffect;
@@ -60,8 +61,11 @@ public class ScreenExitEffect {
 	// 瓦片螺旋样淡出,淡入
 	public final static int SPIRAL_FADE = 6;
 
+	// 不规则的开门,关门效果
+	public final static int DOOR_IRREGULAR_FADE = 7;
+
 	// 瓦片淡出,淡入
-	public final static int TILES_FADE = 7;
+	public final static int TILES_FADE = 8;
 
 	static class ReleasedScreen implements LRelease {
 
@@ -148,6 +152,9 @@ public class ScreenExitEffect {
 				case SPIRAL_FADE:
 					dstScreen.setTransition(LTransition.newFadeSpiral(ISprite.TYPE_FADE_IN, color));
 					break;
+				case DOOR_IRREGULAR_FADE:
+					dstScreen.setTransition(LTransition.newFadeDoorIrregular(ISprite.TYPE_FADE_IN, color));
+					break;
 				case TILES_FADE:
 					dstScreen.setTransition(LTransition.newFadeTile(ISprite.TYPE_FADE_IN, color));
 					break;
@@ -211,6 +218,9 @@ public class ScreenExitEffect {
 			break;
 		case SPIRAL_FADE:
 			baseEffect = new FadeSpiralEffect(ISprite.TYPE_FADE_OUT, color);
+			break;
+		case DOOR_IRREGULAR_FADE:
+			baseEffect = new FadeDoorIrregularEffect(ISprite.TYPE_FADE_OUT, color);
 			break;
 		case TILES_FADE:
 			baseEffect = new FadeTileEffect(ISprite.TYPE_FADE_OUT, color);

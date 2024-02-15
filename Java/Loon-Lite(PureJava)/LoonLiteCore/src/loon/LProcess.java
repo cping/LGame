@@ -322,7 +322,7 @@ public class LProcess implements LRelease {
 						// * 使用,返回: 设定或者自定义一个LTransition对象.
 						LTransition randTransition = screen.onTransition();
 						if (randTransition == null) {
-							int rad = MathUtils.random(0, 13);
+							int rad = MathUtils.random(0, 14);
 							switch (rad) {
 							case 0:
 								randTransition = LTransition.newFadeIn();
@@ -365,6 +365,9 @@ public class LProcess implements LRelease {
 								break;
 							case 13:
 								randTransition = LTransition.newOvalHollowIn(LColor.black);
+								break;
+							case 14:
+								randTransition = LTransition.newFadeDoorIrregularIn(LColor.black);
 								break;
 							}
 						}

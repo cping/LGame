@@ -145,12 +145,12 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 				final float y1 = dy + top + (i * _boardWidth - halfHeight);
 				final float w1 = halfWidth + board - this._count / _divValue;
 				final float h1 = _boardWidth;
-				g.fillRect(x1, y1, w1, h1, _baseColor);
+				g.fillRect(x1 + w1, y1, MathUtils.abs(w1), h1, _baseColor);
 				final float x2 = dx - getWidth() / 2 + (board + this._count / _divValue);
 				final float y2 = dy + top + (i * _boardWidth - halfHeight);
 				final float w2 = -halfWidth + (-board - this._count / _divValue);
 				final float h2 = _boardWidth;
-				g.fillRect(x2, y2, w2, h2, _baseColor);
+				g.fillRect(x2 + w2, y2, MathUtils.abs(w2), h2, _baseColor);
 			}
 			break;
 		}

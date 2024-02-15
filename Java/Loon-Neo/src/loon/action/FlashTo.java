@@ -30,6 +30,8 @@ import loon.utils.timer.EaseTimer;
  */
 public class FlashTo extends ActionEvent {
 
+	private boolean _initVisible;
+
 	private float interval = 0f;
 
 	public FlashTo() {
@@ -57,7 +59,7 @@ public class FlashTo extends ActionEvent {
 	public void update(long elapsedTime) {
 		_easeTimer.update(elapsedTime);
 		if (_isCompleted = _easeTimer.isCompleted()) {
-			original.setVisible(true);
+			original.setVisible(_initVisible);
 			return;
 		}
 		interval -= _easeTimer.getProgress();
@@ -80,13 +82,15 @@ public class FlashTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-
+		if (original != null) {
+			_initVisible = original.isVisible();
+		}
 	}
 
 	@Override
 	public boolean isComplete() {
 		if (_isCompleted) {
-			this.original.setVisible(true);
+			this.original.setVisible(_initVisible);
 		}
 		return _isCompleted;
 	}

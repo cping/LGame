@@ -24,6 +24,7 @@ import loon.action.map.Config;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
@@ -63,7 +64,8 @@ public class LTransition {
 	public static enum TransType {
 		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
 		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
-		SplitRandom, PixelWind, PixelThunder, FadeOvalHollowIn, FadeOvalHollowOut;
+		SplitRandom, PixelWind, PixelThunder, FadeOvalHollowIn, FadeOvalHollowOut, FadeDoorIrregularIn,
+		FadeDoorIrregularOut;
 	}
 
 	/**
@@ -119,6 +121,12 @@ public class LTransition {
 				return TransType.PixelWind;
 			} else if ("pixelthunder".equals(key)) {
 				return TransType.PixelThunder;
+			} else if ("pixelwind".equals(key)) {
+				return TransType.PixelWind;
+			} else if ("doorirregularin".equals(key)) {
+				return TransType.FadeDoorIrregularIn;
+			} else if ("doorirregularout".equals(key)) {
+				return TransType.FadeDoorIrregularOut;
 			} else {
 				return TransType.FadeIn;
 			}
@@ -177,6 +185,7 @@ public class LTransition {
 			break;
 		case FadeOvalOut:
 			transition = newFadeOvalOut(c);
+			break;
 		case FadeOvalHollowIn:
 			transition = newOvalHollowIn(c);
 			break;
@@ -206,6 +215,12 @@ public class LTransition {
 			break;
 		case FadeSwipeOut:
 			transition = newFadeSwipeOut(c);
+			break;
+		case FadeDoorIrregularIn:
+			transition = newFadeDoorIrregularIn(c);
+			break;
+		case FadeDoorIrregularOut:
+			transition = newFadeDoorIrregularOut(c);
 			break;
 		case PixelDarkIn:
 			transition = newPixelDarkIn(c);
@@ -766,6 +781,54 @@ public class LTransition {
 				@Override
 				public ISprite getSprite() {
 					return fadespiral;
+				}
+			});
+			transition.setDisplayGameUI(true);
+			transition.code = 1;
+			return transition;
+		}
+		return null;
+	}
+
+	public static final LTransition newFadeDoorIrregularIn(final LColor c) {
+		return newFadeDoorIrregular(ISprite.TYPE_FADE_IN, c);
+	}
+
+	public static final LTransition newFadeDoorIrregularOut(final LColor c) {
+		return newFadeDoorIrregular(ISprite.TYPE_FADE_OUT, c);
+	}
+
+	public static final LTransition newFadeDoorIrregular(final int type, final LColor c) {
+		if (LSystem.base() != null) {
+			final LTransition transition = new LTransition();
+
+			transition.setTransitionListener(new TransitionListener() {
+
+				final FadeDoorIrregularEffect door = new FadeDoorIrregularEffect(type, c);
+
+				@Override
+				public void draw(GLEx g) {
+					door.createUI(g);
+				}
+
+				@Override
+				public void update(long elapsedTime) {
+					door.update(elapsedTime);
+				}
+
+				@Override
+				public boolean completed() {
+					return door.isCompleted();
+				}
+
+				@Override
+				public void close() {
+					door.close();
+				}
+
+				@Override
+				public ISprite getSprite() {
+					return door;
 				}
 			});
 			transition.setDisplayGameUI(true);

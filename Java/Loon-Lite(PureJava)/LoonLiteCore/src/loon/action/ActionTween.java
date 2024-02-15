@@ -212,6 +212,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration, easing));
 	}
 
+	public ActionTween flashTo(float duration, float delay) {
+		return event(new FlashTo(duration, delay));
+	}
+
 	public ActionTween flashTo(float duration, float delay, EasingMode easing) {
 		return event(new FlashTo(duration, delay, easing));
 	}
@@ -946,6 +950,41 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 */
 	public ActionTween parallelTo(TArray<ActionEvent> list) {
 		return event(new ParallelTo(list));
+	}
+
+	/**
+	 * 将此前设置的所有缓动事件转化为并行事件后返回
+	 * 
+	 * @return
+	 */
+	public ActionTween parallel() {
+		final TArray<ActionEvent> events = getCurrentActionEvents(true);
+		if (events != null) {
+			return parallelTo(events);
+		}
+		return this;
+	}
+
+	public TArray<ActionEvent> getCurrentActionEvents() {
+		return getCurrentActionEvents(false);
+	}
+
+	private TArray<ActionEvent> getCurrentActionEvents(boolean clear) {
+		if (actionEvents == null || actionEvents.size() == 0) {
+			return null;
+		}
+		final TArray<ActionEvent> events = new TArray<ActionEvent>(actionEvents.size());
+		for (; actionEvents.hashNext();) {
+			ActionEvent e = actionEvents.next();
+			if (e != null) {
+				events.add(e);
+			}
+		}
+		actionEvents.stopNext();
+		if (clear) {
+			actionEvents.clear();
+		}
+		return events;
 	}
 
 	public ActionTween updateTo(EventAction e) {

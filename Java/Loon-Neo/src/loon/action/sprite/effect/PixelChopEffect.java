@@ -119,10 +119,10 @@ public class PixelChopEffect extends PixelBaseEffect {
 	}
 
 	public static PixelChopEffect getRandom(LColor color, float x, float y, int width, int frameLimit) {
-		final int rand = MathUtils.random(0, 6);
+		final int rand = MathUtils.nextInt(0, 6);
 		switch (rand) {
-		case 0:
 		default:
+		case 0:
 			return new PixelChopEffect(ChopDirection.WNTES, color, x, y, width, frameLimit);
 		case 1:
 			return new PixelChopEffect(ChopDirection.NETSW, color, x, y, width, frameLimit);

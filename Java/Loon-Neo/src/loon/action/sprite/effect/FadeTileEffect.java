@@ -51,7 +51,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 
 	private LColor fore = LColor.white;
 
-	private int type;
+	private int _type;
 
 	public FadeTileEffect(int type, LColor c) {
 		this(type, 1, 1, c, LColor.white);
@@ -80,7 +80,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		this.setSize(maxWidth, maxHeight);
 		this.setDelay(delay);
 		this.setColor(back);
-		this.type = type;
+		this._type = type;
 		this.count = count;
 		this.speed = speed;
 		this.sizeWidth = w;
@@ -121,7 +121,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		}
 		if (_timer.action(elapsedTime)) {
 			int count = 0;
-			if (ISprite.TYPE_FADE_OUT == type) {
+			if (ISprite.TYPE_FADE_OUT == _type) {
 				for (int i = 0; i < speed; i++) {
 					for (int x = 0; x < tileWidth; x++) {
 						for (int y = 0; y < tileHeight; y++) {
@@ -237,6 +237,13 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
+		if (_type == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), getWidth(), getHeight(), _baseColor);
+			return;
+		}
+		if (_type == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		final int old = g.getTint();
 		for (int x = 0; x < tileWidth; x++) {
 			for (int y = 0; y < tileHeight; y++) {
@@ -260,7 +267,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 
 	public FadeTileEffect pack() {
 		this.tmpflag = 0;
-		if (ISprite.TYPE_FADE_OUT == type) {
+		if (ISprite.TYPE_FADE_OUT == _type) {
 			for (int x = 0; x < tileWidth; x++) {
 				for (int y = 0; y < tileHeight; y++) {
 					conversions[x][y] = false;
@@ -292,7 +299,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	}
 
 	public int getFadeType() {
-		return type;
+		return _type;
 	}
 
 	public int getCount() {

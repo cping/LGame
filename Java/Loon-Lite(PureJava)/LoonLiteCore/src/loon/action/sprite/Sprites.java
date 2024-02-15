@@ -1353,7 +1353,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final int size = this._size;
 		for (int i = size - 1; i > -1; i--) {
 			final ISprite child = childs[i];
-			if (child != null && child.isVisible()) {
+			if (child != null) {
 				try {
 					child.update(elapsedTime);
 					if (listerner) {

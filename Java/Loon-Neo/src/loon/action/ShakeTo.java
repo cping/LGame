@@ -62,9 +62,9 @@ public class ShakeTo extends ActionEvent {
 			original.setLocation(this.startOffsetX, this.startOffsetY);
 			return;
 		}
-		this.shakeX += _easeTimer.getTimeInAfter() * _easeTimer.getDelta();
-		this.shakeY += _easeTimer.getTimeInAfter() * _easeTimer.getDelta();
-
+		final float v = _easeTimer.getTimeInAfter() * _easeTimer.getDelta();
+		this.shakeX += v;
+		this.shakeY += v;
 		if (this.offsetX > 0.0f) {
 			this.offsetX = (-this.shakeX);
 			this.offsetY = (-this.shakeY);
@@ -72,12 +72,11 @@ public class ShakeTo extends ActionEvent {
 			this.offsetX = this.shakeX;
 			this.offsetY = this.shakeY;
 		}
-
 		synchronized (original) {
 			original.setLocation(this.startOffsetX + this.offsetX, this.startOffsetY + this.offsetY);
 		}
 	}
-	
+
 	public float getShakeX() {
 		return shakeX;
 	}

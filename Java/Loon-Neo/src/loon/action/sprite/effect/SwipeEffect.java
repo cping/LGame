@@ -23,12 +23,13 @@ package loon.action.sprite.effect;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+
 /**
  * 折角样黑幕过渡效果
  */
 public class SwipeEffect extends BaseAbstractEffect {
 
-	protected int type;
+	protected int _type;
 
 	protected float triangle = 90;
 
@@ -49,7 +50,7 @@ public class SwipeEffect extends BaseAbstractEffect {
 	}
 
 	public SwipeEffect(LColor c, int delay, int type, int w, int h) {
-		this.type = type;
+		this._type = type;
 		this._timer.setDelay(delay);
 		this.setColor(c);
 		this.setSize(w, h);
@@ -57,11 +58,11 @@ public class SwipeEffect extends BaseAbstractEffect {
 	}
 
 	public int getEffectType() {
-		return type;
+		return _type;
 	}
 
 	public SwipeEffect setEffectType(int type) {
-		this.type = type;
+		this._type = type;
 		return this;
 	}
 
@@ -70,9 +71,16 @@ public class SwipeEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
+		if (_type == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(sx), drawY(sy), getWidth(), getHeight(), _baseColor);
+			return;
+		}
+		if (_type == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		float percent = _timer.getPercentage();
 		LColor tmp = g.getColor();
-		if (type == TYPE_FADE_IN) {
+		if (_type == TYPE_FADE_IN) {
 			float width = getWidth() + (2 * triangle);
 			float height = getHeight();
 			float x = drawX(sx + (percent * width - triangle));
@@ -104,7 +112,7 @@ public class SwipeEffect extends BaseAbstractEffect {
 	}
 
 	public int getFadeType() {
-		return type;
+		return _type;
 	}
 
 	public float getTriangle() {
