@@ -166,6 +166,7 @@ public class EaseTimer extends BasicTimer {
 		case InOutBounce:
 			this._progress = Easing.inOutBounce(this._timer, this._duration, this._ease_value_max,
 					this._ease_value_min);
+			break;
 		case InElastic:
 			this._progress = Easing.inElastic(this._timer, this._duration, this._ease_value_max, this._ease_value_min);
 			break;

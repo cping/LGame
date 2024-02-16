@@ -1115,7 +1115,7 @@ public class LSystem {
 
 	public static final int getMeshPoolSize() {
 		if (base() != null) {
-			base().getMeshPoolSize();
+			return base().getMeshPoolSize();
 		}
 		return 0;
 	}

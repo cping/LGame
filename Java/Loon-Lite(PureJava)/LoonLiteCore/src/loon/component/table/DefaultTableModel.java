@@ -45,8 +45,8 @@ public class DefaultTableModel implements ITableModel, LRelease {
 			for (ListItem item : _view.all()) {
 				item.updateDirty();
 			}
+			_view.updateDirty();
 		}
-		_view.updateDirty();
 		return this;
 	}
 
@@ -56,8 +56,8 @@ public class DefaultTableModel implements ITableModel, LRelease {
 			for (ListItem item : _view.all()) {
 				item.setDirty(d);
 			}
+			_view.setDirty(d);
 		}
-		_view.setDirty(d);
 		return this;
 	}
 
@@ -69,8 +69,9 @@ public class DefaultTableModel implements ITableModel, LRelease {
 					return true;
 				}
 			}
+			return _view.isDirty();
 		}
-		return _view.isDirty();
+		return false;
 	}
 
 	@Override
@@ -121,8 +122,8 @@ public class DefaultTableModel implements ITableModel, LRelease {
 			for (ListItem item : _view.all()) {
 				item._dirty = true;
 			}
+			_view.clear();
 		}
-		_view.clear();
 		return this;
 	}
 

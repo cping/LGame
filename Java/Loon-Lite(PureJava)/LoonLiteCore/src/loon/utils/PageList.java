@@ -132,7 +132,7 @@ public class PageList<T> implements LRelease {
 			_data.clear();
 		}
 		this._tempData.clear();
-		this._totalItems = _data.size;
+		this._totalItems = 0;
 		this._currentPage = 0;
 		this._totalPages = 0;
 		this._dirty = true;

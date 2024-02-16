@@ -56,6 +56,9 @@ public class CollisionBaseQuery implements CollisionQuery {
 
 	public boolean checkOnlyCollision(CollisionObject other) {
 		if (!_offsetLocation.isZero()) {
+			if (_compareObject == null) {
+				return true;
+			}
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
 			return (this._compareObject == null ? true : other.intersects(_collisionRect));
@@ -66,6 +69,9 @@ public class CollisionBaseQuery implements CollisionQuery {
 	@Override
 	public boolean checkCollision(CollisionObject other) {
 		if (!_offsetLocation.isZero()) {
+			if (_compareObject == null) {
+				return true;
+			}
 			_collisionRect.setBounds(offsetX(this._compareObject.getX()), offsetY(this._compareObject.getY()),
 					this._compareObject.getWidth(), this._compareObject.getHeight());
 			return this._flag != null && !_flag.equals(other.getObjectFlag()) ? false

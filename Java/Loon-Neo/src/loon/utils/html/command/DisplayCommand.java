@@ -99,7 +99,7 @@ public abstract class DisplayCommand implements LRelease {
 	public abstract void update();
 
 	public void parser(HtmlElement e) {
-		if (styleSheet != null) {
+		if (e != null && styleSheet != null) {
 			bodyElement = new CssElement(styleSheet, e, null, null, screenWidth, screenHeight);
 			bodyElement.parse();
 		}
@@ -107,10 +107,12 @@ public abstract class DisplayCommand implements LRelease {
 			attrElement = new CssElement(e.getAttrStyleSheet(), e, null, null, screenWidth, screenHeight);
 			attrElement.parse();
 		}
-		CssStyleSheet cssSheet = e.getStyleSheet();
-		if (cssSheet.size() > 0) {
-			selfElement = new CssElement(cssSheet, e, null, null, screenWidth, screenHeight);
-			selfElement.parse();
+		if (e != null) {
+			CssStyleSheet cssSheet = e.getStyleSheet();
+			if (cssSheet != null && cssSheet.size() > 0) {
+				selfElement = new CssElement(cssSheet, e, null, null, screenWidth, screenHeight);
+				selfElement.parse();
+			}
 		}
 	}
 

@@ -434,7 +434,7 @@ public class Gravity implements LRelease {
 	}
 
 	public Gravity setAcceleration(final float acceleration) {
-		this.setAcceleration(acceleration);
+		this.setAcceleration(acceleration, acceleration);
 		return this;
 	}
 

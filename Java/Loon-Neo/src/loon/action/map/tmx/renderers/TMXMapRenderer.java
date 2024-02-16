@@ -562,6 +562,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	public void close() {
 		visible = false;
 		if (textureMap != null) {
+			for (LTexture texture : textureMap.values()) {
+				texture.close();
+			}
 			textureMap.clear();
 		}
 		if (tileAnimators != null) {
@@ -574,9 +577,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 				}
 			}
 			textureCaches.clear();
-		}
-		for (LTexture texture : textureMap.values()) {
-			texture.close();
 		}
 		lastHashCode = 1;
 		_resizeListener = null;

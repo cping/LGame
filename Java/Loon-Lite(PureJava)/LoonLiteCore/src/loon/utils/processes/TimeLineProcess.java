@@ -544,8 +544,8 @@ public class TimeLineProcess extends RealtimeProcess {
 							tle.close();
 						}
 					}
+					eves.close();
 				}
-				eves.close();
 			}
 		}
 		_listeners.close();

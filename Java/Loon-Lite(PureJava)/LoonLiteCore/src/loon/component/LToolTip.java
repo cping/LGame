@@ -125,10 +125,10 @@ public class LToolTip extends LComponent {
 				this._text = new Text(font, mes);
 			} else {
 				this._text.setText(font, mes);
+				final float w = _text.getWidth() + font.getSize();
+				final float h = _text.getHeight() + font.getHeight() / 2f;
+				this.setSize(w, h);
 			}
-			final float w = _text.getWidth() + font.getSize();
-			final float h = _text.getHeight() + font.getHeight() / 2f;
-			this.setSize(w, h);
 		}
 		return this;
 	}

@@ -2259,7 +2259,7 @@ final public class StringUtils extends CharUtils {
 		} else if (c instanceof StringBuffer) {
 			((StringBuffer) c).getChars(start, end, dest, destoff);
 		} else if (c instanceof StringBuilder) {
-			((StrBuilder) c).getChars(start, end, dest, destoff);
+			((StringBuilder) c).getChars(start, end, dest, destoff);
 		} else if (c instanceof StrBuilder) {
 			((StrBuilder) c).getChars(start, end, dest, destoff);
 		} else {

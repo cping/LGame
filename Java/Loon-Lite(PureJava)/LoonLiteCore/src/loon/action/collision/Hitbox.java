@@ -187,7 +187,7 @@ public class Hitbox implements LRelease {
 	}
 
 	public void draw(GLEx g, LColor c) {
-		this.draw(g, c);
+		this.draw(g, c, LColor.red);
 	}
 
 	public void draw(GLEx g, LColor fillColor, LColor drawColor) {

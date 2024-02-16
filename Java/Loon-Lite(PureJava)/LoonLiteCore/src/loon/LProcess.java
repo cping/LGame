@@ -431,13 +431,18 @@ public class LProcess implements LRelease {
 
 	private void killScreen(Screen screen) {
 		try {
-			synchronized (_currentScreen) {
-				if (_currentScreen != null) {
-					_currentScreen.destroy();
+			if (_currentScreen != null) {
+				synchronized (_currentScreen) {
+					if (_currentScreen != null) {
+						_currentScreen.destroy();
+					}
+					if (screen == _currentScreen) {
+						screen.pause();
+					}
+					screen.destroy();
+					_currentScreen = screen;
 				}
-				if (screen == _currentScreen) {
-					screen.pause();
-				}
+			} else {
 				screen.destroy();
 				_currentScreen = screen;
 			}

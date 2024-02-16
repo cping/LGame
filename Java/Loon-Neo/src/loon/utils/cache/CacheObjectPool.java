@@ -199,7 +199,7 @@ public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 			obj.onUnspawn();
 			release();
 		} else {
-			new LSysException("Can not find target in object pool :" + getName());
+			throw new LSysException("Can not find target in object pool :" + getName());
 		}
 	}
 

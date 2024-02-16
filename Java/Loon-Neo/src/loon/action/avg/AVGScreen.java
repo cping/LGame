@@ -1385,10 +1385,12 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						scrCG.close();
 					}
 					if (mesFlag.equalsIgnoreCase(CommandType.L_DEL)) {
-						if (orderFlag != null) {
-							scrCG.remove(orderFlag);
-						} else {
-							scrCG.close();
+						if (scrCG != null) {
+							if (orderFlag != null) {
+								scrCG.remove(orderFlag);
+							} else {
+								scrCG.close();
+							}
 						}
 					} else if (lastFlag != null && CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
 						scrCG.replace(mesFlag, lastFlag);
@@ -1472,8 +1474,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		} else if ((scrFlag && selectUI.getResultIndex() != -1) && selectUI.isClick()) {
 			onSelect(_selectMessage, selectUI.getResultIndex());
 			isNext = selectUI.intersects(getTouchX(), getTouchY());
-			if ((LSystem.isMobile() || LSystem.isEmulateTouch())
-					? _clickcount++ >= _mobile_select_valid_limit
+			if ((LSystem.isMobile() || LSystem.isEmulateTouch()) ? _clickcount++ >= _mobile_select_valid_limit
 					: _clickcount > -1) {
 				messageUI.setVisible(false);
 				clearSelectMessage();

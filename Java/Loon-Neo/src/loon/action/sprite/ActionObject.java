@@ -66,7 +66,9 @@ public abstract class ActionObject extends Entity implements Config {
 
 	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
 		super(animation == null ? null : animation.getSpriteImage(), x, y, dw, dh);
-		this.setTexture(animation.getSpriteImage());
+		if (animation != null) {
+			this.setTexture(animation.getSpriteImage());
+		}
 		this._currentSide = new Side();
 		this.tiles = map;
 		this.animation = animation;

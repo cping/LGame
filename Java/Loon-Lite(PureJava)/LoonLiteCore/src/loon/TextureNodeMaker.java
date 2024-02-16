@@ -134,10 +134,13 @@ public class TextureNodeMaker<T extends ActionBind> implements IV<T> {
 			break;
 		case Button:
 			_value = (T) new LButton(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
+			break;
 		case Select:
 			_value = (T) new LSelect(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
+			break;
 		case Message:
 			_value = (T) new LMessage(texture, MathUtils.ifloor(x), MathUtils.ifloor(y));
+			break;
 		}
 	}
 

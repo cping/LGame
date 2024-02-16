@@ -357,7 +357,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 			arrays.add(tile);
 			dirty = true;
 		} else {
-			new LSysException("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 		return this;
 	}

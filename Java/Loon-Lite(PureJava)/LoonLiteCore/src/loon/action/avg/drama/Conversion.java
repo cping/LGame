@@ -91,6 +91,9 @@ public abstract class Conversion implements Expression {
 				|| StringUtils.startsWith(context, LSystem.SINGLE_QUOTE))) {
 			return context;
 		}
+		if (context == null) {
+			return LSystem.EMPTY;
+		}
 		int size = context.length();
 		StrBuilder sbr = new StrBuilder(size * 2);
 		boolean notFlag = false;

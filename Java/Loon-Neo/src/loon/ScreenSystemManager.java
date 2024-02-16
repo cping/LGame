@@ -113,9 +113,12 @@ public class ScreenSystemManager implements LRelease {
 	}
 
 	public ScreenSystemManager removeSystem(ScreenSystem system, boolean closed) {
+		if (system == null) {
+			return this;
+		}
 		if (this._systems.removeValue(system, true)) {
 			this._systemClazzs.remove(system.getClass());
-			if (_listener != null) {
+			if (this._listener != null) {
 				this._listener.systemRemoved(system);
 			}
 			if (system != null && closed) {

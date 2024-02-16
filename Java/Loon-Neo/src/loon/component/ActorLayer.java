@@ -775,19 +775,15 @@ public abstract class ActorLayer extends LContainer {
 			return;
 		}
 		if (objects != null) {
-			synchronized (objects) {
-				if (objects != null) {
-					objects.clear();
-					objects = null;
-				}
-				if (collisionChecker != null) {
-					collisionChecker.dispose();
-					collisionChecker.clear();
-					collisionChecker = null;
-				}
-				this.collisionChecker = new CollisionManager();
-				this.objects = new ActorTreeSet();
+			objects.clear();
+			objects = null;
+			if (collisionChecker != null) {
+				collisionChecker.dispose();
+				collisionChecker.clear();
+				collisionChecker = null;
 			}
+			this.collisionChecker = new CollisionManager();
+			this.objects = new ActorTreeSet();
 		}
 	}
 

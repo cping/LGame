@@ -36,7 +36,7 @@ public class LPad extends LComponent {
 
 	private ActionKey lockedKey;
 
-	private boolean isLimitClick = false;
+	private boolean limitClick = false;
 
 	private boolean isLeft, isRight, isUp, isDown, isClick;
 
@@ -109,7 +109,7 @@ public class LPad extends LComponent {
 	}
 
 	void freeClick() {
-		if (isLimitClick) {
+		if (limitClick) {
 			lockedKey.release();
 		}
 		this.isLeft = false;
@@ -130,8 +130,19 @@ public class LPad extends LComponent {
 	}
 
 	@Override
+	protected void processTouchDragged() {
+		clickedPad();
+		super.processTouchDragged();
+	}
+
+	@Override
 	protected void processTouchPressed() {
-		if (isLimitClick) {
+		clickedPad();
+		super.processTouchPressed();
+	}
+
+	private void clickedPad() {
+		if (limitClick) {
 			if (lockedKey.isPressed()) {
 				return;
 			}
@@ -191,17 +202,20 @@ public class LPad extends LComponent {
 		} catch (Throwable t) {
 			LSystem.error("LPad click exception", t);
 		}
-		super.processTouchPressed();
+	}
+
+	@Override
+	public void process(long elapsedTime) {
+		if (!isTouchDownClick()) {
+			freeClick();
+		}
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if (SysTouch.isUp()) {
-			freeClick();
-		}
 		pack.glBegin();
 		pack.draw(0, x, y, backWidth, backHeight, _component_baseColor);
-		if (isClick) {
+		if (isPadDown()) {
 			if (angle < 360) {
 				angle += 1;
 			} else {
@@ -250,8 +264,12 @@ public class LPad extends LComponent {
 		return isDown;
 	}
 
-	public boolean isClick() {
-		return isClick;
+	public boolean isPadDown() {
+		return isClick && isTouchDownClick() && isPointInUI();
+	}
+
+	public boolean isPadUp() {
+		return !isClick && !isTouchDownClick();
 	}
 
 	public ClickListener getListener() {
@@ -282,11 +300,11 @@ public class LPad extends LComponent {
 	}
 
 	public boolean isLimitClick() {
-		return isLimitClick;
+		return limitClick;
 	}
 
 	public LPad setLimitClick(boolean l) {
-		this.isLimitClick = l;
+		this.limitClick = l;
 		this.lockedKey.reset();
 		return this;
 	}

@@ -74,7 +74,7 @@ public class Scale {
 	 */
 	public Pair<Vector2f, Vector2f> scaledSize(Mode scaling, float srcWidth, float srcHeight, float tarWidth,
 			float tarHeight) {
-		return scaledSize(scaling, srcWidth, srcHeight, tarWidth, tarHeight);
+		return scaledSize(scaling, true, srcWidth, srcHeight, tarWidth, tarHeight);
 	}
 
 	/**

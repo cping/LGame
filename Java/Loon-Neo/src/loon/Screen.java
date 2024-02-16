@@ -711,13 +711,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen releaseActionKeys() {
-		final int keySize = _keyActions.size();
-		if (keySize > 0) {
-			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-				final ActionKey act = it.next();
-				if (act != null) {
-					act.release();
-				}
+		if (_keyActions.size == 0) {
+			return this;
+		}
+		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+			final ActionKey act = it.next();
+			if (act != null) {
+				act.release();
 			}
 		}
 		return this;
@@ -1686,7 +1686,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._isNext = true;
 		this._screenIndex = 0;
 		this._lastTocuh.empty();
-		this._keyActions.clear();
 		this._visible = true;
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
@@ -6951,9 +6950,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_disposes.close();
 				_conns.close();
 				release();
-				if (_keyActions != null) {
-					_keyActions.clear();
-				}
+				_keyActions.clear();
 				if (_currentScreenBackground != null) {
 					_currentScreenBackground.close();
 					_currentScreenBackground = null;

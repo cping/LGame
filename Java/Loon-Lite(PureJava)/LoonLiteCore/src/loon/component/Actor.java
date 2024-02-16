@@ -643,7 +643,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	public void move(int x, int y) {
-		move(x, y);
+		setLocationDrag(_objectLocation.getX() + x, _objectLocation.getY() + y);
 	}
 
 	@Override

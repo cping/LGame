@@ -1705,7 +1705,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	@Override
 	public void drawString(GLEx g, String chars, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
-		drawString(g, chars, x, y, sx, sy, ax, ay, rotation, c);
+		drawString(g, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
 	}
 
 	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,

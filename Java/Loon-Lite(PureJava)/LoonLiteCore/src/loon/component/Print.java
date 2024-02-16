@@ -547,13 +547,11 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public void complete() {
-		synchronized (_showMessages) {
-			this._onComplete = true;
-			this._messageCount = _messages.length();
-			this._nextflag = _messageCount;
-			this._showMessages = (_messages + "_").toCharArray();
-			this._textsize = _showMessages.length;
-		}
+		this._onComplete = true;
+		this._messageCount = _messages.length();
+		this._nextflag = _messageCount;
+		this._showMessages = (_messages + "_").toCharArray();
+		this._textsize = _showMessages.length;
 	}
 
 	public boolean isComplete() {

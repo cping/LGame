@@ -57,14 +57,16 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public static LWindow alert(LTexture textureBtn, String title, String firstButton, String secondButton,
 			String closeButton, float x, float y, CallFunction first, CallFunction second, CallFunction close,
 			boolean vertical) {
-		return alert(textureBtn, title, firstButton, secondButton, closeButton, x, y, first, second, close, vertical);
+		return alert(SkinManager.get().getWindowSkin().getFont(), textureBtn, title, firstButton, secondButton,
+				closeButton, x, y, first, second, close, vertical);
 	}
 
 	public static LWindow alert(IFont font, LTexture textureBtn, String title, String firstButton, String secondButton,
 			String closeButton, float x, float y, CallFunction first, CallFunction second, CallFunction close,
 			boolean vertical) {
-		return alert(font, textureBtn, title, firstButton, secondButton, closeButton, x, y, first, second, close,
-				vertical);
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton,
+				closeButton, x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, 40, first,
+				second, close, SkinManager.get().getWindowSkin().getFontColor(), vertical);
 	}
 
 	public static LWindow alert(String barPath, String backgroundPath, String btnPath, String title, String firstButton,

@@ -22,7 +22,6 @@ package loon.utils.timer;
 
 import loon.LRelease;
 import loon.LSystem;
-import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
@@ -309,8 +308,7 @@ public class Scheduler implements LRelease {
 				Interval interval = null;
 				final boolean seq = _forceWaitSequence;
 				if (seq) {
-					final int index = seq ? 0 : MathUtils.max(0, _childIndex);
-					interval = _scheduled.get(index);
+					interval = _scheduled.first();
 					if (interval != null) {
 						interval.call(context);
 						final boolean over = interval.completed() || interval.isClosed();

@@ -350,20 +350,22 @@ public class LTexture extends Painter implements LRelease {
 				_image = tmp;
 			}
 		}
-		int w = _image.getWidth();
-		int h = _image.getHeight();
-		if (0 != _textureClip.getRegionX() || 0 != _textureClip.getRegionY() || _textureClip.getRegionWidth() != w
-				|| _textureClip.getRegionHeight() != h) {
-			if (_image != null) {
-				Image tmp = null;
-				if (isScale()) {
-					tmp = Image.getResize(_image, _textureClip.getRegionX(), _textureClip.getRegionY(),
-							_textureClip.getRegionWidth(), _textureClip.getRegionHeight());
-				} else {
-					tmp = _image.getSubImage(_textureClip.getRegionX(), _textureClip.getRegionY(),
-							_textureClip.getRegionWidth(), _textureClip.getRegionHeight());
+		if (_image != null) {
+			int w = _image.getWidth();
+			int h = _image.getHeight();
+			if (0 != _textureClip.getRegionX() || 0 != _textureClip.getRegionY() || _textureClip.getRegionWidth() != w
+					|| _textureClip.getRegionHeight() != h) {
+				if (_image != null) {
+					Image tmp = null;
+					if (isScale()) {
+						tmp = Image.getResize(_image, _textureClip.getRegionX(), _textureClip.getRegionY(),
+								_textureClip.getRegionWidth(), _textureClip.getRegionHeight());
+					} else {
+						tmp = _image.getSubImage(_textureClip.getRegionX(), _textureClip.getRegionY(),
+								_textureClip.getRegionWidth(), _textureClip.getRegionHeight());
+					}
+					return tmp;
 				}
-				return tmp;
 			}
 		}
 		return _image;

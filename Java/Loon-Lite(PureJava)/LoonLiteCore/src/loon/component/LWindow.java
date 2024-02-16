@@ -1,24 +1,24 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- *
+ * 
  */
 package loon.component;
 
@@ -46,7 +46,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	private LTexture _barTexture;
 
-	private Animation animation = new Animation();
+	private Animation _animation = new Animation();
 
 	private int _barheight;
 
@@ -57,22 +57,24 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public static LWindow alert(LTexture textureBtn, String title, String firstButton, String secondButton,
 			String closeButton, float x, float y, CallFunction first, CallFunction second, CallFunction close,
 			boolean vertical) {
-		return alert(textureBtn, title, firstButton, secondButton, closeButton, x, y, first, second, close, vertical);
+		return alert(SkinManager.get().getWindowSkin().getFont(), textureBtn, title, firstButton, secondButton,
+				closeButton, x, y, first, second, close, vertical);
 	}
 
 	public static LWindow alert(IFont font, LTexture textureBtn, String title, String firstButton, String secondButton,
 			String closeButton, float x, float y, CallFunction first, CallFunction second, CallFunction close,
 			boolean vertical) {
-		return alert(font, textureBtn, title, firstButton, secondButton, closeButton, x, y, first, second, close,
-				vertical);
+		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton,
+				closeButton, x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, 40, first,
+				second, close, SkinManager.get().getWindowSkin().getFontColor(), vertical);
 	}
 
 	public static LWindow alert(String barPath, String backgroundPath, String btnPath, String title, String firstButton,
 			String secondButton, String closeButton, float x, float y, float width, float height, float barheight,
 			CallFunction first, CallFunction second, CallFunction close, LColor fontColor, boolean vertical) {
-		return alert(LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath),
-				LSystem.loadTexture(btnPath), title, firstButton, secondButton, closeButton, x, y, width, height,
-				barheight, first, second, close, fontColor, vertical);
+		return alert(LSystem.loadTexture(barPath), LSystem.loadTexture(backgroundPath), LSystem.loadTexture(btnPath),
+				title, firstButton, secondButton, closeButton, x, y, width, height, barheight, first, second, close,
+				fontColor, vertical);
 	}
 
 	public static LWindow alert(IFont font, String barPath, String backgroundPath, String btnPath, String title,
@@ -358,19 +360,19 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	}
 
 	public Animation getAnimation() {
-		return this.animation;
+		return this._animation;
 	}
 
 	public void setAnimation(Animation animation) {
-		this.animation = animation;
+		this._animation = animation;
 	}
 
 	public void addAnimationFrame(String fileName, long timer) {
-		animation.addFrame(fileName, timer);
+		_animation.addFrame(fileName, timer);
 	}
 
 	public void addAnimationFrame(LTexture image, long timer) {
-		animation.addFrame(image, timer);
+		_animation.addFrame(image, timer);
 	}
 
 	@Override
@@ -388,7 +390,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public void update(long elapsedTime) {
 		if (isVisible()) {
 			super.update(elapsedTime);
-			animation.update(elapsedTime);
+			_animation.update(elapsedTime);
 		}
 	}
 
@@ -426,8 +428,8 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 							y + (this._barheight - _font.getHeight()) / 2 - (LSystem.isDesktop() ? 5 : 0), _fontColor);
 				}
 			}
-			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, _component_baseColor);
+			if (_animation.getSpriteImage() != null) {
+				g.draw(_animation.getSpriteImage(), x, y, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);
@@ -477,12 +479,10 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 		this._title = title;
 	}
 
-	@Override
 	public IFont getFont() {
 		return _font;
 	}
 
-	@Override
 	public LWindow setFont(IFont font) {
 		this._font = font;
 		return this;
@@ -501,9 +501,9 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	public void destory() {
-		if (animation != null) {
-			animation.close();
-			animation = null;
+		if (_animation != null) {
+			_animation.close();
+			_animation = null;
 		}
 	}
 

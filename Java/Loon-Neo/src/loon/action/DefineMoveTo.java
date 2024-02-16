@@ -557,7 +557,7 @@ public class DefineMoveTo extends ActionEvent {
 					}
 					if (!isMoved) {
 						float offV = 0f;
-						if (endX != startX) {
+						if (!MathUtils.equal(endX, startX)) {
 							offV = (endX - startX);
 							if (offV > 0) {
 								direction = Field2D.TRIGHT;

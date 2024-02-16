@@ -360,7 +360,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public void setRotation(float r) {
-		if (r == this._objectRotation) {
+		if (MathUtils.equal(r, this._objectRotation)) {
 			return;
 		}
 		this._previousRotation = this._objectRotation;
@@ -374,7 +374,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public boolean isRotated() {
-		return _objectRotation != _previousRotation;
+		return !MathUtils.equal(this._previousRotation, this._objectRotation);
 	}
 
 	public float getPreviousRotation() {
@@ -706,7 +706,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		float nx = getX() + x;
 		float ny = getY() + y;
 		if ((nx + ny) % 2 == 1) {
-			y++;
+			ny++;
 		}
 		return Vector2f.at(nx, ny);
 	}

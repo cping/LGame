@@ -221,7 +221,7 @@ public class AVGCG implements LRelease {
 							}
 						} else {
 							chara.currentFrame++;
-							if (chara.currentFrame == chara.time) {
+							if (MathUtils.equal(chara.currentFrame, chara.time)) {
 								chara.opacity = 0;
 								chara.flag = -1;
 							}

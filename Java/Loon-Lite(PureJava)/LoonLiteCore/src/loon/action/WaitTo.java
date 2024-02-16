@@ -69,6 +69,8 @@ public class WaitTo extends ActionEvent {
 			waitEvent = new WaitTo(actionUpdate);
 		} else if (boolValue != null) {
 			waitEvent = new WaitTo(boolValue);
+		} else {
+			waitEvent = new WaitTo(boolValue = new BooleanValue());
 		}
 		waitEvent.set(this);
 		return waitEvent;

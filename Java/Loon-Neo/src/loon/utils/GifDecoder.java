@@ -232,12 +232,12 @@ public class GifDecoder implements LRelease {
 					status = STATUS_FORMAT_ERROR;
 				}
 			}
+			try {
+				is.close();
+			} catch (Throwable e) {
+			}
 		} else {
 			status = STATUS_OPEN_ERROR;
-		}
-		try {
-			is.close();
-		} catch (Throwable e) {
 		}
 		return status;
 	}

@@ -203,9 +203,12 @@ public class ParallelTo extends ActionEvent {
 
 	@Override
 	public String toString() {
+		if (events == null) {
+			return getName();
+		}
 		StringKeyValue builder = new StringKeyValue(getName());
 		int size = events.size;
-		if (events != null && size > 0) {
+		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				ActionEvent event = events.get(i);
 				if (event != null) {

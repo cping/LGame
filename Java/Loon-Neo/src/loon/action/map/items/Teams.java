@@ -132,7 +132,7 @@ public class Teams implements LRelease {
 		}
 		TArray<Team> list = new TArray<Team>();
 		for (Team team : _teams) {
-			if (name.equalsIgnoreCase(name)) {
+			if (name.equalsIgnoreCase(team.getName())) {
 				list.add(team);
 			}
 		}

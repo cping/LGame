@@ -28,6 +28,7 @@ import loon.Visible;
 import loon.action.sprite.ISprite;
 import loon.geom.XY;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public class AVGChara implements Visible, XY, LRelease {
@@ -179,7 +180,7 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	public boolean next() {
 		_cgMoving = false;
-		if (_cgMovePos != x) {
+		if (!MathUtils.equal(_cgMovePos, x)) {
 			for (int sleep = 0; sleep < _cgMoveSleep; sleep++) {
 				if (_cgDirection == 0) {
 					_cgMoving = (x > _cgMovePos);

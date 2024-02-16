@@ -86,7 +86,7 @@ public class AStarFinder implements Updateable, LRelease {
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MIN = new DiagonalMin();
 
 	public final static AStarFindHeuristic ASTAR_DIAGONAL_MAX = new DiagonalMax();
-	
+
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
@@ -152,7 +152,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
-		return find(heuristic, maps, x1, y1, x2, y2, flag);
+		return find(heuristic, maps, null, x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean flag) {

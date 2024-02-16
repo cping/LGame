@@ -96,7 +96,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private String _lastMessage;
 
-	private static StrBuilder _lazyKey;
+	private final static StrBuilder _lazyKey = new StrBuilder(1024);
 
 	public static class Dict implements LRelease {
 
@@ -462,19 +462,12 @@ public final class LSTRDictionary implements LRelease {
 		hashCode = LSystem.unite(hashCode, font.getLeading());
 		hashCode = LSystem.unite(hashCode, font.getDescent());
 
-		if (_lazyKey == null) {
-			_lazyKey = new StrBuilder();
-			_lazyKey.append(font.getFontName().toLowerCase());
-			_lazyKey.append(hashCode);
-			_lazyKey.append(split);
-			_lazyKey.append(text);
-		} else {
-			_lazyKey.setLength(0);
-			_lazyKey.append(font.getFontName().toLowerCase());
-			_lazyKey.append(hashCode);
-			_lazyKey.append(split);
-			_lazyKey.append(text);
-		}
+		_lazyKey.setLength(0);
+		_lazyKey.append(font.getFontName().toLowerCase());
+		_lazyKey.append(hashCode);
+		_lazyKey.append(split);
+		_lazyKey.append(text);
+
 		return _lazyKey.toString();
 	}
 

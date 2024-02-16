@@ -119,6 +119,8 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 	@Override
 	public boolean equals(final Object obj) {
+		if (obj == null)
+			return false;
 		if (!(obj instanceof VertexAttributes))
 			return false;
 		VertexAttributes other = (VertexAttributes) obj;

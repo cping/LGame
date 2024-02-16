@@ -893,7 +893,7 @@ public class Field2D implements IArray, Config, LRelease {
 	public int getPixelsAtFieldType(float x, float y) {
 		int itsX = pixelsToTilesWidth(x);
 		int itsY = pixelsToTilesHeight(y);
-		return getPixelsAtFieldType(itsX, itsY);
+		return getTileType(itsX, itsY);
 	}
 
 	public IntArray getAllowMove() {
@@ -1071,7 +1071,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public PointI getIndexToPixelPos(int idx) {
-		PointI pos = getIndexToPixelPos(idx);
+		PointI pos = getIndexToPos(idx);
 		if (pos != null) {
 			pos.set(tilesToWidthPixels(pos.x), tilesToHeightPixels(pos.y));
 		}

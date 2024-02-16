@@ -40,7 +40,7 @@ public class PShadowEffect extends BaseAbstractEffect {
 
 	private boolean flag = true;
 
-	private static int[] deasilTrans, widdershinTrans;
+	private int[] deasilTrans, widdershinTrans;
 
 	public PShadowEffect(String fileName) {
 		this(BaseIO.loadImage(fileName));

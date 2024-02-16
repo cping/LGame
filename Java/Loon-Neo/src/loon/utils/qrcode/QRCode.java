@@ -133,7 +133,7 @@ public class QRCode {
 	}
 
 	public LPaper createPaper(int width, int height, Image img) {
-		return createPaper(width, height, img);
+		return new LPaper(createTexture(width, height, img));
 	}
 
 	public LPaper createPaper(int width, int height, String path) {
@@ -141,7 +141,7 @@ public class QRCode {
 	}
 
 	public Picture createPicture(int width, int height, Image img) {
-		return createPicture(width, height, img);
+		return new Picture(createTexture(width, height, img));
 	}
 
 	public Picture createPicture(int width, int height, String path) {
