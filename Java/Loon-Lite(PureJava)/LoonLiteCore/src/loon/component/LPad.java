@@ -265,7 +265,7 @@ public class LPad extends LComponent {
 	}
 
 	public boolean isPadUp() {
-		return isClick && !isTouchDownClick() && isClickUp();
+		return isClick && isClickUp();
 	}
 
 	public ClickListener getListener() {
