@@ -204,7 +204,7 @@ public class LPad extends LComponent {
 
 	@Override
 	public void process(long elapsedTime) {
-		if (!isTouchDownClick()) {
+		if (isPadUp()) {
 			freeClick();
 		}
 	}
@@ -265,7 +265,7 @@ public class LPad extends LComponent {
 	}
 
 	public boolean isPadUp() {
-		return !isClick && !isTouchDownClick();
+		return isClick && !isTouchDownClick() && isClickUp();
 	}
 
 	public ClickListener getListener() {

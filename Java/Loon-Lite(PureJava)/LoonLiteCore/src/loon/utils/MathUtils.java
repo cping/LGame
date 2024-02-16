@@ -1934,8 +1934,8 @@ public final class MathUtils {
 	 * @param side
 	 * @return
 	 */
-	public static float inerations(float total, float start, float side) {
-		final float diff = total = start;
+	public static float inerations(float start, float side) {
+		final float diff = start;
 		final float v = diff / side;
 		return v + (diff % side > 0 ? 1f : 0f);
 	}

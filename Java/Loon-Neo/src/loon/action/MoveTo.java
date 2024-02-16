@@ -267,12 +267,8 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public static void clearPathCache() {
-		if (_PATH_CACHE != null) {
-			synchronized (_PATH_CACHE) {
-				if (_PATH_CACHE != null) {
-					_PATH_CACHE.clear();
-				}
-			}
+		synchronized (_PATH_CACHE) {
+			_PATH_CACHE.clear();
 		}
 	}
 

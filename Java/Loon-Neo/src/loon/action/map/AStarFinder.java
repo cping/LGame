@@ -249,6 +249,9 @@ public class AStarFinder implements Updateable, LRelease {
 
 	@Override
 	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
 		if (o instanceof AStarFinder) {
 			return this.pathFoundListener == ((AStarFinder) o).pathFoundListener;
 		}

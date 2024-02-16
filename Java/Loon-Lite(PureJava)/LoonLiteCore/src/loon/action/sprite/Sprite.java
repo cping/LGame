@@ -720,8 +720,9 @@ public class Sprite extends LObject<ISprite>
 		if (_objectAlpha < 0.01) {
 			return;
 		}
-
-		_image = _animation.getSpriteImage();
+		if (_animation != null) {
+			_image = _animation.getSpriteImage();
+		}
 		final boolean notImg = _image == null;
 		if (_animation != null && _animation.length > 0 && notImg) {
 			return;

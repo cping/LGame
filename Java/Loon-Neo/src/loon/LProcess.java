@@ -308,6 +308,7 @@ public class LProcess implements LRelease {
 	}
 
 	// --- UnLoad end ---//
+	private RealtimeProcess _screenProcess;
 
 	private void setScreen(final Screen screen, final boolean put) {
 		if (checkWaiting()) {
@@ -401,7 +402,11 @@ public class LProcess implements LRelease {
 
 				screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 
-				final RealtimeProcess process = new RealtimeProcess() {
+				if (_screenProcess != null) {
+					_screenProcess.kill();
+				}
+
+				_screenProcess = new RealtimeProcess() {
 
 					@Override
 					public void run(LTimerContext time) {
@@ -424,10 +429,10 @@ public class LProcess implements LRelease {
 						}
 					}
 				};
-				process.setProcessType(GameProcessType.Initialize);
-				process.setDelay(0);
+				_screenProcess.setProcessType(GameProcessType.Initialize);
+				_screenProcess.setDelay(0);
 
-				RealtimeProcessManager.get().addProcess(process);
+				RealtimeProcessManager.get().addProcess(_screenProcess);
 
 				if (put) {
 					addScreen(screen);
@@ -439,23 +444,21 @@ public class LProcess implements LRelease {
 		}
 	}
 
-	private void killScreen(Screen screen) {
+	private void killScreen(final Screen screen) {
 		try {
 			if (_currentScreen != null) {
-				synchronized (_currentScreen) {
-					if (_currentScreen != null) {
-						_currentScreen.destroy();
-					}
+				_currentScreen.destroy();
+				if (screen != null) {
 					if (screen == _currentScreen) {
 						screen.pause();
 					}
 					screen.destroy();
-					_currentScreen = screen;
 				}
-			} else {
+			} else if (screen != null) {
 				screen.destroy();
-				_currentScreen = screen;
 			}
+			_currentScreen = null;
+			_currentScreen = screen;
 		} catch (Throwable cause) {
 			LSystem.error("Destroy screen failure", cause);
 		}
@@ -1236,9 +1239,9 @@ public class LProcess implements LRelease {
 			if (closed && _currentScreen != null) {
 				_currentScreen.destroy();
 			}
-			this._currentScreen = screen;
+			this._currentScreen = null;
+			_currentScreen = screen;
 			_currentScreen.setLock(false);
-			_currentScreen.setLocation(0, 0);
 			_currentScreen.setClose(false);
 			_currentScreen.setOnLoadState(true);
 			if (screen.getBackground() != null) {

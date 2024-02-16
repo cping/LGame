@@ -89,6 +89,11 @@ public class TMXImage {
 		}
 	}
 
+	public TMXImage setFormat(Format f) {
+		this.format = f;
+		return this;
+	}
+
 	public Format getFormat() {
 		return format;
 	}

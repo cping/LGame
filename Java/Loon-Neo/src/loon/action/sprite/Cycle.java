@@ -149,10 +149,10 @@ public class Cycle extends Entity {
 
 	protected boolean isUpdate, stopped;
 
+	protected final IntMap<float[]> signatures;
+
 	protected TArray<Object[]> data;
-
-	protected static IntMap<float[]> signatures;
-
+	
 	protected TArray<Progress> points;
 
 	private LTimer timer;
@@ -193,14 +193,11 @@ public class Cycle extends Entity {
 	}
 
 	public Cycle(TArray<Object[]> path, int x, int y, int w, int h) {
-
+		this.data = new TArray<Object[]>(10);
 		if (path != null) {
 			data.add(path.toArray());
 			isUpdate = true;
-		} else {
-			data = new TArray<Object[]>(10);
 		}
-
 		this.setRepaint(true);
 		this.setSize(w, h);
 		this.setLocation(x, y);
@@ -219,12 +216,10 @@ public class Cycle extends Entity {
 		this.blockHeight = h;
 		this.blockHalfWidth = w / 2;
 		this.blockHalfHeight = h / 2;
-		if (signatures == null) {
-			signatures = new IntMap<float[]>(3);
-			signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
-			signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
-			signatures.put(LINE, new float[] { 1, 1, 1, 1 });
-		}
+		signatures = new IntMap<float[]>(3);
+		signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
+		signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
+		signatures.put(LINE, new float[] { 1, 1, 1, 1 });
 		this.setup();
 
 	}

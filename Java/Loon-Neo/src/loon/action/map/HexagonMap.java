@@ -1781,7 +1781,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			tileBinds.add(tile);
 			dirty = true;
 		} else {
-			new LSysException("Map is no longer active, you can not add new tiles !");
+			throw new LSysException("Map is no longer active, you can not add new tiles !");
 		}
 		return this;
 	}

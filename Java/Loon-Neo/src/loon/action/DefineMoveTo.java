@@ -566,7 +566,7 @@ public class DefineMoveTo extends ActionEvent {
 								direction = Field2D.TLEFT;
 							}
 						}
-						if (endY != startY) {
+						if (!MathUtils.equal(endY, startY)) {
 							offV = (endY - startY);
 							if (offV > 0) {
 								direction = Field2D.TDOWN;

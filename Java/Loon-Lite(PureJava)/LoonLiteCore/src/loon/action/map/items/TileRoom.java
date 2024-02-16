@@ -60,8 +60,14 @@ public class TileRoom extends RectF {
 
 		@Override
 		public boolean equals(Object other) {
-			RoomLink o = (RoomLink) other;
-			return (o._room == this._room) && (this._roomx == o._roomx) && (this._roomy == o._roomy);
+			if (other == null) {
+				return false;
+			}
+			if (other instanceof RoomLink) {
+				RoomLink room = (RoomLink) other;
+				return (room._room == this._room) && (this._roomx == room._roomx) && (this._roomy == room._roomy);
+			}
+			return false;
 		}
 
 		public int getX() {

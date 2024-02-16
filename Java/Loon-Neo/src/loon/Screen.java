@@ -698,13 +698,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen pressActionKeys() {
-		final int keySize = _keyActions.size();
-		if (keySize > 0) {
-			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-				final ActionKey act = it.next();
-				if (act != null) {
-					act.press();
-				}
+		if (_keyActions.size == 0) {
+			return this;
+		}
+		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+			final ActionKey act = it.next();
+			if (act != null) {
+				act.press();
 			}
 		}
 		return this;

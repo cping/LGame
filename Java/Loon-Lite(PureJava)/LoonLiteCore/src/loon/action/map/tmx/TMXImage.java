@@ -23,6 +23,7 @@ package loon.action.map.tmx;
 import loon.Json;
 import loon.LSystem;
 import loon.LTexture;
+import loon.action.map.tmx.TMXImage.Format;
 import loon.canvas.LColor;
 import loon.utils.xml.XMLElement;
 
@@ -87,6 +88,11 @@ public class TMXImage {
 				height = image.getWidth();
 			}
 		}
+	}
+
+	public TMXImage setFormat(Format f) {
+		this.format = f;
+		return this;
 	}
 
 	public Format getFormat() {
