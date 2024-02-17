@@ -32,6 +32,9 @@ import loon.utils.SortedList;
 import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * loon围绕时间桢提供的进程管理用类
+ */
 public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
 
 	static class ProcessComparator implements Comparator<GameProcess> {

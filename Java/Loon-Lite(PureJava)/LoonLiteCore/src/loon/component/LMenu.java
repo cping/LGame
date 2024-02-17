@@ -688,7 +688,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				if ((this.active) || (this.width > 0)) {
 					float posX = this.getScreenRight() - this.width;
 					g.draw(mainpanel, posX, getScreenY(), this.width, getScreenHeight(), _component_baseColor);
-					if (this.width == this.main_panel_size) {
+					if (MathUtils.equal(this.width, this.main_panel_size)) {
 						for (int i = 0; i < this.items.size; i++) {
 							this.items.get(i).draw(g);
 						}

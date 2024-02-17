@@ -222,7 +222,7 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public LScrollContainer scrollX(float x) {
-		this._scrolling = (x != this._boxScrollX);
+		this._scrolling = !MathUtils.equal(x, this._boxScrollX);
 		if (_scrollX) {
 			this._boxScrollX = x;
 		}
@@ -231,7 +231,7 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public LScrollContainer scrollY(float y) {
-		this._scrolling = (y != this._boxScrollY);
+		this._scrolling = !MathUtils.equal(y, this._boxScrollY);
 		if (_scrollY) {
 			this._boxScrollY = y;
 		}

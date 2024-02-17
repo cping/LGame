@@ -42,6 +42,10 @@ import loon.opengl.GLEx;
  */
 public class LWindow extends LContainer implements FontSet<LWindow> {
 
+	private final static float WIDTH_SCALE = 0.75f;
+
+	private final static float HEIGHT_SCALE = 0.45f;
+
 	private String _title;
 
 	private LTexture _barTexture;
@@ -65,8 +69,9 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 			String closeButton, float x, float y, CallFunction first, CallFunction second, CallFunction close,
 			boolean vertical) {
 		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton,
-				closeButton, x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, 40, first,
-				second, close, SkinManager.get().getWindowSkin().getFontColor(), vertical);
+				closeButton, x, y, LSystem.viewSize.getWidth() * WIDTH_SCALE,
+				LSystem.viewSize.getHeight() * HEIGHT_SCALE, 40, first, second, close,
+				SkinManager.get().getWindowSkin().getFontColor(), vertical);
 	}
 
 	public static LWindow alert(String barPath, String backgroundPath, String btnPath, String title, String firstButton,
@@ -119,32 +124,32 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 	public static LWindow alert(String title, String firstButton, String secondButton, String closeButton, float x,
 			float y, CallFunction first, CallFunction second, CallFunction close, LColor fontColor, boolean vertical) {
 		return alert((LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton, closeButton,
-				x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, 40, first, second,
-				close, fontColor, vertical);
+				x, y, LSystem.viewSize.getWidth() * WIDTH_SCALE, LSystem.viewSize.getHeight() * HEIGHT_SCALE, 40, first,
+				second, close, fontColor, vertical);
 	}
 
 	public static LWindow alert(IFont font, String title, String firstButton, String secondButton, String closeButton,
 			float x, float y, CallFunction first, CallFunction second, CallFunction close, LColor fontColor,
 			boolean vertical) {
 		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton,
-				closeButton, x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, 40, first,
-				second, close, fontColor, vertical);
+				closeButton, x, y, LSystem.viewSize.getWidth() * WIDTH_SCALE,
+				LSystem.viewSize.getHeight() * HEIGHT_SCALE, 40, first, second, close, fontColor, vertical);
 	}
 
 	public static LWindow alert(String title, String firstButton, String secondButton, String closeButton, float x,
 			float y, float barheight, CallFunction first, CallFunction second, CallFunction close, LColor fontColor,
 			boolean vertical) {
 		return alert((LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton, closeButton,
-				x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, barheight, first,
-				second, close, fontColor, vertical);
+				x, y, LSystem.viewSize.getWidth() * WIDTH_SCALE, LSystem.viewSize.getHeight() * HEIGHT_SCALE, barheight,
+				first, second, close, fontColor, vertical);
 	}
 
 	public static LWindow alert(IFont font, String title, String firstButton, String secondButton, String closeButton,
 			float x, float y, float barheight, CallFunction first, CallFunction second, CallFunction close,
 			LColor fontColor, boolean vertical) {
 		return alert(font, (LTexture) null, (LTexture) null, (LTexture) null, title, firstButton, secondButton,
-				closeButton, x, y, LSystem.viewSize.getWidth() * 0.75f, LSystem.viewSize.getHeight() * 0.45f, barheight,
-				first, second, close, fontColor, vertical);
+				closeButton, x, y, LSystem.viewSize.getWidth() * WIDTH_SCALE,
+				LSystem.viewSize.getHeight() * HEIGHT_SCALE, barheight, first, second, close, fontColor, vertical);
 	}
 
 	public static LWindow alert(String title, String firstButton, float x, float y, float width, float height,
@@ -306,7 +311,7 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	public static LWindow at(String title, float x, float y) {
 		if (LSystem.getProcess() != null) {
-			return at(title, x, y, LSystem.viewSize.width * 0.75f, LSystem.viewSize.height * 0.45f);
+			return at(title, x, y, LSystem.viewSize.width * WIDTH_SCALE, LSystem.viewSize.height * HEIGHT_SCALE);
 		}
 		return at(title, x, y, 200, 200);
 	}

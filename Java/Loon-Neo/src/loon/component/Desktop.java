@@ -860,8 +860,9 @@ public class Desktop implements Visible, IArray, LRelease {
 		final LComponent[] components = container._childs;
 		final int size = container.getComponentCount();
 		for (int i = 0; i < size; i++) {
-			if (components[i].isContainer()) {
-				this.validateContainer((LContainer) components[i]);
+			LComponent comp = components[i];
+			if (comp != null && comp.isContainer() && comp instanceof LContainer) {
+				return this.validateContainer((LContainer) components[i]);
 			}
 		}
 		return this;

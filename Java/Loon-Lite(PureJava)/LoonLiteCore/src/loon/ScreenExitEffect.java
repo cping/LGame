@@ -181,12 +181,29 @@ public class ScreenExitEffect {
 	/**
 	 * 以指定特效离开当前Screen,并进入指定Screen
 	 * 
+	 * @param index
+	 * @param color
 	 * @param src
 	 * @param dst
-	 * @param color
+	 * @param locked
 	 */
 	public static void gotoEffectExit(final int index, final LColor color, final Screen src, final Screen dst,
 			final BooleanValue locked) {
+		gotoEffectExit(index, color, src, dst, locked, true);
+	}
+
+	/**
+	 * 以指定特效离开当前Screen,并进入指定Screen
+	 * 
+	 * @param index
+	 * @param color
+	 * @param src
+	 * @param dst
+	 * @param locked
+	 * @param hideUI
+	 */
+	public static void gotoEffectExit(final int index, final LColor color, final Screen src, final Screen dst,
+			final BooleanValue locked, final boolean hideUI) {
 		if (src == null) {
 			return;
 		}
@@ -240,7 +257,9 @@ public class ScreenExitEffect {
 		// 把渐变效果渲染层级调到最高,避免被其它效果遮挡
 		baseEffect.setZ(Integer.MAX_VALUE);
 		baseEffect.completedDispose(new ReleasedScreen(index, color, src, dst, locked));
-		src.hideUI();
+		if (hideUI) {
+			src.hideUI();
+		}
 		// 最后渲染精灵类,避免被其它组件遮挡
 		src.lastSpriteDraw();
 		src.setLock(true);
@@ -253,13 +272,16 @@ public class ScreenExitEffect {
 
 	private int _index;
 
+	private boolean _hideUI;
+
 	public ScreenExitEffect() {
-		this(-1, LColor.black);
+		this(-1, LColor.black, true);
 	}
 
-	public ScreenExitEffect(int idx, LColor c) {
+	public ScreenExitEffect(int idx, LColor c, boolean hideUI) {
 		this._index = idx;
 		this._color = c;
+		this._hideUI = hideUI;
 	}
 
 	public void gotoEffectExit(final Screen src, final Screen dst) {
@@ -267,7 +289,7 @@ public class ScreenExitEffect {
 	}
 
 	public void gotoEffectExit(final int index, final Screen src, final Screen dst) {
-		gotoEffectExit(index, _color, src, dst, _effectLocked);
+		gotoEffectExit(index, _color, src, dst, _effectLocked, _hideUI);
 	}
 
 	public void gotoEffectExit(final LColor color, final Screen src, final Screen dst) {
@@ -275,7 +297,7 @@ public class ScreenExitEffect {
 	}
 
 	public void gotoEffectExit(final int index, final LColor color, final Screen src, final Screen dst) {
-		gotoEffectExit(index, color, src, dst, _effectLocked);
+		gotoEffectExit(index, color, src, dst, _effectLocked, _hideUI);
 	}
 
 	public void gotoEffectExitRand(final Screen src, final Screen dst) {
@@ -283,7 +305,7 @@ public class ScreenExitEffect {
 	}
 
 	public void gotoEffectExitRand(final LColor color, final Screen src, final Screen dst) {
-		gotoEffectExit(MathUtils.random(0, TILES_FADE), color, src, dst, _effectLocked);
+		gotoEffectExit(MathUtils.random(0, TILES_FADE), color, src, dst, _effectLocked, _hideUI);
 	}
 
 	public LColor getEffectExitColor() {
@@ -301,6 +323,15 @@ public class ScreenExitEffect {
 
 	public ScreenExitEffect setEffectExitIndex(int idx) {
 		this._index = idx;
+		return this;
+	}
+
+	public boolean isHideUI() {
+		return _hideUI;
+	}
+
+	public ScreenExitEffect setHideUI(boolean h) {
+		this._hideUI = h;
 		return this;
 	}
 }

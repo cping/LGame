@@ -572,22 +572,21 @@ public class JsonLayout implements LRelease {
 			break;
 		}
 
-		if (par.z != -1) {
-			sprite.setLayer(par.z);
+		if (sprite != null) {
+			if (par.z != -1) {
+				sprite.setLayer(par.z);
+			}
+			sprite.setColor(par.color);
+			sprite.setAlpha(par.alpha);
+			sprite.setRotation(par.rotation);
+			sprite.setScale(par.scaleX, par.scaleY);
+			sprite.setVisible(par.visible);
+			if (jsonLayoutListener != null) {
+				jsonLayoutListener.on(props, varName, sprite);
+			}
+			putSprites(varName, sprite);
 		}
-
-		sprite.setColor(par.color);
-		sprite.setAlpha(par.alpha);
-		sprite.setRotation(par.rotation);
-		sprite.setScale(par.scaleX, par.scaleY);
-		sprite.setVisible(par.visible);
-
-		if (jsonLayoutListener != null) {
-			jsonLayoutListener.on(props, varName, sprite);
-		}
-
-		putSprites(varName, sprite);
-
+		
 		return sprite;
 	}
 

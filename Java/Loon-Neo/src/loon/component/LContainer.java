@@ -1382,13 +1382,13 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LContainer scrollX(float x) {
-		this._scrolling = (x != this._component_scrollX);
+		this._scrolling = !MathUtils.equal(x, this._component_scrollX);
 		this._component_scrollX = x;
 		return this;
 	}
 
 	public LContainer scrollY(float y) {
-		this._scrolling = (y != this._component_scrollY);
+		this._scrolling = !MathUtils.equal(y, this._component_scrollY);
 		this._component_scrollY = y;
 		return this;
 	}

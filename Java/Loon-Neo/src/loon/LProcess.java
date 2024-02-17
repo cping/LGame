@@ -54,6 +54,46 @@ import loon.utils.timer.LTimerContext;
  */
 public class LProcess implements LRelease {
 
+	private final class ScreenProcess extends RealtimeProcess {
+
+		private final LGame _game;
+
+		private final LProcess _process;
+
+		private final Screen _screen;
+
+		public ScreenProcess(LGame g, LProcess p, Screen s) {
+			super("ScreenProcess", 0);
+			this._game = g;
+			this._process = p;
+			this._screen = s;
+			this.setProcessType(GameProcessType.Initialize);
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			if (_game != null && !_game.displayImpl.showLogo) {
+				try {
+					_process.startTransition();
+					_screen.setClose(false);
+					_screen.resetOrder();
+					_screen.resetSize();
+					_screen.onLoad();
+					_screen.onLoaded();
+					_screen.setOnLoadState(true);
+					_screen.resume();
+					_process.endTransition();
+				} catch (Throwable cause) {
+					LSystem.error("Screen onLoad dispatch failed: " + _screen, cause);
+				} finally {
+					kill();
+				}
+			}
+
+		}
+
+	}
+
 	protected TArray<Updateable> resumes;
 
 	protected TArray<Updateable> loads;
@@ -72,13 +112,19 @@ public class LProcess implements LRelease {
 
 	private final Vector2f _offsetTouch = new Vector2f();
 
-	private boolean _isInstance;
+	private final ObjectBundle _bundle;
 
-	private int _curId;
+	private final LGame _game;
+	
+	private ScreenProcess _screenProcess;
+
+	private boolean _isInstance;
 
 	private boolean _waitTransition;
 
 	private boolean _running;
+
+	private int _curId;
 
 	private float _touchScaleX = 1f, _touchScaleY = 1f;
 
@@ -87,10 +133,6 @@ public class LProcess implements LRelease {
 	private LTransition _transition;
 
 	private SysInputFactory _currentInput;
-
-	private final ObjectBundle _bundle;
-
-	private final LGame _game;
 
 	public LProcess(LGame game) {
 		this._game = game;
@@ -308,7 +350,6 @@ public class LProcess implements LRelease {
 	}
 
 	// --- UnLoad end ---//
-	private RealtimeProcess _screenProcess;
 
 	private void setScreen(final Screen screen, final boolean put) {
 		if (checkWaiting()) {
@@ -404,33 +445,12 @@ public class LProcess implements LRelease {
 
 				if (_screenProcess != null) {
 					_screenProcess.kill();
+					if (RealtimeProcessManager.get().containsProcess(_screenProcess)) {
+						RealtimeProcessManager.get().delete(_screenProcess);
+					}
 				}
 
-				_screenProcess = new RealtimeProcess() {
-
-					@Override
-					public void run(LTimerContext time) {
-						if (_game != null && !_game.displayImpl.showLogo) {
-							try {
-								startTransition();
-								screen.setClose(false);
-								screen.resetOrder();
-								screen.resetSize();
-								screen.onLoad();
-								screen.onLoaded();
-								screen.setOnLoadState(true);
-								screen.resume();
-								endTransition();
-							} catch (Throwable cause) {
-								LSystem.error("Screen onLoad dispatch failed: " + screen, cause);
-							} finally {
-								kill();
-							}
-						}
-					}
-				};
-				_screenProcess.setProcessType(GameProcessType.Initialize);
-				_screenProcess.setDelay(0);
+				_screenProcess = new ScreenProcess(_game, this, screen);
 
 				RealtimeProcessManager.get().addProcess(_screenProcess);
 
