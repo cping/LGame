@@ -124,7 +124,7 @@ public class Random {
 		range += 1;
 		int r = (int) next(17);
 		int m = range;
-		if ((range & m) == 0) {
+		if ((r & m) == 0) {
 			r = (int) ((range * (long) r) >> 31);
 		} else {
 			for (int u = r; u - (r = u % range) + m < 0; u = (int) next(17))

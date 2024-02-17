@@ -87,19 +87,21 @@ public class GameTouch {
 		if (touch == null) {
 			this.reset();
 		}
-		this._orientation = touch._orientation;
-		this._active = touch._active;
-		this.type = touch.type;
-		this.x = touch.x;
-		this.y = touch.y;
-		this.dx = touch.dx;
-		this.dy = touch.dy;
-		this.button = touch.button;
-		this.pointer = touch.pointer;
-		this.duration = touch.duration;
-		this.id = touch.id;
-		this.timeUp = touch.timeUp;
-		this.timeDown = touch.timeDown;
+		if (touch != null) {
+			this._orientation = touch._orientation;
+			this._active = touch._active;
+			this.type = touch.type;
+			this.x = touch.x;
+			this.y = touch.y;
+			this.dx = touch.dx;
+			this.dy = touch.dy;
+			this.button = touch.button;
+			this.pointer = touch.pointer;
+			this.duration = touch.duration;
+			this.id = touch.id;
+			this.timeUp = touch.timeUp;
+			this.timeDown = touch.timeDown;
+		}
 	}
 
 	public GameTouch convertOrientation() {

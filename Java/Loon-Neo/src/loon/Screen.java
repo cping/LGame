@@ -673,6 +673,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (key != null) {
 			key.press();
 		}
+		_keyButtonPressed = keyCode;
+		_keyButtonReleased = NO_KEY;
 		return this;
 	}
 
@@ -685,6 +687,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (key != null) {
 			key.release();
 		}
+		_keyButtonReleased = keyCode;
+		_keyButtonPressed = NO_KEY;
 		return this;
 	}
 
@@ -694,6 +698,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Screen clearActionKey() {
 		_keyActions.clear();
+		_keyButtonPressed = NO_KEY;
+		_keyButtonReleased = NO_KEY;
 		return this;
 	}
 

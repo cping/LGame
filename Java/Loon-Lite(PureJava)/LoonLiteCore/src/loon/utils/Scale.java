@@ -197,7 +197,7 @@ public class Scale {
 		TArray<ScaledResource> rsrcs = new TArray<ScaledResource>();
 		rsrcs.add(new ScaledResource(this, computePath(path, factor)));
 		for (float rscale = MathUtils.ifloor(factor); rscale > 1; rscale -= 1) {
-			if (rscale != factor)
+			if (!MathUtils.equal(rscale, factor))
 				rsrcs.add(new ScaledResource(new Scale(rscale), computePath(path, rscale)));
 		}
 		rsrcs.add(new ScaledResource(ONE, path));

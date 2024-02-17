@@ -1336,18 +1336,18 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public void setWidth(float w) {
-		if (w != this._width) {
+		if (!MathUtils.equal(w, this._width)) {
+			this._width = MathUtils.max(1f, w);
 			this.onResize();
 		}
-		this._width = MathUtils.max(1f, w);
 	}
 
 	@Override
 	public void setHeight(float h) {
-		if (h != this._height) {
+		if (!MathUtils.equal(h, this._height)) {
+			this._height = MathUtils.max(1f, h);
 			this.onResize();
 		}
-		this._height = MathUtils.max(1f, h);
 	}
 
 	public IEntity setSize(float size) {
@@ -1356,7 +1356,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public IEntity setSize(float w, float h) {
-		if (this._width != w || this._height != h) {
+		if (!MathUtils.equal(w, this._width) || !MathUtils.equal(h, this._height)) {
 			this._width = MathUtils.max(1f, w);
 			this._height = MathUtils.max(1f, h);
 			this.onResize();

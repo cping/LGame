@@ -233,6 +233,9 @@ public class BattleProcess extends CoroutineProcess {
 		if (checkProcessWait()) {
 			return false;
 		}
+		if (turnEvent == null) {
+			return false;
+		}
 		final BattleState state = turnEvent.getState();
 		this._stateCurrent = state;
 		if (_stateCompleted != state) {
@@ -262,6 +265,9 @@ public class BattleProcess extends CoroutineProcess {
 
 	protected boolean updateBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
 		if (checkProcessWait()) {
+			return false;
+		}
+		if (turnEvent == null) {
 			return false;
 		}
 		final BattleState state = turnEvent.getState();

@@ -153,6 +153,9 @@ public final class GameComponentCollection {
 		if (isClear) {
 			return false;
 		}
+		if (gc == null) {
+			return false;
+		}
 		gc.initialize();
 		boolean result = collections.add(gc);
 		if (gc != null && Added != null) {
@@ -168,6 +171,9 @@ public final class GameComponentCollection {
 
 	public boolean add(IGameComponent gc, int index) {
 		if (isClear) {
+			return false;
+		}
+		if (gc == null) {
 			return false;
 		}
 		gc.initialize();

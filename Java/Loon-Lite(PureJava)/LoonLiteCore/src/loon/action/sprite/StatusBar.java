@@ -134,7 +134,7 @@ public class StatusBar extends Entity {
 			g.fillRect(x, y, _width, _height, colorback.mul(_baseColor));
 		}
 		if (minValue < initValue) {
-			if (cv1 == _width) {
+			if (MathUtils.equal(cv1, _width)) {
 				g.fillRect(x, y, cv1, _height, colorbefore.mul(_baseColor));
 			} else {
 				if (!deadObject) {
@@ -143,7 +143,7 @@ public class StatusBar extends Entity {
 				g.fillRect(x, y, cv1, _height, colorbefore.mul(_baseColor));
 			}
 		} else {
-			if (cv2 == _width) {
+			if (MathUtils.equal(cv2, _width)) {
 				g.fillRect(x, y, cv2, _height, colorbefore.mul(_baseColor));
 			} else {
 				g.fillRect(x, y, cv1, _height, colorafter.mul(_baseColor));

@@ -287,7 +287,10 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			}
 		}
 
-		public TArray<TreeElement> setSublevel(TreeElement[] array) {
+		public TArray<LTextTree.TreeElement> setSublevel(TreeElement[] array) {
+			if (array == null) {
+				return new TArray<LTextTree.TreeElement>();
+			}
 			if (array != null && array.length > 0) {
 				for (int i = 0; i < array.length; i++) {
 					TreeElement e = array[i];
@@ -298,7 +301,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 					}
 				}
 			}
-			_childs = new TArray<TreeElement>(array);
+			_childs = new TArray<LTextTree.TreeElement>(array);
 			if (_tree != null) {
 				_tree._dirty = true;
 			}
@@ -470,8 +473,11 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 		for (int i = 0; i < _treeNodes.size && i < _selectRects.length; i++) {
 			TreeNode node = _treeNodes.get(i);
+			if (node == null) {
+				continue;
+			}
 			TreeElement ele = node.getElement();
-			if (node != null && ele != null) {
+			if (ele != null) {
 				RectF rect = _selectRects[i];
 				float newX = rect.x + x + offX;
 				float newY = rect.y + y + offY;
@@ -895,14 +901,16 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 	public LTextTree updateTree() {
 		if (_treeNodes != null && _selected != -1 && CollectionUtils.safeRange(_treeNodes.items, _selected)) {
 			TreeNode node = _treeNodes.get(_selected);
-			TreeElement ele = node.getElement();
-			if (node != null && ele != null) {
-				if (_selected == 0) {
-					_root_hide = !_root_hide;
+			if (node != null) {
+				TreeElement ele = node.getElement();
+				if (ele != null) {
+					if (_selected == 0) {
+						_root_hide = !_root_hide;
+					}
+					ele.reverseChild();
+					_dirty = true;
+					_updateTree = true;
 				}
-				ele.reverseChild();
-				_dirty = true;
-				_updateTree = true;
 			}
 		}
 		return this;

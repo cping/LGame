@@ -289,9 +289,6 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		if (parent == null) {
 			return getX();
 		}
-		if (parent instanceof SpriteEntity) {
-			return getX();
-		}
 		float x = 0;
 		if (parent != null) {
 			x += parent.getX();
@@ -305,9 +302,6 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	public float getScreenY() {
 		ISprite parent = getParent();
 		if (parent == null) {
-			return getY();
-		}
-		if (parent instanceof SpriteEntity) {
 			return getY();
 		}
 		float y = 0;

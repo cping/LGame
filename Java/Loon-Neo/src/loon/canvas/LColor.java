@@ -614,21 +614,21 @@ public class LColor implements Serializable {
 	}
 
 	public static final boolean isSimilarRGB(LColor srcColor, LColor dstColor, float similarOffset) {
-		if (srcColor == dstColor) {
-			return true;
-		}
 		if (srcColor == null || dstColor == null) {
 			return false;
+		}
+		if (srcColor == dstColor || srcColor.equals(dstColor)) {
+			return true;
 		}
 		return isSimilarRGB(srcColor.r, srcColor.g, srcColor.b, dstColor.r, dstColor.g, dstColor.b, similarOffset);
 	}
 
 	public static final boolean isSimilarRGB(String srcColor, String dstColor, float similarOffset) {
-		if (srcColor == dstColor) {
-			return true;
-		}
 		if (srcColor == null || dstColor == null) {
 			return false;
+		}
+		if (srcColor == dstColor || srcColor.equals(dstColor)) {
+			return true;
 		}
 		return isSimilarRGB(new LColor(srcColor), new LColor(dstColor), similarOffset);
 	}

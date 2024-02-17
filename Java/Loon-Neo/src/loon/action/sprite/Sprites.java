@@ -409,10 +409,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		if (spr == null) {
 			return null;
 		}
-		if (this == spr) {
-			return spr;
-		}
-
 		float maxX = 0;
 		float maxY = 0;
 

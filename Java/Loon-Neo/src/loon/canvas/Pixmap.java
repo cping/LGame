@@ -1558,7 +1558,7 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	public Pixmap drawDashCircle(int x, int y, float radius) {
 		float scaleFactor = 0.6f;
 		int sides = 10 + MathUtils.floor(radius * scaleFactor);
-		if (sides % 2 == 1) {
+		if (sides % 2 != 0) {
 			sides++;
 		}
 

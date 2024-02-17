@@ -320,8 +320,6 @@ public class Scheduler implements LRelease {
 							} else {
 								_childIndex++;
 							}
-						} else if (interval.completed() && !seq) {
-							_childIndex++;
 						}
 					}
 					if (_childIndex >= _scheduled.size) {

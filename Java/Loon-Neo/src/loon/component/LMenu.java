@@ -235,8 +235,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				final boolean down = SysTouch.isDown();
 				final boolean drag = SysTouch.isDrag();
 				final boolean checkd = (down || drag);
-				final Vector2f pos = _parent.getUITouchXY();
 				if (this._parent != null) {
+					final Vector2f pos = _parent.getUITouchXY();
 					if (!localpos) {
 						this.x = (this._parent.cellWidth * this.xslot + this._parent.cellWidth / this.itemWidth
 								+ this.xslot * this._parent.paddingx) - this._parent.item_left_offset;
@@ -293,7 +293,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					}
 
 				} else {
-					if (bounds().contains(pos.x, pos.y) && (checkd)) {
+					if (bounds().contains(SysTouch.getX(), SysTouch.getY()) && (checkd)) {
 						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if ((down && !drag) && checkd && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick, this);
@@ -305,15 +305,13 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						this.clicked = false;
 					}
 					if (_texture != null) {
-						g.draw(this._texture, this.x + _parent._leftOffsetMoveMenu + offsetX, this.y + offsetY,
-								this.itemWidth, this.itemHeight, _parent._component_baseColor);
+						g.draw(this._texture, this.x + offsetX, this.y + offsetY, this.itemWidth, this.itemHeight);
 					}
 					if (this._label != null) {
 						font.drawString(g, this._label,
-								(this.x + _parent._leftOffsetMoveMenu
-										+ (itemWidth / 2 - font.stringWidth(_label) / 2 - font.getAscent())) + offsetX
+								(this.x + (itemWidth / 2 - font.stringWidth(_label) / 2 - font.getAscent())) + offsetX
 										+ labelOffsetX,
-								(this.y - 2) + offsetY + labelOffsetY, _parent.fontColor);
+								(this.y - 2) + offsetY + labelOffsetY);
 					}
 				}
 			} finally {

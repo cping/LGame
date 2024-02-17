@@ -146,16 +146,6 @@ public final class MathUtils {
 		}
 	}
 
-	public static int ifloor(float v) {
-		int iv = (int) v;
-		return (v >= 0f || iv == v || iv == Integer.MIN_VALUE) ? iv : (iv - 1);
-	}
-
-	public static int iceil(float v) {
-		int iv = (int) v;
-		return (v <= 0f || iv == v || iv == Integer.MAX_VALUE) ? iv : (iv + 1);
-	}
-
 	public static RectBox getBounds(float x, float y, float width, float height, float rotate, RectBox result) {
 		if (rotate == 0) {
 			if (result == null) {
@@ -1156,6 +1146,10 @@ public final class MathUtils {
 		return MathUtils.floor(random(start, end));
 	}
 
+	public static int ifloor(float v) {
+		return (int) (v + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
+	}
+
 	public static int floor(float x) {
 		return (int) (x + BIG_ENOUGH_FLOOR) - BIG_ENOUGH_INT;
 	}
@@ -1174,6 +1168,10 @@ public final class MathUtils {
 
 	public static int floorPositive(float x) {
 		return (int) x;
+	}
+
+	public static int iceil(float v) {
+		return (int) (v + BIG_ENOUGH_CEIL) - BIG_ENOUGH_INT;
 	}
 
 	public static int ceil(float x) {

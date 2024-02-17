@@ -1056,6 +1056,9 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess setScreen(final Screen screen) {
+		if (checkWaiting()) {
+			return this;
+		}
 		if (screen == null) {
 			return this;
 		}
@@ -1224,6 +1227,9 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess setCurrentScreen(final Screen screen, boolean closed) {
+		if (checkWaiting()) {
+			return this;
+		}
 		if (screen != null) {
 			this._isInstance = false;
 			if (closed && _currentScreen != null) {

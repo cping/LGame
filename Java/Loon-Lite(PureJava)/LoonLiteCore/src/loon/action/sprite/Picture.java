@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,9 +20,10 @@
  */
 package loon.action.sprite;
 
-import loon.LSystem;
 import loon.LTexture;
+import loon.LSystem;
 import loon.canvas.Image;
+import loon.utils.MathUtils;
 
 /**
  * 显示图片用的精灵(本质上就是个显示图用的Entity)
@@ -54,14 +55,22 @@ public class Picture extends Entity {
 		this.setLocation(x, y);
 	}
 
+	@Override
+	public int hashCode() {
+		return _image == null ? super.hashCode() : _image.hashCode();
+	}
+
 	public boolean equals(Picture p) {
 		if (null == p) {
 			return false;
 		}
-		if ((this == p) || _image.equals(p._image)) {
+		if (this == p) {
 			return true;
 		}
-		if (this._width == p._width && this._height == p._height) {
+		if (_image.equals(p._image)) {
+			return true;
+		}
+		if (MathUtils.equal(this._width, p._width) && MathUtils.equal(this._height, p._height)) {
 			if (_image.hashCode() == p._image.hashCode()) {
 				return true;
 			}

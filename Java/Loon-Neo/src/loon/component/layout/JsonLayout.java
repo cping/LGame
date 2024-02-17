@@ -489,6 +489,9 @@ public class JsonLayout implements LRelease {
 	}
 
 	protected ISprite createSprite(int code, Json.Object props) {
+		if (props == null) {
+			return null;
+		}
 
 		ISprite sprite = null;
 
@@ -554,18 +557,18 @@ public class JsonLayout implements LRelease {
 			} else if (image != null) {
 				entity = new Entity(image, par.x, par.y);
 			}
+			if (entity != null) {
+				entity.setRotationCenterX(props.getNumber("pivotx", -1f));
+				entity.setRotationCenterY(props.getNumber("pivoty", -1f));
 
-			entity.setRotationCenterX(props.getNumber("pivotx", -1f));
-			entity.setRotationCenterY(props.getNumber("pivoty", -1f));
+				entity.setSkewCenterX(props.getNumber("skewx", -1f));
+				entity.setSkewCenterY(props.getNumber("skewy", -1f));
 
-			entity.setSkewCenterX(props.getNumber("skewx", -1f));
-			entity.setSkewCenterY(props.getNumber("skewy", -1f));
+				entity.setFlipX(props.getBoolean("flipx", false));
+				entity.setFlipY(props.getBoolean("flipy", false));
 
-			entity.setFlipX(props.getBoolean("flipx", false));
-			entity.setFlipY(props.getBoolean("flipy", false));
-
-			sprite = entity;
-
+				sprite = entity;
+			}
 			break;
 		}
 
@@ -769,7 +772,12 @@ public class JsonLayout implements LRelease {
 	}
 
 	protected LClickButton createClickButton(Json.Object props, String varName, LContainer view) {
-
+		if (props == null) {
+			return null;
+		}
+		if (view == null) {
+			return null;
+		}
 		LClickButton clickButton = null;
 
 		BaseParameter par = new BaseParameter(this, props);
@@ -802,25 +810,20 @@ public class JsonLayout implements LRelease {
 			}
 
 		} else {
-
 			clickButton = new LClickButton(par.text, par.font, par.color, par.x, par.y, par.width, par.height);
-
 		}
 
-		if (par.z != -1) {
-			clickButton.setLayer(par.z);
+		if (clickButton != null) {
+			if (par.z != -1) {
+				clickButton.setLayer(par.z);
+			}
+			clickButton.setVisible(par.visible);
+			move(par.layoutAlgin, view, clickButton);
+			view.add(clickButton);
+			putComponents(varName, clickButton);
 		}
-
-		clickButton.setVisible(par.visible);
-
-		move(par.layoutAlgin, view, clickButton);
-
-		view.add(clickButton);
-
-		putComponents(varName, clickButton);
 
 		return clickButton;
-
 	}
 
 	protected LButton createImageButton(Json.Object props, String varName, LContainer view) {
@@ -1136,7 +1139,7 @@ public class JsonLayout implements LRelease {
 		}
 		progress = new LProgress(pType, par.color, par.x, par.y, par.width, par.height, background, bgProgress);
 		progress.setVertical(props.getBoolean("vertical", false));
-		 float value = props.getNumber("value", 0f);
+		float value = props.getNumber("value", 0f);
 		if (value > 1f) {
 			value = value / 100f;
 		}

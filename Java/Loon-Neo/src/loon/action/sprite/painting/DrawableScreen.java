@@ -245,13 +245,11 @@ public abstract class DrawableScreen extends Screen {
 	public final void onKeyDown(GameKey e) {
 		super.onKeyDown(e);
 		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
-					}
-					drawable.pressed(e);
+			if (drawable != null && drawable._enabled) {
+				if (drawable.getDrawableState() == DrawableState.Hidden) {
+					continue;
 				}
+				drawable.pressed(e);
 			}
 		}
 		pressed(e);
@@ -261,13 +259,11 @@ public abstract class DrawableScreen extends Screen {
 	public final void onKeyUp(GameKey e) {
 		super.onKeyUp(e);
 		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
-					}
-					drawable.released(e);
+			if (drawable != null && drawable._enabled) {
+				if (drawable.getDrawableState() == DrawableState.Hidden) {
+					continue;
 				}
+				drawable.released(e);
 			}
 		}
 		released(e);
@@ -276,13 +272,11 @@ public abstract class DrawableScreen extends Screen {
 	@Override
 	public final void touchDown(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
-					}
-					drawable.pressed(e);
+			if (drawable != null && drawable._enabled) {
+				if (drawable.getDrawableState() == DrawableState.Hidden) {
+					continue;
 				}
+				drawable.pressed(e);
 			}
 		}
 		pressed(e);
@@ -291,13 +285,11 @@ public abstract class DrawableScreen extends Screen {
 	@Override
 	public final void touchUp(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
-					}
-					drawable.released(e);
+			if (drawable != null && drawable._enabled) {
+				if (drawable.getDrawableState() == DrawableState.Hidden) {
+					continue;
 				}
+				drawable.released(e);
 			}
 		}
 		released(e);
@@ -306,13 +298,11 @@ public abstract class DrawableScreen extends Screen {
 	@Override
 	public final void touchMove(GameTouch e) {
 		for (Drawable drawable : drawablesToDraw) {
-			if (drawable._enabled) {
-				if (drawable != null) {
-					if (drawable.getDrawableState() == DrawableState.Hidden) {
-						continue;
-					}
-					drawable.move(e);
+			if (drawable != null && drawable._enabled) {
+				if (drawable.getDrawableState() == DrawableState.Hidden) {
+					continue;
 				}
+				drawable.move(e);
 			}
 		}
 		move(e);

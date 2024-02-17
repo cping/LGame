@@ -546,7 +546,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final Vector2f mulSelf(float scale) {
-		return mulSelf(scale);
+		return mulSelf(scale, scale);
 	}
 
 	public final Vector2f mulSelf(float sx, float sy) {
@@ -1278,9 +1278,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f lerp(Vector2f target, float alpha) {
-		Vector2f r = this.mul(1f - alpha);
-		r.add(target.tmp().mul(alpha));
-		return r;
+		return cpy().lerpSelf(target, alpha);
 	}
 
 	public Vector2f lerpSelf(Vector2f target, float alpha) {

@@ -840,6 +840,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public SortedList<int[]> findMovePath(int xStart, int yStart, int xEnd, int yEnd) {
+		if (positionFlag == null) {
+			return null;
+		}
 		xEnd += offsetXPixel(getViewRect().x);
 		yEnd += offsetYPixel(getViewRect().y);
 		focuses = null;

@@ -676,7 +676,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public LComponent setSize(float w, float h) {
-		if (this._width != w || this._height != h) {
+		if (!MathUtils.equal(this._width, w) || !MathUtils.equal(this._height, h)) {
 			this._width = MathUtils.max(1f, w);
 			this._height = MathUtils.max(1f, h);
 			this.validateResize();
@@ -689,7 +689,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent sizeBy(float w, float h) {
-		if (this._width != w || this._height != h) {
+		if (!MathUtils.equal(this._width, w) || !MathUtils.equal(this._height, h)) {
 			this._width += MathUtils.max(1f, w);
 			this._height += MathUtils.max(1f, h);
 			this.validateResize();
@@ -801,18 +801,18 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setHeight(float height) {
-		if (height != this._height) {
+		if (!MathUtils.equal(height, this._height)) {
+			this._height = MathUtils.max(1f, height);
 			this.validateResize();
 		}
-		this._height = MathUtils.max(1f, height);
 	}
 
 	@Override
 	public void setWidth(float width) {
-		if (width != this._width) {
+		if (!MathUtils.equal(width, this._width)) {
+			this._width = MathUtils.max(1f, width);
 			this.validateResize();
 		}
-		this._width = MathUtils.max(1f, width);
 	}
 
 	@Override
@@ -1282,7 +1282,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public void setScale(float sx, float sy) {
-		if (this._scaleX != sx || this._scaleY != sy) {
+		if (!MathUtils.equal(this._scaleX, sx) || !MathUtils.equal(this._scaleY, sy)) {
 			this._scaleX = sx;
 			this._scaleY = sy;
 			this.processScale();
@@ -1294,7 +1294,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent scaleBy(float sx, float sy) {
-		if (this._scaleX != sx || this._scaleY != sy) {
+		if (!MathUtils.equal(this._scaleX, sx) || !MathUtils.equal(this._scaleY, sy)) {
 			this._scaleX += sx;
 			this._scaleY += sy;
 			this.processScale();
@@ -1711,7 +1711,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public Vector2f getAbsolutePosition() {
 		Vector2f screenPos = new Vector2f(getPosition());
 		for (LComponent p = this.getParent(); p != null; p = p.getParent()) {
-			screenPos.add(p.getPosition());
+			screenPos.addSelf(p.getPosition());
 		}
 		return screenPos;
 	}

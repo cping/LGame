@@ -564,7 +564,7 @@ public class Actor extends LObject<Actor>
 				r = 360 + r % 360;
 			}
 		}
-		if (this._objectRotation != r) {
+		if (!MathUtils.equal(this._objectRotation, r)) {
 			this._objectRotation = r;
 			this._boundingRect = null;
 			this.sizeChanged();

@@ -28,7 +28,6 @@ import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.PlayerUtils;
 import loon.Screen;
-import loon.LObject.State;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;

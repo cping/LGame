@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,10 +27,6 @@ import loon.LSysException;
  */
 public class Base64Coder {
 
-	private static final int BASELENGTH = 255;
-
-	private static final int LOOKUPLENGTH = 64;
-
 	private static final int TWENTYFOURBITGROUP = 24;
 
 	private static final int EIGHTBIT = 8;
@@ -43,9 +39,50 @@ public class Base64Coder {
 
 	private static final byte PAD = (byte) '=';
 
-	private static byte[] BASE64_ALPHABET;
+	static final private class Base64Alphabet {
 
-	private static byte[] LOOKUP_BASE64_ALPHABET;
+		private static final int BASELENGTH = 255;
+
+		private static final int LOOKUPLENGTH = 64;
+
+		private static byte[] BASE64_ALPHABET = new byte[BASELENGTH];
+
+		private static byte[] LOOKUP_BASE64_ALPHABET = new byte[LOOKUPLENGTH];
+
+		static {
+			for (int i = 0; i < BASELENGTH; i++) {
+				BASE64_ALPHABET[i] = -1;
+			}
+			for (int i = 'Z'; i >= 'A'; i--) {
+				BASE64_ALPHABET[i] = (byte) (i - 'A');
+			}
+			for (int i = 'z'; i >= 'a'; i--) {
+				BASE64_ALPHABET[i] = (byte) (i - 'a' + 26);
+			}
+
+			for (int i = '9'; i >= '0'; i--) {
+				BASE64_ALPHABET[i] = (byte) (i - '0' + 52);
+			}
+
+			BASE64_ALPHABET['+'] = 62;
+			BASE64_ALPHABET['/'] = 63;
+
+			for (int i = 0; i <= 25; i++) {
+				LOOKUP_BASE64_ALPHABET[i] = (byte) ('A' + i);
+			}
+
+			for (int i = 26, j = 0; i <= 51; i++, j++) {
+				LOOKUP_BASE64_ALPHABET[i] = (byte) ('a' + j);
+			}
+
+			for (int i = 52, j = 0; i <= 61; i++, j++) {
+				LOOKUP_BASE64_ALPHABET[i] = (byte) ('0' + j);
+			}
+			LOOKUP_BASE64_ALPHABET[62] = (byte) '+';
+			LOOKUP_BASE64_ALPHABET[63] = (byte) '/';
+
+		}
+	}
 
 	private Base64Coder() {
 
@@ -73,50 +110,11 @@ public class Base64Coder {
 		return bufIndex - offset;
 	}
 
-	private final static void checking() {
-		if (BASE64_ALPHABET == null) {
-			BASE64_ALPHABET = new byte[BASELENGTH];
-			for (int i = 0; i < BASELENGTH; i++) {
-				BASE64_ALPHABET[i] = -1;
-			}
-			for (int i = 'Z'; i >= 'A'; i--) {
-				BASE64_ALPHABET[i] = (byte) (i - 'A');
-			}
-			for (int i = 'z'; i >= 'a'; i--) {
-				BASE64_ALPHABET[i] = (byte) (i - 'a' + 26);
-			}
-
-			for (int i = '9'; i >= '0'; i--) {
-				BASE64_ALPHABET[i] = (byte) (i - '0' + 52);
-			}
-
-			BASE64_ALPHABET['+'] = 62;
-			BASE64_ALPHABET['/'] = 63;
-		}
-		if (LOOKUP_BASE64_ALPHABET == null) {
-			LOOKUP_BASE64_ALPHABET = new byte[LOOKUPLENGTH];
-			for (int i = 0; i <= 25; i++) {
-				LOOKUP_BASE64_ALPHABET[i] = (byte) ('A' + i);
-			}
-
-			for (int i = 26, j = 0; i <= 51; i++, j++) {
-				LOOKUP_BASE64_ALPHABET[i] = (byte) ('a' + j);
-			}
-
-			for (int i = 52, j = 0; i <= 61; i++, j++) {
-				LOOKUP_BASE64_ALPHABET[i] = (byte) ('0' + j);
-			}
-			LOOKUP_BASE64_ALPHABET[62] = (byte) '+';
-			LOOKUP_BASE64_ALPHABET[63] = (byte) '/';
-		}
-	}
-
 	public static boolean isBase64(String v) {
 		return isArrayByteBase64(v.getBytes());
 	}
 
 	public static boolean isArrayByteBase64(byte[] bytes) {
-		checking();
 		int length = bytes.length;
 		if (length == 0) {
 			return true;
@@ -130,11 +128,10 @@ public class Base64Coder {
 	}
 
 	private static boolean isBase64(byte octect) {
-		return (octect == PAD || BASE64_ALPHABET[octect] != -1);
+		return (octect == PAD || Base64Alphabet.BASE64_ALPHABET[octect] != -1);
 	}
 
 	public static byte[] encode(byte[] binaryData) {
-		checking();
 		int lengthDataBits = binaryData.length * EIGHTBIT;
 		int fewerThan24bits = lengthDataBits % TWENTYFOURBITGROUP;
 		int numberTriplets = lengthDataBits / TWENTYFOURBITGROUP;
@@ -170,10 +167,10 @@ public class Base64Coder {
 			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
 			byte val3 = ((b3 & SIGN) == 0) ? (byte) (b3 >> 6) : (byte) ((b3) >> 6 ^ 0xfc);
 
-			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
-			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
-			encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[(l << 2) | val3];
-			encodedData[encodedIndex + 3] = LOOKUP_BASE64_ALPHABET[b3 & 0x3f];
+			encodedData[encodedIndex] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[val1];
+			encodedData[encodedIndex + 1] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
+			encodedData[encodedIndex + 2] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[(l << 2) | val3];
+			encodedData[encodedIndex + 3] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[b3 & 0x3f];
 		}
 
 		dataIndex = i * 3;
@@ -182,8 +179,8 @@ public class Base64Coder {
 			b1 = binaryData[dataIndex];
 			k = (byte) (b1 & 0x03);
 			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
-			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
-			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[k << 4];
+			encodedData[encodedIndex] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[val1];
+			encodedData[encodedIndex + 1] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[k << 4];
 			encodedData[encodedIndex + 2] = PAD;
 			encodedData[encodedIndex + 3] = PAD;
 		} else if (fewerThan24bits == SIXTEENBIT) {
@@ -195,16 +192,15 @@ public class Base64Coder {
 			byte val1 = ((b1 & SIGN) == 0) ? (byte) (b1 >> 2) : (byte) ((b1) >> 2 ^ 0xc0);
 			byte val2 = ((b2 & SIGN) == 0) ? (byte) (b2 >> 4) : (byte) ((b2) >> 4 ^ 0xf0);
 
-			encodedData[encodedIndex] = LOOKUP_BASE64_ALPHABET[val1];
-			encodedData[encodedIndex + 1] = LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
-			encodedData[encodedIndex + 2] = LOOKUP_BASE64_ALPHABET[l << 2];
+			encodedData[encodedIndex] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[val1];
+			encodedData[encodedIndex + 1] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[val2 | (k << 4)];
+			encodedData[encodedIndex + 2] = Base64Alphabet.LOOKUP_BASE64_ALPHABET[l << 2];
 			encodedData[encodedIndex + 3] = PAD;
 		}
 		return encodedData;
 	}
 
 	public static byte[] decode(byte[] base64Data) {
-		checking();
 		if (base64Data.length == 0) {
 			return new byte[0];
 		}
@@ -230,12 +226,12 @@ public class Base64Coder {
 			marker0 = base64Data[dataIndex + 2];
 			marker1 = base64Data[dataIndex + 3];
 
-			b1 = BASE64_ALPHABET[base64Data[dataIndex]];
-			b2 = BASE64_ALPHABET[base64Data[dataIndex + 1]];
+			b1 = Base64Alphabet.BASE64_ALPHABET[base64Data[dataIndex]];
+			b2 = Base64Alphabet.BASE64_ALPHABET[base64Data[dataIndex + 1]];
 
 			if (marker0 != PAD && marker1 != PAD) {
-				b3 = BASE64_ALPHABET[marker0];
-				b4 = BASE64_ALPHABET[marker1];
+				b3 = Base64Alphabet.BASE64_ALPHABET[marker0];
+				b4 = Base64Alphabet.BASE64_ALPHABET[marker1];
 
 				decodedData[encodedIndex] = (byte) (b1 << 2 | b2 >> 4);
 				decodedData[encodedIndex + 1] = (byte) (((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
@@ -243,7 +239,7 @@ public class Base64Coder {
 			} else if (marker0 == PAD) {
 				decodedData[encodedIndex] = (byte) (b1 << 2 | b2 >> 4);
 			} else if (marker1 == PAD) {
-				b3 = BASE64_ALPHABET[marker0];
+				b3 = Base64Alphabet.BASE64_ALPHABET[marker0];
 				decodedData[encodedIndex] = (byte) (b1 << 2 | b2 >> 4);
 				decodedData[encodedIndex + 1] = (byte) (((b2 & 0xf) << 4) | ((b3 >> 2) & 0xf));
 			}
@@ -257,13 +253,12 @@ public class Base64Coder {
 	}
 
 	public static byte[] decodeBase64(char[] data) {
-		checking();
 
 		int size = data.length;
 		int temp = size;
 
-		for (char element : data) {
-			if ((element > 255) || BASE64_ALPHABET[element] < 0) {
+		for (int ix = 0; ix < data.length; ix++) {
+			if ((data[ix] > 255) || Base64Alphabet.BASE64_ALPHABET[data[ix]] < 0) {
 				--temp;
 			}
 		}
@@ -282,7 +277,7 @@ public class Base64Coder {
 		int index = 0;
 
 		for (int ix = 0; ix < size; ix++) {
-			int value = (data[ix] > 255) ? -1 : BASE64_ALPHABET[data[ix]];
+			int value = (data[ix] > 255) ? -1 : Base64Alphabet.BASE64_ALPHABET[data[ix]];
 
 			if (value >= 0) {
 				accum <<= 6;

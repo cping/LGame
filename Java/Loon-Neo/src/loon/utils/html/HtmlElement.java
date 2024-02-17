@@ -236,7 +236,7 @@ public class HtmlElement {
 		TArray<HtmlElement> v = new TArray<HtmlElement>();
 		for (Iterator<HtmlElement> e = elements(); e.hasNext();) {
 			HtmlElement ele = e.next();
-			if (!ele.equals(ele.getName())) {
+			if (!ele.getName().equals(ele.getName())) {
 				Iterator<HtmlElement> it = ele.elements(name);
 				for (; it.hasNext();) {
 					HtmlElement child = it.next();
@@ -244,7 +244,7 @@ public class HtmlElement {
 					v.add(child);
 				}
 				continue;
-			} else if (ele.equals(ele.getName())) {
+			} else if (ele.getName().equals(ele.getName())) {
 				v.add(ele);
 				continue;
 			}

@@ -102,7 +102,7 @@ public class LGradation implements LRelease {
 
 	public void drawWidth(GLEx g, int x, int y) {
 		try {
-			if (drawTexWidth == null && !drawTexWidth.isClosed()) {
+			if (drawTexWidth == null || drawTexWidth.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < width; i++) {
 					gl.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
@@ -128,7 +128,7 @@ public class LGradation implements LRelease {
 
 	public void drawHeight(GLEx g, int x, int y) {
 		try {
-			if (drawTexHeight == null && !drawTexHeight.isClosed()) {
+			if (drawTexHeight == null || drawTexHeight.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				for (int i = 0; i < height; i++) {
 					gl.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
@@ -154,7 +154,7 @@ public class LGradation implements LRelease {
 
 	public void drawWidth(Canvas g, int x, int y) {
 		try {
-			if (drawImgWidth == null && !drawImgWidth.isClosed()) {
+			if (drawImgWidth == null || drawImgWidth.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgWidth = gl.image;
 				for (int i = 0; i < width; i++) {
@@ -179,7 +179,7 @@ public class LGradation implements LRelease {
 
 	public void drawHeight(Canvas g, int x, int y) {
 		try {
-			if (drawImgHeight == null && !drawImgHeight.isClosed()) {
+			if (drawImgHeight == null || drawImgHeight.isClosed()) {
 				Canvas gl = LSystem.base().graphics().createCanvas(width, height);
 				drawImgHeight = gl.image;
 				for (int i = 0; i < height; i++) {
@@ -204,7 +204,7 @@ public class LGradation implements LRelease {
 
 	public void drawWidth(Pixmap g, int x, int y) {
 		try {
-			if (drawImgWidth == null && !drawImgWidth.isClosed()) {
+			if (drawImgWidth == null || drawImgWidth.isClosed()) {
 				for (int i = 0; i < width; i++) {
 					g.setColor((startColor.getRed() * (width - i)) / width + (endColor.getRed() * i) / width,
 							(startColor.getGreen() * (width - i)) / width + (endColor.getGreen() * i) / width,
@@ -225,7 +225,7 @@ public class LGradation implements LRelease {
 
 	public void drawHeight(Pixmap g, int x, int y) {
 		try {
-			if (drawImgHeight == null && !drawImgHeight.isClosed()) {
+			if (drawImgHeight == null || drawImgHeight.isClosed()) {
 				for (int i = 0; i < height; i++) {
 					g.setColor((startColor.getRed() * (height - i)) / height + (endColor.getRed() * i) / height,
 							(startColor.getGreen() * (height - i)) / height + (endColor.getGreen() * i) / height,

@@ -76,13 +76,19 @@ public class ArrayMap implements IArray, LRelease {
 		}
 
 		@Override
-		public boolean equals(final Object o) {
+		public boolean equals(Object o) {
+			if (o == null) {
+				return false;
+			}
 			if (this == o) {
 				return true;
 			}
-			Entry e = (Entry) o;
-			return (key != null ? key.equals(e.key) : e.key == null)
-					&& (value != null ? value.equals(e.value) : e.value == null);
+			if (o instanceof Entry) {
+				Entry e = (Entry) o;
+				return (key != null ? key.equals(e.key) : e.key == null)
+						&& (value != null ? value.equals(e.value) : e.value == null);
+			}
+			return false;
 		}
 
 		@Override
