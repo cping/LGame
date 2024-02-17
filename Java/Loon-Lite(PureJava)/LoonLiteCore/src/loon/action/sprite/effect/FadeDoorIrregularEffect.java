@@ -110,7 +110,7 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_type == TYPE_FADE_OUT && _completed) {
-			g.fillRect(drawX(offsetX), drawY(offsetY), getWidth(), getHeight(), _baseColor);
+			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
 			return;
 		}
 		if (_type == TYPE_FADE_IN && _completed) {
@@ -184,4 +184,10 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 		return this;
 	}
 
+	@Override
+	public void close() {
+		super.close();
+		_horizontalgrids.clear();
+		_tmpInts.clear();
+	}
 }

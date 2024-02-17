@@ -72,7 +72,7 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_type == TYPE_FADE_OUT && _completed) {
-			g.fillRect(drawX(sx), drawY(sy), getWidth(), getHeight(), _baseColor);
+			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
 			return;
 		}
 		if (_type == TYPE_FADE_IN && _completed) {

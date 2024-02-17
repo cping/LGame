@@ -194,7 +194,7 @@ public class GameTouch {
 	}
 
 	public int getTileX(int tileX) {
-		return MathUtils.iceil(x / tileX);
+		return MathUtils.ifloor(x / tileX);
 	}
 
 	public float getY() {
@@ -202,7 +202,7 @@ public class GameTouch {
 	}
 
 	public int getTileY(int tileY) {
-		return MathUtils.iceil(y / tileY);
+		return MathUtils.ifloor(y / tileY);
 	}
 
 	public float getDX() {

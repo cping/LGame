@@ -68,13 +68,13 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 		return BaseIO.loadImage(path);
 	}
 
-	public static Image getResize(final Image image, int w, int h) {
+	public static Image getResize(final Image image, float w, float h) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(w, h);
 		canvas.draw(image, 0, 0, w, h, 0, 0, image.width(), image.height());
 		return canvas.getImage();
 	}
 
-	public static Image getResize(final Image image, int x, int y, int w, int h) {
+	public static Image getResize(final Image image, float x, float y, float w, float h) {
 		Canvas canvas = LSystem.base().graphics().createCanvas(w, h);
 		canvas.draw(image, 0, 0, w, h, x, y, image.width(), image.height());
 		return canvas.getImage();
@@ -106,6 +106,10 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	@Override
 	public boolean isLoaded() {
 		return state.isCompleteNow();
+	}
+
+	public Image scale(float w, float h) {
+		return Image.getResize(this, w, h);
 	}
 
 	public abstract Scale scale();
