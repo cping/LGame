@@ -25,6 +25,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.ArcEffect;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeDoorEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.CrossEffect;
 import loon.action.sprite.effect.FadeDotEffect;
@@ -354,6 +355,22 @@ public class LTransition {
 			break;
 		}
 		return transition;
+	}
+
+	public static final LTransition newFadeDoor(final int t, final int d, final LColor color) {
+		return newFadeDoor(t, d, color, -1);
+	}
+
+	public static final LTransition newFadeDoor(final int t, final int d, final LColor color, final long delay) {
+		return newFadeDoor(t, d, color, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), delay);
+	}
+
+	public static final LTransition newFadeDoor(final int t, final int d, final LColor color, final float w,
+			final float h, final long delay) {
+		if (LSystem.base() != null) {
+			return createEffectTransition(new FadeDoorEffect(t, d, color, w, h), delay);
+		}
+		return null;
 	}
 
 	/**

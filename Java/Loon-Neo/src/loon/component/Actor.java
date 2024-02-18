@@ -27,6 +27,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
@@ -724,10 +725,6 @@ public class Actor extends LObject<Actor>
 		return v;
 	}
 
-	public ActorLayer getLLayer() {
-		return this.gameLayer;
-	}
-
 	protected void addLayer(ActorLayer gameLayer) {
 	}
 
@@ -1150,6 +1147,30 @@ public class Actor extends LObject<Actor>
 	public Actor setAnimation(boolean isAnimation) {
 		this.isAnimation = isAnimation;
 		return this;
+	}
+
+	public ActorLayer buildToLayer() {
+		ActorLayer layer = getLLayer();
+		if (layer != null) {
+			layer.addObject(this);
+		}
+		return layer;
+	}
+
+	public ActorLayer getLLayer() {
+		if (this.gameLayer == null && LSystem.getProcess() != null) {
+			Screen screen = LSystem.getProcess().getScreen();
+			if (screen != null) {
+				Desktop ui = screen.getDesktop();
+				if (ui != null) {
+					LLayer layer = (LLayer) ui.findComponentUI("Layer");
+					if (layer != null) {
+						return layer;
+					}
+				}
+			}
+		}
+		return this.gameLayer;
 	}
 
 	@Override

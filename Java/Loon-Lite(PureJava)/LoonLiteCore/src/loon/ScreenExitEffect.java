@@ -23,6 +23,7 @@ package loon;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeDoorEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.FadeDotEffect;
 import loon.action.sprite.effect.FadeEffect;
@@ -62,14 +63,26 @@ public class ScreenExitEffect {
 	// 瓦片螺旋样淡出,淡入
 	public final static int SPIRAL_FADE = 6;
 
+	// 左右方向的开门,关门效果
+	public final static int DOOR_LR_FADE = 7;
+
+	// 上下方向的开门,关门效果
+	public final static int DOOR_TB_FADE = 8;
+
+	// 左中右方向的开门,关门效果
+	public final static int DOOR_LCR_FADE = 9;
+
+	// 上中下方向的开门,关门效果
+	public final static int DOOR_TCB_FADE = 10;
+
 	// 不规则的开门,关门效果
-	public final static int DOOR_IRREGULAR_FADE = 7;
+	public final static int DOOR_IRREGULAR_FADE = 11;
 
 	// 斜角离开,斜角进入
-	public final static int SWIPE_FADE = 8;
+	public final static int SWIPE_FADE = 12;
 
 	// 瓦片淡出,淡入
-	public final static int TILES_FADE = 9;
+	public final static int TILES_FADE = 13;
 
 	static class ReleasedScreen implements LRelease {
 
@@ -131,39 +144,52 @@ public class ScreenExitEffect {
 				return;
 			}
 			try {
+				final int effectType = ISprite.TYPE_FADE_IN;
 				switch (index) {
 				default:
 				case STANDARD_FADE:
-					dstScreen.setTransition(LTransition.newFade(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFade(effectType, color));
 					break;
 				case OVAL_HOLLOW_FADE:
-					dstScreen.setTransition(LTransition.newOvalHollow(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newOvalHollow(effectType, color));
 					break;
 				case OVAL_SOLID_FADE:
-					dstScreen.setTransition(LTransition.newFadeOval(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeOval(effectType, color));
 					break;
 				case DOT_FADE:
-					dstScreen.setTransition(LTransition.newFadeDot(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeDot(effectType, color));
 					break;
 				case BOARD_LEFT_FADE:
-					dstScreen.setTransition(
-							LTransition.newFadeBoard(ISprite.TYPE_FADE_IN, FadeBoardEffect.START_RIGHT, color));
+					dstScreen.setTransition(LTransition.newFadeBoard(effectType, FadeBoardEffect.START_RIGHT, color));
 					break;
 				case BOARD_RIGHT_FADE:
-					dstScreen.setTransition(
-							LTransition.newFadeBoard(ISprite.TYPE_FADE_IN, FadeBoardEffect.START_LEFT, color));
+					dstScreen.setTransition(LTransition.newFadeBoard(effectType, FadeBoardEffect.START_LEFT, color));
 					break;
 				case SPIRAL_FADE:
-					dstScreen.setTransition(LTransition.newFadeSpiral(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeSpiral(effectType, color));
+					break;
+				case DOOR_LR_FADE:
+					dstScreen.setTransition(LTransition.newFadeDoor(effectType, FadeDoorEffect.LEFT_RIGHT, color));
+					break;
+				case DOOR_TB_FADE:
+					dstScreen.setTransition(LTransition.newFadeDoor(effectType, FadeDoorEffect.TOP_BOTTOM, color));
+					break;
+				case DOOR_LCR_FADE:
+					dstScreen.setTransition(
+							LTransition.newFadeDoor(effectType, FadeDoorEffect.LEFT_CENTER_RIGHT, color));
+					break;
+				case DOOR_TCB_FADE:
+					dstScreen.setTransition(
+							LTransition.newFadeDoor(effectType, FadeDoorEffect.TOP_CENTER_BOTTOM, color));
 					break;
 				case DOOR_IRREGULAR_FADE:
-					dstScreen.setTransition(LTransition.newFadeDoorIrregular(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeDoorIrregular(effectType, color));
 					break;
 				case SWIPE_FADE:
-					dstScreen.setTransition(LTransition.newFadeSwipe(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeSwipe(effectType, color));
 					break;
 				case TILES_FADE:
-					dstScreen.setTransition(LTransition.newFadeTile(ISprite.TYPE_FADE_IN, color));
+					dstScreen.setTransition(LTransition.newFadeTile(effectType, color));
 					break;
 				}
 				srcScreen.setScreen(dstScreen);
@@ -219,38 +245,51 @@ public class ScreenExitEffect {
 			}
 			locked.set(true);
 		}
+		final int effectType = ISprite.TYPE_FADE_OUT;
 		BaseAbstractEffect baseEffect = null;
 		switch (index) {
 		default:
 		case STANDARD_FADE:
-			baseEffect = FadeEffect.create(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = FadeEffect.create(effectType, color);
 			break;
 		case OVAL_HOLLOW_FADE:
-			baseEffect = new FadeOvalHollowEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeOvalHollowEffect(effectType, color);
 			break;
 		case OVAL_SOLID_FADE:
-			baseEffect = new FadeOvalEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeOvalEffect(effectType, color);
 			break;
 		case DOT_FADE:
-			baseEffect = new FadeDotEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeDotEffect(effectType, color);
 			break;
 		case BOARD_LEFT_FADE:
-			baseEffect = new FadeBoardEffect(ISprite.TYPE_FADE_OUT, FadeBoardEffect.START_LEFT, color);
+			baseEffect = new FadeBoardEffect(effectType, FadeBoardEffect.START_LEFT, color);
 			break;
 		case BOARD_RIGHT_FADE:
-			baseEffect = new FadeBoardEffect(ISprite.TYPE_FADE_OUT, FadeBoardEffect.START_RIGHT, color);
+			baseEffect = new FadeBoardEffect(effectType, FadeBoardEffect.START_RIGHT, color);
 			break;
 		case SPIRAL_FADE:
-			baseEffect = new FadeSpiralEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeSpiralEffect(effectType, color);
+			break;
+		case DOOR_LR_FADE:
+			baseEffect = new FadeDoorEffect(effectType, FadeDoorEffect.LEFT_RIGHT, color);
+			break;
+		case DOOR_TB_FADE:
+			baseEffect = new FadeDoorEffect(effectType, FadeDoorEffect.TOP_BOTTOM, color);
+			break;
+		case DOOR_LCR_FADE:
+			baseEffect = new FadeDoorEffect(effectType, FadeDoorEffect.LEFT_CENTER_RIGHT, color);
+			break;
+		case DOOR_TCB_FADE:
+			baseEffect = new FadeDoorEffect(effectType, FadeDoorEffect.TOP_CENTER_BOTTOM, color);
 			break;
 		case DOOR_IRREGULAR_FADE:
-			baseEffect = new FadeDoorIrregularEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeDoorIrregularEffect(effectType, color);
 			break;
 		case SWIPE_FADE:
-			baseEffect = new FadeSwipeEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeSwipeEffect(effectType, color);
 			break;
 		case TILES_FADE:
-			baseEffect = new FadeTileEffect(ISprite.TYPE_FADE_OUT, color);
+			baseEffect = new FadeTileEffect(effectType, color);
 			break;
 		}
 		baseEffect.setCompletedAfterBlack(true);

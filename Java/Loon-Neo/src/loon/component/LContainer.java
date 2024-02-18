@@ -694,6 +694,24 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	/**
+	 * 获得一个指定名称的UI组件
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public LComponent findComponentUI(String name) {
+		final LComponent[] childs = this._childs;
+		final int size = this.childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null && child.getUIName().equals(name)) {
+				return child;
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void clear() {
 		if (_component_isClose) {

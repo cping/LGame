@@ -21,6 +21,7 @@
 package org.test;
 
 import loon.LTexture;
+import loon.ScreenExitEffect;
 import loon.Stage;
 import loon.action.map.battle.BattleProcess;
 import loon.action.sprite.Entity;
@@ -31,6 +32,7 @@ import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LTextArea;
 import loon.geom.BooleanValue;
+import loon.utils.MathUtils;
 
 public class RpgBattleTest extends Stage {
 
@@ -203,9 +205,17 @@ public class RpgBattleTest extends Stage {
 		LClickButton run = node("click", "Run", 0, 0, 120, 35);
 		bottomRightOn(run, -5, -5);
 		add(run.up((x, y) -> {
-			// 以指定特效离开当前Screen,前往指定Screen
-			// gotoScreenEffectExit(4, new MapTest());
-			rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
+			// 1/2(50/100)逃跑率,自己回合执行
+			if (MathUtils.chanceRoll(50) && rpgBattleProcess.isCurrentPlayer()) {
+				rpgBattleText.put("你的逃跑努力成功了");
+				// 1秒后执行一次
+				postOnceTask(() -> {
+					// 以空心圆效果离开当前页面前方指定页面
+					gotoScreenEffectExit(ScreenExitEffect.OVAL_HOLLOW_FADE, new MapTest());
+				}, 1f);
+			} else {
+				rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
+			}
 		}));
 
 		// add(MultiScreenTest.getBackButton(this, 3));

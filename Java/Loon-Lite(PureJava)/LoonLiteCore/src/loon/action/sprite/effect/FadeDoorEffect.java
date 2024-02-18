@@ -84,6 +84,10 @@ public class FadeDoorEffect extends BaseAbstractEffect {
 				StringUtils.isEmpty(path) ? null : BaseIO.loadImage(path));
 	}
 
+	public FadeDoorEffect(int type, int dir, LColor color, float w, float h) {
+		this(type, dir, color, 0, 6, w, h, (Image) null);
+	}
+
 	public FadeDoorEffect(int type, int dir, LColor color, float w, float h, Image img) {
 		this(type, dir, color, 0, 6, w, h, img);
 	}

@@ -304,6 +304,13 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
+		if (fadeType == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
+			return;
+		}
+		if (fadeType == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		if (_dirty) {
 			pack();
 			return;

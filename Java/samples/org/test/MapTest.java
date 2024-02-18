@@ -19,6 +19,7 @@ import loon.component.LPad;
 import loon.events.SysKey;
 import loon.events.Touched;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class MapTest extends Stage {
@@ -106,20 +107,17 @@ public class MapTest extends Stage {
 			arrow.setColor(LColor.red);
 			// 注入箭头精灵
 			add(arrow);
-			
+
 			/**
-			 * final Arrow arrow = new Arrow(TextureUtils.filterColor("assets/icon.png", new LColor(255, 0, 255)), 32);
-			// 使用默认的模式2拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
-			arrow.getArrowSet().defaultSet2();
-			// 坐标跟随地图偏移
-			arrow.setOffset(map.getOffset());
-			// 注入箭头精灵
-			add(arrow);
+			 * final Arrow arrow = new Arrow(TextureUtils.filterColor("assets/icon.png", new
+			 * LColor(255, 0, 255)), 32); // 使用默认的模式2拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
+			 * arrow.getArrowSet().defaultSet2(); // 坐标跟随地图偏移
+			 * arrow.setOffset(map.getOffset()); // 注入箭头精灵 add(arrow);
 			 */
 
 			// ----触屏移动---
 			// 监听窗体down事件
-			down(new Touched() {
+			up(new Touched() {
 
 				@Override
 				public void on(final float x, final float y) {
@@ -141,13 +139,18 @@ public class MapTest extends Stage {
 
 							@Override
 							public void stop(ActionBind o) {
-								//移动箭头隐藏
+								// 移动箭头隐藏
 								arrow.setVisible(false);
+								// 1/5(20/100)遇敌率
+								if (MathUtils.chanceRoll(20)) {
+									// 随机使用一种Screen转场效果，进入战斗画面
+									gotoScreenEffectExitRand(new RpgBattleTest());
+								}
 							}
 
 							@Override
 							public void start(ActionBind o) {
-								//显示移动箭头
+								// 显示移动箭头
 								arrow.setVisible(true);
 							}
 
@@ -264,6 +267,7 @@ public class MapTest extends Stage {
 		} catch (LSysException e) {
 			error(e.getMessage());
 		}
+
 		LClickButton click = MultiScreenTest.getBackButton(this, 1);
 		// 禁止触屏点击到click位置，也就是防止点击back时自动寻径
 		// addTouchLimit(click);

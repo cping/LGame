@@ -1005,6 +1005,10 @@ public class Desktop implements Visible, IArray, LRelease {
 		return controls;
 	}
 
+	public LComponent findComponentUI(String name) {
+		return this._contentPane.findComponentUI(name);
+	}
+
 	public float getWidth() {
 		return this._contentPane.getWidth();
 	}
