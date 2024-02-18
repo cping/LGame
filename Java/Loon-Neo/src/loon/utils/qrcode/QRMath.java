@@ -26,8 +26,8 @@ public class QRMath {
 
 	private final static class MathTable {
 
-		public static int[] EXP_TABLE = new int[256];
-		public static int[] LOG_TABLE = new int[256];
+		final static int[] EXP_TABLE = new int[256];
+		final static int[] LOG_TABLE = new int[256];
 		static {
 			for (int i = 0; i < 8; i++) {
 				EXP_TABLE[i] = 1 << i;

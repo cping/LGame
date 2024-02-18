@@ -739,10 +739,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			g.fillRect(0, 0, tmp.getWidth(), tmp.getHeight());
 			g = null;
 			_dialogTexture = tmp.texture();
-			if (tmp != null) {
-				tmp.close();
-				tmp = null;
-			}
+			tmp.close();
+			tmp = null;
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
 		this.messageUI.setFontColor(_fontColor);
@@ -1198,9 +1196,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor).setAutoRemoved(true));
+							effectSprites
+									.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor).setAutoRemoved(true));
 						} else {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor).setAutoRemoved(true));
+							effectSprites
+									.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor).setAutoRemoved(true));
 						}
 					}
 					continue;

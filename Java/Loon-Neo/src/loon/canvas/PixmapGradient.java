@@ -66,13 +66,16 @@ public abstract class PixmapGradient {
 
 	private static final int MAX_GRADIENT_ARRAY_SIZE = 5000;
 
-	private static final int[] SRGBtoLinearRGB = new int[256];
-	private static final int[] LinearRGBtoSRGB = new int[256];
+	private static class Gradient {
 
-	static {
-		for (int k = 0; k < 256; k++) {
-			SRGBtoLinearRGB[k] = toLinearRGB(k);
-			LinearRGBtoSRGB[k] = toSRGB(k);
+		static final int[] SRGBtoLinearRGB = new int[256];
+		static final int[] LinearRGBtoSRGB = new int[256];
+
+		static {
+			for (int k = 0; k < 256; k++) {
+				SRGBtoLinearRGB[k] = toLinearRGB(k);
+				LinearRGBtoSRGB[k] = toSRGB(k);
+			}
 		}
 	}
 
@@ -116,8 +119,7 @@ public abstract class PixmapGradient {
 		float previousFraction = -1.0f;
 		for (float currentFraction : fractions) {
 			if (currentFraction < 0f || currentFraction > 1f) {
-				throw new LSysException(
-						"Fraction values must be in the range 0 to 1: " + currentFraction);
+				throw new LSysException("Fraction values must be in the range 0 to 1: " + currentFraction);
 			}
 
 			if (currentFraction <= previousFraction) {
@@ -175,9 +177,9 @@ public abstract class PixmapGradient {
 			for (int i = 0; i < colors.length; i++) {
 				int argb = colors[i].getRGB();
 				int a = argb >>> 24;
-				int r = SRGBtoLinearRGB[(argb >> 16) & 0xff];
-				int g = SRGBtoLinearRGB[(argb >> 8) & 0xff];
-				int b = SRGBtoLinearRGB[(argb) & 0xff];
+				int r = Gradient.SRGBtoLinearRGB[(argb >> 16) & 0xff];
+				int g = Gradient.SRGBtoLinearRGB[(argb >> 8) & 0xff];
+				int b = Gradient.SRGBtoLinearRGB[(argb) & 0xff];
 				normalizedColors[i] = new LColor(r, g, b, a);
 			}
 		} else {
@@ -306,9 +308,9 @@ public abstract class PixmapGradient {
 		g1 = (rgb >> 8) & 0xff;
 		b1 = (rgb) & 0xff;
 
-		r1 = LinearRGBtoSRGB[r1];
-		g1 = LinearRGBtoSRGB[g1];
-		b1 = LinearRGBtoSRGB[b1];
+		r1 = Gradient.LinearRGBtoSRGB[r1];
+		g1 = Gradient.LinearRGBtoSRGB[g1];
+		b1 = Gradient.LinearRGBtoSRGB[b1];
 
 		return ((a1 << 24) | (r1 << 16) | (g1 << 8) | (b1));
 	}
@@ -382,7 +384,7 @@ public abstract class PixmapGradient {
 		return affine;
 	}
 
-	public abstract void fill(int[] pixels, int off, int x, int y, int w, int h) ;
+	public abstract void fill(int[] pixels, int off, int x, int y, int w, int h);
 
 	public abstract void fill(int[] pixels, int off, int adjust, int x, int y, int w, int h);
 }

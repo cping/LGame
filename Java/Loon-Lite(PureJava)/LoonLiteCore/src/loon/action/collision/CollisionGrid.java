@@ -91,7 +91,7 @@ public class CollisionGrid {
 			}
 		}
 
-		if (cx != cx2 || cy != cy2) {
+		if (!MathUtils.equal(cx, cx2) || !MathUtils.equal(cy, cy2)) {
 			f.onTraverse(cx2, cy2);
 		}
 	}

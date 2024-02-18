@@ -207,12 +207,14 @@ public class RpgBattleTest extends Stage {
 		add(run.up((x, y) -> {
 			// 1/2(50/100)逃跑率,自己回合执行
 			if (MathUtils.chanceRoll(50) && rpgBattleProcess.isCurrentPlayer()) {
-				rpgBattleText.put("你的逃跑努力成功了");
-				// 1秒后执行一次
-				postOnceTask(() -> {
-					// 以空心圆效果离开当前页面前方指定页面
-					gotoScreenEffectExit(ScreenExitEffect.OVAL_HOLLOW_FADE, new MapTest());
-				}, 1f);
+				rpgBattleProcess.callBattleEvent(() -> {
+					rpgBattleText.put("你的逃跑努力成功了");
+					// 1秒后执行一次
+					postOnceTask(() -> {
+						// 以空心圆效果离开当前页面前方指定页面
+						gotoScreenEffectExit(ScreenExitEffect.OVAL_HOLLOW_FADE, new MapTest());
+					}, 1f);
+				});
 			} else {
 				rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
 			}

@@ -719,7 +719,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	public Shape setRotation(float r, float x, float y) {
-		if (rotation != r) {
+		if (!MathUtils.equal(rotation, r)) {
 			this.callTransform(Matrix3.createRotateTransform(rotation = (r * MathUtils.RAD_TO_DEG), x, y));
 			this.updatePoints();
 		}
@@ -851,7 +851,8 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	public boolean equalsRotateScale(float rotate, float sx, float sy) {
-		return rotate == this.rotation && sx == this.scaleX && sy == this.scaleY;
+		return MathUtils.equal(rotate, this.rotation) && MathUtils.equal(sx, this.scaleX)
+				&& MathUtils.equal(sy, this.scaleY);
 	}
 
 	public boolean equals(Shape shape) {
@@ -861,9 +862,11 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (shape == this) {
 			return true;
 		}
-		boolean eq = shape.x == this.x && shape.y == this.y && shape.rotation == this.rotation
-				&& shape.minX == this.minX && shape.minY == this.minY && shape.maxX == this.maxX
-				&& shape.maxY == this.maxY && shape.boundingCircleRadius == this.boundingCircleRadius;
+		boolean eq = MathUtils.equal(shape.x, this.x) && MathUtils.equal(shape.y, this.y)
+				&& MathUtils.equal(shape.rotation, this.rotation) && MathUtils.equal(shape.minX, this.minX)
+				&& MathUtils.equal(shape.minY, this.minY) && MathUtils.equal(shape.maxX, this.maxX)
+				&& MathUtils.equal(shape.maxY, this.maxY)
+				&& MathUtils.equal(shape.boundingCircleRadius, this.boundingCircleRadius);
 		if (eq) {
 			checkPoints();
 			if (eq && shape.points != null) {
@@ -887,7 +890,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (obj instanceof Shape) {
 			return equals((Shape) obj);
 		}
-		return false;
+		return super.equals(obj);
 	}
 
 	public Shape cpy() {

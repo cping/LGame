@@ -331,9 +331,9 @@ public class Ellipse extends Shape {
 		return radius1;
 	}
 
-	public Ellipse setRadius1(float radius1) {
-		if (radius1 != this.radius1) {
-			this.radius1 = radius1;
+	public Ellipse setRadius1(float r) {
+		if (!MathUtils.equal(r, this.radius1)) {
+			this.radius1 = r;
 			pointsDirty = true;
 		}
 		return this;
@@ -347,9 +347,9 @@ public class Ellipse extends Shape {
 		return radius2;
 	}
 
-	public Ellipse setRadius2(float radius2) {
-		if (radius2 != this.radius2) {
-			this.radius2 = radius2;
+	public Ellipse setRadius2(float r) {
+		if (!MathUtils.equal(r, this.radius2)) {
+			this.radius2 = r;
 			pointsDirty = true;
 		}
 		return this;
@@ -456,8 +456,9 @@ public class Ellipse extends Shape {
 		if (e == this) {
 			return true;
 		}
-		if (e.x == this.x && e.y == this.y && e.radius1 == this.radius1 && e.radius2 == this.radius2
-				&& this.boundingCircleRadius == e.boundingCircleRadius
+		if (MathUtils.equal(e.x, this.x) && MathUtils.equal(e.y, this.y) && MathUtils.equal(e.radius1, this.radius1)
+				&& MathUtils.equal(e.radius2, this.radius2)
+				&& MathUtils.equal(this.boundingCircleRadius, e.boundingCircleRadius)
 				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}

@@ -1135,15 +1135,11 @@ public class Affine2f implements LTrans, XY {
 		final float m01 = this.m01;
 		final float m10 = this.m10;
 		final float m11 = this.m11;
-		final float tx = this.tx;
-		final float ty = this.ty;
 
 		this.m00 = m00 + tanY * m10;
 		this.m01 = m01 + tanY * m11;
 		this.m10 = tanX * m00 + m10;
 		this.m11 = tanX * m01 + m11;
-		this.tx = tx;
-		this.ty = ty;
 		return this;
 	}
 

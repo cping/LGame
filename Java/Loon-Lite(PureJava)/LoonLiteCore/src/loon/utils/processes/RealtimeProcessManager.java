@@ -239,7 +239,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 				for (int i = 0; i < ps.size; i++) {
 					GameProcess p = ps.get(i);
 					if (p != null) {
-						if (p.getId() == id || p.getId().indexOf(id) != -1) {
+						if (p.getId().equals(id) || p.getId().indexOf(id) != -1) {
 							p.kill();
 							processes.remove(p);
 							list.add(p);

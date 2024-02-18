@@ -395,7 +395,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public RectBox setRotate(float r) {
-		if (r != this.rotation) {
+		if (!MathUtils.equal(r, this.rotation)) {
 			this.rotation = r;
 			int[] rect = MathUtils.getLimit(x, y, width, height, rotation);
 			return setBounds(rect[0], rect[1], rect[2], rect[3]);
@@ -405,7 +405,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 
 	@Override
 	public Shape setRotation(float r, float x, float y) {
-		if (r != this.rotation) {
+		if (!MathUtils.equal(r, this.rotation)) {
 			super.setRotation(r, x, y);
 			setBounds(minX, minY, (maxX - minX), (maxY - minY));
 		}
@@ -689,7 +689,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		if (obj instanceof RectBox) {
 			return equals((RectBox) obj);
 		}
-		return true;
+		return super.equals(obj);
 	}
 
 	public boolean equals(RectBox rect) {

@@ -152,6 +152,26 @@ public class GameTouch {
 		return this;
 	}
 
+	@Override
+	public int hashCode() {
+		int result = 92;
+		result = LSystem.unite(result, type);
+		result = LSystem.unite(result, id);
+		result = LSystem.unite(result, x);
+		result = LSystem.unite(result, y);
+		result = LSystem.unite(result, button);
+		result = LSystem.unite(result, pointer);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof GameTouch) {
+			return equals((GameTouch) o);
+		}
+		return false;
+	}
+
 	public boolean equals(GameTouch e) {
 		if (e == null) {
 			return false;

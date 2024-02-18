@@ -57,7 +57,19 @@ public class Picture extends Entity {
 
 	@Override
 	public int hashCode() {
-		return _image == null ? super.hashCode() : _image.hashCode();
+		int result = 59;
+		result = LSystem.unite(result, _image.hashCode());
+		result = LSystem.unite(result, _objectLocation.x);
+		result = LSystem.unite(result, _objectLocation.y);
+		result = LSystem.unite(result, _objectAlpha);
+		result = LSystem.unite(result, _objectRotation);
+		result = LSystem.unite(result, _scaleX);
+		result = LSystem.unite(result, _scaleY);
+		result = LSystem.unite(result, _width);
+		result = LSystem.unite(result, _height);
+		result = LSystem.unite(result, _baseColor.toIntBits());
+		result = LSystem.unite(result, super.hashCode());
+		return result;
 	}
 
 	public boolean equals(Picture p) {
@@ -65,9 +77,6 @@ public class Picture extends Entity {
 			return false;
 		}
 		if (this == p) {
-			return true;
-		}
-		if (_image.equals(p._image)) {
 			return true;
 		}
 		if (MathUtils.equal(this._width, p._width) && MathUtils.equal(this._height, p._height)) {

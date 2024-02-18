@@ -20,6 +20,7 @@
  */
 package loon.events;
 
+import loon.LSystem;
 import loon.utils.StringKeyValue;
 
 public class GameKey {
@@ -75,6 +76,23 @@ public class GameKey {
 			this.presses += 1;
 		}
 		return this.down;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 97;
+		result = LSystem.unite(result, type);
+		result = LSystem.unite(result, keyCode);
+		result = LSystem.unite(result, keyChar);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof GameKey) {
+			return equals((GameKey) o);
+		}
+		return false;
 	}
 
 	public boolean equals(GameKey e) {

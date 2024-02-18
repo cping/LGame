@@ -319,7 +319,7 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public Polygon rotate(float cx, float cy, float angle) {
-		if (rotation != angle) {
+		if (!MathUtils.equal(rotation, angle)) {
 			this.rotation = angle;
 			final TArray<Vector2f> result = getVertices();
 			final int len = result.size;

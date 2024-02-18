@@ -399,7 +399,7 @@ public class Point extends Shape {
 		if (obj instanceof Point) {
 			return equals((Point) obj);
 		}
-		return true;
+		return super.equals(obj);
 	}
 
 	public Point copy(Point e) {

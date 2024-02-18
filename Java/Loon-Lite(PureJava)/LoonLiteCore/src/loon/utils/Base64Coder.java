@@ -45,9 +45,9 @@ public class Base64Coder {
 
 		private static final int LOOKUPLENGTH = 64;
 
-		private static byte[] BASE64_ALPHABET = new byte[BASELENGTH];
+		final static byte[] BASE64_ALPHABET = new byte[BASELENGTH];
 
-		private static byte[] LOOKUP_BASE64_ALPHABET = new byte[LOOKUPLENGTH];
+		final static byte[] LOOKUP_BASE64_ALPHABET = new byte[LOOKUPLENGTH];
 
 		static {
 			for (int i = 0; i < BASELENGTH; i++) {

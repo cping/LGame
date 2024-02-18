@@ -607,7 +607,7 @@ public class Line extends Shape {
 
 	@Override
 	public Line setRotation(float degrees, float cx, float cy) {
-		if (rotation != degrees) {
+		if (!MathUtils.equal(rotation, degrees)) {
 			this.rotation = degrees;
 			_currentStart.rotateSelf(cx, cy, degrees);
 			_currentEnd.rotateSelf(cx, cy, degrees);
@@ -784,7 +784,7 @@ public class Line extends Shape {
 		if (obj instanceof Line) {
 			return equals((Line) obj);
 		}
-		return false;
+		return super.equals(obj);
 	}
 
 	public Line copy(Line e) {

@@ -44,16 +44,18 @@ public final class CollisionHelper extends ShapeUtils {
 
 	final private static int MAX_ITERATIONS = 12;
 
-	final private static float[] innerPolygonCoef, outerPolygonCoef;
+	private static class CollisionCoef {
 
-	static {
-		innerPolygonCoef = new float[MAX_ITERATIONS + 1];
-		outerPolygonCoef = new float[MAX_ITERATIONS + 1];
-		for (int t = 0; t <= MAX_ITERATIONS; t++) {
-			int numNodes = 4 << t;
-			innerPolygonCoef[t] = 0.5f / MathUtils.cos(4f * MathUtils.acos(0f) / numNodes);
-			outerPolygonCoef[t] = 0.5f / (MathUtils.cos(2f * MathUtils.acos(0f) / numNodes)
-					* MathUtils.cos(2f * MathUtils.acos(0f) / numNodes));
+		final static float[] innerPolygonCoef = new float[MAX_ITERATIONS + 1];
+		final static float[] outerPolygonCoef = new float[MAX_ITERATIONS + 1];
+
+		static {
+			for (int t = 0; t <= MAX_ITERATIONS; t++) {
+				int numNodes = 4 << t;
+				innerPolygonCoef[t] = 0.5f / MathUtils.cos(4f * MathUtils.acos(0f) / numNodes);
+				outerPolygonCoef[t] = 0.5f / (MathUtils.cos(2f * MathUtils.acos(0f) / numNodes)
+						* MathUtils.cos(2f * MathUtils.acos(0f) / numNodes));
+			}
 		}
 	}
 
@@ -232,16 +234,16 @@ public final class CollisionHelper extends ShapeUtils {
 		rectTemp1.setBounds(x, y, width, height).normalize();
 		rectTemp2.setBounds(dx, dy, dw, dh).normalize();
 		if (touchingIsIn) {
-			if (rectTemp1.x + rectTemp1.width == rectTemp2.x) {
+			if (MathUtils.equal(rectTemp1.x + rectTemp1.width, rectTemp2.x)) {
 				return true;
 			}
-			if (rectTemp1.x == rectTemp2.x + rectTemp2.width) {
+			if (MathUtils.equal(rectTemp1.x, rectTemp2.x + rectTemp2.width)) {
 				return true;
 			}
-			if (rectTemp1.y + rectTemp1.height == rectTemp2.y) {
+			if (MathUtils.equal(rectTemp1.y + rectTemp1.height, rectTemp2.y)) {
 				return true;
 			}
-			if (rectTemp1.y == rectTemp2.y + rectTemp2.height) {
+			if (MathUtils.equal(rectTemp1.y, rectTemp2.y + rectTemp2.height)) {
 				return true;
 			}
 		}
@@ -627,8 +629,8 @@ public final class CollisionHelper extends ShapeUtils {
 
 	private static boolean iterate(float x, float y, float c0x, float c0y, float c2x, float c2y, float rr) {
 		for (int t = 1; t <= MAX_ITERATIONS; t++) {
-			float c1x = (c0x + c2x) * innerPolygonCoef[t];
-			float c1y = (c0y + c2y) * innerPolygonCoef[t];
+			float c1x = (c0x + c2x) * CollisionCoef.innerPolygonCoef[t];
+			float c1y = (c0y + c2y) * CollisionCoef.innerPolygonCoef[t];
 			float tx = x - c1x;
 			float ty = y - c1y;
 			if (tx * tx + ty * ty <= rr) {
@@ -646,8 +648,8 @@ public final class CollisionHelper extends ShapeUtils {
 					|| rr * (t0x * t0x + t0y * t0y) >= (ty * t0x - tx * t0y) * (ty * t0x - tx * t0y))) {
 				return true;
 			}
-			float c3x = (c0x + c1x) * outerPolygonCoef[t];
-			float c3y = (c0y + c1y) * outerPolygonCoef[t];
+			float c3x = (c0x + c1x) * CollisionCoef.outerPolygonCoef[t];
+			float c3y = (c0y + c1y) * CollisionCoef.outerPolygonCoef[t];
 			if ((c3x - x) * (c3x - x) + (c3y - y) * (c3y - y) < rr) {
 				c2x = c1x;
 				c2y = c1y;

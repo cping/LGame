@@ -140,10 +140,10 @@ public class Circle extends Ellipse {
 	 * 
 	 * @param boundingCircleRadius
 	 */
-	public Circle setRadius(float boundingCircleRadius) {
-		if (boundingCircleRadius != this.boundingCircleRadius) {
+	public Circle setRadius(float r) {
+		if (!MathUtils.equal(r, this.boundingCircleRadius)) {
 			pointsDirty = true;
-			this.boundingCircleRadius = boundingCircleRadius;
+			this.boundingCircleRadius = r;
 			setRadii(boundingCircleRadius, boundingCircleRadius);
 		}
 		return this;
@@ -194,10 +194,10 @@ public class Circle extends Ellipse {
 		float dot1 = dir.dot(pos1.sub(line.getStart()));
 		float dot2 = dir.dot(pos2.sub(line.getStart()));
 		if (dot1 < dot2) {
-			pos1.add(pos);
+			pos1.addSelf(pos);
 			return pos1;
 		}
-		pos2.add(pos);
+		pos2.addSelf(pos);
 		return pos2;
 	}
 
@@ -432,7 +432,8 @@ public class Circle extends Ellipse {
 		if (other == this) {
 			return true;
 		}
-		if (this.x == other.x && this.y == other.y && this.boundingCircleRadius == other.boundingCircleRadius
+		if (MathUtils.equal(this.x, other.x) && MathUtils.equal(this.y, other.y)
+				&& MathUtils.equal(this.boundingCircleRadius, other.boundingCircleRadius)
 				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
 		}
@@ -441,13 +442,10 @@ public class Circle extends Ellipse {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
 		if (obj instanceof Circle) {
 			return equals((Circle) obj);
 		}
-		return false;
+		return super.equals(obj);
 	}
 
 	public Circle copy(Circle e) {

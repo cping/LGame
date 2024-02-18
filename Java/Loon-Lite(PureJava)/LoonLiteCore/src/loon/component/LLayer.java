@@ -400,25 +400,27 @@ public class LLayer extends ActorLayer {
 		} else {
 			background = Image.createImage((int) getWidth(), (int) getHeight());
 		}
-		Canvas g = background.getCanvas();
-		for (int i = 0; i < field.getWidth(); i++) {
-			for (int j = 0; j < field.getHeight(); j++) {
-				int index = field.getTileType(i, j);
-				Object o = pathMap.get(index);
-				if (o != null) {
-					if (o instanceof Image) {
-						g.draw(((Image) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
-					} else if (o instanceof Actor) {
-						addObject(((Actor) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
+		if (background != null) {
+			Canvas g = background.getCanvas();
+			for (int i = 0; i < field.getWidth(); i++) {
+				for (int j = 0; j < field.getHeight(); j++) {
+					int index = field.getTileType(i, j);
+					Object o = pathMap.get(index);
+					if (o != null) {
+						if (o instanceof Image) {
+							g.draw(((Image) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
+						} else if (o instanceof Actor) {
+							addObject(((Actor) o), field.tilesToWidthPixels(i), field.tilesToHeightPixels(j));
+						}
 					}
 				}
 			}
-		}
-		g.close();
-		setBackground(background.texture());
-		if (background != null) {
-			background.close();
-			background = null;
+			g.close();
+			setBackground(background.texture());
+			if (background != null) {
+				background.close();
+				background = null;
+			}
 		}
 		return this;
 	}
@@ -437,8 +439,8 @@ public class LLayer extends ActorLayer {
 		if (image == null) {
 			return null;
 		}
-		int layerWidth = (int) getWidth();
-		int layerHeight = (int) getHeight();
+		int layerWidth = width();
+		int layerHeight = height();
 		int tileWidth = image.getWidth();
 		int tileHeight = image.getHeight();
 

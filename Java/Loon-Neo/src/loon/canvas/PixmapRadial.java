@@ -30,11 +30,14 @@ public class PixmapRadial extends PixmapGradient {
 
 	private static final int SQRT_LUT_SIZE = (1 << 11);
 
-	private static final float[] sqrtLut = new float[SQRT_LUT_SIZE + 1];
+	private static class Radial {
 
-	static {
-		for (int i = 0; i < sqrtLut.length; i++) {
-			sqrtLut[i] = MathUtils.sqrt(i / ((float) SQRT_LUT_SIZE));
+		static final float[] sqrtLut = new float[SQRT_LUT_SIZE + 1];
+
+		static {
+			for (int i = 0; i < sqrtLut.length; i++) {
+				sqrtLut[i] = MathUtils.sqrt(i / ((float) SQRT_LUT_SIZE));
+			}
 		}
 	}
 
@@ -101,7 +104,7 @@ public class PixmapRadial extends PixmapGradient {
 		this.focusY = fy;
 		this.radius = r;
 
-		this.isFocus = (focusX == centerX) && (focusY == centerY);
+		this.isFocus = (MathUtils.equal(focusX, centerX)) && (MathUtils.equal(focusY, centerY));
 		this.isNonCyclic = (cycleMethod == CycleMethod.NO_CYCLE);
 
 		this.radiusSq = radius * radius;
@@ -150,8 +153,8 @@ public class PixmapRadial extends PixmapGradient {
 				} else {
 					float fIndex = gRel * SQRT_LUT_SIZE;
 					int iIndex = (int) (fIndex);
-					float s0 = sqrtLut[iIndex];
-					float s1 = sqrtLut[iIndex + 1] - s0;
+					float s0 = Radial.sqrtLut[iIndex];
+					float s1 = Radial.sqrtLut[iIndex + 1] - s0;
 					fIndex = s0 + (fIndex - iIndex) * s1;
 					gIndex = (int) (fIndex * fastGradientArraySize);
 				}
@@ -193,18 +196,18 @@ public class PixmapRadial extends PixmapGradient {
 
 		for (int j = 0; j < h; j++) {
 
-			float X = (m01 * j) + constX;
-			float Y = (m11 * j) + constY;
+			float nx = (m01 * j) + constX;
+			float ny = (m11 * j) + constY;
 
 			for (int i = 0; i < w; i++) {
 
-				if (X == focusX) {
+				if (MathUtils.equal(nx, focusX)) {
 					solutionX = focusX;
 					solutionY = centerY;
-					solutionY += (Y > focusY) ? trivial : -trivial;
+					solutionY += (ny > focusY) ? trivial : -trivial;
 				} else {
-					slope = (Y - focusY) / (X - focusX);
-					yintcpt = Y - (slope * X);
+					slope = (ny - focusY) / (nx - focusX);
+					yintcpt = ny - (slope * nx);
 
 					A = (slope * slope) + 1;
 					B = precalc3 + (-2 * slope * (centerY - yintcpt));
@@ -213,15 +216,15 @@ public class PixmapRadial extends PixmapGradient {
 					det = MathUtils.sqrt((B * B) - (4 * A * C));
 					solutionX = -B;
 
-					solutionX += (X < focusX) ? -det : det;
+					solutionX += (nx < focusX) ? -det : det;
 					solutionX = solutionX / (2 * A);
 					solutionY = (slope * solutionX) + yintcpt;
 				}
 
-				deltaXSq = X - focusX;
+				deltaXSq = nx - focusX;
 				deltaXSq = deltaXSq * deltaXSq;
 
-				deltaYSq = Y - focusY;
+				deltaYSq = ny - focusY;
 				deltaYSq = deltaYSq * deltaYSq;
 
 				currentToFocusSq = deltaXSq + deltaYSq;
@@ -238,8 +241,8 @@ public class PixmapRadial extends PixmapGradient {
 
 				pixels[indexer + i] = gradients(g);
 
-				X += m00;
-				Y += m10;
+				nx += m00;
+				ny += m10;
 			}
 
 			indexer += pixInc;

@@ -291,9 +291,6 @@ public class StateBase implements IState, LRelease {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		}
 		if (obj instanceof StateBase) {
 			return equals((StateBase) obj);
 		}
