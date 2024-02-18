@@ -59,13 +59,16 @@ public class LProcess implements LRelease {
 
 		private final LProcess _process;
 
-		private final Screen _screen;
+		private final Screen _newScreen;
 
-		public ScreenProcess(LGame g, LProcess p, Screen s) {
+		private final boolean _put;
+
+		public ScreenProcess(LGame g, LProcess p, Screen ns, boolean put) {
 			super("ScreenProcess", 0);
 			this._game = g;
 			this._process = p;
-			this._screen = s;
+			this._newScreen = ns;
+			this._put = put;
 			this.setProcessType(GameProcessType.Initialize);
 		}
 
@@ -73,24 +76,19 @@ public class LProcess implements LRelease {
 		public void run(LTimerContext time) {
 			if (_game != null && !_game.displayImpl.showLogo) {
 				try {
-					_process.startTransition();
-					_screen.setClose(false);
-					_screen.resetOrder();
-					_screen.resetSize();
-					_screen.onLoad();
-					_screen.onLoaded();
-					_screen.setOnLoadState(true);
-					_screen.resume();
-					_process.endTransition();
+					if (_newScreen != null) {
+						_process.startTransition();
+						_newScreen.resetOnload();
+						_process.endTransition();
+						_process.setCurrentScreen(false, _newScreen, true, _put);
+					}
 				} catch (Throwable cause) {
-					LSystem.error("Screen onLoad dispatch failed: " + _screen, cause);
+					LSystem.error("The New Screen onLoad dispatch failed: " + _newScreen, cause);
 				} finally {
 					kill();
 				}
 			}
-
 		}
-
 	}
 
 	protected TArray<Updateable> resumes;
@@ -114,7 +112,7 @@ public class LProcess implements LRelease {
 	private final ObjectBundle _bundle;
 
 	private final LGame _game;
-	
+
 	private ScreenProcess _screenProcess;
 
 	private boolean _isInstance;
@@ -341,7 +339,7 @@ public class LProcess implements LRelease {
 
 	// --- UnLoad end ---//
 
-	private void setScreen(final Screen screen, final boolean put) {
+	private void setScreen(final Screen newScreen, final boolean put) {
 		if (checkWaiting()) {
 			return;
 		}
@@ -350,19 +348,19 @@ public class LProcess implements LRelease {
 		}
 		try {
 			synchronized (this) {
-				if (screen == null) {
+				if (newScreen == null) {
 					this._isInstance = false;
 					throw new LSysException("Cannot create a [Screen] instance !");
 				}
 				if (!_game.displayImpl.showLogo) {
 					if (_currentScreen != null) {
-						setTransition(screen.onTransition());
+						setTransition(newScreen.onTransition());
 					} else {
 						// * 为了防止画面单调,Loon默认为未设定Transition时,让首个Screen随机使用一次渐变
 						// * 不想使用,或者需要自行设定的话，请重载Screen的onTransition函数。
 						// * 不使用,返回: LTransition.newEmpty()
 						// * 使用,返回: 设定或者自定义一个LTransition对象.
-						LTransition randTransition = screen.onTransition();
+						LTransition randTransition = newScreen.onTransition();
 						if (randTransition == null) {
 							int rad = MathUtils.random(0, 14);
 							switch (rad) {
@@ -417,58 +415,33 @@ public class LProcess implements LRelease {
 					}
 				}
 				_game.displayImpl.clearLog();
-				screen.setOnLoadState(false);
-				if (_currentScreen == null) {
-					_currentScreen = screen;
-				} else {
-					killScreen(screen);
-				}
-				this._isInstance = true;
-
-				if (screen instanceof EmulatorListener) {
-					setEmulatorListener((EmulatorListener) screen);
-				} else {
-					setEmulatorListener(null);
-				}
-
-				screen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-
+				_isInstance = false;
 				if (_screenProcess != null) {
 					_screenProcess.kill();
 					if (RealtimeProcessManager.get().containsProcess(_screenProcess)) {
 						RealtimeProcessManager.get().delete(_screenProcess);
 					}
 				}
-
-				_screenProcess = new ScreenProcess(_game, this, screen);
-
-				RealtimeProcessManager.get().addProcess(_screenProcess);
-
-				if (put) {
-					addScreen(screen);
+				if (newScreen == _currentScreen) {
+					newScreen.destroy();
 				}
+				newScreen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+				RealtimeProcessManager.get()
+						.addProcess((_screenProcess = new ScreenProcess(_game, this, newScreen, put)));
 				_loadingScreen = null;
 			}
 		} catch (Throwable cause) {
-			LSystem.error("Update Screen failed: " + screen, cause);
+			LSystem.error("Update New Screen failed: " + newScreen, cause);
 		}
 	}
 
-	private void killScreen(final Screen screen) {
+	private void closedScreen(final Screen oldScreen, final Screen newScreen) {
 		try {
-			if (_currentScreen != null) {
-				_currentScreen.destroy();
-				if (screen != null) {
-					if (screen == _currentScreen) {
-						screen.pause();
-					}
-					screen.destroy();
-				}
-			} else if (screen != null) {
-				screen.destroy();
+			if (oldScreen != null && oldScreen != newScreen) {
+				oldScreen.destroy();
+			} else if (oldScreen != null) {
+				oldScreen.pause();
 			}
-			_currentScreen = null;
-			_currentScreen = screen;
 		} catch (Throwable cause) {
 			LSystem.error("Destroy screen failure", cause);
 		}
@@ -1247,15 +1220,23 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess setCurrentScreen(final Screen screen, boolean closed) {
-		if (checkWaiting()) {
+		return setCurrentScreen(screen, closed, true);
+	}
+
+	public LProcess setCurrentScreen(final Screen screen, boolean closed, boolean put) {
+		return setCurrentScreen(true, screen, closed, put);
+	}
+
+	public LProcess setCurrentScreen(final boolean waiting, final Screen screen, boolean closed, boolean put) {
+		if (checkWaiting() && waiting) {
 			return this;
 		}
 		if (screen != null) {
 			this._isInstance = false;
-			if (closed && _currentScreen != null) {
-				_currentScreen.destroy();
+			if (closed) {
+				closedScreen(_currentScreen, screen);
 			}
-			this._currentScreen = null;
+			_currentScreen = null;
 			_currentScreen = screen;
 			_currentScreen.setLock(false);
 			_currentScreen.setClose(false);
@@ -1269,7 +1250,9 @@ public class LProcess implements LRelease {
 			} else {
 				setEmulatorListener(null);
 			}
-			addScreen(screen);
+			if (put) {
+				addScreen(screen);
+			}
 		}
 		return this;
 	}

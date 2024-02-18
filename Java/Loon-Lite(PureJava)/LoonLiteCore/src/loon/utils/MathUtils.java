@@ -981,6 +981,13 @@ public final class MathUtils {
 		return SinCos.COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
+	public static float choose(float... choices) {
+		if (choices == null) {
+			return 0f;
+		}
+		return choices[MathUtils.ifloor(random() * choices.length)];
+	}
+
 	public static boolean between(float v, float min, float max) {
 		return (v > min && v < max);
 	}

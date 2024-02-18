@@ -1695,23 +1695,36 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen restart() {
-		return this.restart(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		return restart(this, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), true);
 	}
 
 	public Screen restart(int w, int h) {
-		return restart(this, w, h);
+		return restart(this, w, h, true);
 	}
 
-	public Screen restart(Screen screen, int w, int h) {
+	public static Screen restart(Screen screen, int w, int h, boolean resetCreated) {
 		if (screen != null) {
-			screen.onCreate(w, h);
-			screen.setClose(false);
-			screen.onLoad();
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
+			screen.setOnLoadState(false);
+			if (resetCreated) {
+				screen.onCreate(w, h);
+			}
+			screen.setClose(false);
+			screen.resetSize(w, h);
+			screen.onLoad();
 			screen.onLoaded();
 			screen.setOnLoadState(true);
+			screen.resume();
 		}
-		return this;
+		return screen;
+	}
+
+	public Screen resetOnload() {
+		return resetOnload(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public Screen resetOnload(int w, int h) {
+		return restart(this, w, h, false);
 	}
 
 	public Screen invokeAsync(Runnable runnable) {

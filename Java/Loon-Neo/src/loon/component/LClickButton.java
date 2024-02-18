@@ -577,7 +577,6 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 
 	@Override
 	public void destory() {
-
 	}
 
 }

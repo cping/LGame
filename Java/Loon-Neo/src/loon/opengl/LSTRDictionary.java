@@ -77,6 +77,8 @@ public final class LSTRDictionary implements LRelease {
 
 	private boolean tmp_asyn = true;
 
+	private boolean _allowBind = true;
+
 	private final ArrayMap cacheList = new ArrayMap(32);
 
 	private final ArrayMap fontList = new ArrayMap(32);
@@ -282,6 +284,9 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public final Dict bind(final LFont font, final String mes, final boolean autoStringFilter) {
+		if (!_allowBind) {
+			return null;
+		}
 		if (StringUtils.isEmpty(mes)) {
 			return null;
 		}
@@ -488,6 +493,15 @@ public final class LSTRDictionary implements LRelease {
 
 	public final static String getAddedString() {
 		return ADDED;
+	}
+
+	public boolean isAllowBind() {
+		return _allowBind;
+	}
+
+	public LSTRDictionary setAllowBind(boolean a) {
+		this._allowBind = a;
+		return this;
 	}
 
 	public final void dispose() {

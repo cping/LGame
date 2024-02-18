@@ -1198,9 +1198,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_IN, 30, _gameColor).setAutoRemoved(true));
 						} else {
-							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor));
+							effectSprites.add(FadeEffect.create(ISprite.TYPE_FADE_OUT, 30, _gameColor).setAutoRemoved(true));
 						}
 					}
 					continue;
@@ -1447,7 +1447,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _currentTasks.size() > 0;
 	}
 
-	public AVGScreen click() {
+	public AVGScreen runScriptClick() {
 		// 如果存在未完成任务，则不允许继续脚本
 		if (tasking()) {
 			return this;
@@ -1696,7 +1696,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (messageDesktop != null) {
 			messageDesktop.processEvents();
 		}
-		click();
 	}
 
 	@Override
@@ -1711,6 +1710,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (messageDesktop != null) {
 			messageDesktop.processEvents();
 		}
+		runScriptClick();
 	}
 
 	@Override
