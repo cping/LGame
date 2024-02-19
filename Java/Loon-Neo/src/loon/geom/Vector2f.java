@@ -1063,16 +1063,25 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return set(x, y).rotateSelf(angle);
 	}
 
+	public Vector2f moveX(float x) {
+		return move(x, this.y);
+	}
+
+	public Vector2f moveY(float y) {
+		return move(this.x, y);
+	}
+
 	public Vector2f move(float dx, float dy) {
 		this.x += dx;
 		this.y += dy;
 		return this;
 	}
 
-	public Vector2f move(Vector2f pos) {
-		this.x += pos.x;
-		this.y += pos.y;
-		return this;
+	public Vector2f move(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		return move(pos.getX(), pos.getY());
 	}
 
 	public Vector2f move_multiples(int direction, float multiples) {
@@ -1081,16 +1090,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 		}
 		Vector2f v = Field2D.getDirection(direction);
 		return move(v.x() * multiples, v.y() * multiples);
-	}
-
-	public Vector2f moveX(float x) {
-		this.x += x;
-		return this;
-	}
-
-	public Vector2f moveY(float y) {
-		this.y += y;
-		return this;
 	}
 
 	public Vector2f moveByAngle(int degAngle, float distance) {

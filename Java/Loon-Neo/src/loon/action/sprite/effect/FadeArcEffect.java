@@ -28,7 +28,7 @@ import loon.utils.MathUtils;
 /**
  * 0.3.2版新增类，单一色彩的圆弧渐变特效
  */
-public class ArcEffect extends BaseAbstractEffect {
+public class FadeArcEffect extends BaseAbstractEffect {
 
 	private final int arcDiv;
 
@@ -38,24 +38,31 @@ public class ArcEffect extends BaseAbstractEffect {
 
 	private int tmpColor;
 
-	private int[] sign = { 1, -1 };
+	private int[] sign = { -1, 1 };
 
-	public ArcEffect(LColor c) {
-		this(c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	private int _sleep;
+
+	public FadeArcEffect(int type, LColor c) {
+		this(type, c, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public ArcEffect(LColor c, int x, int y, int width, int height) {
-		this(c, x, y, width, height, 10);
+	public FadeArcEffect(int type, LColor c, int x, int y, int width, int height) {
+		this(type, c, x, y, width, height, 10);
 	}
 
-	public ArcEffect(LColor c, int x, int y, int width, int height, int div) {
+	public FadeArcEffect(int type, LColor c, int x, int y, int width, int height, int div) {
+		this(type, c, x, y, width, height, div, 1);
+	}
+
+	public FadeArcEffect(int type, LColor c, int x, int y, int width, int height, int div, int sleep) {
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setDelay(200);
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
-		this.setTurn(1);
-		arcDiv = div;
+		this.setTurn(type);
+		this.arcDiv = div;
+		_sleep = LSystem.toIScaleFPS(MathUtils.min(1, sleep));
 	}
 
 	@Override
@@ -63,18 +70,29 @@ public class ArcEffect extends BaseAbstractEffect {
 		if (checkAutoRemove()) {
 			return;
 		}
-		if (this.step >= this.arcDiv) {
-			this._completed = true;
-		}
-
 		if (_timer.action(elapsedTime)) {
-			step++;
+			step += _sleep;
+			if (step != 0) {
+				final float v = (MathUtils.DEG_FULL / this.arcDiv) * this.step;
+				if (v >= MathUtils.DEG_FULL) {
+					this._completed = true;
+				}
+			}
 		}
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
+			return;
+		}
+		if (step < _sleep) {
+			return;
+		}
+		if (curTurn == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
+		}
+		if (curTurn == TYPE_FADE_IN && _completed) {
 			return;
 		}
 		tmpColor = g.color();
@@ -84,18 +102,15 @@ public class ArcEffect extends BaseAbstractEffect {
 		if (useTex) {
 			g.setPixSkip(8);
 		}
-		if (step <= 1) {
-			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height);
-		} else {
-			float deg = 360f / this.arcDiv * this.step;
-			if (deg < 360) {
-				float length = MathUtils.sqrt(MathUtils.pow(_width / 2, 2.0f) + MathUtils.pow(_height / 2, 2.0f));
-				float x = drawX(_width / 2 - length + offsetX);
-				float y = drawY(_height / 2 - length + offsetY);
-				float w = _width / 2 + length - x;
-				float h = _height / 2 + length - y;
-				g.fillArc(x, y, w, h, 20, 0, this.sign[this.curTurn] * deg);
-			}
+		g.setColor(_baseColor);
+		final float deg = MathUtils.DEG_FULL / this.arcDiv * this.step;
+		if (deg < MathUtils.DEG_FULL) {
+			final float length = MathUtils.sqrt(MathUtils.pow(_width / 2f, 2f) + MathUtils.pow(_height / 2f, 2f));
+			final float x = drawX(_width / 2f - length + offsetX) - LSystem.LAYER_TILE_SIZE / 2f;
+			final float y = drawY(_height / 2f - length + offsetY) - LSystem.LAYER_TILE_SIZE / 2f;
+			final float w = (_width / 2f + length - x) + LSystem.LAYER_TILE_SIZE;
+			final float h = (_height / 2f + length - y) + LSystem.LAYER_TILE_SIZE;
+			g.fillArc(x, y, w, h, arcDiv, 0, this.sign[this.curTurn] * deg);
 		}
 		if (useTex) {
 			g.setPixSkip(tmp);
@@ -104,10 +119,9 @@ public class ArcEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public ArcEffect reset() {
+	public FadeArcEffect reset() {
 		super.reset();
 		this.step = 0;
-		this.curTurn = 1;
 		return this;
 	}
 
@@ -115,13 +129,13 @@ public class ArcEffect extends BaseAbstractEffect {
 		return curTurn;
 	}
 
-	public ArcEffect setTurn(int turn) {
+	public FadeArcEffect setTurn(int turn) {
 		this.curTurn = turn;
 		return this;
 	}
 
 	@Override
-	public ArcEffect setAutoRemoved(boolean autoRemoved) {
+	public FadeArcEffect setAutoRemoved(boolean autoRemoved) {
 		super.setAutoRemoved(autoRemoved);
 		return this;
 	}

@@ -83,6 +83,16 @@ import loon.utils.timer.Task;
  */
 public class HelperUtils {
 
+	/**
+	 * 加入fps因素的参数修正
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public static float toFixed(float v) {
+		return LSystem.toScaleFPS(v);
+	}
+
 	public static LTimer timer() {
 		return LTimer.at();
 	}

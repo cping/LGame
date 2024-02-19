@@ -161,8 +161,8 @@ public class JavaSECanvas extends Canvas {
 			newImage = JavaSEImageCachePool.get().find(img.getType(), img.getWidth(), img.getHeight());
 			img.copyData(newImage.getRaster());
 		} else {
-			newImage = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, MathUtils.floor(width),
-					MathUtils.floor(height));
+			newImage = JavaSEImageCachePool.get().find(BufferedImage.TYPE_INT_ARGB_PRE, MathUtils.ifloor(width),
+					MathUtils.ifloor(height));
 		}
 		return newImage;
 	}
@@ -545,7 +545,7 @@ public class JavaSECanvas extends Canvas {
 		int tmp = getStrokeColor();
 		setStrokeColor(c);
 		currentState().prepareStroke(context);
-		context.drawRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
+		context.drawRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(width), MathUtils.ifloor(height));
 		setStrokeColor(tmp);
 		isDirty = true;
 		return this;
@@ -583,8 +583,8 @@ public class JavaSECanvas extends Canvas {
 		int tmp = getStrokeColor();
 		setStrokeColor(c);
 		currentState().prepareStroke(context);
-		context.drawArc(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h),
-				MathUtils.floor(startAngle), MathUtils.floor(endAngle));
+		context.drawArc(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h),
+				MathUtils.ifloor(startAngle), MathUtils.ifloor(endAngle));
 		setStrokeColor(tmp);
 		isDirty = true;
 		return null;
@@ -595,7 +595,7 @@ public class JavaSECanvas extends Canvas {
 		int tmp = getStrokeColor();
 		setStrokeColor(c);
 		currentState().prepareStroke(context);
-		context.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		context.drawOval(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		setStrokeColor(tmp);
 		isDirty = true;
 		return this;
@@ -604,7 +604,7 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas drawOval(float x, float y, float w, float h) {
 		currentState().prepareStroke(context);
-		context.drawOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		context.drawOval(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		isDirty = true;
 		return this;
 	}
@@ -614,7 +614,7 @@ public class JavaSECanvas extends Canvas {
 		int tmp = getFillColor();
 		setFillColor(c);
 		currentState().prepareFill(context);
-		context.fillRect(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(width), MathUtils.floor(height));
+		context.fillRect(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(width), MathUtils.ifloor(height));
 		setFillColor(tmp);
 		isDirty = true;
 		return this;
@@ -623,7 +623,7 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas fillOval(float x, float y, float w, float h) {
 		currentState().prepareFill(context);
-		context.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		context.fillOval(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		isDirty = true;
 		return this;
 	}
@@ -633,7 +633,7 @@ public class JavaSECanvas extends Canvas {
 		int tmp = getFillColor();
 		setFillColor(c);
 		currentState().prepareFill(context);
-		context.fillOval(MathUtils.floor(x), MathUtils.floor(y), MathUtils.floor(w), MathUtils.floor(h));
+		context.fillOval(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		setFillColor(tmp);
 		isDirty = true;
 		return this;
@@ -642,8 +642,8 @@ public class JavaSECanvas extends Canvas {
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
 		currentState().prepareFill(context);
-		context.fillArc(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(width), MathUtils.floor(height),
-				MathUtils.floor(start), MathUtils.floor(end));
+		context.fillArc(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width), MathUtils.ifloor(height),
+				MathUtils.ifloor(start), MathUtils.ifloor(end));
 		isDirty = true;
 		return this;
 	}

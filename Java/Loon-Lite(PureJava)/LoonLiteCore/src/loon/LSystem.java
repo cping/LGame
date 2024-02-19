@@ -33,6 +33,7 @@ import loon.font.LFont;
 import loon.geom.Dimension;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.json.JsonImpl;
@@ -310,6 +311,60 @@ public class LSystem {
 	public static void setSystemGlobalFont(IFont font) {
 		LSystem.setSystemLogFont(font);
 		LSystem.setSystemGameFont(font);
+	}
+
+	/**
+	 * 返回fps是否存在时间轴缩放
+	 * 
+	 * @return
+	 */
+	public static final boolean isScaleFPS() {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.isScaleFPS();
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * 返回时间轴缩放数值
+	 * 
+	 * @return
+	 */
+	public static final float getScaleFPS() {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.getScaleFPS();
+			}
+		}
+		return 1f;
+	}
+
+	public static final float toFPSFixed(float v) {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.toFPSFixed(v);
+			}
+		}
+		return 1f;
+	}
+
+	public static final int toIScaleFPS(float v) {
+		return MathUtils.iceil(toScaleFPS(v));
+	}
+
+	public static final float toScaleFPS(float v) {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.toScaleFPS(v);
+			}
+		}
+		return 1f;
 	}
 
 	public static final boolean isLockAllTouchEvent() {

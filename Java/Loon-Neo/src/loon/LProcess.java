@@ -378,7 +378,7 @@ public class LProcess implements LRelease {
 								randTransition = LTransition.newFadeIn();
 								break;
 							case 1:
-								randTransition = LTransition.newArc();
+								randTransition = LTransition.newFadeArcIn();
 								break;
 							case 2:
 								randTransition = LTransition.newSplitRandom(LColor.black);

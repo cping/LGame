@@ -70,7 +70,7 @@ public class JavaANCanvas extends Canvas {
 	}
 
 	void draw(Bitmap bitmap, float x, float y, float w, float h, float x1, float y1, float w1, float h1) {
-		srcR.set(MathUtils.floor(x1), MathUtils.floor(y1), MathUtils.floor(w1), MathUtils.floor(h1));
+		srcR.set(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(w1), MathUtils.ifloor(h1));
 		dstR.set(x, y, x + w, y + h);
 		context.drawBitmap(bitmap, srcR, dstR, currentState().prepareImage());
 		isDirty = true;
@@ -505,7 +505,7 @@ public class JavaANCanvas extends Canvas {
 			canvas.drawBitmap(img, 0, 0, null);
 			canvas = null;
 		} else {
-			newImage = JavaANImageCachePool.get().find(null, MathUtils.floor(width), MathUtils.floor(height));
+			newImage = JavaANImageCachePool.get().find(null, MathUtils.ifloor(width), MathUtils.ifloor(height));
 		}
 		return newImage;
 	}

@@ -22,7 +22,7 @@ package loon;
 
 import loon.action.map.Config;
 import loon.action.sprite.ISprite;
-import loon.action.sprite.effect.ArcEffect;
+import loon.action.sprite.effect.FadeArcEffect;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
 import loon.action.sprite.effect.FadeDoorEffect;
@@ -432,12 +432,16 @@ public class LTransition {
 	 * 
 	 * @return
 	 */
-	public static final LTransition newArc() {
-		return newArc(LColor.black);
+	public static final LTransition newFadeArcIn() {
+		return newFadeArc(ISprite.TYPE_FADE_IN, LColor.black);
 	}
 
-	public static final LTransition newArc(final LColor c) {
-		return newArc(c, -1);
+	public static final LTransition newFadeArcOut() {
+		return newFadeArc(ISprite.TYPE_FADE_OUT, LColor.black);
+	}
+
+	public static final LTransition newFadeArc(final int type, final LColor c) {
+		return newFadeArc(type, c, -1);
 	}
 
 	/**
@@ -447,9 +451,9 @@ public class LTransition {
 	 * @param delay
 	 * @return
 	 */
-	public static final LTransition newArc(final LColor c, final long delay) {
+	public static final LTransition newFadeArc(final int type, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
-			return createEffectTransition(new ArcEffect(c), delay);
+			return createEffectTransition(new FadeArcEffect(type, c), delay);
 		}
 		return null;
 	}

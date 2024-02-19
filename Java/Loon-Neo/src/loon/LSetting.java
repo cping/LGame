@@ -127,9 +127,78 @@ public class LSetting {
 	public boolean allScreenRefresh = true;
 
 	/**
+	 * 默认帧率
+	 */
+	private final static int DEFAULT_MAX_FPS = 60;
+
+	/**
 	 * 帧率
 	 */
-	public int fps = 60;
+	public int fps = DEFAULT_MAX_FPS;
+
+	/**
+	 * 想要修正的帧率(fps_time_fixed为true时生效)
+	 */
+	public int fps_time_fixed_value = DEFAULT_MAX_FPS;
+
+	/**
+	 * 修正fps帧率,以保证按照要求帧的速度进行运算(此项为true时,会改变全部时间轴,比如最开始设定为60,
+	 * 但是环境只能跑到30帧,游戏变慢,那么开启此项,每秒30帧会被缩放为60帧时的时间返回，表面加速游戏,但本质为跳帧)
+	 */
+	public boolean fps_time_fixed = false;
+
+	/**
+	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public float toFPSFixed(float v) {
+		if (!fps_time_fixed) {
+			return v;
+		}
+		return v * ((float) fps / (float) fps_time_fixed_value);
+	}
+
+	/**
+	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
+	 * 
+	 * @return
+	 */
+	public float toFPSFixed() {
+		return toFPSFixed(1f);
+	}
+
+	/**
+	 * 判断是否允许缩放fps
+	 * 
+	 * @return
+	 */
+	public boolean isScaleFPS() {
+		return fps_time_fixed && (fps != fps_time_fixed_value);
+	}
+
+	/**
+	 * 获得当前fps的缩放值
+	 * 
+	 * @return
+	 */
+	public float getScaleFPS() {
+		if (fps_time_fixed) {
+			return ((float) fps_time_fixed_value / (float) fps);
+		}
+		return 1f;
+	}
+
+	/**
+	 * 获得fps的缩放值
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public float toScaleFPS(float v) {
+		return v * getScaleFPS();
+	}
 
 	/**
 	 * 游戏画面实际宽度

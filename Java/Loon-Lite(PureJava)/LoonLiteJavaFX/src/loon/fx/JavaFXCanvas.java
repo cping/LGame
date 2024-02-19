@@ -344,9 +344,10 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
 		if (end - start == 360) {
-			context.fillOval(x1, y1, width, height);
+			context.fillOval(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width), MathUtils.ifloor(height));
 		} else {
-			context.fillArc(x1, y1, width, height, start, end, ArcType.ROUND);
+			context.fillArc(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width), MathUtils.ifloor(height),
+					MathUtils.ifloor(start), MathUtils.ifloor(end), ArcType.ROUND);
 		}
 		isDirty = true;
 		return null;
@@ -380,7 +381,7 @@ public class JavaFXCanvas extends Canvas {
 
 	@Override
 	public Canvas fillRect(float x, float y, float width, float height) {
-		context.fillRect(x, y,MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
+		context.fillRect(x, y, MathUtils.ifloor(width + 1f), MathUtils.ifloor(height + 1f));
 		isDirty = true;
 		return this;
 	}

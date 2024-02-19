@@ -22,6 +22,7 @@ package loon;
 
 import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseAbstractEffect;
+import loon.action.sprite.effect.FadeArcEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
 import loon.action.sprite.effect.FadeDoorEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
@@ -81,8 +82,11 @@ public class ScreenExitEffect {
 	// 斜角离开,斜角进入
 	public final static int SWIPE_FADE = 12;
 
+	// 扇形淡出,淡入
+	public final static int ARC_FADE = 13;
+
 	// 瓦片淡出,淡入
-	public final static int TILES_FADE = 13;
+	public final static int TILES_FADE = 14;
 
 	static class ReleasedScreen implements LRelease {
 
@@ -188,6 +192,9 @@ public class ScreenExitEffect {
 				case SWIPE_FADE:
 					dstScreen.setTransition(LTransition.newFadeSwipe(effectType, color));
 					break;
+				case ARC_FADE:
+					dstScreen.setTransition(LTransition.newFadeArc(effectType, color));
+					break;
 				case TILES_FADE:
 					dstScreen.setTransition(LTransition.newFadeTile(effectType, color));
 					break;
@@ -287,6 +294,9 @@ public class ScreenExitEffect {
 			break;
 		case SWIPE_FADE:
 			baseEffect = new FadeSwipeEffect(effectType, color);
+			break;
+		case ARC_FADE:
+			baseEffect = new FadeArcEffect(effectType, color);
 			break;
 		case TILES_FADE:
 			baseEffect = new FadeTileEffect(effectType, color);

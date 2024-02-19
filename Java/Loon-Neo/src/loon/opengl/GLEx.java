@@ -3428,7 +3428,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param height
 	 */
 	public GLEx drawOval(float x1, float y1, float width, float height) {
-		return drawOval(x1, y1, width, height, 32);
+		return drawOval(x1, y1, width, height, LSystem.LAYER_TILE_SIZE);
 	}
 
 	/**
@@ -3482,7 +3482,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			fillOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
-			return this.fillArc(x1, y1, width, height, 32, 0, 360);
+			return this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, 360);
 		}
 	}
 
@@ -3502,7 +3502,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillOvalImpl(x1, y1, width, height);
 		} else {
-			this.fillArc(x1, y1, width, height, 32, 0, 360);
+			this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, 360);
 		}
 		setTint(tint);
 		return this;
@@ -3881,7 +3881,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @return
 	 */
 	public final GLEx drawArc(float x1, float y1, float width, float height, float start, float end) {
-		return drawArc(x1, y1, width, height, 32, start, end);
+		return drawArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, start, end);
 	}
 
 	/**
@@ -3897,7 +3897,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @return
 	 */
 	public final GLEx drawArc(float x1, float y1, float width, float height, int segments, float start, float end) {
-		return drawArc(x1, y1, width, height, segments, start, end, false);
+		return drawArc(x1, y1, width, height, segments, start, end, end < 0f);
 	}
 
 	/**
@@ -3959,7 +3959,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param end
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end) {
-		return fillArc(x1, y1, width, height, 32, start, end);
+		return fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, start, end);
 	}
 
 	/**
@@ -3988,7 +3988,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @return
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, int segments, float start, float end) {
-		return fillArc(x1, y1, width, height, segments, start, end, false);
+		return fillArc(x1, y1, width, height, segments, start, end, end < 0f);
 	}
 
 	/**
@@ -4004,7 +4004,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @return
 	 */
 	public final GLEx fillArc(float x1, float y1, float width, float height, float start, float end, boolean reverse) {
-		return fillArc(x1, y1, width, height, 32, start, end, reverse);
+		return fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, start, end, reverse);
 	}
 
 	/**
@@ -4059,7 +4059,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param radius
 	 */
 	public final GLEx drawRoundRect(float x, float y, float width, float height, int radius) {
-		return drawRoundRect(x, y, width, height, radius, 32);
+		return drawRoundRect(x, y, width, height, radius, LSystem.LAYER_TILE_SIZE);
 	}
 
 	/**
@@ -4113,7 +4113,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	 * @param cornerRadius
 	 */
 	public final GLEx fillRoundRect(float x, float y, float width, float height, int cornerRadius) {
-		return fillRoundRect(x, y, width, height, cornerRadius, 32);
+		return fillRoundRect(x, y, width, height, cornerRadius, LSystem.LAYER_TILE_SIZE);
 	}
 
 	/**

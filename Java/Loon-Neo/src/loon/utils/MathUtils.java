@@ -98,6 +98,8 @@ public final class MathUtils {
 
 	public static final float SQRT2 = 1.4142135f;
 
+	public static final float DEG_FULL = 360f;
+
 	private static final int SIN_BITS = 13;
 
 	private static final int SIN_MASK = ~(-1 << SIN_BITS);
@@ -105,8 +107,6 @@ public final class MathUtils {
 	private static final int SIN_COUNT = SIN_MASK + 1;
 
 	private static final float RAD_FULL = PI * 2;
-
-	private static final float DEG_FULL = 360;
 
 	private static final float RAD_TO_INDEX = SIN_COUNT / RAD_FULL;
 

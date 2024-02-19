@@ -2685,7 +2685,7 @@ public class GLEx implements LRelease {
 		canvas.setTransform(tx());
 		LColor color = canvas.getFilltoLColor();
 		canvas.setColor(syncBrushColor());
-		canvas.fillArc(x1, y1, width, height, start, end);
+		canvas.fillArc(x1, y1, width, height, start, -end);
 		canvas.setColor(color);
 		return this;
 	}

@@ -501,21 +501,20 @@ public class Display extends BaseIO implements LRelease {
 		final LSetting setting = _game.setting;
 		final long paintLoop = setting.fixedPaintLoopTime;
 		final long updateLoop = setting.fixedUpdateLoopTime;
-
+		final float fpsScale = setting.getScaleFPS();
 		long nextUpdate = this.nextUpdate;
-
 		if (updateTick >= nextUpdate) {
-			long updateRate = this.updateRate;
+			final long updateRate = this.updateRate;
 			long updates = 0;
 			while (updateTick >= nextUpdate) {
 				nextUpdate += updateRate;
 				updates++;
 			}
 			this.nextUpdate = nextUpdate;
-			long updateDt = updates * updateRate;
+			final long updateDt = updates * updateRate;
 			updateClock.tick += updateDt;
 			if (updateLoop == -1) {
-				updateClock.timeSinceLastUpdate = updateDt;
+				updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
 			} else {
 				updateClock.timeSinceLastUpdate = updateLoop;
 			}
@@ -524,9 +523,9 @@ public class Display extends BaseIO implements LRelease {
 			}
 			update(updateClock);
 		}
-		long paintTick = _game.tick();
+		final long paintTick = _game.tick();
 		if (paintLoop == -1) {
-			paintClock.timeSinceLastUpdate = paintTick - paintClock.tick;
+			paintClock.timeSinceLastUpdate = (long) ((paintTick - paintClock.tick) * fpsScale);
 		} else {
 			paintClock.timeSinceLastUpdate = paintLoop;
 		}
@@ -555,9 +554,10 @@ public class Display extends BaseIO implements LRelease {
 			this.frameCount++;
 			this.frameDelta += delta;
 
-			if (frameCount % 60 == 0) {
+			if (frameCount % 60 == 0 && frameDelta != 0) {
 				final int dstFPS = setting.fps;
-				final int newFps = MathUtils.round((LSystem.SECOND * frameCount) / frameDelta) + 1;
+				final int newFps = MathUtils.round((LSystem.SECOND * frameCount * setting.getScaleFPS()) / frameDelta)
+						+ 1;
 				this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
 				if (frameRate == dstFPS - 1) {
 					frameRate = MathUtils.max(dstFPS, frameRate);
