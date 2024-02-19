@@ -83,7 +83,7 @@ public class TMXProperties {
 	public Values<Object> getValues() {
 		return getPropertiesMap().values();
 	}
-	
+
 	public void parse(Json.Array properties) {
 		for (int p = 0; p < properties.length(); p++) {
 			Json.Object property = properties.getObject(p);
@@ -100,7 +100,7 @@ public class TMXProperties {
 			}
 		}
 	}
-	
+
 	public void parse(XMLElement element) {
 		TArray<XMLElement> properties = element.list("property");
 		if (properties == null) {

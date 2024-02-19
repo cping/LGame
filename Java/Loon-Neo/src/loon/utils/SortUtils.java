@@ -67,7 +67,7 @@ public class SortUtils<T> {
 			srcArray[high] = dest[high];
 		}
 	}
-	
+
 	public static <T> void quickSort(T[] a, Comparator<T> compar) {
 		quickSort(a, 0, a.length - 1, compar);
 	}

@@ -23,5 +23,5 @@ package loon.geom;
 public interface IV<T> {
 
 	public T get();
-	
+
 }

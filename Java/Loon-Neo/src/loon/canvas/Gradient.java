@@ -25,7 +25,7 @@ public abstract class Gradient {
 	private static final float[] GRADIENT_FRACTIONS = new float[] { 0f, 1f };
 
 	public static abstract class Config {
-		
+
 		public final int[] colors;
 		public final float[] positions;
 
@@ -36,7 +36,7 @@ public abstract class Gradient {
 	}
 
 	public static class Linear extends Config {
-		
+
 		public final float x0, y0, x1, y1;
 
 		public Linear(float x0, float y0, float x1, float y1, LColor start, LColor end) {
@@ -61,7 +61,7 @@ public abstract class Gradient {
 	}
 
 	public static class Radial extends Config {
-		
+
 		public final float x, y, r;
 
 		public Radial(float x, float y, float r, LColor start, LColor end) {

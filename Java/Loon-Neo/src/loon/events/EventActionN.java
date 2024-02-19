@@ -23,5 +23,5 @@ package loon.events;
 public interface EventActionN extends EventAction {
 
 	void update();
-	
+
 }

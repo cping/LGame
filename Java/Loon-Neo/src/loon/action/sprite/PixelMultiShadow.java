@@ -26,7 +26,7 @@ import loon.utils.ObjectMap;
 public class PixelMultiShadow implements ISpritesShadow {
 
 	private ObjectMap<Object, ISpritesShadow> _shadowList;
-	
+
 	private boolean _closed;
 
 	public PixelMultiShadow() {

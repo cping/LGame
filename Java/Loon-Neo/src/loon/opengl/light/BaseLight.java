@@ -28,11 +28,11 @@ public abstract class BaseLight {
 	public final Vector3f position = new Vector3f();
 
 	public final LColor color = new LColor(0f, 0f, 0f, 1f);
-	
+
 	public float radius;
-	
+
 	public float intensity;
-	
+
 	public float attenuation;
 
 	public LColor getColor() {

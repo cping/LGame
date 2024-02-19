@@ -20,6 +20,8 @@
  */
 package loon.action.behaviors;
 
+import loon.LSystem;
+
 public class AbortTypes {
 
 	public final static AbortTypes None = new AbortTypes(0);
@@ -38,6 +40,14 @@ public class AbortTypes {
 
 	public int getAbort() {
 		return _code;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 33;
+		result = LSystem.unite(result, _code);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
 	}
 
 	@Override

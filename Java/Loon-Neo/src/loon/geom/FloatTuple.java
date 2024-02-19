@@ -53,7 +53,7 @@ public class FloatTuple implements LRelease {
 		val2 = swap;
 		return this;
 	}
-	
+
 	public FloatTuple cpy() {
 		return new FloatTuple(val1, val2);
 	}

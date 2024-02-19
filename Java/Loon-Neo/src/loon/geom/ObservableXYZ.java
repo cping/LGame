@@ -28,7 +28,7 @@ public class ObservableXYZ<T> implements XYZ, SetXYZ {
 	public final static <T> ObservableXYZ<T> at(TChange<T> change, XYZ pos, T obj) {
 		return new ObservableXYZ<T>(change, pos, obj);
 	}
-	
+
 	private TChange<T> _change;
 
 	private XYZ _pos;

@@ -132,7 +132,7 @@ public class Text implements LRelease {
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {
 			this._lines = FontUtils.splitLines(this._chars, this._lines);
 		} else {
-			this._lines = FontUtils.splitLines(this._font, this._chars, this._lines, this._textOptions._autoWrap,
+			this._lines = FontUtils.splitLines(font, this._chars, this._lines, this._textOptions._autoWrap,
 					this._textOptions._autoWrapWidth);
 		}
 		final int lineCount = this._lines.size;
@@ -152,9 +152,11 @@ public class Text implements LRelease {
 		if (_width <= 0) {
 			_width = _lineWidths.get(0) * StringUtils.countOccurrences(this._chars, LSystem.LF);
 		}
-		this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
-		if (_height <= 0) {
-			_height = _font.getHeight();
+		if (font != null) {
+			this._height = lineCount * font.getHeight() + (lineCount - 1) * this._textOptions._leading;
+			if (_height <= 0) {
+				_height = font.getHeight();
+			}
 		}
 		this._initNativeDraw = false;
 		this._lastCharSequence = chars;

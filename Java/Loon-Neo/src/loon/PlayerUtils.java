@@ -425,5 +425,5 @@ public class PlayerUtils extends Director {
 	public static float getAllowableYDistance(ActionBind src, ActionBind dst, float allowDistance) {
 		return (src.getHeight() / 2) + (dst.getHeight() / 2 - allowDistance);
 	}
-	
+
 }

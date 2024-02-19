@@ -70,7 +70,7 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 	public float limit(float min, float max) {
 		return MathUtils.limit(_value, min, max);
 	}
-	
+
 	public float next(float v) {
 		return increment(v);
 	}
@@ -205,10 +205,7 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 	@Override
 	public String toString() {
 		StringKeyValue v = new StringKeyValue("FloatCounter");
-		v.kv("value", _value).comma()
-		       .kv("min", _min).comma()
-		       .kv("max", _max).comma()
-		       .kv("defaultUpdate", _def_value);
+		v.kv("value", _value).comma().kv("min", _min).comma().kv("max", _max).comma().kv("defaultUpdate", _def_value);
 		return v.toString();
 	}
 }

@@ -32,11 +32,11 @@ import loon.utils.TArray;
 public class LightningEffect extends BaseAbstractEffect {
 
 	private LTexture lightningSegment, halfCircle, pixel;
-	
+
 	private LTexturePack pack;
 
 	private int _countCompleted;
-	
+
 	private static LightningEffect instance;
 
 	public final static void freeStatic() {

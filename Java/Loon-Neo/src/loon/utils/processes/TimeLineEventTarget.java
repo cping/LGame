@@ -94,7 +94,7 @@ public abstract class TimeLineEventTarget implements LRelease {
 		this._actived = a;
 		return this;
 	}
-	
+
 	public final TimeLineEventTarget resetAll() {
 		this.reset();
 		this._age = 0;

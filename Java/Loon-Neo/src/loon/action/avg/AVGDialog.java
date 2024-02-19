@@ -118,11 +118,8 @@ final public class AVGDialog {
 				g.draw(down, 0, height - k);
 
 				lazy = lazyImage.texture();
-
-				if (lazyImage != null) {
-					lazyImage.close();
-					lazyImage = null;
-				}
+				lazyImage.close();
+				lazyImage = null;
 				lazy.setDisabledTexture(true);
 				_dialogCache.put(keyName, lazy);
 			} catch (Throwable e) {

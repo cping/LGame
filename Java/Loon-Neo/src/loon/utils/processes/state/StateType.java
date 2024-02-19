@@ -23,14 +23,14 @@ package loon.utils.processes.state;
 public enum StateType {
 
 	None,
-	
+
 	Enter,
-	
+
 	Event,
-	
+
 	Processing,
-	
+
 	Exit,
-	
+
 	Closed
 }

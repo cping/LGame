@@ -23,7 +23,7 @@ package loon.geom;
 public interface SetXYZW {
 
 	void setX(float x);
-	
+
 	void setY(float y);
 
 	void setZ(float z);

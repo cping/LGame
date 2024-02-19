@@ -671,7 +671,7 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 	public Iterator<T> iterator() {
 		return listIterator();
 	}
-	
+
 	public LIterator<T> listIterator() {
 		if (_iterator == null) {
 			_iterator = new ListItr<T>(this);
@@ -737,6 +737,5 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 	public void close() {
 		dispose();
 	}
-
 
 }

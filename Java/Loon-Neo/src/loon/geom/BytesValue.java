@@ -54,10 +54,10 @@ public class BytesValue implements LRelease {
 		return value != null ? value.cpy() : null;
 	}
 
-	public Nullable<ArrayByte> toNullable(){
+	public Nullable<ArrayByte> toNullable() {
 		return new Nullable<ArrayByte>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return value.toString();

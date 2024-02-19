@@ -546,6 +546,10 @@ public final class MathUtils {
 	}
 
 	public static boolean equal(int a, int b) {
+		return a == b;
+	}
+
+	public static boolean equal(double a, double b) {
 		if (a > b)
 			return a - b <= EPSILON;
 		else

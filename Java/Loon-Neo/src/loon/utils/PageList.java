@@ -64,7 +64,7 @@ public class PageList<T> implements LRelease {
 		}
 		return new PageList<T>(pageData, pageNumber, pageSize);
 	}
-	
+
 	public static int toPageNumber(int n) {
 		return n <= 0 ? Integer.MAX_VALUE : n;
 	}

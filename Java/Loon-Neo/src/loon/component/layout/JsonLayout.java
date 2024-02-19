@@ -586,7 +586,7 @@ public class JsonLayout implements LRelease {
 			}
 			putSprites(varName, sprite);
 		}
-		
+
 		return sprite;
 	}
 

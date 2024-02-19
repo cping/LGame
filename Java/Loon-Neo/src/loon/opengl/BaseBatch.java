@@ -31,10 +31,10 @@ public abstract class BaseBatch extends LTextureBind {
 
 	private boolean _shader_ditry = true;
 
-	abstract ShaderProgram createShaderProgram() ;
+	abstract ShaderProgram createShaderProgram();
 
 	abstract ShaderProgram getShaderProgram();
-	
+
 	public abstract BaseBatch setBlendMode(int b);
 
 	public abstract int getBlendMode();

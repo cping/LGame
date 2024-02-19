@@ -48,7 +48,7 @@ public class FlipXTo extends ActionEvent {
 	public void onLoad() {
 
 	}
-	
+
 	@Override
 	public ActionEvent cpy() {
 		FlipXTo flip = new FlipXTo(flipX);

@@ -21,20 +21,6 @@
 package loon;
 
 public enum PanelNodeType {
-	Unknown, 
-	Layer, 
-	Gesture, 
-	Progress, 
-	ScrollContainer, 
-	MenuSelect, 
-	Radar, 
-	Slider, 
-	TabContainer,
-	Inventory,
-	TextArea,
-	TextBar,
-	TextList,
-	TextTree,
-	StatusBar,
-	TextEffect
+	Unknown, Layer, Gesture, Progress, ScrollContainer, MenuSelect, Radar, Slider, TabContainer, Inventory, TextArea,
+	TextBar, TextList, TextTree, StatusBar, TextEffect
 }

@@ -134,11 +134,11 @@ public abstract class Graphics {
 	public int height() {
 		return screenSize().getHeight();
 	}
-	
-	public boolean isHidden(){
-        return width() < 2 || height() < 2;
-    }
-	
+
+	public boolean isHidden() {
+		return width() < 2 || height() < 2;
+	}
+
 	public Matrix4 getViewMatrix() {
 		display = game.display();
 		Dimension view = LSystem.viewSize;

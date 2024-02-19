@@ -75,7 +75,6 @@ public class RotateTo extends ActionEvent {
 		}
 	}
 
-
 	@Override
 	public void update(long elapsedTime) {
 		_easeTimer.update(elapsedTime);

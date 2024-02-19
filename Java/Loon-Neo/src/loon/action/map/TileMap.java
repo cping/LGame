@@ -813,7 +813,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		float yprime = y * field2d.getTileHeight() - offset.getY();
 		return new Vector2f(xprime, yprime);
 	}
-	
+
 	public TileMap switchMap(MapSwitchMaker ms) {
 		field2d.switchMap(ms);
 		return this;

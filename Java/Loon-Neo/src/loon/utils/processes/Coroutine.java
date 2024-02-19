@@ -24,9 +24,9 @@ import loon.LSystem;
 import loon.utils.reply.ClosableIterator;
 
 public class Coroutine {
-	
+
 	protected CoroutineStatus _status;
-	
+
 	private Yielderable _mainEnumerator = null;
 	private ClosableIterator<WaitCoroutine> _childEnumerator = null;
 	private WaitCoroutine _currentCondition;

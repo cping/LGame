@@ -21,7 +21,7 @@
 package loon.events;
 
 public interface EventActionT<T> extends EventAction {
-	
+
 	void update(T obj);
 
 }

@@ -178,7 +178,7 @@ public class LTransition {
 		FadeIn, FadeOut, FadeBoardIn, FadeBoardOut, FadeOvalIn, FadeOvalOut, FadeDotIn, FadeDotOut, FadeTileIn,
 		FadeTileOut, FadeSpiralIn, FadeSpiralOut, FadeSwipeIn, FadeSwipeOut, PixelDarkIn, PixelDarkOut, CrossRandom,
 		SplitRandom, PixelWind, PixelThunder, FadeOvalHollowIn, FadeOvalHollowOut, FadeDoorIrregularIn,
-		FadeDoorIrregularOut;
+		FadeDoorIrregularOut, FadeArcIn, FadeArcOut;
 	}
 
 	/**
@@ -240,6 +240,10 @@ public class LTransition {
 				return TransType.FadeDoorIrregularIn;
 			} else if ("doorirregularout".equals(key)) {
 				return TransType.FadeDoorIrregularOut;
+			} else if ("doorarcin".equals(key)) {
+				return TransType.FadeArcIn;
+			} else if ("doorarcout".equals(key)) {
+				return TransType.FadeArcOut;
 			} else {
 				return TransType.FadeIn;
 			}

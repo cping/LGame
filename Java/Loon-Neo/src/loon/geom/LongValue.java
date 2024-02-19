@@ -24,7 +24,7 @@ import loon.LRelease;
 import loon.utils.MathUtils;
 import loon.utils.reply.Nullable;
 
-public class LongValue implements LRelease{
+public class LongValue implements LRelease {
 
 	private long value;
 
@@ -40,7 +40,7 @@ public class LongValue implements LRelease{
 		set(v);
 		return v != 0;
 	}
-	
+
 	public LongValue set(long v) {
 		this.value = v;
 		return this;
@@ -70,10 +70,10 @@ public class LongValue implements LRelease{
 		return new LongValue(value);
 	}
 
-	public Nullable<Long> toNullable(){
+	public Nullable<Long> toNullable() {
 		return new Nullable<Long>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);

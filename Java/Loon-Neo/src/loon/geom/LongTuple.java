@@ -22,7 +22,7 @@ package loon.geom;
 
 import loon.LRelease;
 
-public class LongTuple implements LRelease{
+public class LongTuple implements LRelease {
 
 	public long val1;
 
@@ -57,7 +57,7 @@ public class LongTuple implements LRelease{
 	public LongTuple cpy() {
 		return new LongTuple(val1, val2);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "(" + val1 + ',' + val2 + ")";

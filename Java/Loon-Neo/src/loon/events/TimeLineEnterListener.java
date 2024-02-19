@@ -25,5 +25,5 @@ import loon.utils.processes.TimeLineEvent;
 public interface TimeLineEnterListener {
 
 	void onEnter(TimeLineEvent e);
-	
+
 }

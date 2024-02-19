@@ -36,7 +36,8 @@ public class LGradation implements LRelease {
 		return new PixmapLinear(startX, startY, endX, endY, start, end);
 	}
 
-	public final static PixmapGradient createRadial(float centerX, float centerY, float radius, LColor start, LColor end) {
+	public final static PixmapGradient createRadial(float centerX, float centerY, float radius, LColor start,
+			LColor end) {
 		return new PixmapRadial(centerX, centerY, radius, start, end);
 	}
 

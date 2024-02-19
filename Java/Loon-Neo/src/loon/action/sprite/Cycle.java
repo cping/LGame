@@ -152,7 +152,7 @@ public class Cycle extends Entity {
 	protected final IntMap<float[]> signatures;
 
 	protected TArray<Object[]> data;
-	
+
 	protected TArray<Progress> points;
 
 	private LTimer timer;

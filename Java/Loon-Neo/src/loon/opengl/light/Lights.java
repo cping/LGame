@@ -118,27 +118,27 @@ public class Lights implements LRelease {
 		lights.remove(light);
 		return this;
 	}
-	
-	public TArray<PointLight> getPointLights(){
+
+	public TArray<PointLight> getPointLights() {
 		TArray<PointLight> lightList = new TArray<PointLight>();
 		for (BaseLight light : lights) {
 			if (light instanceof PointLight) {
-				lightList.add((PointLight)light);
+				lightList.add((PointLight) light);
 			}
 		}
 		return lightList;
 	}
 
-	public TArray<DirectionalLight> getDirectionalLights(){
+	public TArray<DirectionalLight> getDirectionalLights() {
 		TArray<DirectionalLight> lightList = new TArray<DirectionalLight>();
 		for (BaseLight light : lights) {
 			if (light instanceof DirectionalLight) {
-				lightList.add((DirectionalLight)light);
+				lightList.add((DirectionalLight) light);
 			}
 		}
 		return lightList;
 	}
-	
+
 	public TArray<BaseLight> getLights() {
 		return getLights(LSystem.viewSize.getRect());
 	}

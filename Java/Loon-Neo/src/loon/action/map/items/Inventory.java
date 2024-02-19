@@ -174,7 +174,7 @@ public class Inventory {
 		_items.sort(new Comparator<IItem>() {
 
 			@Override
-			public int compare(final IItem o1,final IItem o2) {
+			public int compare(final IItem o1, final IItem o2) {
 				if (o1 != null && o2 != null) {
 					return o1.getItemTypeId() - o2.getItemTypeId();
 				}

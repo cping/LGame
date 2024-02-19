@@ -192,15 +192,8 @@ public class DirtyRectList {
 		kv.newLine();
 		int idx = 0;
 		for (RectBox rect : _dirtyList) {
-			kv.pushBracket()
-			.addValue(rect.x)
-			.comma()
-			.addValue(rect.y)
-			.comma()
-			.addValue(rect.width)
-			.comma()
-			.addValue(rect.height)
-			.popBracket();
+			kv.pushBracket().addValue(rect.x).comma().addValue(rect.y).comma().addValue(rect.width).comma()
+					.addValue(rect.height).popBracket();
 			if (idx < _dirtyList.size - 1) {
 				kv.comma();
 			}

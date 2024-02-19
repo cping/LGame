@@ -21,7 +21,7 @@
 package loon.component.skin;
 
 public interface ISkin {
-	
+
 	String getSkinName();
 
 }

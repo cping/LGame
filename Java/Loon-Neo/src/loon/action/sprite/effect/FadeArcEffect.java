@@ -86,9 +86,6 @@ public class FadeArcEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
-		if (step < _sleep) {
-			return;
-		}
 		if (curTurn == TYPE_FADE_OUT && _completed) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
 		}
@@ -103,14 +100,26 @@ public class FadeArcEffect extends BaseAbstractEffect {
 			g.setPixSkip(8);
 		}
 		g.setColor(_baseColor);
-		final float deg = MathUtils.DEG_FULL / this.arcDiv * this.step;
-		if (deg < MathUtils.DEG_FULL) {
-			final float length = MathUtils.sqrt(MathUtils.pow(_width / 2f, 2f) + MathUtils.pow(_height / 2f, 2f));
-			final float x = drawX(_width / 2f - length + offsetX) - LSystem.LAYER_TILE_SIZE / 2f;
-			final float y = drawY(_height / 2f - length + offsetY) - LSystem.LAYER_TILE_SIZE / 2f;
-			final float w = (_width / 2f + length - x) + LSystem.LAYER_TILE_SIZE;
-			final float h = (_height / 2f + length - y) + LSystem.LAYER_TILE_SIZE;
-			g.fillArc(x, y, w, h, arcDiv, 0, this.sign[this.curTurn] * deg);
+		if (curTurn == TYPE_FADE_IN && this.step - _sleep <= 0) {
+			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
+		} else {
+			final float deg = MathUtils.DEG_FULL / this.arcDiv * this.step;
+			if (deg <= MathUtils.DEG_FULL) {
+				final float length = MathUtils.sqrt(MathUtils.pow(_width / 2f, 2f) + MathUtils.pow(_height / 2f, 2f));
+				final float x = drawX(_width / 2f - length + offsetX) - LSystem.LAYER_TILE_SIZE / 2f;
+				final float y = drawY(_height / 2f - length + offsetY) - LSystem.LAYER_TILE_SIZE / 2f;
+				final float w = (_width / 2f + length - x) + LSystem.LAYER_TILE_SIZE;
+				final float h = (_height / 2f + length - y) + LSystem.LAYER_TILE_SIZE;
+				if (curTurn == TYPE_FADE_IN) {
+					final float v = this.sign[this.curTurn] * deg;
+					g.fillArc(x, y, w, h, 0, MathUtils.DEG_FULL + v);
+				} else {
+					if (step < _sleep) {
+						return;
+					}
+					g.fillArc(x, y, w, h, arcDiv, 0, this.sign[this.curTurn] * deg);
+				}
+			}
 		}
 		if (useTex) {
 			g.setPixSkip(tmp);

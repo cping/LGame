@@ -179,7 +179,8 @@ public class GameTouch {
 		if (e == this) {
 			return true;
 		}
-		if (e.type == type && e.x == x && e.y == y && e.button == button && e.pointer == pointer && e.id == id) {
+		if (e.type == type && MathUtils.equal(e.x, x) && MathUtils.equal(e.y, y) && e.button == button
+				&& e.pointer == pointer && e.id == id) {
 			return true;
 		}
 		return false;

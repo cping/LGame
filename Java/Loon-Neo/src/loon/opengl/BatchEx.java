@@ -148,7 +148,6 @@ public abstract class BatchEx<T> extends PixmapFImpl {
 		return this;
 	}
 
-	
 	public final BatchEx<T> shapeEnd() {
 		shape(_shapes.items, _shapes.size());
 		return this;

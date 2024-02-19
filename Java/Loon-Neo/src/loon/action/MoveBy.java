@@ -165,7 +165,7 @@ public class MoveBy extends ActionEvent {
 			}
 		}
 	}
-	
+
 	public float getSpeed() {
 		return _speed;
 	}
@@ -193,16 +193,16 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
-				_easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
-				_easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}

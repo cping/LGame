@@ -35,7 +35,7 @@ public class ShaderCmd {
 	public final static ShaderCmd at(String name) {
 		return getCmd(name);
 	}
-	
+
 	public final static ShaderCmd getCmd(String name) {
 		ShaderCmd cmd = _instance.get(name);
 		if (cmd == null) {

@@ -318,7 +318,7 @@ public class Path2D implements Path {
 		}
 		float currentX = x + MathUtils.cos(start) * radiusX;
 		float currentY = y + MathUtils.sin(start) * radiusY;
-		if (this._lastX != currentX || this._lastY != currentY) {
+		if (!MathUtils.equal(this._lastX, currentX) || !MathUtils.equal(this._lastY, currentY)) {
 			this.moveTo(currentX, currentY);
 		}
 		float u = MathUtils.cos(start);

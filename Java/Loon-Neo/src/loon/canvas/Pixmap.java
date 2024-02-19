@@ -2959,6 +2959,17 @@ public class Pixmap extends PixmapComposite implements LRelease {
 	}
 
 	@Override
+	public int hashCode() {
+		int result = 65;
+		result = LSystem.unite(result, _width);
+		result = LSystem.unite(result, _height);
+		result = LSystem.unite(result, _hasAlpha);
+		result = LSystem.unite(result, _transparent);
+		result = LSystem.unites(result, _drawPixels);
+		return result;
+	}
+
+	@Override
 	public boolean equals(final Object obj) {
 		if (obj == null) {
 			return false;

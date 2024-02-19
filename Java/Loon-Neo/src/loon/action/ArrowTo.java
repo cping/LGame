@@ -132,7 +132,7 @@ public class ArrowTo extends ActionEvent {
 			movePos(currentX + offsetX, currentY + offsetY);
 		}
 	}
-	
+
 	public int getDirection() {
 		return dir;
 	}

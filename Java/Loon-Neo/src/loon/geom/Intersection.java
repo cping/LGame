@@ -21,13 +21,13 @@
 package loon.geom;
 
 public class Intersection {
-	
+
 	public Line startLine;
-	
+
 	public Line endLine;
 
 	public Vector2f point;
-	
+
 	public boolean intersected;
 
 	public Intersection(Line s, Line e, Vector2f p, boolean i) {

@@ -145,7 +145,7 @@ public class Side implements Config {
 		}
 		return false;
 	}
-	
+
 	public Side reset() {
 		this._direction = EMPTY;
 		this._pos.setZero();

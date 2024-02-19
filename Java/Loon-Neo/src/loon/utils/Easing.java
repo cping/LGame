@@ -682,13 +682,13 @@ public class Easing {
 		return MathUtils.floor(MathUtils.random() * (max - min + 1.0f) + min);
 	}
 
-	public static int stepped(int v, int steps) {
-		if (v <= 0) {
+	public static int stepped(float v, int steps) {
+		if (v <= 0f) {
 			return 0;
-		} else if (v >= 1) {
+		} else if (v >= 1f) {
 			return 1;
 		} else {
-			return (((steps * v) | 0) + 1) * (1 / steps);
+			return (((MathUtils.ifloor(steps * v)) | 0) + 1) * MathUtils.ifloor(1f / steps);
 		}
 	}
 

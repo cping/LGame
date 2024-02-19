@@ -30,7 +30,7 @@ public class CircleTo extends ActionEvent {
 	private float currentX;
 
 	private float currentY;
-	
+
 	private float startX = -1;
 
 	private float startY = -1;

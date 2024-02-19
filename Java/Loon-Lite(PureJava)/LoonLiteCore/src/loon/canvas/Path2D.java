@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -53,7 +53,7 @@ public class Path2D implements Path {
 	}
 
 	public Path2D(int capacity) {
-		this._commands = new TArray<>(capacity);
+		this._commands = new TArray<Path2D.PathCommand>(capacity);
 		this._data = new FloatArray(capacity);
 		this._tempData = new FloatArray(capacity);
 	}
@@ -318,7 +318,7 @@ public class Path2D implements Path {
 		}
 		float currentX = x + MathUtils.cos(start) * radiusX;
 		float currentY = y + MathUtils.sin(start) * radiusY;
-		if (this._lastX != currentX || this._lastY != currentY) {
+		if (!MathUtils.equal(this._lastX, currentX) || !MathUtils.equal(this._lastY, currentY)) {
 			this.moveTo(currentX, currentY);
 		}
 		float u = MathUtils.cos(start);
@@ -622,7 +622,7 @@ public class Path2D implements Path {
 	}
 
 	public TArray<Vector2f> getVecs() {
-		TArray<Vector2f> list = new TArray<>(_data.size() / 2);
+		TArray<Vector2f> list = new TArray<Vector2f>(_data.size() / 2);
 		for (int i = 0; i < _data.size(); i += 2) {
 			list.add(new Vector2f(_data.get(i), _data.get(i + 1)));
 		}

@@ -24,7 +24,7 @@ import loon.LRelease;
 import loon.utils.MathUtils;
 import loon.utils.reply.Nullable;
 
-public class IntValue implements LRelease{
+public class IntValue implements LRelease {
 
 	private int value;
 
@@ -40,7 +40,7 @@ public class IntValue implements LRelease{
 		set(v);
 		return v != 0;
 	}
-	
+
 	public IntValue set(int v) {
 		this.value = v;
 		return this;
@@ -65,15 +65,15 @@ public class IntValue implements LRelease{
 	public int result() {
 		return value;
 	}
-	
+
 	public IntValue cpy() {
 		return new IntValue(value);
 	}
 
-	public Nullable<Integer> toNullable(){
+	public Nullable<Integer> toNullable() {
 		return new Nullable<Integer>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);

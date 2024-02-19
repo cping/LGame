@@ -38,9 +38,9 @@ public class SnowKernel implements IKernel {
 	private int id;
 
 	private float offsetX, offsetY, speed;
-	
+
 	private float x, y, width, height;
-	
+
 	private float snowWidth, snowHeight;
 
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {

@@ -99,12 +99,14 @@ public class FloatAction extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		return new FloatAction(_start, _end, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
+		return new FloatAction(_start, _end, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode());
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		return new FloatAction(_end, _start, _easeTimer.getDuration(), _easeTimer.getDelay(), _easeTimer.getEasingMode());
+		return new FloatAction(_end, _start, _easeTimer.getDuration(), _easeTimer.getDelay(),
+				_easeTimer.getEasingMode());
 	}
 
 	@Override

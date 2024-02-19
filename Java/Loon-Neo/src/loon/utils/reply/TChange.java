@@ -23,5 +23,5 @@ package loon.utils.reply;
 public interface TChange<T> {
 
 	public void onUpdate(T obj);
-	
+
 }

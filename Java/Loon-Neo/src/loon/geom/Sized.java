@@ -29,7 +29,7 @@ public interface Sized extends XY {
 	public float right();
 
 	public float bottom();
-	
+
 	public int getZ();
 
 }

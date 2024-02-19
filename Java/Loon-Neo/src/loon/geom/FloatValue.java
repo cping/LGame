@@ -70,10 +70,10 @@ public class FloatValue implements LRelease {
 		return new FloatValue(value);
 	}
 
-	public Nullable<Float> toNullable(){
+	public Nullable<Float> toNullable() {
 		return new Nullable<Float>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);

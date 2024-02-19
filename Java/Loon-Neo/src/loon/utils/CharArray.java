@@ -671,7 +671,7 @@ public class CharArray implements IArray, LRelease {
 		buffer.append(']');
 		return buffer.toString();
 	}
-	
+
 	public String newString() {
 		return new StrBuilder(this).toString();
 	}

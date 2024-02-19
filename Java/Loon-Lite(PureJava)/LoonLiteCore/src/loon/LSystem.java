@@ -657,6 +657,54 @@ public class LSystem {
 		return fmt.indexOf('.') == -1 ? (fmt + ".0") : fmt;
 	}
 
+	public static final int unites(float... value) {
+		return unites(31, value);
+	}
+
+	public static final int unites(int hashCode, float... value) {
+		int code = hashCode;
+		for (int i = 0; i < value.length; i++) {
+			code = unite(code, value[i]);
+		}
+		return code;
+	}
+
+	public static final int unites(int... value) {
+		return unites(31, value);
+	}
+
+	public static final int unites(int hashCode, int... value) {
+		int code = hashCode;
+		for (int i = 0; i < value.length; i++) {
+			code = unite(code, value[i]);
+		}
+		return code;
+	}
+
+	public static final int unites(boolean... value) {
+		return unites(31, value);
+	}
+
+	public static final int unites(int hashCode, boolean... value) {
+		int code = hashCode;
+		for (int i = 0; i < value.length; i++) {
+			code = unite(code, value[i]);
+		}
+		return code;
+	}
+
+	public static final int unites(long... value) {
+		return unites(31, value);
+	}
+
+	public static final int unites(int hashCode, long... value) {
+		int code = hashCode;
+		for (int i = 0; i < value.length; i++) {
+			code = unite(code, value[i]);
+		}
+		return code;
+	}
+
 	public static final int unite(int hashCode, boolean value) {
 		int v = value ? 1231 : 1237;
 		return unite(hashCode, v);
@@ -681,6 +729,10 @@ public class LSystem {
 
 	public static final int unite(int hashCode, int value) {
 		return 31 * hashCode + value;
+	}
+
+	public static final boolean equals(final Object o1, final Object o2) {
+		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
 
 	public static boolean isImage(String extension) {
@@ -1143,10 +1195,6 @@ public class LSystem {
 		if (base() != null) {
 			base().log().setMinLevel(level);
 		}
-	}
-
-	public static final boolean equals(final Object o1, final Object o2) {
-		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}
 
 	public static final void closeTemp() {
