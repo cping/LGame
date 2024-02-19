@@ -36,28 +36,43 @@ public class FadeEffect extends BaseAbstractEffect {
 
 	private int type;
 
+	private int _step;
+
 	public static FadeEffect create(int type, LColor c) {
-		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		return new FadeEffect(type, c);
 	}
 
-	public static FadeEffect create(int type, int timer, LColor c) {
-		return new FadeEffect(c, timer, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public static FadeEffect create(int type, long delay, LColor c) {
+		return new FadeEffect(type, delay, c);
 	}
 
-	public static FadeEffect create(int type, LColor c, int w, int h) {
-		return new FadeEffect(c, 120, type, w, h);
+	public static FadeEffect create(int type, LColor c, int w, int h, int s) {
+		return new FadeEffect(type, c, w, h, s);
 	}
 
 	public FadeEffect(int type, LColor c) {
-		this(c, 120, type, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(type, c, 1);
 	}
 
-	public FadeEffect(LColor c, long delay, int type, int w, int h) {
+	public FadeEffect(int type, LColor c, int step) {
+		this(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), step);
+	}
+
+	public FadeEffect(int type, long delay, LColor c) {
+		this(type, delay, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), 1);
+	}
+
+	public FadeEffect(int type, LColor c, int w, int h, int step) {
+		this(type, 120, c, w, h, step);
+	}
+
+	public FadeEffect(int type, long delay, LColor c, int w, int h, int step) {
 		this.type = type;
 		this.setDelay(delay);
 		this.setColor(c);
 		this.setSize(w, h);
 		this.setRepaint(true);
+		this.setStep(step);
 	}
 
 	@Override
@@ -83,13 +98,7 @@ public class FadeEffect extends BaseAbstractEffect {
 
 	@Override
 	public FadeEffect setDelayS(float s) {
-		this.time = Duration.ofS(s);
-		if (type == TYPE_FADE_IN) {
-			this.currentFrame = this.time;
-		} else {
-			this.currentFrame = 0;
-		}
-		return this;
+		return setDelay(Duration.ofS(s));
 	}
 
 	public float getCurrentFrame() {
@@ -115,6 +124,13 @@ public class FadeEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
+		if (type == TYPE_FADE_OUT && _completed) {
+			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
+			return;
+		}
+		if (type == TYPE_FADE_IN && _completed) {
+			return;
+		}
 		if (currentFrame >= time) {
 			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
 		} else {
@@ -128,18 +144,27 @@ public class FadeEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (type == TYPE_FADE_IN) {
-			currentFrame--;
-			if (currentFrame <= 0) {
+			currentFrame -= _step;
+			if (currentFrame <= _step) {
 				setAlpha(0f);
 				_completed = true;
 			}
 		} else {
-			currentFrame++;
-			if (currentFrame >= time) {
+			currentFrame += _step;
+			if (currentFrame >= time - _step) {
 				setAlpha(1f);
 				_completed = true;
 			}
 		}
+	}
+
+	public FadeEffect setStep(int s) {
+		_step = LSystem.toIScaleFPS(s, 1);
+		return this;
+	}
+
+	public int getStep() {
+		return _step;
 	}
 
 	public int getFadeType() {

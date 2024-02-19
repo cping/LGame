@@ -50,7 +50,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 
 		private float time;
 
-		public Dot(int type, int time, int rad, int w, int h) {
+		public Dot(int type, int time, int rad, int w, int h, float sleep) {
 			this.type = type;
 			if (time <= -1) {
 				fade_allowed = true;
@@ -72,20 +72,20 @@ public class FadeDotEffect extends BaseAbstractEffect {
 			}
 			x = (MathUtils.random(0, 1f) * w);
 			y = (MathUtils.random(0, 1f) * h);
-			growSpeed = 1f + (MathUtils.random(0, 1f));
+			growSpeed = LSystem.toScaleFPS(sleep, 1f) + (MathUtils.random(0, 1f));
 		}
 
 		public void update(long elapsedTime) {
 			if (type == ISprite.TYPE_FADE_IN) {
 				currentFrame--;
-				rad -= growSpeed * (elapsedTime / 10) * 0.6f;
+				rad -= growSpeed * (elapsedTime / 5f) * 0.6f;
 				if (rad <= 0) {
 					rad = 0;
 					finished = true;
 				}
 			} else {
 				currentFrame++;
-				rad += growSpeed * (elapsedTime / 10) * 0.4f;
+				rad += growSpeed * (elapsedTime / 5f) * 0.4f;
 				if (rad >= 360) {
 					rad = 360;
 					finished = true;
@@ -119,9 +119,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	private int dot_width = 0;
 	private int dot_height = 0;
 
-	public FadeDotEffect(LColor c, int type, int time, int count) {
-		this(type, time, time, count, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-	}
+	private float _sleep = 0;
 
 	public FadeDotEffect(LColor c) {
 		this(ISprite.TYPE_FADE_IN, 280, c);
@@ -132,10 +130,22 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	public FadeDotEffect(int type, int time, LColor c) {
-		this(type, time, time, 5, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+		this(type, time, c, 5);
 	}
 
-	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h) {
+	public FadeDotEffect(int type, int time, LColor c, int count) {
+		this(type, time, c, count, 1f);
+	}
+
+	public FadeDotEffect(int type, int time, LColor c, int count, float sleep) {
+		this(type, time, time, count, c, sleep);
+	}
+
+	public FadeDotEffect(int type, int time, int rad, int count, LColor c, float sleep) {
+		this(type, time, rad, count, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), sleep);
+	}
+
+	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h, float sleep) {
 		this._type = type;
 		this.count = count;
 		this.dot_time = time;
@@ -145,7 +155,17 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		this.setColor(c);
 		this.setSize(w, h);
 		this.setRepaint(true);
+		this.setSleep(sleep);
 		this.updateDots();
+	}
+
+	public FadeDotEffect setSleep(float s) {
+		this._sleep = LSystem.toScaleFPS(s, 1f);
+		return this;
+	}
+
+	public float getSleep() {
+		return this._sleep;
 	}
 
 	protected void updateDots() {
@@ -155,7 +175,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		}
 		dots = new TArray<Dot>();
 		for (int i = 0; i < count; i++) {
-			dots.add(new Dot(_type, dot_time, dot_rad, dot_width, dot_height));
+			dots.add(new Dot(_type, dot_time, dot_rad, dot_width, dot_height, 1f));
 		}
 		_completed = false;
 	}

@@ -61,9 +61,9 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 		this.setDelay(delay);
 		this.setSize(w, h);
 		this.setRepaint(true);
+		this.setStep(step);
 		this.pack();
 		this._type = t;
-		this._step = step;
 	}
 
 	private void pack() {
@@ -165,7 +165,7 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 	}
 
 	public FadeDoorIrregularEffect setStep(int s) {
-		this._step = s;
+		this._step = LSystem.toIScaleFPS(s, 1);
 		return this;
 	}
 

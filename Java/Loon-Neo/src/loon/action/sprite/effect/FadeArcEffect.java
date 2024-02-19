@@ -62,7 +62,7 @@ public class FadeArcEffect extends BaseAbstractEffect {
 		this.setRepaint(true);
 		this.setTurn(type);
 		this.arcDiv = div;
-		_sleep = LSystem.toIScaleFPS(MathUtils.min(1, sleep));
+		_sleep = LSystem.toIScaleFPS(sleep, 1);
 	}
 
 	@Override

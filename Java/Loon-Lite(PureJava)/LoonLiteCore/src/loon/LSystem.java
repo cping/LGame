@@ -357,6 +357,10 @@ public class LSystem {
 		return MathUtils.iceil(toScaleFPS(v));
 	}
 
+	public static final int toIScaleFPS(float v, int m) {
+		return MathUtils.max(toIScaleFPS(v), m);
+	}
+
 	public static final float toScaleFPS(float v) {
 		if (base() != null) {
 			LSetting setting = LSystem.base().setting;
@@ -365,6 +369,10 @@ public class LSystem {
 			}
 		}
 		return 1f;
+	}
+
+	public static final float toScaleFPS(float v, float m) {
+		return MathUtils.max(toScaleFPS(v), m);
 	}
 
 	public static final boolean isLockAllTouchEvent() {

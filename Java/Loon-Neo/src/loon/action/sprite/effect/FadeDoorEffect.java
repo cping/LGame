@@ -294,7 +294,7 @@ public class FadeDoorEffect extends BaseAbstractEffect {
 	}
 
 	public void setIncrease(int i) {
-		this._increase = i;
+		this._increase = LSystem.toIScaleFPS(i, 1);
 	}
 
 	public int getIncrease() {

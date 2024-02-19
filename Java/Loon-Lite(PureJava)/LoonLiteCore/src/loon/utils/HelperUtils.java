@@ -93,6 +93,18 @@ public class HelperUtils {
 		return LSystem.toScaleFPS(v);
 	}
 
+	public static float toFixed(float v, float m) {
+		return LSystem.toScaleFPS(v, m);
+	}
+
+	public static float toIFixed(float v) {
+		return LSystem.toIScaleFPS(v);
+	}
+
+	public static float toIFixed(float v, int m) {
+		return LSystem.toIScaleFPS(v, m);
+	}
+
 	public static LTimer timer() {
 		return LTimer.at();
 	}

@@ -125,8 +125,10 @@ public abstract class Canvas implements LRelease {
 		}
 		if ((image == null || image.isClosed())) {
 			closeImpl();
-		} else {
-			image = snapshot();
+		} else if (this.isDirty) {
+			if (image != null && image.isDirty) {
+				image = snapshot();
+			}
 		}
 	}
 
