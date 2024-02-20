@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.reply.Nullable;
 
 public class BooleanValue implements LRelease {
@@ -52,12 +53,37 @@ public class BooleanValue implements LRelease {
 	public boolean result() {
 		return value;
 	}
-	
+
+	public boolean isZero() {
+		return !value;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof BooleanValue) {
+			if (((BooleanValue) o).value == this.value) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public BooleanValue cpy() {
 		return new BooleanValue(value);
 	}
-	
-	public Nullable<Boolean> toNullable(){
+
+	public Nullable<Boolean> toNullable() {
 		return new Nullable<Boolean>(value);
 	}
 

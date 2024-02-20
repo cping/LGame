@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.reply.Nullable;
 
@@ -64,6 +65,31 @@ public class IntValue implements LRelease {
 
 	public int result() {
 		return value;
+	}
+
+	public boolean isZero() {
+		return MathUtils.equal(value, 0);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof IntValue) {
+			if (MathUtils.equal(((IntValue) o).value, this.value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public IntValue cpy() {

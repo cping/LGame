@@ -38,9 +38,35 @@ public class StrValue extends TValue<String> {
 		return v != null;
 	}
 
+	public boolean isZero() {
+		return _value == null || LSystem.UNKNOWN.equals(_value) || LSystem.EMPTY.equals(_value);
+	}
+
 	@Override
-	public StrValue cpy() {
-		return new StrValue(_value);
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, _value);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof StrValue) {
+			StrValue str = (StrValue) o;
+			if (str != null && str._value.equals(_value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(_value);
 	}
 
 	@Override

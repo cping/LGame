@@ -39,6 +39,8 @@ public class SpriteEntity implements IEntity {
 
 	private ISprite _sprite;
 
+	private IEntity _parent;
+
 	public SpriteEntity(ISprite s) {
 		this._sprite = s;
 	}
@@ -294,7 +296,6 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public TArray<IEntity> getDescendantChildren() {
-
 		return null;
 	}
 
@@ -369,16 +370,17 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public boolean hasParent() {
-		return false;
+		return _parent != null;
 	}
 
 	@Override
 	public IEntity getParent() {
-		return null;
+		return _parent;
 	}
 
 	@Override
 	public void setParent(IEntity e) {
+		_parent = e;
 		_sprite.setParent(e);
 	}
 
@@ -404,12 +406,12 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public float getScalePixelX() {
-		return 0;
+		return 0f;
 	}
 
 	@Override
 	public float getScalePixelY() {
-		return 0;
+		return 0f;
 	}
 
 	@Override
@@ -464,17 +466,14 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public void setPivotX(float rx) {
-
 	}
 
 	@Override
 	public void setPivotY(float ry) {
-
 	}
 
 	@Override
 	public void setPivot(float rx, float ry) {
-
 	}
 
 	@Override
@@ -665,12 +664,17 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public IEntity with(TComponent<ISprite> c) {
+	public IEntity with(TComponent<IEntity> c) {
 		return this;
 	}
 
 	@Override
-	public IEntity addComponent(TComponent<ISprite> c) {
+	public TComponent<IEntity> findComponent(String name) {
+		return null;
+	}
+
+	@Override
+	public IEntity addComponent(TComponent<IEntity> c) {
 		return this;
 	}
 
@@ -680,7 +684,7 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public boolean removeComponent(TComponent<ISprite> c) {
+	public boolean removeComponent(TComponent<IEntity> c) {
 		return false;
 	}
 
@@ -705,7 +709,7 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public TArray<TComponent<ISprite>> getComponents() {
+	public TArray<TComponent<IEntity>> getComponents() {
 		return null;
 	}
 
@@ -855,11 +859,13 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public IEntity show() {
+		_sprite.setVisible(true);
 		return this;
 	}
 
 	@Override
 	public IEntity hide() {
+		_sprite.setVisible(false);
 		return this;
 	}
 

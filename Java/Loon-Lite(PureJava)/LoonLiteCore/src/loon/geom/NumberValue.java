@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.reply.TValue;
 
@@ -44,6 +45,32 @@ public class NumberValue extends TValue<Number> {
 
 	public int scaledFloor(float length) {
 		return MathUtils.ifloor(scaled(length));
+	}
+
+	public boolean isZero() {
+		return MathUtils.equal(_value.doubleValue(), 0f);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, _value);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof NumberValue) {
+			NumberValue num = (NumberValue) o;
+			if (num != null && (num._value).equals(_value)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

@@ -47,6 +47,7 @@ import loon.component.LSelect;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.events.ClickListener;
+import loon.events.EventActionN;
 import loon.events.GameKey;
 import loon.events.GameTouch;
 import loon.events.Updateable;
@@ -1447,6 +1448,46 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _currentTasks.size() > 0;
 	}
 
+	private static class RunTouchScript implements EventActionN {
+
+		private AVGScreen _screen;
+
+		public RunTouchScript(AVGScreen screen) {
+			this._screen = screen;
+		}
+
+		@Override
+		public void update() {
+			if (_screen == null) {
+				return;
+			}
+			boolean isNext = false;
+			if (!_screen.isSelectMessage && _screen.scrCG.sleep <= 0) {
+				if (!_screen.scrFlag) {
+					_screen.scrFlag = true;
+				}
+				if (!_screen._screenClickd && _screen.messageUI.isVisible()) {
+					isNext = _screen.messageUI.intersects(_screen.getTouchX(), _screen.getTouchY());
+				} else {
+					isNext = true;
+				}
+			} else if ((_screen.scrFlag && _screen.selectUI.getResultIndex() != -1) && _screen.selectUI.isClick()) {
+				if ((LSystem.isMobile() || LSystem.isEmulateTouch())
+						? _screen._clickcount++ >= _screen._mobile_select_valid_limit
+						: _screen._clickcount > -1) {
+					_screen.onSelect(_screen._selectMessage, _screen.selectUI.getResultIndex());
+					isNext = _screen.selectUI.intersects(_screen.getTouchX(), _screen.getTouchY());
+					_screen.messageUI.setVisible(false);
+					_screen.clearSelectMessage();
+				}
+			}
+			if (isNext && !_screen.isSelectMessage) {
+				_screen.nextScript();
+			}
+		}
+
+	}
+
 	public AVGScreen runScriptClick() {
 		// 如果存在未完成任务，则不允许继续脚本
 		if (tasking()) {
@@ -1461,28 +1502,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (messageUI.isVisible() && !messageUI.isComplete()) {
 			return this;
 		}
-		boolean isNext = false;
-		if (!isSelectMessage && scrCG.sleep <= 0) {
-			if (!scrFlag) {
-				scrFlag = true;
-			}
-			if (!_screenClickd && messageUI.isVisible()) {
-				isNext = messageUI.intersects(getTouchX(), getTouchY());
-			} else {
-				isNext = true;
-			}
-		} else if ((scrFlag && selectUI.getResultIndex() != -1) && selectUI.isClick()) {
-			onSelect(_selectMessage, selectUI.getResultIndex());
-			isNext = selectUI.intersects(getTouchX(), getTouchY());
-			if ((LSystem.isMobile() || LSystem.isEmulateTouch()) ? _clickcount++ >= _mobile_select_valid_limit
-					: _clickcount > -1) {
-				messageUI.setVisible(false);
-				clearSelectMessage();
-			}
-		}
-		if (isNext && !isSelectMessage) {
-			nextScript();
-		}
+		callEvent(new RunTouchScript(this));
 		return this;
 	}
 
@@ -1696,6 +1716,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (messageDesktop != null) {
 			messageDesktop.processEvents();
 		}
+		runScriptClick();
 	}
 
 	@Override
@@ -1710,7 +1731,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		if (messageDesktop != null) {
 			messageDesktop.processEvents();
 		}
-		runScriptClick();
+		unlockCallEvent();
 	}
 
 	@Override

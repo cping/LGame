@@ -664,12 +664,17 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public IEntity with(TComponent<ISprite> c) {
+	public IEntity with(TComponent<IEntity> c) {
 		return this;
 	}
 
 	@Override
-	public IEntity addComponent(TComponent<ISprite> c) {
+	public TComponent<IEntity> findComponent(String name) {
+		return null;
+	}
+
+	@Override
+	public IEntity addComponent(TComponent<IEntity> c) {
 		return this;
 	}
 
@@ -679,7 +684,7 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public boolean removeComponent(TComponent<ISprite> c) {
+	public boolean removeComponent(TComponent<IEntity> c) {
 		return false;
 	}
 
@@ -704,7 +709,7 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public TArray<TComponent<ISprite>> getComponents() {
+	public TArray<TComponent<IEntity>> getComponents() {
 		return null;
 	}
 

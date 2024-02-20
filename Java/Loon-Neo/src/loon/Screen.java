@@ -109,6 +109,7 @@ import loon.utils.ConfigReader;
 import loon.utils.Disposes;
 import loon.utils.Easing.EasingMode;
 import loon.utils.GLUtils;
+import loon.utils.HelperUtils;
 import loon.utils.IArray;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -239,6 +240,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private boolean _curSecondPaintFlag;
 
 	private boolean _curLastPaintFlag;
+
+	private boolean _curLockedCallEvent;
 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler _gravityHandler;
@@ -1673,6 +1676,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this.setDirectorSize(0f, 0f, width, height);
 		this._currentMode = SCREEN_NOT_REPAINT;
 		this._curStageRun = true;
+		this._curLockedCallEvent = false;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
 		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
 		this._isLoad = _isLock = _isClose = _isGravity = false;
@@ -6862,6 +6866,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _systemManager.getSystem(systemType);
 	}
 
+	public Screen callEvent(EventAction e) {
+		if (_curLockedCallEvent) {
+			return this;
+		}
+		_curLockedCallEvent = true;
+		synchronized (this) {
+			HelperUtils.callEventAction(e, this);
+		}
+		return this;
+	}
+
+	public Screen callEvent(Runnable e) {
+		if (_curLockedCallEvent) {
+			return this;
+		}
+		_curLockedCallEvent = true;
+		synchronized (this) {
+			e.run();
+		}
+		return this;
+	}
+
+	public Screen lockCallEvent() {
+		_curLockedCallEvent = true;
+		return this;
+	}
+
+	public Screen unlockCallEvent() {
+		_curLockedCallEvent = false;
+		return this;
+	}
+
 	/**
 	 * 构建一个战斗事件进程
 	 * 
@@ -6986,6 +7022,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_resizeListener = null;
 				this._screenSwitch = null;
 				this._curStageRun = false;
+				this._curLockedCallEvent = false;
 				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);

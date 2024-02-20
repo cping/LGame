@@ -21,10 +21,11 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.reply.Nullable;
 
-public class IntValue implements LRelease{
+public class IntValue implements LRelease {
 
 	private int value;
 
@@ -40,7 +41,7 @@ public class IntValue implements LRelease{
 		set(v);
 		return v != 0;
 	}
-	
+
 	public IntValue set(int v) {
 		this.value = v;
 		return this;
@@ -65,15 +66,40 @@ public class IntValue implements LRelease{
 	public int result() {
 		return value;
 	}
-	
+
+	public boolean isZero() {
+		return MathUtils.equal(value, 0);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof IntValue) {
+			if (MathUtils.equal(((IntValue) o).value, this.value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public IntValue cpy() {
 		return new IntValue(value);
 	}
 
-	public Nullable<Integer> toNullable(){
+	public Nullable<Integer> toNullable() {
 		return new Nullable<Integer>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return String.valueOf(value);

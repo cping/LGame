@@ -103,7 +103,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected boolean _repaintAutoOffset = false;
 
 	protected TArray<IEntity> _childrens;
-	protected TArray<TComponent<ISprite>> _components;
+	protected TArray<TComponent<IEntity>> _components;
 
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
@@ -1094,7 +1094,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	private void allocateComponents() {
-		this._components = new TArray<TComponent<ISprite>>(Entity.CHILDREN_CAPACITY_DEFAULT);
+		this._components = new TArray<TComponent<IEntity>>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
@@ -1137,10 +1137,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			return;
 		}
 		if ((this._components != null) && !this._componentsIgnoreUpdate) {
-			final TArray<TComponent<ISprite>> comps = this._components;
+			final TArray<TComponent<IEntity>> comps = this._components;
 			final int entityCount = comps.size;
 			for (int i = 0; i < entityCount; i++) {
-				final TComponent<ISprite> c = comps.get(i);
+				final TComponent<IEntity> c = comps.get(i);
 				if (c != null && !c._paused.get()) {
 					c.update(this);
 				}
@@ -2477,12 +2477,29 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public IEntity with(TComponent<ISprite> c) {
+	public IEntity with(TComponent<IEntity> c) {
 		return addComponent(c);
 	}
 
 	@Override
-	public IEntity addComponent(TComponent<ISprite> c) {
+	public TComponent<IEntity> findComponent(String name) {
+		if (this._components == null) {
+			return null;
+		}
+		if (StringUtils.isNullOrEmpty(name)) {
+			return null;
+		}
+		for (int i = this._components.size - 1; i >= 0; i--) {
+			final TComponent<IEntity> finder = this._components.get(i);
+			if (finder != null && finder.getName().equals(name)) {
+				return finder;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public IEntity addComponent(TComponent<IEntity> c) {
 		if (_components == null) {
 			allocateComponents();
 		}
@@ -2495,7 +2512,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public boolean removeComponent(TComponent<ISprite> c) {
+	public boolean removeComponent(TComponent<IEntity> c) {
 		if (_components == null) {
 			allocateComponents();
 		}
@@ -2513,7 +2530,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			return this;
 		}
 		for (int i = this._components.size - 1; i >= 0; i--) {
-			final TComponent<ISprite> removed = this._components.get(i);
+			final TComponent<IEntity> removed = this._components.get(i);
 			if (removed != null) {
 				removed.onDetached(this);
 				removed.setCurrent(null);
@@ -2548,11 +2565,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public TArray<TComponent<ISprite>> getComponents() {
+	public TArray<TComponent<IEntity>> getComponents() {
 		if (_components == null) {
 			allocateComponents();
 		}
-		return new TArray<TComponent<ISprite>>(_components);
+		return new TArray<TComponent<IEntity>>(_components);
 	}
 
 	@Override

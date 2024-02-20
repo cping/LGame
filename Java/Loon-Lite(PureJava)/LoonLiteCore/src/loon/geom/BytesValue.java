@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.utils.ArrayByte;
 import loon.utils.reply.Nullable;
 
@@ -50,14 +51,39 @@ public class BytesValue implements LRelease {
 		return value;
 	}
 
+	public boolean isZero() {
+		return value == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 59;
+		result = LSystem.unite(result, value.hashCode());
+		result = LSystem.unite(result, super.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o instanceof BytesValue) {
+			if (((BytesValue) o).value.equals(this.value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public ArrayByte cpy() {
 		return value != null ? value.cpy() : null;
 	}
 
-	public Nullable<ArrayByte> toNullable(){
+	public Nullable<ArrayByte> toNullable() {
 		return new Nullable<ArrayByte>(value);
 	}
-	
+
 	@Override
 	public String toString() {
 		return value.toString();

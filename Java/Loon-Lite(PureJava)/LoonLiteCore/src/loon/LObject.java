@@ -88,9 +88,9 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	// 无状态
 	public static final int NOT = -1;
 	// 真
-	public static final int TRUE = 1;
+	public static final int TRUE = Integer.MAX_VALUE;
 	// 假
-	public static final int FALSE = 2;
+	public static final int FALSE = Integer.MIN_VALUE;
 
 	protected T _objectSuper = null;
 
@@ -270,34 +270,45 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	protected float _objectAlpha = 1f;
 
-	protected float _objectRotation, _previousRotation;
+	protected float _objectRotation = 0f, _previousRotation = 0f;
 
-	protected RectBox _objectRect;
+	protected RectBox _objectRect = null;
 
-	protected String _objectName;
+	protected String _objectName = null;
 
-	protected String _object_flag;
+	// 字符串标记,用以定义对象类别
+	protected String _object_flag = null;
 
-	protected final Vector2f _objectLocation = new Vector2f(0, 0);
+	protected final Vector2f _objectLocation = Vector2f.ZERO();
 
-	protected final Vector2f _objectPreviousLocation = new Vector2f(0, 0);
+	protected final Vector2f _objectPreviousLocation = Vector2f.ZERO();
 
-	protected int _objectLayer;
+	// 当前对象层级
+	protected int _objectLayer = 0;
 
+	// 数字标记,用以定义对象状态(比如生死,中毒,能力加强或衰弱)
 	private int _objectStatus = NOT;
 
+	// 数字标记,用以定义对象序列号
 	private int _objectSeqNo = 0;
+
+	// 数字标记,用以标记对象额外性质(比如敌我,是否被选中,是否可以移动)
+	private int _objectOtherFlag = 0;
 
 	public LObject() {
 		this._objectSeqNo = _SYS_GLOBAL_SEQNO;
 		this._objectRotation = 0;
 		this._previousRotation = 0;
 		this._objectLayer = 0;
+		this._objectOtherFlag = 0;
+		this._objectStatus = NOT;
 		this._objectAlpha = 1f;
-		_SYS_GLOBAL_SEQNO++;
+		this._object_flag = null;
+		this._objectName = null;
+		this.nextSequenceNo();
 	}
 
-	public final int getNextSequenceNo() {
+	protected final int nextSequenceNo() {
 		return _objectSeqNo++;
 	}
 
@@ -330,6 +341,32 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return getStatus();
 	}
 
+	public final boolean isStatusEmpty() {
+		return _objectStatus == NOT;
+	}
+
+	public final boolean isStatusTrue() {
+		return _objectStatus == TRUE;
+	}
+
+	public final boolean isStatusFalse() {
+		return _objectStatus == FALSE;
+	}
+
+	public final LObject<T> statusTrue() {
+		_objectStatus = TRUE;
+		return this;
+	}
+
+	public final LObject<T> statusFalse() {
+		_objectStatus = FALSE;
+		return this;
+	}
+
+	public final boolean isStatus(int s) {
+		return MathUtils.equal(_objectStatus, s);
+	}
+
 	public final LObject<T> setObjectFlag(String flag) {
 		this._object_flag = flag;
 		return this;
@@ -337,6 +374,33 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 
 	public final String getObjectFlag() {
 		return StringUtils.isEmpty(this._object_flag) ? getName() : this._object_flag;
+	}
+
+	public final boolean isObjectFlag(String name) {
+		return getObjectFlag().equals(name);
+	}
+
+	public final LObject<T> setFlagType(int f) {
+		this._objectOtherFlag = f;
+		return this;
+	}
+
+	public final int getFlagType() {
+		return this._objectOtherFlag;
+	}
+
+	public final boolean isFlagType(int t) {
+		return MathUtils.equal(_objectOtherFlag, t);
+	}
+
+	public final boolean isTag(Object o) {
+		if (o == Tag) {
+			return true;
+		}
+		if (o != null) {
+			return o.equals(Tag);
+		}
+		return false;
 	}
 
 	public void setTransparency(int a) {

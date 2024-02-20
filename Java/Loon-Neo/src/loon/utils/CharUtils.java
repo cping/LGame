@@ -77,8 +77,6 @@ public class CharUtils {
 		byte result = 0;
 		if (b > 127) {
 			result = (byte) (b - 256);
-		} else if (b > 255) {
-			b = 255;
 		} else {
 			result = (byte) b;
 		}

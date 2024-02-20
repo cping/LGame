@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 public class RangeI implements XY, SetXY {
@@ -144,6 +145,16 @@ public class RangeI implements XY, SetXY {
 
 	public boolean equals(RangeI other) {
 		return this.min == other.min && this.max == other.max;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 38;
+		result = LSystem.unite(result, min);
+		result = LSystem.unite(result, max);
+		result = LSystem.unite(result, enabled);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
 	}
 
 	@Override

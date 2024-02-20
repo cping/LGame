@@ -306,14 +306,14 @@ public class UIntArray implements IArray, LRelease {
 		addAll(array, 0, array.length);
 	}
 
-	public void addAll(byte[] array, int offset, int length) {
+	public void addAll(byte[] array, int offset, int len) {
 		byte[] bytebuffer = this.bytebuffer;
-		int lengthNeeded = length + length;
+		int lengthNeeded = this.length + len;
 		if (lengthNeeded > bytebuffer.length) {
 			bytebuffer = relength(MathUtils.max(8, (int) (lengthNeeded * 1.75f)));
 		}
-		System.arraycopy(array, offset, bytebuffer, length, length);
-		length += length;
+		System.arraycopy(array, offset, bytebuffer, this.length, len);
+		this.length += len;
 	}
 
 	public byte get(int index) {

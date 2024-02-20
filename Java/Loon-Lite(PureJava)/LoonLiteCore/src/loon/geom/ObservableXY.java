@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.reply.TChange;
 
 public class ObservableXY<T> implements XY, SetXY {
@@ -104,6 +105,29 @@ public class ObservableXY<T> implements XY, SetXY {
 	@Override
 	public float getY() {
 		return _pos.getY();
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 39;
+		if (_pos != null) {
+			result = LSystem.unite(result, _pos.getX());
+			result = LSystem.unite(result, _pos.getY());
+		} else {
+			result = LSystem.unite(result, false);
+		}
+		if (_change != null) {
+			result = LSystem.unite(result, _change.hashCode());
+		} else {
+			result = LSystem.unite(result, false);
+		}
+		if (_obj != null) {
+			result = LSystem.unite(result, _obj.hashCode());
+		} else {
+			result = LSystem.unite(result, false);
+		}
+		result = LSystem.unite(result, super.hashCode());
+		return result;
 	}
 
 	@Override

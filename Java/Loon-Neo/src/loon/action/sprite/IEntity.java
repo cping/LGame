@@ -204,13 +204,15 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	void onDetached();
 
-	IEntity with(final TComponent<ISprite> c);
+	IEntity with(final TComponent<IEntity> c);
 
-	IEntity addComponent(final TComponent<ISprite> c);
+	TComponent<IEntity> findComponent(String name);
+	
+	IEntity addComponent(final TComponent<IEntity> c);
 
 	IEntity removeComponents();
 
-	boolean removeComponent(final TComponent<ISprite> c);
+	boolean removeComponent(final TComponent<IEntity> c);
 
 	boolean hasComponent();
 
@@ -220,7 +222,7 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	int getComponentCount();
 
-	TArray<TComponent<ISprite>> getComponents();
+	TArray<TComponent<IEntity>> getComponents();
 
 	IEntity addChild(final IEntity e);
 
