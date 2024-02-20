@@ -24,6 +24,18 @@ import loon.utils.reply.ObjRef;
 
 public class EventRef {
 
+	public static final ObjRef<Runnable> doR(Runnable e) {
+		return ObjRef.of(e);
+	}
+
+	public static final ObjRef<TaskRunnable> doRC(TaskRunnable e) {
+		return ObjRef.of(e);
+	}
+
+	public static final ObjRef<EventActionCheck> doNC(EventActionCheck e) {
+		return ObjRef.of(e);
+	}
+
 	public static final <T> ObjRef<EventActionT<T>> doT(EventActionT<T> e) {
 		return ObjRef.of(e);
 	}

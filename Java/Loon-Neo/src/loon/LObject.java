@@ -277,7 +277,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	protected String _objectName = null;
 
 	// 字符串标记,用以定义对象类别
-	protected String _object_flag = null;
+	protected String _objectFlag = null;
 
 	protected final Vector2f _objectLocation = Vector2f.ZERO();
 
@@ -286,11 +286,10 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	// 当前对象层级
 	protected int _objectLayer = 0;
 
-	// 数字标记,用以定义对象状态(比如生死,中毒,能力加强或衰弱)
-	private int _objectStatus = NOT;
-
 	// 数字标记,用以定义对象序列号
 	private int _objectSeqNo = 0;
+	// 数字标记,用以定义对象状态(比如生死,中毒,能力加强或衰弱)
+	private int _objectStatus = NOT;
 
 	// 数字标记,用以标记对象额外性质(比如敌我,是否被选中,是否可以移动)
 	private int _objectOtherFlag = 0;
@@ -303,13 +302,14 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		this._objectOtherFlag = 0;
 		this._objectStatus = NOT;
 		this._objectAlpha = 1f;
-		this._object_flag = null;
+		this._objectFlag = null;
 		this._objectName = null;
 		this.nextSequenceNo();
 	}
 
 	protected final int nextSequenceNo() {
-		return _objectSeqNo++;
+		_SYS_GLOBAL_SEQNO++;
+		return (_objectSeqNo = _SYS_GLOBAL_SEQNO);
 	}
 
 	public final int getSequenceNo() {
@@ -368,12 +368,12 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public final LObject<T> setObjectFlag(String flag) {
-		this._object_flag = flag;
+		this._objectFlag = flag;
 		return this;
 	}
 
 	public final String getObjectFlag() {
-		return StringUtils.isEmpty(this._object_flag) ? getName() : this._object_flag;
+		return StringUtils.isEmpty(this._objectFlag) ? getName() : this._objectFlag;
 	}
 
 	public final boolean isObjectFlag(String name) {
