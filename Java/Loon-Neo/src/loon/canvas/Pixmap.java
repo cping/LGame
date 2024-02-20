@@ -3045,7 +3045,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 
 	@Override
 	public void set(float x, float y, int pixel) {
-		setRGB(pixel, MathUtils.ifloor(x), MathUtils.ifloor(y));
+		putPixel(MathUtils.ifloor(x), MathUtils.ifloor(y), pixel);
 	}
 
 	@Override

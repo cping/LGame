@@ -296,6 +296,8 @@ public class LSetting {
 		this.isConsoleLog = setting.isConsoleLog;
 		this.disposeTexture = setting.disposeTexture;
 		this.fps = setting.fps;
+		this.fps_time_fixed = setting.fps_time_fixed;
+		this.fps_time_fixed_value = setting.fps_time_fixed_value;
 		this.width = setting.width;
 		this.height = setting.height;
 		this.width_zoom = setting.width_zoom;
