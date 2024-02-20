@@ -2325,6 +2325,75 @@ final public class StringUtils extends CharUtils {
 		return true;
 	}
 
+	private static String getChunk(String s, int slength, int count) {
+		StrBuilder sbr = new StrBuilder();
+		char ch = s.charAt(count);
+		sbr.append(ch);
+		count++;
+		if (isDigit(ch)) {
+			while (count < slength) {
+				ch = s.charAt(count);
+				if (!isDigit(ch)) {
+					break;
+				}
+				sbr.append(ch);
+				count++;
+			}
+		} else {
+			while (count < slength) {
+				ch = s.charAt(count);
+				if (isDigit(ch)) {
+					break;
+				}
+				sbr.append(ch);
+				count++;
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
+	 * 为字符串进行排序
+	 * 
+	 * @param s1
+	 * @param s2
+	 * @return
+	 */
+	public static int checkCompareTo(String s1, String s2) {
+		if (isNullOrEmpty(s1) || isNullOrEmpty(s2)) {
+			return 0;
+		}
+		int m1 = 0;
+		int m2 = 0;
+		int s1Length = s1.length();
+		int s2Length = s2.length();
+		for (; m1 < s1Length && m2 < s2Length;) {
+			String chunk1 = getChunk(s1, s1Length, m1);
+			m1 += chunk1.length();
+			String chunk2 = getChunk(s2, s2Length, m2);
+			m2 += chunk2.length();
+			int result = 0;
+			if (isDigit(chunk1.charAt(0)) && isDigit(chunk2.charAt(0))) {
+				int thisChunkLength = chunk1.length();
+				result = thisChunkLength - chunk2.length();
+				if (result == 0) {
+					for (int i = 0; i < thisChunkLength; i++) {
+						result = chunk1.charAt(i) - chunk2.charAt(i);
+						if (result != 0) {
+							return result;
+						}
+					}
+				}
+			} else {
+				result = chunk1.compareTo(chunk2);
+			}
+			if (result != 0) {
+				return result;
+			}
+		}
+		return s1Length - s2Length;
+	}
+
 	/**
 	 * 判定指定字符串是否仅占位而不显示
 	 * 

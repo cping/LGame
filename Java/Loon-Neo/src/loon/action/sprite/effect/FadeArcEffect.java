@@ -61,8 +61,17 @@ public class FadeArcEffect extends BaseAbstractEffect {
 		this.setColor(c == null ? LColor.black : c);
 		this.setRepaint(true);
 		this.setTurn(type);
+		this.setSleep(sleep);
 		this.arcDiv = div;
-		_sleep = LSystem.toIScaleFPS(sleep, 1);
+	}
+
+	public FadeArcEffect setSleep(float s) {
+		this._sleep = LSystem.toIScaleFPS(s, 1);
+		return this;
+	}
+
+	public int getSleep() {
+		return _sleep;
 	}
 
 	@Override
@@ -117,7 +126,7 @@ public class FadeArcEffect extends BaseAbstractEffect {
 					if (step < _sleep) {
 						return;
 					}
-					g.fillArc(x, y, w, h, arcDiv, 0, this.sign[this.curTurn] * deg);
+					g.fillArc(x, y, w, h, 0, this.sign[this.curTurn] * deg);
 				}
 			}
 		}

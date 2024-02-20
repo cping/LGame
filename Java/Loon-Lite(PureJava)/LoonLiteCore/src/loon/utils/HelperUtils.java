@@ -120,6 +120,26 @@ public class HelperUtils {
 		return LTimer.at(d);
 	}
 
+	public static Task postTask(String name, EventActionT<Task> e) {
+		return LTimer.postTask(name, e, 0f);
+	}
+
+	public static Task postTask(String name, EventActionT<Task> e, float seconds) {
+		return LTimer.postTask(name, e, seconds, -1);
+	}
+
+	public static Task postTask(EventActionT<Task> e, float seconds) {
+		return LTimer.postTask(e, seconds, -1);
+	}
+
+	public static Task postTask(EventActionT<Task> e, float seconds, int loopCount) {
+		return LTimer.postTask(e, seconds, loopCount);
+	}
+
+	public static Task postOnceTask(EventActionT<Task> e, float seconds) {
+		return LTimer.postTask(e, seconds, 1);
+	}
+
 	public static Task postTask(String name, Runnable e) {
 		return LTimer.postTask(name, e, 0f);
 	}

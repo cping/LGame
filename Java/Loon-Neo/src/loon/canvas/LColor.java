@@ -1345,6 +1345,15 @@ public class LColor implements Serializable {
 		return temp;
 	}
 
+	public LColor blackWhiteColor() {
+		return brightness() > 0.5f ? LColor.black : LColor.white;
+	}
+
+	public float brightness() {
+		return (MathUtils.sqrt(0.299f * MathUtils.pow(this.r, 2f) + 0.587f * MathUtils.pow(this.g, 2f)
+				+ 0.114f * MathUtils.pow(this.b, 2f)));
+	}
+
 	public LColor setColorValue(int r, int g, int b, int a) {
 		if (_locked) {
 			return this;

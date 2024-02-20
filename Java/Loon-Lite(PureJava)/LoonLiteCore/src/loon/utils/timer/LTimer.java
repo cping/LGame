@@ -23,6 +23,7 @@ package loon.utils.timer;
 import loon.LRelease;
 import loon.LSystem;
 import loon.events.EventAction;
+import loon.events.EventActionT;
 import loon.events.TimerEvent;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
@@ -90,6 +91,45 @@ public class LTimer implements LTimerListener, LRelease {
 			}
 		}
 		return _instance;
+	}
+
+	public static Task postTask(EventActionT<Task> e) {
+		return postTask(LSystem.UNKNOWN, e, 0f);
+	}
+
+	public static Task postTask(String name, EventActionT<Task> e) {
+		return postTask(name, e, 0f);
+	}
+
+	public static Task postTask(String name, EventActionT<Task> e, float seconds) {
+		return postTask(name, e, seconds, -1);
+	}
+
+	public static Task postTask(EventActionT<Task> e, float seconds) {
+		return postTask(e, seconds, -1);
+	}
+
+	public static Task postTask(EventActionT<Task> e, float seconds, int loopCount) {
+		return postTask(LSystem.UNKNOWN, e, seconds, loopCount);
+	}
+
+	public static Task postTask(String name, EventActionT<Task> e, float seconds, int loopCount) {
+		synchronized (RealtimeProcessManager.class) {
+			synchronized (LTimer.class) {
+				if (e != null) {
+					synchronized (e) {
+						final Task task = new Task(name, seconds, loopCount);
+						if (e != null) {
+							task.setEventAction(e);
+							task.start();
+						}
+						return task;
+					}
+				} else {
+					return new Task(name, seconds, loopCount);
+				}
+			}
+		}
 	}
 
 	public static Task postTask(Runnable e) {

@@ -20,7 +20,21 @@
  */
 package loon.utils;
 
+import java.util.Comparator;
+import java.util.Iterator;
+
 public class StrMap extends ObjectMap<String, String> {
+
+	private static class StrComparator implements Comparator<String> {
+
+		@Override
+		public int compare(String o1, String o2) {
+			return StringUtils.checkCompareTo(o1, o2);
+		}
+
+	}
+
+	private final static StrComparator STR_COMP = new StrComparator();
 
 	public StrMap() {
 		super();
@@ -42,6 +56,32 @@ public class StrMap extends ObjectMap<String, String> {
 		for (int i = 0; i < values.length / 2; i++) {
 			put((String) values[i * 2], String.valueOf(values[i * 2 + 1]));
 		}
+	}
+
+	public TArray<String> sortKeys() {
+		final TArray<String> list = new TArray<String>(size);
+		final Keys<String> names = keys();
+		for (Iterator<String> it = names.iterator(); it.hasNext();) {
+			String name = it.next();
+			if (StringUtils.isNullOrEmpty(name)) {
+				list.add(name);
+			}
+		}
+		list.sort(STR_COMP);
+		return list;
+	}
+
+	public TArray<String> sortValues() {
+		final TArray<String> list = new TArray<String>(size);
+		final Values<String> names = values();
+		for (Iterator<String> it = names.iterator(); it.hasNext();) {
+			String name = it.next();
+			if (StringUtils.isNullOrEmpty(name)) {
+				list.add(name);
+			}
+		}
+		list.sort(STR_COMP);
+		return list;
 	}
 
 	public boolean getBool(String name) {

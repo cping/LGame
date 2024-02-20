@@ -40,7 +40,7 @@ import loon.utils.reply.GoFuture;
 /**
  * 图像加载与处理的基础类,Texture由此类排生,内部为具体运行环境的等效对象封装.
  */
-public abstract class Image extends TextureSource implements Canvas.Drawable, LRelease {
+public abstract class Image extends TextureSource implements Canvas.ColorPixel, Canvas.Drawable, LRelease {
 
 	private boolean _isTexture = false;
 
@@ -53,7 +53,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public static Canvas createCanvas(float w, float h) {
-		return createCanvas((int) w, (int) h);
+		return createCanvas(MathUtils.iceil(w), MathUtils.iceil(h));
 	}
 
 	public static Canvas createCanvas(int w, int h) {
@@ -61,7 +61,7 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 	}
 
 	public static Image createImage(float w, float h) {
-		return createImage((int) w, (int) h);
+		return createImage(MathUtils.iceil(w), MathUtils.iceil(h));
 	}
 
 	public static Image createImage(int w, int h) {
@@ -496,6 +496,40 @@ public abstract class Image extends TextureSource implements Canvas.Drawable, LR
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public int getPixelWidth() {
+		return getWidth();
+	}
+
+	@Override
+	public int getPixelHeight() {
+		return getHeight();
+	}
+
+	@Override
+	public int get(float x, float y) {
+		return getPixel(MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	@Override
+	public void set(float x, float y, int pixel) {
+		setRGB(pixel, MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	@Override
+	public int[] pixels() {
+		return getPixels();
+	}
+
+	@Override
+	public void bindPixels(int[] pixels) {
+		setPixels(pixels, getWidth(), getHeight());
+	}
+
+	public PixmapLimit findLimit() {
+		return PixmapLimit.find(this);
 	}
 
 	@Override

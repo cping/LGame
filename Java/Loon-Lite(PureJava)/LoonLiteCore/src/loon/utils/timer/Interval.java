@@ -23,6 +23,8 @@ package loon.utils.timer;
 import loon.LRelease;
 import loon.LSystem;
 import loon.events.ActionUpdate;
+import loon.events.EventAction;
+import loon.utils.HelperUtils;
 
 /**
  * 这是一个指定循环事务延迟触发用抽象类,本身并没有实现关键的loop方法,loop部分需要用户根据实际需求实现.<br>
@@ -36,6 +38,8 @@ public abstract class Interval implements ActionUpdate, LRelease {
 	protected final LTimer _loop_timer;
 
 	protected Runnable _runnable;
+
+	protected EventAction _event;
 
 	private Interval _waitInterval;
 
@@ -190,6 +194,9 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		if (_runnable != null) {
 			_runnable.run();
 		}
+		if (_event != null) {
+			HelperUtils.callEventAction(_event, this);
+		}
 		loop();
 	}
 
@@ -199,6 +206,15 @@ public abstract class Interval implements ActionUpdate, LRelease {
 
 	public Interval setRunnable(Runnable r) {
 		this._runnable = r;
+		return this;
+	}
+
+	public EventAction getEventAction() {
+		return _event;
+	}
+
+	public Interval setEventAction(EventAction e) {
+		this._event = e;
 		return this;
 	}
 
