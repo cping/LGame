@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class StateMainMenu extends GameState
 {
@@ -235,13 +235,13 @@ public class StateMainMenu extends GameState
 		int num8 = 0;
 		int num9 = 0;
 		int tilelength = 0x3e8;
-		RefObject<Integer> tempRef_num8 = new RefObject<Integer>(num8);
-		RefObject<Integer> tempRef_num9 = new RefObject<Integer>(num9);
-		RefObject<Integer> tempRef_angle = new RefObject<Integer>(angle);
+		ObjRef<Integer> tempRef_num8 = new ObjRef<Integer>(num8);
+		ObjRef<Integer> tempRef_num9 = new ObjRef<Integer>(num9);
+		ObjRef<Integer> tempRef_angle = new ObjRef<Integer>(angle);
 		Train.getPos(tempRef_num8, tempRef_num9, tempRef_angle, x * 10, y * 10, ETileTypes.forValue(width), drawpos, this.tilew * 10, this.tileh * 10, tilelength, EDirections.forValue(height));
-		num8 = tempRef_num8.argvalue;
-		num9 = tempRef_num9.argvalue;
-		angle = tempRef_angle.argvalue;
+		num8 = tempRef_num8.get();
+		num9 = tempRef_num9.get();
+		angle = tempRef_angle.get();
 		int num11 = ((GameUtils.cos(-16) * num8) - (GameUtils.sin(-16) * num9)) >> 13;
 		int num12 = ((GameUtils.sin(-16) * num8) + (GameUtils.cos(-16) * num9)) >> 13;
 		num11 += trackx * 10;

@@ -171,12 +171,10 @@ public abstract class GLFrameBuffer implements LRelease {
 		return image;
 	}
 
-	protected void build() {
-		GL20 gl = LSystem.base().graphics().gl;
-
+	protected static void checkIOSdefaultFramebufferHandle(GL20 gl) {
 		if (!defaultFramebufferHandleInitialized) {
 			defaultFramebufferHandleInitialized = true;
-			if (LSystem.base().type() == LGame.Type.IOS) {
+			if (LSystem.base() != null && LSystem.base().type() == LGame.Type.IOS) {
 				IntBuffer intbuf = ByteBuffer.allocateDirect(16 * Integer.SIZE / 8).order(ByteOrder.nativeOrder())
 						.asIntBuffer();
 				gl.glGetIntegerv(GL20.GL_FRAMEBUFFER_BINDING, intbuf);
@@ -185,7 +183,11 @@ public abstract class GLFrameBuffer implements LRelease {
 				defaultFramebufferHandle = 0;
 			}
 		}
+	}
 
+	protected void build() {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkIOSdefaultFramebufferHandle(gl);
 		framebufferHandle = gl.glGenFramebuffer();
 		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
 
@@ -375,6 +377,10 @@ public abstract class GLFrameBuffer implements LRelease {
 	public void end(int x, int y, int width, int height) {
 		unbind();
 		LSystem.base().graphics().gl.glViewport(x, y, width, height);
+	}
+
+	public int getFramebufferID() {
+		return getFramebufferHandle();
 	}
 
 	public int getFramebufferHandle() {

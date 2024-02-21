@@ -283,8 +283,8 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		}
 		this.x = x;
 		this.y = y;
-		this.width = (int) width;
-		this.height = (int) height;
+		this.width = MathUtils.iceil(width);
+		this.height = MathUtils.iceil(height);
 		this.minX = x;
 		this.minY = y;
 		this.maxX = x + width;

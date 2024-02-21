@@ -26,6 +26,8 @@ import loon.LSystem;
 import loon.events.EventActionT;
 import loon.events.QueryEvent;
 import loon.geom.IV;
+import loon.utils.Calculator;
+import loon.utils.HelperUtils;
 
 public class Nullable<T> implements IV<T>, LRelease {
 
@@ -37,6 +39,122 @@ public class Nullable<T> implements IV<T>, LRelease {
 
 	public Nullable(T v) {
 		this._value = v;
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T calc(final Number v, final int model) {
+		if (_value != null) {
+			if (_value instanceof Integer) {
+				int result = 0;
+				switch (model) {
+				case Calculator.ADD:
+					result = (((Integer) _value).intValue() + v.intValue());
+					break;
+				case Calculator.SUBTRACT:
+					result = (((Integer) _value).intValue() - v.intValue());
+					break;
+				case Calculator.MULTIPLY:
+					result = (((Integer) _value).intValue() * v.intValue());
+					break;
+				case Calculator.DIVIDE:
+					result = (((Integer) _value).intValue() / v.intValue());
+					break;
+				case Calculator.MODULO:
+					result = (((Integer) _value).intValue() % v.intValue());
+					break;
+				}
+				_value = (T) Integer.valueOf(result);
+			} else if (_value instanceof Long) {
+				long result = 0;
+				switch (model) {
+				case Calculator.ADD:
+					result = (((Long) _value).longValue() + v.longValue());
+					break;
+				case Calculator.SUBTRACT:
+					result = (((Long) _value).longValue() - v.longValue());
+					break;
+				case Calculator.MULTIPLY:
+					result = (((Long) _value).longValue() * v.longValue());
+					break;
+				case Calculator.DIVIDE:
+					result = (((Long) _value).longValue() / v.longValue());
+					break;
+				case Calculator.MODULO:
+					result = (((Long) _value).longValue() % v.longValue());
+					break;
+				}
+				_value = (T) Long.valueOf(result);
+			} else if (_value instanceof Float) {
+				float result = 0;
+				switch (model) {
+				case Calculator.ADD:
+					result = (((Float) _value).floatValue() + v.floatValue());
+					break;
+				case Calculator.SUBTRACT:
+					result = (((Float) _value).floatValue() - v.floatValue());
+					break;
+				case Calculator.MULTIPLY:
+					result = (((Float) _value).floatValue() * v.floatValue());
+					break;
+				case Calculator.DIVIDE:
+					result = (((Float) _value).floatValue() / v.floatValue());
+					break;
+				case Calculator.MODULO:
+					result = (((Float) _value).floatValue() % v.floatValue());
+					break;
+				}
+				_value = (T) Float.valueOf(result);
+			} else if (_value instanceof Double) {
+				double result = 0;
+				switch (model) {
+				case Calculator.ADD:
+					result = (((Double) _value).doubleValue() + v.doubleValue());
+					break;
+				case Calculator.SUBTRACT:
+					result = (((Double) _value).doubleValue() - v.doubleValue());
+					break;
+				case Calculator.MULTIPLY:
+					result = (((Double) _value).doubleValue() * v.doubleValue());
+					break;
+				case Calculator.DIVIDE:
+					result = (((Double) _value).doubleValue() / v.doubleValue());
+					break;
+				case Calculator.MODULO:
+					result = (((Double) _value).doubleValue() % v.doubleValue());
+					break;
+				}
+				_value = (T) Double.valueOf(result);
+			} else if (_value instanceof String) {
+				final float strV = HelperUtils.toFloat(_value);
+				if (strV == -1f) {
+					return _value;
+				}
+				String result = String.valueOf(strV + v.floatValue());
+				_value = (T) result;
+			}
+		}
+		return _value;
+
+	}
+
+	public T add(Number v) {
+		return calc(v, Calculator.ADD);
+	}
+
+	public T sub(Number v) {
+		return calc(v, Calculator.SUBTRACT);
+	}
+
+	public T mul(Number v) {
+		return calc(v, Calculator.MULTIPLY);
+	}
+
+	public T div(Number v) {
+		return calc(v, Calculator.DIVIDE);
+	}
+
+	public T mod(Number v) {
+		return calc(v, Calculator.MODULO);
 	}
 
 	public boolean isPresent() {

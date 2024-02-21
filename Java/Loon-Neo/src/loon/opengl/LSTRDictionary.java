@@ -77,7 +77,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private boolean tmp_asyn = true;
 
-	private boolean _allowBind = true;
+	private boolean _allowCacheBind = true;
 
 	private final ArrayMap cacheList = new ArrayMap(32);
 
@@ -284,7 +284,7 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public final Dict bind(final LFont font, final String mes, final boolean autoStringFilter) {
-		if (!_allowBind) {
+		if (!_allowCacheBind) {
 			return null;
 		}
 		if (StringUtils.isEmpty(mes)) {
@@ -495,12 +495,12 @@ public final class LSTRDictionary implements LRelease {
 		return ADDED;
 	}
 
-	public boolean isAllowBind() {
-		return _allowBind;
+	public boolean isAllowCache() {
+		return _allowCacheBind;
 	}
 
-	public LSTRDictionary setAllowBind(boolean a) {
-		this._allowBind = a;
+	public LSTRDictionary setAllowCache(boolean a) {
+		this._allowCacheBind = a;
 		return this;
 	}
 

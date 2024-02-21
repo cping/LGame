@@ -20,11 +20,14 @@
  */
 package loon.opengl;
 
+import java.nio.Buffer;
+import java.nio.ShortBuffer;
+
 import loon.LSystem;
 
 public class Submit {
 
-	private int type = GL20.GL_TRIANGLES;
+	private int glType = GL20.GL_TRIANGLES;
 
 	private boolean running = false;
 
@@ -46,12 +49,13 @@ public class Submit {
 		LSystem.resetMeshTrianglePool(n, size, trisize);
 	}
 
-	public void setGLType(int type) {
-		this.type = type;
+	public Submit setGLType(int type) {
+		this.glType = type;
+		return this;
 	}
 
 	public int getGLType() {
-		return this.type;
+		return this.glType;
 	}
 
 	public void setVertices(String name, int size, float[] vertices) {
@@ -67,6 +71,18 @@ public class Submit {
 	public void resetIndices(String name, int size) {
 		Mesh mesh = getMesh(name, size);
 		LSystem.resetIndices(size, mesh);
+	}
+
+	public int size() {
+		return LSystem.getMeshPoolSize();
+	}
+
+	public void dispose(String name, int size) {
+		LSystem.disposeMeshPool(name, size);
+	}
+
+	public static void dispose() {
+		LSystem.disposeMeshPool();
 	}
 
 	public void post(final String name, final int size, ShaderProgram shader, float[] vertices, int vertexIdx,
@@ -89,9 +105,14 @@ public class Submit {
 			return;
 		}
 		mesh.setVertices(vertices, 0, vertexIdx);
-		mesh.getIndicesBuffer().position(0);
-		mesh.getIndicesBuffer().limit(count);
-		mesh.render(shader, type, 0, count);
+		final ShortBuffer buffer = mesh.getIndicesBuffer(false);
+		final int oldPosition = buffer.position();
+		final int oldLimit = buffer.limit();
+		((Buffer) buffer).position(0);
+		((Buffer) buffer).limit(count);
+		mesh.render(shader, glType, 0, count);
+		((Buffer) buffer).position(oldPosition);
+		((Buffer) buffer).limit(oldLimit);
 		if (!running) {
 			shader.glUseProgramUnBind();
 		} else if (stop_main_readering) {
@@ -120,24 +141,12 @@ public class Submit {
 		}
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.setIndices(indices, 0, indicesIdx);
-		mesh.render(shader, type, 0, countInBatch);
+		mesh.render(shader, glType, 0, countInBatch);
 		if (!running) {
 			shader.glUseProgramUnBind();
 		} else if (stop_main_readering) {
 			LSystem.mainBeginDraw();
 		}
-	}
-
-	public int size() {
-		return LSystem.getMeshPoolSize();
-	}
-
-	public void dispose(String name, int size) {
-		LSystem.disposeMeshPool(name, size);
-	}
-
-	public static void dispose() {
-		LSystem.disposeMeshPool();
 	}
 
 }

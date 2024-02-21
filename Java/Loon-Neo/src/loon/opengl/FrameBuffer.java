@@ -82,29 +82,35 @@ public class FrameBuffer extends GLFrameBuffer {
 	public FrameBuffer(int width, int height, int glFormat, int glType, boolean hasDepth, boolean hasStencil) {
 		FrameBufferBuilder frameBufferBuilder = new FrameBufferBuilder(width, height);
 		frameBufferBuilder.addBasicColorTextureAttachment(glFormat, glType);
-		if (hasDepth)
+		if (hasDepth) {
 			frameBufferBuilder.addBasicDepthRenderBuffer();
-		if (hasStencil)
+		}
+		if (hasStencil) {
 			frameBufferBuilder.addBasicStencilRenderBuffer();
+		}
 		this.bufferBuilder = frameBufferBuilder;
-
 		build();
 	}
 
 	@Override
 	protected LTexture createTexture(FrameBufferTextureAttachmentSpec attachmentSpec) {
-		LTexture texture = LTexture.createTexture(bufferBuilder.width, bufferBuilder.height, Format.LINEAR);
-		return texture;
+		return LTexture.createTexture(bufferBuilder.width, bufferBuilder.height, Format.LINEAR);
 	}
 
 	@Override
 	protected void disposeColorTexture(LTexture colorTexture) {
-		colorTexture.close();
+		if (colorTexture != null) {
+			colorTexture.close();
+		}
+	}
+
+	protected void bindTextureID(int id) {
+		LSystem.base().graphics().gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0,
+				GL20.GL_TEXTURE_2D, id, 0);
 	}
 
 	@Override
 	protected void attachFrameBufferColorTexture(LTexture texture) {
-		LSystem.base().graphics().gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0,
-				GL20.GL_TEXTURE_2D, texture.getID(), 0);
+		bindTextureID(texture.getID());
 	}
 }

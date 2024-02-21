@@ -40,115 +40,34 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		public static final int BiNormal = 256;
 	}
 
-	private final VertexAttribute[] attributes;
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static private class ReadonlyIterable<T> implements Iterable<T> {
 
-	public final int vertexSize;
+		private final T[] array;
 
-	private long mask = -1;
+		private ReadonlyIterator iterator1, iterator2;
 
-	private ReadonlyIterable<VertexAttribute> iterable;
-
-	public VertexAttributes(VertexAttribute... attributes) {
-		if (attributes.length == 0) {
-			throw new LSysException("attributes must be >= 1 !");
+		public ReadonlyIterable(T[] array) {
+			this.array = array;
 		}
 
-		VertexAttribute[] list = new VertexAttribute[attributes.length];
-		for (int i = 0; i < attributes.length; i++)
-			list[i] = attributes[i];
-
-		this.attributes = list;
-		vertexSize = calculateOffsets();
-	}
-
-	public int getOffset(int usage) {
-		VertexAttribute vertexAttribute = findByUsage(usage);
-		if (vertexAttribute == null)
-			return 0;
-		return vertexAttribute.offset / 4;
-	}
-
-	public VertexAttribute findByUsage(int usage) {
-		int len = size();
-		for (int i = 0; i < len; i++)
-			if (get(i).usage == usage)
-				return get(i);
-		return null;
-	}
-
-	private int calculateOffsets() {
-		int count = 0;
-		for (int i = 0; i < attributes.length; i++) {
-			VertexAttribute attribute = attributes[i];
-			attribute.offset = count;
-			if (attribute.usage == VertexAttributes.Usage.ColorPacked)
-				count += 4;
-			else
-				count += 4 * attribute.numComponents;
-		}
-
-		return count;
-	}
-
-	public int size() {
-		return attributes.length;
-	}
-
-	public VertexAttribute get(int index) {
-		return attributes[index];
-	}
-
-	public String toString() {
-		StrBuilder builder = new StrBuilder();
-		builder.append("[");
-		for (int i = 0; i < attributes.length; i++) {
-			builder.append("(");
-			builder.append(attributes[i].alias);
-			builder.append(", ");
-			builder.append(attributes[i].usage);
-			builder.append(", ");
-			builder.append(attributes[i].numComponents);
-			builder.append(", ");
-			builder.append(attributes[i].offset);
-			builder.append(")");
-			builder.append("\n");
-		}
-		builder.append("]");
-		return builder.toString();
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (obj == null)
-			return false;
-		if (!(obj instanceof VertexAttributes))
-			return false;
-		VertexAttributes other = (VertexAttributes) obj;
-		if (this.attributes.length != other.size())
-			return false;
-		for (int i = 0; i < attributes.length; i++) {
-			if (!attributes[i].equals(other.attributes[i]))
-				return false;
-		}
-		return true;
-	}
-
-	public long getMask() {
-		if (mask == -1) {
-			long result = 0;
-			for (int i = 0; i < attributes.length; i++) {
-				result |= attributes[i].usage;
+		@Override
+		public Iterator<T> iterator() {
+			if (iterator1 == null) {
+				iterator1 = new ReadonlyIterator(array);
+				iterator2 = new ReadonlyIterator(array);
 			}
-			mask = result;
+			if (!iterator1.valid) {
+				iterator1.index = 0;
+				iterator1.valid = true;
+				iterator2.valid = false;
+				return iterator1;
+			}
+			iterator2.index = 0;
+			iterator2.valid = true;
+			iterator1.valid = false;
+			return iterator2;
 		}
-		return mask;
-	}
-
-	@Override
-	public Iterator<VertexAttribute> iterator() {
-		if (iterable == null)
-			iterable = new ReadonlyIterable<VertexAttribute>(attributes);
-		return iterable.iterator();
 	}
 
 	static private class ReadonlyIterator<T> implements Iterator<T>, Iterable<T> {
@@ -190,33 +109,118 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		}
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static private class ReadonlyIterable<T> implements Iterable<T> {
+	private final VertexAttribute[] attributes;
 
-		private final T[] array;
+	public final int vertexSize;
 
-		private ReadonlyIterator iterator1, iterator2;
+	private long mask = -1;
 
-		public ReadonlyIterable(T[] array) {
-			this.array = array;
+	private ReadonlyIterable<VertexAttribute> iterable;
+
+	public VertexAttributes(VertexAttribute... attributes) {
+		if (attributes.length == 0) {
+			throw new LSysException("attributes must be >= 1 !");
 		}
-
-		@Override
-		public Iterator<T> iterator() {
-			if (iterator1 == null) {
-				iterator1 = new ReadonlyIterator(array);
-				iterator2 = new ReadonlyIterator(array);
-			}
-			if (!iterator1.valid) {
-				iterator1.index = 0;
-				iterator1.valid = true;
-				iterator2.valid = false;
-				return iterator1;
-			}
-			iterator2.index = 0;
-			iterator2.valid = true;
-			iterator1.valid = false;
-			return iterator2;
+		VertexAttribute[] list = new VertexAttribute[attributes.length];
+		for (int i = 0; i < attributes.length; i++) {
+			list[i] = attributes[i];
 		}
+		this.attributes = list;
+		vertexSize = calculateOffsets();
 	}
+
+	public int getOffset(int usage) {
+		VertexAttribute vertexAttribute = findByUsage(usage);
+		if (vertexAttribute == null) {
+			return 0;
+		}
+		return vertexAttribute.offset / 4;
+	}
+
+	public VertexAttribute findByUsage(int usage) {
+		final int len = size();
+		for (int i = 0; i < len; i++) {
+			if (get(i).usage == usage) {
+				return get(i);
+			}
+		}
+		return null;
+	}
+
+	private int calculateOffsets() {
+		int count = 0;
+		for (int i = 0; i < attributes.length; i++) {
+			VertexAttribute attribute = attributes[i];
+			attribute.offset = count;
+			if (attribute.usage == VertexAttributes.Usage.ColorPacked) {
+				count += 4;
+			} else {
+				count += 4 * attribute.numComponents;
+			}
+		}
+		return count;
+	}
+
+	public int size() {
+		return attributes.length;
+	}
+
+	public VertexAttribute get(int index) {
+		return attributes[index];
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null)
+			return false;
+		if (!(obj instanceof VertexAttributes))
+			return false;
+		VertexAttributes other = (VertexAttributes) obj;
+		if (this.attributes.length != other.size())
+			return false;
+		for (int i = 0; i < attributes.length; i++) {
+			if (!attributes[i].equals(other.attributes[i]))
+				return false;
+		}
+		return true;
+	}
+
+	public long getMask() {
+		if (mask == -1) {
+			long result = 0;
+			for (int i = 0; i < attributes.length; i++) {
+				result |= attributes[i].usage;
+			}
+			mask = result;
+		}
+		return mask;
+	}
+
+	@Override
+	public Iterator<VertexAttribute> iterator() {
+		if (iterable == null)
+			iterable = new ReadonlyIterable<VertexAttribute>(attributes);
+		return iterable.iterator();
+	}
+
+	@Override
+	public String toString() {
+		StrBuilder builder = new StrBuilder();
+		builder.append("[");
+		for (int i = 0; i < attributes.length; i++) {
+			builder.append("(");
+			builder.append(attributes[i].alias);
+			builder.append(", ");
+			builder.append(attributes[i].usage);
+			builder.append(", ");
+			builder.append(attributes[i].numComponents);
+			builder.append(", ");
+			builder.append(attributes[i].offset);
+			builder.append(")");
+			builder.append("\n");
+		}
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

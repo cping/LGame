@@ -58,7 +58,9 @@ public class Picture extends Entity {
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, _image.hashCode());
+		if (_image != null) {
+			result = LSystem.unite(result, _image.hashCode());
+		}
 		result = LSystem.unite(result, _objectLocation.x);
 		result = LSystem.unite(result, _objectLocation.y);
 		result = LSystem.unite(result, _objectAlpha);

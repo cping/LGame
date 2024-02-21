@@ -155,7 +155,7 @@ public class LFont extends FontTrans implements IFont {
 			return;
 		}
 		String newMessage = toMessage(msg);
-		if (useCache) {
+		if (isAllowCache()) {
 			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 		} else {
 			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
@@ -175,12 +175,16 @@ public class LFont extends FontTrans implements IFont {
 			return;
 		}
 		String newMessage = toMessage(msg);
-		if (useCache) {
+		if (isAllowCache()) {
 			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
 			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle,
 					c);
 		}
+	}
+
+	private boolean isAllowCache() {
+		return useCache && LSTRDictionary.get().isAllowCache();
 	}
 
 	private void initLayout(String msg) {

@@ -1,6 +1,6 @@
 ﻿package com.mygame;
 
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class Train extends Entity {
 	public int angle;
@@ -52,12 +52,12 @@ public class Train extends Entity {
 		return EEntityClass.EEntityTrain;
 	}
 
-	public static void getPos(RefObject<Integer> x,
-		RefObject<Integer> y, RefObject<Integer> angle,
+	public static void getPos(ObjRef<Integer> x,
+		ObjRef<Integer> y, ObjRef<Integer> angle,
 			int tilex, int tiley, ETileTypes tiletype, int drawpos, int tilew,
 			int tileh, int tilelength, EDirections enterDir) {
-		x.argvalue = tilex;
-		y.argvalue = tiley;
+		x.set( tilex);
+		y.set( tiley);
 		if (tiletype == ETileTypes.ETileCross) {
 			if ((enterDir == EDirections.EDirTop)
 					|| (enterDir == EDirections.EDirDown)) {
@@ -72,14 +72,14 @@ public class Train extends Entity {
 		case ECaveLeft:
 		case ECaveRight:
 
-			y.argvalue += tileh / 2;
+			y.add( tileh / 2);
 			if (enterDir == EDirections.EDirLeft) {
 				drawpos = tilelength - drawpos;
-				angle.argvalue = 180;
+				angle.set( 180);
 			} else {
-				angle.argvalue = 0;
+				angle.set( 0);
 			}
-			x.argvalue += (tilew * drawpos) / tilelength;
+			x.add( (tilew * drawpos) / tilelength);
 
 			return;
 
@@ -88,78 +88,78 @@ public class Train extends Entity {
 		case ECaveBottom:
 		case ECaveTop:
 		
-			x.argvalue += tilew / 2;
+			x.add( tilew / 2);
 			if (enterDir == EDirections.EDirTop) {
 				drawpos = tilelength - drawpos;
-				angle.argvalue = 90;
+				angle.set( 90);
 			} else {
-				angle.argvalue = 270;
+				angle.set( 270);
 			}
-			y.argvalue += (tileh * drawpos) / tilelength;
+			y.add( (tileh * drawpos) / tilelength);
 			return;
 
 		case ETileTopRight:
 
 			if (enterDir != EDirections.EDirLeft) {
-				angle.argvalue = 270 + ((90 * drawpos) / tilelength);
+				angle.set( 270 + ((90 * drawpos) / tilelength));
 				break;
 			}
-			angle.argvalue = 180 - ((90 * drawpos) / tilelength);
+			angle.set( 180 - ((90 * drawpos) / tilelength));
 			drawpos = tilelength - drawpos;
-			x.argvalue += tilew;
-			y.argvalue += (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14;
-			x.argvalue -= (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14;
+			x.add( tilew);
+			y.add( (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14);
+			x.sub( (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14);
 	
 			return;
 
 		case ETileRightDown:
 			
 			if (enterDir != EDirections.EDirLeft) {
-				angle.argvalue = 90 - ((90 * drawpos) / tilelength);
+				angle.set( 90 - ((90 * drawpos) / tilelength));
 			} else {
-				angle.argvalue = 180 + ((90 * drawpos) / tilelength);
+				angle.set( 180 + ((90 * drawpos) / tilelength));
 				drawpos = tilelength - drawpos;
 			}
-			x.argvalue += tilew;
-			y.argvalue += tileh;
-			y.argvalue -= (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14;
-			x.argvalue -= (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14;
+			x.add( tilew);
+			y.add( tileh);
+			y.sub( (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14);
+			x.sub( (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14);
 			return;
 
 		case ETileDownLeft:
 		
 			if (enterDir != EDirections.EDirRight) {
-				angle.argvalue = 90 + ((90 * drawpos) / tilelength);
+				angle.set( 90 + ((90 * drawpos) / tilelength));
 			} else {
-				angle.argvalue = 360 - ((90 * drawpos) / tilelength);
+				angle.set( 360 - ((90 * drawpos) / tilelength));
 				drawpos = tilelength - drawpos;
 			}
-			y.argvalue += tileh;
-			y.argvalue -= (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14;
-			x.argvalue += (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14;
+			y.add( tileh);
+			y.sub( (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14);
+			x.add( (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14);
 			return;
 
 		case ETileLeftTop:
 		
 			if (enterDir != EDirections.EDirRight) {
-				angle.argvalue = 270 - ((90 * drawpos) / tilelength);
+				angle.set( 270 - ((90 * drawpos) / tilelength));
 			} else {
-				angle.argvalue = (90 * drawpos) / tilelength;
+				angle.set( (90 * drawpos) / tilelength);
 				drawpos = tilelength - drawpos;
 			}
-			y.argvalue += (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14;
-			x.argvalue += (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14;
+			y.add( (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14);
+			x.add( (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14);
 			return;
 
 		default:
 
-			x.argvalue += tilew / 2;
-			y.argvalue += tileh / 2;
+			x.add( tilew / 2);
+			y.add( tileh / 2);
 			return;
 		}
-		x.argvalue += tilew;
-		y.argvalue += (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14;
-		x.argvalue -= (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14;
+		x.add( tilew);
+		y.add( (GameUtils.sin((drawpos * 90) / tilelength) * tileh) >> 14);
+		x.sub( (GameUtils.cos((drawpos * 90) / tilelength) * tilew) >> 14);
 	}
 
 	public Tile GetTile() {
@@ -382,20 +382,20 @@ public class Train extends Entity {
 		if (this.tile != null) {
 			int tilew = Tile.getTileWReal();
 			int tileh = Tile.getTileHReal();
-			RefObject<Integer> tempRef_x = new RefObject<Integer>(
+			ObjRef<Integer> tempRef_x = new ObjRef<Integer>(
 					this.x);
-			RefObject<Integer> tempRef_y = new RefObject<Integer>(
+			ObjRef<Integer> tempRef_y = new ObjRef<Integer>(
 					this.y);
-			RefObject<Integer> tempRef_angle = new RefObject<Integer>(
+			ObjRef<Integer> tempRef_angle = new ObjRef<Integer>(
 					this.angle);
 
 			getPos(tempRef_x, tempRef_y, tempRef_angle, this.tile.x,
 					this.tile.y, this.tile.type, this.pos, tilew, tileh,
 					this.tilelength, this.enterDir);
 
-			super.x = tempRef_x.argvalue;
-			super.y = tempRef_y.argvalue;
-			this.angle = tempRef_angle.argvalue;
+			super.x = tempRef_x.get();
+			super.y = tempRef_y.get();
+			this.angle = tempRef_angle.get();
 			if (((this.tile.type != ETileTypes.ECaveBottom) && (this.tile.type != ETileTypes.ECaveTop))
 					&& ((this.tile.type != ETileTypes.ECaveLeft) && (this.tile.type != ETileTypes.ECaveRight))) {
 				this.yoffs++;

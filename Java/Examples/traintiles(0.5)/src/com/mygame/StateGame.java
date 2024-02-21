@@ -2,7 +2,7 @@ package com.mygame;
 
 import java.util.Collections;
 
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class StateGame extends GameState {
 
@@ -1235,22 +1235,22 @@ public class StateGame extends GameState {
 		if (showIntro) {
 			this.levelStartTicks = 0;
 		}
-		RefObject<Integer> tempRef_trainspeed = new RefObject<Integer>(
+		ObjRef<Integer> tempRef_trainspeed = new ObjRef<Integer>(
 				this.trainspeed);
-		RefObject<java.util.ArrayList<Tile>> tempRef_tiles = new RefObject<java.util.ArrayList<Tile>>(
+		ObjRef<java.util.ArrayList<Tile>> tempRef_tiles = new ObjRef<java.util.ArrayList<Tile>>(
 				this.tiles);
-		RefObject<java.util.ArrayList<Tile>> tempRef_caves = new RefObject<java.util.ArrayList<Tile>>(
+		ObjRef<java.util.ArrayList<Tile>> tempRef_caves = new ObjRef<java.util.ArrayList<Tile>>(
 				this.caves);
-		RefObject<java.util.ArrayList<ScheduleItem>> tempRef_schedule = new RefObject<java.util.ArrayList<ScheduleItem>>(
+		ObjRef<java.util.ArrayList<ScheduleItem>> tempRef_schedule = new ObjRef<java.util.ArrayList<ScheduleItem>>(
 				this.schedule);
 		boolean flag = super.game.LoadLevel(
 				super.game.getValue(EValues.EValueSelectedLevel),
 				tempRef_trainspeed, tempRef_tiles, tempRef_caves,
 				tempRef_schedule);
-		this.trainspeed = tempRef_trainspeed.argvalue;
-		this.tiles = tempRef_tiles.argvalue;
-		this.caves = tempRef_caves.argvalue;
-		this.schedule = tempRef_schedule.argvalue;
+		this.trainspeed = tempRef_trainspeed.get();
+		this.tiles = tempRef_tiles.get();
+		this.caves = tempRef_caves.get();
+		this.schedule = tempRef_schedule.get();
 		this.graphicsLoaded = false;
 		if (flag) {
 			this.skipLevel = false;

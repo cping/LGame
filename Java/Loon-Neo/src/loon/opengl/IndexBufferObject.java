@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 
@@ -36,6 +37,7 @@ public class IndexBufferObject implements IndexData {
 
 	protected boolean isDirty = true;
 	protected boolean isBound = false;
+	protected boolean ownsBuffer = true;
 
 	protected final int usage;
 
@@ -51,10 +53,20 @@ public class IndexBufferObject implements IndexData {
 			maxIndices = 1;
 		}
 		byteBuffer = LSystem.base().support().newUnsafeByteBuffer(maxIndices * 2);
-		isDirect = true;
+		isDirect = ownsBuffer = true;
 		buffer = byteBuffer.asShortBuffer();
-		buffer.flip();
-		byteBuffer.flip();
+		((Buffer) buffer).flip();
+		((Buffer) byteBuffer).flip();
+		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
+		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
+	}
+
+	public IndexBufferObject(boolean isStatic, ByteBuffer data) {
+		empty = data.limit() == 0;
+		byteBuffer = data;
+		isDirect = true;
+		ownsBuffer = false;
+		buffer = byteBuffer.asShortBuffer();
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
 	}
@@ -72,11 +84,11 @@ public class IndexBufferObject implements IndexData {
 	@Override
 	public void setIndices(short[] indices, int offset, int count) {
 		isDirty = true;
-		buffer.clear();
+		((Buffer) buffer).clear();
 		buffer.put(indices, offset, count);
-		buffer.flip();
-		byteBuffer.position(0);
-		byteBuffer.limit(count << 1);
+		((Buffer) buffer).flip();
+		((Buffer) byteBuffer).position(0);
+		((Buffer) byteBuffer).limit(count << 1);
 
 		if (isBound) {
 			LSystem.base().graphics().gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer,
@@ -89,13 +101,26 @@ public class IndexBufferObject implements IndexData {
 	public void setIndices(ShortBuffer indices) {
 		isDirty = true;
 		int pos = indices.position();
-		buffer.clear();
+		((Buffer) buffer).clear();
 		buffer.put(indices);
-		buffer.flip();
-		indices.position(pos);
-		byteBuffer.position(0);
-		byteBuffer.limit(buffer.limit() << 1);
+		((Buffer) buffer).flip();
+		((Buffer) indices).position(pos);
+		((Buffer) byteBuffer).position(0);
+		((Buffer) byteBuffer).limit(buffer.limit() << 1);
+		if (isBound) {
+			LSystem.base().graphics().gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer,
+					usage);
+			isDirty = false;
+		}
+	}
 
+	public void updateIndices(int targetOffset, short[] indices, int offset, int count) {
+		isDirty = true;
+		final int pos = byteBuffer.position();
+		((Buffer) byteBuffer).position(targetOffset * 2);
+		LSystem.base().support().copy(indices, offset, byteBuffer, count);
+		((Buffer) byteBuffer).position(pos);
+		((Buffer) buffer).position(0);
 		if (isBound) {
 			LSystem.base().graphics().gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer,
 					usage);
@@ -104,8 +129,8 @@ public class IndexBufferObject implements IndexData {
 	}
 
 	@Override
-	public ShortBuffer getBuffer() {
-		isDirty = true;
+	public ShortBuffer getBuffer(boolean dirty) {
+		isDirty |= dirty;
 		return buffer;
 	}
 
@@ -116,7 +141,7 @@ public class IndexBufferObject implements IndexData {
 		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
-			byteBuffer.limit(buffer.limit() * 2);
+			((Buffer)byteBuffer).limit(buffer.limit() * 2);
 			LSystem.base().graphics().gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer,
 					usage);
 			isDirty = false;
@@ -142,6 +167,8 @@ public class IndexBufferObject implements IndexData {
 		gl20.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		gl20.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
-		LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
+		if (ownsBuffer) {
+			LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
+		}
 	}
 }

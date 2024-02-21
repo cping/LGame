@@ -20,46 +20,66 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.opengl.VertexAttributes.Usage;
 
 public final class VertexAttribute {
+
+	public final boolean normalized;
 
 	public final int usage;
 
 	public final int numComponents;
 
-	public final boolean normalized;
-
-	public final int type;
+	public final int vertexType;
 
 	public int offset;
 
+	public int unit;
+
 	public String alias;
 
-	public int unit;
 	private final int usageIndex;
 
 	public VertexAttribute(int usage, int numComponents, String alias) {
 		this(usage, numComponents, alias, 0);
 	}
 
-	public VertexAttribute(int usage, int numComponents, String alias, int index) {
+	public VertexAttribute(int usage, int numComponents, String alias, int unit) {
 		this(usage, numComponents, usage == Usage.ColorPacked ? GL20.GL_UNSIGNED_BYTE : GL20.GL_FLOAT,
-				usage == Usage.ColorPacked, alias, index);
+				usage == Usage.ColorPacked, alias, unit);
 	}
 
-	private VertexAttribute(int usage, int numComponents, int type, boolean normalized, String alias) {
-		this(usage, numComponents, type, normalized, alias, 0);
+	public VertexAttribute(int usage, int numComponents, int vertexType, boolean normalized, String alias) {
+		this(usage, numComponents, vertexType, normalized, alias, 0);
 	}
 
-	private VertexAttribute(int usage, int numComponents, int type, boolean normalized, String alias, int index) {
+	public VertexAttribute(int usage, int numComponents, int vertexType, boolean normalized, String alias, int unit) {
 		this.usage = usage;
 		this.numComponents = numComponents;
-		this.type = type;
+		this.vertexType = vertexType;
 		this.normalized = normalized;
 		this.alias = alias;
-		this.unit = index;
+		this.unit = unit;
 		this.usageIndex = Integer.numberOfTrailingZeros(usage);
+	}
+
+	public VertexAttribute cpy() {
+		return new VertexAttribute(usage, numComponents, vertexType, normalized, alias, unit);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (!(obj instanceof VertexAttribute)) {
+			return false;
+		}
+		return equals((VertexAttribute) obj);
+	}
+
+	public boolean equals(final VertexAttribute other) {
+		return other != null && usage == other.usage && numComponents == other.numComponents
+				&& vertexType == other.vertexType && normalized == other.normalized && alias.equals(other.alias)
+				&& unit == other.unit;
 	}
 
 	public static VertexAttribute Position() {
@@ -74,16 +94,12 @@ public final class VertexAttribute {
 		return new VertexAttribute(Usage.Normal, 3, ShaderProgram.NORMAL_ATTRIBUTE);
 	}
 
-	public static VertexAttribute Color() {
-		return ColorPacked();
-	}
-
 	public static VertexAttribute ColorPacked() {
 		return new VertexAttribute(Usage.ColorPacked, 4, GL20.GL_UNSIGNED_BYTE, true, ShaderProgram.COLOR_ATTRIBUTE);
 	}
 
 	public static VertexAttribute ColorUnpacked() {
-		return new VertexAttribute(Usage.Color, 4, GL20.GL_FLOAT, false, ShaderProgram.COLOR_ATTRIBUTE);
+		return new VertexAttribute(Usage.ColorUnpacked, 4, GL20.GL_FLOAT, false, ShaderProgram.COLOR_ATTRIBUTE);
 	}
 
 	public static VertexAttribute Tangent() {
@@ -95,31 +111,33 @@ public final class VertexAttribute {
 	}
 
 	public static VertexAttribute BoneWeight(int unit) {
-		return new VertexAttribute(Usage.BoneWeight, 2, "a_boneWeight" + unit, unit);
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (!(obj instanceof VertexAttribute)) {
-			return false;
-		}
-		return equals((VertexAttribute) obj);
-	}
-
-	public boolean equals(final VertexAttribute other) {
-		return other != null && usage == other.usage && numComponents == other.numComponents
-				&& alias.equals(other.alias) && unit == other.unit;
+		return new VertexAttribute(Usage.BoneWeight, 2, ShaderProgram.BONEWEIGHT_ATTRIBUTE + unit, unit);
 	}
 
 	public int getKey() {
 		return (usageIndex << 8) + (unit & 0xFF);
 	}
 
+	public int getSizeInBytes() {
+		switch (vertexType) {
+		case GL20.GL_FLOAT:
+		case GL20.GL_FIXED:
+			return 4 * numComponents;
+		case GL20.GL_UNSIGNED_BYTE:
+		case GL20.GL_BYTE:
+			return numComponents;
+		case GL20.GL_UNSIGNED_SHORT:
+		case GL20.GL_SHORT:
+			return 2 * numComponents;
+		}
+		return 0;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = getKey();
-		result = 541 * result + numComponents;
-		result = 541 * result + alias.hashCode();
+		result = LSystem.unite(result, normalized);
+		result = LSystem.unite(result, alias.hashCode());
 		return result;
 	}
 }

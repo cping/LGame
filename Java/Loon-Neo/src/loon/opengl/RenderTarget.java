@@ -21,66 +21,104 @@
 package loon.opengl;
 
 import static loon.opengl.GL20.*;
+
 import loon.Graphics;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LTexture;
+import loon.canvas.Image;
+import loon.utils.GLUtils;
 
 public abstract class RenderTarget implements LRelease {
 
-	public static RenderTarget create(Graphics gfx, final LTexture tex) {
-		GL20 gl = gfx.gl;
-		final int fb = gl.glGenFramebuffer();
-		if (fb == 0) {
-			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+	static class TextureRenderTarget extends RenderTarget {
+
+		public TextureRenderTarget(Graphics gfx, LTexture texture) {
+			super(gfx, texture);
 		}
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
-		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex.getID(), 0);
-		gl.checkError("RenderTarget.create");
-		return new RenderTarget(gfx, tex) {
-			public int id() {
-				return fb;
-			}
 
-			public int width() {
-				return tex.pixelWidth();
-			}
+		@Override
+		public int width() {
+			return texture.pixelWidth();
+		}
 
-			public int height() {
-				return tex.pixelHeight();
-			}
+		@Override
+		public int height() {
+			return texture.pixelHeight();
+		}
 
-			public float xscale() {
-				return tex.pixelWidth() / tex.width();
-			}
+		@Override
+		public float xscale() {
+			return texture.pixelWidth() / texture.width();
+		}
 
-			public float yscale() {
-				return tex.pixelHeight() / tex.height();
-			}
+		@Override
+		public float yscale() {
+			return texture.pixelHeight() / texture.height();
+		}
 
-			public boolean flip() {
-				return true;
-			}
+		@Override
+		public boolean flip() {
+			return true;
+		}
 
-			@Override
-			public LTexture texture() {
-				return tex;
-			}
-		};
+		@Override
+		public LTexture texture() {
+			return texture;
+		}
+
+	}
+
+	public static RenderTarget create(Graphics gfx, final LTexture tex) {
+		return new TextureRenderTarget(gfx, tex);
 	}
 
 	public final Graphics gfx;
 
 	public final LTexture texture;
 
+	private int defaultFramebufferID;
+
+	private int frameBufferID;
+
+	private boolean disposed;
+
+	private boolean inited;
+
 	public RenderTarget(Graphics gfx, LTexture texture) {
 		this.gfx = gfx;
 		this.texture = texture;
+		this.frameBufferID = 0;
+		this.defaultFramebufferID = GLFrameBuffer.defaultFramebufferHandle;
+	}
+
+	protected void checkInit() {
+		if (!inited) {
+			createFrameBuffer();
+			inited = true;
+		}
+	}
+
+	protected void createFrameBuffer() {
+		GL20 gl = gfx.gl;
+		GLFrameBuffer.checkIOSdefaultFramebufferHandle(gl);
+		final int fb = gl.glGenFramebuffer();
+		if (fb == 0) {
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+		}
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
+		frameBufferID = fb;
+		if (texture != null) {
+			gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getID(), 0);
+		}
+		gl.checkError("RenderTarget.create");
+	}
+
+	public int id() {
+		return frameBufferID;
 	}
 
 	public abstract LTexture texture();
-
-	public abstract int id();
 
 	public abstract int width();
 
@@ -92,15 +130,60 @@ public abstract class RenderTarget implements LRelease {
 
 	public abstract boolean flip();
 
-	private boolean disposed;
+	public LTexture getTextureData() {
+		return getTextureData(true, true);
+	}
+
+	public LTexture getTextureData(boolean flip, boolean alpha) {
+		return getImageData(0, flip, alpha).texture();
+	}
+
+	public Image getImageData(int index, boolean flip, boolean alpha) {
+		if (texture() == null) {
+			return null;
+		}
+		checkInit();
+		final GL20 gl = gfx.gl;
+		final int nfb = gl.glGenFramebuffer();
+		if (nfb == 0) {
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+		}
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, nfb);
+		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture().getID(), 0);
+		boolean canRead = GLUtils.isFrameBufferCompleted(gl);
+		if (!canRead) {
+			return null;
+		}
+		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, width(), height(), flip, alpha);
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferID);
+		gl.glDeleteFramebuffer(nfb);
+		return image;
+	}
+
+	public void bindTexture(LTexture texture) {
+		if (texture() == null) {
+			return;
+		}
+		checkInit();
+		gfx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D,
+				texture().getID(), 0);
+	}
 
 	public void bind() {
-		gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, id());
-		gfx.gl.glViewport(0, 0, width(), height());
+		checkInit();
+		final GL20 g = gfx.gl;
+		g.glBindFramebuffer(GL_FRAMEBUFFER, id());
+		g.glViewport(0, 0, width(), height());
 	}
 
 	public void unbind() {
-		gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		if (inited) {
+			gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferID);
+		}
+	}
+
+	public int getDefaultFramebufferID() {
+		return defaultFramebufferID;
 	}
 
 	@Override
@@ -116,8 +199,11 @@ public abstract class RenderTarget implements LRelease {
 	@Override
 	public void close() {
 		if (!disposed) {
+			if (inited) {
+				gfx.gl.glDeleteFramebuffer(id());
+			}
 			disposed = true;
-			gfx.gl.glDeleteFramebuffer(id());
+			inited = false;
 		}
 	}
 

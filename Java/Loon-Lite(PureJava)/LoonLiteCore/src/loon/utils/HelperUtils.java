@@ -953,34 +953,26 @@ public class HelperUtils {
 		}
 		if (o instanceof Short) {
 			return ((Short) o).doubleValue();
-		}
-		if (o instanceof Integer) {
+		} else if (o instanceof Integer) {
 			return ((Integer) o).doubleValue();
-		}
-		if (o instanceof Long) {
+		} else if (o instanceof Long) {
 			return ((Long) o).doubleValue();
-		}
-		if (o instanceof Float) {
+		} else if (o instanceof Float) {
 			return ((Float) o).doubleValue();
-		}
-		if (o instanceof Double) {
+		} else if (o instanceof Double) {
 			return ((Double) o).doubleValue();
-		}
-		if (o instanceof Number) {
+		} else if (o instanceof Number) {
 			return ((Number) o).doubleValue();
-		}
-		if (o instanceof Boolean) {
+		} else if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue() ? 1 : 0;
-		}
-		if (o instanceof Character) {
+		} else if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
 			String ns = String.valueOf(vc);
 			if (MathUtils.isNan(ns)) {
 				return Float.valueOf(ns).doubleValue();
 			}
-		}
-		if (o instanceof String) {
+		} else if (o instanceof String) {
 			String v = (String) o;
 			if (MathUtils.isNan(v)) {
 				return Float.valueOf(v).doubleValue();
@@ -995,34 +987,26 @@ public class HelperUtils {
 		}
 		if (o instanceof Short) {
 			return ((Short) o).floatValue();
-		}
-		if (o instanceof Integer) {
+		} else if (o instanceof Integer) {
 			return ((Integer) o).floatValue();
-		}
-		if (o instanceof Long) {
+		} else if (o instanceof Long) {
 			return ((Long) o).floatValue();
-		}
-		if (o instanceof Float) {
+		} else if (o instanceof Float) {
 			return ((Float) o).floatValue();
-		}
-		if (o instanceof Double) {
+		} else if (o instanceof Double) {
 			return ((Double) o).floatValue();
-		}
-		if (o instanceof Number) {
+		} else if (o instanceof Number) {
 			return ((Number) o).floatValue();
-		}
-		if (o instanceof Boolean) {
+		} else if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue() ? 1 : 0;
-		}
-		if (o instanceof Character) {
+		} else if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
 			String ns = String.valueOf(vc);
 			if (MathUtils.isNan(ns)) {
 				return Float.valueOf(ns).floatValue();
 			}
-		}
-		if (o instanceof String) {
+		} else if (o instanceof String) {
 			String v = (String) o;
 			if (MathUtils.isNan(v)) {
 				return Float.valueOf(v).floatValue();
@@ -1037,34 +1021,26 @@ public class HelperUtils {
 		}
 		if (o instanceof Short) {
 			return ((Short) o).intValue();
-		}
-		if (o instanceof Integer) {
+		} else if (o instanceof Integer) {
 			return ((Integer) o).intValue();
-		}
-		if (o instanceof Long) {
+		} else if (o instanceof Long) {
 			return ((Long) o).intValue();
-		}
-		if (o instanceof Float) {
+		} else if (o instanceof Float) {
 			return ((Float) o).intValue();
-		}
-		if (o instanceof Double) {
+		} else if (o instanceof Double) {
 			return ((Double) o).intValue();
-		}
-		if (o instanceof Number) {
+		} else if (o instanceof Number) {
 			return ((Number) o).intValue();
-		}
-		if (o instanceof Boolean) {
+		} else if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue() ? 1 : 0;
-		}
-		if (o instanceof Character) {
+		} else if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
 			String ns = String.valueOf(vc);
 			if (MathUtils.isNan(ns)) {
 				return Float.valueOf(ns).intValue();
 			}
-		}
-		if (o instanceof String) {
+		} else if (o instanceof String) {
 			String v = (String) o;
 			if (MathUtils.isNan(v)) {
 				return Float.valueOf(v).intValue();
@@ -1079,34 +1055,26 @@ public class HelperUtils {
 		}
 		if (o instanceof Short) {
 			return ((Short) o).longValue();
-		}
-		if (o instanceof Integer) {
+		} else if (o instanceof Integer) {
 			return ((Integer) o).longValue();
-		}
-		if (o instanceof Long) {
+		} else if (o instanceof Long) {
 			return ((Long) o).longValue();
-		}
-		if (o instanceof Float) {
+		} else if (o instanceof Float) {
 			return ((Float) o).longValue();
-		}
-		if (o instanceof Double) {
+		} else if (o instanceof Double) {
 			return ((Double) o).longValue();
-		}
-		if (o instanceof Number) {
+		} else if (o instanceof Number) {
 			return ((Number) o).longValue();
-		}
-		if (o instanceof Boolean) {
+		} else if (o instanceof Boolean) {
 			return ((Boolean) o).booleanValue() ? 1 : 0;
-		}
-		if (o instanceof Character) {
+		} else if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
 			String ns = String.valueOf(vc);
 			if (MathUtils.isNan(ns)) {
 				return Float.valueOf(ns).longValue();
 			}
-		}
-		if (o instanceof String) {
+		} else if (o instanceof String) {
 			String v = (String) o;
 			if (MathUtils.isNan(v)) {
 				return Float.valueOf(v).longValue();
@@ -1121,31 +1089,23 @@ public class HelperUtils {
 		}
 		if (o instanceof Short) {
 			return String.valueOf(((Short) o).shortValue());
-		}
-		if (o instanceof Integer) {
+		} else if (o instanceof Integer) {
 			return String.valueOf(((Integer) o).intValue());
-		}
-		if (o instanceof Long) {
+		} else if (o instanceof Long) {
 			return String.valueOf(((Long) o).longValue());
-		}
-		if (o instanceof Float) {
+		} else if (o instanceof Float) {
 			return String.valueOf(((Float) o).floatValue());
-		}
-		if (o instanceof Double) {
+		} else if (o instanceof Double) {
 			return String.valueOf(((Double) o).doubleValue());
-		}
-		if (o instanceof Number) {
+		} else if (o instanceof Number) {
 			return String.valueOf(((Number) o).floatValue());
-		}
-		if (o instanceof Boolean) {
+		} else if (o instanceof Boolean) {
 			return String.valueOf(((Boolean) o).booleanValue());
-		}
-		if (o instanceof Character) {
+		} else if (o instanceof Character) {
 			Character v = (Character) o;
 			char vc = v.charValue();
 			return String.valueOf(vc);
-		}
-		if (o instanceof String) {
+		} else if (o instanceof String) {
 			String v = (String) o;
 			if (MathUtils.isNan(v)) {
 				if (v.indexOf('.') != -1) {

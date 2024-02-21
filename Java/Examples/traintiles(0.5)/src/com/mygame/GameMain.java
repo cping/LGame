@@ -20,10 +20,6 @@
  */
 package com.mygame;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import loon.BaseIO;
 import loon.LSystem;
 import loon.LTransition;
@@ -35,9 +31,8 @@ import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.ArrayByte;
 import loon.utils.ArrayByteReader;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 import loon.utils.timer.GameTime;
-
 
 public class GameMain extends DrawableScreen implements GameCore {
 
@@ -122,7 +117,7 @@ public class GameMain extends DrawableScreen implements GameCore {
 	}
 
 	public void draw(GLEx glex) {
-		if(!isOnLoadComplete()){
+		if (!isOnLoadComplete()) {
 			return;
 		}
 		if (this.buyDialogActive) {
@@ -236,14 +231,11 @@ public class GameMain extends DrawableScreen implements GameCore {
 		}
 	}
 
-	public final boolean LoadLevel(int level, RefObject<Integer> speed,
-			RefObject<java.util.ArrayList<Tile>> tiles,
-			RefObject<java.util.ArrayList<Tile>> caves,
-			RefObject<java.util.ArrayList<ScheduleItem>> schedule) {
+	public final boolean LoadLevel(int level, ObjRef<Integer> speed, ObjRef<java.util.ArrayList<Tile>> tiles,
+			ObjRef<java.util.ArrayList<Tile>> caves, ObjRef<java.util.ArrayList<ScheduleItem>> schedule) {
 		try {
-			ArrayByte bytes = BaseIO.loadArrayByte("assets/levels/level_"
-					+ level + ".lev");
-			ArrayByteReader reader  = new ArrayByteReader(bytes);
+			ArrayByte bytes = BaseIO.loadArrayByte("assets/levels/level_" + level + ".lev");
+			ArrayByteReader reader = new ArrayByteReader(bytes);
 			String record;
 			for (; (record = reader.readLine()) != null;) {
 
@@ -251,15 +243,15 @@ public class GameMain extends DrawableScreen implements GameCore {
 				if (tempVar.equals("t")) {
 					Tile tile = new Tile();
 					tile.InitWithString(record.substring(2));
-					tiles.argvalue.add(tile);
+					tiles.get().add(tile);
 				} else if (tempVar.equals("c")) {
 					Tile tile2 = new Tile();
 					tile2.InitWithString(record.substring(2));
-					caves.argvalue.add(tile2);
+					caves.get().add(tile2);
 				}
 
 				else if (tempVar.equals("s")) {
-					speed.argvalue = Integer.parseInt(record.substring(2));
+					speed.set(Integer.parseInt(record.substring(2)));
 
 				}
 
@@ -268,7 +260,7 @@ public class GameMain extends DrawableScreen implements GameCore {
 					int aCaveId = Integer.parseInt(strArray[0]);
 					int aTicks = Integer.parseInt(strArray[1]);
 					ScheduleItem item = new ScheduleItem(aCaveId, aTicks);
-					schedule.argvalue.add(item);
+					schedule.get().add(item);
 				}
 			}
 			reader.close();
@@ -332,8 +324,8 @@ public class GameMain extends DrawableScreen implements GameCore {
 			this.menuMusicVolume = 0f;
 
 		} else if (this.menuMusicVolume != this.menuMusicVolumeTarget) {
-			float num = ((this.menuMusicQuieter && (this.menuMusicVolumeTarget == 0.6f)) && (this.menuMusicVolume < 0.6f)) ? 0.01f
-					: 0.08f;
+			float num = ((this.menuMusicQuieter && (this.menuMusicVolumeTarget == 0.6f))
+					&& (this.menuMusicVolume < 0.6f)) ? 0.01f : 0.08f;
 			if (this.menuMusicVolume < this.menuMusicVolumeTarget) {
 				this.menuMusicVolume += num;
 				if (this.menuMusicVolume > this.menuMusicVolumeTarget) {
@@ -351,7 +343,6 @@ public class GameMain extends DrawableScreen implements GameCore {
 
 	@Override
 	public void draw(SpriteBatch batch) {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -373,31 +364,27 @@ public class GameMain extends DrawableScreen implements GameCore {
 
 	@Override
 	public void move(GameTouch e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void drag(GameTouch e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void pressed(GameKey e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void released(GameKey e) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public void update(GameTime gameTime) {
-		if(!isOnLoadComplete()){
+		if (!isOnLoadComplete()) {
 			return;
 		}
 		if (this.changingState) {
@@ -439,7 +426,6 @@ public class GameMain extends DrawableScreen implements GameCore {
 
 	@Override
 	public void showPurchaseDialog() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -449,21 +435,17 @@ public class GameMain extends DrawableScreen implements GameCore {
 
 	@Override
 	public void resize(int width, int height) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 }

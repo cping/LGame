@@ -36,7 +36,7 @@ public interface VertexData extends LRelease {
 
 	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count);
 
-	public FloatBuffer getBuffer();
+	public FloatBuffer getBuffer(boolean dirty);
 
 	public void bind(ShaderProgram shader);
 

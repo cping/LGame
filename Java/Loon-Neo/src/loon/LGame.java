@@ -88,7 +88,10 @@ public abstract class LGame implements LRelease {
 	protected static Platform _platform = null;
 
 	private boolean _stopGame = false;
+	
+	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
 
+	private final static int DEF_OTHER_CACHE_SIZE = 8;
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
@@ -139,16 +142,16 @@ public abstract class LGame implements LRelease {
 
 	public LGame(LSetting config, Platform plat) {
 		LGame._platform = plat;
-		this._mesh_all_pools = new TArray<Mesh>(128);
-		this._shader_all_pools = new TArray<ShaderProgram>(128);
-		this._framebuffer_all_pools = new TArray<GLFrameBuffer>(12);
-		this._texture_batch_pools = new IntMap<LTextureBatch>(12);
-		this._texture_mesh_pools = new ObjectMap<String, Mesh>(12);
-		this._texture_lazys = new ObjectMap<String, LTexture>(128);
-		this._texture_all_list = new TArray<LTexture>(128);
-		this._sprites_pools = new TArray<Sprites>(12);
-		this._desktop_pools = new TArray<Desktop>(12);
-		this._font_pools = new TArray<IFont>(12);
+		this._mesh_all_pools = new TArray<Mesh>(DEF_TEXTURE_CACHE_SIZE);
+		this._shader_all_pools = new TArray<ShaderProgram>(DEF_TEXTURE_CACHE_SIZE);
+		this._framebuffer_all_pools = new TArray<GLFrameBuffer>(DEF_TEXTURE_CACHE_SIZE);
+		this._texture_batch_pools = new IntMap<LTextureBatch>(DEF_TEXTURE_CACHE_SIZE);
+		this._texture_mesh_pools = new ObjectMap<String, Mesh>(DEF_TEXTURE_CACHE_SIZE);
+		this._texture_lazys = new ObjectMap<String, LTexture>(DEF_TEXTURE_CACHE_SIZE);
+		this._texture_all_list = new TArray<LTexture>(DEF_TEXTURE_CACHE_SIZE);
+		this._sprites_pools = new TArray<Sprites>(DEF_OTHER_CACHE_SIZE);
+		this._desktop_pools = new TArray<Desktop>(DEF_OTHER_CACHE_SIZE);
+		this._font_pools = new TArray<IFont>(DEF_OTHER_CACHE_SIZE);
 		if (config == null) {
 			config = new LSetting();
 		}

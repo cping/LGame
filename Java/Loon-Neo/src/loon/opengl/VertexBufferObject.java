@@ -44,16 +44,14 @@ public class VertexBufferObject implements VertexData {
 
 	public VertexBufferObject(boolean isStatic, int numVertices, VertexAttributes attributes) {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
-
 		ByteBuffer data = LSystem.base().support().newUnsafeByteBuffer(attributes.vertexSize * numVertices);
-		data.limit(0);
+		((Buffer) data).limit(0);
 		setBuffer(data, true, attributes);
 		setUsage(isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW);
 	}
 
 	protected VertexBufferObject(int usage, ByteBuffer data, boolean ownsBuffer, VertexAttributes attributes) {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
-
 		setBuffer(data, ownsBuffer, attributes);
 		setUsage(usage);
 	}
@@ -74,8 +72,8 @@ public class VertexBufferObject implements VertexData {
 	}
 
 	@Override
-	public FloatBuffer getBuffer() {
-		isDirty = true;
+	public FloatBuffer getBuffer(boolean dirty) {
+		isDirty |= dirty;
 		return buffer;
 	}
 
@@ -112,11 +110,14 @@ public class VertexBufferObject implements VertexData {
 		isDirty = true;
 		if (LSystem.base().support().isNative()) {
 			LSystem.base().support().copy(vertices, byteBuffer, offset, count);
-			buffer.position(0);
-			buffer.limit(count);
+			((Buffer) buffer).position(0);
+			((Buffer) buffer).limit(count);
 		} else {
-			buffer.clear();
-			buffer.put(vertices, offset, count).flip();
+			((Buffer) buffer).clear();
+			buffer.put(vertices, offset, count);
+			((Buffer) buffer).flip();
+			((Buffer) byteBuffer).position(0);
+			((Buffer) byteBuffer).limit(buffer.limit() << 2);
 		}
 		bufferChanged();
 	}
@@ -125,10 +126,10 @@ public class VertexBufferObject implements VertexData {
 	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count) {
 		isDirty = true;
 		final int pos = byteBuffer.position();
-		byteBuffer.position(targetOffset * 4);
+		((Buffer) byteBuffer).position(targetOffset * 4);
 		LSystem.base().support().copy(vertices, byteBuffer, sourceOffset, count);
-		byteBuffer.position(pos);
-		buffer.position(0);
+		((Buffer) byteBuffer).position(pos);
+		((Buffer) buffer).position(0);
 		bufferChanged();
 	}
 
@@ -168,7 +169,7 @@ public class VertexBufferObject implements VertexData {
 					continue;
 				}
 				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.vertexType, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 
@@ -180,7 +181,7 @@ public class VertexBufferObject implements VertexData {
 					continue;
 				}
 				shader.enableVertexAttribute(location);
-				shader.setVertexAttribute(location, attribute.numComponents, attribute.type, attribute.normalized,
+				shader.setVertexAttribute(location, attribute.numComponents, attribute.vertexType, attribute.normalized,
 						attributes.vertexSize, attribute.offset);
 			}
 		}

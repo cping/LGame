@@ -267,6 +267,37 @@ public class Field2D implements IArray, Config, LRelease {
 		return ((y2 - y1) / MathUtils.pow((x2 - x1), scale) * 1f) * MathUtils.pow((x - x1), scale) + y1;
 	}
 
+	public static int getSteps(int from, int to, int mapLength, boolean allowWrapping) {
+		int steps = to - from;
+		int distance = MathUtils.abs(steps);
+		if (allowWrapping && mapLength - distance < distance)
+			steps = (mapLength - distance) * ((steps < 0) ? 1 : -1);
+		return steps;
+	}
+
+	public static IntArray getStepsInRange(int from, int to, int mapLength, int range) {
+		final IntArray steps = new IntArray();
+		int step = to - from;
+		for (; MathUtils.abs(step) <= range;) {
+			steps.add(step);
+			step += (step < 0) ? -mapLength : mapLength;
+		}
+		step = (mapLength - MathUtils.abs(to - from)) * ((step < 0) ? 1 : -1);
+		for (; MathUtils.abs(step) <= range;) {
+			steps.add(step);
+			step += (step < 0) ? -mapLength : mapLength;
+		}
+		return steps;
+	}
+
+	public static int getDistance(int from, int to, int mapLength, boolean allow) {
+		int distance = MathUtils.abs(to - from);
+		if (allow) {
+			distance = MathUtils.min(distance, mapLength - distance);
+		}
+		return distance;
+	}
+
 	public static final float rotation(float srcX, float srcY, float dstX, float dstY) {
 		int nx = MathUtils.floor(dstX - srcX);
 		int ny = MathUtils.floor(dstY - srcY);
@@ -1264,6 +1295,18 @@ public class Field2D implements IArray, Config, LRelease {
 			}
 		}
 		return this;
+	}
+
+	public int distanceFromEdgeTiles(int x, int y) {
+		return MathUtils.min(MathUtils.min(x, width - x), MathUtils.min(y, height - y));
+	}
+
+	public boolean onTilesMap(int x, int y) {
+		return (x >= 0 && y >= 0 && x < width && y < height);
+	}
+
+	public boolean onTilesEdge(int x, int y) {
+		return !(x != 0 && y != 0 && x != width - 1 && y != height - 1);
 	}
 
 	@Override

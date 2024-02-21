@@ -52,7 +52,9 @@ public class ShaderProgram implements LRelease {
 	public static final String TANGENT_ATTRIBUTE = "a_tangent";
 
 	public static final String BINORMAL_ATTRIBUTE = "a_binormal";
-
+	
+	public static final String BONEWEIGHT_ATTRIBUTE = "a_boneWeight";
+	
 	public static boolean pedantic = true;
 
 	private String log = LSystem.EMPTY;
@@ -656,39 +658,43 @@ public class ShaderProgram implements LRelease {
 
 		if (gl instanceof GLExt) {
 
-			IntBuffer params = LSystem.base().support().newIntBuffer(1);
-			IntBuffer type = LSystem.base().support().newIntBuffer(1);
+			final IntBuffer params = LSystem.base().support().newIntBuffer(1);
+			final IntBuffer type = LSystem.base().support().newIntBuffer(1);
 
-			params.clear();
+			((Buffer)params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params);
 			int numAttributes = params.get(0);
 
-			attributeNames = new String[numAttributes];
+			if (attributeNames == null || attributeNames.length != numAttributes) {
+				attributeNames = new String[numAttributes];
+			}
 
 			GLExt ext = (GLExt) gl;
 
 			for (int i = 0; i < numAttributes; i++) {
-				params.clear();
+				((Buffer)params).clear();
 				params.put(0, 1);
-				type.clear();
+				((Buffer)type).clear();
 				String name = ext.glGetActiveAttrib(programId, i, params, type);
-				int location = gl.glGetAttribLocation(programId, name);
+				final int location = gl.glGetAttribLocation(programId, name);
 				attributes.put(name, location);
 				attributeTypes.put(name, type.get(0));
 				attributeSizes.put(name, params.get(0));
 				attributeNames[i] = name;
 			}
 
-			params.clear();
+			((Buffer)params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params);
 			int numUniforms = params.get(0);
 
-			uniformNames = new String[numUniforms];
+			if (uniformNames == null || uniformNames.length != numUniforms) {
+				uniformNames = new String[numUniforms];
+			}
 
 			for (int i = 0; i < numUniforms; i++) {
-				params.clear();
+				((Buffer)params).clear();
 				params.put(0, 1);
-				type.clear();
+				((Buffer)type).clear();
 				String name = ext.glGetActiveUniform(programId, i, params, type);
 				int location = gl.glGetUniformLocation(programId, name);
 				uniforms.put(name, location);
@@ -697,16 +703,20 @@ public class ShaderProgram implements LRelease {
 				uniformNames[i] = name;
 			}
 		} else {
-
+			
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params, 0);
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, params, 1);
 			int numAttributes = params[0];
 			int maxAttributeLength = params[1];
-			namebytes = new byte[maxAttributeLength];
-			attributeNames = new String[numAttributes];
+			if (namebytes == null || namebytes.length != maxAttributeLength) {
+				namebytes = new byte[maxAttributeLength];
+			}
+			if (attributeNames == null || attributeNames.length != numAttributes) {
+				attributeNames = new String[numAttributes];
+			}
 			for (int i = 0; i < numAttributes; i++) {
 				gl.glGetActiveAttrib(programId, i, maxAttributeLength, length, 0, size, 0, type, 0, namebytes, 0);
-				String name = new String(namebytes, 0, length[0]);
+				final String name = new String(namebytes, 0, length[0]);
 				attributes.put(name, gl.glGetAttribLocation(programId, name));
 				attributeTypes.put(name, type[0]);
 				attributeSizes.put(name, params[0]);
@@ -714,13 +724,17 @@ public class ShaderProgram implements LRelease {
 			}
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params, 0);
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH, params, 1);
-			int numUniforms = params[0];
-			int maxUniformLength = params[1];
-			namebytes = new byte[maxUniformLength];
-			uniformNames = new String[numUniforms];
+			final int numUniforms = params[0];
+			final int maxUniformLength = params[1];
+			if (namebytes == null || namebytes.length != maxUniformLength) {
+				namebytes = new byte[maxUniformLength];
+			}
+			if (uniformNames == null || uniformNames.length != numUniforms) {
+				uniformNames = new String[numUniforms];
+			}
 			for (int i = 0; i < numUniforms; i++) {
 				gl.glGetActiveUniform(programId, i, maxUniformLength, length, 0, size, 0, type, 0, namebytes, 0);
-				String name = new String(namebytes, 0, length[0]);
+				final String name = new String(namebytes, 0, length[0]);
 				uniforms.put(name, gl.glGetUniformLocation(programId, name));
 				uniformTypes.put(name, type[0]);
 				uniformSizes.put(name, params[0]);

@@ -1,6 +1,6 @@
 ﻿package com.mygame;
 
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public interface GameCore {
 	void changeState(EStates id);
@@ -41,10 +41,10 @@ public interface GameCore {
 
 	void loadAllStates();
 
-	boolean LoadLevel(int level, RefObject<Integer> speed,
-			RefObject<java.util.ArrayList<Tile>> tiles,
-			RefObject<java.util.ArrayList<Tile>> caves,
-			RefObject<java.util.ArrayList<ScheduleItem>> schedule);
+	boolean LoadLevel(int level, ObjRef<Integer> speed,
+			ObjRef<java.util.ArrayList<Tile>> tiles,
+			ObjRef<java.util.ArrayList<Tile>> caves,
+			ObjRef<java.util.ArrayList<ScheduleItem>> schedule);
 
 	void setMenuMusicQuieter(boolean quiet);
 

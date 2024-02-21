@@ -20,6 +20,7 @@
  */
 package loon.opengl;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
@@ -45,8 +46,8 @@ public class IndexArray implements IndexData {
 		}
 		byteBuffer = LSystem.base().support().newUnsafeByteBuffer(maxIndices * 2);
 		buffer = byteBuffer.asShortBuffer();
-		buffer.flip();
-		byteBuffer.flip();
+		((Buffer) buffer).flip();
+		((Buffer) byteBuffer).flip();
 	}
 
 	@Override
@@ -71,17 +72,25 @@ public class IndexArray implements IndexData {
 	@Override
 	public void setIndices(ShortBuffer indices) {
 		int pos = indices.position();
-		buffer.clear();
-		buffer.limit(indices.remaining());
+		((Buffer) buffer).clear();
+		((Buffer) buffer).limit(indices.remaining());
 		buffer.put(indices);
-		buffer.flip();
-		indices.position(pos);
-		byteBuffer.position(0);
-		byteBuffer.limit(buffer.limit() << 1);
+		((Buffer) buffer).flip();
+		((Buffer) indices).position(pos);
+		((Buffer) byteBuffer).position(0);
+		((Buffer) byteBuffer).limit(buffer.limit() << 1);
 	}
 
 	@Override
-	public ShortBuffer getBuffer() {
+	public void updateIndices(int targetOffset, short[] indices, int offset, int count) {
+		final int pos = byteBuffer.position();
+		((Buffer) byteBuffer).position(targetOffset * 2);
+		LSystem.base().support().copy(indices, offset, byteBuffer, count);
+		((Buffer) byteBuffer).position(pos);
+	}
+
+	@Override
+	public ShortBuffer getBuffer(boolean dirty) {
 		return buffer;
 	}
 
