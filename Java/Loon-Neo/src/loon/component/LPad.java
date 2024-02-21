@@ -108,21 +108,6 @@ public class LPad extends LComponent {
 		return scale_pad;
 	}
 
-	void freeClick() {
-		if (limitClick) {
-			lockedKey.release();
-		}
-		this.isLeft = false;
-		this.isRight = false;
-		this.isDown = false;
-		this.isUp = false;
-		this.isClick = false;
-		if (listener != null) {
-			listener.other();
-		}
-		this.lastDir = -1;
-	}
-
 	@Override
 	protected void processTouchReleased() {
 		freeClick();
@@ -154,6 +139,7 @@ public class LPad extends LComponent {
 			return;
 		}
 		try {
+			cancel();
 			if (MathUtils.abs(x) > MathUtils.abs(y)) {
 				if (x > 0) {
 					this.isRight = true;
@@ -202,6 +188,26 @@ public class LPad extends LComponent {
 		} catch (Throwable t) {
 			LSystem.error("LPad click exception", t);
 		}
+	}
+
+	public LPad cancel() {
+		if (listener != null) {
+			listener.other();
+		}
+		this.isLeft = false;
+		this.isRight = false;
+		this.isDown = false;
+		this.isUp = false;
+		this.isClick = false;
+		return this;
+	}
+
+	private void freeClick() {
+		if (limitClick) {
+			lockedKey.release();
+		}
+		this.cancel();
+		this.lastDir = -1;
 	}
 
 	@Override

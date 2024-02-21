@@ -56,6 +56,10 @@ import loon.LTexture.Format;
  */
 public class FrameBuffer extends GLFrameBuffer {
 
+	public static FrameBuffer createEmptyFrameBuffer(int width, int height) {
+		return new FrameBuffer(width, height, false, false, false);
+	}
+
 	FrameBuffer() {
 	}
 
@@ -80,7 +84,16 @@ public class FrameBuffer extends GLFrameBuffer {
 	}
 
 	public FrameBuffer(int width, int height, int glFormat, int glType, boolean hasDepth, boolean hasStencil) {
-		FrameBufferBuilder frameBufferBuilder = new FrameBufferBuilder(width, height);
+		this(width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth, hasStencil, true);
+	}
+
+	public FrameBuffer(int width, int height, boolean hasDepth, boolean hasStencil, boolean created) {
+		this(width, height, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, hasDepth, hasStencil, created);
+	}
+
+	public FrameBuffer(int width, int height, int glFormat, int glType, boolean hasDepth, boolean hasStencil,
+			boolean created) {
+		FrameBufferBuilder frameBufferBuilder = new FrameBufferBuilder(width, height, created);
 		frameBufferBuilder.addBasicColorTextureAttachment(glFormat, glType);
 		if (hasDepth) {
 			frameBufferBuilder.addBasicDepthRenderBuffer();
@@ -94,7 +107,11 @@ public class FrameBuffer extends GLFrameBuffer {
 
 	@Override
 	protected LTexture createTexture(FrameBufferTextureAttachmentSpec attachmentSpec) {
-		return LTexture.createTexture(bufferBuilder.width, bufferBuilder.height, Format.LINEAR);
+		boolean webGLDepth = attachmentSpec.isDepth && LSystem.base().isHTML5();
+		if (!webGLDepth) {
+			return LTexture.createTexture(bufferBuilder.width, bufferBuilder.height, Format.LINEAR);
+		}
+		return LTexture.createTexture(bufferBuilder.width, bufferBuilder.height, Format.NEAREST);
 	}
 
 	@Override

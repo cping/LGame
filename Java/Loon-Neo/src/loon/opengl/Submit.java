@@ -141,7 +141,14 @@ public class Submit {
 		}
 		mesh.setVertices(vertices, 0, vertexIdx);
 		mesh.setIndices(indices, 0, indicesIdx);
+		final ShortBuffer buffer = mesh.getIndicesBuffer(false);
+		final int oldPosition = buffer.position();
+		final int oldLimit = buffer.limit();
+		((Buffer) buffer).position(0);
+		((Buffer) buffer).limit(countInBatch);
 		mesh.render(shader, glType, 0, countInBatch);
+		((Buffer) buffer).position(oldPosition);
+		((Buffer) buffer).limit(oldLimit);
 		if (!running) {
 			shader.glUseProgramUnBind();
 		} else if (stop_main_readering) {

@@ -44,8 +44,8 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	public static class FrameBufferBuilder extends GLFrameBufferBuilder<FrameBuffer> {
-		public FrameBufferBuilder(int width, int height) {
-			super(width, height);
+		public FrameBufferBuilder(int width, int height, boolean created) {
+			super(width, height, created);
 		}
 
 		@Override
@@ -186,13 +186,21 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	protected void build() {
-		GL20 gl = LSystem.base().graphics().gl;
+		build(LSystem.base().graphics().gl);
+	}
+
+	protected void build(GL20 gl) {
+
 		checkIOSdefaultFramebufferHandle(gl);
 		framebufferHandle = gl.glGenFramebuffer();
-		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
+		if (framebufferHandle == 0) {
+			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
+		}
 
-		int width = bufferBuilder.width;
-		int height = bufferBuilder.height;
+		gl.glBindFramebuffer(GL_FRAMEBUFFER, framebufferHandle);
+
+		final int width = bufferBuilder.width;
+		final int height = bufferBuilder.height;
 
 		if (bufferBuilder.hasDepthRenderBuffer) {
 			depthbufferHandle = gl.glGenRenderbuffer();
@@ -208,12 +216,14 @@ public abstract class GLFrameBuffer implements LRelease {
 					height);
 		}
 
-		LTexture texture = createTexture(
-				(FrameBufferTextureAttachmentSpec) bufferBuilder.textureAttachmentSpecs.first());
-		textureAttachments.add(texture);
-		GLUtils.bindTexture(gl, texture.getID());
+		if (bufferBuilder.makeCacheTexture) {
+			final LTexture texture = createTexture(
+					(FrameBufferTextureAttachmentSpec) bufferBuilder.textureAttachmentSpecs.first());
+			textureAttachments.add(texture);
+			GLUtils.bindTexture(gl, texture.getID());
 
-		attachFrameBufferColorTexture(textureAttachments.first());
+			attachFrameBufferColorTexture(textureAttachments.first());
+		}
 
 		if (bufferBuilder.hasDepthRenderBuffer) {
 			gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER,
@@ -225,97 +235,98 @@ public abstract class GLFrameBuffer implements LRelease {
 					stencilbufferHandle);
 		}
 
-		gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
-		for (LTexture tex : textureAttachments) {
-			GLUtils.bindTexture(gl, tex);
-		}
+		final boolean skip = !(bufferBuilder.hasDepthRenderBuffer && bufferBuilder.hasStencilRenderBuffer
+				&& bufferBuilder.hasDepthRenderBuffer && bufferBuilder.hasStencilRenderBuffer
+				&& bufferBuilder.makeCacheTexture);
 
-		int result = gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER);
-
-		if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED && bufferBuilder.hasDepthRenderBuffer
-				&& bufferBuilder.hasStencilRenderBuffer) {
-			if (bufferBuilder.hasDepthRenderBuffer) {
-				gl.glDeleteRenderbuffer(depthbufferHandle);
-				depthbufferHandle = 0;
-			}
-			if (bufferBuilder.hasStencilRenderBuffer) {
-				gl.glDeleteRenderbuffer(stencilbufferHandle);
-				stencilbufferHandle = 0;
-			}
-
-			depthStencilPackedBufferHandle = gl.glGenRenderbuffer();
-			hasDepthStencilPackedBuffer = true;
-			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);
-			gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, width, height);
+		if (!skip) {
 			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
-
-			gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER,
-					depthStencilPackedBufferHandle);
-			gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_STENCIL_ATTACHMENT, GL20.GL_RENDERBUFFER,
-					depthStencilPackedBufferHandle);
-			result = gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER);
-		}
-
-		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
-
-		if (result != GL20.GL_FRAMEBUFFER_COMPLETE) {
 			for (LTexture tex : textureAttachments) {
-				disposeColorTexture(tex);
+				GLUtils.bindTexture(gl, tex);
 			}
 
-			if (hasDepthStencilPackedBuffer) {
-				gl.glDeleteBuffer(depthStencilPackedBufferHandle);
-			} else {
-				if (bufferBuilder.hasDepthRenderBuffer)
+			int result = gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER);
+
+			if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED && bufferBuilder.hasDepthRenderBuffer
+					&& bufferBuilder.hasStencilRenderBuffer) {
+				if (bufferBuilder.hasDepthRenderBuffer) {
 					gl.glDeleteRenderbuffer(depthbufferHandle);
-				if (bufferBuilder.hasStencilRenderBuffer)
+					depthbufferHandle = 0;
+				}
+				if (bufferBuilder.hasStencilRenderBuffer) {
 					gl.glDeleteRenderbuffer(stencilbufferHandle);
+					stencilbufferHandle = 0;
+				}
+
+				depthStencilPackedBufferHandle = gl.glGenRenderbuffer();
+				hasDepthStencilPackedBuffer = true;
+				gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, depthStencilPackedBufferHandle);
+				gl.glRenderbufferStorage(GL20.GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, width, height);
+				gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);
+
+				gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_DEPTH_ATTACHMENT, GL20.GL_RENDERBUFFER,
+						depthStencilPackedBufferHandle);
+				gl.glFramebufferRenderbuffer(GL20.GL_FRAMEBUFFER, GL20.GL_STENCIL_ATTACHMENT, GL20.GL_RENDERBUFFER,
+						depthStencilPackedBufferHandle);
+				result = gl.glCheckFramebufferStatus(GL20.GL_FRAMEBUFFER);
 			}
 
-			gl.glDeleteFramebuffer(framebufferHandle);
+			gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
 
-			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT)
-				throw new LSysException("Frame buffer couldn't be constructed: incomplete attachment");
-			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS)
-				throw new LSysException("Frame buffer couldn't be constructed: incomplete dimensions");
-			if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT)
-				throw new LSysException("Frame buffer couldn't be constructed: missing attachment");
-			if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED)
-				throw new LSysException("Frame buffer couldn't be constructed: unsupported combination of formats");
-			throw new LSysException("Frame buffer couldn't be constructed: unknown error " + result);
+			if (result != GL20.GL_FRAMEBUFFER_COMPLETE) {
+				for (LTexture tex : textureAttachments) {
+					disposeColorTexture(tex);
+				}
+
+				if (hasDepthStencilPackedBuffer) {
+					gl.glDeleteBuffer(depthStencilPackedBufferHandle);
+				} else {
+					if (bufferBuilder.hasDepthRenderBuffer) {
+						gl.glDeleteRenderbuffer(depthbufferHandle);
+					}
+					if (bufferBuilder.hasStencilRenderBuffer) {
+						gl.glDeleteRenderbuffer(stencilbufferHandle);
+					}
+				}
+
+				gl.glDeleteFramebuffer(framebufferHandle);
+
+				if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT) {
+					throw new LSysException("Frame buffer couldn't be constructed: incomplete attachment");
+				}
+				if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS) {
+					throw new LSysException("Frame buffer couldn't be constructed: incomplete dimensions");
+				}
+				if (result == GL20.GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
+					throw new LSysException("Frame buffer couldn't be constructed: missing attachment");
+				}
+				if (result == GL20.GL_FRAMEBUFFER_UNSUPPORTED) {
+					throw new LSysException("Frame buffer couldn't be constructed: unsupported combination of formats");
+				}
+				throw new LSysException("Frame buffer couldn't be constructed: unknown error " + result);
+			}
 		}
-
 		addManagedFrameBuffer(this);
 	}
 
 	@Override
 	public void close() {
-		GL20 gl = LSystem.base().graphics().gl;
-
+		final GL20 gl = LSystem.base().graphics().gl;
 		for (LTexture texture : textureAttachments) {
 			disposeColorTexture(texture);
 		}
-
 		if (hasDepthStencilPackedBuffer) {
 			gl.glDeleteRenderbuffer(depthStencilPackedBufferHandle);
 		} else {
-			if (bufferBuilder.hasDepthRenderBuffer)
+			if (bufferBuilder.hasDepthRenderBuffer) {
 				gl.glDeleteRenderbuffer(depthbufferHandle);
-			if (bufferBuilder.hasStencilRenderBuffer)
+			}
+			if (bufferBuilder.hasStencilRenderBuffer) {
 				gl.glDeleteRenderbuffer(stencilbufferHandle);
+			}
 		}
-
 		gl.glDeleteFramebuffer(framebufferHandle);
-
 		LSystem.removeFrameBuffer(this);
-	}
-
-	public void bind(GL20 gl) {
-		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, framebufferHandle);
-	}
-
-	public void unbind(GL20 gl) {
-		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, defaultFramebufferHandle);
 	}
 
 	public void bind() {
@@ -324,6 +335,40 @@ public abstract class GLFrameBuffer implements LRelease {
 
 	public void unbind() {
 		unbind(LSystem.base().graphics().gl);
+	}
+
+	public void bind(GL20 gl) {
+		bind(gl, framebufferHandle);
+	}
+
+	public void unbind(GL20 gl) {
+		unbind(gl, defaultFramebufferHandle);
+	}
+
+	public void bind(GL20 gl, int id) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, id);
+	}
+
+	public void unbind(GL20 gl, int id) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, id);
+	}
+
+	public void bind(GL20 gl, int w, int h) {
+		bind(gl, framebufferHandle, w, h);
+	}
+
+	public void bind(GL20 gl, int id, int w, int h) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, id);
+		gl.glViewport(0, 0, w, h);
+	}
+
+	public void unbind(GL20 gl, int w, int h) {
+		unbind(gl, framebufferHandle, w, h);
+	}
+
+	public void unbind(GL20 gl, int id, int w, int h) {
+		gl.glBindFramebuffer(GL20.GL_FRAMEBUFFER, id);
+		gl.glViewport(0, 0, w, h);
 	}
 
 	public GLFrameBuffer lock() {
@@ -407,6 +452,10 @@ public abstract class GLFrameBuffer implements LRelease {
 		return bufferBuilder.width;
 	}
 
+	public final static int getSystemDefaultFramebufferHandle() {
+		return defaultFramebufferHandle;
+	}
+
 	private void addManagedFrameBuffer(GLFrameBuffer frameBuffer) {
 		LSystem.addFrameBuffer(frameBuffer);
 	}
@@ -464,10 +513,12 @@ public abstract class GLFrameBuffer implements LRelease {
 
 		protected boolean hasStencilRenderBuffer;
 		protected boolean hasDepthRenderBuffer;
+		protected boolean makeCacheTexture;
 
-		public GLFrameBufferBuilder(int width, int height) {
+		public GLFrameBufferBuilder(int width, int height, boolean created) {
 			this.width = width;
 			this.height = height;
+			this.makeCacheTexture = created;
 		}
 
 		public GLFrameBufferBuilder<U> addColorTextureAttachment(int internalFormat, int format, int type) {

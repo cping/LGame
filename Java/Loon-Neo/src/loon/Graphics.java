@@ -29,6 +29,7 @@ import loon.geom.Dimension;
 import loon.geom.FloatValue;
 import loon.geom.Matrix4;
 import loon.opengl.GL20;
+import loon.opengl.GLFrameBuffer;
 import loon.opengl.RenderTarget;
 import loon.utils.Array;
 import loon.utils.GLUtils;
@@ -230,7 +231,7 @@ public abstract class Graphics {
 	}
 
 	protected int defaultFramebuffer() {
-		return 0;
+		return GLFrameBuffer.getSystemDefaultFramebufferHandle();
 	}
 
 	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
