@@ -22,19 +22,23 @@ package org.test;
 
 import loon.Counter;
 import loon.Stage;
-import loon.utils.timer.LTimer;
 
 public class TaskTest extends Stage {
 
 	@Override
 	public void create() {
-
 		final Counter conter = newCounter();
-		//提交一个时间任务,间隔1秒,循环三次
-		LTimer.postTask(() -> {
+		//提交一个计时任务,1秒执行一次,循环7次结束
+		postTask(() -> {
 			println(conter.getValue());
 			conter.increment();
-		}, 1f, 3);
+			//如果执行时间大于6s显示超时
+		}, 1f, 7).onTimeOutS(() -> {
+			println("> 6s");
+			//执行完毕调用此函数
+		}, 6f).onComplete(() -> {
+			println("over");
+		});
 
 	}
 

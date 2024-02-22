@@ -172,6 +172,16 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return _loop_timer.getTimeOut();
 	}
 
+	public Interval dispose(LRelease r) {
+		_loop_timer.dispose(r);
+		return this;
+	}
+
+	public Interval onComplete(LRelease r) {
+		_loop_timer.onComplete(r);
+		return this;
+	}
+
 	public String getName() {
 		return _loop_timer.getName();
 	}

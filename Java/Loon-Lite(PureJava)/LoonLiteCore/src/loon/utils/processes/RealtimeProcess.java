@@ -55,7 +55,9 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	private EventActionN _timeOutEvent;
 
-	private final static String getProcessName() {
+	private LRelease _released;
+
+	protected final static String getProcessName() {
 		return "Process" + (GLOBAL_ID++);
 	}
 
@@ -239,6 +241,21 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	public abstract void run(LTimerContext time);
 
+	private void onCompleted() {
+		if (_released != null) {
+			_released.close();
+		}
+	}
+
+	public RealtimeProcess dispose(LRelease r) {
+		this._released = r;
+		return this;
+	}
+
+	public RealtimeProcess onComplete(LRelease r) {
+		return dispose(r);
+	}
+
 	@Override
 	public void kill() {
 		this.isDead = true;
@@ -269,6 +286,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		if (this._processHost != null) {
 			this._processHost.processFinished(this.id, this);
 		}
+		onCompleted();
 	}
 
 	@Override

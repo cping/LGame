@@ -20,41 +20,20 @@
  */
 package loon.utils.processes;
 
-import loon.LRelease;
 import loon.events.ActionUpdate;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
-import loon.utils.LIterator;
-import loon.utils.SortedList;
-import loon.utils.TimeUtils;
-import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
-public class WaitProcess implements GameProcess, LRelease {
+public class WaitProcess extends RealtimeProcess {
 
-	protected boolean isDead = false, isAutoKill = true;
-
-	protected final String id;
-
-	private int _priority;
-
-	private LTimer _timer;
-
-	private GameProcessType _processType = GameProcessType.Other;
-
-	private RealtimeProcessHost _processHost;
-
-	private SortedList<GameProcess> _processesToFireWhenFinished;
+	protected boolean isAutoKill = true;
 
 	private Updateable _update;
 
 	private BooleanValue _value = new BooleanValue(false);
 
 	private RealtimeProcess _waitProcess;
-
-	private final static String getProcessName() {
-		return "Process" + TimeUtils.millis();
-	}
 
 	public WaitProcess(Updateable update) {
 		this(getProcessName(), 60, update);
@@ -69,12 +48,31 @@ public class WaitProcess implements GameProcess, LRelease {
 	}
 
 	public WaitProcess(String id, long delay, GameProcessType pt, Updateable update) {
-		this._timer = new LTimer(delay);
-		this.isDead = false;
+		super(id, delay);
+		this.setProcessType(pt);
 		this.isAutoKill = true;
-		this.id = id;
-		this._processType = pt;
 		this._update = update;
+	}
+
+	@Override
+	public void run(LTimerContext time) {
+		if (_update != null) {
+			final boolean existWait = isDeffered();
+			if (!existWait) {
+				if (_update instanceof ActionUpdate) {
+					ActionUpdate update = (ActionUpdate) _update;
+					update.action(this);
+					if (update.completed()) {
+						kill();
+					}
+				} else {
+					_update.action(this);
+					if (isAutoKill) {
+						kill();
+					}
+				}
+			}
+		}
 	}
 
 	public boolean completed() {
@@ -83,19 +81,6 @@ public class WaitProcess implements GameProcess, LRelease {
 
 	public BooleanValue get() {
 		return _value;
-	}
-
-	@Override
-	public void setProcessHost(RealtimeProcessHost processHost) {
-		this._processHost = processHost;
-	}
-
-	@Override
-	public void fireThisWhenFinished(GameProcess realtimeProcess) {
-		if (this._processesToFireWhenFinished == null) {
-			this._processesToFireWhenFinished = new SortedList<GameProcess>();
-		}
-		this._processesToFireWhenFinished.add(realtimeProcess);
 	}
 
 	public WaitProcess wait(RealtimeProcess process) {
@@ -111,44 +96,6 @@ public class WaitProcess implements GameProcess, LRelease {
 		return _waitProcess != null && !_waitProcess.isDead;
 	}
 
-	@Override
-	public void tick(LTimerContext time) {
-		if (_timer.action(time)) {
-			if (_update != null) {
-				final boolean existWait = isDeffered();
-				if (!existWait) {
-					if (_update instanceof ActionUpdate) {
-						ActionUpdate update = (ActionUpdate) _update;
-						update.action(this);
-						if (update.completed()) {
-							kill();
-						}
-					} else {
-						_update.action(this);
-						if (isAutoKill) {
-							kill();
-						}
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public void kill() {
-		this.isDead = true;
-	}
-
-	@Override
-	public boolean isDead() {
-		return this.isDead;
-	}
-
-	@Override
-	public String getId() {
-		return this.id;
-	}
-
 	public boolean isAutoKill() {
 		return isAutoKill;
 	}
@@ -159,43 +106,9 @@ public class WaitProcess implements GameProcess, LRelease {
 	}
 
 	@Override
-	public GameProcessType getProcessType() {
-		return this._processType;
-	}
-
-	@Override
-	public void setProcessType(GameProcessType pt) {
-		this._processType = pt;
-	}
-
-	public WaitProcess setPriority(int p) {
-		this._priority = p;
-		return this;
-	}
-
-	@Override
-	public int getPriority() {
-		return _priority;
-	}
-
-	@Override
 	public void finish() {
-		if (!this.isDead) {
-			kill();
-		}
-		if (this._processesToFireWhenFinished != null) {
-			for (LIterator<GameProcess> it = this._processesToFireWhenFinished.listIterator(); it.hasNext();) {
-				RealtimeProcessManager.get().addProcess(it.next());
-			}
-		}
-		if (this._processHost != null) {
-			this._processHost.processFinished(this.id, this);
-		}
+		super.finish();
 		_value.set(true);
 	}
 
-	@Override
-	public void close() {
-		finish();
-	}
 }

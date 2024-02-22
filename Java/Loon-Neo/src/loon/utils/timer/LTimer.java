@@ -668,6 +668,20 @@ public class LTimer implements LTimerListener, LRelease {
 		return 0l;
 	}
 
+	public LTimer onComplete(LRelease r) {
+		if (_process != null) {
+			_process.onComplete(r);
+		}
+		return this;
+	}
+
+	public LTimer dispose(LRelease r) {
+		if (_process != null) {
+			_process.dispose(r);
+		}
+		return this;
+	}
+
 	public boolean addListener(LTimerListener timerListener) {
 		if (_currentListeners == null) {
 			synchronized (LTimer.class) {
