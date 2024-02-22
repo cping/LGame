@@ -100,10 +100,6 @@ public abstract class RenderTarget implements LRelease {
 		}
 	}
 
-	public int id() {
-		return frameBuffer.getFramebufferHandle();
-	}
-
 	public abstract LTexture texture();
 
 	public abstract int width();
@@ -115,6 +111,11 @@ public abstract class RenderTarget implements LRelease {
 	public abstract float yscale();
 
 	public abstract boolean flip();
+
+	public int id() {
+		checkFrameBufferInit();
+		return frameBuffer.getFramebufferHandle();
+	}
 
 	public LTexture getTextureData() {
 		checkFrameBufferInit();
