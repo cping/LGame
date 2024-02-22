@@ -23,8 +23,11 @@ package loon.utils.processes;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.events.EventActionN;
 import loon.utils.LIterator;
+import loon.utils.MathUtils;
 import loon.utils.SortedList;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -36,6 +39,10 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	protected final String id;
 
+	private long _timeOutDelay;
+
+	private long _timeOutCount;
+
 	private int _priority;
 
 	private final LTimer _timer = new LTimer(LSystem.SECOND);
@@ -45,6 +52,8 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 	private RealtimeProcessHost _processHost;
 
 	private SortedList<GameProcess> _processesToFireWhenFinished;
+
+	private EventActionN _timeOutEvent;
 
 	private final static String getProcessName() {
 		return "Process" + (GLOBAL_ID++);
@@ -71,11 +80,12 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		this.id = id;
 		this._timer.setDelay(delay);
 		this._processType = pt;
+		this._timeOutDelay = -1;
 	}
 
 	@Override
-	public void setProcessHost(RealtimeProcessHost _processHost) {
-		this._processHost = _processHost;
+	public void setProcessHost(RealtimeProcessHost processHost) {
+		this._processHost = processHost;
 	}
 
 	@Override
@@ -91,6 +101,13 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		if (_timer.action(time)) {
 			run(time);
 		}
+		if (_timeOutDelay != -1) {
+			_timeOutCount += time.timeSinceLastUpdate;
+		}
+		if (isTimeOut() && _timeOutEvent != null) {
+			_timeOutEvent.update();
+			_timeOutCount = 0l;
+		}
 	}
 
 	public RealtimeProcess sleep(long delay) {
@@ -103,12 +120,68 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		return this;
 	}
 
+	public RealtimeProcess setDelayS(float sec) {
+		_timer.setDelayS(sec);
+		return this;
+	}
+
 	public long getDelay() {
 		return _timer.getDelay();
 	}
 
+	public float getDelayS() {
+		return _timer.getDelayS();
+	}
+
 	public long getCurrentTick() {
 		return _timer.getCurrentTick();
+	}
+
+	public boolean isTimeOut() {
+		if (_timeOutDelay == -1) {
+			return false;
+		}
+		return _timeOutCount > _timeOutDelay;
+	}
+
+	public EventActionN getTimeOutEvent() {
+		return this._timeOutEvent;
+	}
+
+	public RealtimeProcess onTimeOut(EventActionN e, long delay) {
+		setTimeOutEvent(e);
+		setTimeOut(delay);
+		return this;
+	}
+
+	public RealtimeProcess onTimeOutS(EventActionN e, float sec) {
+		setTimeOutEvent(e);
+		setTimeOutS(sec);
+		return this;
+	}
+
+	public RealtimeProcess setTimeOutEvent(EventActionN e) {
+		this._timeOutEvent = e;
+		return this;
+	}
+
+	public RealtimeProcess setTimeOut(long delay) {
+		this._timeOutDelay = MathUtils.max(0, delay);
+		return this;
+	}
+
+	public RealtimeProcess setTimeOutS(float sec) {
+		return setTimeOut(Duration.ofS(sec));
+	}
+
+	public long getTimeOut() {
+		return this._timeOutDelay;
+	}
+
+	public RealtimeProcess cancel() {
+		stop();
+		kill();
+		return this;
 	}
 
 	public RealtimeProcess pause() {
@@ -186,6 +259,8 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		if (!this.isDead) {
 			kill();
 		}
+		_timeOutDelay = -1l;
+		_timeOutCount = 0l;
 		if (this._processesToFireWhenFinished != null) {
 			for (LIterator<GameProcess> it = this._processesToFireWhenFinished.listIterator(); it.hasNext();) {
 				RealtimeProcessManager.get().addProcess(it.next());

@@ -1036,6 +1036,9 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addMesh(Mesh mesh) {
+		if(_mesh_all_pools.contains(mesh)) {
+			return;
+		}
 		_mesh_all_pools.add(mesh);
 	}
 
@@ -1052,6 +1055,9 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addShader(ShaderProgram shader) {
+		if(_shader_all_pools.contains(shader)) {
+			return;
+		}
 		_shader_all_pools.add(shader);
 	}
 
@@ -1068,6 +1074,9 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addFrameBuffer(GLFrameBuffer buffer) {
+		if(_framebuffer_all_pools.contains(buffer)) {
+			return;
+		}
 		_framebuffer_all_pools.add(buffer);
 	}
 

@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.events.ActionUpdate;
 import loon.events.EventAction;
+import loon.events.EventActionN;
 import loon.utils.HelperUtils;
 
 /**
@@ -106,6 +107,11 @@ public abstract class Interval implements ActionUpdate, LRelease {
 		return this;
 	}
 
+	public Interval cancel() {
+		_loop_timer.cancel();
+		return this;
+	}
+
 	public Interval pause() {
 		_loop_timer.pause();
 		return this;
@@ -136,6 +142,34 @@ public abstract class Interval implements ActionUpdate, LRelease {
 
 	public long getDelay() {
 		return _loop_timer.getDelay();
+	}
+
+	public boolean isTimeOut() {
+		return _loop_timer.isTimeOut();
+	}
+
+	public LTimer onTimeOut(EventActionN e, long delay) {
+		return _loop_timer.onTimeOut(e, delay);
+	}
+
+	public LTimer onTimeOutS(EventActionN e, float sec) {
+		return _loop_timer.onTimeOutS(e, sec);
+	}
+
+	public LTimer setTimeOutEvent(EventActionN e) {
+		return _loop_timer.setTimeOutEvent(e);
+	}
+
+	public LTimer setTimeOut(long delay) {
+		return _loop_timer.setTimeOut(delay);
+	}
+
+	public LTimer setTimeOutS(float sec) {
+		return _loop_timer.setTimeOutS(sec);
+	}
+
+	public long getTimeOut() {
+		return _loop_timer.getTimeOut();
 	}
 
 	public String getName() {

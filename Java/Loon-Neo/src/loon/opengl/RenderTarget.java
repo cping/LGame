@@ -20,14 +20,10 @@
  */
 package loon.opengl;
 
-import static loon.opengl.GL20.*;
-
 import loon.Graphics;
 import loon.LRelease;
-import loon.LSysException;
 import loon.LTexture;
 import loon.canvas.Image;
-import loon.utils.GLUtils;
 
 public abstract class RenderTarget implements LRelease {
 
@@ -77,9 +73,7 @@ public abstract class RenderTarget implements LRelease {
 
 	public final LTexture texture;
 
-	private int defaultFramebufferID;
-
-	private int frameBufferID;
+	private FrameBuffer frameBuffer;
 
 	private boolean disposed;
 
@@ -88,34 +82,26 @@ public abstract class RenderTarget implements LRelease {
 	public RenderTarget(Graphics gfx, LTexture texture) {
 		this.gfx = gfx;
 		this.texture = texture;
-		this.frameBufferID = 0;
-		this.defaultFramebufferID = GLFrameBuffer.defaultFramebufferHandle;
 	}
 
-	protected void checkInit() {
+	protected void checkFrameBufferInit() {
 		if (!inited) {
-			createFrameBuffer();
-			inited = true;
+			if (this.frameBuffer != null) {
+				this.frameBuffer.close();
+			}
+			final LTexture tex = texture();
+			if (tex == null) {
+				this.frameBuffer = FrameBuffer.createEmptyFrameBuffer(width(), height());
+			} else {
+				this.frameBuffer = new FrameBuffer(width(), height());
+				this.frameBuffer.attachFrameBufferColorTexture(tex);
+			}
+			this.inited = true;
 		}
-	}
-
-	protected void createFrameBuffer() {
-		GL20 gl = gfx.gl;
-		GLFrameBuffer.checkIOSdefaultFramebufferHandle(gl);
-		final int fb = gl.glGenFramebuffer();
-		if (fb == 0) {
-			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
-		}
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, fb);
-		frameBufferID = fb;
-		if (texture != null) {
-			gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getID(), 0);
-		}
-		gl.checkError("RenderTarget.create");
 	}
 
 	public int id() {
-		return frameBufferID;
+		return frameBuffer.getFramebufferHandle();
 	}
 
 	public abstract LTexture texture();
@@ -131,59 +117,39 @@ public abstract class RenderTarget implements LRelease {
 	public abstract boolean flip();
 
 	public LTexture getTextureData() {
-		return getTextureData(true, true);
+		checkFrameBufferInit();
+		return frameBuffer.getTextureData();
 	}
 
 	public LTexture getTextureData(boolean flip, boolean alpha) {
-		return getImageData(0, flip, alpha).texture();
+		checkFrameBufferInit();
+		return frameBuffer.getTextureData(flip, alpha);
 	}
 
 	public Image getImageData(int index, boolean flip, boolean alpha) {
-		if (texture() == null) {
-			return null;
-		}
-		checkInit();
-		final GL20 gl = gfx.gl;
-		final int nfb = gl.glGenFramebuffer();
-		if (nfb == 0) {
-			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
-		}
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, nfb);
-		gl.glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture().getID(), 0);
-		boolean canRead = GLUtils.isFrameBufferCompleted(gl);
-		if (!canRead) {
-			return null;
-		}
-		Image image = GLUtils.getFrameBuffeImage(gl, 0, 0, width(), height(), flip, alpha);
-		gl.glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferID);
-		gl.glDeleteFramebuffer(nfb);
-		return image;
+		checkFrameBufferInit();
+		return frameBuffer.getImageData(index, flip, alpha);
 	}
 
-	public void bindTexture(LTexture texture) {
-		if (texture() == null) {
-			return;
-		}
-		checkInit();
-		gfx.gl.glFramebufferTexture2D(GL20.GL_FRAMEBUFFER, GL20.GL_COLOR_ATTACHMENT0, GL20.GL_TEXTURE_2D,
-				texture().getID(), 0);
+	public int getDefaultFramebufferID() {
+		checkFrameBufferInit();
+		return frameBuffer.getFramebufferHandle();
+	}
+
+	public FrameBuffer getFrameBuffer() {
+		checkFrameBufferInit();
+		return frameBuffer;
 	}
 
 	public void bind() {
-		checkInit();
-		final GL20 g = gfx.gl;
-		g.glBindFramebuffer(GL_FRAMEBUFFER, id());
-		g.glViewport(0, 0, width(), height());
+		checkFrameBufferInit();
+		frameBuffer.bind(gfx.gl, id(), width(), height());
 	}
 
 	public void unbind() {
 		if (inited) {
-			gfx.gl.glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebufferID);
+			frameBuffer.unbind(gfx.gl);
 		}
-	}
-
-	public int getDefaultFramebufferID() {
-		return defaultFramebufferID;
 	}
 
 	@Override
@@ -200,7 +166,7 @@ public abstract class RenderTarget implements LRelease {
 	public void close() {
 		if (!disposed) {
 			if (inited) {
-				gfx.gl.glDeleteFramebuffer(id());
+				frameBuffer.close();
 			}
 			disposed = true;
 			inited = false;

@@ -42,8 +42,8 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 	}
 
 	private Vector2f orthoToIso(float x, float y) {
-		_mapLocation.x = (x - y) * map.getTileWidth() / 2 + _objectLocation.x;
-		_mapLocation.y = (x + y) * map.getTileHeight() / 2 + _objectLocation.y;
+		_mapLocation.x = (x - y) * map.getTileWidth() / 2f + _objectLocation.x;
+		_mapLocation.y = (x + y) * map.getTileHeight() / 2f + _objectLocation.y;
 		return _mapLocation.addSelf(map.getWidth() * map.getTileWidth() / 2f, 0);
 	}
 

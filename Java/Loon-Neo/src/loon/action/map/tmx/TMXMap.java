@@ -31,7 +31,9 @@ import loon.action.map.tmx.renderers.TMXMapRenderer;
 import loon.action.map.tmx.renderers.TMXOrthogonalMapRenderer;
 import loon.action.map.tmx.renderers.TMXStaggeredMapRenderer;
 import loon.canvas.LColor;
+import loon.geom.PointI;
 import loon.geom.Sized;
+import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -92,6 +94,8 @@ public class TMXMap implements Sized {
 	private int height;
 	private int tileWidth;
 	private int tileHeight;
+	private int widthInPixels;
+	private int heightInPixels;
 	private int infinite;
 	private int nextObjectID;
 	private int nextlayerid;
@@ -441,6 +445,9 @@ public class TMXMap implements Sized {
 		height = json.getInt("height", 0);
 		tileWidth = json.getInt("tilewidth", 0);
 		tileHeight = json.getInt("tileheight", 0);
+		widthInPixels = width * tileWidth;
+		heightInPixels = height * tileHeight;
+
 		infinite = json.getInt("infinite", 0);
 
 		nextlayerid = json.getInt("nextlayerid", 0);
@@ -451,6 +458,12 @@ public class TMXMap implements Sized {
 		}
 
 		orientation = Orientation.valueOf(json.getString("orientation", "ORTHOGONAL").trim().toUpperCase());
+		if (orientation != null && orientation == Orientation.STAGGERED) {
+			if (height > 1) {
+				this.widthInPixels += tileWidth / 2;
+				this.heightInPixels = heightInPixels / 2 + tileHeight / 2;
+			}
+		}
 
 		if (json.containsKey("renderorder")) {
 			switch (json.getString("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
@@ -602,7 +615,12 @@ public class TMXMap implements Sized {
 		}
 
 		orientation = Orientation.valueOf(element.getAttribute("orientation", "ORTHOGONAL").trim().toUpperCase());
-
+		if (orientation != null && orientation == Orientation.STAGGERED) {
+			if (height > 1) {
+				this.widthInPixels += tileWidth / 2;
+				this.heightInPixels = heightInPixels / 2 + tileHeight / 2;
+			}
+		}
 		if (element.hasAttribute("renderorder")) {
 			switch (element.getAttribute("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
 			case "right-down":
@@ -727,6 +745,85 @@ public class TMXMap implements Sized {
 			}
 		}
 		return list;
+	}
+
+	public int getWidthInPixels() {
+		return widthInPixels;
+	}
+
+	public int getHeightInPixels() {
+		return heightInPixels;
+	}
+
+	public PointI pixelsStaggeredToMap(float x, float y, boolean even) {
+		return pixelsStaggeredToMap(x, y, tileWidth, tileHeight, even);
+	}
+
+	public PointI pixelsStaggeredToMap(float x, float y, float tileWidth, float tileHeight, boolean even) {
+		float newX = x;
+		float newY = y;
+		if (even) {
+			newX = MathUtils.ifloor((newX + tileWidth) / tileHeight) - 1f;
+			newY = (MathUtils.ifloor((y + tileHeight) / tileHeight) - 1f) * 2f;
+		} else {
+			newX = MathUtils.ifloor((x + tileWidth / 2f) / tileWidth) - 1f;
+			newY = ((MathUtils.ifloor(y + tileHeight / 2f) / tileHeight) - 1f) * 2f;
+		}
+		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
+	}
+
+	public PointI pixelsIsometricToMap(float x, float y) {
+		return pixelsIsometricToMap(x, y, tileWidth, tileHeight);
+	}
+
+	public PointI pixelsIsometricToMap(float x, float y, float tileWidth, float tileHeight) {
+		float newX = x / tileWidth;
+		float newY = (y - tileHeight / 2f) / tileHeight + x;
+		newX -= newY - newX;
+		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
+	}
+
+	public PointI tilesIsometricToPixels(float x, float y) {
+		return tilesIsometricToPixels(x, y, tileWidth, tileHeight);
+	}
+
+	public PointI tilesIsometricToPixels(float x, float y, float tileWidth, float tileHeight) {
+		float newX = tileWidth * x / 2f + height * tileWidth / 2f - y * tileWidth / 2f;
+		float newY = tileHeight * y / 2f + width * tileHeight / 2f - x * tileHeight / 2f;
+		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
+	}
+
+	public PointI pixelsHexagonToMap(float x, float y) {
+		return pixelsHexagonToMap(x, y, tileWidth, tileHeight);
+	}
+
+	public PointI pixelsHexagonToMap(float x, float y, float tileWidth, float tileHeight) {
+		float row = (y / tileHeight);
+		float column = 0f;
+		final boolean rowEven = row % 2 == 0;
+		if (rowEven) {
+			column = (x / tileWidth);
+		} else {
+			column = ((x - widthInPixels / 2f) / tileWidth);
+		}
+		float newX = 0f;
+		float newY = y - (row * tileHeight);
+		if (rowEven) {
+			newX = x - (column * tileWidth);
+		} else {
+			newX = (x - (column * tileWidth)) - widthInPixels / 2f;
+		}
+		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
+	}
+
+	public PointI pixelsOrthogonalToMap(float x, float y) {
+		return pixelsOrthogonalToMap(x, y, tileWidth, tileHeight);
+	}
+
+	public PointI pixelsOrthogonalToMap(float x, float y, float tileWidth, float tileHeight) {
+		float newX = x / tileWidth;
+		float newY = y / tileHeight;
+		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
 	}
 
 }

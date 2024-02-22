@@ -23,6 +23,7 @@ package loon.utils.timer;
 import loon.LRelease;
 import loon.LSystem;
 import loon.events.EventAction;
+import loon.events.EventActionN;
 import loon.events.EventActionT;
 import loon.events.TimerEvent;
 import loon.utils.HelperUtils;
@@ -604,7 +605,9 @@ public class LTimer implements LTimerListener, LRelease {
 	public LTimer cancel() {
 		this.pause();
 		synchronized (RealtimeProcessManager.class) {
-			kill();
+			if (_process != null) {
+				_process.cancel();
+			}
 		}
 		return this;
 	}
@@ -614,6 +617,55 @@ public class LTimer implements LTimerListener, LRelease {
 			_process.kill();
 		}
 		return this;
+	}
+
+	public boolean isTimeOut() {
+		if (_process != null) {
+			return _process.isTimeOut();
+		}
+		return false;
+	}
+
+	public LTimer onTimeOut(EventActionN e, long delay) {
+		if (_process != null) {
+			_process.onTimeOut(e, delay);
+		}
+		return this;
+	}
+
+	public LTimer onTimeOutS(EventActionN e, float sec) {
+		if (_process != null) {
+			_process.onTimeOutS(e, sec);
+		}
+		return this;
+	}
+
+	public LTimer setTimeOutEvent(EventActionN e) {
+		if (_process != null) {
+			_process.setTimeOutEvent(e);
+		}
+		return this;
+	}
+
+	public LTimer setTimeOut(long delay) {
+		if (_process != null) {
+			_process.setTimeOut(delay);
+		}
+		return this;
+	}
+
+	public LTimer setTimeOutS(float sec) {
+		if (_process != null) {
+			_process.setTimeOutS(sec);
+		}
+		return this;
+	}
+
+	public long getTimeOut() {
+		if (_process != null) {
+			return _process.getTimeOut();
+		}
+		return 0l;
 	}
 
 	public boolean addListener(LTimerListener timerListener) {

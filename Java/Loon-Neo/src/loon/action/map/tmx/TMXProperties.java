@@ -72,6 +72,11 @@ public class TMXProperties {
 		return this;
 	}
 
+	public TMXProperties remove(String key) {
+		this.properties.remove(key);
+		return this;
+	}
+
 	public ObjectMap<String, Object> getPropertiesMap() {
 		return properties;
 	}

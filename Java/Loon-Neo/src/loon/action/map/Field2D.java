@@ -250,7 +250,7 @@ public class Field2D implements IArray, Config, LRelease {
 		int total = width * height;
 		if (index > 0 && index <= total) {
 			if (index > width - 1) {
-				ny = MathUtils.floor(index / width);
+				ny = MathUtils.ifloor(index / width);
 				nx = index - (ny * width);
 			} else {
 				nx = index;
@@ -299,8 +299,8 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public static final float rotation(float srcX, float srcY, float dstX, float dstY) {
-		int nx = MathUtils.floor(dstX - srcX);
-		int ny = MathUtils.floor(dstY - srcY);
+		int nx = MathUtils.ifloor(dstX - srcX);
+		int ny = MathUtils.ifloor(dstY - srcY);
 		return MathUtils.toDegrees(MathUtils.atan2(ny, nx));
 	}
 
@@ -316,7 +316,7 @@ public class Field2D implements IArray, Config, LRelease {
 		float ny = dstY - srcY;
 		float r = MathUtils.sqrt(nx * nx + ny * ny);
 		float cos = nx / r;
-		int angle = MathUtils.floor(MathUtils.acos(cos) * 180 / MathUtils.PI);
+		int angle = MathUtils.ifloor(MathUtils.acos(cos) * 180 / MathUtils.PI);
 		if (ny < 0) {
 			angle = 360 - angle;
 		}
@@ -595,7 +595,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D(Screen screen, int tw, int th) {
-		this(MathUtils.floor(screen.getWidth() / tw), MathUtils.floor(screen.getHeight() / th), tw, th, 0);
+		this(MathUtils.ifloor(screen.getWidth() / tw), MathUtils.ifloor(screen.getHeight() / th), tw, th, 0);
 	}
 
 	public Field2D(int w, int h, int tw, int th) {
@@ -652,8 +652,8 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Tile getPointTile(float px, float py) {
-		int x = MathUtils.floor(px / this.tileWidth);
-		int y = MathUtils.floor(py / this.tileHeight);
+		int x = MathUtils.ifloor(px / this.tileWidth);
+		int y = MathUtils.ifloor(py / this.tileHeight);
 		return getTile(x, y);
 	}
 
@@ -706,29 +706,35 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int getHexagonWidth() {
-		return MathUtils.floor(width / 3f * 2f);
+		return MathUtils.ifloor(width / 3f * 2f);
 	}
 
 	public int getHexagonHeight() {
-		return MathUtils.floor(height / MathUtils.sqrt(3f)) - 1;
+		return MathUtils.ifloor(height / MathUtils.sqrt(3f)) - 1;
 	}
 
 	public PointI pixelsHexagonToTiles(float x, float y) {
 		float sqrte = MathUtils.sqrt(3f) / 3f;
-		int hx = MathUtils.floor(2 / 3 * x / tileWidth);
-		int hy = (int) ((sqrte * y / tileHeight + MathUtils.round(hx) % 2f) * sqrte);
+		int hx = MathUtils.ifloor(2 / 3 * x / tileWidth);
+		int hy = MathUtils.ifloor((sqrte * y / tileHeight + MathUtils.round(hx) % 2f) * sqrte);
 		return new PointI(hx, hy);
 	}
 
 	public PointI pixelsIsometricToTiles(float x, float y) {
-		int hx = MathUtils.floor(x / (tileWidth * 0.5f));
-		int hy = MathUtils.floor((y - hx * (tileHeight / 2f)) / tileHeight);
+		int hx = MathUtils.ifloor(x / (tileWidth * 0.5f));
+		int hy = MathUtils.ifloor((y - hx * (tileHeight / 2f)) / tileHeight);
 		return new PointI(hx + hy, hy);
 	}
 
+	public PointI tilesIsometricToPixels(float x, float y) {
+		float hx = tileWidth * x / 2f + height * tileWidth / 2f - y * tileWidth / 2f;
+		float hy = tileHeight * y / 2f + width * tileHeight / 2f - x * tileHeight / 2f;
+		return new PointI(MathUtils.ifloor(hx), MathUtils.ifloor(hy));
+	}
+
 	public PointI pixelsOrthogonalToTiles(float x, float y) {
-		int hx = MathUtils.floor(x / tileWidth);
-		int hy = MathUtils.floor(y / tileHeight);
+		int hx = MathUtils.ifloor(x / tileWidth);
+		int hy = MathUtils.ifloor(y / tileHeight);
 		return new PointI(hx, hy);
 	}
 
@@ -749,19 +755,19 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int pixelsToTilesWidth(float x) {
-		return MathUtils.floor(x / tileWidth);
+		return MathUtils.ifloor(x / tileWidth);
 	}
 
 	public int pixelsToTilesWidth(int x) {
-		return MathUtils.floor(x / tileWidth);
+		return MathUtils.ifloor(x / tileWidth);
 	}
 
 	public int pixelsToTilesHeight(float y) {
-		return MathUtils.floor(y / tileHeight);
+		return MathUtils.ifloor(y / tileHeight);
 	}
 
 	public int pixelsToTilesHeight(int y) {
-		return MathUtils.floor(y / tileHeight);
+		return MathUtils.ifloor(y / tileHeight);
 	}
 
 	public int tilesToWidthPixels(int tiles) {
@@ -773,11 +779,11 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int tilesToWidthPixels(float tiles) {
-		return (int) (tiles * tileWidth);
+		return MathUtils.ifloor(tiles * tileWidth);
 	}
 
 	public int tilesToHeightPixels(float tiles) {
-		return (int) (tiles * tileHeight);
+		return MathUtils.ifloor(tiles * tileHeight);
 	}
 
 	public int getViewWidth() {
@@ -986,8 +992,8 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Vector2f getTileCollision(float srcX, float srcY, float srcWidth, float srcHeight, float newX, float newY) {
-		newX = MathUtils.ceil(newX);
-		newY = MathUtils.ceil(newY);
+		newX = MathUtils.iceil(newX);
+		newY = MathUtils.iceil(newY);
 
 		float fromX = MathUtils.min(srcX, newX);
 		float fromY = MathUtils.min(srcY, newY);
@@ -1024,8 +1030,8 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public boolean checkTileCollision(float srcX, float srcY, float srcWidth, float srcHeight, float newX, float newY) {
-		newX = MathUtils.ceil(newX);
-		newY = MathUtils.ceil(newY);
+		newX = MathUtils.iceil(newX);
+		newY = MathUtils.iceil(newY);
 
 		float fromX = MathUtils.min(srcX, newX);
 		float fromY = MathUtils.min(srcY, newY);

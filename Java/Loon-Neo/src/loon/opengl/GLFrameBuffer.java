@@ -27,6 +27,7 @@ import static loon.opengl.GL20.GL_TEXTURE_2D;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.Iterator;
 
 import loon.LGame;
 import loon.LRelease;
@@ -53,6 +54,112 @@ public abstract class GLFrameBuffer implements LRelease {
 			return new FrameBuffer();
 		}
 	}
+
+	protected static class FrameBufferTextureAttachmentSpec {
+		int internalFormat, format, type;
+		boolean isFloat, isGpuOnly;
+		boolean isDepth;
+		boolean isStencil;
+
+		public FrameBufferTextureAttachmentSpec(int internalformat, int format, int type) {
+			this.internalFormat = internalformat;
+			this.format = format;
+			this.type = type;
+		}
+
+		public boolean isColorTexture() {
+			return !isDepth && !isStencil;
+		}
+	}
+
+	protected static class FrameBufferRenderBufferAttachmentSpec {
+		int internalFormat;
+
+		public FrameBufferRenderBufferAttachmentSpec(int internalFormat) {
+			this.internalFormat = internalFormat;
+		}
+	}
+
+	protected static abstract class GLFrameBufferBuilder<U extends GLFrameBuffer> {
+		protected int width, height;
+
+		protected TArray<FrameBufferTextureAttachmentSpec> textureAttachmentSpecs = new TArray<FrameBufferTextureAttachmentSpec>();
+
+		protected FrameBufferRenderBufferAttachmentSpec stencilRenderBufferSpec;
+		protected FrameBufferRenderBufferAttachmentSpec depthRenderBufferSpec;
+		protected FrameBufferRenderBufferAttachmentSpec packedStencilDepthRenderBufferSpec;
+
+		protected boolean hasStencilRenderBuffer;
+		protected boolean hasDepthRenderBuffer;
+		protected boolean makeCacheTexture;
+
+		public GLFrameBufferBuilder(int width, int height, boolean created) {
+			this.width = width;
+			this.height = height;
+			this.makeCacheTexture = created;
+		}
+
+		public GLFrameBufferBuilder<U> addColorTextureAttachment(int internalFormat, int format, int type) {
+			textureAttachmentSpecs.add(new FrameBufferTextureAttachmentSpec(internalFormat, format, type));
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addFloatAttachment(int internalFormat, int format, int type, boolean gpuOnly) {
+			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat, format, type);
+			spec.isFloat = true;
+			spec.isGpuOnly = gpuOnly;
+			textureAttachmentSpecs.add(spec);
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addBasicColorTextureAttachment(int glFormat, int glType) {
+			return addColorTextureAttachment(glFormat, glFormat, glType);
+		}
+
+		public GLFrameBufferBuilder<U> addDepthTextureAttachment(int internalFormat, int type) {
+			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat,
+					GL20.GL_DEPTH_COMPONENT, type);
+			spec.isDepth = true;
+			textureAttachmentSpecs.add(spec);
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addStencilTextureAttachment(int internalFormat, int type) {
+			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat,
+					GL20.GL_STENCIL_ATTACHMENT, type);
+			spec.isStencil = true;
+			textureAttachmentSpecs.add(spec);
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addDepthRenderBuffer(int internalFormat) {
+			depthRenderBufferSpec = new FrameBufferRenderBufferAttachmentSpec(internalFormat);
+			hasDepthRenderBuffer = true;
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addStencilRenderBuffer(int internalFormat) {
+			stencilRenderBufferSpec = new FrameBufferRenderBufferAttachmentSpec(internalFormat);
+			hasStencilRenderBuffer = true;
+			return this;
+		}
+
+		public GLFrameBufferBuilder<U> addBasicDepthRenderBuffer() {
+			return addDepthRenderBuffer(GL20.GL_DEPTH_COMPONENT16);
+		}
+
+		public GLFrameBufferBuilder<U> addBasicStencilRenderBuffer() {
+			return addStencilRenderBuffer(GL20.GL_STENCIL_INDEX8);
+		}
+
+		public abstract U build();
+	}
+
+	protected abstract LTexture createTexture(FrameBufferTextureAttachmentSpec attachmentSpec);
+
+	protected abstract void disposeColorTexture(LTexture colorTexture);
+
+	protected abstract void attachFrameBufferColorTexture(LTexture texture);
 
 	protected final static int GL_DEPTH_COMPONENT = 0x1902;
 
@@ -186,10 +293,14 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	protected void build() {
-		build(LSystem.base().graphics().gl);
+		build(LSystem.base().graphics().gl, true);
 	}
 
-	protected void build(GL20 gl) {
+	protected void reset() {
+		build(LSystem.base().graphics().gl, false);
+	}
+
+	protected void build(GL20 gl, boolean putPool) {
 
 		checkIOSdefaultFramebufferHandle(gl);
 		framebufferHandle = gl.glGenFramebuffer();
@@ -217,11 +328,11 @@ public abstract class GLFrameBuffer implements LRelease {
 		}
 
 		if (bufferBuilder.makeCacheTexture) {
+			textureAttachments.clear();
 			final LTexture texture = createTexture(
 					(FrameBufferTextureAttachmentSpec) bufferBuilder.textureAttachmentSpecs.first());
 			textureAttachments.add(texture);
 			GLUtils.bindTexture(gl, texture.getID());
-
 			attachFrameBufferColorTexture(textureAttachments.first());
 		}
 
@@ -306,14 +417,22 @@ public abstract class GLFrameBuffer implements LRelease {
 				throw new LSysException("Frame buffer couldn't be constructed: unknown error " + result);
 			}
 		}
-		addManagedFrameBuffer(this);
+		if (putPool) {
+			addManagedFrameBuffer(this);
+		}
 	}
 
 	@Override
 	public void close() {
+		if (LSystem.base() == null || LSystem.base().graphics() == null) {
+			return;
+		}
 		final GL20 gl = LSystem.base().graphics().gl;
-		for (LTexture texture : textureAttachments) {
-			disposeColorTexture(texture);
+		for (Iterator<LTexture> it = textureAttachments.iterator(); it.hasNext();) {
+			LTexture texture = it.next();
+			if (texture != null) {
+				disposeColorTexture(texture);
+			}
 		}
 		if (hasDepthStencilPackedBuffer) {
 			gl.glDeleteRenderbuffer(depthStencilPackedBufferHandle);
@@ -461,126 +580,23 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	public static void invalidate(LGame game) {
-		if (game.graphics().gl == null) {
+		if (game == null || game.graphics() == null || game.graphics().gl == null) {
 			return;
 		}
-		TArray<GLFrameBuffer> bufferArray = game.getFrameBufferAll();
-		if (bufferArray == null) {
+		final TArray<GLFrameBuffer> bufferArray = game.getFrameBufferAll();
+		if (bufferArray == null || bufferArray.size == 0) {
 			return;
 		}
-		for (int i = 0; i < bufferArray.size; i++) {
-			bufferArray.get(i).build();
+		for (Iterator<GLFrameBuffer> it = bufferArray.iterator(); it.hasNext();) {
+			GLFrameBuffer buffer = it.next();
+			if (buffer != null) {
+				buffer.build(game.graphics().gl, false);
+			}
 		}
 	}
 
 	public void clearAllFrameBuffers() {
 		LSystem.clearFramebuffer();
 	}
-
-	protected static class FrameBufferTextureAttachmentSpec {
-		int internalFormat, format, type;
-		boolean isFloat, isGpuOnly;
-		boolean isDepth;
-		boolean isStencil;
-
-		public FrameBufferTextureAttachmentSpec(int internalformat, int format, int type) {
-			this.internalFormat = internalformat;
-			this.format = format;
-			this.type = type;
-		}
-
-		public boolean isColorTexture() {
-			return !isDepth && !isStencil;
-		}
-	}
-
-	protected static class FrameBufferRenderBufferAttachmentSpec {
-		int internalFormat;
-
-		public FrameBufferRenderBufferAttachmentSpec(int internalFormat) {
-			this.internalFormat = internalFormat;
-		}
-	}
-
-	protected static abstract class GLFrameBufferBuilder<U extends GLFrameBuffer> {
-		protected int width, height;
-
-		protected TArray<FrameBufferTextureAttachmentSpec> textureAttachmentSpecs = new TArray<FrameBufferTextureAttachmentSpec>();
-
-		protected FrameBufferRenderBufferAttachmentSpec stencilRenderBufferSpec;
-		protected FrameBufferRenderBufferAttachmentSpec depthRenderBufferSpec;
-		protected FrameBufferRenderBufferAttachmentSpec packedStencilDepthRenderBufferSpec;
-
-		protected boolean hasStencilRenderBuffer;
-		protected boolean hasDepthRenderBuffer;
-		protected boolean makeCacheTexture;
-
-		public GLFrameBufferBuilder(int width, int height, boolean created) {
-			this.width = width;
-			this.height = height;
-			this.makeCacheTexture = created;
-		}
-
-		public GLFrameBufferBuilder<U> addColorTextureAttachment(int internalFormat, int format, int type) {
-			textureAttachmentSpecs.add(new FrameBufferTextureAttachmentSpec(internalFormat, format, type));
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addFloatAttachment(int internalFormat, int format, int type, boolean gpuOnly) {
-			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat, format, type);
-			spec.isFloat = true;
-			spec.isGpuOnly = gpuOnly;
-			textureAttachmentSpecs.add(spec);
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addBasicColorTextureAttachment(int glFormat, int glType) {
-			return addColorTextureAttachment(glFormat, glFormat, glType);
-		}
-
-		public GLFrameBufferBuilder<U> addDepthTextureAttachment(int internalFormat, int type) {
-			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat,
-					GL20.GL_DEPTH_COMPONENT, type);
-			spec.isDepth = true;
-			textureAttachmentSpecs.add(spec);
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addStencilTextureAttachment(int internalFormat, int type) {
-			FrameBufferTextureAttachmentSpec spec = new FrameBufferTextureAttachmentSpec(internalFormat,
-					GL20.GL_STENCIL_ATTACHMENT, type);
-			spec.isStencil = true;
-			textureAttachmentSpecs.add(spec);
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addDepthRenderBuffer(int internalFormat) {
-			depthRenderBufferSpec = new FrameBufferRenderBufferAttachmentSpec(internalFormat);
-			hasDepthRenderBuffer = true;
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addStencilRenderBuffer(int internalFormat) {
-			stencilRenderBufferSpec = new FrameBufferRenderBufferAttachmentSpec(internalFormat);
-			hasStencilRenderBuffer = true;
-			return this;
-		}
-
-		public GLFrameBufferBuilder<U> addBasicDepthRenderBuffer() {
-			return addDepthRenderBuffer(GL20.GL_DEPTH_COMPONENT16);
-		}
-
-		public GLFrameBufferBuilder<U> addBasicStencilRenderBuffer() {
-			return addStencilRenderBuffer(GL20.GL_STENCIL_INDEX8);
-		}
-
-		public abstract U build();
-	}
-
-	protected abstract LTexture createTexture(FrameBufferTextureAttachmentSpec attachmentSpec);
-
-	protected abstract void disposeColorTexture(LTexture colorTexture);
-
-	protected abstract void attachFrameBufferColorTexture(LTexture texture);
 
 }
