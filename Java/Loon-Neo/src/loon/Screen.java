@@ -1694,7 +1694,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		this._currentDesktop = new Desktop("ScreenDesktop", this, getWidth(), getHeight());
 		this._isNext = true;
-		this._screenIndex = 0;
 		this._lastTocuh.empty();
 		this._visible = true;
 		this._rotation = 0;
@@ -1732,6 +1731,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public static Screen restart(Screen screen, int w, int h, boolean resetCreated) {
 		if (screen != null) {
+			screen.setLock(true);
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
 			screen.setOnLoadState(false);
 			if (resetCreated) {
@@ -1743,6 +1743,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			screen.onLoaded();
 			screen.setOnLoadState(true);
 			screen.resume();
+			screen.setLock(false);
 		}
 		return screen;
 	}

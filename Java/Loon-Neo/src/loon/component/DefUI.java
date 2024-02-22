@@ -630,34 +630,43 @@ public class DefUI extends HelperUtils {
 				lastTexture.close(true);
 				lastTexture = null;
 			}
-			lastTexture = LSystem.newTexture(LSystem.getSystemImagePath() + "ui.png");
-			lastTexture.setDisabledTexture(true);
-			LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
-			LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);
-			LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8, 1, 512 - 8);
-			LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8, 33, 72 - 8);
-			LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8, 48, 72 - 8);
-			LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49, 41 - 8, 72, 63 - 8);
-			LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73, 41 - 8, 96, 63 - 8);
-			LSubTexture imagebuttonidle = new LSubTexture(lastTexture, 145, 41 - 8, 176, 72 - 8);
-			LSubTexture imagebuttonhover = new LSubTexture(lastTexture, 177, 41 - 8, 208, 72 - 8);
-			LSubTexture imagebuttonactive = new LSubTexture(lastTexture, 209, 41 - 8, 240, 72 - 8);
-			LSubTexture textfieldleft = new LSubTexture(lastTexture, 218, 40 - 8, 233, 72 - 8);
-			LSubTexture textfieldbody = new LSubTexture(lastTexture, 234, 40 - 8, 250, 72 - 8);
-			defaultTextures.add(windowbar.get());
-			defaultTextures.add(panelbody.get());
-			defaultTextures.add(panelborder.get());
-			defaultTextures.add(buttonleft.get());
-			defaultTextures.add(buttonbody.get());
-			defaultTextures.add(checkboxunchecked.get());
-			defaultTextures.add(checkboxchecked.get());
-			defaultTextures.add(imagebuttonidle.get());
-			defaultTextures.add(imagebuttonhover.get());
-			defaultTextures.add(imagebuttonactive.get());
-			defaultTextures.add(textfieldleft.get());
-			defaultTextures.add(textfieldbody.get());
+			buildTextures();
 		}
-		return defaultTextures.get(index);
+		LTexture texture = defaultTextures.get(index);
+		if (texture == null || texture.isClosed()) {
+			buildTextures();
+		}
+		return texture;
+	}
+
+	protected void buildTextures() {
+		defaultTextures.clear();
+		lastTexture = LSystem.newTexture(LSystem.getSystemImagePath() + "ui.png");
+		lastTexture.setDisabledTexture(true);
+		LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
+		LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);
+		LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8, 1, 512 - 8);
+		LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8, 33, 72 - 8);
+		LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8, 48, 72 - 8);
+		LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49, 41 - 8, 72, 63 - 8);
+		LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73, 41 - 8, 96, 63 - 8);
+		LSubTexture imagebuttonidle = new LSubTexture(lastTexture, 145, 41 - 8, 176, 72 - 8);
+		LSubTexture imagebuttonhover = new LSubTexture(lastTexture, 177, 41 - 8, 208, 72 - 8);
+		LSubTexture imagebuttonactive = new LSubTexture(lastTexture, 209, 41 - 8, 240, 72 - 8);
+		LSubTexture textfieldleft = new LSubTexture(lastTexture, 218, 40 - 8, 233, 72 - 8);
+		LSubTexture textfieldbody = new LSubTexture(lastTexture, 234, 40 - 8, 250, 72 - 8);
+		defaultTextures.add(windowbar.get());
+		defaultTextures.add(panelbody.get());
+		defaultTextures.add(panelborder.get());
+		defaultTextures.add(buttonleft.get());
+		defaultTextures.add(buttonbody.get());
+		defaultTextures.add(checkboxunchecked.get());
+		defaultTextures.add(checkboxchecked.get());
+		defaultTextures.add(imagebuttonidle.get());
+		defaultTextures.add(imagebuttonhover.get());
+		defaultTextures.add(imagebuttonactive.get());
+		defaultTextures.add(textfieldleft.get());
+		defaultTextures.add(textfieldbody.get());
 	}
 
 	public final void clearDefaultUI() {

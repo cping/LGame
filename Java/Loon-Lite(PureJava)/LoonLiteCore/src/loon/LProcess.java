@@ -77,10 +77,11 @@ public class LProcess implements LRelease {
 			if (_game != null && !_game.displayImpl.showLogo) {
 				try {
 					if (_newScreen != null) {
+						_process.closedScreen(_newScreen);
 						_process.startTransition();
-						_newScreen.resetOnload();
+						_newScreen.restart();
 						_process.endTransition();
-						_process.setCurrentScreen(false, _newScreen, true, _put);
+						_process.setCurrentScreen(false, _newScreen, false, _put);
 					}
 				} catch (Throwable cause) {
 					LSystem.error("The New Screen onLoad dispatch failed: " + _newScreen, cause);
@@ -422,10 +423,6 @@ public class LProcess implements LRelease {
 						RealtimeProcessManager.get().delete(_screenProcess);
 					}
 				}
-				if (newScreen == _currentScreen) {
-					newScreen.destroy();
-				}
-				newScreen.onCreate(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 				RealtimeProcessManager.get()
 						.addProcess((_screenProcess = new ScreenProcess(_game, this, newScreen, put)));
 				_loadingScreen = null;
@@ -435,11 +432,16 @@ public class LProcess implements LRelease {
 		}
 	}
 
-	private void closedScreen(final Screen oldScreen, final Screen newScreen) {
+	protected void closedScreen(final Screen newScreen) {
+		closedScreen(_currentScreen, newScreen);
+	}
+
+	protected void closedScreen(final Screen oldScreen, final Screen newScreen) {
 		try {
 			if (oldScreen != null && oldScreen != newScreen) {
 				oldScreen.destroy();
 			} else if (oldScreen != null) {
+				oldScreen.setLock(true);
 				oldScreen.pause();
 			}
 		} catch (Throwable cause) {

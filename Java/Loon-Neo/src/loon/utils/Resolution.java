@@ -49,10 +49,6 @@ public class Resolution implements Comparable<Resolution> {
 		return new Resolution(1280, 800);
 	}
 
-	public static Resolution SVGA() {
-		return new Resolution(800, 600);
-	}
-
 	public static Resolution NDS() {
 		return new Resolution(256, 192);
 	}
@@ -67,6 +63,34 @@ public class Resolution implements Comparable<Resolution> {
 
 	public static Resolution PSP3000() {
 		return new Resolution(480, 272);
+	}
+
+	public static Resolution HVGA() {
+		return new Resolution(480, 320);
+	}
+
+	public static Resolution WVGA() {
+		return new Resolution(800, 480);
+	}
+
+	public static Resolution DVGA() {
+		return new Resolution(960, 640);
+	}
+
+	public static Resolution SVGA() {
+		return new Resolution(800, 600);
+	}
+
+	public static Resolution QVGA() {
+		return new Resolution(1280, 960);
+	}
+
+	public static Resolution XGA() {
+		return new Resolution(1280, 768);
+	}
+
+	public static Resolution SXGA() {
+		return new Resolution(1280, 1024);
 	}
 
 	/**
