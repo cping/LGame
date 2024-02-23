@@ -55,7 +55,7 @@ import loon.utils.MathUtils;
  * 
  */
 public class LTable extends LContainer implements FontSet<LTable> {
-	
+
 	private float _tableLineWidth = 2f;
 
 	private int _tableWidth, _tableHeight, _tableSize;
@@ -533,7 +533,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				}
 				y += (cellHeight + cellSpacing);
 			}
-			if (font instanceof LFont) {
+			if (!isClickDrag() && (font instanceof LFont)) {
 				if (model.isDirty()) {
 					if (_cacheFonts != null) {
 						_cacheFonts.cancalSubmit();
@@ -911,6 +911,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (_cacheFonts != null) {
 			_cacheFonts.close(true);
 			_cacheFonts = null;
+		}
+		if (backgroundTexture != null) {
+			backgroundTexture.close();
+			backgroundTexture = null;
 		}
 	}
 

@@ -24,6 +24,9 @@ import loon.LTexture.Format;
 import loon.action.sprite.Sprites;
 import loon.component.Desktop;
 import loon.events.InputMake;
+import loon.events.RunnableUpdate;
+import loon.events.Updateable;
+import loon.events.UpdateableRun;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.FrameBuffer;
@@ -88,7 +91,7 @@ public abstract class LGame implements LRelease {
 	protected static Platform _platform = null;
 
 	private boolean _stopGame = false;
-	
+
 	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
 
 	private final static int DEF_OTHER_CACHE_SIZE = 8;
@@ -454,7 +457,7 @@ public abstract class LGame implements LRelease {
 	}
 
 	/**
-	 * 如果本地支持异步提交Runnable,则使用本地的,如果不支持,则转换为invokeLater
+	 * 如果本地支持异步提交Runnable,则使用本地的,如果不支持,则转换为process循环中提交
 	 * 
 	 * @param action
 	 * @return
@@ -465,8 +468,26 @@ public abstract class LGame implements LRelease {
 		}
 		if (isAsyncSupported()) {
 			asyn().invokeAsync(action);
-		} else {
-			invokeLater(action);
+		} else if (processImpl != null) {
+			processImpl.addLoad(new RunnableUpdate(action));
+		}
+		return this;
+	}
+
+	/**
+	 * 如果本地支持异步提交Updateable,则使用本地的,如果不支持,则转换为process循环中提交
+	 * 
+	 * @param update
+	 * @return
+	 */
+	public LGame invokeAsync(final Updateable update) {
+		if (update == null) {
+			return this;
+		}
+		if (isAsyncSupported()) {
+			asyn().invokeAsync(new UpdateableRun(update));
+		} else if (processImpl != null) {
+			processImpl.addLoad(update);
 		}
 		return this;
 	}
@@ -1036,7 +1057,7 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addMesh(Mesh mesh) {
-		if(_mesh_all_pools.contains(mesh)) {
+		if (_mesh_all_pools.contains(mesh)) {
 			return;
 		}
 		_mesh_all_pools.add(mesh);
@@ -1055,7 +1076,7 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addShader(ShaderProgram shader) {
-		if(_shader_all_pools.contains(shader)) {
+		if (_shader_all_pools.contains(shader)) {
 			return;
 		}
 		_shader_all_pools.add(shader);
@@ -1074,7 +1095,7 @@ public abstract class LGame implements LRelease {
 	}
 
 	public void addFrameBuffer(GLFrameBuffer buffer) {
-		if(_framebuffer_all_pools.contains(buffer)) {
+		if (_framebuffer_all_pools.contains(buffer)) {
 			return;
 		}
 		_framebuffer_all_pools.add(buffer);

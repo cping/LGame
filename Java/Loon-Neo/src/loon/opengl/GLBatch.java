@@ -48,7 +48,7 @@ public class GLBatch implements LRelease {
 	private String[] shaderUniformNames;
 
 	public GLBatch(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		this(2048, hasNormals, hasColors, numTexCoords, null);
+		this(4096, hasNormals, hasColors, numTexCoords, null);
 		ownsShader = true;
 	}
 

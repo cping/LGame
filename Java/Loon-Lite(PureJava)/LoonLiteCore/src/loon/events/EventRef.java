@@ -24,6 +24,14 @@ import loon.utils.reply.ObjRef;
 
 public class EventRef {
 
+	public static final ObjRef<UpdateableRun> doUConvertR(Updateable u) {
+		return ObjRef.of(new UpdateableRun(u));
+	}
+
+	public static final ObjRef<RunnableUpdate> doRConvertU(Runnable r) {
+		return ObjRef.of(new RunnableUpdate(r));
+	}
+
 	public static final ObjRef<Runnable> doR(Runnable e) {
 		return ObjRef.of(e);
 	}

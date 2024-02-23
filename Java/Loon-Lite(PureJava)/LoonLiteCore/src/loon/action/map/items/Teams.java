@@ -26,6 +26,9 @@ import loon.events.QueryEvent;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * 队伍集合信息存储用类,用于把不同队伍信息统一存储及管理
+ */
 public class Teams implements LRelease {
 
 	protected class TeamQuery implements QueryEvent<Team> {
@@ -226,11 +229,15 @@ public class Teams implements LRelease {
 
 	public boolean isAllDead() {
 		for (Team team : _teams) {
-			if (!team.isDead()) {
+			if (!team.isAllDead()) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public int getSize() {
+		return _teams.size;
 	}
 
 	public Team getPlayer() {
@@ -247,6 +254,58 @@ public class Teams implements LRelease {
 
 	public Team getOther() {
 		return get(Team.Other);
+	}
+
+	public TArray<Team> getPlayers() {
+		return where(new TeamQuery(Team.Player));
+	}
+
+	public TArray<Team> getEnemys() {
+		return where(new TeamQuery(Team.Enemy));
+	}
+
+	public TArray<Team> getNpcs() {
+		return where(new TeamQuery(Team.Npc));
+	}
+
+	public TArray<Team> getOthers() {
+		return where(new TeamQuery(Team.Other));
+	}
+
+	public Team checkWinner() {
+		Team teamPlayer = getPlayer();
+		Team teamEnemy = getEnemy();
+		if (teamPlayer.isAllDead()) {
+			return teamEnemy;
+		}
+		if (teamEnemy.isAllDead()) {
+			return teamPlayer;
+		}
+		return null;
+	}
+
+	public TArray<Team> checkAllWinners() {
+		TArray<Team> teamPlayers = getPlayers();
+		TArray<Team> teamEnemys = getEnemys();
+		int count = 0;
+		for (Team team : teamPlayers) {
+			if (team != null && team.isAllDead()) {
+				count++;
+			}
+		}
+		if (count == teamPlayers.size) {
+			return teamEnemys;
+		}
+		count = 0;
+		for (Team team : teamEnemys) {
+			if (team != null && team.isAllDead()) {
+				count++;
+			}
+		}
+		if (count == teamEnemys.size) {
+			return teamPlayers;
+		}
+		return null;
 	}
 
 	public String getName() {

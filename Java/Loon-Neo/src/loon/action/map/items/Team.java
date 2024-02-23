@@ -23,9 +23,13 @@ package loon.action.map.items;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
+import loon.canvas.LColor;
 import loon.events.QueryEvent;
 import loon.utils.TArray;
 
+/**
+ * 队伍信息存储用类,用于把不同角色对象归类为统一的小队,集中管理专属阵营的对象
+ */
 public class Team implements LRelease {
 
 	protected class IDQuery implements QueryEvent<Role> {
@@ -88,9 +92,13 @@ public class Team implements LRelease {
 
 	protected boolean dirty;
 
+	private final TArray<Role> _characters;
+
+	private LColor _teamColor;
+
 	private int _teamMode = -1;
 
-	private final TArray<Role> _characters;
+	private int _totalAttacksUsed;
 
 	private Role _leadRole;
 
@@ -101,7 +109,12 @@ public class Team implements LRelease {
 	}
 
 	public Team(int teamMode, String name) {
+		this(teamMode, LColor.white, name);
+	}
+
+	public Team(int teamMode, LColor color, String name) {
 		this._characters = new TArray<Role>();
+		this._teamColor = color;
 		this._teamMode = teamMode;
 		this._name = name;
 	}
@@ -244,6 +257,99 @@ public class Team implements LRelease {
 		return this;
 	}
 
+	public int getDeadCount() {
+		int count = 0;
+		for (Role c : _characters) {
+			if (c != null && c.isDead) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public Team checkAndDead() {
+		for (Role c : _characters) {
+			if (c != null && c.getHealth() <= 0) {
+				c.isDead = true;
+			}
+		}
+		return this;
+	}
+
+	public Team allDead() {
+		for (Role c : _characters) {
+			if (c != null) {
+				c.isDead = true;
+			}
+		}
+		return this;
+	}
+
+	public float getAverageMaxHealth() {
+		float health = 0;
+		for (Role c : _characters) {
+			if (c != null) {
+				health += c.maxHealth;
+			}
+		}
+		if (_characters.size > 0) {
+			health /= _characters.size;
+		}
+		return health;
+	}
+
+	public float getAverageHealth() {
+		float health = 0;
+		for (Role c : _characters) {
+			if (c != null) {
+				health += c.health;
+			}
+		}
+		if (_characters.size > 0) {
+			health /= _characters.size;
+		}
+		return health;
+	}
+
+	public float getAverageMana() {
+		float mana = 0;
+		for (Role c : _characters) {
+			if (c != null) {
+				mana += c.mana;
+			}
+		}
+		if (_characters.size > 0) {
+			mana /= _characters.size;
+		}
+		return mana;
+	}
+
+	public float getAverageMaxMana() {
+		float mana = 0;
+		for (Role c : _characters) {
+			if (c != null) {
+				mana += c.maxMana;
+			}
+		}
+		if (_characters.size > 0) {
+			mana /= _characters.size;
+		}
+		return mana;
+	}
+
+	public float getAverageStrength() {
+		float strength = 0;
+		for (Role c : _characters) {
+			if (c != null) {
+				strength += c.strength;
+			}
+		}
+		if (_characters.size > 0) {
+			strength /= _characters.size;
+		}
+		return strength;
+	}
+
 	public boolean isAllDoneAction() {
 		for (Role c : _characters) {
 			if (c != null && !c.isAllDoneAction()) {
@@ -348,7 +454,7 @@ public class Team implements LRelease {
 		return list;
 	}
 
-	public boolean isDead() {
+	public boolean isAllDead() {
 		for (Role c : _characters) {
 			if (c != null && !c.isDead) {
 				return false;
@@ -393,7 +499,25 @@ public class Team implements LRelease {
 	}
 
 	public boolean isOver() {
-		return isDead();
+		return isAllDead();
+	}
+
+	public LColor getTeamColor() {
+		return _teamColor;
+	}
+
+	public Team setTeamColor(LColor color) {
+		this._teamColor = color;
+		return this;
+	}
+
+	public Team setTotalAttacksUsed(int i) {
+		_totalAttacksUsed = i;
+		return this;
+	}
+
+	public int getTotalAttacksUsed() {
+		return _totalAttacksUsed;
 	}
 
 	public Team clear() {

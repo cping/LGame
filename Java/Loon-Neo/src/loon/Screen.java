@@ -1761,8 +1761,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
-	public Screen invokeLater(Runnable runnable) {
-		LSystem.invokeLater(runnable);
+	public Screen invokeAsync(Updateable update) {
+		LSystem.invokeAsync(update);
 		return this;
 	}
 

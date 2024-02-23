@@ -542,7 +542,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				}
 				y += (cellHeight + cellSpacing);
 			}
-			if (font instanceof LFont) {
+			if (!isClickDrag() && (font instanceof LFont)) {
 				if (model.isDirty()) {
 					if (_cacheFonts != null) {
 						_cacheFonts.cancalSubmit();
@@ -921,6 +921,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (_cacheFonts != null) {
 			_cacheFonts.close(true);
 			_cacheFonts = null;
+		}
+		if (backgroundTexture != null) {
+			backgroundTexture.close();
+			backgroundTexture = null;
 		}
 	}
 

@@ -86,6 +86,7 @@ public class LProcess implements LRelease {
 				} catch (Throwable cause) {
 					LSystem.error("The New Screen onLoad dispatch failed: " + _newScreen, cause);
 				} finally {
+					_process.beginProcess();
 					kill();
 				}
 			}
@@ -120,7 +121,7 @@ public class LProcess implements LRelease {
 
 	private boolean _waitTransition;
 
-	private boolean _running;
+	private boolean _screenLoading;
 
 	private int _curId;
 
@@ -416,13 +417,13 @@ public class LProcess implements LRelease {
 					}
 				}
 				_game.displayImpl.clearLog();
-				_isInstance = false;
 				if (_screenProcess != null) {
 					_screenProcess.kill();
 					if (RealtimeProcessManager.get().containsProcess(_screenProcess)) {
 						RealtimeProcessManager.get().delete(_screenProcess);
 					}
 				}
+				endProcess();
 				RealtimeProcessManager.get()
 						.addProcess((_screenProcess = new ScreenProcess(_game, this, newScreen, put)));
 				_loadingScreen = null;
@@ -430,6 +431,14 @@ public class LProcess implements LRelease {
 		} catch (Throwable cause) {
 			LSystem.error("Update New Screen failed: " + newScreen, cause);
 		}
+	}
+
+	protected void beginProcess() {
+		_isInstance = true;
+	}
+
+	protected void endProcess() {
+		_isInstance = false;
 	}
 
 	protected void closedScreen(final Screen newScreen) {
@@ -450,11 +459,11 @@ public class LProcess implements LRelease {
 	}
 
 	public LProcess start() {
-		if (!_running) {
+		if (!_screenLoading) {
 			if (_loadingScreen != null) {
 				setScreen(_loadingScreen);
 			}
-			_running = true;
+			_screenLoading = true;
 		}
 		return this;
 	}
@@ -1246,7 +1255,7 @@ public class LProcess implements LRelease {
 			if (screen.getBackground() != null) {
 				_currentScreen.setRepaintMode(Screen.SCREEN_TEXTURE_REPAINT);
 			}
-			this._isInstance = true;
+			beginProcess();
 			if (screen instanceof EmulatorListener) {
 				setEmulatorListener((EmulatorListener) screen);
 			} else {
@@ -1401,8 +1410,8 @@ public class LProcess implements LRelease {
 
 	@Override
 	public void close() {
-		_running = false;
-		if (_isInstance) {
+		_screenLoading = false;
+		if (_isInstance && _currentScreen != null) {
 			_currentScreen.stop();
 		}
 		endTransition();

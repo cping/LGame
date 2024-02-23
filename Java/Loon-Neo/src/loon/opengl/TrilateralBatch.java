@@ -40,6 +40,8 @@ public class TrilateralBatch extends BaseBatch {
 
 	private float _ubufHeight = 0;
 
+	private float _currentFloatColor = -1f;
+
 	private int _currentBlendMode = -1;
 
 	private int _currentAlpha;
@@ -47,6 +49,8 @@ public class TrilateralBatch extends BaseBatch {
 	private int _currentIndexCount = 0;
 
 	private int _maxSpritesInBatch = 0;
+
+	private int _currentIntColor = -1;
 
 	private boolean _uflip = true;
 
@@ -61,7 +65,7 @@ public class TrilateralBatch extends BaseBatch {
 	}
 
 	public TrilateralBatch(GL20 gl, ShaderSource src) {
-		this(gl, 512, src);
+		this(gl, 2048, src);
 	}
 
 	public TrilateralBatch(GL20 gl, int maxSize, ShaderSource src) {
@@ -76,7 +80,25 @@ public class TrilateralBatch extends BaseBatch {
 	public void init() {
 		this._currentSubmit = new Submit();
 		this._currentBlendMode = -1;
+		this._currentIntColor = -1;
+		this._currentFloatColor = LColor.white.toFloatBits();
 		this._currentAlpha = 255;
+	}
+
+	private final float toFloatColor(int tint) {
+		if (_currentIntColor != tint || _currentIntColor == -1) {
+			final int r = (tint & 0x00FF0000) >> 16;
+			final int g = (tint & 0x0000FF00) >> 8;
+			final int b = (tint & 0x000000FF);
+			_currentAlpha = (tint & 0xFF000000) >> 24;
+			if (_currentAlpha < 0) {
+				_currentAlpha += 256;
+			}
+			_currentIntColor = (_currentAlpha << 24) | (b << 16) | (g << 8) | r;
+			_currentFloatColor = NumberUtils.intBitsToFloat(_currentIntColor & 0xfeffffff);
+			_currentIntColor = tint;
+		}
+		return _currentFloatColor;
 	}
 
 	protected final static float addX(float m00, float m01, float m10, float m11, float x, float y, float tx) {
@@ -95,6 +117,9 @@ public class TrilateralBatch extends BaseBatch {
 		if (_locked) {
 			return;
 		}
+
+		final float colorFloat = toFloatColor(tint);
+
 		final float nx1 = addX(m00, m01, m10, m11, x1, y1, tx);
 		final float ny1 = addY(m00, m01, m10, m11, x1, y1, ty);
 		final float nx2 = addX(m00, m01, m10, m11, x2, y2, tx);
@@ -103,18 +128,6 @@ public class TrilateralBatch extends BaseBatch {
 		final float ny3 = addY(m00, m01, m10, m11, x3, y3, ty);
 		final float nx4 = addX(m00, m01, m10, m11, x4, y4, tx);
 		final float ny4 = addY(m00, m01, m10, m11, x4, y4, ty);
-
-		final int r = (tint & 0x00FF0000) >> 16;
-		final int g = (tint & 0x0000FF00) >> 8;
-		final int b = (tint & 0x000000FF);
-		_currentAlpha = (tint & 0xFF000000) >> 24;
-		if (_currentAlpha < 0) {
-			_currentAlpha += 256;
-		}
-
-		final int color = (_currentAlpha << 24) | (b << 16) | (g << 8) | r;
-
-		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
 
 		int index = this._currentIndexCount;
 
@@ -153,17 +166,7 @@ public class TrilateralBatch extends BaseBatch {
 	public void quad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1,
 			float x2, float y2, float x3, float y3, float x4, float y4, float u, float v, float u2, float v2) {
 
-		final int r = (tint & 0x00FF0000) >> 16;
-		final int g = (tint & 0x0000FF00) >> 8;
-		final int b = (tint & 0x000000FF);
-		_currentAlpha = (tint & 0xFF000000) >> 24;
-		if (_currentAlpha < 0) {
-			_currentAlpha += 256;
-		}
-
-		final int color = (_currentAlpha << 24) | (b << 16) | (g << 8) | r;
-
-		final float colorFloat = NumberUtils.intBitsToFloat(color & 0xfeffffff);
+		final float colorFloat = toFloatColor(tint);
 
 		quad(m00, m01, m10, m11, tx, ty, x1, y1, colorFloat, x2, y2, colorFloat, x3, y3, colorFloat, x4, y4, colorFloat,
 				u, v, u2, v2);

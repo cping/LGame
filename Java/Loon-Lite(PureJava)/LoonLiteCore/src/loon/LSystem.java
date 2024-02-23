@@ -782,6 +782,12 @@ public class LSystem {
 		}
 	}
 
+	public static final void invokeAsync(Updateable update) {
+		if (base() != null) {
+			base().invokeAsync(update);
+		}
+	}
+
 	public static final int batchCacheSize() {
 		if (base() != null) {
 			return base().batchCacheSize();
