@@ -128,8 +128,6 @@ public class LTable extends LContainer implements FontSet<LTable> {
 
 	private LTexture headerTexture;
 
-	private LTexture backgroundTexture;
-
 	public LTable(int x, int y) {
 		this(SkinManager.get().getTableSkin().getFont(), x, y);
 	}
@@ -168,7 +166,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		this.setFont(font);
 		this.cellHeight = (int) (font.getHeight() + font.getAscent());
 		this.headerTexture = headerTexture;
-		this.backgroundTexture = backgroundTexture;
+		this.onlyBackground(backgroundTexture);
 		this.setElastic(false);
 		this.setLocked(true);
 	}
@@ -524,8 +522,8 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (gridVisible) {
 				g.setLineWidth(_tableLineWidth);
 			}
-			if (backgroundTexture != null) {
-				g.draw(backgroundTexture, x, y, _tableWidth, _tableHeight);
+			if (_background != null) {
+				g.draw(_background, x, y, _tableWidth, _tableHeight);
 			}
 			final int rowCount = model.getRowCount();
 			final int colCount = model.getColumnCount();
@@ -881,11 +879,11 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	public LTexture getBackgroundTexture() {
-		return backgroundTexture;
+		return _background;
 	}
 
 	public LTable setBackgroundTexture(LTexture backgroundTexture) {
-		this.backgroundTexture = backgroundTexture;
+		this.onlyBackground(backgroundTexture);
 		addFlagDirty();
 		return this;
 	}
@@ -922,9 +920,9 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			_cacheFonts.close(true);
 			_cacheFonts = null;
 		}
-		if (backgroundTexture != null) {
-			backgroundTexture.close();
-			backgroundTexture = null;
+		if (headerTexture != null) {
+			headerTexture.close();
+			headerTexture = null;
 		}
 	}
 

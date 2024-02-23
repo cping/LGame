@@ -196,7 +196,7 @@ public class LDragging extends LComponent {
 				if (alpha >= 1f) {
 					_fillColor.a = _dragDrawAlpha;
 				}
-				int tint = g.getTint();
+				int tint = g.color();
 				g.setColor(_fillColor);
 				g.fillCircle(areaX, areaY, areaSize);
 				float oldLineWidth = g.getLineWidth();
@@ -211,7 +211,7 @@ public class LDragging extends LComponent {
 				_fillColor.a = alpha;
 				g.setTint(tint);
 			} else {
-				int tint = g.getTint();
+				int tint = g.color();
 				g.setColor(_fillColor);
 				float oldLineWidth = g.getLineWidth();
 				g.setLineWidth(_lineWidth);

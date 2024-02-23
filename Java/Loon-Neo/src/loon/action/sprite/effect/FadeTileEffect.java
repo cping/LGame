@@ -244,7 +244,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		if (_type == TYPE_FADE_IN && _completed) {
 			return;
 		}
-		final int old = g.getTint();
+		final int old = g.color();
 		for (int x = 0; x < tileWidth; x++) {
 			for (int y = 0; y < tileHeight; y++) {
 				final float offX = x * sizeWidth + offsetX;

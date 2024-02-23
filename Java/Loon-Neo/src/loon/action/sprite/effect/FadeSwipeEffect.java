@@ -79,7 +79,7 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 			return;
 		}
 		float percent = _timer.getPercentage();
-		final int tmp = g.getTint();
+		final int tmp = g.color();
 		if (_type == TYPE_FADE_IN) {
 			float width = getWidth() + (2 * triangle);
 			float height = getHeight();

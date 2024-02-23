@@ -307,7 +307,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		if (StringUtils.isEmpty(mes)) {
 			return this;
 		}
-		String[] messages = StringUtils.split(mes, LSystem.LF);
+		final String[] messages = StringUtils.split(mes, LSystem.LF);
 		for (int i = messages.length - 1; i > -1; i--) {
 			putOne(messages[i]);
 		}
@@ -317,9 +317,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private void putOne(String mes) {
 		this.over = false;
 		this.numBak = this.amount;
-
 		this.message[this.amount] = mes;
-
 		if (this.flashFont) {
 			if ((this.crs[this.amount] == 0) && (this.cgs[this.amount] == 0) && (this.cbs[this.amount] == 0)) {
 				this.crs[this.amount] = this.default_cr;
@@ -437,20 +435,19 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return this.waitFlagString;
 	}
 
-	public LTextArea draw(GLEx g, int dx, int dy, int d_type, int lines) {
+	public void draw(GLEx g, int dx, int dy, int d_type, int lines) {
 		if (_background != null) {
 			g.draw(_background, dx, dy, getWidth(), getHeight(), _component_baseColor);
 		}
-		int oldColor = g.color();
+		final int oldColor = g.color();
 		this.countFrame += 1;
-		int index = amount;
 		for (int i = 0; i < this.maxAmount - 1; i++) {
 			this.amount -= 1;
 			if (this.amount < 0) {
 				this.amount = (this.maxAmount - 1);
 			}
 			if (i <= lines) {
-				for (int i2 = 0; i2 < 2; i2++) {
+				for (int j = 0; j < 2; j++) {
 					if (this.getMessageLength[this.amount] < this.message[this.amount].length()) {
 						String[] temp = this.getMessage;
 						temp[this.amount] = (temp[this.amount] + this.message[this.amount]
@@ -535,7 +532,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 					tmpcolor.setColor(this.crs[this.amount], this.cgs[this.amount], this.cbs[this.amount], 255);
 				}
 				drawMessage(g, this.getMessage[this.amount], this.posx, this.drawY, tmpcolor);
-				boolean showFlag = (this.waitFlag) && (i == 0) && index > 0;
+				final boolean showFlag = (this.waitFlag) && (i == 0);
 				if (showFlag) {
 					this.posy = (this.countFrame * 1 / 3 % this.displayFont.getSize() / 2 - 2);
 					drawMessage(g, lineFlag, this.posx + this.displayFont.stringWidth(this.getMessage[this.amount]),
@@ -561,8 +558,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.amount = (this.maxAmount - 1);
 		}
 		g.setColor(oldColor);
-
-		return this;
 	}
 
 	public LTextArea setWaitFlag(boolean w) {
@@ -715,7 +710,6 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	@Override
 	public void destory() {
-
 	}
 
 }

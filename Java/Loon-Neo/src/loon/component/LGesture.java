@@ -89,7 +89,7 @@ public class LGesture extends LComponent {
 	public void createUI(GLEx g, int x, int y) {
 		if (isVisible() && goalPath != null) {
 			g.saveBrush();
-			int tint = g.getTint();
+			int tint = g.color();
 			g.setLineWidth(lineWidth);
 			g.setColor(_component_baseColor);
 			g.drawPolyline(goalPath);

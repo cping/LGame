@@ -370,7 +370,7 @@ public class DefUI extends HelperUtils {
 		} else {
 			gradation.drawWidth(g, 0, 0);
 		}
-		tool.drawFrame(g, 0, 0, width, height);
+		tool.drawFrame(g, -1, -1, width + 2, height + 2);
 		LTexture texture = g.toTexture();
 		if (g.getImage() != null) {
 			g.getImage().close();
@@ -394,7 +394,7 @@ public class DefUI extends HelperUtils {
 			gradation.drawWidth(pix, 0, 0);
 		}
 		g.draw(pix.getImage(), 0, 0, width, height);
-		tool.drawFrame(g, 0, 0, width, height);
+		tool.drawFrame(g, -1, -1, width + 2, height + 2);
 		LTexture texture = g.toTexture();
 		if (g.getImage() != null) {
 			g.getImage().close();
