@@ -62,6 +62,8 @@ public class WaitCoroutine {
 
 	private float _internalValue;
 
+	private float _currentValue;
+
 	private ObjRef<?> _tag;
 
 	private WaitCoroutine(float v, WaitType type) {
@@ -77,6 +79,8 @@ public class WaitCoroutine {
 			this._internalValue = Duration.ofS(v);
 			break;
 		}
+
+		this._currentValue = _internalValue;
 		this._type = type;
 		this._tag = t;
 	}
@@ -88,15 +92,21 @@ public class WaitCoroutine {
 	protected void update(long millis) {
 		switch (this._type) {
 		case Frames:
-			this._internalValue -= 1f;
+			this._currentValue -= 1f;
 			break;
 		case Time:
-			this._internalValue -= MathUtils.max(16, millis);
+			this._currentValue -= MathUtils.max(16, millis);
 			break;
 		}
 	}
 
+	public WaitCoroutine reset() {
+		this._currentValue = this._internalValue;
+		this._tag = null;
+		return this;
+	}
+
 	public boolean isCompleted() {
-		return this._internalValue <= 0f;
+		return this._currentValue <= 0f;
 	}
 }

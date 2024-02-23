@@ -52,9 +52,9 @@ public class ShaderProgram implements LRelease {
 	public static final String TANGENT_ATTRIBUTE = "a_tangent";
 
 	public static final String BINORMAL_ATTRIBUTE = "a_binormal";
-	
+
 	public static final String BONEWEIGHT_ATTRIBUTE = "a_boneWeight";
-	
+
 	public static boolean pedantic = true;
 
 	private String log = LSystem.EMPTY;
@@ -661,7 +661,7 @@ public class ShaderProgram implements LRelease {
 			final IntBuffer params = LSystem.base().support().newIntBuffer(1);
 			final IntBuffer type = LSystem.base().support().newIntBuffer(1);
 
-			((Buffer)params).clear();
+			((Buffer) params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params);
 			int numAttributes = params.get(0);
 
@@ -672,9 +672,9 @@ public class ShaderProgram implements LRelease {
 			GLExt ext = (GLExt) gl;
 
 			for (int i = 0; i < numAttributes; i++) {
-				((Buffer)params).clear();
+				((Buffer) params).clear();
 				params.put(0, 1);
-				((Buffer)type).clear();
+				((Buffer) type).clear();
 				String name = ext.glGetActiveAttrib(programId, i, params, type);
 				final int location = gl.glGetAttribLocation(programId, name);
 				attributes.put(name, location);
@@ -683,7 +683,7 @@ public class ShaderProgram implements LRelease {
 				attributeNames[i] = name;
 			}
 
-			((Buffer)params).clear();
+			((Buffer) params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params);
 			int numUniforms = params.get(0);
 
@@ -692,9 +692,9 @@ public class ShaderProgram implements LRelease {
 			}
 
 			for (int i = 0; i < numUniforms; i++) {
-				((Buffer)params).clear();
+				((Buffer) params).clear();
 				params.put(0, 1);
-				((Buffer)type).clear();
+				((Buffer) type).clear();
 				String name = ext.glGetActiveUniform(programId, i, params, type);
 				int location = gl.glGetUniformLocation(programId, name);
 				uniforms.put(name, location);
@@ -703,7 +703,7 @@ public class ShaderProgram implements LRelease {
 				uniformNames[i] = name;
 			}
 		} else {
-			
+
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params, 0);
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, params, 1);
 			int numAttributes = params[0];

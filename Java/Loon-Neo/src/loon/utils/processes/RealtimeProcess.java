@@ -256,6 +256,13 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		return dispose(r);
 	}
 
+	public RealtimeProcess reset() {
+		isDead = false;
+		_timeOutDelay = -1l;
+		_timeOutCount = 0l;
+		return this;
+	}
+
 	@Override
 	public void kill() {
 		this.isDead = true;

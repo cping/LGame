@@ -78,7 +78,7 @@ public interface Scriptable {
 	void moveToBackground();
 
 	void moveToForeground();
-	
+
 	void zapTo(Scriptable s);
 
 	void pauseFor(float s);

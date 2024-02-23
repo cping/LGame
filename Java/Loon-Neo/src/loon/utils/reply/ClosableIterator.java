@@ -24,8 +24,11 @@ import loon.LRelease;
 import loon.utils.LIterator;
 
 public interface ClosableIterator<T> extends LIterator<T>, LRelease {
+
+	void reset();
+
 	@Override
 	void close();
 
-	public boolean isReturning();
+	boolean isReturning();
 }

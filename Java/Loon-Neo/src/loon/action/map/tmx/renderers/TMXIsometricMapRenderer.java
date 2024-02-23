@@ -47,7 +47,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		_mapLocation.y = (x + y) * map.getTileHeight() / 2f + _objectLocation.y;
 		return _mapLocation.addSelf(map.getWidth() * map.getTileWidth() / 2f, 0);
 	}
-	
+
 	@Override
 	protected void renderImageLayer(GLEx g, TMXImageLayer imageLayer) {
 		if (!imageLayer.isVisible()) {

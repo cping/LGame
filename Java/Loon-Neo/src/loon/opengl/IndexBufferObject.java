@@ -141,7 +141,7 @@ public class IndexBufferObject implements IndexData {
 		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
-			((Buffer)byteBuffer).limit(buffer.limit() * 2);
+			((Buffer) byteBuffer).limit(buffer.limit() * 2);
 			LSystem.base().graphics().gl.glBufferData(GL20.GL_ELEMENT_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer,
 					usage);
 			isDirty = false;

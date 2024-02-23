@@ -33,8 +33,8 @@ public interface IndexData extends LRelease {
 	public void setIndices(short[] indices, int offset, int count);
 
 	public void setIndices(ShortBuffer indices);
-	
-	public void updateIndices (int targetOffset, short[] indices, int offset, int count);
+
+	public void updateIndices(int targetOffset, short[] indices, int offset, int count);
 
 	public ShortBuffer getBuffer(boolean dirty);
 

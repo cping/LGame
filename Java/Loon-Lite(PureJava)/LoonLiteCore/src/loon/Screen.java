@@ -5894,7 +5894,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 调用Loon虚拟的Yield实现
+	 * 调用loon虚拟的协程yield实现
 	 * 
 	 * @param es
 	 * @return
@@ -5903,8 +5903,76 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _battleProcess.call(es);
 	}
 
+	/**
+	 * 以指定名称,调用一个loon虚拟的yield实现(有名称的可复用)
+	 * 
+	 * @param name
+	 * @param es
+	 * @return
+	 */
+	public Coroutine call(String name, YieldExecute... es) {
+		return _battleProcess.call(name, es);
+	}
+
+	/**
+	 * 调用指定名称的loon虚拟协程(需要执行过并且赋名)
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine call(String name) {
+		return _battleProcess.call(name);
+	}
+
+	/**
+	 * 以指定名称,调用一个loon虚拟的yield实现(有名称的可复用)
+	 * 
+	 * @param name
+	 * @param es
+	 * @return
+	 */
+	public Coroutine putCall(String name, YieldExecute... es) {
+		return _battleProcess.putCall(name, es);
+	}
+
+	/**
+	 * 开始执行指定名称协程
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine startCoroutine(String name) {
+		return _battleProcess.startCoroutine(name);
+	}
+
+	/**
+	 * 开始执行指定协程
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public Coroutine startCoroutine(Coroutine c) {
+		return _battleProcess.startCoroutine(c);
+	}
+
+	/**
+	 * 开始执行指定协程
+	 * 
+	 * @param y
+	 * @return
+	 */
 	public Coroutine startCoroutine(Yielderable y) {
 		return _battleProcess.startCoroutine(y);
+	}
+
+	/**
+	 * 添加指定协程
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public boolean putCoroutine(Coroutine c) {
+		return _battleProcess.putCoroutine(c);
 	}
 
 	public BattleProcess resetCoroutine() {

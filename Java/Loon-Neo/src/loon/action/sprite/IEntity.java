@@ -207,7 +207,7 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity with(final TComponent<IEntity> c);
 
 	TComponent<IEntity> findComponent(String name);
-	
+
 	IEntity addComponent(final TComponent<IEntity> c);
 
 	IEntity removeComponents();

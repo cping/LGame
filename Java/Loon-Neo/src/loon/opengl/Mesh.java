@@ -162,9 +162,9 @@ public class Mesh implements LRelease {
 		}
 		FloatBuffer verticesBuffer = getVerticesBuffer(false);
 		int pos = verticesBuffer.position();
-		((Buffer)verticesBuffer).position(srcOffset);
+		((Buffer) verticesBuffer).position(srcOffset);
 		verticesBuffer.get(vertices, destOffset, count);
-		((Buffer)verticesBuffer).position(pos);
+		((Buffer) verticesBuffer).position(pos);
 		return vertices;
 	}
 
@@ -271,9 +271,9 @@ public class Mesh implements LRelease {
 			if (indices.getNumIndices() > 0) {
 				final ShortBuffer buffer = indices.getBuffer(false);
 				final int oldPosition = buffer.position();
-				((Buffer)buffer).position(offset);
+				((Buffer) buffer).position(offset);
 				gl.glDrawElements(primitiveType, count, GL20.GL_UNSIGNED_SHORT, buffer);
-				((Buffer)buffer).position(oldPosition);
+				((Buffer) buffer).position(oldPosition);
 			} else {
 				gl.glDrawArrays(primitiveType, offset, count);
 			}

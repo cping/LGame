@@ -35,6 +35,8 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	private final SortedList<YieldExecute> _executes;
 
+	private final SortedList<YieldExecute> _saveInitYields;
+
 	private Coroutine _coroutine;
 
 	private WaitCoroutine _waitCoroutine;
@@ -42,8 +44,27 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 	private boolean _returning;
 
 	public Yielderable(YieldExecute... es) {
-		_executes = new SortedList<YieldExecute>(es);
-		_loops = new SortedList<YieldLoop>();
+		this(new SortedList<YieldExecute>(es));
+	}
+
+	public Yielderable(SortedList<YieldExecute> es) {
+		this._executes = es;
+		this._saveInitYields = new SortedList<YieldExecute>(es);
+		this._loops = new SortedList<YieldLoop>();
+	}
+
+	public WaitCoroutine startCoroutine(Coroutine c) {
+		if (_coroutine != null) {
+			_coroutine.startCoroutine(c);
+		}
+		return returning(false);
+	}
+
+	public WaitCoroutine startCoroutine(String name) {
+		if (_coroutine != null) {
+			_coroutine.startCoroutine(name);
+		}
+		return returning(false);
 	}
 
 	protected void setCoroutine(Coroutine c) {
@@ -127,14 +148,28 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 			return;
 		}
 		if (!_returning) {
-			_executes.remove();
+			if (_executes.size > 0) {
+				_executes.removeFirst();
+			}
 			_loops.clear();
 		}
 	}
 
+	public WaitCoroutine breakSelf() {
+		return breakSelf(null);
+	}
+
+	public WaitCoroutine breakSelf(Object t) {
+		this._returning = false;
+		if (_coroutine != null) {
+			_coroutine.cancel();
+		}
+		return WaitCoroutine.frames(0, ObjRef.of(t));
+	}
+
 	public WaitCoroutine returning(Object t) {
 		if (t instanceof Boolean) {
-			this._returning = (Boolean) t;
+			this._returning = ((Boolean) t).booleanValue();
 		} else {
 			this._returning = true;
 		}
@@ -188,6 +223,14 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		return this;
 	}
 
+	public int size() {
+		return _executes.size;
+	}
+
+	public Yielderable cpy() {
+		return new Yielderable(_saveInitYields);
+	}
+
 	@Override
 	public boolean hasNext() {
 		return _executes.size > 0;
@@ -195,11 +238,39 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	@Override
 	public WaitCoroutine next() {
+		if (_waitCoroutine != null && !_waitCoroutine.isCompleted()) {
+			return _waitCoroutine;
+		}
 		call();
 		if (_waitCoroutine == null) {
 			return WaitCoroutine.seconds(0f);
 		}
 		return _waitCoroutine;
+	}
+
+	@Override
+	public void reset() {
+		_loops.clear();
+		_executes.clear();
+		_executes.addAll(_saveInitYields);
+		if (_coroutine != null) {
+			_coroutine.setup(this, false);
+		}
+		if (_waitCoroutine != null) {
+			_waitCoroutine.reset();
+			_waitCoroutine = null;
+		}
+		_returning = false;
+	}
+
+	@Override
+	public ClosableIterator<WaitCoroutine> iterator() {
+		return this;
+	}
+
+	@Override
+	public boolean isReturning() {
+		return _returning;
 	}
 
 	@Override
@@ -214,17 +285,8 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		_disposes.close();
 		_loops.clear();
 		_executes.clear();
+		_saveInitYields.clear();
 		_returning = false;
-	}
-
-	@Override
-	public ClosableIterator<WaitCoroutine> iterator() {
-		return this;
-	}
-
-	@Override
-	public boolean isReturning() {
-		return _returning;
 	}
 
 }

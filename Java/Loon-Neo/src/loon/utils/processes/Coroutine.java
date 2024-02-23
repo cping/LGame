@@ -27,32 +27,64 @@ public class Coroutine {
 
 	protected CoroutineStatus _status;
 
+	protected CoroutineProcess _mainProcess;
+
 	private Yielderable _mainEnumerator = null;
 	private ClosableIterator<WaitCoroutine> _childEnumerator = null;
 	private WaitCoroutine _currentCondition;
 	private Exception _lastException;
+
+	private final String _coroutineName;
+
+	public Coroutine() {
+		this(null, null);
+	}
+
+	public Coroutine(CoroutineProcess process, Yielderable y) {
+		this(LSystem.UNKNOWN, process, y);
+	}
+
+	public Coroutine(String name, CoroutineProcess process, Yielderable y) {
+		this._coroutineName = name;
+		this._mainProcess = process;
+		if (y != null) {
+			setup(y);
+		}
+	}
 
 	public void update(long elapsedTime) {
 		if (this._status != CoroutineStatus.Running) {
 			return;
 		}
 		try {
-			if (_currentCondition == null) {
+			if (_childEnumerator != null && _childEnumerator.hasNext()) {
 				this._currentCondition = this._childEnumerator.next();
-			}
-			this._currentCondition.update(elapsedTime);
-			if (this._currentCondition.isCompleted()) {
-				if (this._childEnumerator.hasNext()) {
-					this._currentCondition = this._childEnumerator.next();
-				} else {
-					this._status = CoroutineStatus.Completed;
+				if (this._currentCondition != null) {
+					this._currentCondition.update(elapsedTime);
 				}
+			} else if (this._currentCondition != null && this._currentCondition.isCompleted()) {
+				this._status = CoroutineStatus.Completed;
 			}
 		} catch (Exception e) {
 			this._lastException = e;
 			this._status = CoroutineStatus.Error;
+			e.printStackTrace();
 			LSystem.error(e.getMessage());
 		}
+	}
+
+	public Coroutine startCoroutine(Coroutine coroutine) {
+		if (_mainProcess != null) {
+			return _mainProcess.startCoroutine(coroutine);
+		}
+		return null;
+	}
+
+	public Coroutine startCoroutine(String name) {
+		if (_mainProcess != null) {
+			return _mainProcess.startCoroutine(name);
+		}
+		return null;
 	}
 
 	public Yielderable getYielderable() {
@@ -60,15 +92,20 @@ public class Coroutine {
 	}
 
 	public Coroutine setup(Yielderable y) {
+		return setup(y, true);
+	}
+
+	Coroutine setup(Yielderable y, boolean closed) {
 		this._mainEnumerator = y;
 		if (this._mainEnumerator != null) {
 			this._mainEnumerator.setCoroutine(this);
 			this._status = CoroutineStatus.Running;
 			this._lastException = null;
-			if (this._childEnumerator != null) {
+			if (closed && this._childEnumerator != null) {
 				this._childEnumerator.close();
 			}
 			this._childEnumerator = y.iterator();
+			this._currentCondition = null;
 		}
 		return this;
 	}
@@ -103,11 +140,24 @@ public class Coroutine {
 		return this;
 	}
 
-	public Coroutine cancel() {
-		if (this._childEnumerator != null) {
-			this._childEnumerator.close();
+	public Coroutine start() {
+		this._status = CoroutineStatus.Running;
+		return this;
+	}
+
+	public Coroutine reset() {
+		if (_mainEnumerator != null) {
+			_mainEnumerator.reset();
 		}
+		return this;
+	}
+
+	public Coroutine cancel() {
 		this._status = CoroutineStatus.Cancel;
 		return this;
+	}
+
+	public String getCoroutineName() {
+		return _coroutineName;
 	}
 }

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2023 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,6 +22,7 @@ package org.test;
 
 import loon.Counter;
 import loon.Stage;
+import loon.component.LClickButton;
 import loon.component.LLabel;
 
 public class YieldTest extends Stage {
@@ -35,8 +36,16 @@ public class YieldTest extends Stage {
 		add(label);
 		// 构建计数器
 		final Counter c = new Counter();
-		// 调用loon内置的虚拟yield函数(真实线程移植html环境有问题,所以不用......)
-		call(yield -> {
+		// 构建test1(putcall命令除非后面调用否则不会执行,只会缓存)
+		putCall("test1", yield -> {
+
+			label.setText("hello world");
+			return yield.breakSelf();
+		});
+
+		// 创建并调用loon内置的虚拟协程yield函数test2(真实线程移植html环境有问题,所以不用,自制丐版协程......)
+		call("test2", yield -> {
+
 			// 如果计数器小于100循环
 			if (yield.loop(c.increment() < 100, () -> {
 				label.setText(c.getValue());
@@ -60,6 +69,8 @@ public class YieldTest extends Stage {
 					return yield.returning(c.increment());
 				} else {
 					label.setText("next");
+					// 结束此次操作协程循环
+					// return yield.breakSelf();
 					// 结束此yield循环
 					return yield.returning(false);
 				}
@@ -72,7 +83,16 @@ public class YieldTest extends Stage {
 			label.setText("10s yield 3");
 			return yield.seconds(1f);
 		});
+		LClickButton click = node("click", "Reset", 160, 35);
 
+		centerBottomOn(click, 0, -10);
+		add(click.up((x, y) -> {
+			c.clear();
+			// 再次调用已有的loon协程函数
+			call("test2");
+			// 调用test1
+			// call("test1");
+		}));
 	}
 
 }

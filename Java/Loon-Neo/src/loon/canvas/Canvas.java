@@ -70,17 +70,17 @@ public abstract class Canvas implements LRelease {
 	}
 
 	public interface ColorPixel {
-		
+
 		public int getPixelWidth();
-		
+
 		public int getPixelHeight();
 
 		public int get(float x, float y);
 
 		public void set(float x, float y, int pixel);
-		
+
 		public int[] pixels();
-		
+
 		public void bindPixels(int[] pixels);
 
 	}
@@ -94,7 +94,7 @@ public abstract class Canvas implements LRelease {
 		void draw(Object gc, float x, float y, float width, float height);
 
 		void draw(Object gc, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh);
-		
+
 	}
 
 	public final Image image;
