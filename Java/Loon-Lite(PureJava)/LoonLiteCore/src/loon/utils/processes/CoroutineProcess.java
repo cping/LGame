@@ -176,6 +176,66 @@ public class CoroutineProcess extends RealtimeProcess implements LRelease {
 	}
 
 	/**
+	 * 停止指定名称协程的执行
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine stopCoroutine(String name) {
+		final Coroutine coroutine = getCoroutine(name);
+		if (coroutine != null) {
+			coroutine.cancel();
+		}
+		return coroutine;
+	}
+
+	/**
+	 * 暂停指定名称协程的执行
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine pauseCoroutine(String name) {
+		final Coroutine coroutine = getCoroutine(name);
+		if (coroutine != null) {
+			coroutine.pause();
+		}
+		return coroutine;
+	}
+
+	/**
+	 * 重启指定名称协程的执行
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine resetCoroutine(String name) {
+		final Coroutine coroutine = getCoroutine(name);
+		if (coroutine != null) {
+			coroutine.reset();
+		}
+		return coroutine;
+	}
+
+	/**
+	 * 删除指定名称的协程
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Coroutine deleteCoroutine(String name) {
+		final Coroutine coroutine = getCoroutine(name);
+		if (coroutine != null) {
+			coroutine.cancel();
+			removeCoroutine(coroutine);
+			if (_mainCoroutine == coroutine) {
+				_mainCoroutine = null;
+			}
+		}
+		return coroutine;
+	}
+
+	/**
 	 * 获得指定名称的协程
 	 * 
 	 * @param name

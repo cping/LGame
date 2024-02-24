@@ -87,6 +87,34 @@ public class Coroutine {
 		return null;
 	}
 
+	public Coroutine pauseCoroutine(String name) {
+		if (_mainProcess != null) {
+			return _mainProcess.pauseCoroutine(name);
+		}
+		return null;
+	}
+
+	public Coroutine stopCoroutine(String name) {
+		if (_mainProcess != null) {
+			return _mainProcess.stopCoroutine(name);
+		}
+		return null;
+	}
+
+	public Coroutine resetCoroutine(String name) {
+		if (_mainProcess != null) {
+			return _mainProcess.resetCoroutine(name);
+		}
+		return null;
+	}
+
+	public Coroutine deleteCoroutine(String name) {
+		if (_mainProcess != null) {
+			return _mainProcess.deleteCoroutine(name);
+		}
+		return null;
+	}
+
 	public Yielderable getYielderable() {
 		return _mainEnumerator;
 	}

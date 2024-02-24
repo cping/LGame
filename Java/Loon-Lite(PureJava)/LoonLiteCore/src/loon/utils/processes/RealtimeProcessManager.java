@@ -33,7 +33,7 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
- * loon围绕时间桢提供的进程管理用类
+ * loon围绕时间帧提供的进程管理用类
  */
 public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
 

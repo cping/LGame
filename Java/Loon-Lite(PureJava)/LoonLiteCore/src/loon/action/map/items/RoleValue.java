@@ -36,8 +36,10 @@ public abstract class RoleValue {
 	protected int actionPriority;
 	protected int maxHealth;
 	protected int maxMana;
+	protected int maxExp;
 	protected int health;
 	protected int mana;
+	protected int exp;
 	protected int attack;
 	protected int defence;
 	protected int strength;
@@ -56,6 +58,7 @@ public abstract class RoleValue {
 	protected boolean isSkill;
 	protected boolean isMoved;
 	protected boolean isDead;
+	protected boolean isInvincible;
 
 	protected RoleEquip info;
 
@@ -499,8 +502,26 @@ public abstract class RoleValue {
 		return this.isDead;
 	}
 
+	public boolean isAlive() {
+		return !isDead;
+	}
+
 	public RoleValue setDead(boolean dead) {
 		this.isDead = dead;
+		return this;
+	}
+
+	public RoleValue die() {
+		this.isDead = true;
+		return this;
+	}
+
+	public boolean isInvincible() {
+		return isInvincible;
+	}
+
+	public RoleValue setInvincible(boolean i) {
+		this.isInvincible = i;
 		return this;
 	}
 
@@ -549,12 +570,47 @@ public abstract class RoleValue {
 		}
 	}
 
+	public int getMaxExp() {
+		return maxExp;
+	}
+
+	public RoleValue setMaxExp(int maxExp) {
+		this.maxExp = maxExp;
+		return this;
+	}
+
+	public int getExp() {
+		return exp;
+	}
+
+	public RoleValue setExp(int exp) {
+		this.exp = exp;
+		return this;
+	}
+
+	public float getUpLevelMaxExp() {
+		return getUpLevelMaxExp(0f);
+	}
+
+	public float getUpLevelMaxExp(float offset) {
+		return (2f * level * (MathUtils.pow(1.3f, level / 3f)) + offset) + 4f;
+	}
+
+	public float getEnemyExpEarned(int enemyLevel) {
+		return getEnemyExpEarned(enemyLevel, 0f);
+	}
+
+	public float getEnemyExpEarned(int enemyLevel, float offset) {
+		return (MathUtils.pow(enemyLevel, 0.95f)) + offset;
+	}
+
 	public RoleValue reset() {
 		this.isAttack = false;
 		this.isDefense = false;
 		this.isSkill = false;
 		this.isMoved = false;
 		this.isDead = false;
+		this.isInvincible = false;
 		this._locked = false;
 		return this;
 	}
@@ -674,8 +730,10 @@ public abstract class RoleValue {
 		this.actionPriority = 0;
 		this.maxHealth = 0;
 		this.maxMana = 0;
+		this.maxExp = 0;
 		this.health = 0;
 		this.mana = 0;
+		this.exp = 0;
 		this.attack = 0;
 		this.defence = 0;
 		this.strength = 0;
@@ -688,6 +746,12 @@ public abstract class RoleValue {
 		this.movePoints = 0;
 		this.turnPoints = 0;
 		this.actionPoints = 0;
+		this.isAttack = false;
+		this.isDefense = false;
+		this.isSkill = false;
+		this.isMoved = false;
+		this.isDead = false;
+		this.isInvincible = false;
 		return this;
 	}
 

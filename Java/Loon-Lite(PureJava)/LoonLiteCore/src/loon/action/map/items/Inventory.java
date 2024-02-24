@@ -32,8 +32,15 @@ public class Inventory {
 
 	private float _gold;
 
+	private int _invType;
+
 	public Inventory() {
+		this(-1);
+	}
+
+	public Inventory(int type) {
 		_items = new TArray<IItem>(32);
+		_invType = type;
 		_gold = 0;
 	}
 
@@ -184,6 +191,15 @@ public class Inventory {
 	public Inventory merge(Inventory i) {
 		_items.addAll(i._items);
 		this.addGold(i.getGold());
+		return this;
+	}
+
+	public int getInvType() {
+		return _invType;
+	}
+
+	public Inventory setInvType(int i) {
+		this._invType = i;
 		return this;
 	}
 

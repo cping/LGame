@@ -117,7 +117,7 @@ public class Teams implements LRelease {
 		return _chars;
 	}
 
-	public TArray<Team> list() {
+	public final TArray<Team> list() {
 		return _teams;
 	}
 
@@ -133,7 +133,7 @@ public class Teams implements LRelease {
 		if (StringUtils.isEmpty(name)) {
 			return null;
 		}
-		TArray<Team> list = new TArray<Team>();
+		final TArray<Team> list = new TArray<Team>();
 		for (Team team : _teams) {
 			if (name.equalsIgnoreCase(team.getName())) {
 				list.add(team);

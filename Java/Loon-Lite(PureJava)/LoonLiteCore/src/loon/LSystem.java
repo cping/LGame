@@ -39,7 +39,10 @@ import loon.utils.Scale;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
 
-public class LSystem {
+/**
+ * loon的基础操作用类统一调用器及静态参数保存用类
+ */
+public final class LSystem {
 
 	private LSystem() {
 	}

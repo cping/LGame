@@ -67,6 +67,34 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		return returning(false);
 	}
 
+	public WaitCoroutine pauseCoroutine(String name) {
+		if (_coroutine != null) {
+			_coroutine.pauseCoroutine(name);
+		}
+		return returning(false);
+	}
+
+	public WaitCoroutine stopCoroutine(String name) {
+		if (_coroutine != null) {
+			_coroutine.stopCoroutine(name);
+		}
+		return returning(false);
+	}
+
+	public WaitCoroutine resetCoroutine(String name) {
+		if (_coroutine != null) {
+			_coroutine.resetCoroutine(name);
+		}
+		return returning(false);
+	}
+
+	public WaitCoroutine deleteCoroutine(String name) {
+		if (_coroutine != null) {
+			_coroutine.deleteCoroutine(name);
+		}
+		return returning(false);
+	}
+
 	protected void setCoroutine(Coroutine c) {
 		this._coroutine = c;
 	}

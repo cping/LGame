@@ -387,6 +387,15 @@ public class Team implements LRelease {
 		return true;
 	}
 
+	public boolean isInvincible() {
+		for (Role c : _characters) {
+			if (c != null && !c.isInvincible) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	public TArray<Role> canDefenseRoleList() {
 		TArray<Role> list = new TArray<Role>();
 		for (Role c : _characters) {

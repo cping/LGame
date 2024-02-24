@@ -2040,17 +2040,6 @@ public final class MathUtils {
 	}
 
 	/**
-	 * 返回一个值在指定概率范围内是否可能被触发
-	 * 
-	 * @param k
-	 * @param p
-	 * @return
-	 */
-	public static boolean isSuccessful(final float k, final float p) {
-		return MathUtils.random(k) < p;
-	}
-
-	/**
 	 * 判定数值是否在指定模糊查询值区间内
 	 * 
 	 * @param src
@@ -2100,23 +2089,52 @@ public final class MathUtils {
 	}
 
 	/**
-	 * 返回一个概率事件是否被触发的布尔值
+	 * 返回一个概率事件在100%范围是否被触发的布尔值
 	 * 
-	 * @param chance >0 && < 100
+	 * @param chance>0 && <100
 	 * @return
 	 */
 	public static boolean chanceRoll(final float chance) {
+		return chanceRoll(chance, 100f);
+	}
+
+	/**
+	 * 返回一个概率事件是否被触发的布尔值
+	 * 
+	 * @param chance
+	 * @param max
+	 * @return
+	 */
+	public static boolean chanceRoll(final float chance, final float max) {
 		if (chance <= 0f) {
 			return false;
-		} else if (chance >= 100f) {
+		} else if (chance >= max) {
 			return true;
+		} else if (MathUtils.random(max) >= chance) {
+			return false;
 		} else {
-			if (MathUtils.random(100f) >= chance) {
-				return false;
-			} else {
-				return true;
-			}
+			return true;
 		}
 	}
 
+	/**
+	 * 返回一个值在指定概率范围内是否可能被触发
+	 * 
+	 * @param k
+	 * @param p
+	 * @return
+	 */
+	public static boolean isSuccess(final float k, final float p) {
+		return chanceRoll(k, p);
+	}
+
+	/**
+	 * 返回一个值在100%概率范围内是否可能被触发
+	 * 
+	 * @param p
+	 * @return
+	 */
+	public static boolean isSuccess(final float p) {
+		return chanceRoll(p);
+	}
 }

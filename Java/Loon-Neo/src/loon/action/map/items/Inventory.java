@@ -32,8 +32,15 @@ public class Inventory {
 
 	private float _gold;
 
+	private int _invType;
+
 	public Inventory() {
+		this(-1);
+	}
+
+	public Inventory(int type) {
 		_items = new TArray<IItem>(32);
+		_invType = type;
 		_gold = 0;
 	}
 
@@ -67,23 +74,7 @@ public class Inventory {
 	}
 
 	public Inventory swap(IItem a, IItem b) {
-		int aIdx = -1;
-		int bIdx = -1;
-		for (int i = 0; i < _items.size; i++) {
-			IItem item = _items.get(i);
-			if (item == a) {
-				aIdx = i;
-			}
-			if (item == b) {
-				bIdx = i;
-			}
-			if (aIdx != -1 && bIdx != -1) {
-				break;
-			}
-		}
-		if (aIdx != -1 && bIdx != -1) {
-			_items.swap(aIdx, bIdx);
-		}
+		_items.swap(a, b);
 		return this;
 	}
 
@@ -200,6 +191,15 @@ public class Inventory {
 	public Inventory merge(Inventory i) {
 		_items.addAll(i._items);
 		this.addGold(i.getGold());
+		return this;
+	}
+
+	public int getInvType() {
+		return _invType;
+	}
+
+	public Inventory setInvType(int i) {
+		this._invType = i;
 		return this;
 	}
 

@@ -39,6 +39,9 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
 import loon.utils.timer.LTimerContext;
 
+/**
+ * loon提供的战斗进程管理用类,以内嵌多事件模块顺序(或非顺序)循环的方式进行有序(或无序)的战斗进程管理
+ */
 public class BattleProcess extends CoroutineProcess {
 
 	public static abstract class TurnBeginEvent extends BattleTurnProcessEvent {
@@ -195,6 +198,9 @@ public class BattleProcess extends CoroutineProcess {
 		this._events = new TArray<BattleEvent>();
 		this._result = BattleResults.Running;
 		this._mainTeams = new Teams(name);
+		this._minBattleWaitSeconds = 0.1f;
+		this._maxBattleWaitSeconds = 5f;
+		this._battleWaitSeconds = 1f;
 		this.setLoop(true);
 		this.setDelay(delay);
 	}

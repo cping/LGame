@@ -64,7 +64,10 @@ import loon.utils.timer.Duration;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimer;
 
-public class LSystem {
+/**
+ * loon的基础操作用类统一调用器及静态参数保存用类
+ */
+public final class LSystem {
 
 	private LSystem() {
 	}

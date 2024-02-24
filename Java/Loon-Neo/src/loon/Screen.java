@@ -6027,6 +6027,46 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 停止指定名称协程的执行
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Coroutine stopCoroutine(String n) {
+		return _battleProcess.stopCoroutine(n);
+	}
+
+	/**
+	 * 暂停指定名称协程的执行
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Coroutine pauseCoroutine(String n) {
+		return _battleProcess.pauseCoroutine(n);
+	}
+
+	/**
+	 * 重启指定名称协程的执行
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Coroutine resetCoroutine(String n) {
+		return _battleProcess.resetCoroutine(n);
+	}
+
+	/**
+	 * 删除指定名称的协程
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public Coroutine deleteCoroutine(String n) {
+		return _battleProcess.deleteCoroutine(n);
+	}
+
+	/**
 	 * 添加指定协程
 	 * 
 	 * @param c
