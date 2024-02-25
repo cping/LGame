@@ -256,7 +256,7 @@ public class BattleProcess extends CoroutineProcess {
 	 */
 	public ObjectBundle createTurnHistory(int turn) {
 		final int tick = getTurnToRoundAmount(turn);
-		ObjectBundle data = _battleTurnHistory.get(turn);
+		ObjectBundle data = _battleTurnHistory.get(tick);
 		if (data != null) {
 			data.clear();
 			return data;
@@ -283,8 +283,18 @@ public class BattleProcess extends CoroutineProcess {
 	 * @param turn
 	 * @return
 	 */
-	public ObjectBundle getTurnLastHistory(int turn) {
-		return _battleTurnHistory.last(getTurnToRoundAmount(turn));
+	public ObjectBundle getTurnUpHistory(int turn) {
+		return _battleTurnHistory.up(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 获得指定回合的下一回合历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public ObjectBundle getTurnDownHistory(int turn) {
+		return _battleTurnHistory.down(getTurnToRoundAmount(turn));
 	}
 
 	/**
@@ -357,8 +367,12 @@ public class BattleProcess extends CoroutineProcess {
 		return hasTurnHistory(getTurnCount());
 	}
 
-	public ObjectBundle getCurrentTurnLastHistory() {
-		return getTurnLastHistory(getTurnCount());
+	public ObjectBundle getCurrentTurnUpHistory() {
+		return getTurnUpHistory(getTurnCount());
+	}
+
+	public ObjectBundle getCurrentTurnDownHistory() {
+		return getTurnDownHistory(getTurnCount());
 	}
 
 	public ObjectBundle getCurrentTurnHistory() {
@@ -535,6 +549,10 @@ public class BattleProcess extends CoroutineProcess {
 
 	public int getTurnCount(int count) {
 		return MathUtils.max(0, count + 1);
+	}
+
+	public boolean isTurn(int count) {
+		return MathUtils.equal(count, getTurnCount());
 	}
 
 	public int getRoundAmount() {

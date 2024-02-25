@@ -109,10 +109,25 @@ public class RollbackVar<T> {
 		return _caches.get(tick);
 	}
 
-	public T last(int tick) {
-		for (; tick >= 0; tick--) {
-			if (has(tick)) {
-				return _caches.get(tick);
+	public T up(int tick) {
+		final int[] keys = _caches.keys();
+		final int size = keys.length;
+		for (int i = size - 1; i > -1; i--) {
+			final int key = keys[i];
+			if (key == tick && i > 0) {
+				return _caches.get(keys[i - 1]);
+			}
+		}
+		return null;
+	}
+
+	public T down(int tick) {
+		final int[] keys = _caches.keys();
+		final int size = keys.length;
+		for (int i = 0; i < size; i++) {
+			final int key = keys[i];
+			if (key == tick && i < size - 1) {
+				return _caches.get(keys[i + 1]);
 			}
 		}
 		return null;
