@@ -25,6 +25,14 @@ import loon.utils.reply.ClosableIterator;
 
 public class Coroutine {
 
+	public final static Coroutine create(CoroutineProcess process, YieldExecute yields) {
+		return new Coroutine(process, new Yielderable(yields));
+	}
+
+	public final static Coroutine create(String name, CoroutineProcess process, YieldExecute yields) {
+		return new Coroutine(name, process, new Yielderable(yields));
+	}
+
 	protected CoroutineStatus _status;
 
 	protected CoroutineProcess _mainProcess;

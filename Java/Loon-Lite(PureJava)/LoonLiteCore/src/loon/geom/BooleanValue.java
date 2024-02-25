@@ -46,6 +46,16 @@ public class BooleanValue implements LRelease {
 		return this;
 	}
 
+	public BooleanValue start() {
+		set(false);
+		return this;
+	}
+
+	public BooleanValue stop() {
+		set(true);
+		return this;
+	}
+
 	public boolean get() {
 		return value;
 	}

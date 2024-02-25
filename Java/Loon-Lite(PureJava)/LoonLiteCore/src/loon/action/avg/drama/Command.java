@@ -287,7 +287,8 @@ public class Command extends Conversion implements LRelease {
 						conditionEnvironmentList.put(nowPosFlagName,
 								result = ((Boolean) conditionResult).booleanValue());
 					} else {
-						conditionEnvironmentList.put(nowPosFlagName, conditionResult);
+						final String v = HelperUtils.toStr(conditionResult);
+						conditionEnvironmentList.put(nowPosFlagName, result = StringUtils.toBoolean(v));
 					}
 				} else {
 					conditionEnvironmentList.put(nowPosFlagName, result);

@@ -31,6 +31,7 @@ import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
+import loon.utils.ObjectBundle;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -38,6 +39,7 @@ import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.WaitProcess;
+import loon.utils.reply.RollbackVar;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -151,6 +153,8 @@ public class BattleProcess extends CoroutineProcess {
 
 	private final static EventComparator _sortEvents = new EventComparator();
 
+	private RollbackVar<ObjectBundle> _battleTurnHistory = new RollbackVar<ObjectBundle>();
+
 	private ObjectMap<String, Object> _battleVars = new ObjectMap<String, Object>();
 
 	private Teams _mainTeams;
@@ -242,6 +246,153 @@ public class BattleProcess extends CoroutineProcess {
 
 	public boolean isBool(String name) {
 		return StringUtils.toBoolean(getVar(name));
+	}
+
+	/**
+	 * 创建指定战斗回合的历史数据(记录特定回合状态用的,比如有些游戏有回合触发剧情,这时候这个功能就有用了,记录状态才能后续触发)
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public ObjectBundle createTurnHistory(int turn) {
+		final int tick = getTurnToRoundAmount(turn);
+		ObjectBundle data = _battleTurnHistory.get(turn);
+		if (data != null) {
+			data.clear();
+			return data;
+		} else {
+			data = new ObjectBundle();
+		}
+		_battleTurnHistory.add(tick, data);
+		return data;
+	}
+
+	/**
+	 * 指定回合历史数据是否存在
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public boolean hasTurnHistory(int turn) {
+		return _battleTurnHistory.has(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 获得指定回合的上一回合历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public ObjectBundle getTurnLastHistory(int turn) {
+		return _battleTurnHistory.last(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 获得指定回合历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public ObjectBundle getTurnHistory(int turn) {
+		return _battleTurnHistory.get(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 删除指定回合历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public ObjectBundle removeTurnHistory(int turn) {
+		return _battleTurnHistory.remove(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 获得所有大于指定回合的历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public TArray<ObjectBundle> getTurnHistoryBigger(int turn) {
+		return _battleTurnHistory.getTicksBigger(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 获得所有小于指定回合的历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public TArray<ObjectBundle> getTurnHistorySmaller(int turn) {
+		return _battleTurnHistory.getTicksSmaller(getTurnToRoundAmount(turn));
+	}
+
+	/**
+	 * 删除所有大于指定回合的历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public BattleProcess removeTurnHistoryBigger(int turn) {
+		_battleTurnHistory.removeTickBigger(getTurnToRoundAmount(turn));
+		return this;
+	}
+
+	/**
+	 * 删除所有小于指定回合的历史数据
+	 * 
+	 * @param turn
+	 * @return
+	 */
+	public BattleProcess removeTurnHistorySmaller(int turn) {
+		_battleTurnHistory.removeTickSmaller(getTurnToRoundAmount(turn));
+		return this;
+	}
+
+	public ObjectBundle createCurrentTurnHistory() {
+		return createTurnHistory(getTurnCount());
+	}
+
+	public boolean hasCurrentTurnHistory() {
+		return hasTurnHistory(getTurnCount());
+	}
+
+	public ObjectBundle getCurrentTurnLastHistory() {
+		return getTurnLastHistory(getTurnCount());
+	}
+
+	public ObjectBundle getCurrentTurnHistory() {
+		return getTurnHistory(getTurnCount());
+	}
+
+	public TArray<ObjectBundle> getCurrentTurnHistoryBigger() {
+		return getTurnHistoryBigger(getTurnCount());
+	}
+
+	public TArray<ObjectBundle> getCurrentTurnHistorySmaller() {
+		return getTurnHistorySmaller(getTurnCount());
+	}
+
+	public ObjectBundle removeCurrentTurnHistory() {
+		return removeTurnHistory(getTurnCount());
+	}
+
+	public BattleProcess removeCurrentTurnHistoryBigger() {
+		return removeTurnHistoryBigger(getTurnCount());
+	}
+
+	public BattleProcess removeCurrentTurnHistorySmaller() {
+		return removeTurnHistorySmaller(getTurnCount());
+	}
+
+	/**
+	 * 清空全部回合历史数据
+	 * 
+	 * @return
+	 */
+	public BattleProcess clearTurnHistory() {
+		_battleTurnHistory.clear();
+		return this;
 	}
 
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
@@ -374,8 +525,16 @@ public class BattleProcess extends CoroutineProcess {
 		return _mainTeams.getSize();
 	}
 
+	protected int getTurnToRoundAmount(int turn) {
+		return MathUtils.max(0, turn - 1);
+	}
+
 	public int getTurnCount() {
-		return _roundAmount + 1;
+		return getTurnCount(_roundAmount);
+	}
+
+	public int getTurnCount(int count) {
+		return MathUtils.max(0, count + 1);
 	}
 
 	public int getRoundAmount() {
@@ -527,6 +686,7 @@ public class BattleProcess extends CoroutineProcess {
 		this._states.clear();
 		this.clearEventMainProcess();
 		this.clearVars();
+		this.clearTurnHistory();
 		this._events.clear();
 		this._result = BattleResults.Running;
 		this._actioning.set(false);
