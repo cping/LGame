@@ -28,6 +28,7 @@ import loon.Session;
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.CollectionUtils;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
@@ -72,7 +73,7 @@ public class Command extends Conversion implements LRelease {
 	private boolean functioning = false;
 
 	// 分支标记
-	private boolean esleflag = false;
+	private boolean elseflag = false;
 
 	private boolean esleover = false;
 
@@ -212,7 +213,7 @@ public class Command extends Conversion implements LRelease {
 		this.flaging = false;
 		this.ifing = false;
 		this.isCache = true;
-		this.esleflag = false;
+		this.elseflag = false;
 		this.backIfBool = false;
 		this.functioning = false;
 		this.esleover = false;
@@ -227,12 +228,18 @@ public class Command extends Conversion implements LRelease {
 		return this;
 	}
 
+	private void setDefaultIF(boolean flag) {
+		conditionEnvironmentList.put(nowPosFlagName, flag);
+		esleover = elseflag = flag;
+		addCommand = false;
+	}
+
 	private boolean setupIF(String commandString, String nowPosFlagName, ArrayMap setEnvironmentList,
 			ArrayMap conditionEnvironmentList) {
 		boolean result = false;
-		conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
+		conditionEnvironmentList.put(nowPosFlagName, result);
 		try {
-			TArray<String> temps = commandSplit(commandString);
+			final TArray<String> temps = commandSplit(commandString);
 			int size = temps.size;
 			Object valueA = null;
 			Object valueB = null;
@@ -245,7 +252,7 @@ public class Command extends Conversion implements LRelease {
 				condition = temps.get(2);
 			} else {
 				int count = 0;
-				StrBuilder sbr = new StrBuilder();
+				final StrBuilder sbr = new StrBuilder();
 				for (int i = 0; i < temps.size; i++) {
 					String res = temps.get(i);
 					if (count > 0) {
@@ -262,7 +269,6 @@ public class Command extends Conversion implements LRelease {
 				}
 				valueB = sbr.toString();
 			}
-
 			// 非纯数字
 			if (!MathUtils.isNan((String) valueB)) {
 				try {
@@ -273,50 +279,25 @@ public class Command extends Conversion implements LRelease {
 			}
 			// 无法判定
 			if (valueA == null || valueB == null) {
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
-			}
-
-			// 相等
-			if ("==".equals(condition)) {
-				conditionEnvironmentList.put(nowPosFlagName,
-						Boolean.valueOf(result = valueA.toString().equals(valueB.toString())));
-				// 非等
-			} else if ("!=".equals(condition)) {
-				conditionEnvironmentList.put(nowPosFlagName,
-						Boolean.valueOf(result = !valueA.toString().equals(valueB.toString())));
-				// 大于
-			} else if (">".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA > numberB));
-				// 小于
-			} else if ("<".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA < numberB));
-
-				// 大于等于
-			} else if (">=".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA >= numberB));
-				// 小于等于
-			} else if ("<=".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = numberA <= numberB));
-			} else if ("&&".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 && numberB > 0)));
-			} else if ("||".equals(condition)) {
-				float numberA = Float.parseFloat(valueA.toString());
-				float numberB = Float.parseFloat(valueB.toString());
-				conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(result = (numberA > 0 || numberB > 0)));
+				conditionEnvironmentList.put(nowPosFlagName, result);
+			} else {
+				final Object conditionResult = HelperUtils.eval(condition, valueA, valueB).get();
+				if (conditionResult != null) {
+					if (conditionResult instanceof Boolean) {
+						conditionEnvironmentList.put(nowPosFlagName,
+								result = ((Boolean) conditionResult).booleanValue());
+					} else {
+						conditionEnvironmentList.put(nowPosFlagName, conditionResult);
+					}
+				} else {
+					conditionEnvironmentList.put(nowPosFlagName, result);
+				}
 			}
 		} catch (Throwable ex) {
 			LSystem.error("Command parse exception", ex);
 		}
+		esleover = elseflag = result;
+		addCommand = false;
 		return result;
 	}
 
@@ -812,7 +793,7 @@ public class Command extends Conversion implements LRelease {
 			}
 
 			// 执行代码段调用标记
-			if (((!esleflag && !ifing) || (esleflag && ifing)) && cmd.startsWith(CALL_TAG) && !isCall) {
+			if (((!elseflag && !ifing) || (elseflag && ifing)) && cmd.startsWith(CALL_TAG) && !isCall) {
 				temps = commandSplit(cmd);
 				if (temps.size == 2) {
 					String functionName = temps.get(1);
@@ -836,28 +817,24 @@ public class Command extends Conversion implements LRelease {
 
 			// 条件判断a
 			if (if_bool) {
-				esleover = esleflag = setupIF(cmd, nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
-				addCommand = false;
+				setupIF(cmd, nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
 				ifing = true;
 				// 条件判断b
 			} else if (elseif_bool) {
-				String[] value = StringUtils.split(cmd, LSystem.SPACE);
-				if (!backIfBool && !esleflag) {
+				final String[] value = StringUtils.split(cmd, LSystem.SPACE);
+				if (!backIfBool && !elseflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {
-						esleover = esleflag = setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(),
-								nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
-						addCommand = false;
+						setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(), nowPosFlagName,
+								setEnvironmentList, conditionEnvironmentList);
 						// 单纯的else
 					} else if (value.length == 1 && ELSE_TAG.equals(value[0])) {
 						if (!esleover) {
-							esleover = esleflag = setupIF("if 1==1", nowPosFlagName, setEnvironmentList,
-									conditionEnvironmentList);
-							addCommand = false;
+							setDefaultIF(true);
 						}
 					}
 				} else {
-					esleflag = false;
+					elseflag = false;
 					addCommand = false;
 					conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
 
@@ -882,7 +859,7 @@ public class Command extends Conversion implements LRelease {
 						return null;
 					}
 				}
-			} else if (cmd.startsWith(INCLUDE_TAG) && !ifing && !backIfBool && !esleflag) {
+			} else if (cmd.startsWith(INCLUDE_TAG) && !ifing && !backIfBool && !elseflag) {
 				if (includeCommand(cmd)) {
 					return null;
 				}
@@ -908,10 +885,9 @@ public class Command extends Conversion implements LRelease {
 
 			// 输出脚本判断
 			if (addCommand && ifing) {
-				if (backIfBool && esleflag) {
+				if (backIfBool && elseflag) {
 					executeCommand = cmd;
 				}
-
 			} else if (addCommand) {
 				executeCommand = cmd;
 			}
@@ -1017,8 +993,8 @@ public class Command extends Conversion implements LRelease {
 		session.add("cmd_flaging", flaging);
 		session.add("cmd_ifing", ifing);
 		session.add("cmd_functioning", functioning);
-		session.add("cmd_esleflag", esleflag);
-		session.add("cmd_esleover", esleover);
+		session.add("cmd_elseflag", elseflag);
+		session.add("cmd_elseover", esleover);
 		session.add("cmd_backIfBool", backIfBool);
 		session.add("cmd_isInnerCommand", isInnerCommand);
 		session.add("cmd_isRead", isRead);
@@ -1077,8 +1053,8 @@ public class Command extends Conversion implements LRelease {
 			flaging = session.getBoolean("cmd_flaging");
 			ifing = session.getBoolean("cmd_ifing");
 			functioning = session.getBoolean("cmd_functioning");
-			esleflag = session.getBoolean("cmd_esleflag");
-			esleover = session.getBoolean("cmd_esleover");
+			elseflag = session.getBoolean("cmd_elseflag");
+			esleover = session.getBoolean("cmd_elseover");
 			backIfBool = session.getBoolean("cmd_backIfBool");
 			isInnerCommand = session.getBoolean("cmd_isInnerCommand");
 			isRead = session.getBoolean("cmd_isRead");

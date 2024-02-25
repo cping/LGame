@@ -21,8 +21,11 @@
 package loon.utils.processes;
 
 import loon.LRelease;
+import loon.events.QueryEvent;
+import loon.utils.Calculator;
 import loon.utils.Disposes;
 import loon.utils.LIterable;
+import loon.utils.ObjectMap;
 import loon.utils.SortedList;
 import loon.utils.reply.ClosableIterator;
 import loon.utils.reply.ObjRef;
@@ -30,6 +33,8 @@ import loon.utils.reply.ObjRef;
 public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<WaitCoroutine> {
 
 	private final Disposes _disposes = new Disposes();
+
+	private final ObjectMap<String, Calculator> _varCachecalcs = new ObjectMap<String, Calculator>();
 
 	private final SortedList<YieldLoop> _loops;
 
@@ -142,8 +147,34 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		return ObjRef.empty();
 	}
 
+	/**
+	 * 如果满足条件,进行此循环
+	 * 
+	 * @param condition
+	 * @param yl
+	 * @return
+	 */
 	public Yielderable loop(boolean condition, YieldLoop yl) {
 		if (condition && yl != null) {
+			this._loops.add(yl);
+		}
+		return this;
+	}
+
+	/**
+	 * 如果存在的计算器变量满足条件,进行此循环
+	 * 
+	 * @param v
+	 * @param c
+	 * @param yl
+	 * @return
+	 */
+	public Yielderable loopCalc(String v, QueryEvent<Calculator> c, YieldLoop yl) {
+		final Calculator calc = _varCachecalcs.get(v);
+		if (calc == null) {
+			return this;
+		}
+		if (c.hit(calc) && yl != null) {
 			this._loops.add(yl);
 		}
 		return this;
@@ -163,6 +194,40 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		} else {
 			return false;
 		}
+	}
+
+	public Calculator newCalc(String k, String v) {
+		Calculator c = getCalc(k);
+		if (c == null) {
+			_varCachecalcs.put(k, (c = new Calculator()));
+		}
+		c.set(v);
+		return c;
+	}
+
+	public Calculator newCalc(String k) {
+		return newCalc(k, 0f);
+	}
+
+	public Calculator newCalc(String k, float v) {
+		Calculator c = getCalc(k);
+		if (c == null) {
+			_varCachecalcs.put(k, (c = new Calculator()));
+		}
+		c.set(v);
+		return c;
+	}
+
+	public Calculator existCalc(String k) {
+		Calculator c = getCalc(k);
+		if (c == null) {
+			_varCachecalcs.put(k, (c = new Calculator()));
+		}
+		return c;
+	}
+
+	public Calculator getCalc(String v) {
+		return _varCachecalcs.get(v);
 	}
 
 	protected void call() {
@@ -279,6 +344,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 	@Override
 	public void reset() {
 		_loops.clear();
+		_varCachecalcs.clear();
 		_executes.clear();
 		_executes.addAll(_saveInitYields);
 		if (_coroutine != null) {
@@ -305,6 +371,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 	public void remove() {
 		_executes.remove();
 		_loops.clear();
+		_varCachecalcs.clear();
 		_returning = false;
 	}
 
@@ -314,6 +381,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 		_loops.clear();
 		_executes.clear();
 		_saveInitYields.clear();
+		_varCachecalcs.clear();
 		_returning = false;
 	}
 

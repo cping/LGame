@@ -417,4 +417,22 @@ public class Role extends RoleValue implements ActionBind {
 		}
 		return false;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof Role) {
+			Role ch = ((Role) o);
+			if (ch._roleObject.equals(this._roleObject) && ch._tag.equals(this._tag)
+					&& ch._attributes.equals(this._attributes) && ch._items.equals(this._items)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

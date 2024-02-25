@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.LSystem;
+import loon.action.map.items.Role;
 import loon.action.map.items.Teams;
 import loon.events.EventActionN;
 import loon.events.Updateable;
@@ -138,6 +139,14 @@ public class BattleProcess extends CoroutineProcess {
 			return o2.getState().getPriority() - o1.getState().getPriority();
 		}
 
+	}
+
+	public static BattleAction createBattleAction(Role src, Role dst) {
+		return new BattleAction(src, dst);
+	}
+
+	public static BattleAction createBattleAction(Role src, Role dst, float cost) {
+		return new BattleAction(src, dst, cost);
 	}
 
 	private final static EventComparator _sortEvents = new EventComparator();
@@ -359,6 +368,10 @@ public class BattleProcess extends CoroutineProcess {
 			}
 		}
 		return eve;
+	}
+
+	public int getTotalTeams() {
+		return _mainTeams.getSize();
 	}
 
 	public int getTurnCount() {

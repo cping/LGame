@@ -70,6 +70,7 @@ import loon.geom.ShapeNodeType;
 import loon.geom.StrValue;
 import loon.geom.Vector2f;
 import loon.utils.reply.Pair;
+import loon.utils.reply.TValue;
 import loon.utils.reply.Triple;
 import loon.utils.timer.Duration;
 import loon.utils.timer.Interval;
@@ -1118,6 +1119,39 @@ public class HelperUtils {
 			}
 		}
 		return o.toString();
+	}
+
+	public final static TValue<Object> eval(final String op, final Object left, final Object right) {
+		return eval(op, toFloat(left), toFloat(right));
+	}
+
+	public final static TValue<Object> eval(final String op, final float left, final float right) {
+		if ("+".equals(op)) {
+			return new TValue<Object>(left + right);
+		} else if ("-".equals(op)) {
+			return new TValue<Object>(left - right);
+		} else if ("*".equals(op)) {
+			return new TValue<Object>(left * right);
+		} else if ("/".equals(op)) {
+			return new TValue<Object>(left / right);
+		} else if ("<".equals(op)) {
+			return new TValue<Object>(left < right);
+		} else if (">".equals(op)) {
+			return new TValue<Object>(left > right);
+		} else if ("<=".equals(op)) {
+			return new TValue<Object>(left <= right);
+		} else if (">=".equals(op)) {
+			return new TValue<Object>(left >= right);
+		} else if ("==".equals(op)) {
+			return new TValue<Object>(left == right);
+		} else if ("!=".equals(op)) {
+			return new TValue<Object>(left != right);
+		} else if ("&&".equals(op)) {
+			return new TValue<Object>(left > 0f && right > 0);
+		} else if ("||".equals(op)) {
+			return new TValue<Object>(left > 0 || right > 0);
+		}
+		return new TValue<Object>(null);
 	}
 
 	public static Number[] sortIncrement(final Number... arrays) {

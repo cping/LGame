@@ -22,11 +22,31 @@
 package loon.utils;
 
 import loon.LRelease;
+import loon.LSystem;
+import loon.utils.reply.TValue;
 
 /**
  * 简单的四则运算类,脚本用,也可用于跨域传参(单纯跨域传参推荐使用 @see Counter 类,因为该类可以限制最大和最小值,更适合简单增减用).
  */
 public class Calculator implements LRelease {
+
+	private final static float convertObjectToFloat(Object num) {
+		if (num == null) {
+			return -1f;
+		}
+		float value;
+		if (num instanceof Number) {
+			value = HelperUtils.toFloat(num);
+		} else {
+			final String mes = num.toString();
+			if (MathUtils.isNan(mes)) {
+				value = Float.parseFloat(mes);
+			} else {
+				value = -1f;
+			}
+		}
+		return value;
+	}
 
 	public static final int ADD = 1;
 
@@ -43,7 +63,7 @@ public class Calculator implements LRelease {
 	private float currentTotal;
 
 	public Calculator() {
-		this(0);
+		this(0f);
 	}
 
 	public Calculator(Object num) {
@@ -52,24 +72,6 @@ public class Calculator implements LRelease {
 
 	public Calculator(float num) {
 		this.currentTotal = num;
-	}
-
-	protected static final float convertObjectToFloat(Object num) {
-		if (num == null) {
-			return -1f;
-		}
-		float value;
-		if (num instanceof Number) {
-			value = ((Number) num).floatValue();
-		} else {
-			String mes = num.toString();
-			if (MathUtils.isNan(mes)) {
-				value = Float.parseFloat(mes);
-			} else {
-				value = -1f;
-			}
-		}
-		return value;
 	}
 
 	public Calculator add(Object num) {
@@ -139,9 +141,23 @@ public class Calculator implements LRelease {
 		return this;
 	}
 
+	public Calculator add(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return add(c.get());
+	}
+
 	public Calculator add(float num) {
 		currentTotal += num % 1f == 0 ? (int) num : num;
 		return this;
+	}
+
+	public Calculator sub(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return sub(c.get());
 	}
 
 	public Calculator sub(float num) {
@@ -149,9 +165,23 @@ public class Calculator implements LRelease {
 		return this;
 	}
 
+	public Calculator mul(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return mul(c.get());
+	}
+
 	public Calculator mul(float num) {
 		currentTotal *= num % 1f == 0 ? (int) num : num;
 		return this;
+	}
+
+	public Calculator div(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return div(c.get());
 	}
 
 	public Calculator div(float num) {
@@ -159,9 +189,23 @@ public class Calculator implements LRelease {
 		return this;
 	}
 
+	public Calculator mod(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return mod(c.get());
+	}
+
 	public Calculator mod(float num) {
 		currentTotal %= num % 1f == 0 ? (int) num : num;
 		return this;
+	}
+
+	public Calculator equal(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return equal(c.get());
 	}
 
 	public Calculator equal(float num) {
@@ -176,12 +220,50 @@ public class Calculator implements LRelease {
 		return this;
 	}
 
+	public Calculator set(float num) {
+		return equal(num);
+	}
+
+	public Calculator set(String num) {
+		return equal(num);
+	}
+
+	public TValue<Object> eval(final String op, final Object v) {
+		return HelperUtils.eval(op, get(), convertObjectToFloat(v));
+	}
+
 	public int getInt() {
 		return (int) currentTotal;
 	}
 
 	public float getFloat() {
 		return currentTotal;
+	}
+
+	public float get() {
+		return currentTotal;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		result = LSystem.unite(result, this.currentTotal);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof Calculator) {
+			Calculator c = (Calculator) o;
+			return MathUtils.equal(c.currentTotal, this.currentTotal);
+		}
+		return false;
 	}
 
 	@Override

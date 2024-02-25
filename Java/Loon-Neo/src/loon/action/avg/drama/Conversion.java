@@ -54,6 +54,10 @@ public abstract class Conversion implements Expression {
 			return true;
 		} else if (s.equalsIgnoreCase("<=")) {
 			return true;
+		} else if (s.equalsIgnoreCase("&&")) {
+			return true;
+		} else if (s.equalsIgnoreCase("||")) {
+			return true;
 		} else if (s.equalsIgnoreCase(">")) {
 			return true;
 		} else if (s.equalsIgnoreCase("<")) {
