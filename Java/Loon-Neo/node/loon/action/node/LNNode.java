@@ -32,6 +32,7 @@ import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteBatch;
+import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.GameTouch;
@@ -90,6 +91,8 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	private Comparator<LNNode> comparator = LNNode.DEFAULT_COMPARATOR;
 
 	private ResizeListener<LNNode> _resizeListener;
+
+	private SpriteCollisionListener _collSpriteListener;
 
 	private final static InsertionSorter<LNNode> _node_sorter = new InsertionSorter<LNNode>();
 
@@ -1509,8 +1512,16 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
-	public void onCollision(ISprite coll, int dir) {
+	public LNNode triggerCollision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
 
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	@Override
@@ -1558,9 +1569,10 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 				}
 			}
 		}
+		_resizeListener = null;
+		_collSpriteListener = null;
 		setState(State.DISPOSED);
 		removeActionEvents(this);
-		_resizeListener = null;
 	}
 
 }

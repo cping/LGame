@@ -1276,13 +1276,14 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final ISprite[] sprs = this._sprites;
 		final int size = sprs.length;
 		for (int i = size - 1; i > -1; i--) {
-			ISprite src = sprs[i];
-			int count = i;
-			for (int j = 0; j < count; j++) {
-				ISprite dst = sprs[j];
-				if (i != j && src != null && dst != null && src != dst) {
-					if (src.getCollisionBox().collided(dst.getCollisionBox())) {
-						onTriggerCollision(src, dst);
+			final ISprite src = sprs[i];
+			for (int j = 0; j < size; j++) {
+				if (i != j) {
+					final ISprite dst = sprs[j];
+					if (src != null && dst != null && src != dst) {
+						if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+							onTriggerCollision(src, dst);
+						}
 					}
 				}
 			}
@@ -1339,13 +1340,14 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		final int size = _collisionObjects.size;
 		for (int i = size - 1; i > -1; i--) {
-			ISprite src = _collisionObjects.get(i);
-			int count = i;
-			for (int j = 0; j < count; j++) {
-				ISprite dst = _collisionObjects.get(j);
-				if (i != j && src != dst) {
-					if (src.getCollisionBox().collided(dst.getCollisionBox())) {
-						onTriggerCollision(src, dst);
+			final ISprite src = _collisionObjects.get(i);
+			for (int j = 0; j < size; j++) {
+				if (i != j) {
+					final ISprite dst = _collisionObjects.get(j);
+					if (src != dst) {
+						if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+							onTriggerCollision(src, dst);
+						}
 					}
 				}
 			}

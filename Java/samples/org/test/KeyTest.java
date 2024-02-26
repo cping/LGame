@@ -30,11 +30,19 @@ public class KeyTest extends Stage {
 
 		background("assets/back1.png");
 
+		background("assets/back1.png");
+
 		Entity e = node("e", "assets/ball.png", 125, 125);
 		e.buildToScreen();
 
 		Entity e1 = node("e", "assets/ball.png", 225, 125);
 		e1.buildToScreen();
+
+		Entity e2 = node("e", "assets/ball.png", 365, 125);
+		e2.buildToScreen();
+
+		Entity e3 = node("e", "assets/ball.png", 75, 205);
+		e3.buildToScreen();
 
 		final float speed = 2f;
 		keyPress("up", () -> {
@@ -54,8 +62,16 @@ public class KeyTest extends Stage {
 		// getSprites().setViewWindow(...);
 		// getSprites().viewCollision(...)
 
-		getSprites().triggerCollision((src, dst, dir) -> {
-			dst.removeFromScreen();
+		//全局碰撞
+		/*getSprites().triggerCollision((src, dst, dir) -> {
+			if (e1 != dst) {
+				dst.removeFromScreen();
+			}
+		});*/
+		
+		getSprites().setCheckAllCollision(true);
+		e1.triggerCollision((dst,dir)->{
+			 dst.removeFromScreen();
 		});
 
 	}

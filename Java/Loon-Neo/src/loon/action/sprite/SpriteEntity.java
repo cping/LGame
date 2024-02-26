@@ -868,6 +868,11 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
+	public IEntity triggerCollision(SpriteCollisionListener sc) {
+		return this;
+	}
+
+	@Override
 	public IEntity show() {
 		_sprite.setVisible(true);
 		return this;

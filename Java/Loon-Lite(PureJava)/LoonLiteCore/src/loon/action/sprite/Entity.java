@@ -141,9 +141,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	private ResizeListener<IEntity> _resizeListener;
 
-	private boolean _stopUpdate = false;
-
 	private SpriteCollisionListener _collSpriteListener;
+
+	private boolean _stopUpdate = false;
 
 	private Sprites _sprites = null;
 
@@ -1160,13 +1160,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
-	protected void onUpdate(final long elapsedTime) {
-
-	}
-
-	public Entity collision(SpriteCollisionListener sc) {
+	@Override
+	public Entity triggerCollision(SpriteCollisionListener sc) {
 		this._collSpriteListener = sc;
 		return this;
+	}
+
+	protected void onUpdate(final long elapsedTime) {
+
 	}
 
 	public Entity loop(EventAction la) {
@@ -2646,6 +2647,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		_componentsIgnoreUpdate = false;
 		_loopAction = null;
 		_resizeListener = null;
+		_collSpriteListener = null;
 		_otherShape = null;
 		_oldNodeType = null;
 		_disposed = null;

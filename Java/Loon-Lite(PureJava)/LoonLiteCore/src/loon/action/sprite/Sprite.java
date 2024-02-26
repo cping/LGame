@@ -1466,7 +1466,8 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	public Sprite collision(SpriteCollisionListener sc) {
+	@Override
+	public Sprite triggerCollision(SpriteCollisionListener sc) {
 		this._collSpriteListener = sc;
 		return this;
 	}
@@ -1721,10 +1722,11 @@ public class Sprite extends LObject<ISprite>
 		if (_animation != null) {
 			_animation.close();
 		}
+		_resizeListener = null;
+		_collSpriteListener = null;
 		setState(State.DISPOSED);
 		removeChilds();
 		removeActionEvents(this);
-		_resizeListener = null;
 	}
 
 }

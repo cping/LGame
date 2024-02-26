@@ -35,6 +35,7 @@ import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
+import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -66,6 +67,8 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	private Sprites _screenSprites;
 
 	private ResizeListener<TileMap> _resizeListener;
+
+	private SpriteCollisionListener _collSpriteListener;
 
 	private int firstTileX;
 
@@ -1377,7 +1380,15 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 
 	@Override
 	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
+	}
 
+	@Override
+	public TileMap triggerCollision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
 	}
 
 	@Override
@@ -1497,6 +1508,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 			_background = null;
 		}
 		_resizeListener = null;
+		_collSpriteListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

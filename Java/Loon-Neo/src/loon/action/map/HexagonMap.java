@@ -36,6 +36,7 @@ import loon.action.map.items.Attribute;
 import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
+import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.Image;
 import loon.canvas.LColor;
@@ -121,6 +122,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	private float _fixedHeightOffset = 0f;
 
 	private ResizeListener<HexagonMap> _resizeListener;
+
+	private SpriteCollisionListener _collSpriteListener;
 
 	private int[] position = new int[2];
 
@@ -2162,8 +2165,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void onCollision(ISprite coll, int dir) {
+	public HexagonMap triggerCollision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
+	}
 
+	@Override
+	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
 	}
 
 	@Override
@@ -2310,6 +2321,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			_background = null;
 		}
 		_resizeListener = null;
+		_collSpriteListener = null;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

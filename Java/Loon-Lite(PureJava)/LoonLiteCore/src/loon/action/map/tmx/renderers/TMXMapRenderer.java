@@ -38,6 +38,7 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXAnimationFrame;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
@@ -59,6 +60,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	protected LTextureBatch _texBatch;
 
 	private ResizeListener<TMXMapRenderer> _resizeListener;
+
+	private SpriteCollisionListener _collSpriteListener;
 
 	protected Vector2f _mapLocation = new Vector2f();
 
@@ -473,7 +476,15 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	@Override
 	public void onCollision(ISprite coll, int dir) {
+		if (_collSpriteListener != null) {
+			_collSpriteListener.onCollideUpdate(coll, dir);
+		}
+	}
 
+	@Override
+	public TMXMapRenderer triggerCollision(SpriteCollisionListener sc) {
+		this._collSpriteListener = sc;
+		return this;
 	}
 
 	@Override
@@ -572,7 +583,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		getScreen().remove(this);
 		return this;
 	}
-	
+
 	@Override
 	public void close() {
 		visible = false;
@@ -595,6 +606,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		}
 		lastHashCode = 1;
 		_resizeListener = null;
+		_collSpriteListener = null;
 		setState(State.DISPOSED);
 	}
 

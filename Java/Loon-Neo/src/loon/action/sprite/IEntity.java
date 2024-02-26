@@ -294,6 +294,9 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity hide();
 
 	@Override
+	IEntity triggerCollision(SpriteCollisionListener sc);
+
+	@Override
 	IEntity buildToScreen();
 
 	@Override

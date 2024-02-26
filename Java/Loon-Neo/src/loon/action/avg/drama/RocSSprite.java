@@ -9,6 +9,7 @@ import loon.Screen;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
+import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
@@ -414,6 +415,11 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 			return this;
 		}
 		getScreen().remove(this);
+		return this;
+	}
+
+	@Override
+	public ISprite triggerCollision(SpriteCollisionListener sc) {
 		return this;
 	}
 

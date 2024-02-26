@@ -545,7 +545,8 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		return this;
 	}
 
-	public DisplayObject collision(SpriteCollisionListener sc) {
+	@Override
+	public DisplayObject triggerCollision(SpriteCollisionListener sc) {
 		this._collSpriteListener = sc;
 		return this;
 	}
