@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.Director.Origin;
+
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
@@ -1679,6 +1680,26 @@ public class Sprite extends LObject<ISprite>
 
 	public Sprite setAutoXYSort(boolean a) {
 		this._xySort = a;
+		return this;
+	}
+
+	@Override
+	public ISprite buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
 		return this;
 	}
 

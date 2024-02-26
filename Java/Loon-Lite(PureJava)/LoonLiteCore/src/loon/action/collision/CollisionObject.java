@@ -46,14 +46,19 @@ public interface CollisionObject extends ActionBind {
 
 	public String getObjectFlag();
 
+	@Override
 	public float getX();
 
+	@Override
 	public float getY();
 
+	@Override
 	public float getWidth();
 
+	@Override
 	public float getHeight();
 
+	@Override
 	public RectBox getRectBox();
 
 	public int getLayer();

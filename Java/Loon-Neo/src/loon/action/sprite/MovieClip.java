@@ -343,5 +343,4 @@ public class MovieClip extends DisplayObject {
 		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
-
 }

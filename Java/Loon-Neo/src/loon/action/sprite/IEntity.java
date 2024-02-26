@@ -293,8 +293,10 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	IEntity hide();
 
+	@Override
 	IEntity buildToScreen();
 
+	@Override
 	IEntity removeFromScreen();
 
 	IEntity dispose(LRelease r);

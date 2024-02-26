@@ -376,6 +376,26 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		return false;
 	}
 
+	@Override
+	public ISprite buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 	public ISprite getSprite() {
 		return _sprite;
 	}

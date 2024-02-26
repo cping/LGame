@@ -31,6 +31,7 @@ import loon.Visible;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.PlaceActions;
+import loon.action.collision.CollisionAction;
 import loon.action.map.Side;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
@@ -87,6 +88,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	private ResizeListener<Sprites> _resizeListener;
 
+	private CollisionAction<ISprite> _collisionAction;
+
 	private int _currentPoshash = 1;
 
 	private int _lastPosHash = 1;
@@ -118,6 +121,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private final String _sprites_name;
 
 	private boolean _autoSortLayer;
+
+	private boolean _checkAllCollision;
 
 	private boolean _checkViewCollision;
 
@@ -1247,6 +1252,43 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return;
 	}
 
+	public void onTriggerCollisions() {
+		if (_checkAllCollision) {
+			checkAllCollisionObjects();
+		} else if (_checkViewCollision) {
+			checkViewCollisionObjects();
+		}
+	}
+
+	public boolean isCheckAllCollision() {
+		return _checkAllCollision;
+	}
+
+	public Sprites setCheckAllCollision(boolean c) {
+		this._checkAllCollision = c;
+		return this;
+	}
+
+	protected void checkAllCollisionObjects() {
+		if (!_checkAllCollision) {
+			return;
+		}
+		final ISprite[] sprs = this._sprites;
+		final int size = sprs.length;
+		for (int i = size - 1; i > -1; i--) {
+			ISprite src = sprs[i];
+			int count = i;
+			for (int j = 0; j < count; j++) {
+				ISprite dst = sprs[j];
+				if (i != j && src != null && dst != null && src != dst) {
+					if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+						onTriggerCollision(src, dst);
+					}
+				}
+			}
+		}
+	}
+
 	public boolean isCheckViewCollision() {
 		return _checkViewCollision;
 	}
@@ -1286,8 +1328,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		} else {
 			_collisionObjects.clear();
 		}
+		final ISprite[] sprs = this._sprites;
 		for (int i = 0; i < this._size; i++) {
-			ISprite spr = this._sprites[i];
+			final ISprite spr = sprs[i];
 			if (spr != null && spr.isVisible()) {
 				if (_collViewSize.collided(spr.getCollisionBox())) {
 					_collisionObjects.add(spr);
@@ -1295,24 +1338,58 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		final int size = _collisionObjects.size;
-		for (int i = 0; i < size; i++) {
+		for (int i = size - 1; i > -1; i--) {
 			ISprite src = _collisionObjects.get(i);
-			for (int j = size - 1; j > -1; j--) {
+			int count = i;
+			for (int j = 0; j < count; j++) {
 				ISprite dst = _collisionObjects.get(j);
-				if (src != dst) {
+				if (i != j && src != dst) {
 					if (src.getCollisionBox().collided(dst.getCollisionBox())) {
-						callCollision(src, dst);
+						onTriggerCollision(src, dst);
 					}
 				}
 			}
 		}
 	}
 
-	private void callCollision(ISprite spr, ISprite dst) {
+	private void onTriggerCollision(ISprite spr, ISprite dst) {
 		if (spr == null || dst == null) {
 			return;
 		}
-		spr.onCollision(dst, Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox()));
+		final int dir = Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox());
+		spr.onCollision(dst, dir);
+		if (_collisionAction != null) {
+			_collisionAction.onCollision(spr, dst, dir);
+		}
+	}
+
+	public Sprites triggerCollision(CollisionAction<ISprite> c) {
+		return triggerAllCollision(c);
+	}
+
+	public Sprites triggerAllCollision(CollisionAction<ISprite> c) {
+		setCheckAllCollision(c != null);
+		setCollisionAction(c);
+		return this;
+	}
+
+	public Sprites viewCollision(CollisionAction<ISprite> c) {
+		return triggerViewCollision(c);
+	}
+
+	public Sprites triggerViewCollision(CollisionAction<ISprite> c) {
+		setCheckViewCollision(c != null);
+		setCollisionAction(c);
+		return this;
+	}
+
+	public Sprites setCollisionAction(CollisionAction<ISprite> c) {
+		this._collisionAction = c;
+		return this;
+	}
+
+	public CollisionAction<ISprite> getCollisionAction() {
+		return _collisionAction;
 	}
 
 	public boolean checkAdd(ISprite spr, QueryEvent<ISprite> e) {
@@ -1382,7 +1459,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 				_lastPosHash = _currentPoshash;
 			}
 		}
-		checkViewCollisionObjects();
+		onTriggerCollisions();
 	}
 
 	/**
@@ -2343,6 +2420,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		this._visible = this._createShadow = false;
 		this._autoSortLayer = this._checkViewCollision = false;
+		this._checkAllCollision = false;
 		if (_spriteShadow != null) {
 			_spriteShadow.close();
 		}
@@ -2361,7 +2439,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		this._size = 0;
 		this._closed = true;
 		this._sprites = null;
+		this._collViewSize = null;
+		this._collisionObjects = null;
 		this._resizeListener = null;
+		this._collisionAction = null;
 		LSystem.popSpritesPool(this);
 	}
 

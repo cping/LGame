@@ -1689,6 +1689,26 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
+	@Override
+	public ISprite buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 	public SpriteEntity toEntity() {
 		return new SpriteEntity(this);
 	}

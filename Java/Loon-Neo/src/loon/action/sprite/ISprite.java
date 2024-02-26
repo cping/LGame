@@ -141,4 +141,8 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	boolean isDisposed();
 
+	ISprite buildToScreen();
+
+	ISprite removeFromScreen();
+
 }

@@ -554,6 +554,26 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
+	public ISprite buildToScreen() {
+		if (sprites != null) {
+			sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (sprites != null) {
+			sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+	
+	@Override
 	public void close() {
 		visible = false;
 		if (textureMap != null) {

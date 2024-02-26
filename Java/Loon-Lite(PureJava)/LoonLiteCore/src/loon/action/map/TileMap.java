@@ -1449,6 +1449,26 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return false;
 	}
 
+	@Override
+	public ISprite buildToScreen() {
+		if (_mapSprites != null) {
+			_mapSprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_mapSprites != null) {
+			_mapSprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}

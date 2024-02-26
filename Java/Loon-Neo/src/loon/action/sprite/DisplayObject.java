@@ -629,4 +629,25 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		this._createShadow = s;
 		return this;
 	}
+
+	@Override
+	public ISprite buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 }

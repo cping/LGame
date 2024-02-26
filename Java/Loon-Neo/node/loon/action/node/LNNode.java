@@ -1509,8 +1509,33 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
+	public void onCollision(ISprite coll, int dir) {
+
+	}
+
+	@Override
 	public boolean autoXYSort() {
 		return false;
+	}
+
+	@Override
+	public ISprite buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
 	}
 
 	@Override

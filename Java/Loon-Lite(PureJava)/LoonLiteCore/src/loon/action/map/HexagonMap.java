@@ -2243,6 +2243,26 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return false;
 	}
 
+	@Override
+	public ISprite buildToScreen() {
+		if (_mapSprites != null) {
+			_mapSprites.add(this);
+			return this;
+		}
+		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public ISprite removeFromScreen() {
+		if (_mapSprites != null) {
+			_mapSprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 	public boolean isClosed() {
 		return isDisposed();
 	}
