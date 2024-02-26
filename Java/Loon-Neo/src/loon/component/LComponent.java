@@ -2244,7 +2244,29 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent removeParent() {
+		LComponent comp = this.getSuper();
+		if (comp != null && (comp instanceof LContainer)) {
+			((LContainer) comp).remove(this);
+			setParent(null);
+		}
+		return this;
+	}
+
+	public LComponent removeFromScreen() {
+		if (_desktop != null) {
+			_desktop.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
+		return this;
+	}
+
 	public LComponent buildToScreen() {
+		if (_desktop != null) {
+			_desktop.remove(this);
+			return this;
+		}
 		getScreen().add(this);
 		return this;
 	}

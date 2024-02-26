@@ -207,12 +207,16 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity with(final TComponent<IEntity> c);
 
 	TComponent<IEntity> findComponent(String name);
-	
+
 	IEntity addComponent(final TComponent<IEntity> c);
 
 	IEntity removeComponents();
 
 	boolean removeComponent(final TComponent<IEntity> c);
+
+	boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz);
+
+	boolean removeComponentName(String typeName);
 
 	boolean hasComponent();
 
@@ -290,6 +294,8 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 	IEntity hide();
 
 	IEntity buildToScreen();
+
+	IEntity removeFromScreen();
 
 	IEntity dispose(LRelease r);
 }

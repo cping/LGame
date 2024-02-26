@@ -689,6 +689,16 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
+	public boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz) {
+		return false;
+	}
+
+	@Override
+	public boolean removeComponentName(String typeName) {
+		return false;
+	}
+
+	@Override
 	public boolean hasComponent() {
 		return false;
 	}
@@ -871,6 +881,11 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public IEntity buildToScreen() {
+		return this;
+	}
+
+	@Override
+	public IEntity removeFromScreen() {
 		return this;
 	}
 

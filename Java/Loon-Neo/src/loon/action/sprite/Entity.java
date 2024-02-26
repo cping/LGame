@@ -1977,7 +1977,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public IEntity buildToScreen() {
+		if (_sprites != null) {
+			_sprites.add(this);
+			return this;
+		}
 		getScreen().add(this);
+		return this;
+	}
+
+	@Override
+	public IEntity removeFromScreen() {
+		if (_sprites != null) {
+			_sprites.remove(this);
+			return this;
+		}
+		getScreen().remove(this);
 		return this;
 	}
 
@@ -1986,7 +2000,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		IEntity e = this.getSuper();
 		if (e != null) {
 			e.removeChild(this);
-			e.setParent(null);
+			setParent(null);
 		}
 		return this;
 	}
@@ -2512,6 +2526,48 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public boolean removeComponentName(String typeName) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		int count = 0;
+		if (typeName != null) {
+			final int size = this._components.size;
+			for (int i = size - 1; i >= 0; i--) {
+				final TComponent<IEntity> removed = this._components.get(i);
+				if (removed != null && typeName.equals(removed._name)) {
+					removed.onDetached(this);
+					removed.setCurrent(null);
+					_components.remove(removed);
+					count++;
+				}
+			}
+		}
+		return count > 0;
+	}
+
+	@Override
+	public boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		int count = 0;
+		if (typeClazz != null) {
+			final int size = this._components.size;
+			for (int i = size - 1; i >= 0; i--) {
+				final TComponent<IEntity> removed = this._components.get(i);
+				if (removed != null && removed.getClass().equals(typeClazz)) {
+					removed.onDetached(this);
+					removed.setCurrent(null);
+					_components.remove(removed);
+					count++;
+				}
+			}
+		}
+		return count > 0;
+	}
+
+	@Override
 	public boolean removeComponent(TComponent<IEntity> c) {
 		if (_components == null) {
 			allocateComponents();
@@ -2529,7 +2585,8 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		if (this._components == null) {
 			return this;
 		}
-		for (int i = this._components.size - 1; i >= 0; i--) {
+		final int size = this._components.size;
+		for (int i = size - 1; i >= 0; i--) {
 			final TComponent<IEntity> removed = this._components.get(i);
 			if (removed != null) {
 				removed.onDetached(this);

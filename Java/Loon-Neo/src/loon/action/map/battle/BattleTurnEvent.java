@@ -20,11 +20,13 @@
  */
 package loon.action.map.battle;
 
+import loon.LRelease;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.processes.WaitProcess;
+import loon.utils.timer.Duration;
 
-public abstract class BattleTurnEvent implements BattleEvent {
+public abstract class BattleTurnEvent implements BattleTimerListener, BattleEvent, LRelease {
 
 	private final BattleState _state;
 
@@ -36,6 +38,10 @@ public abstract class BattleTurnEvent implements BattleEvent {
 
 	private BattleProcess _battleProcess;
 
+	private long _turnTimer;
+
+	private long _turnTimeOut;
+
 	private boolean _updateFlag;
 
 	public BattleTurnEvent(BattleState state) {
@@ -43,8 +49,13 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	}
 
 	public BattleTurnEvent(BattleState state, boolean updateFlag) {
+		this(state, updateFlag, -1);
+	}
+
+	public BattleTurnEvent(BattleState state, boolean updateFlag, long outTime) {
 		this._state = state;
 		this._updateFlag = updateFlag;
+		this._turnTimeOut = outTime;
 	}
 
 	@Override
@@ -55,9 +66,11 @@ public abstract class BattleTurnEvent implements BattleEvent {
 			set(false, false, false);
 		}
 		onReset();
+		_turnTimer = 0l;
 		return this;
 	}
 
+	@Override
 	public abstract void onReset();
 
 	public BattleTurnEvent set(boolean s, boolean p, boolean e) {
@@ -102,6 +115,18 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return _end;
 	}
 
+	protected void checkTimeOut(long elapsedTime, BooleanValue process) {
+		if (_turnTimeOut != -1 && _turnTimer > _turnTimeOut) {
+			onTimeOut(elapsedTime, process);
+			_turnTimer = 0l;
+		}
+	}
+
+	@Override
+	public void onTimeOut(long elapsedTime, BooleanValue process) {
+
+	}
+
 	public BattleTurnEvent startEndUnDone() {
 		_start.set(false);
 		_end.set(false);
@@ -132,6 +157,8 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	public boolean start(long elapsedTime) {
 		if (!_start.get()) {
 			onStart(elapsedTime, _start);
+			_turnTimer += elapsedTime;
+			checkTimeOut(elapsedTime, _process);
 		}
 		return _start.get();
 	}
@@ -142,6 +169,8 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	public boolean process(long elapsedTime) {
 		if (!_process.get()) {
 			onProcess(elapsedTime, _process);
+			_turnTimer += elapsedTime;
+			checkTimeOut(elapsedTime, _process);
 		}
 		return _process.get();
 	}
@@ -152,6 +181,8 @@ public abstract class BattleTurnEvent implements BattleEvent {
 	public boolean end(long elapsedTime) {
 		if (!_end.get()) {
 			onEnd(elapsedTime, _end);
+			_turnTimer += elapsedTime;
+			checkTimeOut(elapsedTime, _process);
 		}
 		return _end.get();
 	}
@@ -167,8 +198,10 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return _state;
 	}
 
+	@Override
 	public abstract void onCompleted();
 
+	@Override
 	public WaitProcess wait(Updateable update) {
 		if (_battleProcess != null) {
 			return _battleProcess.wait(update);
@@ -176,6 +209,7 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return null;
 	}
 
+	@Override
 	public WaitProcess wait(Updateable update, float s) {
 		if (_battleProcess != null) {
 			return _battleProcess.wait(update, s);
@@ -183,6 +217,7 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return null;
 	}
 
+	@Override
 	public WaitProcess wait(WaitProcess waitProcess) {
 		if (_battleProcess != null) {
 			return _battleProcess.wait(waitProcess);
@@ -190,10 +225,12 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return null;
 	}
 
+	@Override
 	public BattleProcess getMainProcess() {
 		return _battleProcess;
 	}
 
+	@Override
 	public BattleTurnEvent setMainProcess(BattleProcess battleProcess) {
 		this._battleProcess = battleProcess;
 		return this;
@@ -216,10 +253,51 @@ public abstract class BattleTurnEvent implements BattleEvent {
 		return this;
 	}
 
+	public long getTurnTimer() {
+		return _turnTimer;
+	}
+
+	public float getTurnTimerS() {
+		return Duration.toS(_turnTimer);
+	}
+
+	public long getTurnTimeOut() {
+		return _turnTimeOut;
+	}
+
+	public float getTurnTimeOutS() {
+		return Duration.toS(_turnTimeOut);
+	}
+
+	public BattleTurnEvent setTurnTimeOutS(float s) {
+		return setTurnTimeOut(Duration.ofS(s));
+	}
+
+	public BattleTurnEvent setTurnTimeOut(long t) {
+		this._turnTimeOut = t;
+		return this;
+	}
+
+	public BattleTurnEvent clear() {
+		_start.set(false);
+		_process.set(false);
+		_end.set(false);
+		_battleProcess = null;
+		_turnTimer = 0l;
+		_turnTimeOut = -1l;
+		_updateFlag = false;
+		return this;
+	}
+
 	@Override
 	public boolean completed() {
 		onCompleted();
 		return isDone();
+	}
+
+	@Override
+	public void close() {
+		clear();
 	}
 
 }

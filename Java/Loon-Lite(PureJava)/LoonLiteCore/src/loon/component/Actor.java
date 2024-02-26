@@ -1157,6 +1157,14 @@ public class Actor extends LObject<Actor>
 		return layer;
 	}
 
+	public ActorLayer removeFromLayer() {
+		ActorLayer layer = getLLayer();
+		if (layer != null) {
+			layer.removeObject(this);
+		}
+		return layer;
+	}
+
 	public ActorLayer getLLayer() {
 		if (this.gameLayer == null && LSystem.getProcess() != null) {
 			Screen screen = LSystem.getProcess().getScreen();

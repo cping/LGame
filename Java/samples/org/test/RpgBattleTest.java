@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -98,8 +98,18 @@ public class RpgBattleTest extends Stage {
 		// 获得Screen内置的战斗进程
 		BattleProcess rpgBattleProcess = getBattle();
 		// rpgBattleProcess.reset();
-		// 添加我方战斗事件(不跳过开始与结束步骤)
-		rpgBattleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false) {
+		// 添加我方战斗事件(不跳过开始与结束步骤),超过10秒无操作触发战斗超时
+		rpgBattleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false, 10f) {
+
+			@Override
+			public void onTimeOut(long elapsedTime, BooleanValue process) {
+				// 如果10秒没有触发战斗
+				if (!rpgBattleProcess.isFighting()) {
+					rpgBattleText.put("10秒没有操作,强制战斗结束");
+					// 解锁战斗进程
+					rpgBattleProcess.unlockProcess(process);
+				}
+			}
 
 			@Override
 			public void onStart(long elapsedTime, BooleanValue process) {

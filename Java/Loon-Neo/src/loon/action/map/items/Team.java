@@ -215,6 +215,10 @@ public class Team implements LRelease {
 		return _teamMode;
 	}
 
+	public Role getMainHero() {
+		return getLeadRole();
+	}
+
 	public Role getLeadRole() {
 		return _leadRole;
 	}

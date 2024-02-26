@@ -32,7 +32,7 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 
 	protected final BooleanValue _paused = new BooleanValue();
 
-	protected ISprite _currentSprite;
+	protected T _currentSprite;
 
 	protected String _name;
 
@@ -66,15 +66,15 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 		return this._name;
 	}
 
-	public abstract void onAttached(ISprite on);
+	public abstract void onAttached(T on);
 
-	public abstract void onDetached(ISprite on);
+	public abstract void onDetached(T on);
 
-	public ISprite getCurrent() {
+	public T getCurrent() {
 		return _currentSprite;
 	}
 
-	public TComponent<T> setCurrent(ISprite c) {
+	public TComponent<T> setCurrent(T c) {
 		this._currentSprite = c;
 		return this;
 	}

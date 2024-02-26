@@ -57,6 +57,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnBeginState, skipAndResetFlag);
 		}
 
+		public TurnBeginEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnBeginState, skipAndResetFlag, outTime);
+		}
+
+		public TurnBeginEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnBeginState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnPlayerEvent extends BattleTurnProcessEvent {
@@ -69,6 +76,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnPlayerState, skipAndResetFlag);
 		}
 
+		public TurnPlayerEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnPlayerState, skipAndResetFlag, outTime);
+		}
+
+		public TurnPlayerEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnPlayerState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnEnemyEvent extends BattleTurnProcessEvent {
@@ -81,6 +95,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnEnemyState, skipAndResetFlag);
 		}
 
+		public TurnEnemyEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnEnemyState, skipAndResetFlag, outTime);
+		}
+
+		public TurnEnemyEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnEnemyState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnNpcEvent extends BattleTurnProcessEvent {
@@ -93,6 +114,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnNpcState, skipAndResetFlag);
 		}
 
+		public TurnNpcEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnNpcState, skipAndResetFlag, outTime);
+		}
+
+		public TurnNpcEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnNpcState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnOtherEvent extends BattleTurnProcessEvent {
@@ -105,6 +133,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnOtherState, skipAndResetFlag);
 		}
 
+		public TurnOtherEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnOtherState, skipAndResetFlag, outTime);
+		}
+
+		public TurnOtherEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnOtherState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnEndEvent extends BattleTurnProcessEvent {
@@ -117,6 +152,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnEndState, skipAndResetFlag);
 		}
 
+		public TurnEndEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnEndState, skipAndResetFlag, outTime);
+		}
+
+		public TurnEndEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnEndState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	public static abstract class TurnDoneEvent extends BattleTurnProcessEvent {
@@ -129,6 +171,13 @@ public class BattleProcess extends CoroutineProcess {
 			super(BattleState.TurnDoneState, skipAndResetFlag);
 		}
 
+		public TurnDoneEvent(boolean skipAndResetFlag, long outTime) {
+			super(BattleState.TurnDoneState, skipAndResetFlag, outTime);
+		}
+
+		public TurnDoneEvent(boolean skipAndResetFlag, float outTimeS) {
+			super(BattleState.TurnDoneState, skipAndResetFlag, outTimeS);
+		}
 	}
 
 	static class EventComparator implements Comparator<BattleEvent> {
@@ -159,11 +208,11 @@ public class BattleProcess extends CoroutineProcess {
 
 	private Teams _mainTeams;
 
-	private float _minBattleWaitSeconds = 0.1f;
+	private float _minBattleWaitSeconds;
 
-	private float _maxBattleWaitSeconds = 5f;
+	private float _maxBattleWaitSeconds;
 
-	private float _battleWaitSeconds = 1f;
+	private float _battleWaitSeconds;
 
 	private float _battleSpeed;
 
@@ -197,8 +246,10 @@ public class BattleProcess extends CoroutineProcess {
 
 	private boolean _waiting;
 
+	private boolean _updateTurn;
+
 	public BattleProcess() {
-		this("Battle", 0);
+		this("Battle");
 	}
 
 	public BattleProcess(String name) {
@@ -214,6 +265,7 @@ public class BattleProcess extends CoroutineProcess {
 		this._minBattleWaitSeconds = 0.1f;
 		this._maxBattleWaitSeconds = 5f;
 		this._battleWaitSeconds = 1f;
+		this.setUpdateTurn(true);
 		this.setLoop(true);
 		this.setDelay(delay);
 	}
@@ -519,9 +571,21 @@ public class BattleProcess extends CoroutineProcess {
 			BattleEvent e = it.next();
 			if (e != null && name.equalsIgnoreCase(e.getState().getName())) {
 				eve = e;
+				break;
 			}
 		}
 		return eve;
+	}
+
+	public TArray<BattleEvent> getAll(String name) {
+		final TArray<BattleEvent> events = new TArray<BattleEvent>();
+		for (Iterator<BattleEvent> it = _events.iterator(); it.hasNext();) {
+			BattleEvent e = it.next();
+			if (e != null && name.equalsIgnoreCase(e.getState().getName())) {
+				events.add(e);
+			}
+		}
+		return events;
 	}
 
 	public BattleEvent get(BattleState state) {
@@ -530,9 +594,21 @@ public class BattleProcess extends CoroutineProcess {
 			BattleEvent e = it.next();
 			if (e != null && e.getState().equals(state)) {
 				eve = e;
+				break;
 			}
 		}
 		return eve;
+	}
+
+	public TArray<BattleEvent> getAll(BattleState state) {
+		final TArray<BattleEvent> events = new TArray<BattleEvent>();
+		for (Iterator<BattleEvent> it = _events.iterator(); it.hasNext();) {
+			BattleEvent e = it.next();
+			if (e != null && e.getState().equals(state)) {
+				events.add(e);
+			}
+		}
+		return events;
 	}
 
 	public int getTotalTeams() {
@@ -587,6 +663,12 @@ public class BattleProcess extends CoroutineProcess {
 		return this._waiting;
 	}
 
+	protected void incTurn() {
+		if (_updateTurn) {
+			this._roundAmount++;
+		}
+	}
+
 	public void update(long elapsedTime) {
 		if (_pause) {
 			return;
@@ -603,7 +685,7 @@ public class BattleProcess extends CoroutineProcess {
 			}
 			this._enforce = false;
 			this._enforceEvent = null;
-			this._roundAmount++;
+			this.incTurn();
 		} else {
 			if (!_loop) {
 				return;
@@ -616,8 +698,8 @@ public class BattleProcess extends CoroutineProcess {
 					}
 				}
 			}
-			_actioning.set(false);
-			_roundAmount++;
+			this._actioning.set(false);
+			this.incTurn();
 		}
 		_states.clear();
 		_stateCurrent = null;
@@ -715,6 +797,7 @@ public class BattleProcess extends CoroutineProcess {
 		this._battleEventLocked = false;
 		this._waiting = false;
 		this._pause = false;
+		this._updateTurn = true;
 		this._loop = true;
 		this._roundAmount = 0;
 		this._minBattleWaitSeconds = 0.1f;
@@ -973,6 +1056,15 @@ public class BattleProcess extends CoroutineProcess {
 			}
 			unlockBattle();
 		}
+		return this;
+	}
+
+	public boolean isUpdateTurn() {
+		return _updateTurn;
+	}
+
+	public BattleProcess setUpdateTurn(boolean u) {
+		this._updateTurn = u;
 		return this;
 	}
 
