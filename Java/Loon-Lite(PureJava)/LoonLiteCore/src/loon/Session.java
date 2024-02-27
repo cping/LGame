@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,6 +24,7 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.Base64Coder;
 import loon.utils.Bundle;
+import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
@@ -38,6 +39,9 @@ public class Session implements Bundle<String> {
 	private boolean isPersisted = false;
 
 	private String loadData() {
+		if (_save == null) {
+			return null;
+		}
 		String result = _save.getItem(name);
 		if (StringUtils.isEmpty(result)) {
 			return result;
@@ -89,6 +93,10 @@ public class Session implements Bundle<String> {
 			this.name = name;
 		}
 
+		public boolean isSaved() {
+			return name != null && size() != 0;
+		}
+
 		public int size() {
 			if (values != null) {
 				return values.length;
@@ -138,15 +146,15 @@ public class Session implements Bundle<String> {
 		}
 
 		public String encode() {
-			StringBuffer sbr = new StringBuffer(32);
+			StrBuilder sbr = new StrBuilder(32);
 			sbr.append(this.name);
 			sbr.append(flag);
 			sbr.append(this.active ? "1" : "0");
 			sbr.append(flag);
 			sbr.append(this.values.length);
 			sbr.append(flag);
-			for (String value : this.values) {
-				sbr.append(value);
+			for (int i = 0; i < this.values.length; i++) {
+				sbr.append(this.values[i]);
 				sbr.append(flag);
 			}
 			return sbr.toString();
@@ -175,8 +183,8 @@ public class Session implements Bundle<String> {
 			isPersisted = false;
 		}
 		this.name = name;
-		this.records = new ArrayMap(10);
-		this.recordsList = new TArray<>(10);
+		this.records = new ArrayMap();
+		this.recordsList = new TArray<Record>();
 		if (gain) {
 			load();
 		}
@@ -405,7 +413,6 @@ public class Session implements Bundle<String> {
 			if (n >= parts.length) {
 				return n;
 			}
-
 			int count = Integer.parseInt(parts[n++]);
 			for (int i = 0; i < count; i++) {
 				if (n >= parts.length) {
@@ -413,8 +420,10 @@ public class Session implements Bundle<String> {
 				}
 				Record record = new Record(parts[n++]);
 				n = record.decode(parts, n);
-				records.put(record.name, record);
-				recordsList.add(record);
+				if (record.name != null && record.isSaved()) {
+					records.put(record.name, record);
+					recordsList.add(record);
+				}
 			}
 			return n;
 		}
@@ -422,10 +431,13 @@ public class Session implements Bundle<String> {
 
 	public String encode() {
 		synchronized (recordsList) {
-			StringBuffer sbr = new StringBuffer();
+			final StrBuilder sbr = new StrBuilder();
 			sbr.append(recordsList.size).append(flag).toString();
 			for (int i = 0; i < recordsList.size; i++) {
-				sbr.append((recordsList.get(i)).encode()).toString();
+				final Record record = recordsList.get(i);
+				if (record != null && record.isSaved()) {
+					sbr.append(record.encode()).toString();
+				}
 			}
 			return sbr.toString();
 		}
@@ -502,7 +514,15 @@ public class Session implements Bundle<String> {
 	}
 
 	public int load() {
-		return loadEncodeSession(loadData());
+		final String result = loadData();
+		if (result == null) {
+			return 0;
+		}
+		return loadEncodeSession(result);
+	}
+
+	public boolean isSaved() {
+		return isPersisted && !records.isEmpty();
 	}
 
 	public Session cpy() {

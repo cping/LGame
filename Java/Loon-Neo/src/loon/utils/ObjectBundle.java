@@ -36,59 +36,131 @@ package loon.utils;
  */
 public class ObjectBundle extends MapBundle<Object> {
 
+	public ObjectBundle setVar(String name, Object v) {
+		set(name, v);
+		return this;
+	}
+
+	public ObjectBundle setStr(String name, String v) {
+		return setVar(name, v);
+	}
+
+	public ObjectBundle setBool(String name, boolean v) {
+		return setVar(name, Boolean.valueOf(v));
+	}
+
+	public ObjectBundle setFloat(String name, float v) {
+		return setVar(name, Float.valueOf(v));
+	}
+
+	public ObjectBundle setInt(String name, int v) {
+		return setVar(name, Integer.valueOf(v));
+	}
+
+	public ObjectBundle setLong(String name, long v) {
+		return setVar(name, Long.valueOf(v));
+	}
+
+	public Object getVar(String name) {
+		return getVar(name, null);
+	}
+
+	public Object getVar(String name, Object rollback) {
+		return get(name, rollback);
+	}
+
+	public Object removeVar(String name) {
+		return remove(name, null);
+	}
+
+	public Object removeVar(String name, Object rollback) {
+		return remove(name, rollback);
+	}
+
+	public ObjectBundle clearVars() {
+		clear();
+		return this;
+	}
+
+	public String getStr(String name) {
+		return HelperUtils.toStr(getVar(name));
+	}
+
+	public int getInt(String name) {
+		return HelperUtils.toInt(getVar(name));
+	}
+
+	public long getLong(String name) {
+		return HelperUtils.toLong(getVar(name));
+	}
+
+	public float getFloat(String name) {
+		return HelperUtils.toFloat(getVar(name));
+	}
+
+	public boolean getBool(String name) {
+		return isBool(name);
+	}
+
+	public boolean isBool(String name) {
+		Object result = getVar(name);
+		if (result instanceof Boolean) {
+			return ((Boolean) result).booleanValue();
+		}
+		return StringUtils.toBoolean(HelperUtils.toStr(result));
+	}
+
 	public ObjectBundle set(String key, Object value) {
 		put(key, value);
 		return this;
 	}
 
+	public ObjectBundle add(String key, Object value) {
+		return inc(key, value);
+	}
+
 	public ObjectBundle inc(String key, Object value) {
-		Object data = _mapBundle.get(key);
-		Calculator calculator = new Calculator(data);
+		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			_mapBundle.put(key, calculator.add(value).getFloat());
+			set(key, calculator.add(value).getFloat());
 		}
 		return this;
 	}
 
 	public ObjectBundle sub(String key, Object value) {
-		Object data = _mapBundle.get(key);
-		Calculator calculator = new Calculator(data);
+		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			_mapBundle.put(key, calculator.sub(value).getFloat());
+			set(key, calculator.sub(value).getFloat());
 		}
 		return this;
 	}
 
 	public ObjectBundle mul(String key, Object value) {
-		Object data = _mapBundle.get(key);
-		Calculator calculator = new Calculator(data);
+		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			_mapBundle.put(key, calculator.mul(value).getFloat());
+			set(key, calculator.mul(value).getFloat());
 		}
 		return this;
 	}
 
 	public ObjectBundle div(String key, Object value) {
-		Object data = _mapBundle.get(key);
-		Calculator calculator = new Calculator(data);
+		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			_mapBundle.put(key, calculator.div(value).getFloat());
+			set(key, calculator.div(value).getFloat());
 		}
 		return this;
 	}
 
 	public ObjectBundle mod(String key, Object value) {
-		Object data = _mapBundle.get(key);
-		Calculator calculator = new Calculator(data);
+		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			_mapBundle.put(key, calculator.mod(value).getFloat());
+			set(key, calculator.mod(value).getFloat());
 		}
 		return this;
 	}
 
 	public Calculator calc(String key) {
-		Object data = _mapBundle.get(key);
-		return new Calculator(data);
+		return new Calculator(get(key, -1f));
 	}
 
 	@Override

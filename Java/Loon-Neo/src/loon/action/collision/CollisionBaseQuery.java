@@ -26,13 +26,13 @@ import loon.geom.Vector2f;
 
 public class CollisionBaseQuery implements CollisionQuery {
 
+	private final RectBox _collisionRect = RectBox.ZERO();
+
 	private String _flag;
 
 	private CollisionObject _compareObject;
 
 	private Vector2f _offsetLocation;
-
-	private RectBox _collisionRect = new RectBox(0, 0, 0, 0);
 
 	public void init(String flag, CollisionObject actor, Vector2f offset) {
 		this._flag = flag;

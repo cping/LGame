@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionGrid.TraverseCallback;
+import loon.action.map.Side;
 import loon.geom.PointF;
 import loon.geom.RectF;
 import loon.utils.MathUtils;
@@ -35,6 +36,44 @@ import loon.utils.ObjectMap.Keys;
  * 一个碰撞物体自动管理用类,和CollisionManager不同,它会自动获得碰撞后新的物体坐标
  */
 public class CollisionWorld implements LRelease {
+
+	private static class WorldCollisionFilter extends CollisionFilter {
+
+		private final CollisionWorld _world;
+		private final TArray<ActionBind> _visited;
+		private final CollisionFilter _filter;
+
+		public WorldCollisionFilter(CollisionWorld world, TArray<ActionBind> v, CollisionFilter f) {
+			this._world = world;
+			this._visited = v;
+			this._filter = f;
+		}
+
+		@Override
+		public CollisionResult filter(ActionBind obj, ActionBind other) {
+			if (_visited.contains(other)) {
+				return null;
+			}
+			CollisionResult result = null;
+			if (_filter == null) {
+				result = _world._worldCollisionFilter.filter(obj, other);
+			} else {
+				result = _filter.filter(obj, other);
+			}
+			final CollisionActionQuery<ActionBind> actionQuery = _world._collisionActionQuery;
+			if (actionQuery != null) {
+				final int dir = Side.getCollisionSide(obj.getRectBox(), other.getRectBox());
+				final boolean query = actionQuery.checkQuery(obj, other, dir);
+				if (query) {
+					actionQuery.onCollisionResult(obj, other, dir);
+					return result;
+				} else {
+					return null;
+				}
+			}
+			return result;
+		}
+	}
 
 	public class Cell {
 		public int itemCount = 0;
@@ -85,6 +124,8 @@ public class CollisionWorld implements LRelease {
 	private final Collisions check_cols = new Collisions();
 	private final Collisions check_projectedCols = new Collisions();
 	private final CollisionResult.Result check_result = new CollisionResult.Result();
+
+	private CollisionActionQuery<ActionBind> _collisionActionQuery;
 
 	public CollisionWorld() {
 		this(null);
@@ -526,18 +567,7 @@ public class CollisionWorld implements LRelease {
 		visited.clear();
 		visited.add(bind);
 
-		CollisionFilter visitedFilter = new CollisionFilter() {
-			@Override
-			public CollisionResult filter(ActionBind bind, ActionBind other) {
-				if (visited.contains(other)) {
-					return null;
-				}
-				if (filter == null) {
-					return _worldCollisionFilter.filter(bind, other);
-				}
-				return filter.filter(bind, other);
-			}
-		};
+		final CollisionFilter visitedFilter = new WorldCollisionFilter(this, visited, filter);
 
 		RectF rect = getRect(bind);
 		float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
@@ -587,8 +617,18 @@ public class CollisionWorld implements LRelease {
 		return _worldCollisionFilter;
 	}
 
-	public void setWorldCollisionFilter(CollisionFilter collisionFilter) {
-		this._worldCollisionFilter = collisionFilter;
+	public CollisionWorld setWorldCollisionFilter(CollisionFilter c) {
+		this._worldCollisionFilter = c;
+		return this;
+	}
+
+	public CollisionActionQuery<ActionBind> getCollisionActionQuery() {
+		return _collisionActionQuery;
+	}
+
+	public CollisionWorld setCollisionActionQuery(CollisionActionQuery<ActionBind> c) {
+		this._collisionActionQuery = c;
+		return this;
 	}
 
 	public Screen getGameScreen() {
@@ -627,4 +667,5 @@ public class CollisionWorld implements LRelease {
 		check_cols.clear();
 		check_projectedCols.clear();
 	}
+
 }

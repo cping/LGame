@@ -208,6 +208,8 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	TComponent<IEntity> findComponent(String name);
 
+	TComponent<IEntity> findComponent(Class<? extends TComponent<IEntity>> typeClazz);
+
 	IEntity addComponent(final TComponent<IEntity> c);
 
 	IEntity removeComponents();

@@ -24,6 +24,12 @@ import loon.LSysException;
 
 public class ObjLazy<T> extends Nullable<T> implements ObjT<T> {
 
+	public static <T> void swap(ObjLazy<T> ref1, ObjLazy<T> ref2) {
+		ObjT<T> t3 = ref1._obj;
+		ref1.set(ref2._obj);
+		ref2.set(t3);
+	}
+
 	public static <T> ObjLazy<T> empty() {
 		return new ObjLazy<T>(new ObjRef<T>(null));
 	}

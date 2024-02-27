@@ -31,6 +31,12 @@ import loon.utils.StringUtils;
  */
 public class ObjRef<T> extends Nullable<T> implements ObjT<T>, SetIV<T> {
 
+	public static <T> void swap(ObjRef<T> ref1, ObjRef<T> ref2) {
+		T t3 = ref1.get();
+		ref1.set(ref2.get());
+		ref2.set(t3);
+	}
+
 	public static <T> ObjRef<T> empty() {
 		return of(null);
 	}

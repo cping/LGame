@@ -20,6 +20,8 @@
  */
 package loon.action.map.battle;
 
+import loon.LSystem;
+
 public class BattleState {
 
 	// 这个参数事实上是BattleProcess中事件运行的优先级,系统默认的调高一点,并且间隔大,方便插入自定义参数
@@ -67,6 +69,15 @@ public class BattleState {
 
 	public String getName() {
 		return this._name;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 38;
+		result = LSystem.unite(result, this._priority);
+		result = LSystem.unite(result, this._name);
+		result = LSystem.unite(result, super.hashCode());
+		return result;
 	}
 
 	@Override

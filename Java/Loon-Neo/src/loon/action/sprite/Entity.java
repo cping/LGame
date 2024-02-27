@@ -2514,6 +2514,23 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
+	public TComponent<IEntity> findComponent(Class<? extends TComponent<IEntity>> typeClazz) {
+		if (this._components == null) {
+			return null;
+		}
+		if (typeClazz == null) {
+			return null;
+		}
+		for (int i = this._components.size - 1; i >= 0; i--) {
+			final TComponent<IEntity> finder = this._components.get(i);
+			if (finder != null && finder.getClass().equals(typeClazz)) {
+				return finder;
+			}
+		}
+		return null;
+	}
+
+	@Override
 	public IEntity addComponent(TComponent<IEntity> c) {
 		if (_components == null) {
 			allocateComponents();

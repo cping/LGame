@@ -39,6 +39,9 @@ public class Session implements Bundle<String> {
 	private boolean isPersisted = false;
 
 	private String loadData() {
+		if (_save == null) {
+			return null;
+		}
 		String result = _save.getItem(name);
 		if (StringUtils.isEmpty(result)) {
 			return result;
@@ -88,6 +91,10 @@ public class Session implements Bundle<String> {
 		public Record(String name) {
 			this.values = new String[0];
 			this.name = name;
+		}
+
+		public boolean isSaved() {
+			return name != null && size() != 0;
 		}
 
 		public int size() {
@@ -176,8 +183,8 @@ public class Session implements Bundle<String> {
 			isPersisted = false;
 		}
 		this.name = name;
-		this.records = new ArrayMap(10);
-		this.recordsList = new TArray<Record>(10);
+		this.records = new ArrayMap();
+		this.recordsList = new TArray<Record>();
 		if (gain) {
 			load();
 		}
@@ -324,6 +331,7 @@ public class Session implements Bundle<String> {
 		return res != null ? ("1".equals(res) ? true : false) : false;
 	}
 
+	@Override
 	public String get(String name) {
 		return get(name, 0);
 	}
@@ -405,7 +413,6 @@ public class Session implements Bundle<String> {
 			if (n >= parts.length) {
 				return n;
 			}
-
 			int count = Integer.parseInt(parts[n++]);
 			for (int i = 0; i < count; i++) {
 				if (n >= parts.length) {
@@ -413,8 +420,10 @@ public class Session implements Bundle<String> {
 				}
 				Record record = new Record(parts[n++]);
 				n = record.decode(parts, n);
-				records.put(record.name, record);
-				recordsList.add(record);
+				if (record.name != null && record.isSaved()) {
+					records.put(record.name, record);
+					recordsList.add(record);
+				}
 			}
 			return n;
 		}
@@ -422,10 +431,13 @@ public class Session implements Bundle<String> {
 
 	public String encode() {
 		synchronized (recordsList) {
-			StrBuilder sbr = new StrBuilder();
+			final StrBuilder sbr = new StrBuilder();
 			sbr.append(recordsList.size).append(flag).toString();
 			for (int i = 0; i < recordsList.size; i++) {
-				sbr.append((recordsList.get(i)).encode()).toString();
+				final Record record = recordsList.get(i);
+				if (record != null && record.isSaved()) {
+					sbr.append(record.encode()).toString();
+				}
 			}
 			return sbr.toString();
 		}
@@ -502,7 +514,15 @@ public class Session implements Bundle<String> {
 	}
 
 	public int load() {
-		return loadEncodeSession(loadData());
+		final String result = loadData();
+		if (result == null) {
+			return 0;
+		}
+		return loadEncodeSession(result);
+	}
+
+	public boolean isSaved() {
+		return isPersisted && !records.isEmpty();
 	}
 
 	public Session cpy() {

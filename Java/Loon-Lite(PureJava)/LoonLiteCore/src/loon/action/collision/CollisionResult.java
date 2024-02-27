@@ -24,21 +24,21 @@ import loon.geom.PointF;
 
 public abstract class CollisionResult {
 
-	public abstract Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
-			float goalX, float goalY, CollisionFilter filter, Result result);
-
 	public static class Result {
 
 		public float goalX;
 		public float goalY;
 
-		public Collisions collisions = new Collisions();
+		public final Collisions collisions = new Collisions();
 
 		public void set(float goalX, float goalY) {
 			this.goalX = goalX;
 			this.goalY = goalY;
 		}
 	}
+
+	public abstract Result response(CollisionWorld world, CollisionData collision, float x, float y, float w, float h,
+			float goalX, float goalY, CollisionFilter filter, Result result);
 
 	public static CollisionResult newSlide() {
 		return new CollisionResult() {

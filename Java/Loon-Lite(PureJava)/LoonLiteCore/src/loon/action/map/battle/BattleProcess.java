@@ -32,8 +32,6 @@ import loon.geom.BooleanValue;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
-import loon.utils.ObjectMap;
-import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
@@ -204,7 +202,7 @@ public class BattleProcess extends CoroutineProcess {
 
 	private RollbackVar<ObjectBundle> _battleTurnHistory = new RollbackVar<ObjectBundle>();
 
-	private ObjectMap<String, Object> _battleVars = new ObjectMap<String, Object>();
+	private ObjectBundle _battleVars = new ObjectBundle();
 
 	private Teams _mainTeams;
 
@@ -271,24 +269,41 @@ public class BattleProcess extends CoroutineProcess {
 	}
 
 	public BattleProcess setVar(String name, Object v) {
-		_battleVars.put(name, v);
+		_battleVars.setVar(name, v);
 		return this;
 	}
 
-	public String getVar(String name) {
-		Object v = _battleVars.get(name);
-		if (v == null) {
-			return null;
-		}
-		return HelperUtils.toStr(v);
+	public BattleProcess setStr(String name, String v) {
+		_battleVars.setStr(name, v);
+		return this;
 	}
 
-	public String removeVar(String name) {
-		Object v = _battleVars.remove(name);
-		if (v == null) {
-			return null;
-		}
-		return HelperUtils.toStr(v);
+	public BattleProcess setBool(String name, boolean v) {
+		_battleVars.setBool(name, v);
+		return this;
+	}
+
+	public BattleProcess setFloat(String name, float v) {
+		_battleVars.setFloat(name, v);
+		return this;
+	}
+
+	public BattleProcess setInt(String name, int v) {
+		_battleVars.setInt(name, v);
+		return this;
+	}
+
+	public BattleProcess setLong(String name, long v) {
+		_battleVars.setLong(name, v);
+		return this;
+	}
+
+	public Object getVar(String name) {
+		return _battleVars.get(name);
+	}
+
+	public Object removeVar(String name) {
+		return _battleVars.removeVar(name);
 	}
 
 	public BattleProcess clearVars() {
@@ -296,8 +311,32 @@ public class BattleProcess extends CoroutineProcess {
 		return this;
 	}
 
+	public String getStr(String name) {
+		return _battleVars.getStr(name);
+	}
+
+	public int getInt(String name) {
+		return _battleVars.getInt(name);
+	}
+
+	public long getLong(String name) {
+		return _battleVars.getLong(name);
+	}
+
+	public float getFloat(String name) {
+		return _battleVars.getFloat(name);
+	}
+
+	public boolean getBool(String name) {
+		return _battleVars.isBool(name);
+	}
+
 	public boolean isBool(String name) {
-		return StringUtils.toBoolean(getVar(name));
+		return _battleVars.isBool(name);
+	}
+
+	public ObjectBundle getBattleVars() {
+		return _battleVars;
 	}
 
 	/**
@@ -459,6 +498,10 @@ public class BattleProcess extends CoroutineProcess {
 	public BattleProcess clearTurnHistory() {
 		_battleTurnHistory.clear();
 		return this;
+	}
+
+	public RollbackVar<ObjectBundle> getTrunHistoryData() {
+		return _battleTurnHistory;
 	}
 
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {

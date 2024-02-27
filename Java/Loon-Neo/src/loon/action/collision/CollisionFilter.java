@@ -29,79 +29,71 @@ public abstract class CollisionFilter {
 	private static CollisionFilter _defaultFilter;
 
 	public static CollisionFilter getDefault() {
-		if (_defaultFilter == null) {
-			synchronized (CollisionFilter.class) {
-				if (_defaultFilter == null) {
-					_defaultFilter = new CollisionFilter() {
-						@Override
-						public CollisionResult filter(ActionBind obj, ActionBind other) {
-							return CollisionResult.newSlide();
-						}
-					};
+		synchronized (CollisionFilter.class) {
+			if (_defaultFilter == null) {
+				_defaultFilter = new CollisionFilter() {
+					@Override
+					public CollisionResult filter(ActionBind obj, ActionBind other) {
+						return CollisionResult.newSlide();
+					}
+				};
 
-				}
 			}
+			return _defaultFilter;
 		}
-		return _defaultFilter;
 	}
 
 	private static CollisionFilter _crossFilter;
 
 	public static CollisionFilter getCross() {
-		if (_crossFilter == null) {
-			synchronized (CollisionFilter.class) {
-				_crossFilter = new CollisionFilter() {
-					@Override
-					public CollisionResult filter(ActionBind obj, ActionBind other) {
-						return CollisionResult.newCross();
-					}
-				};
-			}
+		synchronized (CollisionFilter.class) {
+			_crossFilter = new CollisionFilter() {
+				@Override
+				public CollisionResult filter(ActionBind obj, ActionBind other) {
+					return CollisionResult.newCross();
+				}
+			};
+			return _crossFilter;
 		}
-		return _crossFilter;
 	}
 
 	private static CollisionFilter _touchFilter;
 
 	public static CollisionFilter getTouch() {
-		if (_touchFilter == null) {
-			synchronized (CollisionFilter.class) {
-				if (_touchFilter == null) {
-					_touchFilter = new CollisionFilter() {
-						@Override
-						public CollisionResult filter(ActionBind obj, ActionBind other) {
-							return CollisionResult.newTouch();
-						}
-					};
-				}
+		synchronized (CollisionFilter.class) {
+			if (_touchFilter == null) {
+				_touchFilter = new CollisionFilter() {
+					@Override
+					public CollisionResult filter(ActionBind obj, ActionBind other) {
+						return CollisionResult.newTouch();
+					}
+				};
 			}
+			return _touchFilter;
 		}
-		return _touchFilter;
 	}
 
 	private static CollisionFilter _bulletFilter;
 
 	public static CollisionFilter getBullet() {
-		if (_bulletFilter == null) {
-			synchronized (CollisionFilter.class) {
-				if (_bulletFilter == null) {
-					_bulletFilter = new CollisionFilter() {
-						@Override
-						public CollisionResult filter(ActionBind obj, ActionBind other) {
-							if (obj == null || other == null) {
-								return CollisionResult.newSlide();
-							}
-							if (obj == other || obj.equals(other)) {
-								return CollisionResult.newCross();
-							} else {
-								return CollisionResult.newTouch();
-							}
+		synchronized (CollisionFilter.class) {
+			if (_bulletFilter == null) {
+				_bulletFilter = new CollisionFilter() {
+					@Override
+					public CollisionResult filter(ActionBind obj, ActionBind other) {
+						if (obj == null || other == null) {
+							return CollisionResult.newSlide();
 						}
-					};
-				}
+						if (obj == other || obj.equals(other)) {
+							return CollisionResult.newCross();
+						} else {
+							return CollisionResult.newTouch();
+						}
+					}
+				};
 			}
+			return _bulletFilter;
 		}
-		return _bulletFilter;
 	}
 
 	public static void freeStatic() {

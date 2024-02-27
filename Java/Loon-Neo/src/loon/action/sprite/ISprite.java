@@ -95,6 +95,20 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 	@Override
 	int getLayer();
 
+	int getFlagType();
+
+	int getStatus();
+
+	String getObjectFlag();
+
+	boolean isStatus(int s);
+
+	boolean isTag(Object tag);
+
+	boolean isFlagType(int type);
+
+	boolean isObjectFlag(String flag);
+
 	void setLayer(int layer);
 
 	RectBox getCollisionBox();

@@ -674,6 +674,11 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
+	public TComponent<IEntity> findComponent(Class<? extends TComponent<IEntity>> typeClazz) {
+		return null;
+	}
+
+	@Override
 	public IEntity addComponent(TComponent<IEntity> c) {
 		return this;
 	}
@@ -870,6 +875,41 @@ public class SpriteEntity implements IEntity {
 	@Override
 	public IEntity triggerCollision(SpriteCollisionListener sc) {
 		return this;
+	}
+
+	@Override
+	public int getFlagType() {
+		return _sprite.getFlagType();
+	}
+
+	@Override
+	public int getStatus() {
+		return _sprite.getStatus();
+	}
+
+	@Override
+	public String getObjectFlag() {
+		return _sprite.getObjectFlag();
+	}
+
+	@Override
+	public boolean isStatus(int s) {
+		return _sprite.isStatus(s);
+	}
+
+	@Override
+	public boolean isTag(Object tag) {
+		return _sprite.isTag(tag);
+	}
+
+	@Override
+	public boolean isFlagType(int type) {
+		return _sprite.isFlagType(type);
+	}
+
+	@Override
+	public boolean isObjectFlag(String flag) {
+		return _sprite.isObjectFlag(flag);
 	}
 
 	@Override

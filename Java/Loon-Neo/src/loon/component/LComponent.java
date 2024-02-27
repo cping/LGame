@@ -2264,7 +2264,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public LComponent buildToScreen() {
 		if (_desktop != null) {
-			_desktop.remove(this);
+			_desktop.add(this);
 			return this;
 		}
 		getScreen().add(this);

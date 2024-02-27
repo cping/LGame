@@ -33,11 +33,9 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 	}
 
 	public static final Engine get() {
-		if (instance == null) {
-			synchronized (Engine.class) {
-				if (instance == null) {
-					instance = new Engine();
-				}
+		synchronized (Engine.class) {
+			if (instance == null) {
+				instance = new Engine();
 			}
 		}
 		return instance;
