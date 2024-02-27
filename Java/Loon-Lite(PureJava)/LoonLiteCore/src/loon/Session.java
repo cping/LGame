@@ -24,6 +24,7 @@ import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.Base64Coder;
 import loon.utils.Bundle;
+import loon.utils.ObjectBundle;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -494,6 +495,30 @@ public class Session implements Bundle<String> {
 
 	public String getSessionName() {
 		return name;
+	}
+
+	public Session loadToBundle() {
+		return loadToBundle(new ObjectBundle());
+	}
+
+	public Session loadToBundle(ObjectBundle bundle) {
+		if (bundle != null) {
+			bundle.loadFrom(bundle);
+			return this;
+		}
+		return null;
+	}
+
+	public Session saveFromBundle() {
+		return saveFromBundle(new ObjectBundle());
+	}
+
+	public Session saveFromBundle(ObjectBundle bundle) {
+		if (bundle != null) {
+			bundle.savaTo(bundle);
+			return this;
+		}
+		return null;
 	}
 
 	public Session save() {

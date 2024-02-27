@@ -37,32 +37,32 @@ package loon.utils;
 public class ObjectBundle extends MapBundle<Object> {
 
 	public ObjectBundle setVar(String name, Object v) {
-		set(name, v);
+		put(name, v);
 		return this;
 	}
 
 	public ObjectBundle setStr(String name, String v) {
-		return setVar(name, v);
+		return set(name, v);
 	}
 
 	public ObjectBundle setBool(String name, boolean v) {
-		return setVar(name, Boolean.valueOf(v));
+		return set(name, Boolean.valueOf(v));
 	}
 
 	public ObjectBundle setFloat(String name, float v) {
-		return setVar(name, Float.valueOf(v));
+		return set(name, Float.valueOf(v));
 	}
 
 	public ObjectBundle setInt(String name, int v) {
-		return setVar(name, Integer.valueOf(v));
+		return set(name, Integer.valueOf(v));
 	}
 
 	public ObjectBundle setLong(String name, long v) {
-		return setVar(name, Long.valueOf(v));
+		return set(name, Long.valueOf(v));
 	}
 
 	public Object getVar(String name) {
-		return getVar(name, null);
+		return get(name, null);
 	}
 
 	public Object getVar(String name, Object rollback) {
@@ -83,19 +83,19 @@ public class ObjectBundle extends MapBundle<Object> {
 	}
 
 	public String getStr(String name) {
-		return HelperUtils.toStr(getVar(name));
+		return HelperUtils.toStr(get(name));
 	}
 
 	public int getInt(String name) {
-		return HelperUtils.toInt(getVar(name));
+		return HelperUtils.toInt(get(name));
 	}
 
 	public long getLong(String name) {
-		return HelperUtils.toLong(getVar(name));
+		return HelperUtils.toLong(get(name));
 	}
 
 	public float getFloat(String name) {
-		return HelperUtils.toFloat(getVar(name));
+		return HelperUtils.toFloat(get(name));
 	}
 
 	public boolean getBool(String name) {
@@ -103,7 +103,7 @@ public class ObjectBundle extends MapBundle<Object> {
 	}
 
 	public boolean isBool(String name) {
-		Object result = getVar(name);
+		Object result = get(name);
 		if (result instanceof Boolean) {
 			return ((Boolean) result).booleanValue();
 		}
