@@ -8,14 +8,12 @@ public class MD5 {
 	private static MD5 _instance;
 
 	public static MD5 get() {
-		if (_instance == null) {
-			synchronized (MD5.class) {
-				if (_instance == null) {
-					_instance = new MD5();
-				}
+		synchronized (MD5.class) {
+			if (_instance == null) {
+				_instance = new MD5();
 			}
+			return _instance;
 		}
-		return _instance;
 	}
 
 	final static int S11 = 7;

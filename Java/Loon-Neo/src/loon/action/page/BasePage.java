@@ -27,16 +27,33 @@ import loon.Screen;
  */
 public abstract class BasePage {
 
+	protected boolean _locked;
+
+	public boolean isLocked() {
+		return _locked;
+	}
+
+	public BasePage unlockPage() {
+		_locked = false;
+		return this;
+	}
+
+	public BasePage lockPage() {
+		_locked = true;
+		return this;
+	}
+
 	public abstract void onTransform(Screen screen, float position);
 
 	public void resetTransform(Screen screen) {
-		screen.setRotation(0);
-		screen.setScaleX(1);
-		screen.setScaleY(1);
+		screen.setRotation(0f);
+		screen.setScaleX(1f);
+		screen.setScaleY(1f);
 		screen.setPivotX(-1f);
 		screen.setPivotY(-1f);
-		screen.setY(0);
-		screen.setX(0);
+		screen.setX(0f);
+		screen.setY(0f);
+		screen.setAlpha(1f);
 		screen.setVisible(true);
 	}
 

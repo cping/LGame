@@ -159,6 +159,14 @@ final public class CollectionUtils {
 		return tempArr;
 	}
 
+	public static ISprite[] copyOf(ISprite[] data, int start, int end) {
+		ISprite[] tempArr = new ISprite[end - start];
+		for (int i = start, j = 0; i < end; i++, j++) {
+			tempArr[j] = data[i];
+		}
+		return tempArr;
+	}
+
 	/**
 	 * copy指定长度的数组数据
 	 * 
@@ -463,6 +471,12 @@ final public class CollectionUtils {
 	 */
 	public static Object[] concat(Object[] first, Object[] second) {
 		Object[] result = copyOf(first, first.length + second.length);
+		System.arraycopy(second, 0, result, first.length, second.length);
+		return result;
+	}
+
+	public static ISprite[] concat(ISprite[] first, ISprite[] second) {
+		ISprite[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}

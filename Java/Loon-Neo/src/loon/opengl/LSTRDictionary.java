@@ -220,6 +220,9 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public void clearStringLazy() {
+		if (cacheList == null) {
+			return;
+		}
 		synchronized (cacheList) {
 			if (cacheList != null) {
 				cacheList.clear();

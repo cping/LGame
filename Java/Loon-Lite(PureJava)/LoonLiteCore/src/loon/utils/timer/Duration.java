@@ -46,14 +46,12 @@ public class Duration implements Comparable<Duration> {
 	}
 
 	public static Duration shared() {
-		if (_instance == null) {
-			synchronized (Duration.class) {
-				if (_instance == null) {
-					_instance = new Duration();
-				}
+		synchronized (Duration.class) {
+			if (_instance == null) {
+				_instance = new Duration();
 			}
+			return _instance;
 		}
-		return _instance;
 	}
 
 	public static final Duration ZERO = new Duration(0f);
@@ -70,10 +68,10 @@ public class Duration implements Comparable<Duration> {
 
 	public static final Duration ONE_DAY = new Duration(LSystem.DAY);
 
-    public final static boolean isBetween(long time, long from, long end) {
-        return from <= time && time <= end;
-    }
-	
+	public final static boolean isBetween(long time, long from, long end) {
+		return from <= time && time <= end;
+	}
+
 	public final static long now() {
 		return TimeUtils.millis();
 	}

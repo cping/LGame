@@ -24,7 +24,7 @@ import loon.Screen;
 import loon.Screen.PageMethod;
 import loon.utils.timer.EaseTimer;
 
-public class ScreenSwitch {
+public class ScreenSwitchPage {
 
 	private Screen _target;
 
@@ -38,11 +38,11 @@ public class ScreenSwitch {
 
 	private BasePage _targetPage, _sourcePage;
 
-	public ScreenSwitch(PageMethod mode, Screen dst, Screen src) {
+	public ScreenSwitchPage(PageMethod mode, Screen dst, Screen src) {
 		this(mode, dst, src, 1f);
 	}
 
-	public ScreenSwitch(Screen dst, Screen src, BasePage page1, BasePage page2, float duration) {
+	public ScreenSwitchPage(Screen dst, Screen src, BasePage page1, BasePage page2, float duration) {
 		this._mode = PageMethod.Unknown;
 		this._target = dst;
 		this._source = src;
@@ -51,7 +51,7 @@ public class ScreenSwitch {
 		this._sourcePage = page2;
 	}
 
-	public ScreenSwitch(PageMethod mode, Screen dst, Screen src, float duration) {
+	public ScreenSwitchPage(PageMethod mode, Screen dst, Screen src, float duration) {
 		this._mode = mode;
 		this._target = dst;
 		this._source = src;
@@ -75,7 +75,7 @@ public class ScreenSwitch {
 			break;
 		case Fade:
 			this._targetPage = new FadePage();
-			this._sourcePage = new FadePage();
+			this._sourcePage = new FadePage().lockPage();
 			break;
 		case RotateDown:
 			this._targetPage = new RotateDownPage();
@@ -95,7 +95,7 @@ public class ScreenSwitch {
 			break;
 		case ZoomOut:
 			this._targetPage = new ZoomOutPage();
-			this._sourcePage = new ZoomOutPage();
+			this._sourcePage = new ZoomOutPage().lockPage();
 			break;
 		case Rotate:
 			this._targetPage = new RotatePage();
@@ -114,10 +114,10 @@ public class ScreenSwitch {
 		_easeTimer.update(elapsedTime);
 		_targetProgress = _easeTimer.getProgress();
 		_sourceProgress = 1f - _targetProgress;
-		if (_target != null) {
+		if (_target != null && !_targetPage._locked) {
 			_targetPage.onTransform(_target, _targetProgress);
 		}
-		if (_source != null) {
+		if (_source != null && !_sourcePage._locked) {
 			_sourcePage.onTransform(_source, _sourceProgress);
 		}
 		if (_easeTimer.isCompleted()) {

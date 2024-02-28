@@ -84,14 +84,12 @@ public class LTimer implements LTimerListener, LRelease {
 	}
 
 	public static LTimer shared() {
-		if (_instance == null) {
-			synchronized (LTimer.class) {
-				if (_instance == null) {
-					_instance = new LTimer("STATIC_TIME", 0);
-				}
+		synchronized (LTimer.class) {
+			if (_instance == null) {
+				_instance = new LTimer("STATIC_TIME", 0);
 			}
+			return _instance;
 		}
-		return _instance;
 	}
 
 	public static Task postTask(EventActionT<Task> e) {

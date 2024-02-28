@@ -1131,17 +1131,12 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					setImageColor(color);
 				}
 				fontBatch.setBlendState(BlendState.AlphaBlend);
-				if (c == newLineFlag) {
-					fontBatch.draw(colors, x, y + pixelFontSize, intObject.getDrawWidth() * fontScale - offsetX,
-							intObject.getDrawHeight() * fontScale - offsetY, intObject.storedX, intObject.storedY,
-							intObject.storedX + intObject.getDrawWidth() - offsetX,
-							intObject.storedY + intObject.getDrawHeight() - offsetY);
-				} else {
-					fontBatch.draw(colors, x, y, intObject.getDrawWidth() * fontScale - offsetX,
-							intObject.getDrawHeight() * fontScale - offsetY, intObject.storedX, intObject.storedY,
-							intObject.storedX + intObject.getDrawWidth() - offsetX,
-							intObject.storedY + intObject.getDrawHeight() - offsetY);
-				}
+
+				fontBatch.draw(colors, x, y, intObject.getDrawWidth() * fontScale - offsetX,
+						intObject.getDrawHeight() * fontScale - offsetY, intObject.storedX, intObject.storedY,
+						intObject.storedX + intObject.getDrawWidth() - offsetX,
+						intObject.storedY + intObject.getDrawHeight() - offsetY);
+
 				if (colors != null) {
 					colors = null;
 				}

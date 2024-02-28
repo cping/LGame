@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,25 +18,30 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.action.page;
+package org.test;
 
-import loon.Screen;
+import loon.Stage;
+import loon.component.LClickButton;
+import loon.events.DrawLoop;
 
-public class RotateDownPage extends BasePage {
-
-	private static final float ROT_MOD = -15f;
+public class DrawableInterfaceTest extends Stage {
 
 	@Override
-	public void onTransform(Screen screen, float position) {
-		final float width = screen.getWidth();
-		final float height = screen.getHeight();
-		final float rotation = (float) (ROT_MOD * position * -12.25);
-		screen.setPivotX(width * 0.5f);
-		screen.setPivotY(height);
-		screen.setRotation(rotation);
+	public void create() {
+		DrawLoop.Drawable draw1 = (g, x, y) -> {
+			g.drawText("循环嵌套1", 150, 150);
+		};
+		DrawLoop.Drawable draw2 = (g, x, y) -> {
+			g.drawText("循环嵌套2", 150, 150);
+		};
+		drawable(draw1).onUpdate((s, l) -> {
+			System.out.println("数据在循环");
+		});
+		LClickButton click = node("c", "Update", 0, 0, 130, 30);
+		centerBottomOn(click, 0, -10);
+		add(click.up((x, y) -> {
+			drawable(draw2);
+		}));
 	}
 
-	public boolean isPagingEnabled() {
-		return true;
-	}
 }

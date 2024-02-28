@@ -1248,6 +1248,10 @@ public class LProcess implements LRelease {
 		return setCurrentScreen(true, screen, closed, put);
 	}
 
+	public LProcess setCurrentScreen(final boolean waiting, final Screen screen, boolean closed) {
+		return setCurrentScreen(waiting, screen, closed, true);
+	}
+
 	public LProcess setCurrentScreen(final boolean waiting, final Screen screen, boolean closed, boolean put) {
 		if (checkWaiting() && waiting) {
 			return this;

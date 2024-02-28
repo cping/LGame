@@ -31,7 +31,7 @@ import loon.utils.ObjectMap;
 
 public class AnimationHelper implements LRelease {
 
-	final static ObjectMap<String, AnimationHelper> ANIS = new ObjectMap<>();
+	private final static ObjectMap<String, AnimationHelper> ANIS = new ObjectMap<>();
 
 	private boolean closed;
 

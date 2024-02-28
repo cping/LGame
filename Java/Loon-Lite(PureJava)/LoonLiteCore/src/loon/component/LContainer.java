@@ -46,23 +46,25 @@ import loon.utils.reply.Callback;
  */
 public abstract class LContainer extends LComponent implements IArray {
 
+	private final static LayerSorter<LComponent> componentSorter = new LayerSorter<LComponent>(false);
+
 	protected LComponent[] _childs = new LComponent[0];
 
-	private Margin _margin;
+	protected boolean _scrolling = false;
 
-	private float _newLineHeight = -1f;
-
-	protected boolean _scrolling;
+	private boolean _sortableChildren = false;
 	// 滚动x轴
 	protected float _component_scrollX;
 	// 滚动y轴
 	protected float _component_scrollY;
 
-	private boolean _sortableChildren;
+	private float _newLineHeight = -1f;
 
-	private final static LayerSorter<LComponent> compSorter = new LayerSorter<LComponent>(false);
+	private int _childCount = 0;
 
-	private int childCount = 0;
+	private int _childExpandCount = 1;
+
+	private Margin _margin = null;
 
 	private LComponent latestInserted = null;
 
@@ -70,26 +72,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		super(x, y, w, h);
 		this.setFocusable(false);
 		this.setSortableChildren(true);
-	}
-
-	@Override
-	public boolean isContainer() {
-		return true;
-	}
-
-	public boolean hasChilds() {
-		return childCount > 0;
-	}
-
-	public boolean hasChild(LComponent comp) {
-		final LComponent[] comps = _childs;
-		for (int i = comps.length - 1; i > -1; i--) {
-			LComponent o = comps[i];
-			if (o == comp || (o != null && o.equals(comp))) {
-				return true;
-			}
-		}
-		return false;
+		this._childCount = 0;
+		this._childExpandCount = 1;
+		this._newLineHeight = -1f;
 	}
 
 	public LComponent addPadding(LComponent comp, float offX, float offY) {
@@ -129,17 +114,19 @@ public abstract class LContainer extends LComponent implements IArray {
 		float maxY = 0;
 
 		LComponent tag = null;
+		final LComponent[] childs = this._childs;
+		final int size = this._childCount;
 
-		if (childCount == 1) {
-			LComponent cp = _childs[0];
+		if (size == 1) {
+			LComponent cp = childs[0];
 			if (cp != null && cp.getY() >= _newLineHeight && !otherName.equals(cp.getUIName())) {
 				maxX = cp.getX();
 				maxY = cp.getY();
 				tag = cp;
 			}
 		} else {
-			for (int i = 0; i < childCount; i++) {
-				LComponent c = _childs[i];
+			for (int i = 0; i < size; i++) {
+				LComponent c = childs[i];
 				if (c != null && c != comp && c.getY() >= _newLineHeight && !otherName.equals(c.getUIName())) {
 					float oldMaxX = maxX;
 					float oldMaxY = maxY;
@@ -151,8 +138,8 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
-		if (tag == null && childCount > 0) {
-			tag = _childs[childCount - 1];
+		if (tag == null && size > 0) {
+			tag = childs[size - 1];
 		}
 		if (tag != null && tag != comp && !otherName.equals(tag.getUIName())) {
 			switch (code) {
@@ -231,9 +218,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
-		this._childs = CollectionUtils.expand(this._childs, 1, false);
+		this._childs = CollectionUtils.expand(this._childs, _childExpandCount, false);
 		this._childs[0] = comp;
-		this.childCount++;
+		this._childCount++;
 		if (_desktop != null) {
 			this._desktop.setDesktop(comp);
 			if (this.input == null) {
@@ -264,12 +251,13 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
-		LComponent[] newChilds = new LComponent[this._childs.length + 1];
-		this.childCount++;
+		final LComponent[] newChilds = new LComponent[this._childs.length + 1];
+		final LComponent[] oldChilds = this._childs;
+		this._childCount++;
 		int ctr = 0;
-		for (int i = 0; i < this.childCount; i++) {
+		for (int i = 0; i < this._childCount; i++) {
 			if (i != index) {
-				newChilds[i] = this._childs[ctr];
+				newChilds[i] = oldChilds[ctr];
 				ctr++;
 			}
 		}
@@ -294,13 +282,17 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = tags.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final Object tag = tags[j];
-			for (int i = size - 1; i > -1; i--) {
-				if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
-					list.add(this._childs[i]);
+			if (tag != null) {
+				for (int i = size - 1; i > -1; i--) {
+					LComponent child = childs[i];
+					if (child != null && (tag == child.Tag || tag.equals(child.Tag))) {
+						list.add(child);
+					}
 				}
 			}
 		}
@@ -317,14 +309,18 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return null;
 		}
-		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this._childCount;
 		final int len = tags.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final Object tag = tags[j];
-			for (int i = size - 1; i > -1; i--) {
-				if (!tag.equals(this._childs[i].Tag)) {
-					list.add(this._childs[i]);
+			if (tag != null) {
+				for (int i = size - 1; i > -1; i--) {
+					LComponent child = childs[i];
+					if (child != null && !tag.equals(child.Tag)) {
+						list.add(child);
+					}
 				}
 			}
 		}
@@ -342,14 +338,15 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = names.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final String name = names[j];
 			for (int i = size - 1; i > -1; i--) {
-				LComponent comp = this._childs[i];
+				LComponent comp = childs[i];
 				if (comp != null && name.equals(comp.getUIName())) {
-					list.add(this._childs[i]);
+					list.add(comp);
 				}
 			}
 		}
@@ -367,13 +364,17 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = names.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final String name = names[j];
-			for (int i = size - 1; i > -1; i--) {
-				if (!name.equals(this._childs[i].getUIName())) {
-					list.add(this._childs[i]);
+			if (name != null) {
+				for (int i = size - 1; i > -1; i--) {
+					final LComponent child = childs[i];
+					if (child != null && !name.equals(child.getUIName())) {
+						list.add(child);
+					}
 				}
 			}
 		}
@@ -391,13 +392,17 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = names.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final String name = names[j];
-			for (int i = size - 1; i > -1; i--) {
-				if (name.equals(this._childs[i].getName())) {
-					list.add(this._childs[i]);
+			if (name != null) {
+				for (int i = size - 1; i > -1; i--) {
+					LComponent child = childs[i];
+					if (child != null && name.equals(child.getName())) {
+						list.add(child);
+					}
 				}
 			}
 		}
@@ -409,15 +414,15 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = names.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final String name = names[j];
-			for (int i = size - 1; i > -1; i--) {
-				LComponent comp = this._childs[i];
-				if (comp != null) {
-					String childName = comp.getName();
-					if (childName != null && childName.contains(name)) {
+			if (name != null) {
+				for (int i = size - 1; i > -1; i--) {
+					LComponent comp = childs[i];
+					if (comp != null && comp.getName() != null && comp.getName().contains(name)) {
 						list.add(comp);
 					}
 				}
@@ -437,19 +442,29 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final int len = names.length;
+		final LComponent[] childs = this._childs;
 		for (int j = 0; j < len; j++) {
 			final String name = names[j];
-			for (int i = size - 1; i > -1; i--) {
-				if (!name.equals(this._childs[i].getName())) {
-					list.add(this._childs[i]);
+			if (name != null) {
+				for (int i = size - 1; i > -1; i--) {
+					final LComponent child = childs[i];
+					if (!name.equals(child.getName())) {
+						list.add(child);
+					}
 				}
 			}
 		}
 		return list;
 	}
 
+	/**
+	 * 检查指定组件是否存在
+	 * 
+	 * @param comp
+	 * @return
+	 */
 	public boolean contains(LComponent comp) {
 		if (_component_isClose) {
 			return false;
@@ -460,17 +475,20 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return false;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent child = _childs[i];
+		final int len = this._childCount;
+		final LComponent[] childs = _childs;
+		for (int i = 0; i < len; i++) {
+			LComponent child = childs[i];
 			boolean exist = (child != null);
 			if (exist && comp.equals(child)) {
 				return true;
 			}
 			if (exist && child.isContainer() && (child instanceof LContainer)) {
-				LContainer superComp = (LContainer) child;
-				for (int j = 0; j < superComp._childs.length; j++) {
-					boolean superExist = (superComp._childs[j] != null);
-					if (superExist && comp.equals(superComp._childs[j])) {
+				final LContainer superComp = (LContainer) child;
+				final LComponent[] superChilds = superComp._childs;
+				for (int j = 0; j < superChilds.length; j++) {
+					boolean superExist = (superChilds[j] != null);
+					if (superExist && comp.equals(superChilds[j])) {
 						return true;
 					}
 				}
@@ -479,8 +497,55 @@ public abstract class LContainer extends LComponent implements IArray {
 		return false;
 	}
 
+	/**
+	 * 查找符合的Flag整型对象
+	 * 
+	 * @param flag
+	 * @return
+	 */
+	public TArray<LComponent> findFlagTypes(int flag) {
+		if (_component_isClose) {
+			return null;
+		}
+		final TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null && child.getFlagType() == flag) {
+				list.add(child);
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 查找符合的Flag字符对象
+	 * 
+	 * @param flag
+	 * @return
+	 */
+	public TArray<LComponent> findFlagObjects(String flag) {
+		if (_component_isClose) {
+			return null;
+		}
+		final TArray<LComponent> list = new TArray<LComponent>();
+		if (flag == null) {
+			return list;
+		}
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null && flag.equals(child.getObjectFlag())) {
+				list.add(child);
+			}
+		}
+		return list;
+	}
+
 	public LComponent getRandomComponent() {
-		return getRandomComponent(0, childCount);
+		return getRandomComponent(0, _childCount);
 	}
 
 	public LComponent getRandomComponent(int min, int max) {
@@ -488,7 +553,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		min = MathUtils.max(0, min);
-		max = MathUtils.min(max, childCount);
+		max = MathUtils.min(max, _childCount);
 		return _childs[MathUtils.nextInt(min, max)];
 	}
 
@@ -496,7 +561,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return -1;
 		}
-		final int size = this.childCount;
+		final int size = this._childCount;
 		for (int i = size - 1; i > -1; i--) {
 			if (this._childs[i] == comp) {
 				this.remove(i);
@@ -526,7 +591,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			return false;
 		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
 		for (int i = size - 1; i > -1; i--) {
 			if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
 				this.remove(i);
@@ -540,10 +605,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return false;
 		}
+		if (tag == null) {
+			return false;
+		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (!tag.equals(this._childs[i].Tag)) {
+			final LComponent child = childs[i];
+			if (child != null && !tag.equals(child.Tag)) {
 				this.remove(i);
 				flag = true;
 			}
@@ -555,10 +625,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return false;
 		}
+		if (name == null) {
+			return false;
+		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (name.equals(this._childs[i].getUIName())) {
+			final LComponent child = childs[i];
+			if (child != null && name.equals(child.getUIName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -570,10 +645,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return false;
 		}
+		if (name == null) {
+			return false;
+		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (!name.equals(this._childs[i].getUIName())) {
+			final LComponent child = childs[i];
+			if (child != null && !name.equals(child.getUIName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -585,10 +665,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return false;
 		}
+		if (name == null) {
+			return false;
+		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (name.equals(this._childs[i].getName())) {
+			final LComponent child = childs[i];
+			if (child != null && name.equals(child.getName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -600,10 +685,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return false;
 		}
+		if (name == null) {
+			return false;
+		}
 		boolean flag = false;
-		final int size = this.childCount;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (!name.equals(this._childs[i].getName())) {
+			final LComponent child = childs[i];
+			if (child != null && !name.equals(child.getName())) {
 				this.remove(i);
 				flag = true;
 			}
@@ -627,7 +717,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			// comp.close();
 		}
 		this._childs = CollectionUtils.cut(this._childs, index);
-		this.childCount--;
+		this._childCount--;
 		return comp;
 	}
 
@@ -645,11 +735,11 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (first == second) {
 			return this;
 		}
-		if (first >= childCount) {
-			throw new LSysException("first can't be >= size: " + first + " >= " + childCount);
+		if (first >= _childCount) {
+			throw new LSysException("first can't be >= size: " + first + " >= " + _childCount);
 		}
-		if (second >= childCount) {
-			throw new LSysException("second can't be >= size: " + second + " >= " + childCount);
+		if (second >= _childCount) {
+			throw new LSysException("second can't be >= size: " + second + " >= " + _childCount);
 		}
 		final LComponent[] cs = this._childs;
 		final LComponent firstValue = cs[first];
@@ -674,7 +764,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		int fi = -1;
 		int bi = -1;
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final LComponent[] cs = this._childs;
 		for (int i = 0; i < size; i++) {
 			final LComponent comp = cs[i];
@@ -702,7 +792,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 */
 	public LComponent findComponentUI(String name) {
 		final LComponent[] childs = this._childs;
-		final int size = this.childCount;
+		final int size = this._childCount;
 		for (int i = size - 1; i > -1; i--) {
 			LComponent child = childs[i];
 			if (child != null && child.getUIName().equals(name)) {
@@ -718,8 +808,10 @@ public abstract class LContainer extends LComponent implements IArray {
 			return;
 		}
 		this._desktop.clearComponentsStat(this._childs);
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent comp = this._childs[i];
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				comp.setContainer(null);
 				comp.setState(State.REMOVED);
@@ -730,8 +822,9 @@ public abstract class LContainer extends LComponent implements IArray {
 				// comp.close();
 			}
 		}
+		this._childs = null;
 		this._childs = new LComponent[0];
-		this.childCount = 0;
+		this._childCount = 0;
 	}
 
 	public LComponent replace(LComponent oldComp, LComponent newComp) {
@@ -755,7 +848,7 @@ public abstract class LContainer extends LComponent implements IArray {
 			try {
 				super.update(elapsedTime);
 				LComponent component;
-				final int size = this.childCount;
+				final int size = this._childCount;
 				final LComponent[] childs = this._childs;
 				for (int i = 0; i < size; i++) {
 					component = childs[i];
@@ -775,15 +868,17 @@ public abstract class LContainer extends LComponent implements IArray {
 			return;
 		}
 		super.validatePosition();
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent comp = this._childs[i];
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				comp.validatePosition();
 			}
 		}
 		if (!this._component_elastic) {
-			for (int i = 0; i < this.childCount; i++) {
-				LComponent comp = this._childs[i];
+			for (int i = 0; i < size; i++) {
+				LComponent comp = childs[i];
 				if (comp != null) {
 					if (comp.getX() > this.getWidth() || comp.getY() > this.getHeight()
 							|| comp.getX() + comp.getWidth() < 0 || comp.getY() + comp.getHeight() < 0) {
@@ -800,7 +895,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		if (!this.isVisible()) {
+		if (!this._component_visible) {
 			return;
 		}
 		final float newScrollX = _component_scrollX;
@@ -838,7 +933,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i >= 0; i--) {
 			LComponent comp = childs[i];
@@ -852,18 +947,18 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return this;
 		}
-		if (this.childCount <= 1 || this._childs[0] == comp) {
+		if (this._childCount <= 1 || this._childs[0] == comp) {
 			return this;
 		}
 		if (_childs[0] == comp) {
 			return this;
 		}
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final LComponent[] childs = this._childs;
 		for (int i = 0; i < size; i++) {
 			if (childs[i] == comp) {
 				this._childs = CollectionUtils.cut(childs, i);
-				this._childs = CollectionUtils.expand(childs, 1, false);
+				this._childs = CollectionUtils.expand(childs, _childExpandCount, false);
 				this._childs[0] = comp;
 				if (_sortableChildren) {
 					this.sortComponents();
@@ -878,18 +973,18 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return this;
 		}
-		if (this.childCount <= 1 || this._childs[this.childCount - 1] == comp) {
+		if (this._childCount <= 1 || this._childs[this._childCount - 1] == comp) {
 			return this;
 		}
-		if (_childs[this.childCount - 1] == comp) {
+		if (_childs[this._childCount - 1] == comp) {
 			return this;
 		}
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final LComponent[] childs = this._childs;
 		for (int i = 0; i < size; i++) {
 			if (childs[i] == comp) {
 				this._childs = CollectionUtils.cut(childs, i);
-				this._childs = CollectionUtils.expand(childs, 1, true);
+				this._childs = CollectionUtils.expand(childs, _childExpandCount, true);
 				this._childs[size - 1] = comp;
 				if (_sortableChildren) {
 					this.sortComponents();
@@ -904,10 +999,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (this._component_isClose) {
 			return this;
 		}
-		if (this.childCount <= 1) {
+		if (this._childCount <= 1) {
 			return this;
 		}
-		compSorter.sort(this._childs);
+		componentSorter.sort(this._childs);
 		return this;
 	}
 
@@ -915,17 +1010,23 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			if (component == this._childs[i]) {
+		if (component == null) {
+			return;
+		}
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			final LComponent child = childs[i];
+			if (component == child) {
 				int j = i;
 				do {
 					if (--i < 0) {
-						i = this.childCount - 1;
+						i = size - 1;
 					}
 					if (i == j) {
 						return;
 					}
-				} while (!this._childs[i].requestFocus());
+				} while (!child.requestFocus());
 
 				break;
 			}
@@ -936,18 +1037,23 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			if (component == this._childs[i]) {
+		if (component == null) {
+			return;
+		}
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			final LComponent child = childs[i];
+			if (component == child) {
 				int j = i;
 				do {
-					if (++i >= this.childCount) {
+					if (++i >= size) {
 						i = 0;
 					}
 					if (i == j) {
 						return;
 					}
-				} while (!this._childs[i].requestFocus());
-
+				} while (!child.requestFocus());
 				break;
 			}
 		}
@@ -959,8 +1065,11 @@ public abstract class LContainer extends LComponent implements IArray {
 			return false;
 		}
 		if (!super.isSelected()) {
-			for (int i = 0; i < this.childCount; i++) {
-				if (this._childs[i].isSelected()) {
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = 0; i < size; i++) {
+				final LComponent child = childs[i];
+				if (child != null && child.isSelected()) {
 					return true;
 				}
 			}
@@ -982,8 +1091,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (!this.intersects(x1, y1)) {
 			return null;
 		}
-		for (int i = 0; i < this.childCount; i++) {
-			LComponent child = this._childs[i];
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			LComponent child = childs[i];
 			if (child != null && child.getSuper() != null && child.getSuper().isContainer()
 					&& (child.getSuper() instanceof LScrollContainer)) {
 				LScrollContainer scr = (LScrollContainer) child.getSuper();
@@ -1020,19 +1131,20 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public int getComponentCount() {
-		return this.childCount;
+		return this._childCount;
 	}
 
 	public LComponent[] getComponents() {
 		if (_component_isClose) {
 			return null;
 		}
-		return CollectionUtils.copyOf(this._childs, this.childCount);
+		return CollectionUtils.copyOf(this._childs, this._childCount);
 	}
 
 	public float getContextWidth() {
 		float max = 0f;
-		for (int i = _childs.length - 1; i > -1; i--) {
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && comp._component_visible) {
 				max = MathUtils.max(comp.getScalePixelX() + comp.getWidth(), max);
@@ -1043,7 +1155,8 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public float getContextHeight() {
 		float max = 0f;
-		for (int i = _childs.length - 1; i > -1; i--) {
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && comp._component_visible) {
 				max = MathUtils.max(comp.getScalePixelY() + comp.getHeight(), max);
@@ -1071,20 +1184,24 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LContainer layoutElements(final LayoutManager manager, final LComponent... comps) {
-		if (manager != null) {
-			TArray<LComponent> list = new TArray<LComponent>();
-			for (int i = 0; i < comps.length; i++) {
-				LComponent c = comps[i];
-				if (c != null && !(c instanceof LToolTip)) {
-					list.add(c);
-				}
-			}
-			LComponent[] tmp = new LComponent[list.size];
-			for (int i = 0; i < list.size; i++) {
-				tmp[i] = list.get(i);
-			}
-			manager.layoutElements(this, tmp);
+		if (_component_isClose) {
+			return this;
 		}
+		if (manager == null) {
+			return this;
+		}
+		final TArray<LComponent> list = new TArray<LComponent>();
+		for (int i = 0; i < comps.length; i++) {
+			LComponent c = comps[i];
+			if (c != null && !(c instanceof LToolTip)) {
+				list.add(c);
+			}
+		}
+		LComponent[] tmp = new LComponent[list.size];
+		for (int i = 0; i < list.size; i++) {
+			tmp[i] = list.get(i);
+		}
+		manager.layoutElements(this, tmp);
 		return this;
 	}
 
@@ -1094,6 +1211,12 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
+		if (_component_isClose) {
+			return this;
+		}
+		if (manager == null) {
+			return this;
+		}
 		LComponent[] comps = getComponents();
 		CollectionUtils.reverse(comps);
 		layoutElements(manager, comps);
@@ -1115,9 +1238,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		LComponent[] comps = this._childs;
+		final LComponent[] comps = this._childs;
 		if (comps != null) {
-			for (int i = 0; i > comps.length; i++) {
+			final int size = this._childCount;
+			for (int i = 0; i > size; i++) {
 				if (comps[i] != null) {
 					comps[i].setDesktop(d);
 				}
@@ -1132,9 +1256,17 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
+		if (_component_isClose) {
+			return null;
+		}
+		if (query == null) {
+			return null;
+		}
 		final TArray<LComponent> result = new TArray<LComponent>();
-		for (int i = _childs.length - 1; i > -1; i--) {
-			LComponent comp = _childs[i];
+		final LComponent[] childs = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				if (query.hit(comp)) {
 					result.add(comp);
@@ -1142,7 +1274,6 @@ public abstract class LContainer extends LComponent implements IArray {
 				}
 			}
 		}
-
 		return result;
 	}
 
@@ -1153,9 +1284,17 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> find(QueryEvent<LComponent> query) {
+		if (_component_isClose) {
+			return null;
+		}
+		if (query == null) {
+			return null;
+		}
 		final TArray<LComponent> result = new TArray<LComponent>();
-		for (int i = _childs.length - 1; i > -1; i--) {
-			LComponent comp = _childs[i];
+		final LComponent[] childs = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				if (query.hit(comp)) {
 					result.add(comp);
@@ -1172,9 +1311,17 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> delete(QueryEvent<LComponent> query) {
+		if (_component_isClose) {
+			return null;
+		}
+		if (query == null) {
+			return null;
+		}
 		final TArray<LComponent> result = new TArray<LComponent>();
-		for (int i = _childs.length - 1; i > -1; i--) {
-			LComponent comp = _childs[i];
+		final LComponent[] childs = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				if (query.hit(comp)) {
 					result.add(comp);
@@ -1192,9 +1339,17 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> select(QueryEvent<LComponent> query) {
+		if (_component_isClose) {
+			return null;
+		}
+		if (query == null) {
+			return null;
+		}
 		final TArray<LComponent> result = new TArray<LComponent>();
-		for (int i = _childs.length - 1; i > -1; i--) {
-			LComponent comp = _childs[i];
+		final LComponent[] childs = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				if (query.hit(comp)) {
 					result.add(comp);
@@ -1209,8 +1364,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return this;
 		}
-		for (int i = 0; i < _childs.length; i++) {
-			LComponent comp = _childs[i];
+		final LComponent[] comps = this._childs;
+		final int size = this._childCount;
+		for (int i = 0; i < size; i++) {
+			LComponent comp = comps[i];
 			if (comp != null) {
 				comp.in();
 			}
@@ -1224,8 +1381,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return this;
 		}
-		for (int i = 0; i < _childs.length; i++) {
-			LComponent comp = _childs[i];
+		final LComponent[] comps = this._childs;
+		final int size = this._childCount;
+		for (int i = 0; i < size; i++) {
+			LComponent comp = comps[i];
 			if (comp != null) {
 				comp.out();
 			}
@@ -1234,12 +1393,33 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	@Override
+	public boolean isContainer() {
+		return true;
+	}
+
+	public boolean hasChilds() {
+		return _childCount > 0;
+	}
+
+	public boolean hasChild(LComponent comp) {
+		final LComponent[] comps = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent o = comps[i];
+			if (o == comp || (o != null && o.equals(comp))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public int getChildCount() {
 		return size();
 	}
 
 	public LComponent get(int index) {
-		if (index < 0 || index >= childCount) {
+		if (index < 0 || index >= _childCount) {
 			return null;
 		}
 		return this._childs[index];
@@ -1254,9 +1434,11 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		int idx = -1;
 		if (_childs != null) {
-			for (int i = 0; i < _childs.length; i++) {
-				LComponent c = _childs[i];
-				if (c == comp) {
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = 0; i < size; i++) {
+				LComponent child = childs[i];
+				if (child == comp) {
 					idx = i;
 					return idx;
 				}
@@ -1266,19 +1448,19 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public TArray<LComponent> get(String name) {
-		final TArray<LComponent> list = new TArray<LComponent>();
 		if (_component_isClose) {
-			return list;
+			return null;
 		}
 		if (StringUtils.isEmpty(name)) {
-			return list;
+			return null;
 		}
-		if (_childs != null) {
-			for (int i = _childs.length - 1; i > -1; i--) {
-				LComponent comp = _childs[i];
-				if (name.equals(comp.getName())) {
-					list.add(comp);
-				}
+		final TArray<LComponent> list = new TArray<LComponent>();
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null && name.equals(comp.getName())) {
+				list.add(comp);
 			}
 		}
 		return list;
@@ -1286,12 +1468,12 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public int size() {
-		return childCount;
+		return _childCount;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return childCount == 0 || _childs == null;
+		return _childCount == 0 || _childs == null;
 	}
 
 	@Override
@@ -1300,8 +1482,9 @@ public abstract class LContainer extends LComponent implements IArray {
 			return;
 		}
 		super.keyPressed(key);
-		LComponent[] childs = _childs;
-		for (int i = 0; i < childs.length; i++) {
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
 			LComponent c = childs[i];
 			if (c != null) {
 				c.keyPressed(key);
@@ -1315,8 +1498,9 @@ public abstract class LContainer extends LComponent implements IArray {
 			return;
 		}
 		super.keyReleased(key);
-		LComponent[] childs = _childs;
-		for (int i = 0; i < childs.length; i++) {
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
 			LComponent c = childs[i];
 			if (c != null) {
 				c.keyReleased(key);
@@ -1326,8 +1510,8 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	void toString(StrBuilder buffer, int indent) {
 		buffer.append(super.toString());
-		LComponent[] comps = _childs;
-		int size = comps.length;
+		final LComponent[] comps = _childs;
+		final int size = this._childCount;
 		if (size > 0) {
 			buffer.append(LSystem.LS);
 			for (int i = 0; i < size; i++) {
@@ -1351,9 +1535,11 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_component_isClose) {
 			return;
 		}
-		if (_childs != null && childCount > 0) {
-			for (int i = this.childCount - 1; i >= 0; i--) {
-				LComponent comp = _childs[i];
+		if (_childs != null && _childCount > 0) {
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = size - 1; i >= 0; i--) {
+				LComponent comp = childs[i];
 				if (comp != null && comp != this && comp.getParent() == this) {
 					comp.processResize();
 				}
@@ -1367,15 +1553,32 @@ public abstract class LContainer extends LComponent implements IArray {
 			return this;
 		}
 		super.validateResize();
-		if (_childs != null && childCount > 0) {
-			for (int i = this.childCount - 1; i >= 0; i--) {
-				LComponent comp = _childs[i];
+		if (_childs != null && _childCount > 0) {
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = size - 1; i >= 0; i--) {
+				LComponent comp = childs[i];
 				if (comp != null && comp != this && comp.getParent() == this) {
 					comp.validateResize();
 				}
 			}
 		}
 		return this;
+	}
+
+	@Override
+	public void setRotation(float rotate) {
+		super.setRotation(rotate);
+		if (_childs != null && _childCount > 0) {
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = size - 1; i > -1; i--) {
+				LComponent comp = childs[i];
+				if (comp != null) {
+					comp.setRotation(rotate);
+				}
+			}
+		}
 	}
 
 	public LContainer scrollBy(float x, float y) {
@@ -1417,7 +1620,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (_childs != null && childCount > 0) {
+		if (_childs != null && _childCount > 0) {
 			controls = new UIControls(_childs);
 		} else {
 			controls = new UIControls();
@@ -1425,21 +1628,16 @@ public abstract class LContainer extends LComponent implements IArray {
 		return controls;
 	}
 
-	@Override
-	public void setRotation(float rotate) {
-		super.setRotation(rotate);
-		if (_childs != null) {
-			for (int i = _childs.length - 1; i > -1; i--) {
-				LComponent comp = _childs[i];
-				if (comp != null) {
-					comp.setRotation(rotate);
-				}
-			}
-		}
-	}
-
 	public UIControls controls() {
 		return createUIControls();
+	}
+
+	public int getChildExpandCount() {
+		return _childExpandCount;
+	}
+
+	public void setChildExpandCount(int e) {
+		this._childExpandCount = e;
 	}
 
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
@@ -1455,8 +1653,10 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		_margin.setMargin(left, top, right, bottom);
 		_margin.clear();
-		for (int i = childCount - 1; i > -1; --i) {
-			LComponent comp = _childs[i];
+		final int len = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = len - 1; i > -1; --i) {
+			LComponent comp = childs[i];
 			if (comp != null) {
 				_margin.addChild(comp);
 			}
@@ -1473,7 +1673,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (callback == null) {
 			return this;
 		}
-		final int size = this.childCount;
+		final int size = this._childCount;
 		final LComponent[] comps = this._childs;
 		for (int i = size - 1; i > -1; i--) {
 			final LComponent child = comps[i];
@@ -1516,7 +1716,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._component_isClose = true;
 		if (_component_autoDestroy) {
 			if (_childs != null) {
-				final int size = this.childCount;
+				final int size = this._childCount;
 				final LComponent[] comps = this._childs;
 				for (int i = size - 1; i > -1; i--) {
 					final LComponent child = comps[i];

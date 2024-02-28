@@ -64,14 +64,12 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	public static final RealtimeProcessManager get() {
-		if (instance == null) {
-			synchronized (RealtimeProcessManager.class) {
-				if (instance == null) {
-					instance = new RealtimeProcessManager();
-				}
+		synchronized (RealtimeProcessManager.class) {
+			if (instance == null) {
+				instance = new RealtimeProcessManager();
 			}
+			return instance;
 		}
-		return instance;
 	}
 
 	private RealtimeProcessManager() {

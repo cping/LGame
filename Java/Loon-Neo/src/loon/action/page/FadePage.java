@@ -26,12 +26,12 @@ public class FadePage extends BasePage {
 
 	@Override
 	public void onTransform(Screen screen, float position) {
-		if (position < -1 || position > 1) {
+		if (position < -1f || position > 1f) {
 			screen.setAlpha(0.6f);
-		} else if (position <= 0 || position <= 1) {
-			float alpha = (position <= 0) ? position + 1 : 1 - position;
+		} else if (position <= 0f || position <= 1f) {
+			float alpha = (position <= 0) ? position + 1f : 1f - position;
 			screen.setAlpha(alpha);
-		} else if (position == 0) {
+		} else if (position == 0f) {
 			screen.setAlpha(1f);
 		}
 	}

@@ -39,7 +39,7 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
 import loon.action.map.battle.BattleProcess;
-import loon.action.page.ScreenSwitch;
+import loon.action.page.ScreenSwitchPage;
 import loon.action.sprite.IEntity;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprite;
@@ -175,6 +175,44 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public static interface ReplaceEvent {
 
 		public Screen getScreen(int idx);
+
+	}
+
+	private static class ReplaceScreenProcess extends RealtimeProcess {
+
+		private Screen _screen;
+
+		public ReplaceScreenProcess(Screen screen) {
+			this._screen = screen;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			try {
+				_screen.restart();
+			} catch (Throwable cause) {
+				LSystem.error("Replace screen dispatch failure", cause);
+			} finally {
+				kill();
+			}
+		}
+
+	}
+
+	private static class ScreenClosed implements Updateable {
+
+		private Screen _oldScreen;
+
+		public ScreenClosed(Screen o) {
+			this._oldScreen = o;
+		}
+
+		@Override
+		public void action(Object a) {
+			if (_oldScreen != null) {
+				_oldScreen.destroy();
+			}
+		}
 
 	}
 
@@ -342,7 +380,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private Screen _replaceDstScreen;
 
-	private ScreenSwitch _screenSwitch;
+	private ScreenSwitchPage _screenSwitch;
 
 	private final EmptyObject _curDstPos = new EmptyObject();
 
@@ -1336,7 +1374,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param _screenSwitch
 	 * @return
 	 */
-	public Screen replaceScreen(final Screen screen, final ScreenSwitch screenSwitch) {
+	public Screen replaceScreen(final Screen screen, final ScreenSwitchPage screenSwitch) {
 		if (_replaceLoading) {
 			return this;
 		}
@@ -1348,25 +1386,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			this._replaceDstScreen = screen;
 			this._screenSwitch = screenSwitch;
 			screen.setRepaintMode(SCREEN_NOT_REPAINT);
-			addProcess(new RealtimeProcess() {
-
-				@Override
-				public void run(LTimerContext time) {
-					try {
-						screen.restart();
-					} catch (Throwable cause) {
-						LSystem.error("Replace screen dispatch failure", cause);
-					} finally {
-						kill();
-					}
-				}
-			});
+			addProcess(new ReplaceScreenProcess(screen));
 		}
 		return this;
 	}
 
 	public Screen replaceScreen(final Screen screen, PageMethod m) {
-		return replaceScreen(screen, new ScreenSwitch(m, this, screen));
+		return replaceScreen(screen, new ScreenSwitchPage(m, this, screen));
 	}
 
 	/**
@@ -1427,19 +1453,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				break;
 			}
 
-			addProcess(new RealtimeProcess() {
-
-				@Override
-				public void run(LTimerContext time) {
-					try {
-						screen.restart();
-					} catch (Throwable cause) {
-						LSystem.error("Replace screen dispatch failure", cause);
-					} finally {
-						kill();
-					}
-				}
-			});
+			addProcess(new ReplaceScreenProcess(screen));
 
 		}
 
@@ -1467,13 +1481,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private void submitReplaceScreen() {
 		if (_processHandler != null) {
 			_processHandler.setCurrentScreen(_replaceDstScreen, false);
-			_replaceDstScreen._closeUpdate = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					destroy();
-				}
-			};
+			_replaceDstScreen._closeUpdate = new ScreenClosed(this);
 		}
 		_replaceLoading = false;
 	}
@@ -6766,13 +6774,31 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 获得当前的DrawLoop
+	 * 
+	 * @return
+	 */
+	public DrawLoop<Screen> getDrawable() {
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			return ((DrawLoop<Screen>) _drawListener);
+		}
+		return null;
+	}
+
+	/**
 	 * 设定当前Screen的渲染监听器
 	 * 
 	 * @param draw
 	 * @return
 	 */
-	public Screen drawable(DrawLoop.Drawable draw) {
-		return setDrawListener(new DrawLoop<Screen>(this, draw));
+	public DrawLoop<Screen> drawable(DrawLoop.Drawable draw) {
+		DrawLoop<Screen> loop = null;
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			loop = getDrawable().onDrawable(draw);
+		} else {
+			setDrawListener(loop = new DrawLoop<Screen>(this, draw));
+		}
+		return loop;
 	}
 
 	/**

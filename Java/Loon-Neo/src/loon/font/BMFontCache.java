@@ -35,14 +35,12 @@ public class BMFontCache extends CacheMap<BMFont> {
 	}
 
 	public static BMFontCache shared() {
-		if (_fontCache == null) {
-			synchronized (BMFontCache.class) {
-				if (_fontCache == null) {
-					_fontCache = new BMFontCache();
-				}
+		synchronized (BMFontCache.class) {
+			if (_fontCache == null) {
+				_fontCache = new BMFontCache();
 			}
+			return _fontCache;
 		}
-		return _fontCache;
 	}
 
 	@Override

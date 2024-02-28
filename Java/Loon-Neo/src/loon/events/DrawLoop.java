@@ -20,10 +20,15 @@
  */
 package loon.events;
 
+import loon.LRelease;
 import loon.Screen;
+import loon.geom.BooleanValue;
 import loon.opengl.GLEx;
 
-public class DrawLoop<T extends Screen> implements DrawListener<T> {
+/**
+ * Screen专用的渲染循环器,可以以注入接口的方式改变Screen循环与渲染内容
+ */
+public class DrawLoop<T extends Screen> implements DrawListener<T>, LRelease {
 
 	public static interface Drawable {
 
@@ -31,13 +36,51 @@ public class DrawLoop<T extends Screen> implements DrawListener<T> {
 
 	}
 
+	public final BooleanValue enabled = new BooleanValue(true);
+
 	private Drawable _drawable;
+
+	private EventActionTN<T, Long> _eventAction;
 
 	private T _value;
 
 	public DrawLoop(T v, Drawable d) {
 		this._value = v;
 		this._drawable = d;
+	}
+
+	@Override
+	public T update(long elapsedTime) {
+		if (enabled.get() && _eventAction != null) {
+			_eventAction.update(_value, elapsedTime);
+		}
+		return _value;
+	}
+
+	@Override
+	public T draw(GLEx g, float x, float y) {
+		if (enabled.get() && _drawable != null) {
+			_drawable.draw(g, x, y);
+		}
+		return _value;
+	}
+
+	public EventActionTN<T, Long> getEventAction() {
+		return _eventAction;
+	}
+
+	public DrawLoop<T> setEventAction(EventActionTN<T, Long> e) {
+		this._eventAction = e;
+		return this;
+	}
+
+	public DrawLoop<T> onUpdate(EventActionTN<T, Long> e) {
+		return setEventAction(e);
+	}
+
+	public DrawLoop<T> onDrawable(DrawLoop.Drawable draw) {
+		this._drawable = draw;
+		return this;
 	}
 
 	public Drawable drawable() {
@@ -49,16 +92,9 @@ public class DrawLoop<T extends Screen> implements DrawListener<T> {
 	}
 
 	@Override
-	public T update(long elapsedTime) {
-		return _value;
-	}
-
-	@Override
-	public T draw(GLEx g, float x, float y) {
-		if (_drawable != null) {
-			_drawable.draw(g, x, y);
-		}
-		return _value;
+	public void close() {
+		enabled.set(false);
+		_value = null;
 	}
 
 }

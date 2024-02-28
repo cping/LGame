@@ -40,6 +40,15 @@ public class TouchedClick implements ClickListener {
 
 	private TArray<ClickListener> clicks;
 
+	public TouchedClick() {
+		this(true, false);
+	}
+
+	public TouchedClick(boolean e, boolean c) {
+		this._enabled = e;
+		this._downClick = c;
+	}
+
 	public TouchedClick addClickListener(ClickListener c) {
 		if (c == null) {
 			return this;

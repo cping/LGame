@@ -141,6 +141,10 @@ public class Nullable<T> implements IV<T>, LRelease {
 		return calc(v, Calculator.ADD);
 	}
 
+	public T inc(Number v) {
+		return calc(v, Calculator.ADD);
+	}
+
 	public T sub(Number v) {
 		return calc(v, Calculator.SUBTRACT);
 	}

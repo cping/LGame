@@ -1167,11 +1167,14 @@ public class Matrix4 implements Serializable, XY {
 
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Matrix3) || o == null) {
-			return false;
-		}
 		if (this == o) {
 			return true;
+		}
+		if (o == null) {
+			return false;
+		}
+		if (!(o instanceof Matrix3)) {
+			return false;
 		}
 		Matrix3 comp = (Matrix3) o;
 		for (int i = 0; i < 16; i++) {
