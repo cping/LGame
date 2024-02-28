@@ -36,11 +36,9 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.GameProcessType;
-import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.TimeLineProcess;
 import loon.utils.processes.WaitProcess;
-import loon.utils.timer.LTimerContext;
 
 /**
  * 组件动作用工具类,主要用来处理一些和ActionBind相关的事物
@@ -53,8 +51,12 @@ public class PlayerUtils extends Director {
 	 * 
 	 * @param update
 	 */
-	public final static GameProcess addProcess(final ActionUpdate update) {
+	public final static WaitProcess addProcess(final ActionUpdate update) {
 		return addProcess(update, 0);
+	}
+
+	public final static WaitProcess postProcess(final ActionUpdate update) {
+		return addProcess(update);
 	}
 
 	/**
@@ -63,23 +65,17 @@ public class PlayerUtils extends Director {
 	 * @param update
 	 * @param delay
 	 */
-	public final static GameProcess addProcess(final ActionUpdate update, final long delay) {
+	public final static WaitProcess addProcess(final ActionUpdate update, final long delay) {
 		if (update == null) {
 			return null;
 		}
-		RealtimeProcess process = new RealtimeProcess(delay) {
-
-			@Override
-			public void run(LTimerContext time) {
-				if (update.completed()) {
-					kill();
-				}
-				update.action(time);
-			}
-		};
-		process.setProcessType(GameProcessType.Progress);
+		WaitProcess process = new WaitProcess(delay, update);
 		RealtimeProcessManager.get().addProcess(process);
 		return process;
+	}
+
+	public final static WaitProcess postProcess(final ActionUpdate update, final long delay) {
+		return addProcess(update, delay);
 	}
 
 	/**
@@ -93,6 +89,10 @@ public class PlayerUtils extends Director {
 		}
 		RealtimeProcessManager.get().addProcess(process);
 		return process;
+	}
+
+	public final static GameProcess postProcess(GameProcess process) {
+		return addProcess(process);
 	}
 
 	/**
@@ -350,7 +350,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public final static float getDistanceXBetween(ActionBind src, ActionBind dst) {
-		return MathUtils.abs((dst.getX() + dst.getWidth() / 2) - (src.getX() + src.getWidth() / 2));
+		return MathUtils.abs((dst.getX() + dst.getWidth() / 2f) - (src.getX() + src.getWidth() / 2f));
 	}
 
 	/**
@@ -361,7 +361,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public final static float getDistanceXBetween(ActionBind src, RectBox dst) {
-		return MathUtils.abs((dst.getX() + dst.getWidth() / 2) - (src.getX() + src.getWidth() / 2));
+		return MathUtils.abs((dst.getX() + dst.getWidth() / 2f) - (src.getX() + src.getWidth() / 2f));
 	}
 
 	/**
@@ -372,7 +372,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public static float getDistanceYBetween(ActionBind src, ActionBind dst) {
-		return MathUtils.abs((dst.getY() + dst.getHeight() / 2) - (src.getY() + src.getHeight() / 2));
+		return MathUtils.abs((dst.getY() + dst.getHeight() / 2f) - (src.getY() + src.getHeight() / 2f));
 	}
 
 	/**
@@ -383,7 +383,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public final static float getDistanceYBetween(ActionBind src, RectBox dst) {
-		return MathUtils.abs((dst.getY() + dst.getHeight() / 2) - (src.getY() + src.getHeight() / 2));
+		return MathUtils.abs((dst.getY() + dst.getHeight() / 2f) - (src.getY() + src.getHeight() / 2f));
 	}
 
 	/**
@@ -395,7 +395,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public static float getAllowableXDistance(ActionBind src, ActionBind dst, float allowDistance) {
-		return (src.getWidth() / 2) + (dst.getWidth() / 2 - allowDistance);
+		return (src.getWidth() / 2f) + (dst.getWidth() / 2f - allowDistance);
 	}
 
 	/**
@@ -407,6 +407,7 @@ public class PlayerUtils extends Director {
 	 * @return
 	 */
 	public static float getAllowableYDistance(ActionBind src, ActionBind dst, float allowDistance) {
-		return (src.getHeight() / 2) + (dst.getHeight() / 2 - allowDistance);
+		return (src.getHeight() / 2f) + (dst.getHeight() / 2f - allowDistance);
 	}
+
 }

@@ -55,6 +55,67 @@ public class LTexture extends Painter implements LRelease {
 		return LSystem.loadTexture(path);
 	}
 
+	private static class TextureClosedUpdate implements Updateable {
+
+		private Graphics _gfx;
+
+		private LTexture _texture;
+
+		private int _textureId;
+
+		public TextureClosedUpdate(int id, Graphics gfx, LTexture tex) {
+			this._textureId = id;
+			this._gfx = gfx;
+			this._texture = tex;
+		}
+
+		@Override
+		public void action(Object a) {
+			synchronized (LTexture.class) {
+				if (_gfx.game.delTexture(_textureId)) {
+					if (_gfx.game.setting.disposeTexture && !_texture._disposed && _texture._closed) {
+						LSystem.delTexture(_textureId);
+						_texture._disposed = true;
+					}
+					if (_texture._image != null) {
+						_texture._image.close();
+						_texture._image = null;
+					}
+					if (_texture.childs != null) {
+						_texture.childs.clear();
+						_texture.childs = null;
+					}
+					_texture._isLoaded = false;
+					_texture._closed = true;
+					_texture._memorySize = 0;
+					_texture.freeBatch();
+					_gfx.game.log().debug("Texture : " + _texture.getSource() + " Closed,Size = " + _texture.getWidth()
+							+ "," + _texture.getHeight() + (_texture.Tag != null ? ",Tag = " + _texture.Tag : ""));
+				}
+			}
+		}
+	}
+
+	private static class PostTextureDelete extends RealtimeProcess {
+
+		private Updateable _closed;
+
+		private Graphics _gfx;
+
+		public PostTextureDelete(Graphics gfx, Updateable closed) {
+			super("TextureDeleted", LSystem.SECOND, GameProcessType.Texture);
+			this._gfx = gfx;
+			this._closed = closed;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			_gfx.game.processImpl.addLoad(_closed);
+			kill();
+		}
+
+	}
+
 	/**
 	 * 是否无视子纹理使用情况,强制注销纹理
 	 */
@@ -857,7 +918,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	protected void freeTexture() {
-		if (disposed() || _disabledTexture || isCloseSubmitting()) {
+		if (_disabledTexture || disposed() || isCloseSubmitting()) {
 			return;
 		}
 		final int textureId = _id;
@@ -874,46 +935,9 @@ public class LTexture extends Painter implements LRelease {
 				if (batch != null) {
 					gfx.game.disposeBatchCache(batch, false);
 				}
-				_closeSubmit = new Updateable() {
-
-					@Override
-					public void action(Object a) {
-						synchronized (LTexture.class) {
-							if (gfx.game.delTexture(textureId)) {
-								if (gfx.game.setting.disposeTexture && !_disposed && _closed) {
-									LSystem.delTexture(textureId);
-									_disposed = true;
-								}
-								if (_image != null) {
-									_image.close();
-									_image = null;
-								}
-								if (childs != null) {
-									childs.clear();
-									childs = null;
-								}
-								_isLoaded = false;
-								_closed = true;
-								_memorySize = 0;
-								freeBatch();
-								gfx.game.log().debug("Texture : " + getSource() + " Closed,Size = " + getWidth() + ","
-										+ getHeight() + (Tag != null ? ",Tag = " + Tag : ""));
-							}
-						}
-					}
-				};
+				_closeSubmit = new TextureClosedUpdate(textureId, gfx, this);
 				if (isDrawCanvas()) {
-					RealtimeProcess process = new RealtimeProcess() {
-
-						@Override
-						public void run(LTimerContext time) {
-							gfx.game.processImpl.addLoad(_closeSubmit);
-							kill();
-						}
-					};
-					process.setProcessType(GameProcessType.Texture);
-					process.setDelay(LSystem.SECOND);
-					RealtimeProcessManager.get().addProcess(process);
+					RealtimeProcessManager.get().addProcess(new PostTextureDelete(gfx, _closeSubmit));
 				} else {
 					gfx.game.processImpl.addLoad(_closeSubmit);
 				}
