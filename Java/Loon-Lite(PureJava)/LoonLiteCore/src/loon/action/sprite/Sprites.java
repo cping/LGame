@@ -980,7 +980,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 */
 	public TArray<ISprite> containsSprite(ISprite sprite) {
 		if (sprite == null) {
-			return new TArray<ISprite>(0);
+			return null;
 		}
 		return contains(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
@@ -1087,13 +1087,13 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 * @return
 	 */
 	public TArray<ISprite> intersects(float x, float y, float w, float h) {
-		TArray<ISprite> sprites = new TArray<ISprite>();
 		if (_closed) {
-			return sprites;
+			return null;
 		}
 		if (_sprites == null) {
-			return sprites;
+			return null;
 		}
+		final TArray<ISprite> sprites = new TArray<ISprite>();
 		final int size = this._size;
 		final ISprite[] sprs = this._sprites;
 		for (int i = 0; i < size; i++) {
@@ -1126,7 +1126,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	 */
 	public TArray<ISprite> intersectsSprite(ISprite sprite) {
 		if (sprite == null) {
-			return new TArray<ISprite>(0);
+			return null;
 		}
 		return intersects(sprite.getX(), sprite.getY(), sprite.getWidth(), sprite.getHeight());
 	}
