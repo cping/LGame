@@ -78,7 +78,7 @@ public class LProcess implements LRelease {
 			if (_game != null && !_game.displayImpl.showLogo) {
 				try {
 					if (_newScreen != null) {
-						_process.closedScreen(_newScreen);
+						_process.updateScreen(_newScreen);
 						_process.startTransition();
 						_newScreen.restart();
 						_process.endTransition();
@@ -449,6 +449,11 @@ public class LProcess implements LRelease {
 
 	protected void endProcess() {
 		_isInstance = false;
+	}
+
+	protected void updateScreen(final Screen newScreen) {
+		this.closedScreen(_currentScreen, newScreen);
+		this._currentScreen = newScreen;
 	}
 
 	protected void closedScreen(final Screen newScreen) {
