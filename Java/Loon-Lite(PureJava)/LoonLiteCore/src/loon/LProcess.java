@@ -452,6 +452,8 @@ public class LProcess implements LRelease {
 			} else if (oldScreen != null) {
 				oldScreen.setLock(true);
 				oldScreen.pause();
+			} else if (_currentScreen == null && oldScreen == null) {
+				_currentScreen = newScreen;
 			}
 		} catch (Throwable cause) {
 			LSystem.error("Destroy screen failure", cause);

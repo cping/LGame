@@ -65,7 +65,7 @@ public class Clip {
 	public Clip(Clip parent, float factor, int x, int y, int w, int h, boolean updateSize) {
 		this._parent = parent;
 		this._factor = factor;
-		if (parent == null) {
+		if (parent == null || updateSize) {
 			this._displayWidth = w;
 			this._displayHeight = h;
 			this.setRegion(x, y, w, h);
@@ -95,8 +95,14 @@ public class Clip {
 	public Clip setRegion(Clip region, int x, int y, int width, int height, boolean updateSize) {
 		if (region != null) {
 			if (updateSize) {
-				this._displayWidth = region.getRegionWidth();
-				this._displayHeight = region.getRegionHeight();
+				final boolean multiParent = (this._parent != null && this._parent._parent != null);
+				if (multiParent) {
+					this._displayWidth = region.getRegionWidth();
+					this._displayHeight = region.getRegionHeight();
+				} else {
+					this._displayWidth = region._displayWidth;
+					this._displayHeight = region._displayHeight;
+				}
 			} else {
 				this._displayWidth = region._displayWidth;
 				this._displayHeight = region._displayHeight;

@@ -561,7 +561,7 @@ public class LTexture extends Painter implements LRelease {
 			copy._copySize = true;
 			copy.pixelWidth = (int) _textureClip.getDisplayWidth();
 			copy.pixelHeight = (int) _textureClip.getDisplayHeight();
-			if (this._scaleSize) {
+			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, x, y, width, height, true);
 			} else {
 				copy._textureClip = new Clip(this._textureClip, x, y, width, height, false);
@@ -590,7 +590,7 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, height);
 
 		if (childs == null) {
-			childs = new IntMap<>(10);
+			childs = new IntMap<LTexture>(10);
 		}
 
 		synchronized (childs) {
@@ -618,7 +618,7 @@ public class LTexture extends Painter implements LRelease {
 			copy._scaleSize = true;
 			copy.pixelWidth = (int) _textureClip.getDisplayWidth();
 			copy.pixelHeight = (int) _textureClip.getDisplayHeight();
-			if (this._scaleSize) {
+			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, 0, 0, width, height, true);
 			} else {
 				copy._textureClip = new Clip(this._textureClip, 0, 0, width, height, false);

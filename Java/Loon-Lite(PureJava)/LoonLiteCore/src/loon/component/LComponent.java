@@ -714,12 +714,12 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public int getScreenWidth() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getScreenWidth());
+		return screen == null ? LSystem.viewSize.getWidth() : MathUtils.ifloor(screen.getScreenWidth());
 	}
 
 	public int getScreenHeight() {
 		final Screen screen = getScreen();
-		return screen == null ? 0 : MathUtils.ifloor(screen.getScreenHeight());
+		return screen == null ? LSystem.viewSize.getHeight() : MathUtils.ifloor(screen.getScreenHeight());
 	}
 
 	public int getScreenLeft() {

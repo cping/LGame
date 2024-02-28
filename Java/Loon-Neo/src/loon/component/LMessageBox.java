@@ -22,6 +22,7 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.canvas.LColor;
 import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
@@ -579,7 +580,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		if ((this.typeDelayTime <= 0) && (!this.finished)) {
 			this.typeDelayTime = delay;
 			if (this.renderCol > message.lines.get(this.renderRow).length() - 1) {
-
 				if (this.renderRow >= message.lines.size - 1) {
 					this.finished = true;
 					this.pageBlinkTime = pageTime;
@@ -637,8 +637,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			return;
 		}
 		String str = this._messageList.get(this.messageIndex).getFace();
-		if ((str == null || LSystem.NULL.equals(str))) {
-			setFaceImage(null);
+		if ((StringUtils.isNullOrEmpty(str) || LSystem.NULL.equals(str))) {
+			setFaceImage((LTexture) null);
 		} else {
 			toFaceImage(str);
 		}
@@ -657,23 +657,26 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		_message.setLength(0);
 
 		if (!message.lines.isEmpty()) {
-			for (int i = 0; i < this.renderRow + 1; i++) {
-				String line = message.lines.get(i);
 
+			final int sizeRow = this.renderRow;
+			final int sizeCol = this.renderCol;
+
+			for (int i = 0; i < sizeRow + 1; i++) {
+
+				final String line = message.lines.get(i);
 				int len = 0;
-
-				if (i < this.renderRow)
+				if (i < sizeRow) {
 					len = line.length();
-				else {
-					len = this.renderCol;
+				} else {
+					len = sizeCol;
 				}
 
-				String t = line.substring(0, len);
-				if (t.length() != 0) {
+				final String mes = line.substring(0, len);
+				if (mes.length() != 0) {
 					if (len == line.length())
-						_message.append(t).append(LSystem.LF);
+						_message.append(mes).append(LSystem.LF);
 					else {
-						_message.append(t);
+						_message.append(mes);
 					}
 				}
 			}
@@ -704,7 +707,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	public LMessageBox showAll() {
-		Message message = _messageList.get(messageIndex);
+		final Message message = _messageList.get(messageIndex);
 		if (message.lines.isEmpty()) {
 			this.renderRow = (this.renderCol = 0);
 		} else {
@@ -715,9 +718,17 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this;
 	}
 
+	public LMessageBox setFaceImage(String path) {
+		return setFaceImage(LTextures.loadTexture(path));
+	}
+
 	public LMessageBox setFaceImage(LTexture texture) {
 		this._box.setFaceImage(texture);
 		return this;
+	}
+
+	public LMessageBox setFaceImage(String path, float x, float y) {
+		return setFaceImage(LTextures.loadTexture(path), x, y);
 	}
 
 	public LMessageBox setFaceImage(LTexture texture, float x, float y) {
