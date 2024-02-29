@@ -22,6 +22,8 @@ package org.test;
 
 import loon.LTexture;
 import loon.Stage;
+import loon.action.sprite.effect.NaturalEffect;
+import loon.action.sprite.effect.PixelGossipEffect;
 import loon.component.LMessageBox;
 import loon.utils.MathUtils;
 
@@ -45,7 +47,9 @@ public class MessageBoxTest2 extends Stage {
 		// 添加角色对话
 		box.addMessage("test1", "妖溺天:人间,又污秽了。人间的小神,你尽力了。三招不能败你，妖溺天自刎当场。");
 		box.addMessage("test2", "秦假仙:逆天，尚有例外，逆吾，绝无生机！");
-
+		box.addMessage("test1", "妖溺天:大胆，狂妄，纵横无界为主，问天，可敢为敌？！");
+		box.addMessage("test2", "秦假仙:试我诛神之招！");
+		box.addMessage("test2", "秦假仙:魔武究竟，十二神天龙逆道，八部儒释离火极！");
 		// 绑定test1和test2的对应头像图片
 		box.bindFaceImage("test1", "ccc.png");
 		box.bindFaceImage("test2", "ball.png");
@@ -54,7 +58,15 @@ public class MessageBoxTest2 extends Stage {
 		// box.setMessageFace(1, "test2");
 
 		box.up((x, y) -> {
-			box.loop();
+			box.next();
+			if (box.isCompleted()) {
+				PixelGossipEffect gossip = new PixelGossipEffect(0, 0, getHalfWidth(), getHalfHeight());
+				centerOn(gossip);
+				add(gossip);
+				add(NaturalEffect.getThunderEffect());
+
+			}
+			// .loop();
 		});
 		bottomOn(box);
 		add(box);

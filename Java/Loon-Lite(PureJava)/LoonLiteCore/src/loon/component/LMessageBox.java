@@ -650,6 +650,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	@Override
 	public LMessageBox setFont(IFont font) {
 		this._font = font;
+		if (_box != null) {
+			_box.setFont(font);
+		}
 		return this;
 	}
 

@@ -121,7 +121,6 @@ public class Random {
 		if (range <= 0) {
 			return 0;
 		}
-		range += 1;
 		int r = (int) next(17);
 		int m = range;
 		if ((r & m) == 0) {
@@ -130,7 +129,7 @@ public class Random {
 			for (int u = r; u - (r = u % range) + m < 0; u = (int) next(17))
 				;
 		}
-		return r;
+		return MathUtils.abs(r);
 	}
 
 	public float nextLong(float range) {
