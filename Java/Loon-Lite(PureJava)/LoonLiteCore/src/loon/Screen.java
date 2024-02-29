@@ -253,7 +253,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private TouchedClick _touchListener;
 
 	private String _screenName;
-	
+
 	private ScreenAction _screenAction = null;
 
 	private final BattleProcess _battleProcess = new BattleProcess();
@@ -1456,9 +1456,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	private void submitReplaceScreen() {
-		if (_processHandler != null) {
+		if (_processHandler != null && _replaceDstScreen._closeUpdate == null) {
 			_processHandler.setCurrentScreen(_replaceDstScreen, false);
-			_replaceDstScreen._closeUpdate = new ScreenClosed(this);
+			addLoad(_replaceDstScreen._closeUpdate = new ScreenClosed(this));
 		}
 		_replaceLoading = false;
 	}
