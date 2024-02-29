@@ -121,14 +121,19 @@ public class WaitSprite extends Entity {
 				g.setAlpha(1f);
 				break;
 			case 1:
-				int old = g.getBlendMode();
+				final int old = g.getBlendMode();
 				g.setBlendMode(BlendMethod.MODE_NORMAL);
 				g.setLineWidth(10);
 				g.setColor(fill);
 				g.drawOval(x, y, width, height);
-				int sa = angle % 360;
-				g.fillArc(x + (width - paintWidth) / 2, y + (height - paintHeight) / 2, paintWidth, paintHeight, sa,
-						angleStep);
+				int arcAngle = angle % 360;
+				final float lenWidth = MathUtils
+						.sqrt(MathUtils.pow(paintWidth / 2f, 2f) + MathUtils.pow(paintHeight / 2f, 2f)) / 1.8f;
+				final float newX = (width / 2f - lenWidth);
+				final float newY = (height / 2f - lenWidth);
+				final float newW = (width / 2f + lenWidth - newX);
+				final float newH = (height / 2f + lenWidth - newY);
+				g.fillArc(x + newX, y + newY, newW, newH, arcAngle, angleStep);
 				g.resetLineWidth();
 				g.setBlendMode(old);
 				break;

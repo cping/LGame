@@ -43,49 +43,79 @@ import loon.utils.MathUtils;
  */
 public class ScreenExitEffect {
 
-	// 普通全屏渐变淡出淡入
+	/**
+	 * 普通全屏渐变淡出淡入
+	 */
 	public final static int STANDARD_FADE = 0;
 
-	// 椭圆镂空围绕中心淡出,中心淡入
+	/**
+	 * 椭圆镂空围绕中心淡出,中心淡入
+	 */
 	public final static int OVAL_HOLLOW_FADE = 1;
 
-	// 椭圆实心中心点淡出,中心淡入
+	/**
+	 * 椭圆实心中心点淡出,中心淡入
+	 */
 	public final static int OVAL_SOLID_FADE = 2;
 
-	// 水滴点状淡出,点状淡入
+	/**
+	 * 水滴点状淡出,点状淡入
+	 */
 	public final static int DOT_FADE = 3;
 
-	// 瓦片堆砌样左侧淡出，右侧淡入
+	/**
+	 * 瓦片堆砌样左侧淡出，右侧淡入
+	 */
 	public final static int BOARD_LEFT_FADE = 4;
 
-	// 瓦片堆砌样右侧淡出，左侧淡入
+	/**
+	 * 瓦片堆砌样右侧淡出，左侧淡入
+	 */
 	public final static int BOARD_RIGHT_FADE = 5;
 
-	// 瓦片螺旋样淡出,淡入
+	/**
+	 * 瓦片螺旋样淡出,淡入
+	 */
 	public final static int SPIRAL_FADE = 6;
 
-	// 左右方向的开门,关门效果
+	/**
+	 * 左右方向的开门,关门效果
+	 */
 	public final static int DOOR_LR_FADE = 7;
 
-	// 上下方向的开门,关门效果
+	/**
+	 * 上下方向的开门,关门效果
+	 */
 	public final static int DOOR_TB_FADE = 8;
 
-	// 左中右方向的开门,关门效果
+	/**
+	 * 左中右方向的开门,关门效果
+	 */
 	public final static int DOOR_LCR_FADE = 9;
 
-	// 上中下方向的开门,关门效果
+	/**
+	 * 上中下方向的开门,关门效果
+	 */
 	public final static int DOOR_TCB_FADE = 10;
 
-	// 不规则的开门,关门效果
+	/**
+	 * 不规则的开门,关门效果
+	 */
 	public final static int DOOR_IRREGULAR_FADE = 11;
 
-	// 斜角离开,斜角进入
+	/**
+	 * 斜角离开,斜角进入
+	 */
 	public final static int SWIPE_FADE = 12;
 
-	// 扇形淡出,淡入
+	/**
+	 * 扇形淡出,淡入
+	 */
 	public final static int ARC_FADE = 13;
 
-	// 瓦片淡出,淡入
+	/**
+	 * 瓦片淡出,淡入
+	 */
 	public final static int TILES_FADE = 14;
 
 	static class ReleasedScreen implements LRelease {
