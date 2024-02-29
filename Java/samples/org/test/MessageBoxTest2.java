@@ -35,24 +35,23 @@ public class MessageBoxTest2 extends Stage {
 		// 构建一个默认的游戏窗体图
 		LTexture texture = getGameWinFrame(messageBoxWidth, messageBoxHeight);
 		// 构建信息框
-		final LMessageBox box = new LMessageBox(texture, 0, 0,
-				messageBoxWidth, messageBoxHeight);
+		final LMessageBox box = new LMessageBox(texture, 0, 0, messageBoxWidth, messageBoxHeight);
 		// 偏移显示位置
 		// box.setBoxOffsetX(5);
 		// box.setBoxOffsetY(5);
 		// 自动按信息框大小设定头像位置
 		box.setAutoFaceImage();
+		// box.flagHide();
+		// 添加角色对话
+		box.addMessage("test1", "妖溺天:人间,又污秽了。人间的小神,你尽力了。三招不能败你，妖溺天自刎当场。");
+		box.addMessage("test2", "秦假仙:逆天，尚有例外，逆吾，绝无生机！");
 
-		//添加角色对话
-		box.addMessage("test1","妖溺天:人间,又污秽了。人间的小神,你尽力了。三招不能败你，妖溺天自刎当场。");
-		box.addMessage("test2","秦假仙:逆天，尚有例外，逆吾，绝无生机！");
-		
 		// 绑定test1和test2的对应头像图片
 		box.bindFaceImage("test1", "ccc.png");
 		box.bindFaceImage("test2", "ball.png");
 		// 额外设定对话索引和头像关系
-		//box.setMessageFace(0, "test1");
-		//box.setMessageFace(1, "test2");
+		// box.setMessageFace(0, "test1");
+		// box.setMessageFace(1, "test2");
 
 		box.up((x, y) -> {
 			box.loop();

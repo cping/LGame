@@ -81,6 +81,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		LTexture imgFace;
 
 		private boolean drawFace;
+		private boolean _showFlag;
 		private float faceX;
 		private float faceY;
 		private float faceCenterX;
@@ -112,10 +113,15 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 			this.imgFace = face;
 			this.drawFace = false;
+			this._showFlag = true;
 			this._drawScale = 0.023f;
 			this._radius = 10;
 			this._textureBox = box;
 			this._flagType = StringUtils.isEmpty(flag) ? LSystem.FLAG_TAG : flag;
+		}
+
+		public void setFlagShow(boolean f) {
+			this._showFlag = f;
 		}
 
 		public void setFlagType(String f) {
@@ -168,7 +174,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			final float newY = this._boxY + this.messageY + offsetY;
 
 			drawMessage(g, message, newX, newY);
-			if (isPage && _flagType != null) {
+			if (_showFlag && isPage && _flagType != null) {
 				int size = StringUtils.charCount(message, LSystem.LF);
 				if (_leading > 0) {
 					if (drawFace) {
@@ -199,7 +205,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			final IFont displayFont = (this.font == null) ? g.getFont() : this.font;
 			if (_leading > 0) {
 				final String[] texts = StringUtils.split(message, LSystem.LF);
-				final float height = font.getHeight();
+				final float height = displayFont.getHeight();
 				for (int i = 0, size = texts.length; i < size; i++) {
 					displayFont.drawString(g, texts[i], x, y + (i * (height + _leading)), this.fontColor);
 				}
@@ -441,7 +447,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	protected int pageBlinkTime;
 
-	protected int delay = 50;
+	protected int delay = 30;
 
 	protected int pageTime = 300;
 
@@ -952,7 +958,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this._box.setLocation(this._objectLocation);
 		if (!this.noMessage && _messageList.size > 0) {
 			Message message = _messageList.get(messageIndex);
-
 			if (!StringUtils.isEmpty(message.face)) {
 				toFaceImage(message.face, _messageComma);
 			}
@@ -1013,6 +1018,21 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox setMessageComma(String c) {
 		this._messageComma = c;
+		return this;
+	}
+
+	public LMessageBox setBoxFlag(String type) {
+		this._box.setFlagType(type);
+		return this;
+	}
+
+	public LMessageBox flagShow() {
+		this._box.setFlagShow(true);
+		return this;
+	}
+
+	public LMessageBox flagHide() {
+		this._box.setFlagShow(false);
 		return this;
 	}
 
