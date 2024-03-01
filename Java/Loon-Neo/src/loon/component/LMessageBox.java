@@ -35,11 +35,14 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.ConfigReader;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.ObjectSet;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 
 /**
  * 此组件功能近似LMessage，并且允许连续播放文字序列
@@ -447,11 +450,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	protected boolean noPaged;
 	protected boolean isPaged;
 
-	protected int pageBlinkTime;
+	protected long _pageBlinkTime;
 
-	protected int delay = 30;
+	protected long _delay = 30;
 
-	protected int pageTime = 300;
+	protected long _pageTime = 300;
 
 	protected DrawMessageBox _box;
 
@@ -459,7 +462,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	private IFont _font;
 
-	private String _tmpString;
+	private String _messageString;
 
 	public LMessageBox(int x, int y, int width, int height) {
 		this((TArray<Message>) null, x, y, width, height);
@@ -578,6 +581,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			this._box._boxHeight = height;
 		}
 		this._box.setLocation(x, y);
+		this._delay = 30;
+		this._pageTime = 300;
 		freeRes().add(box);
 	}
 
@@ -596,7 +601,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			}
 		}
 		if (sbr.size() > 0) {
-			this._tmpString = sbr.toString();
+			this._messageString = sbr.toString();
 			this._initNativeDraw = false;
 		}
 		return this;
@@ -623,6 +628,14 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this;
 	}
 
+	public LMessageBox clearMessage() {
+		messageIndex = 0;
+		if (_messageList != null) {
+			_messageList.clear();
+		}
+		return this;
+	}
+
 	@Override
 	public void setLocation(float x, float y) {
 		super.setLocation(x, y);
@@ -641,7 +654,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	}
 
 	public String getString() {
-		return this._tmpString;
+		return this._messageString;
 	}
 
 	@Override
@@ -703,11 +716,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	protected void updateType() {
 		Message message = _messageList.get(messageIndex);
 		if ((this.typeDelayTime <= 0) && (!this.finished)) {
-			this.typeDelayTime = delay;
+			this.typeDelayTime = _delay;
 			if (this.renderCol > message.lines.get(this.renderRow).length() - 1) {
 				if (this.renderRow >= message.lines.size - 1) {
 					this.finished = true;
-					this.pageBlinkTime = pageTime;
+					this._pageBlinkTime = _pageTime;
 				} else {
 					this.renderRow += 1;
 					this.renderCol = 0;
@@ -726,8 +739,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox loop() {
 		if (finished) {
-			int size = this.messageIndex + 1;
-			if (size < this._messageList.size) {
+			if (hasNext()) {
 				setIndex(++this.messageIndex);
 				restart();
 			} else {
@@ -739,8 +751,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox next() {
 		if (finished) {
-			int size = this.messageIndex + 1;
-			if (size < this._messageList.size) {
+			if (hasNext()) {
 				setIndex(++this.messageIndex);
 				restart();
 			}
@@ -748,13 +759,20 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		return this;
 	}
 
+	public boolean hasNext() {
+		return this.messageIndex + 1 < this._messageList.size;
+	}
+
 	public LMessageBox setIndex(int index) {
-		int size = this.messageIndex + 1;
-		if (size > 0 && size < this._messageList.size) {
+		if (index > -1 && index < this._messageList.size) {
 			this.messageIndex = index;
 			restart();
 		}
 		return this;
+	}
+
+	public LMessageBox setMessageIndex(int index) {
+		return setIndex(index);
 	}
 
 	public Message getMessage(int index) {
@@ -793,7 +811,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public void drawMessage(GLEx g) {
 		if (!_initNativeDraw) {
 			if (_font instanceof LFont) {
-				LSTRDictionary.get().bind((LFont) _font, _tmpString);
+				LSTRDictionary.get().bind((LFont) _font, _messageString);
 			}
 			_initNativeDraw = true;
 		}
@@ -809,6 +827,12 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			final int sizeCol = this.renderCol;
 
 			for (int i = 0; i < sizeRow + 1; i++) {
+
+				int linelen = message.lines.size;
+
+				if (i >= linelen) {
+					continue;
+				}
 
 				final String line = message.lines.get(i);
 				int len = 0;
@@ -829,8 +853,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 
 		if ((this.finished) && (!this.noPaged)) {
-			if (this.pageBlinkTime > pageTime) {
-				this.pageBlinkTime = 0;
+			if (this._pageBlinkTime > _pageTime) {
+				this._pageBlinkTime = 0;
 				this.isPaged = (!this.isPaged);
 			}
 		} else {
@@ -847,8 +871,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public LMessageBox restart() {
 		this.renderCol = 0;
 		this.renderRow = 0;
-		this.typeDelayTime = delay;
-		this.pageBlinkTime = 0;
+		this.typeDelayTime = _delay;
+		this._pageBlinkTime = 0;
 		this.finished = false;
 		return this;
 	}
@@ -955,6 +979,59 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 	}
 
+	public LMessageBox load(String path, String keyName) {
+		return load(path, keyName, true);
+	}
+
+	public LMessageBox load(String path, String keyName, boolean saveName) {
+		return load(path, keyName, null, saveName);
+	}
+
+	public LMessageBox load(String path, String keyName, String childName) {
+		return load(path, keyName, childName, true);
+	}
+
+	public LMessageBox load(String path, String keyName, String childName, boolean displayName) {
+		if (keyName == null) {
+			return this;
+		}
+		setAutoFaceImage();
+		clearMessage();
+		final ConfigReader config = ConfigReader.shared(path);
+		final ObjectSet<String> items = new ObjectSet<String>();
+		String[] lists = null;
+		if (!StringUtils.isNullOrEmpty(childName)) {
+			lists = config.getNewlineList(keyName + LSystem.DOT + childName);
+		} else {
+			lists = config.getNewlineList(keyName);
+		}
+		for (int i = 0; i < lists.length; i++) {
+			String[] message = StringUtils.split(lists[i], LSystem.COLON);
+			if (message.length == 0) {
+				message = StringUtils.split(lists[i], LSystem.EQUAL);
+			}
+			if (message.length > 1) {
+				if (displayName) {
+					addMessage(message[0], message[0] + LSystem.COLON + message[1]);
+				} else {
+					addMessage(message[0], message[1]);
+				}
+				items.add(message[0]);
+			}
+		}
+		if (items.size() > 0) {
+			for (Iterator<String> it = items.iterator(); it.hasNext();) {
+				String result = it.next();
+				if (!StringUtils.isNullOrEmpty(result)) {
+					String key = result + LSystem.DOT + "face";
+					bindFaceImage(result, config.get(key));
+				}
+			}
+		}
+		restart();
+		return this;
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		drawMessage(g);
@@ -974,18 +1051,43 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				updateType();
 			}
 			if (this.finished) {
-				this.pageBlinkTime += elapsedTime;
+				this._pageBlinkTime += elapsedTime;
 			}
 		}
 	}
 
-	public int getPageTime() {
-		return pageTime;
+	public long getPageTime() {
+		return _pageTime;
 	}
 
-	public LMessageBox setPageTime(int pageTime) {
-		this.pageTime = pageTime;
+	public LMessageBox setPageTimeS(float sec) {
+		return setPageTime(Duration.ofS(sec));
+	}
+
+	public LMessageBox setPageTime(long pageTime) {
+		this._pageTime = pageTime;
 		return this;
+	}
+
+	public long getDelay() {
+		return _delay;
+	}
+
+	public LMessageBox setDelayS(float sec) {
+		return setDelay(Duration.ofS(sec));
+	}
+
+	public LMessageBox setDelay(long time) {
+		this._delay = time;
+		return this;
+	}
+
+	public LMessageBox setMessageDelayS(float sec) {
+		return setDelayS(sec);
+	}
+
+	public LMessageBox setMessageDelay(long time) {
+		return setDelay(time);
 	}
 
 	public LColor getFlagColor() {
@@ -994,15 +1096,6 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	public LMessageBox setFlagColor(LColor c) {
 		this._box.setFlagColor(c);
-		return this;
-	}
-
-	public int getDelay() {
-		return delay;
-	}
-
-	public LMessageBox setDelay(int time) {
-		this.delay = time;
 		return this;
 	}
 
@@ -1027,6 +1120,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 	public LMessageBox setMessageComma(String c) {
 		this._messageComma = c;
 		return this;
+	}
+
+	public int getMessageIndex() {
+		return this.messageIndex;
 	}
 
 	public LMessageBox setBoxFlag(String type) {
@@ -1061,6 +1158,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			}
 		}
 		_faceCache.clear();
+		clearMessage();
+		stopMessage = true;
 	}
 
 }

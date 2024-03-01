@@ -1,5 +1,7 @@
 package loon.utils;
 
+import java.util.Iterator;
+
 import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
@@ -251,7 +253,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 								: filter(itemName + LSystem.DOT + mapName), filter(mapBuffer.toString()));
 					}
 				} else if (mapFlag) {
-					mapBuffer.append(record);
+					mapBuffer.append(record).append(LSystem.LF);
 				} else {
 					loadItem(itemName, record, true);
 				}
@@ -339,6 +341,28 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	public TArray<String> getTables() {
 		return new TArray<String>(_tables);
+	}
+
+	public TArray<String> getChildKeys(String key) {
+		final TArray<String> list = new TArray<String>();
+		for (Iterator<String> it = _configItems.keys(); it.hasNext();) {
+			String name = it.next();
+			if (name != null && name.startsWith(key + LSystem.DOT)) {
+				list.add(name);
+			}
+		}
+		return list;
+	}
+
+	public TArray<String> getChildValues(String key) {
+		final TArray<String> list = new TArray<String>();
+		for (Iterator<String> it = _configItems.keys(); it.hasNext();) {
+			String name = it.next();
+			if (name != null && name.startsWith(key + LSystem.DOT)) {
+				list.add(_configItems.get(name));
+			}
+		}
+		return list;
 	}
 
 	public Keys<String> getKeys() {
@@ -530,6 +554,15 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		String result = getValue(key, defaultValue);
 		removeItem(key);
 		return result;
+	}
+
+	public String[] getNewlineList(String name) {
+		return getNewlineList(name, LSystem.EMPTY);
+	}
+
+	public String[] getNewlineList(String name, String args) {
+		final String result = getValue(name, args);
+		return StringUtils.split(result, LSystem.LF);
 	}
 
 	public Field2D getField2D(String name, int width, int height) {
