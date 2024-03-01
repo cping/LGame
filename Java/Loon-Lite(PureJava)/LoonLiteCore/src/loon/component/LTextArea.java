@@ -169,14 +169,23 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 		this.setFont(tmp);
 		this.showType = type;
-		this.postLine = (h / tmp.getHeight());
 		this.waitFlagString = "new";
 		if (maxAmount < 0) {
-			this.set(LSystem.isDesktop() ? postLine - 1 : postLine + 1);
+			int size = MathUtils.min(tmp.getHeight(), tmp.getSize());
+			if ((size % 2) != 0) {
+				size += 1;
+			}
+			if ((w % size) != 0) {
+				setWidth(w + size / 4);
+			}
+			if ((h % size) != 0) {
+				setHeight(h + size / 4);
+			}
+			this.postLine = MathUtils.ifloor((getHeight() - 4f) / size);
+			this.set(postLine, 255, 255, 255, flashFont);
 		} else {
-			this.set(maxAmount);
+			this.set(maxAmount, 255, 255, 255, flashFont);
 		}
-		this.setDefaultColor(255, 255, 255, flashFont);
 		this.setWaitFlag(waitFlag);
 		this.setSlideMessage(slide);
 		this.setWidthLimit(w);
@@ -185,7 +194,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 	}
 
-	public LTextArea set(int max) {
+	public int getMaxLine() {
+		return this.maxAmount;
+	}
+
+	public LTextArea setMaxLine(int max) {
+		return set(max, this._curretR, this._curretG, this._curretB, this.flashFont);
+	}
+
+	public LTextArea set(int max, int r, int g, int b, boolean flash) {
 		this.maxAmount = MathUtils.max(1, (max + 1));
 		this.message = new String[this.maxAmount];
 		this.crs = new int[this.maxAmount];
@@ -208,6 +225,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.getMessageLength[i] = 0;
 			this.bright[i] = (this.brightMax * i / this.maxAmount);
 		}
+		this.setDefaultColor(r, g, b, flash);
 		return this;
 	}
 
