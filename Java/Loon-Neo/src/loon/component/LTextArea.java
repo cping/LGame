@@ -109,6 +109,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	private String waitFlagString;
 
+	private int _curretR;
+	private int _curretG;
+	private int _curretB;
+
 	public LTextArea(int x, int y, int w, int h) {
 		this(-1, x, y, w, h);
 	}
@@ -214,7 +218,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea setDefaultColor(int r, int g, int b, boolean flash) {
-		this.setFlashFont(flash);
+		this.flashFont = flash;
 		this.default_cr = r;
 		this.default_cg = g;
 		this.default_cb = b;
@@ -229,6 +233,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				this.default_cb = (255 - this.brightMax);
 			}
 		}
+		this._curretR = r;
+		this._curretG = g;
+		this._curretB = b;
 		return this;
 	}
 
@@ -275,6 +282,11 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return this;
 	}
 
+	public LTextArea setDefaultColor() {
+		setColor(default_cr, default_cg, default_cb);
+		return this;
+	}
+
 	public LTextArea setColor(int d_cr, int d_cg, int d_cb) {
 		this.crs[this.amount] = d_cr;
 		this.cgs[this.amount] = d_cg;
@@ -290,6 +302,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				this.cbs[this.amount] = (255 - this.brightMax);
 			}
 		}
+		_curretR = d_cr;
+		_curretG = d_cg;
+		_curretB = d_cb;
 		return this;
 	}
 
@@ -311,6 +326,9 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 		final String[] messages = StringUtils.split(mes, LSystem.LF);
 		for (int i = messages.length - 1; i > -1; i--) {
+			if (!flashFont) {
+				setDefaultColor();
+			}
 			putOne(messages[i]);
 		}
 		return this;
@@ -342,6 +360,10 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 					this.cbs[this.amount] = 0;
 				}
 			}
+		} else {
+			this.crs[this.amount] = this._curretR;
+			this.cgs[this.amount] = this._curretG;
+			this.cbs[this.amount] = this._curretB;
 		}
 
 		if ((this.displayFont != null)
@@ -542,7 +564,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 					tmpcolor.setColor(this.crs[this.amount] + this.bright[i], this.cgs[this.amount] + this.bright[i],
 							this.cbs[this.amount] + this.bright[i]);
 				} else {
-					tmpcolor.setColor(this.crs[this.amount], this.cgs[this.amount], this.cbs[this.amount], 255);
+					tmpcolor.setColor(this.crs[this.amount], this.cgs[this.amount], this.cbs[this.amount]);
 				}
 				drawMessage(g, this.getMessage[this.amount], this.posx, this.drawY, tmpcolor);
 				final boolean showFlag = (this.waitFlag) && (i == 0);
@@ -656,6 +678,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 
 	@Override
 	public LComponent setBackground(LTexture texture) {
+		this._drawBackground = false;
 		this._background = texture;
 		return this;
 	}
@@ -712,8 +735,12 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	}
 
 	public LTextArea setFlashFont(boolean f) {
-		this.flashFont = f;
+		this.setDefaultColor(_curretR, _curretG, _curretB, f);
 		return this;
+	}
+
+	public LColor getCurrentColor() {
+		return new LColor(_curretR, _curretG, _curretB);
 	}
 
 	@Override

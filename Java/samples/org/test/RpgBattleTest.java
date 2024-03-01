@@ -76,24 +76,22 @@ public class RpgBattleTest extends Stage {
 		final Entity dragon = node("e", "assets/rpg/battle/dragon.png");
 		// 敌人居中
 		centerOn(dragon);
-		// 添加敌人到Screen
-		add(dragon);
 
 		// 设定信息显示用类
-		LTextArea rpgBattleText = new LTextArea(0, 0, 300, 100, true);
+		LTextArea rpgBattleText = node("area", 0, 0, 300, 100);
 		// 构建一个300x100的游戏窗体背景图,颜色黑蓝相间,横向渐变
 		LTexture texture = getGameWinFrame(300, 100, LColor.black, LColor.blue, false);
 		rpgBattleText.setBackground(texture);
 		rpgBattleText.setLeftOffset(5);
 		rpgBattleText.setTopOffset(5);
-		add(rpgBattleText);
+		// 禁止文字闪烁
+		// rpgBattleText.setFlashFont(false);
 		centerTopOn(rpgBattleText);
 
 		// 血条状态
 		StatusBar status = node("status", 0, 0, 150, 22);
 		status.setNumber(500);
 		centerOn(status, 0, 60);
-		add(status);
 
 		// 获得Screen内置的战斗进程
 		BattleProcess rpgBattleProcess = getBattle();
@@ -105,9 +103,11 @@ public class RpgBattleTest extends Stage {
 			public void onTimeOut(long elapsedTime, BooleanValue process) {
 				// 如果10秒没有触发战斗
 				if (!rpgBattleProcess.isFighting()) {
-					rpgBattleText.put("10秒没有操作,强制战斗结束");
-					// 解锁战斗进程
-					rpgBattleProcess.unlockProcess(process);
+					rpgBattleProcess.callBattleEvent(() -> {
+						rpgBattleText.put("10秒没有操作,强制战斗结束");
+						// 解锁战斗进程
+						rpgBattleProcess.unlockProcess(process);
+					});
 				}
 			}
 
@@ -199,22 +199,22 @@ public class RpgBattleTest extends Stage {
 		// 按钮居于最下,位置偏移5,-5
 		bottomLeftOn(attack, 5, -5);
 		// 添加按钮并设定按下按钮时事件
-		add(attack.up((x, y) -> {
+		attack.up((x, y) -> {
 			attackEnemyEntity(rpgBattleProcess, rpgBattleText, status, dragon);
-		}));
+		});
 
 		// 设定防御按钮
 		LClickButton defend = node("click", "Defend", 0, 0, 120, 35);
 		bottomOn(defend, -2, -5);
-		add(defend.up((x, y) -> {
+		defend.up((x, y) -> {
 			rpgBattleText.put("你不敢移动,只能全力防御了");
 			rpgBattleProcess.playNext();
-		}));
+		});
 
 		// 设定逃跑按钮
 		LClickButton run = node("click", "Run", 0, 0, 120, 35);
 		bottomRightOn(run, -5, -5);
-		add(run.up((x, y) -> {
+		run.up((x, y) -> {
 			// 1/2(50/100)逃跑率,自己回合执行
 			if (MathUtils.chanceRoll(50) && rpgBattleProcess.isCurrentPlayer()) {
 				rpgBattleProcess.callBattleEvent(() -> {
@@ -228,7 +228,7 @@ public class RpgBattleTest extends Stage {
 			} else {
 				rpgBattleText.put("你尝试逃跑,\n但伟大意志阻止了你");
 			}
-		}));
+		});
 
 		// add(MultiScreenTest.getBackButton(this, 3));
 	}
