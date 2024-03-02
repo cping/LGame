@@ -3801,10 +3801,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
-	private float[] temp_xs = new float[4];
-
-	private float[] temp_ys = new float[4];
-
 	/**
 	 * 设置矩形图案
 	 * 
@@ -3818,46 +3814,27 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		if (this.lastBrush.alltextures || lastTrans.getAngle() != 0f) {
-			if (fill) {
-				fillRectNative(x, y, width, height);
-			} else {
-				float tempX = x;
-				float tempY = y;
-				float tempWidth = tempX + width;
-				float tempHeight = tempY + height;
-				if (tempX > tempWidth) {
-					x = tempX;
-					tempX = tempWidth;
-					tempWidth = x;
-				}
-				if (tempY > tempHeight) {
-					y = tempY;
-					tempY = tempHeight;
-					tempHeight = y;
-				}
-				drawLine(tempX, tempY, tempWidth, tempY, this.lastBrush.lineWidth);
-				drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempWidth, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
-				drawLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1, this.lastBrush.lineWidth);
-			}
-			return this;
-		}
-
-		temp_xs[0] = x;
-		temp_xs[1] = x + width;
-		temp_xs[2] = x + width;
-		temp_xs[3] = x;
-
-		temp_ys[0] = y;
-		temp_ys[1] = y;
-		temp_ys[2] = y + height;
-		temp_ys[3] = y + height;
-
 		if (fill) {
-			fillPolygon(temp_xs, temp_ys, 4);
+			fillRectNative(x, y, width, height);
 		} else {
-			drawPolygon(temp_xs, temp_ys, 4);
+			float tempX = x;
+			float tempY = y;
+			float tempWidth = tempX + width;
+			float tempHeight = tempY + height;
+			if (tempX > tempWidth) {
+				x = tempX;
+				tempX = tempWidth;
+				tempWidth = x;
+			}
+			if (tempY > tempHeight) {
+				y = tempY;
+				tempY = tempHeight;
+				tempHeight = y;
+			}
+			drawLine(tempX, tempY, tempWidth, tempY, this.lastBrush.lineWidth);
+			drawLine(tempX, tempY + 1, tempX, tempHeight, this.lastBrush.lineWidth);
+			drawLine(tempWidth, tempHeight, tempX + 1, tempHeight, this.lastBrush.lineWidth);
+			drawLine(tempWidth, tempHeight - 1, tempWidth, tempY + 1, this.lastBrush.lineWidth);
 		}
 		return this;
 	}
