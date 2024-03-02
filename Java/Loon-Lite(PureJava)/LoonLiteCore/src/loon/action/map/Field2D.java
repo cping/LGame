@@ -20,6 +20,8 @@
  */
 package loon.action.map;
 
+import java.util.Iterator;
+
 import loon.LRelease;
 import loon.LSystem;
 import loon.Screen;
@@ -825,7 +827,11 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D addActionBindToMap(TArray<ActionBind> acts, int flagid, ActionBind other) {
-		for (ActionBind act : acts) {
+		if (acts == null) {
+			return this;
+		}
+		for (Iterator<ActionBind> it = acts.iterator(); it.hasNext();) {
+			ActionBind act = it.next();
 			if (act != null && act != other) {
 				float x = act.getX();
 				float y = act.getY();
@@ -847,6 +853,10 @@ public class Field2D implements IArray, Config, LRelease {
 			}
 		}
 		return this;
+	}
+
+	public boolean isValid(int tx, int ty) {
+		return contains(tx, ty);
 	}
 
 	public boolean isLimited() {
@@ -968,6 +978,14 @@ public class Field2D implements IArray, Config, LRelease {
 		return null;
 	}
 
+	public boolean isNotMovable(int px, int py) {
+		return !isHit(px, py);
+	}
+
+	public boolean isMovable(int px, int py) {
+		return isHit(px, py);
+	}
+
 	public boolean isHit(int px, int py) {
 		int type = get(mapArrays, px, py);
 		if (type == -1 && !allowMove.contains(type)) {
@@ -982,6 +1000,12 @@ public class Field2D implements IArray, Config, LRelease {
 			}
 		}
 		return true;
+	}
+
+	public Vector2f getRandomPos() {
+		int tx = MathUtils.nextInt(0, width - 1);
+		int ty = MathUtils.nextInt(0, height - 1);
+		return new Vector2f(tx, ty);
 	}
 
 	public Vector2f getTileCollision(ActionBind bind, float newX, float newY) {
@@ -1289,6 +1313,9 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D switchMap(MapSwitchMaker s) {
+		if (s == null) {
+			return this;
+		}
 		final int w = width;
 		final int h = height;
 		for (int i = 0; i < w; i++) {

@@ -29,6 +29,7 @@ import loon.geom.RectI.Range;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.reply.ObjRef;
 
 public class TileImpl implements Tile {
 
@@ -58,7 +59,7 @@ public class TileImpl implements Tile {
 
 	protected ActionBind bind = null;
 
-	protected Object userData = null;
+	protected ObjRef<Object> userData = null;
 
 	private TArray<Vector2f> neighbours;
 
@@ -280,7 +281,7 @@ public class TileImpl implements Tile {
 		return this;
 	}
 
-	public TileImpl setUserData(Object data) {
+	public TileImpl setUserData(ObjRef<Object> data) {
 		this.userData = data;
 		return this;
 	}

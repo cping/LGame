@@ -59,6 +59,10 @@ public class TileMapConfig {
 	}
 
 	public static int[][] loadStringMap(String... chars) {
+		return loadStringMap((char) 0, chars);
+	}
+
+	public static int[][] loadStringMap(char spaceFlag, String... chars) {
 		int maxHeight = chars.length;
 		int maxWidth = 0;
 		for (int i = 0; i < chars.length; i++) {
@@ -73,7 +77,7 @@ public class TileMapConfig {
 					temp = line.charAt(j);
 				}
 				if (temp == LSystem.SPACE) {
-					temp = 0;
+					temp = spaceFlag;
 				} else if (CharUtils.isDigit(temp)) {
 					temp = (char) CharUtils.toInt(temp);
 				}

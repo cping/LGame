@@ -25,21 +25,34 @@ import loon.geom.Vector2f;
 
 public class BattleAction {
 
+	private BattleActionType _actionType;
+
 	private Role _actionSource = null;
 
 	private Role _actionTarget = null;
 
 	private float _actionCost = 1f;
 
+	private Object _tag = null;
+
 	private Vector2f _actionMoveOffset = Vector2f.ZERO();
 
 	private Vector2f _originalPos = Vector2f.ZERO();
 
 	public BattleAction(Role src, Role dst) {
-		this(src, dst, 1f);
+		this(BattleActionType.None, src, dst);
+	}
+
+	public BattleAction(BattleActionType type, Role src, Role dst) {
+		this(type, src, dst, 1f);
 	}
 
 	public BattleAction(Role src, Role dst, float cost) {
+		this(BattleActionType.None, src, dst, cost);
+	}
+
+	public BattleAction(BattleActionType type, Role src, Role dst, float cost) {
+		this._actionType = type;
 		this._actionSource = src;
 		this._actionTarget = dst;
 		this._actionCost = cost;
@@ -102,5 +115,23 @@ public class BattleAction {
 
 	public Vector2f getSourceOriginalPosition() {
 		return _originalPos;
+	}
+
+	public BattleActionType getActionType() {
+		return _actionType;
+	}
+
+	public BattleAction setActionType(BattleActionType t) {
+		this._actionType = t;
+		return this;
+	}
+
+	public Object getTag() {
+		return _tag;
+	}
+
+	public BattleAction setTag(Object t) {
+		this._tag = t;
+		return this;
 	}
 }

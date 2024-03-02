@@ -143,6 +143,18 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	private float offsetStringX = 0, offsetStringY = 0;
 
+	public GLEx(Graphics gfx, RenderTarget target, GL20 gl, boolean alltex, boolean saveFrameBuffer) {
+		this(gfx, target, createDefaultBatch(gl), alltex, saveFrameBuffer);
+	}
+
+	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
+		this(gfx, target, createDefaultBatch(gl), false, false);
+	}
+
+	public RenderTarget createTarget(LTexture tex) {
+		return RenderTarget.create(gfx, tex);
+	}
+
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
 	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的 直接像素渲染方式则会禁用）.
@@ -173,19 +185,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		this.lastBrush.blend = BlendMethod.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.saveToFrameBufferTexture = saveFrameBuffer;
+		this.triangleValue = 0.5235988f;
+		this.scaleX = 1f;
+		this.scaleY = 1f;
+		this.offsetStringX = 0;
+		this.offsetStringY = 0;
 		this.update();
-	}
-
-	public GLEx(Graphics gfx, RenderTarget target, GL20 gl, boolean alltex, boolean saveFrameBuffer) {
-		this(gfx, target, createDefaultBatch(gl), alltex, saveFrameBuffer);
-	}
-
-	public GLEx(Graphics gfx, RenderTarget target, GL20 gl) {
-		this(gfx, target, createDefaultBatch(gl), false, false);
-	}
-
-	public RenderTarget createTarget(LTexture tex) {
-		return RenderTarget.create(gfx, tex);
 	}
 
 	public boolean isSaveFrameBuffer() {

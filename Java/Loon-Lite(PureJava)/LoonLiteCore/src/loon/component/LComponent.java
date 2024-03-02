@@ -46,6 +46,7 @@ import loon.component.layout.LayoutPort;
 import loon.events.ClickListener;
 import loon.events.EventAction;
 import loon.events.GameKey;
+import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysInput;
 import loon.events.SysKey;
@@ -456,7 +457,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean intersects(float x1, float y1) {
-		return (this._component_visible) && getCollisionBox().intersects(x1, y1);
+		return intersects(x1, y1, 1f, 1f);
+	}
+
+	public boolean intersects(float x1, float y1, float width, float height) {
+		return (this._component_visible) && getCollisionBox().intersects(x1, y1, width, height);
 	}
 
 	protected float getDrawScrollX() {
@@ -501,6 +506,11 @@ public abstract class LComponent extends LObject<LContainer>
 	public boolean intersects(LComponent comp) {
 		return (this._component_visible) && (comp != null && comp.isVisible())
 				&& getCollisionBox().intersects(comp.getCollisionBox());
+	}
+
+	public boolean contains(LComponent comp) {
+		return (this._component_visible) && (comp != null && comp.isVisible())
+				&& getCollisionBox().contains(comp.getCollisionBox());
 	}
 
 	@Override
@@ -1903,6 +1913,24 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public Screen getScreen() {
 		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
+	}
+
+	public LContainer getParent(final QueryEvent<LComponent> test) {
+		LContainer p = getParent();
+		while (p != null && !test.hit(p)) {
+			p = p.getParent();
+		}
+		return p;
+	}
+
+	public LContainer getParentBefore(final QueryEvent<LComponent> test) {
+		LContainer p = getParent();
+		LContainer prev = null;
+		while (p != null && !test.hit(p)) {
+			prev = p;
+			p = prev.getParent();
+		}
+		return prev;
 	}
 
 	@Override

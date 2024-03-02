@@ -60,11 +60,13 @@ public class MessageBoxTest2 extends Stage {
 		box.up((x, y) -> {
 			box.next();
 			if (box.isCompleted()) {
-				PixelGossipEffect gossip = new PixelGossipEffect(0, 0, getHalfWidth(), getHalfHeight());
-				centerOn(gossip);
-				add(gossip);
-				add(NaturalEffect.getThunderEffect());
-
+				callEvent(() -> {
+					PixelGossipEffect gossip = new PixelGossipEffect(0, 0, getHalfWidth(), getHalfHeight());
+					centerOn(gossip);
+					add(gossip);
+					gossip.selfAction().rotateTo(360).start();
+					add(NaturalEffect.getThunderEffect());
+				});
 			}
 			// .loop();
 		});

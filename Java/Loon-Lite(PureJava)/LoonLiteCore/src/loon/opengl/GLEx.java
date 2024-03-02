@@ -120,6 +120,10 @@ public class GLEx implements LRelease {
 
 	private float offsetStringX = 0, offsetStringY = 0;
 
+	public GLEx(Graphics gfx) {
+		this(gfx, createDefaultBatch(gfx.getCanvas()));
+	}
+
 	/**
 	 * 创建一个默认的GL渲染封装，将其作为默认的渲染器来使用。与0.5以前版本不同的是,此GLEX将不再唯一，允许复数构建.
 	 * 如果使用HTML5，则禁止非纹理的渲染方式（因为部分浏览器不支持，会自动用纹理方式替代，但是glBegin到glEnd的 直接像素渲染方式则会禁用）.
@@ -143,11 +147,12 @@ public class GLEx implements LRelease {
 		this.lastBrush.font = LSystem.getSystemGameFont();
 		this.lastBrush.blend = LSystem.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
+		this.triangleValue = 0.5235988f;
+		this.scaleX = 1f;
+		this.scaleY = 1f;
+		this.offsetStringX = 0;
+		this.offsetStringY = 0;
 		this.update();
-	}
-
-	public GLEx(Graphics gfx) {
-		this(gfx, createDefaultBatch(gfx.getCanvas()));
 	}
 
 	public GLEx updateSize(float sx, float sy) {
@@ -649,9 +654,9 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
-	public void resetClear() {
+	public GLEx reset(float red, float green, float blue, float alpha) {
 		if (isClosed) {
-			return;
+			return this;
 		}
 		gfx.getCanvas().clear();
 		this.setFont(LSystem.getSystemGameFont());
@@ -659,16 +664,18 @@ public class GLEx implements LRelease {
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
 		this.lastBrush.baseAlpha = 1f;
 		this.lastBrush.patternTex = null;
+		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		this.resetLineWidth();
+		return this;
 	}
 
-	public void reset() {
+	public GLEx reset() {
 		if (isClosed) {
-			return;
+			return this;
 		}
 		getCanvas().setCompositeOperation(Composite.SRC_OVER);
 		tempColor.setColor(this.lastBrush.baseColor);
-		resetClear();
+		return reset(tempColor.r, tempColor.g, tempColor.b, tempColor.a);
 	}
 
 	protected int syncBrushColorInt() {

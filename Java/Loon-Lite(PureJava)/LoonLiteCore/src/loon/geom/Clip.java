@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.events.QueryEvent;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
@@ -296,6 +297,24 @@ public class Clip {
 
 	public boolean isFlipY() {
 		return _offY > _heightRatio;
+	}
+
+	public Clip getParent(final QueryEvent<Clip> test) {
+		Clip p = getParent();
+		while (p != null && !test.hit(p)) {
+			p = p.getParent();
+		}
+		return p;
+	}
+
+	public Clip getParentBefore(final QueryEvent<Clip> test) {
+		Clip p = getParent();
+		Clip prev = null;
+		while (p != null && !test.hit(p)) {
+			prev = p;
+			p = prev.getParent();
+		}
+		return prev;
 	}
 
 	@Override

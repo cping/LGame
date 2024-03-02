@@ -31,7 +31,6 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapConfig;
-import loon.action.sprite.SpriteBatch;
 import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.events.CallFunction;
@@ -156,22 +155,6 @@ public class LSelectorIcon extends LComponent {
 			g.setFillColor(fill);
 		}
 		g.setStrokeColor(stroke);
-	}
-
-	public void draw(SpriteBatch batch, float tx, float ty, int offsetX, int offsetY) {
-		final float newX = offsetX + (tx * tileWidth);
-		final float newY = offsetY + (ty * tileHeight);
-		final float color = batch.getFloatColor();
-		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(),
-				MathUtils.ifloor(MathUtils.limit((maxAlpha - _iconAlpha), minAlpha, maxAlpha)));
-		batch.fillRect(newX, newY, tileWidth, tileHeight);
-		if (_drawBorder) {
-			batch.setColor(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(),
-					MathUtils.ifloor(_iconAlpha));
-			batch.drawRect(newX, newY, tileWidth - 1, tileHeight - 1);
-			batch.drawRect(newX - 1, newY - 1, tileWidth + 1, tileHeight + 1);
-		}
-		batch.setColor(color);
 	}
 
 	public void draw(GLEx g, LTexture tex, float tx, float ty, int offsetX, int offsetY, int baseColor,
@@ -693,6 +676,7 @@ public class LSelectorIcon extends LComponent {
 
 	@Override
 	public void destory() {
+		_gridLayout = null;
 		_colorCaches.clear();
 		for (Iterator<LTexture> it = _imageCaches.iterator(); it.hasNext();) {
 			LTexture tex = it.next();

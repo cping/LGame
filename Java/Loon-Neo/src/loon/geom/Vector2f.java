@@ -1051,6 +1051,26 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return right(1f);
 	}
 
+	public Vector3f getXYZ(Vector2f p2, Vector2f p3) {
+		return getXYZ(this, p2, p3);
+	}
+
+	public Vector3f getXYZ(Vector2f p1, Vector2f p2, Vector2f p3) {
+		Vector3f v3 = new Vector3f();
+		float m1Up = (p2.y - p3.y) * p1.x - (p2.x - p3.x) * p1.y + p2.x * p3.y - p3.x * p2.y;
+		float m1Down = (p2.x - p3.x) * (p1.x - p2.x) * (p1.x - p3.x);
+		v3.x = -m1Up / m1Down;
+		float m2Up = (p2.y - p3.y) * p1.x * p1.x + p2.x * p2.x * p3.y - p3.x * p3.x * p2.y
+				- (p2.x * p2.x - p3.x * p3.x) * p1.y;
+		float m2Down = (p2.x - p3.x) * (p1.x - p2.x) * (p1.x - p3.x);
+		v3.y = m2Up / m2Down;
+		float m3Up = (p2.x * p3.y) * p1.x * p1.x - (p2.x * p2.x * p3.y - p3.x * p3.x * p2.y) * p1.x
+				+ (p2.x * p2.x * p3.x - p2.x * p3.x * p3.x) * p1.y;
+		float m3Down = (p2.x - p3.x) * (p1.x - p2.x) * (p1.x - p3.x);
+		v3.z = m3Up / m3Down;
+		return v3;
+	}
+
 	public Vector2f translateSelf(float dx, float dy) {
 		return move(dx, dy);
 	}

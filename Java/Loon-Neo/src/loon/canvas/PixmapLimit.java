@@ -22,12 +22,106 @@ package loon.canvas;
 
 import loon.canvas.Canvas.ColorPixel;
 import loon.geom.AABB;
+import loon.geom.PointI;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
+import loon.utils.SortedList;
 
 /**
  * 像素边缘查找用类,用于获得指定像素集合的边缘所在
  */
 public class PixmapLimit {
+
+	/**
+	 * 按照指定边缘颜色,切分出指定色块
+	 * 
+	 * @param pixmap
+	 * @param x
+	 * @param y
+	 * @param blockColor
+	 * @param borderColor
+	 * @param blackColor
+	 * @param borderSize
+	 * @return
+	 */
+	public static Pixmap findBorder(Pixmap pixmap, int x, int y, LColor blockColor, LColor borderColor,
+			LColor blackColor, int borderSize) {
+		if (pixmap == null) {
+			return null;
+		}
+		boolean[][] fills = floodFill(pixmap, x, y, blockColor.getARGB());
+		Pixmap result = putBorder(pixmap, fills, borderColor.getARGB(), blackColor.getARGB(), borderSize);
+		return result;
+	}
+
+	private static boolean[][] floodFill(Pixmap pixmap, int x, int y, int blockColor) {
+		final boolean[][] fills = new boolean[pixmap.getWidth()][pixmap.getHeight()];
+		final SortedList<PointI> queue = new SortedList<PointI>();
+		queue.clear();
+		queue.add(new PointI(x, y));
+		int newX = 0;
+		int newY = 0;
+		PointI temp;
+		while (!queue.isEmpty()) {
+			temp = queue.remove();
+			newX = MathUtils.ifloor(temp.getX());
+			newY = MathUtils.ifloor(temp.getY());
+			if (newX >= 0 && newX < pixmap.getWidth() && newY >= 0 && newY < pixmap.getHeight()) {
+				int pixel = pixmap.getPixel(newX, newY);
+				if (!fills[newX][newY] && pixel != blockColor) {
+					fills[newX][newY] = true;
+					pixmap.putPixel(newX, newY, 0);
+					queue.add(new PointI(newX + 1, newY));
+					queue.add(new PointI(newX - 1, newY));
+					queue.add(new PointI(newX, newY + 1));
+					queue.add(new PointI(newX, newY - 1));
+				}
+			}
+		}
+		return fills;
+	}
+
+	private static void putBorder(Pixmap pixmap, int borderColor, int borderSize, int x, int y) {
+		for (int i = -borderSize; i < borderSize; i++) {
+			for (int j = -borderSize; j < borderSize; j++) {
+				pixmap.putPixel(x + i, y + j, borderColor);
+			}
+		}
+	}
+
+	private static boolean nearBorder(Pixmap pixmap, int x, int y, int black) {
+		int tx = 0;
+		int ty = 0;
+		boolean result = false;
+		for (int i = -1; i < 2; i++) {
+			for (int j = -1; j < 2; j++) {
+				tx = x + i;
+				ty = y + j;
+				if ((tx >= 0 && tx < pixmap.getWidth()) || (ty >= 0 && ty < pixmap.getHeight())) {
+					int pixel = pixmap.getPixel(tx, ty);
+					if (pixel == black) {
+						return true;
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	private static Pixmap putBorder(Pixmap pixmap, boolean[][] fills, int borderColor, int borderSize, int black) {
+		Pixmap outputPixmap = new Pixmap(pixmap.getWidth(), pixmap.getHeight());
+		for (int x = 0; x < pixmap.getWidth(); x++) {
+			for (int y = 0; y < pixmap.getHeight(); y++) {
+				if (fills[x][y] && nearBorder(pixmap, x, y, black)) {
+					outputPixmap.putPixel(x, y, borderColor);
+					putBorder(outputPixmap, borderColor, borderSize, x, y);
+				} else {
+					outputPixmap.putPixel(x, y, black);
+				}
+			}
+		}
+		return outputPixmap;
+	}
 
 	public final static PixmapLimit find(ColorPixel pixels) {
 		final PixmapLimit result = new PixmapLimit();

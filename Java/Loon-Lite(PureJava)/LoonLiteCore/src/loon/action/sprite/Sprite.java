@@ -37,6 +37,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.Gravity;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.BoxSize;
@@ -1702,6 +1703,24 @@ public class Sprite extends LObject<ISprite>
 		}
 		getScreen().remove(this);
 		return this;
+	}
+
+	public ISprite getParent(final QueryEvent<ISprite> test) {
+		ISprite p = getParent();
+		while (p != null && !test.hit(p)) {
+			p = p.getParent();
+		}
+		return p;
+	}
+
+	public ISprite getParentBefore(final QueryEvent<ISprite> test) {
+		ISprite p = getParent();
+		ISprite prev = null;
+		while (p != null && !test.hit(p)) {
+			prev = p;
+			p = prev.getParent();
+		}
+		return prev;
 	}
 
 	public SpriteEntity toEntity() {

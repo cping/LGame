@@ -46,6 +46,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.LayoutAlign;
 import loon.events.EventAction;
+import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysKey;
 import loon.events.SysTouch;
@@ -2645,6 +2646,24 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			allocateComponents();
 		}
 		return new TArray<TComponent<IEntity>>(_components);
+	}
+
+	public IEntity getParent(final QueryEvent<IEntity> test) {
+		IEntity p = getParent();
+		while (p != null && !test.hit(p)) {
+			p = p.getParent();
+		}
+		return p;
+	}
+
+	public IEntity getParentBefore(final QueryEvent<IEntity> test) {
+		IEntity p = getParent();
+		IEntity prev = null;
+		while (p != null && !test.hit(p)) {
+			prev = p;
+			p = prev.getParent();
+		}
+		return prev;
 	}
 
 	@Override
