@@ -26,6 +26,7 @@ import java.util.Iterator;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.ActionBind;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Config;
@@ -128,6 +129,7 @@ public class LSelectorIcon extends LComponent {
 		this._component_baseColor = c;
 		this._drawBorder = true;
 		this._flashAlpha = true;
+		this.setElastic(false);
 	}
 
 	@Override
@@ -174,10 +176,10 @@ public class LSelectorIcon extends LComponent {
 		batch.setColor(color);
 	}
 
-	public void draw(GLEx g, LTexture tex, float tx, float ty, int offsetX, int offsetY, int baseColor,
+	public void draw(GLEx g, LTexture tex, float tx, float ty, float offsetX, float offsetY, int baseColor,
 			int borderColor) {
-		final float newX = offsetX + (tx * tileWidth);
-		final float newY = offsetY + (ty * tileHeight);
+		final float newX = MathUtils.ifloor(offsetX + (tx * tileWidth));
+		final float newY = MathUtils.ifloor(offsetY + (ty * tileHeight));
 		final int color = g.color();
 		final boolean drawImage = (tex != null);
 		if (_drawImageNotColored && drawImage) {
@@ -554,6 +556,39 @@ public class LSelectorIcon extends LComponent {
 			x = 0;
 			y = 0;
 		}
+		drawGrid(g, x, y);
+	}
+
+	public LSelectorIcon moveTo(float x, float y) {
+		return moveTo(x, y, tileWidth, tileHeight);
+	}
+
+	public LSelectorIcon moveTo(float x, float y, float w, float h) {
+		float newX = 0f;
+		float newY = 0f;
+		if (_gridLayout == null) {
+			newX = MathUtils.ifloor(x - (w - tileWidth) / 2f);
+			newY = MathUtils.ifloor(y - (h - tileHeight) / 2f);
+		} else {
+			newX = MathUtils.ifloor(x + w / 2f);
+			newY = MathUtils.ifloor(y + h / 2f);
+		}
+		setLocation(newX, newY);
+		return this;
+	}
+
+	public LSelectorIcon moveTo(ActionBind bind) {
+		if (bind == null) {
+			return this;
+		}
+		if (bind == this) {
+			return this;
+		}
+		return moveTo(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
+
+	public void drawGrid(GLEx g, int x, int y) {
+		final float oldAlpha = g.alpha();
 		int newAlpha = MathUtils.ifloor(_iconAlpha);
 		final int borderColor = _drawBorder
 				? LColor.getARGB(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(), newAlpha)
@@ -595,6 +630,7 @@ public class LSelectorIcon extends LComponent {
 			draw(g, _background, _objectLocation.x, _objectLocation.y, MathUtils.ifloor(x + getOffsetX()),
 					MathUtils.ifloor(y + getOffsetY()), baseColor, borderColor);
 		}
+		g.setAlpha(oldAlpha);
 	}
 
 	public LSelectorIcon setTexture(String path) {

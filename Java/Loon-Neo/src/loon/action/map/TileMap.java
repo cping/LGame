@@ -966,8 +966,8 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 				}
 			}
 			followActionObject();
-			int moveX = (int) newX;
-			int moveY = (int) newY;
+			final int moveX = MathUtils.ifloor(newX);
+			final int moveY = MathUtils.ifloor(newY);
 			draw(g, moveX, moveY);
 			if (_mapSprites != null) {
 				_mapSprites.paintPos(g, moveX, moveY);

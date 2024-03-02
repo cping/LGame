@@ -6,7 +6,6 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.MoveTo;
 import loon.action.map.Config;
-import loon.action.map.Field2D;
 import loon.action.map.TileMap;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Arrow;
@@ -16,6 +15,7 @@ import loon.action.sprite.effect.RippleEffect.Model;
 import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LPad;
+import loon.component.LSelectorIcon;
 import loon.events.SysKey;
 import loon.events.Touched;
 import loon.geom.Vector2f;
@@ -91,10 +91,28 @@ public class MapTest extends Stage {
 			// 添加hero到地图上
 			add(hero);
 
+			// 构建标记绘制器
+			final LSelectorIcon selector = new LSelectorIcon(0, 0, 32);
+			// 标记布局如下
+			selector.setGridLayout("  0  ", 
+					               " 010 ", 
+					               "  0  ");
+			// 绑定索引与颜色
+			selector.bindColor(0, LColor.red);
+			selector.bindColor(1, LColor.yellow);
+			// 不绘制边框
+			selector.setDrawBorder(false);
+			// 跟随hero偏移
+			selector.setOffset(hero.getOffset());
+			// 移动到hero位置
+			selector.moveTo(hero);
+
+			add(selector);
+
 			// 角色追随和地图滚动只能开一个(否则地图移动视角会乱跳),默认如果followAction注入则scroll无效化
 			/*
 			 * drag(new Touched() {
-			 * 
+			 *
 			 * @Override public void on(float x, float y) { map.scroll(x, y); } });
 			 */
 			// 构建一个箭头精灵,使用图片arrow.png,箭头原图每格占16像素
@@ -146,6 +164,9 @@ public class MapTest extends Stage {
 									// 随机使用一种Screen转场效果，进入战斗画面
 									gotoScreenEffectExitRand(new RpgBattleTest());
 								}
+
+								//改变标记显示位置
+								selector.moveTo(o);
 							}
 
 							@Override
@@ -159,17 +180,17 @@ public class MapTest extends Stage {
 								// 存储上一个移动方向，避免反复刷新动画事件
 								if (move.isDirectionUpdate()) {
 									switch (move.getDirection()) {
-									case Field2D.TUP:
+									case Config.TUP:
 										hero.animate(frames, upIds);
 										break;
 									default:
-									case Field2D.TDOWN:
+									case Config.TDOWN:
 										hero.animate(frames, downIds);
 										break;
-									case Field2D.TLEFT:
+									case Config.TLEFT:
 										hero.animate(frames, leftIds);
 										break;
-									case Field2D.TRIGHT:
+									case Config.TRIGHT:
 										hero.animate(frames, rightIds);
 										break;
 									}

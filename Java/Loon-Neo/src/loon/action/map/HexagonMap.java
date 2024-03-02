@@ -1235,8 +1235,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				}
 			}
 			followActionObject();
-			int moveX = (int) newX;
-			int moveY = (int) newY;
+			final int moveX = MathUtils.ifloor(newX);
+			final int moveY = MathUtils.ifloor(newY);
 			draw(g, moveX, moveY);
 			if (_mapSprites != null) {
 				_mapSprites.paintPos(g, moveX, moveY);
