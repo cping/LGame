@@ -1020,7 +1020,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
-		if (this.lastBrush.baseColor == c) {
+		if (this.lastBrush.baseColor == c && this.lastBrush.baseAlpha == 1f) {
 			return this;
 		}
 		this.setTint(c);
@@ -1048,7 +1048,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
-		if (this.lastBrush.baseColor == c) {
+		if (this.lastBrush.baseColor == c && this.lastBrush.baseAlpha == 1f) {
 			return this;
 		}
 		if (this.lastBrush.baseAlpha != 1f) {

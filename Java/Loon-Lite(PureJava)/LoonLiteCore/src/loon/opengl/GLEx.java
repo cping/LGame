@@ -732,7 +732,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
-		if (c == this.lastBrush.baseColor) {
+		if (c == this.lastBrush.baseColor && this.lastBrush.baseAlpha == 1f) {
 			return this;
 		}
 		this.setTint(c);
@@ -760,7 +760,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
-		if (c == this.lastBrush.baseColor) {
+		if (c == this.lastBrush.baseColor && this.lastBrush.baseAlpha == 1f) {
 			return this;
 		}
 		if (this.lastBrush.baseAlpha != 1f) {

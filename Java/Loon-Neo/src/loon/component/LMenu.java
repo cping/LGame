@@ -230,7 +230,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				return;
 			}
 			final int color = g.color();
-			final IFont font = g.getFont();
+			final IFont font = _font == null ? g.getFont() : _font;
 			try {
 				final boolean down = SysTouch.isDown();
 				final boolean drag = SysTouch.isDrag();
@@ -293,7 +293,6 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 
 				} else {
 					if (bounds().contains(SysTouch.getX(), SysTouch.getY()) && (checkd)) {
-						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if ((down && !drag) && checkd && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick, this);
 							LSystem.load(menu);
