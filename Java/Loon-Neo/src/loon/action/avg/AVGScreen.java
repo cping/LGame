@@ -20,12 +20,12 @@
  */
 package loon.action.avg;
 
+import loon.LReleaseRef;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
 import loon.action.ActionBind;
-import loon.action.ActionListener;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
 import loon.action.avg.drama.Conversion;
@@ -53,16 +53,17 @@ import loon.events.GameTouch;
 import loon.events.Updateable;
 import loon.font.FontSet;
 import loon.font.IFont;
+import loon.geom.BooleanValue;
 import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.ListMap;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
-import loon.utils.processes.GameProcess;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
+import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
 
@@ -73,65 +74,132 @@ import loon.utils.timer.LTimerContext;
  */
 public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
-	// 文字显示速度
-	private SpeedMode _speedMode = SpeedMode.Normal;
+	private static class AVGLoadedProcess extends RealtimeProcess {
 
-	// 屏幕点击计数(为了手机环境选择时防止误点的计数器)
-	private int _clickcount = 0;
+		private AVGScreen _screen;
 
-	// 手机屏幕手机遇到选择框时，需要执行的点击次数限制(0时无限制，此参数的作用在于防止触屏误点选项)
-	private int _mobile_select_valid_limit = 0;
+		public AVGLoadedProcess(AVGScreen screen, long delay) {
+			super("AVGLoaded", delay, GameProcessType.View);
+			this._screen = screen;
+		}
 
-	// 当前任务集合
-	private final Array<Task> _currentTasks = new Array<AVGScreen.Task>();
+		@Override
+		public void run(LTimerContext time) {
+			if (_screen.isGameRunning) {
+				if (_screen.messageDesktop != null) {
+					switch (_screen._speedMode) {
+					default:
+					case Normal:
+						_screen.messageDesktop.update(LSystem.SECOND / 2);
+						break;
+					case SuperSlow:
+						_screen.messageDesktop.update(LSystem.MSEC * 20);
+						break;
+					case Slow:
+						_screen.messageDesktop.update(LSystem.MSEC * 40);
+						break;
+					case FewSlow:
+						_screen.messageDesktop.update(LSystem.MSEC * 60);
+						break;
+					case Fast:
+						_screen.messageDesktop.update(LSystem.SECOND);
+						break;
+					case Quickly:
+						for (int i = 0; i < 2; i++) {
+							_screen.messageDesktop.update(LSystem.SECOND);
+						}
+						break;
+					case Flash:
+						for (int i = 0; i < 3; i++) {
+							_screen.messageDesktop.update(LSystem.SECOND);
+						}
+						break;
+					}
+				}
+				if (_screen.effectSprites != null) {
+					_screen.effectSprites.update(time.timeSinceLastUpdate);
+				}
+				if (_screen._autoPlay) {
+					_screen.playAutoNext();
+				}
+			}
 
-	// 任务集合
-	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
+		}
 
-	private IFont _font;
+	}
 
-	private int _plapDelay;
+	/**
+	 * 传递AVGScreen对象的Process
+	 */
+	public static class AVGSelectedProcess extends RealtimeProcess {
 
-	private String _scriptName;
+		private AVGScreen _screen;
 
-	private String _selectMessage;
+		private TArray<String> _items;
 
-	private String _dialogFileName;
+		public AVGSelectedProcess(AVGScreen screen, TArray<String> items) {
+			this.setProcessType(GameProcessType.Screen);
+			this._screen = screen;
+			this._items = items;
+		}
 
-	private LTexture _dialogTexture;
+		public AVGScreen getScreen() {
+			return this._screen;
+		}
 
-	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
+		@Override
+		public void run(LTimerContext time) {
+			_screen.selectUI.SetClick(new SelectClick(getScreen(), _items));
+			kill();
+		}
 
-	// 若需要任意处点击皆可继续脚本，此标记应为true
-	private boolean _screenClickd = false;
+	}
 
-	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
-	private boolean _limitClickd = false;
+	private static class OptionProcess extends RealtimeProcess {
 
-	// 自动播放的延迟时间
-	private LTimer _autoTimer = new LTimer(LSystem.SECOND);
+		private AVGScreen _screen;
 
-	private int _clickButtonLayer = 200;
+		private LClickButton _click;
 
-	private LColor _fontColor = LColor.white.cpy();
+		public OptionProcess(AVGScreen screen, LClickButton click) {
+			this.setProcessType(GameProcessType.View);
+			this._screen = screen;
+			this._click = click;
+		}
 
-	private LColor _gameColor;
+		@Override
+		public void run(LTimerContext time) {
+			_click.setFontColor(_screen._fontColor);
+			_click.Tag = CommandType.L_OPTION
+					+ (_click.getText() == null ? _screen.command.getIndex() : _click.getText());
+			_click.setLayer(_screen._clickButtonLayer);
+			_screen.getDesktop().add(_click);
+			kill();
+		}
 
-	protected Command command;
+	}
 
-	protected AVGCG scrCG;
+	private static class AVGLoadedUpdate implements Updateable {
 
-	protected LSelect selectUI;
+		private AVGScreen _screen;
 
-	protected LMessage messageUI;
+		public AVGLoadedUpdate(AVGScreen s) {
+			this._screen = s;
+		}
 
-	protected Desktop messageDesktop;
+		@Override
+		public void action(Object a) {
+			try {
+				_screen.defTask();
+				_screen.initAVG();
+				_screen.onLoading();
+			} catch (Throwable cause) {
+				LSystem.error("AVGScreen init exception", cause);
+			}
 
-	protected Sprites effectSprites;
+		}
 
-	private RealtimeProcess avgProcess;
-
-	private boolean _autoPlay;
+	}
 
 	/**
 	 * 此为AVG中特定任务接口，此接口需要实现使用，共有三个API，一个用来从脚本注入参数,
@@ -164,29 +232,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	}
 
 	/**
-	 * 传递AVGScreen对象的Process
-	 */
-	public static class AVGProcess extends RealtimeProcess {
-
-		protected AVGScreen _screen;
-
-		public AVGProcess(AVGScreen screen) {
-			this._screen = screen;
-			this.setProcessType(GameProcessType.Screen);
-		}
-
-		public AVGScreen getScreen() {
-			return this._screen;
-		}
-
-		@Override
-		public void run(LTimerContext time) {
-
-		}
-
-	}
-
-	/**
 	 * 选择UI监听
 	 *
 	 */
@@ -196,9 +241,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 		private AVGScreen _screen;
 
-		public SelectClick(AVGScreen screen, TArray<String> items) {
-			this._screen = screen;
-			_items = items;
+		public SelectClick(AVGScreen s, TArray<String> items) {
+			this._screen = s;
+			this._items = items;
 		}
 
 		@Override
@@ -241,6 +286,235 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	}
 
+	private static class ToastTask implements Task {
+
+		private AVGScreen _screen;
+
+		private String parameter;
+
+		private LToast toast;
+
+		public ToastTask(AVGScreen s) {
+			this._screen = s;
+		}
+
+		@Override
+		public boolean completed() {
+			boolean stop = toast.isStop() && (toast.getOpacity() <= 0.1f || !toast.isVisible());
+			if (stop) {
+				_screen.getDesktop().remove(toast);
+			}
+			return stop;
+		}
+
+		@Override
+		public void call() {
+			toast = LToast.makeText(parameter, Style.ERROR);
+			_screen.getDesktop().add(toast);
+		}
+
+		@Override
+		public void parameters(String[] pars) {
+			parameter = StringUtils.replace(pars[0], "\"", LSystem.EMPTY);
+		}
+
+	}
+
+	private static class TransitionTask implements Task {
+
+		private String transStr, colorStr;
+
+		private LTransition transition;
+
+		private AVGScreen _screen;
+
+		public TransitionTask(AVGScreen s) {
+			this._screen = s;
+		}
+
+		@Override
+		public boolean completed() {
+			boolean stop = transition.getTransitionListener().completed();
+			if (stop) {
+				_screen.getSprites().remove(transition.getTransitionListener().getSprite());
+			}
+			return stop;
+		}
+
+		@Override
+		public void call() {
+			transition = LTransition.newTransition(transStr, colorStr);
+			_screen.getSprites().add(transition.getTransitionListener().getSprite());
+		}
+
+		@Override
+		public void parameters(String[] pars) {
+			if (pars.length >= 2) {
+				transStr = pars[0];
+				colorStr = pars[1];
+			} else if (pars.length == 1) {
+				transStr = pars[0];
+				if (transStr.indexOf(LSystem.COMMA) != -1) {
+					String[] list = StringUtils.split(transStr, LSystem.COMMA);
+					transStr = list[0];
+					colorStr = list[1];
+				} else {
+					colorStr = null;
+				}
+			} else {
+				// 字符串为null时，loon会调用默认特效设置FadeIn
+				transStr = null;
+				colorStr = null;
+			}
+		}
+
+	}
+
+	private static class SpriteTask implements Task {
+
+		private float x, y;
+
+		private String _scriptName, _scriptSource, _scripteContext;
+
+		private BooleanValue _completed;
+
+		private AVGScreen _screen;
+
+		public SpriteTask(AVGScreen s) {
+			this._screen = s;
+			this._completed = new BooleanValue();
+		}
+
+		@Override
+		public boolean completed() {
+			return _completed.get();
+		}
+
+		@Override
+		public void call() {
+			Entity entity = Entity.make(_scriptSource, x, y);
+			if (_scriptName != null) {
+				entity.setName(_scriptName);
+			} else {
+				entity.setName(_scriptSource);
+			}
+			if (_scripteContext != null) {
+				act(entity, _scripteContext).start().dispose(new LReleaseRef(_completed));
+			} else {
+				_completed.set(true);
+			}
+			_screen.scrCG.actionRole.add(entity);
+		}
+
+		@Override
+		public void parameters(String[] pars) {
+			String scriptInfo = pars[0].trim();
+			int start = scriptInfo.indexOf(LSystem.DELIM_START);
+			int end = scriptInfo.lastIndexOf(LSystem.DELIM_END);
+			if (start != -1 && end != -1 && end > start) {
+				scriptInfo = scriptInfo.substring(start + 1, end);
+			}
+			String[] list = StringUtils.split(scriptInfo, LSystem.COMMA);
+			if (list.length == 1) {
+				_scriptSource = list[0];
+			} else if (list.length == 2) {
+				_scriptSource = list[0];
+				if (MathUtils.isNan(list[1])) {
+					x = y = Float.parseFloat(list[1]);
+				}
+			} else if (list.length == 3) {
+				_scriptSource = list[0];
+				if (MathUtils.isNan(list[1])) {
+					x = Float.parseFloat(list[1]);
+				}
+				if (MathUtils.isNan(list[2])) {
+					y = Float.parseFloat(list[2]);
+				}
+			} else if (list.length == 4) {
+				_scriptSource = list[0];
+				_scriptName = list[1];
+				if (MathUtils.isNan(list[2])) {
+					x = Float.parseFloat(list[2]);
+				}
+				if (MathUtils.isNan(list[3])) {
+					y = Float.parseFloat(list[3]);
+				}
+			}
+			if (pars.length > 1) {
+				scriptInfo = pars[1].trim();
+				start = scriptInfo.indexOf(LSystem.DELIM_START);
+				end = scriptInfo.lastIndexOf(LSystem.DELIM_END);
+				if (start != -1 && end != -1 && end > start) {
+					scriptInfo = scriptInfo.substring(start + 1, end);
+				}
+				_scripteContext = scriptInfo;
+			}
+
+		}
+	}
+
+	// 文字显示速度
+	private SpeedMode _speedMode = SpeedMode.Normal;
+
+	// 屏幕点击计数(为了手机环境选择时防止误点的计数器)
+	private int _clickcount = 0;
+
+	// 手机屏幕手机遇到选择框时，需要执行的点击次数限制(0时无限制，此参数的作用在于防止触屏误点选项)
+	private int _mobile_select_valid_limit = 0;
+
+	// 当前任务集合
+	private final Array<Task> _currentTasks = new Array<AVGScreen.Task>();
+
+	// 任务集合
+	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
+
+	private IFont _font;
+
+	private long _plapDelay;
+
+	private String _scriptName;
+
+	private String _selectMessage;
+
+	private String _dialogFileName;
+
+	private LTexture _dialogTexture;
+
+	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
+
+	// 若需要任意处点击皆可继续脚本，此标记应为true
+	private boolean _screenClickd = false;
+
+	// 若需要点击触发脚本继续的功能暂时失效，此处应为true
+	private boolean _limitClickd = false;
+
+	// 自动播放的延迟时间
+	private LTimer _autoTimer = new LTimer(LSystem.SECOND);
+
+	private int _clickButtonLayer = 200;
+
+	private LColor _fontColor = LColor.white.cpy();
+
+	private LColor _gameColor;
+
+	protected Command command;
+
+	protected AVGCG scrCG;
+
+	protected LSelect selectUI;
+
+	protected LMessage messageUI;
+
+	protected Desktop messageDesktop;
+
+	protected Sprites effectSprites;
+
+	private Updateable _avgUpdate;
+
+	private RealtimeProcess _avgProcess;
+
+	private boolean _autoPlay;
+
 	/**
 	 * 默认任务（同时也是任务接口实现示例,Task主要就是给用户自行扩展的,以下实现本质上只是示例……）
 	 */
@@ -252,32 +526,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		 * 
 		 * @example task toast 你获得了500万
 		 */
-		putTask("toast", new Task() {
-
-			private String parameter;
-
-			private LToast toast;
-
-			@Override
-			public boolean completed() {
-				boolean stop = toast.isStop() && (toast.getOpacity() <= 0.1f || !toast.isVisible());
-				if (stop) {
-					getDesktop().remove(toast);
-				}
-				return stop;
-			}
-
-			@Override
-			public void call() {
-				toast = LToast.makeText(parameter, Style.ERROR);
-				getDesktop().add(toast);
-			}
-
-			@Override
-			public void parameters(String[] pars) {
-				parameter = StringUtils.replace(pars[0], "\"", LSystem.EMPTY);
-			}
-		});
+		putTask("toast", new ToastTask(this));
 		/**
 		 * 添加一个指定的过渡效果.
 		 * 
@@ -286,48 +535,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		 * @example task trans fadein black
 		 * @see LTransition
 		 */
-		putTask("trans", new Task() {
-
-			private String transStr, colorStr;
-
-			private LTransition transition;
-
-			@Override
-			public boolean completed() {
-				boolean stop = transition.getTransitionListener().completed();
-				if (stop) {
-					getSprites().remove(transition.getTransitionListener().getSprite());
-				}
-				return stop;
-			}
-
-			@Override
-			public void call() {
-				transition = LTransition.newTransition(transStr, colorStr);
-				getSprites().add(transition.getTransitionListener().getSprite());
-			}
-
-			@Override
-			public void parameters(String[] pars) {
-				if (pars.length >= 2) {
-					transStr = pars[0];
-					colorStr = pars[1];
-				} else if (pars.length == 1) {
-					transStr = pars[0];
-					if (transStr.indexOf(LSystem.COMMA) != -1) {
-						String[] list = StringUtils.split(transStr, LSystem.COMMA);
-						transStr = list[0];
-						colorStr = list[1];
-					} else {
-						colorStr = null;
-					}
-				} else {
-					// 字符串为null时，loon会调用默认特效设置FadeIn
-					transStr = null;
-					colorStr = null;
-				}
-			}
-		});
+		putTask("trans", new TransitionTask(this));
 		/**
 		 * 添加一个精灵 (精灵可以用[clear 精灵名]或者[del 精灵名]方式删除)
 		 * 
@@ -336,97 +544,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		 * @example task sprite {assets/c.png,55,55}
 		 *          {move(155,155,true,16)->delay(3f)->move(25,125,true)}
 		 */
-		putTask("sprite", new Task() {
-
-			private float x, y;
-
-			private String _scriptName, _scriptSource, _scripteContext;
-
-			private boolean isCompleted;
-
-			@Override
-			public boolean completed() {
-				return isCompleted;
-			}
-
-			@Override
-			public void call() {
-				Entity entity = Entity.make(_scriptSource, x, y);
-				if (_scriptName != null) {
-					entity.setName(_scriptName);
-				} else {
-					entity.setName(_scriptSource);
-				}
-				if (_scripteContext != null) {
-					act(entity, _scripteContext).start().setActionListener(new ActionListener() {
-
-						@Override
-						public void stop(ActionBind o) {
-							isCompleted = true;
-						}
-
-						@Override
-						public void start(ActionBind o) {
-
-						}
-
-						@Override
-						public void process(ActionBind o) {
-
-						}
-					});
-				} else {
-					isCompleted = true;
-				}
-				scrCG.actionRole.add(entity);
-			}
-
-			@Override
-			public void parameters(String[] pars) {
-				String scriptInfo = pars[0].trim();
-				int start = scriptInfo.indexOf('{');
-				int end = scriptInfo.lastIndexOf('}');
-				if (start != -1 && end != -1 && end > start) {
-					scriptInfo = scriptInfo.substring(start + 1, end);
-				}
-				String[] list = StringUtils.split(scriptInfo, LSystem.COMMA);
-				if (list.length == 1) {
-					_scriptSource = list[0];
-				} else if (list.length == 2) {
-					_scriptSource = list[0];
-					if (MathUtils.isNan(list[1])) {
-						x = y = Float.parseFloat(list[1]);
-					}
-				} else if (list.length == 3) {
-					_scriptSource = list[0];
-					if (MathUtils.isNan(list[1])) {
-						x = Float.parseFloat(list[1]);
-					}
-					if (MathUtils.isNan(list[2])) {
-						y = Float.parseFloat(list[2]);
-					}
-				} else if (list.length == 4) {
-					_scriptSource = list[0];
-					_scriptName = list[1];
-					if (MathUtils.isNan(list[2])) {
-						x = Float.parseFloat(list[2]);
-					}
-					if (MathUtils.isNan(list[3])) {
-						y = Float.parseFloat(list[3]);
-					}
-				}
-				if (pars.length > 1) {
-					scriptInfo = pars[1].trim();
-					start = scriptInfo.indexOf('{');
-					end = scriptInfo.lastIndexOf('}');
-					if (start != -1 && end != -1 && end > start) {
-						scriptInfo = scriptInfo.substring(start + 1, end);
-					}
-					_scripteContext = scriptInfo;
-				}
-
-			}
-		});
+		putTask("sprite", new SpriteTask(this));
 	}
 
 	/**
@@ -581,19 +699,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 */
 	private void addOpt(final LClickButton click) {
 		if (command != null) {
-			GameProcess process = new RealtimeProcess() {
-
-				@Override
-				public void run(LTimerContext time) {
-					click.setFontColor(_fontColor);
-					click.Tag = CommandType.L_OPTION + (click.getText() == null ? command.getIndex() : click.getText());
-					click.setLayer(_clickButtonLayer);
-					getDesktop().add(click);
-					kill();
-				}
-			};
-			process.setProcessType(GameProcessType.View);
-			addProcess(process);
+			addProcess(new OptionProcess(this, click));
 		}
 	}
 
@@ -605,8 +711,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 */
 	private final void setOpt(LClickButton click, String order) {
 		click.setFontColor(_fontColor);
-		int startFlag = order.indexOf('{');
-		int endFlag = order.lastIndexOf('}');
+		int startFlag = order.indexOf(LSystem.DELIM_START);
+		int endFlag = order.lastIndexOf(LSystem.DELIM_END);
 		if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
 			String gotoMes = order.substring(startFlag + 1, endFlag).trim();
 			final String[] result = StringUtils.split(gotoMes, LSystem.COMMA);
@@ -647,7 +753,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public final void onLoad() {
 		this.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		this._plapDelay = 60;
-		if (_dialogTexture == null && _dialogFileName != null) {
+		if ((_dialogTexture == null || _dialogTexture.isClosed()) && _dialogFileName != null) {
 			this._dialogTexture = LSystem.loadTexture(_dialogFileName);
 		}
 		this.isGameRunning = true;
@@ -662,69 +768,17 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		setSecondOrder(DRAW_SPRITE_PAINT());
 		// 最后绘制桌面
 		setLastOrder(DRAW_DESKTOP_PAINT());
-
-		LSystem.load(new Updateable() {
-
-			@Override
-			public void action(Object a) {
-				try {
-					defTask();
-					initAVG();
-					onLoading();
-				} catch (Throwable cause) {
-					LSystem.error("AVGScreen init exception", cause);
-				}
-			}
-		});
-		this.avgProcess = new RealtimeProcess() {
-
-			@Override
-			public void run(LTimerContext time) {
-				if (isGameRunning) {
-					if (messageDesktop != null) {
-						switch (_speedMode) {
-						default:
-						case Normal:
-							messageDesktop.update(LSystem.SECOND / 2);
-							break;
-						case SuperSlow:
-							messageDesktop.update(LSystem.MSEC * 20);
-							break;
-						case Slow:
-							messageDesktop.update(LSystem.MSEC * 40);
-							break;
-						case FewSlow:
-							messageDesktop.update(LSystem.MSEC * 60);
-							break;
-						case Fast:
-							messageDesktop.update(LSystem.SECOND);
-							break;
-						case Quickly:
-							for (int i = 0; i < 2; i++) {
-								messageDesktop.update(LSystem.SECOND);
-							}
-							break;
-						case Flash:
-							for (int i = 0; i < 3; i++) {
-								messageDesktop.update(LSystem.SECOND);
-							}
-							break;
-						}
-					}
-					if (effectSprites != null) {
-						effectSprites.update(time.timeSinceLastUpdate);
-					}
-					if (_autoPlay) {
-						playAutoNext();
-					}
-				}
-			}
-		};
+		if (_avgUpdate != null) {
+			removeLoad(_avgUpdate);
+		}
+		addLoad(_avgUpdate = new AVGLoadedUpdate(this));
+		if (_avgProcess != null) {
+			_avgProcess.kill();
+			RealtimeProcessManager.get().delete(_avgProcess);
+			_avgProcess = null;
+		}
+		addProcess(_avgProcess = new AVGLoadedProcess(this, _plapDelay));
 		setSpeedMode(_speedMode);
-		avgProcess.setDelay(_plapDelay);
-		avgProcess.setProcessType(GameProcessType.View);
-		RealtimeProcessManager.get().addProcess(avgProcess);
-
 	}
 
 	private synchronized void initDesktop() {
@@ -733,7 +787,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		this.messageDesktop = new Desktop(this, getWidth(), getHeight());
 		this.effectSprites = new Sprites(this, getWidth(), getHeight());
-		if (_dialogTexture == null) {
+		if (_dialogTexture == null || _dialogTexture.isClosed()) {
 			Image tmp = Image.createImage(getWidth() - 20, getHeight() / 2 - 20);
 			Canvas g = tmp.getCanvas();
 			g.setColor(0, 0, 0, 125);
@@ -745,7 +799,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
 		this.messageUI.setFontColor(_fontColor);
-		int size = MathUtils.ifloor((messageUI.getWidth() / (messageUI.getMessageFont().getSize())));
+		int size = MathUtils.ifloor(messageUI.getWidth() / messageUI.getMessageFont().getSize());
 		if (size % 2 != 0) {
 			size = size - 3;
 		} else {
@@ -1055,7 +1109,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESMOVE)) {
 					// 空值时复位
 					if (mesFlag == null) {
-						int mesSize = MathUtils.iceil((messageUI.getWidth() / (messageUI.getMessageFont().getSize())));
+						int mesSize = MathUtils.ifloor((messageUI.getWidth() / (messageUI.getMessageFont().getSize())));
 						if (mesSize % 2 != 0) {
 							mesSize = mesSize - 3;
 						} else {
@@ -1273,13 +1327,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELECT)) {
 					if (mesFlag != null) {
 						mesFlag = mesFlag.trim();
-						int selectStart = mesFlag.indexOf("{");
-						int selectEnd = mesFlag.lastIndexOf("}");
+						int selectStart = mesFlag.indexOf(LSystem.DELIM_START);
+						int selectEnd = mesFlag.lastIndexOf(LSystem.DELIM_END);
 						if (selectStart != -1 && selectEnd != -1) {
 							String messageInfo = null;
-							if (mesFlag.startsWith("\"")) {
-								int startFlag = mesFlag.indexOf('"');
-								int endFlag = mesFlag.lastIndexOf('"');
+							if (mesFlag.indexOf(LSystem.DOUBLE_QUOTES) == 0) {
+								int startFlag = mesFlag.indexOf(LSystem.DOUBLE_QUOTES);
+								int endFlag = mesFlag.lastIndexOf(LSystem.DOUBLE_QUOTES);
 								if (startFlag != -1 && endFlag != -1 && endFlag > startFlag) {
 									messageInfo = mesFlag.substring(startFlag + 1, endFlag);
 								}
@@ -1305,15 +1359,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								}
 							}
 							selectUI.setMessage(messageInfo, selects);
-
-							addProcess(new AVGProcess(this) {
-
-								@Override
-								public void run(LTimerContext time) {
-									selectUI.SetClick(new SelectClick(getScreen(), items));
-									kill();
-								}
-							});
+							addProcess(new AVGSelectedProcess(this, items));
 							break;
 						} else {
 							_selectMessage = mesFlag;
@@ -1557,7 +1603,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return _dialogTexture;
 	}
 
-	public int getPause() {
+	public long getPause() {
 		return _plapDelay;
 	}
 
@@ -1565,17 +1611,21 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return setDelay(pause);
 	}
 
-	public int getDelay() {
+	public long getDelay() {
 		return _plapDelay;
 	}
 
-	public AVGScreen setDelay(int d) {
+	public AVGScreen setDelayS(float s) {
+		return setDelay(Duration.ofS(s));
+	}
+
+	public AVGScreen setDelay(long d) {
 		this._plapDelay = d;
 		if (_speedMode == SpeedMode.Flash || _speedMode == SpeedMode.Quickly || _speedMode == SpeedMode.Fast) {
 			_plapDelay = 0;
 		}
-		if (avgProcess != null) {
-			avgProcess.setDelay(_plapDelay);
+		if (_avgProcess != null) {
+			_avgProcess.setDelay(_plapDelay);
 		}
 		return this;
 	}
@@ -1691,7 +1741,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	public void alter(LTimerContext timer) {
 		if (_currentTasks.size() > 0) {
 			for (; _currentTasks.hashNext();) {
-				Task task = _currentTasks.next();
+				final Task task = _currentTasks.next();
 				if (task.completed()) {
 					_currentTasks.remove(task);
 				}
@@ -1757,8 +1807,17 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		return this;
 	}
 
+	public AVGScreen setAutoDelayS(float s) {
+		_autoTimer.setDelayS(s);
+		return this;
+	}
+
 	public long getAutoDelay() {
 		return _autoTimer.getDelay();
+	}
+
+	public float getAutoDelayS() {
+		return _autoTimer.getDelayS();
 	}
 
 	public LTimer getAutoTimer() {
@@ -1885,9 +1944,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	@Override
 	public void close() {
 		isGameRunning = false;
-		if (avgProcess != null) {
-			avgProcess.kill();
-			avgProcess = null;
+		if (_avgProcess != null) {
+			_avgProcess.kill();
+			_avgProcess = null;
 		}
 		if (messageDesktop != null) {
 			messageDesktop.close();
