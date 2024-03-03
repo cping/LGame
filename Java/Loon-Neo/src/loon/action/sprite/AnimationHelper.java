@@ -27,6 +27,7 @@ import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.opengl.TextureUtils;
 import loon.utils.CollectionUtils;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 
 public class AnimationHelper implements LRelease {
@@ -147,8 +148,8 @@ public class AnimationHelper implements LRelease {
 
 			LTexture texture = TextureUtils.filterColor(fileName, col);
 
-			int wlength = (int) (texture.width() / tileWidth);
-			int hlength = (int) (texture.height() / tileHeight);
+			int wlength = MathUtils.ifloor(texture.width() / tileWidth);
+			int hlength = MathUtils.ifloor(texture.height() / tileHeight);
 
 			LTexture[][] images = TextureUtils.getSplit2Textures(texture, tileWidth, tileHeight);
 

@@ -238,14 +238,14 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	public int getWidth() {
 		if (target != null) {
-			return (int) (target.width() / target.xscale());
+			return MathUtils.iceil(target.width() / target.xscale());
 		}
 		return LSystem.viewSize.getWidth();
 	}
 
 	public int getHeight() {
 		if (target != null) {
-			return (int) (target.height() / target.yscale());
+			return MathUtils.iceil(target.height() / target.yscale());
 		}
 		return LSystem.viewSize.getHeight();
 	}
@@ -928,6 +928,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setAlpha(float alpha) {
+		if (alpha == this.lastBrush.baseAlpha) {
+			return this;
+		}
 		// fix alpha
 		if (alpha < 0.01f) {
 			alpha = 0.01f;
@@ -1017,6 +1020,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
+		if (this.lastBrush.baseColor == c) {
+			return this;
+		}
 		this.setTint(c);
 		this.setAlpha(LColor.getAlpha(this.lastBrush.baseColor));
 		this.lastBrush.fillColor = c;
@@ -1042,6 +1048,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
+		if (this.lastBrush.baseColor == c) {
+			return this;
+		}
 		if (this.lastBrush.baseAlpha != 1f) {
 			this.lastBrush.baseColor = c;
 			int ialpha = (int) (0xFF * MathUtils.clamp(this.lastBrush.baseAlpha, 0, 1));
@@ -3452,7 +3461,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			oval(x1, y1, width, height, lineWidth);
 			return this;
 		} else {
-			return this.drawArc(x1, y1, width, height, seg, 0, 360);
+			return this.drawArc(x1, y1, width, height, seg, 0, MathUtils.DEG_FULL);
 		}
 	}
 
@@ -3487,7 +3496,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			fillOvalImpl(x1, y1, width, height);
 			return this;
 		} else {
-			return this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, 360);
+			return this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, MathUtils.DEG_FULL);
 		}
 	}
 
@@ -3507,7 +3516,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillOvalImpl(x1, y1, width, height);
 		} else {
-			this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, 360);
+			this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, MathUtils.DEG_FULL);
 		}
 		setTint(tint);
 		return this;
@@ -3899,8 +3908,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			return this;
 		}
 		final float rotation = (end - start);
-		if (this.lastBrush.alltextures || (this.lastBrush.lineWidth != 1f && rotation == 360)) {
-			if (rotation != 360) {
+		if (this.lastBrush.alltextures || (this.lastBrush.lineWidth != 1f && rotation == MathUtils.DEG_FULL)) {
+			if (rotation != MathUtils.DEG_FULL) {
 				int skip = getPixSkip();
 				setPixSkip(MathUtils.floor(MathUtils.max(this.lastBrush.lineWidth, skip)));
 				drawArcImpl(x1, y1, width, height, start, end);
@@ -3917,7 +3926,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				beginRenderer(GLType.Line);
 				final int argb = syncBrushColorInt();
 				glRenderer.setColor(argb);
-				if (rotation == 360) {
+				if (rotation == MathUtils.DEG_FULL) {
 					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
 				} else {
 					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
@@ -4018,7 +4027,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				beginRenderer(GLType.Filled);
 				final int argb = syncBrushColorInt();
 				glRenderer.setColor(argb);
-				if (end - start == 360) {
+				if (end - start == MathUtils.DEG_FULL) {
 					glRenderer.oval(cx, cy, MathUtils.min(radiusW, radiusH));
 				} else {
 					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
@@ -4137,7 +4146,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			fillRect(x + radius, y + radius, width - d, height - d);
 			fillArc(x, y + height - d, d, d, segs, 90, 90);
 			fillArc(x, y, d, d, segs, 180, 90);
-			fillArc(x + width - d, y, d, d, segs, 270, 90);
+			fillArc(x + width - d, y, d, d, segs, 269, 90);
 			fillArc(x + width - d, y + height - d, d, d, segs, 0, 90);
 		}
 		return this;

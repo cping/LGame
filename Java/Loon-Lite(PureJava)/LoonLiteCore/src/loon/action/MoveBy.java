@@ -24,6 +24,7 @@ import loon.utils.StringKeyValue;
 import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
 import loon.utils.timer.EaseTimer;
 
 public class MoveBy extends ActionEvent {
@@ -90,14 +91,14 @@ public class MoveBy extends ActionEvent {
 				float newY = _startY + dirY * _easeTimer.getProgress() + offsetY;
 				float lastX = original.getX();
 				float lastY = original.getY();
-				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				updateDirection((newX - lastX), (newY - lastY));
 				movePos(newX, newY);
 			} else {
 				final float moveSpeed = getMoveSpeed(elapsedTime);
 				float x = original.getX();
 				float y = original.getY();
-				int dirX = (int) (_endX - _startX);
-				int dirY = (int) (_endY - _startY);
+				int dirX = MathUtils.ifloor(_endX - _startX);
+				int dirY = MathUtils.ifloor(_endY - _startY);
 				int count = 0;
 				if (dirX > 0) {
 					if (x >= _endX) {
@@ -133,7 +134,7 @@ public class MoveBy extends ActionEvent {
 				float lastY = original.getY();
 				float newX = x + offsetX;
 				float newY = y + offsetY;
-				updateDirection((int) (newX - lastX), (int) (newY - lastY));
+				updateDirection((newX - lastX), (newY - lastY));
 				movePos(newX, newY);
 				_isCompleted = (count == 2);
 			}
@@ -148,9 +149,9 @@ public class MoveBy extends ActionEvent {
 		return isDirUpdate;
 	}
 
-	public void updateDirection(int x, int y) {
+	public void updateDirection(float x, float y) {
 		int oldDir = _direction;
-		_direction = Field2D.getDirection(x, y, oldDir);
+		_direction = Field2D.getDirection(MathUtils.ifloor(x), MathUtils.ifloor(y), oldDir);
 		isDirUpdate = (oldDir != _direction);
 	}
 
@@ -165,7 +166,7 @@ public class MoveBy extends ActionEvent {
 			}
 		}
 	}
-	
+
 	public float getSpeed() {
 		return _speed;
 	}
@@ -193,16 +194,16 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
-				_easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_startX, _startY, _endX, _endY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(), _easeTimer.getDelay(),
-				_easeTimer.getEasingMode(), offsetX, offsetY);
+		MoveBy move = new MoveBy(_endX, _endY, _startX, _startY, _speed, _easeTimer.getDuration(),
+				_easeTimer.getDelay(), _easeTimer.getEasingMode(), offsetX, offsetY);
 		move.set(this);
 		return move;
 	}

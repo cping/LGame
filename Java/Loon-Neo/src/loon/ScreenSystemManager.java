@@ -35,11 +35,12 @@ public class ScreenSystemManager implements LRelease {
 
 	}
 
-	static class SystemComparator implements Comparator<ScreenSystem> {
+	private static class SystemComparator implements Comparator<ScreenSystem> {
 
 		private SystemComparator() {
 		}
 
+		@Override
 		public int compare(ScreenSystem a, ScreenSystem b) {
 			if (a == null) {
 				return -1;

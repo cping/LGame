@@ -639,6 +639,9 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx setAlpha(float alpha) {
+		if (alpha == this.lastBrush.baseAlpha) {
+			return this;
+		}
 		// fix alpha
 		if (alpha < 0.01f) {
 			alpha = 0.01f;
@@ -729,6 +732,9 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx setColor(int c) {
+		if (c == this.lastBrush.baseColor) {
+			return this;
+		}
 		this.setTint(c);
 		this.setAlpha(LColor.getAlpha(this.lastBrush.baseColor));
 		this.lastBrush.fillColor = c;
@@ -754,6 +760,9 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx setTint(int c) {
+		if (c == this.lastBrush.baseColor) {
+			return this;
+		}
 		if (this.lastBrush.baseAlpha != 1f) {
 			this.lastBrush.baseColor = c;
 			int ialpha = (int) (0xFF * MathUtils.clamp(this.lastBrush.baseAlpha, 0, 1));
@@ -761,8 +770,6 @@ public class GLEx implements LRelease {
 		} else {
 			this.lastBrush.baseColor = c;
 		}
-		this.lastBrush.baseAlpha = this.lastBrush.baseAlpha;
-		this.lastBrush.baseColor = this.lastBrush.baseColor;
 		return this;
 	}
 
@@ -2499,6 +2506,9 @@ public class GLEx implements LRelease {
 	 * @param color
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2, int color) {
+		if (x2 < 1 || y2 < 1) {
+			return this;
+		}
 		Canvas canvas = gfx.getCanvas();
 		LColor tmp = canvas.getFilltoLColor();
 		canvas.setTransform(tx());
@@ -2634,6 +2644,9 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx fillRect(final float x1, final float y1, final float x2, final float y2, int color) {
+		if (x2 < 1 || y2 < 1) {
+			return this;
+		}
 		Canvas canvas = gfx.getCanvas();
 		canvas.setTransform(tx());
 		canvas.fillRect(x1, y1, x2, y2, syncBrushColor(color));

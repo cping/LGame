@@ -819,7 +819,7 @@ public class LProcess implements LRelease {
 				float offY = fy + (oldH - newH) / 2f;
 				float posX = (newX - offX);
 				float posY = (newY - offY);
-				final int r = (int) getRotation();
+				final int r = MathUtils.ifloor(getRotation());
 				switch (r) {
 				case -90:
 					offX = fx + (oldH - newW) / 2f;

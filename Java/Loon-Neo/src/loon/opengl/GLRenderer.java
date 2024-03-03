@@ -33,7 +33,11 @@ public class GLRenderer implements LRelease {
 
 	private GLBatch _renderer;
 
-	private LColor _color = new LColor(1f, 1f, 1f, 1f);
+	private LColor _currentColor = LColor.white.cpy();
+
+	private float _currentColorFloat = -1f;
+
+	private int _currentColorInt = -1;
 
 	private GLType _currType = null;
 
@@ -42,11 +46,11 @@ public class GLRenderer implements LRelease {
 	private GLEx _gl;
 
 	public GLRenderer() {
-		this(null, 4096);
+		this(null, 2048);
 	}
 
 	public GLRenderer(GLEx gl) {
-		this(gl, 4096);
+		this(gl, 2048);
 	}
 
 	public GLRenderer(GLEx gl, int maxVertices) {
@@ -67,15 +71,25 @@ public class GLRenderer implements LRelease {
 	}
 
 	public void setColor(int argb) {
-		this._color.setColor(argb);
+		if (_currentColorInt != argb) {
+			this._currentColor.setColor(argb);
+			this._currentColorFloat = _currentColor.toFloatBits();
+			this._currentColorInt = argb;
+		}
 	}
 
 	public void setColor(LColor color) {
-		this._color.setColor(color);
+		if (!_currentColor.equals(color)) {
+			this._currentColor.setColor(color);
+			this._currentColorFloat = _currentColor.toFloatBits();
+		}
 	}
 
 	public void setColor(float r, float g, float b, float a) {
-		this._color.setColor(r, g, b, a);
+		if (!this._currentColor.equals(r, g, b, a)) {
+			this._currentColor.setColor(r, g, b, a);
+			this._currentColorFloat = _currentColor.toFloatBits();
+		}
 	}
 
 	public void point(float x, float y) {
@@ -87,7 +101,7 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Point)");
 		}
 		checkFlush(1);
-		_renderer.color(_color);
+		_renderer.color(_currentColorFloat);
 		_renderer.vertex(x, y, z);
 	}
 
@@ -96,7 +110,7 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(2);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		_renderer.color(colorFloat);
 		_renderer.vertex(x, y, z);
 		_renderer.color(colorFloat);
@@ -108,7 +122,7 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(2);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		_renderer.color(colorFloat);
 		_renderer.vertex(x, y, 0);
 		_renderer.color(colorFloat);
@@ -148,7 +162,7 @@ public class GLRenderer implements LRelease {
 		float dddfx = tmp2x * pre5;
 		float dddfy = tmp2y * pre5;
 
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		for (; segments-- > 0;) {
 			_renderer.color(colorFloat);
 			_renderer.vertex(fx, fy, 0);
@@ -172,7 +186,7 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Filled) or begin(GLType.Line)");
 		}
 		checkFlush(6);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		if (_currType == GLType.Line) {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x1, y1, 0);
@@ -204,7 +218,7 @@ public class GLRenderer implements LRelease {
 		}
 
 		checkFlush(8);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		if (_currType == GLType.Line) {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x, y, 0);
@@ -299,7 +313,7 @@ public class GLRenderer implements LRelease {
 		float cos = MathUtils.cos(angle);
 		float sin = MathUtils.sin(angle);
 		float cx = radius, cy = 0;
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		if (_currType == GLType.Line) {
 			for (int i = 0; i < segments; i++) {
 				_renderer.color(colorFloat);
@@ -349,7 +363,7 @@ public class GLRenderer implements LRelease {
 		}
 		final int numFloats = vertices.length;
 
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		checkFlush(numFloats);
 
 		float firstX = vertices[0];
@@ -389,7 +403,7 @@ public class GLRenderer implements LRelease {
 		}
 		final int numFloats = size;
 
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		checkFlush(numFloats);
 
 		float firstX = xs[0];
@@ -437,7 +451,7 @@ public class GLRenderer implements LRelease {
 		}
 		checkFlush(count);
 
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		for (int i = offset, n = offset + count - 2; i < n; i += 2) {
 			float x1 = vertices[i];
 			float y1 = vertices[i + 1];
@@ -460,7 +474,7 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		checkFlush(count);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		for (int i = 0; i < count; i++) {
 			float x1 = xs[i];
 			float y1 = ys[i];
@@ -487,7 +501,7 @@ public class GLRenderer implements LRelease {
 		if (points.length == 0) {
 			return;
 		}
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 		for (int i = 0; i < tris.getTriangleCount(); i++) {
 			for (int p = 0; p < 3; p++) {
 				float[] pt = tris.getTrianglePoint(i, p);
@@ -543,7 +557,7 @@ public class GLRenderer implements LRelease {
 		float sin = MathUtils.sin(theta);
 		float cx = radius * MathUtils.cos(start * MathUtils.DEG_TO_RAD);
 		float cy = radius * MathUtils.sin(start * MathUtils.DEG_TO_RAD);
-		float colorFloat = _color.toFloatBits();
+		float colorFloat = _currentColorFloat;
 
 		if (_currType == GLType.Line) {
 			checkFlush(segments * 2 + 2);
@@ -603,7 +617,7 @@ public class GLRenderer implements LRelease {
 				if (_gl == null || _gl.disposed()) {
 					_gl = LSystem.base().display().GL();
 				}
-				if (!LColor.white.equals(_color)) {
+				if (!LColor.white.equals(_currentColor)) {
 					_gl.setBlendMode(BlendMethod.MODE_SPEED);
 				}
 			} catch (Throwable ex) {

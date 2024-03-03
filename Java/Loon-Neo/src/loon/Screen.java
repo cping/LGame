@@ -3574,7 +3574,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public LPaper addPaper(LTexture tex, float x, float y) {
-		LPaper paper = new LPaper(tex, (int) x, (int) y);
+		LPaper paper = new LPaper(tex, x, y);
 		add(paper);
 		return paper;
 	}
@@ -4657,7 +4657,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	@Override
 	public PointI getTouch() {
-		_touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
+		_touch.set(MathUtils.ifloor(SysTouch.getX()), MathUtils.ifloor(SysTouch.getY()));
 		return _touch;
 	}
 
@@ -4794,22 +4794,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	@Override
 	public int getTouchX() {
-		return (int) SysTouch.getX();
+		return MathUtils.ifloor(SysTouch.getX());
 	}
 
 	@Override
 	public int getTouchY() {
-		return (int) SysTouch.getY();
+		return MathUtils.ifloor(SysTouch.getY());
 	}
 
 	@Override
 	public int getTouchDX() {
-		return (int) _touchDX;
+		return MathUtils.ifloor(_touchDX);
 	}
 
 	@Override
 	public int getTouchDY() {
-		return (int) _touchDY;
+		return MathUtils.ifloor(_touchDY);
 	}
 
 	@Override

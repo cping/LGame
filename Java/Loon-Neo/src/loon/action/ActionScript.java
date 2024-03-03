@@ -69,8 +69,8 @@ public class ActionScript {
 				for (String cmd : list) {
 					if (cmd.length() > 0) {
 
-						int start = cmd.indexOf('(');
-						int end = cmd.lastIndexOf(')');
+						int start = cmd.indexOf(LSystem.PAREN_START);
+						int end = cmd.lastIndexOf(LSystem.PAREN_END);
 
 						String name = null;
 						String[] parameters = null;
@@ -100,11 +100,12 @@ public class ActionScript {
 												StringUtils.toBoolean(parameters[2]));
 									} else {
 										_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
-												(int) convertToFloat(parameters[2]));
+												MathUtils.ifloor(convertToFloat(parameters[2])));
 									}
 								} else if (parameters.length == 4) {
 									_tween.moveTo(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
-											StringUtils.toBoolean(parameters[2]), (int) convertToFloat(parameters[3]));
+											StringUtils.toBoolean(parameters[2]),
+											MathUtils.ifloor(convertToFloat(parameters[3])));
 								}
 							}
 						} else if ("moveby".equals(name)) {
@@ -113,7 +114,7 @@ public class ActionScript {
 									_tween.moveBy(convertToFloat(parameters[0]), convertToFloat(parameters[1]));
 								} else if (parameters.length == 3) {
 									_tween.moveBy(convertToFloat(parameters[0]), convertToFloat(parameters[1]),
-											(int) convertToFloat(parameters[2]));
+											MathUtils.ifloor(convertToFloat(parameters[2])));
 								}
 							}
 						} else if ("rotate".equals(name) || "rotateto".equals(name)) {
@@ -251,7 +252,8 @@ public class ActionScript {
 								if (parameters.length == 1) {
 									_tween.repeat(convertToFloat(parameters[0]));
 								} else if (parameters.length == 2) {
-									_tween.repeat((int) convertToFloat(parameters[0]), convertToFloat(parameters[1]));
+									_tween.repeat(MathUtils.ifloor(convertToFloat(parameters[0])),
+											convertToFloat(parameters[1]));
 								}
 							} else {
 								_tween.repeat(1f);

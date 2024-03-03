@@ -408,7 +408,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	}
 
 	public int getTransparency() {
-		return (int) (_objectAlpha * 255f);
+		return MathUtils.ifloor(_objectAlpha * 255f);
 	}
 
 	public Alpha getAlphaObject() {

@@ -190,8 +190,8 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch setTexture(LTexture tex2d) {
 		this._meshdata.texture = tex2d;
-		this.texWidth = (int) _meshdata.texture.width();
-		this.texHeight = (int) _meshdata.texture.height();
+		this.texWidth = _meshdata.texture.getWidth();
+		this.texHeight = _meshdata.texture.getHeight();
 		return this;
 	}
 

@@ -659,7 +659,7 @@ public class DefineMoveTo extends ActionEvent {
 
 	public DefineMoveTo updateDirection(float x, float y) {
 		int oldDir = direction;
-		direction = Field2D.getDirection((int) x, (int) y, oldDir);
+		direction = Field2D.getDirection(MathUtils.ifloor(x), MathUtils.ifloor(y), oldDir);
 		isDirUpdate = (oldDir != direction);
 		return this;
 	}

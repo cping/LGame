@@ -123,12 +123,12 @@ public class StatusBar extends Entity {
 	private void drawBar(GLEx g, float v1, float v2, float size, float x, float y) {
 		final float alpha = g.alpha();
 		g.setAlpha(_objectAlpha);
-		final float cv1 = (_width * v1) / size;
+		final float cv1 = MathUtils.iceil(_width * v1) / size;
 		float cv2;
 		if (v1 == v2) {
 			cv2 = cv1;
 		} else {
-			cv2 = (_width * v2) / size;
+			cv2 = MathUtils.iceil((_width * v2) / size);
 		}
 		if (cv1 < _width || cv2 < _height) {
 			g.fillRect(x, y, _width, _height, colorback.mul(_baseColor));

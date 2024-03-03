@@ -37,8 +37,10 @@ public class InventoryTest extends Stage {
 		// 构建背包到位置40,40大小310x240,不限制背包物品拖拽出背包
 		final LInventory inv = new LInventory(40, 40, 310, 240, false);
 
-		// 允许拖拽出窗口范围
+		// 允许背包拖拽出窗口范围
 		// inv.setLimitMove(false);
+		// 禁止actor对象拖拽(物品既actor)
+		// inv.setActorDrag(false);
 		// inv.setDisplayDrawGrid(false);
 		// 绘制圆形网格
 		// inv.setCircleGrid(true);

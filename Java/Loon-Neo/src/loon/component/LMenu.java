@@ -268,7 +268,6 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						}
 					}
 					if (bounds().contains(pos.x, pos.y) && checkd) {
-						g.setTint(0.5f, 0.5f, 0.5f, 1.0f);
 						if ((down && !drag) && checkd && (!this.clicked)) {
 							ClickMenu menu = new ClickMenu(this._itemclick, this);
 							LSystem.load(menu);
@@ -281,7 +280,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					if (_texture != null) {
 						g.draw(this._texture, this.x + _parent._leftOffsetMoveMenu + offsetX,
 								this.y + this._parent.paddingy + this._parent.scroll + offsetY, this.itemWidth,
-								this.itemHeight, _parent._component_baseColor);
+								this.itemHeight, this.clicked ? LColor.gray : _parent._component_baseColor);
 					}
 					if (this._label != null) {
 						font.drawString(g, _label,
@@ -289,7 +288,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 										+ offsetX + labelOffsetX,
 								(this.y + this._parent.paddingy + this._parent.scroll - font.getAscent() - 2) + offsetY
 										+ labelOffsetY,
-								_parent.fontColor);
+								this.clicked ? LColor.gray : _parent.fontColor);
 					}
 
 				} else {

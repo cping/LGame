@@ -23,6 +23,7 @@ package loon.action;
 import loon.LSystem;
 import loon.geom.IntValue;
 import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
 import loon.utils.timer.EaseTimer;
 
 public class IntAction extends ActionEvent {
@@ -57,7 +58,7 @@ public class IntAction extends ActionEvent {
 	@Override
 	public void update(long elapsedTime) {
 		_easeTimer.update(elapsedTime);
-		_value.set((int) (_start + (_end - _start) * _easeTimer.getValue()));
+		_value.set(MathUtils.ifloor(_start + (_end - _start) * _easeTimer.getValue()));
 	}
 
 	@Override

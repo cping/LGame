@@ -559,8 +559,8 @@ public class LTexture extends Painter implements LRelease {
 			copy.imageHeight = imageHeight;
 			copy._image = _image;
 			copy._copySize = true;
-			copy.pixelWidth = (int) _textureClip.getDisplayWidth();
-			copy.pixelHeight = (int) _textureClip.getDisplayHeight();
+			copy.pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
+			copy.pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
 			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, x, y, width, height, true);
 			} else {
@@ -616,8 +616,8 @@ public class LTexture extends Painter implements LRelease {
 			copy._image = _image;
 			copy._copySize = true;
 			copy._scaleSize = true;
-			copy.pixelWidth = (int) _textureClip.getDisplayWidth();
-			copy.pixelHeight = (int) _textureClip.getDisplayHeight();
+			copy.pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
+			copy.pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
 			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, 0, 0, width, height, true);
 			} else {

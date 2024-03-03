@@ -198,24 +198,23 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		}
 		final boolean cliped = g.isClip();
 		final RectBox oldClip = g.getClip();
-		final int w = (int) this.getWidth();
-		final int h = (int) this.getHeight();
+		final int w = this.width();
+		final int h = this.height();
 		final int oc = g.color();
 		final float alpha = g.alpha();
 		try {
 			if (cliped) {
 				g.clearClip();
 			}
-			g.setColor(_backgroundColor);
-			g.setAlpha(_objectAlpha);
 			if (_background == null) {
+				g.setColor(_backgroundColor);
+				g.setAlpha(_objectAlpha);
 				g.fillRoundRect(x, y, w, h, _frame_radius);
 			} else {
-				g.draw(_background, x, y, w, h);
+				g.draw(_background, x, y, w, h, _backgroundColor.setAlpha(_objectAlpha));
 			}
-			g.setColor(_component_baseColor);
-			g.setAlpha(_objectAlpha);
-			_toastFont.drawString(g, _displayText, x + _displayTextX, y + _displayTextY);
+			_toastFont.drawString(g, _displayText, x + _displayTextX, y + _displayTextY,
+					_component_baseColor.setAlpha(_objectAlpha));
 		} finally {
 			g.setColor(oc);
 			g.setAlpha(alpha);
