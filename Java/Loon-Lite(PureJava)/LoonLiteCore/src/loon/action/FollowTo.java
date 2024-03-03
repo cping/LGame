@@ -114,7 +114,7 @@ public class FollowTo extends ActionEvent {
 			_newX = (_currentPos.x + v.x);
 			_newY = (_currentPos.y + v.y);
 
-			updateDirection((int) (_newX - this._currentPos.x), (int) (_newY - this._currentPos.y));
+			updateDirection(MathUtils.ifloor(_newX - this._currentPos.x), MathUtils.ifloor(_newY - this._currentPos.y));
 			if (original.getRectBox().intersects(_actorToFollow.getRectBox())
 					|| original.getRectBox().contains(_actorToFollow.getRectBox())) {
 				_isCompleted = true;

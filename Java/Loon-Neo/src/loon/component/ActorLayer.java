@@ -459,7 +459,8 @@ public abstract class ActorLayer extends LContainer {
 		if (_component_isClose) {
 			return null;
 		}
-		tmpField = new Field2D(new int[(int) (getHeight() / tileHeight)][(int) (getWidth() / tileWidth)], tileWidth,
+		tmpField = new Field2D(
+				new int[MathUtils.iceil(getHeight() / tileHeight)][MathUtils.iceil(getWidth() / tileWidth)], tileWidth,
 				tileHeight);
 		return tmpField;
 	}
@@ -597,8 +598,8 @@ public abstract class ActorLayer extends LContainer {
 		if (count <= 0) {
 			throw new LSysException("count <= 0 !");
 		}
-		int layerWidth = (int) getWidth();
-		int layerHeight = (int) getHeight();
+		int layerWidth = width();
+		int layerHeight = height();
 		int actorWidth = nw > tileSize ? nw : tileSize;
 		int actorHeight = nh > tileSize ? nh : tileSize;
 		int x = nx / actorWidth;
@@ -662,7 +663,8 @@ public abstract class ActorLayer extends LContainer {
 			return null;
 		}
 		RectBox rect = actor.getRectBox();
-		return getRandomLayerLocation((int) rect.x, (int) rect.y, rect.width, rect.height, count);
+		return getRandomLayerLocation(MathUtils.ifloor(rect.x), MathUtils.ifloor(rect.y), MathUtils.ifloor(rect.width),
+				MathUtils.ifloor(rect.height), count);
 	}
 
 	/**
@@ -902,11 +904,11 @@ public abstract class ActorLayer extends LContainer {
 	}
 
 	int getHeightInPixels() {
-		return (int) (this.getHeight() * this.cellSize);
+		return MathUtils.iceil(this.getHeight() * this.cellSize);
 	}
 
 	int getWidthInPixels() {
-		return (int) (this.getWidth() * this.cellSize);
+		return MathUtils.iceil(this.getWidth() * this.cellSize);
 	}
 
 	int toCellCeil(float pixel) {

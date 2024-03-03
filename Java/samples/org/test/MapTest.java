@@ -102,6 +102,8 @@ public class MapTest extends Stage {
 			selector.bindColor(1, LColor.yellow);
 			// 不绘制边框
 			selector.setDrawBorder(false);
+			// 网格间距2
+			selector.setGridSpaceSize(2);
 			// 跟随hero偏移
 			selector.setOffset(hero.getOffset());
 			// 移动到hero位置

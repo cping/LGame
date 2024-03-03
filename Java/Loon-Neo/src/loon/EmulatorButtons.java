@@ -24,6 +24,7 @@ import loon.LTexture.Format;
 import loon.action.sprite.SpriteBatch;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
+import loon.utils.MathUtils;
 
 public class EmulatorButtons implements LRelease {
 
@@ -82,15 +83,23 @@ public class EmulatorButtons implements LRelease {
 			this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true, 68, 68);
 		} else {
 
-			this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, (int) (60 * scale), (int) (60 * scale));
-			this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, (int) (60 * scale), (int) (60 * scale));
-			this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true, (int) (60 * scale), (int) (60 * scale));
-			this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true, (int) (60 * scale), (int) (60 * scale));
+			this.up = new EmulatorButton(dpad, 40, 40, 40, 0, true, MathUtils.ifloor(60 * scale),
+					MathUtils.ifloor(60 * scale));
+			this.left = new EmulatorButton(dpad, 40, 40, 0, 40, true, MathUtils.ifloor(60 * scale),
+					MathUtils.ifloor(60 * scale));
+			this.right = new EmulatorButton(dpad, 40, 40, 80, 40, true, MathUtils.ifloor(60 * scale),
+					MathUtils.ifloor(60 * scale));
+			this.down = new EmulatorButton(dpad, 40, 40, 40, 80, true, MathUtils.ifloor(60 * scale),
+					MathUtils.ifloor(60 * scale));
 
-			this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true, (int) (68 * scale), (int) (68 * scale));
-			this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true, (int) (68 * scale), (int) (68 * scale));
-			this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true, (int) (68 * scale), (int) (68 * scale));
-			this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true, (int) (68 * scale), (int) (68 * scale));
+			this.triangle = new EmulatorButton(buttons, 48, 48, 48, 0, true, MathUtils.ifloor(68 * scale),
+					MathUtils.ifloor(68 * scale));
+			this.square = new EmulatorButton(buttons, 48, 48, 0, 48, true, MathUtils.ifloor(68 * scale),
+					MathUtils.ifloor(68 * scale));
+			this.circle = new EmulatorButton(buttons, 48, 48, 96, 48, true, MathUtils.ifloor(68 * scale),
+					MathUtils.ifloor(68 * scale));
+			this.cancel = new EmulatorButton(buttons, 48, 48, 48, 96, true, MathUtils.ifloor(68 * scale),
+					MathUtils.ifloor(68 * scale));
 		}
 		this.up._monitor = new EmulatorButton.Monitor() {
 			@Override

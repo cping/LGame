@@ -239,7 +239,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 		if (_width >= getScreenWidth()) {
 			if (limitX > tempWidth) {
-				tempX = (int) (getScreenWidth() - _width);
+				tempX = MathUtils.ifloor(getScreenWidth() - _width);
 			} else if (limitX < 1) {
 				tempX = x();
 			}
@@ -248,7 +248,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		if (_height >= getScreenHeight()) {
 			if (limitY > tempHeight) {
-				tempY = (int) (getScreenHeight() - _height);
+				tempY = MathUtils.ifloor(getScreenHeight() - _height);
 			} else if (limitY < 1) {
 				tempY = y();
 			}

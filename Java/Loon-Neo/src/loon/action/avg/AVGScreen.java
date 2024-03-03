@@ -223,7 +223,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					if (idx != -1) {
 						String gotoFlag = _items.get(idx);
 						if (MathUtils.isNan(gotoFlag)) {
-							_screen.command.gotoIndex((int) Double.parseDouble(gotoFlag));
+							_screen.command.gotoIndex(MathUtils.ifloor(Float.parseFloat(gotoFlag)));
 						} else {
 							_screen.command.gotoIndex(gotoFlag);
 						}
@@ -745,7 +745,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
 		this.messageUI.setFontColor(_fontColor);
-		int size = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
+		int size = MathUtils.ifloor((messageUI.getWidth() / (messageUI.getMessageFont().getSize())));
 		if (size % 2 != 0) {
 			size = size - 3;
 		} else {
@@ -1017,10 +1017,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							if (mesFlag.indexOf(LSystem.COMMA) != -1) {
 								String[] optSize = StringUtils.split(mesFlag, LSystem.COMMA);
 								if (optSize.length == 4) {
-									click = new LClickButton(text, (int) Float.parseFloat(optSize[0].trim()),
-											(int) Float.parseFloat(optSize[1].trim()),
-											(int) Float.parseFloat(optSize[2].trim()),
-											(int) Float.parseFloat(optSize[3].trim()));
+									click = new LClickButton(text,
+											MathUtils.ifloor(Float.parseFloat(optSize[0].trim())),
+											MathUtils.ifloor(Float.parseFloat(optSize[1].trim())),
+											MathUtils.ifloor(Float.parseFloat(optSize[2].trim())),
+											MathUtils.ifloor(Float.parseFloat(optSize[3].trim())));
 									// 载入跳转地址与图片
 									if (orderFlag != null) {
 										setOpt(click, orderFlag);
@@ -1031,10 +1032,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								if (orderFlag != null) {
 									String[] optSize = StringUtils.split(orderFlag, LSystem.COMMA);
 									if (optSize.length == 4) {
-										click = new LClickButton(text, (int) Float.parseFloat(optSize[0].trim()),
-												(int) Float.parseFloat(optSize[1].trim()),
-												(int) Float.parseFloat(optSize[2].trim()),
-												(int) Float.parseFloat(optSize[3].trim()));
+										click = new LClickButton(text,
+												MathUtils.ifloor(Float.parseFloat(optSize[0].trim())),
+												MathUtils.ifloor(Float.parseFloat(optSize[1].trim())),
+												MathUtils.ifloor(Float.parseFloat(optSize[2].trim())),
+												MathUtils.ifloor(Float.parseFloat(optSize[3].trim())));
 										// 载入图片
 										if (lastFlag != null) {
 											setOpt(click, lastFlag);
@@ -1053,7 +1055,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESMOVE)) {
 					// 空值时复位
 					if (mesFlag == null) {
-						int mesSize = (int) (messageUI.getWidth() / (messageUI.getMessageFont().getSize()));
+						int mesSize = MathUtils.iceil((messageUI.getWidth() / (messageUI.getMessageFont().getSize())));
 						if (mesSize % 2 != 0) {
 							mesSize = mesSize - 3;
 						} else {

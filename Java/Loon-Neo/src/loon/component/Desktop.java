@@ -40,6 +40,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IArray;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
@@ -107,7 +108,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * @param height
 	 */
 	public Desktop(Screen screen, float width, float height) {
-		this(null, screen, (int) width, (int) height);
+		this(null, screen, MathUtils.iceil(width), MathUtils.iceil(height));
 	}
 
 	/**
@@ -132,7 +133,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		this._clickComponents = new LComponent[1];
 		this._desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this._visible = true;
-		this._contentPane = new LPanel(0, 0, (int) width, (int) height);
+		this._contentPane = new LPanel(0, 0, width, height);
 		this._contentPane.desktopContainer = true;
 		this.input = screen;
 		this._tooltip = new LToolTip();
@@ -1037,7 +1038,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public Desktop setContentPane(LContainer pane) {
-		pane.setBounds(0, 0, (int) this.getWidth(), (int) this.getHeight());
+		pane.setBounds(0, 0, this.getWidth(), this.getHeight());
 		this._contentPane = pane;
 		this.setDesktop(this._contentPane);
 		return this;

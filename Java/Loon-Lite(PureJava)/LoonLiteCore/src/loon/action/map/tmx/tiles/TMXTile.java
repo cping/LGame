@@ -28,9 +28,14 @@ import loon.utils.xml.XMLElement;
 public class TMXTile {
 
 	private int id;
+
 	private int totalDuration;
 
+	private int playerCount;
+
 	private boolean animated;
+
+	private boolean isMovable;
 
 	private TArray<TMXAnimationFrame> frames;
 
@@ -122,5 +127,23 @@ public class TMXTile {
 
 	public TMXProperties getProperties() {
 		return properties;
+	}
+
+	public int getPlayerCount() {
+		return playerCount;
+	}
+
+	public TMXTile setPlayerCount(int p) {
+		this.playerCount = p;
+		return this;
+	}
+
+	public boolean isMovable() {
+		return isMovable;
+	}
+
+	public TMXTile setMovable(boolean m) {
+		this.isMovable = m;
+		return this;
 	}
 }

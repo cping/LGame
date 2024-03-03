@@ -71,17 +71,17 @@ public class LPapers extends LContainer {
 		}
 		if (this._rows != -1 && this._columns != -1) {
 			if (this._rows == 1) {
-				this._rowHeight = (int) this.getHeight();
+				this._rowHeight = MathUtils.ifloor(this.getHeight());
 				this._yOffset = 0;
 			} else {
-				this._rowHeight = (int) (this.getHeight() / this._rows);
+				this._rowHeight = MathUtils.ifloor(this.getHeight() / this._rows);
 				this._yOffset = this.getHeight() / (this._rows - 1) * 1 / 10;
 			}
 			if (this._columns == 1) {
-				this._columnWidth = (int) this.getWidth();
+				this._columnWidth = MathUtils.ifloor(this.getWidth());
 				this._xOffset = 0;
 			} else {
-				this._columnWidth = (int) (this.getWidth() / this._columns);
+				this._columnWidth = MathUtils.ifloor(this.getWidth() / this._columns);
 				this._xOffset = this.getWidth() / (this._columns - 1) * 1 / 10;
 			}
 		} else {
@@ -120,8 +120,8 @@ public class LPapers extends LContainer {
 			final int width = getMaxColumnsWidth();
 			final int height = getMaxRowsHeight();
 
-			this._rows = (int) (this.getHeight() / height);
-			this._columns = (int) (this.getWidth() / width);
+			this._rows = MathUtils.ifloor(this.getHeight() / height);
+			this._columns = MathUtils.ifloor(this.getWidth() / width);
 
 			this._rowHeight = height;
 			if (_rows > 1) {

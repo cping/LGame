@@ -225,14 +225,18 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	}
 
 	public TileMap removeTile(int id) {
-		for (TileImpl tile : arrays) {
-			if (tile.getId() == id) {
+		final int size = arrays.size;
+		final TArray<TileImpl> tiles = arrays;
+		for (int i = size - 1; i > -1; i--) {
+			TileImpl tile = tiles.get(i);
+			if (tile != null && tile.getId() == id) {
 				if (tile.isAnimation()) {
 					animations.remove(tile.getAnimation());
 				}
-				arrays.remove(tile);
+				tiles.removeIndex(i);
 			}
 		}
+		this.arrays = tiles;
 		if (animations.size == 0) {
 			playAnimation = false;
 		}
@@ -335,8 +339,11 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	}
 
 	public TileImpl getTile(int id) {
-		for (TileImpl tile : arrays) {
-			if (tile.getId() == id) {
+		final int size = arrays.size;
+		final TArray<TileImpl> tiles = arrays;
+		for (int i = size - 1; i > -1; i--) {
+			TileImpl tile = tiles.get(i);
+			if (tile != null && tile.getId() == id) {
 				return tile;
 			}
 		}
@@ -365,10 +372,11 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 			if (!texturePack.isPacked()) {
 				texturePack.packed();
 			}
-			int[] list = texturePack.getIdList();
+			final int[] list = texturePack.getIdList();
 			active = true;
 			dirty = true;
-			for (int id : list) {
+			for (int i = 0; i < list.length; i++) {
+				int id = list[i];
 				putTile(id, id);
 			}
 		}
@@ -454,7 +462,10 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 							int id = maps[j][i];
 							final float posX = field2d.tilesToWidthPixels(i) + offsetX;
 							final float posY = field2d.tilesToHeightPixels(j) + offsetY;
-							for (TileImpl tile : arrays) {
+							final TArray<TileImpl> tiles = arrays;
+							final int size = tiles.size;
+							for (int n = 0; n < size; n++) {
+								TileImpl tile = tiles.get(n);
 								if (tile.isAnimation() && tile.getId() == id) {
 									g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
 											baseColor);
@@ -490,7 +501,10 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 						int id = maps[j][i];
 						final float posX = field2d.tilesToWidthPixels(i) + offsetX;
 						final float posY = field2d.tilesToHeightPixels(j) + offsetY;
-						for (TileImpl tile : arrays) {
+						final TArray<TileImpl> tiles = arrays;
+						final int size = tiles.size;
+						for (int n = 0; n < size; n++) {
+							TileImpl tile = tiles.get(n);
 							if (playAnimation) {
 								if (tile.getId() == id) {
 									if (tile.isAnimation()) {
@@ -957,8 +971,13 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	@Override
 	public void update(long elapsedTime) {
 		if (playAnimation && animations.size > 0) {
-			for (Animation a : animations) {
-				a.update(elapsedTime);
+			final int size = animations.size;
+			final TArray<Animation> ans = animations;
+			for (int i = size - 1; i > -1; i--) {
+				Animation an = ans.get(i);
+				if (an != null) {
+					an.update(elapsedTime);
+				}
 			}
 		}
 		if (_mapSprites != null) {

@@ -369,8 +369,8 @@ public class MoveTo extends ActionEvent {
 		float newY = 0f;
 		if (moveByMode) {
 			int count = 0;
-			int dirX = (int) (endX - startX);
-			int dirY = (int) (endY - startY);
+			int dirX = MathUtils.ifloor(endX - startX);
+			int dirY = MathUtils.ifloor(endY - startY);
 			int dir = Field2D.getDirection(dirX, dirY, direction);
 			if (allDir) {
 				newX = original.getX();

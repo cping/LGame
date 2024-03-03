@@ -346,12 +346,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				break;
 			}
 			closedNodes.add(node);
-			int[][] positions = map.adjacent(node.position);
-			for (int[] position : positions) {
-				if (!map.isAllowMoved(position)) {
-					continue;
-				}
-				if (closedNodes.find(position) != null) {
+			final int[][] positions = map.adjacent(node.position);
+			for (int i = 0; i < positions.length; i++) {
+				final int[] position = positions[i];
+				if (!map.isAllowMoved(position) || (closedNodes.find(position) != null)) {
 					continue;
 				}
 				Node openNode = openNodes.find(position);

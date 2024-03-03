@@ -435,8 +435,8 @@ public class Display extends BaseIO implements LRelease {
 						image = tmp;
 					} else {
 						// 因为内存和速度关系,考虑到全平台录制,因此默认只录屏幕大小的一半(否则在手机上绝对抗不了5分钟以上……)
-						image = Image.getResize(tmp, (int) (_process.getWidth() * 0.5f),
-								(int) (_process.getHeight() * 0.5f));
+						image = Image.getResize(tmp, MathUtils.iceil(_process.getWidth() * 0.5f),
+								MathUtils.iceil(_process.getHeight() * 0.5f));
 					}
 					gifEncoder.addFrame(image);
 					if (tmp != null) {

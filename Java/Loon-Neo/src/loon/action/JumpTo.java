@@ -21,6 +21,7 @@
 package loon.action;
 
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
 public class JumpTo extends ActionEvent {
@@ -92,8 +93,8 @@ public class JumpTo extends ActionEvent {
 		boolean isLimit = original.isBounded();
 		if (isLimit) {
 			RectBox rect = original.getRectBox();
-			int limitWidth = (int) (original.getContainerWidth() - rect.getWidth());
-			int limitHeight = (int) rect.getHeight();
+			int limitWidth = MathUtils.iceil(original.getContainerWidth() - rect.getWidth());
+			int limitHeight = rect.height();
 			if (original.getX() > limitWidth) {
 				movePos(offsetX + limitWidth, offsetY + original.getY());
 				_isCompleted = true;

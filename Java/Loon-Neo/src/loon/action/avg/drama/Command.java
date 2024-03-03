@@ -941,7 +941,7 @@ public class Command extends Conversion implements LRelease {
 					String gotoFlag = temps.get(1);
 					// 如果是数字，跳转到指定行数
 					if (MathUtils.isNan(gotoFlag)) {
-						gotoIndex((int) Double.parseDouble(gotoFlag));
+						gotoIndex(MathUtils.ifloor(Float.parseFloat(gotoFlag)));
 					} else {// 如果不是，跳转向指定标记
 						gotoIndex(gotoFlag);
 					}

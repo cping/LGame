@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -53,7 +53,7 @@ public class LPapers extends LContainer {
 
 	public LPapers(int x, int y, int w, int h, int row, int col, LTexture background, LTexture... images) {
 		super(x, y, w, h);
-		this._images = new TArray<>();
+		this._images = new TArray<LTexture>();
 		this._rows = row;
 		this._columns = col;
 		this.setBackground(background);
@@ -62,7 +62,8 @@ public class LPapers extends LContainer {
 			_updateList = true;
 		}
 		if (images != null) {
-			for (LTexture tex : images) {
+			for (int i = 0; i < images.length; i++) {
+				LTexture tex = images[i];
 				if (tex != null) {
 					_images.add(tex);
 				}
@@ -70,17 +71,17 @@ public class LPapers extends LContainer {
 		}
 		if (this._rows != -1 && this._columns != -1) {
 			if (this._rows == 1) {
-				this._rowHeight = (int) this.getHeight();
+				this._rowHeight = MathUtils.ifloor(this.getHeight());
 				this._yOffset = 0;
 			} else {
-				this._rowHeight = (int) (this.getHeight() / this._rows);
+				this._rowHeight = MathUtils.ifloor(this.getHeight() / this._rows);
 				this._yOffset = this.getHeight() / (this._rows - 1) * 1 / 10;
 			}
 			if (this._columns == 1) {
-				this._columnWidth = (int) this.getWidth();
+				this._columnWidth = MathUtils.ifloor(this.getWidth());
 				this._xOffset = 0;
 			} else {
-				this._columnWidth = (int) (this.getWidth() / this._columns);
+				this._columnWidth = MathUtils.ifloor(this.getWidth() / this._columns);
 				this._xOffset = this.getWidth() / (this._columns - 1) * 1 / 10;
 			}
 		} else {
@@ -119,8 +120,8 @@ public class LPapers extends LContainer {
 			final int width = getMaxColumnsWidth();
 			final int height = getMaxRowsHeight();
 
-			this._rows = (int) (this.getHeight() / height);
-			this._columns = (int) (this.getWidth() / width);
+			this._rows = MathUtils.ifloor(this.getHeight() / height);
+			this._columns = MathUtils.ifloor(this.getWidth() / width);
 
 			this._rowHeight = height;
 			if (_rows > 1) {

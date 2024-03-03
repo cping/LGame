@@ -22,7 +22,9 @@ public class SelectIconTest extends Stage {
 		// 禁止标记闪烁
 		// selectIcon.setFlashAlpha(false);
 		// 绘制边界线
-		// selectIcon.setDrawBorder(false);
+		selectIcon.setDrawBorder(true);
+		 // 网格间距(默认0)
+		selectIcon.setGridSpaceSize(2);
 		// 网格间边缘色
 		selectIcon.setBorderColor(LColor.yellow);
 		// 以字符串设定选择区域网格格式布局(不设定默认仅有一格)

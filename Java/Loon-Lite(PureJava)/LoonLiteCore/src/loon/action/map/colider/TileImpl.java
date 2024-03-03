@@ -41,9 +41,13 @@ public class TileImpl implements Tile {
 
 	protected int imgId = -1;
 
+	protected int playerCount;
+
 	protected Attribute attribute;
 
 	protected boolean isAnimation;
+
+	protected boolean isMovable;
 
 	protected Animation animation;
 
@@ -348,6 +352,24 @@ public class TileImpl implements Tile {
 
 	public int distance(Tile other) {
 		return MathUtils.abs(getX() - other.getX()) + MathUtils.abs(getY() - other.getY());
+	}
+
+	public int getPlayerCount() {
+		return playerCount;
+	}
+
+	public TileImpl setPlayerCount(int p) {
+		this.playerCount = p;
+		return this;
+	}
+
+	public boolean isMovable() {
+		return isMovable;
+	}
+
+	public TileImpl setMovable(boolean m) {
+		this.isMovable = m;
+		return this;
 	}
 
 	@Override

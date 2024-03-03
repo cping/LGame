@@ -111,7 +111,7 @@ public class AVGCG implements LRelease {
 	}
 
 	public void add(final String resName, float x, float y, float w, float h) {
-		add(resName, (int) x, (int) y, (int) w, (int) h);
+		add(resName, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 	}
 
 	public void add(final String resName, int x, int y, int w, int h) {

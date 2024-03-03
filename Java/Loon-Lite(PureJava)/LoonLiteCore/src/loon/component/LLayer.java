@@ -398,7 +398,7 @@ public class LLayer extends ActorLayer {
 				tmp = null;
 			}
 		} else {
-			background = Image.createImage((int) getWidth(), (int) getHeight());
+			background = Image.createImage(getWidth(), getHeight());
 		}
 		if (background != null) {
 			Canvas g = background.getCanvas();

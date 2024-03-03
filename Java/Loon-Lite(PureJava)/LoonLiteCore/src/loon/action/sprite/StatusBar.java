@@ -225,9 +225,9 @@ public class StatusBar extends Entity {
 			}
 			g.setFont(numberFont);
 			int width = numberFont.stringWidth(displayValue);
-			int height = numberFont.getHeight();
-			g.drawString(displayValue, offX + (_width / 2 - width / 2) + _offsetTextX,
-					offY + (_height / 2 - height / 2) - 2 + _offsetTextY, fontColor);
+			int height = MathUtils.min(numberFont.getSize(), numberFont.getHeight());
+			g.drawString(displayValue, offX + ((_width - width) / 2) + _offsetTextX,
+					offY + ((_height - height) / 2) - 1 + _offsetTextY, fontColor);
 			g.setFont(font);
 		}
 	}

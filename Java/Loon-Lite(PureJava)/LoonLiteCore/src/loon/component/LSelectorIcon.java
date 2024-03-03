@@ -77,6 +77,7 @@ public class LSelectorIcon extends LComponent {
 	private int _gridWidth;
 	private int _gridHeight;
 
+	private float _gridSpaceSize;
 	private float _gridCenterX;
 	private float _gridCenterY;
 
@@ -148,12 +149,13 @@ public class LSelectorIcon extends LComponent {
 		final int stroke = g.getStrokeColor();
 		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(),
 				MathUtils.ifloor(MathUtils.limit((maxAlpha - _iconAlpha), minAlpha, maxAlpha)));
-		g.fillRect(newX, newY, tileWidth, tileHeight);
+		g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight));
 		if (_drawBorder) {
 			g.setColor(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(),
 					MathUtils.ifloor(_iconAlpha));
-			g.strokeRect(newX, newY, tileWidth - 1, tileHeight - 1);
-			g.strokeRect(newX - 1, newY - 1, tileWidth + 1, tileHeight + 1);
+			g.strokeRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth) - 1, fixGridSize(tileHeight) - 1);
+			g.strokeRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(tileWidth) + 1,
+					fixGridSize(tileHeight) + 1);
 			g.setFillColor(fill);
 		}
 		g.setStrokeColor(stroke);
@@ -166,16 +168,19 @@ public class LSelectorIcon extends LComponent {
 		final int color = g.color();
 		final boolean drawImage = (tex != null);
 		if (_drawImageNotColored && drawImage) {
-			g.draw(tex, newX, newY, tileWidth, tileHeight);
+			g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight));
 		} else {
-			g.fillRect(newX, newY, tileWidth, tileHeight, baseColor);
+			g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight), baseColor);
 			if (drawImage) {
-				g.draw(tex, newX, newY, tileWidth, tileHeight, _tempColor.setColor(baseColor));
+				g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight),
+						_tempColor.setColor(baseColor));
 			}
 		}
 		if (_drawBorder) {
-			g.drawRect(newX, newY, tileWidth - 1, tileHeight - 1, borderColor);
-			g.drawRect(newX - 1, newY - 1, tileWidth + 1, tileHeight + 1, borderColor);
+			g.drawRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth) - 1, fixGridSize(tileHeight) - 1,
+					borderColor);
+			g.drawRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(tileWidth) + 1,
+					fixGridSize(tileHeight) + 1, borderColor);
 		}
 		g.setColor(color);
 	}
@@ -184,6 +189,14 @@ public class LSelectorIcon extends LComponent {
 		_objectLocation.set(tx, ty);
 		moveSide();
 		return this;
+	}
+
+	private float fixGridPos(float v) {
+		return v + _gridSpaceSize;
+	}
+
+	private float fixGridSize(float v) {
+		return v - _gridSpaceSize * 2f;
 	}
 
 	private void moveSide() {
@@ -702,6 +715,15 @@ public class LSelectorIcon extends LComponent {
 
 	public LSelectorIcon setDrawImageNotColored(boolean d) {
 		this._drawImageNotColored = d;
+		return this;
+	}
+
+	public float getGridSpaceSize() {
+		return _gridSpaceSize;
+	}
+
+	public LSelectorIcon setGridSpaceSize(float s) {
+		this._gridSpaceSize = s;
 		return this;
 	}
 
