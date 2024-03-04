@@ -681,23 +681,21 @@ public class LTimer implements LTimerListener, LRelease {
 	}
 
 	public boolean addListener(LTimerListener timerListener) {
-		if (_currentListeners == null) {
-			synchronized (LTimer.class) {
-				if (_currentListeners == null) {
-					_currentListeners = new TArray<LTimerListener>();
+		synchronized (LTimer.class) {
+			if (_currentListeners == null) {
+				_currentListeners = new TArray<LTimerListener>();
+			}
+			if (_currentListeners != null) {
+				if (timerListener == null) {
+					return false;
 				}
+				if (timerListener == this) {
+					return false;
+				}
+				return _currentListeners.add(timerListener);
 			}
+			return false;
 		}
-		if (_currentListeners != null) {
-			if (timerListener == null) {
-				return false;
-			}
-			if (timerListener == this) {
-				return false;
-			}
-			return _currentListeners.add(timerListener);
-		}
-		return false;
 	}
 
 	public boolean removeListener(LTimerListener timerListener) {

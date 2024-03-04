@@ -757,6 +757,11 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	@Override
+	public int hashCode() {
+		return getHashCode();
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) {
 			return false;

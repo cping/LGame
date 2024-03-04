@@ -36,14 +36,12 @@ public class LColorPool implements LRelease {
 	}
 
 	public static LColorPool get() {
-		if (_colorPool == null) {
-			synchronized (LColorPool.class) {
-				if (_colorPool == null) {
-					_colorPool = new LColorPool();
-				}
+		synchronized (LColorPool.class) {
+			if (_colorPool == null) {
+				_colorPool = new LColorPool();
 			}
+			return _colorPool;
 		}
-		return _colorPool;
 	}
 
 	private final LColor _alphaColor = new LColor(0f, 0f, 0f, 0f, true);

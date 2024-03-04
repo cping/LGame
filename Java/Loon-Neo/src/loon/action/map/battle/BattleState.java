@@ -89,7 +89,7 @@ public class BattleState {
 			return false;
 		}
 		BattleState state = (BattleState) o;
-		if (this._name == state._name && this._priority == state._priority) {
+		if ((this._name == state._name || this._name.equals(state._name)) && this._priority == state._priority) {
 			return true;
 		}
 		if (state._name != null && state._name.equalsIgnoreCase(_name) && this._priority == state._priority) {

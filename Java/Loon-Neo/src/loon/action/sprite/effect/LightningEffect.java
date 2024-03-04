@@ -48,9 +48,6 @@ public class LightningEffect extends BaseAbstractEffect {
 	}
 
 	final static LightningEffect get() {
-		if (instance != null) {
-			return instance;
-		}
 		synchronized (LightningEffect.class) {
 			if (instance == null || instance.isClosed()) {
 				instance = make();

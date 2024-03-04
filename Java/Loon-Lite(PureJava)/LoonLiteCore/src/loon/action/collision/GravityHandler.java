@@ -853,11 +853,12 @@ public class GravityHandler implements LRelease {
 				}
 
 				if (positionY + rect.height > rb.y && positionY < rb.y + rb.height) {
-					if ((positionX + rect.width == rb.x && remainingVX > 0)
-							|| (positionX == rb.x + rb.width && remainingVX < 0)) {
-						if ((positionX + rect.width == rb.x && remainingVX > 0) && result.normal.x == 0) {
+					final boolean posResultA = MathUtils.ifloor(positionX + rect.width) == rb.x && remainingVX > 0;
+					final boolean posResultB = MathUtils.ifloor(rb.x + rb.width) == positionX && remainingVX < 0;
+					if (posResultA || posResultB) {
+						if (posResultA && result.normal.x == 0) {
 							result.normal.x = -1;
-						} else if ((positionX == rb.x + rb.width && remainingVX < 0) && result.normal.x == 0) {
+						} else if (posResultB && result.normal.x == 0) {
 							result.normal.x = 1;
 						}
 						remainingVX = 0;

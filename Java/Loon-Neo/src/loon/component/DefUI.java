@@ -49,14 +49,12 @@ public class DefUI extends HelperUtils {
 	}
 
 	public final static DefUI self() {
-		if (_instance == null) {
-			synchronized (DefUI.class) {
-				if (_instance == null) {
-					_instance = make();
-				}
+		synchronized (DefUI.class) {
+			if (_instance == null) {
+				_instance = make();
 			}
+			return _instance;
 		}
-		return _instance;
 	}
 
 	public final static DefUI selfClear() {

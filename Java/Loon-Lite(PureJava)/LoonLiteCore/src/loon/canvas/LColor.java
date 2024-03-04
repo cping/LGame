@@ -2074,7 +2074,21 @@ public class LColor implements Serializable {
 		if (_locked) {
 			return _colorFloat;
 		}
-		return getFloatBits();
+		if (a == 1f && r == 1f && g == 1f && b == 1f) {
+			return -1.7014117E38f;
+		}
+		if (a == 0f && r == 0f && g == 0f && b == 0f) {
+			return 0f;
+		}
+		if (_colorFloat == -1f || NumberUtils.compare(this._olda, a) != 0 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._olda = this.a;
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _colorFloat = getFloatBits();
+		}
+		return _colorFloat;
 	}
 
 	private float getFloatBits() {
@@ -2085,7 +2099,21 @@ public class LColor implements Serializable {
 		if (_locked) {
 			return _colorInt;
 		}
-		return getIntBits();
+		if (a == 1f && r == 1f && g == 1f && b == 1f) {
+			return -1;
+		}
+		if (a == 0f && r == 0f && g == 0f && b == 0f) {
+			return 0;
+		}
+		if (_colorInt == -1 || NumberUtils.compare(this._olda, a) != 0 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._olda = this.a;
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _colorInt = getIntBits();
+		}
+		return _colorInt;
 	}
 
 	private int getIntBits() {
