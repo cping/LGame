@@ -30,6 +30,7 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 直角(2D平面)地图纹理渲染器
@@ -76,10 +77,10 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 
 			final int screenWidth = LSystem.viewSize.getWidth();
 			final int screenHeight = LSystem.viewSize.getHeight();
-			final int tx = (int) (getRenderX() / map.getTileWidth());
-			final int ty = (int) (getRenderY() / map.getTileHeight());
-			final int windowWidth = (int) (screenWidth / map.getTileWidth() / scaleX);
-			final int windowHeight = (int) (screenHeight / map.getTileHeight() / scaleY);
+			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
+			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
+			final int windowWidth = MathUtils.ifloor(screenWidth / map.getTileWidth() / scaleX);
+			final int windowHeight = MathUtils.ifloor(screenHeight / map.getTileHeight() / scaleY);
 
 			final int layerWidth = tileLayer.getWidth();
 			final int layerHeight = tileLayer.getHeight();

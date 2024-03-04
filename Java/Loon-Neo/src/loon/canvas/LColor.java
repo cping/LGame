@@ -435,11 +435,6 @@ public class LColor implements Serializable {
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
-	public float toFloatBits() {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
-		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
-	}
-
 	public static final LColor hsvToColor(float h, float s, float v) {
 		if (h == 0 && s == 0) {
 			return new LColor(v, v, v);
@@ -1089,6 +1084,26 @@ public class LColor implements Serializable {
 
 	public float a = 1.0f;
 
+	private float _olda = -1f;
+
+	private float _oldr = -1f;
+
+	private float _oldg = -1f;
+
+	private float _oldb = -1f;
+
+	private float _colorFloat = -1f;
+
+	private int _argbInt = -1;
+
+	private int _abgrInt = -1;
+
+	private int _rgbInt = -1;
+
+	private int _bgrInt = -1;
+
+	private int _colorInt = -1;
+
 	private boolean _locked = false;
 
 	public static final LColor newWhite() {
@@ -1174,7 +1189,7 @@ public class LColor implements Serializable {
 				setColor(hexToColor(c));
 			}
 		}
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public LColor() {
@@ -1195,8 +1210,8 @@ public class LColor implements Serializable {
 			this._locked = locked;
 			return;
 		}
-		setColor(color.r, color.g, color.b, color.a);
-		this._locked = locked;
+		this.setColor(color.r, color.g, color.b, color.a);
+		this.initLockData(locked);
 	}
 
 	public LColor(int r, int g, int b) {
@@ -1205,7 +1220,7 @@ public class LColor implements Serializable {
 
 	public LColor(int r, int g, int b, boolean locked) {
 		this.setColor(r, g, b);
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public LColor(int r, int g, int b, int a) {
@@ -1214,7 +1229,7 @@ public class LColor implements Serializable {
 
 	public LColor(int r, int g, int b, int a, boolean locked) {
 		this.setColor(r, g, b, a);
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public LColor(float r, float g, float b) {
@@ -1224,7 +1239,7 @@ public class LColor implements Serializable {
 
 	public LColor(float r, float g, float b, boolean locked) {
 		this.setColor(r, g, b);
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public LColor(float r, float g, float b, float a) {
@@ -1234,7 +1249,7 @@ public class LColor implements Serializable {
 
 	public LColor(float r, float g, float b, float a, boolean locked) {
 		this.setColor(r, g, b, a);
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public LColor(int pixel) {
@@ -1253,7 +1268,7 @@ public class LColor implements Serializable {
 			a = 255;
 		}
 		this.setColor(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
-		this._locked = locked;
+		this.initLockData(locked);
 	}
 
 	public boolean isColorLocked() {
@@ -1264,53 +1279,20 @@ public class LColor implements Serializable {
 		return setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	}
 
-	@Override
-	public int hashCode() {
-		int result = (r != +0.0f ? NumberUtils.floatToIntBits(r) : 0);
-		result = 31 * result + (g != +0.0f ? NumberUtils.floatToIntBits(g) : 0);
-		result = 31 * result + (b != +0.0f ? NumberUtils.floatToIntBits(b) : 0);
-		result = 31 * result + (a != +0.0f ? NumberUtils.floatToIntBits(a) : 0);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
+	private void initLockData(boolean locked) {
+		this._locked = locked;
+		if (_locked) {
+			final int a = getAlpha();
+			final int r = getRed();
+			final int g = getGreen();
+			final int b = getBlue();
+			this._argbInt = argb(a, r, g, b);
+			this._abgrInt = abgr(a, r, g, b);
+			this._rgbInt = rgb(r, g, b);
+			this._bgrInt = bgr(r, g, b);
+			this._colorFloat = getFloatBits();
+			this._colorInt = getIntBits();
 		}
-		if (o == null || getClass() != o.getClass()) {
-			return false;
-		}
-		LColor color = (LColor) o;
-		if (NumberUtils.compare(color.a, a) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(color.b, b) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(color.g, g) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(color.r, r) != 0) {
-			return false;
-		}
-		return true;
-	}
-
-	public boolean equals(float r1, float g1, float b1, float a1) {
-		if (NumberUtils.compare(a1, a) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(b1, b) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(g1, g) != 0) {
-			return false;
-		}
-		if (NumberUtils.compare(r1, r) != 0) {
-			return false;
-		}
-		return true;
 	}
 
 	public LColor darker() {
@@ -1387,6 +1369,10 @@ public class LColor implements Serializable {
 		return this;
 	}
 
+	public LColor setFloatColor(float r, float g, float b) {
+		return setFloatColor(r, g, b, 1f);
+	}
+
 	public LColor setFloatColor(float r, float g, float b, float a) {
 		if (_locked) {
 			return this;
@@ -1429,6 +1415,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColorARGB(int pixel) {
+		if (_locked) {
+			return this;
+		}
 		int r = (pixel & 0x00FF0000) >> 16;
 		int g = (pixel & 0x0000FF00) >> 8;
 		int b = (pixel & 0x000000FF);
@@ -1440,6 +1429,9 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColorRGB(int pixel) {
+		if (_locked) {
+			return this;
+		}
 		int r = (pixel & 0x00FF0000) >> 16;
 		int g = (pixel & 0x0000FF00) >> 8;
 		int b = (pixel & 0x000000FF);
@@ -2078,17 +2070,123 @@ public class LColor implements Serializable {
 		return lerp(this, target, alpha);
 	}
 
+	public float toFloatBits() {
+		if (_locked) {
+			return _colorFloat;
+		}
+		return getFloatBits();
+	}
+
+	private float getFloatBits() {
+		return NumberUtils.intBitsToFloat(getIntBits() & 0xfeffffff);
+	}
+
+	public int toIntBits() {
+		if (_locked) {
+			return _colorInt;
+		}
+		return getIntBits();
+	}
+
+	private int getIntBits() {
+		return ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
+	}
+
 	/**
 	 * 返回ARGB
 	 * 
 	 * @return
 	 */
 	public int getARGB() {
-		return argb(getAlpha(), getRed(), getGreen(), getBlue());
+		if (_locked) {
+			return _argbInt;
+		}
+		if (a == 1f && r == 1f && g == 1f && b == 1f) {
+			return -1;
+		}
+		if (a == 0f && r == 0f && g == 0f && b == 0f) {
+			return 0;
+		}
+		if (_argbInt == -1 || NumberUtils.compare(this._olda, a) != 0 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._olda = this.a;
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _argbInt = argb(getAlpha(), getRed(), getGreen(), getBlue());
+		}
+		return _argbInt;
 	}
 
+	/**
+	 * 返回ABGR
+	 * 
+	 * @return
+	 */
 	public int getABGR() {
-		return abgr(getAlpha(), getRed(), getGreen(), getBlue());
+		if (_locked) {
+			return _abgrInt;
+		}
+		if (a == 1f && r == 1f && g == 1f && b == 1f) {
+			return -1;
+		}
+		if (a == 0f && r == 0f && g == 0f && b == 0f) {
+			return 0;
+		}
+		if (_abgrInt == -1 || NumberUtils.compare(this._olda, a) != 0 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._olda = this.a;
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _abgrInt = abgr(getAlpha(), getRed(), getGreen(), getBlue());
+		}
+		return _abgrInt;
+	}
+
+	/**
+	 * 返回RGB
+	 * 
+	 * @return
+	 */
+	public int getRGB() {
+		if (_locked) {
+			return _rgbInt;
+		}
+		if (r == 1f && g == 1f && b == 1f) {
+			return -1;
+		}
+		if (r == 0f && g == 0f && b == 0f) {
+			return 0;
+		}
+		if (_rgbInt == -1 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _rgbInt = argb(getAlpha(), getRed(), getGreen(), getBlue());
+		}
+		return _rgbInt;
+	}
+
+	public int getBGR() {
+		if (_locked) {
+			return _bgrInt;
+		}
+		if (r == 1f && g == 1f && b == 1f) {
+			return -1;
+		}
+		if (r == 0f && g == 0f && b == 0f) {
+			return 0;
+		}
+		if (_bgrInt == -1 || NumberUtils.compare(this._oldr, r) != 0
+				|| (NumberUtils.compare(this._oldg, g) != 0 || NumberUtils.compare(this._oldb, b) != 0)) {
+			this._oldr = this.r;
+			this._oldg = this.g;
+			this._oldb = this.b;
+			return _bgrInt = bgr(getRed(), getGreen(), getBlue());
+		}
+		return _bgrInt;
 	}
 
 	/**
@@ -2103,19 +2201,6 @@ public class LColor implements Serializable {
 
 	public int getABGR(float alpha) {
 		return abgr((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
-	}
-
-	/**
-	 * 返回RGB
-	 * 
-	 * @return
-	 */
-	public int getRGB() {
-		return rgb(getRed(), getGreen(), getBlue());
-	}
-
-	public int getBGR() {
-		return bgr(getRed(), getGreen(), getBlue());
 	}
 
 	public float[] toRgbFloatArray() {
@@ -2140,11 +2225,6 @@ public class LColor implements Serializable {
 
 	public byte[] toRgbByteArray() {
 		return new byte[] { (byte) getRed(), (byte) getGreen(), (byte) getBlue() };
-	}
-
-	public int toIntBits() {
-		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
-		return color;
 	}
 
 	public String toCSS() {
@@ -2448,4 +2528,52 @@ public class LColor implements Serializable {
 		return toString(getARGB());
 	}
 
+	@Override
+	public int hashCode() {
+		int result = (r != +0.0f ? NumberUtils.floatToIntBits(r) : 0);
+		result = 31 * result + (g != +0.0f ? NumberUtils.floatToIntBits(g) : 0);
+		result = 31 * result + (b != +0.0f ? NumberUtils.floatToIntBits(b) : 0);
+		result = 31 * result + (a != +0.0f ? NumberUtils.floatToIntBits(a) : 0);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		LColor color = (LColor) o;
+		if (NumberUtils.compare(color.a, a) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(color.b, b) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(color.g, g) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(color.r, r) != 0) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean equals(float r1, float g1, float b1, float a1) {
+		if (NumberUtils.compare(a1, a) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(b1, b) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(g1, g) != 0) {
+			return false;
+		}
+		if (NumberUtils.compare(r1, r) != 0) {
+			return false;
+		}
+		return true;
+	}
 }

@@ -95,8 +95,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	// 以此完整保存全局FrameBuffer内容(否则GLEx中每次begin时FrameBuffer绑定都会刷新，如果多次begin和end，将无法保存全部内容)
 	private boolean saveToFrameBufferTexture;
 
-	private final LColor tempColor = new LColor();
-
 	private final Vector2f tempLocation = new Vector2f();
 
 	private final Affine2f tempAffine = new Affine2f();
@@ -112,6 +110,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	private final TArray<RectBox> scissors = new TArray<RectBox>();
 
 	private final TArray<LTexture> bufferTextures = new TArray<LTexture>();
+
+	private final LColor currentColorUpdate = new LColor();
+
+	private final LColor currentColorTemp = new LColor();
 
 	private final LTexture colorTex;
 
@@ -142,6 +144,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	private float scaleX = 1f, scaleY = 1f;
 
 	private float offsetStringX = 0, offsetStringY = 0;
+
+	private int _oldFill = -1;
+
+	private int _oldBase = -1;
+
+	private int _oldResult = -1;
 
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl, boolean alltex, boolean saveFrameBuffer) {
 		this(gfx, target, createDefaultBatch(gl), alltex, saveFrameBuffer);
@@ -190,6 +198,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		this.scaleY = 1f;
 		this.offsetStringX = 0;
 		this.offsetStringY = 0;
+		this._oldFill = -1;
+		this._oldBase = -1;
+		this._oldResult = -1;
 		this.update();
 	}
 
@@ -965,24 +976,34 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		tempColor.setColor(this.lastBrush.baseColor);
-		return reset(tempColor.r, tempColor.g, tempColor.b, tempColor.a);
+		currentColorUpdate.setColor(this.lastBrush.baseColor);
+		return reset(currentColorUpdate.r, currentColorUpdate.g, currentColorUpdate.b, currentColorUpdate.a);
 	}
 
 	protected int syncBrushColorInt() {
-		return LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
+		if (this.lastBrush.fillColor == _oldFill && this.lastBrush.baseColor == _oldBase) {
+			return _oldResult;
+		}
+		_oldFill = lastBrush.fillColor;
+		_oldBase = lastBrush.baseColor;
+		return _oldResult = LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor);
 	}
 
 	protected int syncBrushColorInt(int color) {
-		return LColor.combine(color, this.lastBrush.baseColor);
+		if (this.lastBrush.fillColor == color && this.lastBrush.baseColor == _oldBase) {
+			return _oldResult;
+		}
+		_oldFill = color;
+		_oldBase = lastBrush.baseColor;
+		return _oldResult = LColor.combine(color, this.lastBrush.baseColor);
 	}
 
 	protected LColor syncBrushColor() {
-		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, this.lastBrush.baseColor));
+		return currentColorUpdate.setColor(syncBrushColorInt());
 	}
 
 	protected LColor syncBrushColor(int color) {
-		return tempColor.setColor(LColor.combine(this.lastBrush.fillColor, color));
+		return currentColorUpdate.setColor(syncBrushColorInt(color));
 	}
 
 	public int color() {
@@ -1001,22 +1022,28 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (color == null) {
 			return this;
 		}
-		int argb = color.getARGB();
-		setColor(argb);
+		setColor(color.getARGB());
 		return this;
 	}
 
 	public GLEx setColor(int r, int g, int b) {
-		return setColor(LColor.getRGB(r, g, b));
+		currentColorTemp.setColor(r, g, b);
+		return setColor(currentColorTemp.getRGB());
 	}
 
 	public GLEx setColor(int r, int g, int b, int a) {
-		return setColor(LColor.getARGB(r, g, b, a));
+		currentColorTemp.setColor(r, g, b, a);
+		return setColor(currentColorTemp.getARGB());
+	}
+
+	public GLEx setColor(float r, float g, float b) {
+		currentColorTemp.setFloatColor(r, g, b);
+		return setColor(currentColorTemp.getRGB());
 	}
 
 	public GLEx setColor(float r, float g, float b, float a) {
-		return setColor(LColor.getARGB((int) (r > 1 ? r : r * 255), (int) (g > 1 ? g : r * 255),
-				(int) (b > 1 ? b : b * 255), (int) (a > 1 ? a : a * 255)));
+		currentColorTemp.setFloatColor(r, g, b, a);
+		return setColor(currentColorTemp.getARGB());
 	}
 
 	public GLEx setColor(int c) {
@@ -1031,19 +1058,29 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx setTint(int r, int g, int b) {
-		return setColor(LColor.getRGB(r, g, b));
+		currentColorTemp.setColor(r, g, b);
+		return setTint(currentColorTemp.getRGB());
 	}
 
 	public GLEx setTint(int r, int g, int b, int a) {
-		return setColor(LColor.getARGB(r, g, b, a));
+		currentColorTemp.setColor(r, g, b, a);
+		return setTint(currentColorTemp.getARGB());
+	}
+
+	public GLEx setTint(float r, float g, float b) {
+		currentColorTemp.setFloatColor(r, g, b);
+		return setTint(currentColorTemp.getRGB());
 	}
 
 	public GLEx setTint(float r, float g, float b, float a) {
-		return setColor(LColor.getARGB((int) (r > 1 ? r : r * 255), (int) (g > 1 ? g : r * 255),
-				(int) (b > 1 ? b : b * 255), (int) (a > 1 ? a : a * 255)));
+		currentColorTemp.setFloatColor(r, g, b, a);
+		return setTint(currentColorTemp.getARGB());
 	}
 
 	public GLEx setTint(LColor color) {
+		if (color == null) {
+			return this;
+		}
 		return this.setTint(color.getARGB());
 	}
 
@@ -1984,7 +2021,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float a = (endColor.a - startColor.a) / steps;
 
 		for (int i = steps; i >= 0; i--) {
-			drawLine(x0, y0, x1, y1, width + step * i, tempColor.setColor((startColor.r + r * i),
+			drawLine(x0, y0, x1, y1, width + step * i, currentColorUpdate.setColor((startColor.r + r * i),
 					(startColor.g + g * i), (startColor.b + b * i), (startColor.a + a * i)));
 		}
 		return this;

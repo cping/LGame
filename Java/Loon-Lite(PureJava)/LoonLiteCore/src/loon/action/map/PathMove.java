@@ -197,8 +197,8 @@ public class PathMove extends RealtimeProcess implements LRelease {
 			} else {
 				float x = origin.getX();
 				float y = origin.getY();
-				int dirX = (int) (endPosX - startPosX);
-				int dirY = (int) (endPosY - startPosY);
+				int dirX = MathUtils.ifloor(endPosX - startPosX);
+				int dirY = MathUtils.ifloor(endPosY - startPosY);
 				int count = 0;
 				if (dirX > 0) {
 					if (x >= endPosX) {

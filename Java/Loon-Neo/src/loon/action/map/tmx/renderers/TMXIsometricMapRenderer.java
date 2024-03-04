@@ -31,6 +31,7 @@ import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
  * 标准斜视视角（标准45度角）地图纹理渲染器
@@ -91,8 +92,8 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 			final int screenWidth = LSystem.viewSize.getWidth();
 			final int screenHeight = LSystem.viewSize.getHeight();
 
-			final int tx = (int) (getRenderX() / map.getTileWidth());
-			final int ty = (int) (getRenderY() / map.getTileHeight());
+			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
+			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
 			final float windowWidth = screenWidth / map.getTileWidth() * 2f;
 			final float windowHeight = screenHeight / map.getTileHeight() * 2f;
 			final float doubleWidth = tileLayer.getWidth() * 2f;

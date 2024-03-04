@@ -20,6 +20,8 @@
  */
 package loon.action.map.items;
 
+import loon.utils.MathUtils;
+
 /**
  * 一个简单的角色基本附加参数类,用于简单的rpg类游戏角色属性配置(和RoleValue的关系在于这个更接近装备参数)
  */
@@ -177,43 +179,43 @@ public class RoleEquip {
 	}
 
 	public int updateAttack(float attackModifier) {
-		return (int) (attackModifier * (this._baseAttack + this._equipAttack));
+		return MathUtils.ifloor(attackModifier * (this._baseAttack + this._equipAttack));
 	}
 
 	public int updateDefence(float defenceModifier) {
-		return (int) (defenceModifier * (this._baseDefence + this._equipDefence));
+		return MathUtils.ifloor(defenceModifier * (this._baseDefence + this._equipDefence));
 	}
 
 	public int updateStrength(float strengthModifier) {
-		return (int) (strengthModifier * (this._baseStrength + this._equipStrength));
+		return MathUtils.ifloor(strengthModifier * (this._baseStrength + this._equipStrength));
 	}
 
 	public int updateIntelligence(float intelligenceModifier) {
-		return (int) (intelligenceModifier * (this._baseIntelligence + this._equipIntelligence));
+		return MathUtils.ifloor(intelligenceModifier * (this._baseIntelligence + this._equipIntelligence));
 	}
 
 	public int updateFitness(float fitnessModifier) {
-		return (int) (fitnessModifier * (this._baseFitness + this._equipFitness));
+		return MathUtils.ifloor(fitnessModifier * (this._baseFitness + this._equipFitness));
 	}
 
 	public int updateSkillPoints(float skillModifier) {
-		return (int) (skillModifier * (this._baseSkillPoints + this._equipSkillPoints));
+		return MathUtils.ifloor(skillModifier * (this._baseSkillPoints + this._equipSkillPoints));
 	}
 
 	public int updateManaPoints(float manaModifier) {
-		return (int) (manaModifier * (this._baseManaPoint + this._equipManaPoint));
+		return MathUtils.ifloor(manaModifier * (this._baseManaPoint + this._equipManaPoint));
 	}
 
 	public int updateDexterity(float dexterityModifier) {
-		return (int) (dexterityModifier * (this._baseDexterity + this._equipDexterity));
+		return MathUtils.ifloor(dexterityModifier * (this._baseDexterity + this._equipDexterity));
 	}
 
 	public int updateMaxHealth(float maxHealthModifier) {
-		return (int) (maxHealthModifier * (this._baseMaxHealth + this._equipMaxHealth));
+		return MathUtils.ifloor(maxHealthModifier * (this._baseMaxHealth + this._equipMaxHealth));
 	}
 
 	public int updateAgility(float agilityModifier) {
-		return (int) (agilityModifier * (this._baseAgility + this._equipAgility));
+		return MathUtils.ifloor(agilityModifier * (this._baseAgility + this._equipAgility));
 	}
 
 	public int getBaseMaxHealth() {

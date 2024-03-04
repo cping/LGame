@@ -20,6 +20,8 @@
  */
 package loon.action.map.colider;
 
+import loon.utils.MathUtils;
+
 public class TileHelper implements Tile {
 
 	protected int id = -1;
@@ -105,11 +107,11 @@ public class TileHelper implements Tile {
 	}
 
 	public void setWidth(float w) {
-		setWidth((int) w);
+		setWidth(MathUtils.iceil(w));
 	}
 
 	public void setHeight(float h) {
-		setHeight((int) h);
+		setHeight(MathUtils.iceil(h));
 	}
 
 	@Override

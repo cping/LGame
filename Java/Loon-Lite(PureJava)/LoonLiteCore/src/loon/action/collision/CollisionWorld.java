@@ -154,7 +154,7 @@ public class CollisionWorld implements LRelease {
 		if (collisionManager == null) {
 			collisionManager = new CollisionManager();
 		}
-		collisionManager.initialize((int) cellSizeX, (int) cellSizeY);
+		collisionManager.initialize(MathUtils.iceil(cellSizeX), MathUtils.iceil(cellSizeY));
 		return collisionManager;
 	}
 

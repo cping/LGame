@@ -74,7 +74,7 @@ public class TileImpl implements Tile {
 	}
 
 	public TileImpl(int idx, ActionBind bind) {
-		this(idx, bind, bind.x(), bind.y(), (int) bind.getWidth(), (int) bind.getHeight());
+		this(idx, bind, bind.x(), bind.y(), MathUtils.iceil(bind.getWidth()), MathUtils.iceil(bind.getHeight()));
 	}
 
 	public TileImpl(int idx, int x, int y) {

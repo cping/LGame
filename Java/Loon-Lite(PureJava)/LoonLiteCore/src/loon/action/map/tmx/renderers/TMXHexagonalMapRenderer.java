@@ -118,8 +118,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			final int screenWidth = LSystem.viewSize.getWidth();
 			final int screenHeight = LSystem.viewSize.getHeight();
 
-			final int tx = (int) (getRenderX() / map.getTileWidth());
-			final int ty = (int) (getRenderY() / map.getTileHeight());
+			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
+			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
 			final float windowWidth = screenWidth / map.getTileWidth();
 			final float windowHeight = screenHeight / map.getTileHeight();
 
@@ -179,14 +179,15 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					final float tileWidthUpperCorner = (layerTileWidth + layerHexLength) / 2;
 					final float layerTileHeight50 = layerTileHeight * 0.5f;
 
-					final int ya = MathUtils.max(0, (int) ((0f - layerTileHeight50 - layerOffsetX) / layerTileHeight));
+					final int ya = MathUtils.max(0,
+							MathUtils.ifloor((0f - layerTileHeight50 - layerOffsetX) / layerTileHeight));
 					final int yb = MathUtils.min(layerHeight,
-							(int) ((0f + screenHeight + layerTileHeight - layerOffsetX) / layerTileHeight));
+							MathUtils.ifloor((0f + screenHeight + layerTileHeight - layerOffsetX) / layerTileHeight));
 
 					final int xa = MathUtils.max(0,
-							(int) (((0f - tileWidthLowerCorner - layerOffsetY) / tileWidthUpperCorner)));
-					final int xb = MathUtils.min(layerWidth,
-							(int) ((0f + screenWidth + tileWidthUpperCorner - layerOffsetY) / tileWidthUpperCorner));
+							MathUtils.ifloor(((0f - tileWidthLowerCorner - layerOffsetY) / tileWidthUpperCorner)));
+					final int xb = MathUtils.min(layerWidth, MathUtils
+							.ifloor((0f + screenWidth + tileWidthUpperCorner - layerOffsetY) / tileWidthUpperCorner));
 
 					final int maxXa = (staggerIndexEven == (xa % 2 == 0)) ? xa + 1 : xa;
 					final int maxXb = (staggerIndexEven == (xa % 2 == 0)) ? xa : xa + 1;
@@ -210,14 +211,14 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					final float layerTileWidth50 = layerTileWidth * 0.5f;
 
 					final int maxYa = MathUtils.max(0,
-							(int) (((0f - tileHeightLowerCorner - layerOffsetX) / tileHeightUpperCorner)));
-					final int maxYb = MathUtils.min(layerHeight,
-							(int) ((0f + screenHeight + tileHeightUpperCorner - layerOffsetX) / tileHeightUpperCorner));
+							MathUtils.ifloor(((0f - tileHeightLowerCorner - layerOffsetX) / tileHeightUpperCorner)));
+					final int maxYb = MathUtils.min(layerHeight, MathUtils.ifloor(
+							(0f + screenHeight + tileHeightUpperCorner - layerOffsetX) / tileHeightUpperCorner));
 
 					final int maxXa = MathUtils.max(0,
-							(int) (((0f - layerTileWidth50 - layerOffsetY) / layerTileWidth)));
+							MathUtils.ifloor(((0f - layerTileWidth50 - layerOffsetY) / layerTileWidth)));
 					final int maxXb = MathUtils.min(layerWidth,
-							(int) ((0f + screenWidth + layerTileWidth - layerOffsetY) / layerTileWidth));
+							MathUtils.ifloor((0f + screenWidth + layerTileWidth - layerOffsetY) / layerTileWidth));
 
 					float shiftX = 0;
 					for (int y = maxYb - 1; y >= maxYa; y--) {

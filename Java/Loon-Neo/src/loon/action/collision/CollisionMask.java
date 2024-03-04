@@ -30,6 +30,7 @@ import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.FloatArray;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -57,7 +58,7 @@ public class CollisionMask {
 		if (image == null) {
 			throw new LSysException("Image is null !");
 		}
-		return makePolygon(image.getPixels(), (int) image.width(), (int) image.height());
+		return makePolygon(image.getPixels(), MathUtils.ifloor(image.width()), MathUtils.ifloor(image.height()));
 	}
 
 	public static Polygon makePolygon(Pixmap image) {

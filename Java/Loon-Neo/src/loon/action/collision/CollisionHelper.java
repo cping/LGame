@@ -177,16 +177,16 @@ public final class CollisionHelper extends ShapeUtils {
 		if (rectA == null || rectB == null) {
 			return false;
 		}
-		int top = (int) MathUtils.max(rectA.getY(), rectB.getY());
-		int bottom = (int) MathUtils.min(rectA.getBottom(), rectB.getBottom());
-		int left = (int) MathUtils.max(rectA.getX(), rectB.getX());
-		int right = (int) MathUtils.min(rectA.getRight(), rectB.getRight());
+		int top = MathUtils.ifloor(MathUtils.max(rectA.getY(), rectB.getY()));
+		int bottom = MathUtils.ifloor(MathUtils.min(rectA.getBottom(), rectB.getBottom()));
+		int left = MathUtils.ifloor(MathUtils.max(rectA.getX(), rectB.getX()));
+		int right = MathUtils.ifloor(MathUtils.min(rectA.getRight(), rectB.getRight()));
 
 		for (int y = top; y < bottom; y++) {
 			for (int x = left; x < right; x++) {
 
-				int colorA = dataA[(int) ((x - rectA.x) + (y - rectA.y) * rectA.width)];
-				int colorB = dataB[(int) ((x - rectB.x) + (y - rectB.y) * rectB.width)];
+				int colorA = dataA[MathUtils.ifloor(((x - rectA.x) + (y - rectA.y) * rectA.width))];
+				int colorB = dataB[MathUtils.ifloor(((x - rectB.x) + (y - rectB.y) * rectB.width))];
 				if (colorA >>> 24 != 0 && colorB >>> 24 != 0) {
 					return true;
 				}
@@ -265,19 +265,20 @@ public final class CollisionHelper extends ShapeUtils {
 		final float width1 = x1 + src.width() - 1, height1 = y1 + src.height() - 1, width2 = x2 + dest.width() - 1,
 				height2 = y2 + dest.height() - 1;
 
-		final int xstart = (int) MathUtils.max(x1, x2), ystart = (int) MathUtils.max(y1, y2),
-				xend = (int) MathUtils.min(width1, width2), yend = (int) MathUtils.min(height1, height2);
+		final int xstart = MathUtils.ifloor(MathUtils.max(x1, x2)), ystart = MathUtils.ifloor(MathUtils.max(y1, y2)),
+				xend = MathUtils.ifloor(MathUtils.min(width1, width2)),
+				yend = MathUtils.ifloor(MathUtils.min(height1, height2));
 
 		final int toty = MathUtils.abs(yend - ystart);
 		final int totx = MathUtils.abs(xend - xstart);
 
 		for (int y = 1; y < toty - 1; y++) {
-			int ny = MathUtils.abs(ystart - (int) y1) + y;
-			int ny1 = MathUtils.abs(ystart - (int) y2) + y;
+			int ny = MathUtils.abs(ystart - MathUtils.ifloor(y1) + y);
+			int ny1 = MathUtils.abs(ystart - MathUtils.ifloor(y2) + y);
 
 			for (int x = 1; x < totx - 1; x++) {
-				int nx = MathUtils.abs(xstart - (int) x1) + x;
-				int nx1 = MathUtils.abs(xstart - (int) x2) + x;
+				int nx = MathUtils.abs(xstart - MathUtils.ifloor(x1) + x);
+				int nx1 = MathUtils.abs(xstart - MathUtils.ifloor(x2) + x);
 
 				try {
 					if (((src.getPixel(nx, ny) & LColor.TRANSPARENT) != 0x00)

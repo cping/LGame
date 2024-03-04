@@ -110,7 +110,7 @@ public abstract class RoleValue {
 		if ((damage = MathUtils.ceil(this.variance(damage, damageBufferMax, true))) < 1f) {
 			damage = 1f;
 		}
-		return (int) damage;
+		return MathUtils.ifloor(damage);
 	}
 
 	public int calculateDamage(int enemyDefence) {
@@ -132,7 +132,7 @@ public abstract class RoleValue {
 	}
 
 	public RoleValue damage(float damageTaken) {
-		this.health = (int) ((float) this.health - damageTaken);
+		this.health = MathUtils.ifloor(this.health - damageTaken);
 		return this;
 	}
 
@@ -173,7 +173,7 @@ public abstract class RoleValue {
 
 	public RoleValue heal(int healCost, int healAmount) {
 		if (this.getMana() >= healCost) {
-			healAmount = (int) this.variance(healAmount, 20, true);
+			healAmount = MathUtils.ifloor(this.variance(healAmount, 20, true));
 			this.health += healAmount;
 			if (this.health > this.maxHealth) {
 				this.health = this.maxHealth;

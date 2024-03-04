@@ -179,11 +179,11 @@ public class TileRoom extends RectF {
 	}
 
 	public int getCenterX() {
-		return (int) super.centerX();
+		return MathUtils.ifloor(super.centerX());
 	}
 
 	public int getCenterY() {
-		return (int) super.centerY();
+		return MathUtils.ifloor(super.centerY());
 	}
 
 	public Vector2f center() {
