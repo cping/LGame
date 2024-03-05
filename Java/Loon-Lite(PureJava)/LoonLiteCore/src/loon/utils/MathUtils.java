@@ -513,7 +513,11 @@ public final class MathUtils {
 	}
 
 	public static int mid(int i, int min, int max) {
-		return MathUtils.max(i, MathUtils.min(min, max));
+		return limit(i, min, max);
+	}
+
+	public static float mid(float i, float min, float max) {
+		return limit(i, min, max);
 	}
 
 	public static int div(int x, int y) {
@@ -543,6 +547,89 @@ public final class MathUtils {
 			}
 			return -k;
 		}
+	}
+
+	public static boolean equal(float[] a, float[] b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a.length != b.length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			if (!equal(a[i], b[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean equal(int[] a, int[] b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a.length != b.length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			if (!equal(a[i], b[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean equal(boolean[] a, boolean[] b) {
+		if (a == null || b == null) {
+			return false;
+		}
+		if (a.length != b.length) {
+			return false;
+		}
+		for (int i = 0; i < a.length; i++) {
+			if (a[i] != b[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static boolean equal(float[] points, float[] xpoints, float[] ypoints) {
+		int count = 0;
+		for (int i = 0; i < points.length; i++) {
+			if (i % 2 == 0) {
+				final float newX = xpoints[count];
+				if (!equal(points[i], newX)) {
+					return false;
+				}
+			} else {
+				final float newY = ypoints[count];
+				if (!equal(points[i], newY)) {
+					return false;
+				}
+				count++;
+			}
+		}
+		return true;
+	}
+
+	public static boolean equal(float[] points, int[] xpoints, int[] ypoints) {
+		int count = 0;
+		for (int i = 0; i < points.length; i++) {
+			if (i % 2 == 0) {
+				final float newX = xpoints[count];
+				if (!equal(points[i], newX)) {
+					return false;
+				}
+			} else {
+				final float newY = ypoints[count];
+				if (!equal(points[i], newY)) {
+					return false;
+				}
+				count++;
+			}
+		}
+		return true;
 	}
 
 	public static boolean equal(int a, int b) {

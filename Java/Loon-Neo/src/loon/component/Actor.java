@@ -405,7 +405,6 @@ public class Actor extends LObject<Actor>
 	 * 
 	 */
 	public Actor removeActionEvents() {
-		failIfNotInLayer();
 		removeActionEvents(this);
 		return this;
 	}

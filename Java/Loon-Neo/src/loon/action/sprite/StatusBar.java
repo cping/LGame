@@ -173,9 +173,9 @@ public class StatusBar extends Entity {
 	 * @return
 	 */
 	public StatusBar setUpdate(int val) {
-		this.minValue = MathUtils.mid(0, val, maxValue);
-		this.currentWidth = (int) ((_width * initValue) / maxValue);
-		this.goalWidth = (int) ((_width * minValue) / maxValue);
+		this.minValue = MathUtils.mid(val, 0, maxValue);
+		this.currentWidth = MathUtils.ifloor((_width * initValue) / maxValue);
+		this.goalWidth = MathUtils.ifloor((_width * minValue) / maxValue);
 		return this;
 	}
 

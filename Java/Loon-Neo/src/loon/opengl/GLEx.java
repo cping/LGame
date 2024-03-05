@@ -151,6 +151,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	private int _oldResult = -1;
 
+	private final Polygon _currentPolys = new Polygon();
+
 	public GLEx(Graphics gfx, RenderTarget target, GL20 gl, boolean alltex, boolean saveFrameBuffer) {
 		this(gfx, target, createDefaultBatch(gl), alltex, saveFrameBuffer);
 	}
@@ -1450,6 +1452,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, float rotation) {
+		if (rotation == 0f) {
+			return draw(texture, x, y, w, h);
+		}
 		return draw(texture, x, y, w, h, w / 2, h / 2, rotation);
 	}
 
@@ -3638,7 +3643,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (this.lastBrush.alltextures) {
 			fillPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			fill(new Polygon(xPoints, yPoints, nPoints));
+			_currentPolys.setPolygon(xPoints, yPoints, nPoints);
+			fill(_currentPolys);
 		}
 		return this;
 	}
@@ -3657,8 +3663,25 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (this.lastBrush.alltextures) {
 			drawPolygonImpl(xPoints, yPoints, nPoints);
 		} else {
-			draw(new Polygon(xPoints, yPoints, nPoints));
+			_currentPolys.setPolygon(xPoints, yPoints, nPoints);
+			draw(_currentPolys);
 		}
+		return this;
+	}
+
+	/**
+	 * 直接以本地(图片)绘制多边形轮廓
+	 * 
+	 * @param xPoints
+	 * @param yPoints
+	 * @param nPoints
+	 * @return
+	 */
+	public GLEx drawPolygonNative(float[] xPoints, float[] yPoints, int nPoints) {
+		if (isClosed) {
+			return this;
+		}
+		drawPolygonImpl(xPoints, yPoints, nPoints);
 		return this;
 	}
 

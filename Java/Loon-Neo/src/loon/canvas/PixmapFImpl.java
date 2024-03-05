@@ -153,13 +153,21 @@ public abstract class PixmapFImpl {
 	protected abstract void drawOvalImpl(float x, float y, float width, float height);
 
 	protected void drawPolygonImpl(float xPoints[], float yPoints[], int nPoints) {
-		drawPolylineImpl(xPoints, yPoints, nPoints);
-		drawLineImpl(xPoints[nPoints - 1], yPoints[nPoints - 1], xPoints[0], yPoints[0]);
+		drawPolygonImpl(0f, 0f, xPoints, yPoints, nPoints);
 	}
 
 	protected void drawPolylineImpl(float xPoints[], float yPoints[], float nPoints) {
+		drawPolylineImpl(0f, 0f, xPoints, yPoints, nPoints);
+	}
+
+	protected void drawPolygonImpl(float x, float y, float xPoints[], float yPoints[], int nPoints) {
+		drawPolylineImpl(x, y, xPoints, yPoints, nPoints);
+		drawLineImpl(x + xPoints[nPoints - 1], y + yPoints[nPoints - 1], x + xPoints[0], y + yPoints[0]);
+	}
+
+	protected void drawPolylineImpl(float x, float y, float xPoints[], float yPoints[], float nPoints) {
 		for (int i = 1; i < nPoints; i++) {
-			drawLineImpl(xPoints[i - 1], yPoints[i - 1], xPoints[i], yPoints[i]);
+			drawLineImpl(x + xPoints[i - 1], y + yPoints[i - 1], x + xPoints[i], y + yPoints[i]);
 		}
 	}
 

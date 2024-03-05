@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LRelease;
 import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionResult;
 import loon.action.collision.CollisionWorld;
@@ -35,7 +36,11 @@ public abstract class ActionEvent {
 
 	private ActionListener actionListener;
 
-	protected boolean firstTick, _isCompleted, isInit;
+	private LRelease _released;
+
+	protected boolean firstTick, isInit;
+
+	protected boolean _isCompleted, _isCompletedEvent;
 
 	protected CollisionWorld collisionWorld;
 
@@ -86,7 +91,18 @@ public abstract class ActionEvent {
 			if (actionListener != null) {
 				actionListener.process(original);
 			}
+			if (_isCompleted && !_isCompletedEvent) {
+				if (_released != null) {
+					_released.close();
+				}
+				_isCompletedEvent = true;
+			}
 		}
+		return this;
+	}
+
+	public ActionEvent dispose(LRelease r) {
+		this._released = r;
 		return this;
 	}
 
@@ -115,6 +131,7 @@ public abstract class ActionEvent {
 		}
 		this.firstTick = true;
 		this._isCompleted = false;
+		this._isCompletedEvent = false;
 		this.isInit = false;
 		return this;
 	}
@@ -126,6 +143,9 @@ public abstract class ActionEvent {
 	public ActionEvent stop() {
 		if (actionListener != null) {
 			actionListener.stop(original);
+		}
+		if (_released != null) {
+			_released.close();
 		}
 		this._isCompleted = true;
 		return this;
@@ -230,6 +250,7 @@ public abstract class ActionEvent {
 			_easeTimer.reset();
 		}
 		_isCompleted = false;
+		_isCompletedEvent = false;
 		return this;
 	}
 

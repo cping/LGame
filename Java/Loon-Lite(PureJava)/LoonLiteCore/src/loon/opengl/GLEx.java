@@ -128,6 +128,8 @@ public class GLEx implements LRelease {
 
 	private int _oldResult = -1;
 
+	private final Polygon _currentPolys = new Polygon();
+
 	public GLEx(Graphics gfx) {
 		this(gfx, createDefaultBatch(gfx.getCanvas()));
 	}
@@ -1115,6 +1117,9 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, float rotation) {
+		if (rotation == 0f) {
+			return draw(texture, x, y, w, h);
+		}
 		return draw(texture, x, y, w, h, w / 2, h / 2, rotation);
 	}
 
@@ -2489,7 +2494,8 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		fill(new Polygon(xPoints, yPoints, nPoints));
+		_currentPolys.setPolygon(xPoints, yPoints, nPoints);
+		fill(_currentPolys);
 		return this;
 	}
 
@@ -2504,7 +2510,8 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		draw(new Polygon(xPoints, yPoints, nPoints));
+		_currentPolys.setPolygon(xPoints, yPoints, nPoints);
+		draw(_currentPolys);
 		return this;
 	}
 

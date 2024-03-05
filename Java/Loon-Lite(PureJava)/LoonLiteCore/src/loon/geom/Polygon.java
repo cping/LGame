@@ -137,21 +137,6 @@ public class Polygon extends Shape implements BoxSize {
 
 	private boolean closed = true;
 
-	public Polygon(Vector2f... vs) {
-		this(new TArray<Vector2f>(vs));
-	}
-
-	public Polygon(TArray<Vector2f> vectors) {
-		if (vectors == null || vectors.size < 0) {
-			throw new LSysException("points < 0");
-		}
-		setPolygon(syncPoints(vectors, false));
-	}
-
-	public Polygon(float[] points) {
-		setPolygon(points);
-	}
-
 	public Polygon() {
 		points = new float[0];
 		maxX = -Float.MIN_VALUE;
@@ -160,74 +145,190 @@ public class Polygon extends Shape implements BoxSize {
 		minY = Float.MAX_VALUE;
 	}
 
+	public Polygon(Vector2f... vs) {
+		this(new TArray<Vector2f>(vs));
+	}
+
+	public Polygon(TArray<Vector2f> vectors) {
+		if (vectors == null || vectors.size < 0) {
+			throw new LSysException("points < 0");
+		}
+		this.setPolygon(syncPoints(vectors, false), vectors.size);
+	}
+
+	public Polygon(float[] points) {
+		this.setPolygon(points, points.length);
+	}
+
 	public Polygon(float[] xpoints, float[] ypoints, int npoints) {
-		if (npoints > xpoints.length || npoints > ypoints.length) {
-			throw new LSysException("npoints > xpoints.length || " + "npoints > ypoints.length");
-		}
-		if (npoints < 0) {
-			throw new LSysException("npoints < 0");
-		}
-		points = new float[0];
-		maxX = -Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
-		for (int i = 0; i < npoints; i++) {
-			addPoint(xpoints[i], ypoints[i]);
-		}
+		this.setPolygon(xpoints, ypoints, npoints);
 	}
 
 	public Polygon(int[] xpoints, int[] ypoints, int npoints) {
+		this.setPolygon(xpoints, ypoints, npoints);
+	}
+
+	public void setPolygon(int[] xpoints, int[] ypoints, int npoints) {
+		if (xpoints == null || ypoints == null) {
+			throw new LSysException("points is null !");
+		}
 		if (npoints > xpoints.length || npoints > ypoints.length) {
 			throw new LSysException("npoints > xpoints.length || " + "npoints > ypoints.length");
 		}
 		if (npoints < 0) {
 			throw new LSysException("npoints < 0");
 		}
-		points = new float[0];
-		maxX = -Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
-		for (int i = 0; i < npoints; i++) {
-			addPoint(xpoints[i], ypoints[i]);
+		int size = xpoints.length + ypoints.length;
+		int length = points.length;
+		if (size != length) {
+			points = new float[size];
+			length = points.length;
 		}
-	}
-
-	protected void setPolygon(float[] points) {
-		this.points = points;
 		this.maxX = -Float.MIN_VALUE;
 		this.maxY = -Float.MIN_VALUE;
 		this.minX = Float.MAX_VALUE;
 		this.minY = Float.MAX_VALUE;
 		this.x = Float.MAX_VALUE;
 		this.y = Float.MAX_VALUE;
-		int length = points.length;
+		int count = 0;
 		for (int i = 0; i < length; i++) {
-			this.points[i] = points[i];
 			if (i % 2 == 0) {
-				if (points[i] > maxX) {
-					maxX = points[i];
+				final int newX = xpoints[count];
+				if (newX > maxX) {
+					maxX = newX;
 				}
-				if (points[i] < minX) {
-					minX = points[i];
+				if (newX < minX) {
+					minX = newX;
 				}
-				if (points[i] < x) {
-					x = points[i];
+				if (newX < x) {
+					x = newX;
 				}
+				this.points[i] = newX;
 			} else {
-				if (points[i] > maxY) {
-					maxY = points[i];
+				final int newY = ypoints[count];
+				if (newY > maxY) {
+					maxY = newY;
 				}
-				if (points[i] < minY) {
-					minY = points[i];
+				if (newY < minY) {
+					minY = newY;
 				}
-				if (points[i] < y) {
-					y = points[i];
+				if (newY < y) {
+					y = newY;
 				}
+				this.points[i] = newY;
+				count++;
 			}
 		}
+		findCenter();
+		calculateRadius();
+		pointsDirty = true;
+	}
 
+	public void setPolygon(float[] xpoints, float[] ypoints, int npoints) {
+		if (xpoints == null || ypoints == null) {
+			throw new LSysException("points is null !");
+		}
+		if (npoints > xpoints.length || npoints > ypoints.length) {
+			throw new LSysException("npoints > xpoints.length || " + "npoints > ypoints.length");
+		}
+		if (npoints < 0) {
+			throw new LSysException("npoints < 0");
+		}
+		int size = xpoints.length + ypoints.length;
+		int length = points.length;
+		if (size != length) {
+			points = new float[size];
+			length = points.length;
+		}
+		this.maxX = -Float.MIN_VALUE;
+		this.maxY = -Float.MIN_VALUE;
+		this.minX = Float.MAX_VALUE;
+		this.minY = Float.MAX_VALUE;
+		this.x = Float.MAX_VALUE;
+		this.y = Float.MAX_VALUE;
+		int count = 0;
+		for (int i = 0; i < length; i++) {
+			if (i % 2 == 0) {
+				final float newX = xpoints[count];
+				if (newX > maxX) {
+					maxX = newX;
+				}
+				if (newX < minX) {
+					minX = newX;
+				}
+				if (newX < x) {
+					x = newX;
+				}
+				this.points[i] = newX;
+			} else {
+				final float newY = ypoints[count];
+				if (newY > maxY) {
+					maxY = newY;
+				}
+				if (newY < minY) {
+					minY = newY;
+				}
+				if (newY < y) {
+					y = newY;
+				}
+				this.points[i] = newY;
+				count++;
+			}
+		}
+		findCenter();
+		calculateRadius();
+		pointsDirty = true;
+	}
+
+	public void setPolygon(float[] ps, int npoints) {
+		if (ps == null) {
+			throw new LSysException("points is null !");
+		}
+		if (npoints > ps.length) {
+			throw new LSysException("npoints > points.length");
+		}
+		if (ps.length == 0) {
+			throw new LSysException("points.length == 0");
+		}
+		int size = ps.length;
+		int length = this.points.length;
+		if (size != length) {
+			this.points = new float[size];
+			length = ps.length;
+		}
+		this.maxX = -Float.MIN_VALUE;
+		this.maxY = -Float.MIN_VALUE;
+		this.minX = Float.MAX_VALUE;
+		this.minY = Float.MAX_VALUE;
+		this.x = Float.MAX_VALUE;
+		this.y = Float.MAX_VALUE;
+		for (int i = 0; i < length; i++) {
+			if (i % 2 == 0) {
+				float newX = ps[i];
+				if (newX > maxX) {
+					maxX = newX;
+				}
+				if (newX < minX) {
+					minX = newX;
+				}
+				if (newX < x) {
+					x = newX;
+				}
+				this.points[i] = newX;
+			} else {
+				float newY = ps[i];
+				if (newY > maxY) {
+					maxY = newY;
+				}
+				if (newY < minY) {
+					minY = newY;
+				}
+				if (newY < y) {
+					y = newY;
+				}
+				this.points[i] = newY;
+			}
+		}
 		findCenter();
 		calculateRadius();
 		pointsDirty = true;
