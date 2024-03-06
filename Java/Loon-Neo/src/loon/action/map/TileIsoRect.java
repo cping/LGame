@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LRelease;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
@@ -31,7 +32,7 @@ import loon.utils.MathUtils;
 /**
  * 工具用类,绘制指定大小角度的斜角网格区域用
  */
-public class TileIsoRect {
+public class TileIsoRect implements LRelease {
 
 	public static class TileIsoImage {
 
@@ -77,6 +78,7 @@ public class TileIsoRect {
 
 	private float _angle;
 	private float _sinAngle;
+	private float _rotation;
 	private float _diagonalWidth;
 	private float _diagonalHeight;
 	private float _centerX;
@@ -91,6 +93,8 @@ public class TileIsoRect {
 	private TileIsoImage _isoImage;
 
 	private Polygon _isoRect = new Polygon();
+
+	private int _flag;
 	private Object _tag;
 
 	public TileIsoRect(float cx, float cy, float size) {
@@ -128,6 +132,9 @@ public class TileIsoRect {
 		verticesY[2] = _centerY;
 		verticesY[3] = _centerY + newY;
 		_isoRect.setPolygon(verticesX, verticesY, 4);
+		if (_rotation != 0f) {
+			_isoRect.setRotation(_rotation);
+		}
 	}
 
 	public void draw(GLEx g) {
@@ -174,7 +181,7 @@ public class TileIsoRect {
 			if (_isoImage.width > 0f && _isoImage.height > 0f) {
 				g.draw(_isoImage.image, _centerX + _isoImage.x - _isoImage.width / 2f,
 						_centerY + _isoImage.y - _isoImage.height / 2f, _isoImage.width, _isoImage.height,
-						_isoImage.rotation == -1f ? MathUtils.toDegrees(MathUtils.sin(_angle)) : _isoImage.rotation);
+						(_isoImage.rotation == -1f ? MathUtils.toDegrees(_sinAngle) : _isoImage.rotation) + _rotation);
 			} else {
 				float newW = _diagonalWidth;
 				float newH = _diagonalHeight;
@@ -186,7 +193,7 @@ public class TileIsoRect {
 					newH = (_diagonalHeight * _sinAngle) + _diagonalHeight / 2f;
 				}
 				g.draw(_isoImage.image, _centerX + _isoImage.x - newW / 2f, _centerY + _isoImage.y - newH / 2f, newW,
-						newH, _isoImage.rotation == -1f ? 45f : _isoImage.rotation);
+						newH, (_isoImage.rotation == -1f ? 45f : _isoImage.rotation) + _rotation);
 			}
 		}
 	}
@@ -232,6 +239,19 @@ public class TileIsoRect {
 		this._isoImage.height = h;
 		this._isoImage.rotation = r;
 		return this;
+	}
+
+	public TileIsoRect setRatation(float r) {
+		if (MathUtils.equal(this._rotation, r)) {
+			return this;
+		}
+		this._rotation = r;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getRotation() {
+		return _rotation;
 	}
 
 	public LColor getColor() {
@@ -378,6 +398,23 @@ public class TileIsoRect {
 	public TileIsoRect setDrawImageNotColored(boolean d) {
 		this._drawImageNotColored = d;
 		return this;
+	}
+
+	public int getFlag() {
+		return _flag;
+	}
+
+	public TileIsoRect setFlag(int f) {
+		this._flag = f;
+		return this;
+	}
+
+	@Override
+	public void close() {
+		if (_isoImage != null && _isoImage.image != null) {
+			_isoImage.image.close();
+			_isoImage.image = null;
+		}
 	}
 
 }

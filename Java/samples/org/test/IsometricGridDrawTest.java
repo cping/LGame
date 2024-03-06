@@ -34,7 +34,8 @@ public class IsometricGridDrawTest extends Stage {
 	public void create() {
 
 		background("back1.png");
-		// 构筑斜角瓦片区域渲染器,4行,3列,坐标0,0,大小64x64,旋转幅度0.7f
+		// 构筑斜角瓦片区域渲染器,4行,3列,坐标0,0,大小64x64,旋转幅度0.7f(附带一提,斜角地图瓦片大小一般是不等的,
+		// 比如64x32或者32x16这样旋转才能看出效果,这个示例之所以相当是为了图片示例绑定方便,否则扭曲的图片不能直接使用……)
 		TileIsoRectGrid grid = new TileIsoRectGrid(4, 3, 0, 0, 64, 64, 0.7f);
 		// 填充网格内部色彩
 		// grid.setFill(true);

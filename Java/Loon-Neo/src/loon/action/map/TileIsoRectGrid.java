@@ -20,24 +20,30 @@
  */
 package loon.action.map;
 
+import loon.LRelease;
 import loon.canvas.LColor;
 import loon.font.IFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 /**
  * 工具用类,同时绘制多个斜角网格区域用
  */
-public class TileIsoRectGrid {
+public class TileIsoRectGrid implements LRelease {
 
 	private TileIsoRect[][] _grids;
+
+	private float _rotation;
 
 	private float _angle;
 
 	private int _rows;
 
 	private int _cols;
+
+	private boolean _closed;
 
 	private boolean _visible;
 
@@ -88,10 +94,28 @@ public class TileIsoRectGrid {
 				float hx = px + (x + y) * newHalfTileWidth;
 				float hy = 0;
 				if (newAngle < 1f) {
-					hy = py + x * newHalfTileWidth - y * newHalfTileHeight + (th * row) * newAngle - newHalfTileHeight;
+					if (MathUtils.equal(newHalfTileWidth, newHalfTileHeight)) {
+						hy = py + x * newHalfTileWidth - y * newHalfTileHeight + (th * row) * newAngle
+								- newHalfTileHeight;
+					} else if (newHalfTileWidth > newHalfTileHeight) {
+						hy = py + x * newHalfTileWidth / 2f - y * newHalfTileHeight + (th * row) * newAngle
+								- newHalfTileHeight;
+					} else if (newHalfTileWidth < newHalfTileHeight) {
+						hy = py + x * (newHalfTileHeight * newAngle + tw / 2f) - y * newHalfTileHeight
+								+ (th * row) * newAngle - newHalfTileHeight;
+					}
 				} else {
-					hy = py + x * newHalfTileWidth - y * newHalfTileHeight + (th * row) / 2f + (newY * row) / 2f
-							- newHalfTileHeight;
+					if (MathUtils.equal(newHalfTileWidth, newHalfTileHeight)) {
+						hy = py + x * newHalfTileWidth - y * newHalfTileHeight + (th * row) / 2f + (newY * row) / 2f
+								- newHalfTileHeight;
+					}else if (newHalfTileWidth > newHalfTileHeight) {
+						hy = py + x * newHalfTileWidth / 2f - y * newHalfTileHeight + (th * row) * newAngle
+								- newHalfTileHeight;
+					} else if (newHalfTileWidth < newHalfTileHeight) {
+						hy = py + x * (newHalfTileWidth*newAngle + tw/2f) - y * newHalfTileHeight + (th * row) / 2f + (newY * row) / 2f
+								- newHalfTileHeight;
+					}
+					
 				}
 				_grids[x][y] = TileIsoRect.createPos(hx, hy, tw, th, angle);
 			}
@@ -131,12 +155,42 @@ public class TileIsoRectGrid {
 		for (int x = 0; x < _cols; x++) {
 			for (int y = 0; y < _rows; y++) {
 				TileIsoRect rect = _grids[x][y];
-				if (rect != null && rect.getRect().contains(px, py)) {
+				if (rect != null && rect.isVisible() && rect.getRect().contains(px, py)) {
 					return rect;
 				}
 			}
 		}
 		return null;
+	}
+
+	public TArray<TileIsoRect> findFlag(int flag) {
+		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && rect.isVisible() && flag == rect.getFlag()) {
+					rects.add(rect);
+				}
+			}
+		}
+		return rects;
+	}
+
+	public TArray<TileIsoRect> findTag(Object tag) {
+		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && rect.isVisible() && (tag == rect.getTag() || tag.equals(rect.getTag()))) {
+					rects.add(rect);
+				}
+			}
+		}
+		return rects;
+	}
+
+	public boolean contains(float px, float py) {
+		return pixelToTile(px, py) != null;
 	}
 
 	public float getAngle() {
@@ -165,7 +219,7 @@ public class TileIsoRectGrid {
 	}
 
 	public void draw(GLEx g, float offx, float offy) {
-		if (!_visible) {
+		if (!_visible || _closed) {
 			return;
 		}
 		final IFont font = g.getFont();
@@ -260,6 +314,20 @@ public class TileIsoRectGrid {
 		return this;
 	}
 
+	public TileIsoRectGrid setRotation(float r) {
+		this._rotation = r;
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				_grids[x][y].setRatation(r);
+			}
+		}
+		return this;
+	}
+
+	public float getRotation() {
+		return _rotation;
+	}
+
 	public boolean isShowCoordinate() {
 		return _showCoordinate;
 	}
@@ -267,5 +335,19 @@ public class TileIsoRectGrid {
 	public TileIsoRectGrid setShowCoordinate(boolean c) {
 		this._showCoordinate = c;
 		return this;
+	}
+
+	public boolean isClosed() {
+		return _closed;
+	}
+
+	@Override
+	public void close() {
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				_grids[x][y].close();
+			}
+		}
+		_closed = true;
 	}
 }
