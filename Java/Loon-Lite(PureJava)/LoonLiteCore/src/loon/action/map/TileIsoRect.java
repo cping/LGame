@@ -95,6 +95,8 @@ public class TileIsoRect implements LRelease {
 	private Polygon _isoRect = new Polygon();
 
 	private int _flag;
+	private int _id;
+
 	private Object _tag;
 
 	public TileIsoRect(float cx, float cy, float size) {
@@ -370,6 +372,15 @@ public class TileIsoRect implements LRelease {
 		}
 		this._centerY = y;
 		this._dirty = true;
+		return this;
+	}
+
+	public int getId() {
+		return this._id;
+	}
+
+	public TileIsoRect setId(int id) {
+		this._id = id;
 		return this;
 	}
 
