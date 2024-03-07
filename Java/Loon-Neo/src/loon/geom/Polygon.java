@@ -149,8 +149,8 @@ public class Polygon extends Shape implements BoxSize {
 		if (vectors == null) {
 			throw new LSysException("points is null !");
 		}
-		if (vectors.size < 0) {
-			throw new LSysException("points < 0");
+		if (vectors.size < 1) {
+			throw new LSysException("points < 1");
 		}
 		this.initPoints(vectors.size);
 		this.setPolygon(syncPoints(vectors, false), vectors.size);
@@ -160,8 +160,8 @@ public class Polygon extends Shape implements BoxSize {
 		if (points == null) {
 			throw new LSysException("points is null !");
 		}
-		if (points.length < 0) {
-			throw new LSysException("points < 0");
+		if (points.length < 1) {
+			throw new LSysException("points < 1");
 		}
 		this.initPoints(points.length);
 		this.setPolygon(points, points.length);

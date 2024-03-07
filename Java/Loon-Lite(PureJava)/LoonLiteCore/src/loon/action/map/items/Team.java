@@ -100,6 +100,10 @@ public class Team implements LRelease {
 
 	private int _totalAttacksUsed;
 
+	private float _currentPercent;
+
+	private float _score;
+
 	private Role _leadRole;
 
 	private String _name;
@@ -117,6 +121,8 @@ public class Team implements LRelease {
 		this._teamColor = color;
 		this._teamMode = teamMode;
 		this._name = name;
+		this._score = 0f;
+		this._currentPercent = 0f;
 	}
 
 	public TArray<Role> list() {
@@ -533,9 +539,39 @@ public class Team implements LRelease {
 		return _totalAttacksUsed;
 	}
 
+	public Team incScore() {
+		_score++;
+		return this;
+	}
+
+	public Team incScore(float amount) {
+		_score += amount;
+		return this;
+	}
+
+	public Team resetScore() {
+		_score = 0f;
+		return this;
+	}
+
+	public Team setPercent(int total) {
+		_currentPercent = 100f * (_score / total);
+		return this;
+	}
+
+	public float getPercent() {
+		return _currentPercent;
+	}
+
+	public float getScore() {
+		return _score;
+	}
+
 	public Team clear() {
-		_characters.clear();
-		dirty = true;
+		this._characters.clear();
+		this._score = 0f;
+		this._currentPercent = 0f;
+		this.dirty = true;
 		return this;
 	}
 

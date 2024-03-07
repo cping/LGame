@@ -52,14 +52,12 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public final static LSTRDictionary get() {
-		if (instance == null) {
-			synchronized (LSTRDictionary.class) {
-				if (instance == null) {
-					instance = make();
-				}
+		synchronized (LSTRDictionary.class) {
+			if (instance == null) {
+				instance = make();
 			}
+			return instance;
 		}
-		return instance;
 	}
 
 	public LSTRDictionary setAsyn(boolean asyn) {

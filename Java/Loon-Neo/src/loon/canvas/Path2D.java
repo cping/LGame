@@ -38,7 +38,7 @@ import loon.utils.TArray;
 public class Path2D implements Path {
 
 	public static enum PathCommand {
-		MoveTo, LineTo, CurveTo, CubicCurveTo, Closed
+		MoveTo, LineTo, CurveTo, CubicCurveTo, Stroke, Fill, Closed
 	}
 
 	private final TArray<PathCommand> _commands;
@@ -125,6 +125,16 @@ public class Path2D implements Path {
 		_lastX = x;
 		_lastY = y;
 		_dirty = true;
+		return this;
+	}
+
+	public Path fill() {
+		_commands.add(PathCommand.Fill);
+		return this;
+	}
+
+	public Path stroke() {
+		_commands.add(PathCommand.Stroke);
 		return this;
 	}
 

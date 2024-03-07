@@ -347,7 +347,7 @@ public abstract class GLFrameBuffer implements LRelease {
 		}
 
 		final boolean skip = !(bufferBuilder.hasDepthRenderBuffer && bufferBuilder.hasStencilRenderBuffer
-				&& bufferBuilder.hasStencilRenderBuffer && bufferBuilder.makeCacheTexture);
+				&& bufferBuilder.makeCacheTexture);
 
 		if (!skip) {
 			gl.glBindRenderbuffer(GL20.GL_RENDERBUFFER, 0);

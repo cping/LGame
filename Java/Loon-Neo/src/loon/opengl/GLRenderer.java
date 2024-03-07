@@ -597,12 +597,12 @@ public class GLRenderer implements LRelease {
 
 	public void end() {
 		if (_renderer != null) {
-			int tmp = _gl.getBlendMode();
+			if (_gl == null || _gl.disposed()) {
+				_gl = LSystem.base().display().GL();
+			}
+			final int oldBlend = _gl.getBlendMode();
 			try {
 				LSystem.mainEndDraw();
-				if (_gl == null || _gl.disposed()) {
-					_gl = LSystem.base().display().GL();
-				}
 				if (!LColor.white.equals(_currentColor)) {
 					_gl.setBlendMode(BlendMethod.MODE_SPEED);
 				}
@@ -610,7 +610,7 @@ public class GLRenderer implements LRelease {
 				LSystem.error("GLRenderer end() error", ex);
 			} finally {
 				_renderer.end();
-				_gl.setBlendMode(tmp);
+				_gl.setBlendMode(oldBlend);
 				_currType = null;
 				LSystem.mainBeginDraw();
 			}

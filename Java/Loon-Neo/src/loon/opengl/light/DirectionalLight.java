@@ -66,7 +66,10 @@ public class DirectionalLight extends BaseLight {
 
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof DirectionalLight) ? equals((DirectionalLight) o) : false;
+		if (o instanceof DirectionalLight) {
+			return equals((DirectionalLight) o);
+		}
+		return false;
 	}
 
 	public boolean equals(final DirectionalLight other) {
