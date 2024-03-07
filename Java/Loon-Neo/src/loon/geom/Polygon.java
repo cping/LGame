@@ -146,30 +146,43 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public Polygon(TArray<Vector2f> vectors) {
-		this.initPoints();
-		if (vectors == null || vectors.size < 0) {
+		if (vectors == null) {
+			throw new LSysException("points is null !");
+		}
+		if (vectors.size < 0) {
 			throw new LSysException("points < 0");
 		}
+		this.initPoints(vectors.size);
 		this.setPolygon(syncPoints(vectors, false), vectors.size);
 	}
 
 	public Polygon(float[] points) {
-		this();
+		if (points == null) {
+			throw new LSysException("points is null !");
+		}
+		if (points.length < 0) {
+			throw new LSysException("points < 0");
+		}
+		this.initPoints(points.length);
 		this.setPolygon(points, points.length);
 	}
 
 	public Polygon(float[] xpoints, float[] ypoints, int npoints) {
-		this.initPoints();
+		this.initPoints(npoints * 2);
 		this.setPolygon(xpoints, ypoints, npoints);
 	}
 
 	public Polygon(int[] xpoints, int[] ypoints, int npoints) {
-		this.initPoints();
+		this.initPoints(npoints * 2);
 		this.setPolygon(xpoints, ypoints, npoints);
 	}
 
 	protected void initPoints() {
-		points = new float[0];
+		this.initPoints(0);
+	}
+
+	protected void initPoints(int size) {
+		points = new float[size];
 		maxX = -Float.MIN_VALUE;
 		maxY = -Float.MIN_VALUE;
 		minX = Float.MAX_VALUE;
@@ -187,6 +200,9 @@ public class Polygon extends Shape implements BoxSize {
 			throw new LSysException("npoints < 0");
 		}
 		int size = xpoints.length + ypoints.length;
+		if (this.points == null) {
+			this.points = new float[size];
+		}
 		int length = points.length;
 		if (size != length) {
 			points = new float[size];
@@ -243,6 +259,9 @@ public class Polygon extends Shape implements BoxSize {
 			throw new LSysException("npoints < 0");
 		}
 		int size = xpoints.length + ypoints.length;
+		if (this.points == null) {
+			this.points = new float[size];
+		}
 		int length = points.length;
 		if (size != length) {
 			points = new float[size];
@@ -297,6 +316,9 @@ public class Polygon extends Shape implements BoxSize {
 		}
 		if (ps.length == 0) {
 			throw new LSysException("points.length == 0");
+		}
+		if (this.points == null) {
+			this.points = ps;
 		}
 		int size = ps.length;
 		int length = this.points.length;
