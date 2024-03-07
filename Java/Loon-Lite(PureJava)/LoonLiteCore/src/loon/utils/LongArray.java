@@ -28,6 +28,10 @@ import loon.LSystem;
 
 public class LongArray implements IArray, LRelease {
 
+	public static LongArray of(long... list) {
+		return new LongArray(list);
+	}
+
 	/**
 	 * 产生一组指定范围的数据
 	 * 

@@ -20,6 +20,9 @@
  */
 package loon.canvas;
 
+import loon.LSystem;
+import loon.geom.Curve;
+import loon.geom.Polygon;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.FloatArray;
@@ -41,6 +44,8 @@ public class Path2D implements Path {
 
 	private final FloatArray _tempData;
 	private final FloatArray _data;
+
+	private final Curve _curve = new Curve();
 
 	private float _lastX;
 	private float _lastY;
@@ -78,6 +83,10 @@ public class Path2D implements Path {
 		return lineTo(x + _lastX, y + _lastY);
 	}
 
+	public Path curveToRel(float controlX, float controlY, float anchorX, float anchorY) {
+		return curveTo(controlX + _lastX, controlY + _lastY, anchorX + _lastX, anchorY + _lastY);
+	}
+
 	public Path moveToRel(float x, float y) {
 		return moveTo(x + _lastX, y + _lastY);
 	}
@@ -112,10 +121,8 @@ public class Path2D implements Path {
 
 	public Path curveTo(float controlX, float controlY, float anchorX, float anchorY) {
 		_commands.add(PathCommand.CurveTo);
-		_data.add(controlX);
-		_data.add(controlY);
-		_data.add(anchorX);
-		_data.add(anchorY);
+		_curve.set(_lastX, _lastY, controlX, controlY, anchorX, anchorY, anchorX, anchorY);
+		_data.addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
 		return this;
@@ -124,12 +131,8 @@ public class Path2D implements Path {
 	public Path cubicCurveTo(float controlX1, float controlY1, float controlX2, float controlY2, float anchorX,
 			float anchorY) {
 		_commands.add(PathCommand.CubicCurveTo);
-		_data.add(controlX1);
-		_data.add(controlY1);
-		_data.add(controlX2);
-		_data.add(controlY2);
-		_data.add(anchorX);
-		_data.add(anchorY);
+		_curve.set(_lastX, _lastY, controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
+		_data.addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
 		return this;
@@ -292,17 +295,30 @@ public class Path2D implements Path {
 		return this;
 	}
 
+	public Path oval(float x1, float y1, float width, float height, int segments) {
+		return arcToBezier(x1, y1, width, height, 0, MathUtils.DEG_FULL, segments);
+	}
+
 	public Path oval(float x1, float y1, float width, float height) {
-		return arcToBezier(x1, y1, width, height, 0, 360);
+		return oval(x1, y1, width, height, LSystem.LAYER_TILE_SIZE);
+	}
+
+	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float endAngle) {
+		return arcToBezier(x, y, radiusX, radiusY, 0, endAngle);
 	}
 
 	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle) {
-		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, false);
+		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, LSystem.LAYER_TILE_SIZE);
 	}
 
 	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle,
-			boolean anticlockwise) {
-		float halfPI = MathUtils.PI * 0.5f;
+			int segments) {
+		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, false, segments);
+	}
+
+	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle,
+			boolean anticlockwise, int segments) {
+		float halfPI = MathUtils.PI / (segments / 2);
 		float start = startAngle;
 		float end = start;
 		if (anticlockwise) {
@@ -323,17 +339,18 @@ public class Path2D implements Path {
 		}
 		float u = MathUtils.cos(start);
 		float v = MathUtils.sin(start);
-		for (int i = 0; i < 4; i++) {
+		int step = (segments - 1);
+		for (int i = 0; i < segments; i++) {
 			float addAngle = end - start;
-			float a = 4f * MathUtils.tan(addAngle / 4f) / 3f;
-			float x1 = currentX - v * a * radiusX;
-			float y1 = currentY + u * a * radiusY;
+			float newAngle = segments * MathUtils.tan(addAngle / segments) / step;
+			float x1 = currentX - v * newAngle * radiusX;
+			float y1 = currentY + u * newAngle * radiusY;
 			u = MathUtils.cos(end);
 			v = MathUtils.sin(end);
 			currentX = x + u * radiusX;
 			currentY = y + v * radiusY;
-			float x2 = currentX + v * a * radiusX;
-			float y2 = currentY - u * a * radiusY;
+			float x2 = currentX + v * newAngle * radiusX;
+			float y2 = currentY - u * newAngle * radiusY;
 			this.cubicCurveTo(x1, y1, x2, y2, currentX, currentY);
 			if (end == endAngle) {
 				break;
@@ -355,16 +372,24 @@ public class Path2D implements Path {
 		return this;
 	}
 
-	public Path drawCircle(float x, float y, float radius) {
-		return this.arcToBezier(x, y, radius, radius, 0, MathUtils.TWO_PI);
+	public Path drawCircle(float x, float y, float radius, int segments) {
+		return this.arcToBezier(x, y, radius, radius, 0, MathUtils.TWO_PI, segments);
 	}
 
-	public Path drawEllipse(float x, float y, float width, float height) {
+	public Path drawCircle(float x, float y, float radius) {
+		return drawCircle(x, y, radius, LSystem.LAYER_TILE_SIZE);
+	}
+
+	public Path drawEllipse(float x, float y, float width, float height, int segments) {
 		float radiusX = width * 0.5f;
 		float radiusY = height * 0.5f;
 		x += radiusX;
 		y += radiusY;
-		return this.arcToBezier(x, y, radiusX, radiusY, 0, MathUtils.TWO_PI);
+		return this.arcToBezier(x, y, radiusX, radiusY, 0, MathUtils.TWO_PI, segments);
+	}
+
+	public Path drawEllipse(float x, float y, float width, float height) {
+		return drawEllipse(x, y, width, height, LSystem.LAYER_TILE_SIZE);
 	}
 
 	public Path drawRoundRect(float x, float y, float width, float height, float ellipseWidth, float ellipseHeight) {
@@ -621,6 +646,10 @@ public class Path2D implements Path {
 		return this;
 	}
 
+	public Polygon getPolygon() {
+		return new Polygon(_data.toArray());
+	}
+
 	public TArray<Vector2f> getVecs() {
 		TArray<Vector2f> list = new TArray<Vector2f>(_data.size() / 2);
 		for (int i = 0; i < _data.size(); i += 2) {
@@ -689,42 +718,42 @@ public class Path2D implements Path {
 			case MoveTo:
 				builder.append("moveTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case LineTo:
 				builder.append("lineTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case CubicCurveTo:
 				builder.append("cubiccurveTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append(",");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 2));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 3));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 4));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 5));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case CurveTo:
 				builder.append("cubicTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append(",");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 2));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 3));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case Closed:
 				builder.append("closed\n");

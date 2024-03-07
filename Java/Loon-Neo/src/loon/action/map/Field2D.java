@@ -572,6 +572,14 @@ public class Field2D implements IArray, Config, LRelease {
 		return EMPTY;
 	}
 
+	public static Field2D of(int tw, int th, String... map) {
+		return new Field2D(map, tw, th);
+	}
+
+	public static Field2D of(String... map) {
+		return new Field2D(map, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE);
+	}
+
 	public Field2D(Field2D field) {
 		cpy(field);
 	}
@@ -593,7 +601,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D(int w, int h) {
-		this(w, h, 32, 32, 0);
+		this(w, h, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 0);
 	}
 
 	public Field2D(Screen screen, int tw, int th) {

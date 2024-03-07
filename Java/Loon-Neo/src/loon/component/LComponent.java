@@ -111,7 +111,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public boolean customRendering = false;
 
 	// 居中位置，组件坐标与大小
-	private int cam_x, cam_y;
+	private int _cam_x, _cam_y;
 
 	protected float _width, _height;
 	// 水平设置
@@ -217,6 +217,36 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	/**
+	 * 刷新基本参数
+	 * 
+	 * @return
+	 */
+	public LComponent reset() {
+		this.isAllowSelectOfSelf = true;
+		this._fixedWidthOffset = 0f;
+		this._fixedHeightOffset = 0f;
+		this._component_paused = false;
+		this._component_elastic = false;
+		this._component_autoDestroy = true;
+		this._component_isClose = false;
+		this._flipX = _flipY = false;
+		this._scaleX = _scaleY = 1f;
+		this._cam_x = _cam_y = 0;
+		this._screenX = _screenY = 0;
+		this._touchDownMovedValue = 2f;
+		this._downClick = false;
+		this._pivotX = _pivotY = -1;
+		this._component_visible = true;
+		this._component_enabled = true;
+		this._component_focusable = false;
+		this._component_selected = false;
+		this._component_downmoved = false;
+		this._downUpTimer.reset();
+		this._origin = Origin.CENTER;
+		return this;
+	}
+
+	/**
 	 * 让当前组件向指定的中心点位置居中
 	 * 
 	 * @param x
@@ -255,9 +285,9 @@ public abstract class LComponent extends LObject<LContainer>
 		} else {
 			return;
 		}
-		this.cam_x = tempX;
-		this.cam_y = tempY;
-		this.setLocation(cam_x, cam_y);
+		this._cam_x = tempX;
+		this._cam_y = tempY;
+		this.setLocation(_cam_x, _cam_y);
 	}
 
 	protected boolean isNotMoveInScreen(int x, int y) {
@@ -1231,11 +1261,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public int getCamX() {
-		return cam_x == 0 ? x() : cam_x;
+		return _cam_x == 0 ? x() : _cam_x;
 	}
 
 	public int getCamY() {
-		return cam_y == 0 ? y() : cam_y;
+		return _cam_y == 0 ? y() : _cam_y;
 	}
 
 	public LComponent clip(boolean b) {

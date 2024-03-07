@@ -29,6 +29,7 @@ import loon.action.map.items.Teams;
 import loon.events.EventActionN;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
+import loon.geom.PointI;
 import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -205,6 +206,8 @@ public class BattleProcess extends CoroutineProcess {
 	private ObjectBundle _battleVars = new ObjectBundle();
 
 	private Teams _mainTeams;
+
+	private final TArray<PointI> _lockedLocation = new TArray<PointI>();
 
 	private float _minBattleWaitSeconds;
 
@@ -763,6 +766,79 @@ public class BattleProcess extends CoroutineProcess {
 		return this;
 	}
 
+	public BattleProcess clearLockedLocation() {
+		_lockedLocation.clear();
+		return this;
+	}
+
+	public boolean addLockedLocation(float x, float y) {
+		return addLockedLocation(MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	public boolean addLockedLocation(int x, int y) {
+		final int size = _lockedLocation.size;
+		final TArray<PointI> list = _lockedLocation;
+		for (int i = size - 1; i > -1; i--) {
+			PointI pos = list.get(i);
+			if (pos != null && pos.equals(x, y)) {
+				return false;
+			}
+		}
+		return _lockedLocation.add(new PointI(x, y));
+	}
+
+	public boolean addLockedLocation(PointI pos) {
+		if (pos == null) {
+			return false;
+		}
+		return _lockedLocation.add(pos);
+	}
+
+	public int unLockedLocation(float x, float y) {
+		return unLockedLocation(MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	public int unLockedLocation(int x, int y) {
+		int count = 0;
+		final int size = _lockedLocation.size;
+		final TArray<PointI> list = _lockedLocation;
+		for (int i = size - 1; i > -1; i--) {
+			PointI pos = list.get(i);
+			if (pos != null && pos.equals(x, y)) {
+				list.removeIndex(i);
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public boolean isLockedLocation(PointI pos) {
+		if (pos == null) {
+			return false;
+		}
+		return _lockedLocation.contains(pos);
+	}
+
+	public boolean isLockedLocation(float x, float y) {
+		return isLockedLocation(MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	public boolean isLockedLocation(int x, int y) {
+		final int size = _lockedLocation.size;
+		final TArray<PointI> list = _lockedLocation;
+		for (int i = size - 1; i > -1; i--) {
+			PointI pos = list.get(i);
+			if (pos != null && pos.equals(x, y)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public TArray<PointI> getLockedLocation() {
+		return _lockedLocation;
+	}
+
 	public BattleProcess removeEvent(BattleEvent e) {
 		if (e == null) {
 			return this;
@@ -831,6 +907,7 @@ public class BattleProcess extends CoroutineProcess {
 		this.clearVars();
 		this.clearTurnHistory();
 		this._events.clear();
+		this._lockedLocation.clear();
 		this._result = BattleResults.Running;
 		this._actioning.set(false);
 		this._enforce = false;

@@ -21,11 +21,16 @@
 package loon.component;
 
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
 /**
- * 空的容器面板,什么也不显示
+ * 空的容器面板,什么也不显示,可以充当布局器或者单纯容器使用
  */
 public class LPanel extends LContainer {
+
+	public LPanel(float x, float y, float w, float h) {
+		this(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(w), MathUtils.iceil(h));
+	}
 
 	public LPanel(int x, int y, int w, int h) {
 		super(x, y, w, h);

@@ -138,11 +138,7 @@ public class Polygon extends Shape implements BoxSize {
 	private boolean closed = true;
 
 	public Polygon() {
-		points = new float[0];
-		maxX = -Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
-		minX = Float.MAX_VALUE;
-		minY = Float.MAX_VALUE;
+		this.initPoints();
 	}
 
 	public Polygon(Vector2f... vs) {
@@ -150,6 +146,7 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public Polygon(TArray<Vector2f> vectors) {
+		this.initPoints();
 		if (vectors == null || vectors.size < 0) {
 			throw new LSysException("points < 0");
 		}
@@ -157,15 +154,26 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public Polygon(float[] points) {
+		this();
 		this.setPolygon(points, points.length);
 	}
 
 	public Polygon(float[] xpoints, float[] ypoints, int npoints) {
+		this.initPoints();
 		this.setPolygon(xpoints, ypoints, npoints);
 	}
 
 	public Polygon(int[] xpoints, int[] ypoints, int npoints) {
+		this.initPoints();
 		this.setPolygon(xpoints, ypoints, npoints);
+	}
+
+	protected void initPoints() {
+		points = new float[0];
+		maxX = -Float.MIN_VALUE;
+		maxY = -Float.MIN_VALUE;
+		minX = Float.MAX_VALUE;
+		minY = Float.MAX_VALUE;
 	}
 
 	public void setPolygon(int[] xpoints, int[] ypoints, int npoints) {

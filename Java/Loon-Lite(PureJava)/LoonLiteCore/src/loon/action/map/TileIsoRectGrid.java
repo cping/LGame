@@ -241,11 +241,11 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 				}
 			}
 		}
-		if (_drawListener != null) {
-			_drawListener.draw(g, offx, offy);
-		}
 		if (updateTrans) {
 			g.translate(-offx, -offy);
+		}
+		if (_drawListener != null) {
+			_drawListener.draw(g, offx, offy);
 		}
 		if (saveColor) {
 			g.setColor(color);
@@ -368,6 +368,19 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 			}
 		}
 		return null;
+	}
+
+	public TArray<TileIsoRect> findID(int id) {
+		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && rect.isVisible() && id == rect.getId()) {
+					rects.add(rect);
+				}
+			}
+		}
+		return rects;
 	}
 
 	public TArray<TileIsoRect> findFlag(int flag) {

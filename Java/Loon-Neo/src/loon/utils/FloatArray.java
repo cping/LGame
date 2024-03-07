@@ -29,6 +29,10 @@ import loon.events.QueryEvent;
 
 public class FloatArray implements IArray, LRelease {
 
+	public static FloatArray of(float... list) {
+		return new FloatArray(list);
+	}
+
 	/**
 	 * 产生一组指定范围的数据
 	 *

@@ -25,6 +25,13 @@ import java.util.Iterator;
 
 public class StrMap extends ObjectMap<String, String> {
 
+	public static StrMap of(Object... cs) {
+		if (cs == null) {
+			return new StrMap();
+		}
+		return new StrMap(cs);
+	}
+
 	private static class StrComparator implements Comparator<String> {
 
 		@Override

@@ -104,6 +104,27 @@ public class Inventory {
 		return false;
 	}
 
+	public boolean contains(int typeId) {
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			if (item != null && item.getItemTypeId() == typeId) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public TArray<IItem> find(int typeId) {
+		final TArray<IItem> items = new TArray<IItem>();
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			if (item != null && item.getItemTypeId() == typeId) {
+				items.add(item);
+			}
+		}
+		return items;
+	}
+
 	public boolean collided(Shape shape) {
 		for (int i = _items.size - 1; i > -1; i--) {
 			final RectBox rect = _items.get(i).getArea();

@@ -20,6 +20,9 @@
  */
 package loon.utils;
 
+/**
+ * 其实Array就应该是Stack,最早起名时瞎起名,改名牵扯类比较多,懒得改了,衍生个子类,特此声明……
+ */
 public class Stack<T> extends Array<T> {
 
 	public boolean empty() {

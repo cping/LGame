@@ -241,11 +241,11 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 				}
 			}
 		}
-		if (_drawListener != null) {
-			_drawListener.draw(g, offx, offy);
-		}
 		if (updateTrans) {
 			g.translate(-offx, -offy);
+		}
+		if (_drawListener != null) {
+			_drawListener.draw(g, offx, offy);
 		}
 		if (saveColor) {
 			g.setColor(color);

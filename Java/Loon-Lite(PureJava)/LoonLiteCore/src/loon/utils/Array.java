@@ -30,6 +30,19 @@ import loon.events.QueryEvent;
 
 public class Array<T> implements Iterable<T>, IArray, LRelease {
 
+	public static <T> Array<T> of(T[] list) {
+		final Array<T> result = new Array<T>();
+		if (list != null) {
+			for (int i = 0; i < list.length; i++) {
+				T o = list[i];
+				if (o != null) {
+					result.add(o);
+				}
+			}
+		}
+		return result;
+	}
+
 	private static class ListItr<T> implements LIterator<T> {
 
 		private Array<T> list;
@@ -671,7 +684,7 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 	public Iterator<T> iterator() {
 		return listIterator();
 	}
-	
+
 	public LIterator<T> listIterator() {
 		if (_iterator == null) {
 			_iterator = new ListItr<T>(this);
@@ -737,6 +750,5 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 	public void close() {
 		dispose();
 	}
-
 
 }

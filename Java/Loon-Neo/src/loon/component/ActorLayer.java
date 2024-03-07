@@ -772,10 +772,11 @@ public abstract class ActorLayer extends LContainer {
 	 * 刷新缓存数据，重置世界
 	 * 
 	 */
-	public void reset() {
+	public ActorLayer reset() {
 		if (_component_isClose) {
-			return;
+			return this;
 		}
+		super.reset();
 		if (objects != null) {
 			objects.clear();
 			objects = null;
@@ -787,6 +788,7 @@ public abstract class ActorLayer extends LContainer {
 			this.collisionChecker = new CollisionManager();
 			this.objects = new ActorTreeSet();
 		}
+		return this;
 	}
 
 	/**

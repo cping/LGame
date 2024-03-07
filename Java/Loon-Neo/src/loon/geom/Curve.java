@@ -39,6 +39,10 @@ public class Curve extends Shape {
 
 	private int _segments;
 
+	public Curve() {
+		this(new Vector2f(), new Vector2f(), new Vector2f(), new Vector2f());
+	}
+
 	public Curve(XY start, Bezier b) {
 		this(start, b.controlPoint1, b.controlPoint2, b.endPosition);
 	}
@@ -48,12 +52,35 @@ public class Curve extends Shape {
 	}
 
 	public Curve(XY p1, XY c1, XY c2, XY p2, int segments) {
+		this.set(p1, c1, c2, p2, segments);
+	}
+
+	public Curve set(float px1, float py1, float cx1, float cy1, float cx2, float cy2, float px2, float py2) {
+		return set(px1, py1, cx1, cy1, cx2, cy2, px2, py2, _segments);
+	}
+
+	public Curve set(float px1, float py1, float cx1, float cy1, float cx2, float cy2, float px2, float py2, int segments) {
+		this._p1.set(px1, py1);
+		this._c1.set(cx1, cy1);
+		this._c2.set(cx2, cy2);
+		this._p2.set(px2, py2);
+		this._segments = segments;
+		this.pointsDirty = true;
+		return this;
+	}
+
+	public Curve set(XY p1, XY c1, XY c2, XY p2) {
+		return set(p1, c1, c2, p2, _segments);
+	}
+
+	public Curve set(XY p1, XY c1, XY c2, XY p2, int segments) {
 		this._p1 = new Vector2f(p1);
 		this._c1 = new Vector2f(c1);
 		this._c2 = new Vector2f(c2);
 		this._p2 = new Vector2f(p2);
 		this._segments = segments;
-		pointsDirty = true;
+		this.pointsDirty = true;
+		return this;
 	}
 
 	public boolean intersects(Line line) {

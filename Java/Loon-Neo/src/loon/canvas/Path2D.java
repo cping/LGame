@@ -20,7 +20,11 @@
  */
 package loon.canvas;
 
+import loon.LSystem;
+import loon.geom.Curve;
+import loon.geom.Polygon;
 import loon.geom.Vector2f;
+import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
@@ -42,11 +46,19 @@ public class Path2D implements Path {
 	private final FloatArray _tempData;
 	private final FloatArray _data;
 
+	private final Polygon _currentPolys = new Polygon();
+
+	private final Curve _curve = new Curve();
+
+	private int _segments = LSystem.LAYER_TILE_SIZE;
+
 	private float _lastX;
 	private float _lastY;
 
 	private float _lastStartX;
 	private float _lastStartY;
+
+	private boolean _dirty;
 
 	public Path2D() {
 		this(CollectionUtils.INITIAL_CAPACITY);
@@ -78,6 +90,10 @@ public class Path2D implements Path {
 		return lineTo(x + _lastX, y + _lastY);
 	}
 
+	public Path curveToRel(float controlX, float controlY, float anchorX, float anchorY) {
+		return curveTo(controlX + _lastX, controlY + _lastY, anchorX + _lastX, anchorY + _lastY);
+	}
+
 	public Path moveToRel(float x, float y) {
 		return moveTo(x + _lastX, y + _lastY);
 	}
@@ -97,6 +113,7 @@ public class Path2D implements Path {
 		_lastY = y;
 		_lastStartX = x;
 		_lastStartY = y;
+		_dirty = true;
 		return this;
 	}
 
@@ -107,31 +124,37 @@ public class Path2D implements Path {
 		_data.add(y);
 		_lastX = x;
 		_lastY = y;
+		_dirty = true;
 		return this;
 	}
 
 	public Path curveTo(float controlX, float controlY, float anchorX, float anchorY) {
+		return curveTo(controlX, controlY, anchorX, anchorY, _segments);
+	}
+
+	public Path curveTo(float controlX, float controlY, float anchorX, float anchorY, int segments) {
 		_commands.add(PathCommand.CurveTo);
-		_data.add(controlX);
-		_data.add(controlY);
-		_data.add(anchorX);
-		_data.add(anchorY);
+		_curve.set(_lastX, _lastY, controlX, controlY, anchorX, anchorY, anchorX, anchorY, segments);
+		_data.addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
+		_dirty = true;
 		return this;
 	}
 
 	public Path cubicCurveTo(float controlX1, float controlY1, float controlX2, float controlY2, float anchorX,
 			float anchorY) {
+		return cubicCurveTo(controlX1, controlY1, controlX2, controlY2, anchorX, anchorY, _segments);
+	}
+
+	public Path cubicCurveTo(float controlX1, float controlY1, float controlX2, float controlY2, float anchorX,
+			float anchorY, int segments) {
 		_commands.add(PathCommand.CubicCurveTo);
-		_data.add(controlX1);
-		_data.add(controlY1);
-		_data.add(controlX2);
-		_data.add(controlY2);
-		_data.add(anchorX);
-		_data.add(anchorY);
+		_curve.set(_lastX, _lastY, controlX1, controlY1, controlX2, controlY2, anchorX, anchorY, segments);
+		_data.addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
+		_dirty = true;
 		return this;
 	}
 
@@ -292,17 +315,30 @@ public class Path2D implements Path {
 		return this;
 	}
 
+	public Path oval(float x1, float y1, float width, float height, int segments) {
+		return arcToBezier(x1, y1, width, height, 0, MathUtils.DEG_FULL, segments);
+	}
+
 	public Path oval(float x1, float y1, float width, float height) {
-		return arcToBezier(x1, y1, width, height, 0, 360);
+		return oval(x1, y1, width, height, _segments);
+	}
+
+	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float endAngle) {
+		return arcToBezier(x, y, radiusX, radiusY, 0, endAngle);
 	}
 
 	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle) {
-		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, false);
+		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, _segments);
 	}
 
 	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle,
-			boolean anticlockwise) {
-		float halfPI = MathUtils.PI * 0.5f;
+			int segments) {
+		return arcToBezier(x, y, radiusX, radiusY, startAngle, endAngle, false, segments);
+	}
+
+	public Path arcToBezier(float x, float y, float radiusX, float radiusY, float startAngle, float endAngle,
+			boolean anticlockwise, int segments) {
+		float halfPI = MathUtils.PI / (segments / 2);
 		float start = startAngle;
 		float end = start;
 		if (anticlockwise) {
@@ -323,17 +359,18 @@ public class Path2D implements Path {
 		}
 		float u = MathUtils.cos(start);
 		float v = MathUtils.sin(start);
-		for (int i = 0; i < 4; i++) {
+		int step = (segments - 1);
+		for (int i = 0; i < segments; i++) {
 			float addAngle = end - start;
-			float a = 4f * MathUtils.tan(addAngle / 4f) / 3f;
-			float x1 = currentX - v * a * radiusX;
-			float y1 = currentY + u * a * radiusY;
+			float newAngle = segments * MathUtils.tan(addAngle / segments) / step;
+			float x1 = currentX - v * newAngle * radiusX;
+			float y1 = currentY + u * newAngle * radiusY;
 			u = MathUtils.cos(end);
 			v = MathUtils.sin(end);
 			currentX = x + u * radiusX;
 			currentY = y + v * radiusY;
-			float x2 = currentX + v * a * radiusX;
-			float y2 = currentY - u * a * radiusY;
+			float x2 = currentX + v * newAngle * radiusX;
+			float y2 = currentY - u * newAngle * radiusY;
 			this.cubicCurveTo(x1, y1, x2, y2, currentX, currentY);
 			if (end == endAngle) {
 				break;
@@ -355,19 +392,32 @@ public class Path2D implements Path {
 		return this;
 	}
 
-	public Path drawCircle(float x, float y, float radius) {
-		return this.arcToBezier(x, y, radius, radius, 0, MathUtils.TWO_PI);
+	public Path drawCircle(float x, float y, float radius, int segments) {
+		return this.arcToBezier(x, y, radius, radius, 0, MathUtils.TWO_PI, segments);
 	}
 
-	public Path drawEllipse(float x, float y, float width, float height) {
+	public Path drawCircle(float x, float y, float radius) {
+		return drawCircle(x, y, radius, _segments);
+	}
+
+	public Path drawEllipse(float x, float y, float width, float height, int segments) {
 		float radiusX = width * 0.5f;
 		float radiusY = height * 0.5f;
 		x += radiusX;
 		y += radiusY;
-		return this.arcToBezier(x, y, radiusX, radiusY, 0, MathUtils.TWO_PI);
+		return this.arcToBezier(x, y, radiusX, radiusY, 0, MathUtils.TWO_PI, segments);
+	}
+
+	public Path drawEllipse(float x, float y, float width, float height) {
+		return drawEllipse(x, y, width, height, _segments);
 	}
 
 	public Path drawRoundRect(float x, float y, float width, float height, float ellipseWidth, float ellipseHeight) {
+		return drawRoundRect(x, y, width, height, ellipseWidth, ellipseHeight, _segments);
+	}
+
+	public Path drawRoundRect(float x, float y, float width, float height, float ellipseWidth, float ellipseHeight,
+			int segments) {
 		float radiusX = MathUtils.max(0f, (ellipseWidth * 0.5f));
 		float radiusY = MathUtils.max(0f, ellipseHeight > 0f ? (ellipseHeight * 0.5f) : radiusX);
 
@@ -386,9 +436,9 @@ public class Path2D implements Path {
 		}
 		if (hw == radiusX && hh == radiusY) {
 			if (radiusX == radiusY) {
-				this.drawCircle(x + radiusX, y + radiusY, radiusX);
+				this.drawCircle(x + radiusX, y + radiusY, radiusX, segments);
 			} else {
-				this.drawEllipse(x, y, radiusX * 2, radiusY * 2);
+				this.drawEllipse(x, y, radiusX * 2, radiusY * 2, segments);
 			}
 			return this;
 		}
@@ -400,13 +450,13 @@ public class Path2D implements Path {
 		float ytw = y + radiusY;
 		float ybw = bottom - radiusY;
 		this.moveTo(right, ybw);
-		this.curveTo(right, bottom, xrw, bottom);
+		this.curveTo(right, bottom, xrw, bottom, segments);
 		this.lineTo(xlw, bottom);
-		this.curveTo(x, bottom, x, ybw);
+		this.curveTo(x, bottom, x, ybw, segments);
 		this.lineTo(x, ytw);
-		this.curveTo(x, y, xlw, y);
+		this.curveTo(x, y, xlw, y, segments);
 		this.lineTo(xrw, y);
-		this.curveTo(right, y, right, ytw);
+		this.curveTo(right, y, right, ytw, segments);
 		this.lineTo(right, ybw);
 		return this;
 	}
@@ -579,18 +629,6 @@ public class Path2D implements Path {
 		return _data.size() == 0;
 	}
 
-	@Override
-	public Path reset() {
-		_commands.clear();
-		_data.clear();
-		_tempData.clear();
-		_lastX = 0f;
-		_lastY = 0f;
-		_lastStartX = 0f;
-		_lastStartY = 0f;
-		return this;
-	}
-
 	public float getLastX() {
 		return _lastX;
 	}
@@ -618,7 +656,16 @@ public class Path2D implements Path {
 	public Path2D update(FloatArray arrays) {
 		_data.clear();
 		_data.addAll(arrays);
+		_dirty = true;
 		return this;
+	}
+
+	public Polygon getShape() {
+		if (_dirty) {
+			_currentPolys.setPolygon(_data.toArray(), _data.length);
+			_dirty = false;
+		}
+		return _currentPolys;
 	}
 
 	public TArray<Vector2f> getVecs() {
@@ -635,6 +682,14 @@ public class Path2D implements Path {
 			_data.add(p._data.get(i) + px);
 			_data.add(p._data.get(i + 1) + py);
 		}
+		_dirty = true;
+		return this;
+	}
+
+	public Path2D fill(GLEx g, float px, float py) {
+		if (g != null) {
+			g.fill(getShape(), px, py);
+		}
 		return this;
 	}
 
@@ -648,6 +703,13 @@ public class Path2D implements Path {
 			}
 			path.close();
 			c.fillPath(path);
+		}
+		return this;
+	}
+
+	public Path2D stroke(GLEx g, float px, float py) {
+		if (g != null) {
+			g.draw(getShape(), px, py);
 		}
 		return this;
 	}
@@ -670,6 +732,20 @@ public class Path2D implements Path {
 		return _data.toArray();
 	}
 
+	public int getSegments() {
+		return _segments;
+	}
+
+	public Path2D setSegments(int s) {
+		this._segments = s;
+		this._dirty = true;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return _dirty;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -689,42 +765,42 @@ public class Path2D implements Path {
 			case MoveTo:
 				builder.append("moveTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case LineTo:
 				builder.append("lineTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case CubicCurveTo:
 				builder.append("cubiccurveTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append(",");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 2));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 3));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 4));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 5));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case CurveTo:
 				builder.append("cubicTo: ");
 				builder.append(_data.get(i + 0));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 1));
-				builder.append(",");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 2));
-				builder.append(", ");
+				builder.append(LSystem.COMMA);
 				builder.append(_data.get(i + 3));
-				builder.append("\n");
+				builder.append(LSystem.LF);
 				break;
 			case Closed:
 				builder.append("closed\n");
@@ -736,10 +812,26 @@ public class Path2D implements Path {
 	}
 
 	@Override
+	public Path reset() {
+		_commands.clear();
+		_data.clear();
+		_tempData.clear();
+		_curve.clear();
+		_currentPolys.clear();
+		_lastX = 0f;
+		_lastY = 0f;
+		_lastStartX = 0f;
+		_lastStartY = 0f;
+		_dirty = true;
+		return this;
+	}
+
+	@Override
 	public Path close() {
 		_commands.add(PathCommand.Closed);
 		_lastX = _lastStartX;
 		_lastY = _lastStartY;
+		_dirty = true;
 		return this;
 	}
 

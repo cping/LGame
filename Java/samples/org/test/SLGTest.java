@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -27,6 +27,7 @@ import loon.action.ActionBind;
 import loon.action.ActionListener;
 import loon.action.MoveTo;
 import loon.action.map.AStarFinder;
+import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.MoveDraw;
 import loon.action.map.TileAllocation;
@@ -34,14 +35,13 @@ import loon.action.map.TileMap;
 import loon.action.map.battle.BattleProcess;
 import loon.action.map.items.Role;
 import loon.action.map.items.Team;
-import loon.action.map.items.Teams;
 import loon.action.sprite.AnimatedEntity;
 import loon.action.sprite.Draw;
 import loon.action.sprite.PixelShadow;
 import loon.action.sprite.StatusBar;
 import loon.action.sprite.effect.PixelChopEffect;
-import loon.action.sprite.effect.StringEffect;
 import loon.action.sprite.effect.PixelChopEffect.ChopDirection;
+import loon.action.sprite.effect.StringEffect;
 import loon.canvas.LColor;
 import loon.component.LMenuSelect;
 import loon.component.LRadar;
@@ -49,21 +49,19 @@ import loon.component.LRadar.Mode;
 import loon.component.LToast;
 import loon.component.LToast.Style;
 import loon.events.ActionUpdate;
-import loon.events.Touched;
 import loon.geom.BooleanValue;
 import loon.geom.IntValue;
 import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
-import loon.utils.TArray;
-import loon.utils.reply.Nullable;
 import loon.utils.Array;
+import loon.utils.TArray;
 
 /**
  * 说一下为什么分了SLG和SRPG示例,因为SRPG那个示例是多线程的,这个是单线程的,
  * 这个逻辑能用在任何环境,SRPG那个不能跑GWT（SRPG示例需要以后走teavm运行）
- * 
+ *
  * 这个重构的SLG基础例子还是比较麻烦,有时间需要简化
  */
 public class SLGTest extends Stage {
@@ -245,7 +243,7 @@ public class SLGTest extends Stage {
 			}
 			for (int j = 0; j <= maxY - 1; j++) {
 				for (int i = 0; i <= maxX - 1; i++) {
-					for (Team team : teams.list()) {
+					for (Team team : getBattle().getTeams().list()) {
 						for (Role ch : team.list()) {
 							GameRole r = (GameRole) ch.getRoleObject();
 							if (r.isStop()) { // 待机
@@ -353,13 +351,13 @@ public class SLGTest extends Stage {
 
 		/**
 		 * 显示角色状态
-		 * 
+		 *
 		 * @param g
 		 * @param idx
 		 */
 		public void showRoleState(GLEx g, int idx, float x, float y) {
 			if (idx > -1) {
-				GameRole role = (GameRole) teams.getRole(idx).getRoleObject();
+				GameRole role = (GameRole) getBattle().getTeams().getRole(idx).getRoleObject();
 				float alpha = g.alpha();
 				g.setAlpha(0.75f);
 				float leftA = tileSize;
@@ -424,7 +422,7 @@ public class SLGTest extends Stage {
 
 		/**
 		 * 设定角色参数
-		 * 
+		 *
 		 * @param name
 		 * @param team
 		 * @param image
@@ -519,7 +517,7 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 创建角色并注入Team
-	 * 
+	 *
 	 * @param name
 	 * @param team
 	 * @param imageIndex
@@ -535,17 +533,17 @@ public class SLGTest extends Stage {
 		// 让角色按照XY位置排序,以修正遮挡关系(如果不设为true,则不参与xy排序)
 		role.setAutoXYSort(true);
 		// 添加游戏角色到分组中
-		teams.add(team, role.character);
+		getBattle().getTeams().add(team, role.character);
 		add(role);
 		return role;
 	}
 
 	public GameRole getRoleIdxObject(int idx) {
-		return (GameRole) teams.getRole(idx).getRoleObject();
+		return (GameRole) getBattle().getTeams().getRole(idx).getRoleObject();
 	}
 
 	public GameRole getRole(final int tileX, final int tileY) {
-		for (Role role : teams.all()) {
+		for (Role role : getBattle().getTeams().all()) {
 			PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 			if (tileX == pos.x && tileY == pos.y) {
 				return (GameRole) role.getRoleObject();
@@ -559,7 +557,7 @@ public class SLGTest extends Stage {
 	}
 
 	public int getRoleIdx(final int team, final int x, final int y) {
-		TArray<Role> list = (team == -1 ? teams.all() : teams.get(team).list());
+		TArray<Role> list = (team == -1 ? getBattle().getTeams().all() : getBattle().getTeams().get(team).list());
 		for (Role role : list) {
 			PointI pos = gameMap.pixelsToTileMap(role.getX(), role.getY());
 			if (x == pos.x && y == pos.y) {
@@ -586,7 +584,10 @@ public class SLGTest extends Stage {
 			break;
 		}
 		if (type != -1) { // 有人
-			if (getRole(x, y) != null) {
+			GameRole role = getRole(x, y);
+			// 敌人
+			if (role != null && role.getTeam() == Team.Enemy) {
+				// 不能进入
 				return -1;
 			}
 		}
@@ -595,26 +596,13 @@ public class SLGTest extends Stage {
 
 	public void removeRole(final int team, final GameRole e) {
 		// 从单元集合中删除角色
-		teams.remove(e.character);
+		getBattle().getTeams().remove(e.character);
 		// 设定死亡
 		e.character.setDead(true);
 		// 放倒角色淡出并删除敌人
-		get(e).rotateTo(90).fadeOut(6f).start().setActionListener(new ActionListener() {
-
-			@Override
-			public void stop(ActionBind o) {
-				remove(e);
-
-				getBattle().set(false);
-			}
-
-			@Override
-			public void start(ActionBind o) {
-			}
-
-			@Override
-			public void process(ActionBind o) {
-			}
+		get(e).rotateTo(90).fadeOut(6f).start().dispose(() -> {
+			remove(e);
+			getBattle().set(false);
 		});
 	}
 
@@ -643,33 +631,20 @@ public class SLGTest extends Stage {
 
 			add(str);
 
-			// 敌人颤抖
-			get(enemy).shakeTo(0.5f).start().setActionListener(new ActionListener() {
-
-				@Override
-				public void stop(ActionBind o) {
-					// 改变hp
-					int curhp = enemy.getHp();
-					int newhp = curhp - khp;
-					enemy.setHp(newhp);
-					enemy.getHPStatus().setUpdate(newhp);
-					if (enemy.getHp() <= 0) {
-						// 死亡则删除角色
-						removeRole(1, enemy);
-					}
-					attacker.stop();
-					getBattle().set(false);
+			// 敌人颤抖,执行完毕后改变hp并检查是否存活
+			get(enemy).shakeTo(0.5f).start().dispose(() -> {
+				// 改变hp
+				int curhp = enemy.getHp();
+				int newhp = curhp - khp;
+				enemy.setHp(newhp);
+				enemy.getHPStatus().setUpdate(newhp);
+				if (enemy.getHp() <= 0) {
+					// 死亡则删除角色
+					removeRole(1, enemy);
 				}
+				attacker.stop();
+				getBattle().set(false);
 
-				@Override
-				public void start(ActionBind o) {
-
-				}
-
-				@Override
-				public void process(ActionBind o) {
-
-				}
 			});
 
 		} else {
@@ -680,7 +655,7 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 变更当前地图角色位置当二维数组中(实际开发中应该使用多个Field2D做分层,示例只为省事……)
-	 * 
+	 *
 	 * @return
 	 */
 	public Field2D toCurrentMap(boolean player) {
@@ -698,7 +673,7 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 检查是否可攻击的玩家
-	 * 
+	 *
 	 * @param tileX
 	 * @param tileY
 	 * @return
@@ -716,7 +691,7 @@ public class SLGTest extends Stage {
 			return false;
 		}
 		PointI attackPos = gameMap.pixelsToTileMap(attacker.getX(), attacker.getY());
-		for (Role r : teams.get(team).list()) {
+		for (Role r : getBattle().getTeams().get(team).list()) {
 			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			boolean checkAttacker = false;
 			if (attackPos.x - 1 == tileX && attackPos.y == tileY) {
@@ -740,14 +715,14 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 检查指定坐标旁是否有角色存在
-	 * 
+	 *
 	 * @param tileX
 	 * @param tileY
 	 * @param length
 	 * @return
 	 */
 	public GameRole checkRoleExist(int tileX, int tileY, int length, int team) {
-		for (Role r : teams.get(team).list()) {
+		for (Role r : getBattle().getTeams().get(team).list()) {
 			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			for (int i = 1; i <= length; i++) {
 				boolean exist = false;
@@ -777,14 +752,14 @@ public class SLGTest extends Stage {
 	}
 
 	public boolean checkMoveArea(Field2D field, int tileX, int tileY) {
-		for (Role r : teams.all()) {
+		for (Role r : getBattle().getTeams().all()) {
 			PointI pos = gameMap.pixelsToTileMap(r.getX(), r.getY());
 			if (tileX == pos.x && tileY == pos.y) {
 				return false;
 			}
 		}
 		// 动态位置占用检查
-		if (lockedLocation.contains(pointi(tileX, tileY))) {
+		if (getBattle().isLockedLocation(tileX, tileY)) {
 			return false;
 		}
 
@@ -795,7 +770,7 @@ public class SLGTest extends Stage {
 	 * 变更敌人所在位置的地图上标识
 	 */
 	public void updateEnemyPos(Field2D field) {
-		for (Role e : teams.getEnemy().list()) {
+		for (Role e : getBattle().getTeams().getEnemy().list()) {
 			PointI pos = gameMap.pixelsToTileMap(e.getX(), e.getY());
 			field.setTileType(pos.x, pos.y, 'E');
 		}
@@ -806,7 +781,7 @@ public class SLGTest extends Stage {
 	}
 
 	public void updatePlayerPos(Field2D field) {
-		for (Role e : teams.getPlayer().list()) {
+		for (Role e : getBattle().getTeams().getPlayer().list()) {
 			PointI pos = gameMap.pixelsToTileMap(e.getX(), e.getY());
 			field.setTileType(pos.x, pos.y, 'P');
 		}
@@ -828,7 +803,7 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 返回一个随机移动位置
-	 * 
+	 *
 	 * @param team
 	 * @param move
 	 * @param role
@@ -860,7 +835,7 @@ public class SLGTest extends Stage {
 
 	/**
 	 * 返回一个随机移动位置
-	 * 
+	 *
 	 * @param move
 	 * @param role
 	 * @return
@@ -869,13 +844,7 @@ public class SLGTest extends Stage {
 		return randMove(map, move, role, newCounter());
 	}
 
-
-	private TArray<PointI> lockedLocation = new TArray<PointI>();
-
 	private int lastTileX, lastTileY;
-
-	// 角色分组
-	private Teams teams = new Teams();
 
 	// 默认瓦片大小
 	final static int gameTile = 32;
@@ -894,37 +863,24 @@ public class SLGTest extends Stage {
 	@Override
 	public void create() {
 
+		add(MultiScreenTest.getBackButton(this, 1));
+
+		// 获得内置战斗管理器
+		final BattleProcess battleProcess = getBattle();
+
+		// 为分组创建两个子分组,己方与敌人
+		battleProcess.getTeams().createPE();
+
 		// 清空初始数据(重载Screen时有用)
 		this.lastTileX = lastTileY = 0;
 
-		// 为分组创建两个子分组,己方与敌人
-		this.teams.createPE();
-		this.lockedLocation.clear();
-
 		// 构建一个2D的二维数组游戏地图
 		this.gameMap = new TileMap("assets/map2.txt", 32, 32);
-		// 设置切图方式
-		/*TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10);
-		// 索引,名称,开始切图的x,y位置,以及切下来多少
-		clips.add(new LTexturePackClip(0, "1", 0, 0, 32, 32));
-		clips.add(new LTexturePackClip(1, "2", 0, 32, 32, 32));
-		clips.add(new LTexturePackClip(2, "3", 32, 0, 32, 32));
-		clips.add(new LTexturePackClip(3, "4", 32, 32, 32, 32));
 
-		// 注入切图用地图，以及切图方式(也可以直接注入xml配置文件)
-		gameMap.setImagePack("assets/map.png", clips);*/
-		
-		TileAllocation<Nullable<String>> v =TileAllocation.none("assets/map.png");
-				 v.clip("1", 0, 0, 32, 32)
-			     .clip("2", 0, 32, 32, 32)
-			     .clip("3", 32, 0, 32, 32)
-			     .clip("4", 32, 32, 32, 32);
-		
-		gameMap.setImagePack(TileAllocation.none("assets/map.png")
-		 .clip("1", 0, 0, 32, 32)
-	     .clip("2", 0, 32, 32, 32)
-	     .clip("3", 32, 0, 32, 32)
-	     .clip("4", 32, 32, 32, 32));
+		// 切图并设置对应图片索引名
+		gameMap.setImagePack(TileAllocation.none("assets/map.png").clip("1", 0, 0, 32, 32).clip("2", 0, 32, 32, 32)
+				.clip("3", 32, 0, 32, 32).clip("4", 32, 32, 32, 32));
+
 		// 限制进入区域
 		gameMap.setLimit(new int[] { 1, 2, 3, 'P', 'E' });
 		// 允许进入区域
@@ -977,26 +933,25 @@ public class SLGTest extends Stage {
 		menu.load();
 
 		// 监听菜单事件
-		menu.setListener(new LMenuSelect.ClickEvent() {
-
-			@Override
-			public void onSelected(int index, String context) {
-				int idx = roleIndex.get();
-				if (idx != -1 && getRoleIdxObject(idx).getTeam() != Team.Enemy) {
-					if (index == 0) {
-						moveState.setAttackState(idx);
-					} else if (index == 1) {
-						moveState.setFinalState(idx);
-					}
-					menu.hide();
-					menuState.hide();
+		menu.setListener((sel, mes) -> {
+			// 角色id
+			int idx = roleIndex.get();
+			// 如果非敌人
+			if (idx != -1 && getRoleIdxObject(idx).getTeam() != Team.Enemy) {
+				// 出现操作界面
+				if (sel == 0) {
+					moveState.setAttackState(idx);
+				} else if (sel == 1) {
+					moveState.setFinalState(idx);
 				}
+				menu.hide();
+				menuState.hide();
 			}
 		});
 
 		// 玩家与敌方本回合操作对象临时存储用堆栈
-		final Array<GameRole> playerStack = new Array<GameRole>();
-		final Array<GameRole> enemyStack = new Array<GameRole>();
+		final Array<GameRole> playerStack = new Array<>();
+		final Array<GameRole> enemyStack = new Array<>();
 
 		// 显示敌人坐标到雷达中
 		Field2D tmp = this.gameMap.getField2D().cpy();
@@ -1009,24 +964,14 @@ public class SLGTest extends Stage {
 		add(radar);
 
 		// 触屏up事件处理(我方角色操作)
-		up(new Touched() {
-
-			@Override
-			public void on(float x, float y) {
-				playerTouch(moveState, menuState, menu, roleIndex, clickCount, x, y);
-			}
+		up((x, y) -> {
+			playerTouch(moveState, menuState, menu, roleIndex, clickCount, x, y);
 		});
 
 		// 监听拖拽事件滚动地图
-		drag(new Touched() {
-
-			@Override
-			public void on(float x, float y) {
-				gameMap.scroll(x, y);
-			}
+		drag((x, y) -> {
+			gameMap.scroll(x, y);
 		});
-		
-		final BattleProcess battleProcess = getBattle();
 
 		// 添加我方回合事件
 		battleProcess.addEvent(new BattleProcess.TurnPlayerEvent(false) {
@@ -1034,13 +979,13 @@ public class SLGTest extends Stage {
 			// 每次我方回合开始
 			@Override
 			public void onStart(long elapsedTime, BooleanValue start) {
-				for (Role r : teams.getPlayer().list()) {
+				for (Role r : battleProcess.getTeams().getPlayer().list()) {
 					gameMap.followAction(r);
 					break;
 				}
 
 				add(LToast.makeText("我方第" + battleProcess.getTurnCount() + "回合", Style.ERROR));
-				for (Role re : teams.all()) {
+				for (Role re : battleProcess.getTeams().all()) {
 					GameRole r = (GameRole) re.getRoleObject();
 					r.start();
 					if (r.getTeam() == Team.Player) {
@@ -1057,7 +1002,7 @@ public class SLGTest extends Stage {
 			@Override
 			public void onProcess(long elapsedTime, BooleanValue process) {
 				// 我方全部角色移动结束
-				if (teams.getPlayer().isMoved()) {
+				if (battleProcess.getTeams().getPlayer().isMoved()) {
 					// 完成我方回合事件
 					done();
 				}
@@ -1066,7 +1011,7 @@ public class SLGTest extends Stage {
 			// 刷新资源
 			@Override
 			public void onReset() {
-				lockedLocation.clear();
+				getBattle().clearLockedLocation();
 				roleIndex.set(-1);
 				moveState.clear();
 				menuState.hide();
@@ -1087,7 +1032,7 @@ public class SLGTest extends Stage {
 					@Override
 					public void action(Object a) {
 						if (toast.isStop()) {
-							for (Role re : teams.all()) {
+							for (Role re : battleProcess.getTeams().all()) {
 								GameRole r = (GameRole) re.getRoleObject();
 								r.start();
 								if (r.getTeam() == Team.Enemy) {
@@ -1113,7 +1058,7 @@ public class SLGTest extends Stage {
 			@Override
 			public void onProcess(long elapsedTime, BooleanValue process) {
 				// 敌方全部角色移动结束
-				if (teams.getEnemy().isMoved()) {
+				if (battleProcess.getTeams().getEnemy().isMoved()) {
 					// 完成敌方回合事件
 					done();
 				}
@@ -1135,7 +1080,7 @@ public class SLGTest extends Stage {
 							// 地图切换跟随对象
 							gameMap.followAction(runRole);
 							// 把随机位置注入位置锁(因为后面是异步执行的Action移动,不占用的话其它角色寻径检查位置时可能会出错……)
-							lockedLocation.add(pointi(movePos.x, movePos.y));
+							getBattle().addLockedLocation(movePos.x, movePos.y);
 							// 转换像素坐标为地图实际坐标
 							final PointI startPos = gameMap.tilePixels(runRole.x(), runRole.y());
 							final PointI endPos = gameMap.tileMapToPixels(movePos.getX(), movePos.getY());
@@ -1174,17 +1119,17 @@ public class SLGTest extends Stage {
 									// 判定移动方向是否变更，避免反复刷新动画事件
 									if (move.isDirectionUpdate()) {
 										switch (move.getDirection()) {
-										case Field2D.TUP:
+										case Config.TUP:
 											runRole.animate("up");
 											break;
 										default:
-										case Field2D.TDOWN:
+										case Config.TDOWN:
 											runRole.animate("down");
 											break;
-										case Field2D.TLEFT:
+										case Config.TLEFT:
 											runRole.animate("left");
 											break;
-										case Field2D.TRIGHT:
+										case Config.TRIGHT:
 											runRole.animate("right");
 											break;
 										}
@@ -1212,14 +1157,12 @@ public class SLGTest extends Stage {
 
 			}
 		});
-
-		add(MultiScreenTest.getBackButton(this, 1));
-
+		lastDesktopDraw();
 	}
 
 	/**
 	 * 我方角色触屏操作
-	 * 
+	 *
 	 * @param enemyRound
 	 * @param roleMoving
 	 * @param moveState
@@ -1234,11 +1177,8 @@ public class SLGTest extends Stage {
 			final Counter count, final float x, final float y) {
 
 		// 敌方回合不响应触屏事件
-		if (getBattle().isCurrentEnemy()) {
-			return;
-		}
 		// 如果角色在移动则不能触发事件
-		if (getBattle().get()) {
+		if (getBattle().isCurrentEnemy() || getBattle().get()) {
 			return;
 		}
 
@@ -1331,17 +1271,17 @@ public class SLGTest extends Stage {
 							// 存储上一个移动方向，避免反复刷新动画事件
 							if (move.isDirectionUpdate()) {
 								switch (move.getDirection()) {
-								case Field2D.TUP:
+								case Config.TUP:
 									runRole.animate("up");
 									break;
 								default:
-								case Field2D.TDOWN:
+								case Config.TDOWN:
 									runRole.animate("down");
 									break;
-								case Field2D.TLEFT:
+								case Config.TLEFT:
 									runRole.animate("left");
 									break;
-								case Field2D.TRIGHT:
+								case Config.TRIGHT:
 									runRole.animate("right");
 									break;
 								}

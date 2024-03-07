@@ -27,6 +27,20 @@ import loon.LSysException;
 
 public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 
+	public static <T> IntMap<T> of(T[] list) {
+		if (list == null) {
+			return new IntMap<T>();
+		}
+		final IntMap<T> result = new IntMap<T>();
+		for (int i = 0; i < list.length; i++) {
+			T o = list[i];
+			if (o != null) {
+				result.put(i, o);
+			}
+		}
+		return result;
+	}
+
 	public static class Entry<T> {
 
 		public final long key;
@@ -101,13 +115,13 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 		this(CollectionUtils.INITIAL_CAPACITY);
 	}
 
-	public IntMap(final int _capacity) {
-		this(MathUtils.nextPowerOfTwo(_capacity), 0.85f);
+	public IntMap(final int c) {
+		this(MathUtils.nextPowerOfTwo(c), 0.85f);
 	}
 
-	public IntMap(final int _capacity, final float factor) {
+	public IntMap(final int c, final float factor) {
 		this.loader_factor = factor;
-		this.resize(MathUtils.nextPowerOfTwo(_capacity));
+		this.resize(MathUtils.nextPowerOfTwo(c));
 	}
 
 	public IntMap(final IntMap<T> data) {

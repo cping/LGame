@@ -33,6 +33,19 @@ import loon.utils.ObjectMap.Values;
 @SuppressWarnings({ "unchecked" })
 public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
+	public static <T> TArray<T> of(T[] list) {
+		final TArray<T> result = new TArray<T>();
+		if (list != null) {
+			for (int i = 0; i < list.length; i++) {
+				T o = list[i];
+				if (o != null) {
+					result.add(o);
+				}
+			}
+		}
+		return result;
+	}
+
 	public final static class ArrayIterable<T> implements Iterable<T> {
 
 		private final TArray<T> array;

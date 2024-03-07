@@ -21,11 +21,23 @@
 package loon.component;
 
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 
+/**
+ * 空白类,不显示,单纯占位
+ */
 public class LLineBreak extends LComponent {
+
+	public LLineBreak(float x, float y, float width, float height) {
+		this(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.iceil(width), MathUtils.iceil(height));
+	}
 
 	public LLineBreak(int x, int y, int width, int height) {
 		super(x, y, width, height);
+		setLocked(true);
+		setElastic(false);
+		setEnabled(false);
+		setSelected(false);
 	}
 
 	@Override
