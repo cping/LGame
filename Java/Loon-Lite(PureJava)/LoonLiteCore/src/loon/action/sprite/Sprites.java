@@ -2311,6 +2311,11 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _size == 0 || _sprites == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public Sprites setAutoYLayer(boolean y) {
 		spriteXYSorter.setSortY(y);
 		return this;

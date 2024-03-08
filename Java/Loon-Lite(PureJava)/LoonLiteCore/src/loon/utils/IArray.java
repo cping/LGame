@@ -10,4 +10,6 @@ public interface IArray {
 	void clear();
 
 	boolean isEmpty();
+
+	boolean isNotEmpty();
 }

@@ -33,6 +33,10 @@ public class RectF implements XYZW, SetXY {
 
 	public static class Range implements XY, SetXY {
 
+		public static Range fromLTRB(float left, float top, float right, float bottom) {
+			return new Range(left, top, right, bottom);
+		}
+		
 		public float left;
 
 		public float top;

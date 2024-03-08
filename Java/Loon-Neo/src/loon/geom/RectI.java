@@ -32,6 +32,10 @@ public class RectI implements XYZW, SetXY {
 
 	public static class Range implements XY, SetXY {
 
+		public static Range fromLTRB(int left, int top, int right, int bottom) {
+			return new Range(left, top, right, bottom);
+		}
+
 		public int left;
 
 		public int top;

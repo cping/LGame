@@ -586,14 +586,36 @@ public abstract class LContainer extends LComponent implements IArray {
 		return false;
 	}
 
+	public boolean removeWhen(QueryEvent<LComponent> query) {
+		if (_component_isClose) {
+			return false;
+		}
+		if (query == null) {
+			return false;
+		}
+		boolean flag = false;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (query.hit(child)) {
+				this.remove(i);
+				flag = true;
+			}
+		}
+		return flag;
+	}
+
 	public boolean removeTag(Object tag) {
 		if (_component_isClose) {
 			return false;
 		}
 		boolean flag = false;
 		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
 		for (int i = size - 1; i > -1; i--) {
-			if (this._childs[i].Tag == tag || tag.equals(this._childs[i].Tag)) {
+			LComponent child = childs[i];
+			if (child != null && (child.Tag == tag || tag.equals(child.Tag))) {
 				this.remove(i);
 				flag = true;
 			}
@@ -1474,6 +1496,11 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	public boolean isEmpty() {
 		return _childCount == 0 || _childs == null;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	@Override

@@ -606,6 +606,11 @@ public class CharArray implements IArray, LRelease {
 		return length == 0 || items == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public CharArray cpy() {
 		return new CharArray(this);
 	}
@@ -671,7 +676,7 @@ public class CharArray implements IArray, LRelease {
 		buffer.append(']');
 		return buffer.toString();
 	}
-	
+
 	public String newString() {
 		return new StrBuilder(this).toString();
 	}

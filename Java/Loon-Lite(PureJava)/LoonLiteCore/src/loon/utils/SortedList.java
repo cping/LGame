@@ -714,6 +714,11 @@ public class SortedList<E> implements Iterable<E>, IArray {
 		return size == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public Object[] toArray() {
 		Object[] result = new Object[size];
 		int i = 0;

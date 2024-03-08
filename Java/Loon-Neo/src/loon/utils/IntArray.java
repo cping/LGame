@@ -540,6 +540,11 @@ public class IntArray implements IArray, LRelease {
 		return length == 0 || items == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public byte[] getBytes() {
 		return getBytes(0);
 	}

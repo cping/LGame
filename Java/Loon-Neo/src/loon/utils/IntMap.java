@@ -401,6 +401,11 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public Iterator<T> iterator() {
 		if (_mapIterator1 == null) {
 			_mapIterator1 = new IntMapIterator<T>(this);

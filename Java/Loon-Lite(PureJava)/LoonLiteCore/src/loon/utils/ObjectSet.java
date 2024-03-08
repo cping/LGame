@@ -52,7 +52,7 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 		_map = new OrderedMap<>(initialCapacity, loadFactor, false, false);
 	}
 
-	public void addAll(ObjectSet<? extends E> c){
+	public void addAll(ObjectSet<? extends E> c) {
 		for (E key : c) {
 			add(key);
 		}
@@ -71,6 +71,11 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	@Override
 	public boolean isEmpty() {
 		return _map.isEmpty();
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	public boolean contains(Object o) {
@@ -104,22 +109,22 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	}
 
 	@Override
-    public String toString() {
+	public String toString() {
 		LIterator<E> it = iterator();
-        if (! it.hasNext()) {
-            return "[]";
-        }
-        StrBuilder sbr = new StrBuilder();
-        sbr.append('[');
-        for (it = _map.keys(); it.hasNext();) {
-            E e = it.next();
-            sbr.append(e == this ? "(this ObjectSet)" : e);
-            if (! it.hasNext()) {
-                return sbr.append(']').toString();
-            }
-            sbr.append(LSystem.COMMA).append(' ');
-        }
-        return sbr.toString();
-    }
+		if (!it.hasNext()) {
+			return "[]";
+		}
+		StrBuilder sbr = new StrBuilder();
+		sbr.append('[');
+		for (it = _map.keys(); it.hasNext();) {
+			E e = it.next();
+			sbr.append(e == this ? "(this ObjectSet)" : e);
+			if (!it.hasNext()) {
+				return sbr.append(']').toString();
+			}
+			sbr.append(LSystem.COMMA).append(' ');
+		}
+		return sbr.toString();
+	}
 
 }

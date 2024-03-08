@@ -569,6 +569,11 @@ public class Session implements Bundle<String> {
 		return recordsList.isEmpty();
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public Session dispose(String name) {
 		synchronized (recordsList) {
 			clear(name);

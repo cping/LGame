@@ -76,10 +76,6 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return out;
 	}
 
-	public final static RectBox from(float x, float y, float w, float h) {
-		return new RectBox(x, y, w, h);
-	}
-
 	public final static RectBox at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new RectBox();
@@ -111,8 +107,30 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return new RectBox(x, y, w, h);
 	}
 
-	public final static RectBox fromActor(ActionBind bind) {
+	public final static RectBox fromLTWH(float left, float top, float right, float bottom) {
+		return new RectBox(left, top, right, bottom);
+	}
+
+	public final static RectBox fromLTRB(float left, float top, float right, float bottom) {
+		return new RectBox().setLTRB(left, top, right, bottom);
+	}
+
+	public final static <T> RectBox fromObject(LObject<T> bind) {
+		if (bind == null) {
+			return new RectBox();
+		}
 		return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
+
+	public final static RectBox fromActor(ActionBind bind) {
+		if (bind == null) {
+			return new RectBox();
+		}
+		return new RectBox(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
+	}
+
+	public final static RectBox from(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
 	}
 
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
@@ -303,6 +321,20 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		this.minY = y;
 		this.maxX = x + width;
 		this.maxY = y + height;
+		this.pointsDirty = true;
+		this.checkPoints();
+		return this;
+	}
+
+	public RectBox setLTRB(float left, float top, float right, float bottom) {
+		this.setLeft(left);
+		this.setTop(top);
+		this.setRight(right);
+		this.setBottom(bottom);
+		this.minX = left;
+		this.minY = top;
+		this.maxX = right;
+		this.maxY = bottom;
 		this.pointsDirty = true;
 		this.checkPoints();
 		return this;

@@ -237,4 +237,8 @@ class JsonArray implements Json.Array, IArray {
 		return length() == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
 }

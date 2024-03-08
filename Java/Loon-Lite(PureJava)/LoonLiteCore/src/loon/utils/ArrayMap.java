@@ -39,11 +39,11 @@ public class ArrayMap implements IArray, LRelease {
 
 		protected Entry next;
 
-		protected Entry(final int hashCode, final Object key, final Object value, final Entry next) {
+		protected Entry(int hashCode, Object key, Object value, Entry next) {
 			this(-1, hashCode, key, value, next);
 		}
 
-		public Entry(final int index, final int hashCode, final Object key, final Object value, final Entry next) {
+		public Entry(int index, int hashCode, Object key, Object value, Entry next) {
 			this.index = index;
 			this.hashCode = hashCode;
 			this.key = key;
@@ -59,7 +59,7 @@ public class ArrayMap implements IArray, LRelease {
 			return value;
 		}
 
-		public Object setValue(final Object value) {
+		public Object setValue(Object value) {
 			Object oldValue = value;
 			this.value = value;
 			return oldValue;
@@ -139,20 +139,25 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	@Override
-	public final int size() {
+	public int size() {
 		return size;
 	}
 
 	@Override
-	public final boolean isEmpty() {
+	public boolean isEmpty() {
 		return size == 0;
 	}
 
-	public final boolean containsValue(Object value) {
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	public boolean containsValue(Object value) {
 		return indexOf(value) >= 0;
 	}
 
-	protected final int indexOf(final Entry entry) {
+	protected int indexOf(Entry entry) {
 		if (entry != null) {
 			Entry value;
 			int start = 0;
@@ -188,7 +193,7 @@ public class ArrayMap implements IArray, LRelease {
 		return -1;
 	}
 
-	public final int indexOf(Object value) {
+	public int indexOf(Object value) {
 		if (value != null) {
 			Object data = null;
 			for (int i = 0; i < size; i++) {
@@ -207,7 +212,7 @@ public class ArrayMap implements IArray, LRelease {
 		return -1;
 	}
 
-	public boolean containsKey(final Object key) {
+	public boolean containsKey(Object key) {
 		Entry[] table = keysTable;
 		if (key != null) {
 			int hashCode = CollectionUtils.getLimitHash(key.hashCode());
@@ -227,7 +232,7 @@ public class ArrayMap implements IArray, LRelease {
 		return false;
 	}
 
-	public Object get(final Object key) {
+	public Object get(Object key) {
 		Entry[] table = keysTable;
 		if (key != null) {
 			int hashCode = CollectionUtils.getLimitHash(key.hashCode());
@@ -247,11 +252,11 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	public Object getValue(final Object key) {
+	public Object getValue(Object key) {
 		return get(key);
 	}
 
-	public final Object get(final int index) {
+	public Object get(int index) {
 		if (index < 0 || index >= size) {
 			return null;
 		}
@@ -262,7 +267,7 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	public final Object getKey(final int index) {
+	public Object getKey(int index) {
 		if (index < 0 || index >= size) {
 			return null;
 		}
@@ -273,7 +278,7 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	public final Entry getEntry(final int index) {
+	public Entry getEntry(int index) {
 		if (index >= size) {
 			throw new LSysException("Index:" + index + ", Size:" + size);
 		}
@@ -288,7 +293,7 @@ public class ArrayMap implements IArray, LRelease {
 		}
 	}
 
-	public Object put(final Object key, final Object value) {
+	public Object put(Object key, Object value) {
 		int hashCode = 0;
 		int index = 0;
 		if (key != null) {
@@ -322,11 +327,11 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	public final void set(final int index, final Object value) {
+	public void set(int index, Object value) {
 		getEntry(index).setValue(value);
 	}
 
-	public Object remove(final Object key) {
+	public Object remove(Object key) {
 		Entry e = removeMap(key);
 		if (e != null) {
 			Object value = e.value;
@@ -338,7 +343,7 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	public final Object remove(int index) {
+	public Object remove(int index) {
 		Entry e = removeList(index);
 		Object value = e.value;
 		removeMap(e.key);
@@ -347,7 +352,7 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	@Override
-	public final void clear() {
+	public void clear() {
 		int length = keysTable.length;
 		for (int i = 0; i < length; i++) {
 			keysTable[i] = null;
@@ -374,7 +379,7 @@ public class ArrayMap implements IArray, LRelease {
 		return lists;
 	}
 
-	public final Object[] toArray() {
+	public Object[] toArray() {
 		Object[] array = new Object[size];
 		for (int i = 0; i < size; i++) {
 			array[i] = get(i);
@@ -383,7 +388,7 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	@Override
-	public final boolean equals(Object o) {
+	public boolean equals(Object o) {
 		if (!(o instanceof ArrayMap)) {
 			return false;
 		}
@@ -408,7 +413,7 @@ public class ArrayMap implements IArray, LRelease {
 		return copy;
 	}
 
-	private final Entry removeMap(Object key) {
+	private Entry removeMap(Object key) {
 		int hashCode = 0;
 		int index = 0;
 		if (key != null) {
@@ -439,7 +444,7 @@ public class ArrayMap implements IArray, LRelease {
 		return null;
 	}
 
-	private final Entry removeList(int index) {
+	private Entry removeList(int index) {
 		Entry e = valuesTable[index];
 		int numMoved = size - index - 1;
 		if (numMoved > 0) {
@@ -450,7 +455,7 @@ public class ArrayMap implements IArray, LRelease {
 		return e;
 	}
 
-	private final void ensureCapacity() {
+	private void ensureCapacity() {
 		if (size >= threshold) {
 			Entry[] oldTable = valuesTable;
 			int newCapacity = oldTable.length * 2 + 1;
@@ -473,7 +478,7 @@ public class ArrayMap implements IArray, LRelease {
 		}
 	}
 
-	private final Object swapValue(final Entry entry, final Object value) {
+	private Object swapValue(Entry entry, Object value) {
 		Object old = entry.value;
 		entry.value = value;
 		return old;

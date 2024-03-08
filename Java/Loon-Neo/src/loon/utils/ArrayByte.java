@@ -700,6 +700,11 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+	
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ArrayByte)) {
 			return false;

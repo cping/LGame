@@ -708,6 +708,11 @@ public class Animation implements IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public int size() {
 		return frames.size;
 	}

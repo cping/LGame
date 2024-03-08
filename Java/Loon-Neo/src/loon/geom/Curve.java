@@ -22,12 +22,16 @@ package loon.geom;
 
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
+import loon.utils.FloatArray;
+import loon.utils.MathUtils;
 
 public class Curve extends Shape {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	private static final float discriminantEpsilon = 1e-15f;
 
 	private Vector2f _p1;
 
@@ -59,7 +63,8 @@ public class Curve extends Shape {
 		return set(px1, py1, cx1, cy1, cx2, cy2, px2, py2, _segments);
 	}
 
-	public Curve set(float px1, float py1, float cx1, float cy1, float cx2, float cy2, float px2, float py2, int segments) {
+	public Curve set(float px1, float py1, float cx1, float cy1, float cx2, float cy2, float px2, float py2,
+			int segments) {
 		this._p1.set(px1, py1);
 		this._c1.set(cx1, cy1);
 		this._c2.set(cx2, cy2);
@@ -88,9 +93,69 @@ public class Curve extends Shape {
 				line.getEnd());
 	}
 
+	@Override
 	public boolean intersects(XY xy) {
 		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(_p1, _c1, _c2, _p2, Vector2f.at(xy),
 				Vector2f.at(x + 1f, y + 1f));
+	}
+
+	public float[] solveCubic(float a, float b, float c, float d) {
+		if (a == 0f) {
+			return solveQuadratic(b, c, d);
+		}
+		if (b == 0f) {
+			return solveDepressedCubic(c / a, d / a, 1f);
+		} else {
+			final float s = b / (3f * a);
+			final float p = c / a - 3f * s * s;
+			final float q = d / a - (p + s * s) * s;
+			final float[] tmp = solveDepressedCubic(p, q, 1f);
+			final FloatArray result = new FloatArray();
+			for (int i = 0; i < tmp.length; i++) {
+				result.add(tmp[i] - s);
+			}
+			return result.toArray();
+		}
+	}
+
+	private float cubicRoot(float x) {
+		if (x >= 0) {
+			return MathUtils.pow(x, 1f / 3f);
+		} else {
+			return -MathUtils.pow(-x, 1f / 3f);
+		}
+	}
+
+	private float[] solveDepressedCubic(float p, float q, float tau) {
+		final float discriminant = MathUtils.abs(q * q / 4f + p * p * p / 27f);
+		if (discriminant < discriminantEpsilon) {
+			final float x1 = cubicRoot(q / 2f);
+			final float x2 = -2 * x1;
+			return new float[] { x1, x1, x2 };
+		} else if (discriminant > 0) {
+			final float w = cubicRoot(MathUtils.abs(q) / 2f + MathUtils.sqrt(discriminant));
+			return new float[] { (p / (3 * w) - w) * MathUtils.sign(q) };
+		} else {
+			final float f = 2 * MathUtils.sqrt(-p / 3f);
+			final float v = MathUtils.acos(3f * q / (f * p)) / 3f;
+			final float x0 = f * MathUtils.cos(v);
+			final float x1 = f * MathUtils.cos(v - 1 / 3f * tau);
+			final float x2 = f * MathUtils.cos(v - 2 / 3f * tau);
+			return new float[] { x0, x1, x2 };
+		}
+	}
+
+	public float[] solveQuadratic(float a, float b, float c) {
+		if (a == 0f) {
+			return new float[] { -c / b };
+		}
+		final float det = b * b - 4f * a * c;
+		if (det >= 0f) {
+			final float sqrtDet = MathUtils.sqrt(det);
+			return new float[] { (-b - sqrtDet) / (2 * a), (-b + sqrtDet) / (2 * a) };
+		} else {
+			return new float[] {};
+		}
 	}
 
 	public Vector2f pointAt(float t) {

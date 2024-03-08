@@ -521,6 +521,11 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public String toString() {
 		if (size == 0)
 			return "[]";

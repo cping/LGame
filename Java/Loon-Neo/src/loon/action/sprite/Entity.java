@@ -1679,6 +1679,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return (_childrens == null ? true : _childrens.size == 0);
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public Vector2f getOffset() {
 		return _offset;
 	}

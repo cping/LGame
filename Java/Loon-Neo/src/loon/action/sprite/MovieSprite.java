@@ -206,6 +206,11 @@ public class MovieSprite extends DisplayObject implements IArray {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public ActionTween selfAction() {
 		return PlayerUtils.set(this);
 	}

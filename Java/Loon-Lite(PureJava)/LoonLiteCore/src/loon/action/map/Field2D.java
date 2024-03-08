@@ -1355,6 +1355,11 @@ public class Field2D implements IArray, Config, LRelease {
 		return mapArrays == null || mapArrays.length == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public Field2D setName(String n) {
 		this._fieldName = n;
 		return this;

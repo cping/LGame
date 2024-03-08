@@ -558,6 +558,11 @@ public class LongArray implements IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public int hashCode() {
 		long hashCode = 1;
 		for (int i = length - 1; i > -1; i--) {

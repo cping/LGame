@@ -962,6 +962,11 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		return size == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public boolean containsKey(Object key) {
 		return positionOf(key) != NO_INDEX;
 	}

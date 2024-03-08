@@ -233,11 +233,15 @@ public class AnimationData implements IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public void close() {
 		_frames = null;
 		_frameDurations = null;
 		_frameEndsInNanoseconds = null;
 	}
-
 
 }

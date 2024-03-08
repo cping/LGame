@@ -1766,6 +1766,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return restart(this, w, h, false);
 	}
 
+	public <T> GoFuture<T> awaitOn(final FutureResult<T> call) {
+		return loadFuture(call);
+	}
+
 	public <T> GoFuture<T> loadFuture(final FutureResult<T> call) {
 		return LSystem.loadFuture(call);
 	}
@@ -6947,6 +6951,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return true;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+	
 	public Viewport getViewport() {
 		return _baseViewport;
 	}

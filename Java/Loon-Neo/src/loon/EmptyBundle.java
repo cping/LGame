@@ -60,7 +60,11 @@ public class EmptyBundle implements Bundle<Object> {
 
 	@Override
 	public boolean isEmpty() {
-		return false;
+		return true;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return false;
+	}
 }

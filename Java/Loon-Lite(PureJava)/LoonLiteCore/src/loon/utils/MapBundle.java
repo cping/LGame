@@ -62,6 +62,11 @@ public class MapBundle<T> implements Bundle<T> {
 		return _mapBundle.isEmpty();
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	@SuppressWarnings("unchecked")
 	public MapBundle<T> loadFrom(Session session) {
 		if (session != null) {

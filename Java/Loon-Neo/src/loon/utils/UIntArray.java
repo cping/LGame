@@ -678,6 +678,11 @@ public class UIntArray implements IArray, LRelease {
 		return length == 0 || bytebuffer == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public int sum() {
 		if (length == 0) {
 			return 0;

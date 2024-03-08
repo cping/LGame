@@ -559,6 +559,11 @@ public class FloatArray implements IArray, LRelease {
 		return length == 0 || items == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public FloatArray where(QueryEvent<Float> test) {
 		FloatArray list = new FloatArray();
 		for (int i = 0; i < length; i++) {

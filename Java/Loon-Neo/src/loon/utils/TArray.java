@@ -544,6 +544,11 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return this.size == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public T shift() {
 		return removeIndex(0);
 	}

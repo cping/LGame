@@ -652,6 +652,11 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 		return _close || _length == 0 || this._items.next == this._items;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public boolean isClosed() {
 		return _close;
 	}

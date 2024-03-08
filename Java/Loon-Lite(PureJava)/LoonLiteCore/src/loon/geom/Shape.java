@@ -950,6 +950,11 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
 	public void clear() {
 		points = new float[0];
 		center = new float[0];

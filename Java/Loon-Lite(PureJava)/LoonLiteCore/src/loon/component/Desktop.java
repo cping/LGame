@@ -1379,6 +1379,11 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return _contentPane.isNotEmpty();
+	}
+
+	@Override
 	public boolean isVisible() {
 		return _visible;
 	}

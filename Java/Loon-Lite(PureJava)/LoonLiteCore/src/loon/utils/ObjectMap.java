@@ -30,7 +30,7 @@ import loon.LSysException;
  * @param <K>
  * @param <V>
  */
-public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,LRelease {
+public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray, LRelease {
 
 	private Values<V> values1, values2;
 
@@ -82,7 +82,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		@Override
 		@SuppressWarnings("unchecked")
 		public final V next() {
-			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX
+					|| _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -167,7 +168,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		@Override
 		@SuppressWarnings("unchecked")
 		public final K next() {
-			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX
+					|| _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -255,7 +257,8 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 
 		@Override
 		public final Entry<K, V> next() {
-			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX || _nextIndex >= _map.firstUnusedIndex) {
+			if (!_valid || (_map.modCount != _expectedModCount) || _nextIndex == NO_INDEX
+					|| _nextIndex >= _map.firstUnusedIndex) {
 				return null;
 			}
 			_lastIndex = _nextIndex;
@@ -926,6 +929,11 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 	@Override
 	public boolean isEmpty() {
 		return size == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	public boolean containsKey(Object key) {

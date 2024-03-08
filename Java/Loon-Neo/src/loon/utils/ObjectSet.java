@@ -73,6 +73,11 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 		return _map.isEmpty();
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public boolean contains(Object o) {
 		return _map.containsKey(o);
 	}

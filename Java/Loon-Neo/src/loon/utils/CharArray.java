@@ -606,6 +606,11 @@ public class CharArray implements IArray, LRelease {
 		return length == 0 || items == null;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+	
 	public CharArray cpy() {
 		return new CharArray(this);
 	}

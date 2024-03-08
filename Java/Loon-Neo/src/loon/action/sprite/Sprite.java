@@ -1329,7 +1329,12 @@ public class Sprite extends LObject<ISprite>
 
 	@Override
 	public boolean isEmpty() {
-		return false;
+		return (_childrens == null ? true : _childrens.size == 0);
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
 	}
 
 	@Override

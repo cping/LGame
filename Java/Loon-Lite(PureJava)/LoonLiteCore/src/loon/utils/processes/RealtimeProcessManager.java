@@ -275,6 +275,11 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return processes.size == 0;
 	}
 
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
 	public void dispose() {
 		close();
 	}

@@ -162,6 +162,11 @@ public class LTextureFree implements IArray, LRelease {
 	}
 
 	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+	
+	@Override
 	public void close() {
 		this.free();
 	}
