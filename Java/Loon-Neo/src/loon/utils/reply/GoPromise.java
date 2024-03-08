@@ -35,7 +35,7 @@ public class GoPromise<T> extends GoFuture<T> {
 	}
 
 	public void fail(Throwable cause) {
-		_result.update(Try.<T>createFailure(cause));
+		_result.update(Try.createFailure(cause));
 	}
 
 	public Port<Try<T>> completer() {

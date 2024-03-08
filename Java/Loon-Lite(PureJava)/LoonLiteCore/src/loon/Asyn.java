@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,24 +20,27 @@
  */
 package loon;
 
+import loon.events.EventActionFuture;
 import loon.utils.TArray;
 import loon.utils.reply.Act;
+import loon.utils.reply.FutureResult;
 import loon.utils.reply.GoPromise;
 import loon.utils.reply.Port;
 
 public abstract class Asyn {
 
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
-	private static class CallDefaultPort<T> extends Port<T>{
+	private static class CallDefaultPort<T> extends Port<T> {
 
 		private Default _def;
 
-		CallDefaultPort(Default d){
+		CallDefaultPort(Default d) {
 			this._def = d;
+
 		}
 
 		@Override
-		public void onEmit(Object event) {
+		public void onEmit(T e) {
 			_def.dispatch();
 		}
 
@@ -45,13 +48,13 @@ public abstract class Asyn {
 
 	public static class Default extends Asyn {
 
-		private final TArray<Runnable> pending = new TArray<>();
-		private final TArray<Runnable> running = new TArray<>();
+		private final TArray<Runnable> pending = new TArray<Runnable>();
+		private final TArray<Runnable> running = new TArray<Runnable>();
 		protected final Log log;
 
 		public Default(Log log, Act<? extends Object> frame) {
 			this.log = log;
-			frame.connect(new CallDefaultPort<>(this)).setPriority(Short.MAX_VALUE);
+			frame.connect(new CallDefaultPort<Object>(this)).setPriority(Short.MAX_VALUE);
 		}
 
 		@Override
@@ -119,6 +122,21 @@ public abstract class Asyn {
 		}
 	}
 
+	private static class CallEventActionPromise<T> extends GoPromise<T> {
+
+		private Asyn _asyn;
+
+		private EventActionFuture<T> _future;
+
+		public CallEventActionPromise(Asyn a, FutureResult<T> f) {
+			this._asyn = a;
+			this._future = new EventActionFuture<T>(this, f);
+			if (_asyn != null) {
+				_asyn.invokeLater(_future);
+			}
+		}
+	}
+
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
 	private static class CallDeferredPromise<T> extends GoPromise<T> {
 
@@ -130,19 +148,21 @@ public abstract class Asyn {
 
 		@Override
 		public void succeed(final T value) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<>(0, this, value,
-					null));
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(0, this, value, null));
 		}
 
 		@Override
 		public void fail(final Throwable cause) {
-			_asyn.invokeLater(new DeferredPromiseRunnable<>(1, this, null,
-					cause));
+			_asyn.invokeLater(new DeferredPromiseRunnable<T>(1, this, null, cause));
 		}
 	}
 
 	public <T> GoPromise<T> deferredPromise() {
-		return new CallDeferredPromise<>(this);
+		return new CallDeferredPromise<T>(Asyn.this);
+	}
+
+	public <T> GoPromise<T> deferredPromise(FutureResult<T> result) {
+		return new CallEventActionPromise<T>(Asyn.this, result);
 	}
 
 	public abstract boolean isAsyncSupported();
@@ -150,4 +170,5 @@ public abstract class Asyn {
 	public void invokeAsync(Runnable action) {
 		throw new UnsupportedOperationException();
 	}
+
 }

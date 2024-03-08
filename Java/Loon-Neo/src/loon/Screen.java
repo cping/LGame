@@ -127,6 +127,8 @@ import loon.utils.processes.YieldExecute;
 import loon.utils.processes.Yielderable;
 import loon.utils.reply.Callback;
 import loon.utils.reply.Closeable;
+import loon.utils.reply.FutureResult;
+import loon.utils.reply.GoFuture;
 import loon.utils.reply.ObjLazy;
 import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
@@ -1762,6 +1764,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Screen resetOnload(int w, int h) {
 		return restart(this, w, h, false);
+	}
+
+	public <T> GoFuture<T> loadFuture(final FutureResult<T> call) {
+		return LSystem.loadFuture(call);
 	}
 
 	public Screen invokeAsync(Runnable runnable) {

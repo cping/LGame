@@ -177,17 +177,6 @@ public class Path2D implements Path {
 				x + 2.0f / 3.0f * (controlX - x), y + 2.0f / 3.0f * (controlY - y), x, y);
 	}
 
-	public Path drawRect(float x, float y, float width, float height) {
-		float x2 = x + width;
-		float y2 = y + height;
-		this.moveTo(x, y);
-		this.lineTo(x2, y);
-		this.lineTo(x2, y2);
-		this.lineTo(x, y2);
-		this.lineTo(x, y);
-		return this;
-	}
-
 	public Path cubicToRel(float controlX1, float controlY1, float controlX2, float controlY2, float x, float y) {
 		return cubicCurveTo(controlX1 + _lastX, controlY1 + _lastY, controlX2 + _lastX, controlY2 + _lastY, x + _lastX,
 				y + _lastY);
@@ -397,8 +386,22 @@ public class Path2D implements Path {
 					end = endAngle;
 				}
 			}
-
 		}
+		this.close();
+		this.stroke();
+		return this;
+	}
+
+	public Path drawRect(float x, float y, float width, float height) {
+		float x2 = x + width;
+		float y2 = y + height;
+		this.moveTo(x, y);
+		this.lineTo(x2, y);
+		this.lineTo(x2, y2);
+		this.lineTo(x, y2);
+		this.lineTo(x, y);
+		this.close();
+		this.stroke();
 		return this;
 	}
 
@@ -468,6 +471,8 @@ public class Path2D implements Path {
 		this.lineTo(xrw, y);
 		this.curveTo(right, y, right, ytw, segments);
 		this.lineTo(right, ybw);
+		this.close();
+		this.stroke();
 		return this;
 	}
 

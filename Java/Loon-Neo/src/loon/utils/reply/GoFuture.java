@@ -47,6 +47,7 @@ public class GoFuture<T> {
 		Try<T> result = _result.get();
 		if (result == null)
 			_result.connect(new ActViewListener<Try<T>>() {
+				@Override
 				public void onEmit(Try<T> result) {
 					if (result.isSuccess()) {
 						slot.onEmit(result.get());

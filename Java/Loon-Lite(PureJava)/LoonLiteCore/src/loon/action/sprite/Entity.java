@@ -82,6 +82,38 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 
+	public final static Entity load(String path) {
+		return new Entity(path);
+	}
+
+	public final static Entity load(LTexture tex) {
+		return new Entity(tex);
+	}
+
+	public final static Entity load(String path, float x, float y) {
+		return new Entity(path, x, y);
+	}
+
+	public final static Entity load(String path, float x, float y, float w, float h) {
+		return new Entity(path, x, y, w, h);
+	}
+
+	public static Entity make(LTexture texture, final float x, final float y) {
+		return new Entity(texture, x, y);
+	}
+
+	public static Entity make(String path, final float x, final float y) {
+		return new Entity(path, x, y);
+	}
+
+	public static Entity make(String path, final Vector2f v) {
+		return new Entity(path, v);
+	}
+
+	public static Entity make(String path) {
+		return new Entity(path, 0, 0);
+	}
+
 	protected Origin _origin = Origin.CENTER;
 	protected boolean _visible = true;
 	protected boolean _deform = true;
@@ -174,6 +206,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this(LSystem.loadTexture(path), x, y);
 	}
 
+	public Entity(final String path, final float x, final float y, final float w, final float h) {
+		this(LSystem.loadTexture(path), x, y, w, h);
+	}
+
 	public Entity(final String path, final Vector2f v) {
 		this(path, v == null ? 0 : v.x, v == null ? 0 : v.y);
 	}
@@ -191,22 +227,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		this._width = w;
 		this._height = h;
 		this._image = texture;
-	}
-
-	public static Entity make(LTexture texture, final float x, final float y) {
-		return new Entity(texture, x, y);
-	}
-
-	public static Entity make(String path, final float x, final float y) {
-		return new Entity(path, x, y);
-	}
-
-	public static Entity make(String path, final Vector2f v) {
-		return new Entity(path, v);
-	}
-
-	public static Entity make(String path) {
-		return new Entity(path, 0, 0);
 	}
 
 	protected void onUpdateColor() {

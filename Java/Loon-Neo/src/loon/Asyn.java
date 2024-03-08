@@ -20,8 +20,10 @@
  */
 package loon;
 
+import loon.events.EventActionFuture;
 import loon.utils.TArray;
 import loon.utils.reply.Act;
+import loon.utils.reply.FutureResult;
 import loon.utils.reply.GoPromise;
 import loon.utils.reply.Port;
 
@@ -120,6 +122,21 @@ public abstract class Asyn {
 		}
 	}
 
+	private static class CallEventActionPromise<T> extends GoPromise<T> {
+
+		private Asyn _asyn;
+
+		private EventActionFuture<T> _future;
+
+		public CallEventActionPromise(Asyn a, FutureResult<T> f) {
+			this._asyn = a;
+			this._future = new EventActionFuture<T>(this, f);
+			if (_asyn != null) {
+				_asyn.invokeLater(_future);
+			}
+		}
+	}
+
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
 	private static class CallDeferredPromise<T> extends GoPromise<T> {
 
@@ -142,6 +159,10 @@ public abstract class Asyn {
 
 	public <T> GoPromise<T> deferredPromise() {
 		return new CallDeferredPromise<T>(Asyn.this);
+	}
+
+	public <T> GoPromise<T> deferredPromise(FutureResult<T> result) {
+		return new CallEventActionPromise<T>(Asyn.this, result);
 	}
 
 	public abstract boolean isAsyncSupported();

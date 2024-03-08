@@ -24,6 +24,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.component.Desktop;
+import loon.events.EventActionFuture;
 import loon.events.InputMake;
 import loon.events.RunnableUpdate;
 import loon.events.Updateable;
@@ -40,6 +41,9 @@ import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
+import loon.utils.reply.FutureResult;
+import loon.utils.reply.GoFuture;
+import loon.utils.reply.GoPromise;
 import loon.utils.reply.Port;
 
 /**
@@ -396,6 +400,28 @@ public abstract class LGame implements LRelease {
 	 */
 	public boolean isAsyncSupported() {
 		return asyn().isAsyncSupported();
+	}
+
+	/**
+	 * 预加载数据并返回结果
+	 * 
+	 * @param <T>
+	 * @param call
+	 * @return
+	 */
+	public <T> GoFuture<T> loadFuture(final FutureResult<T> call) {
+		final Asyn asyn = asyn();
+		if (asyn == null || call == null) {
+			return GoFuture.failure(new LSysException("The Asyn object is null !"));
+		}
+		if (asyn.isAsyncSupported()) {
+			return asyn.deferredPromise(call);
+		}
+		GoPromise<T> result = GoPromise.create();
+		if (processImpl != null) {
+			processImpl.addLoad(new RunnableUpdate(new EventActionFuture<T>(result, call)));
+		}
+		return result;
 	}
 
 	/**

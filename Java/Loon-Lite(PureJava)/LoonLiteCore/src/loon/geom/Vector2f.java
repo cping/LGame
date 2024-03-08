@@ -141,6 +141,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return theta;
 	}
 
+	public final static Vector2f all(float v) {
+		return new Vector2f(v, v);
+	}
+
 	public final static Vector2f at(float x, float y) {
 		return new Vector2f(x, y);
 	}

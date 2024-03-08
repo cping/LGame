@@ -38,6 +38,8 @@ import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.json.JsonImpl;
 import loon.utils.reply.Act;
+import loon.utils.reply.FutureResult;
+import loon.utils.reply.GoFuture;
 
 /**
  * loon的基础操作用类统一调用器及静态参数保存用类
@@ -777,6 +779,11 @@ public final class LSystem {
 
 	public static final boolean isAsyncSupported() {
 		return base() != null ? base().isAsyncSupported() : false;
+	}
+
+	public static final <T> GoFuture<T> loadFuture(final FutureResult<T> call) {
+		return base() != null ? base().loadFuture(call)
+				: GoFuture.failure(new LSysException("The Game is not initialized !"));
 	}
 
 	public static final void invokeAsync(Runnable action) {

@@ -69,6 +69,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return new Vector4f(0, 0, 0, 1);
 	}
 
+	public final static Vector4f all(float v) {
+		return new Vector4f(v, v, v, v);
+	}
+
 	public final static Vector4f at(float x, float y, float z, float w) {
 		return new Vector4f(x, y, z, w);
 	}

@@ -35,13 +35,72 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	 */
 	private static final long serialVersionUID = 1114108169708351982L;
 
-	public float x;
-
-	public float y;
-
-	public float z;
-
 	private static final Array<Vector3f> _VEC3_CACHE = new Array<Vector3f>();
+
+	private final static Vector3f tmpNormal1 = new Vector3f();
+
+	private final static Vector3f tmpNormal2 = new Vector3f();
+
+	public final static Vector3f TMP() {
+		Vector3f temp = _VEC3_CACHE.pop();
+		if (temp == null) {
+			_VEC3_CACHE.add(temp = new Vector3f(0, 0, 0));
+		}
+		return temp;
+	}
+
+	public final static Vector3f ZERO() {
+		return new Vector3f(0);
+	}
+
+	public final static Vector3f HALF() {
+		return new Vector3f(0.5f, 0.5f, 0.5f);
+	}
+
+	public final static Vector3f RIGHT() {
+		return AXIS_X();
+	}
+
+	public final static Vector3f LEFT() {
+		return new Vector3f(-1f, 0f, 0f);
+	}
+
+	public final static Vector3f UP() {
+		return new Vector3f(0f, -1f, 0f);
+	}
+
+	public final static Vector3f DOWN() {
+		return AXIS_Y();
+	}
+
+	public final static Vector3f ONE() {
+		return new Vector3f(1);
+	}
+
+	public final static Vector3f AXIS_X() {
+		return new Vector3f(1, 0, 0);
+	}
+
+	public final static Vector3f AXIS_Y() {
+		return new Vector3f(0, 1, 0);
+	}
+
+	public final static Vector3f AXIS_Z() {
+		return new Vector3f(0, 0, 1);
+	}
+
+	public final static Vector3f all(float v) {
+		return new Vector3f(v, v, v);
+	}
+
+	public final static Vector3f at(float x, float y, float z) {
+		return new Vector3f(x, y, z);
+	}
+
+	public final static Vector3f smoothStep(Vector3f a, Vector3f b, float amount) {
+		return new Vector3f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount),
+				MathUtils.smoothStep(a.z, b.z, amount));
+	}
 
 	public static Vector3f set(Vector3f v1, Vector3f v2) {
 		return set(v1, v2.x, v2.y, v2.z);
@@ -358,46 +417,11 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return result.norSelf();
 	}
 
-	public final static Vector3f TMP() {
-		Vector3f temp = _VEC3_CACHE.pop();
-		if (temp == null) {
-			_VEC3_CACHE.add(temp = new Vector3f(0, 0, 0));
-		}
-		return temp;
-	}
+	public float x;
 
-	public final static Vector3f ZERO() {
-		return new Vector3f(0);
-	}
+	public float y;
 
-	public final static Vector3f ONE() {
-		return new Vector3f(1);
-	}
-
-	public final static Vector3f AXIS_X() {
-		return new Vector3f(1, 0, 0);
-	}
-
-	public final static Vector3f AXIS_Y() {
-		return new Vector3f(0, 1, 0);
-	}
-
-	public final static Vector3f AXIS_Z() {
-		return new Vector3f(0, 0, 1);
-	}
-
-	public final static Vector3f at(float x, float y, float z) {
-		return new Vector3f(x, y, z);
-	}
-
-	public final static Vector3f smoothStep(Vector3f a, Vector3f b, float amount) {
-		return new Vector3f(MathUtils.smoothStep(a.x, b.x, amount), MathUtils.smoothStep(a.y, b.y, amount),
-				MathUtils.smoothStep(a.z, b.z, amount));
-	}
-
-	private final static Vector3f tmpNormal1 = new Vector3f();
-
-	private final static Vector3f tmpNormal2 = new Vector3f();
+	public float z;
 
 	public Vector3f() {
 		this(0, 0, 0);
@@ -406,7 +430,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public Vector3f(float x, float y, float z) {
 		this.set(x, y, z);
 	}
-	
+
 	public Vector3f(final XYZ v) {
 		this.set(v);
 	}
@@ -441,7 +465,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public Vector3f set(final XYZ v) {
 		return this.set(v.getX(), v.getY(), v.getZ());
 	}
-	
+
 	public Vector3f set(final Vector3f v) {
 		return this.set(v.x, v.y, v.z);
 	}
@@ -744,7 +768,7 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	public final Vector3f setEmpty() {
 		return set(0f);
 	}
-	
+
 	public Vector3f setLength2Self(float len2) {
 		float oldLen2 = len2();
 		return (oldLen2 == 0 || oldLen2 == len2) ? this : scaleSelf(MathUtils.sqrt(len2 / oldLen2));

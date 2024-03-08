@@ -60,6 +60,8 @@ import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
+import loon.utils.reply.FutureResult;
+import loon.utils.reply.GoFuture;
 import loon.utils.timer.Duration;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimer;
@@ -1089,6 +1091,11 @@ public final class LSystem {
 
 	public static final boolean isAsyncSupported() {
 		return base() != null ? base().isAsyncSupported() : false;
+	}
+
+	public static final <T> GoFuture<T> loadFuture(final FutureResult<T> call) {
+		return base() != null ? base().loadFuture(call)
+				: GoFuture.failure(new LSysException("The Game is not initialized !"));
 	}
 
 	public static final void invokeAsync(Runnable action) {

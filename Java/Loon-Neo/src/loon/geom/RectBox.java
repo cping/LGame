@@ -41,6 +41,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return new RectBox(0, 0, 0, 0);
 	}
 
+	public static RectBox HALF() {
+		return new RectBox(0.5f, 0.5f, 0.5f, 0.5f);
+	}
+
+	public static RectBox ONE() {
+		return new RectBox(1, 1, 1, 1);
+	}
+
 	public static RectBox toPixels(final RectBox rect, final XY point) {
 		return new RectBox(rect.getX() * point.getX(), rect.getY() * point.getY(), rect.getWidth() * point.getX(),
 				rect.getHeight() * point.getY());
@@ -68,6 +76,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return out;
 	}
 
+	public final static RectBox from(float x, float y, float w, float h) {
+		return new RectBox(x, y, w, h);
+	}
+
 	public final static RectBox at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new RectBox();
@@ -85,6 +97,10 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 			}
 		}
 		return new RectBox();
+	}
+
+	public final static RectBox all(float v) {
+		return new RectBox(v, v, v, v);
 	}
 
 	public final static RectBox at(int x, int y, int w, int h) {

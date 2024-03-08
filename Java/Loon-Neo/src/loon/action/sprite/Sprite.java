@@ -64,6 +64,22 @@ public class Sprite extends LObject<ISprite>
 
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(false);
 
+	public final static Sprite load(String path) {
+		return new Sprite(path);
+	}
+
+	public final static Sprite load(LTexture tex) {
+		return new Sprite(tex);
+	}
+
+	public final static Sprite load(String path, int row, int col) {
+		return new Sprite(path, row, col);
+	}
+
+	public final static Sprite load(String path, int row, int col, long delay) {
+		return new Sprite(path, row, col, delay);
+	}
+
 	private Origin _origin = Origin.CENTER;
 
 	protected TArray<ISprite> _childrens = null;
