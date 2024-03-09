@@ -127,10 +127,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected float _skewCenterX = -1;
 	protected float _skewCenterY = -1;
 
-	private ResizeListener<IEntity> _resizeListener;
-
-	private SpriteCollisionListener _collSpriteListener;
-
 	private boolean _stopUpdate = false;
 
 	protected float _width, _height;
@@ -637,6 +633,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		}
 	}
 
+	@Override
 	public IEntity removeChildren() {
 		super.removeChilds();
 		return this;
@@ -846,10 +843,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 				}
 			}
 			if (_debugDraw) {
-				final boolean useAll = g.isAlltextures();
-				g.setAlltextures(true);
 				g.drawRect(nx, ny, _width, _height, _debugDrawColor);
-				g.setAlltextures(useAll);
 			}
 			if (update) {
 				g.restoreBrush();
@@ -1239,17 +1233,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		final StrBuilder sbr = new StrBuilder();
 		this.toString(sbr);
 		return sbr.toString();
-	}
-
-	@Override
-	public void clear() {
-		if (_childrens != null) {
-			removeChildren();
-		}
-	}
-
-	public Vector2f getOffset() {
-		return _offset;
 	}
 
 	public IEntity setOffset(float x, float y) {

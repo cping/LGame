@@ -37,6 +37,7 @@ import loon.action.map.Field2D;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.EventAction;
+import loon.events.ResizeListener;
 import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.geom.BoxSize;
@@ -87,7 +88,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	protected Shape _otherShape = null;
 
-	protected ShapeNodeType _oldNodeType;
+	protected ShapeNodeType _oldNodeType = null;
+
+	protected ResizeListener<T> _resizeListener = null;
+	protected SpriteCollisionListener _collSpriteListener = null;
 
 	protected Sprites _sprites = null;
 
@@ -173,6 +177,13 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return;
 	}
 
+	@Override
+	public void clear() {
+		if (_childrens != null) {
+			removeChilds();
+		}
+	}
+
 	public T getChildByIndex(int idx) {
 		if (this._childrens == null || (idx < 0 || idx > this._childrens.size - 1)) {
 			return null;
@@ -220,6 +231,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
+	}
+
+	public Vector2f getOffset() {
+		return _offset;
 	}
 
 	public Vector2f getTouchOffset() {

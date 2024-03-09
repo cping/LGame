@@ -76,15 +76,11 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	// 动画
 	private Animation _animation = new Animation();
 
-	private ResizeListener<Sprite> _resizeListener;
-
 	private int _transform;
 
 	private LColor _filterColor;
 
 	private Vector2f _pivot = new Vector2f(-1, -1);
-
-	private SpriteCollisionListener _collSpriteListener;
 
 	/**
 	 * 默认构造函数
@@ -496,11 +492,11 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		if (!this._ignoreUpdate) {
 			_animation.update(elapsedTime);
 			onUpdate(elapsedTime);
-			if (_childrens != null && !this._childrenIgnoreUpdate) {
-				final TArray<ISprite> entities = this._childrens;
-				final int entityCount = entities.size;
-				for (int i = 0; i < entityCount; i++) {
-					entities.get(i).update(elapsedTime);
+			if (!this._childrenIgnoreUpdate && _childrens != null) {
+				final TArray<ISprite> childs = this._childrens;
+				final int count = childs.size;
+				for (int i = 0; i < count; i++) {
+					childs.get(i).update(elapsedTime);
 				}
 			}
 			if (_loopAction != null) {
@@ -632,7 +628,10 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 				}
 			}
 			if (_childrenVisible && _childrens != null && _childrens.size > 0) {
-				for (ISprite spr : _childrens) {
+				final TArray<ISprite> childs = this._childrens;
+				final int count = childs.size;
+				for (int i = 0; i < count; i++) {
+					ISprite spr = childs.get(i);
 					if (spr != null) {
 						float px = 0, py = 0;
 						ISprite parent = spr.getParent();
@@ -924,13 +923,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	@Override
-	public void clear() {
-		if (_childrens != null) {
-			removeChilds();
-		}
-	}
-
-	@Override
 	public ISprite setSprites(Sprites ss) {
 		if (this._sprites == ss) {
 			return this;
@@ -1087,11 +1079,11 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this._childrens.contains(e);
 	}
 
-	public ResizeListener<Sprite> getResizeListener() {
+	public ResizeListener<ISprite> getResizeListener() {
 		return _resizeListener;
 	}
 
-	public Sprite setResizeListener(ResizeListener<Sprite> listener) {
+	public Sprite setResizeListener(ResizeListener<ISprite> listener) {
 		this._resizeListener = listener;
 		return this;
 	}
