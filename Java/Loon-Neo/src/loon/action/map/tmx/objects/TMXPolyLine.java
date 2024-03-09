@@ -47,11 +47,11 @@ public class TMXPolyLine {
 	}
 
 	public void parse(Json.Object element) {
-		String pointsLine = element.getString("points", LSystem.EMPTY).trim();
+		final String pointsLine = element.getString("points", LSystem.EMPTY).trim();
+		final String[] list = StringUtils.split(pointsLine, LSystem.SPACE);
 
-		for (String token : pointsLine.split(" ")) {
-			String[] subTokens = token.split(",");
-
+		for (int i = 0; i < list.length; i++) {
+			String[] subTokens = StringUtils.split(list[i], LSystem.COMMA);
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
@@ -61,10 +61,11 @@ public class TMXPolyLine {
 	}
 
 	public void parse(XMLElement element) {
-		String pointsLine = element.getAttribute("points", LSystem.EMPTY).trim();
+		final String pointsLine = element.getAttribute("points", LSystem.EMPTY).trim();
+		final String[] list = StringUtils.split(pointsLine, LSystem.SPACE);
 
-		for (String token : pointsLine.split(" ")) {
-			String[] subTokens = token.split(",");
+		for (int i = 0; i < list.length; i++) {
+			String[] subTokens = StringUtils.split(list[i], LSystem.COMMA);
 
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());

@@ -904,8 +904,8 @@ public class Vector2f implements Serializable, SetXY, XY {
 		float cos = MathUtils.cos(rad);
 		float sin = MathUtils.sin(rad);
 
-		float nx = cx + (this.x - cx) * MathUtils.cos(rad) - (this.y - cy) * sin;
-		float ny = cy + (this.x - cx) * MathUtils.sin(rad) + (this.y - cy) * cos;
+		float nx = cx + (this.x - cx) * cos - (this.y - cy) * sin;
+		float ny = cy + (this.x - cx) * sin + (this.y - cy) * cos;
 
 		return set(nx, ny);
 	}

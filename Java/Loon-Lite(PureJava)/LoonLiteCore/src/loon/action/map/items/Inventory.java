@@ -26,6 +26,9 @@ import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.utils.TArray;
 
+/**
+ * 物品背包类,一般配合商店或物品栏使用，具体的物品展示组件loon提供有LInventory这一专用背包类UI
+ */
 public class Inventory {
 
 	private final TArray<IItem> _items;

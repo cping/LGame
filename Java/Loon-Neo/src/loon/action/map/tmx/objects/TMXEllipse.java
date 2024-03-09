@@ -21,6 +21,7 @@
 package loon.action.map.tmx.objects;
 
 public class TMXEllipse {
+	
 	private int x;
 	private int y;
 	private int radiusX;

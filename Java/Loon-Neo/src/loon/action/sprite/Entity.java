@@ -28,47 +28,28 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
-import loon.PlayerUtils;
-import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionBindData;
 import loon.action.ActionControl;
 import loon.action.ActionListener;
-import loon.action.ActionTween;
 import loon.action.PlaceActions;
-import loon.action.collision.CollisionHelper;
-import loon.action.collision.CollisionMask;
-import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
-import loon.action.map.Field2D;
 import loon.action.sprite.Sprites.Created;
-import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.layout.LayoutAlign;
 import loon.events.EventAction;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
-import loon.events.SysKey;
-import loon.events.SysTouch;
 import loon.geom.Affine2f;
-import loon.geom.BoxSize;
 import loon.geom.Circle;
 import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
-import loon.geom.Point;
-import loon.geom.PointF;
-import loon.geom.PointI;
-import loon.geom.Polygon;
 import loon.geom.RectBox;
-import loon.geom.Shape;
-import loon.geom.ShapeNodeType;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.HelperUtils;
-import loon.utils.IArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -78,9 +59,10 @@ import loon.utils.TArray;
 /**
  * 一个精灵类的具体实现,可以用来充当ECS模式中的实体对象用类(当然,Loon中并不强制要求使用ECS模式进行开发)
  */
-public class Entity extends LObject<IEntity> implements CollisionObject, IEntity, IArray, BoxSize {
+public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
+	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
 
 	public final static Entity load(String path) {
 		return new Entity(path);
@@ -114,16 +96,10 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return new Entity(path, 0, 0);
 	}
 
-	protected Origin _origin = Origin.CENTER;
-	protected boolean _visible = true;
 	protected boolean _deform = true;
-	protected boolean _ignoreUpdate = false;
-	protected boolean _childrenVisible = true;
-	protected boolean _childrenIgnoreUpdate = false;
-	protected boolean _childrenSortPending = false;
-	protected boolean _componentsIgnoreUpdate = false;
-	protected boolean _debugDraw = false;
 
+	protected boolean _componentsIgnoreUpdate = false;
+	protected boolean _childrenSortPending = false;
 	protected boolean _followRotation = true;
 	protected boolean _followScale = true;
 	protected boolean _followColor = true;
@@ -140,24 +116,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
-	private LColor _debugDrawColor = LColor.red;
-
-	private Vector2f _touchOffset = new Vector2f();
-
-	protected Vector2f _offset = new Vector2f();
-
-	private Vector2f _touchPoint = new Vector2f();
-	private boolean _createShadow;
-	private boolean _xySort;
-
-	protected float _fixedWidthOffset = 0f;
-	protected float _fixedHeightOffset = 0f;
 
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
-
-	protected float _scaleX = 1f;
-	protected float _scaleY = 1f;
 
 	protected float _scaleCenterX = -1;
 	protected float _scaleCenterY = -1;
@@ -168,29 +129,13 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	protected float _skewCenterX = -1;
 	protected float _skewCenterY = -1;
 
-	protected boolean _flipX = false, _flipY = false;
-
-	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
-
 	private ResizeListener<IEntity> _resizeListener;
 
 	private SpriteCollisionListener _collSpriteListener;
 
 	private boolean _stopUpdate = false;
 
-	private Sprites _sprites = null;
-
-	private EventAction _loopAction;
-
-	private Shape _otherShape = null;
-
-	private float _oldShapeRectX, _oldShapeRectY, _oldShapeRectW, _oldShapeRectH;
-
-	private ShapeNodeType _oldNodeType;
-
 	protected float _width, _height;
-
-	protected LTexture _image;
 
 	protected LRelease _disposed;
 
@@ -260,16 +205,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public boolean isVisible() {
-		return this._visible;
-	}
-
-	@Override
-	public void setVisible(final boolean v) {
-		this._visible = v;
-	}
-
-	@Override
 	public boolean isChildrenVisible() {
 		return this._childrenVisible;
 	}
@@ -278,16 +213,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity setChildrenVisible(final boolean v) {
 		this._childrenVisible = v;
 		return this;
-	}
-
-	@Override
-	public boolean isIgnoreUpdate() {
-		return this._ignoreUpdate;
-	}
-
-	@Override
-	public void setIgnoreUpdate(final boolean u) {
-		this._ignoreUpdate = u;
 	}
 
 	@Override
@@ -310,11 +235,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity setIndexTag(final int idx) {
 		this._idxTag = idx;
 		return this;
-	}
-
-	@Override
-	public boolean isRotated() {
-		return this._objectRotation != 0f;
 	}
 
 	@Override
@@ -383,21 +303,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity coord(float x, float y) {
 		setLocation(x, y);
 		return this;
-	}
-
-	@Override
-	public boolean isScaled() {
-		return (this._scaleX != 1) || (this._scaleY != 1);
-	}
-
-	@Override
-	public float getScaleX() {
-		return this._scaleX;
-	}
-
-	@Override
-	public float getScaleY() {
-		return this._scaleY;
 	}
 
 	@Override
@@ -885,58 +790,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	public float getScreenX() {
-		ISprite parent = getParent();
-		if (parent == null) {
-			return getX();
-		}
-		if (parent instanceof SpriteEntity) {
-			return getX();
-		}
-		float x = 0;
-		if (parent != null) {
-			x += parent.getX();
-			for (; (parent = parent.getParent()) != null;) {
-				x += parent.getX();
-			}
-		}
-		return x + getX();
-	}
-
-	public float getScreenY() {
-		ISprite parent = getParent();
-		if (parent == null) {
-			return getY();
-		}
-		if (parent instanceof SpriteEntity) {
-			return getY();
-		}
-		float y = 0;
-		if (parent != null) {
-			y += parent.getY();
-			for (; (parent = parent.getParent()) != null;) {
-				y += parent.getY();
-			}
-		}
-		return y + getY();
-	}
-
-	public float getCurrentX() {
-		return this.getX() + _offset.x;
-	}
-
-	public float getCurrentY() {
-		return this.getY() + _offset.y;
-	}
-
-	public float centerX() {
-		return getX() + (getWidth() / 2f);
-	}
-
-	public float centerY() {
-		return getY() + (getHeight() / 2f);
-	}
-
 	public float getXdistance(Entity target) {
 		return MathUtils.abs(getCenterX() - target.getCenterX());
 	}
@@ -1080,6 +933,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
+	@Override
 	public float getScreenScalePixelX() {
 		if (_scaleCenterX != -1f) {
 			return getScreenX() + _scaleCenterX;
@@ -1087,27 +941,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
 	}
 
+	@Override
 	public float getScreenScalePixelY() {
 		if (_scaleCenterY != -1f) {
 			return getScreenY() + _scaleCenterY;
 		}
 		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
-	}
-
-	public Entity placeToCenter(ActionBind ab) {
-		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
-				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
-		return this;
-	}
-
-	public Entity placeToCenterX(ActionBind ab, float x) {
-		ab.setLocation(x, getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
-		return this;
-	}
-
-	public Entity placeToCenterY(ActionBind ab, float y) {
-		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
-		return this;
 	}
 
 	private void allocateChildren() {
@@ -1237,13 +1076,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	}
 
-	public boolean isCollision(Entity o) {
-		if (o == null) {
-			return false;
-		}
-		RectBox src = getCollisionArea();
-		RectBox dst = o.getCollisionArea();
-		return src.intersects(dst) || src.contains(dst);
+	@Override
+	public float getAniWidth() {
+		return this._width;
+	}
+
+	@Override
+	public float getAniHeight() {
+		return this._height;
 	}
 
 	public int width() {
@@ -1267,41 +1107,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public Field2D getField2D() {
-		return null;
-	}
-
-	@Override
-	public boolean isBounded() {
-		return false;
-	}
-
-	@Override
 	public boolean isContainer() {
 		return _childrens != null && _childrens.size > 0;
 	}
 
 	@Override
-	public boolean inContains(float x, float y, float w, float h) {
-		return getCollisionBox().contains(x, y, w, h);
-	}
-
-	@Override
-	public RectBox getCollisionArea() {
-		return getCollisionBox();
-	}
-
-	@Override
-	public RectBox getRectBox() {
-		return getCollisionBox();
-	}
-
-	@Override
-	public RectBox getCollisionBox() {
-		return setRect(MathUtils.getBounds(getScreenScalePixelX(), getScreenScalePixelY(), getWidth(), getHeight(),
-				_objectRotation, _objectRect));
-	}
-
 	public float getScalePixelX() {
 		if (_scaleCenterX != -1f) {
 			return getX() + _scaleCenterX;
@@ -1309,6 +1119,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
 	}
 
+	@Override
 	public float getScalePixelY() {
 		if (_scaleCenterY != -1f) {
 			return getY() + _scaleCenterY;
@@ -1342,18 +1153,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 			}
 		}
 		return max;
-	}
-
-	@Override
-	public LTexture getBitmap() {
-		return _image;
-	}
-
-	public void clearImage() {
-		if (_image != null) {
-			_image.close();
-			_image = null;
-		}
 	}
 
 	@Override
@@ -1455,10 +1254,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		}
 	}
 
-	public Origin getOrigin() {
-		return _origin;
-	}
-
 	public IEntity setOrigin(Origin o) {
 		this._origin = o;
 		return this;
@@ -1493,142 +1288,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public boolean isFlipX() {
-		return _flipX;
-	}
-
-	@Override
-	public boolean isFlipY() {
-		return _flipY;
-	}
-
-	@Override
-	public boolean collides(ISprite e) {
-		if (e == null || !e.isVisible()) {
-			return false;
-		}
-		return intersects(e.getCollisionBox());
-	}
-
-	@Override
-	public boolean collidesX(ISprite other) {
-		if (other == null || !other.isVisible()) {
-			return false;
-		}
-		RectBox rectSelf = getRectBox();
-		RectBox rectDst = getRectBox();
-		return CollisionHelper.checkAABBvsAABB(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight(),
-				rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
-	}
-
-	@Override
-	public boolean collidesY(ISprite other) {
-		if (other == null || !other.isVisible()) {
-			return false;
-		}
-		RectBox rectSelf = getRectBox();
-		RectBox rectDst = getRectBox();
-		return CollisionHelper.checkAABBvsAABB(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight(), 0,
-				rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
-	}
-
-	public float getTouchDX() {
-		final Screen screen = getScreen();
-		return toPixelScaleX(screen == null ? SysTouch.getDX() : screen.getTouchDX());
-	}
-
-	public float getTouchDY() {
-		final Screen screen = getScreen();
-		return toPixelScaleY(screen == null ? SysTouch.getDY() : screen.getTouchDY());
-	}
-
-	public float getTouchX() {
-		final Screen screen = getScreen();
-		return toPixelScaleX(screen == null ? SysTouch.getX() : screen.getTouchX());
-	}
-
-	public float getTouchY() {
-		final Screen screen = getScreen();
-		return toPixelScaleY(screen == null ? SysTouch.getY() : screen.getTouchY());
-	}
-
-	public boolean isPointInUI(Vector2f v) {
-		return isPointInUI(v.x, v.y);
-	}
-
-	public boolean isPointInUI(PointI p) {
-		return isPointInUI(p.x, p.y);
-	}
-
-	public boolean isPointInUI(PointF p) {
-		return isPointInUI(p.x, p.y);
-	}
-
-	public boolean isPointInUI(float x, float y) {
-		return getCollisionBox().contains(x, y);
-	}
-
-	public boolean isPointInUI() {
-		return isPointInUI(getTouchX(), getTouchY());
-	}
-
-	public boolean isKeyDown(int key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysKey.isKeyPressed(key);
-		}
-		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
-	}
-
-	public boolean isKeyUp(int key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysKey.isKeyReleased(key);
-		}
-		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
-	}
-
-	public boolean isKeyDown(String key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysKey.isKeyPressed(key);
-		}
-		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
-	}
-
-	public boolean isKeyUp(String key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysKey.isKeyReleased(key);
-		}
-		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
-	}
-
-	public boolean isClickDown() {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysTouch.isDown();
-		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
-	}
-
-	public boolean isClickUp() {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysTouch.isUp();
-		}
-		return screen.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
-	}
-
-	public boolean isClickDrag() {
-		final Screen screen = getScreen();
-		if (screen == null) {
-			return SysTouch.isDrag();
-		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
-	}
-
-	@Override
 	public void toString(final StrBuilder s) {
 		s.append(super.toString());
 		if ((this._childrens != null) && (this._childrens.size > 0)) {
@@ -1650,16 +1309,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		final StrBuilder sbr = new StrBuilder();
 		this.toString(sbr);
 		return sbr.toString();
-	}
-
-	@Override
-	public ActionTween selfAction() {
-		return PlayerUtils.set(this);
-	}
-
-	@Override
-	public boolean isActionCompleted() {
-		return PlayerUtils.isActionCompleted(this);
 	}
 
 	@Override
@@ -1699,50 +1348,14 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	@Override
-	public float getOffsetX() {
-		return _offset.x;
-	}
-
 	public IEntity setOffsetX(float offsetX) {
 		this._offset.setX(offsetX);
 		return this;
 	}
 
-	@Override
-	public float getOffsetY() {
-		return _offset.y;
-	}
-
 	public IEntity setOffsetY(float offsetY) {
 		this._offset.setY(offsetY);
 		return this;
-	}
-
-	protected float drawX(float offsetX) {
-		return offsetX + this._objectLocation.x + _offset.x;
-	}
-
-	protected float drawY(float offsetY) {
-		return offsetY + this._objectLocation.y + _offset.y;
-	}
-
-	public float getDrawX() {
-		return drawX(0);
-	}
-
-	public float getDrawY() {
-		return drawY(0);
-	}
-
-	@Override
-	public float getCenterX() {
-		return getX() + getWidth() / 2f;
-	}
-
-	@Override
-	public float getCenterY() {
-		return getY() + getHeight() / 2f;
 	}
 
 	public IEntity in() {
@@ -1790,120 +1403,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public ISprite setSprites(Sprites ss) {
+	public IEntity setSprites(Sprites ss) {
 		if (this._sprites == ss) {
 			return this;
 		}
 		this._sprites = ss;
 		return this;
-	}
-
-	@Override
-	public Sprites getSprites() {
-		return this._sprites;
-	}
-
-	private float toPixelScaleX(float x) {
-		return MathUtils.iceil(x / _scaleX);
-	}
-
-	private float toPixelScaleY(float y) {
-		return MathUtils.iceil(y / _scaleY);
-	}
-
-	public Vector2f getUITouch(float x, float y) {
-		return getUITouch(x, y, null);
-	}
-
-	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
-		if (!(x == -1 && y == -1 && pointResult != null)) {
-			if (pointResult == null) {
-				pointResult = new Vector2f(x, y);
-			} else {
-				pointResult.set(x, y);
-			}
-		}
-		float newX = 0f;
-		float newY = 0f;
-		IEntity parent = getParent();
-		if (parent != null) {
-			newX = pointResult.x - parent.getX() - getX();
-			newY = pointResult.y - parent.getX() - getY();
-		} else {
-			newX = pointResult.x - getX();
-			newY = pointResult.y - getY();
-		}
-		final float angle = getRotation();
-		if (angle == 0 || angle == 360) {
-			pointResult.x = toPixelScaleX(newX) + _touchOffset.x;
-			pointResult.y = toPixelScaleY(newY) + _touchOffset.y;
-			return pointResult;
-		}
-		float oldWidth = _width;
-		float oldHeight = _height;
-		float newWidth = getWidth();
-		float newHeight = getHeight();
-		float offX = oldWidth / 2f - newWidth / 2f;
-		float offY = oldHeight / 2f - newHeight / 2f;
-		float posX = (newX - offX);
-		float posY = (newY - offY);
-		if (angle == 90) {
-			offX = oldHeight / 2f - newWidth / 2f;
-			offY = oldWidth / 2f - newHeight / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
-			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this._height));
-		} else if (angle == -90) {
-			offX = oldHeight / 2f - newWidth / 2f;
-			offY = oldWidth / 2f - newHeight / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
-			pointResult.set(-(pointResult.x - this._width), MathUtils.abs(pointResult.y));
-		} else if (angle == -180 || angle == 180) {
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation()).addSelf(_width, _height);
-		} else {
-			float rad = MathUtils.toRadians(angle);
-			float sin = MathUtils.sin(rad);
-			float cos = MathUtils.cos(rad);
-			float dx = offX / getScaleX();
-			float dy = offY / getScaleY();
-			float dx2 = cos * dx - sin * dy;
-			float dy2 = sin * dx + cos * dy;
-			pointResult.x = _width - (newX - dx2);
-			pointResult.y = _height - (newY - dy2);
-		}
-		pointResult.addSelf(_touchOffset);
-		return pointResult;
-	}
-
-	public Vector2f getUITouchXY() {
-		float newX = 0f;
-		float newY = 0f;
-		if (getRotation() == 0) {
-			if (_objectSuper == null) {
-				newX = toPixelScaleX(SysTouch.getX() - getX());
-				newY = toPixelScaleY(SysTouch.getY() - getY());
-			} else {
-				newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
-				newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
-			}
-			_touchPoint.set(newX, newY).addSelf(_touchOffset);
-		} else {
-			newX = SysTouch.getX();
-			newY = SysTouch.getY();
-			return getUITouch(newX, newY, _touchPoint);
-		}
-		return _touchPoint;
-	}
-
-	public float getUITouchX() {
-		return getUITouchXY().x;
-	}
-
-	public float getUITouchY() {
-		return getUITouchXY().y;
 	}
 
 	protected void onRotation() {
@@ -2032,78 +1537,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	@Override
-	public Screen getScreen() {
-		if (this._sprites == null) {
-			return LSystem.getProcess().getScreen();
-		}
-		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
-	}
-
-	@Override
-	public float getContainerX() {
-		if (_objectSuper != null) {
-			return getScreenX() - getX();
-		}
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
-	}
-
-	@Override
-	public float getContainerY() {
-		if (_objectSuper != null) {
-			return getScreenX() - getY();
-		}
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
-	}
-
-	@Override
-	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
-	}
-
-	@Override
-	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
-	}
-
-	@Override
-	public RectBox getBoundingRect() {
-		return getCollisionBox();
-	}
-
-	@Override
-	public boolean containsPoint(float x, float y) {
-		return inContains(x, y, 1, 1);
-	}
-
-	@Override
-	public boolean contains(CollisionObject o) {
-		return getCollisionBox().contains(o.getRectBox());
-	}
-
-	@Override
-	public boolean intersects(CollisionObject o) {
-		return getCollisionBox().intersects(o.getRectBox());
-	}
-
-	@Override
-	public boolean intersects(Shape s) {
-		return getCollisionBox().intersects(s);
-	}
-
-	@Override
-	public boolean contains(Shape shape) {
-		return getCollisionBox().contains(shape);
-	}
-
-	public boolean collided(Shape shape) {
-		return getCollisionBox().collided(shape);
-	}
-
-	public Gravity getGravity() {
-		return new Gravity("IEntity", this);
-	}
-
 	public IEntity softCenterOn(float x, float y) {
 		final RectBox rect = getSprites() == null ? LSystem.viewSize.getRect() : getSprites().getBoundingBox();
 		final IEntity sprite = this.getSuper();
@@ -2142,34 +1575,21 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	@Override
-	public boolean showShadow() {
-		return _createShadow;
-	}
-
 	public Entity createShadow(boolean s) {
 		this._createShadow = s;
 		return this;
 	}
 
-	public boolean isDebugDraw() {
-		return _debugDraw;
-	}
-
-	public ISprite setDebugDraw(boolean debug) {
+	public IEntity setDebugDraw(boolean debug) {
 		this._debugDraw = debug;
 		return this;
 	}
 
-	public ISprite debug() {
+	public IEntity debug() {
 		return setDebugDraw(true);
 	}
 
-	public LColor getDebugDrawColor() {
-		return _debugDrawColor.cpy();
-	}
-
-	public ISprite setDebugDrawColor(LColor debugColor) {
+	public IEntity setDebugDrawColor(LColor debugColor) {
 		if (debugColor == null) {
 			return this;
 		}
@@ -2234,7 +1654,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public ISprite setFixedWidthOffset(float fixedWidthOffset) {
+	public IEntity setFixedWidthOffset(float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
 		return this;
 	}
@@ -2245,7 +1665,7 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	}
 
 	@Override
-	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
+	public IEntity setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 		return this;
 	}
@@ -2257,10 +1677,6 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 	public IEntity setRepaintAutoOffset(boolean autoOffset) {
 		this._repaintAutoOffset = autoOffset;
 		return this;
-	}
-
-	public boolean isMirror() {
-		return this._flipX;
 	}
 
 	public IEntity setMirror(boolean mirror) {
@@ -2356,35 +1772,11 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return result;
 	}
 
-	public Vector2f getTouchOffset() {
-		return _touchOffset;
-	}
-
-	public Entity setTouchOffset(Vector2f offset) {
-		if (offset != null) {
-			this._touchOffset = offset;
-		}
-		return this;
-	}
-
-	public Entity setTouchOffset(float x, float y) {
-		return setTouchOffset(Vector2f.at(x, y));
-	}
-
 	public boolean hasChild(IEntity e) {
 		if (_childrens == null) {
 			return false;
 		}
 		return this._childrens.contains(e);
-	}
-
-	public boolean hasActions() {
-		return ActionControl.get().containsKey(this);
-	}
-
-	public Entity clearActions() {
-		ActionControl.get().removeAllActions(this);
-		return this;
 	}
 
 	@Override
@@ -2418,73 +1810,9 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 		return this;
 	}
 
-	@Override
-	public boolean autoXYSort() {
-		return _xySort;
-	}
-
 	public Entity setAutoXYSort(boolean a) {
 		this._xySort = a;
 		return this;
-	}
-
-	public Shape getShape() {
-		return getShape(ShapeNodeType.Rectangle);
-	}
-
-	public Shape getShape(ShapeNodeType nodeType) {
-		final RectBox rect = getCollisionBox();
-		if (_oldShapeRectX == rect.x && _oldShapeRectY == rect.y && _oldShapeRectW == rect.width
-				&& _oldShapeRectH == rect.height && _oldNodeType == nodeType && _otherShape != null) {
-			return _otherShape;
-		}
-		switch (nodeType) {
-		case Rectangle:
-		default:
-			_otherShape = rect;
-			break;
-		case Circle:
-			_otherShape = Circle.rect(rect.x, rect.y, rect.width, rect.height);
-			break;
-		case Ellipse:
-			_otherShape = Ellipse.rect(rect.x, rect.y, rect.width, rect.height);
-			break;
-		case Polygon:
-			if (_image != null) {
-				Image img = _image.getImage();
-				if (img != null) {
-					_otherShape = CollisionMask.makePolygon(img).setLocation(rect.x, rect.y);
-				} else if (!_image.isImageCanvas()) {
-					_otherShape = CollisionMask.makePolygon(_image.getSource()).setLocation(rect.x, rect.y);
-				} else {
-					int[] pixels = _image.getPixels();
-					if (pixels != null) {
-						_otherShape = CollisionMask.makePolygon(pixels, _image.getWidth(), _image.getHeight())
-								.setLocation(rect.x, rect.y);
-					} else {
-						_otherShape = Polygon.rect(rect.x, rect.y, rect.width, rect.height);
-					}
-				}
-			} else {
-				_otherShape = Polygon.rect(rect.x, rect.y, rect.width, rect.height);
-			}
-			break;
-		case Line:
-			_otherShape = Line.rect(rect.x, rect.y, rect.width, rect.height);
-			break;
-		case Triangle:
-			_otherShape = Triangle2f.at(rect.x, rect.y, rect.width, rect.height);
-			break;
-		case Point:
-			_otherShape = new Point(rect.x, rect.y);
-			break;
-		}
-		_oldShapeRectX = rect.x;
-		_oldShapeRectY = rect.y;
-		_oldShapeRectW = rect.width;
-		_oldShapeRectH = rect.height;
-		_oldNodeType = nodeType;
-		return _otherShape;
 	}
 
 	/**
@@ -2656,12 +1984,12 @@ public class Entity extends LObject<IEntity> implements CollisionObject, IEntity
 
 	@Override
 	public boolean isComponentIgnoreUpdate() {
-		return _childrenIgnoreUpdate;
+		return _componentsIgnoreUpdate;
 	}
 
 	@Override
 	public IEntity setComponentIgnoreUpdate(boolean c) {
-		this._childrenIgnoreUpdate = c;
+		this._componentsIgnoreUpdate = c;
 		return this;
 	}
 

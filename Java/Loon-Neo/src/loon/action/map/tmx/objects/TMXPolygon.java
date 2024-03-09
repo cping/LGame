@@ -22,6 +22,8 @@ package loon.action.map.tmx.objects;
 
 import loon.Json;
 import loon.LSystem;
+import loon.geom.Polygon;
+import loon.utils.FloatArray;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
@@ -30,8 +32,26 @@ public class TMXPolygon {
 
 	private TArray<TMXPoint> points;
 
+	private FloatArray arrays;
+
+	private Polygon polygon;
+
 	public TMXPolygon() {
 		points = new TArray<TMXPoint>();
+		arrays = new FloatArray();
+	}
+
+	public Polygon getPolygon() {
+		if (polygon == null) {
+			polygon = new Polygon(arrays.toArray());
+		} else {
+			polygon.setPolygon(arrays.toArray(), arrays.length);
+		}
+		return polygon;
+	}
+
+	public FloatArray getFloatPoints() {
+		return arrays;
 	}
 
 	public TMXPoint getPoint(int index) {
@@ -47,28 +67,34 @@ public class TMXPolygon {
 	}
 
 	public void parse(Json.Object element) {
-		String pointsLine = element.getString("points", LSystem.EMPTY).trim();
 
-		for (String token : pointsLine.split(" ")) {
-			String[] subTokens = token.split(",");
+		final String pointsLine = element.getString("points", LSystem.EMPTY).trim();
+		final String[] list = StringUtils.split(pointsLine, LSystem.SPACE);
+
+		for (int i = 0; i < list.length; i++) {
+			String[] subTokens = StringUtils.split(list[i], LSystem.COMMA);
 
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
+			arrays.add(point.x, point.y);
 
 			points.add(point);
 		}
 	}
 
 	public void parse(XMLElement element) {
-		String pointsLine = element.getAttribute("points", LSystem.EMPTY).trim();
 
-		for (String token : pointsLine.split(" ")) {
-			String[] subTokens = token.split(",");
+		final String pointsLine = element.getAttribute("points", LSystem.EMPTY).trim();
+		final String[] list = StringUtils.split(pointsLine, LSystem.SPACE);
+
+		for (int i = 0; i < list.length; i++) {
+			String[] subTokens = StringUtils.split(list[i], LSystem.COMMA);
 
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
+			arrays.add(point.x, point.y);
 
 			points.add(point);
 		}

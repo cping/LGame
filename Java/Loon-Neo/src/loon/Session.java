@@ -31,7 +31,7 @@ import loon.utils.TArray;
 import loon.utils.TimeUtils;
 
 /**
- * 游戏记录器，用于记录当前游戏数据
+ * 游戏记录器，用于记录当前游戏数据到本地保存
  */
 public class Session implements Bundle<String> {
 

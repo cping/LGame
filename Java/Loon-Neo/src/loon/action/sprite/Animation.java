@@ -353,6 +353,14 @@ public class Animation implements IArray, LRelease {
 		return play(idx);
 	}
 
+	public Animation gotoLast() {
+		return play(maxFrame - 1);
+	}
+
+	public Animation gotoFirst() {
+		return play(0);
+	}
+
 	/**
 	 * 停止动画播放
 	 * 
@@ -715,6 +723,10 @@ public class Animation implements IArray, LRelease {
 	@Override
 	public int size() {
 		return frames.size;
+	}
+
+	public long getTotalDuration() {
+		return this.totalDuration;
 	}
 
 	public Animation increment() {

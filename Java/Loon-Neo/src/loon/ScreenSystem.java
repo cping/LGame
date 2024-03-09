@@ -23,6 +23,9 @@ package loon;
 import loon.action.behaviors.ISystem;
 import loon.utils.timer.LTimer;
 
+/**
+ * 系统任务的抽象实现,具体实现后可注入Screen实现多功能系统插件的作用
+ */
 public abstract class ScreenSystem implements ISystem {
 
 	private int _priority;

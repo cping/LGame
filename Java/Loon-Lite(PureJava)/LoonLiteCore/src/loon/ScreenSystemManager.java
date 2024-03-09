@@ -25,6 +25,9 @@ import java.util.Comparator;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
+/**
+ * 系统任务的抽象实现管理器,也就是常见的的ECS模式的S
+ */
 public class ScreenSystemManager implements LRelease {
 
 	public static interface ScreenSystemListener {

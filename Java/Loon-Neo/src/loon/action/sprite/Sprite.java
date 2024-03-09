@@ -22,33 +22,24 @@ package loon.action.sprite;
 
 import loon.Director.Origin;
 
-import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
-import loon.PlayerUtils;
-import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
-import loon.action.ActionTween;
-import loon.action.collision.CollisionHelper;
-import loon.action.collision.CollisionObject;
-import loon.action.collision.Gravity;
-import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.events.EventAction;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
-import loon.geom.BoxSize;
 import loon.geom.Point;
 import loon.geom.RectBox;
-import loon.geom.Shape;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
-import loon.utils.IArray;
+import loon.utils.HelperUtils;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -59,9 +50,10 @@ import loon.utils.res.MovieSpriteSheet;
  * 一个精灵类的具体实现,仿照J2ME的Sprite同名类实现的精灵类
  *
  */
-public class Sprite extends LObject<ISprite>
-		implements Flip<Sprite>, CollisionObject, ISprite, IArray, LTrans, BoxSize {
+public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite, LTrans {
 
+	// 默认每帧刷新时间
+	private static final long defaultDelay = 150;
 	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(false);
 
 	public final static Sprite load(String path) {
@@ -80,27 +72,12 @@ public class Sprite extends LObject<ISprite>
 		return new Sprite(path, row, col, delay);
 	}
 
-	private Origin _origin = Origin.CENTER;
-
 	protected TArray<ISprite> _childrens = null;
-
-	// 默认每帧刷新时间
-	private static final long defaultDelay = 150;
-
-	// 是否可见
-	private boolean _visible = true;
 
 	private boolean _elastic = false;
 
-	private boolean _xySort = false;
-
-	// 精灵图片
-	private LTexture _image;
-
 	// 动画
 	private Animation _animation = new Animation();
-
-	private LColor _debugDrawColor = LColor.red;
 
 	private ResizeListener<Sprite> _resizeListener;
 
@@ -108,25 +85,7 @@ public class Sprite extends LObject<ISprite>
 
 	private LColor _filterColor;
 
-	private float _scaleX = 1f, _scaleY = 1f;
-
-	private float _fixedWidthOffset = 0f, _fixedHeightOffset = 0f;
-
-	private Vector2f _offset = new Vector2f();
-
-	private boolean _createShadow = false;
-
-	private boolean _spritePaused = false;
-
-	private boolean _spritesVisible = true;
-
-	private boolean _flipX = false, _flipY = false;
-
-	private boolean _debugDraw = false;
-
 	private Vector2f _pivot = new Vector2f(-1, -1);
-
-	private Sprites _sprites = null;
 
 	private SpriteCollisionListener _collSpriteListener;
 
@@ -355,8 +314,8 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public Sprite(String spriteName, LTexture[] images, int maxFrame, float x, float y, long timer) {
 		this.setLocation(x, y);
-		this._objectName = spriteName;
 		this.setAnimation(_animation, images, maxFrame, timer);
+		this._objectName = spriteName;
 		this._visible = true;
 		this._transform = LTrans.TRANS_NONE;
 	}
@@ -427,64 +386,6 @@ public class Sprite extends LObject<ISprite>
 	 */
 	public int getCurrentFrameIndex() {
 		return _animation.getCurrentFrameIndex();
-	}
-
-	/**
-	 * 获得当前精灵的窗体居中横坐标
-	 * 
-	 * @param x
-	 * @return
-	 */
-	public int centerX(int x) {
-		return centerX(this, x);
-	}
-
-	/**
-	 * 获得指定精灵的窗体居中横坐标
-	 * 
-	 * @param sprite
-	 * @param x
-	 * @return
-	 */
-	public static int centerX(Sprite sprite, int x) {
-		int newX = (int) (x - (sprite.getWidth() / 2));
-		if (newX + sprite.getWidth() >= LSystem.viewSize.getWidth()) {
-			return (int) (LSystem.viewSize.getWidth() - sprite.getWidth() - 1);
-		}
-		if (newX < 0) {
-			return x;
-		} else {
-			return newX;
-		}
-	}
-
-	/**
-	 * 获得当前精灵的窗体居中纵坐标
-	 * 
-	 * @param y
-	 * @return
-	 */
-	public int centerY(int y) {
-		return centerY(this, y);
-	}
-
-	/**
-	 * 获得指定精灵的窗体居中纵坐标
-	 * 
-	 * @param sprite
-	 * @param y
-	 * @return
-	 */
-	public static int centerY(Sprite sprite, int y) {
-		int newY = (int) (y - (sprite.getHeight() / 2));
-		if (newY + sprite.getHeight() >= LSystem.viewSize.getHeight()) {
-			return (int) (LSystem.viewSize.getHeight() - sprite.getHeight() - 1);
-		}
-		if (newY < 0) {
-			return y;
-		} else {
-			return newY;
-		}
 	}
 
 	/**
@@ -564,12 +465,12 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public boolean isPaused() {
-		return _spritePaused;
+		return _ignoreUpdate;
 	}
 
 	public Sprite pause() {
-		if (!this._spritePaused) {
-			ActionControl.get().paused(this._spritePaused = true, this);
+		if (!this._ignoreUpdate) {
+			ActionControl.get().paused(this._ignoreUpdate = true, this);
 			if (_animation != null) {
 				_animation.pause();
 			}
@@ -578,8 +479,8 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	public Sprite resume() {
-		if (this._spritePaused) {
-			ActionControl.get().paused(this._spritePaused = false, this);
+		if (this._ignoreUpdate) {
+			ActionControl.get().paused(this._ignoreUpdate = false, this);
 			if (_animation != null) {
 				_animation.resume();
 			}
@@ -593,19 +494,20 @@ public class Sprite extends LObject<ISprite>
 	/**
 	 * 变更动画
 	 */
+	@Override
 	public void update(long elapsedTime) {
-		if (_spritePaused) {
-			return;
-		}
-		if (_visible) {
+		if (!this._ignoreUpdate) {
 			_animation.update(elapsedTime);
 			onUpdate(elapsedTime);
-			if (_childrens != null && _childrens.size > 0) {
-				for (ISprite spr : _childrens) {
-					if (spr != null) {
-						spr.update(elapsedTime);
-					}
+			if (_childrens != null && !this._childrenIgnoreUpdate) {
+				final TArray<ISprite> entities = this._childrens;
+				final int entityCount = entities.size;
+				for (int i = 0; i < entityCount; i++) {
+					entities.get(i).update(elapsedTime);
 				}
+			}
+			if (_loopAction != null) {
+				HelperUtils.callEventAction(_loopAction, this);
 			}
 		}
 	}
@@ -625,6 +527,7 @@ public class Sprite extends LObject<ISprite>
 		return _animation.getSpriteImage();
 	}
 
+	@Override
 	public float getAniWidth() {
 		LTexture si = _animation.getSpriteImage();
 		if (si == null) {
@@ -633,6 +536,7 @@ public class Sprite extends LObject<ISprite>
 		return si.width();
 	}
 
+	@Override
 	public float getAniHeight() {
 		LTexture si = _animation.getSpriteImage();
 		if (si == null) {
@@ -670,17 +574,7 @@ public class Sprite extends LObject<ISprite>
 		return (float) this.getMiddlePoint().distanceTo(second.getMiddlePoint());
 	}
 
-	/**
-	 * 返回碰撞盒
-	 * 
-	 * @return
-	 */
 	@Override
-	public RectBox getCollisionBox() {
-		return setRect(MathUtils.getBounds(getScreenScalePixelX(), getScreenScalePixelY(), getWidth(), getHeight(),
-				_objectRotation, _objectRect));
-	}
-
 	public float getScalePixelX() {
 		if (_pivot.x != -1f) {
 			return getX() + _pivot.x;
@@ -688,41 +582,12 @@ public class Sprite extends LObject<ISprite>
 		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
 	}
 
+	@Override
 	public float getScalePixelY() {
 		if (_pivot.y != -1f) {
 			return getY() + _pivot.y;
 		}
 		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
-	}
-
-	/**
-	 * 检查是否与指定精灵位置发生了矩形碰撞
-	 * 
-	 * @param sprite
-	 * @return
-	 */
-	public boolean isRectToRect(Sprite sprite) {
-		return CollisionHelper.isRectToRect(this.getCollisionBox(), sprite.getCollisionBox());
-	}
-
-	/**
-	 * 检查是否与指定精灵位置发生了圆形碰撞
-	 * 
-	 * @param sprite
-	 * @return
-	 */
-	public boolean isCircToCirc(Sprite sprite) {
-		return CollisionHelper.isCircToCirc(this.getCollisionBox(), sprite.getCollisionBox());
-	}
-
-	/**
-	 * 检查是否与指定精灵位置发生了方形与圆形碰撞
-	 * 
-	 * @param sprite
-	 * @return
-	 */
-	public boolean isRectToCirc(Sprite sprite) {
-		return CollisionHelper.isRectToCirc(this.getCollisionBox(), sprite.getCollisionBox());
 	}
 
 	@Override
@@ -793,7 +658,7 @@ public class Sprite extends LObject<ISprite>
 							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
 				}
 			}
-			if (_spritesVisible && _childrens != null && _childrens.size > 0) {
+			if (_childrenVisible && _childrens != null && _childrens.size > 0) {
 				for (ISprite spr : _childrens) {
 					if (spr != null) {
 						float px = 0, py = 0;
@@ -846,42 +711,7 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	public float getScreenX() {
-		ISprite parent = getParent();
-		if (parent == null) {
-			return getX();
-		}
-		if (parent instanceof SpriteEntity) {
-			return getX();
-		}
-		float x = 0;
-		if (parent != null) {
-			x += parent.getX();
-			for (; (parent = parent.getParent()) != null;) {
-				x += parent.getX();
-			}
-		}
-		return x + getX();
-	}
-
-	public float getScreenY() {
-		ISprite parent = getParent();
-		if (parent == null) {
-			return getY();
-		}
-		if (parent instanceof SpriteEntity) {
-			return getY();
-		}
-		float y = 0;
-		if (parent != null) {
-			y += parent.getY();
-			for (; (parent = parent.getParent()) != null;) {
-				y += parent.getY();
-			}
-		}
-		return y + getY();
-	}
-
+	@Override
 	public float getScreenScalePixelX() {
 		if (_pivot.x != -1f) {
 			return getScreenX() + _pivot.x;
@@ -889,6 +719,7 @@ public class Sprite extends LObject<ISprite>
 		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
 	}
 
+	@Override
 	public float getScreenScalePixelY() {
 		if (_pivot.y != -1f) {
 			return getScreenY() + _pivot.y;
@@ -896,38 +727,8 @@ public class Sprite extends LObject<ISprite>
 		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
 	}
 
-	public Sprite placeToCenter(ActionBind ab) {
-		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
-				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
-		return this;
-	}
-
-	public Sprite placeToCenterX(ActionBind ab, float x) {
-		ab.setLocation(x, getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
-		return this;
-	}
-
-	public Sprite placeToCenterY(ActionBind ab, float y) {
-		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
-		return this;
-	}
-
-	@Override
-	public boolean isVisible() {
-		return _visible;
-	}
-
-	@Override
-	public void setVisible(boolean v) {
-		this._visible = v;
-	}
-
-	public boolean isChildrenVisible() {
-		return this._spritesVisible;
-	}
-
 	public Sprite setChildrenVisible(final boolean v) {
-		this._spritesVisible = v;
+		this._childrenVisible = v;
 		return this;
 	}
 
@@ -958,23 +759,9 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	@Override
-	public LTexture getBitmap() {
-		return this._image;
-	}
-
-	@Override
-	public float getScaleX() {
-		return _scaleX;
-	}
-
 	public Sprite setScaleX(float scaleX) {
 		this._scaleX = scaleX;
 		return this;
-	}
-
-	public float getScaleY() {
-		return _scaleY;
 	}
 
 	public Sprite setScaleY(float scaleY) {
@@ -1010,34 +797,13 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	@Override
-	public Field2D getField2D() {
-		return null;
-	}
-
-	@Override
-	public boolean isBounded() {
-		return false;
+	public boolean isChildrenVisible() {
+		return this._childrenVisible;
 	}
 
 	@Override
 	public boolean isContainer() {
 		return _childrens != null && _childrens.size > 0;
-	}
-
-	@Override
-	public boolean inContains(float x, float y, float w, float h) {
-		return getCollisionBox().contains(x, y, w, h);
-	}
-
-	@Override
-	public RectBox getCollisionArea() {
-		return getCollisionBox();
-	}
-
-	@Override
-	public RectBox getRectBox() {
-		return getCollisionBox();
 	}
 
 	public Sprite setScale(float s) {
@@ -1210,12 +976,9 @@ public class Sprite extends LObject<ISprite>
 		return null;
 	}
 
-	protected float drawX(float offsetX) {
-		return offsetX + this._objectLocation.x + _offset.x;
-	}
-
-	protected float drawY(float offsetY) {
-		return offsetY + this._objectLocation.y + _offset.y;
+	public Sprite loop(EventAction la) {
+		this._loopAction = la;
+		return this;
 	}
 
 	@Override
@@ -1241,23 +1004,9 @@ public class Sprite extends LObject<ISprite>
 		return getFilterColor();
 	}
 
-	public Origin getOrigin() {
-		return _origin;
-	}
-
 	public Sprite setOrigin(Origin o) {
 		this._origin = o;
 		return this;
-	}
-
-	@Override
-	public ActionTween selfAction() {
-		return PlayerUtils.set(this);
-	}
-
-	@Override
-	public boolean isActionCompleted() {
-		return PlayerUtils.isActionCompleted(this);
 	}
 
 	@Override
@@ -1280,16 +1029,6 @@ public class Sprite extends LObject<ISprite>
 	}
 
 	@Override
-	public boolean isFlipX() {
-		return _flipX;
-	}
-
-	@Override
-	public boolean isFlipY() {
-		return _flipY;
-	}
-
-	@Override
 	public int size() {
 		return (_childrens == null ? 0 : _childrens.size);
 	}
@@ -1299,32 +1038,6 @@ public class Sprite extends LObject<ISprite>
 		if (_childrens != null) {
 			removeChilds();
 		}
-	}
-
-	@Override
-	public float getContainerX() {
-		if (_objectSuper != null) {
-			return getScreenX() - getX();
-		}
-		return this._sprites == null ? super.getContainerX() : this._sprites.getX();
-	}
-
-	@Override
-	public float getContainerY() {
-		if (_objectSuper != null) {
-			return getScreenY() - getY();
-		}
-		return this._sprites == null ? super.getContainerY() : this._sprites.getY();
-	}
-
-	@Override
-	public float getContainerWidth() {
-		return this._sprites == null ? super.getContainerWidth() : this._sprites.getWidth();
-	}
-
-	@Override
-	public float getContainerHeight() {
-		return this._sprites == null ? super.getContainerHeight() : this._sprites.getHeight();
 	}
 
 	@Override
@@ -1346,144 +1059,9 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	@Override
-	public Sprites getSprites() {
-		return this._sprites;
-	}
-
-	@Override
-	public Screen getScreen() {
-		if (this._sprites == null) {
-			return LSystem.getProcess().getScreen();
-		}
-		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
-	}
-
-	@Override
-	public RectBox getBoundingRect() {
-		return getCollisionBox();
-	}
-
-	@Override
-	public boolean containsPoint(float x, float y) {
-		return inContains(x, y, 1, 1);
-	}
-
-	@Override
-	public boolean contains(CollisionObject o) {
-		return getCollisionBox().contains(o.getRectBox());
-	}
-
-	@Override
-	public boolean intersects(CollisionObject o) {
-		return getCollisionBox().intersects(o.getRectBox());
-	}
-
-	@Override
-	public boolean intersects(Shape s) {
-		return getCollisionBox().intersects(s);
-	}
-
-	@Override
-	public boolean contains(Shape s) {
-		return getCollisionBox().contains(s);
-	}
-
-	@Override
-	public boolean collided(Shape s) {
-		return getCollisionBox().collided(s);
-	}
-
-	public Gravity getGravity() {
-		return new Gravity("Sprite", this);
-	}
-
-	private float toPixelScaleX(float x) {
-		return MathUtils.iceil(x / _scaleX);
-	}
-
-	private float toPixelScaleY(float y) {
-		return MathUtils.iceil(y / _scaleY);
-	}
-
-	public Vector2f getUITouch(float x, float y) {
-		return getUITouch(x, y, null);
-	}
-
-	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
-		if (!(x == -1 && y == -1 && pointResult != null)) {
-			if (pointResult == null) {
-				pointResult = new Vector2f(x, y);
-			} else {
-				pointResult.set(x, y);
-			}
-		}
-		float newX = 0f;
-		float newY = 0f;
-		ISprite parent = getParent();
-		if (parent != null) {
-			newX = pointResult.x - parent.getX() - getX();
-			newY = pointResult.y - parent.getX() - getY();
-		} else {
-			newX = pointResult.x - getX();
-			newY = pointResult.y - getY();
-		}
-		final float angle = getRotation();
-		if (angle == 0 || angle == 360) {
-			pointResult.x = toPixelScaleX(newX);
-			pointResult.y = toPixelScaleY(newY);
-			return pointResult;
-		}
-		float oldWidth = getAniWidth();
-		float oldHeight = getAniHeight();
-		float newWidth = getWidth();
-		float newHeight = getHeight();
-		float offX = oldWidth / 2f - newWidth / 2f;
-		float offY = oldHeight / 2f - newHeight / 2f;
-		float posX = (newX - offX);
-		float posY = (newY - offY);
-		if (angle == 90) {
-			offX = oldHeight / 2f - newWidth / 2f;
-			offY = oldWidth / 2f - newHeight / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(90);
-			pointResult.set(-pointResult.x, MathUtils.abs(pointResult.y - this.getAniHeight()));
-		} else if (angle == -90) {
-			offX = oldHeight / 2f - newWidth / 2f;
-			offY = oldWidth / 2f - newHeight / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(-90);
-			pointResult.set(-(pointResult.x - this.getAniWidth()), MathUtils.abs(pointResult.y));
-		} else if (angle == -180 || angle == 180) {
-			pointResult.set(posX / getScaleX(), posY / getScaleY()).rotateSelf(getRotation())
-					.addSelf(this.getAniWidth(), this.getAniHeight());
-		} else {
-			float rad = MathUtils.toRadians(angle);
-			float sin = MathUtils.sin(rad);
-			float cos = MathUtils.cos(rad);
-			float dx = offX / getScaleX();
-			float dy = offY / getScaleY();
-			float dx2 = cos * dx - sin * dy;
-			float dy2 = sin * dx + cos * dy;
-			pointResult.x = getAniWidth() - (newX - dx2);
-			pointResult.y = getAniHeight() - (newY - dy2);
-		}
-		return pointResult;
-	}
-
-	public boolean isDebugDraw() {
-		return _debugDraw;
-	}
-
 	public ISprite setDebugDraw(boolean debugDraw) {
 		this._debugDraw = debugDraw;
 		return this;
-	}
-
-	public LColor getDebugDrawColor() {
-		return _debugDrawColor.cpy();
 	}
 
 	public ISprite setDebugDrawColor(LColor debugColor) {
@@ -1527,48 +1105,6 @@ public class Sprite extends LObject<ISprite>
 	public Sprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 		return this;
-	}
-
-	@Override
-	public boolean collides(ISprite e) {
-		if (e == null || !e.isVisible()) {
-			return false;
-		}
-		return intersects(e.getCollisionBox());
-	}
-
-	@Override
-	public boolean collidesX(ISprite other) {
-		if (other == null || !other.isVisible()) {
-			return false;
-		}
-		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
-		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
-	}
-
-	@Override
-	public boolean collidesY(ISprite other) {
-		if (other == null || !other.isVisible()) {
-			return false;
-		}
-		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
-		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
-	}
-
-	@Override
-	public float getCenterX() {
-		return getX() + getWidth() / 2f;
-	}
-
-	@Override
-	public float getCenterY() {
-		return getY() + getHeight() / 2f;
 	}
 
 	public Sprite softCenterOn(float x, float y) {
@@ -1627,23 +1163,17 @@ public class Sprite extends LObject<ISprite>
 		return this;
 	}
 
-	@Override
-	public float getOffsetX() {
-		return _offset.x;
-	}
-
-	@Override
-	public float getOffsetY() {
-		return _offset.y;
-	}
-
-	@Override
-	public boolean showShadow() {
-		return _createShadow;
-	}
-
 	public Sprite createShadow(boolean s) {
 		this._createShadow = s;
+		return this;
+	}
+
+	public boolean isChildrenIgnoreUpdate() {
+		return this._childrenIgnoreUpdate;
+	}
+
+	public ISprite setChildrenIgnoreUpdate(final boolean c) {
+		this._childrenIgnoreUpdate = c;
 		return this;
 	}
 
@@ -1677,15 +1207,6 @@ public class Sprite extends LObject<ISprite>
 		return this._childrens.contains(e);
 	}
 
-	public boolean hasActions() {
-		return ActionControl.get().containsKey(this);
-	}
-
-	public Sprite clearActions() {
-		ActionControl.get().removeAllActions(this);
-		return this;
-	}
-
 	public ResizeListener<Sprite> getResizeListener() {
 		return _resizeListener;
 	}
@@ -1700,11 +1221,6 @@ public class Sprite extends LObject<ISprite>
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
 		}
-	}
-
-	@Override
-	public boolean autoXYSort() {
-		return _xySort;
 	}
 
 	public Sprite setAutoXYSort(boolean a) {
@@ -1761,13 +1277,15 @@ public class Sprite extends LObject<ISprite>
 	@Override
 	public void close() {
 		this._visible = false;
-		this._spritePaused = false;
+		this._ignoreUpdate = false;
+		this._childrenVisible = false;
 		if (_image != null) {
 			_image.close();
 		}
 		if (_animation != null) {
 			_animation.close();
 		}
+		_loopAction = null;
 		_resizeListener = null;
 		_collSpriteListener = null;
 		setState(State.DISPOSED);

@@ -300,16 +300,32 @@ public class TMXMap implements Sized {
 		return layers.get(index);
 	}
 
+	public TMXTileLayer getTileLayer(int index) {
+		return tileLayers.get(index);
+	}
+
+	public boolean getLayerVisibility(int index) {
+		TMXMapLayer layer = layers.get(index);
+		if (layer != null) {
+			return layer.visible;
+		}
+		return false;
+	}
+
+	public boolean getTileLayerVisibility(int index) {
+		TMXTileLayer layer = tileLayers.get(index);
+		if (layer != null) {
+			return layer.visible;
+		}
+		return false;
+	}
+
 	public int getNumLayers() {
 		return layers.size;
 	}
 
 	public TArray<TMXMapLayer> getLayers() {
 		return layers;
-	}
-
-	public TMXTileLayer getTileLayer(int index) {
-		return tileLayers.get(index);
 	}
 
 	public int getNumTileLayers() {

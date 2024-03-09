@@ -513,26 +513,41 @@ public abstract class LComponent extends LObject<LContainer>
 
 	@Override
 	public boolean intersects(CollisionObject obj) {
+		if (obj == null) {
+			return false;
+		}
 		return intersects(obj.getRectBox());
 	}
 
 	@Override
 	public boolean intersects(Shape rect) {
+		if (rect == null) {
+			return false;
+		}
 		return getCollisionBox().intersects(rect);
 	}
 
 	@Override
-	public boolean contains(CollisionObject o) {
-		return getCollisionBox().contains(o.getRectBox());
+	public boolean contains(CollisionObject obj) {
+		if (obj == null) {
+			return false;
+		}
+		return getCollisionBox().contains(obj.getRectBox());
 	}
 
 	@Override
 	public boolean contains(Shape rect) {
+		if (rect == null) {
+			return false;
+		}
 		return getCollisionBox().contains(rect);
 	}
 
 	@Override
 	public boolean collided(Shape rect) {
+		if (rect == null) {
+			return false;
+		}
 		return getCollisionBox().collided(rect);
 	}
 
@@ -889,6 +904,83 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 		return this;
+	}
+
+	public RectBox getInScreenCollisionBox(float offsetX, float offsetY) {
+		validatePosition();
+		final Screen screen = getScreen();
+		float screenX = 0f;
+		float screenY = 0f;
+		if (screen != null) {
+			screenX = screen.getScalePixelX();
+			screenY = screen.getScalePixelY();
+		}
+		final float newX = getScalePixelX() + screenX;
+		final float newY = getScalePixelY() + screenY;
+		final float newW = getWidth() - newX;
+		final float newH = getHeight() - newY;
+		return setRect(MathUtils.getBounds(newX + offsetX, newY + offsetY, newW - offsetX * 2f, newH - offsetY * 2f,
+				_objectRotation, _objectRect));
+	}
+
+	public boolean containsInScreen(XY xy) {
+		return containsInScreen(xy.getX(), xy.getY());
+	}
+
+	public boolean containsInScreen(float x, float y) {
+		return containsInScreen(x, y, 0f, 0f);
+	}
+
+	public boolean containsInScreen(RectBox rect) {
+		return containsInScreen(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public boolean containsInScreen(CollisionObject obj) {
+		if (obj == null) {
+			return false;
+		}
+		return containsInScreen(obj.getRectBox());
+	}
+
+	public boolean containsInScreen(float x, float y, float width, float height) {
+		return getInScreenCollisionBox(width, height).contains(x, y, width, height);
+	}
+
+	public boolean containsInScreen(ActionBind obj) {
+		if (obj == null) {
+			return false;
+		}
+		return containsInScreen(obj.getRectBox());
+	}
+
+	public boolean intersectsInScreen(XY xy) {
+		return intersectsInScreen(xy.getX(), xy.getY());
+	}
+
+	public boolean intersectsInScreen(float x, float y) {
+		return intersectsInScreen(x, y, 1f, 1f);
+	}
+
+	public boolean intersectsInScreen(RectBox rect) {
+		return intersectsInScreen(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	public boolean intersectsInScreen(CollisionObject obj) {
+		if (obj == null) {
+			return false;
+		}
+		return intersectsInScreen(obj.getRectBox());
+	}
+
+	public boolean intersectsInScreen(ActionBind obj) {
+		if (obj == null) {
+			return false;
+		}
+		return intersectsInScreen(obj.getRectBox());
+	}
+
+	public boolean intersectsInScreen(float x, float y, float width, float height) {
+		return getInScreenCollisionBox(width, height).intersects(x, y, width, height);
 	}
 
 	public RectBox getCollisionBox() {

@@ -24,6 +24,18 @@ import loon.LSystem;
 import loon.action.map.tmx.TMXMap;
 
 public class TMXMapTile {
+
+	public static class Flips {
+
+		public float angle = 0f;
+		public float cos = 0f;
+		public float sin = 0f;
+		public float newX = 0f;
+		public float newY = 0f;
+		public boolean flip = false;
+
+	}
+
 	private int tileSetID;
 	private int id;
 	private int gid;
@@ -67,6 +79,58 @@ public class TMXMapTile {
 
 	public boolean isFlippedDiagonally() {
 		return flippedDiagonally;
+	}
+
+	public Flips getFlips() {
+		return getFlips(0f, 0f, 0f, 0f);
+	}
+
+	public Flips getFlips(float x, float y, float cx, float cy) {
+		Flips flips = new Flips();
+		if (!flippedDiagonally && !flippedVertically && !flippedHorizontally) {
+			flips.angle = 0f;
+			flips.cos = 1f;
+			flips.sin = 0f;
+			flips.flip = false;
+		} else if (!flippedDiagonally && !flippedVertically && flippedHorizontally) {
+			flips.angle = 0f;
+			flips.cos = 1f;
+			flips.sin = 0f;
+			flips.flip = true;
+		} else if (flippedDiagonally && !flippedVertically && flippedHorizontally) {
+			flips.angle = 1f;
+			flips.cos = 0f;
+			flips.sin = 1f;
+			flips.flip = false;
+		} else if (flippedDiagonally && flippedVertically && flippedHorizontally) {
+			flips.angle = 1f;
+			flips.cos = 0f;
+			flips.sin = 1f;
+			flips.flip = true;
+		} else if (!flippedDiagonally && flippedVertically && flippedHorizontally) {
+			flips.angle = 2f;
+			flips.cos = -1f;
+			flips.sin = 0f;
+			flips.flip = false;
+		} else if (!flippedDiagonally && flippedVertically && !flippedHorizontally) {
+			flips.angle = 2f;
+			flips.cos = -1f;
+			flips.sin = 0f;
+			flips.flip = true;
+		} else if (flippedDiagonally && flippedVertically && !flippedHorizontally) {
+			flips.angle = 3f;
+			flips.cos = 0f;
+			flips.sin = -1f;
+			flips.flip = false;
+		} else if (flippedDiagonally && !flippedVertically && !flippedHorizontally) {
+			flips.angle = 3f;
+			flips.cos = 0f;
+			flips.sin = -1f;
+			flips.flip = true;
+		}
+		flips.newX = cx + (x - cx) * flips.cos - (y - cy) * flips.sin;
+		flips.newY = cy + (x - cx) * flips.sin + (y - cy) * flips.cos;
+		return flips;
 	}
 
 	@Override

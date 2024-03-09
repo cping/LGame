@@ -385,6 +385,12 @@ public class LTimer implements LTimerListener, LRelease {
 		return this;
 	}
 
+	public LTimer restart() {
+		this.reset();
+		this.resume();
+		return this;
+	}
+
 	public LTimer setEquals(LTimer other) {
 		this._delay = MathUtils.max(other._delay, 0);
 		this._maxNumberOfRepeats = MathUtils.max(other._maxNumberOfRepeats, -1);
