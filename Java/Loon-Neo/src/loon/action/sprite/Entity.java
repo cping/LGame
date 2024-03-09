@@ -61,7 +61,6 @@ import loon.utils.TArray;
  */
 public class Entity extends SpriteBase<IEntity> implements IEntity {
 
-	private static final int CHILDREN_CAPACITY_DEFAULT = 4;
 	private final static LayerSorter<IEntity> entitySorter = new LayerSorter<IEntity>(false);
 
 	public final static Entity load(String path) {
@@ -111,7 +110,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	// 是否传递本身偏移设定数据到自绘部分
 	protected boolean _repaintAutoOffset = false;
 
-	protected TArray<IEntity> _childrens;
 	protected TArray<TComponent<IEntity>> _components;
 
 	protected RectBox _shear;
@@ -194,6 +192,10 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return this;
 	}
 
+	protected void allocateComponents() {
+		this._components = new TArray<TComponent<IEntity>>(CHILDREN_CAPACITY_DEFAULT);
+	}
+
 	@Override
 	public IEntity view(String path) {
 		return setTexture(path);
@@ -202,11 +204,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	@Override
 	public IEntity view(LTexture tex) {
 		return setTexture(tex);
-	}
-
-	@Override
-	public boolean isChildrenVisible() {
-		return this._childrenVisible;
 	}
 
 	@Override
@@ -554,14 +551,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	@Override
-	public int getChildCount() {
-		if (this._childrens == null) {
-			return 0;
-		}
-		return this._childrens.size;
-	}
-
-	@Override
 	public IEntity getChildByTag(final int idx) {
 		if (this._childrens == null) {
 			return null;
@@ -573,30 +562,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public IEntity getChildByIndex(final int pIndex) {
-		if (this._childrens == null) {
-			return null;
-		}
-		return this._childrens.get(pIndex);
-	}
-
-	@Override
-	public IEntity getFirstChild() {
-		if (this._childrens == null) {
-			return null;
-		}
-		return this._childrens.get(0);
-	}
-
-	@Override
-	public IEntity getLastChild() {
-		if (this._childrens == null) {
-			return null;
-		}
-		return this._childrens.get(this._childrens.size - 1);
 	}
 
 	@Override
@@ -625,6 +590,14 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			addChild(e);
 		}
 		return this;
+	}
+
+	@Override
+	public void sort() {
+		if (_childrens == null) {
+			return;
+		}
+		entitySorter.sort(_childrens);
 	}
 
 	@Override
@@ -664,60 +637,30 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		}
 	}
 
-	@Override
 	public IEntity removeChildren() {
-		if (this._childrens == null) {
-			return this;
-		}
-		for (int i = this._childrens.size - 1; i >= 0; i--) {
-			final IEntity removed = this._childrens.get(i);
-			if (removed != null) {
-				removed.setState(State.REMOVED);
-				removed.onDetached();
-			}
-			// 删除精灵同时，删除缓动动画
-			if (removed != null && removed instanceof ActionBind) {
-				removeActionEvents((ActionBind) removed);
-			}
-		}
-		this._childrens.clear();
+		super.removeChilds();
 		return this;
 	}
 
 	@Override
-	public boolean removeChild(final IEntity e) {
-		if (e == null) {
-			return true;
+	public IEntity removeChildIndexTag(final int idx) {
+		if (idx < 0) {
+			return null;
 		}
-		if (this._childrens == null) {
-			return false;
-		}
-		boolean removed = this._childrens.remove(e);
-		if (removed) {
-			e.setState(State.REMOVED);
-			e.onDetached();
-		}
-		// 删除精灵同时，删除缓动动画
-		if (removed && e instanceof ActionBind) {
-			removeActionEvents((ActionBind) e);
-		}
-		return removed;
-	}
-
-	@Override
-	public IEntity removeChild(final int idx) {
 		if (this._childrens == null) {
 			return null;
 		}
 		for (int i = this._childrens.size - 1; i >= 0; i--) {
-			if (this._childrens.get(i).getIndexTag() == idx) {
+			IEntity e = this._childrens.get(i);
+			if (e != null && e.getIndexTag() == idx) {
 				final IEntity removed = this._childrens.removeIndex(i);
-				if (removed != null) {
+				final boolean exist = (removed != null);
+				if (exist) {
 					removed.setState(State.REMOVED);
 					removed.onDetached();
 				}
 				// 删除精灵同时，删除缓动动画
-				if (removed != null && (removed instanceof ActionBind)) {
+				if (exist && (removed instanceof ActionBind)) {
 					removeActionEvents((ActionBind) removed);
 				}
 				return removed;
@@ -811,7 +754,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	public void paint(final GLEx g, float offsetX, float offsetY) {
-		if (_objectAlpha < 0.01f) {
+		if (!_visible || _objectAlpha < 0.01f) {
 			return;
 		}
 		final boolean exist = _image != null || (_width > 0 && _height > 0) || _repaintDraw;
@@ -947,14 +890,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			return getScreenY() + _scaleCenterY;
 		}
 		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
-	}
-
-	private void allocateChildren() {
-		this._childrens = new TArray<IEntity>(Entity.CHILDREN_CAPACITY_DEFAULT);
-	}
-
-	private void allocateComponents() {
-		this._components = new TArray<TComponent<IEntity>>(Entity.CHILDREN_CAPACITY_DEFAULT);
 	}
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
@@ -1104,11 +1039,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	public float getHeight() {
 		return _height > 1 ? (_height * this._scaleY) - _fixedHeightOffset
 				: _image == null ? 0 : (_image.getHeight() * this._scaleY) - _fixedHeightOffset;
-	}
-
-	@Override
-	public boolean isContainer() {
-		return _childrens != null && _childrens.size > 0;
 	}
 
 	@Override
@@ -1292,15 +1222,15 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		s.append(super.toString());
 		if ((this._childrens != null) && (this._childrens.size > 0)) {
 			s.append(LSystem.LS);
-			s.append(" [");
+			s.append(LSystem.BRACKET_START);
 			final TArray<IEntity> entities = this._childrens;
 			for (int i = 0; i < entities.size; i++) {
 				entities.get(i).toString(s);
 				if (i < (entities.size - 1)) {
-					s.append(", ");
+					s.append(LSystem.COMMA);
 				}
 			}
-			s.append("]");
+			s.append(LSystem.BRACKET_END);
 		}
 	}
 
@@ -1312,25 +1242,10 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	@Override
-	public int size() {
-		return _childrens == null ? 0 : _childrens.size;
-	}
-
-	@Override
 	public void clear() {
 		if (_childrens != null) {
 			removeChildren();
 		}
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return (_childrens == null ? true : _childrens.size == 0);
-	}
-
-	@Override
-	public boolean isNotEmpty() {
-		return !isEmpty();
 	}
 
 	public Vector2f getOffset() {
@@ -1726,11 +1641,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			}
 			actor = actor.getParent();
 		}
-	}
-
-	@Override
-	public TArray<IEntity> getChildren() {
-		return _childrens;
 	}
 
 	/**

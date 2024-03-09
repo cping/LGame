@@ -55,8 +55,11 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
+import loon.utils.TArray;
 
 public abstract class SpriteBase<T extends ISprite> extends LObject<T> implements CollisionObject, IArray, BoxSize {
+
+	static final int CHILDREN_CAPACITY_DEFAULT = 8;
 
 	protected Origin _origin = Origin.CENTER;
 
@@ -88,9 +91,132 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	protected Sprites _sprites = null;
 
+	protected TArray<T> _childrens;
+
 	public abstract float getAniWidth();
 
 	public abstract float getAniHeight();
+
+	protected void allocateChildren() {
+		synchronized (SpriteBase.class) {
+			this._childrens = new TArray<T>(CHILDREN_CAPACITY_DEFAULT);
+		}
+	}
+
+	public boolean removeChild(final T e) {
+		if (e == null) {
+			return true;
+		}
+		if (this._childrens == null) {
+			return false;
+		}
+		boolean removed = this._childrens.remove(e);
+		if (removed) {
+			e.setState(State.REMOVED);
+			if (e instanceof IEntity) {
+				((IEntity) e).onDetached();
+			}
+		}
+		// 删除精灵同时，删除缓动动画
+		if (removed && e instanceof ActionBind) {
+			removeActionEvents((ActionBind) e);
+		}
+		return removed;
+	}
+
+	public boolean removeChild(final int idx) {
+		if (idx < 0) {
+			return false;
+		}
+		if (this._childrens == null) {
+			return false;
+		}
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
+			if (i == idx) {
+				final T removed = this._childrens.removeIndex(i);
+				final boolean exist = (removed != null);
+				if (exist) {
+					removed.setState(State.REMOVED);
+					if (removed instanceof IEntity) {
+						((IEntity) removed).onDetached();
+					}
+				}
+				// 删除精灵同时，删除缓动动画
+				if (exist && (removed instanceof ActionBind)) {
+					removeActionEvents((ActionBind) removed);
+				}
+				return exist;
+			}
+		}
+		return false;
+	}
+
+	public void removeChilds() {
+		if (this._childrens == null) {
+			return;
+		}
+		for (int i = this._childrens.size - 1; i >= 0; i--) {
+			final ISprite removed = this._childrens.get(i);
+			boolean exist = (removed != null);
+			if (exist) {
+				removed.setState(State.REMOVED);
+				if (removed instanceof IEntity) {
+					((IEntity) removed).onDetached();
+				}
+			}
+			// 删除精灵同时，删除缓动动画
+			if (exist && removed instanceof ActionBind) {
+				removeActionEvents((ActionBind) removed);
+			}
+		}
+		this._childrens.clear();
+		return;
+	}
+
+	public T getChildByIndex(int idx) {
+		if (this._childrens == null || (idx < 0 || idx > this._childrens.size - 1)) {
+			return null;
+		}
+		return this._childrens.get(idx);
+	}
+
+	public T getFirstChild() {
+		if (this._childrens == null) {
+			return null;
+		}
+		return this._childrens.get(0);
+	}
+
+	public T getLastChild() {
+		if (this._childrens == null) {
+			return null;
+		}
+		return this._childrens.get(this._childrens.size - 1);
+	}
+
+	public abstract void sort();
+
+	@Override
+	public boolean isEmpty() {
+		return getChildCount() == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return !isEmpty();
+	}
+
+	@Override
+	public int size() {
+		return getChildCount();
+	}
+
+	public int getChildCount() {
+		if (this._childrens == null) {
+			return 0;
+		}
+		return this._childrens.size;
+	}
 
 	public LColor getDebugDrawColor() {
 		return _debugDrawColor.cpy();
@@ -325,8 +451,50 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return _debugDraw;
 	}
 
+	public boolean isChildrenVisible() {
+		return this._childrenVisible;
+	}
+
+	@Override
+	public boolean isContainer() {
+		return getChildCount() > 0;
+	}
+
+	public TArray<T> getChildren() {
+		return _childrens;
+	}
+
 	public boolean showShadow() {
 		return _createShadow;
+	}
+
+	@Override
+	public void setScale(float sx, float sy) {
+		this._scaleX = sx;
+		this._scaleY = sy;
+	}
+
+	/**
+	 * 获得精灵的中间位置
+	 * 
+	 * @return
+	 */
+	public PointF getMiddlePoint(T p) {
+		return new PointF(p.getX() + p.getWidth() / 2f, p.getY() + p.getHeight() / 2f);
+	}
+
+	public PointF getMiddlePoint() {
+		return new PointF(getScreenScalePixelY() + getWidth() / 2f, getScreenScalePixelY() + getHeight() / 2f);
+	}
+
+	/**
+	 * 获得两个精灵的中间距离
+	 * 
+	 * @param second
+	 * @return
+	 */
+	public float getDistance(T second) {
+		return this.getMiddlePoint().distanceTo(getMiddlePoint(second));
 	}
 
 	public float getOffsetX() {

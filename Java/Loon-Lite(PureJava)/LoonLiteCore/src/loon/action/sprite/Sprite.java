@@ -26,14 +26,12 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTrans;
-import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.canvas.LColor;
 import loon.events.EventAction;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
-import loon.geom.Point;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -54,7 +52,8 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	// 默认每帧刷新时间
 	private static final long defaultDelay = 150;
-	private final static LayerSorter<ISprite> childSorter = new LayerSorter<ISprite>(false);
+
+	private final static LayerSorter<ISprite> spriteSorter = new LayerSorter<ISprite>(false);
 
 	public final static Sprite load(String path) {
 		return new Sprite(path);
@@ -71,8 +70,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	public final static Sprite load(String path, int row, int col, long delay) {
 		return new Sprite(path, row, col, delay);
 	}
-
-	protected TArray<ISprite> _childrens = null;
 
 	private boolean _elastic = false;
 
@@ -555,25 +552,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return (getAniHeight() * _scaleY) - _fixedHeightOffset;
 	}
 
-	/**
-	 * 获得精灵的中间位置
-	 * 
-	 * @return
-	 */
-	public Point getMiddlePoint() {
-		return new Point(x() + getWidth() / 2, y() + getHeight() / 2);
-	}
-
-	/**
-	 * 获得两个精灵的中间距离
-	 * 
-	 * @param second
-	 * @return
-	 */
-	public float getDistance(Sprite second) {
-		return (float) this.getMiddlePoint().distanceTo(second.getMiddlePoint());
-	}
-
 	@Override
 	public float getScalePixelX() {
 		if (_pivot.x != -1f) {
@@ -597,10 +575,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!_visible) {
-			return;
-		}
-		if (_objectAlpha < 0.01) {
+		if (!_visible || _objectAlpha < 0.01f) {
 			return;
 		}
 		if (_animation != null) {
@@ -791,24 +766,9 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
-	public boolean isChildrenVisible() {
-		return this._childrenVisible;
-	}
-
-	@Override
-	public boolean isContainer() {
-		return _childrens != null && _childrens.size > 0;
-	}
-
 	public Sprite setScale(float s) {
 		this.setScale(s, s);
 		return this;
-	}
-
-	@Override
-	public void setScale(float sx, float sy) {
-		this._scaleX = sx;
-		this._scaleY = sy;
 	}
 
 	public Sprite setSize(float size) {
@@ -888,86 +848,27 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 			return this;
 		}
 		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
+			allocateChildren();
 		}
 		spr.setParent(this);
 		spr.setSprites(this._sprites);
 		spr.setState(State.ADDED);
 		_childrens.add(spr);
-		childSorter.sort(_childrens);
+		spriteSorter.sort(_childrens);
 		return this;
 	}
 
-	public boolean removeChild(ISprite spr) {
-		if (spr == null) {
-			return true;
-		}
-		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
-		}
-		boolean removed = _childrens.remove(spr);
-		if (removed) {
-			spr.setState(State.REMOVED);
-		}
-		// 删除精灵同时，删除缓动动画
-		if (removed && spr instanceof ActionBind) {
-			removeActionEvents((ActionBind) spr);
-		}
-		return removed;
-	}
-
-	public boolean removeChild(int idx) {
-		if (idx < 0) {
-			return true;
-		}
-		if (_childrens == null) {
-			_childrens = new TArray<ISprite>();
-		}
-		for (int i = this._childrens.size - 1; i >= 0; i--) {
-			if (i == idx) {
-				final ISprite removed = this._childrens.removeIndex(i);
-				final boolean exist = (removed == null);
-				if (exist) {
-					removed.setState(State.REMOVED);
-				}
-				// 删除精灵同时，删除缓动动画
-				if (exist && (removed instanceof ActionBind)) {
-					removeActionEvents((ActionBind) removed);
-				}
-				return exist;
-			}
-		}
-		return false;
-	}
-
-	public Sprite removeChilds() {
-		if (this._childrens == null) {
-			return this;
-		}
-		for (int i = this._childrens.size - 1; i >= 0; i--) {
-			final ISprite removed = this._childrens.get(i);
-			boolean exist = (removed == null);
-			if (exist) {
-				removed.setState(State.REMOVED);
-			}
-			// 删除精灵同时，删除缓动动画
-			if (exist && removed instanceof ActionBind) {
-				removeActionEvents((ActionBind) removed);
-			}
-		}
-		this._childrens.clear();
+	public Sprite removeChildren() {
+		super.removeChilds();
 		return this;
 	}
 
-	public int getChildCount() {
-		return size();
-	}
-
-	public ISprite getChildByIndex(int idx) {
-		if (_childrens != null && idx >= 0 && idx < size()) {
-			return _childrens.get(idx);
+	@Override
+	public void sort() {
+		if (_childrens == null) {
+			return;
 		}
-		return null;
+		spriteSorter.sort(_childrens);
 	}
 
 	public Sprite loop(EventAction la) {
@@ -1023,25 +924,10 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	@Override
-	public int size() {
-		return (_childrens == null ? 0 : _childrens.size);
-	}
-
-	@Override
 	public void clear() {
 		if (_childrens != null) {
 			removeChilds();
 		}
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return (_childrens == null ? true : _childrens.size == 0);
-	}
-
-	@Override
-	public boolean isNotEmpty() {
-		return !isEmpty();
 	}
 
 	@Override

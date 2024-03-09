@@ -252,7 +252,9 @@ public interface IEntity extends ISprite, Flip<IEntity> {
 
 	boolean removeChild(final IEntity e);
 
-	IEntity removeChild(final int t);
+	boolean removeChild(final int i);
+
+	IEntity removeChildIndexTag(final int t);
 
 	IEntity removeChildren();
 

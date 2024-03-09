@@ -784,7 +784,12 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
-	public IEntity removeChild(int t) {
+	public boolean removeChild(int t) {
+		return false;
+	}
+
+	@Override
+	public IEntity removeChildIndexTag(int t) {
 		return this;
 	}
 
