@@ -29,7 +29,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.ActionBind;
-import loon.action.ActionBindData;
 import loon.action.ActionControl;
 import loon.action.ActionListener;
 import loon.action.PlaceActions;
@@ -37,7 +36,6 @@ import loon.action.sprite.Sprites.Created;
 import loon.canvas.LColor;
 import loon.component.layout.LayoutAlign;
 import loon.events.EventAction;
-import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.Circle;
@@ -49,7 +47,6 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
-import loon.utils.HelperUtils;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -97,7 +94,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	protected boolean _deform = true;
 
-	protected boolean _componentsIgnoreUpdate = false;
 	protected boolean _childrenSortPending = false;
 	protected boolean _followRotation = true;
 	protected boolean _followScale = true;
@@ -188,10 +184,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return this;
 	}
 
-	protected void allocateComponents() {
-		this._components = new TArray<TComponent<IEntity>>(CHILDREN_CAPACITY_DEFAULT);
-	}
-
 	@Override
 	public IEntity view(String path) {
 		return setTexture(path);
@@ -206,11 +198,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	public IEntity setChildrenVisible(final boolean v) {
 		this._childrenVisible = v;
 		return this;
-	}
-
-	@Override
-	public boolean isChildrenIgnoreUpdate() {
-		return this._childrenIgnoreUpdate;
 	}
 
 	@Override
@@ -475,11 +462,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	@Override
 	public float getBlue() {
 		return this._baseColor.b;
-	}
-
-	@Override
-	public float getAlpha() {
-		return super.getAlpha();
 	}
 
 	@Override
@@ -922,27 +904,24 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		if (_stopUpdate) {
 			return;
 		}
-		if ((this._components != null) && !this._componentsIgnoreUpdate) {
-			final TArray<TComponent<IEntity>> comps = this._components;
-			final int entityCount = comps.size;
-			for (int i = 0; i < entityCount; i++) {
-				final TComponent<IEntity> c = comps.get(i);
-				if (c != null && !c._paused.get()) {
-					c.update(this);
-				}
-			}
-		}
-		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
-			final TArray<IEntity> entities = this._childrens;
-			final int entityCount = entities.size;
-			for (int i = 0; i < entityCount; i++) {
-				entities.get(i).update(elapsedTime);
-			}
-		}
-		onUpdate(elapsedTime);
-		if (_loopAction != null) {
-			HelperUtils.callEventAction(_loopAction, this);
-		}
+		onBaseUpdate(elapsedTime);
+	}
+
+	@Override
+	public IEntity setComponentIgnoreUpdate(boolean c) {
+		this._componentsIgnoreUpdate = c;
+		return this;
+	}
+
+	@Override
+	public IEntity with(TComponent<IEntity> c) {
+		return addComponent(c);
+	}
+
+	@Override
+	public IEntity removeComponents() {
+		clearComponentAll();
+		return this;
 	}
 
 	@Override
@@ -958,17 +937,9 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return this;
 	}
 
-	protected void onUpdate(final long elapsedTime) {
-
-	}
-
 	public Entity loop(EventAction la) {
 		this._loopAction = la;
 		return this;
-	}
-
-	public boolean isPaused() {
-		return _ignoreUpdate;
 	}
 
 	public Entity pause() {
@@ -1299,10 +1270,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	@Override
 	public IEntity setSprites(Sprites ss) {
-		if (this._sprites == ss) {
-			return this;
-		}
-		this._sprites = ss;
+		setSpritesObject(ss);
 		return this;
 	}
 
@@ -1382,10 +1350,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	public IEntity rotateAroundDistance(XY point, float angle, float distance) {
 		PlaceActions.rotateAroundDistance(this, point, angle, distance);
 		return this;
-	}
-
-	public ActionBindData getActionData() {
-		return new ActionBindData((ActionBind) this);
 	}
 
 	@Override
@@ -1499,21 +1463,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	public IEntity setResizeListener(ResizeListener<IEntity> listener) {
 		this._resizeListener = listener;
 		return this;
-	}
-
-	@Override
-	public void onResize() {
-		if (_resizeListener != null) {
-			_resizeListener.onResize(this);
-		}
-		if (_childrens != null) {
-			for (int i = this._childrens.size - 1; i >= 0; i--) {
-				final IEntity child = this._childrens.get(i);
-				if (child != null && child != this) {
-					child.onResize();
-				}
-			}
-		}
 	}
 
 	@Override
@@ -1662,13 +1611,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return result;
 	}
 
-	public boolean hasChild(IEntity e) {
-		if (_childrens == null) {
-			return false;
-		}
-		return this._childrens.contains(e);
-	}
-
 	@Override
 	public IEntity show() {
 		setVisible(true);
@@ -1688,10 +1630,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			show();
 		}
 		return _visible;
-	}
-
-	public boolean isClosed() {
-		return isDisposed();
 	}
 
 	@Override
@@ -1733,180 +1671,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			moveOn(align, (LObject<?>) spr, x, y);
 		}
 		return this;
-	}
-
-	@Override
-	public IEntity with(TComponent<IEntity> c) {
-		return addComponent(c);
-	}
-
-	@Override
-	public TComponent<IEntity> findComponent(String name) {
-		if (this._components == null) {
-			return null;
-		}
-		if (StringUtils.isNullOrEmpty(name)) {
-			return null;
-		}
-		for (int i = this._components.size - 1; i >= 0; i--) {
-			final TComponent<IEntity> finder = this._components.get(i);
-			if (finder != null && finder.getName().equals(name)) {
-				return finder;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public TComponent<IEntity> findComponent(Class<? extends TComponent<IEntity>> typeClazz) {
-		if (this._components == null) {
-			return null;
-		}
-		if (typeClazz == null) {
-			return null;
-		}
-		for (int i = this._components.size - 1; i >= 0; i--) {
-			final TComponent<IEntity> finder = this._components.get(i);
-			if (finder != null && finder.getClass().equals(typeClazz)) {
-				return finder;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public IEntity addComponent(TComponent<IEntity> c) {
-		if (_components == null) {
-			allocateComponents();
-		}
-		if (c != null && !_components.contains(c)) {
-			_components.add(c);
-			c.onAttached(this);
-			c.setCurrent(this);
-		}
-		return null;
-	}
-
-	@Override
-	public boolean removeComponentName(String typeName) {
-		if (_components == null) {
-			allocateComponents();
-		}
-		int count = 0;
-		if (typeName != null) {
-			final int size = this._components.size;
-			for (int i = size - 1; i >= 0; i--) {
-				final TComponent<IEntity> removed = this._components.get(i);
-				if (removed != null && typeName.equals(removed._name)) {
-					removed.onDetached(this);
-					removed.setCurrent(null);
-					_components.remove(removed);
-					count++;
-				}
-			}
-		}
-		return count > 0;
-	}
-
-	@Override
-	public boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz) {
-		if (_components == null) {
-			allocateComponents();
-		}
-		int count = 0;
-		if (typeClazz != null) {
-			final int size = this._components.size;
-			for (int i = size - 1; i >= 0; i--) {
-				final TComponent<IEntity> removed = this._components.get(i);
-				if (removed != null && removed.getClass().equals(typeClazz)) {
-					removed.onDetached(this);
-					removed.setCurrent(null);
-					_components.remove(removed);
-					count++;
-				}
-			}
-		}
-		return count > 0;
-	}
-
-	@Override
-	public boolean removeComponent(TComponent<IEntity> c) {
-		if (_components == null) {
-			allocateComponents();
-		}
-		if (c != null) {
-			_components.remove(c);
-			c.onDetached(this);
-			c.setCurrent(null);
-		}
-		return false;
-	}
-
-	@Override
-	public IEntity removeComponents() {
-		if (this._components == null) {
-			return this;
-		}
-		final int size = this._components.size;
-		for (int i = size - 1; i >= 0; i--) {
-			final TComponent<IEntity> removed = this._components.get(i);
-			if (removed != null) {
-				removed.onDetached(this);
-				removed.setCurrent(null);
-			}
-		}
-		this._components.clear();
-		return this;
-	}
-
-	@Override
-	public boolean hasComponent() {
-		return this._components != null && this._components.size > 0;
-	}
-
-	@Override
-	public int getComponentCount() {
-		if (_components == null) {
-			allocateComponents();
-		}
-		return _components.size;
-	}
-
-	@Override
-	public boolean isComponentIgnoreUpdate() {
-		return _componentsIgnoreUpdate;
-	}
-
-	@Override
-	public IEntity setComponentIgnoreUpdate(boolean c) {
-		this._componentsIgnoreUpdate = c;
-		return this;
-	}
-
-	@Override
-	public TArray<TComponent<IEntity>> getComponents() {
-		if (_components == null) {
-			allocateComponents();
-		}
-		return new TArray<TComponent<IEntity>>(_components);
-	}
-
-	public IEntity getParent(final QueryEvent<IEntity> test) {
-		IEntity p = getParent();
-		while (p != null && !test.hit(p)) {
-			p = p.getParent();
-		}
-		return p;
-	}
-
-	public IEntity getParentBefore(final QueryEvent<IEntity> test) {
-		IEntity p = getParent();
-		IEntity prev = null;
-		while (p != null && !test.hit(p)) {
-			prev = p;
-			p = prev.getParent();
-		}
-		return prev;
 	}
 
 	@Override

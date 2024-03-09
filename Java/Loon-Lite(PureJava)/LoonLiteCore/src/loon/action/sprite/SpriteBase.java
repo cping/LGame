@@ -27,6 +27,7 @@ import loon.PlayerUtils;
 import loon.Screen;
 import loon.Director.Origin;
 import loon.action.ActionBind;
+import loon.action.ActionBindData;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
@@ -37,6 +38,7 @@ import loon.action.map.Field2D;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.events.EventAction;
+import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysKey;
 import loon.events.SysTouch;
@@ -54,10 +56,13 @@ import loon.geom.ShapeNodeType;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.utils.HelperUtils;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+@SuppressWarnings("unchecked")
 public abstract class SpriteBase<T extends ISprite> extends LObject<T> implements CollisionObject, IArray, BoxSize {
 
 	static final int CHILDREN_CAPACITY_DEFAULT = 8;
@@ -79,6 +84,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected boolean _createShadow = false;
 	protected boolean _xySort = false;
 
+	protected boolean _componentsIgnoreUpdate = false;
 	protected EventAction _loopAction = null;
 	protected Vector2f _touchOffset = new Vector2f();
 	protected Vector2f _touchPoint = new Vector2f();
@@ -95,7 +101,9 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	protected Sprites _sprites = null;
 
-	protected TArray<T> _childrens;
+	protected TArray<T> _childrens = null;
+
+	protected TArray<TComponent<T>> _components = null;
 
 	public abstract float getAniWidth();
 
@@ -105,6 +113,176 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		synchronized (SpriteBase.class) {
 			this._childrens = new TArray<T>(CHILDREN_CAPACITY_DEFAULT);
 		}
+	}
+
+	protected void allocateComponents() {
+		synchronized (SpriteBase.class) {
+			this._components = new TArray<TComponent<T>>(CHILDREN_CAPACITY_DEFAULT);
+		}
+	}
+
+	protected void onBaseUpdate(long elapsedTime) {
+		if ((this._components != null) && !this._componentsIgnoreUpdate) {
+			final TArray<TComponent<T>> comps = this._components;
+			final int entityCount = comps.size;
+			for (int i = 0; i < entityCount; i++) {
+				final TComponent<T> c = comps.get(i);
+				if (c != null && !c._paused.get()) {
+					c.onUpdate(elapsedTime);
+				}
+			}
+		}
+		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
+			final TArray<T> entities = this._childrens;
+			final int entityCount = entities.size;
+			for (int i = 0; i < entityCount; i++) {
+				entities.get(i).update(elapsedTime);
+			}
+		}
+		onUpdate(elapsedTime);
+		if (_loopAction != null) {
+			HelperUtils.callEventAction(_loopAction, this);
+		}
+	}
+
+	protected void onUpdate(long elapsedTime) {
+	}
+
+	public TComponent<T> findComponent(String name) {
+		if (this._components == null) {
+			return null;
+		}
+		if (StringUtils.isNullOrEmpty(name)) {
+			return null;
+		}
+		for (int i = this._components.size - 1; i >= 0; i--) {
+			final TComponent<T> finder = this._components.get(i);
+			if (finder != null && finder.getName().equals(name)) {
+				return finder;
+			}
+		}
+		return null;
+	}
+
+	public TComponent<T> findComponent(Class<? extends TComponent<T>> typeClazz) {
+		if (this._components == null) {
+			return null;
+		}
+		if (typeClazz == null) {
+			return null;
+		}
+		for (int i = this._components.size - 1; i >= 0; i--) {
+			final TComponent<T> finder = this._components.get(i);
+			if (finder != null && finder.getClass().equals(typeClazz)) {
+				return finder;
+			}
+		}
+		return null;
+	}
+
+	public T addComponent(TComponent<T> c) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		if (c != null && !_components.contains(c)) {
+			_components.add(c);
+			T bind = (T) this;
+			c.onAttached(bind);
+			c.setCurrent(bind);
+		}
+		return null;
+	}
+
+	public void clearComponentAll() {
+		if (this._components == null) {
+			return;
+		}
+		final int size = this._components.size;
+		for (int i = size - 1; i >= 0; i--) {
+			final TComponent<T> removed = this._components.get(i);
+			if (removed != null) {
+				removed.onDetached((T) this);
+				removed.setCurrent(null);
+			}
+		}
+		this._components.clear();
+	}
+
+	public boolean removeComponentName(String typeName) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		int count = 0;
+		if (typeName != null) {
+			final int size = this._components.size;
+			for (int i = size - 1; i >= 0; i--) {
+				final TComponent<T> removed = this._components.get(i);
+				if (removed != null && typeName.equals(removed._name)) {
+					removed.onDetached((T) this);
+					removed.setCurrent(null);
+					_components.remove(removed);
+					count++;
+				}
+			}
+		}
+		return count > 0;
+	}
+
+	public boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		int count = 0;
+		if (typeClazz != null) {
+			final int size = this._components.size;
+			for (int i = size - 1; i >= 0; i--) {
+				final TComponent<T> removed = this._components.get(i);
+				if (removed != null && removed.getClass().equals(typeClazz)) {
+					removed.onDetached((T) this);
+					removed.setCurrent(null);
+					_components.remove(removed);
+					count++;
+				}
+			}
+		}
+		return count > 0;
+	}
+
+	public boolean removeComponent(TComponent<T> c) {
+		if (_components == null) {
+			allocateComponents();
+		}
+		if (c != null) {
+			boolean result = _components.remove(c);
+			if (result) {
+				c.onDetached((T) this);
+				c.setCurrent(null);
+			}
+			return result;
+		}
+		return false;
+	}
+
+	public boolean hasComponent() {
+		return this._components != null && this._components.size > 0;
+	}
+
+	public int getComponentCount() {
+		if (_components == null) {
+			allocateComponents();
+		}
+		return _components.size;
+	}
+
+	public boolean isComponentIgnoreUpdate() {
+		return _componentsIgnoreUpdate;
+	}
+
+	public TArray<TComponent<T>> getComponents() {
+		if (_components == null) {
+			allocateComponents();
+		}
+		return new TArray<TComponent<T>>(_components);
 	}
 
 	public boolean removeChild(final T e) {
@@ -155,12 +333,58 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return false;
 	}
 
+	public int removeWhere(QueryEvent<T> query) {
+		if (this._childrens == null) {
+			return 0;
+		}
+		int count = 0;
+		final int size = this._childrens.size;
+		final TArray<T> childs = this._childrens;
+		for (int i = size - 1; i >= 0; i--) {
+			final T o = childs.get(i);
+			boolean exist = (o != null);
+			if (exist && query.hit(o)) {
+				final T result = childs.removeIndex(i);
+				if (result != null) {
+					result.setState(State.REMOVED);
+					if (result instanceof IEntity) {
+						((IEntity) result).onDetached();
+					}
+					if (exist && result instanceof ActionBind) {
+						removeActionEvents((ActionBind) result);
+					}
+					count++;
+				}
+			}
+		}
+		this._childrens = childs;
+		return count;
+	}
+
+	public TArray<T> findWhere(QueryEvent<T> query) {
+		if (this._childrens == null) {
+			return null;
+		}
+		final TArray<T> result = new TArray<T>();
+		final int size = this._childrens.size;
+		final TArray<T> childs = this._childrens;
+		for (int i = size - 1; i >= 0; i--) {
+			final T o = childs.get(i);
+			if ((o != null) && query.hit(o)) {
+				result.add(o);
+			}
+		}
+		return result;
+	}
+
 	public void removeChilds() {
 		if (this._childrens == null) {
 			return;
 		}
-		for (int i = this._childrens.size - 1; i >= 0; i--) {
-			final ISprite removed = this._childrens.get(i);
+		final int size = this._childrens.size;
+		final TArray<T> childs = this._childrens;
+		for (int i = size - 1; i >= 0; i--) {
+			final T removed = childs.get(i);
 			boolean exist = (removed != null);
 			if (exist) {
 				removed.setState(State.REMOVED);
@@ -241,6 +465,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return _touchOffset;
 	}
 
+	public boolean isPaused() {
+		return _ignoreUpdate;
+	}
+
 	public boolean isMirror() {
 		return this._flipX;
 	}
@@ -273,7 +501,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		}
 		float newX = 0f;
 		float newY = 0f;
-		ISprite parent = getParent();
+		T parent = getParent();
 		if (parent != null) {
 			newX = pointResult.x - parent.getX() - getX();
 			newY = pointResult.y - parent.getX() - getY();
@@ -453,6 +681,17 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return y + getY();
 	}
 
+	public boolean hasChild(T e) {
+		if (_childrens == null) {
+			return false;
+		}
+		return this._childrens.contains(e);
+	}
+
+	public ActionBindData getActionData() {
+		return new ActionBindData((ActionBind) this);
+	}
+
 	public Origin getOrigin() {
 		return _origin;
 	}
@@ -520,7 +759,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return _offset.y;
 	}
 
-	public boolean isCollision(ISprite o) {
+	public boolean isCollision(T o) {
 		if (o == null) {
 			return false;
 		}
@@ -922,6 +1161,38 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return this._image;
 	}
 
+	public void onResize() {
+		if (_resizeListener != null) {
+			_resizeListener.onResize((T) this);
+		}
+		if (_childrens != null) {
+			for (int i = this._childrens.size - 1; i >= 0; i--) {
+				final T child = this._childrens.get(i);
+				if (child != null && child != this) {
+					child.onResize();
+				}
+			}
+		}
+	}
+
+	public T getParent(final QueryEvent<T> test) {
+		T p = getParent();
+		while (p != null && !test.hit(p)) {
+			p = (T) p.getParent();
+		}
+		return p;
+	}
+
+	public T getParentBefore(final QueryEvent<T> test) {
+		T p = getParent();
+		T prev = null;
+		while (p != null && !test.hit(p)) {
+			prev = p;
+			p = (T) prev.getParent();
+		}
+		return prev;
+	}
+
 	@Override
 	public boolean isVisible() {
 		return this._visible;
@@ -952,6 +1223,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	public void setIgnoreUpdate(final boolean u) {
 		this._ignoreUpdate = u;
+	}
+
+	public boolean isChildrenIgnoreUpdate() {
+		return this._childrenIgnoreUpdate;
 	}
 
 	protected float drawX(float offsetX) {
@@ -1037,5 +1312,16 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	public Sprites getSprites() {
 		return this._sprites;
+	}
+
+	public void setSpritesObject(Sprites ss) {
+		if (this._sprites == ss) {
+			return;
+		}
+		this._sprites = ss;
+	}
+
+	public boolean isClosed() {
+		return isDisposed();
 	}
 }

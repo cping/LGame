@@ -29,7 +29,6 @@ import loon.LTrans;
 import loon.action.ActionControl;
 import loon.canvas.LColor;
 import loon.events.EventAction;
-import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
@@ -37,7 +36,6 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.TextureUtils;
 import loon.utils.Flip;
-import loon.utils.HelperUtils;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -80,7 +78,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	private LColor _filterColor;
 
-	private Vector2f _pivot = new Vector2f(-1, -1);
+	private Vector2f _pivot = new Vector2f(-1f, -1f);
 
 	/**
 	 * 默认构造函数
@@ -448,17 +446,13 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	 * 
 	 * @param _animation
 	 */
-	public Sprite setAnimation(Animation _animation) {
-		this._animation = _animation;
+	public Sprite setAnimation(Animation a) {
+		this._animation = a;
 		return this;
 	}
 
 	public Animation getAnimation() {
 		return _animation;
-	}
-
-	public boolean isPaused() {
-		return _ignoreUpdate;
 	}
 
 	public Sprite pause() {
@@ -481,9 +475,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
-	protected void onUpdate(long elapsedTime) {
-	}
-
 	/**
 	 * 变更动画
 	 */
@@ -491,17 +482,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	public void update(long elapsedTime) {
 		if (!this._ignoreUpdate) {
 			_animation.update(elapsedTime);
-			onUpdate(elapsedTime);
-			if (!this._childrenIgnoreUpdate && _childrens != null) {
-				final TArray<ISprite> childs = this._childrens;
-				final int count = childs.size;
-				for (int i = 0; i < count; i++) {
-					childs.get(i).update(elapsedTime);
-				}
-			}
-			if (_loopAction != null) {
-				HelperUtils.callEventAction(_loopAction, this);
-			}
+			onBaseUpdate(elapsedTime);
 		}
 	}
 
@@ -676,6 +657,20 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	public Sprite setElastic(boolean e) {
 		this._elastic = e;
+		return this;
+	}
+
+	public ISprite setComponentIgnoreUpdate(boolean c) {
+		this._componentsIgnoreUpdate = c;
+		return this;
+	}
+
+	public ISprite with(TComponent<ISprite> c) {
+		return addComponent(c);
+	}
+
+	public ISprite removeComponents() {
+		clearComponentAll();
 		return this;
 	}
 
@@ -924,10 +919,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	@Override
 	public ISprite setSprites(Sprites ss) {
-		if (this._sprites == ss) {
-			return this;
-		}
-		this._sprites = ss;
+		setSpritesObject(ss);
 		return this;
 	}
 
@@ -1040,10 +1032,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
-	public boolean isChildrenIgnoreUpdate() {
-		return this._childrenIgnoreUpdate;
-	}
-
 	public ISprite setChildrenIgnoreUpdate(final boolean c) {
 		this._childrenIgnoreUpdate = c;
 		return this;
@@ -1068,17 +1056,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return _visible;
 	}
 
-	public TArray<ISprite> getChildren() {
-		return _childrens;
-	}
-
-	public boolean hasChild(ISprite e) {
-		if (_childrens == null) {
-			return false;
-		}
-		return this._childrens.contains(e);
-	}
-
 	public ResizeListener<ISprite> getResizeListener() {
 		return _resizeListener;
 	}
@@ -1086,13 +1063,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	public Sprite setResizeListener(ResizeListener<ISprite> listener) {
 		this._resizeListener = listener;
 		return this;
-	}
-
-	@Override
-	public void onResize() {
-		if (_resizeListener != null) {
-			_resizeListener.onResize(this);
-		}
 	}
 
 	public Sprite setAutoXYSort(boolean a) {
@@ -1120,30 +1090,8 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
-	public ISprite getParent(final QueryEvent<ISprite> test) {
-		ISprite p = getParent();
-		while (p != null && !test.hit(p)) {
-			p = p.getParent();
-		}
-		return p;
-	}
-
-	public ISprite getParentBefore(final QueryEvent<ISprite> test) {
-		ISprite p = getParent();
-		ISprite prev = null;
-		while (p != null && !test.hit(p)) {
-			prev = p;
-			p = prev.getParent();
-		}
-		return prev;
-	}
-
 	public SpriteEntity toEntity() {
 		return new SpriteEntity(this);
-	}
-
-	public boolean isClosed() {
-		return isDisposed();
 	}
 
 	@Override

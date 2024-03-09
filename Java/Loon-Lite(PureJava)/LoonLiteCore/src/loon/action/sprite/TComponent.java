@@ -34,6 +34,8 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 
 	protected T _currentSprite;
 
+	protected long _elapsedTime;
+
 	protected String _name;
 
 	public TComponent() {
@@ -64,6 +66,15 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 
 	public String getName() {
 		return this._name;
+	}
+
+	public long getElapsedTime() {
+		return _elapsedTime;
+	}
+
+	public void onUpdate(long elapsedTime) {
+		this._elapsedTime = elapsedTime;
+		update(_currentSprite);
 	}
 
 	public abstract void onAttached(T on);
