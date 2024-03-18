@@ -74,6 +74,8 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected float _fixedHeightOffset = 0f;
 	protected float _scaleX = 1f;
 	protected float _scaleY = 1f;
+	protected float _scaleCenterX = -1;
+	protected float _scaleCenterY = -1;
 
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
@@ -1070,6 +1072,55 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return CollisionHelper.isRectToCirc(this.getCollisionBox(), sprite.getRectBox());
 	}
 
+	public float getScaleCenterX() {
+		return this._scaleCenterX;
+	}
+
+	public float getScaleCenterY() {
+		return this._scaleCenterY;
+	}
+
+	public void setScaleCenterX(final float sx) {
+		this._scaleCenterX = sx;
+	}
+
+	public void setScaleCenterY(final float sy) {
+		this._scaleCenterY = sy;
+	}
+
+	public void setScaleCenter(final float sx, final float sy) {
+		this._scaleCenterX = sx;
+		this._scaleCenterY = sy;
+	}
+
+	public float getScalePixelX() {
+		if (_scaleCenterX != -1f) {
+			return getX() + _scaleCenterX;
+		}
+		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
+	}
+
+	public float getScalePixelY() {
+		if (_scaleCenterY != -1f) {
+			return getY() + _scaleCenterY;
+		}
+		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
+	}
+
+	public float getScreenScalePixelX() {
+		if (_scaleCenterX != -1f) {
+			return getScreenX() + _scaleCenterX;
+		}
+		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
+	}
+
+	public float getScreenScalePixelY() {
+		if (_scaleCenterY != -1f) {
+			return getScreenY() + _scaleCenterY;
+		}
+		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
+	}
+
 	public void placeToCenter(ActionBind ab) {
 		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f,
 				getScreenScalePixelY() + (getHeight() - ab.getHeight()) / 2f);
@@ -1082,14 +1133,6 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	public void placeToCenterY(ActionBind ab, float y) {
 		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
 	}
-
-	public abstract float getScreenScalePixelX();
-
-	public abstract float getScreenScalePixelY();
-
-	public abstract float getScalePixelX();
-
-	public abstract float getScalePixelY();
 
 	public Shape getShape() {
 		return getShape(ShapeNodeType.Rectangle);

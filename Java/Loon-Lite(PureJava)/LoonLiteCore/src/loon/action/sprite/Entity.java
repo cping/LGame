@@ -114,9 +114,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
-	protected float _scaleCenterX = -1;
-	protected float _scaleCenterY = -1;
-
 	protected float _skewX = 0;
 	protected float _skewY = 0;
 
@@ -352,32 +349,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			}
 		}
 		return this;
-	}
-
-	@Override
-	public float getScaleCenterX() {
-		return this._scaleCenterX;
-	}
-
-	@Override
-	public float getScaleCenterY() {
-		return this._scaleCenterY;
-	}
-
-	@Override
-	public void setScaleCenterX(final float sx) {
-		this._scaleCenterX = sx;
-	}
-
-	@Override
-	public void setScaleCenterY(final float sy) {
-		this._scaleCenterY = sy;
-	}
-
-	@Override
-	public void setScaleCenter(final float sx, final float sy) {
-		this._scaleCenterX = sx;
-		this._scaleCenterY = sy;
 	}
 
 	@Override
@@ -849,22 +820,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	}
 
-	@Override
-	public float getScreenScalePixelX() {
-		if (_scaleCenterX != -1f) {
-			return getScreenX() + _scaleCenterX;
-		}
-		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
-	}
-
-	@Override
-	public float getScreenScalePixelY() {
-		if (_scaleCenterY != -1f) {
-			return getScreenY() + _scaleCenterY;
-		}
-		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
-	}
-
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
 		final TArray<IEntity> children = this._childrens;
 		if (!this._childrenVisible || (children == null)) {
@@ -1001,22 +956,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	public float getHeight() {
 		return _height > 1 ? (_height * this._scaleY) - _fixedHeightOffset
 				: _image == null ? 0 : (_image.getHeight() * this._scaleY) - _fixedHeightOffset;
-	}
-
-	@Override
-	public float getScalePixelX() {
-		if (_scaleCenterX != -1f) {
-			return getX() + _scaleCenterX;
-		}
-		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
-	}
-
-	@Override
-	public float getScalePixelY() {
-		if (_scaleCenterY != -1f) {
-			return getY() + _scaleCenterY;
-		}
-		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
 	}
 
 	public float getContextWidth() {

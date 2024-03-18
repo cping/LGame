@@ -74,11 +74,11 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	// 动画
 	private Animation _animation = new Animation();
 
+	private Vector2f _pivot = new Vector2f();
+
 	private int _transform;
 
 	private LColor _filterColor;
-
-	private Vector2f _pivot = new Vector2f(-1f, -1f);
 
 	/**
 	 * 默认构造函数
@@ -530,22 +530,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	@Override
-	public float getScalePixelX() {
-		if (_pivot.x != -1f) {
-			return getX() + _pivot.x;
-		}
-		return ((_scaleX == 1f) ? getX() : (getX() + _origin.ox(getWidth())));
-	}
-
-	@Override
-	public float getScalePixelY() {
-		if (_pivot.y != -1f) {
-			return getY() + _pivot.y;
-		}
-		return ((_scaleY == 1f) ? getY() : (getY() + _origin.oy(getHeight())));
-	}
-
-	@Override
 	public void createUI(GLEx g) {
 		createUI(g, 0f, 0f);
 	}
@@ -577,8 +561,8 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 			if (update) {
 				g.saveTx();
 				Affine2f tx = g.tx();
-				final float centerX = this._pivot.x == -1 ? (nx + _origin.ox(width)) : nx + this._pivot.x;
-				final float centerY = this._pivot.y == -1 ? (ny + _origin.oy(height)) : ny + this._pivot.y;
+				final float centerX = _scaleCenterX == -1 ? (nx + _origin.ox(width)) : nx + _scaleCenterX;
+				final float centerY = _scaleCenterY == -1 ? (ny + _origin.oy(height)) : ny + _scaleCenterY;
 				if (_objectRotation != 0 && notImg) {
 					tx.translate(centerX, centerY);
 					tx.preRotate(_objectRotation);
@@ -602,10 +586,13 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 			g.setAlpha(_objectAlpha);
 			if (!notImg) {
 				if (LTrans.TRANS_NONE == _transform) {
-					g.draw(_image, nx, ny, width, height, _filterColor, _objectRotation, _pivot, _scaleX, _scaleY);
+					g.draw(_image, nx, ny, width, height, _filterColor, _objectRotation, _scaleCenterX, _scaleCenterY,
+							_scaleX, _scaleY);
 				} else {
-					g.drawRegion(_image, 0, 0, (int) width, (int) height, _transform, (int) nx, (int) ny,
-							LTrans.TOP | LTrans.LEFT, _filterColor, _pivot, _scaleX, _scaleY, _objectRotation);
+					_pivot.set(_scaleCenterX, _scaleCenterY);
+					g.drawRegion(_image, 0, 0, MathUtils.ifloor(width), MathUtils.ifloor(height), _transform,
+							MathUtils.ifloor(nx), MathUtils.ifloor(ny), LTrans.TOP | LTrans.LEFT, _filterColor, _pivot,
+							_scaleX, _scaleY, _objectRotation);
 				}
 			}
 			if (_childrenVisible && _childrens != null && _childrens.size > 0) {
@@ -674,22 +661,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
-	@Override
-	public float getScreenScalePixelX() {
-		if (_pivot.x != -1f) {
-			return getScreenX() + _pivot.x;
-		}
-		return ((_scaleX == 1f) ? getScreenX() : (getScreenX() + _origin.ox(getWidth())));
-	}
-
-	@Override
-	public float getScreenScalePixelY() {
-		if (_pivot.y != -1f) {
-			return getScreenY() + _pivot.y;
-		}
-		return ((_scaleY == 1f) ? getScreenY() : (getScreenY() + _origin.oy(getHeight())));
-	}
-
 	public Sprite setChildrenVisible(final boolean v) {
 		this._childrenVisible = v;
 		return this;
@@ -733,25 +704,25 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	public Sprite setPivotX(float pX) {
-		_pivot.setX(pX);
+		setScaleCenterX(pX);
 		return this;
 	}
 
 	public Sprite setPivotY(float pY) {
-		_pivot.setY(pY);
+		setScaleCenterY(pY);
 		return this;
 	}
 
 	public float getPivotX() {
-		return _pivot.getX();
+		return getScaleCenterX();
 	}
 
 	public float getPivotY() {
-		return _pivot.getY();
+		return getScaleCenterY();
 	}
 
 	public Sprite setPivot(float pX, float pY) {
-		_pivot.set(pX, pY);
+		setScaleCenter(pX, pY);
 		return this;
 	}
 

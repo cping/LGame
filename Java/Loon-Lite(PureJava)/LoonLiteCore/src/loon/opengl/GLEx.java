@@ -1155,18 +1155,26 @@ public class GLEx implements LRelease {
 		return draw(texture, x, y, w, h, color, rotation, pivot, 1f, 1f);
 	}
 
+	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, float pivotX,
+			float pivotY, float sx, float sy) {
+		return draw(texture, x, y, w, h, color, rotation, pivotX, pivotY, sx, sy, false, false);
+	}
+
 	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, Vector2f pivot,
 			float sx, float sy) {
-		return draw(texture, x, y, w, h, color, rotation, pivot, sx, sy, false, false);
+		if (pivot == null) {
+			return draw(texture, x, y, w, h, color, rotation, sx, sy, false, false);
+		}
+		return draw(texture, x, y, w, h, color, rotation, pivot.x, pivot.y, sx, sy, false, false);
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, float sx,
 			float sy, boolean flipX, boolean flipY) {
-		return draw(texture, x, y, w, h, color, rotation, null, sx, sy, flipX, flipY);
+		return draw(texture, x, y, w, h, color, rotation, -1f, -1f, sx, sy, flipX, flipY);
 	}
 
-	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, Vector2f pivot,
-			float sx, float sy, boolean flipX, boolean flipY) {
+	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float rotation, float pivotX,
+			float pivotY, float sx, float sy, boolean flipX, boolean flipY) {
 		if (isClosed || (texture == null)) {
 			return this;
 		}
@@ -1179,9 +1187,9 @@ public class GLEx implements LRelease {
 			xf = getTempAffine();
 			float centerX = x + w / 2;
 			float centerY = y + h / 2;
-			if (pivot != null && (pivot.x != -1 && pivot.y != -1)) {
-				centerX = x + pivot.x;
-				centerX = y + pivot.y;
+			if (pivotX != -1f && pivotY != -1f) {
+				centerX = x + pivotX;
+				centerX = y + pivotY;
 			}
 			if (rotation != 0) {
 				xf.translate(centerX, centerY);
