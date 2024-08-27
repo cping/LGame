@@ -27,13 +27,14 @@ import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.events.EventActionN;
 import loon.geom.RectBox;
 import loon.utils.TArray;
 
 /**
  * 角色模板,提供了一些基础的人物参数
  */
-public class Role extends RoleValue implements ActionBind {
+public class Role extends RoleValue implements ActionBind, EventActionN {
 
 	public static class ActionPriorityComparator implements Comparator<Role> {
 
@@ -148,6 +149,11 @@ public class Role extends RoleValue implements ActionBind {
 	public Role setTag(Object t) {
 		this._tag = t;
 		return this;
+	}
+
+	@Override
+	public void update() {
+
 	}
 
 	@Override
@@ -435,4 +441,5 @@ public class Role extends RoleValue implements ActionBind {
 		}
 		return false;
 	}
+
 }

@@ -20,6 +20,7 @@
  */
 package loon.action.map.items;
 
+import loon.LSystem;
 import loon.geom.PointI;
 import loon.utils.TArray;
 
@@ -29,7 +30,7 @@ public class AttackBase {
 
 	private AttackScale _attack;
 
-	private int _damage;
+	private float _damage;
 
 	private float _hitRate;
 
@@ -37,7 +38,19 @@ public class AttackBase {
 
 	protected TArray<PointI> _range;
 
-	public AttackBase(String n, AttackScale s) {
+	public AttackBase() {
+		this(0f);
+	}
+
+	public AttackBase(float damage) {
+		this(LSystem.UNKNOWN, AttackScale.Single, damage);
+	}
+
+	public AttackBase(AttackScale s, float damage) {
+		this(LSystem.UNKNOWN, s, damage);
+	}
+
+	public AttackBase(String n, AttackScale s, float damage) {
 		this._range = new TArray<PointI>();
 		this._name = n;
 		this._attack = s;
@@ -70,11 +83,11 @@ public class AttackBase {
 		return this;
 	}
 
-	public int getDamage() {
+	public float getDamage() {
 		return _damage;
 	}
 
-	public AttackBase setDamage(int d) {
+	public AttackBase setDamage(float d) {
 		this._damage = d;
 		return this;
 	}

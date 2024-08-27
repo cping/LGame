@@ -1410,6 +1410,13 @@ public class LColor implements Serializable {
 		return setColor(color.r, color.g, color.b, color.a);
 	}
 
+	public LColor setColor(LColor color, float alpha) {
+		if (color == null) {
+			return setColor(this.r, this.g, this.b, alpha);
+		}
+		return setColor(color.r, color.g, color.b, alpha);
+	}
+
 	public LColor setColor(int pixel) {
 		return setColorARGB(pixel);
 	}

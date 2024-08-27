@@ -23,6 +23,7 @@ package loon.action.map.items;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.events.EventActionT;
 import loon.geom.RectBox;
 import loon.geom.XYZW;
 
@@ -37,6 +38,10 @@ public class Item<T> implements IItem {
 	protected T _item;
 
 	protected int _typeId;
+
+	protected boolean _used;
+
+	protected EventActionT<Item<T>> _itemChanged;
 
 	public Item(String name, String imagePath, XYZW rect, T item) {
 		this(0, name, imagePath, rect.getX(), rect.getY(), rect.getZ(), rect.getW(), item);
@@ -94,11 +99,23 @@ public class Item<T> implements IItem {
 		}
 	}
 
+	public Item<T> setItemChanged(EventActionT<Item<T>> eve) {
+		this._itemChanged = eve;
+		return this;
+	}
+
+	public EventActionT<Item<T>> getItemChanged() {
+		return this._itemChanged;
+	}
+
 	public Item<T> setArea(float x, float y, float w, float h) {
 		if (this._itemArea == null) {
 			this._itemArea = new RectBox(x, y, w, h);
 		} else {
 			this._itemArea.setBounds(x, y, w, h);
+		}
+		if (this._itemChanged != null) {
+			this._itemChanged.update(this);
 		}
 		return this;
 	}
@@ -110,6 +127,9 @@ public class Item<T> implements IItem {
 
 	public Item<T> setName(String name) {
 		this._name = name;
+		if (this._itemChanged != null) {
+			this._itemChanged.update(this);
+		}
 		return this;
 	}
 
@@ -120,6 +140,9 @@ public class Item<T> implements IItem {
 
 	public Item<T> setItem(T o) {
 		this._item = o;
+		if (o != null && this._itemChanged != null) {
+			this._itemChanged.update(this);
+		}
 		return this;
 	}
 
@@ -148,6 +171,30 @@ public class Item<T> implements IItem {
 
 	public Item<T> setItemTypeId(int id) {
 		this._typeId = id;
+		return this;
+	}
+
+	@Override
+	public void update() {
+		if (_itemChanged != null) {
+			_itemChanged.update(this);
+		}
+	}
+
+	@Override
+	public boolean isUsed() {
+		return _used;
+	}
+
+	@Override
+	public IItem setUse(boolean u) {
+		if (this._used == u) {
+			return this;
+		}
+		this._used = u;
+		if (_itemChanged != null) {
+			_itemChanged.update(this);
+		}
 		return this;
 	}
 
@@ -224,6 +271,7 @@ public class Item<T> implements IItem {
 		if (_name != null) {
 			hashCode = LSystem.unite(hashCode, _name.hashCode());
 		}
+		hashCode = LSystem.unite(hashCode, _used);
 		return hashCode;
 	}
 

@@ -20,24 +20,38 @@
  */
 package loon.action.map.items;
 
-import loon.LTexture;
-import loon.events.EventActionN;
-import loon.geom.RectBox;
+public class AttackResult {
 
-public interface IItem extends EventActionN {
+	private AttackType _type;
 
-	String getName();
+	private AttackBase _attackBase;
 
-	Object getItem();
+	public AttackResult(AttackType atype, AttackBase abase) {
+		this._type = atype;
+		this._attackBase = abase;
+	}
 
-	LTexture getTexture();
+	public AttackResult(AttackType atype, float damage) {
+		this._type = atype;
+		this._attackBase = new AttackBase(damage);
+	}
 
-	RectBox getArea();
+	public AttackResult setAttackType(AttackType atype) {
+		this._type = atype;
+		return this;
+	}
 
-	int getItemTypeId();
+	public AttackType getAttackType() {
+		return _type;
+	}
 
-	boolean isUsed();
+	public AttackResult setAttackBase(AttackBase abase) {
+		this._attackBase = abase;
+		return this;
+	}
 
-	IItem setUse(boolean u);
+	public AttackBase getAttackBase() {
+		return _attackBase;
+	}
 
 }

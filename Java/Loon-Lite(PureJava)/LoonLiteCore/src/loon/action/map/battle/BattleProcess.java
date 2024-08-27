@@ -1192,6 +1192,10 @@ public class BattleProcess extends CoroutineProcess {
 		kill();
 		return this;
 	}
+	
+	public boolean isBattleEnd() {
+		return !isCoroutineRunning();
+	}
 
 	@Override
 	public void close() {

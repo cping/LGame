@@ -21,18 +21,23 @@
 package loon.action.map.items;
 
 import loon.LTexture;
+import loon.events.EventActionN;
 import loon.geom.RectBox;
 
-public interface IItem {
+public interface IItem extends EventActionN {
 
-	public String getName();
-	
-	public Object getItem();
+	String getName();
 
-	public LTexture getTexture();
+	Object getItem();
 
-	public RectBox getArea();
-	
-	public int getItemTypeId();
+	LTexture getTexture();
+
+	RectBox getArea();
+
+	int getItemTypeId();
+
+	boolean isUsed();
+
+	IItem setUse(boolean u);
 
 }

@@ -158,15 +158,23 @@ public class Inventory {
 		if (obj == null) {
 			return false;
 		}
+		obj.update();
 		return _items.add(obj);
 	}
 
 	public boolean removeItem(IItem obj) {
+		if (obj != null) {
+			obj.update();
+		}
 		return _items.remove(obj);
 	}
 
 	public IItem removeItemIndex(int idx) {
-		return _items.removeIndex(idx);
+		IItem item = _items.removeIndex(idx);
+		if (item != null) {
+			item.update();
+		}
+		return item;
 	}
 
 	public IItem popItem() {
@@ -228,6 +236,12 @@ public class Inventory {
 	}
 
 	public Inventory clear() {
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			if (item != null) {
+				item.update();
+			}
+		}
 		_items.clear();
 		return this;
 	}

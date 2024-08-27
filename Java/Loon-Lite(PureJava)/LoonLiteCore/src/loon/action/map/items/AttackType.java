@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2023 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,6 @@
  */
 package loon.action.map.items;
 
-public enum AttackScale {
-	Single, Line, Range
+public enum AttackType {
+	Missed, Hit, CriticalHit, Other
 }
