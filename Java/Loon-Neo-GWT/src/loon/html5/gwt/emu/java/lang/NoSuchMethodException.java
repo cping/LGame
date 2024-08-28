@@ -16,11 +16,11 @@ public class NoSuchMethodException extends Exception {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public NoSuchMethodException(String message) {
+	public NoSuchMethodException (String message) {
 		super(message);
 	}
 
-	public NoSuchMethodException() {
+	public NoSuchMethodException () {
 		super();
 	}
 }

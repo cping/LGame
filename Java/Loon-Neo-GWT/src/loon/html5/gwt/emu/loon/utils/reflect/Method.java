@@ -7,19 +7,19 @@ public final class Method {
 
 	private final loon.gwtref.client.Method method;
 
-	Method(loon.gwtref.client.Method method) {
+	Method (loon.gwtref.client.Method method) {
 		this.method = method;
 	}
 
-	public String getName() {
+	public String getName () {
 		return method.getName();
 	}
 
-	public Class getReturnType() {
+	public Class getReturnType () {
 		return method.getReturnType();
 	}
 
-	public Class[] getParameterTypes() {
+	public Class[] getParameterTypes () {
 		Parameter[] parameters = method.getParameters();
 		Class[] parameterTypes = new Class[parameters.length];
 		for (int i = 0, j = parameters.length; i < j; i++) {
@@ -28,54 +28,54 @@ public final class Method {
 		return parameterTypes;
 	}
 
-	public Class getDeclaringClass() {
+	public Class getDeclaringClass () {
 		return method.getEnclosingType();
 	}
 
-	public boolean isAccessible() {
+	public boolean isAccessible () {
 		return method.isPublic();
 	}
 
-	public void setAccessible(boolean accessible) {
+	public void setAccessible (boolean accessible) {
 	}
 
-	public boolean isAbstract() {
+	public boolean isAbstract () {
 		return method.isAbstract();
 	}
 
-	public boolean isDefaultAccess() {
+	public boolean isDefaultAccess () {
 		return !isPrivate() && !isProtected() && !isPublic();
 	}
 
-	public boolean isFinal() {
+	public boolean isFinal () {
 		return method.isFinal();
 	}
 
-	public boolean isPrivate() {
+	public boolean isPrivate () {
 		return method.isPrivate();
 	}
 
-	public boolean isProtected() {
+	public boolean isProtected () {
 		return method.isProtected();
 	}
 
-	public boolean isPublic() {
+	public boolean isPublic () {
 		return method.isPublic();
 	}
 
-	public boolean isNative() {
+	public boolean isNative () {
 		return method.isNative();
 	}
 
-	public boolean isStatic() {
+	public boolean isStatic () {
 		return method.isStatic();
 	}
 
-	public boolean isVarArgs() {
+	public boolean isVarArgs () {
 		return method.isVarArgs();
 	}
 
-	public Object invoke(Object obj, Object... args) throws ReflectionException {
+	public Object invoke (Object obj, Object... args) throws ReflectionException {
 		try {
 			return method.invoke(obj, args);
 		} catch (IllegalArgumentException e) {
@@ -83,7 +83,7 @@ public final class Method {
 		}
 	}
 
-	public boolean isAnnotationPresent(Class<? extends java.lang.annotation.Annotation> annotationType) {
+	public boolean isAnnotationPresent (Class<? extends java.lang.annotation.Annotation> annotationType) {
 		java.lang.annotation.Annotation[] annotations = method.getDeclaredAnnotations();
 		if (annotations != null) {
 			for (java.lang.annotation.Annotation annotation : annotations) {
@@ -95,7 +95,7 @@ public final class Method {
 		return false;
 	}
 
-	public Annotation[] getDeclaredAnnotations() {
+	public Annotation[] getDeclaredAnnotations () {
 		java.lang.annotation.Annotation[] annotations = method.getDeclaredAnnotations();
 		Annotation[] result = new Annotation[annotations.length];
 		for (int i = 0; i < annotations.length; i++) {
@@ -104,7 +104,7 @@ public final class Method {
 		return result;
 	}
 
-	public Annotation getDeclaredAnnotation(Class<? extends java.lang.annotation.Annotation> annotationType) {
+	public Annotation getDeclaredAnnotation (Class<? extends java.lang.annotation.Annotation> annotationType) {
 		java.lang.annotation.Annotation[] annotations = method.getDeclaredAnnotations();
 		for (java.lang.annotation.Annotation annotation : annotations) {
 			if (annotation.annotationType().equals(annotationType)) {

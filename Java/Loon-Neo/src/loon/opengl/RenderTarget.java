@@ -35,22 +35,22 @@ public abstract class RenderTarget implements LRelease {
 
 		@Override
 		public int width() {
-			return texture.pixelWidth();
+			return _texture.pixelWidth();
 		}
 
 		@Override
 		public int height() {
-			return texture.pixelHeight();
+			return _texture.pixelHeight();
 		}
 
 		@Override
 		public float xscale() {
-			return texture.pixelWidth() / texture.width();
+			return _texture.pixelWidth() / _texture.width();
 		}
 
 		@Override
 		public float yscale() {
-			return texture.pixelHeight() / texture.height();
+			return _texture.pixelHeight() / _texture.height();
 		}
 
 		@Override
@@ -60,7 +60,7 @@ public abstract class RenderTarget implements LRelease {
 
 		@Override
 		public LTexture texture() {
-			return texture;
+			return _texture;
 		}
 
 	}
@@ -69,34 +69,34 @@ public abstract class RenderTarget implements LRelease {
 		return new TextureRenderTarget(gfx, tex);
 	}
 
-	public final Graphics gfx;
+	public final Graphics _gfx;
 
-	public final LTexture texture;
+	public final LTexture _texture;
 
-	private FrameBuffer frameBuffer;
+	private FrameBuffer _frameBuffer;
 
-	private boolean disposed;
+	private boolean _disposed;
 
-	private boolean inited;
+	private boolean _inited;
 
 	public RenderTarget(Graphics gfx, LTexture texture) {
-		this.gfx = gfx;
-		this.texture = texture;
+		this._gfx = gfx;
+		this._texture = texture;
 	}
 
 	protected void checkFrameBufferInit() {
-		if (!inited) {
-			if (this.frameBuffer != null) {
-				this.frameBuffer.close();
+		if (!_inited) {
+			if (this._frameBuffer != null) {
+				this._frameBuffer.close();
 			}
 			final LTexture tex = texture();
 			if (tex == null) {
-				this.frameBuffer = FrameBuffer.createEmptyFrameBuffer(width(), height());
+				this._frameBuffer = FrameBuffer.createEmptyFrameBuffer(width(), height());
 			} else {
-				this.frameBuffer = new FrameBuffer(width(), height());
-				this.frameBuffer.attachFrameBufferColorTexture(tex);
+				this._frameBuffer = new FrameBuffer(width(), height());
+				this._frameBuffer.attachFrameBufferColorTexture(tex);
 			}
-			this.inited = true;
+			this._inited = true;
 		}
 	}
 
@@ -114,42 +114,42 @@ public abstract class RenderTarget implements LRelease {
 
 	public int id() {
 		checkFrameBufferInit();
-		return frameBuffer.getFramebufferHandle();
+		return _frameBuffer.getFramebufferHandle();
 	}
 
 	public LTexture getTextureData() {
 		checkFrameBufferInit();
-		return frameBuffer.getTextureData();
+		return _frameBuffer.getTextureData();
 	}
 
 	public LTexture getTextureData(boolean flip, boolean alpha) {
 		checkFrameBufferInit();
-		return frameBuffer.getTextureData(flip, alpha);
+		return _frameBuffer.getTextureData(flip, alpha);
 	}
 
 	public Image getImageData(int index, boolean flip, boolean alpha) {
 		checkFrameBufferInit();
-		return frameBuffer.getImageData(index, flip, alpha);
+		return _frameBuffer.getImageData(index, flip, alpha);
 	}
 
 	public int getDefaultFramebufferID() {
 		checkFrameBufferInit();
-		return frameBuffer.getFramebufferHandle();
+		return _frameBuffer.getFramebufferHandle();
 	}
 
 	public FrameBuffer getFrameBuffer() {
 		checkFrameBufferInit();
-		return frameBuffer;
+		return _frameBuffer;
 	}
 
 	public void bind() {
 		checkFrameBufferInit();
-		frameBuffer.bind(gfx.gl, id(), width(), height());
+		_frameBuffer.bind(_gfx.gl, id(), width(), height());
 	}
 
 	public void unbind() {
-		if (inited) {
-			frameBuffer.unbind(gfx.gl);
+		if (_inited) {
+			_frameBuffer.unbind(_gfx.gl);
 		}
 	}
 
@@ -160,24 +160,24 @@ public abstract class RenderTarget implements LRelease {
 	}
 
 	public boolean isClosed() {
-		return disposed;
+		return _disposed;
 	}
 
 	@Override
 	public void close() {
-		if (!disposed) {
-			if (inited) {
-				frameBuffer.close();
+		if (!_disposed) {
+			if (_inited) {
+				_frameBuffer.close();
 			}
-			disposed = true;
-			inited = false;
+			_disposed = true;
+			_inited = false;
 		}
 	}
 
 	@Override
 	protected void finalize() {
-		if (!disposed) {
-			gfx.queueForDispose(this);
+		if (!_disposed) {
+			_gfx.queueForDispose(this);
 		}
 	}
 

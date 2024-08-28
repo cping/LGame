@@ -27,7 +27,7 @@ import loon.utils.reply.Nullable;
 
 public class FloatValue implements LRelease {
 
-	private float value = 0f;
+	private float _value = 0f;
 
 	public FloatValue() {
 		this(0f);
@@ -43,12 +43,12 @@ public class FloatValue implements LRelease {
 	}
 
 	public FloatValue set(float v) {
-		this.value = v;
+		this._value = v;
 		return this;
 	}
 
 	public float scaled(float length) {
-		return value * length;
+		return _value * length;
 	}
 
 	public int scaledCeil(float length) {
@@ -64,17 +64,17 @@ public class FloatValue implements LRelease {
 	}
 
 	public float result() {
-		return value;
+		return _value;
 	}
 
 	public boolean isZero() {
-		return MathUtils.equal(value, 0f);
+		return MathUtils.equal(_value, 0f);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, _value);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -85,7 +85,7 @@ public class FloatValue implements LRelease {
 			return false;
 		}
 		if (o instanceof FloatValue) {
-			if (MathUtils.equal(((FloatValue) o).value, this.value)) {
+			if (MathUtils.equal(((FloatValue) o)._value, this._value)) {
 				return true;
 			}
 		}
@@ -93,21 +93,21 @@ public class FloatValue implements LRelease {
 	}
 
 	public FloatValue cpy() {
-		return new FloatValue(value);
+		return new FloatValue(_value);
 	}
 
 	public Nullable<Float> toNullable() {
-		return new Nullable<Float>(value);
+		return new Nullable<Float>(_value);
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return String.valueOf(_value);
 	}
 
 	@Override
 	public void close() {
-		this.value = 0f;
+		this._value = 0f;
 	}
 
 }

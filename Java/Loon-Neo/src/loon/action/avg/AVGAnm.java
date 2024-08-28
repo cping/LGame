@@ -114,9 +114,9 @@ public class AVGAnm implements Expression, LRelease {
 		String[] op = StringUtils.split(script, '=');
 		if (op.length == 2) {
 			final String key = op[0].trim();
-			final String value = op[1].trim();
+			final String vv = op[1].trim();
 			if ("path".equalsIgnoreCase(key)) {
-				_texturePath = StringUtils.replace(value, "\"", LSystem.EMPTY);
+				_texturePath = StringUtils.replace(vv, "\"", LSystem.EMPTY);
 				if (texture != null) {
 					texture.close();
 					texture = null;
@@ -128,19 +128,19 @@ public class AVGAnm implements Expression, LRelease {
 				}
 			}
 			if ("imagewidth".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					imageWidth = Integer.parseInt(value);
+				if (MathUtils.isNan(vv)) {
+					imageWidth = Integer.parseInt(vv);
 				}
 			} else if ("alpha".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					alpha = Float.parseFloat(value);
+				if (MathUtils.isNan(vv)) {
+					alpha = Float.parseFloat(vv);
 				}
 			} else if ("angle".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					angle = Float.parseFloat(value);
+				if (MathUtils.isNan(vv)) {
+					angle = Float.parseFloat(vv);
 				}
 			} else if ("color".equalsIgnoreCase(key)) {
-				String[] p = value.split(",");
+				String[] p = vv.split(",");
 				if (p.length > 2 && p.length < 5) {
 					for (int i = 0; i < p.length; i++) {
 						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
@@ -154,22 +154,22 @@ public class AVGAnm implements Expression, LRelease {
 					}
 				}
 			} else if ("imageheight".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value))
-					imageHeight = Integer.parseInt(value);
+				if (MathUtils.isNan(vv))
+					imageHeight = Integer.parseInt(vv);
 			} else if ("width".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					width = Integer.parseInt(value);
+				if (MathUtils.isNan(vv)) {
+					width = Integer.parseInt(vv);
 				}
 			} else if ("height".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					height = Integer.parseInt(value);
+				if (MathUtils.isNan(vv)) {
+					height = Integer.parseInt(vv);
 				}
 			} else if ("time".equalsIgnoreCase(key)) {
-				if (MathUtils.isNan(value)) {
-					anmtime = Integer.parseInt(value);
+				if (MathUtils.isNan(vv)) {
+					anmtime = Integer.parseInt(vv);
 				}
 			} else if ("pos".equalsIgnoreCase(key)) {
-				String[] p = value.split(",");
+				String[] p = vv.split(",");
 				for (int i = 0; i < p.length; i++) {
 					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
 				}

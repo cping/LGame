@@ -24,7 +24,7 @@ import loon.Log;
 
 public class GWTLog extends Log {
 
-	private GWTLog() {
+	public GWTLog() {
 	}
 
 	@Override

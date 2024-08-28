@@ -127,8 +127,6 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		initTime();
 		initRequestAnimFrame();
 
-		Loon.self = this;
-
 		_orientation = calculateScreenOrientation();
 		try {
 			this.registerOrientationChangedHandler(new OrientationChangedEvent() {
@@ -324,6 +322,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	protected GWTGame createGame() {
+		LSystem.freeStaticObject();
+		Loon.self = this;
 		return this.game = new GWTGame(this, root, config);
 	}
 

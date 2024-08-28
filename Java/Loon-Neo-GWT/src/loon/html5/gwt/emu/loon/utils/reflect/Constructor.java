@@ -7,11 +7,11 @@ public final class Constructor {
 
 	private final loon.gwtref.client.Constructor constructor;
 
-	Constructor(loon.gwtref.client.Constructor constructor) {
+	Constructor (loon.gwtref.client.Constructor constructor) {
 		this.constructor = constructor;
 	}
 
-	public Class[] getParameterTypes() {
+	public Class[] getParameterTypes () {
 		Parameter[] parameters = constructor.getParameters();
 		Class[] parameterTypes = new Class[parameters.length];
 		for (int i = 0, j = parameters.length; i < j; i++) {
@@ -20,24 +20,24 @@ public final class Constructor {
 		return parameterTypes;
 	}
 
-	public Class getDeclaringClass() {
+	public Class getDeclaringClass () {
 		return constructor.getEnclosingType();
 	}
 
-	public boolean isAccessible() {
+	public boolean isAccessible () {
 		return constructor.isPublic();
 	}
 
-	public void setAccessible(boolean accessible) {
+	public void setAccessible (boolean accessible) {
 
 	}
 
-	public Object newInstance(Object... args) throws ReflectionException {
+	public Object newInstance (Object... args) throws ReflectionException {
 		try {
 			return constructor.newInstance(args);
 		} catch (IllegalArgumentException e) {
-			throw new ReflectionException(
-					"Illegal argument(s) supplied to constructor for class: " + getDeclaringClass().getName(), e);
+			throw new ReflectionException("Illegal argument(s) supplied to constructor for class: " + getDeclaringClass().getName(),
+				e);
 		}
 	}
 

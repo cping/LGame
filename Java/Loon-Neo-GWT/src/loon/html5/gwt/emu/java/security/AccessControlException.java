@@ -17,16 +17,16 @@ public class AccessControlException extends SecurityException {
 	private static final long serialVersionUID = 1L;
 	private final Permission permission;
 
-	public AccessControlException(String message) {
+	public AccessControlException (String message) {
 		this(message, null);
 	}
 
-	public AccessControlException(String message, Permission permission) {
+	public AccessControlException (String message, Permission permission) {
 		super(message);
 		this.permission = permission;
 	}
 
-	public Permission getPermission() {
+	public Permission getPermission () {
 		return permission;
 	}
 }

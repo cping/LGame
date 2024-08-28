@@ -25,53 +25,57 @@ package java.lang.reflect;
  */
 public class UndeclaredThrowableException extends RuntimeException {
 
-	private static final long serialVersionUID = 330127114055056639L;
+    private static final long serialVersionUID = 330127114055056639L;
 
-	private Throwable undeclaredThrowable;
+    private Throwable undeclaredThrowable;
 
-	/**
-	 * Constructs a new {@code UndeclaredThrowableException} instance with the
-	 * undeclared, checked exception that occurred.
-	 * 
-	 * @param exception the undeclared, checked exception that occurred
-	 */
-	public UndeclaredThrowableException(Throwable exception) {
-		super();
-		this.undeclaredThrowable = exception;
-		initCause(exception);
-	}
+    /**
+     * Constructs a new {@code UndeclaredThrowableException} instance with the
+     * undeclared, checked exception that occurred.
+     * 
+     * @param exception
+     *            the undeclared, checked exception that occurred
+     */
+    public UndeclaredThrowableException(Throwable exception) {
+        super();
+        this.undeclaredThrowable = exception;
+        initCause(exception);
+    }
 
-	/**
-	 * Constructs a new {@code UndeclaredThrowableException} instance with the
-	 * undeclared, checked exception that occurred and a message.
-	 * 
-	 * @param detailMessage the detail message for the exception
-	 * @param exception     the undeclared, checked exception that occurred
-	 */
-	public UndeclaredThrowableException(Throwable exception, String detailMessage) {
-		super(detailMessage);
-		this.undeclaredThrowable = exception;
-		initCause(exception);
-	}
+    /**
+     * Constructs a new {@code UndeclaredThrowableException} instance with the
+     * undeclared, checked exception that occurred and a message.
+     * 
+     * @param detailMessage
+     *            the detail message for the exception
+     * @param exception
+     *            the undeclared, checked exception that occurred
+     */
+    public UndeclaredThrowableException(Throwable exception,
+            String detailMessage) {
+        super(detailMessage);
+        this.undeclaredThrowable = exception;
+        initCause(exception);
+    }
 
-	/**
-	 * Returns the undeclared, checked exception that occurred, which may be
-	 * {@code null}.
-	 *
-	 * @return the undeclared, checked exception that occurred
-	 */
-	public Throwable getUndeclaredThrowable() {
-		return undeclaredThrowable;
-	}
+    /**
+     * Returns the undeclared, checked exception that occurred, which may be
+     * {@code null}.
+     *
+     * @return the undeclared, checked exception that occurred
+     */
+    public Throwable getUndeclaredThrowable() {
+        return undeclaredThrowable;
+    }
 
-	/**
-	 * Returns the undeclared, checked exception that occurred, which may be
-	 * {@code null}.
-	 *
-	 * @return the undeclared, checked exception that occurred
-	 */
-	@Override
-	public Throwable getCause() {
-		return undeclaredThrowable;
-	}
+    /**
+     * Returns the undeclared, checked exception that occurred, which may be
+     * {@code null}.
+     *
+     * @return the undeclared, checked exception that occurred
+     */
+    @Override
+    public Throwable getCause() {
+        return undeclaredThrowable;
+    }
 }

@@ -17,12 +17,12 @@ public class InputStreamReader extends Reader {
 
 	private final GWTUtf8 utf8Decoder;
 
-	public InputStreamReader(InputStream in) {
+	public InputStreamReader (InputStream in) {
 		this.in = in;
 		this.utf8Decoder = new GWTUtf8();
 	}
 
-	public InputStreamReader(InputStream in, String encoding) throws UnsupportedEncodingException {
+	public InputStreamReader (InputStream in, String encoding) throws UnsupportedEncodingException {
 		this(in);
 
 		// FIXME this is bad, but some APIs seem to use "ISO-8859-1", fuckers...
@@ -31,13 +31,13 @@ public class InputStreamReader extends Reader {
 // }
 	}
 
-	public int read(char[] b, int offset, int length) throws IOException {
+	public int read (char[] b, int offset, int length) throws IOException {
 		byte[] buffer = new byte[length];
 		int c = in.read(buffer);
 		return c <= 0 ? c : utf8Decoder.decode(buffer, 0, c, b, offset);
 	}
 
-	public void close() throws IOException {
+	public void close () throws IOException {
 		in.close();
 	}
 }

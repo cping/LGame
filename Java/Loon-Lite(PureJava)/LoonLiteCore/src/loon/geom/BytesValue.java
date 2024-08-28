@@ -27,7 +27,7 @@ import loon.utils.reply.Nullable;
 
 public class BytesValue implements LRelease {
 
-	private ArrayByte value;
+	private ArrayByte _value;
 
 	public BytesValue() {
 		this(new ArrayByte(512));
@@ -43,22 +43,22 @@ public class BytesValue implements LRelease {
 	}
 
 	public BytesValue set(ArrayByte v) {
-		this.value = v;
+		this._value = v;
 		return this;
 	}
 
 	public ArrayByte result() {
-		return value;
+		return _value;
 	}
 
 	public boolean isZero() {
-		return value == null;
+		return _value == null;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, value.hashCode());
+		result = LSystem.unite(result, _value.hashCode());
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -69,7 +69,7 @@ public class BytesValue implements LRelease {
 			return false;
 		}
 		if (o instanceof BytesValue) {
-			if (((BytesValue) o).value.equals(this.value)) {
+			if (((BytesValue) o)._value.equals(this._value)) {
 				return true;
 			}
 		}
@@ -77,20 +77,20 @@ public class BytesValue implements LRelease {
 	}
 
 	public ArrayByte cpy() {
-		return value != null ? value.cpy() : null;
+		return _value != null ? _value.cpy() : null;
 	}
 
 	public Nullable<ArrayByte> toNullable() {
-		return new Nullable<ArrayByte>(value);
+		return new Nullable<ArrayByte>(_value);
 	}
 
 	@Override
 	public String toString() {
-		return value.toString();
+		return _value.toString();
 	}
 
 	@Override
 	public void close() {
-		value = null;
+		_value = null;
 	}
 }

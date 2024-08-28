@@ -20,12 +20,10 @@ import java.util.ArrayList;
 
 import com.google.gwt.storage.client.Storage;
 
-/**
- * LocalStorage based File implementation for GWT. Should probably have used
- * Harmony as a starting point instead of writing this from scratch.
+/** LocalStorage based File implementation for GWT. Should probably have used Harmony as a starting point instead of writing this
+ * from scratch.
  * 
- * @author Stefan Haustein
- */
+ * @author Stefan Haustein */
 public class File {
 
 	public static final File ROOT = new File("");
@@ -44,7 +42,7 @@ public class File {
 	String name;
 	boolean absolute;
 
-	public File(String pathname) {
+	public File (String pathname) {
 		while (pathname.endsWith(separator) && pathname.length() > 0) {
 			pathname = pathname.substring(0, pathname.length() - 1);
 		}
@@ -63,11 +61,11 @@ public class File {
 // Compatibility.println("new File ('"+pathname+ "'); canonical name: '" + getCanonicalPath() + "'");
 	}
 
-	public File(String parent, String child) {
+	public File (String parent, String child) {
 		this(new File(parent), child);
 	}
 
-	public File(File parent, String child) {
+	public File (File parent, String child) {
 		this.parent = parent;
 		this.name = child;
 	}
@@ -76,27 +74,27 @@ public class File {
 	 * public File(URI uri) { }
 	 */
 
-	public String getName() {
+	public String getName () {
 		return name;
 	}
 
-	public String getParent() {
+	public String getParent () {
 		return parent == null ? "" : parent.getPath();
 	}
 
-	public File getParentFile() {
+	public File getParentFile () {
 		return parent;
 	}
 
-	public String getPath() {
+	public String getPath () {
 		return parent == null ? name : (parent.getPath() + separatorChar + name);
 	}
 
-	private boolean isRoot() {
+	private boolean isRoot () {
 		return name.equals("") && parent == null;
 	}
 
-	public boolean isAbsolute() {
+	public boolean isAbsolute () {
 		if (isRoot()) {
 			return true;
 		}
@@ -106,12 +104,12 @@ public class File {
 		return parent.isAbsolute();
 	}
 
-	public String getAbsolutePath() {
+	public String getAbsolutePath () {
 		String path = getAbsoluteFile().getPath();
 		return path.length() == 0 ? "/" : path;
 	}
 
-	public File getAbsoluteFile() {
+	public File getAbsoluteFile () {
 		if (isAbsolute()) {
 			return this;
 		}
@@ -121,11 +119,11 @@ public class File {
 		return new File(parent.getAbsoluteFile(), name);
 	}
 
-	public String getCanonicalPath() {
+	public String getCanonicalPath () {
 		return getCanonicalFile().getAbsolutePath();
 	}
 
-	public File getCanonicalFile() {
+	public File getCanonicalFile () {
 		File cParent = parent == null ? null : parent.getCanonicalFile();
 		if (name.equals(".")) {
 			return cParent == null ? ROOT : cParent;
@@ -154,37 +152,37 @@ public class File {
 	 * public URI toURI() { }
 	 */
 
-	public boolean canRead() {
+	public boolean canRead () {
 		return true;
 	}
 
-	public boolean canWrite() {
+	public boolean canWrite () {
 		return true;
 	}
 
-	public boolean exists() {
+	public boolean exists () {
 		return LocalStorage.getItem(getCanonicalPath()) != null;
 	}
 
-	public boolean isDirectory() {
+	public boolean isDirectory () {
 		String s = LocalStorage.getItem(getCanonicalPath());
 		return s != null && s.startsWith("{");
 	}
 
-	public boolean isFile() {
+	public boolean isFile () {
 		String s = LocalStorage.getItem(getCanonicalPath());
 		return s != null && !s.startsWith("{");
 	}
 
-	public boolean isHidden() {
+	public boolean isHidden () {
 		return false;
 	}
 
-	public long lastModified() {
+	public long lastModified () {
 		return 0;
 	}
 
-	public long length() {
+	public long length () {
 		try {
 			if (!exists()) {
 				return 0;
@@ -199,16 +197,14 @@ public class File {
 		}
 	}
 
-	public boolean createNewFile() throws IOException {
-		if (exists())
-			return false;
-		if (!parent.exists())
-			return false;
+	public boolean createNewFile () throws IOException {
+		if (exists()) return false;
+		if (!parent.exists()) return false;
 		LocalStorage.setItem(getCanonicalPath(), RandomAccessFile.btoa(""));
 		return true;
 	}
 
-	public boolean delete() {
+	public boolean delete () {
 		if (!exists()) {
 			return false;
 		}
@@ -216,11 +212,11 @@ public class File {
 		return true;
 	}
 
-	public void deleteOnExit() {
+	public void deleteOnExit () {
 		throw new RuntimeException("NYI: File.deleteOnExit()");
 	}
 
-	public String[] list() {
+	public String[] list () {
 		throw new RuntimeException("NYI: File.list()");
 	}
 
@@ -228,11 +224,11 @@ public class File {
 	 * public String[] list(FilenameFilter filter) { return null; }
 	 */
 
-	public File[] listFiles() {
+	public File[] listFiles () {
 		return listFiles(null);
 	}
 
-	public File[] listFiles(FilenameFilter filter) {
+	public File[] listFiles (FilenameFilter filter) {
 		ArrayList<File> files = new ArrayList<File>();
 		String prefix = getCanonicalPath();
 		if (!prefix.endsWith(separator)) {
@@ -256,7 +252,7 @@ public class File {
 	 * public File[] listFiles(FileFilter filter) { return null; }
 	 */
 
-	public boolean mkdir() {
+	public boolean mkdir () {
 		if (parent != null && !parent.exists()) {
 			return false;
 		}
@@ -268,53 +264,53 @@ public class File {
 		return true;
 	}
 
-	public boolean mkdirs() {
+	public boolean mkdirs () {
 		if (parent != null) {
 			parent.mkdirs();
 		}
 		return mkdir();
 	}
 
-	public boolean renameTo(File dest) {
+	public boolean renameTo (File dest) {
 		throw new RuntimeException("renameTo()");
 	}
 
-	public boolean setLastModified(long time) {
+	public boolean setLastModified (long time) {
 		return false;
 	}
 
-	public boolean setReadOnly() {
+	public boolean setReadOnly () {
 		return false;
 	}
 
-	public static File[] listRoots() {
-		return new File[] { ROOT };
+	public static File[] listRoots () {
+		return new File[] {ROOT};
 	}
 
-	public static File createTempFile(String prefix, String suffix, File directory) throws IOException {
+	public static File createTempFile (String prefix, String suffix, File directory) throws IOException {
 		throw new RuntimeException("NYI: createTempFile");
 	}
 
-	public static File createTempFile(String prefix, String suffix) throws IOException {
+	public static File createTempFile (String prefix, String suffix) throws IOException {
 		throw new RuntimeException("NYI: createTempFile");
 	}
 
-	public int compareTo(File pathname) {
+	public int compareTo (File pathname) {
 		throw new RuntimeException("NYI: File.compareTo()");
 	}
 
-	public boolean equals(Object obj) {
+	public boolean equals (Object obj) {
 		if (!(obj instanceof File)) {
 			return false;
 		}
-		return getPath().equals(((File) obj).getPath());
+		return getPath().equals(((File)obj).getPath());
 	}
 
-	public int hashCode() {
+	public int hashCode () {
 		return parent != null ? parent.hashCode() + name.hashCode() : name.hashCode();
 	}
 
-	public String toString() {
+	public String toString () {
 		return name;
 	}
 }

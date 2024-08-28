@@ -23,11 +23,11 @@ public class ConsolePrintStream extends PrintStream {
 
 	StringBuilder buf = new StringBuilder();
 
-	public ConsolePrintStream() {
-		super((OutputStream) null);
+	public ConsolePrintStream () {
+		super((OutputStream)null);
 	}
 
-	public void print(String s) {
+	public void print (String s) {
 
 		while (true) {
 			int cut = s.indexOf('\n');
@@ -41,7 +41,7 @@ public class ConsolePrintStream extends PrintStream {
 		buf.append(s);
 	}
 
-	public native void consoleLog(String msg) /*-{
+	public native void consoleLog (String msg) /*-{
 																if (window.console) {
 																window.console.log(msg);
 																} else {
@@ -49,7 +49,7 @@ public class ConsolePrintStream extends PrintStream {
 																}
 																}-*/;
 
-	public void print(char c) {
+	public void print (char c) {
 		if (c == '\n') {
 			println("");
 		} else {
@@ -57,12 +57,12 @@ public class ConsolePrintStream extends PrintStream {
 		}
 	}
 
-	public void println() {
+	public void println () {
 		println("");
 	}
 
 	@Override
-	public void println(String s) {
+	public void println (String s) {
 		buf.append(s);
 		consoleLog(buf.toString());
 		buf.setLength(0);

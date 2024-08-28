@@ -26,7 +26,7 @@ import loon.utils.reply.Nullable;
 
 public class BooleanValue implements LRelease {
 
-	private boolean value = false;
+	private boolean _value = false;
 
 	public BooleanValue() {
 		this(false);
@@ -42,7 +42,7 @@ public class BooleanValue implements LRelease {
 	}
 
 	public BooleanValue set(boolean res) {
-		this.value = res;
+		this._value = res;
 		return this;
 	}
 
@@ -57,21 +57,21 @@ public class BooleanValue implements LRelease {
 	}
 
 	public boolean get() {
-		return value;
+		return _value;
 	}
 
 	public boolean result() {
-		return value;
+		return _value;
 	}
 
 	public boolean isZero() {
-		return !value;
+		return !_value;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, _value);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -82,7 +82,7 @@ public class BooleanValue implements LRelease {
 			return false;
 		}
 		if (o instanceof BooleanValue) {
-			if (((BooleanValue) o).value == this.value) {
+			if (((BooleanValue) o)._value == this._value) {
 				return true;
 			}
 		}
@@ -90,20 +90,20 @@ public class BooleanValue implements LRelease {
 	}
 
 	public BooleanValue cpy() {
-		return new BooleanValue(value);
+		return new BooleanValue(_value);
 	}
 
 	public Nullable<Boolean> toNullable() {
-		return new Nullable<Boolean>(value);
+		return new Nullable<Boolean>(_value);
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return String.valueOf(_value);
 	}
 
 	@Override
 	public void close() {
-		this.value = false;
+		this._value = false;
 	}
 }

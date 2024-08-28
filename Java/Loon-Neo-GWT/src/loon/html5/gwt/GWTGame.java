@@ -23,11 +23,11 @@ package loon.html5.gwt;
 import loon.Asyn;
 import loon.LGame;
 import loon.LSetting;
+import loon.LSystem;
 import loon.Support;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;
-import loon.utils.reply.Act;
 
 import com.google.gwt.animation.client.AnimationScheduler;
 import com.google.gwt.animation.client.AnimationScheduler.AnimationCallback;
@@ -162,14 +162,14 @@ public class GWTGame extends LGame {
 	private final static Support support = new NativeSupport();
 
 	static final AgentInfo agentInfo = computeAgentInfo();
+	
 	final GWTSetting gwtconfig;
 
-	private final double start = initNow();
+	private final double start;
 
-	public Act<LGame> frame = Act.create();
-	private final GWTLog log = GWT.create(GWTLog.class);
-	private final Asyn syn = new Asyn.Default(log, frame);
-	private final GWTAccelerometer accelerometer = new GWTAccelerometer();
+	private final GWTLog log;
+	private final Asyn syn;
+	private final GWTAccelerometer accelerometer;
 	private final GWTAssets assets;
 
 	private final GWTGraphics graphics;
@@ -178,6 +178,8 @@ public class GWTGame extends LGame {
 	private final GWTClipboard clipboard;
 
 	private final Loon game;
+
+	private boolean initGwt = false;
 
 	public GWTGame(Loon game, Panel panel, GWTSetting config) {
 		super(config, game);
@@ -189,6 +191,10 @@ public class GWTGame extends LGame {
 		});
 		this.game = game;
 		this.gwtconfig = config;
+		this.start = initNow();
+		this.log = new GWTLog();
+		this.syn = new Asyn.Default(log, frame);
+		this.accelerometer = new GWTAccelerometer();
 		log.info("Browser orientation: " + game.getOrientation());
 		log.info("Browser screen width: " + game.getContainerWidth() + ", screen height: " + game.getContainerHeight());
 		log.info("devicePixelRatio: " + Loon.devicePixelRatio() + " backingStorePixelRatio: "
@@ -204,13 +210,15 @@ public class GWTGame extends LGame {
 			setting.height_zoom = height;
 			setting.updateScale();
 			// 若缩放值为无法实现的数值，则默认操作
+		} else {
+			setting.updateScale();
 		}
 		try {
 			graphics = new GWTGraphics(panel, this, config);
-			input = new GWTInputMake(this, graphics.rootElement);
 			assets = new GWTAssets(this);
-			save = new GWTSave(this);
 			clipboard = new GWTClipboard();
+			input = new GWTInputMake(this, graphics.rootElement);
+			save = new GWTSave(this);
 		} catch (Throwable e) {
 			log.error("init()", e);
 			Window.alert("failed to init(): " + e.getMessage());
@@ -219,24 +227,21 @@ public class GWTGame extends LGame {
 		if (setting != null && setting.appName != null) {
 			setTitle(setting.appName);
 		}
-		initProcess();
-
+		this.initProcess();
 	}
-
-	private boolean initGwt = false;
 
 	private void init() {
 		if (!initGwt) {
-			if (game != null && game.isMobile()) {
-				Window.scrollTo(0, 1);
+			if (game != null ) {
+				game.initialize();
+				LSystem.PAUSED = false;
+				initGwt = true;
 			}
-			game.initialize();
-			initGwt = true;
 		}
 	}
 
 	public void start() {
-
+		init();
 		Repaint repaint = game.config.repaint;
 		// 此处使用了三种不同的画面刷新模式，万一有浏览器刷不动，大家可以换模式看看……
 		switch (repaint) {
@@ -245,7 +250,6 @@ public class GWTGame extends LGame {
 
 				@Override
 				public void fire() {
-					init();
 					requestAnimationFrame(game.setting.fps, this);
 					emitFrame();
 				}
@@ -256,7 +260,6 @@ public class GWTGame extends LGame {
 
 				@Override
 				public void execute(double timestamp) {
-					init();
 					emitFrame();
 					AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas);
 				}
@@ -267,7 +270,6 @@ public class GWTGame extends LGame {
 			new Timer() {
 				@Override
 				public void run() {
-					init();
 					Duration duration = new Duration();
 					emitFrame();
 					this.schedule(Math.max(MIN_DELAY, framed - duration.elapsedMillis()));

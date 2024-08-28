@@ -9,7 +9,10 @@
   <inherits name='com.google.gwt.user.User'/>
   <inherits name='com.google.gwt.user.theme.clean.Clean'/>
   <inherits name='loon.html5.Core' />
-  <set-property name="compiler.stackMode" value="strip"/>
+   <set-property name="compiler.stackMode" value="emulated"/>  
+  <!--  gwt2.11有坑，strip模式下某些变量或者函数会和java源代码中某些命名方式冲突，总之strip模式不好用了，编译开native或emulated吧……
+    <set-property name="compiler.stackMode" value="emulated"/>
+  -->
   <set-property name="compiler.useSourceMaps" value="true" />
   <extend-property name="locale" values="zh"/>
   <set-property-fallback name="locale" value="zh"/>

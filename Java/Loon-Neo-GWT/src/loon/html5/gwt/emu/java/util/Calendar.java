@@ -18,7 +18,7 @@ package java.util;
 import com.google.gwt.core.client.JavaScriptObject;
 
 public final class Calendar extends JavaScriptObject {
-
+	
 	public static final int MONTH = 2;
 	public static final int DAY_OF_MONTH = 5;
 
@@ -35,7 +35,7 @@ public final class Calendar extends JavaScriptObject {
     }-*/;
 
 	public long getTimeInMillis() {
-		return new Date().getTime();
+	    return new Date().getTime();
 	}
 
 	public native int get(int field) /*-{

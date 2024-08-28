@@ -17,15 +17,14 @@
 package java.nio;
 
 /**
- * A <code>BufferUnderflowException</code> is thrown when elements are read from
- * a buffer but there are not enough remaining elements in the buffer.
- */
+ * A <code>BufferUnderflowException</code> is thrown when elements are read from a buffer but there
+ * are not enough remaining elements in the buffer. */
 public class BufferUnderflowException extends RuntimeException {
 
-	private static final long serialVersionUID = -1713313658691622206L;
+    private static final long serialVersionUID = -1713313658691622206L;
 
-	/** Constructs a <code>BufferUnderflowException</code>. */
-	public BufferUnderflowException() {
-		super();
-	}
+    /** Constructs a <code>BufferUnderflowException</code>. */
+    public BufferUnderflowException () {
+        super();
+    }
 }

@@ -27,7 +27,7 @@ import loon.utils.reply.Nullable;
 
 public class IntValue implements LRelease {
 
-	private int value;
+	private int _value;
 
 	public IntValue() {
 		this(0);
@@ -43,12 +43,12 @@ public class IntValue implements LRelease {
 	}
 
 	public IntValue set(int v) {
-		this.value = v;
+		this._value = v;
 		return this;
 	}
 
 	public int scaled(int length) {
-		return value * length;
+		return _value * length;
 	}
 
 	public int scaledCeil(int length) {
@@ -64,17 +64,17 @@ public class IntValue implements LRelease {
 	}
 
 	public int result() {
-		return value;
+		return _value;
 	}
 
 	public boolean isZero() {
-		return MathUtils.equal(value, 0);
+		return MathUtils.equal(_value, 0);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, _value);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -85,7 +85,7 @@ public class IntValue implements LRelease {
 			return false;
 		}
 		if (o instanceof IntValue) {
-			if (MathUtils.equal(((IntValue) o).value, this.value)) {
+			if (MathUtils.equal(((IntValue) o)._value, this._value)) {
 				return true;
 			}
 		}
@@ -93,21 +93,21 @@ public class IntValue implements LRelease {
 	}
 
 	public IntValue cpy() {
-		return new IntValue(value);
+		return new IntValue(_value);
 	}
 
 	public Nullable<Integer> toNullable() {
-		return new Nullable<Integer>(value);
+		return new Nullable<Integer>(_value);
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return String.valueOf(_value);
 	}
 
 	@Override
 	public void close() {
-		this.value = 0;
+		this._value = 0;
 	}
 
 }

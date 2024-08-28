@@ -23,46 +23,41 @@ package java.nio;
  */
 public final class ByteOrder {
 
-	/** This constant represents big endian. */
-	public static final ByteOrder BIG_ENDIAN = new ByteOrder("BIG_ENDIAN"); //$NON-NLS-1$
+    /** This constant represents big endian. */
+    public static final ByteOrder BIG_ENDIAN = new ByteOrder("BIG_ENDIAN"); //$NON-NLS-1$
 
-	/** This constant represents little endian. */
-	public static final ByteOrder LITTLE_ENDIAN = new ByteOrder("LITTLE_ENDIAN"); //$NON-NLS-1$
+    /** This constant represents little endian. */
+    public static final ByteOrder LITTLE_ENDIAN = new ByteOrder("LITTLE_ENDIAN"); //$NON-NLS-1$
 
-	private static final ByteOrder NATIVE_ORDER;
+    private static final ByteOrder NATIVE_ORDER;
 
-	static {
+    static {
 // if (Platform.getMemorySystem().isLittleEndian()) {
-		NATIVE_ORDER = LITTLE_ENDIAN;
+        NATIVE_ORDER = LITTLE_ENDIAN;
 // } else {
 // NATIVE_ORDER = BIG_ENDIAN;
 // }
-	}
+    }
 
-	/**
-	 * Returns the current platform byte order.
-	 *
-	 * @return the byte order object, which is either LITTLE_ENDIAN or BIG_ENDIAN.
-	 */
-	public static ByteOrder nativeOrder() {
-		return NATIVE_ORDER;
-	}
+    /** Returns the current platform byte order.
+     *
+     * @return the byte order object, which is either LITTLE_ENDIAN or BIG_ENDIAN. */
+    public static ByteOrder nativeOrder () {
+        return NATIVE_ORDER;
+    }
 
-	private final String name;
+    private final String name;
 
-	private ByteOrder(String name) {
-		super();
-		this.name = name;
-	}
+    private ByteOrder (String name) {
+        super();
+        this.name = name;
+    }
 
-	/**
-	 * Returns a string that describes this object.
-	 *
-	 * @return "BIG_ENDIAN" for {@link #BIG_ENDIAN ByteOrder.BIG_ENDIAN} objects,
-	 *         "LITTLE_ENDIAN" for {@link #LITTLE_ENDIAN ByteOrder.LITTLE_ENDIAN}
-	 *         objects.
-	 */
-	public String toString() {
-		return name;
-	}
+    /** Returns a string that describes this object.
+     *
+     * @return "BIG_ENDIAN" for {@link #BIG_ENDIAN ByteOrder.BIG_ENDIAN} objects, "LITTLE_ENDIAN"
+     *         for {@link #LITTLE_ENDIAN ByteOrder.LITTLE_ENDIAN} objects. */
+    public String toString () {
+        return name;
+    }
 }

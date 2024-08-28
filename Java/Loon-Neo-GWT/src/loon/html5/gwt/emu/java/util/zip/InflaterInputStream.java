@@ -22,17 +22,17 @@ import java.io.InputStream;
 public class InflaterInputStream extends InputStream {
 	private InputStream in;
 
-	public InflaterInputStream(InputStream in) {
+	public InflaterInputStream (InputStream in) {
 		this.in = in;
 	}
 
 	@Override
-	public int read() throws IOException {
+	public int read () throws IOException {
 		throw new RuntimeException("InflaterInputStream not supported in GWT");
 	}
 
 	@Override
-	public void close() throws IOException {
+	public void close () throws IOException {
 		super.close();
 		if (in != null) {
 			in.close();

@@ -27,7 +27,7 @@ import loon.utils.reply.Nullable;
 
 public class LongValue implements LRelease {
 
-	private long value;
+	private long _value;
 
 	public LongValue() {
 		this(0);
@@ -43,12 +43,12 @@ public class LongValue implements LRelease {
 	}
 
 	public LongValue set(long v) {
-		this.value = v;
+		this._value = v;
 		return this;
 	}
 
 	public long scaled(long length) {
-		return value * length;
+		return _value * length;
 	}
 
 	public long scaledCeil(long length) {
@@ -64,17 +64,17 @@ public class LongValue implements LRelease {
 	}
 
 	public long result() {
-		return value;
+		return _value;
 	}
 
 	public boolean isZero() {
-		return MathUtils.equal(value, 0l);
+		return MathUtils.equal(_value, 0l);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 59;
-		result = LSystem.unite(result, value);
+		result = LSystem.unite(result, _value);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -85,7 +85,7 @@ public class LongValue implements LRelease {
 			return false;
 		}
 		if (o instanceof LongValue) {
-			if (MathUtils.equal(((LongValue) o).value, this.value)) {
+			if (MathUtils.equal(((LongValue) o)._value, this._value)) {
 				return true;
 			}
 		}
@@ -93,21 +93,21 @@ public class LongValue implements LRelease {
 	}
 
 	public LongValue cpy() {
-		return new LongValue(value);
+		return new LongValue(_value);
 	}
 
 	public Nullable<Long> toNullable() {
-		return new Nullable<Long>(value);
+		return new Nullable<Long>(_value);
 	}
 
 	@Override
 	public String toString() {
-		return String.valueOf(value);
+		return String.valueOf(_value);
 	}
 
 	@Override
 	public void close() {
-		this.value = 0;
+		this._value = 0;
 	}
 
 }

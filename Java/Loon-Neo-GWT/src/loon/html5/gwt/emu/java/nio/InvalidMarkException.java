@@ -17,15 +17,15 @@
 package java.nio;
 
 /**
- * An {@code InvalidMarkException} is thrown when {@code reset()} is called on a
- * buffer, but no mark has been set previously.
+ * An {@code InvalidMarkException} is thrown when {@code reset()} is called on a buffer, but no
+ * mark has been set previously.
  */
 public class InvalidMarkException extends IllegalStateException {
 
-	private static final long serialVersionUID = 1698329710438510774L;
+    private static final long serialVersionUID = 1698329710438510774L;
 
-	/** Constructs an {@code InvalidMarkException}. */
-	public InvalidMarkException() {
-		super();
-	}
+    /** Constructs an {@code InvalidMarkException}. */
+    public InvalidMarkException () {
+        super();
+    }
 }

@@ -551,10 +551,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 以键值对方式添加任务（主要是方便脚本调用）
 	 * 
 	 * @param key
-	 * @param value
+	 * @param vv
 	 */
-	public void putTask(String key, Task value) {
-		_tasks.put(key, value);
+	public void putTask(String key, Task vv) {
+		_tasks.put(key, vv);
 	}
 
 	/**
