@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>loon.tea</groupId>
+  <artifactId>loon-teavm</artifactId>
+  <version>0.5-SNAPSHOT</version>
+  <packaging>war</packaging>
+
+  <properties>
+    <java.version>11</java.version>
+    <teavm.version>0.10.1</teavm.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-classlib</artifactId>
+      <version>${teavm.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.teavm</groupId>
+      <artifactId>teavm-jso-apis</artifactId>
+      <version>${teavm.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <finalName>test</finalName>
+    <plugins>
+        <plugin>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-maven-plugin</artifactId>
+          <version>9.4.55.v20240627</version>
+          <configuration>
+            <webAppSourceDirectory>${project.basedir}/target</webAppSourceDirectory>
+          </configuration>
+        </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.1</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.2</version>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>${project.build.directory}/generated/js</directory>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+
+      <!-- Configure TeaVM -->
+      <plugin>
+        <groupId>org.teavm</groupId>
+        <artifactId>teavm-maven-plugin</artifactId>
+        <version>${teavm.version}</version>
+        <executions>
+          <execution>
+            <id>web-client</id>
+            <goals>
+              <goal>compile</goal>
+            </goals>
+            <configuration>
+              <!-- Directory where TeaVM should put generated files. This configuration conforms to the settings
+                   of the WAR plugin -->
+              <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
+
+              <!-- Main class, containing static void main(String[]) -->
+              <mainClass>loon.tea.Client</mainClass>
+
+              <!-- Whether TeaVM should produce minified JavaScript. Can reduce JavaScript file size more than
+                   two times -->
+              <minifying>false</minifying>
+
+              <!-- Whether TeaVM should produce debug information for its built-in debugger -->
+              <debugInformationGenerated>true</debugInformationGenerated>
+
+              <!-- Whether TeaVM should produce source maps file -->
+              <sourceMapsGenerated>true</sourceMapsGenerated>
+
+              <!-- Whether TeaVM should also put source files into output directory,
+                   for compatibility with source maps -->
+              <sourceFilesCopied>true</sourceFilesCopied>
+
+              <!-- Optimization level. Valid values are: SIMPLE, ADVANCED, FULL -->
+              <optimizationLevel>ADVANCED</optimizationLevel>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

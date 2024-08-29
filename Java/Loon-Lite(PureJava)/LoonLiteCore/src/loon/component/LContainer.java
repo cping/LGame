@@ -544,6 +544,32 @@ public abstract class LContainer extends LComponent implements IArray {
 		return list;
 	}
 
+	public LContainer enableds() {
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null) {
+				child.setEnabled(true);
+			}
+		}
+		this.setEnabled(true);
+		return this;
+	}
+
+	public LContainer disables() {
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null) {
+				child.setEnabled(false);
+			}
+		}
+		this.setEnabled(false);
+		return this;
+	}
+
 	public LComponent getRandomComponent() {
 		return getRandomComponent(0, _childCount);
 	}
