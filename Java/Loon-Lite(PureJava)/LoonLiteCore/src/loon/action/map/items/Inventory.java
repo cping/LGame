@@ -24,6 +24,9 @@ import java.util.Comparator;
 
 import loon.geom.RectBox;
 import loon.geom.Shape;
+import loon.utils.MathUtils;
+import loon.utils.ObjectSet;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 /**
@@ -97,6 +100,10 @@ public class Inventory {
 		return null;
 	}
 
+	public IItem getRandomItem() {
+		return _items.get(MathUtils.random(0, _items.size));
+	}
+
 	public boolean contains(float x, float y) {
 		for (int i = _items.size - 1; i > -1; i--) {
 			final RectBox rect = _items.get(i).getArea();
@@ -126,6 +133,31 @@ public class Inventory {
 			}
 		}
 		return items;
+	}
+
+	public TArray<IItem> find(String result) {
+		final TArray<IItem> items = new TArray<IItem>();
+		if (StringUtils.isEmpty(result)) {
+			return items;
+		}
+		final String text = result.trim().toLowerCase();
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			final String itemName = item.getName();
+			if (item != null && itemName != null && itemName.toLowerCase().indexOf(text) != -1) {
+				items.add(item);
+			}
+		}
+		return items;
+	}
+
+	public ObjectSet<String> getItemNames() {
+		ObjectSet<String> strings = new ObjectSet<String>();
+		for (int i = _items.size - 1; i > -1; i--) {
+			final IItem item = _items.get(i);
+			strings.add(item.getName());
+		}
+		return strings;
 	}
 
 	public boolean collided(Shape shape) {

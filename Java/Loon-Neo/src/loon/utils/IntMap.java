@@ -280,6 +280,21 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 		put(CollectionUtils.getHashKey(key), value);
 	}
 
+	@SuppressWarnings("unchecked")
+	public void putAll(IntMap<? extends T> map) {
+		if (_locked) {
+			return;
+		}
+		long[] keyTable = map._keysTable;
+		Object[] valueTable = map._valuesTable;
+		for (int i = 0, n = keyTable.length; i < n; i++) {
+			long key = keyTable[i];
+			if (key != 0) {
+				put(key, (T) valueTable[i]);
+			}
+		}
+	}
+
 	public T remove(final int key) {
 		if (_locked) {
 			return null;
