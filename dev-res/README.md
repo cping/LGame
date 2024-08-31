@@ -2,11 +2,12 @@
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
-* jMonkeyEngine: 目前最完善的Java3D游戏开发引擎，也可以跨平台，不过非台式机效率有限…… [项目地址](https://github.com/jMonkeyEngine/jmonkeyengine/)
+* jMonkeyEngine: 目前最完善的Java3D游戏开发引擎，也可以跨平台，不过非台式机效率有限…… [项目地址](https://github.com/jMonkeyEngine/jmonkeyengine)
 * Korge: 一个基于Kotlin开发的2D/3D游戏引擎，基于Kotlin Native编译时可以支持多平台。[项目地址](https://github.com/korlibs/korge)
-* Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com/)
-* libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx/)
-* LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame/)
+* Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com)
+* libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx)
+* XMage: 一个Java开发的，可以联网的万智牌游戏引擎，拥有多种卡牌及规则设定模式，可以自行定制自己的万智牌游戏。[项目地址](https://github.com/magefree/mage)
+* LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame)
 * GameComposer: Java/JavaFX游戏引擎,支持多种web平台转换。[项目地址](https://github.com/mirkosertic/GameComposer)
 * playn: 2D的Java游戏引擎，支持多平台。 [项目地址](https://github.com/threerings/playn/)
 * FXGL: Java / JavaFX / Kotlin Game Library (Engine)  [项目地址](https://github.com/AlmasB/FXGL/)
@@ -16,7 +17,7 @@
 * LWJGL: 目前最常用的，对OpenGL/CL/AL等渲染API进行本地封装的Java开发包。[官网](http://lwjgl.org/)
 * JavaFX: Java官方目前最推荐的UI库，号称是Swing以及Applet的后继者，也可以用于游戏开发官方提供有Android环境的本地支持库，通过Robovm也可以支持IOS平台。[官网](http://www.oracle.com/technetwork/java/javase/overview/javafx-overview-2158620.html)
 * Scene Builder: 开发JavaFX应用的可视化布局工具。[下载地址](http://gluonhq.com/open-source/scene-builder/)
-
+* IoGame: 基于jNetty的网络编程框架，用于网络游戏服务器、物联网、内部系统及各种需要长连接的场景。[下载地址](https://github.com/iohao/ioGame)
 
 ### Java的跨平台工具(仅包含还在更新的)
 
@@ -108,6 +109,7 @@ PS:使用下列免费资源时，建议注明引用的资源出处，免得引�
 
 ### 免费的开发辅助工具
 
+* Ark-pixel-font: 开源的像素字体库，支持中日韩等常见亚洲字符串的图片显示，允许免费商用。[地址](https://github.com/TakWolf/ark-pixel-font)
 * PyxelEdit: 一个2D的像素风画面编辑器。[地址](https://www.pyxeledit.com/)
 * gimp: 经典的免费图像资源开发工具，基本可以替代PS使用[地址](http://www.gimp.org/)
 * live2d: 伪3D人物动态表情开发工具(基本上就是设计AVG游戏动态角色用的)[地址](http://www.live2d.com/)
