@@ -25,14 +25,17 @@ import java.util.Comparator;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
+import loon.action.map.battle.BattleProcess;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.events.EventActionN;
+import loon.events.EventActionT;
 import loon.geom.RectBox;
 import loon.utils.TArray;
+import loon.utils.reply.Callback;
 
 /**
- * 角色模板,提供了一些基础的人物参数
+ * 角色模板,提供了一些基础的人物参数与行为调用函数
  */
 public class Role extends RoleValue implements ActionBind, EventActionN {
 
@@ -54,7 +57,15 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 
 	private final TArray<Item<Object>> _items = new TArray<Item<Object>>();
 
+	private BattleProcess _battleProcess;
+
 	private ISprite _roleObject;
+
+	private RoleActionType _lastActionType = null;
+
+	private RoleActionType _actionType = RoleActionType.Other;
+
+	private EventActionT<Role> _onActionUpdate;
 
 	private Object _tag;
 
@@ -72,6 +83,128 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 			int intelligence, int fitness, int dexterity, int agility, int lv) {
 		super(id, name, info, maxHealth, maxMana, attack, defence, strength, intelligence, fitness, dexterity, agility,
 				lv);
+	}
+
+	public <T> Role choseAttack(Callback<Role> v) {
+		return choseAttack(v, this);
+	}
+
+	public <T> Role choseAttack(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Attack);
+	}
+
+	public <T> Role choseDefend(Callback<Role> v) {
+		return choseDefend(v, this);
+	}
+
+	public <T> Role choseDefend(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Defend);
+	}
+
+	public <T> Role choseAbility(Callback<Role> v) {
+		return choseAbility(v, this);
+	}
+
+	public <T> Role choseAbility(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Ability);
+	}
+
+	public <T> Role choseMana(Callback<Role> v) {
+		return choseMana(v, this);
+	}
+
+	public <T> Role choseMana(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Mana);
+	}
+
+	public <T> Role choseItem(Callback<Role> v) {
+		return choseItem(v, this);
+	}
+
+	public <T> Role choseItem(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Item);
+	}
+
+	public <T> Role choseMove(Callback<Role> v) {
+		return choseMove(v, this);
+	}
+
+	public <T> Role choseMove(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Move);
+	}
+
+	public <T> Role choseWait(Callback<Role> v) {
+		return choseWait(v, this);
+	}
+
+	public <T> Role choseWait(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Wait);
+	}
+
+	public <T> Role choseEscape(Callback<Role> v) {
+		return choseEscape(v, this);
+	}
+
+	public <T> Role choseEscape(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Escape);
+	}
+
+	public <T> Role choseSay(Callback<Role> v) {
+		return choseSay(v, this);
+	}
+
+	public <T> Role choseSay(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Say);
+	}
+
+	public <T> Role choseChange(Callback<Role> v) {
+		return choseChange(v, this);
+	}
+
+	public <T> Role choseChange(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Change);
+	}
+
+	public <T> Role choseDie(Callback<Role> v) {
+		return choseDie(v, this);
+	}
+
+	public <T> Role choseDie(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Die);
+	}
+
+	public <T> Role choseLive(Callback<Role> v) {
+		return choseLive(v, this);
+	}
+
+	public <T> Role choseLive(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Live);
+	}
+
+	public <T> Role choseOther(Callback<Role> v) {
+		return choseOther(v, this);
+	}
+
+	public <T> Role choseOther(Callback<Role> v, Role enemy) {
+		return choseActionCall(v, enemy, RoleActionType.Other);
+	}
+
+	public <T> Role choseActionCall(Callback<Role> v, Role enemy, RoleActionType actionType) {
+		try {
+			v.onSuccess(enemy == null ? this : enemy);
+			onUpdateRoleAction(actionType);
+		} catch (Exception e) {
+			v.onFailure(e);
+		}
+		return this;
+	}
+
+	private void onUpdateRoleAction(RoleActionType actionType) {
+		this._actionType = actionType;
+		if (_onActionUpdate != null) {
+			_onActionUpdate.update(this);
+		}
+		this._lastActionType = this._actionType;
 	}
 
 	public Role addAttribute(Attribute attribute) {
@@ -422,6 +555,32 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 			return _roleObject.isActionCompleted();
 		}
 		return false;
+	}
+
+	public RoleActionType getActionType() {
+		return _actionType;
+	}
+
+	public RoleActionType getLastActionType() {
+		return _lastActionType;
+	}
+
+	public EventActionT<Role> getOnActionUpdate() {
+		return _onActionUpdate;
+	}
+
+	public Role setOnActionUpdate(EventActionT<Role> u) {
+		this._onActionUpdate = u;
+		return this;
+	}
+
+	public BattleProcess getBattleProcess() {
+		return _battleProcess;
+	}
+
+	public Role setBattleProcess(BattleProcess battleProcess) {
+		this._battleProcess = battleProcess;
+		return this;
 	}
 
 	@Override

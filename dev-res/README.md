@@ -1,4 +1,4 @@
-# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2020-10-17)
+# Java(Android)游戏开发领域常用资源 (游戏素材,游戏资源,不定期更新:本次更新日期 2024-08-30)
 
 ### Java游戏开发框架及资源(仅包含还在更新的)
 
@@ -55,14 +55,20 @@
 
 PS:使用下列免费资源时，建议注明引用的资源出处，免得引发不必要的版权官司（比如被人投诉说你抄袭资源之类，游戏介绍中注明了资源出处，直接声明使用的资源来源，省得麻烦）……
 
+* itch-assets: 著名的独立游戏发布网站itch提供的游戏资源库，有免费素材也有付费素材，有些时候付费的也会转成免费。[地址](https://itch.io/game-assets) 
 * opengameart: 一个著名的，完全没有版权问题的(可商用的)游戏素材下载站。[地址](http://opengameart.org/) 
+* gamedevmarket: 一个游戏素材市场，资源有免费的也有收费的，具体资源用法看作者的具体描述。[地址](https://www.gamedevmarket.net) 
+* kenney: 一个免费的2D与3D图像，音频和UI资源网站，所有游戏资源均为CC0模式，可用于商业，无需署名或标记出处。[地址](https://kenney.nl/assets) 
+* craftPix: 一个游戏素材在线网站，提供有大量的2D图像资源，有资源免费，当然也有收费，不过免费资源基本都允许无条件商用。[地址](https://craftpix.net) 
+* reddit-gameassets:  准确的说，这不是网站，而是reddit的免费资源分享区，具体能否商用看作者描述。[地址](https://www.reddit.com/r/gameassets) 
 * aigei(爱给网): 一个中国的资源站，涵盖游戏源码音频图像等多种资源，部分免费，主要是收费资源。[地址](http://www.aigei.com)
 * rr-sc(人人素材): 一个中国的资源素材论坛，各种资源都有，部分免费，依旧是收费资源为主。[地址](https://www.rr-sc.com)
 * soundimage: 一个欧美的免费资源站，有1800多种完全免费的图像和音频资源可用(音频为主)。[地址](https://www.soundimage.org)
 * soundeffect-lab: 一个日本的音频下载站，拥有多种效果音频类型(含游戏与其它场合)，大多数游戏有这网站撑着效果音就足够了，不过资源都是mp3发布，某些场合可能需要自己转码，另外该站已经写明商用免费。[地址](http://soundeffect-lab.info/sound/voice/game.html)
 * FreeSFX: 一个免费的音频站。[地址](https://www.freesfx.co.uk/)
 * Unsplash: 一个图片（照片）资源站，能够免费商用，人物，自然之类素材较多。[地址](https://unsplash.com/)
-* Unity Asset Store: Unity3D的资源商店，都是收钱的，但是资源够多，而且版权可靠性有保障(毕竟有平台当中介)。[地址](https://assetstore.unity.com)
+* Unity Asset Store: Unity3D的资源商店，几乎都是收钱的，少量免费，但是资源够多，而且版权可靠性有保障(毕竟有平台当中介)。[地址](https://assetstore.unity.com)
+* 空想曲線: 一个展示免费日式游戏资源的blog，以AVG(galgame)资源为主，具体用法看作者描述。[地址](https://kopacurve.blog.fc2.com)
 * 猫手製アイコン屋: 日式素材下载站。 [地址](http://www007.upp.so-net.ne.jp/nekoteya/)
 * 消失点: 日式AVG（galgame）以及RMXP和RMVX素材站，素材以背景图和地图为主。[地址](http://www.aj.undo.jp/)  
 * k-after: 日式AVG（galgame）游戏的免费背景素材下载站。  [地址](http://k-after.at.webry.info/)  
