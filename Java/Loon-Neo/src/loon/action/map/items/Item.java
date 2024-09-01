@@ -35,6 +35,8 @@ public class Item<T> implements IItem {
 
 	protected String _name;
 
+	protected String _description;
+
 	protected T _item;
 
 	protected int _typeId;
@@ -198,6 +200,16 @@ public class Item<T> implements IItem {
 		return this;
 	}
 
+	public Item<T> setDescription(String d) {
+		this._description = d;
+		return this;
+	}
+
+	@Override
+	public String getDescription() {
+		return _description;
+	}
+
 	public boolean equals(Item<T> e) {
 		if (e == null) {
 			return false;
@@ -207,18 +219,22 @@ public class Item<T> implements IItem {
 		}
 		final boolean checkItem = e._item != null;
 		final boolean checkName = e._name != null;
+		final boolean checkDes = e._description != null;
 		final boolean checkTexture = e._image != null;
 		final boolean checkRect = e._itemArea != null;
 		if (checkItem && _item == null) {
-			return false;
-		}
-		if (checkName && _name == null) {
 			return false;
 		}
 		if (checkTexture && _image == null) {
 			return false;
 		}
 		if (checkRect && _itemArea == null) {
+			return false;
+		}
+		if (checkName && _name == null) {
+			return false;
+		}
+		if (checkDes && _description == null) {
 			return false;
 		}
 		if (checkItem) {
@@ -228,6 +244,11 @@ public class Item<T> implements IItem {
 		}
 		if (checkName) {
 			if (!e._name.equals(_name)) {
+				return false;
+			}
+		}
+		if (checkDes) {
+			if (!e._description.equals(_description)) {
 				return false;
 			}
 		}
@@ -270,6 +291,9 @@ public class Item<T> implements IItem {
 		}
 		if (_name != null) {
 			hashCode = LSystem.unite(hashCode, _name.hashCode());
+		}
+		if (_description != null) {
+			hashCode = LSystem.unite(hashCode, _description.hashCode());
 		}
 		hashCode = LSystem.unite(hashCode, _used);
 		return hashCode;

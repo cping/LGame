@@ -111,6 +111,8 @@ Built-in over 30 game example(Part screenshots):
 
 ![LGame](https://raw.github.com/cping/LGame/master/e4x.png "4")
 
+![LGame](https://raw.github.com/cping/LGame/master/sample.jpg "samplelist")
+
 ![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
 
 PS : If there is a dependency problem such as a Loon-method NoSuchMethodError, the best way is of course to reset the environment yourself to ensure that the relevant jars are recognized by the compiler. But if not, then there is a simple and feasible solution, which is to delete all loon related jars, and then directly copy the relevant source code to your running environment src directory, so no matter what environment, as long as you can run, They Never have a dependency problem...
@@ -118,11 +120,11 @@ _________
 
 #### 关于LGame
 
-总之就是一个非常懒人化的2D全功能游戏库(标准版会增加3D支持)，基于OpenGL（OpenGLES）开发，有多平台适配，基本上可以一个jar满足绝大多数的2D游戏需求（暂时不含网络部分，准备有时间单开项目）。
+总之就是一个非常懒人化的2D全功能游戏库(标准版会增加3D支持)，基于OpenGL（OpenGLES）开发，有多平台适配，基本上可以一个jar满足绝大多数的2D游戏需求（暂时不含网络部分，准备有时间单开项目），目前仅以Java语法来说，算是很方便的2D游戏库了。
 
-主版本3個，Java版(0.5版)基本构建完毕，C#版构建中，C++版构建中，理论上Java版是核心，以后会提供工具转化语法为其它版本。
+主版本3個，Java版(0.5版)基本构建完毕，C#版构建中，C++版构建中，理论上Java版是核心，以后会提供工具相互转化语法为其它版本，因为Java跨平台是天坑，多个语言多条路……
 
-此外还有一个和标准版同API(略有精简)的纯Java环境lite版(Loon-Lite)，仅使用Java运行环境提供的图形接口（也就是Graphics和Canvas的API封装），目前只能跑在JavaFX、JavaSE以及Android、GWT这些环境，主要是当作2D图形特效库以及UI库使用，万一以后有人把GraalVM扩展出多平台的渲染库，也可能在更多平台运行。以后还可能有一个基于精简版的TypeScript版本。
+此外还有一个和标准版同API(略有精简)的纯Java环境lite版(Loon-Lite)，不使用任何第三方库，仅使用Java运行环境提供的图形接口（也就是只用Graphics和Canvas的API封装），目前只能跑在JavaFX、JavaSE(标准JDK)以及Android、GWT、TeaVM这些环境，主要是当作2D图形特效库以及UI库使用，不过基本游戏功能都有，纯血javaer专用，万一以后有人把GraalVM扩展出多平台的渲染库，也可能在更多平台运行。以后还可能有一个基于精简版的TypeScript版本。
 _________
 
 License : http://www.apache.org/licenses/LICENSE-2.0

@@ -267,6 +267,19 @@ public class Team implements LRelease {
 		return this;
 	}
 
+	public int clearDead() {
+		int count = 0;
+		TArray<Role> dieRoles = new TArray<Role>();
+		for (Role c : _characters) {
+			if (c != null && c.isDead) {
+				dieRoles.add(c);
+				count++;
+			}
+		}
+		_characters.removeAll(dieRoles);
+		return count;
+	}
+	
 	public int getDeadCount() {
 		int count = 0;
 		for (Role c : _characters) {

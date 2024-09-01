@@ -191,8 +191,32 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 
 	public <T> Role choseActionCall(Callback<Role> v, Role enemy, RoleActionType actionType) {
 		try {
-			v.onSuccess(enemy == null ? this : enemy);
+			Role role = (enemy == null ? this : enemy);
+			v.onSuccess(role);
 			onUpdateRoleAction(actionType);
+			switch (actionType) {
+			case Attack:
+				role.isAttack = true;
+				break;
+			case Defend:
+				role.isDefense = true;
+				break;
+			case Mana:
+			case Ability:
+				role.isSkill = true;
+				break;
+			case Move:
+				role.isMoved = true;
+				break;
+			case Die:
+				role.isDead = true;
+				break;
+			case Live:
+				role.isDead = false;
+				break;
+			default:
+				break;
+			}
 		} catch (Exception e) {
 			v.onFailure(e);
 		}

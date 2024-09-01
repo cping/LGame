@@ -466,8 +466,8 @@ public abstract class RoleValue {
 		return isAttack;
 	}
 
-	public RoleValue setAttack(boolean isAttack) {
-		this.isAttack = isAttack;
+	public RoleValue setAttack(boolean attack) {
+		this.isAttack = attack;
 		return this;
 	}
 

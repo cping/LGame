@@ -35,6 +35,8 @@ public interface IItem extends EventActionN {
 	RectBox getArea();
 
 	int getItemTypeId();
+	
+	String getDescription();
 
 	boolean isUsed();
 
