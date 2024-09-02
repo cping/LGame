@@ -42,7 +42,7 @@ public abstract class ShaderSource {
 	 * 于此动态设置着色器参数
 	 */
 	public abstract void setupShader(ShaderProgram program);
-
+	
 	public String vertexShader() {
 		return _vertexShader;
 	}

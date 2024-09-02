@@ -34,6 +34,42 @@ public class Line extends Shape {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public Vector2f intersect(Line other) {
+		return intersect(other, false);
+	}
+
+	public Vector2f intersect(Line other, boolean limit) {
+		Vector2f temp = new Vector2f();
+		if (!intersect(other, limit, temp))
+			return null;
+		return temp;
+	}
+
+	public boolean intersect(Line other, boolean limit, Vector2f result) {
+		float dx1 = this._currentEnd.getX() - this._currentStart.getX();
+		float dx2 = other._currentEnd.getX() - other._currentStart.getX();
+		float dy1 = this._currentEnd.getY() - this._currentStart.getY();
+		float dy2 = other._currentEnd.getY() - other._currentStart.getY();
+		float denom = dy2 * dx1 - dx2 * dy1;
+		if (denom == 0f) {
+			return false;
+		}
+		float ua = dx2 * (this._currentStart.getY() - other._currentStart.getY())
+				- dy2 * (this._currentStart.getX() - other._currentStart.getX());
+		ua /= denom;
+		float ub = dx1 * (this._currentStart.getY() - other._currentStart.getY())
+				- dy1 * (this._currentStart.getX() - other._currentStart.getX());
+		ub /= denom;
+		if (limit && (ua < 0f || ua > 1f || ub < 0f || ub > 1f)) {
+			return false;
+		}
+		float u = ua;
+		float ix = this._currentStart.getX() + u * (this._currentEnd.getX() - this._currentStart.getX());
+		float iy = this._currentStart.getY() + u * (this._currentEnd.getY() - this._currentStart.getY());
+		result.set(ix, iy);
+		return true;
+	}
+
 	public static final Vector2f getIntersects(final Line lineA, final Line lineB) {
 		return getIntersects(lineA, lineB, 0.001f);
 	}

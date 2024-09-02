@@ -36,6 +36,7 @@ import loon.geom.Matrix3;
 import loon.geom.Matrix4;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
+import loon.geom.Vector4f;
 import loon.utils.IntMap;
 import loon.utils.TArray;
 
@@ -499,6 +500,14 @@ public class ShaderProgram implements LRelease {
 
 	public void setUniformf(int location, Vector3f values) {
 		setUniformf(location, values.x, values.y, values.z);
+	}
+
+	public void setUniformf(String name, Vector4f values) {
+		setUniformf(name, values.x, values.y, values.z, values.w);
+	}
+
+	public void setUniformf(int location, Vector4f values) {
+		setUniformf(location, values.x, values.y, values.z, values.w);
 	}
 
 	public void setVertexAttribute(String name, int size, int type, boolean normalize, int stride, Buffer buffer) {

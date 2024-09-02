@@ -38,7 +38,10 @@ import loon.events.SysTouch;
 import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.opengl.BaseBatch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
+import loon.opengl.light.Light2D;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -51,6 +54,11 @@ import loon.utils.reply.Callback;
  */
 public class Desktop implements Visible, IArray, LRelease {
 
+	// 是否在整个桌面组件中使用光源
+	private boolean _useLight = false;
+
+	private final Light2D _light = new Light2D();
+	
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private final Vector2f _touchPoint = new Vector2f();
@@ -440,13 +448,37 @@ public class Desktop implements Visible, IArray, LRelease {
 		return this;
 	}
 
+	public Desktop setGlobalLight(boolean l) {
+		this._useLight = l;
+		return this;
+	}
+
+	public boolean isGlobalLight() {
+		return this._useLight;
+	}
+
+	public Light2D getGlobalLight() {
+		return _light;
+	}
+
 	public void createUI(GLEx g) {
 		if (!_visible) {
 			return;
 		}
 		try {
 			g.saveTx();
-			this._contentPane.createUI(g);
+			if (_useLight) {
+				BaseBatch lightBatch = _light.getGlBaseBatch();
+				lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
+				_light.setTimer(this.input.getCurrentTimer());
+				_light.setTouch(this.input.getTouchX(), this.input.getTouchY());
+				BaseBatch old = g.batch();
+				g.pushBatch(lightBatch);
+				this._contentPane.createUI(g);
+				g.popBatch(old);
+			} else {
+				this._contentPane.createUI(g);
+			}
 		} finally {
 			g.restoreTx();
 		}

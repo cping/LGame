@@ -37,6 +37,23 @@ import loon.utils.TArray;
 
 public abstract class Shape implements Serializable, IArray, XY, SetXY {
 
+	public class HitResult {
+
+		public Line line;
+
+		public int p1;
+
+		public int p2;
+
+		public Vector2f pt;
+	}
+
+	public final static int MAX_POINTS = 10000;
+
+	public final static float EDGE_SCALE = 1f;
+
+	public final static float EPSILON = 1.0E-4f;
+
 	/**
 	 * SAT凸多边形碰撞检测(Separating Axis Theorem)
 	 * 
@@ -835,6 +852,274 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			aabb.set(minX, minY, maxX, maxY);
 		}
 		return aabb;
+	}
+
+	public Shape[] subtract(Shape source) {
+		return this.subtract(this, source);
+	}
+
+	public Shape[] subtract(Shape target, Shape source) {
+		target = target.cpy();
+		source = source.cpy();
+		int count = 0;
+		for (int i = 0; i < target.getPointCount(); i++) {
+			if (source.contains(target.getPoint(i)[0], target.getPoint(i)[1])) {
+				count++;
+			}
+		}
+		if (count == target.getPointCount()) {
+			return new Shape[0];
+		}
+		if (!target.intersects(source)) {
+			return new Shape[] { target };
+		}
+		int found = 0;
+		int j;
+		for (j = 0; j < source.getPointCount(); j++) {
+			if (target.contains(source.getPoint(j)[0], source.getPoint(j)[1])
+					&& !onPath(target, source.getPoint(j)[0], source.getPoint(j)[1])) {
+				found++;
+			}
+		}
+		for (j = 0; j < target.getPointCount(); j++) {
+			if (source.contains(target.getPoint(j)[0], target.getPoint(j)[1])
+					&& !onPath(source, target.getPoint(j)[0], target.getPoint(j)[1])) {
+				found++;
+			}
+		}
+		if (found < 1) {
+			return new Shape[] { target };
+		}
+		return combine(target, source, true);
+	}
+
+	private Shape[] combine(Shape target, Shape other, boolean subtract) {
+		if (subtract) {
+			TArray<Shape> shapes = new TArray<Shape>();
+			TArray<Vector2f> used = new TArray<Vector2f>();
+			int j;
+			for (j = 0; j < target.getPointCount(); j++) {
+				float[] point = target.getPoint(j);
+				if (other.contains(point[0], point[1])) {
+					used.add(new Vector2f(point[0], point[1]));
+				}
+			}
+			for (j = 0; j < target.getPointCount(); j++) {
+				float[] point = target.getPoint(j);
+				Vector2f pt = new Vector2f(point[0], point[1]);
+				if (!used.contains(pt)) {
+					Shape result = combineSingle(target, other, true, j);
+					shapes.add(result);
+					for (int k = 0; k < result.getPointCount(); k++) {
+						float[] kpoint = result.getPoint(k);
+						Vector2f kpt = new Vector2f(kpoint[0], kpoint[1]);
+						used.add(kpt);
+					}
+				}
+			}
+			Shape[] list = new Shape[shapes.size];
+			for (int i = 0; i < shapes.size; i++) {
+				list[i] = shapes.get(i);
+			}
+			return list;
+		}
+		for (int i = 0; i < target.getPointCount(); i++) {
+			if (!other.contains(target.getPoint(i)[0], target.getPoint(i)[1])
+					&& !other.hasVertex(target.getPoint(i)[0], target.getPoint(i)[1])) {
+				Shape shape = combineSingle(target, other, false, i);
+				return new Shape[] { shape };
+			}
+		}
+		return new Shape[] { other };
+	}
+
+	public static int rationalPoint(Shape shape, int p) {
+		while (p < 0) {
+			p += shape.getPointCount();
+		}
+		while (p >= shape.getPointCount()) {
+			p -= shape.getPointCount();
+		}
+		return p;
+	}
+
+	public Shape[] union(Shape target, Shape other) {
+		target = target.cpy();
+		other = other.cpy();
+		if (!target.intersects(other)) {
+			return new Shape[] { target, other };
+		}
+		boolean touches = false;
+		int buttCount = 0;
+		int i;
+		for (i = 0; i < target.getPointCount(); i++) {
+			if (other.contains(target.getPoint(i)[0], target.getPoint(i)[1])
+					&& !other.hasVertex(target.getPoint(i)[0], target.getPoint(i)[1])) {
+				touches = true;
+				break;
+			}
+			if (other.hasVertex(target.getPoint(i)[0], target.getPoint(i)[1])) {
+				buttCount++;
+			}
+		}
+		for (i = 0; i < other.getPointCount(); i++) {
+			if (target.contains(other.getPoint(i)[0], other.getPoint(i)[1])
+					&& !target.hasVertex(other.getPoint(i)[0], other.getPoint(i)[1])) {
+				touches = true;
+				break;
+			}
+		}
+		if (!touches && buttCount < 2) {
+			return new Shape[] { target, other };
+		}
+		return combine(target, other, false);
+	}
+
+	public Line getLine(Shape shape, int s, int e) {
+		float[] start = shape.getPoint(s);
+		float[] end = shape.getPoint(e);
+		Line line = new Line(start[0], start[1], end[0], end[1]);
+		return line;
+	}
+
+	public Line getLine(Shape shape, float sx, float sy, int e) {
+		float[] end = shape.getPoint(e);
+		Line line = new Line(sx, sy, end[0], end[1]);
+		return line;
+	}
+
+	public HitResult intersect(Shape shape, Line line) {
+		float distance = Float.MAX_VALUE;
+		HitResult hit = null;
+		for (int i = 0; i < shape.getPointCount(); i++) {
+			int next = rationalPoint(shape, i + 1);
+			Line local = getLine(shape, i, next);
+			Vector2f pt = line.intersect(local, true);
+			if (pt != null) {
+				float newDis = pt.distance(line.getStart());
+				if (newDis < distance && newDis > EPSILON) {
+					hit = new HitResult();
+					hit.pt = pt;
+					hit.line = local;
+					hit.p1 = i;
+					hit.p2 = next;
+					distance = newDis;
+				}
+			}
+		}
+		return hit;
+	}
+
+	private Shape combineSingle(Shape target, Shape missing, boolean subtract, int start) {
+		Shape current = target;
+		Shape other = missing;
+		int point = start;
+		int dir = 1;
+		Polygon poly = new Polygon();
+		boolean first = true;
+		int loop = 0;
+		float px = current.getPoint(point)[0];
+		float py = current.getPoint(point)[1];
+		while (!poly.hasVertex(px, py) || first || current != target) {
+			first = false;
+			loop++;
+			if (loop > MAX_POINTS) {
+				break;
+			}
+			poly.addPoint(px, py);
+			Line line = getLine(current, px, py, rationalPoint(current, point + dir));
+			HitResult hit = intersect(other, line);
+			if (hit != null) {
+				Line hitLine = hit.line;
+				Vector2f pt = hit.pt;
+				px = pt.x;
+				py = pt.y;
+				if (other.hasVertex(px, py)) {
+					point = other.indexOf(pt.x, pt.y);
+					dir = 1;
+					px = pt.x;
+					py = pt.y;
+					Shape shape = current;
+					current = other;
+					other = shape;
+					continue;
+				}
+				float dx = hitLine.getDX() / hitLine.length();
+				float dy = hitLine.getDY() / hitLine.length();
+				dx *= EDGE_SCALE;
+				dy *= EDGE_SCALE;
+				if (current.contains(pt.x + dx, pt.y + dy)) {
+					if (subtract) {
+						if (current == missing) {
+							point = hit.p2;
+							dir = -1;
+						} else {
+							point = hit.p1;
+							dir = 1;
+						}
+					} else if (current == target) {
+						point = hit.p2;
+						dir = -1;
+					} else {
+						point = hit.p2;
+						dir = -1;
+					}
+					Shape shape = current;
+					current = other;
+					other = shape;
+					continue;
+				}
+				if (current.contains(pt.x - dx, pt.y - dy)) {
+					if (subtract) {
+						if (current == target) {
+							point = hit.p2;
+							dir = -1;
+						} else {
+							point = hit.p1;
+							dir = 1;
+						}
+					} else if (current == missing) {
+						point = hit.p1;
+						dir = 1;
+					} else {
+						point = hit.p1;
+						dir = 1;
+					}
+					Shape shape = current;
+					current = other;
+					other = shape;
+					continue;
+				}
+				if (subtract) {
+					break;
+				}
+				point = hit.p1;
+				dir = 1;
+				Shape temp = current;
+				current = other;
+				other = temp;
+				point = rationalPoint(current, point + dir);
+				px = current.getPoint(point)[0];
+				py = current.getPoint(point)[1];
+				continue;
+			}
+			point = rationalPoint(current, point + dir);
+			px = current.getPoint(point)[0];
+			py = current.getPoint(point)[1];
+		}
+		poly.addPoint(px, py);
+		return poly;
+	}
+
+	private boolean onPath(Shape path, float x, float y) {
+		for (int i = 0; i < path.getPointCount() + 1; i++) {
+			int n = rationalPoint(path, i + 1);
+			Line line = getLine(path, rationalPoint(path, i), n);
+			if (line.distance(new Vector2f(x, y)) < EPSILON * 100f) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public ShapeEntity getEntity() {

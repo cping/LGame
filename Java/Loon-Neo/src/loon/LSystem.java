@@ -260,6 +260,34 @@ public final class LSystem {
 			return cmd.getShader();
 		}
 	}
+	
+	public static final String getGLExLightFragmentShader() {
+		ShaderCmd cmd = ShaderCmd.getCmd("glex_light_fragment");
+		if (cmd.isCache()) {
+			return cmd.getShader();
+		} else {
+			cmd.putVarying("LOWP vec4", "v_color");
+			cmd.putVaryingVec2("v_texCoords");
+			cmd.putUniform("sampler2D", "u_texture");
+			cmd.putUniformVec2("resolution");
+			cmd.putUniformVec2("touch");
+			cmd.putUniformVec2("time");
+			cmd.putUniformVec2("lightSize");
+			cmd.putUniformVec4("lightData");
+			cmd.putUniformVec4("ambientData");
+			cmd.putMainLowpCmd("  vec2 position = touch/resolution.xx;\r\n"
+					+ "  float maxDistance = lightSize.x + 0.015*sin(time.x);\r\n"
+					+ "  float distance = distance(gl_FragCoord.xy/resolution.xx, position);\r\n"
+					+ "  float value = 1.0 - smoothstep(-0.2, maxDistance, distance);\r\n"
+					+ "  vec4 pixel =  texture2D(u_texture, v_texCoords);\r\n"
+					+ "  vec3 ambient = pixel.rgb * ambientData.rgb * ambientData.a;\r\n"
+					+ "  vec3 light = lightData.rgb * lightData.a * clamp(value, 0.0, 1.0);\r\n"
+					+ "  vec3 intensity = ambient + light;\r\n"
+					+ "  vec3 final = pixel.rgb * intensity;\r\n"
+					+ "  gl_FragColor = vec4(final, 1.0) * v_color;");
+			return cmd.getShader();
+		}
+	}
 
 	public static final String getColorFragmentShader() {
 		ShaderCmd cmd = ShaderCmd.getCmd("color_fragment");

@@ -44,7 +44,10 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
+import loon.opengl.BaseBatch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
+import loon.opengl.light.Light2D;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
@@ -69,6 +72,11 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		public Sprites update(ISprite spr);
 
 	}
+
+	// 是否在整个桌面组件中使用光源
+	private boolean _useLight = false;
+
+	private final Light2D _light = new Light2D();
 
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
@@ -1571,6 +1579,19 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		onTriggerCollisions();
 	}
 
+	public Sprites setGlobalLight(boolean l) {
+		this._useLight = l;
+		return this;
+	}
+
+	public boolean isGlobalLight() {
+		return this._useLight;
+	}
+
+	public Light2D getGlobalLight() {
+		return _light;
+	}
+
 	/**
 	 * 单纯渲染精灵
 	 * 
@@ -1586,23 +1607,52 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		float spriteHeight;
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		for (int i = 0; i < size; i++) {
-			final ISprite spr = childs[i];
-			if (spr != null && spr.isVisible()) {
-				if (_limitViewWindows) {
-					spriteX = minX + spr.getX();
-					spriteY = minY + spr.getY();
-					spriteWidth = spr.getWidth();
-					spriteHeight = spr.getHeight();
-					if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
-							|| spriteY > maxY) {
-						continue;
+		if (_useLight) {
+			BaseBatch lightBatch = _light.getGlBaseBatch();
+			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
+			_light.setTimer(this._screen.getCurrentTimer());
+			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			BaseBatch old = g.batch();
+			g.pushBatch(lightBatch);
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_limitViewWindows) {
+						spriteX = minX + spr.getX();
+						spriteY = minY + spr.getY();
+						spriteWidth = spr.getWidth();
+						spriteHeight = spr.getHeight();
+						if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+								|| spriteY > maxY) {
+							continue;
+						}
 					}
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+					}
+					spr.createUI(g);
 				}
-				if (_createShadow && spr.showShadow()) {
-					_spriteShadow.drawShadow(g, spr, 0f, 0f);
+			}
+			g.popBatch(old);
+		} else {
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_limitViewWindows) {
+						spriteX = minX + spr.getX();
+						spriteY = minY + spr.getY();
+						spriteWidth = spr.getWidth();
+						spriteHeight = spr.getHeight();
+						if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+								|| spriteY > maxY) {
+							continue;
+						}
+					}
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+					}
+					spr.createUI(g);
 				}
-				spr.createUI(g);
 			}
 		}
 	}
@@ -1613,13 +1663,32 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		for (int i = 0; i < size; i++) {
-			final ISprite spr = childs[i];
-			if (spr != null && spr.isVisible()) {
-				if (_createShadow && spr.showShadow()) {
-					_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+		if (_useLight) {
+			BaseBatch lightBatch = _light.getGlBaseBatch();
+			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
+			_light.setTimer(this._screen.getCurrentTimer());
+			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			BaseBatch old = g.batch();
+			g.pushBatch(lightBatch);
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+					}
+					spr.createUI(g, offsetX, offsetY);
 				}
-				spr.createUI(g, offsetX, offsetY);
+			}
+			g.popBatch(old);
+		} else {
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+					}
+					spr.createUI(g, offsetX, offsetY);
+				}
 			}
 		}
 	}
@@ -1675,24 +1744,56 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		for (int i = 0; i < size; i++) {
-			final ISprite spr = childs[i];
-			if (spr != null && spr.isVisible()) {
-				if (_limitViewWindows) {
-					int layerX = spr.x();
-					int layerY = spr.y();
-					float layerWidth = spr.getWidth() + 1;
-					float layerHeight = spr.getHeight() + 1;
-					if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY || layerY > maxY) {
-						continue;
+
+		if (_useLight) {
+			BaseBatch lightBatch = _light.getGlBaseBatch();
+			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
+			_light.setTimer(this._screen.getCurrentTimer());
+			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			BaseBatch old = g.batch();
+			g.pushBatch(lightBatch);
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_limitViewWindows) {
+						int layerX = spr.x();
+						int layerY = spr.y();
+						float layerWidth = spr.getWidth() + 1;
+						float layerHeight = spr.getHeight() + 1;
+						if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
+								|| layerY > maxY) {
+							continue;
+						}
 					}
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+					}
+					spr.createUI(g);
 				}
-				if (_createShadow && spr.showShadow()) {
-					_spriteShadow.drawShadow(g, spr, 0f, 0f);
+			}
+			g.popBatch(old);
+		} else {
+			for (int i = 0; i < size; i++) {
+				final ISprite spr = childs[i];
+				if (spr != null && spr.isVisible()) {
+					if (_limitViewWindows) {
+						int layerX = spr.x();
+						int layerY = spr.y();
+						float layerWidth = spr.getWidth() + 1;
+						float layerHeight = spr.getHeight() + 1;
+						if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
+								|| layerY > maxY) {
+							continue;
+						}
+					}
+					if (_createShadow && spr.showShadow()) {
+						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+					}
+					spr.createUI(g);
 				}
-				spr.createUI(g);
 			}
 		}
+
 		if (offset) {
 			g.translate(-minX, -minY);
 		}

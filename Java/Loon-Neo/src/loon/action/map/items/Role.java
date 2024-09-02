@@ -22,6 +22,7 @@ package loon.action.map.items;
 
 import java.util.Comparator;
 
+import loon.LSysException;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
@@ -192,31 +193,51 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 	public <T> Role choseActionCall(Callback<Role> v, Role enemy, RoleActionType actionType) {
 		try {
 			Role role = (enemy == null ? this : enemy);
+			if (role != null && role == this) {
+				switch (actionType) {
+				case Attack:
+					if(role.isAttack) {
+						throw new LSysException("This role has completed the Attack !");
+					}
+					role.isAttack = true;
+					break;
+				case Defend:
+					if(role.isDefense) {
+						throw new LSysException("This role has completed the Defense !");
+					}
+					role.isDefense = true;
+					break;
+				case Mana:
+				case Ability:
+					if(role.isDefense) {
+						throw new LSysException("This role has completed the Mana/Ability !");
+					}
+					role.isSkill = true;
+					break;
+				case Move:
+					if(role.isMoved) {
+						throw new LSysException("This role has completed the Move !");
+					}
+					role.isMoved = true;
+					break;
+				case Die:
+					if(role.isDead) {
+						throw new LSysException("This role has completed the Die !");
+					}
+					role.isDead = true;
+					break;
+				case Live:
+					if(!role.isDead) {
+						throw new LSysException("This role has completed the Live !");
+					}
+					role.isDead = false;
+					break;
+				default:
+					break;
+				}
+			}
 			v.onSuccess(role);
 			onUpdateRoleAction(actionType);
-			switch (actionType) {
-			case Attack:
-				role.isAttack = true;
-				break;
-			case Defend:
-				role.isDefense = true;
-				break;
-			case Mana:
-			case Ability:
-				role.isSkill = true;
-				break;
-			case Move:
-				role.isMoved = true;
-				break;
-			case Die:
-				role.isDead = true;
-				break;
-			case Live:
-				role.isDead = false;
-				break;
-			default:
-				break;
-			}
 		} catch (Exception e) {
 			v.onFailure(e);
 		}
