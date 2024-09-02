@@ -469,7 +469,6 @@ public class Desktop implements Visible, IArray, LRelease {
 			g.saveTx();
 			if (_useLight) {
 				BaseBatch lightBatch = _light.getGlBaseBatch();
-				lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
 				_light.setTimer(this.input.getCurrentTimer());
 				_light.setTouch(this.input.getTouchX(), this.input.getTouchY());
 				BaseBatch old = g.batch();

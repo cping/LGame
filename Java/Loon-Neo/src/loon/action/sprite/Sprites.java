@@ -45,7 +45,6 @@ import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
 import loon.opengl.BaseBatch;
-import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.opengl.light.Light2D;
 import loon.utils.CollectionUtils;
@@ -1609,7 +1608,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final int size = this._size;
 		if (_useLight) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
 			_light.setTimer(this._screen.getCurrentTimer());
 			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
 			BaseBatch old = g.batch();
@@ -1665,7 +1663,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final int size = this._size;
 		if (_useLight) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
 			_light.setTimer(this._screen.getCurrentTimer());
 			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
 			BaseBatch old = g.batch();
@@ -1747,7 +1744,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 		if (_useLight) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			lightBatch.setBlendMode(BlendMethod.MODE_SCREEN);
 			_light.setTimer(this._screen.getCurrentTimer());
 			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
 			BaseBatch old = g.batch();

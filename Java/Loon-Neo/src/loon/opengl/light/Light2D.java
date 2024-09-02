@@ -25,6 +25,7 @@ import loon.geom.FloatValue;
 import loon.geom.Vector2f;
 import loon.geom.Vector4f;
 import loon.opengl.BaseBatch;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
@@ -113,14 +114,21 @@ public class Light2D {
 
 	private BaseBatch _baseBatch;
 
-	public Light2D() {
+	private int _blend;
 
+	public Light2D() {
+		this(BlendMethod.MODE_ALPHA);
+	}
+
+	public Light2D(int b) {
+		this._blend = b;
 	}
 
 	public BaseBatch getGlBaseBatch() {
 		if (_baseBatch == null) {
 			_baseBatch = createGLExBatch();
 		}
+		_baseBatch.setBlendMode(_blend);
 		return _baseBatch;
 	}
 
@@ -187,6 +195,15 @@ public class Light2D {
 
 	public void draw(GLEx g) {
 		loadShaderSource();
+	}
+
+	public int getBlend() {
+		return _blend;
+	}
+
+	public Light2D setBlend(int blend) {
+		this._blend = blend;
+		return this;
 	}
 
 }

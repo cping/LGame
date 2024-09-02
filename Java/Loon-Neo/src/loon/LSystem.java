@@ -284,7 +284,7 @@ public final class LSystem {
 					+ "  vec3 light = lightData.rgb * lightData.a * clamp(value, 0.0, 1.0);\r\n"
 					+ "  vec3 intensity = ambient + light;\r\n"
 					+ "  vec3 final = pixel.rgb * intensity;\r\n"
-					+ "  gl_FragColor = vec4(final, 1.0) * v_color;");
+					+ "  gl_FragColor = vec4(final, pixel.a) * v_color;");
 			return cmd.getShader();
 		}
 	}
