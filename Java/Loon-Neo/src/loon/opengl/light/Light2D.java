@@ -20,6 +20,7 @@
  */
 package loon.opengl.light;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.geom.FloatValue;
 import loon.geom.Vector2f;
@@ -32,13 +33,13 @@ import loon.opengl.ShaderSource;
 import loon.opengl.TrilateralBatch;
 import loon.utils.MathUtils;
 
-public class Light2D {
+public class Light2D implements LRelease {
 
 	private static class LightShader extends ShaderSource {
 
 		private final FloatValue _timer = new FloatValue(1f);
 
-		private final Vector2f _touch = new Vector2f(240, 240);
+		private final Vector2f _touch = new Vector2f();
 
 		private final Vector4f _ambientData = new Vector4f(0.3f, 0.3f, 0.8f, 0.3f);
 
@@ -110,7 +111,9 @@ public class Light2D {
 
 	private LightShader _shader;
 
-	private boolean _inited;
+	private boolean _closed;
+
+	private boolean _inited, _autoTouchMove;
 
 	private BaseBatch _baseBatch;
 
@@ -122,9 +125,13 @@ public class Light2D {
 
 	public Light2D(int b) {
 		this._blend = b;
+		this._autoTouchMove = true;
 	}
 
 	public BaseBatch getGlBaseBatch() {
+		if (_closed) {
+			return null;
+		}
 		if (_baseBatch == null) {
 			_baseBatch = createGLExBatch();
 		}
@@ -133,6 +140,9 @@ public class Light2D {
 	}
 
 	public BaseBatch createGLExBatch() {
+		if (_closed) {
+			return null;
+		}
 		loadShaderSource();
 		return new TrilateralBatch(LSystem.base().graphics().gl, _shader);
 	}
@@ -145,9 +155,19 @@ public class Light2D {
 		_shader.updateSize();
 	}
 
+	public boolean isAutoTouchMove() {
+		return _autoTouchMove;
+	}
+
+	public Light2D setAutoTouchMove(boolean a) {
+		this._autoTouchMove = a;
+		return this;
+	}
+
 	public Light2D reset() {
 		loadShaderSource();
 		_shader.reset();
+		_closed = false;
 		return this;
 	}
 
@@ -181,6 +201,15 @@ public class Light2D {
 		return this;
 	}
 
+	public Light2D setAutoTouchTimer(float x, float y, float timer) {
+		loadShaderSource();
+		if (_autoTouchMove) {
+			_shader.setTouch(x, y);
+			_shader.setTimer(timer);
+		}
+		return this;
+	}
+
 	public Light2D setTimer(float d) {
 		loadShaderSource();
 		_shader.setTimer(d);
@@ -204,6 +233,19 @@ public class Light2D {
 	public Light2D setBlend(int blend) {
 		this._blend = blend;
 		return this;
+	}
+
+	public boolean isClosed() {
+		return _closed;
+	}
+
+	@Override
+	public void close() {
+		if (_baseBatch != null) {
+			_baseBatch.close();
+			_baseBatch = null;
+		}
+		_closed = true;
 	}
 
 }

@@ -75,7 +75,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
 
-	private final Light2D _light = new Light2D();
+	private final Light2D _light;
 
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
@@ -158,6 +158,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
 		this._sortableChildren = this._visible = true;
+		this._light = new Light2D();
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this._size = 0;
@@ -1606,10 +1607,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		float spriteHeight;
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		if (_useLight) {
+		if (_useLight && !_light.isClosed()) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			_light.setTimer(this._screen.getCurrentTimer());
-			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			BaseBatch old = g.batch();
 			g.pushBatch(lightBatch);
 			for (int i = 0; i < size; i++) {
@@ -1661,10 +1661,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		if (_useLight) {
+		if (_useLight && !_light.isClosed()) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			_light.setTimer(this._screen.getCurrentTimer());
-			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			BaseBatch old = g.batch();
 			g.pushBatch(lightBatch);
 			for (int i = 0; i < size; i++) {
@@ -1742,10 +1741,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 
-		if (_useLight) {
+		if (_useLight && !_light.isClosed()) {
 			BaseBatch lightBatch = _light.getGlBaseBatch();
-			_light.setTimer(this._screen.getCurrentTimer());
-			_light.setTouch(this._screen.getTouchX(), this._screen.getTouchY());
+			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			BaseBatch old = g.batch();
 			g.pushBatch(lightBatch);
 			for (int i = 0; i < size; i++) {
@@ -2676,6 +2674,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
+		this._light.close();
 		this._size = 0;
 		this._closed = true;
 		this._sprites = null;

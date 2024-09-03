@@ -39,7 +39,6 @@ import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BaseBatch;
-import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.opengl.light.Light2D;
 import loon.utils.IArray;
@@ -57,8 +56,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
 
-	private final Light2D _light = new Light2D();
-	
+	private final Light2D _light;
+
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private final Vector2f _touchPoint = new Vector2f();
@@ -139,6 +138,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 */
 	public Desktop(String name, Screen screen, int width, int height) {
 		this._clickComponents = new LComponent[1];
+		this._light = new Light2D();
 		this._desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this._visible = true;
 		this._contentPane = new LPanel(0, 0, width, height);
@@ -467,10 +467,9 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		try {
 			g.saveTx();
-			if (_useLight) {
+			if (_useLight && !_light.isClosed()) {
 				BaseBatch lightBatch = _light.getGlBaseBatch();
-				_light.setTimer(this.input.getCurrentTimer());
-				_light.setTouch(this.input.getTouchX(), this.input.getTouchY());
+				_light.setAutoTouchTimer(input.getTouchX(), input.getTouchY(), input.getCurrentTimer());
 				BaseBatch old = g.batch();
 				g.pushBatch(lightBatch);
 				this._contentPane.createUI(g);
@@ -1442,6 +1441,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		this._closed = true;
 		this._resizeListener = null;
+		this._light.close();
 		LSystem.popDesktopPool(this);
 	}
 
