@@ -21,6 +21,7 @@
 package loon.font;
 
 import loon.LSystem;
+import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
 import loon.component.layout.HorizontalAlign;
 import loon.geom.PointF;
@@ -459,4 +460,93 @@ public class FontUtils {
 		return -font.charWidth(chars.charAt(idx));
 	}
 
+	public static int getChangLine(final IFont font, final CharSequence chars, final int lineWidth) {
+		int wd = 0;
+		for (int i = 0; i < chars.length(); i++) {
+			char ch = chars.charAt(i);
+			if (ch == LSystem.LF || ch == LSystem.CR) {
+				return i + 1;
+			}
+			wd += font.charWidth(ch);
+			if (wd > lineWidth) {
+				return i;
+			}
+		}
+		return 0;
+	}
+
+	public static int getStringWidth(final IFont font, final CharSequence chars) {
+		int wd = 0;
+		for (int i = 0; i < chars.length(); i++) {
+			char ch = chars.charAt(i);
+			wd += font.charWidth(ch);
+		}
+		return wd;
+	}
+
+	public static int[] ajustDrawString(final GLEx g, final IFont font, final CharSequence chars, final int lineWidth,
+			final int lastY, final int startIndex, final int x, final int y, final int yDis) {
+		int currentInd = 0;
+		int hiddenIndex = 0;
+		CharSequence strText = chars;
+		int vy = y;
+		for (;;) {
+			CharSequence subStr;
+			int nPos = getChangLine(font, strText, lineWidth);
+			if (nPos == 0) {
+				g.drawString(strText.toString(), x, vy);
+				currentInd++;
+				break;
+			}
+			char v = strText.charAt(nPos - 1);
+			if (v == LSystem.LF || v == LSystem.CR) {
+				subStr = strText.subSequence(0, nPos - 1);
+			} else {
+				subStr = strText.subSequence(0, nPos);
+			}
+			if (currentInd >= startIndex && vy < lastY) {
+				g.drawString(subStr.toString(), x, vy);
+				vy = vy + font.getHeight() + yDis;
+			}
+			if (vy >= lastY) {
+				hiddenIndex++;
+			}
+			currentInd++;
+			strText = strText.subSequence(nPos, strText.length());
+		}
+		return new int[] { vy, hiddenIndex };
+	}
+
+	public static int[] ajustDrawString(final SpriteBatch g, final IFont font, final CharSequence chars,
+			final int lineWidth, final int lastY, final int startIndex, final int x, final int y, final int yDis) {
+		int currentInd = 0;
+		int hiddenIndex = 0;
+		CharSequence strText = chars;
+		int vy = y;
+		for (;;) {
+			CharSequence subStr;
+			int nPos = getChangLine(font, strText, lineWidth);
+			if (nPos == 0) {
+				g.drawString(strText.toString(), x, vy);
+				currentInd++;
+				break;
+			}
+			char v = strText.charAt(nPos - 1);
+			if (v == LSystem.LF || v == LSystem.CR) {
+				subStr = strText.subSequence(0, nPos - 1);
+			} else {
+				subStr = strText.subSequence(0, nPos);
+			}
+			if (currentInd >= startIndex && vy < lastY) {
+				g.drawString(subStr.toString(), x, vy);
+				vy = vy + font.getHeight() + yDis;
+			}
+			if (vy >= lastY) {
+				hiddenIndex++;
+			}
+			currentInd++;
+			strText = strText.subSequence(nPos, strText.length());
+		}
+		return new int[] { vy, hiddenIndex };
+	}
 }
