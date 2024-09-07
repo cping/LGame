@@ -547,6 +547,131 @@ public class LongArray implements IArray, LRelease {
 		return v;
 	}
 
+	public LongArray plus(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v + list[i];
+		}
+		return this;
+	}
+
+	public LongArray plus(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v + nv;
+		}
+		return this;
+	}
+
+	public LongArray sub(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v - list[i];
+		}
+		return this;
+	}
+
+	public LongArray sub(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v - nv;
+		}
+		return this;
+	}
+
+	public LongArray mul(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v * list[i];
+		}
+		return this;
+	}
+
+	public LongArray mul(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v * nv;
+		}
+		return this;
+	}
+
+	public LongArray div(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v / list[i];
+		}
+		return this;
+	}
+
+	public LongArray div(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v / nv;
+		}
+		return this;
+	}
+
+	public LongArray mod(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v % list[i];
+		}
+		return this;
+	}
+
+	public LongArray mod(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			long v = this.items[i];
+			this.items[i] = v % nv;
+		}
+		return this;
+	}
+
 	@Override
 	public int size() {
 		return length;

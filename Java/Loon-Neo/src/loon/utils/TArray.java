@@ -900,7 +900,7 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	public SwappableArray<T> getSwappableArray() {
 		return new SwappableArray<T>(this);
 	}
-
+	
 	@Override
 	public int hashCode() {
 		if (!ordered) {

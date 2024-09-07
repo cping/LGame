@@ -632,6 +632,131 @@ public class IntArray implements IArray, LRelease {
 		return v;
 	}
 
+	public IntArray plus(IntArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final int[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v + list[i];
+		}
+		return this;
+	}
+
+	public IntArray plus(final int nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v + nv;
+		}
+		return this;
+	}
+
+	public IntArray sub(IntArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final int[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v - list[i];
+		}
+		return this;
+	}
+
+	public IntArray sub(final int nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v - nv;
+		}
+		return this;
+	}
+
+	public IntArray mul(IntArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final int[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v * list[i];
+		}
+		return this;
+	}
+
+	public IntArray mul(final int nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v * nv;
+		}
+		return this;
+	}
+
+	public IntArray div(IntArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final int[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v / list[i];
+		}
+		return this;
+	}
+
+	public IntArray div(final int nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v / nv;
+		}
+		return this;
+	}
+
+	public IntArray mod(IntArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final int[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v % list[i];
+		}
+		return this;
+	}
+
+	public IntArray mod(final int nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			int v = this.items[i];
+			this.items[i] = v % nv;
+		}
+		return this;
+	}
+
 	public IntArray cpy() {
 		return new IntArray(this);
 	}

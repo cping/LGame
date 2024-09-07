@@ -408,6 +408,15 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 		return PlayerUtils.isActionCompleted(this);
 	}
 
+	public static float getBallisticRange(float speed, float gravity, float iheight) {
+		float angle = 45f * MathUtils.DEG_TO_RAD;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float range = (speed * cos / gravity)
+				* (speed * sin + MathUtils.sqrt(speed * speed * sin * sin + 2f * gravity * iheight));
+		return range;
+	}
+
 	@Override
 	public void close() {
 		if (animation != null) {

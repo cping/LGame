@@ -637,6 +637,131 @@ public class FloatArray implements IArray, LRelease {
 		return v;
 	}
 
+	public FloatArray plus(FloatArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final float[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v + list[i];
+		}
+		return this;
+	}
+
+	public FloatArray plus(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v + nv;
+		}
+		return this;
+	}
+
+	public FloatArray sub(LongArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final long[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v - list[i];
+		}
+		return this;
+	}
+
+	public FloatArray sub(final long nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v - nv;
+		}
+		return this;
+	}
+
+	public FloatArray mul(FloatArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final float[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v * list[i];
+		}
+		return this;
+	}
+
+	public FloatArray mul(final float nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v * nv;
+		}
+		return this;
+	}
+
+	public FloatArray div(FloatArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final float[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v / list[i];
+		}
+		return this;
+	}
+
+	public FloatArray div(final float nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v / nv;
+		}
+		return this;
+	}
+
+	public FloatArray mod(FloatArray target) {
+		if (target == null) {
+			return null;
+		}
+		if (target.length != this.length) {
+			return null;
+		}
+		final float[] list = target.items;
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v % list[i];
+		}
+		return this;
+	}
+
+	public FloatArray mod(final float nv) {
+		final int size = this.length;
+		for (int i = size - 1; i > -1; i--) {
+			float v = this.items[i];
+			this.items[i] = v % nv;
+		}
+		return this;
+	}
+
 	public byte[] getBytes() {
 		return getBytes(0);
 	}

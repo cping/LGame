@@ -28,7 +28,9 @@ public class AttackBase {
 
 	private String _name;
 
-	private AttackScale _attack;
+	private AttackScale _scale;
+
+	private AttackState _state;
 
 	private float _damage;
 
@@ -43,17 +45,22 @@ public class AttackBase {
 	}
 
 	public AttackBase(float damage) {
-		this(LSystem.UNKNOWN, AttackScale.Single, damage);
+		this(LSystem.UNKNOWN, AttackScale.Single, AttackState.MiddleAttack, damage);
 	}
 
 	public AttackBase(AttackScale s, float damage) {
-		this(LSystem.UNKNOWN, s, damage);
+		this(LSystem.UNKNOWN, s, AttackState.MiddleAttack, damage);
 	}
 
-	public AttackBase(String n, AttackScale s, float damage) {
+	public AttackBase(AttackScale s, AttackState as, float damage) {
+		this(LSystem.UNKNOWN, s, as, damage);
+	}
+
+	public AttackBase(String n, AttackScale s, AttackState as, float damage) {
 		this._range = new TArray<PointI>();
 		this._name = n;
-		this._attack = s;
+		this._scale = s;
+		this._state = as;
 	}
 
 	public AttackBase setLock(boolean l) {
@@ -74,13 +81,22 @@ public class AttackBase {
 		return this;
 	}
 
-	public AttackScale getAttack() {
-		return _attack;
+	public AttackScale getAttackScale() {
+		return _scale;
 	}
 
-	public AttackBase setAttack(AttackScale a) {
-		this._attack = a;
+	public AttackBase setAttackScale(AttackScale a) {
+		this._scale = a;
 		return this;
+	}
+
+	public AttackBase setAttackState(AttackState s) {
+		this._state = s;
+		return this;
+	}
+
+	public AttackState getAttackState() {
+		return this._state;
 	}
 
 	public float getDamage() {

@@ -39,6 +39,14 @@ import loon.utils.TArray;
 
 public abstract class LayoutManager {
 
+	public static Vector2f pixelPerfect(Vector2f target) {
+		return new Vector2f(MathUtils.round(target.x * 100f) / 100f, MathUtils.round(target.y * 100f) / 100f);
+	}
+
+	public static float roundTo2DP(float num) {
+		return num = MathUtils.round(num * 100f) / 100f;
+	}
+
 	/**
 	 * 构建一个三角区域,让集合中的动作元素尽可能填充这一三角区域
 	 * 
