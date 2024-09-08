@@ -38,7 +38,7 @@ public class AttackBase {
 
 	private boolean _locked;
 
-	protected TArray<PointI> _range;
+	protected final TArray<PointI> _range;
 
 	public AttackBase() {
 		this(0f);
@@ -65,6 +65,15 @@ public class AttackBase {
 
 	public AttackBase setLock(boolean l) {
 		this._locked = l;
+		return this;
+	}
+
+	public AttackBase setRange(TArray<PointI> r) {
+		if (r == null) {
+			return this;
+		}
+		_range.clear();
+		_range.addAll(r);
 		return this;
 	}
 

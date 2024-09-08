@@ -550,13 +550,24 @@ public class IntArray implements IArray, LRelease {
 	}
 
 	public byte[] getBytes(int order) {
-		int[] items = this.items;
-		ArrayByte bytes = new ArrayByte(items.length * 4);
+		final int size = items.length;
+		final int[] items = this.items;
+		ArrayByte bytes = new ArrayByte(size * 4);
 		bytes.setOrder(order);
-		for (int i = 0; i < items.length; i++) {
+		for (int i = 0; i < size; i++) {
 			bytes.writeInt(items[i]);
 		}
 		return bytes.getBytes();
+	}
+
+	public BoolArray getBools() {
+		final int size = this.length;
+		final int[] items = this.items;
+		BoolArray bools = new BoolArray(this.length);
+		for (int i = 0; i < size; i++) {
+			bools.add(items[i] > 0);
+		}
+		return bools;
 	}
 
 	public IntArray where(QueryEvent<Integer> test) {

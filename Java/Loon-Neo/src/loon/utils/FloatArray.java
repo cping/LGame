@@ -767,13 +767,24 @@ public class FloatArray implements IArray, LRelease {
 	}
 
 	public byte[] getBytes(int order) {
-		float[] items = this.items;
-		ArrayByte bytes = new ArrayByte(items.length * 4);
+		final int size = items.length;
+		final float[] items = this.items;
+		ArrayByte bytes = new ArrayByte(size * 4);
 		bytes.setOrder(order);
-		for (float item : items) {
-			bytes.writeFloat(item);
+		for (int i = 0; i < size; i++) {
+			bytes.writeFloat(items[i]);
 		}
 		return bytes.getBytes();
+	}
+
+	public BoolArray getBools() {
+		final int size = this.length;
+		final float[] items = this.items;
+		BoolArray bools = new BoolArray(this.length);
+		for (int i = 0; i < size; i++) {
+			bools.add(items[i] > 0);
+		}
+		return bools;
 	}
 
 	@Override

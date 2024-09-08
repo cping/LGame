@@ -696,10 +696,12 @@ public class LongArray implements IArray, LRelease {
 		return (int) hashCode;
 	}
 
-	public byte[] getBytes() {
-		long[] items = this.items;
-		ArrayByte bytes = new ArrayByte(items.length * 8);
-		for (int i = 0; i < items.length; i++) {
+	public byte[] getBytes(int order) {
+		final int size = items.length;
+		final long[] items = this.items;
+		ArrayByte bytes = new ArrayByte(size * 8);
+		bytes.setOrder(order);
+		for (int i = 0; i < size; i++) {
 			bytes.writeLong(items[i]);
 		}
 		return bytes.getBytes();
