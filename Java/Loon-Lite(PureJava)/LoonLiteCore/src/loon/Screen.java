@@ -132,6 +132,7 @@ import loon.utils.res.ResourceLocal;
 import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
+import loon.utils.timer.StepList;
 import loon.utils.timer.StopwatchTimer;
 
 /**
@@ -247,6 +248,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private boolean _collisionClosed;
 
 	private final IntMap<ActionKey> _keyActions = new IntMap<ActionKey>();
+
+	private final StepList _steps = new StepList();
 
 	private ReplaceEvent _revent;
 
@@ -4324,6 +4327,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public StepList getSteps() {
+		return this._steps;
+	}
+
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
 		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
@@ -4348,6 +4355,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_pauseTimer.refresh();
 			}
 		}
+		_steps.update(timer);
 		if (_delayTimer.action(elapsedTime)) {
 			if (_isProcessing && !_isClose) {
 				_systemManager.update(elapsedTime);
@@ -7092,6 +7100,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_battleProcess.close();
 				_disposes.close();
 				_conns.close();
+				_steps.close();
 				release();
 				_keyActions.clear();
 				if (_currentScreenBackground != null) {
