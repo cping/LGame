@@ -380,10 +380,15 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void process(long elapsedTime) {
-
 	}
 
 	public abstract void createUI(GLEx g, int x, int y);
+
+	protected void preUI(GLEx g) {
+	}
+
+	protected void postUI(GLEx g) {
+	}
 
 	/**
 	 * 渲染当前组件画面于指定绘图器之上
@@ -442,6 +447,7 @@ public abstract class LComponent extends LObject<LContainer>
 				}
 			}
 			g.setBlendMode(_GL_BLEND);
+			preUI(g);
 			if (_drawBackground && _background != null) {
 				g.draw(_background, newX, newY, width, height, _component_baseColor);
 			}
@@ -450,6 +456,7 @@ public abstract class LComponent extends LObject<LContainer>
 			} else {
 				this.createUI(g, newX, newY);
 			}
+			postUI(g);
 			if (isDrawSelect()) {
 				g.drawRect(newX, newY, width - 1f, height - 1f, _component_baseColor);
 			}
