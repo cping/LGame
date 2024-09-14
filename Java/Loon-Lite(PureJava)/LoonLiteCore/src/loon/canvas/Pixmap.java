@@ -163,6 +163,121 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 		return buffer;
 	}
 
+	/**
+	 * 模糊化指定像素
+	 * 
+	 * @param srcPixels
+	 * @param dstPixels
+	 * @param width
+	 * @param height
+	 * @param radius
+	 */
+	public static void blurPass(int[] srcPixels, int[] dstPixels, int width, int height, int radius) {
+		final int windowSize = radius * 2 + 1;
+		final int radiusPlusOne = radius + 1;
+
+		int sumRed;
+		int sumGreen;
+		int sumBlue;
+		int sumAlpha;
+
+		int srcIndex = 0;
+		int dstIndex;
+		int pixel;
+
+		int[] sumLookupTable = new int[256 * windowSize];
+		for (int i = 0; i < sumLookupTable.length; i++) {
+			sumLookupTable[i] = i / windowSize;
+		}
+
+		int[] indexLookupTable = new int[radiusPlusOne];
+		if (radius < width) {
+			for (int i = 0; i < indexLookupTable.length; i++) {
+				indexLookupTable[i] = i;
+			}
+		} else {
+			for (int i = 0; i < width; i++) {
+				indexLookupTable[i] = i;
+			}
+			for (int i = width; i < indexLookupTable.length; i++) {
+				indexLookupTable[i] = width - 1;
+			}
+		}
+
+		for (int y = 0; y < height; y++) {
+			sumAlpha = sumRed = sumGreen = sumBlue = 0;
+			dstIndex = y;
+
+			pixel = srcPixels[srcIndex];
+			sumRed += radiusPlusOne * ((pixel >> 24) & 0xFF);
+			sumGreen += radiusPlusOne * ((pixel >> 16) & 0xFF);
+			sumBlue += radiusPlusOne * ((pixel >> 8) & 0xFF);
+			sumAlpha += radiusPlusOne * (pixel & 0xFF);
+
+			for (int i = 1; i <= radius; i++) {
+				pixel = srcPixels[srcIndex + indexLookupTable[i]];
+				sumRed += (pixel >> 24) & 0xFF;
+				sumGreen += (pixel >> 16) & 0xFF;
+				sumBlue += (pixel >> 8) & 0xFF;
+				sumAlpha += pixel & 0xFF;
+			}
+
+			for (int x = 0; x < width; x++) {
+				dstPixels[dstIndex] = sumLookupTable[sumRed] << 24 | sumLookupTable[sumGreen] << 16
+						| sumLookupTable[sumBlue] << 8 | sumLookupTable[sumAlpha];
+				dstIndex += height;
+
+				int nextPixelIndex = x + radiusPlusOne;
+				if (nextPixelIndex >= width) {
+					nextPixelIndex = width - 1;
+				}
+
+				int previousPixelIndex = x - radius;
+				if (previousPixelIndex < 0) {
+					previousPixelIndex = 0;
+				}
+
+				int nextPixel = srcPixels[srcIndex + nextPixelIndex];
+				int previousPixel = srcPixels[srcIndex + previousPixelIndex];
+
+				sumRed += (nextPixel >> 24) & 0xFF;
+				sumRed -= (previousPixel >> 24) & 0xFF;
+
+				sumGreen += (nextPixel >> 16) & 0xFF;
+				sumGreen -= (previousPixel >> 16) & 0xFF;
+
+				sumBlue += (nextPixel >> 8) & 0xFF;
+				sumBlue -= (previousPixel >> 8) & 0xFF;
+
+				sumAlpha += nextPixel & 0xFF;
+				sumAlpha -= previousPixel & 0xFF;
+			}
+
+			srcIndex += width;
+		}
+	}
+
+	/**
+	 * 模糊指定像素，范围为指定半径和迭代次数
+	 * 
+	 * @param pixels
+	 * @param width
+	 * @param height
+	 * @param radius
+	 * @param iterations
+	 * @return
+	 */
+	public static int[] blur(int[] pixels, int width, int height, int radius, int iterations) {
+		int[] srcPixels = new int[width * height];
+		int[] dstPixels = new int[width * height];
+		System.arraycopy(pixels, 0, srcPixels, 0, srcPixels.length);
+		for (int i = 0; i < iterations; i++) {
+			blurPass(srcPixels, dstPixels, width, height, radius);
+			blurPass(dstPixels, srcPixels, height, width, radius);
+		}
+		return srcPixels;
+	}
+
 	private RectI temp_rect = new RectI();
 
 	private boolean _dirty;
@@ -2891,6 +3006,24 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 			}
 		}
 		return buffer;
+	}
+
+	public Pixmap blur(int radius, int iterations, boolean disposePixmap) {
+		return blur(0, 0, getWidth(), getHeight(), 0, 0, getWidth(), getHeight(), radius, iterations);
+	}
+
+	public Pixmap blur(int dstx, int dsty, int dstwidth, int dstheight, int srcx, int srcy, int srcwidth, int srcheight,
+			int radius, int iterations) {
+		Pixmap selfPixel = this;
+		boolean srcEq = srcx == 0 && srcy == 0 && srcwidth == getWidth() && srcheight == getHeight();
+		boolean dstEq = dstx == 0 && dsty == 0 && dstwidth == getWidth() && dstheight == getHeight();
+		if (!srcEq || !dstEq) {
+			Pixmap tmp = new Pixmap(dstwidth, dstheight, true);
+			tmp.drawPixmap(this, dstx, dsty, dstwidth, dstheight, srcx, srcy, srcwidth, srcheight);
+			selfPixel = tmp;
+		}
+		int[] pixels = blur(selfPixel.getData(), dstwidth, dstheight, radius, iterations);
+		return new Pixmap(pixels, dstwidth, dstheight);
 	}
 
 	public ByteBuffer convertPixmapToByteBuffer() {

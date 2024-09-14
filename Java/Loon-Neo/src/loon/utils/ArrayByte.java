@@ -597,6 +597,10 @@ public class ArrayByte implements IArray, LRelease {
 		return this;
 	}
 
+	public int capacity() {
+		return _buffer.length;
+	}
+
 	public byte[] getData() {
 		return _buffer;
 	}
@@ -625,6 +629,10 @@ public class ArrayByte implements IArray, LRelease {
 		return this;
 	}
 
+	public ArrayByte slice(int length) {
+		return slice(this._position, length);
+	}
+
 	public ArrayByte slice(int begin, int end) {
 		if (end == -1) {
 			end = this.length();
@@ -633,6 +641,15 @@ public class ArrayByte implements IArray, LRelease {
 		ArrayByte bytes = new ArrayByte(len);
 		bytes.write(this._buffer, begin, len);
 		return bytes;
+	}
+
+	public byte[] unwrap() {
+		try {
+			int size = this.length();
+			return this.slice(0, size).readByteArray(size);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public String toUTF8String() {
@@ -703,7 +720,7 @@ public class ArrayByte implements IArray, LRelease {
 	public boolean isNotEmpty() {
 		return !isEmpty();
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof ArrayByte)) {

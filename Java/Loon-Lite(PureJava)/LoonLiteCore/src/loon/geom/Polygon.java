@@ -116,6 +116,62 @@ public class Polygon extends Shape implements BoxSize {
 		return sum > 0;
 	}
 
+	public final static float getPolygonSignedArea(Vector2f[] points) {
+		if (points.length < 3) {
+			return 0;
+		}
+		float sum = 0;
+		for (int i = 0; i < points.length; i++) {
+			Vector2f p1 = points[i];
+			Vector2f p2 = i != points.length - 1 ? points[i + 1] : points[0];
+			sum += (p1.x * p2.y) - (p1.y * p2.x);
+		}
+		return 0.5f * sum;
+	}
+
+	public final static float getPolygonArea(Vector2f[] points) {
+		return MathUtils.abs(getPolygonSignedArea(points));
+	}
+
+	public final static boolean isPolygonCCW(Vector2f[] points) {
+		return getPolygonSignedArea(points) > 0;
+	}
+
+	public final static Vector2f getCenter(TArray<Vector2f> vertices) {
+		Vector2f center = new Vector2f();
+		for (int i = 0; i < vertices.size; i++) {
+			center.addSelf(vertices.get(i));
+		}
+		center.mulSelf(1f / (float) vertices.size());
+		return center;
+	}
+
+	public final static TArray<Vector2f> getCenterVertices(TArray<Vector2f> vertices, Vector2f vertex) {
+		TArray<Vector2f> newVertices = new TArray<Vector2f>();
+		for (int i = 0; i < vertices.size; i++) {
+			newVertices.add(vertices.get(i).sub(vertex));
+		}
+		return newVertices;
+	}
+
+	public final static TArray<Vector2f> getCenterVerticesReverse(TArray<Vector2f> vertices, Vector2f vertex) {
+		return getCenterVertices(vertices, vertex.mul(-1f));
+	}
+
+	public final static Vector2f getClosestNode(float x, float y, TArray<Vector2f> nodes) {
+		Vector2f closest = null;
+		float closestDistance = Float.MAX_VALUE;
+		for (int i = 0; i < nodes.size; i++) {
+			Vector2f vertex = nodes.get(i);
+			float distance = nodes.get(i).dst2(x, y);
+			if (closest == null || closestDistance > distance) {
+				closest = vertex;
+				closestDistance = distance;
+			}
+		}
+		return closest;
+	}
+
 	public final static Vector2f findIntersection(float x1, float y1, float x2, float y2, float x3, float y3, float x4,
 			float y4) {
 		float d = ((y4 - y3) * (x2 - x1)) - ((x4 - x3) * (y2 - y1));
