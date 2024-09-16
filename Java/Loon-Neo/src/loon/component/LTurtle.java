@@ -233,7 +233,7 @@ public class LTurtle extends LComponent {
 		if (tc == null) {
 			return this;
 		}
-		push(tc);
+		pushCommand(tc);
 		return this;
 	}
 
