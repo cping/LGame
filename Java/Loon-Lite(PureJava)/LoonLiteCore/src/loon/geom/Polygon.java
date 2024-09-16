@@ -209,7 +209,7 @@ public class Polygon extends Shape implements BoxSize {
 			throw new LSysException("points < 1");
 		}
 		this.initPoints(vectors.size);
-		this.setPolygon(syncPoints(vectors, false), vectors.size);
+		this.setPolygon(vectors);
 	}
 
 	public Polygon(float[] points) {
@@ -245,7 +245,16 @@ public class Polygon extends Shape implements BoxSize {
 		minY = Float.MAX_VALUE;
 	}
 
-	public void setPolygon(int[] xpoints, int[] ypoints, int npoints) {
+	public Polygon setPolygon(TArray<Vector2f> vectors) {
+		return setPolygon(vectors, false);
+	}
+
+	public Polygon setPolygon(TArray<Vector2f> vectors, boolean dirty) {
+		this.setPolygon(syncPoints(vectors, dirty), vectors.size);
+		return this;
+	}
+
+	public Polygon setPolygon(int[] xpoints, int[] ypoints, int npoints) {
 		if (xpoints == null || ypoints == null) {
 			throw new LSysException("points is null !");
 		}
@@ -302,9 +311,10 @@ public class Polygon extends Shape implements BoxSize {
 		findCenter();
 		calculateRadius();
 		pointsDirty = true;
+		return this;
 	}
 
-	public void setPolygon(float[] xpoints, float[] ypoints, int npoints) {
+	public Polygon setPolygon(float[] xpoints, float[] ypoints, int npoints) {
 		if (xpoints == null || ypoints == null) {
 			throw new LSysException("points is null !");
 		}
@@ -361,9 +371,10 @@ public class Polygon extends Shape implements BoxSize {
 		findCenter();
 		calculateRadius();
 		pointsDirty = true;
+		return this;
 	}
 
-	public void setPolygon(float[] ps, int npoints) {
+	public Polygon setPolygon(float[] ps, int npoints) {
 		if (ps == null) {
 			throw new LSysException("points is null !");
 		}
@@ -418,6 +429,7 @@ public class Polygon extends Shape implements BoxSize {
 		findCenter();
 		calculateRadius();
 		pointsDirty = true;
+		return this;
 	}
 
 	public Polygon setAllowDuplicatePoints(boolean allowDups) {

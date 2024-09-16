@@ -26,6 +26,7 @@ module loon.core {
 	exports loon.font;
 	exports loon.geom;
 	exports loon.opengl;
+	exports loon.opengl.light;
 	exports loon.particle;
 	exports loon.utils;
 	exports loon.utils.cache;

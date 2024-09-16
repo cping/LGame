@@ -23,6 +23,7 @@ package loon.opengl.light;
 import loon.geom.Circle;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.reply.TValue;
 
 public class LightCircle extends Circle implements LightShape {
 
@@ -30,9 +31,11 @@ public class LightCircle extends Circle implements LightShape {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private Vector2f[] verticies = new Vector2f[2];
-	
+
+	private TValue<Object> _values;
+
+	private Vector2f[] _verticies = new Vector2f[2];
+
 	public LightCircle(float x, float y, float radius) {
 		super(x, y, radius);
 	}
@@ -41,26 +44,30 @@ public class LightCircle extends Circle implements LightShape {
 	public Vector2f[] getVertices(Vector2f light) {
 		Vector2f toLight = light.cpy();
 		float x = getCenterX(), y = getCenterY();
-		toLight.x -= x; toLight.y -= y;
+		toLight.x -= x;
+		toLight.y -= y;
 		toLight.add(90);
 		toLight.norSelf();
 		toLight.scaleSelf(this.getCircle());
-		verticies[0] = toLight.cpy();
-		verticies[0].x += x; verticies[0].y += y;
-		verticies[1] = toLight.scale(-1);
-		verticies[1].x += x; verticies[1].y += y;
-		return verticies;
+		_verticies[0] = toLight.cpy();
+		_verticies[0].x += x;
+		_verticies[0].y += y;
+		_verticies[1] = toLight.scale(-1);
+		_verticies[1].x += x;
+		_verticies[1].y += y;
+		return _verticies;
 	}
-	
+
 	public float getCircle() {
 		return this.getRadius() * 2f;
 	}
 
 	@Override
-	public Vector2f getIntersection(Vector2f start, Vector2f dir,
-			Vector2f ignore) {
+	public Vector2f getIntersection(Vector2f start, Vector2f dir, Vector2f ignore) {
 		for (int i = 0; i < 2; i++) {
-			if (verticies[i] == ignore) return null;
+			if (_verticies[i] == ignore) {
+				return null;
+			}
 		}
 		float x = getCenterX(), y = getCenterY();
 		float ox = start.x - x, oy = start.y - y;
@@ -75,17 +82,28 @@ public class LightCircle extends Circle implements LightShape {
 		float t1 = (-b + MathUtils.sqrt(disc)) / (2 * a);
 		float t;
 		if (t0 < 0) {
-			if (t1 < 0) return null;
+			if (t1 < 0)
+				return null;
 			t = t1;
 		} else {
 			t = t0;
 		}
-		return dir.scale(t).add(start);
+		return dir.scale(t).addSelf(start);
 	}
 
 	@Override
 	public boolean contains(Vector2f pos) {
 		return contains(pos.x, pos.y);
+	}
+
+	@Override
+	public TValue<Object> getTag() {
+		return _values;
+	}
+
+	@Override
+	public void setTag(TValue<Object> t) {
+		this._values = t;
 	}
 
 }

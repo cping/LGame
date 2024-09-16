@@ -21,6 +21,7 @@
 package loon.opengl.light;
 
 import loon.geom.Vector2f;
+import loon.utils.reply.TValue;
 
 public interface LightShape {
 
@@ -29,5 +30,9 @@ public interface LightShape {
 	Vector2f getIntersection(Vector2f start, Vector2f dir, Vector2f ignore);
 
 	boolean contains(Vector2f pos);
+	
+	TValue<Object> getTag();
+	
+	void setTag(TValue<Object> t);
 
 }

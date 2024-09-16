@@ -22,6 +22,7 @@ package loon.opengl.light;
 
 import loon.geom.Polygon;
 import loon.geom.Vector2f;
+import loon.utils.reply.TValue;
 
 public class LightPolygon extends Polygon implements LightShape {
 
@@ -29,8 +30,10 @@ public class LightPolygon extends Polygon implements LightShape {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private Vector2f[] verticies;
+
+	private TValue<Object> _values;
+
+	private Vector2f[] _verticies;
 
 	public LightPolygon(float[] verticies) {
 		super(verticies);
@@ -39,25 +42,25 @@ public class LightPolygon extends Polygon implements LightShape {
 	@Override
 	public Vector2f[] getVertices(Vector2f light) {
 		final float[] verts = getPoints();
-		if (verticies == null || verticies.length != verts.length / 2) {
-			verticies = new Vector2f[verts.length / 2];
+		if (_verticies == null || _verticies.length != verts.length / 2) {
+			_verticies = new Vector2f[verts.length / 2];
 		}
-		for (int i = 0; i < verticies.length; i++) {
-			if (verticies[i] == null) {
-				verticies[i] = new Vector2f();
+		for (int i = 0; i < _verticies.length; i++) {
+			if (_verticies[i] == null) {
+				_verticies[i] = new Vector2f();
 			}
-			verticies[i].set(verts[i * 2], verts[i * 2 + 1]);
+			_verticies[i].set(verts[i * 2], verts[i * 2 + 1]);
 		}
-		return verticies;
+		return _verticies;
 	}
 
 	@Override
 	public Vector2f getIntersection(Vector2f start, Vector2f dir, Vector2f ignore) {
 		getVertices(null);
 		Vector2f closest = null;
-		for (int i = 0; i < verticies.length; i++) {
-			Vector2f p0 = verticies[i];
-			Vector2f p1 = verticies[(i + 1) % verticies.length];
+		for (int i = 0; i < _verticies.length; i++) {
+			Vector2f p0 = _verticies[i];
+			Vector2f p1 = _verticies[(i + 1) % _verticies.length];
 
 			if (p0 == ignore || p1 == ignore) {
 				continue;
@@ -80,4 +83,13 @@ public class LightPolygon extends Polygon implements LightShape {
 		return contains(pos.x, pos.y);
 	}
 
+	@Override
+	public TValue<Object> getTag() {
+		return _values;
+	}
+
+	@Override
+	public void setTag(TValue<Object> t) {
+		this._values = t;
+	}
 }
