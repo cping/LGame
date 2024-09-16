@@ -118,7 +118,25 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return sub(ri, n.mulSelf(2));
 	}
 
-	public static Vector2f bounce(Vector2f ri, Vector2f normal, float restitution, float friction) {
+	public final static Vector2f intersect(Vector2f start, Vector2f dir, Vector2f p0, Vector2f p1) {
+		Vector2f p = start, r = dir, q = p0, s = p1.sub(p0);
+		final float cross = cross(r, s);
+		if (cross == 0) {
+			return null;
+		}
+		final Vector2f qmp = q.sub(p);
+		final float u = cross(qmp, r) / cross;
+		if (u < 0 || u > 1) {
+			return null;
+		}
+		final float t = cross(qmp, s) / cross;
+		if (t < 0) {
+			return null;
+		}
+		return s.mul(u).addSelf(q);
+	}
+
+	public final static Vector2f bounce(Vector2f ri, Vector2f normal, float restitution, float friction) {
 		friction = 1f - friction;
 		final Vector2f normalized = nor(normal);
 		final Vector2f axis = normalized.right();
@@ -723,6 +741,22 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public Vector2f tmp() {
 		return TMP().set(this);
+	}
+
+	public Vector2f clamp(Vector2f min, Vector2f max) {
+		if (this.x < min.x) {
+			this.x = min.x;
+		}
+		if (this.x > max.x) {
+			this.x = max.x;
+		}
+		if (this.y < min.y) {
+			this.y = min.y;
+		}
+		if (this.y > max.y) {
+			this.y = max.y;
+		}
+		return this;
 	}
 
 	public float cross(float x, float y) {
@@ -1455,6 +1489,21 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public boolean isPerpendicular(Vector2f vector, float epsilon) {
 		return MathUtils.isZero(dot(vector), epsilon);
+	}
+
+	public boolean isOutOfBounds(Vector2f max) {
+		return isOutOfBounds(max, null);
+	}
+
+	public boolean isOutOfBounds(Vector2f max, Vector2f min) {
+		Vector2f minCoords = (min == null ? new Vector2f(0f, 0f) : min);
+		if (this.x >= max.x || y >= max.y) {
+			return true;
+		}
+		if (x < minCoords.x || y < minCoords.y) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean hasSameDirection(Vector2f vector) {

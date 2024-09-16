@@ -229,6 +229,14 @@ public class LTurtle extends LComponent {
 		return current + incrementation;
 	}
 
+	public LTurtle push(TurtleCommand tc) {
+		if (tc == null) {
+			return this;
+		}
+		push(tc);
+		return this;
+	}
+
 	protected void pushCommand(TurtleCommand tc) {
 		_commands.add(tc);
 	}
