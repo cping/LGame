@@ -32,7 +32,7 @@ import loon.LSystem;
  */
 public class ImageBackground extends Background {
 
-	private PointF _scrollDrag;
+	private final PointF _scrollDrag;
 
 	public ImageBackground(LTexture tex, float x, float y, float w, float h) {
 		super(x, y, w, h);
@@ -178,8 +178,12 @@ public class ImageBackground extends Background {
 	@Override
 	public void onResize() {
 		super.onResize();
-		this._offset.set(0f);
-		this._scrollDrag.set(0f);
+		if (_offset != null) {
+			this._offset.set(0f);
+		}
+		if (_scrollDrag != null) {
+			this._scrollDrag.set(0f);
+		}
 	}
 
 }

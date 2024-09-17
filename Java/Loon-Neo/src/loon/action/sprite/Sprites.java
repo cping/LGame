@@ -77,6 +77,11 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 
 	private final Light2D _light;
 
+	// 是否使用shadermask改变画面显示效果
+	private boolean _useShaderMask = false;
+
+	private ShaderMask _shaderMask;
+
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private ISpritesShadow _spriteShadow;
@@ -1592,6 +1597,20 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _light;
 	}
 
+	public boolean isShaderMask() {
+		return this._useShaderMask;
+	}
+
+	public ShaderMask getShaderMask() {
+		return this._shaderMask;
+	}
+
+	public Sprites setShaderMask(ShaderMask mask) {
+		this._shaderMask = mask;
+		this._useShaderMask = (this._shaderMask != null);
+		return this;
+	}
+
 	/**
 	 * 单纯渲染精灵
 	 * 
@@ -1632,6 +1651,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 			lightMask.popBatch(g);
 		} else {
+			if (_useShaderMask) {
+				_shaderMask.pushBatch(g);
+			}
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1650,6 +1672,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					}
 					spr.createUI(g);
 				}
+			}
+			if (_useShaderMask) {
+				_shaderMask.popBatch(g);
 			}
 		}
 	}
@@ -1675,6 +1700,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 			lightMask.popBatch(g);
 		} else {
+			if (_useShaderMask) {
+				_shaderMask.pushBatch(g);
+			}
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1683,6 +1711,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					}
 					spr.createUI(g, offsetX, offsetY);
 				}
+			}
+			if (_useShaderMask) {
+				_shaderMask.popBatch(g);
 			}
 		}
 	}
@@ -1732,10 +1763,12 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			minY = y;
 			maxY = y + this._height;
 		}
-		boolean offset = (minX != 0 || minY != 0);
+
+		final boolean offset = (minX != 0 || minY != 0);
 		if (offset) {
 			g.translate(minX, minY);
 		}
+
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 
@@ -1764,6 +1797,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 			lightMask.popBatch(g);
 		} else {
+			if (_useShaderMask) {
+				_shaderMask.pushBatch(g);
+			}
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1783,8 +1819,10 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					spr.createUI(g);
 				}
 			}
+			if (_useShaderMask) {
+				_shaderMask.popBatch(g);
+			}
 		}
-
 		if (offset) {
 			g.translate(-minX, -minY);
 		}
@@ -2672,6 +2710,11 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		clear();
 		this._light.close();
+		if (_shaderMask != null) {
+			_useShaderMask = false;
+			_shaderMask.close();
+			_shaderMask = null;
+		}
 		this._size = 0;
 		this._closed = true;
 		this._sprites = null;

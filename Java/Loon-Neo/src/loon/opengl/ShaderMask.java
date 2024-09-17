@@ -26,11 +26,11 @@ import loon.events.EventActionN;
 
 public class ShaderMask implements LRelease {
 
-	private ShaderSource _shaderSource;
+	protected ShaderSource _shaderSource;
 
-	private BaseBatch _maskBatch;
+	protected BaseBatch _maskBatch;
 
-	private BaseBatch _oldBatch;
+	protected BaseBatch _oldBatch;
 
 	private EventActionN _onLoad;
 

@@ -58,6 +58,11 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	private final Light2D _light;
 
+	// 是否使用shadermask改变画面显示效果
+	private boolean _useShaderMask = false;
+
+	private ShaderMask _shaderMask;
+
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private final Vector2f _touchPoint = new Vector2f();
@@ -461,6 +466,20 @@ public class Desktop implements Visible, IArray, LRelease {
 		return _light;
 	}
 
+	public boolean isShaderMask() {
+		return this._useShaderMask;
+	}
+
+	public ShaderMask getShaderMask() {
+		return this._shaderMask;
+	}
+
+	public Desktop setShaderMask(ShaderMask mask) {
+		this._shaderMask = mask;
+		this._useShaderMask = (this._shaderMask != null);
+		return this;
+	}
+
 	public void createUI(GLEx g) {
 		if (!_visible) {
 			return;
@@ -474,7 +493,13 @@ public class Desktop implements Visible, IArray, LRelease {
 				this._contentPane.createUI(g);
 				lightMask.popBatch(g);
 			} else {
+				if (_useShaderMask) {
+					_shaderMask.pushBatch(g);
+				}
 				this._contentPane.createUI(g);
+				if (_useShaderMask) {
+					_shaderMask.popBatch(g);
+				}
 			}
 		} finally {
 			g.restoreTx();
@@ -1441,6 +1466,11 @@ public class Desktop implements Visible, IArray, LRelease {
 		this._closed = true;
 		this._resizeListener = null;
 		this._light.close();
+		if (_shaderMask != null) {
+			_useShaderMask = false;
+			_shaderMask.close();
+			_shaderMask = null;
+		}
 		LSystem.popDesktopPool(this);
 	}
 
