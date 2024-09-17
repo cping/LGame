@@ -476,7 +476,10 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public float[] syncPoints(TArray<Vector2f> list, boolean dirty) {
-		this.points = new float[list.size * 2];
+		final int size = list.size * 2;
+		if (dirty || this.points == null || this.points.length != size) {
+			this.points = new float[size];
+		}
 		for (int i = 0, j = 0; i < points.length; i += 2, j++) {
 			Vector2f v = list.get(j);
 			points[i] = v.x;

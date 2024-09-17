@@ -44,8 +44,8 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
-import loon.opengl.BaseBatch;
 import loon.opengl.GLEx;
+import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
@@ -1608,10 +1608,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 		if (_useLight && !_light.isClosed()) {
-			BaseBatch lightBatch = _light.getGlBaseBatch();
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			BaseBatch old = g.batch();
-			g.pushBatch(lightBatch);
+			final ShaderMask lightMask = _light.getMask();
+			lightMask.pushBatch(g);
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1631,7 +1630,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					spr.createUI(g);
 				}
 			}
-			g.popBatch(old);
+			lightMask.popBatch(g);
 		} else {
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
@@ -1662,10 +1661,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 		if (_useLight && !_light.isClosed()) {
-			BaseBatch lightBatch = _light.getGlBaseBatch();
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			BaseBatch old = g.batch();
-			g.pushBatch(lightBatch);
+			final ShaderMask lightMask = _light.getMask();
+			lightMask.pushBatch(g);
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1675,7 +1673,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					spr.createUI(g, offsetX, offsetY);
 				}
 			}
-			g.popBatch(old);
+			lightMask.popBatch(g);
 		} else {
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
@@ -1742,10 +1740,9 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		final int size = this._size;
 
 		if (_useLight && !_light.isClosed()) {
-			BaseBatch lightBatch = _light.getGlBaseBatch();
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			BaseBatch old = g.batch();
-			g.pushBatch(lightBatch);
+			final ShaderMask lightMask = _light.getMask();
+			lightMask.pushBatch(g);
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];
 				if (spr != null && spr.isVisible()) {
@@ -1765,7 +1762,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 					spr.createUI(g);
 				}
 			}
-			g.popBatch(old);
+			lightMask.popBatch(g);
 		} else {
 			for (int i = 0; i < size; i++) {
 				final ISprite spr = childs[i];

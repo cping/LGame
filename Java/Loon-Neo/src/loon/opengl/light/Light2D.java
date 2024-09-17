@@ -22,18 +22,17 @@ package loon.opengl.light;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.events.EventActionN;
 import loon.geom.FloatValue;
 import loon.geom.Vector2f;
 import loon.geom.Vector4f;
-import loon.opengl.BaseBatch;
 import loon.opengl.BlendMethod;
-import loon.opengl.GLEx;
+import loon.opengl.ShaderMask;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
-import loon.opengl.TrilateralBatch;
 import loon.utils.MathUtils;
 
-public class Light2D implements LRelease {
+public class Light2D implements EventActionN, LRelease {
 
 	private static class LightShader extends ShaderSource {
 
@@ -109,47 +108,30 @@ public class Light2D implements LRelease {
 
 	}
 
-	private LightShader _shader;
-
-	private boolean _closed;
-
 	private boolean _inited, _autoTouchMove;
 
-	private BaseBatch _baseBatch;
+	private LightShader _shader;
 
-	private int _blend;
+	private ShaderMask _mask;
 
 	public Light2D() {
 		this(BlendMethod.MODE_ALPHA);
 	}
 
 	public Light2D(int b) {
-		this._blend = b;
+		this._mask = new ShaderMask(b, this);
 		this._autoTouchMove = true;
 	}
 
-	public BaseBatch getGlBaseBatch() {
-		if (_closed) {
-			return null;
-		}
-		if (_baseBatch == null) {
-			_baseBatch = createGLExBatch();
-		}
-		_baseBatch.setBlendMode(_blend);
-		return _baseBatch;
+	public ShaderMask getMask() {
+		return this._mask;
 	}
 
-	public BaseBatch createGLExBatch() {
-		if (_closed) {
-			return null;
-		}
-		loadShaderSource();
-		return new TrilateralBatch(LSystem.base().graphics().gl, _shader);
-	}
-
-	private void loadShaderSource() {
+	@Override
+	public void update() {
 		if (!_inited || _shader == null) {
 			_shader = new LightShader();
+			_mask.setShaderSource(_shader);
 			_inited = true;
 		}
 		_shader.updateSize();
@@ -165,44 +147,44 @@ public class Light2D implements LRelease {
 	}
 
 	public Light2D reset() {
-		loadShaderSource();
+		update();
 		_shader.reset();
-		_closed = false;
+		_mask.reset();
 		return this;
 	}
 
 	public Light2D setSway(boolean b) {
-		loadShaderSource();
+		update();
 		_shader.setSway(b);
 		return this;
 	}
 
 	public Light2D setAmbientData(float r, float g, float b, float a) {
-		loadShaderSource();
+		update();
 		_shader.setAmbientData(r, g, b, a);
 		return this;
 	}
 
 	public Light2D setLightData(float r, float g, float b, float a) {
-		loadShaderSource();
+		update();
 		_shader.setLightData(r, g, b, a);
 		return this;
 	}
 
 	public Light2D setLightSize(float w, float h) {
-		loadShaderSource();
+		update();
 		_shader.setLightSize(w, h);
 		return this;
 	}
 
 	public Light2D setSize(float w, float h) {
-		loadShaderSource();
+		update();
 		_shader.setSize(w, h);
 		return this;
 	}
 
 	public Light2D setAutoTouchTimer(float x, float y, float timer) {
-		loadShaderSource();
+		update();
 		if (_autoTouchMove) {
 			_shader.setTouch(x, y);
 			_shader.setTimer(timer);
@@ -211,41 +193,24 @@ public class Light2D implements LRelease {
 	}
 
 	public Light2D setTimer(float d) {
-		loadShaderSource();
+		update();
 		_shader.setTimer(d);
 		return this;
 	}
 
 	public Light2D setTouch(float x, float y) {
-		loadShaderSource();
+		update();
 		_shader.setTouch(x, y);
 		return this;
 	}
 
-	public void draw(GLEx g) {
-		loadShaderSource();
-	}
-
-	public int getBlend() {
-		return _blend;
-	}
-
-	public Light2D setBlend(int blend) {
-		this._blend = blend;
-		return this;
-	}
-
 	public boolean isClosed() {
-		return _closed;
+		return _mask.isClosed();
 	}
 
 	@Override
 	public void close() {
-		if (_baseBatch != null) {
-			_baseBatch.close();
-			_baseBatch = null;
-		}
-		_closed = true;
+		_mask.close();
 	}
 
 }

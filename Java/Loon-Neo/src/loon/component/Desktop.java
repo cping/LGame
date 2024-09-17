@@ -38,8 +38,8 @@ import loon.events.SysTouch;
 import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.opengl.BaseBatch;
 import loon.opengl.GLEx;
+import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
@@ -468,12 +468,11 @@ public class Desktop implements Visible, IArray, LRelease {
 		try {
 			g.saveTx();
 			if (_useLight && !_light.isClosed()) {
-				BaseBatch lightBatch = _light.getGlBaseBatch();
 				_light.setAutoTouchTimer(input.getTouchX(), input.getTouchY(), input.getCurrentTimer());
-				BaseBatch old = g.batch();
-				g.pushBatch(lightBatch);
+				final ShaderMask lightMask = _light.getMask();
+				lightMask.pushBatch(g);
 				this._contentPane.createUI(g);
-				g.popBatch(old);
+				lightMask.popBatch(g);
 			} else {
 				this._contentPane.createUI(g);
 			}
