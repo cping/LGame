@@ -47,6 +47,7 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
+import loon.opengl.light.Light2D.LightType;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.LayerSorter;
@@ -75,7 +76,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
 
-	private final Light2D _light;
+	private Light2D _light;
 
 	// 是否使用shadermask改变画面显示效果
 	private boolean _useShaderMask = false;
@@ -163,7 +164,6 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	public Sprites(String name, Screen screen, int w, int h) {
 		this._screen = screen;
 		this._sortableChildren = this._visible = true;
-		this._light = new Light2D();
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this._size = 0;
@@ -1584,9 +1584,18 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		onTriggerCollisions();
 	}
 
-	public Sprites setGlobalLight(boolean l) {
-		this._useLight = l;
-		return this;
+	public Light2D createGlobalLight(LightType lt) {
+		if (lt == null) {
+			this._useLight = false;
+			return null;
+		}
+		if (this._light == null) {
+			this._light = new Light2D(lt);
+		} else {
+			this._light.updateLightType(lt);
+		}
+		this._useLight = true;
+		return this._light;
 	}
 
 	public boolean isGlobalLight() {
@@ -2709,7 +2718,11 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		clear();
-		this._light.close();
+		if (_light != null) {
+			_light.close();
+			_light = null;
+		}
+		this._useLight = false;
 		if (_shaderMask != null) {
 			_useShaderMask = false;
 			_shaderMask.close();

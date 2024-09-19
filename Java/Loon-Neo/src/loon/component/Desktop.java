@@ -41,6 +41,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
+import loon.opengl.light.Light2D.LightType;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -56,7 +57,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
 
-	private final Light2D _light;
+	private Light2D _light;
 
 	// 是否使用shadermask改变画面显示效果
 	private boolean _useShaderMask = false;
@@ -143,7 +144,6 @@ public class Desktop implements Visible, IArray, LRelease {
 	 */
 	public Desktop(String name, Screen screen, int width, int height) {
 		this._clickComponents = new LComponent[1];
-		this._light = new Light2D();
 		this._desktop_name = StringUtils.isEmpty(name) ? "Desktop" + LSystem.getDesktopSize() : name;
 		this._visible = true;
 		this._contentPane = new LPanel(0, 0, width, height);
@@ -453,9 +453,18 @@ public class Desktop implements Visible, IArray, LRelease {
 		return this;
 	}
 
-	public Desktop setGlobalLight(boolean l) {
-		this._useLight = l;
-		return this;
+	public Light2D createGlobalLight(LightType lt) {
+		if (lt == null) {
+			this._useLight = false;
+			return null;
+		}
+		if (this._light == null) {
+			this._light = new Light2D(lt);
+		} else {
+			this._light.updateLightType(lt);
+		}
+		this._useLight = true;
+		return this._light;
 	}
 
 	public boolean isGlobalLight() {
@@ -1465,7 +1474,11 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		this._closed = true;
 		this._resizeListener = null;
-		this._light.close();
+		if (_light != null) {
+			this._light.close();
+			this._light = null;
+		}
+		this._useLight = false;
 		if (_shaderMask != null) {
 			_useShaderMask = false;
 			_shaderMask.close();

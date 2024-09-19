@@ -120,6 +120,9 @@ public class ShaderMask implements LRelease {
 
 	@Override
 	public void close() {
+		if (_closed) {
+			return;
+		}
 		if (_maskBatch != null) {
 			_maskBatch.close();
 			_maskBatch = null;

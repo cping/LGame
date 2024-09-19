@@ -31,9 +31,9 @@ public abstract class BaseLight {
 
 	public float radius;
 
-	public float intensity;
+	public float intensity = 1f;
 
-	public float attenuation;
+	public float attenuation = 1f;
 
 	public LColor getColor() {
 		return color;

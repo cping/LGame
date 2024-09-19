@@ -25,8 +25,18 @@ import loon.geom.Vector3f;
 
 public class PointLight extends BaseLight {
 
-	public PointLight() {
+	private boolean _dirty;
 
+	PointLight() {
+
+	}
+
+	public PointLight(float x, float y) {
+		this(x, y, 0.3f);
+	}
+
+	public PointLight(float x, float y, float radius) {
+		this(null, x, y, 0f, radius, 1f, 1f);
 	}
 
 	public PointLight(LColor color, float x, float y, float radius) {
@@ -53,6 +63,8 @@ public class PointLight extends BaseLight {
 			final float attenuation) {
 		if (color != null) {
 			this.color.setColor(color);
+		} else {
+			this.color.setColor(1f, 0.8f, 0.2f, 1f);
 		}
 		if (position != null) {
 			this.position.set(position);
@@ -60,6 +72,7 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
+		this._dirty = true;
 		return this;
 	}
 
@@ -68,10 +81,13 @@ public class PointLight extends BaseLight {
 		this.color.setColor(r, g, b);
 		if (position != null) {
 			this.position.set(position);
+		} else {
+			this.color.setColor(1f, 0.8f, 0.2f, 1f);
 		}
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
+		this._dirty = true;
 		return this;
 	}
 
@@ -79,6 +95,8 @@ public class PointLight extends BaseLight {
 			final float intensity, final float attenuation) {
 		if (color != null) {
 			this.color.setColor(color);
+		} else {
+			this.color.setColor(1f, 0.8f, 0.2f, 1f);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
@@ -86,6 +104,7 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
+		this._dirty = true;
 		return this;
 	}
 
@@ -93,6 +112,8 @@ public class PointLight extends BaseLight {
 			final float radius, final float intensity, final float attenuation) {
 		if (color != null) {
 			this.color.setColor(color);
+		} else {
+			this.color.setColor(1f, 0.8f, 0.2f, 1f);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
@@ -100,6 +121,7 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
+		this._dirty = true;
 		return this;
 	}
 
@@ -107,12 +129,39 @@ public class PointLight extends BaseLight {
 			final float intensity) {
 		if (color != null) {
 			this.color.setColor(r, g, b);
+		} else {
+			this.color.setColor(1f, 0.8f, 0.2f, 1f);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
 		}
 		this.intensity = intensity;
+		this._dirty = true;
 		return this;
+	}
+
+	public PointLight updateDirty() {
+		this._dirty = !this._dirty;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return this._dirty;
+	}
+
+	public float[] getEffectAt(float x, float y, boolean colouredLights) {
+		float dx = (x - position.x);
+		float dy = (y - position.y);
+		float distance2 = (dx * dx) + (dy * dy);
+		float effect = 1 - (distance2 / (intensity * intensity));
+		if (effect < 0) {
+			effect = 0;
+		}
+		if (colouredLights) {
+			return new float[] { color.r * effect, color.g * effect, color.b * effect };
+		} else {
+			return new float[] { effect, effect, effect };
+		}
 	}
 
 	@Override

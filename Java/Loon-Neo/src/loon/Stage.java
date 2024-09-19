@@ -35,6 +35,7 @@ import loon.events.GameTouch;
 import loon.events.UpdateListener;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.opengl.ShaderMask;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.loaders.PreloadAssets;
@@ -48,6 +49,11 @@ import loon.utils.timer.LTimerContext;
  * 希望纯组件构建游戏时(也就是一个create接口满足一切时)可以使用此类派生画面
  */
 public abstract class Stage extends Screen implements PreloadLoader {
+
+	// 是否使用shadermask改变画面显示效果
+	private boolean _useShaderMask = false;
+
+	private ShaderMask _shaderMask;
 
 	private float _drawPosX;
 
@@ -96,6 +102,20 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
 		}
+	}
+
+	public boolean isShaderMask() {
+		return this._useShaderMask;
+	}
+
+	public ShaderMask getShaderMask() {
+		return this._shaderMask;
+	}
+
+	public Stage setShaderMask(ShaderMask mask) {
+		this._shaderMask = mask;
+		this._useShaderMask = (this._shaderMask != null);
+		return this;
 	}
 
 	/**
@@ -292,6 +312,9 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void draw(GLEx g) {
+		if (_useShaderMask) {
+			_shaderMask.pushBatch(g);
+		}
 		background(g);
 		if (_scrollBackground != null) {
 			_scrollBackground.paint(g);
@@ -313,6 +336,9 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		paint(g);
 		if (_existing) {
 			_stateManager.paint(g);
+		}
+		if (_useShaderMask) {
+			_shaderMask.popBatch(g);
 		}
 	}
 
@@ -683,6 +709,11 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		if (_preload != null) {
 			_preload.close();
 			_preload = null;
+		}
+		if (_shaderMask != null) {
+			_useShaderMask = false;
+			_shaderMask.close();
+			_shaderMask = null;
 		}
 		dispose();
 	}

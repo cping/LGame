@@ -86,7 +86,9 @@ public class SpriteEntity implements IEntity {
 
 	@Override
 	public void onResize() {
-		_sprite.onResize();
+		if (_sprite != null) {
+			_sprite.onResize();
+		}
 	}
 
 	@Override

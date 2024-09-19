@@ -42,18 +42,14 @@ public abstract class LLight {
 	protected float[][][] lightValue;
 
 	// 光源集合
-	protected TArray<Light> lights = new TArray<Light>();
+	protected TArray<PointLight> lights = new TArray<PointLight>();
 
 	// 默认的主控光源
-	protected Light mainLight;
+	protected PointLight mainLight;
 
 	private int width;
 
 	private int height;
-
-	public static Light create(float x, float y, float str) {
-		return new Light(x, y, str);
-	}
 
 	protected void maxLightSize(int width, int height) {
 		this.width = width;
@@ -102,17 +98,17 @@ public abstract class LLight {
 		updateLight();
 	}
 
-	public LLight setMainLight(Light l) {
+	public LLight setMainLight(PointLight l) {
 		this.mainLight = l;
 		this.isLightDirty = true;
 		return this;
 	}
 
-	public Light getMainLight() {
+	public PointLight getMainLight() {
 		return mainLight;
 	}
 
-	public LLight addLight(Light l) {
+	public LLight addLight(PointLight l) {
 		if (l != null) {
 			this.lights.add(l);
 			this.isLightDirty = true;
@@ -120,7 +116,7 @@ public abstract class LLight {
 		return this;
 	}
 
-	public LLight removeLight(Light l) {
+	public LLight removeLight(PointLight l) {
 		if (l != null) {
 			this.lights.remove(l);
 			this.isLightDirty = true;
@@ -175,51 +171,6 @@ public abstract class LLight {
 		}
 		this.isLightDirty = true;
 		return this;
-	}
-
-	// 地图光源用类
-	public static class Light extends BaseLight {
-
-		private float xpos;
-
-		private float ypos;
-
-		private float strength;
-
-		public Light(float x, float y, float str, LColor col) {
-			this.xpos = x;
-			this.ypos = y;
-			this.strength = str;
-			if (col != null) {
-				this.color.setColor(col);
-			}
-		}
-
-		public Light(float x, float y, float str) {
-			this(x, y, str, null);
-		}
-
-		public Light setLocation(float x, float y) {
-			xpos = x;
-			ypos = y;
-			return this;
-		}
-
-		public float[] getEffectAt(float x, float y, boolean colouredLights) {
-			float dx = (x - xpos);
-			float dy = (y - ypos);
-			float distance2 = (dx * dx) + (dy * dy);
-			float effect = 1 - (distance2 / (strength * strength));
-			if (effect < 0) {
-				effect = 0;
-			}
-			if (colouredLights) {
-				return new float[] { color.r * effect, color.g * effect, color.b * effect };
-			} else {
-				return new float[] { effect, effect, effect };
-			}
-		}
-
 	}
 
 }
