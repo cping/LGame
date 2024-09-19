@@ -23,6 +23,7 @@ package loon.opengl.light;
 import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.events.ChangeEvent;
 import loon.events.EventActionN;
 import loon.geom.FloatValue;
 import loon.geom.Vector2f;
@@ -43,7 +44,7 @@ public class Light2D implements EventActionN, LRelease {
 		Singleton, Multiple;
 	}
 
-	public static class LightMultipleShader extends ShaderSource {
+	public static class LightMultipleShader extends ShaderSource implements ChangeEvent<Object> {
 
 		private static final int LIGHT_COUNT = 32;
 
@@ -75,18 +76,30 @@ public class Light2D implements EventActionN, LRelease {
 		}
 
 		public void addLight(PointLight light) {
-			_lights.add(light);
-			_dirty = true;
+			if (light != null) {
+				light.setChangeValue(this);
+				_lights.add(light);
+				_dirty = true;
+			}
 		}
 
-		public void addLights(PointLight... light) {
-			_lights.addAll(light);
-			_dirty = true;
+		public void addLights(PointLight... lights) {
+			if (lights != null) {
+				for (int i = lights.length - 1; i > -1; i--) {
+					PointLight light = lights[i];
+					if (light != null) {
+						light.setChangeValue(this);
+					}
+				}
+				_lights.addAll(lights);
+				_dirty = true;
+			}
 		}
 
 		public PointLight removeLight(int idx) {
 			PointLight light = _lights.removeIndex(idx);
 			if (light != null) {
+				light.setChangeValue(null);
 				_dirty = true;
 			}
 			return light;
@@ -95,6 +108,7 @@ public class Light2D implements EventActionN, LRelease {
 		public boolean removeLightValue(PointLight l) {
 			boolean result = _lights.removeValue(l);
 			if (result) {
+				l.setChangeValue(null);
 				_dirty = true;
 			}
 			return result;
@@ -180,6 +194,10 @@ public class Light2D implements EventActionN, LRelease {
 			program.setUniform1fv("lightAttenuation", _tmpLightAttenuations, 0, _tmpLightAttenuations.length);
 		}
 
+		@Override
+		public void onChange(Object v) {
+			updateLight();
+		}
 	}
 
 	public static class LightSingletonShader extends ShaderSource {

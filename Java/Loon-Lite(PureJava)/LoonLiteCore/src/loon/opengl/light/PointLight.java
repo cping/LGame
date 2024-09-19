@@ -21,9 +21,14 @@
 package loon.opengl.light;
 
 import loon.canvas.LColor;
+import loon.events.ChangeEvent;
 import loon.geom.Vector3f;
 
 public class PointLight extends BaseLight {
+
+	private ChangeEvent<Object> _changeValue;
+
+	protected final static LColor DefLightColor = new LColor(1f, 0.8f, 0.2f, 1f, true);
 
 	private boolean _dirty;
 
@@ -59,12 +64,18 @@ public class PointLight extends BaseLight {
 		return set(copyFrom.color, copyFrom.position, copyFrom.radius, copyFrom.intensity, copyFrom.attenuation);
 	}
 
+	private void update() {
+		if (_changeValue != null) {
+			_changeValue.onChange(this);
+		}
+	}
+
 	public PointLight set(final LColor color, final Vector3f position, final float radius, final float intensity,
 			final float attenuation) {
 		if (color != null) {
 			this.color.setColor(color);
 		} else {
-			this.color.setColor(1f, 0.8f, 0.2f, 1f);
+			this.color.setColor(DefLightColor);
 		}
 		if (position != null) {
 			this.position.set(position);
@@ -73,21 +84,27 @@ public class PointLight extends BaseLight {
 		this.intensity = intensity;
 		this.attenuation = attenuation;
 		this._dirty = true;
+		this.update();
 		return this;
 	}
 
 	public PointLight set(final float r, final float g, final float b, final Vector3f position, final float radius,
 			final float intensity, final float attenuation) {
-		this.color.setColor(r, g, b);
+		if (color != null) {
+			this.color.setColor(r, g, b);
+		} else {
+			this.color.setColor(DefLightColor);
+		}
 		if (position != null) {
 			this.position.set(position);
 		} else {
-			this.color.setColor(1f, 0.8f, 0.2f, 1f);
+			this.color.setColor(DefLightColor);
 		}
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
 		this._dirty = true;
+		this.update();
 		return this;
 	}
 
@@ -96,7 +113,7 @@ public class PointLight extends BaseLight {
 		if (color != null) {
 			this.color.setColor(color);
 		} else {
-			this.color.setColor(1f, 0.8f, 0.2f, 1f);
+			this.color.setColor(DefLightColor);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
@@ -105,15 +122,16 @@ public class PointLight extends BaseLight {
 		this.intensity = intensity;
 		this.attenuation = attenuation;
 		this._dirty = true;
+		this.update();
 		return this;
 	}
 
 	public PointLight set(final float r, final float g, final float b, final float x, final float y, final float z,
 			final float radius, final float intensity, final float attenuation) {
 		if (color != null) {
-			this.color.setColor(color);
+			this.color.setColor(r, g, b);
 		} else {
-			this.color.setColor(1f, 0.8f, 0.2f, 1f);
+			this.color.setColor(DefLightColor);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
@@ -122,7 +140,16 @@ public class PointLight extends BaseLight {
 		this.intensity = intensity;
 		this.attenuation = attenuation;
 		this._dirty = true;
+		this.update();
 		return this;
+	}
+
+	public PointLight set(final LColor c, final float x, final float y, final float radius) {
+		return set(c.r, c.g, c.b, x, y, 0f, radius, 1f, 1f);
+	}
+
+	public PointLight set(final float x, final float y, final float radius) {
+		return set(null, x, y, 0f, radius, 1f, 1f);
 	}
 
 	public PointLight set(final float r, final float g, final float b, final float x, final float y, final float z,
@@ -130,13 +157,14 @@ public class PointLight extends BaseLight {
 		if (color != null) {
 			this.color.setColor(r, g, b);
 		} else {
-			this.color.setColor(1f, 0.8f, 0.2f, 1f);
+			this.color.setColor(DefLightColor);
 		}
 		if (position != null) {
 			this.position.set(x, y, z);
 		}
 		this.intensity = intensity;
 		this._dirty = true;
+		this.update();
 		return this;
 	}
 
@@ -147,6 +175,14 @@ public class PointLight extends BaseLight {
 
 	public boolean isDirty() {
 		return this._dirty;
+	}
+
+	protected void setChangeValue(ChangeEvent<Object> e) {
+		this._changeValue = e;
+	}
+
+	protected ChangeEvent<Object> getChangeValue() {
+		return this._changeValue;
 	}
 
 	public float[] getEffectAt(float x, float y, boolean colouredLights) {
