@@ -36,6 +36,8 @@ public class ShaderMask implements LRelease {
 
 	private boolean _closed;
 
+	private boolean _enabled;
+
 	private int _blend;
 
 	public ShaderMask(EventActionN update) {
@@ -45,6 +47,8 @@ public class ShaderMask implements LRelease {
 	public ShaderMask(int b, EventActionN update) {
 		this._blend = b;
 		this._onLoad = update;
+		this._closed = false;
+		this._enabled = true;
 	}
 
 	public ShaderMask setShaderSource(ShaderSource ss) {
@@ -63,6 +67,25 @@ public class ShaderMask implements LRelease {
 
 	public int getBlend() {
 		return this._blend;
+	}
+
+	public ShaderMask enabled() {
+		this.setEnabled(true);
+		return this;
+	}
+
+	public ShaderMask disabled() {
+		this.setEnabled(false);
+		return this;
+	}
+
+	public boolean isEnabled() {
+		return this._enabled;
+	}
+
+	public ShaderMask setEnabled(boolean e) {
+		this._enabled = e;
+		return this;
 	}
 
 	protected BaseBatch createBatch() {
@@ -95,7 +118,7 @@ public class ShaderMask implements LRelease {
 	}
 
 	public void pushBatch(GLEx g) {
-		if (_closed) {
+		if (!_enabled || _closed) {
 			return;
 		}
 		_oldBatch = g.batch();
@@ -103,7 +126,7 @@ public class ShaderMask implements LRelease {
 	}
 
 	public void popBatch(GLEx g) {
-		if (_closed) {
+		if (!_enabled || _closed) {
 			return;
 		}
 		g.popBatch(_oldBatch);
@@ -111,6 +134,7 @@ public class ShaderMask implements LRelease {
 
 	public ShaderMask reset() {
 		this._closed = false;
+		this._enabled = false;
 		return this;
 	}
 
@@ -128,6 +152,7 @@ public class ShaderMask implements LRelease {
 			_maskBatch = null;
 		}
 		_closed = true;
+		_enabled = false;
 	}
 
 }

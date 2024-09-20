@@ -874,11 +874,15 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		if (getClass() != obj.getClass())
 			return false;
 		Vector3f other = (Vector3f) obj;
-		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(other.x))
+		return equals(other.x, other.y, other.z);
+	}
+
+	public boolean equals(float x1, float y1, float z1) {
+		if (NumberUtils.floatToIntBits(x) != NumberUtils.floatToIntBits(x1))
 			return false;
-		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(other.y))
+		if (NumberUtils.floatToIntBits(y) != NumberUtils.floatToIntBits(y1))
 			return false;
-		if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(other.z))
+		if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(z1))
 			return false;
 		return true;
 	}

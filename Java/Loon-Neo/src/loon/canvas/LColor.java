@@ -2596,17 +2596,21 @@ public class LColor implements Serializable {
 		return true;
 	}
 
+	public boolean equals(float r1, float g1, float b1) {
+		return equals(r1, g1, b1, this.a);
+	}
+
 	public boolean equals(float r1, float g1, float b1, float a1) {
-		if (NumberUtils.compare(a1, a) != 0) {
+		if (NumberUtils.compare(a1, this.a) != 0) {
 			return false;
 		}
-		if (NumberUtils.compare(b1, b) != 0) {
+		if (NumberUtils.compare(b1, this.b) != 0) {
 			return false;
 		}
-		if (NumberUtils.compare(g1, g) != 0) {
+		if (NumberUtils.compare(g1, this.g) != 0) {
 			return false;
 		}
-		if (NumberUtils.compare(r1, r) != 0) {
+		if (NumberUtils.compare(r1, this.r) != 0) {
 			return false;
 		}
 		return true;

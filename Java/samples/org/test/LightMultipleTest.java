@@ -22,6 +22,7 @@ package org.test;
 
 import loon.Stage;
 import loon.action.sprite.ImageBackground;
+import loon.canvas.LColor;
 import loon.opengl.light.Light2D;
 import loon.opengl.light.PointLight;
 import loon.opengl.light.Light2D.LightType;
@@ -47,7 +48,15 @@ public class LightMultipleTest extends Stage {
 		light2d.addLights(light1, light2, light3, light4);
 		// 光源摇曳
 		light2d.setSway(true);
+		light1.set(LColor.red, 99, 99, 0.3f);
 
+		// 当在屏幕按下时
+		up((x, y) -> {
+
+			// 反转光源开启状态
+			light2d.setEnabled(!light2d.isEnabled());
+
+		});
 	}
 
 }

@@ -66,7 +66,7 @@ public class Light2D implements EventActionN, LRelease {
 
 		private final Vector2f _size = new Vector2f();
 
-		private boolean _dirty = true;
+		private boolean _shaderDirty = true;
 
 		private boolean _sway;
 
@@ -79,7 +79,7 @@ public class Light2D implements EventActionN, LRelease {
 			if (light != null) {
 				light.setChangeValue(this);
 				_lights.add(light);
-				_dirty = true;
+				_shaderDirty = true;
 			}
 		}
 
@@ -92,7 +92,7 @@ public class Light2D implements EventActionN, LRelease {
 					}
 				}
 				_lights.addAll(lights);
-				_dirty = true;
+				_shaderDirty = true;
 			}
 		}
 
@@ -100,7 +100,7 @@ public class Light2D implements EventActionN, LRelease {
 			PointLight light = _lights.removeIndex(idx);
 			if (light != null) {
 				light.setChangeValue(null);
-				_dirty = true;
+				_shaderDirty = true;
 			}
 			return light;
 		}
@@ -109,7 +109,7 @@ public class Light2D implements EventActionN, LRelease {
 			boolean result = _lights.removeValue(l);
 			if (result) {
 				l.setChangeValue(null);
-				_dirty = true;
+				_shaderDirty = true;
 			}
 			return result;
 		}
@@ -118,19 +118,19 @@ public class Light2D implements EventActionN, LRelease {
 			PointLight light = _lights.get(idx);
 			if (light != null && l != null) {
 				light.set(l);
-				_dirty = true;
+				_shaderDirty = true;
 			}
 			return light;
 		}
 
 		public void updateLight() {
-			this._dirty = true;
+			this._shaderDirty = true;
 		}
 
 		public void reset() {
 			_timer.set(1f);
 			_ambientData.set(0.3f, 0.3f, 0.8f, 0.3f);
-			_dirty = true;
+			_shaderDirty = true;
 		}
 
 		public void updateSize() {
@@ -154,7 +154,7 @@ public class Light2D implements EventActionN, LRelease {
 		}
 
 		private void update(float scaleX, float scaleY) {
-			if (_dirty) {
+			if (_shaderDirty) {
 				int floatIndex = 0;
 				int vec2Index = 0;
 				int vec4Index = 0;
@@ -174,7 +174,7 @@ public class Light2D implements EventActionN, LRelease {
 					vec2Index += 2;
 					vec4Index += 4;
 				}
-				_dirty = false;
+				_shaderDirty = false;
 			}
 		}
 
@@ -270,73 +270,65 @@ public class Light2D implements EventActionN, LRelease {
 
 	}
 
-	private boolean _inited, _autoTouchMove;
+	private boolean _shaderInited, _autoTouchMove;
 
-	private LightSingletonShader _lsshader;
+	private final ShaderMask _shaderMask;
 
-	private LightMultipleShader _lmshader;
+	private final LightSingletonShader _lsshader;
 
-	private ShaderMask _mask;
+	private final LightMultipleShader _lmshader;
 
-	private LightType _model;
+	private LightType _lightModel;
 
-	private boolean _dirty;
+	private boolean _shaderDirty;
 
 	public Light2D(LightType lt) {
 		this(BlendMethod.MODE_ALPHA, lt);
 	}
 
 	public Light2D(int b, LightType lt) {
-		this._mask = new ShaderMask(b, this);
-		this._autoTouchMove = _dirty = true;
-		this._model = lt;
+		this._shaderMask = new ShaderMask(b, this);
+		this._lsshader = new LightSingletonShader();
+		this._lmshader = new LightMultipleShader();
+		this._autoTouchMove = _shaderDirty = true;
+		this._lightModel = lt;
 	}
 
 	public ShaderMask getMask() {
 		update();
-		return this._mask;
+		return this._shaderMask;
 	}
 
 	public LightType getLightType() {
-		return this._model;
+		return this._lightModel;
 	}
 
 	public Light2D updateLightType(LightType lt) {
-		this._model = lt;
-		this._dirty = true;
+		this._lightModel = lt;
+		this._shaderDirty = true;
 		return this;
 	}
 
 	@Override
 	public void update() {
-		if (!_inited || (_lsshader == null && _lmshader == null) || _dirty) {
-			if (_lsshader == null) {
-				_lsshader = new LightSingletonShader();
-			}
-			if (_lmshader == null) {
-				_lmshader = new LightMultipleShader();
-			}
-			switch (_model) {
+		if (!_shaderInited || _shaderDirty) {
+			switch (_lightModel) {
 			case Singleton:
-				_mask.setShaderSource(_lsshader);
+				_shaderMask.setShaderSource(_lsshader);
 				break;
 			default:
-				_mask.setShaderSource(_lmshader);
+				_shaderMask.setShaderSource(_lmshader);
 				break;
 			}
-			_inited = true;
-			_dirty = false;
+			_shaderInited = true;
+			_shaderDirty = false;
 		}
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.updateSize();
-			}
+			_lsshader.updateSize();
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.updateSize();
-			}
+			_lmshader.updateSize();
 			break;
 		}
 	}
@@ -352,34 +344,26 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D reset() {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.reset();
-			}
+			_lsshader.reset();
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.reset();
-			}
+			_lmshader.reset();
 			break;
 		}
-		_mask.reset();
+		_shaderMask.reset();
 		return this;
 	}
 
 	public Light2D setSway(boolean b) {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.setSway(b);
-			}
+			_lsshader.setSway(b);
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.setSway(b);
-			}
+			_lmshader.setSway(b);
 			break;
 		}
 		return this;
@@ -394,16 +378,12 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D setAmbientData(float r, float g, float b, float a) {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.setAmbientData(r, g, b, a);
-			}
+			_lsshader.setAmbientData(r, g, b, a);
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.setAmbientData(r, g, b, a);
-			}
+			_lmshader.setAmbientData(r, g, b, a);
 			break;
 		}
 		return this;
@@ -411,11 +391,9 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D setLightData(float r, float g, float b, float a) {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.setLightData(r, g, b, a);
-			}
+			_lsshader.setLightData(r, g, b, a);
 			break;
 		default:
 			break;
@@ -425,16 +403,12 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D setLightSize(float w, float h) {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.setLightSize(w, h);
-			}
+			_lsshader.setLightSize(w, h);
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.setLightSize(w, h);
-			}
+			_lmshader.setLightSize(w, h);
 			break;
 		}
 		return this;
@@ -442,25 +416,23 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D setAutoTouchTimer(float x, float y, float timer) {
 		update();
-		if (_autoTouchMove && _lsshader != null) {
+		if (_autoTouchMove && _lightModel == LightType.Singleton) {
 			_lsshader.setTouch(x, y);
 			_lsshader.setTimer(timer);
+		} else {
+			_lmshader.setTimer(timer);
 		}
 		return this;
 	}
 
 	public Light2D setTimer(float d) {
 		update();
-		switch (_model) {
+		switch (_lightModel) {
 		case Singleton:
-			if (_lsshader != null) {
-				_lsshader.setTimer(d);
-			}
+			_lsshader.setTimer(d);
 			break;
 		default:
-			if (_lmshader != null) {
-				_lmshader.setTimer(d);
-			}
+			_lmshader.setTimer(d);
 			break;
 		}
 		return this;
@@ -468,69 +440,71 @@ public class Light2D implements EventActionN, LRelease {
 
 	public Light2D setTouch(float x, float y) {
 		update();
-		if (_lsshader != null) {
-			_lsshader.setTouch(x, y);
-		}
+		_lsshader.setTouch(x, y);
 		return this;
 	}
 
 	public Light2D addLight(PointLight light) {
 		update();
-		if (_lmshader != null) {
-			_lmshader.addLight(light);
-		}
+		_lmshader.addLight(light);
 		return this;
 	}
 
 	public Light2D addLights(PointLight... light) {
 		update();
-		if (_lmshader != null) {
-			_lmshader.addLights(light);
-		}
+		_lmshader.addLights(light);
 		return this;
 	}
 
 	public PointLight removeLight(int idx) {
 		update();
-		if (_lmshader != null) {
-			return _lmshader.removeLight(idx);
-		}
-		return null;
+		return _lmshader.removeLight(idx);
 	}
 
 	public boolean removeLightValue(PointLight l) {
 		update();
-		if (_lmshader != null) {
-			return _lmshader.removeLightValue(l);
-		}
-		return false;
+		return _lmshader.removeLightValue(l);
 	}
 
 	public PointLight updateLightValue(int idx, PointLight l) {
 		update();
-		if (_lmshader != null) {
-			return _lmshader.updateLightValue(idx, l);
-		}
-		return null;
+		return _lmshader.updateLightValue(idx, l);
 	}
 
 	public Light2D updateLight() {
 		update();
-		if (_lmshader != null) {
-			_lmshader.updateLight();
-		}
+		_lmshader.updateLight();
+		return this;
+	}
+
+	public Light2D enabled() {
+		_shaderMask.setEnabled(true);
+		return this;
+	}
+
+	public Light2D disabled() {
+		_shaderMask.setEnabled(false);
+		return this;
+	}
+
+	public boolean isEnabled() {
+		return _shaderMask.isEnabled();
+	}
+
+	public Light2D setEnabled(boolean e) {
+		_shaderMask.setEnabled(e);
 		return this;
 	}
 
 	public boolean isClosed() {
-		return _mask.isClosed();
+		return _shaderMask.isClosed();
 	}
 
 	@Override
 	public void close() {
-		_mask.close();
-		_dirty = true;
-		_inited = false;
+		_shaderMask.close();
+		_shaderDirty = true;
+		_shaderInited = false;
 	}
 
 }

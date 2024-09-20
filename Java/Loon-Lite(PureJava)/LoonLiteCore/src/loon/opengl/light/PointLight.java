@@ -65,13 +65,20 @@ public class PointLight extends BaseLight {
 	}
 
 	private void update() {
-		if (_changeValue != null) {
-			_changeValue.onChange(this);
+		if (this._dirty) {
+			if (_changeValue != null) {
+				_changeValue.onChange(this);
+			}
+			this._dirty = false;
 		}
 	}
 
 	public PointLight set(final LColor color, final Vector3f position, final float radius, final float intensity,
 			final float attenuation) {
+		if (!this.color.equals(color) || !this.position.equals(position) || this.radius != radius
+				|| this.intensity != intensity || this.attenuation != attenuation) {
+			this._dirty = true;
+		}
 		if (color != null) {
 			this.color.setColor(color);
 		} else {
@@ -83,13 +90,16 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
-		this._dirty = true;
 		this.update();
 		return this;
 	}
 
 	public PointLight set(final float r, final float g, final float b, final Vector3f position, final float radius,
 			final float intensity, final float attenuation) {
+		if (!this.color.equals(r, g, b) || !this.position.equals(position) || this.radius != radius
+				|| this.intensity != intensity || this.attenuation != attenuation) {
+			this._dirty = true;
+		}
 		if (color != null) {
 			this.color.setColor(r, g, b);
 		} else {
@@ -103,13 +113,16 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
-		this._dirty = true;
 		this.update();
 		return this;
 	}
 
 	public PointLight set(final LColor color, final float x, final float y, final float z, final float radius,
 			final float intensity, final float attenuation) {
+		if (!this.color.equals(color) || !this.position.equals(x, y, z) || this.radius != radius
+				|| this.intensity != intensity || this.attenuation != attenuation) {
+			this._dirty = true;
+		}
 		if (color != null) {
 			this.color.setColor(color);
 		} else {
@@ -121,13 +134,16 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
-		this._dirty = true;
 		this.update();
 		return this;
 	}
 
 	public PointLight set(final float r, final float g, final float b, final float x, final float y, final float z,
 			final float radius, final float intensity, final float attenuation) {
+		if (!this.color.equals(r, g, b) || !this.position.equals(x, y, z) || this.radius != radius
+				|| this.intensity != intensity || this.attenuation != attenuation) {
+			this._dirty = true;
+		}
 		if (color != null) {
 			this.color.setColor(r, g, b);
 		} else {
@@ -139,7 +155,6 @@ public class PointLight extends BaseLight {
 		this.radius = radius;
 		this.intensity = intensity;
 		this.attenuation = attenuation;
-		this._dirty = true;
 		this.update();
 		return this;
 	}
@@ -154,6 +169,9 @@ public class PointLight extends BaseLight {
 
 	public PointLight set(final float r, final float g, final float b, final float x, final float y, final float z,
 			final float intensity) {
+		if (!this.color.equals(r, g, b) || !this.position.equals(x, y, z) || this.intensity != intensity) {
+			this._dirty = true;
+		}
 		if (color != null) {
 			this.color.setColor(r, g, b);
 		} else {
@@ -163,7 +181,6 @@ public class PointLight extends BaseLight {
 			this.position.set(x, y, z);
 		}
 		this.intensity = intensity;
-		this._dirty = true;
 		this.update();
 		return this;
 	}
