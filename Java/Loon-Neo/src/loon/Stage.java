@@ -30,6 +30,7 @@ import loon.action.sprite.JumpObject;
 import loon.action.sprite.MoveObject;
 import loon.action.sprite.TextureObject;
 import loon.action.sprite.effect.ScrollEffect;
+import loon.canvas.LColor;
 import loon.component.LLayer;
 import loon.events.GameTouch;
 import loon.events.UpdateListener;
@@ -381,6 +382,116 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void pause() {
+	}
+
+	/**
+	 * 变更游戏窗体
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public Screen changeTo(final Screen screen) {
+		return setScreen(screen);
+	}
+
+	/**
+	 * 变更为指定名称的游戏窗体(需要提前注入screen)
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public Screen changeTo(final CharSequence name) {
+		return runScreen(name);
+	}
+
+	/**
+	 * 以指定色彩变更游戏窗体
+	 * 
+	 * @param color
+	 * @param screen
+	 * @return
+	 */
+	public Screen changeTo(final LColor color, final Screen screen) {
+		return gotoScreenEffectExitRand(color, screen);
+	}
+
+	/**
+	 * 以指定名称，指定色彩变更游戏窗体(需要提前注入screen)
+	 * 
+	 * @param color
+	 * @param name
+	 * @return
+	 */
+	public Screen changeTo(final LColor color, final CharSequence name) {
+		return gotoScreenEffectExitRand(color, name);
+	}
+
+	/**
+	 * 以指定模式，指定颜色变更游戏窗体
+	 * 
+	 * @param effectTypeIndex
+	 * @param color
+	 * @param screen
+	 * @return
+	 */
+	public Screen changeTo(final int effectTypeIndex, final LColor color, final Screen screen) {
+		return gotoScreenEffectExit(effectTypeIndex, color, screen);
+	}
+
+	/**
+	 * 以指定模式，指定颜色变更游戏窗体
+	 * 
+	 * @param effectTypeIndex
+	 * @param color
+	 * @param name
+	 * @return
+	 */
+	public Screen changeTo(final int effectTypeIndex, final LColor color, final CharSequence name) {
+		return gotoScreenEffectExit(effectTypeIndex, color, name);
+	}
+
+	/**
+	 * 以指定移动方式，离开当前Screen，进入指定Screen
+	 * 
+	 * @param m
+	 * @param screen
+	 * @return
+	 */
+	public Screen changeTo(final MoveMethod m, final Screen screen) {
+		return replaceScreen(screen, m);
+	}
+
+	/**
+	 * 以指定移动方式，离开当前Screen，进入指定Screen
+	 * 
+	 * @param m
+	 * @param name
+	 * @return
+	 */
+	public Screen changeTo(final MoveMethod m, final CharSequence name) {
+		return replaceScreen(getScreen(name), m);
+	}
+
+	/**
+	 * 以指定双screen交互方式，离开当前screen，进入指定screen
+	 * 
+	 * @param m
+	 * @param screen
+	 * @return
+	 */
+	public Screen changeTo(final PageMethod m, final Screen screen) {
+		return replaceScreen(screen, m);
+	}
+
+	/**
+	 * 以指定双screen交互方式，离开当前screen，进入指定screen
+	 * 
+	 * @param m
+	 * @param name
+	 * @return
+	 */
+	public Screen changeTo(final PageMethod m, final CharSequence name) {
+		return replaceScreen(getScreen(name), m);
 	}
 
 	public Stage createLevel(int tw, int th, String[]... map) {

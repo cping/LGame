@@ -75,6 +75,14 @@ public class Light2D implements EventActionN, LRelease {
 			updateSize();
 		}
 
+		public int getLightCount() {
+			return this._lights.size;
+		}
+
+		public void clearLights() {
+			this._lights.clear();
+		}
+
 		public void addLight(PointLight light) {
 			if (light != null) {
 				light.setChangeValue(this);
@@ -469,6 +477,15 @@ public class Light2D implements EventActionN, LRelease {
 	public PointLight updateLightValue(int idx, PointLight l) {
 		update();
 		return _lmshader.updateLightValue(idx, l);
+	}
+
+	public int getLightCount() {
+		return _lmshader.getLightCount();
+	}
+
+	public Light2D clearLights() {
+		_lmshader.clearLights();
+		return this;
 	}
 
 	public Light2D updateLight() {
