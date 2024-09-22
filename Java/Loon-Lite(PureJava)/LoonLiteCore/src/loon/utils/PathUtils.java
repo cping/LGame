@@ -48,6 +48,14 @@ public class PathUtils {
 		return result;
 	}
 
+	public static String normalizeDir(String filename) {
+		filename = PathUtils.normalize(PathUtils.getDirName(filename));
+		if (filename.lastIndexOf(LSystem.BACKSLASH) != -1 || filename.lastIndexOf(LSystem.SLASH) != -1) {
+			filename = filename.substring(0, filename.length() - 1);
+		}
+		return filename;
+	}
+
 	/**
 	 * 返回指定文件的基础文件名(不带.)
 	 *

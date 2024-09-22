@@ -1068,12 +1068,36 @@ public class GLEx implements LRelease {
 				null, dir);
 	}
 
+	public final GLEx draw(Painter texture, float x, float y, boolean flipX, boolean flipY) {
+		if (!flipX && !flipY) {
+			return draw(texture, x, y, Direction.TRANS_MIRROR);
+		} else if (flipX && !flipY) {
+			return draw(texture, x, y, Direction.TRANS_FLIP);
+		} else if (!flipX && flipY) {
+			return draw(texture, x, y, Direction.TRANS_MIRROR);
+		} else {
+			return draw(texture, x, y, Direction.TRANS_MF);
+		}
+	}
+
 	public final GLEx draw(Painter texture, float x, float y, LColor color, float rotation) {
 		if (isClosed || (texture == null)) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
 				rotation, null, null);
+	}
+
+	public final GLEx draw(Painter texture, float x, float y, LColor color, boolean flipX, boolean flipY) {
+		if (!flipX && !flipY) {
+			return draw(texture, x, y, color, Direction.TRANS_MIRROR);
+		} else if (flipX && !flipY) {
+			return draw(texture, x, y, color, Direction.TRANS_FLIP);
+		} else if (!flipX && flipY) {
+			return draw(texture, x, y, color, Direction.TRANS_MIRROR);
+		} else {
+			return draw(texture, x, y, color, Direction.TRANS_MF);
+		}
 	}
 
 	public GLEx draw(Painter texture, float x, float y) {

@@ -20,8 +20,6 @@
  */
 package loon;
 
-import loon.Screen.MoveMethod;
-import loon.Screen.PageMethod;
 import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.action.map.Level;

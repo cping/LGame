@@ -10,6 +10,7 @@ module loon.core {
 	exports loon.action.map.colider;
 	exports loon.action.map.heuristics;
 	exports loon.action.map.items;
+	exports loon.action.map.ldtk;
 	exports loon.action.map.tmx.objects;
 	exports loon.action.map.tmx.renderers;
 	exports loon.action.map.tmx.tiles;
