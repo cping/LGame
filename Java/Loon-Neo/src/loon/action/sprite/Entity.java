@@ -35,6 +35,8 @@ import loon.action.PlaceActions;
 import loon.action.sprite.Sprites.Created;
 import loon.canvas.LColor;
 import loon.component.layout.LayoutAlign;
+import loon.events.DrawListener;
+import loon.events.DrawLoop;
 import loon.events.EventAction;
 import loon.events.ResizeListener;
 import loon.geom.Affine2f;
@@ -114,7 +116,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected float _rotationCenterX = -1;
 	protected float _rotationCenterY = -1;
 
-
 	protected float _skewX = 0;
 	protected float _skewY = 0;
 
@@ -122,6 +123,8 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected float _skewCenterY = -1;
 
 	private boolean _stopUpdate = false;
+
+	private DrawListener<Entity> _drawListener;
 
 	protected float _width, _height;
 
@@ -351,7 +354,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		}
 		return this;
 	}
-
 
 	@Override
 	public boolean isSkewed() {
@@ -797,6 +799,14 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 					g.fillRect(nx, ny, _width, _height, _baseColor);
 				}
 			}
+			DrawListener<Entity> drawing = this._drawListener;
+			if (drawing != null) {
+				if (_repaintAutoOffset) {
+					drawing.draw(g, nx, ny);
+				} else {
+					drawing.draw(g, offsetX, offsetY);
+				}
+			}
 			if (_debugDraw) {
 				g.drawRect(nx, ny, _width, _height, _debugDrawColor);
 			}
@@ -824,7 +834,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected void postPaint(final GLEx g) {
 
 	}
-
 
 	protected void onManagedPaint(final GLEx g, float offsetX, float offsetY) {
 		final TArray<IEntity> children = this._childrens;
@@ -920,6 +929,10 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	@Override
 	public void update(long elapsedTime) {
 		if (!this._ignoreUpdate) {
+			DrawListener<Entity> drawing = this._drawListener;
+			if (drawing != null) {
+				drawing.update(elapsedTime);
+			}
 			this.onProcess(elapsedTime);
 			this.onManagedUpdate(elapsedTime);
 		}
@@ -963,7 +976,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return _height > 1 ? (_height * this._scaleY) - _fixedHeightOffset
 				: _image == null ? 0 : (_image.getHeight() * this._scaleY) - _fixedHeightOffset;
 	}
-
 
 	public float getContextWidth() {
 		if (_childrens == null) {
@@ -1123,6 +1135,32 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		setFlipX(x);
 		setFlipY(y);
 		return this;
+	}
+
+	public DrawListener<Entity> getDrawListener() {
+		return _drawListener;
+	}
+
+	public Entity setDrawListener(DrawListener<Entity> drawListener) {
+		this._drawListener = drawListener;
+		return this;
+	}
+
+	public DrawLoop<Entity> getDrawable() {
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			return ((DrawLoop<Entity>) _drawListener);
+		}
+		return null;
+	}
+
+	public DrawLoop<Entity> drawable(DrawLoop.Drawable draw) {
+		DrawLoop<Entity> loop = null;
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			loop = getDrawable().onDrawable(draw);
+		} else {
+			setDrawListener(loop = new DrawLoop<Entity>(this, draw));
+		}
+		return loop;
 	}
 
 	@Override
@@ -1645,6 +1683,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		_collSpriteListener = null;
 		_otherShape = null;
 		_oldNodeType = null;
+		_drawListener = null;
 		_disposed = null;
 		setState(State.DISPOSED);
 		removeComponents();

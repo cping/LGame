@@ -66,7 +66,7 @@ import loon.utils.TArray;
 /**
  * 一个简单(易于操作)的渲染六边形瓦片地图用的,二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
-public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, Sized, ISprite {
+public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>, TileMapCollision, Sized, ISprite {
 
 	// 默认的六边形参数
 	public static final int LEFT = -3;
@@ -2286,6 +2286,21 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		}
 		getScreen().remove(this);
 		return this;
+	}
+
+	@Override
+	public Vector2f getOffset() {
+		return _offset;
+	}
+
+	@Override
+	public int getTileWidth() {
+		return field2d.getTileWidth();
+	}
+
+	@Override
+	public int getTileHeight() {
+		return field2d.getTileHeight();
 	}
 
 	public boolean isClosed() {

@@ -21,9 +21,11 @@
 package loon.action.map.ldtk;
 
 import loon.LTexture;
+import loon.events.ChangeEvent;
 import loon.geom.RectBox;
 import loon.geom.XY;
 import loon.opengl.GLEx.Direction;
+import loon.utils.MathUtils;
 
 public class LDTKTile {
 
@@ -33,18 +35,61 @@ public class LDTKTile {
 
 	private int _pixelW, _pixelH;
 
+	private int _tileX, _tileY;
+
+	private int _tileId;
+
 	private boolean _flipX;
 
 	private boolean _flipY;
 
+	private boolean _visible;
+
+	private boolean _dirty;
+
 	private RectBox _rectSize;
 
-	public LDTKTile(LTexture tex, float x, float y, int w, int h) {
+	private int _typeIdFlag;
+
+	private ChangeEvent<LDTKTile> _changeValue;
+
+	public LDTKTile(ChangeEvent<LDTKTile> layer, int id, int tf, LTexture tex, float x, float y, int w, int h, int tx,
+			int ty) {
+		this._tileId = id;
+		this._typeIdFlag = tf;
 		this._texture = tex;
 		this._pixelX = x;
 		this._pixelY = y;
 		this._pixelW = w;
 		this._pixelH = h;
+		this._tileX = tx;
+		this._tileY = ty;
+		this._visible = true;
+	}
+
+	private void update() {
+		if (this._dirty) {
+			if (_changeValue != null) {
+				_changeValue.onChange(this);
+			}
+			this._dirty = false;
+		}
+	}
+
+	public int getId() {
+		return this._tileId;
+	}
+
+	public int getTypeIdFlag() {
+		return this._typeIdFlag;
+	}
+
+	public int getTileX() {
+		return this._tileX;
+	}
+
+	public int getTileY() {
+		return this._tileY;
 	}
 
 	public boolean contains(float x, float y) {
@@ -98,6 +143,18 @@ public class LDTKTile {
 		return this;
 	}
 
+	public boolean isVisible() {
+		return _visible;
+	}
+
+	public LDTKTile setVisible(boolean v) {
+		if (v != this._visible) {
+			update();
+		}
+		this._visible = v;
+		return this;
+	}
+
 	public LTexture getTexture() {
 		return _texture;
 	}
@@ -112,7 +169,11 @@ public class LDTKTile {
 	}
 
 	public LDTKTile setX(int x) {
+		if (x != this._pixelX) {
+			update();
+		}
 		this._pixelX = x;
+		this._tileX = MathUtils.iceil(_pixelX / _pixelW);
 		return this;
 	}
 
@@ -121,7 +182,19 @@ public class LDTKTile {
 	}
 
 	public LDTKTile setY(int y) {
+		if (y != this._pixelX) {
+			update();
+		}
 		this._pixelY = y;
+		this._tileY = MathUtils.iceil(_pixelY / _pixelH);
+		return this;
+	}
+
+	public LDTKTile setTypeFlag(int t) {
+		if (t != this._typeIdFlag) {
+			update();
+		}
+		_typeIdFlag = t;
 		return this;
 	}
 }

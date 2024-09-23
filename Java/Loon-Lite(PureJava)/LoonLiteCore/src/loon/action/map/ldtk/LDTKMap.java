@@ -22,8 +22,14 @@ package loon.action.map.ldtk;
 
 import loon.BaseIO;
 import loon.Json;
-import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
+import loon.LTexture;
+import loon.action.map.Config;
+import loon.action.sprite.Entity;
+import loon.canvas.LColor;
+import loon.opengl.GLEx;
+import loon.utils.IntArray;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -33,11 +39,13 @@ import loon.utils.StringUtils;
 /**
  * LDTK2D地图的解释与渲染器（编辑器官网：https://github.com/deepnight/ldtk）
  */
-public class LDTKMap implements LRelease {
+public class LDTKMap extends Entity implements Config {
 
 	private final IntMap<LDTKLevel> _leveltoIds;
 
 	private final ObjectMap<String, Integer> _levelNamesToIds;
+
+	private final IntArray _drawLevels;
 
 	private int _worldGridWidth, _worldGridHeight;
 
@@ -46,10 +54,6 @@ public class LDTKMap implements LRelease {
 	private float _defaultPivotX;
 
 	private float _defaultPivotY;
-
-	private float _posX;
-
-	private float _posY;
 
 	private int _defaultLevelWidth;
 
@@ -61,6 +65,10 @@ public class LDTKMap implements LRelease {
 
 	private int _defaultEntityHeight;
 
+	private LColor _defaultLevelBgColor;
+
+	private LColor _bgColor;
+
 	private LDTKTypes _types;
 
 	private String _path;
@@ -69,34 +77,56 @@ public class LDTKMap implements LRelease {
 
 	private boolean _dirty;
 
-	public LDTKMap() {
-		this(new LDTKTypes());
-	}
-
 	public LDTKMap(String path) {
-		this(new LDTKTypes(), path);
+		this(path, 0f, 0f, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public LDTKMap(LDTKTypes types) {
+	public LDTKMap(String path, float x, float y) {
+		this(new LDTKTypes(), path, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public LDTKMap(String path, float x, float y, float w, float h) {
+		this(new LDTKTypes(), path, x, y, w, h);
+	}
+
+	public LDTKMap(LDTKTypes types, String path, float x, float y, float w, float h) {
+		super((LTexture) null, x, y, w, h);
 		this._leveltoIds = new IntMap<LDTKLevel>();
 		this._levelNamesToIds = new ObjectMap<String, Integer>();
+		this._drawLevels = new IntArray();
 		this._types = types;
 		this._dirty = true;
-	}
-
-	public LDTKMap(LDTKTypes types, String path) {
-		this(types);
 		this._path = path;
 		this._dirPath = PathUtils.normalizeDir(_path);
+		this._repaintDraw = true;
 	}
 
-	public void reset() {
+	@Override
+	protected void repaint(GLEx g, float offsetX, float offsetY) {
+		for (int i = _drawLevels.length - 1; i > -1; i--) {
+			int idx = _drawLevels.get(i);
+			LDTKLevel level = _leveltoIds.get(idx);
+			if (level != null) {
+				level.draw(g, drawX(offsetX), drawY(offsetY));
+			}
+		}
+	}
+
+	public void freeMap() {
 		for (int i = _leveltoIds.size - 1; i > -1; i--) {
 			_leveltoIds.get(i).close();
 		}
 		this._leveltoIds.clear();
 		this._levelNamesToIds.clear();
+		this._drawLevels.clear();
 		this._dirty = true;
+	}
+
+	@Override
+	public LDTKMap reset() {
+		super.reset();
+		this.freeMap();
+		return this;
 	}
 
 	public void parse() {
@@ -129,6 +159,8 @@ public class LDTKMap implements LRelease {
 		this._defaultGridSize = root.getInt("defaultGridSize");
 		this._defaultEntityWidth = root.getInt("defaultEntityWidth");
 		this._defaultEntityHeight = root.getInt("defaultEntityHeight");
+		this._defaultLevelBgColor = new LColor(root.getString("defaultLevelBgColor"));
+		this._bgColor = new LColor(root.getString("bgColor"));
 		Json.Array levelRoot = root.getArray("levels");
 		for (int i = 0; i < levelRoot.length(); i++) {
 			parseLevel(levelRoot.getObject(i));
@@ -159,6 +191,34 @@ public class LDTKMap implements LRelease {
 		return gridSize;
 	}
 
+	public LDTKMap setDrawLevelNames(String... names) {
+		parse();
+		String[] list = names;
+		if (list != null) {
+			for (int i = 0; i < list.length; i++) {
+				Integer id = _levelNamesToIds.get(names[i]);
+				if (id != null) {
+					_drawLevels.add(id);
+				}
+			}
+		}
+		return this;
+	}
+
+	public LDTKMap setDrawLevelIds(int... ids) {
+		parse();
+		int[] list = ids;
+		if (list != null) {
+			for (int i = 0; i < list.length; i++) {
+				int id = ids[i];
+				if (_leveltoIds.containsKey(id)) {
+					_drawLevels.add(id);
+				}
+			}
+		}
+		return this;
+	}
+
 	public LDTKLevel getLevel(String name) {
 		parse();
 		return _leveltoIds.get(_levelNamesToIds.get(name));
@@ -179,22 +239,22 @@ public class LDTKMap implements LRelease {
 		return _leveltoIds;
 	}
 
-	public float getPosX() {
-		return _posX;
+	public LColor getDefaultLevelBgColor() {
+		parse();
+		return _defaultLevelBgColor;
 	}
 
-	public LDTKMap setPosX(float x) {
-		this._posX = x;
-		return this;
+	public LColor getBgColor() {
+		parse();
+		return _bgColor;
+	}
+
+	public float getPosX() {
+		return getX();
 	}
 
 	public float getPosY() {
-		return _posY;
-	}
-
-	public LDTKMap setPosY(float y) {
-		this._posY = y;
-		return this;
+		return getY();
 	}
 
 	public int getMaxWidth() {
@@ -247,7 +307,8 @@ public class LDTKMap implements LRelease {
 
 	@Override
 	public void close() {
-		reset();
+		super.close();
+		freeMap();
 	}
 
 }

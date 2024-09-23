@@ -22,28 +22,61 @@ package loon.action.map.ldtk;
 
 import loon.Json;
 import loon.LSysException;
+import loon.canvas.LColor;
+import loon.geom.Vector2f;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 
 public class LDTKEntity {
 
 	private final String _id;
 
+	private final int _defUid;
+
 	private final float _x, _y;
 
-	private float _pivotX, _pivotY;
+	private final float _pivotX, _pivotY;
+
+	private final int _width, _height;
+
+	private final LColor _smartColor;
 
 	private final ObjectMap<String, Object> _values;
 
+	private final TArray<String> _tags;
+
+	private final LDTKTileSetUid _tileuid;
+
+	private final Vector2f _grid;
+
 	public LDTKEntity(Json.Object v, LDTKTypes types, LDTKLayer layer) {
 		_values = new ObjectMap<String, Object>();
+		_tags = new TArray<String>();
 		_id = v.getString("__identifier");
 		_x = v.getArray("px").getNumber(0);
 		_y = v.getArray("px").getNumber(1);
+		_width = v.getInt("width");
+		_height = v.getInt("height");
+		Json.Array grid = v.getArray("__grid");
+		if (grid != null) {
+			_grid = new Vector2f(grid.getNumber(0), grid.getNumber(1));
+		} else {
+			_grid = new Vector2f();
+		}
+		_defUid = v.getInt("defUid");
+		_smartColor = new LColor(v.getString("__smartColor"));
+		Json.Array tags = v.getArray("__tags");
+		for (int i = 0; i < tags.length(); i++) {
+			_tags.add(tags.getString(i));
+		}
+		_tileuid = new LDTKTileSetUid(v.getObject("__tile"));
 		final String key = "__pivot";
 		if (v.isArray(key)) {
 			Json.Array pivot = v.getArray(key);
 			_pivotX = pivot.getNumber(0);
 			_pivotY = pivot.getNumber(1);
+		} else {
+			_pivotX = _pivotY = 0f;
 		}
 		Json.Array fields = v.getArray("fieldInstances");
 		for (int i = 0; i < fields.length(); i++) {
@@ -60,8 +93,40 @@ public class LDTKEntity {
 		}
 	}
 
+	public boolean hasSprite() {
+		return _tileuid != null && _tileuid._id != -1;
+	}
+
+	public int getDefaultUid() {
+		return _defUid;
+	}
+
+	public Vector2f getGridPosition() {
+		return _grid;
+	}
+
+	public LDTKTileSetUid getTileSetUid() {
+		return _tileuid;
+	}
+
+	public LColor getSmartColor() {
+		return _smartColor;
+	}
+
 	public String getId() {
 		return _id;
+	}
+
+	public TArray<String> getTags() {
+		return _tags;
+	}
+
+	public int getWidth() {
+		return _width;
+	}
+
+	public int getHeight() {
+		return _height;
 	}
 
 	public float getX() {

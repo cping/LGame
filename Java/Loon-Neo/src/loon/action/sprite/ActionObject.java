@@ -25,7 +25,7 @@ import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
-import loon.action.map.TileMap;
+import loon.action.map.TileMapCollision;
 import loon.action.map.items.Attribute;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
@@ -46,7 +46,7 @@ public abstract class ActionObject extends Entity implements Config {
 
 	protected Animation animation;
 
-	protected TileMap tiles;
+	protected TileMapCollision tiles;
 
 	protected float velocityX;
 
@@ -60,11 +60,11 @@ public abstract class ActionObject extends Entity implements Config {
 		this(x, y, 0, 0, animation, null);
 	}
 
-	public ActionObject(float x, float y, Animation animation, TileMap map) {
+	public ActionObject(float x, float y, Animation animation, TileMapCollision map) {
 		this(x, y, 0f, 0f, animation, map);
 	}
 
-	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
+	public ActionObject(float x, float y, float dw, float dh, Animation animation, TileMapCollision map) {
 		super(animation == null ? null : animation.getSpriteImage(), x, y, dw, dh);
 		if (animation != null) {
 			this.setTexture(animation.getSpriteImage());
@@ -194,7 +194,7 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
-	public TileMap getTileMap() {
+	public TileMapCollision getTileMap() {
 		return tiles;
 	}
 
@@ -281,11 +281,11 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
-	public TileMap getTiles() {
+	public TileMapCollision getTiles() {
 		return tiles;
 	}
 
-	public ActionObject setTiles(TileMap tile) {
+	public ActionObject setTiles(TileMapCollision tile) {
 		this.tiles = tile;
 		return this;
 	}

@@ -27,12 +27,15 @@ import loon.utils.TArray;
 public class LDTKEntityLayer extends LDTKLayer {
 
 	private final LDTKMap _mapIn;
+	
+	private final LDTKLevel _level;
 
 	private final ObjectMap<String, TArray<LDTKEntity>> _entityMap;
 
-	public LDTKEntityLayer(LDTKMap map, Json.Object v, LDTKTypes types) {
+	public LDTKEntityLayer(LDTKMap map,LDTKLevel level, Json.Object v, LDTKTypes types) {
 		super(v);
 		_mapIn = map;
+		_level = level;
 		_entityMap = new ObjectMap<String, TArray<LDTKEntity>>();
 		Json.Array entityInstanceList = v.getArray("entityInstances");
 		for (int i = 0; i < entityInstanceList.length(); i++) {
@@ -57,6 +60,10 @@ public class LDTKEntityLayer extends LDTKLayer {
 
 	public LDTKMap getMap() {
 		return _mapIn;
+	}
+	
+	public LDTKLevel getLevel() {
+		return _level;
 	}
 
 }

@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.LSystem;
-import loon.action.map.TileMap;
+import loon.action.map.TileMapCollision;
 import loon.geom.Vector2f;
 
 /**
@@ -63,12 +63,12 @@ public class JumpObject extends ActionObject {
 		this(x, y, 0, 0, animation, null);
 	}
 
-	public JumpObject(float x, float y, Animation animation, TileMap map) {
+	public JumpObject(float x, float y, Animation animation, TileMapCollision map) {
 		super(x, y, 0, 0, animation, map);
 		this.init();
 	}
 
-	public JumpObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
+	public JumpObject(float x, float y, float dw, float dh, Animation animation, TileMapCollision map) {
 		super(x, y, dw, dh, animation, map);
 		this.init();
 	}

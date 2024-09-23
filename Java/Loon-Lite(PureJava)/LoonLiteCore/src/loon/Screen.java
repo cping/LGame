@@ -345,7 +345,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _isProcessing = true;
 
-	protected boolean _isNext;
+	private boolean _isNext;
 
 	private float _lastTouchX, _lastTouchY, _touchDX, _touchDY;
 
@@ -4584,6 +4584,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public SysInput getInput() {
 		return this;
+	}
+
+	public boolean hasNext() {
+		return this._isNext;
 	}
 
 	public Screen setNext(boolean next) {

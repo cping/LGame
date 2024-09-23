@@ -21,14 +21,13 @@
 package loon.events;
 
 import loon.LRelease;
-import loon.Screen;
 import loon.geom.BooleanValue;
 import loon.opengl.GLEx;
 
 /**
- * Screen专用的渲染循环器,可以以注入接口的方式改变Screen循环与渲染内容
+ * 渲染循环器,可以以注入接口的方式改变Screen循环与渲染内容
  */
-public class DrawLoop<T extends Screen> implements DrawListener<T>, LRelease {
+public class DrawLoop<T> implements DrawListener<T>, LRelease {
 
 	public static interface Drawable {
 

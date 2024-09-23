@@ -26,6 +26,8 @@ public class LDTKLayer {
 
 	protected String _id;
 
+	protected int _tileSize;
+
 	protected int _width;
 
 	protected int _height;
@@ -61,6 +63,7 @@ public class LDTKLayer {
 		this._pixelOffsetX = pixelOffsetX;
 		this._pixelOffsetY = pixelOffsetY;
 		this._randomSeed = randomSeed;
+		this._tileSize = _width * _height;
 	}
 
 	public String getId() {
@@ -71,8 +74,12 @@ public class LDTKLayer {
 		this._id = id;
 		return this;
 	}
+	
+	public int getTileSize() {
+		return _tileSize;
+	}
 
-	public int getWidth() {
+	public float getWidth() {
 		return _width;
 	}
 
@@ -81,7 +88,7 @@ public class LDTKLayer {
 		return this;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return _height;
 	}
 
@@ -143,7 +150,7 @@ public class LDTKLayer {
 		this._randomSeed = randomSeed;
 		return this;
 	}
-	
+
 	public boolean isVisible() {
 		return this._visible;
 	}

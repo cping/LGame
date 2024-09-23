@@ -23,7 +23,7 @@ package loon.action.sprite;
 import loon.LTexture;
 import loon.action.map.Field2D;
 import loon.action.map.Level;
-import loon.action.map.TileMap;
+import loon.action.map.TileMapCollision;
 
 public class TextureObject extends ActionObject {
 
@@ -49,14 +49,14 @@ public class TextureObject extends ActionObject {
 		return new TextureObject(x, y, tiles.getTileWidth(), tiles.getTileHeight(), path);
 	}
 
-	public final static TextureObject create(float x, float y, LTexture tex2d, TileMap tiles) {
+	public final static TextureObject create(float x, float y, LTexture tex2d, TileMapCollision tiles) {
 		if (tiles == null) {
 			return new TextureObject(x, y, tex2d, tiles);
 		}
 		return new TextureObject(x, y, tiles.getTileWidth(), tiles.getTileHeight(), tex2d, tiles);
 	}
 
-	public final static TextureObject create(float x, float y, String path, TileMap tiles) {
+	public final static TextureObject create(float x, float y, String path, TileMapCollision tiles) {
 		if (tiles == null) {
 			return new TextureObject(x, y, path, tiles);
 		}
@@ -79,19 +79,19 @@ public class TextureObject extends ActionObject {
 		super(x, y, w, h, Animation.getDefaultAnimation(file), null);
 	}
 
-	public TextureObject(float x, float y, LTexture tex2d, TileMap map) {
+	public TextureObject(float x, float y, LTexture tex2d, TileMapCollision map) {
 		super(x, y, tex2d.width(), tex2d.height(), Animation.getDefaultAnimation(tex2d), map);
 	}
 
-	public TextureObject(float x, float y, String file, TileMap map) {
+	public TextureObject(float x, float y, String file, TileMapCollision map) {
 		super(x, y, Animation.getDefaultAnimation(file), map);
 	}
 
-	public TextureObject(float x, float y, float w, float h, LTexture tex2d, TileMap map) {
+	public TextureObject(float x, float y, float w, float h, LTexture tex2d, TileMapCollision map) {
 		super(x, y, w, h, Animation.getDefaultAnimation(tex2d), map);
 	}
 
-	public TextureObject(float x, float y, float w, float h, String file, TileMap map) {
+	public TextureObject(float x, float y, float w, float h, String file, TileMapCollision map) {
 		super(x, y, w, h, Animation.getDefaultAnimation(file), map);
 	}
 }

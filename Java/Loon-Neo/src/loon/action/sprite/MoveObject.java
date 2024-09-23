@@ -26,6 +26,7 @@ import loon.action.map.AStarFinder;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.TileMap;
+import loon.action.map.TileMapCollision;
 import loon.events.GameTouch;
 import loon.geom.ShapeUtils;
 import loon.geom.Vector2f;
@@ -89,11 +90,11 @@ public class MoveObject extends ActionObject {
 		this(x, y, 0, 0, animation, null);
 	}
 
-	public MoveObject(float x, float y, Animation animation, TileMap map) {
+	public MoveObject(float x, float y, Animation animation, TileMapCollision map) {
 		this(x, y, 0, 0, animation, map);
 	}
 
-	public MoveObject(float x, float y, float dw, float dh, Animation animation, TileMap map) {
+	public MoveObject(float x, float y, float dw, float dh, Animation animation, TileMapCollision map) {
 		super(x, y, dw, dh, animation, map);
 		if (map == null) {
 			this.tiles = new TileMap(LSystem.viewSize.newField2D());

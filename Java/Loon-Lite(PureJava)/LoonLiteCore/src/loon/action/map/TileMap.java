@@ -56,7 +56,7 @@ import loon.utils.TArray;
 /**
  * 一个简单(易于操作)的二维数组地图构造以及显示类.复杂地图请使用tmx包
  */
-public class TileMap extends LObject<ISprite> implements Sized, ISprite {
+public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized, ISprite {
 
 	private int lastOffsetX, lastOffsetY;
 
@@ -661,6 +661,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return this;
 	}
 
+	@Override
 	public boolean isHit(int px, int py) {
 		return _field2d.isHit(px, py);
 	}
@@ -669,6 +670,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return isHit(v.x(), v.y());
 	}
 
+	@Override
 	public boolean isPixelHit(int px, int py) {
 		return isPixelHit(px, py, 0, 0);
 	}
@@ -694,6 +696,7 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return isPixelHit(px, py, 0, 1);
 	}
 
+	@Override
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
 		return _field2d.getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
 	}
@@ -837,14 +840,17 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 	 *
 	 * @return
 	 */
+	@Override
 	public Vector2f getOffset() {
 		return _offset;
 	}
 
+	@Override
 	public int getTileWidth() {
 		return _field2d.getTileWidth();
 	}
 
+	@Override
 	public int getTileHeight() {
 		return _field2d.getTileHeight();
 	}
@@ -859,10 +865,12 @@ public class TileMap extends LObject<ISprite> implements Sized, ISprite {
 		return (_field2d.getWidth() * _field2d.getTileHeight() * _scaleX) - _fixedWidthOffset;
 	}
 
+	@Override
 	public int getRow() {
 		return _field2d.getWidth();
 	}
 
+	@Override
 	public int getCol() {
 		return _field2d.getHeight();
 	}
