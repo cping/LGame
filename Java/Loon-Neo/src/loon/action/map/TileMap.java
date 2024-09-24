@@ -579,11 +579,11 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	}
 
 	public float centerX() {
-		return (getContainerWidth() - getWidth()) / 2f;
+		return ((getContainerX() + getContainerWidth()) - (getX() + getWidth())) / 2f;
 	}
 
 	public float centerY() {
-		return (getContainerHeight() - getHeight()) / 2f;
+		return ((getContainerY() + getContainerHeight()) - (getY() + getHeight())) / 2f;
 	}
 
 	public TileMap scrollDown(float distance) {
