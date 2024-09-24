@@ -26,16 +26,24 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.ActionBind;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapCollision;
 import loon.events.ChangeEvent;
+import loon.geom.PointF;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, ChangeEvent<LDTKTile>, LRelease {
+
+	private ActionBind _follow;
+
+	private RectBox _tileLayerRect;
 
 	private Vector2f _offset = new Vector2f();
 
@@ -48,6 +56,10 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	private LDTKLevel _level;
 
 	private Field2D _mapToArray;
+
+	private final PointF _scrollDrag;
+
+	private int _notSetTileID;
 
 	private int _cellsTilesPerRow;
 
@@ -62,6 +74,8 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		this._map = map;
 		this._level = level;
 		this._limits = new IntArray();
+		this._scrollDrag = new PointF();
+		this._notSetTileID = -1;
 		String tilesetRelPath = v.getString("__tilesetRelPath");
 		if (!StringUtils.isEmpty(map.getDir()) && tilesetRelPath.indexOf(map.getDir()) == -1) {
 			tilesetRelPath = map.getDir() + LSystem.FS + tilesetRelPath;
@@ -69,8 +83,8 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		this._mapTexture = LTextures.loadTexture(tilesetRelPath);
 		this._widthInPixels = level.getWidth();
 		this._heightInPixels = level.getHeight();
-		this._cellsTilesPerRow = _widthInPixels / _gridSize;
-		this._cellsTilesPerCol = _heightInPixels / _gridSize;
+		this._cellsTilesPerRow = _widthInPixels / _gridSize.x;
+		this._cellsTilesPerCol = _heightInPixels / _gridSize.y;
 		Json.Array tiles = v.getArray(intGrid ? "autoLayerTiles" : "gridTiles");
 		this._mapTiles = new LDTKTile[tiles.length()];
 		for (int i = 0; i < tiles.length(); i++) {
@@ -96,13 +110,13 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 			}
 			float posX = sourcePosition.getNumber(0);
 			float posY = sourcePosition.getNumber(1);
-			LTexture tile = _mapTexture.sub(posX, posY, _gridSize, _gridSize);
+			LTexture tile = _mapTexture.sub(posX, posY, _gridSize.x, _gridSize.y);
 			float pixelX = pixelPosition.getNumber(0);
 			float pixelY = pixelPosition.getNumber(1);
-			int tx = MathUtils.iceil(pixelX / _gridSize);
-			int ty = MathUtils.iceil(pixelY / _gridSize);
+			int tx = MathUtils.iceil(pixelX / _gridSize.x);
+			int ty = MathUtils.iceil(pixelY / _gridSize.y);
 			int tileId = ty * _cellsTilesPerRow + tx;
-			_mapTiles[i] = new LDTKTile(this, tileId, typeFlag, tile, pixelX, pixelY, _gridSize, _gridSize, tx, ty);
+			_mapTiles[i] = new LDTKTile(this, tileId, typeFlag, tile, pixelX, pixelY, _gridSize.x, _gridSize.y, tx, ty);
 			_mapTiles[i].flip(flipX, flipY);
 			if (!_limits.contains(typeFlag)) {
 				_limits.add(typeFlag);
@@ -110,23 +124,42 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		}
 	}
 
-	public void draw(GLEx g) {
+	public void draw(GLEx g, float offsetX, float offsetY) {
 		if (this._roll) {
 			this._offset = this.toRollPosition(this._offset);
 		}
-		draw(g, _pixelOffsetX + _offset.x(), _pixelOffsetY + _offset.y());
-	}
-
-	public void draw(GLEx g, float offsetX, float offsetY) {
 		final float old = g.alpha();
 		g.setAlpha(_opacity);
+		final float offX = _pixelOffsetX + _offset.x() + offsetX;
+		final float offY = _pixelOffsetY + _offset.y() + offsetY;
 		for (int i = _mapTiles.length - 1; i > -1; i--) {
 			LDTKTile tile = _mapTiles[i];
 			if (tile != null && tile.isVisible()) {
-				g.draw(tile.getTexture(), tile.getX() + offsetX, tile.getY() + offsetY, tile.getDirection());
+				g.draw(tile.getTexture(), tile.getX() + offX, tile.getY() + offY, tile.getDirection());
 			}
 		}
 		g.setAlpha(old);
+	}
+
+	public boolean contains(XY point) {
+		if (point == null) {
+			return false;
+		}
+		return contains(point.getX(), point.getY());
+	}
+
+	public boolean contains(float x, float y) {
+		return _tileLayerRect.contains(x, y);
+	}
+
+	public RectBox getCollisionBox() {
+		if (_tileLayerRect == null) {
+			_tileLayerRect = new RectBox(_pixelOffsetX + _offset.x, _pixelOffsetY + _offset.y, _widthInPixels,
+					_heightInPixels);
+		} else {
+			_tileLayerRect.set(_pixelOffsetX + _offset.x, _pixelOffsetY + _offset.y, _widthInPixels, _heightInPixels);
+		}
+		return _tileLayerRect;
 	}
 
 	public int[] getMapTypes() {
@@ -214,9 +247,12 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	@Override
 	public Field2D getField2D() {
 		if (_mapToArray == null) {
-			_mapToArray = new Field2D(_cellsTilesPerRow, _cellsTilesPerCol, _gridSize, _gridSize);
+			_mapToArray = new Field2D(_cellsTilesPerRow, _cellsTilesPerCol, _gridSize.x, _gridSize.y, _notSetTileID);
 		}
 		if (_dirty) {
+			_mapToArray.fill(_notSetTileID);
+			_mapToArray.setSize(_cellsTilesPerRow, _cellsTilesPerCol);
+			_mapToArray.setTile(_gridSize.x, _gridSize.y);
 			for (int i = _mapTiles.length - 1; i > -1; i--) {
 				LDTKTile tile = _mapTiles[i];
 				if (tile.isVisible()) {
@@ -236,10 +272,112 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		return _cellsTilesPerCol;
 	}
 
-	public LDTKTileLayer offsetClear() {
-		if (_offset != null && !this._offset.equals(0f, 0f)) {
+	public float centerX() {
+		return ((_map.getX() + _map.getContainerWidth()) - (getPixelOffsetX() + getViewWidth())) * 0.5f;
+	}
+
+	public float centerY() {
+		return (_map.getY() + _map.getContainerHeight() - (getPixelOffsetY() + getViewHeight())) * 0.5f;
+	}
+
+	public LDTKTileLayer scrollDown(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min((this._offset.y + distance),
+				(MathUtils.max(0, _map.getContainerHeight() - this.getViewHeight())));
+		if (this._offset.y >= 0) {
+			this._offset.y = 0;
+		}
+		return this;
+	}
+
+	public LDTKTileLayer scrollLeft(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min(this._offset.x - distance, this.getPixelOffsetX());
+		float limitX = (_map.getContainerWidth() - this.getViewWidth());
+		if (this._offset.x <= limitX) {
+			this._offset.x = limitX;
+		}
+		return this;
+	}
+
+	public LDTKTileLayer scrollRight(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min((this._offset.x + distance),
+				(MathUtils.max(0, this.getViewWidth() - _map.getContainerWidth())));
+		if (this._offset.x >= 0) {
+			this._offset.x = 0;
+		}
+		return this;
+	}
+
+	public LDTKTileLayer scrollUp(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min(this._offset.y - distance, 0);
+		float limitY = (_map.getContainerHeight() - this.getViewHeight());
+		if (this._offset.y <= limitY) {
+			this._offset.y = limitY;
+		}
+		return this;
+	}
+
+	public LDTKTileLayer scrollLeftUp(float distance) {
+		this.scrollUp(distance);
+		this.scrollLeft(distance);
+		return this;
+	}
+
+	public LDTKTileLayer scrollRightDown(float distance) {
+		this.scrollDown(distance);
+		this.scrollRight(distance);
+		return this;
+	}
+
+	public LDTKTileLayer scrollClear() {
+		if (!this._offset.equals(0f, 0f)) {
 			this._offset.set(0, 0);
 		}
+		return this;
+	}
+
+	public LDTKTileLayer scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public LDTKTileLayer scroll(float x, float y, float distance) {
+		if (_scrollDrag.x == 0f && _scrollDrag.y == 0f) {
+			_scrollDrag.set(x, y);
+			return this;
+		}
+		return scroll(_scrollDrag.x, _scrollDrag.y, x, y, distance);
+	}
+
+	public LDTKTileLayer scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public LDTKTileLayer scroll(float x1, float y1, float x2, float y2, float distance) {
+		if (this._follow != null) {
+			return this;
+		}
+		if (x1 < x2 && x1 > centerX()) {
+			scrollRight(distance);
+		} else if (x1 > x2) {
+			scrollLeft(distance);
+		}
+		if (y1 < y2 && y1 > centerY()) {
+			scrollDown(distance);
+		} else if (y1 > y2) {
+			scrollUp(distance);
+		}
+		_scrollDrag.set(x2, y2);
 		return this;
 	}
 
@@ -280,6 +418,42 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		return pos;
 	}
 
+	protected float limitOffsetX(float newOffsetX) {
+		float offsetX = _map.getContainerWidth() / 2 - newOffsetX;
+		offsetX = MathUtils.min(offsetX, 0);
+		offsetX = MathUtils.max(offsetX, _map.getContainerWidth() - getViewWidth());
+		return offsetX;
+	}
+
+	protected float limitOffsetY(float newOffsetY) {
+		float offsetY = _map.getContainerHeight() / 2 - newOffsetY;
+		offsetY = MathUtils.min(offsetY, 0);
+		offsetY = MathUtils.max(offsetY, _map.getContainerHeight() - getViewHeight());
+		return offsetY;
+	}
+
+	public LDTKTileLayer followActionObject() {
+		if (_follow != null) {
+			float offsetX = limitOffsetX(_follow.getX());
+			float offsetY = limitOffsetY(_follow.getY());
+			if (offsetX != 0 || offsetY != 0) {
+				setOffset(offsetX, offsetY);
+				getField2D().setOffset(_offset);
+			}
+		}
+		return this;
+	}
+
+	public LDTKTileLayer setNotSetTileId(int id) {
+		this._notSetTileID = id;
+		this._dirty = true;
+		return this;
+	}
+
+	public int getNotSetTileId() {
+		return this._notSetTileID;
+	}
+
 	@Override
 	public Vector2f getTileCollision(LObject<?> o, float newX, float newY) {
 		return getField2D().getTileCollision(o.getX(), o.getY(), o.getWidth(), o.getHeight(), newX, newY);
@@ -287,22 +461,22 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 
 	@Override
 	public int tilesToPixelsX(float x) {
-		return MathUtils.ifloor(x * _gridSize);
+		return MathUtils.ifloor(x * _gridSize.x);
 	}
 
 	@Override
 	public int tilesToPixelsY(float y) {
-		return MathUtils.ifloor(y * _gridSize);
+		return MathUtils.ifloor(y * _gridSize.y);
 	}
 
 	@Override
 	public int pixelsToTilesWidth(float x) {
-		return MathUtils.ifloor(x / _gridSize);
+		return MathUtils.ifloor(x / _gridSize.x);
 	}
 
 	@Override
 	public int pixelsToTilesHeight(float y) {
-		return MathUtils.ifloor(y / _gridSize);
+		return MathUtils.ifloor(y / _gridSize.y);
 	}
 
 	@Override
@@ -346,6 +520,16 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		this._dirty = true;
 	}
 
+	public LDTKTileLayer centerOffset() {
+		this._offset.set(centerX(), centerY());
+		return this;
+	}
+
+	public LDTKTileLayer setOffset(float x, float y) {
+		this._offset.set(x, y);
+		return this;
+	}
+
 	public LDTKTileLayer setOffset(Vector2f o) {
 		if (o == null) {
 			return this;
@@ -361,12 +545,12 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 
 	@Override
 	public int getTileWidth() {
-		return _gridSize;
+		return _gridSize.x;
 	}
 
 	@Override
 	public int getTileHeight() {
-		return _gridSize;
+		return _gridSize.y;
 	}
 
 	@Override

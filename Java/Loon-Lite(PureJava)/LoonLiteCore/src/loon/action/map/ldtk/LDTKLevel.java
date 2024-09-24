@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.canvas.LColor;
+import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -183,7 +184,7 @@ public class LDTKLevel implements LRelease {
 		return this._bgPosMode;
 	}
 
-	public int getGridSize(int idx) {
+	public PointI getGridSize(int idx) {
 		return _layers.get(idx)._gridSize;
 	}
 
@@ -244,6 +245,33 @@ public class LDTKLevel implements LRelease {
 		return this;
 	}
 
+	public LDTKLevel centerOffset() {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.centerOffset();
+		}
+		return this;
+	}
+
+	public LDTKLevel setOffset(float x, float y) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.setOffset(x, y);
+		}
+		return this;
+	}
+
+	public LDTKLevel setOffset(Vector2f o) {
+		if (o == null) {
+			return this;
+		}
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.setOffset(o);
+		}
+		return this;
+	}
+
 	public void draw(GLEx g) {
 		draw(g, 0f, 0f);
 	}
@@ -251,16 +279,101 @@ public class LDTKLevel implements LRelease {
 	public void draw(GLEx g, float offsetX, float offsetY) {
 		if (_useImageBackground && _bgPos._supportBackground) {
 			LDTKBackgroundPos pos = _bgPos;
-			g.draw(getBackgroundTexture(), offsetX + pos._top + getX(), offsetY + pos._left + getY(),
-					getWidth() * pos._scale.x, getHeight() * pos._scale.y, pos._cropRect.x, pos._cropRect.y,
-					pos._cropRect.width, pos._cropRect.height);
+			if (_tileLayers.size == 0) {
+				g.draw(getBackgroundTexture(), offsetX + pos._top + getX(), offsetY + pos._left + getY(),
+						getWidth() * pos._scale.x, getHeight() * pos._scale.y, pos._cropRect.x, pos._cropRect.y,
+						pos._cropRect.width, pos._cropRect.height);
+			} else {
+				final Vector2f offset = _tileLayers.get(0).getOffset();
+				g.draw(getBackgroundTexture(), offsetX + pos._top + getX() + offset.x,
+						offsetY + pos._left + getY() + offset.y, getWidth() * pos._scale.x, getHeight() * pos._scale.y,
+						pos._cropRect.x, pos._cropRect.y, pos._cropRect.width, pos._cropRect.height);
+			}
 		}
 		for (int i = _tileLayers.size - 1; i > -1; i--) {
 			final LDTKTileLayer layer = _tileLayers.get(i);
-			final float pixelX = layer.getPixelOffsetX();
-			final float pixelY = layer.getPixelOffsetY();
-			layer.draw(g, getX() + offsetX + pixelX, getY() + offsetY + pixelY);
+			layer.draw(g, getX() + offsetX, getY() + offsetY);
 		}
+	}
+
+	public LDTKLevel scrollDown(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollDown(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollLeft(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollLeft(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollRight(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollRight(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollUp(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollUp(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollLeftUp(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollLeftUp(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollRightDown(float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollRightDown(distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scrollClear() {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scrollClear();
+		}
+		return this;
+	}
+
+	public LDTKLevel scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public LDTKLevel scroll(float x, float y, float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scroll(x, y, distance);
+		}
+		return this;
+	}
+
+	public LDTKLevel scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public LDTKLevel scroll(float x1, float y1, float x2, float y2, float distance) {
+		for (int i = _tileLayers.size - 1; i > -1; i--) {
+			final LDTKTileLayer layer = _tileLayers.get(i);
+			layer.scroll(x1, y1, x2, y2, distance);
+		}
+		return this;
 	}
 
 	public LTexture getBackgroundTexture() {

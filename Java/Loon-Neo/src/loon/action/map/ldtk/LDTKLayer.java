@@ -21,6 +21,7 @@
 package loon.action.map.ldtk;
 
 import loon.Json;
+import loon.geom.PointI;
 
 public class LDTKLayer {
 
@@ -36,7 +37,7 @@ public class LDTKLayer {
 
 	protected int _heightInPixels;
 
-	protected int _gridSize;
+	protected final PointI _gridSize;
 
 	protected int _levelId;
 
@@ -53,12 +54,15 @@ public class LDTKLayer {
 	protected boolean _dirty;
 
 	public LDTKLayer(Json.Object v) {
-		this(v.getString("__identifier"), v.getInt("__cWid"), v.getInt("__cHei"), v.getInt("__gridSize"),
+		this(v.getString("__identifier"), v.getInt("__cWid"), v.getInt("__cHei"),
+				v.isArray("__gridSize")
+						? new PointI(v.getArray("__gridSize").getInt(0), v.getArray("__gridSize").getInt(1))
+						: new PointI(v.getInt("__gridSize")),
 				v.getNumber("__opacity"), v.getInt("levelId"), v.getInt("pxOffsetX"), v.getInt("pxOffsetY"),
 				v.getInt("seed"), v.getBoolean("visible"));
 	}
 
-	public LDTKLayer(String id, int width, int height, int gridSize, float opacity, int levelId, int pixelOffsetX,
+	public LDTKLayer(String id, int width, int height, PointI gridSize, float opacity, int levelId, int pixelOffsetX,
 			int pixelOffsetY, int randomSeed, boolean v) {
 		this._id = id;
 		this._width = width;
@@ -121,15 +125,23 @@ public class LDTKLayer {
 		return _heightInPixels;
 	}
 
-	public int getGridSize() {
+	public PointI getGridSize() {
 		return _gridSize;
 	}
 
-	public LDTKLayer setGridSize(int gridSize) {
-		if (this._gridSize != gridSize) {
+	public LDTKLayer setGridSize(int size) {
+		if (!this._gridSize.equals(size, size)) {
 			this._dirty = true;
 		}
-		this._gridSize = gridSize;
+		this._gridSize.set(size);
+		return this;
+	}
+
+	public LDTKLayer setGridSize(int w, int h) {
+		if (!this._gridSize.equals(w, h)) {
+			this._dirty = true;
+		}
+		this._gridSize.set(w, h);
 		return this;
 	}
 

@@ -878,8 +878,8 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	 * @param _offset
 	 */
 	@Override
-	public TileMap setOffset(Vector2f _offset) {
-		this._offset.set(_offset);
+	public TileMap setOffset(Vector2f offset) {
+		this._offset.set(offset);
 		return this;
 	}
 

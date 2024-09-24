@@ -28,6 +28,7 @@ import loon.LTexture;
 import loon.action.map.Config;
 import loon.action.sprite.Entity;
 import loon.canvas.LColor;
+import loon.geom.PointI;
 import loon.opengl.GLEx;
 import loon.utils.IntArray;
 import loon.utils.IntMap;
@@ -69,6 +70,8 @@ public class LDTKMap extends Entity implements Config {
 
 	private LColor _bgColor;
 
+	private LDTKWorldLayoutType _worldType;
+
 	private LDTKTypes _types;
 
 	private String _path;
@@ -94,11 +97,21 @@ public class LDTKMap extends Entity implements Config {
 		this._leveltoIds = new IntMap<LDTKLevel>();
 		this._levelNamesToIds = new ObjectMap<String, Integer>();
 		this._drawLevels = new IntArray();
+		this._worldType = LDTKWorldLayoutType.WorldLayoutFree;
 		this._types = types;
 		this._dirty = true;
 		this._path = path;
 		this._dirPath = PathUtils.normalizeDir(_path);
 		this._repaintDraw = true;
+	}
+
+	public LDTKWorldLayoutType getWorldLayoutType() {
+		return this._worldType;
+	}
+
+	public LDTKMap setWorldLayoutType(LDTKWorldLayoutType t) {
+		this._worldType = t;
+		return this;
 	}
 
 	@Override
@@ -136,6 +149,22 @@ public class LDTKMap extends Entity implements Config {
 			}
 			_dirty = false;
 		}
+	}
+
+	public int getWorldX() {
+		return MathUtils.iceil(this.getX());
+	}
+
+	public int getWorldY() {
+		return MathUtils.iceil(this.getY());
+	}
+
+	public int getWorldWidth() {
+		return MathUtils.iceil(this.getWidth());
+	}
+
+	public int getWorldHeight() {
+		return MathUtils.iceil(this.getHeight());
 	}
 
 	public String getPath() {
@@ -179,9 +208,9 @@ public class LDTKMap extends Entity implements Config {
 		}
 	}
 
-	public int getGridSize(LDTKLevel level, int idx) {
+	public PointI getGridSize(LDTKLevel level, int idx) {
 		parse();
-		int gridSize = 0;
+		PointI gridSize = new PointI();
 		for (int j = 0; j < _leveltoIds.size; j++) {
 			LDTKLevel le = _leveltoIds.get(j);
 			if (le.getLayerType() == LDTKLayerType.Entities) {
