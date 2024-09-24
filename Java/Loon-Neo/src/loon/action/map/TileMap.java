@@ -387,6 +387,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		return null;
 	}
 
+	@Override
 	public int[][] getMap() {
 		return _field2d.getMap();
 	}
@@ -1228,8 +1229,8 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	}
 
 	public Vector2f toRollPosition(Vector2f pos) {
-		pos.x = pos.x % ((_field2d.getViewWidth()));
-		pos.y = pos.y % ((_field2d.getViewHeight()));
+		pos.x = pos.x % _field2d.getViewWidth();
+		pos.y = pos.y % _field2d.getViewHeight();
 		if (pos.x < 0f) {
 			pos.x += _field2d.getViewWidth();
 		}

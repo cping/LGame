@@ -34,6 +34,7 @@ import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.utils.Base64Coder;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLElement;
 
@@ -301,7 +302,7 @@ public class TMXTileLayer extends TMXMapLayer {
 	}
 
 	private void parseCSV(String csv) {
-		String[] tokens = csv.split(",");
+		String[] tokens = StringUtils.split(csv, LSystem.COMMA);
 		int tileCount = 0;
 
 		for (String token : tokens) {

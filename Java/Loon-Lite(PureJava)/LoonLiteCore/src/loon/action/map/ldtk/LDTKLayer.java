@@ -32,6 +32,10 @@ public class LDTKLayer {
 
 	protected int _height;
 
+	protected int _widthInPixels;
+
+	protected int _heightInPixels;
+
 	protected int _gridSize;
 
 	protected int _levelId;
@@ -45,6 +49,8 @@ public class LDTKLayer {
 	protected float _pixelOffsetY;
 
 	protected boolean _visible;
+
+	protected boolean _dirty;
 
 	public LDTKLayer(Json.Object v) {
 		this(v.getString("__identifier"), v.getInt("__cWid"), v.getInt("__cHei"), v.getInt("__gridSize"),
@@ -64,6 +70,7 @@ public class LDTKLayer {
 		this._pixelOffsetY = pixelOffsetY;
 		this._randomSeed = randomSeed;
 		this._tileSize = _width * _height;
+		this._dirty = true;
 	}
 
 	public String getId() {
@@ -71,10 +78,13 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setId(String id) {
+		if (!this._id.equals(id)) {
+			this._dirty = true;
+		}
 		this._id = id;
 		return this;
 	}
-	
+
 	public int getTileSize() {
 		return _tileSize;
 	}
@@ -84,6 +94,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setWidth(int width) {
+		if (this._width != width) {
+			this._dirty = true;
+		}
 		this._width = width;
 		return this;
 	}
@@ -93,8 +106,19 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setHeight(int height) {
+		if (this._height != height) {
+			this._dirty = true;
+		}
 		this._height = height;
 		return this;
+	}
+
+	public int getViewWidth() {
+		return _widthInPixels;
+	}
+
+	public int getViewHeight() {
+		return _heightInPixels;
 	}
 
 	public int getGridSize() {
@@ -102,6 +126,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setGridSize(int gridSize) {
+		if (this._gridSize != gridSize) {
+			this._dirty = true;
+		}
 		this._gridSize = gridSize;
 		return this;
 	}
@@ -111,6 +138,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setOpacity(float opacity) {
+		if (this._opacity != opacity) {
+			this._dirty = true;
+		}
 		this._opacity = opacity;
 		return this;
 	}
@@ -120,6 +150,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setLevelId(int levelId) {
+		if (this._levelId != levelId) {
+			this._dirty = true;
+		}
 		this._levelId = levelId;
 		return this;
 	}
@@ -129,6 +162,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setPixelOffsetX(float pixelOffsetX) {
+		if (this._pixelOffsetX != pixelOffsetX) {
+			this._dirty = true;
+		}
 		this._pixelOffsetX = pixelOffsetX;
 		return this;
 	}
@@ -138,6 +174,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setPixelOffsetY(float pixelOffsetY) {
+		if (this._pixelOffsetY != pixelOffsetY) {
+			this._dirty = true;
+		}
 		this._pixelOffsetY = pixelOffsetY;
 		return this;
 	}
@@ -147,6 +186,9 @@ public class LDTKLayer {
 	}
 
 	public LDTKLayer setRandomSeed(int randomSeed) {
+		if (this._randomSeed != randomSeed) {
+			this._dirty = true;
+		}
 		this._randomSeed = randomSeed;
 		return this;
 	}

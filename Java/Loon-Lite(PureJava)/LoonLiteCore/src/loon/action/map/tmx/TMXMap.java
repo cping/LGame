@@ -623,6 +623,9 @@ public class TMXMap implements Sized {
 		tileHeight = element.getIntAttribute("tileheight", 0);
 		infinite = element.getIntAttribute("infinite", 0);
 
+		widthInPixels = width * tileWidth;
+		heightInPixels = height * tileHeight;
+
 		nextlayerid = element.getIntAttribute("nextlayerid", 0);
 		nextObjectID = element.getIntAttribute("nextobjectid", 0);
 

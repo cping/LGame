@@ -37,7 +37,7 @@ import loon.utils.StringUtils;
 
 public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, ChangeEvent<LDTKTile>, LRelease {
 
-	private Vector2f _offect = new Vector2f();
+	private Vector2f _offset = new Vector2f();
 
 	private LDTKTile[] _mapTiles;
 
@@ -55,7 +55,7 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 
 	private IntArray _limits;
 
-	protected boolean _dirty;
+	private boolean _roll;
 
 	public LDTKTileLayer(LDTKMap map, LDTKLevel level, Json.Object v, boolean intGrid) {
 		super(v);
@@ -67,8 +67,10 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 			tilesetRelPath = map.getDir() + LSystem.FS + tilesetRelPath;
 		}
 		this._mapTexture = LTextures.loadTexture(tilesetRelPath);
-		this._cellsTilesPerRow = level.getWidth() / _gridSize;
-		this._cellsTilesPerCol = level.getHeight() / _gridSize;
+		this._widthInPixels = level.getWidth();
+		this._heightInPixels = level.getHeight();
+		this._cellsTilesPerRow = _widthInPixels / _gridSize;
+		this._cellsTilesPerCol = _heightInPixels / _gridSize;
 		Json.Array tiles = v.getArray(intGrid ? "autoLayerTiles" : "gridTiles");
 		this._mapTiles = new LDTKTile[tiles.length()];
 		for (int i = 0; i < tiles.length(); i++) {
@@ -106,11 +108,13 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 				_limits.add(typeFlag);
 			}
 		}
-		this._dirty = true;
 	}
 
 	public void draw(GLEx g) {
-		draw(g, 0, 0);
+		if (this._roll) {
+			this._offset = this.toRollPosition(this._offset);
+		}
+		draw(g, _pixelOffsetX + _offset.x(), _pixelOffsetY + _offset.y());
 	}
 
 	public void draw(GLEx g, float offsetX, float offsetY) {
@@ -232,6 +236,13 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		return _cellsTilesPerCol;
 	}
 
+	public LDTKTileLayer offsetClear() {
+		if (_offset != null && !this._offset.equals(0f, 0f)) {
+			this._offset.set(0, 0);
+		}
+		return this;
+	}
+
 	public LDTKMap getLDTKMap() {
 		return _map;
 	}
@@ -246,6 +257,27 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 
 	public LTexture getTilemapTexture() {
 		return _mapTexture;
+	}
+
+	public boolean isRoll() {
+		return _roll;
+	}
+
+	public LDTKTileLayer setRoll(boolean roll) {
+		this._roll = roll;
+		return this;
+	}
+
+	public Vector2f toRollPosition(Vector2f pos) {
+		pos.x = pos.x % _widthInPixels;
+		pos.y = pos.y % _heightInPixels;
+		if (pos.x < 0f) {
+			pos.x += _widthInPixels;
+		}
+		if (pos.x < 0f) {
+			pos.y += _heightInPixels;
+		}
+		return pos;
 	}
 
 	@Override
@@ -318,13 +350,13 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		if (o == null) {
 			return this;
 		}
-		this._offect = o;
+		this._offset = o;
 		return this;
 	}
 
 	@Override
 	public Vector2f getOffset() {
-		return _offect;
+		return _offset;
 	}
 
 	@Override

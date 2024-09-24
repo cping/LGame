@@ -49,6 +49,7 @@ import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.ObjectMap;
+import loon.utils.TArray;
 import loon.utils.TimeUtils;
 
 /**
@@ -324,7 +325,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	@Override
 	public Field2D getField2D() {
-		return null;
+		TArray<Field2D> fileds = map.newIDField2Ds();
+		return fileds.size > 0 ? fileds.get(0) : null;
 	}
 
 	@Override

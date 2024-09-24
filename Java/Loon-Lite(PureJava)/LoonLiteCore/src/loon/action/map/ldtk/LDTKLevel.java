@@ -362,6 +362,10 @@ public class LDTKLevel implements LRelease {
 		return _neighbours;
 	}
 
+	public LDTKLayer getLayer(int layerID) {
+		return _tileLayers.get(layerID);
+	}
+
 	public int getPixelsAtFieldType(int layerID, float x, float y) {
 		LDTKLayer layer = _tileLayers.get(layerID);
 		if (layer instanceof LDTKTileLayer) {
