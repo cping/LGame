@@ -97,6 +97,10 @@ public class LDTKEntity {
 		return _tileuid != null && _tileuid._id != -1;
 	}
 
+	public int getValueCount() {
+		return _values.size;
+	}
+
 	public int getDefaultUid() {
 		return _defUid;
 	}

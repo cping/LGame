@@ -402,6 +402,18 @@ public class LDTKLevel implements LRelease {
 		return new Vector2f(mapX + offsetX + posX, mapY + offsetY + posY);
 	}
 
+	public int getLayerCount() {
+		return this._layers.size;
+	}
+
+	public int getEntityCount() {
+		return this._entityLayers.size;
+	}
+
+	public int getTileCount() {
+		return this._tileLayers.size;
+	}
+
 	public boolean contains(XY point) {
 		if (point == null) {
 			return false;

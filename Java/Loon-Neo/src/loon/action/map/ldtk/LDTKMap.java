@@ -241,6 +241,12 @@ public class LDTKMap extends Entity implements Config {
 		return gridSize;
 	}
 
+	/**
+	 * 设定需要绘制的level名
+	 * 
+	 * @param names
+	 * @return
+	 */
 	public LDTKMap setDrawLevelNames(String... names) {
 		parse();
 		String[] list = names;
@@ -255,6 +261,39 @@ public class LDTKMap extends Entity implements Config {
 		return this;
 	}
 
+	/**
+	 * 设定需要绘制的level索引(索引是注入level中的先后顺寻，由0开始到最大值，注意与id区分)
+	 * 
+	 * @param indexs
+	 * @return
+	 */
+	public LDTKMap setDrawLevelIndexs(int... indexs) {
+		parse();
+		int[] list = indexs;
+		if (list != null) {
+			final int[] keys = _leveltoIds.keys();
+			for (int i = 0; i < list.length; i++) {
+				final int idx = indexs[i];
+				for (int j = 0; j < keys.length; j++) {
+					if (j == idx) {
+						int id = keys[j];
+						LDTKLevel level = _leveltoIds.get(id);
+						if (level != null) {
+							_drawLevels.add(id);
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 设定需要绘制的level的id(id是注入level中的level专属id，在json中设置，不一定连续，注意与index区分)
+	 * 
+	 * @param ids
+	 * @return
+	 */
 	public LDTKMap setDrawLevelIds(int... ids) {
 		parse();
 		int[] list = ids;
@@ -267,6 +306,10 @@ public class LDTKMap extends Entity implements Config {
 			}
 		}
 		return this;
+	}
+
+	public int getLevelCount() {
+		return _leveltoIds.size;
 	}
 
 	public LDTKLevel getLevel(String name) {

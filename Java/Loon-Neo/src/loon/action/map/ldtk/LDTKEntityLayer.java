@@ -65,5 +65,9 @@ public class LDTKEntityLayer extends LDTKLayer {
 	public LDTKLevel getLevel() {
 		return _level;
 	}
+	
+	public int getEntityCount() {
+		return _entityMap.size;
+	}
 
 }
