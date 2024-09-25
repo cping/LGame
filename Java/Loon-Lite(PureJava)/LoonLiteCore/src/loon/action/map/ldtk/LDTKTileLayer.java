@@ -273,11 +273,13 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	}
 
 	public float centerX() {
-		return ((_map.getX() + _map.getContainerWidth()) - (getPixelOffsetX() + getViewWidth())) * 0.5f;
+		return ((_map.getX() + _map.getContainerX() + _map.getContainerWidth()) - (getPixelOffsetX() + getViewWidth()))
+				* 0.5f;
 	}
 
 	public float centerY() {
-		return (_map.getY() + _map.getContainerHeight() - (getPixelOffsetY() + getViewHeight())) * 0.5f;
+		return (_map.getY() + _map.getContainerY() + _map.getContainerHeight() - (getPixelOffsetY() + getViewHeight()))
+				* 0.5f;
 	}
 
 	public LDTKTileLayer scrollDown(float distance) {

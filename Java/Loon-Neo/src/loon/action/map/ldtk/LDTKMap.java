@@ -70,7 +70,7 @@ public class LDTKMap extends Entity implements Config {
 
 	private LColor _bgColor;
 
-	private LDTKWorldLayoutType _worldType;
+	private LDTKWorldLayoutType _worldLayout;
 
 	private LDTKTypes _types;
 
@@ -97,7 +97,7 @@ public class LDTKMap extends Entity implements Config {
 		this._leveltoIds = new IntMap<LDTKLevel>();
 		this._levelNamesToIds = new ObjectMap<String, Integer>();
 		this._drawLevels = new IntArray();
-		this._worldType = LDTKWorldLayoutType.WorldLayoutFree;
+		this._worldLayout = LDTKWorldLayoutType.WorldLayoutFree;
 		this._types = types;
 		this._dirty = true;
 		this._path = path;
@@ -106,11 +106,11 @@ public class LDTKMap extends Entity implements Config {
 	}
 
 	public LDTKWorldLayoutType getWorldLayoutType() {
-		return this._worldType;
+		return this._worldLayout;
 	}
 
 	public LDTKMap setWorldLayoutType(LDTKWorldLayoutType t) {
-		this._worldType = t;
+		this._worldLayout = t;
 		return this;
 	}
 
@@ -175,10 +175,31 @@ public class LDTKMap extends Entity implements Config {
 		return this._dirPath;
 	}
 
+	private void convertLayout(Json.Object o) {
+		if (o != null) {
+			String wl = o.getString("worldLayout", null);
+			if (wl != null) {
+				wl = wl.toLowerCase();
+				if ("linearvertical".equals(wl)) {
+					this._worldLayout = LDTKWorldLayoutType.WorldLayoutVertical;
+				} else if ("linearhorizontal".equals(wl)) {
+					this._worldLayout = LDTKWorldLayoutType.WorldLayoutHorizontal;
+				} else if ("gridvania".equals(wl)) {
+					this._worldLayout = LDTKWorldLayoutType.WorldLayoutGridVania;
+				} else if ("free".equals(wl)) {
+					this._worldLayout = LDTKWorldLayoutType.WorldLayoutFree;
+				} else {
+					this._worldLayout = null;
+				}
+			}
+		}
+	}
+
 	private void load(Json.Object root) {
 		if (root == null || root.isNull("levels")) {
 			throw new LSysException("The file " + _path + " does not exist or is not an ldtk map file !");
 		}
+		this.convertLayout(root);
 		this._worldGridWidth = root.getInt("worldGridWidth");
 		this._worldGridHeight = root.getInt("worldGridHeight");
 		this._defaultLevelWidth = root.getInt("defaultLevelWidth");

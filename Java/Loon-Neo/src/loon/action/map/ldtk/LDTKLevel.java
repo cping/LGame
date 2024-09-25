@@ -277,22 +277,24 @@ public class LDTKLevel implements LRelease {
 	}
 
 	public void draw(GLEx g, float offsetX, float offsetY) {
+		final float offX = getX() + offsetX;
+		final float offY = getY() + offsetY;
 		if (_useImageBackground && _bgPos._supportBackground) {
 			LDTKBackgroundPos pos = _bgPos;
 			if (_tileLayers.size == 0) {
-				g.draw(getBackgroundTexture(), offsetX + pos._top + getX(), offsetY + pos._left + getY(),
-						getWidth() * pos._scale.x, getHeight() * pos._scale.y, pos._cropRect.x, pos._cropRect.y,
-						pos._cropRect.width, pos._cropRect.height);
+				g.draw(getBackgroundTexture(), offX + pos._top, offY + pos._left, getWidth() * pos._scale.x,
+						getHeight() * pos._scale.y, pos._cropRect.x, pos._cropRect.y, pos._cropRect.width,
+						pos._cropRect.height);
 			} else {
 				final Vector2f offset = _tileLayers.get(0).getOffset();
-				g.draw(getBackgroundTexture(), offsetX + pos._top + getX() + offset.x,
-						offsetY + pos._left + getY() + offset.y, getWidth() * pos._scale.x, getHeight() * pos._scale.y,
-						pos._cropRect.x, pos._cropRect.y, pos._cropRect.width, pos._cropRect.height);
+				g.draw(getBackgroundTexture(), offX + pos._top + offset.x, offY + pos._left + offset.y,
+						getWidth() * pos._scale.x, getHeight() * pos._scale.y, pos._cropRect.x, pos._cropRect.y,
+						pos._cropRect.width, pos._cropRect.height);
 			}
 		}
 		for (int i = _tileLayers.size - 1; i > -1; i--) {
 			final LDTKTileLayer layer = _tileLayers.get(i);
-			layer.draw(g, getX() + offsetX, getY() + offsetY);
+			layer.draw(g, offX, offY);
 		}
 	}
 
