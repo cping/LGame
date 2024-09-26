@@ -140,7 +140,7 @@ public class AVGAnm implements Expression, LRelease {
 					angle = Float.parseFloat(vv);
 				}
 			} else if ("color".equalsIgnoreCase(key)) {
-				String[] p = vv.split(",");
+				String[] p = StringUtils.split(vv, LSystem.COMMA);
 				if (p.length > 2 && p.length < 5) {
 					for (int i = 0; i < p.length; i++) {
 						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
@@ -152,6 +152,8 @@ public class AVGAnm implements Expression, LRelease {
 						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]),
 								Integer.parseInt(p[3]));
 					}
+				} else {
+					color = new LColor(vv);
 				}
 			} else if ("imageheight".equalsIgnoreCase(key)) {
 				if (MathUtils.isNan(vv))
@@ -169,7 +171,7 @@ public class AVGAnm implements Expression, LRelease {
 					anmtime = Integer.parseInt(vv);
 				}
 			} else if ("pos".equalsIgnoreCase(key)) {
-				String[] p = vv.split(",");
+				String[] p = StringUtils.split(vv, LSystem.COMMA);
 				for (int i = 0; i < p.length; i++) {
 					p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
 				}

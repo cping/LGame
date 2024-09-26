@@ -28,9 +28,9 @@ public interface YamlEvent {
 
 	void event(String key);
 
-	void content(String key, String value);
+	void content(String key, String v);
 
-	void property(String key, String value);
+	void property(String key, String v);
 
 	void error(LSysException ex, int line);
 

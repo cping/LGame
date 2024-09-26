@@ -725,11 +725,11 @@ public final class LSystem {
 		return unite(hashCode, v);
 	}
 
-	public static final int unite(int hashCode, Object value) {
-		if (value == null) {
+	public static final int unite(int hashCode, Object v) {
+		if (v == null) {
 			return unite(hashCode, LSystem.YEAR);
 		}
-		return unite(hashCode, value.hashCode());
+		return unite(hashCode, v.hashCode());
 	}
 
 	public static final int unite(int hashCode, int value) {

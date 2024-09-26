@@ -1017,11 +1017,11 @@ public class RocScript {
 				return null;
 			}
 			nextItem();
-			String value = LSystem.EMPTY;
+			String v = LSystem.EMPTY;
 
 			if (!item.equals(")")) {
 				while (item.indexOf(")") == -1) {
-					value += item;
+					v += item;
 					nextItem();
 
 				}
@@ -1031,19 +1031,19 @@ public class RocScript {
 				}
 			}
 
-			if (value.length() > 0 && value.indexOf(LSystem.COMMA) == -1) {
-				if (value.indexOf(LSystem.DOUBLE_QUOTES) == -1 && value.indexOf(LSystem.SLASH) == -1
-						&& !isNumber(value)) {
-					String tmp = getVarVal(value).toString();
+			if (v.length() > 0 && v.indexOf(LSystem.COMMA) == -1) {
+				if (v.indexOf(LSystem.DOUBLE_QUOTES) == -1 && v.indexOf(LSystem.SLASH) == -1
+						&& !isNumber(v)) {
+					String tmp = getVarVal(v).toString();
 					if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
-						value = tmp;
+						v = tmp;
 					}
 				}
-			} else if (value.indexOf(LSystem.COMMA) != -1) {
-				String[] split = StringUtils.split(value, LSystem.COMMA);
+			} else if (v.indexOf(LSystem.COMMA) != -1) {
+				String[] split = StringUtils.split(v, LSystem.COMMA);
 				StrBuilder sbr = new StrBuilder();
 				for (String s : split) {
-					if (s.indexOf(LSystem.DOUBLE_QUOTES) == -1 && value.indexOf(LSystem.SLASH) == -1 && !isNumber(s)) {
+					if (s.indexOf(LSystem.DOUBLE_QUOTES) == -1 && v.indexOf(LSystem.SLASH) == -1 && !isNumber(s)) {
 						String tmp = getVarVal(s).toString();
 						if (!LSystem.UNKNOWN.equalsIgnoreCase(tmp)) {
 							sbr.append(tmp.toString());
@@ -1055,13 +1055,13 @@ public class RocScript {
 					}
 					sbr.append(LSystem.COMMA);
 				}
-				value = sbr.toString();
-				if (value.endsWith(",")) {
-					value = value.substring(0, value.length() - 1);
+				v = sbr.toString();
+				if (v.endsWith(",")) {
+					v = v.substring(0, v.length() - 1);
 				}
 
 			}
-			Object reuslt = _rocFunctions.getValue(this, key, value);
+			Object reuslt = _rocFunctions.getValue(this, key, v);
 			return reuslt == null ? LSystem.UNKNOWN : reuslt;
 		}
 
@@ -1928,16 +1928,16 @@ public class RocScript {
 	/**
 	 * 查询指定的json对象元素（暂时未使用递归，预防有不愿展露的数据被穷举出来）
 	 * 
-	 * @param value
+	 * @param vvalue
 	 * @param vname
 	 * @param method
 	 * @return
 	 */
-	private Object queryJson(Object value, String vname, String method) {
+	private Object queryJson(Object vvalue, String vname, String method) {
 		int start = 0;
 		int end = 0;
 		Object o = null;
-		Json.Object json = (Json.Object) value;
+		Json.Object json = (Json.Object) vvalue;
 		if (json.containsKey(method)) {
 			o = json.getObject(method);
 		}
@@ -2142,11 +2142,11 @@ public class RocScript {
 			if (o != null) {
 				Object[] result = (Object[]) o;
 				String method = (String) result[1];
-				Object value = result[2];
-				if (value instanceof Json.Object) {
-					o = queryJson(value, vname, method);
+				Object vs = result[2];
+				if (vs instanceof Json.Object) {
+					o = queryJson(vs, vname, method);
 				} else {
-					o = value;
+					o = vs;
 				}
 			}
 		}

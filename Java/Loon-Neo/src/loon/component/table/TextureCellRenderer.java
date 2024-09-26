@@ -31,11 +31,11 @@ public class TextureCellRenderer implements ICellRenderer {
 	private boolean scaleTexture = true;
 
 	@Override
-	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
-		if (!(value instanceof LTexture)) {
+	public void paint(GLEx g, Object vl, int x, int y, int width, int height) {
+		if (!(vl instanceof LTexture)) {
 			return;
 		}
-		LTexture textire = (LTexture) value;
+		LTexture textire = (LTexture) vl;
 		if (scaleTexture) {
 			g.draw(textire, x, y, width, height, LColor.white);
 		} else {
@@ -44,11 +44,11 @@ public class TextureCellRenderer implements ICellRenderer {
 	}
 
 	@Override
-	public void paint(Canvas g, Object value, int x, int y, int width, int height) {
-		if (!(value instanceof LTexture)) {
+	public void paint(Canvas g, Object vl, int x, int y, int width, int height) {
+		if (!(vl instanceof LTexture)) {
 			return;
 		}
-		LTexture textire = (LTexture) value;
+		LTexture textire = (LTexture) vl;
 		int old = g.getFillColor();
 		if (scaleTexture) {
 			g.draw(textire.getImage(), x, y, width, height);
@@ -63,14 +63,14 @@ public class TextureCellRenderer implements ICellRenderer {
 	}
 
 	@Override
-	public Dimension getCellContentSize(Object value) {
-		if (value == null) {
+	public Dimension getCellContentSize(Object vl) {
+		if (vl == null) {
 			return null;
 		}
-		if (!(value instanceof LTexture)) {
+		if (!(vl instanceof LTexture)) {
 			return null;
 		}
-		LTexture texture = (LTexture) value;
+		LTexture texture = (LTexture) vl;
 		return new Dimension(texture.getWidth(), texture.getHeight());
 	}
 }

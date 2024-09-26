@@ -843,14 +843,14 @@ public class LColor implements Serializable {
 		return (color & 0x00ffffff) | (alpha << 24);
 	}
 
-	private static final int convertInt(String value) {
-		if (!MathUtils.isNan(value)) {
+	private static final int convertInt(String v) {
+		if (!MathUtils.isNan(v)) {
 			return 0;
 		}
-		if (value.indexOf('.') == -1) {
-			return Integer.parseInt(value);
+		if (v.indexOf(LSystem.DOT) == -1) {
+			return Integer.parseInt(v);
 		}
-		return (int) Double.parseDouble(value);
+		return (int) Double.parseDouble(v);
 	}
 
 	public static final float encode(float upper, float lower) {
@@ -2468,11 +2468,11 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public String toString(int color) {
-		String value = CharUtils.toHex(color);
-		for (; value.length() < 8;) {
-			value = "0" + value;
+		String v = CharUtils.toHex(color);
+		for (; v.length() < 8;) {
+			v = "0" + v;
 		}
-		return value;
+		return v;
 	}
 
 	public float getBrightness() {

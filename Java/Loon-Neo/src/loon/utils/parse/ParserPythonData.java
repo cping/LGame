@@ -222,8 +222,8 @@ public class ParserPythonData {
 			pushBack(i);
 			Object key = parse(in);
 			confirm(in, ':');
-			Object value = parse(in);
-			m.put(key, value);
+			Object vl = parse(in);
+			m.put(key, vl);
 			i = readA(in);
 			if (i == end) {
 				return;

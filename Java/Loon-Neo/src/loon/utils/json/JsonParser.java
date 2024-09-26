@@ -83,9 +83,9 @@ final class JsonParser {
 
 	private boolean _eof;
 
-	private Object value;
+	private Object _value;
 
-	private Token token;
+	private Token _token;
 
 	JsonParser(String s, boolean filter) throws JsonParserException {
 		if (s == null) {
@@ -113,7 +113,7 @@ final class JsonParser {
 		advanceToken();
 		Object parsed = currentValue();
 		if (advanceToken() != Token.EOF) {
-			throw createParseException("Expected end of input, got " + token, true);
+			throw createParseException("Expected end of input, got " + _token, true);
 		}
 		if (clazz != Object.class && (parsed == null || clazz != parsed.getClass())) {
 			throw createParseException("JSON did not contain the correct type, expected " + clazz.getName() + ".",
@@ -138,12 +138,12 @@ final class JsonParser {
 			}
 			if (JSONTOKENS.indexOf(c) != -1) {
 				if (jsonValue.length() > 0) {
-					String value = jsonValue.toString();
-					if (MathUtils.isNan(value)) {
-						jsonContext.append(value);
+					String v = jsonValue.toString();
+					if (MathUtils.isNan(v)) {
+						jsonContext.append(v);
 					} else {
 						jsonContext.append(LSystem.DOUBLE_QUOTES);
-						jsonContext.append(value);
+						jsonContext.append(v);
 						jsonContext.append(LSystem.DOUBLE_QUOTES);
 					}
 					jsonValue.setLength(0);
@@ -159,10 +159,10 @@ final class JsonParser {
 	}
 
 	private Object currentValue() throws JsonParserException {
-		if (token.isValue) {
-			return value;
+		if (_token.isValue) {
+			return _value;
 		}
-		throw createParseException("Expected JSON value, got " + token, true);
+		throw createParseException("Expected JSON value, got " + _token, true);
 	}
 
 	private Token advanceToken() throws JsonParserException {
@@ -177,7 +177,7 @@ final class JsonParser {
 
 		switch (c) {
 		case -1:
-			return token = Token.EOF;
+			return _token = Token.EOF;
 		case '[':
 			JsonArray list = new JsonArray();
 			if (advanceToken() != Token.ARRAY_END)
@@ -186,63 +186,63 @@ final class JsonParser {
 					if (advanceToken() == Token.ARRAY_END) {
 						break;
 					}
-					if (token != Token.COMMA) {
-						throw createParseException("Expected a comma or end of the array instead of " + token, true);
+					if (_token != Token.COMMA) {
+						throw createParseException("Expected a comma or end of the array instead of " + _token, true);
 					}
 					if (advanceToken() == Token.ARRAY_END) {
 						throw createParseException("Trailing comma found in array", true);
 					}
 				}
-			value = list;
-			return token = Token.ARRAY_START;
+			_value = list;
+			return _token = Token.ARRAY_START;
 		case ']':
-			return token = Token.ARRAY_END;
+			return _token = Token.ARRAY_END;
 		case ',':
-			return token = Token.COMMA;
+			return _token = Token.COMMA;
 		case ':':
-			return token = Token.COLON;
+			return _token = Token.COLON;
 		case '{':
 			JsonObject map = new JsonObject();
 			if (advanceToken() != Token.OBJECT_END)
 				while (true) {
-					if (token != Token.STRING) {
-						throw createParseException("Expected STRING, got " + token, true);
+					if (_token != Token.STRING) {
+						throw createParseException("Expected STRING, got " + _token, true);
 					}
-					String key = (String) value;
+					String key = (String) _value;
 					if (advanceToken() != Token.COLON) {
-						throw createParseException("Expected COLON, got " + token, true);
+						throw createParseException("Expected COLON, got " + _token, true);
 					}
 					advanceToken();
 					map.put(key, currentValue());
 					if (advanceToken() == Token.OBJECT_END) {
 						break;
 					}
-					if (token != Token.COMMA) {
-						throw createParseException("Expected a comma or end of the object instead of " + token, true);
+					if (_token != Token.COMMA) {
+						throw createParseException("Expected a comma or end of the object instead of " + _token, true);
 					}
 					if (advanceToken() == Token.OBJECT_END) {
 						throw createParseException("Trailing object found in array", true);
 					}
 				}
-			value = map;
-			return token = Token.OBJECT_START;
+			_value = map;
+			return _token = Token.OBJECT_START;
 		case '}':
-			return token = Token.OBJECT_END;
+			return _token = Token.OBJECT_END;
 		case 't':
 			consumeKeyword((char) c, TRUE);
-			value = Boolean.TRUE;
-			return token = Token.TRUE;
+			_value = Boolean.TRUE;
+			return _token = Token.TRUE;
 		case 'f':
 			consumeKeyword((char) c, FALSE);
-			value = Boolean.FALSE;
-			return token = Token.FALSE;
+			_value = Boolean.FALSE;
+			return _token = Token.FALSE;
 		case 'n':
 			consumeKeyword((char) c, NULL);
-			value = null;
-			return token = Token.NULL;
+			_value = null;
+			return _token = Token.NULL;
 		case '\"':
-			value = consumeTokenString();
-			return token = Token.STRING;
+			_value = consumeTokenString();
+			return _token = Token.STRING;
 		case '-':
 		case '0':
 		case '1':
@@ -254,8 +254,8 @@ final class JsonParser {
 		case '7':
 		case '8':
 		case '9':
-			value = consumeTokenNumber((char) c);
-			return token = Token.NUMBER;
+			_value = consumeTokenNumber((char) c);
+			return _token = Token.NUMBER;
 		case '+':
 		case '.':
 			throw createParseException("Numbers may not start with '" + (char) c + "'", true);

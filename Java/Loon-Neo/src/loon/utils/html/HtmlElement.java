@@ -312,8 +312,8 @@ public class HtmlElement {
 		return attribute;
 	}
 
-	public HtmlAttribute addAttribute(String name, String value) {
-		HtmlAttribute attribute = new HtmlAttribute(name, value);
+	public HtmlAttribute addAttribute(String name, String v) {
+		HtmlAttribute attribute = new HtmlAttribute(name, v);
 		this.attributes.put(name, attribute);
 		return attribute;
 	}
@@ -437,16 +437,16 @@ public class HtmlElement {
 	}
 
 	public CssStyleSheet getAttrStyleSheet() {
-		String value = getAttribute("style", null);
-		if (value != null) {
-			return CssParser.loadText("* {" + value + "}");
+		String v = getAttribute("style", null);
+		if (v != null) {
+			return CssParser.loadText("* {" + v + "}");
 		}
 		return null;
 	}
 
 	public CssStyleNode getAttrStyleNode() {
-		String value = getAttribute("style", null);
-		if (value != null) {
+		String v = getAttribute("style", null);
+		if (v != null) {
 			CssStyleBuilder builder = new CssStyleBuilder();
 			return builder.build(this, getAttrStyleSheet());
 		}

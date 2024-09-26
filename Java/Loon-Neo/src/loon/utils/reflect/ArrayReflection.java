@@ -34,8 +34,8 @@ public final class ArrayReflection {
 		return java.lang.reflect.Array.get(array, index);
 	}
 
-	static public void set(Object array, int index, Object value) {
-		java.lang.reflect.Array.set(array, index, value);
+	static public void set(Object array, int index, Object vl) {
+		java.lang.reflect.Array.set(array, index, vl);
 	}
 
 }

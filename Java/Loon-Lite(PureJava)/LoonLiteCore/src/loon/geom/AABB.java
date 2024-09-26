@@ -114,10 +114,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return this;
 		}
-		minX = other.minX;
-		maxX = (other.minX + other.maxX) / 2f;
-		minY = other.minY;
-		maxY = (other.minY + other.maxY) / 2f;
+		this.minX = other.minX;
+		this.maxX = (other.minX + other.maxX) / 2f;
+		this.minY = other.minY;
+		this.maxY = (other.minY + other.maxY) / 2f;
 		return this;
 	}
 
@@ -125,10 +125,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return this;
 		}
-		minX = (other.minX + other.maxX) / 2f;
-		maxX = other.maxX;
-		minY = other.minY;
-		maxY = (other.minY + other.maxY) / 2f;
+		this.minX = (other.minX + other.maxX) / 2f;
+		this.maxX = other.maxX;
+		this.minY = other.minY;
+		this.maxY = (other.minY + other.maxY) / 2f;
 		return this;
 	}
 
@@ -136,10 +136,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return this;
 		}
-		minX = other.minX;
-		maxX = (other.minX + other.maxX) / 2f;
-		minY = (other.minY + other.maxY) / 2f;
-		maxY = other.maxY;
+		this.minX = other.minX;
+		this.maxX = (other.minX + other.maxX) / 2f;
+		this.minY = (other.minY + other.maxY) / 2f;
+		this.maxY = other.maxY;
 		return this;
 	}
 
@@ -147,10 +147,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return this;
 		}
-		minX = (other.minX + other.maxX) / 2f;
-		maxX = other.maxX;
-		minY = (other.minY + other.maxY) / 2f;
-		maxY = other.maxY;
+		this.minX = (other.minX + other.maxX) / 2f;
+		this.maxX = other.maxX;
+		this.minY = (other.minY + other.maxY) / 2f;
+		this.maxY = other.maxY;
 		return this;
 	}
 
@@ -180,16 +180,16 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this.minX < b.maxX && b.minX < this.maxX && this.minY < b.maxY && b.minY < this.maxY;
 	}
 
-	public AABB set(float minX, float minY, float maxX, float maxY) {
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+	public AABB set(float x1, float y1, float x2, float y2) {
+		this.minX = x1;
+		this.minY = y1;
+		this.maxX = x2;
+		this.maxY = y2;
 		return this;
 	}
 
 	public AABB scale(float sx, float sy) {
-		return new AABB(minX * sx, minY * sy, maxX * sx, maxY * sy);
+		return new AABB(this.minX * sx, this.minY * sy, this.maxX * sx, this.maxY * sy);
 	}
 
 	public AABB moveMin(float cx, float cy) {
@@ -217,10 +217,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (!intersects(other)) {
 			return false;
 		}
-		final float right = other.minX - maxX;
-		final float left = minX - other.maxX;
-		final float up = other.minY - maxY;
-		final float down = minY - other.maxY;
+		final float right = other.minX - this.maxX;
+		final float left = this.minX - other.maxX;
+		final float up = other.minY - this.maxY;
+		final float down = this.minY - other.maxY;
 		final float lr = right > left ? -right : left;
 		final float ud = up > down ? up : -down;
 		if (MathUtils.abs(lr) < MathUtils.abs(ud)) {
@@ -232,35 +232,35 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public boolean intersects(float x, float y) {
-		return x > minX && x < maxX && y > minY && y < maxY;
+		return x > this.minX && x < this.maxX && y > this.minY && y < this.maxY;
 	}
 
 	public boolean intersects(XY pos) {
 		if (pos == null) {
 			return false;
 		}
-		return pos.getX() > minX && pos.getX() < maxX && pos.getY() > minY && pos.getY() < maxY;
+		return pos.getX() > this.minX && pos.getX() < this.maxX && pos.getY() > this.minY && pos.getY() < this.maxY;
 	}
 
 	public boolean intersects(AABB other) {
 		if (other == null) {
 			return false;
 		}
-		return maxX > other.minX && minX < other.maxX && maxY > other.minY && minY < other.maxY;
+		return this.maxX > other.minX && this.minX < other.maxX && this.maxY > other.minY && this.minY < other.maxY;
 	}
 
 	public boolean contains(XY pos) {
 		if (pos == null) {
 			return false;
 		}
-		return pos.getX() >= minX && pos.getX() <= maxX && pos.getY() >= minY && pos.getY() <= maxY;
+		return pos.getX() >= this.minX && pos.getX() <= this.maxX && pos.getY() >= this.minY && pos.getY() <= this.maxY;
 	}
 
 	public boolean overlaps(AABB other) {
 		if (other == null) {
 			return false;
 		}
-		return (minX <= other.maxX && maxX >= other.minX && maxY >= other.minY && minY <= other.maxY);
+		return (this.minX <= other.maxX && this.maxX >= other.minX && this.maxY >= other.minY && this.minY <= other.maxY);
 	}
 
 	public float distance(Vector2f other) {
@@ -270,13 +270,13 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB merge(AABB other) {
-		float minX = MathUtils.min(this.getX(), other.getX());
-		float minY = MathUtils.min(this.getY(), other.getY());
+		float x0 = MathUtils.min(this.getX(), other.getX());
+		float y0 = MathUtils.min(this.getY(), other.getY());
 
 		float maxW = MathUtils.max(this.getWidth(), other.getWidth());
 		float maxH = MathUtils.max(this.getHeight(), other.getHeight());
 
-		return new AABB(minX, minY, maxW, maxH);
+		return new AABB(x0, y0, maxW, maxH);
 	}
 
 	public Vector2f getPosition(Vector2f pos) {
@@ -292,7 +292,7 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB rotate(float rotate) {
-		final int[] rect = MathUtils.getLimit(minX, minY, maxX, maxY, rotate);
+		final int[] rect = MathUtils.getLimit(this.minX, this.minY, this.maxX, this.maxY, rotate);
 		return set(rect[0], rect[1], rect[2], rect[3]);
 	}
 
@@ -303,35 +303,35 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB setVertices(TArray<Vector2f> vertices, XY velocity) {
-		minX = Float.MIN_VALUE;
-		maxX = -Float.MIN_VALUE;
-		minY = Float.MIN_VALUE;
-		maxY = -Float.MIN_VALUE;
+		this.minX = Float.MIN_VALUE;
+		this.maxX = -Float.MIN_VALUE;
+		this.minY = Float.MIN_VALUE;
+		this.maxY = -Float.MIN_VALUE;
 		for (int i = 0; i < vertices.size; i++) {
 			Vector2f vertex = vertices.get(i);
-			if (vertex.x > maxX) {
-				maxX = vertex.x;
+			if (vertex.x > this.maxX) {
+				this.maxX = vertex.x;
 			}
-			if (vertex.x < minX) {
-				minX = vertex.x;
+			if (vertex.x < this.minX) {
+				this.minX = vertex.x;
 			}
-			if (vertex.y > maxY) {
-				maxY = vertex.y;
+			if (vertex.y > this.maxY) {
+				this.maxY = vertex.y;
 			}
-			if (vertex.y < minY) {
-				minY = vertex.y;
+			if (vertex.y < this.minY) {
+				this.minY = vertex.y;
 			}
 		}
 		if (velocity != null) {
 			if (velocity.getX() > 0) {
-				maxX += velocity.getX();
+				this.maxX += velocity.getX();
 			} else {
-				minX += velocity.getX();
+				this.minX += velocity.getX();
 			}
 			if (velocity.getY() > 0) {
-				maxY += velocity.getY();
+				this.maxY += velocity.getY();
 			} else {
-				minY += velocity.getY();
+				this.minY += velocity.getY();
 			}
 		}
 		return this;
@@ -348,16 +348,16 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public Vector2f[] getBoxCoordinates() {
-		return new Vector2f[] { new Vector2f(minX, maxY), new Vector2f(maxX, maxY), new Vector2f(maxX, minY),
-				new Vector2f(minX, minY) };
+		return new Vector2f[] { new Vector2f(this.minX, this.maxY), new Vector2f(this.maxX, this.maxY),
+				new Vector2f(this.maxX, this.minY), new Vector2f(this.minX, this.minY) };
 	}
 
 	public float getPerimeter() {
-		return 2 * (maxX - minX + maxY - minY);
+		return 2 * (this.maxX - this.minX + this.maxY - this.minY);
 	}
 
 	public float getArea() {
-		return (maxX - minX) * (maxY - minY);
+		return (this.maxX - this.minX) * (this.maxY - this.minY);
 	}
 
 	public Vector2f getCenter(Vector2f pos) {
@@ -405,44 +405,44 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB addQuad(float[] vertices) {
-		float minX = this.minX;
-		float minY = this.minY;
-		float maxX = this.maxX;
-		float maxY = this.maxY;
+		float x0 = this.minX;
+		float y0 = this.minY;
+		float x1 = this.maxX;
+		float y1 = this.maxY;
 
 		float x = vertices[0];
 		float y = vertices[1];
 
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		x0 = x < x0 ? x : x0;
+		y0 = y < y0 ? y : y0;
+		x1 = x > x1 ? x : x1;
+		y1 = y > y1 ? y : y1;
 
 		x = vertices[2];
 		y = vertices[3];
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		x0 = x < x0 ? x : x0;
+		y0 = y < y0 ? y : y0;
+		x1 = x > x1 ? x : x1;
+		y1 = y > y1 ? y : y1;
 
 		x = vertices[4];
 		y = vertices[5];
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		x0 = x < x0 ? x : x0;
+		y0 = y < y0 ? y : y0;
+		x1 = x > x1 ? x : x1;
+		y1 = y > y1 ? y : y1;
 
 		x = vertices[6];
 		y = vertices[7];
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		x0 = x < x0 ? x : x0;
+		y0 = y < y0 ? y : y0;
+		x1 = x > x1 ? x : x1;
+		y1 = y > y1 ? y : y1;
 
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+		this.minX = x0;
+		this.minY = y0;
+		this.maxX = x1;
+		this.maxY = y1;
 		return this;
 	}
 
@@ -454,67 +454,67 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		float tx = aff.tx;
 		float ty = aff.ty;
 
-		float minX = this.minX;
-		float minY = this.minY;
-		float maxX = this.maxX;
-		float maxY = this.maxY;
+		float minX1 = this.minX;
+		float minY1 = this.minY;
+		float maxX1 = this.maxX;
+		float maxY1 = this.maxY;
 
 		float x = (a * x0) + (c * y0) + tx;
 		float y = (b * x0) + (d * y0) + ty;
 
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		minX1 = x < minX1 ? x : minX1;
+		minY1 = y < minY1 ? y : minY1;
+		maxX1 = x > maxX1 ? x : maxX1;
+		maxY1 = y > maxY1 ? y : maxY1;
 
 		x = (a * x1) + (c * y0) + tx;
 		y = (b * x1) + (d * y0) + ty;
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		minX1 = x < minX1 ? x : minX1;
+		minY1 = y < minY1 ? y : minY1;
+		maxX1 = x > maxX1 ? x : maxX1;
+		maxY1 = y > maxY1 ? y : maxY1;
 
 		x = (a * x0) + (c * y1) + tx;
 		y = (b * x0) + (d * y1) + ty;
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		minX1 = x < minX1 ? x : minX1;
+		minY1 = y < minY1 ? y : minY1;
+		maxX1 = x > maxX1 ? x : maxX1;
+		maxY1 = y > maxY1 ? y : maxY1;
 
 		x = (a * x1) + (c * y1) + tx;
 		y = (b * x1) + (d * y1) + ty;
-		minX = x < minX ? x : minX;
-		minY = y < minY ? y : minY;
-		maxX = x > maxX ? x : maxX;
-		maxY = y > maxY ? y : maxY;
+		minX1 = x < minX1 ? x : minX1;
+		minY1 = y < minY1 ? y : minY1;
+		maxX1 = x > maxX1 ? x : maxX1;
+		maxY1 = y > maxY1 ? y : maxY1;
 
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+		this.minX = minX1;
+		this.minY = minY1;
+		this.maxX = maxX1;
+		this.maxY = maxY1;
 		return this;
 	}
 
 	public AABB addVertexData(float[] vertexData, int begin, int end) {
-		float minX = this.minX;
-		float minY = this.minY;
-		float maxX = this.maxX;
-		float maxY = this.maxY;
+		float minX1 = this.minX;
+		float minY1 = this.minY;
+		float maxX1 = this.maxX;
+		float maxY1 = this.maxY;
 
 		for (int i = begin; i < end; i += 2) {
 			float x = vertexData[i];
 			float y = vertexData[i + 1];
 
-			minX = x < minX ? x : minX;
-			minY = y < minY ? y : minY;
-			maxX = x > maxX ? x : maxX;
-			maxY = y > maxY ? y : maxY;
+			minX1 = x < minX1 ? x : minX1;
+			minY1 = y < minY1 ? y : minY1;
+			maxX1 = x > maxX1 ? x : maxX1;
+			maxY1 = y > maxY1 ? y : maxY1;
 		}
 
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+		this.minX = minX1;
+		this.minY = minY1;
+		this.maxX = maxX1;
+		this.maxY = maxY1;
 		return this;
 	}
 
@@ -548,22 +548,22 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 
 	@Override
 	public float getX() {
-		return minX;
+		return this.minX;
 	}
 
 	@Override
 	public float getY() {
-		return minY;
+		return this.minY;
 	}
 
 	@Override
 	public float getZ() {
-		return maxX;
+		return this.maxX;
 	}
 
 	@Override
 	public float getW() {
-		return maxY;
+		return this.maxY;
 	}
 
 	public boolean contains(Circle circle) {
@@ -573,8 +573,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		float ymin = circle.y - circle.getRadius();
 		float ymax = ymin + 2f * circle.getRadius();
 
-		return ((xmin > minX && xmin < minX + maxX) && (xmax > minX && xmax < minX + maxX))
-				&& ((ymin > minY && ymin < minY + maxY) && (ymax > minY && ymax < minY + maxY));
+		return ((xmin > this.minX && xmin < this.minX + this.maxX)
+				&& (xmax > this.minX && xmax < this.minX + this.maxX))
+				&& ((ymin > this.minY && ymin < this.minY + this.maxY)
+						&& (ymax > this.minY && ymax < this.minY + this.maxY));
 	}
 
 	public boolean isEmpty() {
@@ -620,10 +622,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (pos == null) {
 			return this;
 		}
-		minX += pos.getX();
-		maxX += pos.getX();
-		minY += pos.getY();
-		maxY += pos.getY();
+		this.minX += pos.getX();
+		this.maxX += pos.getX();
+		this.minY += pos.getY();
+		this.maxY += pos.getY();
 		return this;
 	}
 
@@ -631,13 +633,13 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (pos == null) {
 			return this;
 		}
-		float deltaX = maxX - minX;
-		float deltaY = maxY - minY;
+		float deltaX = this.maxX - this.minX;
+		float deltaY = this.maxY - this.minY;
 
-		minX = pos.getX();
-		maxX = pos.getX() + deltaX;
-		minY = pos.getY();
-		maxY = pos.getY() + deltaY;
+		this.minX = pos.getX();
+		this.maxX = pos.getX() + deltaX;
+		this.minY = pos.getY();
+		this.maxY = pos.getY() + deltaY;
 		return this;
 	}
 
@@ -654,15 +656,15 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB add(AABB rect) {
-		final float minX = this.minX;
-		final float minY = this.minY;
-		final float maxX = this.maxX;
-		final float maxY = this.maxY;
+		final float minX1 = this.minX;
+		final float minY1 = this.minY;
+		final float maxX1 = this.maxX;
+		final float maxY1 = this.maxY;
 
-		this.minX = rect.minX < minX ? rect.minX : minX;
-		this.minY = rect.minY < minY ? rect.minY : minY;
-		this.maxX = rect.maxX > maxX ? rect.maxX : maxX;
-		this.maxY = rect.maxY > maxY ? rect.maxY : maxY;
+		this.minX = rect.minX < minX1 ? rect.minX : minX1;
+		this.minY = rect.minY < minY1 ? rect.minY : minY1;
+		this.maxX = rect.maxX > maxX1 ? rect.maxX : maxX1;
+		this.maxY = rect.maxY > maxY1 ? rect.maxY : maxY1;
 		return this;
 	}
 
@@ -678,21 +680,21 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB add(AABB aabb, RectBox area) {
-		final float _minX = aabb.minX > area.x ? aabb.minX : area.x;
-		final float _minY = aabb.minY > area.y ? aabb.minY : area.y;
-		final float _maxX = aabb.maxX < area.x + area.width ? aabb.maxX : (area.x + area.width);
-		final float _maxY = aabb.maxY < area.y + area.height ? aabb.maxY : (area.y + area.height);
+		final float aminX = aabb.minX > area.x ? aabb.minX : area.x;
+		final float bminY = aabb.minY > area.y ? aabb.minY : area.y;
+		final float cmaxX = aabb.maxX < area.x + area.width ? aabb.maxX : (area.x + area.width);
+		final float dmaxY = aabb.maxY < area.y + area.height ? aabb.maxY : (area.y + area.height);
 
-		if (_minX <= _maxX && _minY <= _maxY) {
-			final float minX = this.minX;
-			final float minY = this.minY;
-			final float maxX = this.maxX;
-			final float maxY = this.maxY;
+		if (aminX <= cmaxX && bminY <= dmaxY) {
+			final float minX1 = this.minX;
+			final float minY1 = this.minY;
+			final float maxX1 = this.maxX;
+			final float maxY1 = this.maxY;
 
-			this.minX = _minX < minX ? _minX : minX;
-			this.minY = _minY < minY ? _minY : minY;
-			this.maxX = _maxX > maxX ? _maxX : maxX;
-			this.maxY = _maxY > maxY ? _maxY : maxY;
+			this.minX = aminX < minX1 ? aminX : minX1;
+			this.minY = bminY < minY1 ? bminY : minY1;
+			this.maxX = cmaxX > maxX1 ? cmaxX : maxX1;
+			this.maxY = dmaxY > maxY1 ? dmaxY : maxY1;
 		}
 		return this;
 	}
@@ -709,23 +711,24 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	public int hashCode() {
 		final int prime = 31;
 		int hashCode = 1;
-		hashCode = prime * LSystem.unite(hashCode, minX);
-		hashCode = prime * LSystem.unite(hashCode, minY);
-		hashCode = prime * LSystem.unite(hashCode, maxX);
-		hashCode = prime * LSystem.unite(hashCode, maxY);
+		hashCode = prime * LSystem.unite(hashCode, this.minX);
+		hashCode = prime * LSystem.unite(hashCode, this.minY);
+		hashCode = prime * LSystem.unite(hashCode, this.maxX);
+		hashCode = prime * LSystem.unite(hashCode, this.maxY);
 		return hashCode;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("AABB");
-		builder.kv("minX", minX).comma().kv("minY", minY).comma().kv("maxX", maxX).comma().kv("maxY", maxY);
+		builder.kv("minX", this.minX).comma().kv("minY", this.minY).comma().kv("maxX", this.maxX).comma().kv("maxY",
+				this.maxY);
 		return builder.toString();
 	}
 
 	@Override
 	public void close() {
-		this.minX = this.minY = this.maxX = this.maxY = 0;
+		this.minX = this.minY = this.maxX = this.maxY = 0f;
 	}
 
 }

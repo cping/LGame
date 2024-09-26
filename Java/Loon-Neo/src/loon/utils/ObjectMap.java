@@ -1002,17 +1002,17 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		}
 	}
 
-	public boolean containsValue(Object value) {
+	public boolean containsValue(Object v) {
 		if (keyValueTable == null || size == 0) {
 			return false;
 		}
 		if (keyIndexShift == 0) {
-			return size > 0 && value == FINAL_VALUE;
+			return size > 0 && v == FINAL_VALUE;
 		}
 		for (int i = NULL_INDEX; i < firstUnusedIndex; i++) {
 			if (!isEmpty(i)) {
 				Object o = keyValueTable[(i << keyIndexShift) + 2];
-				if (o == value || o != null && o.equals(value)) {
+				if (o == v || o != null && o.equals(v)) {
 					return true;
 				}
 			}
@@ -1067,9 +1067,9 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		for (int i = NULL_INDEX; i < firstUnusedIndex; i++)
 			if (!isEmpty(i)) {
 				int hc = i == NULL_INDEX ? 0 : keyValueTable[(i << keyIndexShift) + 1].hashCode();
-				Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
-				if (value != null) {
-					hc ^= value.hashCode();
+				Object v = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+				if (v != null) {
+					hc ^= v.hashCode();
 				}
 				hashCode += hc;
 			}
@@ -1092,14 +1092,14 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 		for (int i = NULL_INDEX; i < firstUnusedIndex; i++)
 			if (!isEmpty(i)) {
 				Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
-				Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
-				if (value == null) {
+				Object v = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+				if (v == null) {
 					if (!(m.get(key) == null && m.containsKey(key))) {
 						return false;
 					}
 				} else {
 					Object value2 = m.get(key);
-					if (value != value2 && !value.equals(value2)) {
+					if (v != value2 && !v.equals(value2)) {
 						return false;
 					}
 				}
@@ -1122,10 +1122,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 				sbr.append(", ");
 			}
 			Object key = i == NULL_INDEX ? null : keyValueTable[(i << keyIndexShift) + 1];
-			Object value = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
+			Object v = keyIndexShift > 0 ? keyValueTable[(i << keyIndexShift) + 2] : FINAL_VALUE;
 			sbr.append(key == this ? "(this Map)" : key);
 			sbr.append('=');
-			sbr.append(value == this ? "(this Map)" : value);
+			sbr.append(v == this ? "(this Map)" : v);
 		}
 		return sbr.append(']').toString();
 	}

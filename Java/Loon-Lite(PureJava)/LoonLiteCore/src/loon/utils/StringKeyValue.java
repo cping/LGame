@@ -35,14 +35,14 @@ public class StringKeyValue {
 	public final static StringKeyValue at(String name) {
 		return new StringKeyValue(name);
 	}
-	
-	private final int capacity;
 
-	private String key;
+	private final int _capacity;
 
-	private String value;
+	private String _key;
 
-	private final Array<CharSequence> flags;
+	private String _value;
+
+	private final Array<CharSequence> _flags;
 
 	private StrBuilder _buffer;
 
@@ -58,30 +58,30 @@ public class StringKeyValue {
 		this(size, key, null);
 	}
 
-	public StringKeyValue(int size, String k, String val) {
-		this.capacity = size;
-		this.key = k;
-		this.value = val;
-		this.flags = new Array<CharSequence>();
+	public StringKeyValue(int size, String k, String v) {
+		this._capacity = size;
+		this._key = k;
+		this._value = v;
+		this._flags = new Array<CharSequence>();
 	}
 
 	private void initBuild() {
 		if (!_init_buffer && _buffer == null) {
-			_buffer = new StrBuilder(capacity);
+			_buffer = new StrBuilder(_capacity);
 			_init_buffer = true;
 		}
 	}
 
 	public String getKey() {
-		return key;
+		return _key;
 	}
 
 	public void setKey(String newKey) {
-		this.key = newKey;
+		this._key = newKey;
 	}
 
 	public int getCapacity() {
-		return capacity;
+		return _capacity;
 	}
 
 	public StringKeyValue addValue(boolean ch) {
@@ -198,14 +198,14 @@ public class StringKeyValue {
 		return kv(key, sbr.toString());
 	}
 
-	public StringKeyValue kv(CharSequence key, Object value) {
-		if (key == null && value == null) {
+	public StringKeyValue kv(CharSequence key, Object vl) {
+		if (key == null && vl == null) {
 			return this;
 		}
-		if (key != null && value == null) {
+		if (key != null && vl == null) {
 			return addValue(key).addValue(LSystem.EQUAL).addValue(LSystem.UNKNOWN);
-		} else if (key != null && value != null) {
-			return addValue(key).addValue(LSystem.EQUAL).addValue(value.toString());
+		} else if (key != null && vl != null) {
+			return addValue(key).addValue(LSystem.EQUAL).addValue(vl.toString());
 		}
 		return this;
 	}
@@ -217,51 +217,51 @@ public class StringKeyValue {
 	public StringKeyValue line(CharSequence mes) {
 		return addValue(mes).newLine();
 	}
-	
+
 	public TArray<CharSequence> getTags() {
-		return new TArray<CharSequence>(flags);
+		return new TArray<CharSequence>(_flags);
 	}
 
 	public CharSequence removeFirstTag() {
-		return flags.removeFirst();
+		return _flags.removeFirst();
 	}
 
 	public CharSequence removeLastTag() {
-		return flags.removeLast();
+		return _flags.removeLast();
 	}
 
 	public StringKeyValue addTag(CharSequence tag) {
-		flags.add(tag);
+		_flags.add(tag);
 		return this;
 	}
 
 	public StringKeyValue removeTag(CharSequence tag) {
-		flags.remove(tag);
+		_flags.remove(tag);
 		return this;
 	}
 
 	public StringKeyValue pushTag(CharSequence tag) {
-		flags.add(tag);
+		_flags.add(tag);
 		return addValue("<" + tag + ">");
 	}
 
 	public StringKeyValue popTag(CharSequence tag) {
-		CharSequence tmp = flags.pop();
+		CharSequence tmp = _flags.pop();
 		return addValue("</" + ((tag == null || tag.length() == 0 || " ".equals(tag)) ? tmp : tag) + ">");
 	}
 
 	public StringKeyValue popTag() {
-		if (flags.size() > 0) {
-			return addValue("</" + flags.pop() + ">");
+		if (_flags.size() > 0) {
+			return addValue("</" + _flags.pop() + ">");
 		}
 		return this;
 	}
 
 	public StringKeyValue popTagAll() {
-		for (; flags.hashNext();) {
-			addValue("</" + flags.next() + ">");
+		for (; _flags.hashNext();) {
+			addValue("</" + _flags.next() + ">");
 		}
-		flags.clear();
+		_flags.clear();
 		return this;
 	}
 
@@ -278,10 +278,10 @@ public class StringKeyValue {
 
 	public String getValue() {
 		if (_dirty && _buffer != null) {
-			value = _buffer.toString();
+			_value = _buffer.toString();
 			_dirty = false;
 		}
-		return value;
+		return _value;
 	}
 
 	public StringKeyValue clear() {
@@ -311,7 +311,7 @@ public class StringKeyValue {
 	public String toHtml() {
 		return "<html>" + toData() + "</html>";
 	}
-	
+
 	@Override
 	public String toString() {
 		return toData("[", "]");

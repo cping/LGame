@@ -57,38 +57,38 @@ public class RocFunctions {
 		return this;
 	}
 
-	public Object getValue(RocScript script, String name, String value) {
+	public Object getValue(RocScript script, String name, String v) {
 		if (name == null) {
-			return value;
+			return v;
 		}
 		String key = name.trim().toLowerCase();
 		if ("trim".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return StringUtils.trim(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return StringUtils.trim(v);
 			}
 		} else if ("rtrim".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return StringUtils.rtrim(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return StringUtils.rtrim(v);
 			}
 		} else if ("isnan".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return MathUtils.isNan(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return MathUtils.isNan(v);
 			}
 		} else if ("ischinese".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return StringUtils.isChinaLanguage(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return StringUtils.isChinaLanguage(v);
 			}
 		} else if ("isjapanese".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return StringUtils.isJapanLanguage(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return StringUtils.isJapanLanguage(v);
 			}
 		} else if ("iskorean".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) == -1) {
-				return StringUtils.isKoreanLanguage(value);
+			if (v.indexOf(LSystem.COMMA) == -1) {
+				return StringUtils.isKoreanLanguage(v);
 			}
 		} else if ("indexof".equals(key)) {
-			if (value.indexOf(LSystem.COMMA) != -1) {
-				String[] split = StringUtils.split(value, LSystem.COMMA);
+			if (v.indexOf(LSystem.COMMA) != -1) {
+				String[] split = StringUtils.split(v, LSystem.COMMA);
 				if (split.length == 2) {
 					return split[0].indexOf(split[1]) != -1;
 				}
@@ -98,7 +98,7 @@ public class RocFunctions {
 		}
 		IRocFunction roc = (IRocFunction) _rocFunctions.get(key);
 		if (roc != null) {
-			String[] args = StringUtils.split(value, LSystem.COMMA);
+			String[] args = StringUtils.split(v, LSystem.COMMA);
 			Object o = roc.call(args);
 			if (o != null) {
 				return o;

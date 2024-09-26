@@ -27,76 +27,76 @@ import loon.utils.StringUtils;
 
 public class XMLAttribute {
 
-	private String name;
+	private String _name;
 
-	private String value;
+	private String _value;
 
-	protected XMLElement element;
+	protected XMLElement _element;
 
 	XMLAttribute(String n, String v) {
-		this.name = n;
-		this.value = v;
+		this._name = n;
+		this._value = v;
 	}
 
 	public XMLElement getElement() {
-		return element;
+		return _element;
 	}
 
 	public String getValue() {
-		return this.value;
+		return this._value;
 	}
 
 	public int getIntValue() {
-		if (!MathUtils.isNan(this.value)) {
+		if (!MathUtils.isNan(this._value)) {
 			return 0;
 		}
 		try {
-			return Integer.valueOf(this.value);
+			return Integer.valueOf(this._value);
 		} catch (Throwable ex) {
 			throw new LSysException(
-					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an integer !");
+					"Attribute '" + this._name + "' has value '" + this._value + "' which is not an integer !");
 		}
 	}
 
 	public float getFloatValue() {
-		if (!MathUtils.isNan(this.value)) {
+		if (!MathUtils.isNan(this._value)) {
 			return 0;
 		}
 		try {
-			return Float.valueOf(this.value);
+			return Float.valueOf(this._value);
 		} catch (Throwable ex) {
 			throw new LSysException(
-					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an float !");
+					"Attribute '" + this._name + "' has value '" + this._value + "' which is not an float !");
 		}
 	}
 
 	public double getDoubleValue() {
-		if (!MathUtils.isNan(this.value)) {
+		if (!MathUtils.isNan(this._value)) {
 			return 0;
 		}
 		try {
-			if (this.value.indexOf('b') != -1) {
-				this.value = value.replace("b", LSystem.EMPTY);
+			if (this._value.indexOf('b') != -1) {
+				this._value = _value.replace("b", LSystem.EMPTY);
 			}
-			return Double.parseDouble(this.value);
+			return Double.parseDouble(this._value);
 		} catch (Throwable ex) {
 			throw new LSysException(
-					"Attribute '" + this.name + "' has value '" + this.value + "' which is not an double !");
+					"Attribute '" + this._name + "' has value '" + this._value + "' which is not an double !");
 		}
 	}
 
 	public boolean getBoolValue() {
-		if (!StringUtils.isBoolean(this.value)) {
+		if (!StringUtils.isBoolean(this._value)) {
 			return false;
 		}
-		if (value == null) {
+		if (_value == null) {
 			return false;
 		}
-		return StringUtils.toBoolean(value);
+		return StringUtils.toBoolean(_value);
 	}
 
 	public String getName() {
-		return this.name;
+		return this._name;
 	}
 
 }

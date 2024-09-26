@@ -256,8 +256,8 @@ public class XMLElement {
 		return attribute;
 	}
 
-	public XMLAttribute addAttribute(String name, String value) {
-		XMLAttribute attribute = new XMLAttribute(name, value);
+	public XMLAttribute addAttribute(String name, String v) {
+		XMLAttribute attribute = new XMLAttribute(name, v);
 		this.attributes.put(name, attribute);
 		return attribute;
 	}

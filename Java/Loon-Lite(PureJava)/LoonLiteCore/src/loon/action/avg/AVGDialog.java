@@ -30,7 +30,11 @@ import loon.utils.ObjectMap;
 /**
  * 一个专门解析RMXP素材对话框的专用类
  */
-final public class AVGDialog {
+public final class AVGDialog {
+	
+	private AVGDialog() {
+	}
+
 
 	private static AVGDialog _instance = null;
 

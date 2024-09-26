@@ -248,10 +248,10 @@ public class XMLParser {
 							sbr1.append(str2.charAt(m));
 						} else if (sbr2.length() > 0) {
 							String key = sbr2.toString();
-							String value = sbr1.toString();
+							String v = sbr1.toString();
 							if (key.length() > 0) {
-								XMLAttribute a = el.addAttribute(key, value);
-								a.element = el;
+								XMLAttribute a = el.addAttribute(key, v);
+								a._element = el;
 								if (l != null) {
 									l.addAttribute(index, a);
 								}
@@ -304,9 +304,9 @@ public class XMLParser {
 				}
 				if (sbr1.length() > 0) {
 					String key = sbr2.toString();
-					String value = sbr1.toString();
-					XMLAttribute a = el.addAttribute(key, value);
-					a.element = el;
+					String v = sbr1.toString();
+					XMLAttribute a = el.addAttribute(key, v);
+					a._element = el;
 					if (l != null) {
 						l.addAttribute(index, a);
 					}

@@ -108,8 +108,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	// 是否传递本身偏移设定数据到自绘部分
 	protected boolean _repaintAutoOffset = false;
 
-	protected TArray<TComponent<IEntity>> _components;
-
 	protected RectBox _shear;
 	protected LColor _baseColor = new LColor(LColor.white);
 

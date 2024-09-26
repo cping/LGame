@@ -29,16 +29,16 @@ public class Language {
 
 	private static Language ROOT_LANG;
 
-	public static Locale newLocaleFromCode(String value) {
-		if (StringUtils.isEmpty(value)) {
+	public static Locale newLocaleFromCode(String vl) {
+		if (StringUtils.isEmpty(vl)) {
 			throw new LSysException("'value' must be present");
 		}
-		String[] parameters = StringUtils.split(value, '_');
+		String[] parameters = StringUtils.split(vl, '_');
 		if (parameters.length == 0) {
-			parameters = StringUtils.split(value, LSystem.COMMA);
+			parameters = StringUtils.split(vl, LSystem.COMMA);
 		}
 		if (parameters.length == 0) {
-			parameters = StringUtils.split(value, '-');
+			parameters = StringUtils.split(vl, '-');
 		}
 		if (parameters.length == 0) {
 			throw new LSysException("'value' must not be empty");
@@ -55,7 +55,7 @@ public class Language {
 			newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
 			break;
 		default:
-			throw new LSysException("Unknown locale descriptor: " + value);
+			throw new LSysException("Unknown locale descriptor: " + vl);
 		}
 		return newLocale;
 	}

@@ -155,10 +155,10 @@ public class HtmlParser {
 							sbr1.append(text.charAt(m));
 						} else if (sbr2.length() > 0) {
 							String key = sbr2.toString();
-							String value = sbr1.toString();
+							String v = sbr1.toString();
 							if (key.length() > 0) {
-								HtmlAttribute a = el.addAttribute(key, value);
-								a.element = el;
+								HtmlAttribute a = el.addAttribute(key, v);
+								a._element = el;
 							}
 							end = 0;
 							sbr1.setLength(0);
@@ -208,9 +208,9 @@ public class HtmlParser {
 				}
 				if (sbr1.length() > 0) {
 					String key = sbr2.toString();
-					String value = sbr1.toString();
-					HtmlAttribute a = el.addAttribute(key, value);
-					a.element = el;
+					String v = sbr1.toString();
+					HtmlAttribute a = el.addAttribute(key, v);
+					a._element = el;
 				}
 			}
 		}

@@ -39,8 +39,8 @@ public class TMXProperties {
 		properties = new ObjectMap<String, Object>();
 	}
 
-	public TMXProperties put(String key, Object value) {
-		properties.put(key, value);
+	public TMXProperties put(String key, Object v) {
+		properties.put(key, v);
 		return this;
 	}
 
@@ -93,15 +93,15 @@ public class TMXProperties {
 		for (int p = 0; p < properties.length(); p++) {
 			Json.Object property = properties.getObject(p);
 			String name = property.getString("name", LSystem.EMPTY);
-			String value = property.getString("value", LSystem.EMPTY);
-			if (MathUtils.isNan(value)) {
-				if (value.indexOf('.') != -1) {
-					put(name, Float.parseFloat(value));
+			String v = property.getString("value", LSystem.EMPTY);
+			if (MathUtils.isNan(v)) {
+				if (v.indexOf('.') != -1) {
+					put(name, Float.parseFloat(v));
 				} else {
-					put(name, Integer.parseInt(value));
+					put(name, Integer.parseInt(v));
 				}
 			} else {
-				put(name, value);
+				put(name, v);
 			}
 		}
 	}
@@ -114,15 +114,15 @@ public class TMXProperties {
 		for (int p = 0; p < properties.size; p++) {
 			XMLElement property = properties.get(p);
 			String name = property.getAttribute("name", LSystem.EMPTY);
-			String value = property.getAttribute("value", LSystem.EMPTY);
-			if (MathUtils.isNan(value)) {
-				if (value.indexOf('.') != -1) {
-					put(name, Float.parseFloat(value));
+			String v = property.getAttribute("value", LSystem.EMPTY);
+			if (MathUtils.isNan(v)) {
+				if (v.indexOf('.') != -1) {
+					put(name, Float.parseFloat(v));
 				} else {
-					put(name, Integer.parseInt(value));
+					put(name, Integer.parseInt(v));
 				}
 			} else {
-				put(name, value);
+				put(name, v);
 			}
 		}
 	}

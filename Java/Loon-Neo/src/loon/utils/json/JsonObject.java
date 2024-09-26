@@ -170,9 +170,9 @@ class JsonObject implements Json.Object {
 	}
 
 	@Override
-	public JsonObject put(String key, Object value) {
-		JsonImpl.checkJsonType(value);
-		_orderedMap.put(key, value);
+	public JsonObject put(String key, Object v) {
+		JsonImpl.checkJsonType(v);
+		_orderedMap.put(key, v);
 		return this;
 	}
 

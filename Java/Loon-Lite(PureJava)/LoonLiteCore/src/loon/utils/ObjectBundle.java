@@ -110,51 +110,51 @@ public class ObjectBundle extends MapBundle<Object> {
 		return StringUtils.toBoolean(HelperUtils.toStr(result));
 	}
 
-	public ObjectBundle set(String key, Object value) {
-		put(key, value);
+	public ObjectBundle set(String key, Object v) {
+		put(key, v);
 		return this;
 	}
 
-	public ObjectBundle add(String key, Object value) {
-		return inc(key, value);
+	public ObjectBundle add(String key, Object v) {
+		return inc(key, v);
 	}
 
-	public ObjectBundle inc(String key, Object value) {
+	public ObjectBundle inc(String key, Object v) {
 		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			set(key, calculator.add(value).getFloat());
+			set(key, calculator.add(v).getFloat());
 		}
 		return this;
 	}
 
-	public ObjectBundle sub(String key, Object value) {
+	public ObjectBundle sub(String key, Object v) {
 		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			set(key, calculator.sub(value).getFloat());
+			set(key, calculator.sub(v).getFloat());
 		}
 		return this;
 	}
 
-	public ObjectBundle mul(String key, Object value) {
+	public ObjectBundle mul(String key, Object v) {
 		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			set(key, calculator.mul(value).getFloat());
+			set(key, calculator.mul(v).getFloat());
 		}
 		return this;
 	}
 
-	public ObjectBundle div(String key, Object value) {
+	public ObjectBundle div(String key, Object v) {
 		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			set(key, calculator.div(value).getFloat());
+			set(key, calculator.div(v).getFloat());
 		}
 		return this;
 	}
 
-	public ObjectBundle mod(String key, Object value) {
+	public ObjectBundle mod(String key, Object v) {
 		Calculator calculator = new Calculator(get(key, 0f));
 		if (calculator.getFloat() != -1f) {
-			set(key, calculator.mod(value).getFloat());
+			set(key, calculator.mod(v).getFloat());
 		}
 		return this;
 	}

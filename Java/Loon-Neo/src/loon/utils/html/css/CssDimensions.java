@@ -85,15 +85,15 @@ public class CssDimensions {
 			this.height = height;
 		}
 
-		public static float getValue(float size, float fontSize, String value) {
+		public static float getValue(float size, float fontSize, String vl) {
 
 			float v = 0;
-			if (isEm(value)) {
-				v = fontSize * getFloat(value);
-			} else if (isPer(value)) {
-				v = MathUtils.percent(size, getFloat(value));
+			if (isEm(vl)) {
+				v = fontSize * getFloat(vl);
+			} else if (isPer(vl)) {
+				v = MathUtils.percent(size, getFloat(vl));
 			} else {
-				v = getFloat(value);
+				v = getFloat(vl);
 			}
 
 			return v;
@@ -169,48 +169,48 @@ public class CssDimensions {
 			return rect;
 		}
 
-		public static boolean isPx(String value) {
-			return value.indexOf("px") != -1;
+		public static boolean isPx(String vl) {
+			return vl.indexOf("px") != -1;
 		}
 
-		public static boolean isEm(String value) {
-			return value.indexOf("em") != -1;
+		public static boolean isEm(String vl) {
+			return vl.indexOf("em") != -1;
 		}
 
-		public static boolean isPer(String value) {
-			return value.indexOf("%") != -1;
+		public static boolean isPer(String vl) {
+			return vl.indexOf("%") != -1;
 		}
 
-		public static float getFloat(String value) {
-			int px = value.indexOf("px");
-			int pt = value.indexOf("pt");
-			int em = value.indexOf("rem");
+		public static float getFloat(String vl) {
+			int px = vl.indexOf("px");
+			int pt = vl.indexOf("pt");
+			int em = vl.indexOf("rem");
 			if (em == -1) {
-				em = value.indexOf("em");
+				em = vl.indexOf("em");
 			}
-			int cm = value.indexOf("cm");
-			int per = value.indexOf("%");
+			int cm = vl.indexOf("cm");
+			int per = vl.indexOf("%");
 			if (px != -1) {
-				return Float.parseFloat(value.substring(0, px));
+				return Float.parseFloat(vl.substring(0, px));
 			}
 			if (pt != -1) {
-				return Float.parseFloat(value.substring(0, pt));
+				return Float.parseFloat(vl.substring(0, pt));
 			}
 			if (em != -1) {
-				return Float.parseFloat(value.substring(0, em));
+				return Float.parseFloat(vl.substring(0, em));
 			}
 			if (cm != -1) {
-				return Float.parseFloat(value.substring(0, cm));
+				return Float.parseFloat(vl.substring(0, cm));
 			}
 			if (per != -1) {
-				return Float.parseFloat(value.substring(0, per));
+				return Float.parseFloat(vl.substring(0, per));
 			}
-			if (MathUtils.isNan(value)) {
-				return Float.parseFloat(value);
+			if (MathUtils.isNan(vl)) {
+				return Float.parseFloat(vl);
 			}
 			StrBuilder sbr = new StrBuilder();
-			for (int i = 0; i < value.length(); i++) {
-				char ch = value.charAt(i);
+			for (int i = 0; i < vl.length(); i++) {
+				char ch = vl.charAt(i);
 				if (StringUtils.isDigit(ch)) {
 					sbr.append(ch);
 				}

@@ -1512,9 +1512,9 @@ final public class CollectionUtils {
 			if (cutData) {
 				Object[] items = new Object[len - count];
 				for (int i = 0, j = 0; i < len; i++) {
-					Object value = arrays[i];
-					if (value != null) {
-						items[j++] = value;
+					Object vo = arrays[i];
+					if (vo != null) {
+						items[j++] = vo;
 					}
 				}
 				return items;

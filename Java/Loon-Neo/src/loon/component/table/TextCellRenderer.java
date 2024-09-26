@@ -40,10 +40,10 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 	}
 
 	@Override
-	public void paint(GLEx g, Object value, int x, int y, int width, int height) {
-		if (value instanceof BindIcon) {
+	public void paint(GLEx g, Object vl, int x, int y, int width, int height) {
+		if (vl instanceof BindIcon) {
 			int size = font.getHeight() - 4;
-			BindIcon icon = (BindIcon) value;
+			BindIcon icon = (BindIcon) vl;
 			String s = icon.name;
 			s = font.confineLength(s, width - size - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
@@ -54,18 +54,18 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 				font.drawString(g, s, x + entryOffset, y - 4, textColor);
 			}
 		} else {
-			String s = value.toString();
+			String s = vl.toString();
 			s = font.confineLength(s, width - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
 			font.drawString(g, s, x + entryOffset, y - 4, textColor);
 		}
 	}
 
-	public void paint(Canvas g, Object value, int x, int y, int width, int height) {
+	public void paint(Canvas g, Object vl, int x, int y, int width, int height) {
 		int old = g.getFillColor();
-		if (value instanceof BindIcon) {
+		if (vl instanceof BindIcon) {
 			int size = font.getHeight() - 4;
-			BindIcon icon = (BindIcon) value;
+			BindIcon icon = (BindIcon) vl;
 			String s = icon.name;
 			s = font.confineLength(s, width - size - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
@@ -77,7 +77,7 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 				g.drawText(s, x + entryOffset, y - 4);
 			}
 		} else {
-			String s = value.toString();
+			String s = vl.toString();
 			s = font.confineLength(s, width - 4);
 			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
 			g.setColor(textColor);
@@ -101,11 +101,11 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 		return setFontColor(textColor);
 	}
 
-	public Dimension getCellContentSize(Object value) {
-		if (value == null) {
+	public Dimension getCellContentSize(Object vl) {
+		if (vl == null) {
 			return null;
 		}
-		String s = value.toString();
+		String s = vl.toString();
 		return new Dimension(font.stringWidth(s), font.getHeight());
 	}
 

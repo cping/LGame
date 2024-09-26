@@ -55,12 +55,12 @@ public class JsonImpl implements Json {
 		return JsonParser.array().from(json);
 	}
 
-	final static void checkJsonType(java.lang.Object value) {
-		if (value == null || value instanceof String || value instanceof Json.Object || value instanceof Json.Array
-				|| value instanceof Boolean || value instanceof Number) {
+	final static void checkJsonType(java.lang.Object v) {
+		if (v == null || v instanceof String || v instanceof Json.Object || v instanceof Json.Array
+				|| v instanceof Boolean || v instanceof Number) {
 			return;
 		}
-		throw new LSysException("Invalid JSON type [value=" + value + ", class=" + value.getClass() + "]");
+		throw new LSysException("Invalid JSON type [value=" + v + ", class=" + v.getClass() + "]");
 	}
 
 }

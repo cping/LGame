@@ -37,13 +37,13 @@ public class Session implements Bundle<String> {
 
 	private Save _save;
 
-	private boolean isPersisted = false;
+	private boolean _isPersisted = false;
 
 	private String loadData() {
 		if (_save == null) {
 			return null;
 		}
-		String result = _save.getItem(name);
+		String result = _save.getItem(_name);
 		if (StringUtils.isEmpty(result)) {
 			return result;
 		}
@@ -68,11 +68,11 @@ public class Session implements Bundle<String> {
 				result = new String(Base64Coder.encode(result.getBytes()));
 			}
 		}
-		_save.setItem(name, result);
+		_save.setItem(_name, result);
 	}
 
 	private void removeData() {
-		_save.removeItem(name);
+		_save.removeItem(_name);
 	}
 
 	public static Session load(String name) {
@@ -136,14 +136,14 @@ public class Session implements Bundle<String> {
 			if (StringUtils.isEmpty(v)) {
 				return;
 			}
-			final String value = StringUtils.replace(v, String.valueOf(flag), "+");
+			final String vl = StringUtils.replace(v, String.valueOf(flag), "+");
 			if (index >= values.length) {
 				int size = index + 1;
 				String[] res = new String[size];
 				System.arraycopy(values, 0, res, 0, values.length);
 				this.values = res;
 			}
-			this.values[index] = value;
+			this.values[index] = vl;
 		}
 
 		public String encode() {
@@ -163,11 +163,11 @@ public class Session implements Bundle<String> {
 
 	}
 
-	private String name;
+	private String _name;
 
-	private ArrayMap records;
+	private ArrayMap _records;
 
-	private TArray<Record> recordsList;
+	private TArray<Record> _recordsList;
 
 	public Session(String name) {
 		this(name, true);
@@ -179,20 +179,20 @@ public class Session implements Bundle<String> {
 		}
 		try {
 			this._save = LSystem.base().save();
-			isPersisted = true;
+			_isPersisted = true;
 		} catch (Throwable ex) {
-			isPersisted = false;
+			_isPersisted = false;
 		}
-		this.name = name;
-		this.records = new ArrayMap();
-		this.recordsList = new TArray<Record>();
+		this._name = name;
+		this._records = new ArrayMap();
+		this._recordsList = new TArray<Record>();
 		if (gain) {
 			load();
 		}
 	}
 
 	public boolean isPersisted() {
-		return isPersisted;
+		return _isPersisted;
 	}
 
 	public int loadEncodeSession(String encode) {
@@ -204,9 +204,9 @@ public class Session implements Bundle<String> {
 	}
 
 	public String getActiveID() {
-		synchronized (recordsList) {
-			for (int i = 0; i < recordsList.size; i++) {
-				Record record = recordsList.get(i);
+		synchronized (_recordsList) {
+			for (int i = 0; i < _recordsList.size; i++) {
+				Record record = _recordsList.get(i);
 				if (record.active) {
 					return record.name;
 				}
@@ -215,100 +215,100 @@ public class Session implements Bundle<String> {
 		}
 	}
 
-	public String set(int index, String value) {
+	public String set(int index, String vl) {
 		String name = "session_name_" + TimeUtils.millis();
-		set(name, index, value);
+		set(name, index, vl);
 		return name;
 	}
 
-	public String set(int index, int value) {
-		return set(index, String.valueOf(value));
+	public String set(int index, int vl) {
+		return set(index, String.valueOf(vl));
 	}
 
-	public String set(int index, float value) {
-		return set(index, String.valueOf(value));
+	public String set(int index, float vl) {
+		return set(index, String.valueOf(vl));
 	}
 
-	public String set(int index, boolean value) {
-		return set(index, value ? "1" : "0");
+	public String set(int index, boolean vl) {
+		return set(index, vl ? "1" : "0");
 	}
 
-	public Session set(String name, String value) {
-		return set(name, 0, value);
+	public Session set(String name, String vl) {
+		return set(name, 0, vl);
 	}
 
-	public Session set(String name, int index, String value) {
-		if (StringUtils.isEmpty(value)) {
+	public Session set(String name, int index, String vl) {
+		if (StringUtils.isEmpty(vl)) {
 			return this;
 		}
-		synchronized (recordsList) {
-			Record record = (Record) records.get(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.get(name);
 			if (record == null) {
 				record = new Record(name);
-				records.put(name, record);
-				recordsList.add(record);
+				_records.put(name, record);
+				_recordsList.add(record);
 			}
-			record.set(index, value);
+			record.set(index, vl);
 		}
 		return this;
 	}
 
-	public Session set(String name, int value) {
-		return set(name, 0, value);
+	public Session set(String name, int vl) {
+		return set(name, 0, vl);
 	}
 
-	public Session set(String name, int index, int value) {
-		return set(name, index, String.valueOf(value));
+	public Session set(String name, int index, int vl) {
+		return set(name, index, String.valueOf(vl));
 	}
 
-	public Session set(String name, float value) {
-		return set(name, 0, value);
+	public Session set(String name, float vl) {
+		return set(name, 0, vl);
 	}
 
-	public Session set(String name, int index, float value) {
-		return set(name, index, String.valueOf(value));
+	public Session set(String name, int index, float vl) {
+		return set(name, index, String.valueOf(vl));
 	}
 
-	public Session set(String name, boolean value) {
-		return set(name, 0, value ? "1" : "0");
+	public Session set(String name, boolean vl) {
+		return set(name, 0, vl ? "1" : "0");
 	}
 
-	public Session set(String name, int index, boolean value) {
-		return set(name, index, value ? "1" : "0");
+	public Session set(String name, int index, boolean vl) {
+		return set(name, index, vl ? "1" : "0");
 	}
 
-	public Session add(String name, String value) {
-		if (StringUtils.isEmpty(value)) {
+	public Session add(String name, String vl) {
+		if (StringUtils.isEmpty(vl)) {
 			return this;
 		}
-		synchronized (recordsList) {
-			Record record = (Record) records.get(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.get(name);
 			if (record == null) {
 				record = new Record(name);
-				records.put(name, record);
-				recordsList.add(record);
+				_records.put(name, record);
+				_recordsList.add(record);
 			}
 			int id = record.size();
-			record.set(id++, value);
+			record.set(id++, vl);
 		}
 		return this;
 	}
 
-	public Session add(String name, int value) {
-		return add(name, String.valueOf(value));
+	public Session add(String name, int vl) {
+		return add(name, String.valueOf(vl));
 	}
 
-	public Session add(String name, float value) {
-		return add(name, String.valueOf(value));
+	public Session add(String name, float vl) {
+		return add(name, String.valueOf(vl));
 	}
 
-	public Session add(String name, boolean value) {
-		return add(name, value ? "1" : "0");
+	public Session add(String name, boolean vl) {
+		return add(name, vl ? "1" : "0");
 	}
 
 	public String get(String name, int index) {
-		synchronized (recordsList) {
-			Record record = (Record) records.get(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.get(name);
 			if (record == null) {
 				return null;
 			} else {
@@ -350,12 +350,12 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session delete(String name) {
-		synchronized (recordsList) {
-			records.remove(name);
-			for (int i = 0; i < recordsList.size; i++) {
-				Record record = recordsList.get(i);
+		synchronized (_recordsList) {
+			_records.remove(name);
+			for (int i = 0; i < _recordsList.size; i++) {
+				Record record = _recordsList.get(i);
 				if (record.name.equals(name)) {
-					recordsList.removeIndex(i);
+					_recordsList.removeIndex(i);
 					i--;
 				}
 			}
@@ -389,8 +389,8 @@ public class Session implements Bundle<String> {
 	}
 
 	public int getCount(String name) {
-		synchronized (recordsList) {
-			Record record = (Record) records.get(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.get(name);
 			if (record == null) {
 				return 0;
 			} else {
@@ -400,17 +400,17 @@ public class Session implements Bundle<String> {
 	}
 
 	public int getSize() {
-		if (recordsList != null) {
-			return recordsList.size;
+		if (_recordsList != null) {
+			return _recordsList.size;
 		} else {
 			return 0;
 		}
 	}
 
 	public int decode(String[] parts, int n) {
-		synchronized (recordsList) {
-			records.clear();
-			recordsList.clear();
+		synchronized (_recordsList) {
+			_records.clear();
+			_recordsList.clear();
 			if (n >= parts.length) {
 				return n;
 			}
@@ -422,8 +422,8 @@ public class Session implements Bundle<String> {
 				Record record = new Record(parts[n++]);
 				n = record.decode(parts, n);
 				if (record.name != null && record.isSaved()) {
-					records.put(record.name, record);
-					recordsList.add(record);
+					_records.put(record.name, record);
+					_recordsList.add(record);
 				}
 			}
 			return n;
@@ -431,11 +431,11 @@ public class Session implements Bundle<String> {
 	}
 
 	public String encode() {
-		synchronized (recordsList) {
+		synchronized (_recordsList) {
 			final StrBuilder sbr = new StrBuilder();
-			sbr.append(recordsList.size).append(flag).toString();
-			for (int i = 0; i < recordsList.size; i++) {
-				final Record record = recordsList.get(i);
+			sbr.append(_recordsList.size).append(flag).toString();
+			for (int i = 0; i < _recordsList.size; i++) {
+				final Record record = _recordsList.get(i);
 				if (record != null && record.isSaved()) {
 					sbr.append(record.encode()).toString();
 				}
@@ -445,34 +445,34 @@ public class Session implements Bundle<String> {
 	}
 
 	public boolean hasData(String name) {
-		synchronized (recordsList) {
-			return records.get(name) != null;
+		synchronized (_recordsList) {
+			return _records.get(name) != null;
 		}
 	}
 
 	public Session activate(String name) {
-		synchronized (recordsList) {
+		synchronized (_recordsList) {
 			Record record = new Record(name);
 			record.active = true;
-			records.put(name, record);
-			recordsList.add(record);
+			_records.put(name, record);
+			_recordsList.add(record);
 		}
 		return this;
 	}
 
 	public Session clear(String name) {
-		synchronized (recordsList) {
-			Record record = (Record) records.remove(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.remove(name);
 			if (record != null) {
-				recordsList.remove(record);
+				_recordsList.remove(record);
 			}
 		}
 		return this;
 	}
 
 	public boolean isActive(String name) {
-		synchronized (recordsList) {
-			Record record = (Record) records.get(name);
+		synchronized (_recordsList) {
+			Record record = (Record) _records.get(name);
 			if (record != null) {
 				return record.active;
 			} else {
@@ -482,19 +482,19 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session reject(String name) {
-		synchronized (recordsList) {
+		synchronized (_recordsList) {
 			clear(name);
 			Record record = new Record(name);
 			record.active = false;
 			record.set(0, "1");
-			records.put(name, record);
-			recordsList.add(record);
+			_records.put(name, record);
+			_recordsList.add(record);
 		}
 		return this;
 	}
 
 	public String getSessionName() {
-		return name;
+		return _name;
 	}
 
 	public Session loadToBundle() {
@@ -530,9 +530,9 @@ public class Session implements Bundle<String> {
 	}
 
 	public ArrayMap getRecords(int index) {
-		ArrayMap result = new ArrayMap(records.size());
-		for (int i = 0; i < records.size(); i++) {
-			Entry entry = records.getEntry(i);
+		ArrayMap result = new ArrayMap(_records.size());
+		for (int i = 0; i < _records.size(); i++) {
+			Entry entry = _records.getEntry(i);
 			result.put(entry.getKey(), ((Record) entry.getValue()).get(index));
 		}
 		return result;
@@ -547,26 +547,26 @@ public class Session implements Bundle<String> {
 	}
 
 	public boolean isSaved() {
-		return isPersisted && !records.isEmpty();
+		return _isPersisted && !_records.isEmpty();
 	}
 
 	public Session cpy() {
-		return new Session(name);
+		return new Session(_name);
 	}
 
 	@Override
 	public int size() {
-		return recordsList.size;
+		return _recordsList.size;
 	}
 
 	@Override
 	public void clear() {
-		recordsList.clear();
+		_recordsList.clear();
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return recordsList.isEmpty();
+		return _recordsList.isEmpty();
 	}
 
 	@Override
@@ -575,23 +575,23 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session dispose(String name) {
-		synchronized (recordsList) {
+		synchronized (_recordsList) {
 			clear(name);
 			Record record = new Record(name);
 			record.active = false;
-			records.put(name, record);
-			recordsList.add(record);
+			_records.put(name, record);
+			_recordsList.add(record);
 		}
 		return this;
 	}
 
 	public void dispose() {
 		try {
-			if (records != null) {
-				records.clear();
+			if (_records != null) {
+				_records.clear();
 			}
-			if (recordsList != null) {
-				recordsList.clear();
+			if (_recordsList != null) {
+				_recordsList.clear();
 			}
 			removeData();
 		} catch (Throwable e) {

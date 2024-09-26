@@ -125,15 +125,15 @@ public class I18N implements LRelease {
 		return getText(res, "");
 	}
 
-	public String getText(String res, String value) {
-		return getText(LSystem.getSystemAppName(), res, value);
+	public String getText(String res, String vl) {
+		return getText(LSystem.getSystemAppName(), res, vl);
 	}
 
-	public String getText(Object obj, String res, String value) {
+	public String getText(Object obj, String res, String vl) {
 		loadConfig();
 		String result = null;
 		if (obj == null) {
-			result = _langConfig.getValue(res, value);
+			result = _langConfig.getValue(res, vl);
 		}
 		if (result == null) {
 			String clazz = null;
@@ -146,7 +146,7 @@ public class I18N implements LRelease {
 			}
 			result = _langConfig.getValue(clazz + "." + res);
 			if (result == null) {
-				result = _langConfig.getValue(res, value);
+				result = _langConfig.getValue(res, vl);
 			}
 		}
 		if (result != null && result.indexOf("\\n") != -1) {

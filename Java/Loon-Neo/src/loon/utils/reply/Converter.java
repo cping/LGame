@@ -22,6 +22,6 @@ package loon.utils.reply;
 
 public interface Converter<T> {
 
-	T convert(Object value);
+	T convert(Object vl);
 
 }

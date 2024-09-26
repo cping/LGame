@@ -101,9 +101,11 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 			case 1:
 				flipX = true;
 				flipY = false;
+				break;
 			case 2:
 				flipX = false;
 				flipY = true;
+				break;
 			default:
 				flipX = flipY = true;
 				break;
@@ -172,7 +174,7 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	}
 
 	public LDTKTileLayer removeLimitToField2D() {
-		getField2D().setLimit(null);
+		getField2D().setLimit((int[])null);
 		return this;
 	}
 
@@ -201,44 +203,40 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	}
 
 	public int getPixelsAtFieldType(float x, float y) {
-		if (_mapTiles.length == 0) {
+		if (_mapTiles == null || _mapTiles.length == 0) {
 			return -1;
 		}
 		return getField2D().getPixelsAtFieldType(x, y);
 	}
 
 	public int getTilesAtFieldType(int x, int y) {
-		if (_mapTiles.length == 0) {
+		if (_mapTiles == null || _mapTiles.length == 0) {
 			return -1;
 		}
 		return getField2D().getTileType(x, y);
 	}
 
 	public LDTKTile getPixelsAtTile(float x, float y) {
-		if (_mapTiles.length == 0) {
+		if (_mapTiles == null || _mapTiles.length == 0) {
 			return null;
 		}
-		if (_mapTiles != null) {
-			for (int i = _mapTiles.length - 1; i > -1; i--) {
-				LDTKTile tile = _mapTiles[i];
-				if (tile.contains(x, y)) {
-					return tile;
-				}
+		for (int i = _mapTiles.length - 1; i > -1; i--) {
+			LDTKTile tile = _mapTiles[i];
+			if (tile.contains(x, y)) {
+				return tile;
 			}
 		}
 		return null;
 	}
 
 	public LDTKTile getTilePosAtTile(int x, int y) {
-		if (_mapTiles.length == 0) {
+		if (_mapTiles == null || _mapTiles.length == 0) {
 			return null;
 		}
-		if (_mapTiles != null) {
-			for (int i = _mapTiles.length - 1; i > -1; i--) {
-				LDTKTile tile = _mapTiles[i];
-				if (tile.getTileX() == x && tile.getTileY() == y) {
-					return tile;
-				}
+		for (int i = _mapTiles.length - 1; i > -1; i--) {
+			LDTKTile tile = _mapTiles[i];
+			if (tile.getTileX() == x && tile.getTileY() == y) {
+				return tile;
 			}
 		}
 		return null;

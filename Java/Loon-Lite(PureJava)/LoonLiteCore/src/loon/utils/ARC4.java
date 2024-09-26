@@ -60,12 +60,12 @@ public class ARC4 {
 	 * @param value
 	 * @return
 	 */
-	public static ArrayByte cryptData(String key, String value) {
+	public static ArrayByte cryptData(String key, String v) {
 		try {
 			ARC4 rc4 = new ARC4(key);
-			return rc4.getCrypt(value.getBytes(LSystem.ENCODING));
+			return rc4.getCrypt(v.getBytes(LSystem.ENCODING));
 		} catch (Throwable e) {
-			return new ArrayByte(value.getBytes());
+			return new ArrayByte(v.getBytes());
 		}
 	}
 

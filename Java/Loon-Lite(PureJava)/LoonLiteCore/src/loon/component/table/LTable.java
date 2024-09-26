@@ -411,10 +411,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		for (int row = 0; row < _tableSize && row < rowCount; row++) {
 			x = displayX;
 			for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
-				Object value = model.getValue(row, columnIndex);
-				if (value != null) {
+				Object vl = model.getValue(row, columnIndex);
+				if (vl != null) {
 					ICellRenderer cellRenderer = getColumn(columnIndex).getCellRenderer();
-					Dimension contentDimension = cellRenderer.getCellContentSize(value);
+					Dimension contentDimension = cellRenderer.getCellContentSize(vl);
 					if (contentDimension == null) {
 						contentDimension = new Dimension(getColumnWidth(columnIndex), cellHeight);
 					}
@@ -424,21 +424,21 @@ public class LTable extends LContainer implements FontSet<LTable> {
 							contentDimension.getHeight());
 
 					if (bindIcons.size() == 0) {
-						cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
+						cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 					} else {
-						if (value instanceof String) {
+						if (vl instanceof String) {
 							g.setColor(textColor);
-							String v = (String) value;
+							String v = (String) vl;
 							BindIcon icon = containsBindIcon(v);
 							if (icon != null) {
 								cellRenderer.paint(g, icon, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							} else {
-								cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex),
+								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							}
 						} else {
-							cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
+							cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 						}
 					}
 				}
@@ -458,10 +458,10 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		for (int row = 0; row < _tableSize && row < rowCount; row++) {
 			x = displayX;
 			for (int columnIndex = 0; columnIndex < colCount; columnIndex++) {
-				Object value = model.getValue(row, columnIndex);
-				if (value != null) {
+				Object vl = model.getValue(row, columnIndex);
+				if (vl != null) {
 					ICellRenderer cellRenderer = getColumn(columnIndex).getCellRenderer();
-					Dimension contentDimension = cellRenderer.getCellContentSize(value);
+					Dimension contentDimension = cellRenderer.getCellContentSize(vl);
 					if (contentDimension == null) {
 						contentDimension = new Dimension(getColumnWidth(columnIndex), cellHeight);
 					}
@@ -471,21 +471,21 @@ public class LTable extends LContainer implements FontSet<LTable> {
 							contentDimension.getHeight());
 
 					if (bindIcons.size() == 0) {
-						cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
+						cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 					} else {
-						if (value instanceof String) {
+						if (vl instanceof String) {
 							g.setColor(textColor);
-							String v = (String) value;
+							String v = (String) vl;
 							BindIcon icon = containsBindIcon(v);
 							if (icon != null) {
 								cellRenderer.paint(g, icon, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							} else {
-								cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex),
+								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							}
 						} else {
-							cellRenderer.paint(g, value, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
+							cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 						}
 					}
 				}

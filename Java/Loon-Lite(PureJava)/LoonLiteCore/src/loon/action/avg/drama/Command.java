@@ -462,10 +462,10 @@ public class Command extends Conversion implements LRelease {
 	 * 插入变量
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 */
-	public Command setVariable(String key, Object value) {
-		setEnvironmentList.put(key, value);
+	public Command setVariable(String key, Object v) {
+		setEnvironmentList.put(key, v);
 		return this;
 	}
 
@@ -639,11 +639,11 @@ public class Command extends Conversion implements LRelease {
 			if (randTags != null) {
 				for (int i = 0; i < randTags.size; i++) {
 					String key = randTags.get(i);
-					Object value = setEnvironmentList.get(key);
+					Object v = setEnvironmentList.get(key);
 					// 已存在变量
-					if (value != null) {
+					if (v != null) {
 						cmd = StringUtils.replaceMatch(cmd,
-								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), value.toString());
+								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), v.toString());
 						// 设定有随机数生成范围
 					} else if (MathUtils.isNan(key)) {
 						cmd = StringUtils.replaceMatch(cmd,
@@ -915,11 +915,11 @@ public class Command extends Conversion implements LRelease {
 				if (printTags != null) {
 					for (int i = 0; i < printTags.size; i++) {
 						String key = printTags.get(i);
-						Object value = setEnvironmentList.get(key);
-						if (value != null) {
+						Object v = setEnvironmentList.get(key);
+						if (v != null) {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
-									value.toString());
+									v.toString());
 						} else {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), key);

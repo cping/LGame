@@ -146,13 +146,13 @@ public interface Json {
 
 		boolean isObject(int index);
 
-		Array add(java.lang.Object value);
+		Array add(java.lang.Object v);
 
-		Array add(int index, java.lang.Object value);
+		Array add(int index, java.lang.Object v);
 
 		Array remove(int index);
 
-		Array set(int index, java.lang.Object value);
+		Array set(int index, java.lang.Object v);
 
 		<T extends JsonSink<T>> JsonSink<T> write(JsonSink<T> sink);
 	}
@@ -207,7 +207,7 @@ public interface Json {
 
 		boolean isObject(String key);
 
-		Object put(String key, java.lang.Object value);
+		Object put(String key, java.lang.Object v);
 
 		Object remove(String key);
 

@@ -25,7 +25,7 @@ import loon.utils.Bundle;
 public class EmptyBundle implements Bundle<Object> {
 
 	@Override
-	public void put(String key, Object value) {
+	public void put(String key, Object v) {
 	}
 
 	@Override

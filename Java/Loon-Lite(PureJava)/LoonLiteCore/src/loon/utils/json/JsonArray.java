@@ -46,19 +46,19 @@ class JsonArray implements Json.Array, IArray {
 	}
 
 	@Override
-	public JsonArray add(Object value) {
-		JsonImpl.checkJsonType(value);
-		_json_array_context.add(value);
+	public JsonArray add(Object vl) {
+		JsonImpl.checkJsonType(vl);
+		_json_array_context.add(vl);
 		return this;
 	}
 
 	@Override
-	public JsonArray add(int index, Object value) {
-		JsonImpl.checkJsonType(value);
+	public JsonArray add(int index, Object vl) {
+		JsonImpl.checkJsonType(vl);
 		while (_json_array_context.size < index) {
 			_json_array_context.add(null);
 		}
-		_json_array_context.insert(index, value);
+		_json_array_context.insert(index, vl);
 		return this;
 	}
 
@@ -194,12 +194,12 @@ class JsonArray implements Json.Array, IArray {
 	}
 
 	@Override
-	public JsonArray set(int index, Object value) {
-		JsonImpl.checkJsonType(value);
+	public JsonArray set(int index, Object vl) {
+		JsonImpl.checkJsonType(vl);
 		while (_json_array_context.size <= index) {
 			_json_array_context.add(null);
 		}
-		_json_array_context.set(index, value);
+		_json_array_context.set(index, vl);
 		return this;
 	}
 

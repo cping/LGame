@@ -29,50 +29,50 @@ public class ArrayMap implements IArray, LRelease {
 
 	public static class Entry {
 
-		protected int index;
+		protected int _index;
 
-		protected int hashCode;
+		protected int _hashCode;
 
-		public Object key;
+		protected Object _key;
 
-		public Object value;
+		protected Object _value;
 
-		protected Entry next;
+		protected Entry _next;
 
-		protected Entry(int hashCode, Object key, Object value, Entry next) {
-			this(-1, hashCode, key, value, next);
+		protected Entry(int hashCode, Object key, Object v, Entry next) {
+			this(-1, hashCode, key, v, next);
 		}
 
-		public Entry(int index, int hashCode, Object key, Object value, Entry next) {
-			this.index = index;
-			this.hashCode = hashCode;
-			this.key = key;
-			this.value = value;
-			this.next = next;
+		public Entry(int index, int hashCode, Object key, Object v, Entry next) {
+			this._index = index;
+			this._hashCode = hashCode;
+			this._key = key;
+			this._value = v;
+			this._next = next;
 		}
 
 		public Object getKey() {
-			return key;
+			return _key;
 		}
 
 		public Object getValue() {
-			return value;
+			return _value;
 		}
 
-		public Object setValue(Object value) {
-			Object oldValue = value;
-			this.value = value;
+		public Object setValue(Object v) {
+			Object oldValue = v;
+			this._value = v;
 			return oldValue;
 		}
 
 		public int getIndex() {
-			return this.index;
+			return this._index;
 		}
 
 		protected void clear() {
-			key = null;
-			value = null;
-			next = null;
+			_key = null;
+			_value = null;
+			_next = null;
 		}
 
 		@Override
@@ -85,35 +85,35 @@ public class ArrayMap implements IArray, LRelease {
 			}
 			if (o instanceof Entry) {
 				Entry e = (Entry) o;
-				return (key != null ? key.equals(e.key) : e.key == null)
-						&& (value != null ? value.equals(e.value) : e.value == null);
+				return (_key != null ? _key.equals(e._key) : e._key == null)
+						&& (_value != null ? _value.equals(e._value) : e._value == null);
 			}
 			return false;
 		}
 
 		@Override
 		public int hashCode() {
-			return hashCode;
+			return _hashCode;
 		}
 
 		@Override
 		public String toString() {
-			return key + "=" + value;
+			return _key + "=" + _value;
 		}
 
 	}
 
-	private int threshold;
+	private int _threshold;
 
-	private Entry[] keysTable;
+	private Entry[] _keysTable;
 
-	private Entry[] valuesTable;
+	private Entry[] _valuesTable;
 
-	private int size = 0;
+	private int _size = 0;
 
-	private float loadFactor;
+	private float _loadFactor;
 
-	private int removed = 0;
+	private int _removed = 0;
 
 	public ArrayMap() {
 		this(CollectionUtils.INITIAL_CAPACITY);
@@ -132,20 +132,20 @@ public class ArrayMap implements IArray, LRelease {
 		if (initialCapacity <= 0) {
 			initialCapacity = CollectionUtils.INITIAL_CAPACITY;
 		}
-		this.keysTable = new Entry[initialCapacity];
-		this.valuesTable = new Entry[initialCapacity];
-		this.threshold = (int) (initialCapacity * factor);
-		this.loadFactor = factor;
+		this._keysTable = new Entry[initialCapacity];
+		this._valuesTable = new Entry[initialCapacity];
+		this._threshold = (int) (initialCapacity * factor);
+		this._loadFactor = factor;
 	}
 
 	@Override
 	public int size() {
-		return size;
+		return _size;
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return size == 0;
+		return _size == 0;
 	}
 
 	@Override
@@ -153,21 +153,21 @@ public class ArrayMap implements IArray, LRelease {
 		return !isEmpty();
 	}
 
-	public boolean containsValue(Object value) {
-		return indexOf(value) >= 0;
+	public boolean containsValue(Object v) {
+		return indexOf(v) >= 0;
 	}
 
 	protected int indexOf(Entry entry) {
 		if (entry != null) {
 			Entry value;
 			int start = 0;
-			int len = size - 1;
+			int len = _size - 1;
 			for (; start <= len;) {
 				int mid = start + (len - start) / 2;
-				value = valuesTable[mid];
-				if (entry.index < value.index) {
+				value = _valuesTable[mid];
+				if (entry._index < value._index) {
 					len = mid - 1;
-				} else if (entry.index > value.index) {
+				} else if (entry._index > value._index) {
 					start = mid + 1;
 				} else {
 					if (entry == value) {
@@ -177,15 +177,15 @@ public class ArrayMap implements IArray, LRelease {
 					}
 				}
 			}
-			for (int i = 0; i < size; i++) {
-				value = valuesTable[i];
+			for (int i = 0; i < _size; i++) {
+				value = _valuesTable[i];
 				if (value == entry) {
 					return i;
 				}
 			}
 		} else {
-			for (int i = 0; i < size; i++) {
-				if (valuesTable[i] == null) {
+			for (int i = 0; i < _size; i++) {
+				if (_valuesTable[i] == null) {
 					return i;
 				}
 			}
@@ -193,18 +193,18 @@ public class ArrayMap implements IArray, LRelease {
 		return -1;
 	}
 
-	public int indexOf(Object value) {
-		if (value != null) {
+	public int indexOf(Object v) {
+		if (v != null) {
 			Object data = null;
-			for (int i = 0; i < size; i++) {
-				data = valuesTable[i].value;
-				if (data == value || data.equals(value)) {
+			for (int i = 0; i < _size; i++) {
+				data = _valuesTable[i]._value;
+				if (data == v || data.equals(v)) {
 					return i;
 				}
 			}
 		} else {
-			for (int i = 0; i < size; i++) {
-				if (valuesTable[i].value == null) {
+			for (int i = 0; i < _size; i++) {
+				if (_valuesTable[i]._value == null) {
 					return i;
 				}
 			}
@@ -213,18 +213,18 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	public boolean containsKey(Object key) {
-		Entry[] table = keysTable;
+		Entry[] table = _keysTable;
 		if (key != null) {
 			int hashCode = CollectionUtils.getLimitHash(key.hashCode());
 			int index = (hashCode & 0x7FFFFFFF) % table.length;
-			for (Entry e = table[index]; e != null; e = e.next) {
-				if (e.hashCode == hashCode && key.equals(e.key)) {
+			for (Entry e = table[index]; e != null; e = e._next) {
+				if (e._hashCode == hashCode && key.equals(e._key)) {
 					return true;
 				}
 			}
 		} else {
-			for (Entry e = table[0]; e != null; e = e.next) {
-				if (e.key == null) {
+			for (Entry e = table[0]; e != null; e = e._next) {
+				if (e._key == null) {
 					return true;
 				}
 			}
@@ -233,19 +233,19 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	public Object get(Object key) {
-		Entry[] table = keysTable;
+		Entry[] table = _keysTable;
 		if (key != null) {
 			int hashCode = CollectionUtils.getLimitHash(key.hashCode());
 			int index = (hashCode & 0x7FFFFFFF) % table.length;
-			for (Entry e = table[index]; e != null; e = e.next) {
-				if (e.hashCode == hashCode && key.equals(e.key)) {
-					return e.value;
+			for (Entry e = table[index]; e != null; e = e._next) {
+				if (e._hashCode == hashCode && key.equals(e._key)) {
+					return e._value;
 				}
 			}
 		} else {
-			for (Entry e = table[0]; e != null; e = e.next) {
-				if (e.key == null) {
-					return e.value;
+			for (Entry e = table[0]; e != null; e = e._next) {
+				if (e._key == null) {
+					return e._value;
 				}
 			}
 		}
@@ -257,131 +257,131 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	public Object get(int index) {
-		if (index < 0 || index >= size) {
+		if (index < 0 || index >= _size) {
 			return null;
 		}
 		Entry entry = getEntry(index);
 		if (entry != null) {
-			return entry.value;
+			return entry._value;
 		}
 		return null;
 	}
 
 	public Object getKey(int index) {
-		if (index < 0 || index >= size) {
+		if (index < 0 || index >= _size) {
 			return null;
 		}
 		Entry entry = getEntry(index);
 		if (entry != null) {
-			return entry.key;
+			return entry._key;
 		}
 		return null;
 	}
 
 	public Entry getEntry(int index) {
-		if (index >= size) {
-			throw new LSysException("Index:" + index + ", Size:" + size);
+		if (index >= _size) {
+			throw new LSysException("Index:" + index + ", Size:" + _size);
 		}
-		return valuesTable[index];
+		return _valuesTable[index];
 	}
 
 	public void putAll(ArrayMap map) {
 		ensureCapacity();
-		for (int i = 0; i < map.size; i++) {
+		for (int i = 0; i < map._size; i++) {
 			Entry e = map.getEntry(i);
-			put(e.key, e.value);
+			put(e._key, e._value);
 		}
 	}
 
-	public Object put(Object key, Object value) {
+	public Object put(Object key, Object v) {
 		int hashCode = 0;
 		int index = 0;
 		if (key != null) {
 			hashCode = CollectionUtils.getLimitHash(key.hashCode());
-			index = (hashCode & 0x7FFFFFFF) % keysTable.length;
-			for (Entry e = keysTable[index]; e != null; e = e.next) {
-				if ((e.hashCode == hashCode) && key.equals(e.key)) {
-					return swapValue(e, value);
+			index = (hashCode & 0x7FFFFFFF) % _keysTable.length;
+			for (Entry e = _keysTable[index]; e != null; e = e._next) {
+				if ((e._hashCode == hashCode) && key.equals(e._key)) {
+					return swapValue(e, v);
 				}
 			}
 		} else {
-			for (Entry e = keysTable[0]; e != null; e = e.next) {
-				if (e.key == null) {
-					return swapValue(e, value);
+			for (Entry e = _keysTable[0]; e != null; e = e._next) {
+				if (e._key == null) {
+					return swapValue(e, v);
 				}
 			}
 		}
 		ensureCapacity();
-		index = (hashCode & 0x7FFFFFFF) % keysTable.length;
+		index = (hashCode & 0x7FFFFFFF) % _keysTable.length;
 		Entry e = null;
-		if (removed < 0) {
-			removed = 0;
+		if (_removed < 0) {
+			_removed = 0;
 		}
-		if (removed == 0) {
-			e = new Entry(size, hashCode, key, value, keysTable[index]);
+		if (_removed == 0) {
+			e = new Entry(_size, hashCode, key, v, _keysTable[index]);
 		} else {
-			e = new Entry(removed + size, hashCode, key, value, keysTable[index]);
+			e = new Entry(_removed + _size, hashCode, key, v, _keysTable[index]);
 		}
-		keysTable[index] = e;
-		valuesTable[size++] = e;
+		_keysTable[index] = e;
+		_valuesTable[_size++] = e;
 		return null;
 	}
 
-	public void set(int index, Object value) {
-		getEntry(index).setValue(value);
+	public void set(int index, Object v) {
+		getEntry(index).setValue(v);
 	}
 
 	public Object remove(Object key) {
 		Entry e = removeMap(key);
 		if (e != null) {
-			Object value = e.value;
+			Object v = e._value;
 			int index = indexOf(e);
 			removeList(index);
 			e.clear();
-			return value;
+			return v;
 		}
 		return null;
 	}
 
 	public Object remove(int index) {
 		Entry e = removeList(index);
-		Object value = e.value;
-		removeMap(e.key);
+		Object v = e._value;
+		removeMap(e._key);
 		e.clear();
-		return value;
+		return v;
 	}
 
 	@Override
 	public void clear() {
-		int length = keysTable.length;
+		int length = _keysTable.length;
 		for (int i = 0; i < length; i++) {
-			keysTable[i] = null;
-			valuesTable[i] = null;
+			_keysTable[i] = null;
+			_valuesTable[i] = null;
 		}
-		size = 0;
-		removed = 0;
+		_size = 0;
+		_removed = 0;
 	}
 
 	public int getRemoved() {
-		return removed;
+		return _removed;
 	}
 
 	public Entry[] toEntrys() {
-		Entry[] lists = CollectionUtils.copyOf(valuesTable, size);
+		Entry[] lists = CollectionUtils.copyOf(_valuesTable, _size);
 		return lists;
 	}
 
 	public TArray<Entry> toList() {
-		TArray<Entry> lists = new TArray<ArrayMap.Entry>(size);
-		for (int i = 0; i < size; i++) {
-			lists.add(valuesTable[i]);
+		TArray<Entry> lists = new TArray<ArrayMap.Entry>(_size);
+		for (int i = 0; i < _size; i++) {
+			lists.add(_valuesTable[i]);
 		}
 		return lists;
 	}
 
 	public Object[] toArray() {
-		Object[] array = new Object[size];
-		for (int i = 0; i < size; i++) {
+		Object[] array = new Object[_size];
+		for (int i = 0; i < _size; i++) {
 			array[i] = get(i);
 		}
 		return array;
@@ -393,11 +393,11 @@ public class ArrayMap implements IArray, LRelease {
 			return false;
 		}
 		ArrayMap e = (ArrayMap) o;
-		if (size != e.size) {
+		if (_size != e._size) {
 			return false;
 		}
-		for (int i = 0; i < size; i++) {
-			if (!valuesTable[i].equals(e.valuesTable[i])) {
+		for (int i = 0; i < _size; i++) {
+			if (!_valuesTable[i].equals(e._valuesTable[i])) {
 				return false;
 			}
 		}
@@ -406,10 +406,10 @@ public class ArrayMap implements IArray, LRelease {
 
 	public ArrayMap cpy() {
 		ArrayMap copy = new ArrayMap();
-		copy.threshold = threshold;
-		copy.keysTable = keysTable;
-		copy.valuesTable = valuesTable;
-		copy.size = size;
+		copy._threshold = _threshold;
+		copy._keysTable = _keysTable;
+		copy._valuesTable = _valuesTable;
+		copy._size = _size;
 		return copy;
 	}
 
@@ -418,24 +418,24 @@ public class ArrayMap implements IArray, LRelease {
 		int index = 0;
 		if (key != null) {
 			hashCode = CollectionUtils.getLimitHash(key.hashCode());
-			index = (hashCode & 0x7FFFFFFF) % keysTable.length;
-			for (Entry e = keysTable[index], prev = null; e != null; prev = e, e = e.next) {
-				if ((e.hashCode == hashCode) && key.equals(e.key)) {
+			index = (hashCode & 0x7FFFFFFF) % _keysTable.length;
+			for (Entry e = _keysTable[index], prev = null; e != null; prev = e, e = e._next) {
+				if ((e._hashCode == hashCode) && key.equals(e._key)) {
 					if (prev != null) {
-						prev.next = e.next;
+						prev._next = e._next;
 					} else {
-						keysTable[index] = e.next;
+						_keysTable[index] = e._next;
 					}
 					return e;
 				}
 			}
 		} else {
-			for (Entry e = keysTable[index], prev = null; e != null; prev = e, e = e.next) {
-				if ((e.hashCode == hashCode) && e.key == null) {
+			for (Entry e = _keysTable[index], prev = null; e != null; prev = e, e = e._next) {
+				if ((e._hashCode == hashCode) && e._key == null) {
 					if (prev != null) {
-						prev.next = e.next;
+						prev._next = e._next;
 					} else {
-						keysTable[index] = e.next;
+						_keysTable[index] = e._next;
 					}
 					return e;
 				}
@@ -445,87 +445,87 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	private Entry removeList(int index) {
-		Entry e = valuesTable[index];
-		int numMoved = size - index - 1;
+		Entry e = _valuesTable[index];
+		int numMoved = _size - index - 1;
 		if (numMoved > 0) {
-			System.arraycopy(valuesTable, index + 1, valuesTable, index, numMoved);
+			System.arraycopy(_valuesTable, index + 1, _valuesTable, index, numMoved);
 		}
-		valuesTable[--size] = null;
-		removed++;
+		_valuesTable[--_size] = null;
+		_removed++;
 		return e;
 	}
 
 	private void ensureCapacity() {
-		if (size >= threshold) {
-			Entry[] oldTable = valuesTable;
+		if (_size >= _threshold) {
+			Entry[] oldTable = _valuesTable;
 			int newCapacity = oldTable.length * 2 + 1;
 			Entry[] newMapTable = new Entry[newCapacity];
 			Entry[] newListTable = new Entry[newCapacity];
-			threshold = (int) (newCapacity * loadFactor);
-			System.arraycopy(oldTable, 0, newListTable, 0, size);
-			for (int i = 0; i < size; i++) {
+			_threshold = (int) (newCapacity * _loadFactor);
+			System.arraycopy(oldTable, 0, newListTable, 0, _size);
+			for (int i = 0; i < _size; i++) {
 				Entry old = oldTable[i];
-				int index = (old.hashCode & 0x7FFFFFFF) % newCapacity;
+				int index = (old._hashCode & 0x7FFFFFFF) % newCapacity;
 				Entry e = old;
-				old = old.next;
-				e.next = newMapTable[index];
+				old = old._next;
+				e._next = newMapTable[index];
 				newMapTable[index] = e;
-				newListTable[i].index = i;
+				newListTable[i]._index = i;
 			}
-			keysTable = newMapTable;
-			valuesTable = newListTable;
-			removed = 0;
+			_keysTable = newMapTable;
+			_valuesTable = newListTable;
+			_removed = 0;
 		}
 	}
 
-	private Object swapValue(Entry entry, Object value) {
-		Object old = entry.value;
-		entry.value = value;
+	private Object swapValue(Entry entry, Object v) {
+		Object old = entry._value;
+		entry._value = v;
 		return old;
 	}
 
 	public void reverse() {
-		for (int i = 0, lastIndex = size - 1, n = size / 2; i < n; i++) {
+		for (int i = 0, lastIndex = _size - 1, n = _size / 2; i < n; i++) {
 			int ii = lastIndex - i;
-			Entry tempKey = keysTable[i];
-			keysTable[i] = keysTable[ii];
-			keysTable[ii] = tempKey;
-			Entry tempValue = valuesTable[i];
-			valuesTable[i] = valuesTable[ii];
-			valuesTable[ii] = tempValue;
+			Entry tempKey = _keysTable[i];
+			_keysTable[i] = _keysTable[ii];
+			_keysTable[ii] = tempKey;
+			Entry tempValue = _valuesTable[i];
+			_valuesTable[i] = _valuesTable[ii];
+			_valuesTable[ii] = tempValue;
 		}
 	}
 
 	public void shuffle() {
-		for (int i = size - 1; i >= 0; i--) {
+		for (int i = _size - 1; i >= 0; i--) {
 			int ii = MathUtils.random(i);
-			Entry tempKey = keysTable[i];
-			keysTable[i] = keysTable[ii];
-			keysTable[ii] = tempKey;
-			Entry tempValue = valuesTable[i];
-			valuesTable[i] = valuesTable[ii];
-			valuesTable[ii] = tempValue;
+			Entry tempKey = _keysTable[i];
+			_keysTable[i] = _keysTable[ii];
+			_keysTable[ii] = tempKey;
+			Entry tempValue = _valuesTable[i];
+			_valuesTable[i] = _valuesTable[ii];
+			_valuesTable[ii] = tempValue;
 		}
 	}
 
 	public void truncate(int newSize) {
-		if (size <= newSize) {
+		if (_size <= newSize) {
 			return;
 
 		}
-		for (int i = newSize; i < size; i++) {
-			keysTable[i] = null;
-			valuesTable[i] = null;
+		for (int i = newSize; i < _size; i++) {
+			_keysTable[i] = null;
+			_valuesTable[i] = null;
 		}
-		size = newSize;
+		_size = newSize;
 	}
 
 	@Override
 	public int hashCode() {
 		int hashCode = 1;
-		for (int i = size - 1; i > -1; i--) {
-			hashCode = 31 * hashCode + (keysTable[i] == null ? 0 : keysTable[i].hashCode());
-			hashCode = 31 * hashCode + (valuesTable[i] == null ? 0 : valuesTable[i].hashCode());
+		for (int i = _size - 1; i > -1; i--) {
+			hashCode = 31 * hashCode + (_keysTable[i] == null ? 0 : _keysTable[i].hashCode());
+			hashCode = 31 * hashCode + (_valuesTable[i] == null ? 0 : _valuesTable[i].hashCode());
 		}
 		return hashCode;
 	}
@@ -536,19 +536,19 @@ public class ArrayMap implements IArray, LRelease {
 	}
 
 	public String toString(char split) {
-		if (size == 0) {
+		if (_size == 0) {
 			return "[]";
 		}
-		Entry[] values = this.valuesTable;
+		Entry[] values = this._valuesTable;
 		StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
-		for (int i = 0; i < size; i++) {
-			Object key = values[i].key;
-			Object value = values[i].value;
+		for (int i = 0; i < _size; i++) {
+			Object key = values[i]._key;
+			Object v = values[i]._value;
 			buffer.append(key == this ? "(this Map)" : key);
 			buffer.append('=');
-			buffer.append(value == this ? "(this Map)" : value);
-			if (i < size - 1) {
+			buffer.append(v == this ? "(this Map)" : v);
+			if (i < _size - 1) {
 				buffer.append(split).append(' ');
 			}
 		}
@@ -558,9 +558,9 @@ public class ArrayMap implements IArray, LRelease {
 
 	@Override
 	public void close() {
-		this.keysTable = null;
-		this.valuesTable = null;
-		this.size = 0;
+		this._keysTable = null;
+		this._valuesTable = null;
+		this._size = 0;
 	}
 
 }

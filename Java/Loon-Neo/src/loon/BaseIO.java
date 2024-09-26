@@ -157,11 +157,11 @@ public abstract class BaseIO extends DefUI {
 
 	public final static StrTokenizer loadStrTokenizer(String path, String delimiters) {
 		if (StringUtils.isEmpty(path)) {
-			return new StrTokenizer("");
+			return new StrTokenizer(LSystem.EMPTY);
 		}
 		String text = loadText(path);
 		if (text == null) {
-			return new StrTokenizer("");
+			return new StrTokenizer(LSystem.EMPTY);
 		}
 		if (delimiters == null) {
 			return new StrTokenizer(text);

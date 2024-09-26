@@ -27,6 +27,9 @@ import loon.utils.reply.Emitter;
 public final class Engine extends PlayerUtils implements EventActionT<Screen>, LRelease {
 
 	private static Engine instance;
+	
+	private Engine() {
+	}
 
 	public static void freeStatic() {
 		instance = null;

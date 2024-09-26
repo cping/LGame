@@ -275,7 +275,7 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		final int size = chars.length;
 		final StrBuilder sbr = _template_values.setLength(0);
 		String key = itemName;
-		String value = null;
+		String vl = null;
 		int idx = 0;
 		int equals = 0;
 		for (int i = 0; i < size; i++) {
@@ -309,20 +309,20 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 			}
 		}
 		if (key != null) {
-			value = sbr.toString();
+			vl = sbr.toString();
 			if (save) {
-				_configItems.put(filter(key), filter(value));
+				_configItems.put(filter(key), filter(vl));
 			}
 		}
-		return filter(value);
+		return filter(vl);
 	}
 
-	public String putItem(String key, String value) {
-		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
+	public String putItem(String key, String vl) {
+		if (StringUtils.isEmpty(key) || StringUtils.isEmpty(vl)) {
 			return null;
 		}
 		synchronized (_configItems) {
-			return _configItems.put(filter(key), filter(value));
+			return _configItems.put(filter(key), filter(vl));
 		}
 	}
 
@@ -533,8 +533,8 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 	}
 
 	@Override
-	public void put(String key, String value) {
-		putItem(key, value);
+	public void put(String key, String vl) {
+		putItem(key, vl);
 	}
 
 	@Override

@@ -86,14 +86,14 @@ public class XMLOutput implements LRelease {
 		start_attr(attr.getName(), attr.getValue());
 	}
 
-	public XMLOutput start_attr(String name, Object value) {
+	public XMLOutput start_attr(String name, Object vl) {
 		if (_currentElement == null) {
 			throw new LSysException("current element is null");
 		}
 		_writer.append(' ');
 		_writer.append(name);
 		_writer.append("=\"");
-		_writer.append(value == null ? "null" : value.toString());
+		_writer.append(vl == null ? "null" : vl.toString());
 		_writer.append('"');
 		return this;
 	}

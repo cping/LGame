@@ -281,7 +281,7 @@ public class LSetting {
 	/**
 	 * 初始化游戏时传参用，默认无数据
 	 */
-	public String[] args = new String[] { "" };
+	public String[] args = new String[] { LSystem.EMPTY };
 
 	/**
 	 * 复制setting设置到自身

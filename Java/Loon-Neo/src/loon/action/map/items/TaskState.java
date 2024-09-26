@@ -92,8 +92,8 @@ public class TaskState {
 		return this;
 	}
 
-	public TaskState setPropertyValue(String key, String value) {
-		_properties.put(key, value);
+	public TaskState setPropertyValue(String key, String v) {
+		_properties.put(key, v);
 		return this;
 	}
 

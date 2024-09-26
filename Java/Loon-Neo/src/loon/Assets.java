@@ -201,7 +201,7 @@ public abstract class Assets {
 		int pathLen;
 		do {
 			pathLen = path.length();
-			path = path.replaceAll("[^/]+/\\.\\./", "");
+			path = path.replaceAll("[^/]+/\\.\\./", LSystem.EMPTY);
 		} while (path.length() != pathLen);
 		path = path.replace("\\", "/");
 		if (path.startsWith("/")) {

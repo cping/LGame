@@ -79,8 +79,8 @@ public class MapBundle<T> implements Bundle<T> {
 				if (map != null) {
 					for (int j = 0; j < map.size(); j++) {
 						loon.utils.ArrayMap.Entry entry = map.getEntry(j);
-						if (entry != null && entry.key != null && entry.value != null) {
-							put(HelperUtils.toStr(entry.key), (T) entry.value);
+						if (entry != null && entry.getKey() != null && entry.getValue() != null) {
+							put(HelperUtils.toStr(entry.getKey()), (T) entry.getValue());
 						}
 					}
 				}

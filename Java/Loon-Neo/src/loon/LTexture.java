@@ -100,7 +100,7 @@ public class LTexture extends Painter implements LRelease {
 					_texture._memorySize = 0;
 					_texture.freeBatch();
 					_gfx.game.log().debug("Texture : " + _texture.getSource() + " Closed,Size = " + _texture.getWidth()
-							+ "," + _texture.getHeight() + (_texture.Tag != null ? ",Tag = " + _texture.Tag : ""));
+							+ "," + _texture.getHeight() + (_texture.Tag != null ? ",Tag = " + _texture.Tag : LSystem.EMPTY));
 				}
 			}
 		}
@@ -206,7 +206,7 @@ public class LTexture extends Painter implements LRelease {
 		@Override
 		public String toString() {
 			StringKeyValue builder = new StringKeyValue("Managed");
-			builder.kv("managed", managed).comma().kv("repeat", (repeatX ? "x" : "") + (repeatY ? "y" : "")).comma()
+			builder.kv("managed", managed).comma().kv("repeat", (repeatX ? "x" : LSystem.EMPTY) + (repeatY ? "y" : LSystem.EMPTY)).comma()
 					.kv("filter", (minFilter + "/" + magFilter)).comma().kv("mipmaps", mipmaps);
 			return builder.toString();
 		}
@@ -304,7 +304,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public String getSource() {
-		return StringUtils.isEmpty(source) ? "" : source;
+		return StringUtils.isEmpty(source) ? LSystem.EMPTY : source;
 	}
 
 	public boolean isDrawCanvas() {

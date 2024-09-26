@@ -5694,12 +5694,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 添加全局通用的Bundle对象
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public ObjectBundle addBundle(String key, Object value) {
+	public ObjectBundle addBundle(String key, Object v) {
 		if (LSystem.getProcess() != null) {
-			LSystem.getProcess().addBundle(key, value);
+			LSystem.getProcess().addBundle(key, v);
 		}
 		return new ObjectBundle();
 	}
@@ -5721,44 +5721,44 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 全局通用的Bundle中指定数据做加法
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public ObjectBundle incBundle(String key, Object value) {
-		return getBundle().inc(key, value);
+	public ObjectBundle incBundle(String key, Object v) {
+		return getBundle().inc(key, v);
 	}
 
 	/**
 	 * 全局通用的Bundle中指定数据做减法
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public ObjectBundle subBundle(String key, Object value) {
-		return getBundle().sub(key, value);
+	public ObjectBundle subBundle(String key, Object v) {
+		return getBundle().sub(key, v);
 	}
 
 	/**
 	 * 全局通用的Bundle中指定数据做乘法
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public ObjectBundle mulBundle(String key, Object value) {
-		return getBundle().mul(key, value);
+	public ObjectBundle mulBundle(String key, Object v) {
+		return getBundle().mul(key, v);
 	}
 
 	/**
 	 * 全局通用的Bundle中指定数据做除法
 	 * 
 	 * @param key
-	 * @param value
+	 * @param v
 	 * @return
 	 */
-	public ObjectBundle divBundle(String key, Object value) {
-		return getBundle().div(key, value);
+	public ObjectBundle divBundle(String key, Object v) {
+		return getBundle().div(key, v);
 	}
 
 	/**

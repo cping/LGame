@@ -146,9 +146,9 @@ public final class Field {
 		}
 	}
 
-	public void set(Object obj, Object value) throws ReflectionException {
+	public void set(Object obj, Object vl) throws ReflectionException {
 		try {
-			field.set(obj, value);
+			field.set(obj, vl);
 		} catch (IllegalArgumentException e) {
 			throw new ReflectionException("Argument not valid for field: " + getName(), e);
 		} catch (IllegalAccessException e) {
