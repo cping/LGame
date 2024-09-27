@@ -22,58 +22,58 @@ package loon.geom;
 
 public class Bound {
 
-	protected final PointF leftTop;
+	protected final PointF _leftTop;
 
-	protected final PointF rightTop;
+	protected final PointF _rightTop;
 
-	protected final PointF leftBottom;
+	protected final PointF _leftBottom;
 
-	protected final PointF rightBottom;
+	protected final PointF _rightBottom;
 
 	public Bound() {
 		this(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f);
 	}
 
 	public Bound(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
-		this.leftTop = new PointF(x0, y0);
-		this.rightTop = new PointF(x1, y1);
-		this.leftBottom = new PointF(x2, y2);
-		this.rightBottom = new PointF(x3, y3);
+		this._leftTop = new PointF(x0, y0);
+		this._rightTop = new PointF(x1, y1);
+		this._leftBottom = new PointF(x2, y2);
+		this._rightBottom = new PointF(x3, y3);
 	}
 
 	public PointF getLeftTop() {
-		return leftTop;
+		return _leftTop;
 	}
 
 	public Bound setLeftTop(float left, float top) {
-		this.leftTop.set(left, top);
+		this._leftTop.set(left, top);
 		return this;
 	}
 
 	public PointF getRightTop() {
-		return rightTop;
+		return _rightTop;
 	}
 
 	public Bound setRightTop(float right, float top) {
-		this.rightTop.set(right, top);
+		this._rightTop.set(right, top);
 		return this;
 	}
 
 	public PointF getLeftBottom() {
-		return leftBottom;
+		return _leftBottom;
 	}
 
 	public Bound setLeftBottom(float left, float bottom) {
-		this.leftBottom.set(left, bottom);
+		this._leftBottom.set(left, bottom);
 		return this;
 	}
 
 	public PointF getRightBottom() {
-		return rightBottom;
+		return _rightBottom;
 	}
 
 	public Bound setRightBottom(float right, float bottom) {
-		this.rightBottom.set(right, bottom);
+		this._rightBottom.set(right, bottom);
 		return this;
 	}
 

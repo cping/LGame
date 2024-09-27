@@ -35,13 +35,13 @@ public class Clip {
 
 	private int _displayHeight;
 
+	private int _regionWidth, _regionHeight;
+	
 	private float _offX, _offY;
 
 	private float _widthRatio, _heightRatio;
 
 	private float _factor;
-
-	private int _regionWidth, _regionHeight;
 
 	public Clip(float x, float y, float w, float h) {
 		this(x, y, w, h, false);

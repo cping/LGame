@@ -26,33 +26,31 @@ public class Dimension {
 
 	public float width = -1, height = -1;
 
-	private RectBox rect;
+	private RectBox _rect;
 
-	private boolean dirty = false;
+	private boolean _dirty;
 
 	public Dimension() {
 		this(-1, -1);
 	}
 
-	public Dimension(float w, float h) {
-		width = w;
-		height = h;
-		dirty = true;
+	public Dimension(Dimension d) {
+		this(d.getWidth(), d.getHeight());
 	}
 
-	public Dimension(Dimension d) {
-		width = d.getWidth();
-		height = d.getHeight();
-		dirty = true;
+	public Dimension(float w, float h) {
+		this.width = w;
+		this.height = h;
+		this._dirty = true;
 	}
 
 	public RectBox getRect() {
-		if (rect == null) {
-			rect = new RectBox(0, 0, width, height);
+		if (this._rect == null) {
+			this._rect = new RectBox(0, 0, width, height);
 		} else {
-			rect.setBounds(0, 0, width, height);
+			this._rect.setBounds(0, 0, width, height);
 		}
-		return rect;
+		return this._rect;
 	}
 
 	public float getTileWidthSize() {
@@ -78,7 +76,7 @@ public class Dimension {
 	}
 
 	public boolean isDirty() {
-		return dirty;
+		return this._dirty;
 	}
 
 	public boolean contains(float x, float y) {
@@ -112,29 +110,35 @@ public class Dimension {
 		return (int) width;
 	}
 
-	public Dimension setWidth(int width) {
-		this.width = width;
-		this.dirty = true;
+	public Dimension setWidth(int w) {
+		if (this.width != w) {
+			this._dirty = true;
+		}
+		this.width = w;
 		return this;
 	}
 
-	public Dimension setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
-		this.dirty = true;
+	public Dimension setSize(int w, int h) {
+		if (this.width != w || this.height != h) {
+			this._dirty = true;
+		}
+		this.width = w;
+		this.height = h;
 		return this;
 	}
 
 	public Dimension setSize(Dimension d) {
-		this.width = d.getWidth();
-		this.height = d.getHeight();
-		this.dirty = true;
-		return this;
+		if (d == null) {
+			return this;
+		}
+		return setSize(d.getWidth(), d.getHeight());
 	}
 
-	public Dimension setHeight(int height) {
-		this.height = height;
-		this.dirty = true;
+	public Dimension setHeight(int h) {
+		if (this.height != h) {
+			this._dirty = true;
+		}
+		this.height = h;
 		return this;
 	}
 

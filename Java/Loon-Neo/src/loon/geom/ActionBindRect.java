@@ -27,11 +27,11 @@ import loon.canvas.LColor;
 
 public class ActionBindRect implements ActionBind, BoxSize {
 
-	private final RectBox rect;
+	private final RectBox _rect;
 
-	private final ActionBind actionBind;
+	private final ActionBind _actionBind;
 
-	private Vector2f position;
+	private Vector2f _position;
 
 	public ActionBindRect(ActionBind bind) {
 		this(bind, bind.getX(), bind.getY());
@@ -42,209 +42,208 @@ public class ActionBindRect implements ActionBind, BoxSize {
 	}
 
 	public ActionBindRect(ActionBind bind, float x, float y, float w, float h) {
-		this.actionBind = bind;
-		this.position = new Vector2f();
-		this.rect = new RectBox(x, y, w, h);
+		this._actionBind = bind;
+		this._position = new Vector2f();
+		this._rect = new RectBox(x, y, w, h);
 	}
 
 	@Override
 	public Field2D getField2D() {
-		return actionBind.getField2D();
+		return _actionBind.getField2D();
 	}
 
 	@Override
 	public void setVisible(boolean v) {
-		actionBind.setVisible(v);
+		_actionBind.setVisible(v);
 	}
 
 	@Override
 	public boolean isVisible() {
-		return actionBind.isVisible();
+		return _actionBind.isVisible();
 	}
 
 	@Override
 	public int x() {
-		return rect.x() + position.x();
+		return _rect.x() + _position.x();
 	}
 
 	@Override
 	public int y() {
-		return rect.y() + position.y();
+		return _rect.y() + _position.y();
 	}
 
 	@Override
 	public float getX() {
-		return rect.getX() + position.x;
+		return _rect.getX() + _position.x;
 	}
 
 	@Override
 	public float getY() {
-		return rect.getY() + position.y;
+		return _rect.getY() + _position.y;
 	}
 
 	@Override
 	public float getScaleX() {
-		return actionBind.getScaleX();
+		return _actionBind.getScaleX();
 	}
 
 	@Override
 	public float getScaleY() {
-		return actionBind.getScaleY();
+		return _actionBind.getScaleY();
 	}
 
 	@Override
 	public void setColor(LColor color) {
-		actionBind.setColor(color);
+		_actionBind.setColor(color);
 	}
 
 	@Override
 	public LColor getColor() {
-		return actionBind.getColor();
+		return _actionBind.getColor();
 	}
 
 	@Override
 	public void setScale(float sx, float sy) {
-		actionBind.setScale(sx, sy);
+		_actionBind.setScale(sx, sy);
 	}
 
 	@Override
 	public float getRotation() {
-		return actionBind.getRotation();
+		return _actionBind.getRotation();
 	}
 
 	@Override
 	public void setRotation(float r) {
-		actionBind.setRotation(r);
+		_actionBind.setRotation(r);
 	}
 
 	@Override
 	public float getWidth() {
-		return rect.getWidth();
+		return _rect.getWidth();
 	}
 
 	@Override
 	public float getHeight() {
-		return rect.getHeight();
+		return _rect.getHeight();
 	}
 
 	@Override
 	public float getAlpha() {
-		return actionBind.getAlpha();
+		return _actionBind.getAlpha();
 	}
 
 	@Override
 	public void setAlpha(float alpha) {
-		actionBind.setAlpha(alpha);
+		_actionBind.setAlpha(alpha);
 	}
 
 	@Override
 	public void setLocation(float x, float y) {
-		rect.setLocation(x, y);
+		_rect.setLocation(x, y);
 	}
 
 	public void setRect(float x, float y, float w, float h) {
-		rect.setBounds(x, y, w, h);
+		_rect.setBounds(x, y, w, h);
 	}
 
 	@Override
 	public void setX(float x) {
-		rect.setX(x);
+		_rect.setX(x);
 	}
 
 	@Override
 	public void setY(float y) {
-		rect.setY(y);
+		_rect.setY(y);
 	}
 
 	@Override
 	public boolean isBounded() {
-		return actionBind.isBounded();
+		return _actionBind.isBounded();
 	}
 
 	@Override
 	public boolean isContainer() {
-		return actionBind.isContainer();
+		return _actionBind.isContainer();
 	}
 
 	@Override
 	public boolean inContains(float x, float y, float w, float h) {
-		return rect.intersects(x, y, w, h);
+		return _rect.intersects(x, y, w, h);
 	}
 
 	@Override
 	public RectBox getRectBox() {
-		return rect;
+		return _rect;
 	}
 
 	@Override
 	public float getContainerWidth() {
-		return actionBind.getContainerWidth();
+		return _actionBind.getContainerWidth();
 	}
 
 	@Override
 	public float getContainerHeight() {
-		return actionBind.getContainerHeight();
+		return _actionBind.getContainerHeight();
 	}
 
 	@Override
 	public ActionTween selfAction() {
-		return actionBind.selfAction();
+		return _actionBind.selfAction();
 	}
 
 	@Override
 	public boolean isActionCompleted() {
-		return actionBind.isActionCompleted();
+		return _actionBind.isActionCompleted();
 	}
 
 	@Override
 	public void setWidth(float w) {
-		rect.setWidth(w);
+		_rect.setWidth(w);
 	}
 
 	@Override
 	public void setHeight(float h) {
-		rect.setHeight(h);
+		_rect.setHeight(h);
 	}
 
 	@Override
 	public float getCenterX() {
-		return rect.getCenterX() + position.x;
+		return _rect.getCenterX() + _position.x;
 	}
 
 	@Override
 	public float getCenterY() {
-		return rect.getCenterY() + position.y;
+		return _rect.getCenterY() + _position.y;
 	}
 
 	public ActionBind offset(Vector2f v) {
 		if (v != null) {
-			this.position = v;
+			this._position = v;
 		}
 		return this;
 	}
 
 	public float getOffsetX() {
-		return position.x;
+		return _position.x;
 	}
 
 	public float getOffsetY() {
-		return position.y;
+		return _position.y;
 	}
 
 	public ActionBind setOffsetX(float x) {
-		this.position.setX(x);
+		this._position.setX(x);
 		return this;
 	}
 
 	public ActionBind getOffsetY(float y) {
-		this.position.setY(y);
+		this._position.setY(y);
 		return this;
 	}
 
 	@Override
 	public ActionBind setSize(float w, float h) {
-		actionBind.setSize(w, h);
-		return actionBind;
+		return _actionBind.setSize(w, h);
 	}
 
 }
