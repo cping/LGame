@@ -29,29 +29,30 @@ public class Plane implements XY {
 		FRONT, BACK, ON_PLANE
 	}
 
-	public Vector3f normal;
-	public float d;
+	private Vector3f _normal;
+	
+	private float _dot;
 
 	public Plane() {
 		this(Vector3f.ZERO(), 0);
 	}
 
 	public Plane(Vector3f normal, float d) {
-		this.normal = new Vector3f(normal);
-		this.d = d;
+		this._normal = new Vector3f(normal);
+		this._dot = d;
 	}
 
 	public Plane(float a, float b, float c, float d) {
-		this.normal = new Vector3f(a, b, c);
-		this.d = d;
+		this._normal = new Vector3f(a, b, c);
+		this._dot = d;
 
-		float length = normal.length();
-		normal.scaleSelf(1 / length);
-		this.d /= length;
+		float length = _normal.length();
+		_normal.scaleSelf(1 / length);
+		this._dot /= length;
 	}
 
 	public Plane(Plane plane) {
-		this(plane.normal, plane.d);
+		this(plane._normal, plane._dot);
 	}
 
 	public static Vector3f intersection(Plane p1, Plane p2, Plane p3, Vector3f dest) {
@@ -63,22 +64,22 @@ public class Plane implements XY {
 		float c31x, c31y, c31z;
 		float c12x, c12y, c12z;
 
-		c23x = p2.normal.y * p3.normal.z - p2.normal.z * p3.normal.y;
-		c23y = p2.normal.z * p3.normal.x - p2.normal.x * p3.normal.z;
-		c23z = p2.normal.x * p3.normal.y - p2.normal.y * p3.normal.x;
+		c23x = p2._normal.y * p3._normal.z - p2._normal.z * p3._normal.y;
+		c23y = p2._normal.z * p3._normal.x - p2._normal.x * p3._normal.z;
+		c23z = p2._normal.x * p3._normal.y - p2._normal.y * p3._normal.x;
 
-		c31x = p3.normal.y * p1.normal.z - p3.normal.z * p1.normal.y;
-		c31y = p3.normal.z * p1.normal.x - p3.normal.x * p1.normal.z;
-		c31z = p3.normal.x * p1.normal.y - p3.normal.y * p1.normal.x;
+		c31x = p3._normal.y * p1._normal.z - p3._normal.z * p1._normal.y;
+		c31y = p3._normal.z * p1._normal.x - p3._normal.x * p1._normal.z;
+		c31z = p3._normal.x * p1._normal.y - p3._normal.y * p1._normal.x;
 
-		c12x = p1.normal.y * p2.normal.z - p1.normal.z * p2.normal.y;
-		c12y = p1.normal.z * p2.normal.x - p1.normal.x * p2.normal.z;
-		c12z = p1.normal.x * p2.normal.y - p1.normal.y * p2.normal.x;
+		c12x = p1._normal.y * p2._normal.z - p1._normal.z * p2._normal.y;
+		c12y = p1._normal.z * p2._normal.x - p1._normal.x * p2._normal.z;
+		c12z = p1._normal.x * p2._normal.y - p1._normal.y * p2._normal.x;
 
-		float dot = p1.normal.dot(c23x, c23y, c23z);
-		dest.x = (-c23x * p1.d - c31x * p2.d - c12x * p3.d) / dot;
-		dest.y = (-c23y * p1.d - c31y * p2.d - c12y * p3.d) / dot;
-		dest.z = (-c23z * p1.d - c31z * p2.d - c12z * p3.d) / dot;
+		float dot = p1._normal.dot(c23x, c23y, c23z);
+		dest.x = (-c23x * p1._dot - c31x * p2._dot - c12x * p3._dot) / dot;
+		dest.y = (-c23y * p1._dot - c31y * p2._dot - c12y * p3._dot) / dot;
+		dest.z = (-c23z * p1._dot - c31z * p2._dot - c12z * p3._dot) / dot;
 
 		return dest;
 	}
@@ -88,7 +89,7 @@ public class Plane implements XY {
 	}
 
 	public Side testPoint(float x, float y, float z) {
-		float test = normal.dot(x, y, z) + d;
+		float test = _normal.dot(x, y, z) + _dot;
 
 		if (test == 0)
 			return Side.ON_PLANE;
@@ -100,34 +101,34 @@ public class Plane implements XY {
 	}
 
 	public Plane set(Vector3f normal, float d) {
-		this.normal.set(normal);
-		this.d = d;
+		this._normal.set(normal);
+		this._dot = d;
 
 		return this;
 	}
 
 	public Plane set(float a, float b, float c, float d) {
-		this.normal.set(a, b, c);
-		this.d = d;
+		this._normal.set(a, b, c);
+		this._dot = d;
 
-		float length = normal.length();
-		normal.scaleSelf(1 / length);
-		this.d /= length;
+		float length = _normal.length();
+		_normal.scaleSelf(1 / length);
+		this._dot /= length;
 
 		return this;
 	}
 
 	public Plane set(Plane plane) {
-		this.normal.set(plane.normal);
-		this.d = plane.d;
+		this._normal.set(plane._normal);
+		this._dot = plane._dot;
 
 		return this;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = normal.hashCode();
-		result = 31 * result + (d != +0.0f ? NumberUtils.floatToIntBits(d) : 0);
+		int result = _normal.hashCode();
+		result = 31 * result + (_dot != +0.0f ? NumberUtils.floatToIntBits(_dot) : 0);
 		return result;
 	}
 
@@ -141,23 +142,27 @@ public class Plane implements XY {
 		}
 
 		Plane plane = (Plane) o;
-		return NumberUtils.compare(plane.d, d) == 0 && normal.equals(plane.normal);
+		return NumberUtils.compare(plane._dot, _dot) == 0 && _normal.equals(plane._normal);
 	}
 
 	@Override
 	public float getX() {
-		return normal.x;
+		return _normal.x;
 	}
 
 	@Override
 	public float getY() {
-		return normal.y;
+		return _normal.y;
+	}
+	
+	public float getDot() {
+		return this._dot;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Plane");
-		builder.kv("normal", normal).comma().kv("dot", d);
+		builder.kv("normal", _normal).comma().kv("dot", _dot);
 		return builder.toString();
 	}
 

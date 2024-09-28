@@ -25,36 +25,36 @@ import loon.utils.MathUtils;
 
 public class RangeI implements XY, SetXY {
 
-	private int max;
+	private int _max;
 
-	private int min;
+	private int _min;
 
-	private boolean enabled = true;
+	private boolean _enabled = true;
 
 	public RangeI(XY pos) {
 		this(MathUtils.ifloor(pos.getX()), MathUtils.ifloor(pos.getY()));
 	}
 
 	public RangeI(int min, int max) {
-		this.min = min;
-		this.max = max;
+		this._min = min;
+		this._max = max;
 	}
 
 	public int random() {
-		return MathUtils.random(min, max);
+		return MathUtils.random(_min, _max);
 	}
 
 	public boolean isEnabled() {
-		return enabled;
+		return _enabled;
 	}
 
 	public RangeI setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		this._enabled = enabled;
 		return this;
 	}
 
 	public boolean contains(float v) {
-		return this.min <= v && this.max >= v;
+		return this._min <= v && this._max >= v;
 	}
 
 	public boolean contains(XY v) {
@@ -62,97 +62,97 @@ public class RangeI implements XY, SetXY {
 	}
 
 	public int getMax() {
-		return max;
+		return _max;
 	}
 
 	public RangeI setMax(int max) {
-		if (!enabled) {
+		if (!_enabled) {
 			return this;
 		}
-		this.max = max;
+		this._max = max;
 		return this;
 	}
 
 	public int getMin() {
-		return min;
+		return _min;
 	}
 
 	public RangeI setMin(int min) {
-		if (!enabled) {
+		if (!_enabled) {
 			return this;
 		}
-		this.min = min;
+		this._min = min;
 		return this;
 	}
 
 	@Override
 	public void setX(float x) {
-		if (!enabled) {
+		if (!_enabled) {
 			return;
 		}
-		this.min = MathUtils.ifloor(x);
+		this._min = MathUtils.ifloor(x);
 	}
 
 	@Override
 	public void setY(float y) {
-		if (!enabled) {
+		if (!_enabled) {
 			return;
 		}
-		this.max = MathUtils.ifloor(y);
+		this._max = MathUtils.ifloor(y);
 	}
 
 	@Override
 	public float getX() {
-		return min;
+		return _min;
 	}
 
 	@Override
 	public float getY() {
-		return max;
+		return _max;
 	}
 
 	public int getWidth() {
-		return this.max - this.min;
+		return this._max - this._min;
 	}
 
 	public int getCenter() {
-		return MathUtils.ifloor((this.max + this.min) * 0.5f);
+		return MathUtils.ifloor((this._max + this._min) * 0.5f);
 	}
 
 	public float lerp(float ratio) {
-		return MathUtils.lerp(this.min, this.max, ratio);
+		return MathUtils.lerp(this._min, this._max, ratio);
 	}
 
 	public RangeI add(int pMin, int pMax) {
-		return new RangeI(this.min + pMin, this.max + pMax);
+		return new RangeI(this._min + pMin, this._max + pMax);
 	}
 
 	public RangeI sub(int pMin, int pMax) {
-		return new RangeI(this.min - pMin, this.max - pMax);
+		return new RangeI(this._min - pMin, this._max - pMax);
 	}
 
 	public RangeI mul(int pMin, int pMax) {
-		return new RangeI(this.min * pMin, this.max * pMax);
+		return new RangeI(this._min * pMin, this._max * pMax);
 	}
 
 	public RangeI div(int pMin, int pMax) {
-		return new RangeI(this.min / pMin, this.max / pMax);
+		return new RangeI(this._min / pMin, this._max / pMax);
 	}
 
 	public RangeI cpy() {
-		return new RangeI(this.min, this.max);
+		return new RangeI(this._min, this._max);
 	}
 
 	public boolean equals(RangeI other) {
-		return this.min == other.min && this.max == other.max;
+		return this._min == other._min && this._max == other._max;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 38;
-		result = LSystem.unite(result, min);
-		result = LSystem.unite(result, max);
-		result = LSystem.unite(result, enabled);
+		result = LSystem.unite(result, _min);
+		result = LSystem.unite(result, _max);
+		result = LSystem.unite(result, _enabled);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -173,6 +173,6 @@ public class RangeI implements XY, SetXY {
 
 	@Override
 	public String toString() {
-		return min + " to " + max;
+		return _min + " to " + _max;
 	}
 }

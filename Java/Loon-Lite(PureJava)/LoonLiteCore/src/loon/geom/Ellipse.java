@@ -96,11 +96,11 @@ public class Ellipse extends Shape {
 
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
-	private int segmentCount;
+	private int _segmentCount;
 
-	private float radius1;
+	private float _radius1;
 
-	private float radius2;
+	private float _radius2;
 
 	private float _start = 0;
 
@@ -169,9 +169,9 @@ public class Ellipse extends Shape {
 	public Ellipse set(float centerPointX, float centerPointY, float radius1, float radius2, int segmentCount) {
 		this.x = centerPointX - radius1;
 		this.y = centerPointY - radius2;
-		this.radius1 = radius1;
-		this.radius2 = radius2;
-		this.segmentCount = segmentCount;
+		this._radius1 = radius1;
+		this._radius2 = radius2;
+		this._segmentCount = segmentCount;
 		checkPoints();
 		return this;
 	}
@@ -304,11 +304,11 @@ public class Ellipse extends Shape {
 	}
 
 	public float getRealX() {
-		return this.x + radius1;
+		return this.x + _radius1;
 	}
 
 	public float getRealY() {
-		return this.y + radius2;
+		return this.y + _radius2;
 	}
 
 	/**
@@ -324,32 +324,32 @@ public class Ellipse extends Shape {
 	}
 
 	public float getDiameter1() {
-		return radius1 * 2f;
+		return _radius1 * 2f;
 	}
 
 	public float getRadius1() {
-		return radius1;
+		return _radius1;
 	}
 
 	public Ellipse setRadius1(float r) {
-		if (!MathUtils.equal(r, this.radius1)) {
-			this.radius1 = r;
+		if (!MathUtils.equal(r, this._radius1)) {
+			this._radius1 = r;
 			pointsDirty = true;
 		}
 		return this;
 	}
 
 	public float getDiameter2() {
-		return radius2 * 2f;
+		return _radius2 * 2f;
 	}
 
 	public float getRadius2() {
-		return radius2;
+		return _radius2;
 	}
 
 	public Ellipse setRadius2(float r) {
-		if (!MathUtils.equal(r, this.radius2)) {
-			this.radius2 = r;
+		if (!MathUtils.equal(r, this._radius2)) {
+			this._radius2 = r;
 			pointsDirty = true;
 		}
 		return this;
@@ -367,10 +367,10 @@ public class Ellipse extends Shape {
 		float start = _start;
 		float end = _end;
 
-		float cx = x + radius1;
-		float cy = y + radius2;
+		float cx = x + _radius1;
+		float cy = y + _radius2;
 
-		int step = 360 / segmentCount;
+		int step = 360 / _segmentCount;
 
 		for (float a = start; a <= end + step; a += step) {
 			float ang = a;
@@ -378,8 +378,8 @@ public class Ellipse extends Shape {
 				ang = end;
 			}
 
-			float newX = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * radius1));
-			float newY = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * radius2));
+			float newX = (cx + (MathUtils.cos(MathUtils.toRadians(ang)) * _radius1));
+			float newY = (cy + (MathUtils.sin(MathUtils.toRadians(ang)) * _radius2));
 
 			if (newX > maxX) {
 				maxX = newX;
@@ -406,13 +406,13 @@ public class Ellipse extends Shape {
 	@Override
 	protected void findCenter() {
 		center = new float[2];
-		center[0] = x + radius1;
-		center[1] = y + radius2;
+		center[0] = x + _radius1;
+		center[1] = y + _radius2;
 	}
 
 	@Override
 	protected void calculateRadius() {
-		boundingCircleRadius = MathUtils.max(radius1, radius2);
+		boundingCircleRadius = MathUtils.max(_radius1, _radius2);
 	}
 
 	public float getStart() {
@@ -443,8 +443,8 @@ public class Ellipse extends Shape {
 		if (scaleX != sx || scaleY != sy) {
 			this.scaleX = sx;
 			this.scaleY = sy;
-			this.radius1 = sx * radius1;
-			this.radius2 = sy * radius2;
+			this._radius1 = sx * _radius1;
+			this._radius2 = sy * _radius2;
 			this.pointsDirty = true;
 		}
 	}
@@ -456,8 +456,8 @@ public class Ellipse extends Shape {
 		if (e == this) {
 			return true;
 		}
-		if (MathUtils.equal(e.x, this.x) && MathUtils.equal(e.y, this.y) && MathUtils.equal(e.radius1, this.radius1)
-				&& MathUtils.equal(e.radius2, this.radius2)
+		if (MathUtils.equal(e.x, this.x) && MathUtils.equal(e.y, this.y) && MathUtils.equal(e._radius1, this._radius1)
+				&& MathUtils.equal(e._radius2, this._radius2)
 				&& MathUtils.equal(this.boundingCircleRadius, e.boundingCircleRadius)
 				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY)) {
 			return true;
@@ -486,9 +486,9 @@ public class Ellipse extends Shape {
 		this.x = e.x;
 		this.y = e.y;
 		this.rotation = e.rotation;
-		this.radius1 = e.radius1;
-		this.radius2 = e.radius2;
-		this.segmentCount = e.segmentCount;
+		this._radius1 = e._radius1;
+		this._radius2 = e._radius2;
+		this._segmentCount = e._segmentCount;
 		this.boundingCircleRadius = e.boundingCircleRadius;
 		this.minX = e.minX;
 		this.minY = e.minY;
@@ -513,15 +513,15 @@ public class Ellipse extends Shape {
 
 	@Override
 	public Ellipse cpy() {
-		return new Ellipse(getCenterX(), getCenterY(), this.radius1, this.radius2, this.segmentCount);
+		return new Ellipse(getCenterX(), getCenterY(), this._radius1, this._radius2, this._segmentCount);
 	}
 
 	public float getMinorRadius() {
-		return MathUtils.min(this.radius1, this.radius2) / 2f;
+		return MathUtils.min(this._radius1, this._radius2) / 2f;
 	}
 
 	public float getMajorRadius() {
-		return MathUtils.max(this.radius1, this.radius2) / 2f;
+		return MathUtils.max(this._radius1, this._radius2) / 2f;
 	}
 
 	@Override
@@ -545,8 +545,8 @@ public class Ellipse extends Shape {
 		hashCode = prime * LSystem.unite(hashCode, x);
 		hashCode = prime * LSystem.unite(hashCode, y);
 		hashCode = prime * LSystem.unite(hashCode, boundingCircleRadius);
-		hashCode = prime * LSystem.unite(hashCode, radius1);
-		hashCode = prime * LSystem.unite(hashCode, radius2);
+		hashCode = prime * LSystem.unite(hashCode, _radius1);
+		hashCode = prime * LSystem.unite(hashCode, _radius2);
 		return hashCode;
 	}
 

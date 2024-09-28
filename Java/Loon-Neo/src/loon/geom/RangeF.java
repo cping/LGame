@@ -25,36 +25,36 @@ import loon.utils.MathUtils;
 
 public class RangeF implements XY, SetXY {
 
-	private float max;
+	private float _max;
 
-	private float min;
+	private float _min;
 
-	private boolean enabled = true;
+	private boolean _enabled = true;
 
 	public RangeF(XY pos) {
 		this(pos.getX(), pos.getY());
 	}
 
 	public RangeF(float min, float max) {
-		this.min = min;
-		this.max = max;
+		this._min = min;
+		this._max = max;
 	}
 
 	public float random() {
-		return MathUtils.random(min, max);
+		return MathUtils.random(_min, _max);
 	}
 
 	public boolean isEnabled() {
-		return enabled;
+		return _enabled;
 	}
 
 	public RangeF setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		this._enabled = enabled;
 		return this;
 	}
 
 	public boolean contains(float v) {
-		return this.min <= v && this.max >= v;
+		return this._min <= v && this._max >= v;
 	}
 
 	public boolean contains(XY v) {
@@ -62,97 +62,97 @@ public class RangeF implements XY, SetXY {
 	}
 
 	public float getMax() {
-		return max;
+		return _max;
 	}
 
 	public RangeF setMax(float max) {
-		if (!enabled) {
+		if (!_enabled) {
 			return this;
 		}
-		this.max = max;
+		this._max = max;
 		return this;
 	}
 
 	public float getMin() {
-		return min;
+		return _min;
 	}
 
 	public RangeF setMin(float min) {
-		if (!enabled) {
+		if (!_enabled) {
 			return this;
 		}
-		this.min = min;
+		this._min = min;
 		return this;
 	}
 
 	@Override
 	public void setX(float x) {
-		if (!enabled) {
+		if (!_enabled) {
 			return;
 		}
-		this.min = x;
+		this._min = x;
 	}
 
 	@Override
 	public void setY(float y) {
-		if (!enabled) {
+		if (!_enabled) {
 			return;
 		}
-		this.max = y;
+		this._max = y;
 	}
 
 	@Override
 	public float getX() {
-		return min;
+		return _min;
 	}
 
 	@Override
 	public float getY() {
-		return max;
+		return _max;
 	}
 
 	public float getWidth() {
-		return this.max - this.min;
+		return this._max - this._min;
 	}
 
 	public float getCenter() {
-		return (this.max + this.min) * 0.5f;
+		return (this._max + this._min) * 0.5f;
 	}
 
 	public float lerp(float ratio) {
-		return MathUtils.lerp(this.min, this.max, ratio);
+		return MathUtils.lerp(this._min, this._max, ratio);
 	}
 
 	public RangeF add(float pMin, float pMax) {
-		return new RangeF(this.min + pMin, this.max + pMax);
+		return new RangeF(this._min + pMin, this._max + pMax);
 	}
 
 	public RangeF sub(float pMin, float pMax) {
-		return new RangeF(this.min - pMin, this.max - pMax);
+		return new RangeF(this._min - pMin, this._max - pMax);
 	}
 
 	public RangeF mul(float pMin, float pMax) {
-		return new RangeF(this.min * pMin, this.max * pMax);
+		return new RangeF(this._min * pMin, this._max * pMax);
 	}
 
 	public RangeF div(float pMin, float pMax) {
-		return new RangeF(this.min / pMin, this.max / pMax);
+		return new RangeF(this._min / pMin, this._max / pMax);
 	}
 
 	public RangeF cpy() {
-		return new RangeF(this.min, this.max);
+		return new RangeF(this._min, this._max);
 	}
 
 	public boolean equals(RangeF other) {
-		return this.min == other.min && this.max == other.max;
+		return this._min == other._min && this._max == other._max;
 	}
 
 	@Override
 	public int hashCode() {
 		int result = 38;
-		result = LSystem.unite(result, min);
-		result = LSystem.unite(result, max);
-		result = LSystem.unite(result, enabled);
+		result = LSystem.unite(result, _min);
+		result = LSystem.unite(result, _max);
+		result = LSystem.unite(result, _enabled);
 		result = LSystem.unite(result, super.hashCode());
 		return result;
 	}
@@ -173,6 +173,6 @@ public class RangeF implements XY, SetXY {
 
 	@Override
 	public String toString() {
-		return min + " to " + max;
+		return _min + " to " + _max;
 	}
 }

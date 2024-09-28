@@ -37,26 +37,26 @@ public class ParserCSVData {
 	public static class CSVRow {
 
 		// 对应的行号id
-		private final int lineId;
+		private final int _lineId;
 
-		private final ObjectMap<String, Integer> headerMap;
-		private final TArray<String> fields;
+		private final ObjectMap<String, Integer> _headerMap;
+		private final TArray<String> _fields;
 
 		public CSVRow(final int id, final ObjectMap<String, Integer> headerMap, final TArray<String> fields) {
-			this.lineId = id;
-			this.headerMap = headerMap;
-			this.fields = fields;
+			this._lineId = id;
+			this._headerMap = headerMap;
+			this._fields = fields;
 		}
 
 		public int getLine() {
-			return this.lineId;
+			return this._lineId;
 		}
 
 		public String getByName(final String name) {
-			if (headerMap == null) {
+			if (_headerMap == null) {
 				return null;
 			}
-			final Integer col = headerMap.get(name);
+			final Integer col = _headerMap.get(name);
 			if (col != null) {
 				return get(col);
 			}
@@ -64,17 +64,17 @@ public class ParserCSVData {
 		}
 
 		public TArray<String> getRawList() {
-			return fields;
+			return _fields;
 		}
 
 		public ObjectMap<String, String> getFieldMap() {
-			if (headerMap == null) {
+			if (_headerMap == null) {
 				return null;
 			}
-			final ObjectMap<String, String> fieldMap = new ObjectMap<>(headerMap.size());
-			for (final Entry<String, Integer> header : headerMap.entries()) {
+			final ObjectMap<String, String> fieldMap = new ObjectMap<>(_headerMap.size());
+			for (final Entry<String, Integer> header : _headerMap.entries()) {
 				String key = header.getKey();
-				Integer col = headerMap.get(key);
+				Integer col = _headerMap.get(key);
 				String val = null == col ? null : get(col);
 				fieldMap.put(key, val);
 			}
@@ -82,65 +82,65 @@ public class ParserCSVData {
 		}
 
 		public int getFieldCount() {
-			return fields.size();
+			return _fields.size();
 		}
 
 		public int size() {
-			return this.fields.size();
+			return this._fields.size();
 		}
 
 		public boolean isEmpty() {
-			return this.fields.isEmpty();
+			return this._fields.isEmpty();
 		}
 
 		public boolean contains(String key) {
-			return this.fields.contains(key);
+			return this._fields.contains(key);
 		}
 
 		public Object[] toArray() {
-			return this.fields.toArray();
+			return this._fields.toArray();
 		}
 
 		public boolean add(String e) {
-			return this.fields.add(e);
+			return this._fields.add(e);
 		}
 
 		public boolean remove(String key) {
-			return this.fields.remove(key);
+			return this._fields.remove(key);
 		}
 
 		public CSVRow clear() {
-			this.fields.clear();
+			this._fields.clear();
 			return this;
 		}
 
 		public String get(int index) {
-			return index >= fields.size() ? null : fields.get(index);
+			return index >= _fields.size() ? null : _fields.get(index);
 		}
 
 		public void set(int index, String str) {
-			this.fields.set(index, str);
+			this._fields.set(index, str);
 		}
 
 		public void remove(int index) {
-			this.fields.removeIndex(index);
+			this._fields.removeIndex(index);
 		}
 
 		public int indexOf(String key) {
-			return this.fields.indexOf(key);
+			return this._fields.indexOf(key);
 		}
 
 		@Override
 		public String toString() {
-			if (headerMap == null || headerMap.size == 0) {
+			if (_headerMap == null || _headerMap.size == 0) {
 				return "[]";
 			}
 			final StrBuilder buffer = new StrBuilder("CSVRow{");
 			buffer.append("line=");
-			buffer.append(this.lineId);
+			buffer.append(this._lineId);
 			buffer.append(", ");
 			buffer.append("table=");
-			if (headerMap != null) {
+			if (_headerMap != null) {
 				buffer.append('{');
 				ObjectMap<String, String> map = getFieldMap();
 				for (final LIterator<Entry<String, String>> it = map.iterator(); it.hasNext();) {
@@ -156,7 +156,7 @@ public class ParserCSVData {
 				}
 				buffer.append('}');
 			} else {
-				buffer.append(fields.toString());
+				buffer.append(_fields.toString());
 			}
 			buffer.append('}');
 			return buffer.toString();
@@ -247,7 +247,7 @@ public class ParserCSVData {
 				continue;
 			}
 			final String[] split = StringUtils.split(result, _csvFlag);
-			return new CSVRow(startingLineNo, this._header == null ? null : this._header.headerMap,
+			return new CSVRow(startingLineNo, this._header == null ? null : this._header._headerMap,
 					StringUtils.getStringsToList(split));
 		}
 		return null;

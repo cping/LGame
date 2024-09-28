@@ -190,7 +190,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	private int _byteOrder;
 
-	private boolean expandArray = true;
+	private boolean _expandArray = true;
 
 	public ArrayByte() {
 		this(4096);
@@ -226,7 +226,7 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public ArrayByte setOrder(int type) {
-		expandArray = true;
+		_expandArray = true;
 		_position = 0;
 		_byteOrder = type;
 		return this;
@@ -466,7 +466,7 @@ public class ArrayByte implements IArray, LRelease {
 
 	private void ensureCapacity(int dataSize) {
 		if (_position + dataSize > _buffer.length) {
-			if (expandArray) {
+			if (_expandArray) {
 				setLength((_position + dataSize) * 2);
 			} else {
 				setLength(_position + dataSize);
@@ -615,11 +615,11 @@ public class ArrayByte implements IArray, LRelease {
 	}
 
 	public boolean isExpandArray() {
-		return expandArray;
+		return _expandArray;
 	}
 
 	public ArrayByte setExpandArray(boolean expandArray) {
-		this.expandArray = expandArray;
+		this._expandArray = expandArray;
 		return this;
 	}
 

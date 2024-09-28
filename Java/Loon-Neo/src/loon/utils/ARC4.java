@@ -69,10 +69,11 @@ public class ARC4 {
 		}
 	}
 
-	private final byte[] key;
-	private final byte[] state;
-	private int x;
-	private int y;
+	private final byte[] _key;
+	private final byte[] _state;
+	private int _x;
+	private int _y;
+	private int _bitMax;
 
 	public ARC4(ArrayByte key) {
 		this(key.getData());
@@ -88,28 +89,43 @@ public class ARC4 {
 	 * @param key
 	 */
 	public ARC4(byte[] key) {
-		this.state = new byte[256];
-		int length = MathUtils.min(256, key.length);
+		this(256, key);
+	}
+
+	/**
+	 * 以指定密钥长度，用指定的密钥生成一个ARC4对象
+	 * 
+	 * @param bitMax
+	 * @param key
+	 */
+	public ARC4(int bitMax, byte[] key) {
+		this._bitMax = bitMax;
+		this._state = new byte[_bitMax];
+		int length = MathUtils.min(_bitMax, key.length);
 		byte[] keyCopy = new byte[length];
 		System.arraycopy(key, 0, keyCopy, 0, length);
-		this.key = keyCopy;
+		this._key = keyCopy;
 		reset();
 	}
 
+	public int getBitSize() {
+		return this._bitMax;
+	}
+
 	public void reset() {
-		for (int i = 0; i < 256; i++) {
-			state[i] = (byte) i;
+		for (int i = 0; i < _bitMax; i++) {
+			_state[i] = (byte) i;
 		}
 		int j = 0;
-		for (int i = 0; i < 256; i++) {
-			j = (j + state[i] + key[i % key.length]) & 0xff;
-			byte temp = state[i];
-			state[i] = state[j];
-			state[j] = temp;
+		for (int i = 0; i < _bitMax; i++) {
+			j = (j + _state[i] + _key[i % _key.length]) & 0xff;
+			byte temp = _state[i];
+			_state[i] = _state[j];
+			_state[j] = temp;
 		}
 
-		x = 0;
-		y = 0;
+		_x = 0;
+		_y = 0;
 	}
 
 	/**
@@ -153,12 +169,12 @@ public class ARC4 {
 	 */
 	public void crypt(byte[] input, byte[] output) {
 		for (int i = 0; i < input.length; i++) {
-			x = (x + 1) & 0xff;
-			y = (state[x] + y) & 0xff;
-			byte temp = state[x];
-			state[x] = state[y];
-			state[y] = temp;
-			output[i] = (byte) ((input[i] ^ state[(state[x] + state[y]) & 0xff]));
+			_x = (_x + 1) & 0xff;
+			_y = (_state[_x] + _y) & 0xff;
+			byte temp = _state[_x];
+			_state[_x] = _state[_y];
+			_state[_y] = temp;
+			output[i] = (byte) ((input[i] ^ _state[(_state[_x] + _state[_y]) & 0xff]));
 		}
 	}
 }

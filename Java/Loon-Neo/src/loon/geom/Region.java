@@ -28,60 +28,61 @@ import loon.utils.StringKeyValue;
  */
 public class Region implements SetXY, XY {
 
-	private int start;
-	private int end;
+	private int _start;
+	
+	private int _end;
 
 	public Region(int start, int end) {
-		this.start = start;
-		this.end = end;
+		this._start = start;
+		this._end = end;
 	}
 
 	public Region setStart(int start) {
-		this.start = start;
+		this._start = start;
 		return this;
 	}
 
 	public Region setEnd(int end) {
-		this.end = end;
+		this._end = end;
 		return this;
 	}
 
 	public int getStart() {
-		return start;
+		return _start;
 	}
 
 	public int getEnd() {
-		return end;
+		return _end;
 	}
 
 	@Override
 	public float getX() {
-		return start;
+		return _start;
 	}
 
 	@Override
 	public float getY() {
-		return end;
+		return _end;
 	}
 
 	@Override
 	public void setX(float x) {
-		this.start = (int) x;
+		this._start = (int) x;
 	}
 
 	@Override
 	public void setY(float y) {
-		this.end = (int) y;
+		this._end = (int) y;
 	}
 
 	public int random() {
-		return (int) (start + (MathUtils.random() * (end - start)));
+		return (int) (_start + (MathUtils.random() * (_end - _start)));
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Region");
-		builder.kv("start", start).comma().kv("end", end);
+		builder.kv("start", _start).comma().kv("end", _end);
 		return builder.toString();
 	}
 

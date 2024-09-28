@@ -876,6 +876,14 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		return _field2d.getHeight();
 	}
 
+	public float getFlippedX() {
+		return getContainerWidth() - (getScreenX() + getWidth());
+	}
+
+	public float getFlippedY() {
+		return getContainerHeight() - (getScreenY() + getHeight());
+	}
+
 	public TileMap setMapValues(int v) {
 		_field2d.setValues(v);
 		return this;

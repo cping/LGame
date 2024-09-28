@@ -189,9 +189,9 @@ public class Polygon extends Shape implements BoxSize {
 
 	private final TArray<Float> _tempPoints = new TArray<Float>();
 
-	private boolean allowDups = false;
+	private boolean _allowDups = false;
 
-	private boolean closed = true;
+	private boolean _closed = true;
 
 	public Polygon() {
 		this.initPoints();
@@ -433,12 +433,12 @@ public class Polygon extends Shape implements BoxSize {
 	}
 
 	public Polygon setAllowDuplicatePoints(boolean allowDups) {
-		this.allowDups = allowDups;
+		this._allowDups = allowDups;
 		return this;
 	}
 
 	public Polygon addPoint(float x, float y) {
-		if (hasVertex(x, y) && (!allowDups)) {
+		if (hasVertex(x, y) && (!_allowDups)) {
 			return this;
 		}
 		_tempPoints.clear();
@@ -555,7 +555,7 @@ public class Polygon extends Shape implements BoxSize {
 		transform.transform(points, 0, result, 0, points.length / 2);
 		resultPolygon.points = result;
 		resultPolygon.findCenter();
-		resultPolygon.closed = closed;
+		resultPolygon._closed = _closed;
 
 		return resultPolygon;
 	}
@@ -587,11 +587,11 @@ public class Polygon extends Shape implements BoxSize {
 
 	@Override
 	public boolean closed() {
-		return closed;
+		return _closed;
 	}
 
 	public Polygon setClosed(boolean closed) {
-		this.closed = closed;
+		this._closed = closed;
 		return this;
 	}
 

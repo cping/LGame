@@ -21,11 +21,16 @@
 package loon.geom;
 
 public class PerlinNoise {
-	private int octaves;
-	private float amplitude;
-	private float frequency;
-	private float persistence;
-	private int seed;
+	
+	private int _octaves;
+	
+	private float _amplitude;
+	
+	private float _frequency;
+	
+	private float _persistence;
+	
+	private int _seed;
 
 	public PerlinNoise(int seed, float persistence, float frequency, float amplitude, int octaves) {
 		set(seed, persistence, frequency, amplitude, octaves);
@@ -36,70 +41,70 @@ public class PerlinNoise {
 	}
 
 	public float getHeight(float x, float y) {
-		return amplitude * total(x, y);
+		return this._amplitude * total(x, y);
 	}
 
 	public int getSeed() {
-		return seed;
+		return this._seed;
 	}
 
 	public int getOctaves() {
-		return octaves;
+		return this._octaves;
 	}
 
 	public float getAmplitude() {
-		return amplitude;
+		return this._amplitude;
 	}
 
 	public float getFrequency() {
-		return frequency;
+		return this._frequency;
 	}
 
 	public float getPersistence() {
-		return persistence;
+		return this._persistence;
 	}
 
 	public final void set(int seed, float persistence, float frequency, float amplitude, int octaves) {
-		this.seed = 2 + seed * seed;
-		this.octaves = octaves;
-		this.amplitude = amplitude;
-		this.frequency = frequency;
-		this.persistence = persistence;
+		this._seed = 2 + seed * seed;
+		this._octaves = octaves;
+		this._amplitude = amplitude;
+		this._frequency = frequency;
+		this._persistence = persistence;
 	}
 
 	public PerlinNoise setSeed(int seed) {
-		this.seed = 2 + seed * seed;
+		this._seed = 2 + seed * seed;
 		return this;
 	}
 
 	public PerlinNoise setOctaves(int octaves) {
-		this.octaves = octaves;
+		this._octaves = octaves;
 		return this;
 	}
 
 	public PerlinNoise setAmplitude(float amplitude) {
-		this.amplitude = amplitude;
+		this._amplitude = amplitude;
 		return this;
 	}
 
 	public PerlinNoise setFrequency(float frequency) {
-		this.frequency = frequency;
+		this._frequency = frequency;
 		return this;
 	}
 
 	public PerlinNoise setPersistence(float persistence) {
-		this.persistence = persistence;
+		this._persistence = persistence;
 		return this;
 	}
 
 	private float total(float x, float y) {
 		float t = 0f;
 		float amp = 1f;
-		float freq = frequency;
+		float freq = this._frequency;
 
-		for (int k = 0; k < octaves; k++) {
-			t += getValue(y * freq + seed, x * freq + seed) * amp;
-			amp *= persistence;
+		for (int k = 0; k < this._octaves; k++) {
+			t += getValue(y * freq + this._seed, x * freq + this._seed) * amp;
+			amp *= this._persistence;
 			freq *= 2;
 		}
 

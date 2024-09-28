@@ -24,58 +24,58 @@ import loon.utils.StringKeyValue;
 
 public class Padding {
 
-	private int left;
-	private int top;
-	private int right;
-	private int bottom;
+	private int _left;
+	private int _top;
+	private int _right;
+	private int _bottom;
 
 	public Padding() {
 		this(0, 0, 0, 0);
 	}
 
 	public Padding(int left, int top, int right, int bottom) {
-		this.left = left;
-		this.top = top;
-		this.right = right;
-		this.bottom = bottom;
+		this._left = left;
+		this._top = top;
+		this._right = right;
+		this._bottom = bottom;
 	}
 
 	public int getLeft() {
-		return left;
+		return _left;
 	}
 
 	public void setLeft(int left) {
-		this.left = left;
+		this._left = left;
 	}
 
 	public int getTop() {
-		return top;
+		return _top;
 	}
 
 	public void setTop(int top) {
-		this.top = top;
+		this._top = top;
 	}
 
 	public int getRight() {
-		return right;
+		return _right;
 	}
 
 	public void setRight(int right) {
-		this.right = right;
+		this._right = right;
 	}
 
 	public int getBottom() {
-		return bottom;
+		return _bottom;
 	}
 
 	public void setBottom(int bottom) {
-		this.bottom = bottom;
+		this._bottom = bottom;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Padding");
-		builder.kv("left", left).comma().kv("top", top).comma().kv("right", right).comma().kv("bottom", bottom);
+		builder.kv("left", _left).comma().kv("top", _top).comma().kv("right", _right).comma().kv("bottom", _bottom);
 		return builder.toString();
 	}
 }

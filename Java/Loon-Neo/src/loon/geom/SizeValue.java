@@ -36,13 +36,13 @@ public class SizeValue extends TValue<String> {
 
 	private static final float MAX_PERCENT = 100.0f;
 
-	private final float percentValue;
+	private final float _percentValue;
 
-	private final float pixelValue;
+	private final float _pixelValue;
 
-	private boolean hasWidthSuffix;
+	private boolean _hasWidthSuffix;
 
-	private boolean hasHeightSuffix;
+	private boolean _hasHeightSuffix;
 
 	public SizeValue(final int size) {
 		this(size + PIXEL);
@@ -52,10 +52,10 @@ public class SizeValue extends TValue<String> {
 		super(valueParam);
 		if (valueParam != null) {
 			if (valueParam.endsWith(PERCENT + WIDTH_SUFFIX)) {
-				hasWidthSuffix = true;
+				_hasWidthSuffix = true;
 				this._value = valueParam.substring(0, valueParam.length() - 1);
 			} else if (valueParam.endsWith(PERCENT + HEIGHT_SUFFIX)) {
-				hasHeightSuffix = true;
+				_hasHeightSuffix = true;
 				this._value = valueParam.substring(0, valueParam.length() - 1);
 			} else {
 				this._value = valueParam;
@@ -63,8 +63,8 @@ public class SizeValue extends TValue<String> {
 		} else {
 			this._value = valueParam;
 		}
-		this.percentValue = getPercentValue();
-		this.pixelValue = getPixelValue();
+		this._percentValue = getPercentValue();
+		this._pixelValue = getPixelValue();
 	}
 
 	public boolean isPercentOrPixel() {
@@ -73,9 +73,9 @@ public class SizeValue extends TValue<String> {
 
 	public float getValue(final float range) {
 		if (isPercent()) {
-			return (range / MAX_PERCENT) * percentValue;
+			return (range / MAX_PERCENT) * _percentValue;
 		} else if (isPixel()) {
-			return pixelValue;
+			return _pixelValue;
 		} else {
 			return -1;
 		}
@@ -135,11 +135,11 @@ public class SizeValue extends TValue<String> {
 	}
 
 	public boolean hasWidthSuffix() {
-		return hasWidthSuffix;
+		return _hasWidthSuffix;
 	}
 
 	public boolean hasHeightSuffix() {
-		return hasHeightSuffix;
+		return _hasHeightSuffix;
 	}
 
 	public boolean hasWildcard() {

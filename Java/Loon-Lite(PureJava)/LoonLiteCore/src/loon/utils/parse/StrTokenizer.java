@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -24,13 +24,13 @@ import loon.LSysException;
 
 public class StrTokenizer {
 
-	private String strings;
+	private String _strings;
 
-	private String delimiters;
+	private String _delimiters;
 
-	private boolean returnDelimiters;
+	private boolean _returnDelimiters;
 
-	private int position;
+	private int _position;
 
 	public StrTokenizer(String str) {
 		this(str, " \t\n\r\f", false);
@@ -44,22 +44,22 @@ public class StrTokenizer {
 		if (str == null) {
 			throw new LSysException("string == null");
 		}
-		this.strings = str;
-		this.delimiters = delimiters;
-		this.returnDelimiters = returnDelimiters;
-		this.position = 0;
+		this._strings = str;
+		this._delimiters = delimiters;
+		this._returnDelimiters = returnDelimiters;
+		this._position = 0;
 	}
 
 	public void reset() {
-		this.position = 0;
+		this._position = 0;
 	}
 
 	public int countTokens() {
 		int count = 0;
 		boolean inToken = false;
-		for (int i = position, length = strings.length(); i < length; i++) {
-			if (delimiters.indexOf(strings.charAt(i), 0) >= 0) {
-				if (returnDelimiters) {
+		for (int i = _position, length = _strings.length(); i < length; i++) {
+			if (_delimiters.indexOf(_strings.charAt(i), 0) >= 0) {
+				if (_returnDelimiters) {
 					count++;
 				}
 				if (inToken) {
@@ -81,16 +81,16 @@ public class StrTokenizer {
 	}
 
 	public boolean hasMoreTokens() {
-		if (delimiters == null) {
+		if (_delimiters == null) {
 			throw new NullPointerException("delimiters == null");
 		}
-		int length = strings.length();
-		if (position < length) {
-			if (returnDelimiters) {
+		int length = _strings.length();
+		if (_position < length) {
+			if (_returnDelimiters) {
 				return true;
 			}
-			for (int i = position; i < length; i++) {
-				if (delimiters.indexOf(strings.charAt(i), 0) == -1) {
+			for (int i = _position; i < length; i++) {
+				if (_delimiters.indexOf(_strings.charAt(i), 0) == -1) {
 					return true;
 				}
 			}
@@ -99,40 +99,40 @@ public class StrTokenizer {
 	}
 
 	public String nextToken() {
-		if (delimiters == null) {
+		if (_delimiters == null) {
 			throw new LSysException("delimiters == null");
 		}
-		int i = position;
-		int length = strings.length();
+		int i = _position;
+		int length = _strings.length();
 
 		if (i < length) {
-			if (returnDelimiters) {
-				if (delimiters.indexOf(strings.charAt(position), 0) >= 0)
-					return String.valueOf(strings.charAt(position++));
-				for (position++; position < length; position++)
-					if (delimiters.indexOf(strings.charAt(position), 0) >= 0)
-						return strings.substring(i, position);
-				return strings.substring(i);
+			if (_returnDelimiters) {
+				if (_delimiters.indexOf(_strings.charAt(_position), 0) >= 0)
+					return String.valueOf(_strings.charAt(_position++));
+				for (_position++; _position < length; _position++)
+					if (_delimiters.indexOf(_strings.charAt(_position), 0) >= 0)
+						return _strings.substring(i, _position);
+				return _strings.substring(i);
 			}
 
-			while (i < length && delimiters.indexOf(strings.charAt(i), 0) >= 0) {
+			while (i < length && _delimiters.indexOf(_strings.charAt(i), 0) >= 0) {
 				i++;
 			}
-			position = i;
+			_position = i;
 			if (i < length) {
-				for (position++; position < length; position++) {
-					if (delimiters.indexOf(strings.charAt(position), 0) >= 0) {
-						return strings.substring(i, position);
+				for (_position++; _position < length; _position++) {
+					if (_delimiters.indexOf(_strings.charAt(_position), 0) >= 0) {
+						return _strings.substring(i, _position);
 					}
 				}
-				return strings.substring(i);
+				return _strings.substring(i);
 			}
 		}
 		return null;
 	}
 
 	public String nextToken(String delims) {
-		this.delimiters = delims;
+		this._delimiters = delims;
 		return nextToken();
 	}
 

@@ -34,29 +34,37 @@ public class ParserPythonData {
 
 	protected class LoopStringBuilder {
 
-		private char[] chars;
-		private int pos;
-		private int size;
+		private char[] _chars;
+		private int _pos;
+		private int _size;
 
 		protected LoopStringBuilder(int size) {
-			this.size = size;
-			this.pos = 0;
-			chars = new char[size];
+			this._size = size;
+			this._pos = 0;
+			_chars = new char[size];
 		}
 
 		public void add(char c) {
-			chars[pos++] = c;
-			if (pos >= size) {
-				pos = 0;
+			_chars[_pos++] = c;
+			if (_pos >= _size) {
+				_pos = 0;
 			}
 		}
 
+		public int getPos() {
+			return this._pos;
+		}
+
+		public int getSize() {
+			return this._size;
+		}
+
 		public String get() {
-			int q = pos;
+			int q = _pos;
 			StrBuilder sbr = new StrBuilder();
-			for (int i = 0; i < size; i++) {
-				sbr.append(chars[q++]);
-				if (q >= size) {
+			for (int i = 0; i < _size; i++) {
+				sbr.append(_chars[q++]);
+				if (q >= _size) {
 					q = 0;
 				}
 			}
@@ -65,9 +73,9 @@ public class ParserPythonData {
 
 	}
 
-	private StrBuilder buffer = new StrBuilder();
+	private StrBuilder _buffer = new StrBuilder();
 
-	private int lineNo = 1, pos = 0;
+	private int _lineNo = 1, _pos = 0;
 
 	public static Object parseString(String str) {
 		return new ParserPythonData().parseAll(new ArrayByte(str.getBytes()));
@@ -129,7 +137,7 @@ public class ParserPythonData {
 	}
 
 	private void pushBack(char c) {
-		buffer.append(c);
+		_buffer.append(c);
 	}
 
 	private void confirm(char i, char c) throws LSysException {
@@ -146,10 +154,10 @@ public class ParserPythonData {
 	private char read(ArrayByte in) {
 		char c = (char) in.read();
 		if (c == '\n') {
-			lineNo++;
-			pos = 0;
+			_lineNo++;
+			_pos = 0;
 		} else {
-			pos++;
+			_pos++;
 		}
 		return c;
 	}
@@ -261,17 +269,17 @@ public class ParserPythonData {
 	}
 
 	private char xread(ArrayByte in) {
-		int len = buffer.length();
+		int len = _buffer.length();
 		if (len > 0) {
-			char i = buffer.charAt(len - 1);
-			buffer.setLength(len - 1);
+			char i = _buffer.charAt(len - 1);
+			_buffer.setLength(len - 1);
 			return i;
 		}
 		return read(in);
 	}
 
 	private String at() {
-		return " at line:" + lineNo + " pos:" + pos;
+		return " at line:" + _lineNo + " pos:" + _pos;
 	}
 
 	private void skipUtil(ArrayByte in, String end) {

@@ -1052,6 +1052,14 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return cols;
 	}
 
+	public float getFlippedX() {
+		return getContainerWidth() - (getScreenX() + getWidth());
+	}
+
+	public float getFlippedY() {
+		return getContainerHeight() - (getScreenY() + getHeight());
+	}
+
 	public HexagonMap setListener(DrawListener<HexagonMap> liste) {
 		this.listener = liste;
 		return this;
