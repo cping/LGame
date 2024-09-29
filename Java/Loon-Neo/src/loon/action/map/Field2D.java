@@ -56,32 +56,50 @@ public class Field2D implements IArray, Config, LRelease {
 
 	private final static float ANGULAR = 0.706F;
 
-	private String _fieldName = "Field2D";
-
 	private Vector2f _offset = new Vector2f();
+
+	private TArray<Vector2f> _result = null;
+
+	private String _fieldName = "Field2D";
 
 	private RectBox _rectTemp = null;
 
-	private Tile _tileImpl;
+	private Tile _tileImpl = null;
+
+	private int[][] _mapArrays;
+
+	private int[] _moveLimited;
+
+	// default size
+	private int _tileWidth = LSystem.LAYER_TILE_SIZE;
+
+	private int _tileHeight = LSystem.LAYER_TILE_SIZE;
+
+	private int _width, _height;
+
+	private IntArray _allowMove;
 
 	public Object Tag;
 
-	private TArray<Vector2f> result;
+	public final static RectBox inflateBounds(RectBox rect, float x, float y) {
+		if (x < rect.x) {
+			rect.width += rect.x - x;
+			rect.x = x;
+		}
+		if (y < rect.y) {
+			rect.height += rect.y - y;
+			rect.y = y;
+		}
+		if (x > rect.x + rect.width) {
+			rect.width = MathUtils.iceil(x - rect.x);
+		}
+		if (y > rect.y + rect.height) {
+			rect.height = MathUtils.iceil(y - rect.y);
+		}
+		return rect;
+	}
 
-	private int[][] mapArrays;
-
-	private int[] moveLimited;
-
-	// default size
-	private int tileWidth = LSystem.LAYER_TILE_SIZE;
-
-	private int tileHeight = LSystem.LAYER_TILE_SIZE;
-
-	private int width, height;
-
-	private IntArray allowMove;
-
-	public TArray<PointI> getPosOfLine(int x0, int y0, int x1, int y1) {
+	public final static TArray<PointI> getPosOfLine(int x0, int y0, int x1, int y1) {
 		TArray<PointI> list = new TArray<PointI>();
 		int dx = MathUtils.abs(x1 - x0);
 		int dy = MathUtils.abs(y1 - y0);
@@ -106,9 +124,9 @@ public class Field2D implements IArray, Config, LRelease {
 		return list;
 	}
 
-	public TArray<PointI> getPosOfParabola(int x0, int y0, int x1, int y1, int height) {
+	public final static TArray<PointI> getPosOfParabola(int x0, int y0, int x1, int y1, int height) {
 		if (x0 == x1) {
-			return this.getPosOfLine(x0, y0, x1, y1);
+			return getPosOfLine(x0, y0, x1, y1);
 		}
 		TArray<PointI> list = new TArray<PointI>();
 		int top_y, start_x, start_y, dest_x, dest_y;
@@ -140,7 +158,7 @@ public class Field2D implements IArray, Config, LRelease {
 		return list;
 	}
 
-	public TArray<PointI> getPosOfParabola(int x1, int y1, int x2, int y2, int x3, int y3) {
+	public final static TArray<PointI> getPosOfParabola(int x1, int y1, int x2, int y2, int x3, int y3) {
 		TArray<PointI> list = new TArray<PointI>();
 		int a = (x1 * (y3 - y2) - x2 * y3 + y2 * x3 + y1 * (x2 - x3))
 				/ (x1 * ((x3 * x3) - (x2 * x2)) - x2 * (x3 * x3) + (x2 * x2) * x3 + (x1 * x1) * (x2 - x3));
@@ -165,11 +183,11 @@ public class Field2D implements IArray, Config, LRelease {
 		return list;
 	}
 
-	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction) {
+	public final static Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction) {
 		return shiftPosition(items, x, y, direction, null);
 	}
 
-	public static final Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction,
+	public final static Vector2f shiftPosition(TArray<ActionBind> items, float x, float y, int direction,
 			Vector2f output) {
 
 		if (output == null) {
@@ -262,14 +280,14 @@ public class Field2D implements IArray, Config, LRelease {
 		return out;
 	}
 
-	public static final float getRelation(float x, float x1, float x2, float y1, float y2, float scale) {
+	public final static float getRelation(float x, float x1, float x2, float y1, float y2, float scale) {
 		if (scale <= 0f) {
 			scale = 1f;
 		}
 		return ((y2 - y1) / MathUtils.pow((x2 - x1), scale) * 1f) * MathUtils.pow((x - x1), scale) + y1;
 	}
 
-	public static int getSteps(int from, int to, int mapLength, boolean allowWrapping) {
+	public final static int getSteps(int from, int to, int mapLength, boolean allowWrapping) {
 		int steps = to - from;
 		int distance = MathUtils.abs(steps);
 		if (allowWrapping && mapLength - distance < distance)
@@ -277,7 +295,7 @@ public class Field2D implements IArray, Config, LRelease {
 		return steps;
 	}
 
-	public static IntArray getStepsInRange(int from, int to, int mapLength, int range) {
+	public final static IntArray getStepsInRange(int from, int to, int mapLength, int range) {
 		final IntArray steps = new IntArray();
 		int step = to - from;
 		for (; MathUtils.abs(step) <= range;) {
@@ -292,7 +310,7 @@ public class Field2D implements IArray, Config, LRelease {
 		return steps;
 	}
 
-	public static int getDistance(int from, int to, int mapLength, boolean allow) {
+	public final static int getDistance(int from, int to, int mapLength, boolean allow) {
 		int distance = MathUtils.abs(to - from);
 		if (allow) {
 			distance = MathUtils.min(distance, mapLength - distance);
@@ -300,20 +318,20 @@ public class Field2D implements IArray, Config, LRelease {
 		return distance;
 	}
 
-	public static final float rotation(float srcX, float srcY, float dstX, float dstY) {
+	public final static float rotation(float srcX, float srcY, float dstX, float dstY) {
 		int nx = MathUtils.ifloor(dstX - srcX);
 		int ny = MathUtils.ifloor(dstY - srcY);
 		return MathUtils.toDegrees(MathUtils.atan2(ny, nx));
 	}
 
-	public static final float rotation(Vector2f source, Vector2f target) {
+	public final static float rotation(Vector2f source, Vector2f target) {
 		if (source == null || target == null) {
 			return 0f;
 		}
 		return rotation(source.x, source.y, target.x, target.y);
 	}
 
-	public static final int angle(float srcX, float srcY, float dstX, float dstY) {
+	public final static int angle(float srcX, float srcY, float dstX, float dstY) {
 		float nx = dstX - srcX;
 		float ny = dstY - srcY;
 		float r = MathUtils.sqrt(nx * nx + ny * ny);
@@ -325,14 +343,14 @@ public class Field2D implements IArray, Config, LRelease {
 		return angle;
 	}
 
-	public static final int angle(Vector2f source, Vector2f target) {
+	public final static int angle(Vector2f source, Vector2f target) {
 		if (source == null || target == null) {
 			return 0;
 		}
 		return angle(source.x, source.y, target.x, target.y);
 	}
 
-	public static final float getDirectionToAngle(int dir) {
+	public final static float getDirectionToAngle(int dir) {
 		switch (dir) {
 		case Config.UP:
 			return 45;
@@ -354,7 +372,7 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 	}
 
-	public static final Vector2f getDirectionToPoint(int dir, int value) {
+	public final static Vector2f getDirectionToPoint(int dir, int value) {
 		Vector2f direction = null;
 		switch (dir) {
 		case Config.UP:
@@ -388,11 +406,11 @@ public class Field2D implements IArray, Config, LRelease {
 		return direction;
 	}
 
-	public static final int getDirection(int x, int y) {
+	public final static int getDirection(int x, int y) {
 		return getDirection(x, y, Config.EMPTY);
 	}
 
-	public static final int getDirection(int x, int y, int value) {
+	public final static int getDirection(int x, int y, int value) {
 		int newX = 0;
 		int newY = 0;
 		if (x > 0) {
@@ -409,7 +427,7 @@ public class Field2D implements IArray, Config, LRelease {
 		return Config.EMPTY == dir ? value : dir;
 	}
 
-	private static final int getDirectionImpl(int x, int y) {
+	private final static int getDirectionImpl(int x, int y) {
 		if (x == 0 && y == 0) {
 			return Config.EMPTY;
 		} else if (x == 1 && y == -1) {
@@ -432,14 +450,14 @@ public class Field2D implements IArray, Config, LRelease {
 		return Config.EMPTY;
 	}
 
-	public static final Vector2f getDirection(int type) {
+	public final static Vector2f getDirection(int type) {
 		if (type > Config.TDOWN) {
 			type = Config.TDOWN;
 		}
 		return getDirectionToPoint(type, 1).cpy();
 	}
 
-	public static final String toDirection(int id) {
+	public final static String toDirection(int id) {
 		switch (id) {
 		default:
 		case Config.EMPTY:
@@ -463,17 +481,17 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 	}
 
-	private static void insertArrays(int[][] arrays, int index, int px, int py) {
+	private final static void insertArrays(int[][] arrays, int index, int px, int py) {
 		arrays[index][0] = px;
 		arrays[index][1] = py;
 	}
 
-	public static final int getDirection(Vector2f source, Vector2f target, int dirNumber) {
+	public final static int getDirection(Vector2f source, Vector2f target, int dirNumber) {
 		int angleValue = angle(source, target);
 		return getDirection(source, target, angleValue, dirNumber);
 	}
 
-	public static final int getDirection(Vector2f source, Vector2f target, float angleValue, int dirNumber) {
+	public final static int getDirection(Vector2f source, Vector2f target, float angleValue, int dirNumber) {
 		if (dirNumber == 4) {
 			if (angleValue < 90) {
 				return Config.RIGHT;
@@ -520,11 +538,11 @@ public class Field2D implements IArray, Config, LRelease {
 		return Config.EMPTY;
 	}
 
-	public static final int getDirection(Vector2f source, Vector2f target) {
+	public final static int getDirection(Vector2f source, Vector2f target) {
 		return getDirection(source.x, source.y, target.x, target.y);
 	}
 
-	public static final int getDirection(float srcX, float srcY, float destX, float destY) {
+	public final static int getDirection(float srcX, float srcY, float destX, float destY) {
 		if (srcX - destX > 0) {
 			if (srcY - destY > 0) {
 				return Config.LEFT;
@@ -552,7 +570,7 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 	}
 
-	public static final int getDirection(float angle) {
+	public final static int getDirection(float angle) {
 		float tup = MathUtils.sin(angle) * 0 + MathUtils.cos(angle) * -1;
 		float tright = MathUtils.sin(angle) * 1 + MathUtils.cos(angle) * 0;
 		float tleft = MathUtils.sin(angle) * -1 + MathUtils.cos(angle) * 0;
@@ -572,11 +590,11 @@ public class Field2D implements IArray, Config, LRelease {
 		return EMPTY;
 	}
 
-	public static Field2D of(int tw, int th, String... map) {
+	public final static Field2D of(int tw, int th, String... map) {
 		return new Field2D(map, tw, th);
 	}
 
-	public static Field2D of(String... map) {
+	public final static Field2D of(String... map) {
 		return new Field2D(map, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE);
 	}
 
@@ -631,7 +649,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D cpy(Field2D field) {
-		this.set(CollectionUtils.copyOf(field.mapArrays), field.tileWidth, field.tileHeight);
+		this.set(CollectionUtils.copyOf(field._mapArrays), field._tileWidth, field._tileHeight);
 		if (field._offset != null) {
 			this._offset = field._offset.cpy();
 		}
@@ -640,111 +658,119 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 		this._tileImpl = field._tileImpl;
 		this.Tag = field.Tag;
-		if (field.result != null) {
-			this.result = field.result.cpy();
+		if (field._result != null) {
+			this._result = field._result.cpy();
 		}
-		if (field.moveLimited != null) {
-			this.moveLimited = CollectionUtils.copyOf(field.moveLimited);
+		if (field._moveLimited != null) {
+			this._moveLimited = CollectionUtils.copyOf(field._moveLimited);
 		}
-		this.width = field.width;
-		this.height = field.height;
-		if (field.allowMove != null) {
-			this.allowMove = new IntArray(field.allowMove);
+		this._width = field._width;
+		this._height = field._height;
+		if (field._allowMove != null) {
+			this._allowMove = new IntArray(field._allowMove);
 		}
 		return this;
 	}
 
 	public Tile getTile(int x, int y) {
 		if (contains(x, y)) {
-			return _tileImpl.at(getTileType(x, y), x, y, this.tileWidth, this.tileHeight);
+			return _tileImpl.at(getTileType(x, y), x, y, this._tileWidth, this._tileHeight);
 		}
 		return null;
 	}
 
 	public Tile getPointTile(float px, float py) {
-		int x = MathUtils.ifloor(px / this.tileWidth);
-		int y = MathUtils.ifloor(py / this.tileHeight);
+		int x = MathUtils.ifloor(px / this._tileWidth);
+		int y = MathUtils.ifloor(py / this._tileHeight);
 		return getTile(x, y);
 	}
 
 	public Field2D set(int[][] arrays, int tw, int th) {
-		if (this.allowMove == null) {
-			this.allowMove = new IntArray();
+		if (this._allowMove == null) {
+			this._allowMove = new IntArray();
 		}
 		this.setMap(arrays);
 		this.setTileWidth(tw);
 		this.setTileHeight(th);
 		if (arrays != null) {
-			this.width = arrays[0].length;
-			this.height = arrays.length;
+			this._width = arrays[0].length;
+			this._height = arrays.length;
 		}
 		if (_tileImpl == null) {
-			this._tileImpl = new TileHelper(tileWidth, tileHeight);
+			this._tileImpl = new TileHelper(_tileWidth, _tileHeight);
 		} else {
-			this._tileImpl.setWidth(tileWidth);
-			this._tileImpl.setHeight(tileHeight);
+			this._tileImpl.setWidth(_tileWidth);
+			this._tileImpl.setHeight(_tileHeight);
 		}
 		return this;
 	}
 
 	public Field2D setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
+		this._width = width;
+		this._height = height;
 		return this;
 	}
 
 	public Field2D setTile(int tw, int th) {
-		this.tileWidth = tw;
-		this.tileHeight = th;
+		this._tileWidth = tw;
+		this._tileHeight = th;
 		return this;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public int getDrawWidth() {
-		return tilesToHeightPixels(width);
+		return tilesToHeightPixels(_width);
 	}
 
 	public int getDrawHeight() {
-		return tilesToHeightPixels(height);
+		return tilesToHeightPixels(_height);
 	}
 
 	public int getHexagonWidth() {
-		return MathUtils.ifloor(width / 3f * 2f);
+		return getHexagonWidth(2f / 3f);
+	}
+
+	public int getHexagonWidth(float offset) {
+		return MathUtils.ifloor(_width * offset);
 	}
 
 	public int getHexagonHeight() {
-		return MathUtils.ifloor(height / MathUtils.sqrt(3f)) - 1;
+		return MathUtils.ifloor(_height / MathUtils.sqrt(3f)) - 1;
 	}
 
 	public PointI pixelsHexagonToTiles(float x, float y) {
+		return pixelsHexagonToTiles(x, y, 2f / 3f);
+	}
+
+	public PointI pixelsHexagonToTiles(float x, float y, float offset) {
 		float sqrte = MathUtils.sqrt(3f) / 3f;
-		int hx = MathUtils.ifloor(2 / 3 * x / tileWidth);
-		int hy = MathUtils.ifloor((sqrte * y / tileHeight + MathUtils.round(hx) % 2f) * sqrte);
+		int hx = MathUtils.ifloor(offset * x / _tileWidth);
+		int hy = MathUtils.ifloor((sqrte * y / _tileHeight + MathUtils.round(hx) % 2f) * sqrte);
 		return new PointI(hx, hy);
 	}
 
 	public PointI pixelsIsometricToTiles(float x, float y) {
-		int hx = MathUtils.ifloor(x / (tileWidth * 0.5f));
-		int hy = MathUtils.ifloor((y - hx * (tileHeight / 2f)) / tileHeight);
+		int hx = MathUtils.ifloor(x / (_tileWidth * 0.5f));
+		int hy = MathUtils.ifloor((y - hx * (_tileHeight / 2f)) / _tileHeight);
 		return new PointI(hx + hy, hy);
 	}
 
 	public PointI tilesIsometricToPixels(float x, float y) {
-		float hx = tileWidth * x / 2f + height * tileWidth / 2f - y * tileWidth / 2f;
-		float hy = tileHeight * y / 2f + width * tileHeight / 2f - x * tileHeight / 2f;
+		float hx = _tileWidth * x / 2f + _height * _tileWidth / 2f - y * _tileWidth / 2f;
+		float hy = _tileHeight * y / 2f + _width * _tileHeight / 2f - x * _tileHeight / 2f;
 		return new PointI(MathUtils.ifloor(hx), MathUtils.ifloor(hy));
 	}
 
 	public PointI pixelsOrthogonalToTiles(float x, float y) {
-		int hx = MathUtils.ifloor(x / tileWidth);
-		int hy = MathUtils.ifloor(y / tileHeight);
+		int hx = MathUtils.ifloor(x / _tileWidth);
+		int hy = MathUtils.ifloor(y / _tileHeight);
 		return new PointI(hx, hy);
 	}
 
@@ -765,68 +791,68 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int pixelsToTilesWidth(float x) {
-		return MathUtils.ifloor(x / tileWidth);
+		return MathUtils.ifloor(x / _tileWidth);
 	}
 
 	public int pixelsToTilesWidth(int x) {
-		return MathUtils.ifloor(x / tileWidth);
+		return MathUtils.ifloor(x / _tileWidth);
 	}
 
 	public int pixelsToTilesHeight(float y) {
-		return MathUtils.ifloor(y / tileHeight);
+		return MathUtils.ifloor(y / _tileHeight);
 	}
 
 	public int pixelsToTilesHeight(int y) {
-		return MathUtils.ifloor(y / tileHeight);
+		return MathUtils.ifloor(y / _tileHeight);
 	}
 
 	public int tilesToWidthPixels(int tiles) {
-		return tiles * tileWidth;
+		return tiles * _tileWidth;
 	}
 
 	public int tilesToHeightPixels(int tiles) {
-		return tiles * tileHeight;
+		return tiles * _tileHeight;
 	}
 
 	public int tilesToWidthPixels(float tiles) {
-		return MathUtils.ifloor(tiles * tileWidth);
+		return MathUtils.ifloor(tiles * _tileWidth);
 	}
 
 	public int tilesToHeightPixels(float tiles) {
-		return MathUtils.ifloor(tiles * tileHeight);
+		return MathUtils.ifloor(tiles * _tileHeight);
 	}
 
 	public int getViewWidth() {
-		return tilesToWidthPixels(width);
+		return tilesToWidthPixels(_width);
 	}
 
 	public int getViewHeight() {
-		return tilesToWidthPixels(height);
+		return tilesToWidthPixels(_height);
 	}
 
 	public int getTileHeight() {
-		return tileHeight;
+		return _tileHeight;
 	}
 
 	public int getTileHalfHeight() {
-		return tileHeight / 2;
+		return _tileHeight / 2;
 	}
 
 	public Field2D setTileHeight(int tileHeight) {
-		this.tileHeight = tileHeight;
+		this._tileHeight = tileHeight;
 		return this;
 	}
 
 	public int getTileHalfWidth() {
-		return tileWidth / 2;
+		return _tileWidth / 2;
 	}
 
 	public int getTileWidth() {
-		return tileWidth;
+		return _tileWidth;
 	}
 
 	public Field2D setTileWidth(int tileWidth) {
-		this.tileWidth = tileWidth;
+		this._tileWidth = tileWidth;
 		return this;
 	}
 
@@ -849,12 +875,12 @@ public class Field2D implements IArray, Config, LRelease {
 				int dstTileY = pixelsToTilesHeight(y);
 				int dstTileWidth = dstTileX + pixelsToTilesWidth(w);
 				int dstTileHeight = dstTileY + pixelsToTilesWidth(h);
-				int fieldWidth = mapArrays[0].length;
-				int fieldHeight = mapArrays.length;
+				int fieldWidth = _mapArrays[0].length;
+				int fieldHeight = _mapArrays.length;
 				for (int i = 0; i < fieldHeight; i++) {
 					for (int j = 0; j < fieldWidth; j++) {
 						if (j > dstTileX && j < dstTileWidth && i > dstTileY && i < dstTileHeight) {
-							mapArrays[i][j] = flagid;
+							_mapArrays[i][j] = flagid;
 						}
 					}
 				}
@@ -868,35 +894,35 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public boolean isLimited() {
-		return moveLimited != null && moveLimited.length > 0;
+		return _moveLimited != null && _moveLimited.length > 0;
 	}
 
 	public int[] getLimit() {
-		return moveLimited;
+		return _moveLimited;
 	}
 
 	public Field2D setLimit(int... limit) {
-		this.moveLimited = limit;
+		this._moveLimited = limit;
 		return this;
 	}
 
 	public Field2D setAllowMove(int... args) {
-		this.allowMove.addAll(args);
+		this._allowMove.addAll(args);
 		return this;
 	}
 
 	public boolean contains(int x, int y) {
-		return x >= 0 && x < width && y >= 0 && y < height;
+		return x >= 0 && x < _width && y >= 0 && y < _height;
 	}
 
 	public Field2D replaceType(int oldid, int newid) {
-		int w = mapArrays[0].length;
-		int h = mapArrays.length;
+		int w = _mapArrays[0].length;
+		int h = _mapArrays.length;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				int id = mapArrays[i][j];
+				int id = _mapArrays[i][j];
 				if (id == oldid) {
-					mapArrays[i][j] = newid;
+					_mapArrays[i][j] = newid;
 				}
 			}
 		}
@@ -912,7 +938,7 @@ public class Field2D implements IArray, Config, LRelease {
 			if (!contains(x, y)) {
 				return -1;
 			}
-			return mapArrays[y][x];
+			return _mapArrays[y][x];
 		} catch (Throwable e) {
 			return -1;
 		}
@@ -923,21 +949,21 @@ public class Field2D implements IArray, Config, LRelease {
 			if (!contains(x, y)) {
 				return this;
 			}
-			this.mapArrays[y][x] = tile;
+			this._mapArrays[y][x] = tile;
 		} catch (Throwable e) {
 		}
 		return this;
 	}
 
 	public int[][] getMap() {
-		return CollectionUtils.copyOf(mapArrays);
+		return CollectionUtils.copyOf(_mapArrays);
 	}
 
 	public Field2D setMap(int[][] arrays) {
 		if (arrays == null) {
 			return this;
 		}
-		this.mapArrays = arrays;
+		this._mapArrays = arrays;
 		return this;
 	}
 
@@ -952,7 +978,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public IntArray getAllowMove() {
-		return this.allowMove;
+		return this._allowMove;
 	}
 
 	public boolean inside(int x, int y) {
@@ -995,14 +1021,14 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public boolean isHit(int px, int py) {
-		int type = get(mapArrays, px, py);
-		if (type == -1 && !allowMove.contains(type)) {
+		int type = get(_mapArrays, px, py);
+		if (type == -1 && !_allowMove.contains(type)) {
 			return false;
 		}
-		if (moveLimited != null) {
-			final int size = moveLimited.length - 1;
+		if (_moveLimited != null) {
+			final int size = _moveLimited.length - 1;
 			for (int i = size; i > -1; i--) {
-				if (moveLimited[i] == type) {
+				if (_moveLimited[i] == type) {
 					return false;
 				}
 			}
@@ -1011,8 +1037,8 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Vector2f getRandomPos() {
-		int tx = MathUtils.nextInt(0, width - 1);
-		int ty = MathUtils.nextInt(0, height - 1);
+		int tx = MathUtils.nextInt(0, _width - 1);
+		int ty = MathUtils.nextInt(0, _height - 1);
 		return new Vector2f(tx, ty);
 	}
 
@@ -1092,15 +1118,15 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public boolean notWidth(final int x) {
-		return x < 0 || x >= width;
+		return x < 0 || x >= _width;
 	}
 
 	public boolean notHeight(final int y) {
-		return y < 0 || y >= height;
+		return y < 0 || y >= _height;
 	}
 
 	public Vector2f toXY(int index) {
-		return toXY(index, this.width, this.height);
+		return toXY(index, this._width, this._height);
 	}
 
 	public int[][] neighbors(int px, int py, boolean flag) {
@@ -1119,24 +1145,24 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public TArray<Vector2f> neighbors(Vector2f pos, boolean diagonal) {
-		if (result == null) {
-			result = new TArray<Vector2f>(diagonal ? 8 : 4);
+		if (_result == null) {
+			_result = new TArray<Vector2f>(diagonal ? 8 : 4);
 		} else {
-			result.clear();
+			_result.clear();
 		}
 		int x = pos.x();
 		int y = pos.y();
-		result.add(new Vector2f(x, y - 1));
-		result.add(new Vector2f(x + 1, y));
-		result.add(new Vector2f(x, y + 1));
-		result.add(new Vector2f(x - 1, y));
+		_result.add(new Vector2f(x, y - 1));
+		_result.add(new Vector2f(x + 1, y));
+		_result.add(new Vector2f(x, y + 1));
+		_result.add(new Vector2f(x - 1, y));
 		if (diagonal) {
-			result.add(new Vector2f(x - 1, y - 1));
-			result.add(new Vector2f(x + 1, y - 1));
-			result.add(new Vector2f(x + 1, y + 1));
-			result.add(new Vector2f(x - 1, y + 1));
+			_result.add(new Vector2f(x - 1, y - 1));
+			_result.add(new Vector2f(x + 1, y - 1));
+			_result.add(new Vector2f(x + 1, y + 1));
+			_result.add(new Vector2f(x - 1, y + 1));
 		}
-		return result;
+		return _result;
 	}
 
 	public PointI getIndexToPixelPos(int idx) {
@@ -1149,8 +1175,8 @@ public class Field2D implements IArray, Config, LRelease {
 
 	public PointI getIndexToPos(int idx) {
 		int count = 0;
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++) {
+		for (int y = 0; y < _height; y++) {
+			for (int x = 0; x < _width; x++) {
 				if (idx == count) {
 					return new PointI(x, y);
 				}
@@ -1186,11 +1212,11 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D setValues(int val) {
-		int w = mapArrays[0].length;
-		int h = mapArrays.length;
+		int w = _mapArrays[0].length;
+		int h = _mapArrays.length;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				mapArrays[i][j] = val;
+				_mapArrays[i][j] = val;
 			}
 		}
 		return this;
@@ -1243,16 +1269,16 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int clampX(int x) {
-		return MathUtils.clamp(x, 0, this.width - 1);
+		return MathUtils.clamp(x, 0, this._width - 1);
 	}
 
 	public int clampY(int y) {
-		return MathUtils.clamp(y, 0, this.height - 1);
+		return MathUtils.clamp(y, 0, this._height - 1);
 	}
 
 	public boolean canOffsetTile(float x, float y) {
-		return this._offset.x >= x - width && this._offset.x <= x + width && this._offset.y >= y - height
-				&& this._offset.y <= y + height;
+		return this._offset.x >= x - _width && this._offset.x <= x + _width && this._offset.y >= y - _height
+				&& this._offset.y <= y + _height;
 	}
 
 	public float getIsometricType(float px, float py) {
@@ -1324,12 +1350,12 @@ public class Field2D implements IArray, Config, LRelease {
 		if (s == null) {
 			return this;
 		}
-		final int w = width;
-		final int h = height;
+		final int w = _width;
+		final int h = _height;
 		for (int i = 0; i < w; i++) {
 			for (int j = 0; j < h; j++) {
 				if (s != null) {
-					final int v = mapArrays[j][i];
+					final int v = _mapArrays[j][i];
 					s.loop(v, tilesToWidthPixels(i), tilesToHeightPixels(j));
 				}
 
@@ -1339,20 +1365,20 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int distanceFromEdgeTiles(int x, int y) {
-		return MathUtils.min(MathUtils.min(x, width - x), MathUtils.min(y, height - y));
+		return MathUtils.min(MathUtils.min(x, _width - x), MathUtils.min(y, _height - y));
 	}
 
 	public boolean onTilesMap(int x, int y) {
-		return (x >= 0 && y >= 0 && x < width && y < height);
+		return (x >= 0 && y >= 0 && x < _width && y < _height);
 	}
 
 	public boolean onTilesEdge(int x, int y) {
-		return !(x != 0 && y != 0 && x != width - 1 && y != height - 1);
+		return !(x != 0 && y != 0 && x != _width - 1 && y != _height - 1);
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return mapArrays == null || mapArrays.length == 0;
+		return _mapArrays == null || _mapArrays.length == 0;
 	}
 
 	@Override
@@ -1371,12 +1397,12 @@ public class Field2D implements IArray, Config, LRelease {
 
 	@Override
 	public int size() {
-		return width * height;
+		return _width * _height;
 	}
 
 	@Override
 	public void clear() {
-		set(new int[height][width], width, height);
+		set(new int[_height][_width], _width, _height);
 	}
 
 	@Override
@@ -1388,13 +1414,13 @@ public class Field2D implements IArray, Config, LRelease {
 		if (isEmpty()) {
 			return "[]";
 		}
-		StrBuilder buffer = new StrBuilder(size() * 2 + height + 2);
+		StrBuilder buffer = new StrBuilder(size() * 2 + _height + 2);
 		buffer.append('[');
 		buffer.append(LSystem.LS);
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				buffer.append(mapArrays[i][j]);
-				if (j < width - 1) {
+		for (int i = 0; i < _height; i++) {
+			for (int j = 0; j < _width; j++) {
+				buffer.append(_mapArrays[i][j]);
+				if (j < _width - 1) {
 					buffer.append(split);
 				}
 			}
@@ -1406,8 +1432,8 @@ public class Field2D implements IArray, Config, LRelease {
 
 	@Override
 	public void close() {
-		if (mapArrays != null) {
-			mapArrays = null;
+		if (_mapArrays != null) {
+			_mapArrays = null;
 		}
 	}
 
