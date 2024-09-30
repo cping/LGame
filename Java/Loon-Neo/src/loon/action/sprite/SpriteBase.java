@@ -62,6 +62,9 @@ import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
+/**
+ * Sprite包下最基础类,所有Sprite对象由此类衍生,此类继承自LObject
+ */
 @SuppressWarnings("unchecked")
 public abstract class SpriteBase<T extends ISprite> extends LObject<T> implements CollisionObject, IArray, BoxSize {
 
@@ -728,6 +731,17 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	public void setScale(float sx, float sy) {
 		this._scaleX = sx;
 		this._scaleY = sy;
+	}
+
+	public void setSizeScale(float w, float h) {
+		if (w <= 0 && h <= 0) {
+			return;
+		}
+		if (w > 0) {
+			_scaleX = w / this.getWidth();
+		} else if (h > 0) {
+			_scaleY = h / this.getHeight();
+		}
 	}
 
 	/**

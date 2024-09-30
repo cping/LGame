@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import loon.LObject;
 import loon.LSysException;
 import loon.geom.RectBox;
 import loon.geom.SetXY;
@@ -774,6 +775,61 @@ public final class MathUtils {
 		result += AS4;
 		result = mul(fRoot, result);
 		return result;
+	}
+
+	public static <T> float angleBetween(LObject<T> a1, LObject<T> b1, boolean degree) {
+		if (a1 == null || b1 == null) {
+			return 0f;
+		}
+		float dx = b1.getX() - a1.getX();
+		float dy = b1.getY() - a1.getY();
+		return angleFrom(dx, dy, degree);
+	}
+
+	public static <T> float degreesBetween(LObject<T> a1, LObject<T> b1) {
+		return angleBetween(a1, b1, true);
+	}
+
+	public static <T> float radiansBetween(LObject<T> a1, LObject<T> b1) {
+		return angleBetween(a1, b1, false);
+	}
+
+	public static <T> float angleBetweenPoint(LObject<T> o, XY pos, boolean degree) {
+		float dx = pos.getX() - o.getX();
+		float dy = pos.getY() - o.getY();
+		return angleFrom(dx, dy, degree);
+	}
+
+	public static <T> float degreesBetweenPoint(LObject<T> o, XY pos) {
+		return angleBetweenPoint(o, pos, true);
+	}
+
+	public static <T> float radiansBetweenPoint(LObject<T> o, XY pos) {
+		return angleBetweenPoint(o, pos, false);
+	}
+
+	/**
+	 * 转化极坐标系为笛卡尔坐标系
+	 * 
+	 * @param x
+	 * @param y
+	 * @param radius
+	 * @param angle
+	 * @return
+	 */
+	public static Vector2f getCartesianCoords(float x, float y, float radius, float angle) {
+		return new Vector2f(radius * MathUtils.cos(angle * DEG_TO_RAD), radius * MathUtils.sin(angle * DEG_TO_RAD));
+	}
+
+	/**
+	 * 转化笛卡尔坐标系为极坐标系
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	public static Vector2f getPolarCoords(float x, float y) {
+		return new Vector2f(MathUtils.sqrt((x * x) + (y * y)), degreesFrom(x, y));
 	}
 
 	public static float trunc(float x) {
@@ -2002,6 +2058,29 @@ public final class MathUtils {
 		float diffX = x2 - x1;
 		float diffY = y2 - y1;
 		return atan2(diffY, diffX);
+	}
+
+	/**
+	 * 转换坐标为angle
+	 * 
+	 * @param x
+	 * @param y
+	 * @param d
+	 * @return
+	 */
+	public static float angleFrom(float x, float y, boolean d) {
+		if (d) {
+			return atan2(y, x) * RAD_TO_DEG;
+		}
+		return atan2(y, x);
+	}
+
+	public static float radiansFrom(float x, float y) {
+		return angleFrom(x, y, false);
+	}
+
+	public static float degreesFrom(float x, float y) {
+		return angleFrom(x, y, true);
 	}
 
 	/**

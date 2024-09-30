@@ -1164,6 +1164,22 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return Side.getOverlapRect(this.getCollisionArea(), spr.getRectBox());
 	}
 
+	public float degreesBetween(LObject<T> target) {
+		return MathUtils.degreesBetween(this, target);
+	}
+
+	public float radiansBetween(LObject<T> target) {
+		return MathUtils.radiansBetween(this, target);
+	}
+
+	public float degreesBetweenPoint(LObject<T> o, XY pos) {
+		return MathUtils.degreesBetweenPoint(o, pos);
+	}
+
+	public float radiansBetweenPoint(LObject<T> o, XY pos) {
+		return MathUtils.radiansBetweenPoint(o, pos);
+	}
+
 	@Override
 	public int compare(T o1, T o2) {
 		if (o1 == null || o2 == null) {
