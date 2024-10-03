@@ -87,6 +87,28 @@ public final class TimeUtils {
 		return currentTime(getDefaultTimeUnit());
 	}
 
+	public static String formatTicks(float startTicks, float endTicks) {
+		return (MathUtils.abs(endTicks - startTicks) / 1000f) + "s";
+	}
+
+	public static String formatSecondsTime(float seconds, boolean showMS) {
+		String timeDisplay = (int) (seconds / 60f) + ":";
+		int time = (int) (seconds) % 60;
+		if (time < 10) {
+			timeDisplay += "0";
+		}
+		timeDisplay += String.valueOf(time);
+		if (showMS) {
+			timeDisplay += LSystem.DOT;
+			time = (int) ((seconds - (int) (seconds)) * 100);
+			if (time < 10) {
+				timeDisplay += "0";
+			}
+			timeDisplay += String.valueOf(time);
+		}
+		return timeDisplay;
+	}
+
 	public static float convert(float time, Unit source, Unit target) {
 		if (source == target)
 			return time;

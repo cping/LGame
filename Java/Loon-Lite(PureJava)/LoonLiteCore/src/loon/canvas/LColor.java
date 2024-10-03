@@ -260,19 +260,19 @@ public class LColor implements Serializable {
 
 	protected static float hue2rgb(float p, float q, float t) {
 		if (t < 0) {
-			t += 1;
+			t += 1f;
 		}
-		if (t > 1) {
-			t -= 1;
+		if (t > 1f) {
+			t -= 1f;
 		}
-		if (t < 1 / 6) {
-			return p + (q - p) * 6 * t;
+		if (t < 1f / 6f) {
+			return p + (q - p) * 6f * t;
 		}
-		if (t < 1 / 2) {
+		if (t < 1f / 2f) {
 			return q;
 		}
-		if (t < 2 / 3) {
-			return p + (q - p) * (2 / 3 - t) * 6;
+		if (t < 2f / 3f) {
+			return p + (q - p) * (2f / 3f - t) * 6f;
 		}
 		return p;
 	}
@@ -440,7 +440,7 @@ public class LColor implements Serializable {
 			return new LColor(v, v, v);
 		}
 		float c = s * v;
-		float x = c * (1 - MathUtils.abs(h % 2 - 1));
+		float x = c * (1f - MathUtils.abs(h % 2f - 1f));
 		float m = v - c;
 
 		if (h < 1) {
@@ -1445,6 +1445,60 @@ public class LColor implements Serializable {
 		return setColor(r / 255.0f, g / 255.0f, b / 255.0f, 1f);
 	}
 
+	public LColor setCMYK(float cyan, float magenta, float yellow, float black, float alpha) {
+		float red = (1f - cyan) * (1f - black);
+		float green = (1f - magenta) * (1f - black);
+		float blue = (1f - yellow) * (1f - black);
+		return setColor(red, green, blue, alpha);
+	}
+
+	public LColor setCMYK(float cyan, float magenta, float yellow, float black) {
+		return setCMYK(cyan, magenta, yellow, black, this.a);
+	}
+
+	public LColor setHSB(float hue, float saturation, float brightness) {
+		return setHSB(hue, saturation, brightness, this.a);
+	}
+
+	public LColor setHSB(float hue, float saturation, float brightness, float alpha) {
+		float chroma = brightness * saturation;
+		float match = brightness - chroma;
+		return setHueChromaMatch(hue, chroma, match, alpha);
+	}
+
+	public LColor setHSL(float hue, float saturation, float lightness) {
+		return setHSL(hue, saturation, lightness, this.a);
+	}
+
+	public LColor setHSL(float hue, float saturation, float lightness, float alpha) {
+		float chroma = (1f - MathUtils.abs(2f * lightness - 1f)) * saturation;
+		float match = lightness - chroma / 2f;
+		return setHueChromaMatch(hue, chroma, match, alpha);
+	}
+
+	public LColor setHueChromaMatch(float hue, float chroma, float match, float alpha) {
+		hue %= 360f;
+		float hueD = hue / 60f;
+		float mid = chroma * (1 - MathUtils.abs(hueD % 2 - 1)) + match;
+		chroma += match;
+		int t = (int) hueD;
+		switch (t) {
+		case 0:
+			setColor(chroma, mid, match, alpha);
+		case 1:
+			setColor(mid, chroma, match, alpha);
+		case 2:
+			setColor(match, chroma, mid, alpha);
+		case 3:
+			setColor(match, mid, chroma, alpha);
+		case 4:
+			setColor(mid, match, chroma, alpha);
+		case 5:
+			setColor(chroma, match, mid, alpha);
+		}
+		return this;
+	}
+
 	public float red() {
 		return r;
 	}
@@ -2236,6 +2290,14 @@ public class LColor implements Serializable {
 
 	public int getABGR(float alpha) {
 		return abgr((int) (a * alpha * 255), getRed(), getGreen(), getBlue());
+	}
+
+	public float getMaxColor() {
+		return MathUtils.max(this.r, MathUtils.max(this.g, this.b));
+	}
+
+	public float getMinColor() {
+		return MathUtils.min(this.r, MathUtils.min(this.g, this.b));
 	}
 
 	public float[] toRgbFloatArray() {

@@ -1376,6 +1376,54 @@ public class Field2D implements IArray, Config, LRelease {
 		return !(x != 0 && y != 0 && x != _width - 1 && y != _height - 1);
 	}
 
+	public float getColAt(float worldX, float x) {
+		return getColAt(worldX, x, true);
+	}
+
+	public float getColAt(float worldX, float x, boolean b) {
+		float result = MathUtils.floor((worldX - x) / _tileWidth);
+		if (b) {
+			return result < 0f ? 0f : (result >= _width ? _width - 1 : result);
+		}
+		return result;
+	}
+
+	public float getRowAt(float worldY, float y) {
+		return getRowAt(worldY, y, true);
+	}
+
+	public float getRowAt(float worldY, float y, boolean b) {
+		float result = MathUtils.floor((worldY - y) / _tileHeight);
+		if (b) {
+			return result < 0f ? 0f : (result >= _height ? _height - 1 : result);
+		}
+		return result;
+	}
+
+	public float getColToPos(float x) {
+		return getColToPos(x, _width);
+	}
+
+	public float getColToPos(float x, float column) {
+		return getColToPos(x, column, false);
+	}
+
+	public float getColToPos(float x, float column, boolean midpoint) {
+		return x + column * _tileWidth + (midpoint ? _tileWidth * 0.5f : 0f);
+	}
+
+	public float getRowToPos(float y) {
+		return getRowToPos(y, _height);
+	}
+
+	public float getRowToPos(float y, float row) {
+		return getRowToPos(y, row, false);
+	}
+
+	public float getRowToPos(float y, float row, boolean midpoint) {
+		return y + row * _tileHeight + (midpoint ? _tileHeight * 0.5f : 0f);
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return _mapArrays == null || _mapArrays.length == 0;

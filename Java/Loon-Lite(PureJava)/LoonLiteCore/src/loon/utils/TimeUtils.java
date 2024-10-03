@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2016 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -85,6 +85,28 @@ public final class TimeUtils {
 
 	public static float currentTime() {
 		return currentTime(getDefaultTimeUnit());
+	}
+
+	public static String formatTicks(float startTicks, float endTicks) {
+		return (MathUtils.abs(endTicks - startTicks) / 1000f) + "s";
+	}
+
+	public static String formatSecondsTime(float seconds, boolean showMS) {
+		String timeDisplay = (int) (seconds / 60f) + ":";
+		int time = (int) (seconds) % 60;
+		if (time < 10) {
+			timeDisplay += "0";
+		}
+		timeDisplay += String.valueOf(time);
+		if (showMS) {
+			timeDisplay += LSystem.DOT;
+			time = (int) ((seconds - (int) (seconds)) * 100);
+			if (time < 10) {
+				timeDisplay += "0";
+			}
+			timeDisplay += String.valueOf(time);
+		}
+		return timeDisplay;
 	}
 
 	public static float convert(float time, Unit source, Unit target) {
@@ -313,7 +335,7 @@ public final class TimeUtils {
 		output.append(minutes);
 		output.append(':');
 
-		if(seconds < 10) {
+		if (seconds < 10) {
 			output.append('0');
 		}
 		output.append(seconds);

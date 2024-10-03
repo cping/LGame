@@ -529,7 +529,7 @@ public class LTimer implements LTimerListener, LRelease {
 	}
 
 	public float getPercentage() {
-		return (float) this._currentTick / (float) this._delay;
+		return (this._delay > 0) ? ((float) this._currentTick / (float) this._delay) : 0f;
 	}
 
 	public float getOverallPercentage() {
