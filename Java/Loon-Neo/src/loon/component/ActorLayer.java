@@ -772,6 +772,7 @@ public abstract class ActorLayer extends LContainer {
 	 * 刷新缓存数据，重置世界
 	 * 
 	 */
+	@Override
 	public ActorLayer reset() {
 		if (_component_isClose) {
 			return this;

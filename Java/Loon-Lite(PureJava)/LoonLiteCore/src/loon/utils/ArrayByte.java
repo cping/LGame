@@ -28,6 +28,7 @@ import java.util.Comparator;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
+import loon.canvas.ImageFormat;
 
 /**
  * Loon的Byte[]操作用类
@@ -693,6 +694,10 @@ public class ArrayByte implements IArray, LRelease {
 	public String toBase64ConvertCRC64Hex() {
 		final byte[] bytes = Base64Coder.encode(_buffer);
 		return CRC64.toHexString(bytes);
+	}
+
+	public ImageFormat getImageFormat() {
+		return new ImageFormat(this);
 	}
 
 	@Override

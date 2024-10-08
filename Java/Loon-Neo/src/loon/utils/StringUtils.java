@@ -2780,6 +2780,38 @@ final public class StringUtils extends CharUtils {
 		return str.toString();
 	}
 
+	public static CharSequence getRoot(final CharSequence cur, final CharSequence ch) {
+		for (int i = 0; i < cur.length(); i++) {
+			int idx = i + 1;
+			if (cur.subSequence(i, idx).equals(ch)) {
+				return cur.subSequence(0, i);
+			}
+		}
+		return cur;
+	}
+
+	public static CharSequence getBranch(final CharSequence cur, final CharSequence ch) {
+		for (int i = 0; i < cur.length(); i++) {
+			int idx = i + 1;
+			if (cur.subSequence(i, idx).equals(ch)) {
+				return cur.subSequence(idx, idx + cur.length() - i - 1);
+			}
+		}
+		return cur;
+	}
+
+	public static CharSequence getLastBranch(final CharSequence cur, final CharSequence ch) {
+		int i = cur.length() - 1;
+		while (i >= 0) {
+			int idx = i + 1;
+			if (cur.subSequence(i, idx).equals(ch)) {
+				return cur.subSequence(idx, idx + cur.length() - i - 1);
+			}
+			i--;
+		}
+		return cur;
+	}
+
 	public static String byteArrayToString(final byte[] array) {
 		return byteArrayToString(array, 0, array.length);
 	}

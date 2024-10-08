@@ -731,7 +731,9 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 	}
 
+	@Override
 	public LMessageBox reset() {
+		super.reset();
 		messageIndex = 0;
 		stopMessage = false;
 		return restart();

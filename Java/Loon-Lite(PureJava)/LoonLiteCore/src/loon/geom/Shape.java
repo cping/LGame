@@ -788,6 +788,23 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		}
 	}
 
+	public Shape reverse() {
+		checkPoints();
+		int numCoords = points.length;
+		int numVertices = numCoords / 2;
+		float tmp;
+		for (int i = 0; i < numVertices; i += 2) {
+			tmp = points[i];
+			points[i] = points[numCoords - i - 2];
+			points[numCoords - i - 2] = tmp;
+			tmp = points[i + 1];
+			points[i + 1] = points[numCoords - i - 1];
+			points[numCoords - i - 1] = tmp;
+
+		}
+		return this;
+	}
+
 	public void preCache() {
 		checkPoints();
 		getTriangles();

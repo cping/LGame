@@ -116,6 +116,31 @@ public class Polygon extends Shape implements BoxSize {
 		return sum > 0;
 	}
 
+	public final static boolean isConvexTriangle(float ax, float ay, float bx, float by, float cx, float cy) {
+		return (ay - by) * (cx - bx) + (bx - ax) * (cy - by) >= 0f;
+	}
+
+	public final static boolean isVectorsIntersecting(float ax, float ay, float bx, float by, float cx, float cy,
+			float dx, float dy) {
+		if ((ax == bx && ay == by) || (cx == dx && cy == dy)) {
+			return false;
+		}
+		float abx = bx - ax;
+		float aby = by - ay;
+		float cdx = dx - cx;
+		float cdy = dy - cy;
+		float tDen = cdy * abx - cdx * aby;
+		if (tDen == 0f) {
+			return false;
+		}
+		float t = (aby * (cx - ax) - abx * (cy - ay)) / tDen;
+		if (t < 0f || t > 1f) {
+			return false;
+		}
+		float result = aby != 0f ? (cy - ay + t * cdy) / aby : (cx - ax + t * cdx) / abx;
+		return result >= 0f && result <= 1f;
+	}
+
 	public final static float getPolygonSignedArea(Vector2f[] points) {
 		if (points.length < 3) {
 			return 0;
@@ -636,6 +661,62 @@ public class Polygon extends Shape implements BoxSize {
 
 	public boolean isPolygonClockwise() {
 		return isPolygonClockwise(getPoints());
+	}
+
+	public boolean isPolygonConvex() {
+		checkPoints();
+		int numCoords = points.length;
+		if (numCoords < 6) {
+			return true;
+		} else {
+			for (int i = 0; i < numCoords; i += 2) {
+				if (!isConvexTriangle(points[i], points[i + 1], points[(i + 2) % numCoords],
+						points[(i + 3) % numCoords], points[(i + 4) % numCoords], points[(i + 5) % numCoords])) {
+					return false;
+				}
+				i += 2;
+			}
+		}
+		return true;
+	}
+
+	public boolean isPolygonNotSelfIntersecting() {
+		checkPoints();
+		int numCoords = points.length;
+		if (numCoords <= 6) {
+			return true;
+		}
+		for (int i = 0; i < numCoords; i += 2) {
+			float ax = points[i];
+			float ay = points[i + 1];
+			float bx = points[(i + 2) % numCoords];
+			float by = points[(i + 3) % numCoords];
+			float endJ = i + numCoords - 2;
+			for (int j = i + 4; j < endJ; j += 2) {
+				float cx = points[j % numCoords];
+				float cy = points[(j + 1) % numCoords];
+				float dx = points[(j + 2) % numCoords];
+				float dy = points[(j + 3) % numCoords];
+				if (isVectorsIntersecting(ax, ay, bx, by, cx, cy, dx, dy)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	public float getArea() {
+		checkPoints();
+		float area = 0f;
+		int numCoords = points.length;
+		if (numCoords >= 6) {
+			for (int i = 0; i < numCoords; i += 2) {
+				area += points[i] * points[(i + 3) % numCoords];
+				area -= points[i + 1] * points[(i + 2) % numCoords];
+
+			}
+		}
+		return area / 2f;
 	}
 
 	public Polygon getOffsetPolygon(float offset) {

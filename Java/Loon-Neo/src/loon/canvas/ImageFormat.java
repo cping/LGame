@@ -92,6 +92,42 @@ public class ImageFormat {
 		}
 	}
 
+	public boolean isJpg() {
+		return getImageFormat() == Jpg;
+	}
+
+	public boolean isPng() {
+		return getImageFormat() == Png;
+	}
+
+	public boolean isBmp() {
+		return getImageFormat() == Bmp;
+	}
+
+	public boolean isGif() {
+		return getImageFormat() == Gif;
+	}
+
+	public boolean isTga() {
+		return getImageFormat() == Tga;
+	}
+
+	public boolean isTiff() {
+		return getImageFormat() == Tiff;
+	}
+
+	public boolean isWebp() {
+		return getImageFormat() == Webp;
+	}
+
+	public boolean isIco() {
+		return getImageFormat() == Ico;
+	}
+
+	public boolean isRawData() {
+		return getImageFormat() == RawData;
+	}
+
 	public int getImageFormat() {
 		final byte[] data = new byte[12];
 		final int pos = buffer.position();

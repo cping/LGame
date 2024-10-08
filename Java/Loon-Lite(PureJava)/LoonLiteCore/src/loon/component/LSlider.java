@@ -87,12 +87,25 @@ public class LSlider extends LComponent {
 		freeRes().add(sliderText, barText);
 	}
 
+	@Override
 	public LSlider reset() {
+		super.reset();
 		this._stepSize = 0f;
 		this._value = 0f;
 		this._minValue = 0f;
 		this._maxValue = 100f;
 		return this;
+	}
+
+	protected void onChange() {
+		if (_vertical) {
+			_value = (getUITouchY()) / getHeight();
+		} else {
+			_value = (getUITouchX()) / getWidth();
+		}
+		if (_listener != null) {
+			_listener.onChange(this, _value);
+		}
 	}
 
 	@Override
@@ -102,15 +115,8 @@ public class LSlider extends LComponent {
 		}
 		super.update(elapsedTime);
 		if (SysTouch.isDrag() || SysTouch.isDown()) {
-			if (isPointInUI(getTouchX(), getTouchY())) {
-				if (_vertical) {
-					_value = (getUITouchY()) / getHeight();
-				} else {
-					_value = (getUITouchX()) / getWidth();
-				}
-				if (_listener != null) {
-					_listener.onChange(this, _value);
-				}
+			if (isPointInUI()) {
+				onChange();
 			}
 		}
 	}

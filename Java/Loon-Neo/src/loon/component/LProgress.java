@@ -187,7 +187,9 @@ public class LProgress extends LComponent {
 		}
 	}
 
+	@Override
 	public LProgress reset() {
+		super.reset();
 		this.percentage = 1f;
 		this.minValue = 0f;
 		this.maxValue = 100f;
