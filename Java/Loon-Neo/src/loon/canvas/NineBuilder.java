@@ -23,11 +23,68 @@ package loon.canvas;
 import loon.BaseIO;
 import loon.LTexture;
 import loon.geom.RectBox;
+import loon.utils.TArray;
 
 /**
  * 手动设置的9grid构建类
  */
 public class NineBuilder {
+
+	public static class SliceRects {
+		
+		public TArray<RectBox> src;
+		public TArray<RectBox> dst;
+
+		public SliceRects(TArray<RectBox> s, TArray<RectBox> d) {
+			this.src = s;
+			this.dst = d;
+		}
+	}
+
+	public static SliceRects buildRects(float w, float h, float bitmapWidth, float bitmapHeight, RectBox slice) {
+		final TArray<RectBox> srcRects = buildSrcRects(bitmapWidth, bitmapHeight, slice);
+		final TArray<RectBox> dstRects = buildDstRects(w, h, srcRects);
+		return new SliceRects(srcRects, dstRects);
+	}
+
+	public static TArray<RectBox> buildSrcRects(float bitmapWidth, float bitmapHeight, RectBox slice) {
+		final float x1 = slice.Left();
+		final float y1 = slice.Top();
+		final float x2 = slice.Right();
+		final float y2 = slice.Bottom();
+		final TArray<RectBox> srcRects = new TArray<RectBox>();
+		srcRects.add(new RectBox(0, 0, x1, y1));
+		srcRects.add(new RectBox(x1, 0, x2 - x1, y1));
+		srcRects.add(new RectBox(x2, 0, bitmapWidth - x2, y1));
+		srcRects.add(new RectBox(0, y1, x1, y2 - y1));
+		srcRects.add(new RectBox(x1, y1, x2 - x1, y2 - y1));
+		srcRects.add(new RectBox(x2, y1, bitmapWidth - x2, y2 - y1));
+		srcRects.add(new RectBox(0, y2, x1, bitmapHeight - y2));
+		srcRects.add(new RectBox(x1, y2, x2 - x1, bitmapHeight - y2));
+		srcRects.add(new RectBox(x2, y2, bitmapWidth - x2, bitmapHeight - y2));
+		return srcRects;
+	}
+
+	public static TArray<RectBox> buildDstRects(float w, float h, TArray<RectBox> srcRects) {
+		final TArray<RectBox> dstRects = new TArray<RectBox>();
+		dstRects.add(new RectBox(0, 0, srcRects.get(0).width, srcRects.get(0).height));
+		dstRects.add(new RectBox(srcRects.get(0).width, 0, w - srcRects.get(0).width - srcRects.get(2).width,
+				srcRects.get(1).height));
+		dstRects.add(new RectBox(w - srcRects.get(2).width, 0, srcRects.get(2).width, srcRects.get(2).height));
+		dstRects.add(new RectBox(0, srcRects.get(0).height, srcRects.get(3).width,
+				h - srcRects.get(0).height - srcRects.get(6).height));
+		dstRects.add(new RectBox(srcRects.get(3).width, srcRects.get(0).height,
+				w - srcRects.get(3).width - srcRects.get(5).width,
+				h - srcRects.get(1).height - srcRects.get(7).height));
+		dstRects.add(new RectBox(w - srcRects.get(5).width, srcRects.get(2).height, srcRects.get(5).width,
+				h - srcRects.get(2).height - srcRects.get(8).height));
+		dstRects.add(new RectBox(0, h - srcRects.get(6).height, srcRects.get(6).width, srcRects.get(6).height));
+		dstRects.add(new RectBox(srcRects.get(6).width, h - srcRects.get(7).height,
+				w - srcRects.get(6).width - srcRects.get(8).width, srcRects.get(7).height));
+		dstRects.add(new RectBox(w - srcRects.get(8).width, h - srcRects.get(8).height, srcRects.get(8).width,
+				srcRects.get(8).height));
+		return dstRects;
+	}
 
 	private Pixmap _baseImage;
 

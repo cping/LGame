@@ -24,6 +24,40 @@ import loon.utils.StringKeyValue;
 
 public class Bezier {
 
+	public static float mix2(float p, float a, float b) {
+		return a * (1f - p) + (b * p);
+	}
+
+	public static float mix3(float p, float a, float b, float c) {
+		return mix2(p, mix2(p, a, b), mix2(p, b, c));
+	}
+
+	public static float mix4(float p, float a, float b, float c, float d) {
+		return mix2(p, mix3(p, a, b, c), mix3(p, b, c, d));
+	}
+
+	public static float mix5(float p, float a, float b, float c, float d, float e) {
+		return mix2(p, mix4(p, a, b, c, d), mix4(p, b, c, d, e));
+	}
+
+	public static PointF bezier2(float p, XY a, XY b) {
+		return new PointF(mix2(p, a.getX(), b.getX()), mix2(p, a.getY(), b.getY()));
+	}
+
+	public static PointF bezier3(float p, XY a, XY b, XY c) {
+		return new PointF(mix3(p, a.getX(), b.getX(), c.getX()), mix3(p, a.getY(), b.getY(), c.getY()));
+	}
+
+	public static PointF bezier4(float p, XY a, XY b, XY c, XY d) {
+		return new PointF(mix4(p, a.getX(), b.getX(), c.getX(), d.getX()),
+				mix4(p, a.getY(), b.getY(), c.getY(), d.getY()));
+	}
+
+	public static PointF bezier5(float p, XY a, XY b, XY c, XY d, XY e) {
+		return new PointF(mix5(p, a.getX(), b.getX(), c.getX(), d.getX(), e.getX()),
+				mix5(p, a.getY(), b.getY(), c.getY(), d.getY(), e.getY()));
+	}
+
 	public Vector2f endPosition = new Vector2f();
 
 	public Vector2f controlPoint1 = new Vector2f();

@@ -57,6 +57,8 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 
 	private Field2D _mapToArray;
 
+	private final Vector2f _pixelOffset = new Vector2f();
+
 	private final PointF _scrollDrag;
 
 	private int _notSetTileID;
@@ -151,7 +153,7 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	}
 
 	public boolean contains(float x, float y) {
-		return _tileLayerRect.contains(x, y);
+		return getCollisionBox().contains(x, y);
 	}
 
 	public RectBox getCollisionBox() {
@@ -174,7 +176,7 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 	}
 
 	public LDTKTileLayer removeLimitToField2D() {
-		getField2D().setLimit((int[])null);
+		getField2D().setLimit((int[]) null);
 		return this;
 	}
 
@@ -260,6 +262,22 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 			_dirty = false;
 		}
 		return _mapToArray;
+	}
+
+	public Vector2f getPixelOffset(float x, float y) {
+		return _pixelOffset.set(x, y).addSelf(_pixelOffsetX + _offset.x(), _pixelOffsetY + _offset.y());
+	}
+
+	public boolean hasPixelsCollision(float x, float y) {
+		Field2D map = getField2D();
+		int tx = map.pixelsToTilesWidth(x);
+		int ty = map.pixelsToTilesHeight(y);
+		return map.contains(tx, ty) && map.isHit(tx, ty);
+	}
+
+	public boolean hasTilesCollision(int x, int y) {
+		Field2D map = getField2D();
+		return map.contains(x, y) && map.isHit(x, y);
 	}
 
 	public int getCellsTilesPerRow() {

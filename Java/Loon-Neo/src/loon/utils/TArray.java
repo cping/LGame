@@ -298,9 +298,17 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		items[index] = value;
 	}
 
-	public void swap(int first, int second) {
+	public TArray<T> swapByIndex(int idx1, int idx2) {
+		T[] items = this.items;
+		T temp = items[idx1];
+		items[idx1] = items[idx2];
+		items[idx2] = temp;
+		return this;
+	}
+
+	public TArray<T> swap(int first, int second) {
 		if (first == second)
-			return;
+			return this;
 		if (first >= size)
 			throw new LSysException("first can't be >= size: " + first + " >= " + size);
 		if (second >= size)
@@ -309,11 +317,12 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		T firstValue = items[first];
 		items[first] = items[second];
 		items[second] = firstValue;
+		return this;
 	}
 
-	public void swap(T first, T second) {
+	public TArray<T> swap(T first, T second) {
 		if ((first == null && second == null) || (first == second)) {
-			return;
+			return this;
 		}
 		int fi = -1;
 		int bi = -1;
@@ -332,8 +341,9 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 			}
 		}
 		if (fi != -1 && bi != -1) {
-			swap(fi, bi);
+			return swap(fi, bi);
 		}
+		return this;
 	}
 
 	public boolean contains(T value) {
@@ -900,7 +910,7 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	public SwappableArray<T> getSwappableArray() {
 		return new SwappableArray<T>(this);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		if (!ordered) {

@@ -924,7 +924,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	/**
-	 * 设定矩形选框交集
+	 * 获得矩形选框交集
 	 * 
 	 * @param rect
 	 */
@@ -933,7 +933,7 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	/**
-	 * 设定矩形选框交集
+	 * 获得矩形选框交集
 	 * 
 	 * @param x
 	 * @param y
@@ -946,6 +946,59 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		int x2 = (int) MathUtils.min(this.x + this.width - 1, x + width - 1);
 		int y2 = (int) MathUtils.min(this.y + this.height - 1, y + height - 1);
 		return setBounds(x1, y1, MathUtils.max(0, x2 - x1 + 1), MathUtils.max(0, y2 - y1 + 1));
+	}
+
+	private static RectBox _intersectionCache = null;
+
+	/**
+	 * 获得一个存在缓存的矩形选框交集结果
+	 * 
+	 * @param rect
+	 * @return
+	 */
+	public RectBox intersectionCache(RectBox rect) {
+		return intersectionCache(rect, true);
+	}
+
+	/**
+	 * 获得一个存在缓存的矩形选框交集结果
+	 * 
+	 * @param rect
+	 * @param noAlloc
+	 * @return
+	 */
+	public RectBox intersectionCache(RectBox rect, boolean noAlloc) {
+		if (noAlloc && _intersectionCache == null) {
+			_intersectionCache = new RectBox();
+		}
+		float x0 = Left() < rect.Left() ? rect.Left() : Left();
+		float x1 = Right() > rect.Right() ? rect.Right() : Right();
+		if (x1 <= x0) {
+			if (noAlloc) {
+				_intersectionCache.setEmpty();
+				return _intersectionCache;
+			} else {
+				return new RectBox();
+			}
+		}
+		float y0 = Top() < rect.Top() ? rect.Top() : Top();
+		float y1 = Bottom() > rect.Bottom() ? rect.Bottom() : Bottom();
+		if (y1 <= y0) {
+			if (noAlloc) {
+				_intersectionCache.setEmpty();
+				return _intersectionCache;
+			} else {
+				return new RectBox();
+			}
+		}
+		RectBox r = null;
+		if (noAlloc) {
+			r = _intersectionCache;
+		} else {
+			r = new RectBox();
+		}
+		r.setBounds(x0, y0, x1 - x0, y1 - y0);
+		return r;
 	}
 
 	/**
