@@ -45,6 +45,7 @@ import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
 import loon.events.ClickListener;
 import loon.events.EventAction;
+import loon.events.EventActionN;
 import loon.events.GameKey;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
@@ -86,6 +87,8 @@ public abstract class LComponent extends LObject<LContainer>
 	private ResizeListener<LComponent> _resizeListener;
 
 	private EventAction _loopAction;
+
+	private EventActionN _validateEvent;
 
 	protected LTexture[] _imageUI = null;
 
@@ -759,7 +762,23 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public void validatePosition() {
+	public LComponent setValidateEvent(EventActionN n) {
+		this._validateEvent = n;
+		return this;
+	}
+
+	public EventActionN getValidateEvent() {
+		return this._validateEvent;
+	}
+
+	public void validateNow() {
+		this.validatePosition();
+	}
+
+	protected void validatePosition() {
+		if (_validateEvent != null) {
+			_validateEvent.update();
+		}
 		if (_objectSuper != null) {
 			this._screenX = _objectLocation.x() + this._objectSuper.getScreenX();
 			this._screenY = _objectLocation.y() + this._objectSuper.getScreenY();

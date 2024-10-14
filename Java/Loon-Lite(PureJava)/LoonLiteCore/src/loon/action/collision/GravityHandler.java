@@ -128,7 +128,7 @@ public class GravityHandler implements LRelease {
 		this._easeTimer = new EaseTimer(duration, _easingMode);
 		this._gravityMap = new ObjectMap<ActionBind, Gravity>();
 		this._gravityScale = _objectMaxSpeed = 1f;
-		this._deviation = 1 / 60f;
+		this._deviation = LSystem.DEFAULT_EASE_DELAY;
 		this.objects = new TArray<Gravity>(10);
 		this.pendingAdd = new TArray<Gravity>(10);
 		this.pendingRemove = new TArray<Gravity>(10);

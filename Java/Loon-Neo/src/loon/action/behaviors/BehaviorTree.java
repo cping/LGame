@@ -20,6 +20,8 @@
  */
 package loon.action.behaviors;
 
+import loon.LSystem;
+
 public class BehaviorTree<T> {
 
 	public float updatePeriod;
@@ -40,7 +42,7 @@ public class BehaviorTree<T> {
 		_context = context;
 		_root = rootNode;
 		this.updatePeriod = _elapsedTime = update;
-		this._deltaTime = 1 / 60f;
+		this._deltaTime = LSystem.DEFAULT_EASE_DELAY;
 	}
 
 	public void setElapsedTime(float time) {

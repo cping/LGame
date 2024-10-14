@@ -22,6 +22,7 @@ package loon.utils;
 
 import loon.LObject;
 import loon.LSysException;
+import loon.LSystem;
 import loon.geom.RectBox;
 import loon.geom.SetXY;
 import loon.geom.Vector2f;
@@ -205,6 +206,16 @@ public final class MathUtils {
 	public static int previousPowerOfTwo(int value) {
 		final int power = (int) (log(value) / log(2));
 		return (int) pow(2, power);
+	}
+
+	public static int precision(float v) {
+		int e = 1;
+		int p = 0;
+		while (abs((round(v * e) / e) - v) > FLOAT_ROUNDING_ERROR) {
+			e *= 10;
+			p++;
+		}
+		return p;
 	}
 
 	public static int nextPowerOfTwo(int value) {
@@ -1410,6 +1421,14 @@ public final class MathUtils {
 		return obj;
 	}
 
+	public static float cameraLerp(float elapsed, float l) {
+		return l * (elapsed / LSystem.DEFAULT_EASE_DELAY);
+	}
+
+	public static float coolLerp(float elapsed, float b, float t, float r) {
+		return b + cameraLerp(elapsed, r) * (t - b);
+	}
+
 	public static float hermite(float value1, float tangent1, float value2, float tangent2, float amount) {
 		float v1 = value1, v2 = value2, t1 = tangent1, t2 = tangent2, s = amount, result;
 		float sCubed = s * s * s;
@@ -1683,6 +1702,12 @@ public final class MathUtils {
 		}
 	}
 
+	public static float roundToNearest(float v, float n) {
+		int p = max(precision(v), precision(n));
+		float inv = 1f / n;
+		return round(round(v, inv) / inv, p);
+	}
+
 	public static int toShift(int angle) {
 		if (angle <= 45) {
 			return SHIFT[angle];
@@ -1899,6 +1924,10 @@ public final class MathUtils {
 		}
 		n -= x >>> 31;
 		return n;
+	}
+
+	public static float logBase(float b, float v) {
+		return log(v) / log(b);
 	}
 
 	public static int limit(int i, int min, int max) {
@@ -2132,6 +2161,17 @@ public final class MathUtils {
 		return result;
 	}
 
+	public static float fmodulo(float v1, float v2) {
+		int p = max(precision(v1), precision(v2));
+		int e = 1;
+		for (int i = 0; i < p; i++) {
+			e *= 10;
+		}
+		int i1 = round(v1 * e);
+		int i2 = round(v2 * e);
+		return round(i1 % i2 / e, p);
+	}
+
 	/**
 	 * 让两值做加法,若大于第三值则返回第三值
 	 * 
@@ -2281,6 +2321,19 @@ public final class MathUtils {
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * 返回一个对象集合中的随机概率对象
+	 * 
+	 * @param <T>
+	 * @param values
+	 * @return
+	 */
+	public static <T> T chanceRollValues(final T[] values) {
+		final int maxIndex = max(0, values.length - 1);
+		final int rolledIndex = round(random() * maxIndex);
+		return values[rolledIndex];
 	}
 
 	/**
