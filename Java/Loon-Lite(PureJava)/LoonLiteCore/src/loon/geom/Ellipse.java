@@ -449,6 +449,25 @@ public class Ellipse extends Shape {
 		}
 	}
 
+	public Ellipse mutate() {
+		return mutate(16);
+	}
+
+	public Ellipse mutate(int v) {
+		int r = MathUtils.random(2);
+		switch (r) {
+		case 0:
+			x = MathUtils.clamp(x + MathUtils.random(-v, v), 0, x);
+			y = MathUtils.clamp(y + MathUtils.random(-v, v), 0, y);
+		case 1:
+			_radius1 = MathUtils.clamp(_radius1 + MathUtils.random(-v, v), 1, _radius1);
+		case 2:
+			_radius2 = MathUtils.clamp(_radius2 + MathUtils.random(-v, v), 1, _radius2);
+		}
+		checkPoints();
+		return this;
+	}
+
 	public boolean equals(Ellipse e) {
 		if (e == null) {
 			return false;

@@ -157,6 +157,16 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 清空指定字串
+	 * 
+	 * @param ch
+	 * @return
+	 */
+	public static String clean(String ch, String c) {
+		return replace(ch, c, LSystem.EMPTY);
+	}
+
+	/**
 	 * 判定指定字符序列是否在指定范围内
 	 * 
 	 * @param cs

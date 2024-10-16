@@ -66,6 +66,30 @@ public class LColor implements Serializable {
 	}
 
 	/**
+	 * 计算一种颜色到另一种颜色之间的平滑过渡
+	 * 
+	 * @param startColor
+	 * @param endColor
+	 * @param ratio
+	 * @return
+	 */
+	public static int interpolate(int startColor, int endColor, float ratio) {
+		int startA = (startColor >> 24) & 0xFF;
+		int startR = (startColor >> 16) & 0xFF;
+		int startG = (startColor >> 8) & 0xFF;
+		int startB = (startColor) & 0xFF;
+		int endA = (endColor >> 24) & 0xFF;
+		int endR = (endColor >> 16) & 0xFF;
+		int endG = (endColor >> 8) & 0xFF;
+		int endB = (endColor) & 0xFF;
+		int newA = (int) (startA + (endA - startA) * ratio);
+		int newR = (int) (startR + (endR - startR) * ratio);
+		int newG = (int) (startG + (endG - startG) * ratio);
+		int newB = (int) (startB + (endB - startB) * ratio);
+		return LColor.getARGB(newR, newG, newB, newA);
+	}
+
+	/**
 	 * 获得24位色
 	 * 
 	 * @param r
@@ -2129,6 +2153,22 @@ public class LColor implements Serializable {
 
 	public LColor lerp(LColor target, float alpha) {
 		return lerp(this, target, alpha);
+	}
+
+	public LColor interpolate(int endColor) {
+		return interpolate(endColor, 1f);
+	}
+
+	public LColor interpolate(int endColor, float r) {
+		return new LColor(interpolate(getARGB(), endColor, r));
+	}
+
+	public LColor interpolate(LColor endColor) {
+		return interpolate(endColor, 1f);
+	}
+
+	public LColor interpolate(LColor endColor, float r) {
+		return interpolate(endColor == null ? LColor.white.getARGB() : endColor.getARGB(), r);
 	}
 
 	public float toFloatBits() {

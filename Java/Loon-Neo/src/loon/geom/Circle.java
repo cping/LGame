@@ -425,6 +425,26 @@ public class Circle extends Ellipse {
 		return new Vector2f(nx, ny);
 	}
 
+	@Override
+	public Ellipse mutate() {
+		return mutate(16);
+	}
+
+	@Override
+	public Ellipse mutate(int v) {
+		int r = MathUtils.random(1);
+		switch (r) {
+		case 0:
+			x = MathUtils.clamp(x + MathUtils.random(-v, v), 0, x);
+			y = MathUtils.clamp(y + MathUtils.random(-v, v), 0, y);
+		case 1:
+			boundingCircleRadius = MathUtils.clamp(boundingCircleRadius + MathUtils.random(-v, v), 1,
+					boundingCircleRadius);
+		}
+		checkPoints();
+		return this;
+	}
+
 	public boolean equals(Circle other) {
 		if (other == null) {
 			return false;

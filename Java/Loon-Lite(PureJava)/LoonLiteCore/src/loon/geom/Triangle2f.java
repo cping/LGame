@@ -358,6 +358,27 @@ public class Triangle2f extends Shape implements Triangle {
 	public void startHole() {
 	}
 
+	public Triangle2f mutate() {
+		return mutate(16);
+	}
+
+	public Triangle2f mutate(int v) {
+		int r = MathUtils.random(2);
+		switch (r) {
+		case 0:
+			xpoints[0] = MathUtils.clamp(xpoints[0] + MathUtils.random(-v, v), 0, xpoints[0]);
+			ypoints[0] = MathUtils.clamp(ypoints[0] + MathUtils.random(-v, v), 0, ypoints[0]);
+		case 1:
+			xpoints[1] = MathUtils.clamp(xpoints[1] + MathUtils.random(-v, v), 0, xpoints[1]);
+			ypoints[1] = MathUtils.clamp(ypoints[1] + MathUtils.random(-v, v), 0, ypoints[1]);
+		case 2:
+			xpoints[2] = MathUtils.clamp(xpoints[2] + MathUtils.random(-v, v), 0, xpoints[2]);
+			ypoints[2] = MathUtils.clamp(ypoints[2] + MathUtils.random(-v, v), 0, ypoints[2]);
+		}
+		checkPoints();
+		return this;
+	}
+
 	public boolean equals(Triangle2f t) {
 		if (t == null) {
 			return false;

@@ -726,6 +726,24 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		this.width = (int) width;
 	}
 
+	public RectBox mutate() {
+		return mutate(16);
+	}
+
+	public RectBox mutate(int v) {
+		int r = MathUtils.random(1);
+		switch (r) {
+		case 0:
+			x = MathUtils.clamp(x + MathUtils.random(-v, v), 0, x);
+			y = MathUtils.clamp(y + MathUtils.random(-v, v), 0, y);
+		case 1:
+			width = MathUtils.clamp(width + MathUtils.random(-v, v), 0, width);
+			height = MathUtils.clamp(height + MathUtils.random(-v, v), 0, height);
+		}
+		checkPoints();
+		return this;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -1555,6 +1573,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		float newWidth = width + paddingX * 2;
 		float newHeight = height + paddingY * 2;
 		return setBounds(newX, newY, newWidth, newHeight);
+	}
+
+	public RectBox pad(float top, float left, float bottom, float right) {
+		this.x -= left;
+		this.y -= top;
+		this.width += left + right;
+		this.height += top + bottom;
+		return this;
 	}
 
 	public ObservableXYZW<RectBox> observable(TChange<RectBox> v) {

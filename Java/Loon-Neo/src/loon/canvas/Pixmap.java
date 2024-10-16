@@ -164,6 +164,117 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 	}
 
 	/**
+	 * 获得指定像素内指定色彩的矩形范围
+	 * 
+	 * @param image
+	 * @param mask
+	 * @param color
+	 * @param findColor
+	 * @return
+	 */
+	public static RectBox getColorBoundsRect(Pixmap image, int mask, int color, boolean findColor) {
+		int left = image.getWidth() + 1;
+		int right = 0;
+		int top = image.getHeight() + 1;
+		int bottom = 0;
+		int pixel;
+		boolean hit;
+		for (int x = 0; x < image.getWidth(); x++) {
+			hit = false;
+			for (int y = 0; y < image.getHeight(); y++) {
+				pixel = image.getPixel(x, y);
+				hit = findColor ? (pixel & mask) == color : (pixel & mask) != color;
+				if (hit) {
+					if (x < left)
+						left = x;
+					break;
+				}
+			}
+			if (hit) {
+				break;
+			}
+		}
+		int ix;
+		for (int x = 0; x < image.getWidth(); x++) {
+			ix = (image.getWidth() - 1) - x;
+			hit = false;
+			for (int y = 0; y < image.getHeight(); y++) {
+				pixel = image.getPixel(ix, y);
+				hit = findColor ? (pixel & mask) == color : (pixel & mask) != color;
+				if (hit) {
+					if (ix > right)
+						right = ix;
+					break;
+				}
+			}
+			if (hit) {
+				break;
+			}
+		}
+		for (int y = 0; y < image.getHeight(); y++) {
+			hit = false;
+			for (int x = 0; x < image.getWidth(); x++) {
+				pixel = image.getPixel(x, y);
+				hit = findColor ? (pixel & mask) == color : (pixel & mask) != color;
+
+				if (hit) {
+					if (y < top)
+						top = y;
+					break;
+				}
+			}
+			if (hit) {
+				break;
+			}
+		}
+		int iy;
+		for (int y = 0; y < image.getHeight(); y++) {
+			iy = (image.getHeight() - 1) - y;
+			hit = false;
+			for (int x = 0; x < image.getWidth(); x++) {
+				pixel = image.getPixel(x, iy);
+				hit = findColor ? (pixel & mask) == color : (pixel & mask) != color;
+
+				if (hit) {
+					if (iy > bottom)
+						bottom = iy;
+					break;
+				}
+			}
+
+			if (hit) {
+				break;
+			}
+		}
+		int w = right - left;
+		int h = bottom - top;
+		if (w > 0) {
+			w++;
+		}
+		if (h > 0) {
+			h++;
+		}
+		if (w < 0) {
+			w = 0;
+		}
+		if (h < 0) {
+			h = 0;
+		}
+		if (left == right)
+			w = 1;
+		if (top == bottom)
+			h = 1;
+
+		if (left > image.getWidth()) {
+			left = 0;
+		}
+		if (top > image.getHeight()) {
+			top = 0;
+		}
+		return new RectBox(left, top, w, h);
+	}
+
+	/**
 	 * 模糊化指定像素
 	 * 
 	 * @param srcPixels

@@ -773,15 +773,15 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void validatePosition() {
-		if (_validateEvent != null) {
-			_validateEvent.update();
-		}
 		if (_objectSuper != null) {
 			this._screenX = _objectLocation.x() + this._objectSuper.getScreenX();
 			this._screenY = _objectLocation.y() + this._objectSuper.getScreenY();
 		} else {
 			this._screenX = _objectLocation.x();
 			this._screenY = _objectLocation.y();
+		}
+		if (_validateEvent != null) {
+			this._validateEvent.update();
 		}
 	}
 

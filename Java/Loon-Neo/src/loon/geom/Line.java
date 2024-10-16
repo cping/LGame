@@ -798,6 +798,24 @@ public class Line extends Shape {
 		return new Intersection(this, other, null, false);
 	}
 
+	public Line mutate() {
+		return mutate(16);
+	}
+
+	public Line mutate(int v) {
+		int r = MathUtils.random(1);
+		switch (r) {
+		case 0:
+			_currentStart.x = MathUtils.clamp(_currentStart.x + MathUtils.random(-v, v), 0, _currentStart.x);
+			_currentStart.y = MathUtils.clamp(_currentStart.y + MathUtils.random(-v, v), 0, _currentStart.y);
+		case 1:
+			_currentEnd.x = MathUtils.clamp(_currentEnd.x + MathUtils.random(-v, v), 0, _currentEnd.x);
+			_currentEnd.y = MathUtils.clamp(_currentEnd.y + MathUtils.random(-v, v), 0, _currentEnd.y);
+		}
+		checkPoints();
+		return this;
+	}
+
 	public boolean equals(Line e) {
 		if (e == null) {
 			return false;
