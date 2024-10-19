@@ -1462,6 +1462,34 @@ public abstract class LContainer extends LComponent implements IArray {
 		return false;
 	}
 
+	public LContainer setChildIndex(int index, LComponent comp) {
+		if (comp == null) {
+			return this;
+		}
+		final LComponent[] comps = this._childs;
+		final int size = this._childCount;
+		if (comp.getSuper() == this || index < 0 || index >= size) {
+			return this;
+		}
+		comps[index] = comp;
+		return this;
+	}
+
+	public int getChildIndex(LComponent comp) {
+		if (comp == null) {
+			return -1;
+		}
+		final LComponent[] comps = this._childs;
+		final int size = this._childCount;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent o = comps[i];
+			if (o == comp || (o != null && o.equals(comp))) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
 	public int getChildCount() {
 		return size();
 	}

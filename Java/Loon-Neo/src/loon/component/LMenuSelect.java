@@ -26,6 +26,7 @@ import loon.canvas.LColor;
 import loon.component.skin.SelectSkin;
 import loon.events.ActionKey;
 import loon.events.CallFunction;
+import loon.events.EventActionN;
 import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.font.FontSet;
@@ -37,6 +38,7 @@ import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -78,6 +80,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	private final ActionKey _touchEvent = new ActionKey(ActionKey.NORMAL);
 
 	private final ActionKey _keyEvent = new ActionKey(ActionKey.NORMAL);
+
+	private ObjectMap<String, EventActionN> _doClickEvents;
 
 	private ClickEvent _menuSelectedEvent;
 
@@ -262,7 +266,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				float height = 0;
 				lastWidth = maxWidth;
 				lastHeight = maxHeight;
-				for (CharSequence ch : chars) {
+				for (int j = 0; j < chars.size; j++) {
+					CharSequence ch = chars.get(j);
 					maxWidth = MathUtils.max(maxWidth,
 							FontUtils.measureText(_font, ch) + _font.getHeight() + _flagWidth + _flag_text_space);
 					height += MathUtils.max(_font.stringHeight(new StrBuilder(ch).toString()), _flagHeight);
@@ -450,11 +455,18 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		}
 		if (_touchEvent.isPressed()) {
 			this._pressed = false;
-			if (_menuSelectedEvent != null && _labels != null && _labels.length > 0) {
+			boolean selectedExist = (_labels != null && _labels.length > 0);
+			if (_menuSelectedEvent != null && selectedExist) {
 				try {
 					_menuSelectedEvent.onSelected(_selected, _labels[_selected]);
 				} catch (Throwable thr) {
 					LSystem.error("LMenuSelect onSelected() exception", thr);
+				}
+			}
+			if (_doClickEvents != null && selectedExist && _selected > -1 && _selected < _labels.length) {
+				EventActionN clicked = _doClickEvents.get(_labels[_selected]);
+				if (clicked != null) {
+					clicked.update();
 				}
 			}
 			super.processTouchReleased();
@@ -522,6 +534,30 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 				_keyEvent.release();
 			}
 		}
+	}
+
+	public LMenuSelect setCommand(int idx, EventActionN e) {
+		if (_labels != null && idx > -1 && idx < _labels.length) {
+			return setCommand(_labels[idx], e);
+		}
+		return this;
+	}
+
+	public LMenuSelect setCommand(String key, EventActionN e) {
+		if (_doClickEvents == null) {
+			_doClickEvents = new ObjectMap<String, EventActionN>();
+		}
+		if (e != null) {
+			_doClickEvents.put(key, e);
+		}
+		return this;
+	}
+
+	public LMenuSelect clearCommand() {
+		if (_doClickEvents != null) {
+			_doClickEvents.clear();
+		}
+		return this;
 	}
 
 	public PointF getOffsetFont() {

@@ -32,8 +32,11 @@ import loon.action.sprite.TextureObject;
 import loon.action.sprite.effect.ScrollEffect;
 import loon.canvas.LColor;
 import loon.component.LLayer;
+import loon.component.LToast;
+import loon.component.LToast.Style;
 import loon.events.GameTouch;
 import loon.events.UpdateListener;
+import loon.font.IFont;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
@@ -117,6 +120,42 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		this._shaderMask = mask;
 		this._useShaderMask = (this._shaderMask != null);
 		return this;
+	}
+
+	public LToast toast(String text) {
+		LToast toast = LToast.makeText(text);
+		add(toast);
+		return toast;
+	}
+
+	public LToast toast(String text, Style style) {
+		LToast toast = LToast.makeText(text, style);
+		add(toast);
+		return toast;
+	}
+
+	public LToast toast(String text, int d) {
+		LToast toast = LToast.makeText(text, d);
+		add(toast);
+		return toast;
+	}
+
+	public LToast toast(IFont font, String text) {
+		LToast toast = LToast.makeText(font, null, text);
+		add(toast);
+		return toast;
+	}
+
+	public LToast toast(IFont font, String text, Style style) {
+		LToast toast = LToast.makeText(font, null, text, style);
+		add(toast);
+		return toast;
+	}
+
+	public LToast toast(IFont font, String text, int d) {
+		LToast toast = LToast.makeText(font, null, text, d);
+		add(toast);
+		return toast;
 	}
 
 	/**
