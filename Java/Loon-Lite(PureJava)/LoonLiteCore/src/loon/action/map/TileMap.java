@@ -68,6 +68,10 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 
 	private int lastTileY;
 
+	private float lastTileScale = 0f;
+
+	private float _tileScale = 1f;
+
 	public DrawListener<TileMap> _drawListener;
 
 	private LTexturePack _texturePack;
@@ -170,6 +174,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		this.lastOffsetX = -1;
 		this.lastOffsetY = -1;
 		this._scaleX = this._scaleY = 1f;
+		this._tileScale = 1f;
 		this._active = true;
 		this._dirty = true;
 		this._visible = true;
@@ -451,7 +456,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 
 		this._dirty = this._dirty || !_texturePack.existCache();
 
-		if (!_dirty && lastOffsetX == offsetX && lastOffsetY == offsetY) {
+		if (!_dirty && lastOffsetX == offsetX && lastOffsetY == offsetY && lastTileScale == _tileScale) {
 
 			_texturePack.postCache();
 
@@ -470,8 +475,8 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 							for (int n = 0; n < size; n++) {
 								TileImpl tile = tiles.get(n);
 								if (tile.isAnimation() && tile.getId() == id) {
-									g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
-											_baseColor);
+									g.draw(tile.getAnimation().getSpriteImage(), posX * _tileScale, posY * _tileScale,
+											tileWidth * _tileScale, tileHeight * _tileScale, _baseColor);
 								}
 							}
 						}
@@ -485,12 +490,12 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 
 			_texturePack.glBegin();
 
-			firstTileX = _field2d.pixelsToTilesWidth(-offsetX);
-			firstTileY = _field2d.pixelsToTilesHeight(-offsetY);
+			firstTileX = _field2d.pixelsToTilesWidth(-offsetX * _tileScale);
+			firstTileY = _field2d.pixelsToTilesHeight(-offsetY * _tileScale);
 
-			lastTileX = firstTileX + _field2d.pixelsToTilesWidth(_pixelInWidth) + 1;
+			lastTileX = firstTileX + _field2d.pixelsToTilesWidth(_pixelInWidth * _tileScale) + 4;
 			lastTileX = MathUtils.min(lastTileX, _field2d.getWidth());
-			lastTileY = firstTileY + _field2d.pixelsToTilesHeight(_pixelInHeight) + 1;
+			lastTileY = firstTileY + _field2d.pixelsToTilesHeight(_pixelInHeight * _tileScale) + 4;
 			lastTileY = MathUtils.min(lastTileY, _field2d.getHeight());
 
 			final int width = _field2d.getWidth();
@@ -511,15 +516,17 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 							if (_playAnimation) {
 								if (tile.getId() == id) {
 									if (tile.isAnimation()) {
-										g.draw(tile.getAnimation().getSpriteImage(), posX, posY, tileWidth, tileHeight,
+										g.draw(tile.getAnimation().getSpriteImage(), posX * _tileScale,
+												posY * _tileScale, tileWidth * _tileScale, tileHeight * _tileScale,
 												_baseColor);
 									} else {
-										_texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight,
-												_baseColor);
+										_texturePack.draw(tile.getImgId(), posX * _tileScale, posY * _tileScale,
+												tileWidth * _tileScale, tileHeight * _tileScale, _baseColor);
 									}
 								}
 							} else if (tile.getId() == id) {
-								_texturePack.draw(tile.getImgId(), posX, posY, tileWidth, tileHeight);
+								_texturePack.draw(tile.getImgId(), posX * _tileScale, posY * _tileScale,
+										tileWidth * _tileScale, tileHeight * _tileScale);
 							}
 						}
 					}
@@ -531,12 +538,23 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 
 			lastOffsetX = offsetX;
 			lastOffsetY = offsetY;
+			lastTileScale = _tileScale;
+
 			_dirty = false;
 		}
 
 		if (_drawListener != null) {
 			_drawListener.draw(g, offsetX, offsetY);
 		}
+	}
+
+	public float getTileScale() {
+		return this._tileScale;
+	}
+
+	public TileMap setTileScale(float s) {
+		this._tileScale = s;
+		return this;
 	}
 
 	public float centerX() {
@@ -1552,6 +1570,10 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		}
 		_resizeListener = null;
 		_collSpriteListener = null;
+		lastOffsetX = lastOffsetY = 0;
+		firstTileX = firstTileY = 0;
+		lastTileX = lastTileY = 0;
+		lastTileScale = 0f;
 		removeActionEvents(this);
 		setState(State.DISPOSED);
 	}

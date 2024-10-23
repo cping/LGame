@@ -20,7 +20,9 @@
  */
 package loon.action.map.tmx;
 
+import loon.geom.RectBox;
 import loon.geom.Sized;
+import loon.utils.MathUtils;
 
 public class TMXMapLayer implements Sized {
 
@@ -47,13 +49,21 @@ public class TMXMapLayer implements Sized {
 	protected int zOrder;
 	protected int parseOrder;
 
+	protected int widthInPixels;
+	protected int heightInPixels;
+
 	protected float opacity;
 	protected boolean visible;
 	protected boolean renderOffsetDirty;
 
+	protected float repeatX;
+	protected float repeatY;
+
 	protected TmxLayerType type;
 
 	protected TMXProperties properties;
+
+	protected RectBox layerRect;
 
 	public TMXMapLayer(TMXMap parent, String name, float offsetX, float offsetY, int width, int height, float opacity,
 			boolean visible, TmxLayerType type) {
@@ -74,7 +84,10 @@ public class TMXMapLayer implements Sized {
 		this.visible = visible;
 		this.type = type;
 		this.updateRenderOffset();
-
+		if (this.parent != null) {
+			widthInPixels = this.parent.getTileWidth() * width;
+			heightInPixels = this.parent.getTileHeight() * height;
+		}
 		properties = new TMXProperties();
 
 	}
@@ -142,8 +155,8 @@ public class TMXMapLayer implements Sized {
 		return parallaxX;
 	}
 
-	public TMXMapLayer setParallaxX(float parallaxX) {
-		this.parallaxX = parallaxX;
+	public TMXMapLayer setParallaxX(float x) {
+		this.parallaxX = x;
 		return this;
 	}
 
@@ -151,9 +164,33 @@ public class TMXMapLayer implements Sized {
 		return parallaxY;
 	}
 
-	public TMXMapLayer setParallaxY(float parallaxY) {
-		this.parallaxY = parallaxY;
+	public TMXMapLayer setParallaxY(float y) {
+		this.parallaxY = y;
 		return this;
+	}
+
+	public float getRepeatX() {
+		return repeatX;
+	}
+
+	public float getRepeatY() {
+		return repeatY;
+	}
+
+	public boolean isRepeatX() {
+		return !MathUtils.isEqual(repeatX, 0f);
+	}
+
+	public boolean isRepeatY() {
+		return !MathUtils.isEqual(repeatY, 0f);
+	}
+
+	public boolean isRepeat() {
+		return isRepeatX() || isRepeatY();
+	}
+
+	public boolean isNotRepeat() {
+		return !isRepeat();
 	}
 
 	public float getRenderOffsetX() {
@@ -182,6 +219,30 @@ public class TMXMapLayer implements Sized {
 		renderOffsetDirty = false;
 	}
 
+	public RectBox getLayerRect() {
+		calcRenderOffsets();
+		if (layerRect == null) {
+			layerRect = new RectBox(offsetX, offsetY, widthInPixels, heightInPixels);
+		} else {
+			layerRect.setBounds(offsetX, offsetY, widthInPixels, heightInPixels);
+		}
+		return layerRect;
+	}
+
+	public int getDefaultRepeatIntX() {
+		if (parent == null) {
+			return 0;
+		}
+		return MathUtils.ceil((parent.getWidthInPixels() / widthInPixels) + 4);
+	}
+
+	public int getDefaultRepeatIntY() {
+		if (parent == null) {
+			return 0;
+		}
+		return MathUtils.ceil((parent.getHeightInPixels() / heightInPixels) + 4);
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -190,12 +251,20 @@ public class TMXMapLayer implements Sized {
 		return height;
 	}
 
+	public int getWidthInPixels() {
+		return widthInPixels;
+	}
+
+	public int getHeightInPixels() {
+		return heightInPixels;
+	}
+
 	public int getZOrder() {
 		return zOrder;
 	}
 
-	public TMXMapLayer setZOrder(int zOrder) {
-		this.zOrder = zOrder;
+	public TMXMapLayer setZOrder(int z) {
+		this.zOrder = z;
 		return this;
 	}
 

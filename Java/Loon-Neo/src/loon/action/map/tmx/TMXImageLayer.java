@@ -49,6 +49,9 @@ public class TMXImageLayer extends TMXMapLayer {
 		opacity = element.getNumber("opacity", 1f);
 		visible = element.getBoolean("visible", true);
 
+		repeatX = element.getNumber("repeatx", 0f);
+		repeatY = element.getNumber("repeaty", 0f);
+
 		if (element.containsKey("image")) {
 			image = new TMXImage();
 			image.parse(element, getMap().getFilePath());
@@ -77,6 +80,9 @@ public class TMXImageLayer extends TMXMapLayer {
 
 		opacity = element.getFloatAttribute("opacity", 1f);
 		visible = element.getBoolAttribute("visible", true);
+
+		repeatX = element.getFloatAttribute("repeatx", 0f);
+		repeatY = element.getFloatAttribute("repeaty", 0f);
 
 		XMLElement nodes = element.getChildrenByName("image");
 		if (nodes != null) {

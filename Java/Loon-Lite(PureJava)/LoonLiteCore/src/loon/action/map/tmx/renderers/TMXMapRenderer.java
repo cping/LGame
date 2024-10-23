@@ -376,12 +376,15 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return getCollisionArea();
 	}
 
+	public RectBox getView() {
+		return getCollisionArea();
+	}
+
 	@Override
 	public int hashCode() {
 		int result = map.getTileSets().size;
 		result = LSystem.unite(result, _objectLocation.x);
 		result = LSystem.unite(result, _objectLocation.y);
-		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, map.getTileWidth());
 		result = LSystem.unite(result, map.getTileHeight());
 		result = LSystem.unite(result, scaleX);
