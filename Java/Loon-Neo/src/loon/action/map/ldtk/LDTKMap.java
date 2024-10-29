@@ -317,6 +317,21 @@ public class LDTKMap extends Entity implements Config {
 		return _leveltoIds.get(_levelNamesToIds.get(name));
 	}
 
+	public LDTKLevel getLevelIndex(int idx) {
+		parse();
+		final int[] keys = _leveltoIds.keys();
+		for (int j = 0; j < keys.length; j++) {
+			if (j == idx) {
+				int id = keys[j];
+				LDTKLevel level = _leveltoIds.get(id);
+				if (level != null) {
+					return level;
+				}
+			}
+		}
+		return null;
+	}
+
 	public LDTKLevel getLevel(int id) {
 		parse();
 		return _leveltoIds.get(id);

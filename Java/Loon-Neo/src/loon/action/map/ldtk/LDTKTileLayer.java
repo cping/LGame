@@ -136,9 +136,18 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		g.setAlpha(_opacity);
 		final float offX = _pixelOffsetX + _offset.x() + offsetX;
 		final float offY = _pixelOffsetY + _offset.y() + offsetY;
+		final int worldWidth = _map.getWorldWidth() / _gridSize.x;
+		final int worldHeight = _map.getWorldHeight() / _gridSize.x;
+		int startX = MathUtils.ifloor(-offX / _gridSize.x);
+		int startY = MathUtils.ifloor(-offY / _gridSize.x);
+		int endX = startX + worldWidth + 4;
+		endX = MathUtils.min(endX, worldWidth);
+		int endY = startY + worldHeight + 4;
+		endY = MathUtils.min(endY, worldHeight);
 		for (int i = _mapTiles.length - 1; i > -1; i--) {
 			LDTKTile tile = _mapTiles[i];
-			if (tile != null && tile.isVisible()) {
+			if (tile != null && tile.isVisible() && tile.getTileX() >= startX && tile.getTileY() >= startY
+					&& tile.getTileX() <= endX && tile.getTileY() <= endY) {
 				g.draw(tile.getTexture(), tile.getX() + offX, tile.getY() + offY, tile.getDirection());
 			}
 		}
