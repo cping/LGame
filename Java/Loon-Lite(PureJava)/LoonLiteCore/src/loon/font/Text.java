@@ -28,6 +28,7 @@ import loon.component.layout.HorizontalAlign;
 import loon.opengl.GLEx;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -38,7 +39,9 @@ import loon.utils.TArray;
 public class Text implements LRelease {
 
 	private CharSequence _lastCharSequence;
-	private boolean _closed = false;
+	private boolean _initNativeDraw = false, _closed = false;
+
+	protected ObjectMap<String, String> _templateVars;
 	protected IFont _font;
 	protected float _space = 0;
 	protected float _lineWidthMaximum;
@@ -81,6 +84,68 @@ public class Text implements LRelease {
 
 	public boolean isEmpty() {
 		return this._chars == null || _chars.length() == 0;
+	}
+
+	/**
+	 * 以模板数据替换Text中字符串
+	 */
+	protected void updateText() {
+		if (!isEmpty() && this._templateVars != null) {
+			_chars = StringUtils.formatVars(_chars.toString(), LSystem.EMPTY, _templateVars);
+		}
+	}
+
+	/**
+	 * 清空模板变量
+	 * 
+	 * @return
+	 */
+	public Text clearTemplateVars() {
+		if (this._templateVars != null) {
+			this._templateVars.clear();
+		}
+		return this;
+	}
+
+	/**
+	 * 获得所有模板数据
+	 * 
+	 * @return
+	 */
+	public ObjectMap<String, String> getTemplateVars() {
+		return this._templateVars;
+	}
+
+	/**
+	 * 设定模板变量集合
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public Text setTemplateVars(ObjectMap<String, String> v) {
+		if (v == null && this._templateVars == null) {
+			this._templateVars = new ObjectMap<String, String>();
+		} else if (v != null) {
+			this._templateVars = v;
+		}
+		updateText();
+		return this;
+	}
+
+	/**
+	 * 设定单独的模板变量
+	 * 
+	 * @param k
+	 * @param v
+	 * @return
+	 */
+	public Text setTemplateVar(String k, String v) {
+		if (this._templateVars == null) {
+			this._templateVars = new ObjectMap<String, String>();
+		}
+		this._templateVars.put(k, v);
+		updateText();
+		return this;
 	}
 
 	public CharSequence getText() {
@@ -157,6 +222,7 @@ public class Text implements LRelease {
 				_height = font.getHeight();
 			}
 		}
+		this._initNativeDraw = false;
 		this._lastCharSequence = chars;
 		return this;
 	}
@@ -177,10 +243,20 @@ public class Text implements LRelease {
 		return mes;
 	}
 
+	private void initLFont() {
+		if (_closed) {
+			return;
+		}
+		if (!_initNativeDraw) {
+			_initNativeDraw = true;
+		}
+	}
+
 	public void paintNonStyleString(GLEx g, String mes, float offsetX, float offsetY, LColor color) {
 		if (_closed) {
 			return;
 		}
+		initLFont();
 		_font.drawString(g, mes, offsetX, offsetY, color);
 	}
 
@@ -188,6 +264,8 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
+		initLFont();
+
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:
@@ -271,6 +349,7 @@ public class Text implements LRelease {
 		if (_closed) {
 			return;
 		}
+		initLFont();
 		if (_lines.size == 1) {
 			paintString(g, toString(_lines.get(0)), offsetX, offsetY, color);
 		} else if (_textOptions._autoWrap == AutoWrap.VERTICAL) {
@@ -441,7 +520,9 @@ public class Text implements LRelease {
 		_chars = null;
 		_lines = null;
 		_lineWidths = null;
+		_templateVars = null;
 		_closed = true;
+		_initNativeDraw = false;
 	}
 
 	public boolean isClosed() {

@@ -31,6 +31,7 @@ import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.geom.PointI;
 import loon.utils.HelperUtils;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
 import loon.utils.TArray;
@@ -202,6 +203,8 @@ public class BattleProcess extends CoroutineProcess {
 	private final static EventComparator _sortEvents = new EventComparator();
 
 	private RollbackVar<ObjectBundle> _battleTurnHistory = new RollbackVar<ObjectBundle>();
+
+	private IntMap<EventActionN> _turnTrigger = new IntMap<EventActionN>();
 
 	private ObjectBundle _battleVars = new ObjectBundle();
 
@@ -507,6 +510,48 @@ public class BattleProcess extends CoroutineProcess {
 		return _battleTurnHistory;
 	}
 
+	/**
+	 * 清空指定回合触发的事件
+	 */
+	public BattleProcess clearTurnTrigger() {
+		_turnTrigger.clear();
+		return this;
+	}
+
+	/**
+	 * 添加指定回合触发的事件
+	 * 
+	 * @param turnNo
+	 * @param e
+	 * @return
+	 */
+	public BattleProcess putTurnTrigger(int turnNo, EventActionN e) {
+		if (e != null) {
+			_turnTrigger.put(getTurnToRoundAmount(turnNo), e);
+		}
+		return this;
+	}
+
+	/**
+	 * 删除指定回合触发的事件
+	 * 
+	 * @param turnNo
+	 * @return
+	 */
+	public EventActionN removeTurnTrigger(int turnNo) {
+		return _turnTrigger.remove(getTurnToRoundAmount(turnNo));
+	}
+
+	/**
+	 * 获得指定回合触发的事件
+	 * 
+	 * @param turnNo
+	 * @return
+	 */
+	public EventActionN getTurnTrigger(int turnNo) {
+		return _turnTrigger.get(getTurnToRoundAmount(turnNo));
+	}
+
 	protected boolean runBattleEvent(final BattleEvent turnEvent, final long elapsedTime) {
 		if (checkProcessWait()) {
 			return false;
@@ -713,6 +758,13 @@ public class BattleProcess extends CoroutineProcess {
 		if (_updateTurn) {
 			this._roundAmount++;
 		}
+		if (_turnTrigger.size > 0) {
+			// 每到指定回合触发事件
+			EventActionN e = _turnTrigger.get(_roundAmount);
+			if (e != null) {
+				e.update();
+			}
+		}
 	}
 
 	public void update(long elapsedTime) {
@@ -906,6 +958,7 @@ public class BattleProcess extends CoroutineProcess {
 		this.clearEventMainProcess();
 		this.clearVars();
 		this.clearTurnHistory();
+		this.clearTurnTrigger();
 		this._events.clear();
 		this._lockedLocation.clear();
 		this._result = BattleResults.Running;
@@ -1192,7 +1245,7 @@ public class BattleProcess extends CoroutineProcess {
 		kill();
 		return this;
 	}
-	
+
 	public boolean isBattleEnd() {
 		return !isCoroutineRunning();
 	}
