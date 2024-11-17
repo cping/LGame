@@ -96,6 +96,51 @@ public class Affine2f implements LTrans, XY {
 		return xform;
 	}
 
+	public final static RectBox transformRect(RectBox rect, Affine2f aff) {
+		if (rect == null) {
+			return rect;
+		}
+		float x = rect.x, y = rect.y, width = rect.width, height = rect.height;
+		if (x != 0f || y != 0f) {
+			aff.appendTransform(0, 0, 1, 1, 0, 0, 0, -x, -y);
+		}
+		float x_a = width * aff.m00, x_b = width * aff.m01;
+		float y_c = height * aff.m10, y_d = height * aff.m11;
+		float tx = aff.tx, ty = aff.ty;
+		float minX = tx, maxX = tx, minY = ty, maxY = ty;
+		if ((x = x_a + tx) < minX) {
+			minX = x;
+		} else if (x > maxX) {
+			maxX = x;
+		}
+		if ((x = x_a + y_c + tx) < minX) {
+			minX = x;
+		} else if (x > maxX) {
+			maxX = x;
+		}
+		if ((x = y_c + tx) < minX) {
+			minX = x;
+		} else if (x > maxX) {
+			maxX = x;
+		}
+		if ((y = x_b + ty) < minY) {
+			minY = y;
+		} else if (y > maxY) {
+			maxY = y;
+		}
+		if ((y = x_b + y_d + ty) < minY) {
+			minY = y;
+		} else if (y > maxY) {
+			maxY = y;
+		}
+		if ((y = y_d + ty) < minY) {
+			minY = y;
+		} else if (y > maxY) {
+			maxY = y;
+		}
+		return rect.set(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	public final static Affine2f transform(Affine2f tx, float x, float y, int transform) {
 		switch (transform) {
 		case TRANS_ROT90: {
@@ -1328,6 +1373,33 @@ public class Affine2f implements LTrans, XY {
 		return prepend(other.m00, other.m10, other.m01, other.m11, other.tx, other.ty);
 	}
 
+	public Affine2f prependTransform(float x, float y, float scaleX, float scaleY, float rotation, float skewX,
+			float skewY, float regX, float regY) {
+		float cos;
+		float sin;
+		if (rotation % 360 != 0f) {
+			float r = rotation * MathUtils.DEG_TO_RAD;
+			cos = MathUtils.cos(r);
+			sin = MathUtils.sin(r);
+		} else {
+			cos = 1f;
+			sin = 0f;
+		}
+		if (skewX != 0f || skewY != 0f) {
+			skewX *= MathUtils.DEG_TO_RAD;
+			skewY *= MathUtils.DEG_TO_RAD;
+			this.prepend(cos * scaleX, sin * scaleX, -sin * scaleY, cos * scaleY, 0, 0);
+			this.prepend(MathUtils.cos(skewY), MathUtils.sin(skewY), -MathUtils.sin(skewX), MathUtils.cos(skewX), x, y);
+		} else {
+			this.prepend(cos * scaleX, sin * scaleX, -sin * scaleY, cos * scaleY, x, y);
+		}
+		if (regX != 0f || regY != 0f) {
+			this.tx -= regX * this.m00 + regY * this.m10;
+			this.ty -= regX * this.m01 + regY * this.m11;
+		}
+		return this;
+	}
+
 	/**
 	 * 让矩阵后置一组新矩阵数据
 	 * 
@@ -1363,6 +1435,33 @@ public class Affine2f implements LTrans, XY {
 	 */
 	public Affine2f append(Affine2f other) {
 		return append(other.m00, other.m10, other.m01, other.m11, other.tx, other.ty);
+	}
+
+	public Affine2f appendTransform(float x, float y, float scaleX, float scaleY, float rotation, float skewX,
+			float skewY, float regX, float regY) {
+		float cos;
+		float sin;
+		if (rotation % 360 != 0f) {
+			float r = rotation * MathUtils.DEG_TO_RAD;
+			cos = MathUtils.cos(r);
+			sin = MathUtils.sin(r);
+		} else {
+			cos = 1f;
+			sin = 0f;
+		}
+		if (skewX != 0f || skewY != 0f) {
+			skewX *= MathUtils.DEG_TO_RAD;
+			skewY *= MathUtils.DEG_TO_RAD;
+			this.append(MathUtils.cos(skewY), MathUtils.sin(skewY), -MathUtils.sin(skewX), MathUtils.cos(skewX), x, y);
+			this.append(cos * scaleX, sin * scaleX, -sin * scaleY, cos * scaleY, 0, 0);
+		} else {
+			this.append(cos * scaleX, sin * scaleX, -sin * scaleY, cos * scaleY, x, y);
+		}
+		if (regX != 0f || regY != 0f) {
+			this.tx -= regX * this.m00 + regY * this.m10;
+			this.ty -= regX * this.m01 + regY * this.m11;
+		}
+		return this;
 	}
 
 	/**

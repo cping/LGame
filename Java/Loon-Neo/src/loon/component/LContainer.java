@@ -1475,6 +1475,13 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	public LComponent getChildByIndex(int idx) {
+		if (this._childs == null || (idx < 0 || idx > this._childCount - 1)) {
+			return null;
+		}
+		return this._childs[idx];
+	}
+
 	public int getChildIndex(LComponent comp) {
 		if (comp == null) {
 			return -1;
@@ -1719,6 +1726,14 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public void setChildExpandCount(int e) {
 		this._childExpandCount = e;
+	}
+
+	public float measureWidth() {
+		return getContextWidth();
+	}
+
+	public float measureHeight() {
+		return getContextHeight();
 	}
 
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {

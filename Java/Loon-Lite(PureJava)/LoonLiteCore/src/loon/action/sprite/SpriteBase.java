@@ -1250,6 +1250,34 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return prev;
 	}
 
+	public float measureWidth() {
+		if (_childrens == null) {
+			return 0f;
+		}
+		float max = 0;
+		for (int i = this._childrens.size - 1; i > -1; i--) {
+			T spr = _childrens.get(i);
+			if (spr.isVisible()) {
+				max = MathUtils.max(spr.getScaleX() + spr.getWidth(), max);
+			}
+		}
+		return max;
+	}
+
+	public float measureHeight() {
+		if (_childrens == null) {
+			return 0f;
+		}
+		float max = 0;
+		for (int i = this._childrens.size - 1; i > -1; i--) {
+			T spr = _childrens.get(i);
+			if (spr.isVisible()) {
+				max = MathUtils.max(spr.getScaleY() + spr.getHeight(), max);
+			}
+		}
+		return max;
+	}
+
 	@Override
 	public boolean isVisible() {
 		return this._visible;

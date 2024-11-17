@@ -195,7 +195,7 @@ public class BMFont extends FontTrans implements IFont {
 				char ch = info.charAt(i);
 				if (ch == newSpaceFlag && sbr.length() > 0) {
 					String result = sbr.toString().toLowerCase().trim();
-					String[] list = StringUtils.split(result, '=');
+					String[] list = StringUtils.split(result, LSystem.EQUAL);
 					if (list.length == 2) {
 						if (list[0].equals("size")) {
 							_size = (int) Float.parseFloat(list[1]);
@@ -731,6 +731,5 @@ public class BMFont extends FontTrans implements IFont {
 		builder.kv("info", info).comma().kv("common", common).comma().kv("page", page);
 		return builder.toString();
 	}
-
 
 }

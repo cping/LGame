@@ -1917,7 +1917,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		return this;
 	}
-
+	
 	@Override
 	public LComponent setFlipX(boolean x) {
 		this._flipX = x;
