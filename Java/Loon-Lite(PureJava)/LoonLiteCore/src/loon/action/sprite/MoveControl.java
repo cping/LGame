@@ -40,6 +40,28 @@ import loon.utils.timer.LTimerContext;
  */
 public class MoveControl implements LRelease {
 
+	public class MoveControlProcess extends RealtimeProcess {
+
+		private final MoveControl _moveControl;
+
+		public MoveControlProcess(MoveControl m) {
+			this._moveControl = m;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			if (_moveControl._running) {
+				_moveControl.call();
+				if (_moveControl._freeDir) {
+					_moveControl.resetDirection();
+				}
+			} else {
+				kill();
+			}
+		}
+
+	}
+
 	private float _moveSpeed = 1f;
 
 	private float _offsetX = 0f;
@@ -55,6 +77,8 @@ public class MoveControl implements LRelease {
 	private int _direction = -1, _lastDirection = -1;
 
 	private boolean _isMoving = false, _running = false, _freeDir = true, _closed = false;
+
+	private boolean _moveBlocked = false;
 
 	private CollisionWorld _collisionWorld;
 
@@ -154,20 +178,7 @@ public class MoveControl implements LRelease {
 
 	public MoveControl submit() {
 		if (!_running) {
-			final RealtimeProcess process = new RealtimeProcess() {
-
-				@Override
-				public void run(LTimerContext time) {
-					if (_running) {
-						call();
-						if (_freeDir) {
-							resetDirection();
-						}
-					} else {
-						kill();
-					}
-				}
-			};
+			final MoveControlProcess process = new MoveControlProcess(this);
 			process.setProcessType(GameProcessType.Progress);
 			process.setDelay(_delay);
 			_running = true;
@@ -181,11 +192,20 @@ public class MoveControl implements LRelease {
 		return this;
 	}
 
+	public boolean isMoveBlock() {
+		return _moveBlocked;
+	}
+
+	public MoveControl setMoveBlock(boolean b) {
+		this._moveBlocked = b;
+		return this;
+	}
+
 	protected final boolean checkTileCollision(Field2D field2d, ActionBind bind, float newX, float newY) {
 		if (field2d == null) {
 			return false;
 		}
-		return field2d.checkTileCollision(bind.getX() - _offsetX, bind.getY() - _offsetY,
+		return !_moveBlocked && field2d.checkTileCollision(bind.getX() - _offsetX, bind.getY() - _offsetY,
 				bind.getWidth() * _vagueWidthScale, bind.getHeight() * _vagueHeightScale, newX, newY);
 	}
 

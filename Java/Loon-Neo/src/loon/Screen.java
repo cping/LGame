@@ -6888,6 +6888,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this._currentDesktop != null ? this._currentDesktop.isSortableChildren() : false;
 	}
 
+	public boolean isCurrentScreen() {
+		if (this._processHandler != null) {
+			return this._processHandler.getCurrentScreen() == this;
+		}
+		return false;
+	}
+
 	@Override
 	public float getCurrentTimer() {
 		return TimeUtils.currentTime();
@@ -7090,6 +7097,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public void println(String msg, Throwable throwable) {
 		LSystem.info(msg, throwable);
+	}
+
+	public String format(String msg, Object... args) {
+		return StringUtils.format(msg, args);
 	}
 
 	/**
