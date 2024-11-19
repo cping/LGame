@@ -46,6 +46,8 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	private WaitCoroutine _waitCoroutine;
 
+	private YieldValueLoop _repeatLoop;
+
 	private boolean _returning;
 
 	public Yielderable(YieldExecute... es) {
@@ -159,6 +161,38 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 			this._loops.add(yl);
 		}
 		return this;
+	}
+
+	public float getRepeatCount() {
+		return _repeatLoop == null ? 0f : _repeatLoop.get();
+	}
+
+	public Yielderable clearRepeatLoop() {
+		if (_repeatLoop != null) {
+			_repeatLoop.clear();
+		}
+		return this;
+	}
+
+	public WaitCoroutine repeat(float v, YieldLoop yl) {
+		return repeat(v, 0f, yl);
+	}
+
+	public WaitCoroutine repeat(float v, float s, YieldLoop yl) {
+		if ((_repeatLoop == null || _repeatLoop.get() <= 0f) && yl != null) {
+			if (_repeatLoop == null) {
+				_repeatLoop = new YieldValueLoop(yl);
+			} else {
+				_repeatLoop.set(yl);
+			}
+			_repeatLoop.loop();
+			return returning(s);
+		} else if (_repeatLoop.get() <= v) {
+			_repeatLoop.loop();
+			return returning(s);
+		} else {
+			return returning(false);
+		}
 	}
 
 	/**
@@ -343,6 +377,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	@Override
 	public void reset() {
+		clearRepeatLoop();
 		_loops.clear();
 		_varCachecalcs.clear();
 		_executes.clear();
@@ -369,6 +404,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	@Override
 	public void remove() {
+		clearRepeatLoop();
 		_executes.remove();
 		_loops.clear();
 		_varCachecalcs.clear();
@@ -377,6 +413,7 @@ public class Yielderable implements LIterable<WaitCoroutine>, ClosableIterator<W
 
 	@Override
 	public void close() {
+		clearRepeatLoop();
 		_disposes.close();
 		_loops.clear();
 		_executes.clear();
