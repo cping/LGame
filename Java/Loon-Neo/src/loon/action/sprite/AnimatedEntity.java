@@ -20,18 +20,269 @@
  */
 package loon.action.sprite;
 
+import loon.BaseIO;
+import loon.Json;
+import loon.LSysException;
+import loon.LSystem;
 import loon.LTexture;
 import loon.events.FrameListener;
+import loon.geom.PointI;
+import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
+import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
+import loon.utils.PathUtils;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 import loon.utils.timer.Duration;
+import loon.utils.xml.XMLDocument;
+import loon.utils.xml.XMLElement;
+import loon.utils.xml.XMLParser;
 
 /**
  * Entity类的动画播放扩展类,相比单纯使用Sprite类,此类更容易进行具体帧的临时播放和设置参数变更,以及监听.
  */
 public class AnimatedEntity extends Entity {
+
+	/**
+	 * 加载一个动画配置文件
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static AnimatedEntity config(String path) {
+		if (StringUtils.isNullOrEmpty(path)) {
+			throw new LSysException("The Animation file name cannot be null.");
+		}
+		String ext = PathUtils.getExtension(path);
+		if ("xml".equals(ext)) {
+			return loadXml(ext, false);
+		}
+		return loadJson(ext, false);
+	}
+
+	/**
+	 * 加载一个xml文件形式存在的AnimatedEntity配置文件(实例见player.xml)
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static AnimatedEntity loadXml(String path) {
+		return loadXml(path, true);
+	}
+
+	/**
+	 * 加载一个xml文件形式存在的AnimatedEntity配置文件(实例见player.xml)
+	 * 
+	 * @param path
+	 * @param checkExt
+	 * @return
+	 */
+	public static AnimatedEntity loadXml(String path, boolean checkExt) {
+		if (StringUtils.isNullOrEmpty(path)) {
+			throw new LSysException("The Animation file name cannot be null.");
+		}
+		String ext = PathUtils.getExtension(path);
+		if (checkExt && StringUtils.isEmpty(ext)) {
+			path = path + ".xml";
+		}
+		AnimatedEntity entity = null;
+		XMLDocument doc = XMLParser.parse(path);
+		String resource = null;
+		String play = null;
+		PointI clip = null;
+		RectBox rect = null;
+		if (doc != null) {
+			XMLElement docElement = doc.getRoot();
+			if (docElement != null) {
+				if (!docElement.getName().equals("info")) {
+					throw new LSysException("Invalid Animation file. The first child must be a <info> element.");
+				}
+				TArray<XMLElement> list = docElement.list();
+				for (int i = 0; i < list.size; i++) {
+					XMLElement ele = list.get(i);
+					if ("res".equals(ele.getName())) {
+						resource = ele.getContents();
+						if (StringUtils.isNullOrEmpty(resource)) {
+							throw new LSysException("The Resource file cannot be null.");
+						}
+					}
+					if ("play".equals(ele.getName())) {
+						play = ele.getContents();
+					} else if ("clip".equals(ele.getName())) {
+						String[] clipStr = StringUtils.split(ele.getContents(), LSystem.COMMA);
+						if (clipStr.length == 1) {
+							clip = new PointI(HelperUtils.toInt(clipStr[0]));
+						} else if (clipStr.length > 1) {
+							clip = new PointI(HelperUtils.toInt(clipStr[0]), HelperUtils.toInt(clipStr[1]));
+						}
+					} else if ("display".equals(ele.getName())) {
+						String[] displayStr = StringUtils.split(ele.getContents(), LSystem.COMMA);
+						if (displayStr.length == 1) {
+							rect = RectBox.all(HelperUtils.toInt(displayStr[0]));
+						} else if (displayStr.length == 2) {
+							rect = new RectBox(HelperUtils.toInt(displayStr[0]), HelperUtils.toInt(displayStr[1]));
+						} else if (displayStr.length == 4) {
+							rect = new RectBox(HelperUtils.toInt(displayStr[0]), HelperUtils.toInt(displayStr[1]),
+									HelperUtils.toInt(displayStr[2]), HelperUtils.toInt(displayStr[3]));
+						}
+					} else if ("ani".equals(ele.getName())) {
+						if (entity == null && resource != null) {
+							if (rect == null) {
+								entity = new AnimatedEntity(resource, clip.x, clip.y, 0, 0, clip.x, clip.y);
+							} else {
+								entity = new AnimatedEntity(resource, clip.x, clip.y, rect.x, rect.y, rect.width,
+										rect.height);
+							}
+						}
+						String name = null;
+						String index = null;
+						String timer = null;
+						TArray<XMLElement> anis = ele.list();
+						for (int j = 0; j < anis.size; j++) {
+							XMLElement ani = anis.get(j);
+							if ("name".equals(ani.getName())) {
+								name = ani.getContents();
+							} else if ("index".equals(ani.getName())) {
+								index = ani.getContents();
+							} else if ("timer".equals(ani.getName())) {
+								timer = ani.getContents();
+							}
+						}
+						if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(index)) {
+							String[] indexStr = StringUtils.split(index, LSystem.COMMA);
+							int[] indexs = new int[indexStr.length];
+							for (int n = 0; n < indexStr.length; n++) {
+								indexs[n] = HelperUtils.toInt(indexStr[n]);
+							}
+							if (StringUtils.isNotEmpty(timer)) {
+								entity.setPlayIndex(name, HelperUtils.toInt(timer), indexs);
+							} else {
+								entity.setPlayIndex(name, indexs);
+							}
+						}
+					}
+				}
+			}
+			if (entity == null && resource != null) {
+				if (rect == null) {
+					entity = new AnimatedEntity(resource, clip.x, clip.y, 0, 0, clip.x, clip.y);
+				} else {
+					entity = new AnimatedEntity(resource, clip.x, clip.y, rect.x, rect.y, rect.width, rect.height);
+				}
+			}
+			if (StringUtils.isNotEmpty(play)) {
+				entity.animate(play);
+			}
+		}
+		return entity;
+	}
+
+	/**
+	 * 加载一个json文件形式存在的AnimatedEntity配置文件(实例见player.json)
+	 * 
+	 * @param path
+	 * @return
+	 */
+	public static AnimatedEntity loadJson(String path) {
+		return loadJson(path, true);
+	}
+
+	/**
+	 * 加载一个json文件形式存在的AnimatedEntity配置文件(实例见player.json)
+	 * 
+	 * @param path
+	 * @param checkExt
+	 * @return
+	 */
+	public static AnimatedEntity loadJson(String path, boolean checkExt) {
+		if (StringUtils.isNullOrEmpty(path)) {
+			throw new LSysException("The Animation file name cannot be null.");
+		}
+		String ext = PathUtils.getExtension(path);
+		if (checkExt && StringUtils.isEmpty(ext)) {
+			path = path + ".json";
+		}
+		AnimatedEntity entity = null;
+		Object jsonObject = BaseIO.loadJsonObject(path);
+		String resource = null;
+		String play = null;
+		PointI clip = null;
+		RectBox rect = null;
+		if (jsonObject != null) {
+			Json.Object json = (Json.Object) jsonObject;
+			if (json != null) {
+				Json.Object info = json.getObject("info");
+				if (info == null) {
+					throw new LSysException("Invalid Animation file. The first child must be a <info> element.");
+				}
+				resource = info.getString("res");
+				if (StringUtils.isNullOrEmpty(resource)) {
+					throw new LSysException("The Resource file cannot be null.");
+				}
+				play = info.getString("play");
+				String[] clipStr = StringUtils.split(info.getString("clip"), LSystem.COMMA);
+				if (clipStr.length == 1) {
+					clip = new PointI(HelperUtils.toInt(clipStr[0]));
+				} else if (clipStr.length > 1) {
+					clip = new PointI(HelperUtils.toInt(clipStr[0]), HelperUtils.toInt(clipStr[1]));
+				}
+				String[] displayStr = StringUtils.split(info.getString("display"), LSystem.COMMA);
+				if (displayStr.length == 1) {
+					rect = RectBox.all(HelperUtils.toInt(displayStr[0]));
+				} else if (displayStr.length == 2) {
+					rect = new RectBox(HelperUtils.toInt(displayStr[0]), HelperUtils.toInt(displayStr[1]));
+				} else if (displayStr.length == 4) {
+					rect = new RectBox(HelperUtils.toInt(displayStr[0]), HelperUtils.toInt(displayStr[1]),
+							HelperUtils.toInt(displayStr[2]), HelperUtils.toInt(displayStr[3]));
+				}
+				Json.Array anis = info.getArray("ani");
+				if (anis != null) {
+					if (entity == null && resource != null) {
+						if (rect == null) {
+							entity = new AnimatedEntity(resource, clip.x, clip.y, 0, 0, clip.x, clip.y);
+						} else {
+							entity = new AnimatedEntity(resource, clip.x, clip.y, rect.x, rect.y, rect.width,
+									rect.height);
+						}
+					}
+					String name = null;
+					String index = null;
+					String timer = null;
+					for (int j = 0; j < anis.length(); j++) {
+						Json.Object ani = anis.getObject(j);
+						name = ani.getString("name");
+						index = ani.getString("index");
+						timer = ani.getString("timer");
+						if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(index)) {
+							String[] indexStr = StringUtils.split(index, LSystem.COMMA);
+							int[] indexs = new int[indexStr.length];
+							for (int n = 0; n < indexStr.length; n++) {
+								indexs[n] = HelperUtils.toInt(indexStr[n]);
+							}
+							if (StringUtils.isNotEmpty(timer)) {
+								entity.setPlayIndex(name, HelperUtils.toInt(timer), indexs);
+							} else {
+								entity.setPlayIndex(name, indexs);
+							}
+						}
+					}
+				}
+			}
+			if (entity == null && resource != null) {
+				if (rect == null) {
+					entity = new AnimatedEntity(resource, clip.x, clip.y, 0, 0, clip.x, clip.y);
+				} else {
+					entity = new AnimatedEntity(resource, clip.x, clip.y, rect.x, rect.y, rect.width, rect.height);
+				}
+			}
+			if (StringUtils.isNotEmpty(play)) {
+				entity.animate(play);
+			}
+		}
+		return entity;
+	}
 
 	/**
 	 * 动画具体播放速度值及帧索引存储用类

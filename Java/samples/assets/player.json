@@ -1,0 +1,30 @@
+{
+  "info": {
+    "res": "rpg/hero.gif",
+    "clip": "32,32",
+    "display": "112,222,64,64",
+    "play": "down",
+    "ani": [
+      {
+        "name": "left",
+        "index": "3, 4, 5",
+        "timer": "200"
+      },
+      {
+        "name": "right",
+        "index": "6, 7, 8",
+        "timer": "200"
+      },
+      {
+        "name": "down",
+        "index": "0, 1, 2",
+        "timer": "200"
+      },
+      {
+        "name": "up",
+        "index": "9, 10, 11",
+        "timer": "200"
+      }
+    ]
+  }
+}

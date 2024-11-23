@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<info>
+	<res>rpg/hero.gif</res>
+	<clip>32,32</clip>
+	<display>112,222,64,64</display>
+	<play>down</play>
+	<ani>
+		<name>left</name>
+		<index>3, 4, 5</index>
+		<timer>200</timer>
+	</ani>
+	<ani>
+		<name>right</name>
+		<index>6, 7, 8</index>
+		<timer>200</timer>
+	</ani>
+	<ani>
+		<name>down</name>
+		<index>0, 1, 2</index>
+		<timer>200</timer>
+	</ani>
+	<ani>
+		<name>up</name>
+		<index>9, 10, 11</index>
+		<timer>200</timer>
+	</ani>
+</info>
