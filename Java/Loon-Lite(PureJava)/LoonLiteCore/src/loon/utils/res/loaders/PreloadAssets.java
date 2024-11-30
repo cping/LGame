@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -22,9 +22,11 @@ package loon.utils.res.loaders;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Values;
+import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.xml.XMLListener;
@@ -36,8 +38,8 @@ public class PreloadAssets implements LRelease {
 	private ObjectMap<PreloadItem, TArray<AssetLoader>> _preloadMap;
 
 	public PreloadAssets() {
-		this._loads = new TArray<>();
-		this._preloadMap = new ObjectMap<>();
+		this._loads = new TArray<AssetLoader>();
+		this._preloadMap = new ObjectMap<PreloadItem, TArray<AssetLoader>>();
 	}
 
 	public PreloadAssets load(AssetLoader loader) {
@@ -108,6 +110,38 @@ public class PreloadAssets implements LRelease {
 		return false;
 	}
 
+	public PreloadAssets load(String path) {
+		return load(path, null);
+	}
+
+	public PreloadAssets load(String path, String nickname) {
+		String ext = PathUtils.getExtension(path).trim().toLowerCase();
+		if ("xml".equals(ext) || "tmx".equals(ext)) {
+			return xml(path, nickname, null);
+		} else if ("json".equals(ext) || "tmj".equals(ext)) {
+			return json(path, nickname);
+		} else if ("txt".equals(ext) || "chr".equals(ext)) {
+			return text(path, nickname);
+		} else if ("i18n".equals(ext)) {
+			return I18N(path, nickname);
+		} else if ("pack".equals(ext)) {
+			return texturePack(path, nickname);
+		} else if ("fnt".equals(ext)) {
+			return bitmapFont(path, nickname);
+		} else if ("dbf".equals(ext)) {
+			return glyphFont(path, nickname);
+		} else if ("bytes".equals(ext)) {
+			return bytes(path, nickname);
+		} else if ("cfg".equals(ext) || "config".equals(ext)) {
+			return config(path, nickname);
+		} else if (LSystem.isImage(ext)) {
+			return texture(path, nickname);
+		} else if (LSystem.isAudio(ext)) {
+			return sound(path, nickname);
+		}
+		return this;
+	}
+
 	public PreloadAssets text(String path) {
 		return text(path, null);
 	}
@@ -142,6 +176,23 @@ public class PreloadAssets implements LRelease {
 	public PreloadAssets bytes(String path, String nickname) {
 		checkAssets(PreloadItem.Bytes, path, nickname);
 		return load(new BytesAssetLoader(path, nickname));
+	}
+
+	public PreloadAssets glyphFont(String path) {
+		return glyphFont(path, null, -1);
+	}
+
+	public PreloadAssets glyphFont(String path, int size) {
+		return glyphFont(path, null, size);
+	}
+
+	public PreloadAssets glyphFont(String path, String nickname) {
+		return glyphFont(path, nickname, -1);
+	}
+
+	public PreloadAssets glyphFont(String path, String nickname, int size) {
+		checkAssets(PreloadItem.BitmapDistributionFont, path, nickname);
+		return load(new BDFontAssetLoader(path, nickname, size));
 	}
 
 	public PreloadAssets bitmapFont(String path) {
@@ -230,7 +281,11 @@ public class PreloadAssets implements LRelease {
 	}
 
 	public PreloadAssets xml(String path) {
-		return xml(path, null);
+		return xml(path, null, null);
+	}
+
+	public PreloadAssets xml(String path, String nickname) {
+		return xml(path, nickname, null);
 	}
 
 	public PreloadAssets xml(String path, XMLListener listener) {
@@ -239,7 +294,7 @@ public class PreloadAssets implements LRelease {
 
 	public PreloadAssets xml(String path, String nickname, XMLListener listener) {
 		checkAssets(PreloadItem.Xml, path, nickname);
-		return load(new TextureAssetLoader(path, nickname));
+		return load(new XmlAssetLoader(path, nickname, listener));
 	}
 
 	public PreloadAssets I18N(String path) {
@@ -268,6 +323,15 @@ public class PreloadAssets implements LRelease {
 		AssetLoader loader = getAssetLoader(PreloadItem.BitmapFont, path);
 		if (loader != null && loader instanceof BMFontAssetLoader) {
 			return (BMFontAssetLoader) loader;
+		}
+		loaderGetException(path);
+		return null;
+	}
+
+	public BDFontAssetLoader getBitmapDistributionFont(String path) {
+		AssetLoader loader = getAssetLoader(PreloadItem.BitmapDistributionFont, path);
+		if (loader != null && loader instanceof BDFontAssetLoader) {
+			return (BDFontAssetLoader) loader;
 		}
 		loaderGetException(path);
 		return null;
@@ -430,7 +494,7 @@ public class PreloadAssets implements LRelease {
 			PreloadItem item = loader.item();
 			TArray<AssetLoader> list = _preloadMap.get(item);
 			if (list == null) {
-				list = new TArray<>();
+				list = new TArray<AssetLoader>();
 			}
 			if (!list.contains(loader)) {
 				list.add(loader);

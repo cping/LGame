@@ -25,18 +25,19 @@ public interface PreloadLoader {
 	/**
 	 * 预载完毕后,创建系统
 	 */
-	 void prefinish();
+	void prefinish();
 
 	/**
 	 * 资源预加载用函数,异步加载指定资源
 	 * 
 	 * @param assets
 	 */
-	 void preload(PreloadAssets assets);
+	void preload(PreloadAssets assets);
+
 	/**
 	 * 预载资源已完成进度
 	 * 
 	 * @param percent
 	 */
-	 void preloadProgress(float percent);
+	void preloadProgress(float percent);
 }

@@ -22,7 +22,7 @@ package loon.utils.res.loaders;
 
 public enum PreloadItem {
 
-	Text, Texture, TexturePack, Image, Pixmap, Tokenizer, Xml, Sound, Music, Context, Config, Json, Res, BitmapFont,
-	Bytes, I18N, Other
+	Text, Texture, TexturePack, Image, Pixmap, Tokenizer, Xml, Sound, Music, Context, Config, Json, Res,
+	BitmapFont,BitmapDistributionFont, Bytes, I18N, Other
 
 }

@@ -20,36 +20,44 @@
  */
 package loon.utils.res.loaders;
 
-import loon.BaseIO;
-import loon.Sound;
+import loon.font.BDFont;
 
-public class MusicAssetLoader extends AssetAbstractLoader<Sound> {
+public class BDFontAssetLoader extends AssetAbstractLoader<BDFont> {
 
-	private Sound _sound;
+	private BDFont _font;
 
-	public MusicAssetLoader(String path, String nickname) {
-		this.set(path, nickname);
-	}
+	private int _fontSize;
 
-	@Override
-	public Sound get() {
-		return _sound;
+	public BDFontAssetLoader(String path, String nickname, int fontSize) {
+		set(path, nickname);
+		_fontSize = fontSize;
 	}
 
 	@Override
 	public boolean completed() {
-		return (_sound = BaseIO.loadMusic(_path)) != null;
+		if (_fontSize <= 0) {
+			_font = new BDFont(_path);
+		} else {
+			_font = new BDFont(_path, _fontSize);
+		}
+		return _font != null;
 	}
 
 	@Override
 	public PreloadItem item() {
-		return PreloadItem.Music;
+		return PreloadItem.BitmapDistributionFont;
+	}
+
+	@Override
+	public BDFont get() {
+		return _font;
 	}
 
 	@Override
 	public void close() {
-		if (_sound != null) {
-			_sound.release();
+		if (_font != null) {
+			_font.close();
+			_font = null;
 		}
 	}
 

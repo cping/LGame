@@ -24,6 +24,8 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
+import loon.utils.TArray;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -71,6 +73,8 @@ public class PreloadControl implements LRelease {
 
 	private PreloadAssets _preAssets;
 
+	private TArray<String> _otherAssets;
+
 	private boolean _closedFreeResource;
 
 	private float _preMaxFileCount;
@@ -88,8 +92,13 @@ public class PreloadControl implements LRelease {
 	}
 
 	public PreloadControl(PreloadLoader loader, boolean freeRes) {
+		this(loader, null, freeRes);
+	}
+
+	public PreloadControl(PreloadLoader loader, TArray<String> others, boolean freeRes) {
 		this._loader = loader;
 		this._closedFreeResource = freeRes;
+		this.setOhterAssets(others);
 	}
 
 	public void createPreloadAssets() {
@@ -100,12 +109,26 @@ public class PreloadControl implements LRelease {
 		this._preAssets = new PreloadAssets();
 	}
 
+	public void setOhterAssets(TArray<String> others) {
+		if (others != null) {
+			this._otherAssets = new TArray<String>(others);
+		}
+	}
+
 	/**
 	 * 开始加载资源
 	 */
 	public void prestart() {
 		this.createPreloadAssets();
 		this.preload(_preAssets);
+		if (_otherAssets != null) {
+			for (int i = 0; i < _otherAssets.size; i++) {
+				String path = _otherAssets.get(i);
+				if (StringUtils.isNotEmpty(path)) {
+					_preAssets.load(path);
+				}
+			}
+		}
 		this.setPercentMax(this._preMaxFileCount = _preAssets.waiting());
 		if (_preMaxFileCount > LSystem.DEFAULT_MAX_PRE_SIZE) {
 			throw new LSysException(
@@ -223,6 +246,10 @@ public class PreloadControl implements LRelease {
 		if (this._preAssets != null) {
 			this._preAssets.close();
 			this._preAssets = null;
+		}
+		if (this._otherAssets != null) {
+			this._otherAssets.clear();
+			this._otherAssets = null;
 		}
 	}
 
