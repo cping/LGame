@@ -138,8 +138,9 @@ public class PreloadAssets implements LRelease {
 			return texture(path, nickname);
 		} else if (LSystem.isAudio(ext)) {
 			return sound(path, nickname);
+		} else {
+			throw new LSysException("The file " + path + " cannot be recognized, so it  loading failed.");
 		}
-		return this;
 	}
 
 	public PreloadAssets text(String path) {

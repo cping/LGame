@@ -98,7 +98,7 @@ public class PreloadControl implements LRelease {
 	public PreloadControl(PreloadLoader loader, TArray<String> others, boolean freeRes) {
 		this._loader = loader;
 		this._closedFreeResource = freeRes;
-		this.setOhterAssets(others);
+		this.loadAssets(others);
 	}
 
 	public void createPreloadAssets() {
@@ -109,10 +109,18 @@ public class PreloadControl implements LRelease {
 		this._preAssets = new PreloadAssets();
 	}
 
-	public void setOhterAssets(TArray<String> others) {
+	public PreloadControl loadAssets(String... others) {
+		if (others == null || others.length == 0) {
+			return this;
+		}
+		return loadAssets(StringUtils.getStringsToList(others));
+	}
+
+	public PreloadControl loadAssets(TArray<String> others) {
 		if (others != null) {
 			this._otherAssets = new TArray<String>(others);
 		}
+		return this;
 	}
 
 	/**
