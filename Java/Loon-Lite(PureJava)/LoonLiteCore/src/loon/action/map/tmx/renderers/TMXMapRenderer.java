@@ -47,6 +47,7 @@ import loon.geom.Sized;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
@@ -64,10 +65,14 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	private SpriteCollisionListener _collSpriteListener;
 
+	private Vector2f _tempScreenPos = new Vector2f();
+
 	protected Vector2f _mapLocation = new Vector2f();
 
 	protected Vector2f _offset = new Vector2f();
+
 	protected float _fixedWidthOffset = 0f;
+
 	protected float _fixedHeightOffset = 0f;
 
 	protected Sprites sprites = null;
@@ -445,6 +450,100 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	public ISprite setFixedHeightOffset(float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 		return this;
+	}
+
+	public Vector2f getMapToPixel(float tileX, float tileY) {
+		return getMapToPixel(tileX, tileY, _tempScreenPos);
+	}
+
+	public Vector2f getMapToPixel(float tileX, float tileY, Vector2f newPos) {
+		if (newPos == null) {
+			newPos = new Vector2f();
+		}
+		switch (map.getOrientation()) {
+		case ORTHOGONAL:
+			newPos.x = tileX * map.getTileWidth();
+			newPos.y = tileY * map.getTileHeight();
+			break;
+		case ISOMETRIC:
+			newPos.x = map.getWidth() / 2 - (tileY - tileX) * map.getTileWidthHalf();
+			newPos.y = (tileY + tileX) * map.getTileHeightHalf();
+			break;
+		case STAGGERED:
+			tileX = MathUtils.ifloor(tileX);
+			tileY = MathUtils.ifloor(tileY);
+			newPos.x = tileX * map.getTileWidth() + (MathUtils.ifloor(tileY) & 1) * map.getTileWidthHalf();
+			newPos.y = tileY * map.getTileHeightHalf();
+			break;
+		case HEXAGONAL:
+			tileX = MathUtils.ifloor(tileX);
+			tileY = MathUtils.ifloor(tileY);
+			int nTileHeight = map.getTileHeight() * 2 / 3;
+			newPos.x = (tileX * map.getTileWidth() + tileY % 2 * map.getTileWidthHalf()) % this.map.getWidth();
+			newPos.y = (tileY * nTileHeight) % this.map.getHeight();
+			break;
+		}
+		newPos.x = (newPos.x + this.getX()) * this.getScaleX();
+		newPos.y = (newPos.y + this.getY()) * this.getScaleY();
+		return newPos;
+	}
+
+	public Vector2f getPixelToMap(float screenX, float screenY) {
+		return getPixelToMap(screenX, screenY, _tempScreenPos);
+	}
+
+	public Vector2f getPixelToMap(float screenX, float screenY, Vector2f newPos) {
+		if (newPos == null) {
+			newPos = new Vector2f();
+		}
+		float newY = 0;
+		float newX = 0;
+		int newTileW = this.map.getTileWidth();
+		int newTileH = this.map.getTileHeight();
+		screenX = screenX / this.getScaleX() - this.getScreen().getX();
+		screenY = screenY / this.getScaleY() - this.getScreen().getY();
+		switch (this.map.getOrientation()) {
+		case ORTHOGONAL:
+			newX = screenX / newTileW;
+			newY = screenY / newTileH;
+			newPos.x = newX;
+			newPos.y = newY;
+			break;
+		case ISOMETRIC:
+			float tDirX = screenX - this.map.getWidth() / 2;
+			float tDirY = screenY;
+			newY = -(tDirX / newTileW - tDirY / newTileH);
+			newX = tDirX / newTileW + tDirY / newTileH;
+			newPos.x = newX;
+			newPos.y = newY;
+			break;
+		case STAGGERED:
+			float cx, cy, rx, ry;
+			cx = MathUtils.ifloor(screenX / newTileW) * newTileW + newTileW / 2;
+			cy = MathUtils.ifloor(screenY / newTileH) * newTileH + newTileH / 2;
+			rx = (screenX - cx) * newTileH / 2;
+			ry = (screenY - cy) * newTileW / 2;
+			if (MathUtils.abs(rx) + MathUtils.abs(ry) <= newTileW * newTileH / 4) {
+				newX = MathUtils.floor(screenX / newTileW);
+				newY = MathUtils.floor(screenY / newTileH) * 2;
+			} else {
+				screenX = screenX - newTileW / 2;
+				newX = MathUtils.floor(screenX / newTileW) + 1;
+				screenY = screenY - newTileH / 2;
+				newY = MathUtils.floor(screenY / newTileH) * 2 + 1;
+			}
+			newPos.x = newX - (MathUtils.ifloor(newY) & 1);
+			newPos.y = newY;
+			break;
+		case HEXAGONAL:
+			int tTileHeight = newTileH * 2 / 3;
+			newY = screenY / tTileHeight;
+			newX = (screenX - newY % 2 * map.getTileWidthHalf()) / newTileW;
+			newPos.x = newX;
+			newPos.y = newY;
+			break;
+		}
+		return newPos;
 	}
 
 	@Override

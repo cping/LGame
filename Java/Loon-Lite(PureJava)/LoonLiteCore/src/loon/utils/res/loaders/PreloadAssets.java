@@ -139,7 +139,7 @@ public class PreloadAssets implements LRelease {
 		} else if (LSystem.isAudio(ext)) {
 			return sound(path, nickname);
 		} else {
-			throw new LSysException("The file " + path + " cannot be recognized, so it  loading failed.");
+			throw new LSysException("The file " + path + " cannot be recognized, so it loading failed.");
 		}
 	}
 

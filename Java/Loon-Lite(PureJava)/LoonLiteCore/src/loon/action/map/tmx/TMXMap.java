@@ -92,8 +92,13 @@ public class TMXMap implements Sized {
 
 	private int width;
 	private int height;
+
 	private int tileWidth;
 	private int tileHeight;
+
+	private int tileWidthHalf;
+	private int tileHeightHalf;
+
 	private int widthInPixels;
 	private int heightInPixels;
 	private int infinite;
@@ -280,6 +285,14 @@ public class TMXMap implements Sized {
 		return tileHeight;
 	}
 
+	public int getTileWidthHalf() {
+		return tileWidthHalf;
+	}
+
+	public int getTileHeightHalf() {
+		return tileHeightHalf;
+	}
+
 	public int getNextObjectID() {
 		return nextObjectID;
 	}
@@ -461,6 +474,10 @@ public class TMXMap implements Sized {
 		height = json.getInt("height", 0);
 		tileWidth = json.getInt("tilewidth", 0);
 		tileHeight = json.getInt("tileheight", 0);
+
+		tileWidthHalf = tileWidth / 2;
+		tileHeightHalf = tileHeight / 2;
+
 		widthInPixels = width * tileWidth;
 		heightInPixels = height * tileHeight;
 
@@ -622,6 +639,9 @@ public class TMXMap implements Sized {
 		tileWidth = element.getIntAttribute("tilewidth", 0);
 		tileHeight = element.getIntAttribute("tileheight", 0);
 		infinite = element.getIntAttribute("infinite", 0);
+
+		tileWidthHalf = tileWidth / 2;
+		tileHeightHalf = tileHeight / 2;
 
 		widthInPixels = width * tileWidth;
 		heightInPixels = height * tileHeight;

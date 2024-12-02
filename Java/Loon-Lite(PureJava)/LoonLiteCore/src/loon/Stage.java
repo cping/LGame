@@ -87,6 +87,24 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	public abstract void create();
 
+	/**
+	 * 初始化数据构建用类,重载使用,主要作用就是在加载数据正式创建游戏画面前预设配置,此函数的执行顺序在create前
+	 */
+	protected void init() {
+	}
+
+	/**
+	 * 预载游戏资源用函数,此类实际有效范围仅限init()和preload(PreloadAssets assets)函数中使用,
+	 * 一旦create()函数被调用,则此类失效,因为数据加载已经完毕.
+	 * 
+	 * @param paths
+	 */
+	public void preload(String... paths) {
+		if (_preload != null) {
+			_preload.loadAssets(paths);
+		}
+	}
+
 	@Override
 	public void onLoad() {
 		try {
@@ -96,6 +114,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 			this._childTiles = new TArray<TileMap>();
 			this._currentOffset = Vector2f.ZERO();
 			this._preload = new PreloadControl(this);
+			this.init();
 			this._preload.prestart();
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
