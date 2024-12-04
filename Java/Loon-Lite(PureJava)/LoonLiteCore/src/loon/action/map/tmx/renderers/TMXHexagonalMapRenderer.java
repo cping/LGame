@@ -30,6 +30,7 @@ import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
+import loon.canvas.LColor;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -79,15 +80,6 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		float opacity = imageLayer.getOpacity();
-		if (opacity <= 0f) {
-			return;
-		}
-		if (opacity > 1f) {
-			opacity = 1f;
-		}
-		float tmpAlpha = baseColor.a;
-		baseColor.a *= opacity;
 		LTexture current = textureMap.get(imageLayer.getImage().getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
@@ -96,8 +88,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), baseColor);
-		baseColor.a = tmpAlpha;
+				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
 	@Override
@@ -106,13 +97,6 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		synchronized (this) {
 			if (!tileLayer.isVisible()) {
 				return;
-			}
-			float opacity = tileLayer.getOpacity();
-			if (opacity <= 0f) {
-				return;
-			}
-			if (opacity > 1f) {
-				opacity = 1f;
 			}
 
 			final int screenWidth = LSystem.viewSize.getWidth();
@@ -139,9 +123,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			_texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
 			_texBatch = _texCurrent.getTextureBatch();
 
-			final float tmpAlpha = baseColor.a;
 			boolean isCached = false;
-			baseColor.a *= opacity;
+
+			final LColor drawColor = tileLayer.getTileLayerColor(baseColor);
 
 			try {
 
@@ -172,7 +156,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 					_texBatch.begin();
 				}
 
-				_texBatch.setColor(baseColor);
+				_texBatch.setColor(drawColor);
 
 				if (staggerAxisX) {
 					final float tileWidthLowerCorner = (layerTileWidth - layerHexLength) / 2;
@@ -242,7 +226,6 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 						saveCache(_texBatch);
 					}
 				}
-				baseColor.a = tmpAlpha;
 			}
 		}
 	}
@@ -297,7 +280,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			}
 
 			_texBatch.draw(x + offsetX, y + offsetY, -1f, -1f, 0f, 0f, tileWidth, tileHeight, scaleX, scaleY,
-					this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY, baseColor);
+					this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 		}
 
 	}

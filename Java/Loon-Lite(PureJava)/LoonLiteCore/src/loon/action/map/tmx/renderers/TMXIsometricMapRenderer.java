@@ -28,6 +28,7 @@ import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
+import loon.canvas.LColor;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -53,25 +54,15 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		float opacity = imageLayer.getOpacity();
-		if (opacity <= 0f) {
-			return;
-		}
-		if (opacity > 1f) {
-			opacity = 1f;
-		}
-		float tmpAlpha = baseColor.a;
-		baseColor.a *= opacity;
-		LTexture _texCurrent = textureMap.get(imageLayer.getImage().getSource());
+		LTexture current = textureMap.get(imageLayer.getImage().getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
 		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2) + (imageLayer.getRenderOffsetX() * tileWidth / 2)
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(_texCurrent, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), baseColor);
-		baseColor.a = tmpAlpha;
+		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
 	@Override
@@ -79,13 +70,6 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		synchronized (this) {
 			if (!tileLayer.isVisible()) {
 				return;
-			}
-			float opacity = tileLayer.getOpacity();
-			if (opacity <= 0f) {
-				return;
-			}
-			if (opacity > 1f) {
-				opacity = 1f;
 			}
 
 			final int screenWidth = LSystem.viewSize.getWidth();
@@ -112,9 +96,9 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 			_texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
 			_texBatch = _texCurrent.getTextureBatch();
 
-			final float tmpAlpha = baseColor.a;
 			boolean isCached = false;
-			baseColor.a *= opacity;
+
+			final LColor drawColor = tileLayer.getTileLayerColor(baseColor);
 
 			try {
 
@@ -143,6 +127,8 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 					_texBatch.begin();
 				}
 
+				_texBatch.setColor(drawColor);
+
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
 						if ((tx + x < 0) || (ty + y < 0) || (tx + x >= doubleWidth) || (ty + y >= doubleHeight)) {
@@ -162,7 +148,6 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 						saveCache(_texBatch);
 					}
 				}
-				baseColor.a = tmpAlpha;
 			}
 		}
 	}
@@ -216,7 +201,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		}
 		Vector2f pos = orthoToIso(x, y);
 		_texBatch.draw(pos.x, pos.y, -1f, -1f, 0f, 0f, tileWidth, tileHeight, 1f, 1f, this._objectRotation, srcX, srcY,
-				srcWidth, srcHeight, flipX, flipY, baseColor);
+				srcWidth, srcHeight, flipX, flipY);
 
 	}
 

@@ -39,8 +39,8 @@ public class TMXProperties {
 		properties = new ObjectMap<String, Object>();
 	}
 
-	public TMXProperties put(String key, Object v) {
-		properties.put(key, v);
+	public TMXProperties put(String key, Object vl) {
+		properties.put(key, vl);
 		return this;
 	}
 
@@ -95,7 +95,7 @@ public class TMXProperties {
 			String name = property.getString("name", LSystem.EMPTY);
 			String v = property.getString("value", LSystem.EMPTY);
 			if (MathUtils.isNan(v)) {
-				if (v.indexOf('.') != -1) {
+				if (v.indexOf(LSystem.DOT) != -1) {
 					put(name, Float.parseFloat(v));
 				} else {
 					put(name, Integer.parseInt(v));

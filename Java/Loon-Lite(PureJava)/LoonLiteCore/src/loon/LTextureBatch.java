@@ -449,6 +449,13 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float pivotX, float pivotY, float originX, float originY, float width,
 			float height, float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth,
+			float srcHeight, boolean flipX, boolean flipY) {
+		return draw(x, y, pivotX, pivotY, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY,
+				srcWidth, srcHeight, flipX, flipY, _color);
+	}
+
+	public LTextureBatch draw(float x, float y, float pivotX, float pivotY, float originX, float originY, float width,
+			float height, float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY, LColor color) {
 
 		if (!checkTexture(_meshdata.texture)) {
@@ -467,7 +474,7 @@ public class LTextureBatch implements LRelease {
 		}
 
 		int argb = this._color.getABGR();
-		if (color != null) {
+		if (color != null && this._color != color) {
 			argb = LColor.combine(argb, color.getARGB());
 		}
 

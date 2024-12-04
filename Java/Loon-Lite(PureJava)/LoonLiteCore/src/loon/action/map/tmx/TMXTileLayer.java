@@ -32,6 +32,7 @@ import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapConfig;
 import loon.action.map.tmx.tiles.TMXMapTile;
+import loon.canvas.LColor;
 import loon.utils.Base64Coder;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -65,6 +66,10 @@ public class TMXTileLayer extends TMXMapLayer {
 		id = element.getInt("id", 0);
 		name = element.getString("name", LSystem.EMPTY);
 
+		if (element.containsKey("tintcolor")) {
+			tintColor = new LColor(element.getString("tintcolor", LColor.white.toString()).trim());
+		}
+
 		offsetX = element.getNumber("x", 0);
 		offsetY = element.getNumber("y", 0);
 
@@ -83,7 +88,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		}
 
 		tileMap = new TMXMapTile[width * height];
-
+	
 		if (element.containsKey("encoding")) {
 			switch (element.getString("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
@@ -139,6 +144,10 @@ public class TMXTileLayer extends TMXMapLayer {
 
 		id = element.getIntAttribute("id", 0);
 		name = element.getAttribute("name", LSystem.EMPTY);
+
+		if (element.hasAttribute("tintcolor")) {
+			tintColor = new LColor(element.getAttribute("tintcolor", LColor.white.toString()).trim());
+		}
 
 		offsetX = element.getFloatAttribute("x", 0);
 		offsetY = element.getFloatAttribute("y", 0);

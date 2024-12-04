@@ -20,6 +20,7 @@
  */
 package loon.action.map.tmx;
 
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Sized;
 import loon.utils.MathUtils;
@@ -30,8 +31,12 @@ public class TMXMapLayer implements Sized {
 		TILE, OBJECT, IMAGE
 	}
 
+	private LColor tempColor = new LColor();
+
 	protected TMXMap parent;
 	protected String name;
+
+	protected LColor tintColor;
 
 	protected int id;
 
@@ -278,6 +283,33 @@ public class TMXMapLayer implements Sized {
 
 	public boolean isVisible() {
 		return visible;
+	}
+
+	public LColor getTileLayerColor(LColor baseColor) {
+		if (tempColor.equals(baseColor) && (opacity == 1f) && (tintColor == null || tintColor.equals(LColor.white))) {
+			return baseColor;
+		}
+		float alpha = opacity;
+		if (alpha <= 0f) {
+			alpha = 0f;
+		}
+		if (alpha > 1f) {
+			alpha = 1f;
+		}
+		tempColor.setColor(baseColor);
+		if (tintColor == null) {
+			return tempColor.mulSelfAlpha(alpha);
+		}
+		return tempColor.mulSelfAlpha(alpha).mul(tintColor);
+	}
+
+	public LColor getTintColor() {
+		return tintColor;
+	}
+
+	public TMXMapLayer setTintColor(LColor c) {
+		this.tintColor = c;
+		return this;
 	}
 
 	public TmxLayerType getTypeCode() {

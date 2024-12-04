@@ -29,6 +29,7 @@ import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
+import loon.canvas.LColor;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -46,32 +47,15 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		float opacity = imageLayer.getOpacity();
-		if (opacity <= 0f) {
-			return;
-		}
-		if (opacity > 1f) {
-			opacity = 1f;
-		}
-		float tmpAlpha = baseColor.a;
-		baseColor.a *= opacity;
 		LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
 		g.draw(originalTexture, imageLayer.getRenderOffsetX(), imageLayer.getRenderOffsetY(),
-				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(), baseColor);
-		baseColor.a = tmpAlpha;
+				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
 	protected void renderTileLayer(GLEx g, TMXTileLayer tileLayer) {
 		synchronized (this) {
 			if (!tileLayer.isVisible()) {
 				return;
-			}
-			float opacity = tileLayer.getOpacity();
-			if (opacity <= 0f) {
-				return;
-			}
-			if (opacity > 1f) {
-				opacity = 1f;
 			}
 
 			final int screenWidth = LSystem.viewSize.getWidth();
@@ -95,9 +79,9 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			LTexture current = textureMap.get(map.getTileset(0).getImage().getSource());
 			LTextureBatch texBatch = current.getTextureBatch();
 
-			float tmpAlpha = baseColor.a;
 			boolean isCached = false;
-			baseColor.a *= opacity;
+
+			final LColor drawColor = tileLayer.getTileLayerColor(baseColor);
 
 			try {
 
@@ -126,7 +110,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 					texBatch.begin();
 				}
 				texBatch.setBlendState(BlendState.AlphaBlend);
-				texBatch.setColor(baseColor);
+				texBatch.setColor(drawColor);
 				for (int x = 0; x < layerWidth; x++) {
 					for (int y = 0; y < layerHeight; y++) {
 						if ((tx + x < 0) || (ty + y < 0)) {
@@ -203,7 +187,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						saveCache(texBatch);
 					}
 				}
-				baseColor.a = tmpAlpha;
+
 			}
 		}
 
