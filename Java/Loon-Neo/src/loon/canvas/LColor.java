@@ -1428,7 +1428,7 @@ public class LColor implements Serializable {
 	}
 
 	public LColor setColor(LColor color) {
-		if (color == null) {
+		if (color == null || color == this) {
 			return this;
 		}
 		return setColor(color.r, color.g, color.b, color.a);
@@ -1436,7 +1436,13 @@ public class LColor implements Serializable {
 
 	public LColor setColor(LColor color, float alpha) {
 		if (color == null) {
-			return setColor(this.r, this.g, this.b, alpha);
+			if (this.a == alpha) {
+				return this;
+			} else {
+				return setColor(this.r, this.g, this.b, alpha);
+			}
+		} else if (color == this && this.a == alpha) {
+			return this;
 		}
 		return setColor(color.r, color.g, color.b, alpha);
 	}
