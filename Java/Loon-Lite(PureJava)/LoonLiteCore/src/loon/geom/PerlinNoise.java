@@ -20,16 +20,88 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
+
 public class PerlinNoise {
-	
+
+	public static float[][] generateSmoothNoise(float[][] baseNoise, int octave) {
+		final int width = baseNoise.length;
+		final int height = baseNoise[0].length;
+		final float[][] smoothNoise = new float[width][height];
+		final int samplePeriod = 1 << octave;
+		final float sampleFrequency = 1.0f / samplePeriod;
+		for (int i = 0; i < width; i++) {
+			int samplea0 = (i / samplePeriod) * samplePeriod;
+			int samplea1 = (samplea0 + samplePeriod) % width;
+			float horizontalblend = (i - samplea0) * sampleFrequency;
+			for (int j = 0; j < height; j++) {
+				int sampleb0 = (j / samplePeriod) * samplePeriod;
+				int sampleb1 = (sampleb0 + samplePeriod) % height;
+				float verticalblend = (j - sampleb0) * sampleFrequency;
+				float top = getInterpolate(baseNoise[samplea0][sampleb0], baseNoise[samplea1][sampleb0],
+						horizontalblend);
+				float bottom = getInterpolate(baseNoise[samplea0][sampleb1], baseNoise[samplea1][sampleb1],
+						horizontalblend);
+				smoothNoise[i][j] = getInterpolate(top, bottom, verticalblend);
+			}
+		}
+		return smoothNoise;
+	}
+
+	public static float[][] generatePerlinNoise(float[][] baseNoise, int octaveCount, float persistance) {
+		final int width = baseNoise.length;
+		final int height = baseNoise[0].length;
+		final float[][][] smoothNoise = new float[octaveCount][][];
+		for (int i = 0; i < octaveCount; i++) {
+			smoothNoise[i] = generateSmoothNoise(baseNoise, i);
+		}
+		float[][] perlinNoise = new float[width][height];
+		float amplitude = 1f;
+		float totalAmplitude = 0f;
+		for (int octave = octaveCount - 1; octave >= 0; octave--) {
+			amplitude *= persistance;
+			totalAmplitude += amplitude;
+			for (int i = 0; i < width; i++) {
+				for (int j = 0; j < height; j++) {
+					perlinNoise[i][j] += smoothNoise[octave][i][j] * amplitude;
+				}
+			}
+		}
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				perlinNoise[i][j] /= totalAmplitude;
+			}
+		}
+		return perlinNoise;
+	}
+
+	public static float[][] generatePerlinNoise(int width, int height, int seed, int octaveCount, float persistancee) {
+		float[][] baseNoise = generateWhiteNoise(width, height);
+		return generatePerlinNoise(baseNoise, octaveCount, persistancee);
+	}
+
+	public static float[][] generateWhiteNoise(int width, int height) {
+		final float[][] noise = new float[width][height];
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				noise[i][j] = MathUtils.random() % 1;
+			}
+		}
+		return noise;
+	}
+
+	public static float getInterpolate(float x0, float x1, float alpha) {
+		return x0 * (1 - alpha) + alpha * x1;
+	}
+
 	private int _octaves;
-	
+
 	private float _amplitude;
-	
+
 	private float _frequency;
-	
+
 	private float _persistence;
-	
+
 	private int _seed;
 
 	public PerlinNoise(int seed, float persistence, float frequency, float amplitude, int octaves) {

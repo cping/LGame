@@ -120,6 +120,7 @@ import loon.utils.processes.Coroutine;
 import loon.utils.processes.CoroutineProcess;
 import loon.utils.processes.GameProcess;
 import loon.utils.processes.RealtimeProcess;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.YieldExecute;
 import loon.utils.processes.Yielderable;
 import loon.utils.reply.Callback;
@@ -3660,6 +3661,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen transfer(ISprite s) {
+		if (s == null) {
+			return this;
+		}
+		if (s.getScreen() != null && s.getScreen() != this) {
+			s.getScreen().remove(s);
+		}
+		return add(s);
+	}
+
+	public Screen transfer(LComponent c) {
+		if (c == null) {
+			return this;
+		}
+		if (c.getScreen() != null && c.getScreen() != this) {
+			c.getScreen().remove(c);
+		}
+		return add(c);
+	}
+
 	public boolean contains(LComponent comp) {
 		return contains(comp, false);
 	}
@@ -3764,6 +3785,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (_currentDesktop != null) {
 			_currentDesktop.removeAll();
 		}
+		RealtimeProcessManager.get().clear();
 		ActionControl.get().clear();
 		removeAllLoad();
 		removeAllUnLoad();

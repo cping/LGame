@@ -42,7 +42,7 @@ public abstract class BaseIO extends DefUI {
 			try {
 				return base.assets().getText(path);
 			} catch (Throwable e) {
-				base.log().debug("The path " + path + " is null !");
+				base.log().debug("The path [" + path + "] is null !");
 				return null;
 			}
 		}
@@ -55,7 +55,7 @@ public abstract class BaseIO extends DefUI {
 			try {
 				return base.assets().getTextSync(path);
 			} catch (Throwable e) {
-				base.log().debug("The path " + path + " is null !");
+				base.log().debug("The path [" + path + "] is null !");
 				return null;
 			}
 		}

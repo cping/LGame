@@ -483,6 +483,30 @@ public class LSetting {
 		return this.height_zoom > 0 ? this.height_zoom : this.height;
 	}
 
+	public boolean toggleDebug() {
+		return this.isDebug = !this.isDebug;
+	}
+
+	public boolean toggleDisplayLog() {
+		return this.isDisplayLog = !this.isDisplayLog;
+	}
+
+	public boolean toggleConsoleLog() {
+		return this.isConsoleLog = !this.isConsoleLog;
+	}
+
+	public boolean toggleFPS() {
+		return this.isFPS = !this.isFPS;
+	}
+
+	public boolean toggleMemory() {
+		return this.isMemory = !this.isMemory;
+	}
+
+	public boolean toggleSprites() {
+		return this.isSprites = !this.isSprites;
+	}
+
 	/**
 	 * 判断设备是否宽屏
 	 *
