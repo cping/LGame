@@ -614,6 +614,9 @@ public class FloatArray implements IArray, LRelease {
 	}
 
 	public float min() {
+		if (this.length == 0) {
+			return -1f;
+		}
 		float v = this.items[0];
 		final int size = this.length;
 		for (int i = size - 1; i > -1; i--) {
@@ -626,6 +629,9 @@ public class FloatArray implements IArray, LRelease {
 	}
 
 	public float max() {
+		if (this.length == 0) {
+			return -1f;
+		}
 		float v = this.items[0];
 		final int size = this.length;
 		for (int i = size - 1; i > -1; i--) {

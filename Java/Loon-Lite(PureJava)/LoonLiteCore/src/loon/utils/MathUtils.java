@@ -70,6 +70,8 @@ public final class MathUtils {
 
 	public static final float PHI = 0.618f;
 
+	public static final float TAU = 6.28318548f;
+
 	private static final float CEIL = 0.9999999f;
 
 	private static final int BIG_ENOUGH_INT = 16384;
@@ -1506,6 +1508,60 @@ public final class MathUtils {
 		return sum;
 	}
 
+	public static float snap(float src, float dst) {
+		return round(src / dst) * dst;
+	}
+
+	public static Vector2f snap(XY src, float dst) {
+		if (src == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snap(src.getX(), dst), snap(src.getY(), dst));
+	}
+
+	public static Vector2f snap(XY src, XY dst) {
+		if (src == null || dst == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snap(src.getX(), dst.getX()), snap(src.getY(), dst.getY()));
+	}
+
+	public static float snapFloor(float src, float dst) {
+		return floor(src / dst) * dst;
+	}
+
+	public static Vector2f snapFloor(XY src, float dst) {
+		if (src == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snapFloor(src.getX(), dst), snapFloor(src.getY(), dst));
+	}
+
+	public static Vector2f snapFloor(XY src, XY dst) {
+		if (src == null || dst == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snapFloor(src.getX(), dst.getX()), snapFloor(src.getY(), dst.getY()));
+	}
+
+	public static float snapCeil(float src, float dst) {
+		return ceil(src / dst) * dst;
+	}
+
+	public static Vector2f snapCeil(XY src, float dst) {
+		if (src == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snapCeil(src.getX(), dst), snapCeil(src.getY(), dst));
+	}
+
+	public static Vector2f snapCeil(XY src, XY dst) {
+		if (src == null || dst == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(snapCeil(src.getX(), dst.getX()), snapCeil(src.getY(), dst.getY()));
+	}
+
 	public static void arraySumInternal(final int[] values) {
 		final int valueCount = values.length;
 		for (int i = 1; i < valueCount; i++) {
@@ -1547,6 +1603,105 @@ public final class MathUtils {
 
 	public static float arrayAverage(final float[] values) {
 		return MathUtils.arraySum(values) / values.length;
+	}
+
+	public static float average(final float a, final float b) {
+		return a + (b - a) * 0.5f;
+	}
+
+	public static float approach(float src, float dst, float amount) {
+		if (src > dst) {
+			return max(src - amount, dst);
+		} else {
+			return min(src + amount, dst);
+		}
+	}
+
+	public static float approachIfLower(float src, float dst, float amount) {
+		if (sign(src) != sign(dst) || abs(src) < abs(dst)) {
+			return approach(src, dst, amount);
+		} else {
+			return src;
+		}
+	}
+
+	public static Vector2f approach(Vector2f src, Vector2f dst, float amount) {
+		if (src == null || dst == null) {
+			return new Vector2f();
+		}
+		if (src == dst) {
+			return dst;
+		} else {
+			Vector2f diff = dst.sub(src);
+			if (diff.lengthSquared() <= amount * amount) {
+				return dst;
+			} else {
+				return diff.nor().mulSelf(amount).addSelf(src);
+			}
+		}
+	}
+
+	public static float angle(XY vec) {
+		if (vec == null) {
+			return 0f;
+		}
+		return atan2(vec.getY(), vec.getX());
+	}
+
+	public static float angle(XY src, XY dst) {
+		if (src == null || dst == null) {
+			return 0f;
+		}
+		return atan2(dst.getY() - src.getY(), dst.getX() - src.getX());
+	}
+
+	public static Vector2f angleToVector(float angle) {
+		return angleToVector(angle, 1f);
+	}
+
+	public static Vector2f angleToVector(float angle, float length) {
+		return angleToVector(angle, length, null);
+	}
+
+	public static Vector2f angleToVector(float angle, float length, Vector2f result) {
+		float newX = cos(angle) * length;
+		float newY = sin(angle) * length;
+		if (result == null) {
+			return new Vector2f(newX, newY);
+		}
+		return result.set(newX, newY);
+	}
+
+	public static float angleLerp(float startAngle, float endAngle, float percent) {
+		return startAngle + angleDiff(startAngle, endAngle) * percent;
+	}
+
+	public static float angleDiff(float radiansA, float radiansB) {
+		return ((radiansB - radiansA - PI) % TAU + TAU) % TAU - PI;
+	}
+
+	public static float angleApproach(float val, float dst, float maxMove) {
+		float diff = angleDiff(val, dst);
+		if (abs(diff) < maxMove) {
+			return dst;
+		}
+		return val + clamp(diff, -maxMove, maxMove);
+	}
+
+	public static float absAngleDiff(float radiansA, float radiansB) {
+		return abs(angleDiff(radiansA, radiansB));
+	}
+
+	public static Vector2f rotateToward(Vector2f dir, Vector2f dst, float maxAngleDelta, float maxMagnitudeDelta) {
+		float angle = dir.angle();
+		float len = dir.length();
+		if (maxAngleDelta > 0f) {
+			angle = angleApproach(angle, dst.angle(), maxAngleDelta);
+		}
+		if (maxMagnitudeDelta > 0f) {
+			len = approach(len, dst.length(), maxMagnitudeDelta);
+		}
+		return angleToVector(angle, len);
 	}
 
 	public static float[] scaleAroundCenter(final float[] vertices, final float scaleX, final float scaleY,

@@ -343,4 +343,26 @@ public final class TimeUtils {
 		return output.toString();
 	}
 
+	public static final boolean onInterval(float time, float delta, float interval, float offset) {
+		return MathUtils.floor((time - offset - delta) / interval) < MathUtils.floor((time - offset) / interval);
+	}
+
+	public static final boolean onInterval(float delta, float interval, float offset) {
+		return onInterval(currentSeconds(), delta, interval, offset);
+	}
+
+	public static final float sineWave(float from, float to, float duration, float offsetPercent) {
+		float total = currentSeconds();
+		float range = (to - from) * 0.5f;
+		return from + range + MathUtils.sin(((total + duration * offsetPercent) / duration) * MathUtils.TAU) * range;
+	}
+
+	public static boolean betweenInterval(float time, float interval, float offset) {
+		return (time - offset) % (interval * 2) >= interval;
+	}
+
+	public static final boolean betweenInterval(float interval, float offset) {
+		return betweenInterval(currentSeconds(), interval, offset);
+	}
+
 }

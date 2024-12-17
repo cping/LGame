@@ -7,6 +7,7 @@ import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.Shape;
 import loon.geom.Triangle;
+import loon.geom.XY;
 import loon.utils.MathUtils;
 
 public class GLRenderer implements LRelease {
@@ -165,6 +166,13 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(fx, fy, 0);
 		_renderer.color(colorFloat);
 		_renderer.vertex(x2, y2, 0);
+	}
+
+	public void triangle(XY a, XY b, XY c) {
+		if (a == null || b == null || c == null) {
+			return;
+		}
+		triangle(a.getX(), a.getY(), b.getX(), b.getY(), c.getX(), c.getY());
 	}
 
 	public void triangle(float x1, float y1, float x2, float y2, float x3, float y3) {
@@ -341,7 +349,6 @@ public class GLRenderer implements LRelease {
 			throw new LSysException("Must call begin(GLType.Line)");
 		}
 		if (vertices.length < 6) {
-
 			throw new LSysException("Polygons must contain at least 3 points.");
 		}
 		if (vertices.length % 2 != 0) {

@@ -524,6 +524,9 @@ public class LongArray implements IArray, LRelease {
 	}
 
 	public long min() {
+		if (this.length == 0) {
+			return -1;
+		}
 		long v = this.items[0];
 		final int size = this.length;
 		for (int i = size - 1; i > -1; i--) {
@@ -536,6 +539,9 @@ public class LongArray implements IArray, LRelease {
 	}
 
 	public long max() {
+		if (this.length == 0) {
+			return -1;
+		}
 		long v = this.items[0];
 		final int size = this.length;
 		for (int i = size - 1; i > -1; i--) {

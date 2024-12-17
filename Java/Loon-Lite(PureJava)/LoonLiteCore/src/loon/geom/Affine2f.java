@@ -96,6 +96,28 @@ public class Affine2f implements LTrans, XY {
 		return xform;
 	}
 
+	public final static Affine2f merge(Affine2f src, Affine2f dst, Affine2f result) {
+		float amaxx = src.tx + src.m00;
+		float amaxy = src.ty + src.m11;
+		float bmaxx = dst.tx + dst.m00;
+		float bmaxy = dst.ty + dst.m11;
+		float minx = result.tx = MathUtils.max(src.tx, dst.tx);
+		float miny = result.ty = MathUtils.max(src.ty, dst.ty);
+		result.m01 = result.m10 = 0f;
+		result.tx = minx;
+		result.ty = miny;
+		if (amaxx <= dst.tx || amaxy <= dst.ty || bmaxx <= src.tx || bmaxy <= src.ty) {
+			result.m00 = -0.1f;
+			result.m11 = -0.1f;
+		} else {
+			float maxx = MathUtils.min(amaxx, bmaxx);
+			float maxy = MathUtils.min(amaxy, bmaxy);
+			result.m00 = maxx - minx;
+			result.m11 = maxy - miny;
+		}
+		return result;
+	}
+
 	public final static RectBox transformRect(RectBox rect, Affine2f aff) {
 		if (rect == null) {
 			return rect;
@@ -729,6 +751,14 @@ public class Affine2f implements LTrans, XY {
 
 	public float mapY(float tx, float ty) {
 		return this.m01 * tx + this.m11 * ty + this.ty;
+	}
+
+	public Affine2f merge(Affine2f dst) {
+		return merge(this, new Affine2f());
+	}
+
+	public Affine2f merge(Affine2f dst, Affine2f result) {
+		return merge(this, dst, result);
 	}
 
 	/**

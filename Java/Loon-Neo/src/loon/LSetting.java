@@ -148,6 +148,8 @@ public class LSetting {
 	 */
 	public boolean fps_time_fixed = false;
 
+	private float aspect;
+
 	/**
 	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
 	 * 
@@ -452,7 +454,12 @@ public class LSetting {
 		this.height = MathUtils.divTwoAbs(MathUtils.floor(h));
 		this.width_zoom = MathUtils.divTwoAbs(MathUtils.floor(zw));
 		this.height_zoom = MathUtils.divTwoAbs(MathUtils.floor(zh));
+		this.aspect = this.width / (float) this.height;
 		return this;
+	}
+
+	public float getAspect() {
+		return this.aspect;
 	}
 
 	public DPI getDpi() {
