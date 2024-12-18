@@ -31,8 +31,6 @@ public class MeshBatch extends BaseBatch {
 
 	private Mesh meshObject;
 
-	private int _count = 0;
-
 	private int _idx = 0;
 
 	public void submit() {
@@ -87,6 +85,7 @@ public class MeshBatch extends BaseBatch {
 				a2f.translate(-w, -h);
 			}
 		}
+		drawCallCount = 0;
 	}
 
 	@Override
@@ -121,11 +120,6 @@ public class MeshBatch extends BaseBatch {
 	}
 
 	@Override
-	public String toString() {
-		return "tris/" + _count;
-	}
-
-	@Override
 	public void addQuad(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb) {
 		if (meshData.blend != -1) {
@@ -134,7 +128,12 @@ public class MeshBatch extends BaseBatch {
 		meshData.texture = getCurrentTexture();
 		meshObject.setMesh(meshData);
 		meshObject.paint(tint, m00, m01, m10, m11, tx, ty, left, top, right, bottom, sl, st, sr, sb);
-		_count++;
+		this.drawCallCount++;
+	}
+
+	@Override
+	public String toString() {
+		return "tris/" + drawCallCount;
 	}
 
 }

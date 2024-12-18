@@ -112,6 +112,11 @@ public class LSetting {
 	public boolean isSprites = false;
 
 	/**
+	 * 是否显示渲染命令调用次数
+	 */
+	public boolean isDrawCall = false;
+
+	/**
 	 * 是否显示logo（替换logo使用logoPath指定地址）
 	 */
 	public boolean isLogo = false;

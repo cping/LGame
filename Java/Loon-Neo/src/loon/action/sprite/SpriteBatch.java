@@ -72,6 +72,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 	private boolean ownsShader;
 
 	private float color = LColor.white.toFloatBits();
+	private int drawCallCount;
 
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
@@ -375,6 +376,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		}
 		setupMatrices();
 		drawing = true;
+		drawCallCount = 0;
 	}
 
 	public BlendState getBlendState() {
@@ -404,6 +406,15 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 			shader.end();
 		}
 		LSystem.mainBeginDraw();
+		drawCallCount = 0;
+	}
+
+	public void clearDrawCallCount() {
+		this.drawCallCount = 0;
+	}
+
+	public int getDrawCallCount() {
+		return drawCallCount;
 	}
 
 	private void checkDrawing() {
@@ -1101,6 +1112,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float x, float y, float width, float height, float rotation, LColor c) {
@@ -1243,6 +1255,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, Vector2f pos, RectBox srcBox, LColor c) {
@@ -1308,6 +1321,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float x, float y) {
@@ -1381,6 +1395,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float[] spriteVertices, int offset, int length) {
@@ -1406,6 +1421,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 			offset += vertexCount;
 			idx += vertexCount;
 		}
+		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float rotation) {
@@ -1460,6 +1476,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
@@ -1571,6 +1588,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	@Override
@@ -1624,6 +1642,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
@@ -1751,38 +1770,47 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v4);
 
 		this.idx = idx;
+		this.drawCallCount++;
 	}
 
 	public void drawPoint(int x, int y) {
 		drawPointImpl(x, y);
+		this.drawCallCount++;
 	}
 
 	public void fillPolygon(float xPoints[], float yPoints[], int nPoints) {
 		fillPolygonImpl(xPoints, yPoints, nPoints);
+		this.drawCallCount++;
 	}
 
 	public void drawPolygon(float[] xPoints, float[] yPoints, int nPoints) {
 		drawPolygonImpl(xPoints, yPoints, nPoints);
+		this.drawCallCount++;
 	}
 
 	public void drawOval(float x1, float y1, float width, float height) {
 		drawOvalImpl(x1, y1, width, height);
+		this.drawCallCount++;
 	}
 
 	public void fillOval(float x1, float y1, float width, float height) {
 		fillOvalImpl(x1, y1, width, height);
+		this.drawCallCount++;
 	}
 
 	public void drawArc(RectBox rect, float start, float end) {
 		drawArcImpl(rect.x, rect.y, rect.width, rect.height, start, end);
+		this.drawCallCount++;
 	}
 
 	public void drawArc(float x1, float y1, float width, float height, float start, float end) {
 		drawArcImpl(x1, y1, width, height, start, end);
+		this.drawCallCount++;
 	}
 
 	public void fillArc(float x1, float y1, float width, float height, float start, float end) {
 		fillArcImpl(x1, y1, width, height, start, end);
+		this.drawCallCount++;
 	}
 
 	@Override
@@ -1810,6 +1838,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		drawLineImpl(tempX, tempY + 1, tempX, tempHeight, lineWidth);
 		drawLineImpl(tempWidth, tempHeight, tempX + 1, tempHeight, lineWidth);
 		drawLineImpl(tempWidth, tempHeight - 1, tempWidth, tempY + 1, lineWidth);
+		this.drawCallCount++;
 	}
 
 	public void drawRect(float x, float y, float width, float height) {
@@ -1818,10 +1847,12 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 
 	public final void drawRoundRect(float x, float y, float width, float height, int radius) {
 		drawRoundRectImpl(x, y, width, height, radius, radius);
+		this.drawCallCount++;
 	}
 
 	public final void fillRoundRect(float x, float y, float width, float height, int radius) {
 		fillRoundRectImpl(x, y, width, height, radius);
+		this.drawCallCount++;
 	}
 
 	public void fillRect(float x, float y, float width, float height) {
@@ -1834,6 +1865,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 
 	public void draw(Shape shape, float x, float y) {
 		drawShapeImpl(shape, x, y);
+		this.drawCallCount++;
 	}
 
 	public void fill(Shape shape) {
@@ -1842,6 +1874,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 
 	public void fill(Shape shape, float x, float y) {
 		fillShapeImpl(shape, x, y);
+		this.drawCallCount++;
 	}
 
 	@Override

@@ -187,9 +187,13 @@ public class Display extends BaseIO implements LRelease {
 
 	private final static String DESKTOP_STR = "DESKTOP:";
 
+	private final static String DRAWCALL_STR = "DRAWCALL:";
+
 	private String displayMemony = MEMORY_STR;
 
 	private String displaySprites = SPRITE_STR;
+
+	private String displayDrawCall = DRAWCALL_STR;
 
 	private StrBuilder displayMessage = new StrBuilder(32);
 
@@ -223,6 +227,8 @@ public class Display extends BaseIO implements LRelease {
 
 	private LSetting _setting;
 
+	private int _displayTop;
+
 	protected boolean showLogo = false, initDrawConfig = false;
 
 	private boolean logDisplayCreated = false;
@@ -248,6 +254,7 @@ public class Display extends BaseIO implements LRelease {
 		updateSyncTween(_setting.isSyncTween);
 		this.displayMemony = MEMORY_STR + "0";
 		this.displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
+		this.displayDrawCall = DRAWCALL_STR + "0";
 		if (!_setting.isLogo) {
 			_process.start();
 		}
@@ -518,7 +525,8 @@ public class Display extends BaseIO implements LRelease {
 		}
 		final boolean debug = setting.isDebug;
 
-		if (debug || setting.isFPS || setting.isMemory || setting.isSprites) {
+		if (debug || setting.isFPS || setting.isMemory || setting.isSprites || setting.isDrawCall) {
+
 			this.frameCount++;
 			this.frameDelta += delta;
 
@@ -566,26 +574,41 @@ public class Display extends BaseIO implements LRelease {
 
 				displaySprites = displayMessage.toString();
 
+				displayMessage.setLength(0);
+				displayMessage.append(DRAWCALL_STR);
+				displayMessage.append(gl.getDrawCallCount());
+
+				displayDrawCall = displayMessage.toString();
+
 			}
 			if (displayFont != null) {
+
+				final int maxHeight = MathUtils.max(10, displayFont.getSize()) + 2;
+
 				// 显示fps速度
 				if (debug || setting.isFPS) {
-					displayFont.drawString(gl, FPS_STR + frameRate, 5, 5, 0, LColor.white);
+					displayFont.drawString(gl, FPS_STR + frameRate, 5, _displayTop += 5, 0, LColor.white);
 				}
 				// 显示内存占用
 				if (debug || setting.isMemory) {
-					displayFont.drawString(gl, displayMemony, 5, 25, 0, LColor.white);
+					displayFont.drawString(gl, displayMemony, 5, _displayTop += maxHeight, 0, LColor.white);
 				}
 				// 显示精灵与组件数量
 				if (debug || setting.isSprites) {
-					displayFont.drawString(gl, displaySprites, 5, 45, 0, LColor.white);
+					displayFont.drawString(gl, displaySprites, 5, _displayTop += maxHeight, 0, LColor.white);
+				}
+				// 显示渲染次数
+				if (debug || setting.isDrawCall) {
+					displayFont.drawString(gl, displayDrawCall, 5, _displayTop += maxHeight, 0, LColor.white);
 				}
 				// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
 				if (debug && setting.isDisplayLog) {
-					paintLog(gl, 5, 65);
+					paintLog(gl, 5, _displayTop += maxHeight);
 				}
+				_displayTop = 0;
 			}
 		}
+
 	}
 
 	public boolean isRunning() {

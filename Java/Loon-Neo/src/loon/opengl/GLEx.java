@@ -127,6 +127,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	private int scissorDepth;
 
+	private int drawCallCount;
+
 	private boolean isClosed = false;
 
 	private Graphics gfx;
@@ -279,6 +281,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (batch == null) {
 			return this;
 		}
+		drawCallCount = 0;
 		target.bind();
 		beginBatch(batch);
 		startFrameBuffer();
@@ -300,6 +303,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		stopFrameBuffer();
 		batch.end();
+		drawCallCount = 0;
 		return this;
 	}
 
@@ -402,11 +406,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return null;
 		}
-		if (b == null) {
+		if (b == null || b == this.batch) {
 			return null;
 		}
 		BaseBatch oldBatch = batch;
 		save();
+		drawCallCount += batch.getDrawCallCount();
 		batch.end();
 		batch = beginBatch(b);
 		return oldBatch;
@@ -416,7 +421,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return null;
 		}
-		if (oldBatch != null) {
+		if (oldBatch != null && oldBatch != this.batch) {
+			drawCallCount += batch.getDrawCallCount();
 			batch.end();
 			batch = beginBatch(oldBatch);
 			restore();
@@ -2803,6 +2809,20 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return glRenderer;
 	}
 
+	public void clearDrawCall() {
+		if (glRenderer != null) {
+			glRenderer.clearDrawCall();
+		}
+		if (batch != null) {
+			batch.clearDrawCall();
+		}
+		this.drawCallCount = 0;
+	}
+
+	public int getDrawCallCount() {
+		return batch == null ? drawCallCount : batch.drawCallCount + drawCallCount;
+	}
+
 	public GLEx drawLine(float x1, float y1, float x2, float y2) {
 		return $drawLine(x1, y1, x2, y2, true);
 	}
@@ -2833,6 +2853,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			if (use) {
 				endRenderer();
 			}
+			drawCallCount++;
 			return this;
 		}
 	}
@@ -2876,6 +2897,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			drawShapeImpl(shape, x, y);
+			drawCallCount++;
 		} else {
 			float[] points = shape.getPoints();
 			if (points.length == 0) {
@@ -2901,6 +2923,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				glRenderer.polygon(points);
 				endRenderer();
 			}
+			drawCallCount++;
 		}
 		return this;
 	}
@@ -2964,6 +2987,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			glRenderer.polyline(points);
 			endRenderer();
 		}
+		drawCallCount++;
 		return this;
 	}
 
@@ -3013,6 +3037,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			glRenderer.drawShape(shape, x, y);
 			endRenderer();
 		}
+		drawCallCount++;
 		return this;
 	}
 
@@ -3104,6 +3129,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		glRenderer.setColor(argb);
 		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		endRenderer();
+		drawCallCount++;
 		return this;
 	}
 
@@ -3124,6 +3150,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		glRenderer.setColor(argb);
 		glRenderer.triangle(x1, y1, x2, y2, x3, y3);
 		endRenderer();
+		drawCallCount++;
 		return this;
 	}
 
@@ -3568,6 +3595,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	public GLEx fillOval(float x1, float y1, float width, float height) {
 		if (this.lastBrush.alltextures) {
 			fillOvalImpl(x1, y1, width, height);
+			drawCallCount++;
 			return this;
 		} else {
 			return this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, MathUtils.DEG_FULL);
@@ -3589,6 +3617,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		setTint(c);
 		if (this.lastBrush.alltextures) {
 			fillOvalImpl(x1, y1, width, height);
+			drawCallCount++;
 		} else {
 			this.fillArc(x1, y1, width, height, LSystem.LAYER_TILE_SIZE, 0, MathUtils.DEG_FULL);
 		}
@@ -3612,6 +3641,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			glRenderer.point(x, y);
 			endRenderer();
 		}
+		drawCallCount++;
 		return this;
 	}
 
@@ -3634,6 +3664,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			glRenderer.point(x, y);
 			endRenderer();
 		}
+		drawCallCount++;
 		return this;
 	}
 
@@ -3658,6 +3689,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			}
 			endRenderer();
 		}
+		drawCallCount++;
 		return this;
 	}
 
@@ -3674,6 +3706,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			fillPolygonImpl(xPoints, yPoints, nPoints);
+			drawCallCount++;
 		} else {
 			_currentPolys.setPolygon(xPoints, yPoints, nPoints);
 			fill(_currentPolys);
@@ -3694,6 +3727,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			drawPolygonImpl(xPoints, yPoints, nPoints);
+			drawCallCount++;
 		} else {
 			_currentPolys.setPolygon(xPoints, yPoints, nPoints);
 			draw(_currentPolys);
@@ -3714,6 +3748,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			return this;
 		}
 		drawPolygonImpl(xPoints, yPoints, nPoints);
+		drawCallCount++;
 		return this;
 	}
 
@@ -4006,6 +4041,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				setPixSkip(MathUtils.floor(MathUtils.max(this.lastBrush.lineWidth, skip)));
 				drawArcImpl(x1, y1, width, height, start, end);
 				setPixSkip(skip);
+				drawCallCount++;
 			} else {
 				oval(x1, y1, width, height, this.lastBrush.lineWidth);
 			}
@@ -4024,6 +4060,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
 				}
 				endRenderer();
+				drawCallCount++;
 			} else {
 				draw(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
 			}
@@ -4110,6 +4147,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			fillArcImpl(x1, y1, width, height, start, end);
+			drawCallCount++;
 		} else {
 			final float radiusW = width / 2f;
 			final float radiusH = height / 2f;
@@ -4125,6 +4163,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 					glRenderer.arc(cx, cy, MathUtils.min(radiusW, radiusH), start, end, segments, reverse);
 				}
 				endRenderer();
+				drawCallCount++;
 			} else {
 				fill(new Ellipse(cx, cy, radiusW, radiusH, start, end, segments));
 			}
@@ -4161,6 +4200,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			drawRoundRectImpl(x, y, width, height, radius);
+			drawCallCount++;
 		} else {
 			if (radius < 0) {
 				throw new LSysException("radius > 0");
@@ -4215,6 +4255,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		if (this.lastBrush.alltextures) {
 			fillRoundRectImpl(x, y, width, height, radius);
+			drawCallCount++;
 		} else {
 			if (radius < 0) {
 				throw new LSysException("radius > 0");

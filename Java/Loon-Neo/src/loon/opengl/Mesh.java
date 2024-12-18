@@ -120,7 +120,6 @@ public class Mesh implements LRelease {
 
 	public Mesh setVertices(float[] vertices, int offset, int count) {
 		this.vertices.setVertices(vertices, offset, count);
-
 		return this;
 	}
 

@@ -48,8 +48,8 @@ public class LTextureBind extends GLBase {
 	@Override
 	public void end() {
 		super.end();
-		lastTexId = -1;
-		curTexId = -1;
+		this.lastTexId = -1;
+		this.curTexId = -1;
 	}
 
 	protected LTextureBind(GL20 gl) {

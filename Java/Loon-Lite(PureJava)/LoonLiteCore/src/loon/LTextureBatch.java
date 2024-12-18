@@ -117,6 +117,8 @@ public class LTextureBatch implements LRelease {
 
 	private int _blendMode;
 
+	private int _drawCallCount;
+
 	private MeshData _meshdata;
 
 	private String _source;
@@ -151,7 +153,8 @@ public class LTextureBatch implements LRelease {
 		if (!isCacheLocked) {
 			vertexIdx = 0;
 		}
-		drawing = true;
+		this.drawing = true;
+		this._drawCallCount = 0;
 		return this;
 	}
 
@@ -165,7 +168,8 @@ public class LTextureBatch implements LRelease {
 		if (vertexIdx > 0) {
 			submit(tx, ty);
 		}
-		drawing = false;
+		this.drawing = false;
+		this._drawCallCount = 0;
 		return this;
 	}
 
@@ -257,6 +261,7 @@ public class LTextureBatch implements LRelease {
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(gl.tx());
 			canvas.draw(_buffer.snapshot(), x, y);
+			_drawCallCount++;
 		}
 		return this;
 	}
@@ -300,8 +305,17 @@ public class LTextureBatch implements LRelease {
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(_buffer.snapshot(), x, y);
+			_drawCallCount++;
 		}
 		return this;
+	}
+
+	public void clearDrawCallCount() {
+		this._drawCallCount = 0;
+	}
+
+	public int getDrawCallCount() {
+		return _drawCallCount;
 	}
 
 	public boolean isDrawing() {
@@ -515,7 +529,7 @@ public class LTextureBatch implements LRelease {
 		}
 
 		vertexIdx += 9;
-
+		_drawCallCount++;
 		return this;
 	}
 
@@ -589,6 +603,7 @@ public class LTextureBatch implements LRelease {
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(cache._image, x, y);
+			_drawCallCount++;
 		}
 		return this;
 	}

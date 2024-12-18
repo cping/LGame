@@ -42,6 +42,8 @@ public class GLRenderer implements LRelease {
 
 	private GLEx _gl;
 
+	private int _drawCallCount;
+
 	public GLRenderer() {
 		this(null, 4096);
 	}
@@ -65,6 +67,15 @@ public class GLRenderer implements LRelease {
 			_affine = LSystem.base().display().GL().tx();
 		}
 		_renderer.begin(_affine, _currType.glType);
+		clearDrawCall();
+	}
+
+	public void clearDrawCall() {
+		this._drawCallCount = 0;
+	}
+
+	public int getDrawCallCount() {
+		return this._drawCallCount;
 	}
 
 	public void setColor(int argb) {
@@ -90,6 +101,7 @@ public class GLRenderer implements LRelease {
 		checkFlush(1);
 		_renderer.color(_currentColor.toFloatBits());
 		_renderer.vertex(x, y, z);
+		_drawCallCount++;
 	}
 
 	public void line(float x, float y, float z, float x2, float y2, float z2) {
@@ -102,6 +114,7 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(x, y, z);
 		_renderer.color(colorFloat);
 		_renderer.vertex(x2, y2, z2);
+		_drawCallCount++;
 	}
 
 	public void line(float x, float y, float x2, float y2) {
@@ -114,6 +127,7 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(x, y, 0);
 		_renderer.color(colorFloat);
 		_renderer.vertex(x2, y2, 0);
+		_drawCallCount++;
 	}
 
 	public void curve(float x1, float y1, float cx1, float cy1, float cx2, float cy2, float x2, float y2,
@@ -166,6 +180,7 @@ public class GLRenderer implements LRelease {
 		_renderer.vertex(fx, fy, 0);
 		_renderer.color(colorFloat);
 		_renderer.vertex(x2, y2, 0);
+		_drawCallCount++;
 	}
 
 	public void triangle(XY a, XY b, XY c) {
@@ -204,6 +219,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x3, y3, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void rect(float x, float y, float width, float height) {
@@ -248,6 +264,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x, y, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void rect(float x, float y, float width, float height, LColor col1, LColor col2, LColor col3, LColor col4) {
@@ -291,6 +308,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(col1.r, col1.g, col1.b, col1.a);
 			_renderer.vertex(x, y, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void oval(float x, float y, float radius) {
@@ -342,6 +360,7 @@ public class GLRenderer implements LRelease {
 		cy = 0;
 		_renderer.color(colorFloat);
 		_renderer.vertex(x + cx, y + cy, 0);
+		_drawCallCount++;
 	}
 
 	public void polygon(float[] vertices) {
@@ -382,6 +401,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x2, y2, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void polygon(float[] xs, float[] ys, int size) {
@@ -422,6 +442,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x2, y2, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void polyline(float[] vertices) {
@@ -460,6 +481,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x2, y2, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void polyline(float[] xs, float[] ys, int count) {
@@ -483,6 +505,7 @@ public class GLRenderer implements LRelease {
 			_renderer.color(colorFloat);
 			_renderer.vertex(x2, y2, 0);
 		}
+		_drawCallCount++;
 	}
 
 	public void drawShape(Shape shape, float x, float y) {
@@ -502,6 +525,7 @@ public class GLRenderer implements LRelease {
 				_renderer.vertex(pt[0] + x, pt[1] + y);
 			}
 		}
+		_drawCallCount++;
 	}
 
 	public void arc(float x, float y, float radius, float start, float degrees) {
@@ -591,6 +615,7 @@ public class GLRenderer implements LRelease {
 		cy = 0;
 		_renderer.color(colorFloat);
 		_renderer.vertex(x + cx, y + cy, 0);
+		_drawCallCount++;
 	}
 
 	private void checkFlush(int newVertices) {
@@ -622,6 +647,7 @@ public class GLRenderer implements LRelease {
 				LSystem.mainBeginDraw();
 			}
 		}
+		clearDrawCall();
 	}
 
 	public GLRenderer setGLEx(GLEx g) {

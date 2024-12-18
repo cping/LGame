@@ -28,7 +28,13 @@ public abstract class GLBase implements LRelease {
 
 	public boolean begun;
 
+	protected int drawCallCount;
+
 	public abstract void init();
+
+	public int getDrawCallCount() {
+		return drawCallCount;
+	}
 
 	public boolean running() {
 		return begun;
@@ -39,6 +45,11 @@ public abstract class GLBase implements LRelease {
 			throw new LSysException(getClass().getSimpleName() + " mismatched begin()");
 		}
 		begun = true;
+		clearDrawCall();
+	}
+
+	public void clearDrawCall() {
+		this.drawCallCount = 0;
 	}
 
 	public void flush() {
@@ -53,7 +64,7 @@ public abstract class GLBase implements LRelease {
 		} finally {
 			begun = false;
 		}
-
+		clearDrawCall();
 	}
 
 	@Override

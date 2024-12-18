@@ -156,10 +156,10 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, sy3);
 
 		this._currentIndexCount = index;
-
 		if (lastTexId != curTexId) {
 			flush();
 		}
+		this.drawCallCount++;
 	}
 
 	@Override
@@ -213,11 +213,10 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, v);
 
 		this._currentIndexCount = index;
-
 		if (lastTexId != curTexId) {
 			flush();
 		}
-
+		this.drawCallCount++;
 	}
 
 	@Override
@@ -252,8 +251,9 @@ public class TrilateralBatch extends BaseBatch {
 			}
 			_loaded = true;
 		}
-		_currentBatchShader.begin();
-		setupMatrices();
+		this._currentBatchShader.begin();
+		this.drawCallCount = 0;
+		this.setupMatrices();
 	}
 
 	@Override

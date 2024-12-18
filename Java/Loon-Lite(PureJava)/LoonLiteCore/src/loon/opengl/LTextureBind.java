@@ -28,8 +28,10 @@ import loon.utils.GLUtils;
 public class LTextureBind extends GLBase {
 
 	protected Canvas gl = null;
+
 	protected int curTexId = -1;
 	protected int lastTexId = -1;
+
 	protected LTexture lastTexture = null;
 
 	public int getCurrentTextureID() {
@@ -61,6 +63,11 @@ public class LTextureBind extends GLBase {
 		super.end();
 		lastTexId = -1;
 		curTexId = -1;
+		drawCallCount = -1;
+	}
+
+	public int getDrawCallCount() {
+		return drawCallCount;
 	}
 
 	protected LTextureBind(Canvas g) {

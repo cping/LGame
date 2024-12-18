@@ -106,6 +106,8 @@ public class GLEx implements LRelease {
 
 	private int scissorDepth;
 
+	private int drawCallCount;
+
 	private boolean isClosed = false;
 
 	private Graphics gfx;
@@ -203,6 +205,7 @@ public class GLEx implements LRelease {
 		if (isClosed || (batch == null)) {
 			return this;
 		}
+		drawCallCount = 0;
 		beginBatch(batch);
 		return this;
 	}
@@ -218,6 +221,7 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		batch.end();
+		drawCallCount = 0;
 		return this;
 	}
 
@@ -256,11 +260,12 @@ public class GLEx implements LRelease {
 	}
 
 	public BaseBatch pushBatch(BaseBatch b) {
-		if (isClosed || (b == null)) {
+		if (isClosed || (b == null || b == this.batch)) {
 			return null;
 		}
 		BaseBatch oldBatch = batch;
 		save();
+		drawCallCount += batch.getDrawCallCount();
 		batch.end();
 		batch = beginBatch(b);
 		return oldBatch;
@@ -270,12 +275,24 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return null;
 		}
-		if (oldBatch != null) {
+		if (oldBatch != null && oldBatch != this.batch) {
+			drawCallCount += batch.getDrawCallCount();
 			batch.end();
 			batch = beginBatch(oldBatch);
 			restore();
 		}
 		return batch;
+	}
+
+	public void clearDrawCall() {
+		if (batch != null) {
+			batch.clearDrawCall();
+		}
+		this.drawCallCount = 0;
+	}
+
+	public int getDrawCallCount() {
+		return batch == null ? drawCallCount : batch.drawCallCount + drawCallCount;
 	}
 
 	/**
@@ -1611,6 +1628,7 @@ public class GLEx implements LRelease {
 		g.drawLine(x0, y0, x1, y1);
 		g.setLineWidth(old);
 		g.setColor(c);
+		drawCallCount++;
 		return this;
 	}
 
@@ -1822,6 +1840,7 @@ public class GLEx implements LRelease {
 		canvas.setStrokeColor(syncBrushColor());
 		canvas.strokePath(path);
 		canvas.setStrokeColor(color);
+		drawCallCount++;
 		return this;
 	}
 
@@ -1879,6 +1898,7 @@ public class GLEx implements LRelease {
 		canvas.setStrokeColor(syncBrushColor());
 		canvas.strokePath(path);
 		canvas.setStrokeColor(color);
+		drawCallCount++;
 		return this;
 	}
 
@@ -1916,6 +1936,7 @@ public class GLEx implements LRelease {
 		canvas.setColor(syncBrushColor());
 		canvas.fillPath(path);
 		canvas.setColor(color);
+		drawCallCount++;
 		return this;
 	}
 
@@ -2490,6 +2511,7 @@ public class GLEx implements LRelease {
 		canvas.setTransform(tx());
 		canvas.drawPoint(x, y);
 		canvas.setColor(tmp);
+		drawCallCount++;
 		return this;
 	}
 
@@ -2512,6 +2534,7 @@ public class GLEx implements LRelease {
 		path.close();
 		canvas.strokePath(path);
 		canvas.setColor(tmp);
+		drawCallCount++;
 		return this;
 	}
 
@@ -2590,6 +2613,7 @@ public class GLEx implements LRelease {
 		canvas.setTransform(tx());
 		canvas.drawRect(x1, y1, x2, y2, syncBrushColor(color));
 		canvas.setColor(tmp);
+		drawCallCount++;
 		return this;
 	}
 
@@ -2726,6 +2750,7 @@ public class GLEx implements LRelease {
 		Canvas canvas = gfx.getCanvas();
 		canvas.setTransform(tx());
 		canvas.fillRect(x1, y1, x2, y2, syncBrushColor(color));
+		drawCallCount++;
 		return this;
 	}
 
