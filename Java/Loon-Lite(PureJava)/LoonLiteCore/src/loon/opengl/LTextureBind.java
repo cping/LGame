@@ -63,7 +63,6 @@ public class LTextureBind extends GLBase {
 		super.end();
 		lastTexId = -1;
 		curTexId = -1;
-		drawCallCount = -1;
 	}
 
 	public int getDrawCallCount() {

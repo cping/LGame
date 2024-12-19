@@ -230,7 +230,7 @@ public class Display extends BaseIO implements LRelease {
 	private LSetting _setting;
 
 	private int _displayTop;
-	
+
 	protected boolean showLogo = false, initDrawConfig = false;
 
 	private boolean logDisplayCreated = false;
@@ -496,8 +496,8 @@ public class Display extends BaseIO implements LRelease {
 			_glEx.restoreTx();
 			_glEx.clearFrame();
 			_process.resetTouch();
+			GraphicsDrawCall.clear();
 		}
-
 	}
 
 	private void onFrame() {
@@ -611,7 +611,7 @@ public class Display extends BaseIO implements LRelease {
 
 				displayMessage.setLength(0);
 				displayMessage.append(DRAWCALL_STR);
-				displayMessage.append(gl.getDrawCallCount());
+				displayMessage.append(GraphicsDrawCall.getCount() + gl.getDrawCallCount());
 
 				displayDrawCall = displayMessage.toString();
 

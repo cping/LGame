@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.GraphicsDrawCall;
 import loon.LGame;
 import loon.LSysException;
 import loon.LSystem;
@@ -499,6 +500,8 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 			if (!lockSubmit) {
 				idx = 0;
 			}
+			this.drawCallCount++;
+			GraphicsDrawCall.add(drawCallCount);
 		}
 	}
 
@@ -1112,7 +1115,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float x, float y, float width, float height, float rotation, LColor c) {
@@ -1255,7 +1257,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, Vector2f pos, RectBox srcBox, LColor c) {
@@ -1321,7 +1322,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float x, float y) {
@@ -1395,7 +1395,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTexture texture, float[] spriteVertices, int offset, int length) {
@@ -1421,7 +1420,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 			offset += vertexCount;
 			idx += vertexCount;
 		}
-		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float rotation) {
@@ -1476,7 +1474,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
@@ -1588,7 +1585,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	@Override
@@ -1642,7 +1638,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void draw(LTextureRegion region, float x, float y, float originX, float originY, float width, float height,
@@ -1770,7 +1765,6 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		expandVertices.setVertice(idx++, v4);
 
 		this.idx = idx;
-		this.drawCallCount++;
 	}
 
 	public void drawPoint(int x, int y) {

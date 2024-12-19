@@ -159,7 +159,6 @@ public class TrilateralBatch extends BaseBatch {
 		if (lastTexId != curTexId) {
 			flush();
 		}
-		this.drawCallCount++;
 	}
 
 	@Override
@@ -216,7 +215,6 @@ public class TrilateralBatch extends BaseBatch {
 		if (lastTexId != curTexId) {
 			flush();
 		}
-		this.drawCallCount++;
 	}
 
 	@Override

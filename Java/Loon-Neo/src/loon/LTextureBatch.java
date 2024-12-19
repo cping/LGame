@@ -358,7 +358,6 @@ public class LTextureBatch implements LRelease {
 			offset += vertexCount;
 			vertexIdx += vertexCount;
 		}
-		drawCallCount++;
 		return this;
 	}
 
@@ -478,6 +477,8 @@ public class LTextureBatch implements LRelease {
 				mesh.reset(name, expandVertices.length());
 			}
 			GLUtils.setBlendMode(gl, old);
+			drawCallCount++;
+			GraphicsDrawCall.add(drawCallCount);
 		}
 		return this;
 	}
@@ -610,6 +611,7 @@ public class LTextureBatch implements LRelease {
 		globalShader.end();
 		LSystem.mainBeginDraw();
 		runningCache = true;
+		GraphicsDrawCall.add(1);
 		return this;
 	}
 
@@ -741,7 +743,6 @@ public class LTextureBatch implements LRelease {
 			glTexCoord2f(widthRatio, yOff);
 
 		}
-		drawCallCount++;
 		return this;
 	}
 
@@ -776,7 +777,6 @@ public class LTextureBatch implements LRelease {
 		glVertex2f(drawX + drawWidth, drawY);
 		glColor4f(c4);
 		glTexCoord2f(textureSrcX + renderWidth, textureSrcY);
-		drawCallCount++;
 		return this;
 	}
 
@@ -1019,7 +1019,6 @@ public class LTextureBatch implements LRelease {
 			glColor4f(colors[LTexture.TOP_RIGHT]);
 			glTexCoord2f(widthRatio, yOff);
 		}
-		drawCallCount++;
 		return this;
 	}
 
@@ -1082,7 +1081,6 @@ public class LTextureBatch implements LRelease {
 			glColor4f(colors[LTexture.TOP_RIGHT]);
 			glTexCoord2f(widthRatio, yOff);
 		}
-		drawCallCount++;
 		return this;
 	}
 
@@ -1148,7 +1146,6 @@ public class LTextureBatch implements LRelease {
 				glTexCoord2f(uvArray[idx], uvArray[idx + 1]);
 			}
 		}
-		drawCallCount++;
 		return this;
 	}
 

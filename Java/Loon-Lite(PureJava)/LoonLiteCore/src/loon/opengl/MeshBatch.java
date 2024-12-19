@@ -128,7 +128,6 @@ public class MeshBatch extends BaseBatch {
 		meshData.texture = getCurrentTexture();
 		meshObject.setMesh(meshData);
 		meshObject.paint(tint, m00, m01, m10, m11, tx, ty, left, top, right, bottom, sl, st, sr, sb);
-		this.drawCallCount++;
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public abstract class GLBase implements LRelease {
 	}
 
 	public void flush() {
-
+		this.drawCallCount++;
 	}
 
 	public void end() {

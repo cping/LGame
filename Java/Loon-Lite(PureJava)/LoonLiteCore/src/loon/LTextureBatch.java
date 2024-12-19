@@ -262,6 +262,7 @@ public class LTextureBatch implements LRelease {
 			canvas.setTransform(gl.tx());
 			canvas.draw(_buffer.snapshot(), x, y);
 			_drawCallCount++;
+			GraphicsDrawCall.add(_drawCallCount);
 		}
 		return this;
 	}
@@ -305,7 +306,7 @@ public class LTextureBatch implements LRelease {
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(_buffer.snapshot(), x, y);
-			_drawCallCount++;
+			GraphicsDrawCall.add(1);
 		}
 		return this;
 	}
@@ -529,7 +530,6 @@ public class LTextureBatch implements LRelease {
 		}
 
 		vertexIdx += 9;
-		_drawCallCount++;
 		return this;
 	}
 
@@ -603,7 +603,7 @@ public class LTextureBatch implements LRelease {
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(display);
 			canvas.draw(cache._image, x, y);
-			_drawCallCount++;
+			GraphicsDrawCall.add(1);
 		}
 		return this;
 	}
