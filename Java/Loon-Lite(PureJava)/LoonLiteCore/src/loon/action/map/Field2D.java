@@ -1376,6 +1376,72 @@ public class Field2D implements IArray, Config, LRelease {
 		return !(x != 0 && y != 0 && x != _width - 1 && y != _height - 1);
 	}
 
+	public Field2D setTilesRect(int cx, int cy, int cwidth, int cheight, int type) {
+		if (cx < 0) {
+			cwidth += cx;
+			cx = 0;
+		}
+		if (cy < 0) {
+			cheight += cy;
+			cy = 0;
+		}
+		if (cx + cwidth > _width) {
+			cwidth = _width - cx;
+		}
+		if (cy + cheight > _height) {
+			cheight = _height - cy;
+		}
+		for (int i = 0; i < cwidth; i++) {
+			for (int j = 0; j < cheight; j++) {
+				setTileType(cx + i, cy + j, type);
+			}
+		}
+		return this;
+	}
+
+	public boolean checkTilesRect(int cx, int cy, int cwidth, int cheight, int type) {
+		if (cx < 0) {
+			cwidth += cx;
+			cx = 0;
+		}
+		if (cy < 0) {
+			cheight += cy;
+			cy = 0;
+		}
+		if (cx + cwidth > _width) {
+			cwidth = _width - cx;
+		}
+		if (cy + cheight > _height) {
+			cheight = _height - cy;
+		}
+		for (int i = 0; i < cwidth; i++) {
+			for (int j = 0; j < cheight; j++) {
+				if (isTileType(cx + i, cy + j, type)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean inColType(int x, int type) {
+		for (int i = 0; i < _height; i++) {
+			if (isTileType(x, i, type)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean inRowType(int y, int type) {
+		for (int i = 0; i < _width; i++) {
+			if (isTileType(i, y, type)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public float getColAt(float worldX, float x) {
 		return getColAt(worldX, x, true);
 	}

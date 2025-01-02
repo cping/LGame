@@ -23,7 +23,9 @@ package loon.utils;
 import loon.LObject;
 import loon.LSysException;
 import loon.LSystem;
+import loon.geom.RangeI;
 import loon.geom.RectBox;
+import loon.geom.RectI.Range;
 import loon.geom.SetXY;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
@@ -1184,6 +1186,34 @@ public final class MathUtils {
 
 	public static float translateY(float angle, float length) {
 		return length * MathUtils.sinDeg(angle);
+	}
+
+	public static RangeI transformIndexToCoordinates(int index, int rows, int cols) {
+		return transformIndexToCoordinates(index, rows, cols, true);
+	}
+
+	public static RangeI transformIndexToCoordinates(int index, int rows, int cols, boolean leftToRight) {
+		if (leftToRight) {
+			int row = index / cols;
+			int col = index % cols;
+			return new RangeI(col, row);
+		} else {
+			int col = index / rows;
+			int row = index % rows;
+			return new RangeI(col, row);
+		}
+	}
+
+	public static int transformCoordinatesToIndex(int row, int col, int rows, int cols) {
+		return transformCoordinatesToIndex(row, col, rows, cols, true);
+	}
+
+	public static int transformCoordinatesToIndex(int row, int col, int rows, int cols, boolean leftToRight) {
+		if (leftToRight) {
+			return row * cols + col;
+		} else {
+			return col * rows + row;
+		}
 	}
 
 	public static int dip2px(float scale, float dpValue) {

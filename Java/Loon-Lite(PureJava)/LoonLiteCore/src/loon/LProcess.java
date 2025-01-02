@@ -32,6 +32,7 @@ import loon.events.SysInputFactory;
 import loon.events.SysInputFactoryImpl;
 import loon.events.TouchMake;
 import loon.events.Updateable;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.GLEx;
@@ -1337,6 +1338,10 @@ public class LProcess implements LRelease {
 
 	public Screen getCurrentScreen() {
 		return _currentScreen;
+	}
+
+	public RectBox getWorldBounds() {
+		return LSystem.viewSize.getRect();
 	}
 
 	public Resolution getOriginResolution() {

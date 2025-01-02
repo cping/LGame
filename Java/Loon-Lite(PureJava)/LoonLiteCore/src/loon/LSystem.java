@@ -527,6 +527,10 @@ public final class LSystem {
 		return graphics == null ? new Scale(1f) : graphics.scale();
 	}
 
+	public static boolean isHiDpi() {
+		return (_scaleWidth != 1f) || (_scaleHeight != 1f);
+	}
+
 	public static float invXScaled(float length) {
 		return length / LSystem.getScaleWidth();
 	}
