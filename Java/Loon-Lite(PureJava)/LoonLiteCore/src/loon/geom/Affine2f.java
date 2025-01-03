@@ -1701,6 +1701,47 @@ public class Affine2f implements LTrans, XY {
 		return this;
 	}
 
+	public Affine2f cpyColumn(int column, XYZW vec) {
+		if (vec == null) {
+			return this;
+		}
+		if (column > 2) {
+			throw new LSysException("Column " + column + " out of bounds (2)");
+		} else if (column == 0) {
+			m00 = vec.getX();
+			m01 = vec.getY();
+		} else if (column == 1) {
+			m10 = vec.getZ();
+			m11 = vec.getW();
+		} else {
+			tx = vec.getX();
+			ty = vec.getY();
+		}
+		return this;
+	}
+
+	public Affine2f cpyColumn(int column, SetXYZ vec) {
+		if (vec == null) {
+			return this;
+		}
+		if (column > 2) {
+			throw new LSysException("Column " + column + " out of bounds (2)");
+		} else if (column == 0) {
+			vec.setX(m00);
+			vec.setY(m01);
+			vec.setZ(0);
+		} else if (column == 1) {
+			vec.setX(m10);
+			vec.setY(m11);
+			vec.setZ(0);
+		} else {
+			vec.setX(tx);
+			vec.setY(ty);
+			vec.setZ(1);
+		}
+		return this;
+	}
+
 	public Affine2f cpy() {
 		return new Affine2f(m00, m01, m10, m11, tx, ty);
 	}

@@ -610,13 +610,86 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	}
 
 	public boolean replace(T src, T dst) {
-		int index1 = indexOf(src);
-		int index2 = indexOf(dst);
+		return replace(src, dst, false);
+	}
+
+	public boolean replace(T src, T dst, boolean identity) {
+		int index1 = indexOf(src, identity);
+		int index2 = indexOf(dst, identity);
 		if (index1 != -1 && index2 == -1) {
 			items[index1] = dst;
 			return true;
 		}
 		return false;
+	}
+
+	public boolean replaceFirst(T src, T dst) {
+		return replaceFirst(src, dst, false);
+	}
+
+	public boolean replaceFirst(T src, T dst, boolean identity) {
+		if (src == null) {
+			return false;
+		}
+		if (dst == null) {
+			return false;
+		}
+		final int idx = indexOf(src, identity);
+		if (idx != -1) {
+			items[idx] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean replaceLast(T src, T dst) {
+		return replaceLast(src, dst, false);
+	}
+
+	public boolean replaceLast(T src, T dst, boolean identity) {
+		if (src == null) {
+			return false;
+		}
+		if (dst == null) {
+			return false;
+		}
+		final int idx = lastIndexOf(src, identity);
+		if (idx != -1) {
+			items[idx] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public int replaceAll(T src, T dst) {
+		return replaceAll(src, dst, false);
+	}
+
+	public int replaceAll(T src, T dst, boolean identity) {
+		int count = -1;
+		if (src == null) {
+			return count;
+		}
+		if (dst == null) {
+			return count;
+		}
+		final T[] items = this.items;
+		if (identity || src == null) {
+			for (int i = 0, n = size; i < n; i++) {
+				if (items[i] == src) {
+					items[i] = dst;
+					count++;
+				}
+			}
+		} else {
+			for (int i = 0, n = size; i < n; i++) {
+				if (src.equals(items[i])) {
+					items[i] = dst;
+					count++;
+				}
+			}
+		}
+		return count;
 	}
 
 	public int getCount(T value) {

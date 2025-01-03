@@ -1464,6 +1464,54 @@ final public class StringUtils extends CharUtils {
 		return split(result, sep);
 	}
 
+	public static IntArray toIntArray(final String mes, final String flag) {
+		if (isNotEmpty(mes)) {
+			String[] list = split(mes, flag);
+			IntArray result = new IntArray(list.length);
+			for (int i = 0; i < list.length; i++) {
+				result.add(Integer.parseInt(list[i]));
+			}
+			return result;
+		}
+		return null;
+	}
+
+	public static FloatArray toFloatArray(final String mes, final String flag) {
+		if (isNotEmpty(mes)) {
+			String[] list = split(mes, flag);
+			FloatArray result = new FloatArray(list.length);
+			for (int i = 0; i < list.length; i++) {
+				result.add(Float.parseFloat(list[i]));
+			}
+			return result;
+		}
+		return null;
+	}
+
+	public static LongArray toLongArray(final String mes, final String flag) {
+		if (isNotEmpty(mes)) {
+			String[] list = split(mes, flag);
+			LongArray result = new LongArray(list.length);
+			for (int i = 0; i < list.length; i++) {
+				result.add(Long.parseLong(list[i]));
+			}
+			return result;
+		}
+		return null;
+	}
+
+	public static BoolArray toBoolArray(final String mes, final String flag) {
+		if (isNotEmpty(mes)) {
+			String[] list = split(mes, flag);
+			BoolArray result = new BoolArray(list.length);
+			for (int i = 0; i < list.length; i++) {
+				result.add(toBoolean(list[i]));
+			}
+			return result;
+		}
+		return null;
+	}
+
 	public static String toTimeCN(long ms) {
 		return toTime(ms, true);
 	}
