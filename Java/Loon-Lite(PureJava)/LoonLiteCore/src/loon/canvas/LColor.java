@@ -812,6 +812,22 @@ public class LColor implements Serializable {
 		return abgr(alpha, red, green, blue);
 	}
 
+	public static final int bgra(float a, float r, float g, float b) {
+		int alpha = (int) (a * 255);
+		int red = (int) (r * 255);
+		int green = (int) (g * 255);
+		int blue = (int) (b * 255);
+		return bgra(alpha, red, green, blue);
+	}
+
+	public static final int rgba(float a, float r, float g, float b) {
+		int alpha = (int) (a * 255);
+		int red = (int) (r * 255);
+		int green = (int) (g * 255);
+		int blue = (int) (b * 255);
+		return rgba(alpha, red, green, blue);
+	}
+
 	/**
 	 * 获得ARGB格式数据
 	 * 
@@ -825,8 +841,43 @@ public class LColor implements Serializable {
 		return (a << 24) | (r << 16) | (g << 8) | b;
 	}
 
+	/**
+	 * 获得ABGR格式数据
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
 	public static final int abgr(int a, int r, int g, int b) {
 		return (a << 24) | (b << 16) | (g << 8) | r;
+	}
+
+	/**
+	 * 获得BGRA格式数据
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static final int bgra(int a, int r, int g, int b) {
+		return (b << 24) | (g << 16) | (r << 8) | a;
+	}
+
+	/**
+	 * 获得RGBA格式数据
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public static final int rgba(int a, int r, int g, int b) {
+		return (r << 24) | (g << 16) | (b << 8) | a;
 	}
 
 	public static final int rgb(int r, int g, int b) {
@@ -1876,6 +1927,24 @@ public class LColor implements Serializable {
 			return cpy();
 		}
 		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+	}
+
+	/**
+	 * 获得rgb中最大数值
+	 * 
+	 * @return
+	 */
+	public float maxRGB() {
+		return MathUtils.max(r, MathUtils.max(g, b));
+	}
+
+	/**
+	 * 获得rgb中最小数值
+	 * 
+	 * @return
+	 */
+	public float minRGB() {
+		return MathUtils.min(r, MathUtils.min(g, b));
 	}
 
 	/**

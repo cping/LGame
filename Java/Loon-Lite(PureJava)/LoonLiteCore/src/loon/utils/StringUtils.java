@@ -2190,6 +2190,19 @@ final public class StringUtils extends CharUtils {
 	 * @return
 	 */
 	public static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit) {
+		return unificationChars(tempChars, messages, limit, false);
+	}
+
+	/**
+	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 
+	 * @param tempChars
+	 * @param messages
+	 * @param limit
+	 * @param sorted
+	 * @return
+	 */
+	public static String unificationChars(CharArray tempChars, char[] messages, CharSequence limit, boolean sorted) {
 		if (messages == null || messages.length == 0) {
 			return LSystem.EMPTY;
 		}
@@ -2222,7 +2235,7 @@ final public class StringUtils extends CharUtils {
 		if (tempChars.length == 0) {
 			return LSystem.EMPTY;
 		} else {
-			return tempChars.sort().getString().trim();
+			return sorted ? tempChars.sort().getString().trim() : tempChars.getString().trim();
 		}
 	}
 

@@ -46,6 +46,22 @@ import loon.utils.parse.StrTokenizer;
 // 但缺点在于，没有提供图像的文字不能被渲染).
 public class BMFont extends FontTrans implements IFont {
 
+	public static BMFont create(String file, String imgFile) {
+		try {
+			return new BMFont(file, imgFile);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static BMFont create(String file) {
+		try {
+			return new BMFont(file);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	private static final int DEFAULT_MAX_CHAR = 256;
 
 	private final char newLineFlag = LSystem.LF;

@@ -31,6 +31,27 @@ import loon.utils.TimeUtils;
  */
 public class StopwatchTimer {
 
+	public static StopwatchTimer create() {
+		return make();
+	}
+
+	public static StopwatchTimer make() {
+		return new StopwatchTimer();
+	}
+
+	public static StopwatchTimer begin() {
+		StopwatchTimer sw = new StopwatchTimer();
+		sw.start();
+		return sw;
+	}
+
+	public static StopwatchTimer run(EventAction a) {
+		StopwatchTimer sw = begin();
+		HelperUtils.callEventAction(a, sw);
+		sw.stop();
+		return sw;
+	}
+
 	private String _currentName;
 
 	private long _from;
@@ -65,25 +86,12 @@ public class StopwatchTimer {
 		this.reset();
 	}
 
-	public static StopwatchTimer begin() {
-		StopwatchTimer sw = new StopwatchTimer();
-		sw.start();
-		return sw;
-	}
-
-	public static StopwatchTimer make() {
-		return new StopwatchTimer();
-	}
-
-	public static StopwatchTimer run(EventAction a) {
-		StopwatchTimer sw = begin();
-		HelperUtils.callEventAction(a, sw);
-		sw.stop();
-		return sw;
-	}
-
 	public boolean isWaiting() {
 		return !isDone();
+	}
+
+	public boolean isRunning() {
+		return isWaiting();
 	}
 
 	public boolean isDoneAndReset() {
@@ -128,6 +136,10 @@ public class StopwatchTimer {
 		this._to = (_timeOff == -1) ? currentTime() : _timeOff;
 		this._over = true;
 		return this;
+	}
+
+	public long getTime() {
+		return isWaiting() ? currentTime() - _from + _to : _lastStop;
 	}
 
 	public long getDuration() {
