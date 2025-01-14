@@ -57,6 +57,25 @@ public class Text implements LRelease {
 	protected FloatArray _lineWidths = new FloatArray(1);
 	protected float _width = 0, _height = 0;
 
+	public Text(final IFont font, final byte[] bytes) {
+		this(font, bytes, new TextOptions());
+	}
+
+	public Text(final IFont font, final byte[] bytes, final TextOptions opt) {
+		String result = null;
+		try {
+			result = new String(bytes, LSystem.ENCODING);
+		} catch (Exception e) {
+			result = new String(bytes);
+		}
+		if (opt != null) {
+			this._textOptions = opt;
+		} else {
+			this._textOptions = new TextOptions();
+		}
+		this.setText(font, result);
+	}
+
 	public Text(final IFont font, final CharSequence chars) {
 		this(font, chars, new TextOptions());
 	}

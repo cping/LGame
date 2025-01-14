@@ -76,6 +76,7 @@ import loon.events.EventActionN;
 import loon.events.FrameLoopEvent;
 import loon.events.GameKey;
 import loon.events.GameTouch;
+import loon.events.GestureType;
 import loon.events.LTouchArea;
 import loon.events.LTouchLocation;
 import loon.events.QueryEvent;
@@ -356,6 +357,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private boolean _isNext;
 
 	private float _lastTouchX, _lastTouchY, _touchDX, _touchDY;
+
+	private float _touchInitX, _touchInitY;
+
+	private float _touchDifX, _touchDifY;
+
+	private float _touchPrevDifX, _touchPrevDifY;
 
 	public long elapsedTime;
 
@@ -879,6 +886,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._touchDY = -1;
 		this._lastTouchX = -1;
 		this._lastTouchY = -1;
+		this._touchDifX = _touchDifY = 0f;
+		this._touchInitX = _touchInitY = 0f;
+		this._touchPrevDifX = _touchPrevDifY = 0f;
 		if (_touchTypes != null) {
 			_touchTypes.clear();
 		}
@@ -1692,6 +1702,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._curStageRun = true;
 		this._curLockedCallEvent = false;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
+		this._touchDifX = _touchDifY = 0f;
+		this._touchInitX = _touchInitY = 0f;
+		this._touchPrevDifX = _touchPrevDifY = 0f;
 		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
 		this._isLoad = _isLock = _isClose = _isGravity = false;
 		this._isProcessing = true;
@@ -3694,7 +3707,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		return add(s);
 	}
-	
+
 	public Screen transfer(LComponent c) {
 		if (c == null) {
 			return this;
@@ -3704,7 +3717,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		return add(c);
 	}
-	
+
 	public boolean contains(LComponent comp) {
 		return contains(comp, false);
 	}
@@ -4695,6 +4708,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		_touchTypes.clear();
 		_keyTypes.clear();
 		_touchDX = _touchDY = 0;
+		_touchDifX = _touchDifY = 0f;
+		_touchInitX = _touchInitY = 0f;
+		_touchPrevDifX = _touchPrevDifY = 0f;
 	}
 
 	public abstract void resize(int w, int h);
@@ -6151,6 +6167,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 获得当前触屏手势的滑动方向(Up,Down,Left,Right)
+	 * 
+	 * @return
+	 */
+	public GestureType getGestureDirection() {
+		_touchPrevDifX = _touchDifX;
+		_touchPrevDifY = _touchDifY;
+		_touchDifX = MathUtils.abs(_touchInitX - _lastTouchX);
+		_touchDifY = MathUtils.abs(_touchInitY - _lastTouchY);
+		if (_touchPrevDifX > _touchDifX || _touchPrevDifY > _touchDifY) {
+			_touchInitX = _lastTouchX;
+			_touchInitY = _lastTouchY;
+			_touchDifX = 0f;
+			_touchDifY = 0f;
+			_touchPrevDifX = 0f;
+			_touchPrevDifY = 0f;
+			_touchDifX = MathUtils.abs(_touchInitX - _lastTouchX);
+			_touchDifY = MathUtils.abs(_touchInitY - _lastTouchY);
+		}
+		if (_touchInitY > _lastTouchY && _touchDifY > _touchDifX) {
+			return GestureType.Up;
+		} else if (_touchInitY < _lastTouchY && _touchDifY > _touchDifX) {
+			return GestureType.Down;
+		} else if (_touchInitX > _lastTouchX && _touchDifY < _touchDifX) {
+			return GestureType.Left;
+		} else if (_touchInitX < _lastTouchX && _touchDifY < _touchDifX) {
+			return GestureType.Right;
+		} else {
+			return GestureType.None;
+		}
+	}
+
+	/**
 	 * 判断当前Touch行为与上次是否在屏幕中指定间距内存在移动
 	 * 
 	 * @param distance
@@ -6170,7 +6219,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 返回当前Touch行为的移动方向(返回int为map组件包中 @see Config 中设置的整型方向参数)
+	 * 返回当前Touch行为与上次Touch行为位置差值转化的移动方向(返回int为map组件包中 @see Config 中设置的整型方向参数)
 	 * 
 	 * @param distance
 	 * @return
@@ -6184,7 +6233,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 返回当前Touch行为的移动方向(返回map组件包中的Config整型方向)
+	 * 返回当前Touch行为与上次Touch行为位置差值转化的移动方向(返回map组件包中的Config整型方向)
 	 * 
 	 * @return
 	 */

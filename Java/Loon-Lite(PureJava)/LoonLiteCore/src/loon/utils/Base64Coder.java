@@ -111,6 +111,9 @@ public class Base64Coder {
 	}
 
 	public static boolean isBase64(String v) {
+		if (v == null) {
+			return false;
+		}
 		return isArrayByteBase64(v.getBytes());
 	}
 

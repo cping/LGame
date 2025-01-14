@@ -615,6 +615,48 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.min(this.x, this.y);
 	}
 
+	public Vector2f max(Vector2f v) {
+		if (v == null) {
+			return cpy();
+		}
+		return max(this, v);
+	}
+
+	public Vector2f min(Vector2f v) {
+		if (v == null) {
+			return cpy();
+		}
+		return min(this, v);
+	}
+
+	public float maxX(XY v) {
+		if (v == null) {
+			return this.x;
+		}
+		return MathUtils.max(this.x, v.getX());
+	}
+
+	public float minX(XY v) {
+		if (v == null) {
+			return this.x;
+		}
+		return MathUtils.min(this.x, v.getX());
+	}
+
+	public float maxY(XY v) {
+		if (v == null) {
+			return this.y;
+		}
+		return MathUtils.max(this.y, v.getY());
+	}
+
+	public float minY(XY v) {
+		if (v == null) {
+			return this.y;
+		}
+		return MathUtils.min(this.y, v.getY());
+	}
+
 	public Vector2f setMin(Vector2f t) {
 		if (t == null) {
 			return this;

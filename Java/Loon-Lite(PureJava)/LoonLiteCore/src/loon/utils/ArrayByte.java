@@ -84,6 +84,51 @@ public class ArrayByte implements IArray, LRelease {
 		return BYTES_COMPARATOR;
 	}
 
+	public static ArrayByte of(String base64) {
+		return new ArrayByte(base64);
+	}
+
+	public static ArrayByte of(String base64, int pos, int order) {
+		return new ArrayByte(base64, pos, order);
+	}
+
+	public static ArrayByte of(byte[] data) {
+		return new ArrayByte(data);
+	}
+
+	public static int[] toIntArray(byte[] data, boolean length) {
+		final int[] result;
+		int n = (((data.length & 3) == 0) ? (data.length >>> 2) : ((data.length >>> 2) + 1));
+		if (length) {
+			result = new int[n + 1];
+			result[n] = data.length;
+		} else {
+			result = new int[n];
+		}
+		n = data.length;
+		for (int i = 0; i < n; i++) {
+			result[i >>> 2] |= (0x000000ff & data[i]) << ((i & 3) << 3);
+		}
+		return result;
+	}
+
+	public static byte[] toByteArray(int[] data, boolean length) {
+		int n = data.length << 2;
+		if (length) {
+			int m = data[data.length - 1];
+			if (m > n) {
+				return null;
+			} else {
+				n = m;
+			}
+		}
+		final byte[] result = new byte[n];
+		for (int i = 0; i < n; i++) {
+			result[i] = (byte) ((data[i >>> 2] >>> ((i & 3) << 3)) & 0xff);
+		}
+		return result;
+	}
+
 	public static int compare(final byte[] a, final byte[] b) {
 		return getDefaultByteArrayComparator().compare(a, b);
 	}
