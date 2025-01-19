@@ -761,7 +761,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		return this;
 	}
-	
+
 	public LComponent setValidateEvent(EventActionN n) {
 		this._validateEvent = n;
 		return this;
@@ -904,14 +904,6 @@ public abstract class LComponent extends LObject<LContainer>
 	@Override
 	public float getHeight() {
 		return (this._height * _scaleY) - _fixedHeightOffset;
-	}
-
-	public int width() {
-		return (int) getWidth();
-	}
-
-	public int height() {
-		return (int) getHeight();
 	}
 
 	public float getFixedWidthOffset() {
@@ -1917,7 +1909,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		return this;
 	}
-	
+
 	@Override
 	public LComponent setFlipX(boolean x) {
 		this._flipX = x;

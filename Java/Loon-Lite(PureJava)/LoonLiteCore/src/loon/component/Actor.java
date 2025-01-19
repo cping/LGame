@@ -571,14 +571,6 @@ public class Actor extends LObject<Actor>
 		}
 	}
 
-	public int width() {
-		return (int) getWidth();
-	}
-
-	public int height() {
-		return (int) getHeight();
-	}
-
 	protected float pixelWidth() {
 		float width = 0f;
 		if (_actorWidth > 0) {

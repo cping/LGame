@@ -25,7 +25,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.geom.RangeI;
 import loon.geom.RectBox;
-import loon.geom.RectI.Range;
 import loon.geom.SetXY;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;

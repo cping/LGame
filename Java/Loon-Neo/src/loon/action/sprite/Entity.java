@@ -955,14 +955,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return this._height;
 	}
 
-	public int width() {
-		return (int) getWidth();
-	}
-
-	public int height() {
-		return (int) getHeight();
-	}
-
 	@Override
 	public float getWidth() {
 		return _width > 1 ? (_width * this._scaleX) - _fixedWidthOffset

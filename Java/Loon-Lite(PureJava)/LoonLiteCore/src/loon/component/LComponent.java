@@ -903,14 +903,6 @@ public abstract class LComponent extends LObject<LContainer>
 		return (this._height * _scaleY) - _fixedHeightOffset;
 	}
 
-	public int width() {
-		return (int) getWidth();
-	}
-
-	public int height() {
-		return (int) getHeight();
-	}
-
 	public float getFixedWidthOffset() {
 		return _fixedWidthOffset;
 	}

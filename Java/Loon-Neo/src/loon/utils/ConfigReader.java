@@ -56,6 +56,10 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 
+	public final static ConfigReader from(final String context) {
+		return parse(context);
+	}
+
 	public final static ConfigReader parse(final String context) {
 		final String defaultName = LSystem.getSystemAppName() + "_configpasertemp_" + CRC32.toHexString(context);
 		synchronized (ConfigReader.class) {

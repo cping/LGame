@@ -307,6 +307,46 @@ public class CharArray implements IArray, LRelease {
 		return length != startlength;
 	}
 
+	public boolean replace(char src, char dst) {
+		int index1 = indexOf(src);
+		int index2 = indexOf(dst);
+		if (index1 != -1 && index2 == -1) {
+			items[index1] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean replaceFirst(char src, char dst) {
+		final int idx = indexOf(src);
+		if (idx != -1) {
+			items[idx] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public boolean replaceLast(char src, char dst) {
+		final int idx = lastIndexOf(src);
+		if (idx != -1) {
+			items[idx] = dst;
+			return true;
+		}
+		return false;
+	}
+
+	public int replaceAll(char src, char dst) {
+		int count = -1;
+		final char[] items = this.items;
+		for (int i = 0, n = length; i < n; i++) {
+			if (src == items[i]) {
+				items[i] = dst;
+				count++;
+			}
+		}
+		return count;
+	}
+
 	public int pop() {
 		return items[--length];
 	}
@@ -610,7 +650,7 @@ public class CharArray implements IArray, LRelease {
 	public boolean isNotEmpty() {
 		return !isEmpty();
 	}
-	
+
 	public CharArray cpy() {
 		return new CharArray(this);
 	}

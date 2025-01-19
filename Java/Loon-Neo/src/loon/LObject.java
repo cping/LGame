@@ -1079,6 +1079,14 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return this.getHeight() >= this.getWidth();
 	}
 
+	public int width() {
+		return (int) this.getWidth();
+	}
+
+	public int height() {
+		return (int) this.getHeight();
+	}
+
 	public abstract float getWidth();
 
 	public abstract float getHeight();
