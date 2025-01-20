@@ -23,10 +23,12 @@ package loon.opengl;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.Canvas;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.utils.ArrayMap;
 import loon.utils.CharArray;
+import loon.utils.IntMap;
 import loon.utils.StrBuilder;
 import loon.utils.ArrayMap.Entry;
 import loon.utils.StringUtils;
@@ -38,6 +40,8 @@ import loon.utils.TArray;
 public final class LSTRDictionary implements LRelease {
 
 	private final CharArray templateChars = new CharArray(256);
+
+	private final IntMap<Canvas> fontCanvasList = new IntMap<Canvas>();
 
 	private final int CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE * 2;
 
@@ -58,6 +62,18 @@ public final class LSTRDictionary implements LRelease {
 			}
 			return instance;
 		}
+	}
+
+	protected final Canvas createFontCanvas(float w, float h) {
+		int keyFlag = 1;
+		keyFlag = LSystem.unite(keyFlag, w);
+		keyFlag = LSystem.unite(keyFlag, h);
+		Canvas canvas = fontCanvasList.get(keyFlag);
+		if (canvas == null || canvas.image == null || canvas.image.isClosed()) {
+			canvas = LSystem.base().graphics().createCanvas(w, h);
+			fontCanvasList.put(keyFlag, canvas);
+		}
+		return canvas;
 	}
 
 	public LSTRDictionary setAsyn(boolean asyn) {
@@ -227,6 +243,19 @@ public final class LSTRDictionary implements LRelease {
 			}
 		}
 		closeDict(fontList);
+	}
+
+	public void clearFontCanvasLazy() {
+		for (Canvas canvas : fontCanvasList.values()) {
+			if (canvas != null) {
+				if (canvas.image != null) {
+					canvas.image.close();
+				}
+				canvas.close();
+				canvas = null;
+			}
+		}
+		fontCanvasList.clear();
 	}
 
 	public final boolean checkMessage(String key, String message) {
@@ -509,6 +538,7 @@ public final class LSTRDictionary implements LRelease {
 		cacheList.clear();
 		clearStringLazy();
 		clearEnglishLazy();
+		clearFontCanvasLazy();
 	}
 
 	@Override

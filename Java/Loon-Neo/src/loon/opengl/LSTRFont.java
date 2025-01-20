@@ -123,8 +123,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				strfont._outBounds = true;
 			}
 
-			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
+			Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setFillColor(strfont.pixelColor);
+			canvas.clearRect(0f, 0f, strfont.textureWidth, strfont.textureHeight);
 			canvas.setFont(strfont.font);
 			int rowHeight = 0;
 			int positionX = 0;
@@ -255,7 +256,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				sbr = null;
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture().setDisabledTexture(true));
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
