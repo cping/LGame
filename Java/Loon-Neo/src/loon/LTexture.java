@@ -86,7 +86,7 @@ public class LTexture extends Painter implements LRelease {
 						GLUtils.deleteTexture(_gfx.gl, _textureId);
 						_texture._disposed = true;
 					}
-					if (_texture._image != null) {
+					if (_texture._image != null && !_texture._disabledImage) {
 						_texture._image.close();
 						_texture._image = null;
 					}
@@ -134,6 +134,8 @@ public class LTexture extends Painter implements LRelease {
 	private boolean _forcedDeleteTexture = false;
 
 	private boolean _disabledTexture = false;
+
+	private boolean _disabledImage = false;
 
 	private boolean _drawing = false;
 
@@ -804,6 +806,7 @@ public class LTexture extends Painter implements LRelease {
 				copy._textureClip = new Clip(this._textureClip, x, y, width, height, false);
 			}
 			copy._disabledTexture = _disabledTexture;
+			copy._disabledImage = _disabledImage;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
 
 			childs.put(hashCode, copy);
@@ -863,6 +866,7 @@ public class LTexture extends Painter implements LRelease {
 				copy._textureClip = new Clip(this._textureClip, 0, 0, width, height, false);
 			}
 			copy._disabledTexture = _disabledTexture;
+			copy._disabledImage = _disabledImage;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
 
 			childs.put(hashCode, copy);
@@ -1396,6 +1400,21 @@ public class LTexture extends Painter implements LRelease {
 
 	public boolean isDisabledTexture() {
 		return _disabledTexture;
+	}
+
+	/**
+	 * 此值为true时,构建当前纹理的Image对象将无法释放
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public LTexture setDisabledImage(boolean d) {
+		_disabledImage = d;
+		return this;
+	}
+
+	public boolean isDisabledImage() {
+		return _disabledImage;
 	}
 
 	/**

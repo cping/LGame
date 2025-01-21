@@ -256,7 +256,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				sbr = null;
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture().setDisabledTexture(true));
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture().setDisabledImage(true));
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();
