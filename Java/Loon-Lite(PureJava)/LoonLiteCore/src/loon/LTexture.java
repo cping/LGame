@@ -366,7 +366,7 @@ public class LTexture extends Painter implements LRelease {
 				_image.draw(image, 0, 0, imageWidth, imageHeight);
 			}
 		}
-		_memorySize = imageWidth * imageHeight * 4;
+		_memorySize = MathUtils.abs(imageWidth * imageHeight * 4);
 		_drawing = false;
 		if (updated) {
 			_isLoaded = true;

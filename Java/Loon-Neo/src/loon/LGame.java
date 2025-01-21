@@ -825,7 +825,10 @@ public abstract class LGame implements LRelease {
 		int memTotal = 0;
 		for (LTexture tex : _texture_all_list) {
 			if (tex != null && !tex.isChild() && !tex.isClosed()) {
-				memTotal += tex.getMemSize();
+				final int v = tex.getMemSize();
+				if (v > 0) {
+					memTotal += v;
+				}
 			}
 		}
 		return memTotal;

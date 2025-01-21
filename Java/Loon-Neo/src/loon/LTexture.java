@@ -99,8 +99,10 @@ public class LTexture extends Painter implements LRelease {
 					_texture._closed = true;
 					_texture._memorySize = 0;
 					_texture.freeBatch();
-					_gfx.game.log().debug("Texture : " + _texture.getSource() + " Closed,Size = " + _texture.getWidth()
-							+ "," + _texture.getHeight() + (_texture.Tag != null ? ",Tag = " + _texture.Tag : LSystem.EMPTY));
+					_gfx.game.log()
+							.debug("Texture : " + _texture.getSource() + " Closed,Size = " + _texture.getWidth() + ","
+									+ _texture.getHeight()
+									+ (_texture.Tag != null ? ",Tag = " + _texture.Tag : LSystem.EMPTY));
 				}
 			}
 		}
@@ -206,7 +208,8 @@ public class LTexture extends Painter implements LRelease {
 		@Override
 		public String toString() {
 			StringKeyValue builder = new StringKeyValue("Managed");
-			builder.kv("managed", managed).comma().kv("repeat", (repeatX ? "x" : LSystem.EMPTY) + (repeatY ? "y" : LSystem.EMPTY)).comma()
+			builder.kv("managed", managed).comma()
+					.kv("repeat", (repeatX ? "x" : LSystem.EMPTY) + (repeatY ? "y" : LSystem.EMPTY)).comma()
 					.kv("filter", (minFilter + "/" + magFilter)).comma().kv("mipmaps", mipmaps);
 			return builder.toString();
 		}
@@ -523,9 +526,9 @@ public class LTexture extends Painter implements LRelease {
 			}
 		}
 		if (config.mipmaps) {
-			_memorySize = imageWidth * imageHeight * 4 * (1 + 1 / 3);
+			_memorySize = MathUtils.abs(imageWidth * imageHeight * 4 * (1 + 1 / 3));
 		} else {
-			_memorySize = imageWidth * imageHeight * 4;
+			_memorySize = MathUtils.abs(imageWidth * imageHeight * 4);
 		}
 		if (closed && !_isReload) {
 			if (image != null && gfx.game != null && gfx.game.setting.saveTexturePixels) {

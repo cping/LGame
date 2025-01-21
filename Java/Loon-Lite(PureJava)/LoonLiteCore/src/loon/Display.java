@@ -544,7 +544,7 @@ public class Display extends BaseIO implements LRelease {
 				if (this.memorySelf) {
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append(((float) ((LTextures.getMemSize() * 100) >> 20) / 10f));
+					displayMessage.append(MathUtils.abs(((LTextures.getMemSize() * 100) >> 20) / 10f));
 					displayMessage.append(" of ");
 					displayMessage.append('?');
 					displayMessage.append(" MB");
@@ -556,9 +556,9 @@ public class Display extends BaseIO implements LRelease {
 					long currentMemory = totalMemory - runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append(((float) ((currentMemory * 10) >> 20) / 10f));
+					displayMessage.append(MathUtils.abs(((currentMemory * 10) >> 20) / 10f));
 					displayMessage.append(" of ");
-					displayMessage.append(((float) ((runtime.maxMemory() * 10) >> 20) / 10f));
+					displayMessage.append(MathUtils.abs(((runtime.maxMemory() * 10) >> 20) / 10f));
 					displayMessage.append(" MB");
 				}
 				displayMemony = displayMessage.toString();
