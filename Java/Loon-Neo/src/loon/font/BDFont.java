@@ -391,7 +391,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 			}
 
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture().setDisabledImage(true));
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();

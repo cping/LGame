@@ -237,7 +237,7 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public void clearEnglishLazy() {
-		if(englishFontList.size()==0) {
+		if (englishFontList.size() == 0) {
 			return;
 		}
 		closeDict(englishFontList);
@@ -252,7 +252,7 @@ public final class LSTRDictionary implements LRelease {
 				cacheList.clear();
 			}
 		}
-		if(fontList.size()==0) {
+		if (fontList.size() == 0) {
 			return;
 		}
 		closeDict(fontList);
