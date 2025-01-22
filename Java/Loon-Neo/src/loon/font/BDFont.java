@@ -39,6 +39,7 @@ import loon.opengl.BlendMethod;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRDictionary;
 import loon.opengl.Painter;
 import loon.utils.CharArray;
 import loon.utils.CharIterator;
@@ -292,7 +293,10 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
-			Canvas canvas = LSystem.base().graphics().createCanvas(strfont.textureWidth, strfont.textureHeight);
+			Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
+			canvas.setFillColor(strfont.pixelColor);
+			canvas.clearRect(0f, 0f, strfont.textureWidth, strfont.textureHeight);
+
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
@@ -387,7 +391,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 			}
 
 			LTextureBatch tmpbatch = strfont.fontBatch;
-			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
+			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture().setDisabledImage(true));
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
 				tmpbatch.close();

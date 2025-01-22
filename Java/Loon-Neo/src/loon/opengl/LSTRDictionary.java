@@ -48,6 +48,9 @@ public final class LSTRDictionary implements LRelease {
 	private static LSTRDictionary instance;
 
 	public static void freeStatic() {
+		if (instance != null) {
+			instance.dispose();
+		}
 		instance = null;
 	}
 
@@ -64,7 +67,11 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	protected final Canvas createFontCanvas(float w, float h) {
+	public final Canvas createFontCanvas(float w, float h) {
+		final int cacheSize = fontCanvasList.size;
+		if (cacheSize > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			clearFontCanvasLazy();
+		}
 		int keyFlag = 1;
 		keyFlag = LSystem.unite(keyFlag, w);
 		keyFlag = LSystem.unite(keyFlag, h);
@@ -230,6 +237,9 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public void clearEnglishLazy() {
+		if(englishFontList.size()==0) {
+			return;
+		}
 		closeDict(englishFontList);
 	}
 
@@ -242,10 +252,16 @@ public final class LSTRDictionary implements LRelease {
 				cacheList.clear();
 			}
 		}
+		if(fontList.size()==0) {
+			return;
+		}
 		closeDict(fontList);
 	}
 
 	public void clearFontCanvasLazy() {
+		if (fontCanvasList.size == 0) {
+			return;
+		}
 		for (Canvas canvas : fontCanvasList.values()) {
 			if (canvas != null) {
 				if (canvas.image != null) {
@@ -535,10 +551,13 @@ public final class LSTRDictionary implements LRelease {
 	}
 
 	public final void dispose() {
-		cacheList.clear();
-		clearStringLazy();
-		clearEnglishLazy();
-		clearFontCanvasLazy();
+		try {
+			cacheList.clear();
+			clearStringLazy();
+			clearEnglishLazy();
+			clearFontCanvasLazy();
+		} catch (Exception ex) {
+		}
 	}
 
 	@Override
