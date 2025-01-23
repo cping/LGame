@@ -177,6 +177,10 @@ public class StringKeyValue {
 		return addValue(LSystem.BRANCH);
 	}
 
+	public StringKeyValue colon() {
+		return addValue(LSystem.COLON);
+	}
+
 	public StringKeyValue scomma() {
 		return addValue(" , ");
 	}

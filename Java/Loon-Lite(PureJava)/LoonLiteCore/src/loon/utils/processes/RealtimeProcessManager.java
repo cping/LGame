@@ -29,6 +29,7 @@ import loon.LSystem;
 import loon.utils.IArray;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
+import loon.utils.StrBuilder;
 import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
@@ -58,6 +59,8 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	private static RealtimeProcessManager instance;
 
 	private SortedList<GameProcess> processes;
+
+	private GameProcess _currentProcess;
 
 	public static void freeStatic() {
 		instance = null;
@@ -107,6 +110,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 					GameProcess realtimeProcess = it.next();
 					if (realtimeProcess != null) {
 						synchronized (realtimeProcess) {
+							_currentProcess = realtimeProcess;
 							realtimeProcess.tick(time);
 							if (realtimeProcess.isDead()) {
 								deadProcesses.add(realtimeProcess);
@@ -131,6 +135,10 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 				LSystem.error("Process dispatch failure", cause);
 			}
 		}
+	}
+
+	public GameProcess currentProcess() {
+		return _currentProcess;
 	}
 
 	public TArray<GameProcess> find(String id) {
@@ -268,6 +276,7 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	@Override
 	public void clear() {
 		processes.clear();
+		_currentProcess = null;
 	}
 
 	@Override
@@ -285,7 +294,30 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	}
 
 	@Override
+	public String toString() {
+		return toString(LSystem.COMMA);
+	}
+
+	public String toString(char separator) {
+		if (processes.size == 0) {
+			return "[]";
+		}
+		StrBuilder buffer = new StrBuilder(32);
+		buffer.append(LSystem.BRACKET_START);
+		for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+			GameProcess p = it.next();
+			if (p != null) {
+				buffer.append(p.toString());
+				buffer.append(separator);
+			}
+		}
+		buffer.append(LSystem.BRACKET_END);
+		return buffer.toString();
+	}
+
+	@Override
 	public void close() {
+		_currentProcess = null;
 		if (processes != null && processes.size > 0) {
 			synchronized (this.processes) {
 				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);

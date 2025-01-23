@@ -27,6 +27,7 @@ import loon.events.EventActionN;
 import loon.utils.LIterator;
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
+import loon.utils.StringKeyValue;
 import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
@@ -57,7 +58,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	private LRelease _released;
 
-	protected final static String getProcessName() {
+	final static String getProcessName() {
 		return "Process" + (GLOBAL_ID++);
 	}
 
@@ -294,6 +295,17 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 			this._processHost.processFinished(this.id, this);
 		}
 		onCompleted();
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue kv = new StringKeyValue("Process")
+				.kv("id", id).comma()
+				.kv("timeout", _timeOutDelay).comma()
+				.kv("type", _processType).comma()
+				.kv("priority", _priority).comma()
+				.kv("finish", isDead);
+		return kv.toString();
 	}
 
 	@Override

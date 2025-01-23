@@ -754,7 +754,8 @@ public class LTimer implements LTimerListener, LRelease {
 				.kv("factor", _speedFactor).comma().kv("active", _active).comma().kv("repeats", _repeats).comma()
 				.kv("maxNumberOfRepeats", _maxNumberOfRepeats).comma().kv("numberOfTicks", _numberOfTicks).comma()
 				.kv("timerListeners", _currentListeners == null ? 0 : _currentListeners.size).comma()
-				.kv("completed", _completed);
+				.kv("completed", _completed).comma()
+				.kv("process", _process);
 		return builder.toString();
 	}
 

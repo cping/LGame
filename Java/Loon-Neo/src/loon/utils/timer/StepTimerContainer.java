@@ -20,6 +20,8 @@
  */
 package loon.utils.timer;
 
+import loon.utils.StringKeyValue;
+
 public class StepTimerContainer {
 
 	private StepTimer _step;
@@ -45,5 +47,12 @@ public class StepTimerContainer {
 
 	public boolean contains(StepTimer step) {
 		return step == this._step;
+	}
+
+	@Override
+	public String toString() {
+		StringKeyValue builder = new StringKeyValue("StepTimerContainer");
+		builder.kv("curtime", _timer).comma().kv("maxtime", _maxTimer);
+		return builder.toString();
 	}
 }
