@@ -44,8 +44,6 @@ public class BulletEntity extends Entity {
 
 	protected CollisionFilter worldCollisionFilter;
 
-	private boolean closed;
-
 	private boolean running;
 
 	private boolean limitMoved;
@@ -85,7 +83,6 @@ public class BulletEntity extends Entity {
 			this.collisionWorld = new CollisionWorld();
 			this.selfWorld = true;
 		}
-		this.closed = false;
 		this.running = true;
 		this.limitMoved = true;
 		this.setRepaint(true);
@@ -168,7 +165,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity addBullet(Bullet bullet) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		if (bullet == null) {
@@ -195,7 +192,7 @@ public class BulletEntity extends Entity {
 
 	@Override
 	protected void repaint(GLEx g, float offsetX, float offsetY) {
-		if (closed) {
+		if (_destroyed) {
 			return;
 		}
 		for (int i = this.bullets.size - 1; i >= 0; i--) {
@@ -209,7 +206,7 @@ public class BulletEntity extends Entity {
 
 	@Override
 	protected void onUpdate(final long elapsedTime) {
-		if (closed) {
+		if (_destroyed) {
 			return;
 		}
 		if (running) {
@@ -286,7 +283,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setCollisionInTheLayer(boolean itlayer) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().setInTheLayer(itlayer);
@@ -294,14 +291,14 @@ public class BulletEntity extends Entity {
 	}
 
 	public boolean getCollisionInTheLayer() {
-		if (closed) {
+		if (_destroyed) {
 			return false;
 		}
 		return getCollisionManager().getInTheLayer();
 	}
 
 	public BulletEntity setCollisionOffsetPos(Vector2f offset) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().setOffsetPos(offset);
@@ -309,7 +306,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setCollisionOffsetPos(float x, float y) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().setOffsetPos(x, y);
@@ -317,7 +314,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setCollisionOffsetX(float x) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().setOffsetX(x);
@@ -325,7 +322,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setCollisionOffsetY(float y) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().setOffsetY(y);
@@ -333,14 +330,14 @@ public class BulletEntity extends Entity {
 	}
 
 	public Vector2f getCollisionOffsetPos() {
-		if (closed) {
+		if (_destroyed) {
 			return Vector2f.ZERO();
 		}
 		return getCollisionManager().getOffsetPos();
 	}
 
 	public BulletEntity putCollision(CollisionObject obj) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().addObject(obj);
@@ -348,7 +345,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity removeCollision(CollisionObject obj) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().removeObject(obj);
@@ -356,7 +353,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity removeCollision(String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return this;
 		}
 		getCollisionManager().removeObject(objFlag);
@@ -364,21 +361,21 @@ public class BulletEntity extends Entity {
 	}
 
 	public int getCollisionSize() {
-		if (closed) {
+		if (_destroyed) {
 			return 0;
 		}
 		return getCollisionManager().numberActors();
 	}
 
 	public TArray<CollisionObject> getCollisionObjects() {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getActorsList();
 	}
 
 	public TArray<CollisionObject> getCollisionObjects(String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getObjects(objFlag);
@@ -389,7 +386,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getCollisionObjectsAt(float x, float y, String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getObjectsAt(x, y, objFlag);
@@ -400,7 +397,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getIntersectingObjects(CollisionObject obj, String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getIntersectingObjects(obj, objFlag);
@@ -411,7 +408,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public CollisionObject getOnlyIntersectingObject(CollisionObject obj, String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getOnlyIntersectingObject(obj, objFlag);
@@ -422,7 +419,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getObjectsInRange(float x, float y, float r, String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		return getCollisionManager().getObjectsInRange(x, y, r, objFlag);
@@ -433,7 +430,7 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<CollisionObject> getNeighbours(CollisionObject obj, float distance, boolean d, String objFlag) {
-		if (closed) {
+		if (_destroyed) {
 			return null;
 		}
 		if (distance < 0) {
@@ -481,13 +478,8 @@ public class BulletEntity extends Entity {
 	}
 
 	@Override
-	public boolean isClosed() {
-		return closed || super.isClosed();
-	}
-
-	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		clearBullets();
 		if (textureFree != null) {
 			textureFree.close();
@@ -500,7 +492,6 @@ public class BulletEntity extends Entity {
 			}
 		}
 		running = false;
-		closed = true;
 	}
 
 }

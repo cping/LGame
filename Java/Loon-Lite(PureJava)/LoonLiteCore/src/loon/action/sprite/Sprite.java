@@ -1066,7 +1066,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		this._visible = false;
 		this._ignoreUpdate = false;
 		this._childrenVisible = false;
@@ -1079,7 +1079,6 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		_loopAction = null;
 		_resizeListener = null;
 		_collSpriteListener = null;
-		setState(State.DISPOSED);
 		removeChilds();
 		removeActionEvents(this);
 	}

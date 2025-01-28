@@ -1405,8 +1405,4 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		}
 		this._sprites = ss;
 	}
-
-	public boolean isClosed() {
-		return isDisposed();
-	}
 }

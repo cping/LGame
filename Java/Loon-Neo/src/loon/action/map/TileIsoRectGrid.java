@@ -56,8 +56,6 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 
 	private TileIsoRect[][] _grids;
 
-	private boolean _closed;
-
 	private boolean _visible;
 
 	private boolean _showCoordinate;
@@ -165,7 +163,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 
 	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
-		if (!_visible || _closed) {
+		if (!_visible || _destroyed) {
 			return;
 		}
 		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
@@ -213,7 +211,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public void draw(GLEx g, float offx, float offy) {
-		if (!_visible || _closed) {
+		if (!_visible || _destroyed) {
 			return;
 		}
 		if (_background != null) {
@@ -1089,12 +1087,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		return _background;
 	}
 
-	public boolean isClosed() {
-		return _closed;
-	}
-
 	@Override
-	public void close() {
+	protected void _onDestroy() {
 		_visible = false;
 		_roll = false;
 		for (int x = 0; x < _cols; x++) {
@@ -1102,7 +1096,6 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 				_grids[x][y].close();
 			}
 		}
-		_closed = true;
 		if (_mapSprites != null) {
 			_mapSprites.close();
 			_mapSprites = null;
@@ -1114,7 +1107,6 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		_resizeListener = null;
 		_collSpriteListener = null;
 		removeActionEvents(this);
-		setState(State.DISPOSED);
 	}
 
 }

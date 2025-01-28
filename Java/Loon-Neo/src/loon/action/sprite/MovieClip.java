@@ -331,16 +331,11 @@ public class MovieClip extends DisplayObject {
 		return this;
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		if (_sheet != null) {
 			_sheet.close();
 		}
-		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
 }

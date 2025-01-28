@@ -40,13 +40,26 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		String[] result = StringUtils.split(v, LSystem.COMMA);
 		int len = result.length;
 		if (len > 3) {
-			try {
-				float x = Float.parseFloat(result[0].trim());
-				float y = Float.parseFloat(result[1].trim());
-				float width = Float.parseFloat(result[2].trim());
-				float height = Float.parseFloat(result[3].trim());
-				return new AABB(x, y, width, height);
-			} catch (Exception ex) {
+			if (len == 4) {
+				try {
+					float x = Float.parseFloat(result[0].trim());
+					float y = Float.parseFloat(result[1].trim());
+					float width = Float.parseFloat(result[2].trim());
+					float height = Float.parseFloat(result[3].trim());
+					return new AABB(x, y, width, height);
+				} catch (Exception ex) {
+				}
+			} else if (len == 6) {
+				try {
+					float minx = Float.parseFloat(result[0].trim());
+					float miny = Float.parseFloat(result[1].trim());
+					float minz = Float.parseFloat(result[2].trim());
+					float maxx = Float.parseFloat(result[3].trim());
+					float maxy = Float.parseFloat(result[4].trim());
+					float maxz = Float.parseFloat(result[5].trim());
+					return new AABB(minx, miny, minz, maxx, maxy, maxz);
+				} catch (Exception ex) {
+				}
 			}
 		}
 		return new AABB();
@@ -64,30 +77,34 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return new AABB(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
 	}
 
-	public float minX, minY;
+	public float minX, minY, minZ;
 
-	public float maxX, maxY;
+	public float maxX, maxY, maxZ;
 
 	public AABB() {
-		this(0.0F, 0.0F, 0.0F, 0.0F);
+		this(0f, 0f, 0f, 0f);
 	}
 
 	public AABB(float radius) {
 		this(null, radius);
 	}
 
-	public AABB(Vector2f center, float radius) {
+	public AABB(XYZ center, float radius) {
 		radius = MathUtils.max(0f, radius);
 		if (center == null) {
 			this.minX = -radius;
 			this.minY = -radius;
+			this.minZ = -radius;
 			this.maxX = radius;
 			this.maxY = radius;
+			this.maxZ = radius;
 		} else {
-			this.minX = center.x - radius;
-			this.minY = center.y - radius;
-			this.maxX = center.x + radius;
-			this.maxY = center.y + radius;
+			this.minX = center.getX() - radius;
+			this.minY = center.getY() - radius;
+			this.minZ = center.getZ() - radius;
+			this.maxX = center.getX() + radius;
+			this.maxY = center.getY() + radius;
+			this.maxZ = center.getZ() + radius;
 		}
 	}
 
@@ -95,11 +112,17 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		this(aabb.minX, aabb.minY, aabb.maxX, aabb.maxY);
 	}
 
-	public AABB(float minX, float minY, float maxX, float maxY) {
+	public AABB(float minX, float minY, float minZ, float maxX) {
+		this(0f, 0f, 0f, 0f, 0f, 0f);
+	}
+
+	public AABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
 		this.minX = minX;
 		this.minY = minY;
+		this.minZ = minZ;
 		this.maxX = maxX;
 		this.maxY = maxY;
+		this.maxZ = maxZ;
 	}
 
 	public AABB setCentered(float x, float y, float size) {
@@ -154,6 +177,18 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
+	public int AABBX() {
+		return MathUtils.iceil(maxX + minX) / 2;
+	}
+
+	public int AABBY() {
+		return MathUtils.iceil(maxY + minY) / 2;
+	}
+
+	public int AABBZ() {
+		return MathUtils.iceil(maxZ + minZ) / 2;
+	}
+
 	public int width() {
 		return (int) getWidth();
 	}
@@ -172,6 +207,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this.maxY - this.minY;
 	}
 
+	public float depth() {
+		return this.maxZ - this.minZ;
+	}
+
 	public AABB cpy() {
 		return new AABB(this.minX, this.minY, this.maxX, this.maxY);
 	}
@@ -180,11 +219,32 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this.minX < b.maxX && b.minX < this.maxX && this.minY < b.maxY && b.minY < this.maxY;
 	}
 
+	public boolean isOutside(AABB b) {
+		return maxX - b.minX < 0 || minX - b.maxX > 0 || maxY - b.minY < 0 || minY - b.maxY > 0 || maxZ - b.minZ < 0
+				|| minZ - b.maxZ > 0;
+	}
+
+	public AABB set(AABB b, XYZ p) {
+		this.minX = MathUtils.ifloor(b.minX + p.getX());
+		this.minY = MathUtils.ifloor(b.minY + p.getY());
+		this.minZ = MathUtils.ifloor(b.minZ + p.getZ());
+		this.maxX = MathUtils.iceil(b.maxX + p.getX());
+		this.maxY = MathUtils.iceil(b.maxY + p.getY());
+		this.maxZ = MathUtils.iceil(b.maxZ + p.getZ());
+		return this;
+	}
+
 	public AABB set(float x1, float y1, float x2, float y2) {
+		return set(x1, y1, 0f, x2, y2, 0f);
+	}
+
+	public AABB set(float x1, float y1, float z1, float x2, float y2, float z2) {
 		this.minX = x1;
 		this.minY = y1;
+		this.minZ = z1;
 		this.maxX = x2;
 		this.maxY = y2;
+		this.maxZ = z2;
 		return this;
 	}
 
@@ -260,7 +320,8 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return false;
 		}
-		return (this.minX <= other.maxX && this.maxX >= other.minX && this.maxY >= other.minY && this.minY <= other.maxY);
+		return (this.minX <= other.maxX && this.maxX >= other.minX && this.maxY >= other.minY
+				&& this.minY <= other.maxY);
 	}
 
 	public float distance(Vector2f other) {
@@ -360,8 +421,16 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return (this.maxX - this.minX) * (this.maxY - this.minY);
 	}
 
+	public Vector3f getCenter(Vector3f pos) {
+		final float centerX = maxX + minX;
+		final float centerY = maxY + minY;
+		final float centerZ = maxZ + minZ;
+		return new Vector3f((centerX < 0 ? 0 : centerX * 0.5f), (centerY < 0 ? 0 : centerY * 0.5f),
+				(centerZ < 0 ? 0 : centerZ * 0.5f));
+	}
+
 	public Vector2f getCenter(Vector2f pos) {
-		pos.x = getX() + getWidth() / 2f;
+		pos.x = getX() + getWidth() / 2;
 		pos.y = getY() + getHeight() / 2;
 		return pos;
 	}
@@ -376,7 +445,7 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
-	public AABB fitOutside(AABB rect) {
+	public AABB i(AABB rect) {
 		float ratio = getAspectRatio();
 		if (ratio > rect.getAspectRatio()) {
 			setSize(rect.getHeight() * ratio, rect.getHeight());
@@ -518,12 +587,26 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return this;
 	}
 
+	public AABB clear() {
+		return setZero();
+	}
+
 	public AABB setZero() {
-		this.minX = 0;
-		this.maxX = 0;
-		this.minY = 0;
-		this.maxY = 0;
+		this.minX = 0f;
+		this.maxX = 0f;
+		this.minY = 0f;
+		this.maxY = 0f;
+		this.minZ = 0f;
+		this.maxZ = 0f;
 		return this;
+	}
+
+	public void setMinZ(float z) {
+		this.minZ = z;
+	}
+
+	public void setMaxZ(float z) {
+		this.maxZ = z;
 	}
 
 	@Override
@@ -580,7 +663,7 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public boolean isEmpty() {
-		return this.maxX <= 0 && this.maxY <= 0;
+		return minX >= maxX || minY >= maxY || minZ >= maxZ;
 	}
 
 	public AABB random() {
@@ -618,7 +701,7 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return rect;
 	}
 
-	public AABB translate(XY pos) {
+	public AABB translate(XYZ pos) {
 		if (pos == null) {
 			return this;
 		}
@@ -626,20 +709,23 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		this.maxX += pos.getX();
 		this.minY += pos.getY();
 		this.maxY += pos.getY();
+		this.minZ += pos.getZ();
+		this.maxZ += pos.getZ();
 		return this;
 	}
 
-	public AABB shift(XY pos) {
+	public AABB shift(XYZ pos) {
 		if (pos == null) {
 			return this;
 		}
 		float deltaX = this.maxX - this.minX;
 		float deltaY = this.maxY - this.minY;
-
 		this.minX = pos.getX();
 		this.maxX = pos.getX() + deltaX;
 		this.minY = pos.getY();
 		this.maxY = pos.getY() + deltaY;
+		this.minZ = pos.getZ();
+		this.maxZ = pos.getZ() + deltaY;
 		return this;
 	}
 
@@ -647,24 +733,29 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return getRectBox(null);
 	}
 
-	public AABB add(XY pos) {
+	public AABB add(XYZ pos) {
 		this.minX = MathUtils.min(this.minX, pos.getX());
 		this.maxX = MathUtils.max(this.maxX, pos.getX());
 		this.minY = MathUtils.min(this.minY, pos.getY());
 		this.maxY = MathUtils.max(this.maxY, pos.getY());
+		this.minZ = MathUtils.min(this.minZ, pos.getZ());
+		this.maxZ = MathUtils.max(this.maxZ, pos.getZ());
 		return this;
 	}
 
 	public AABB add(AABB rect) {
 		final float minX1 = this.minX;
 		final float minY1 = this.minY;
+		final float minZ1 = this.minZ;
 		final float maxX1 = this.maxX;
 		final float maxY1 = this.maxY;
-
+		final float maxZ1 = this.maxZ;
 		this.minX = rect.minX < minX1 ? rect.minX : minX1;
 		this.minY = rect.minY < minY1 ? rect.minY : minY1;
+		this.minZ = rect.minZ < minZ1 ? rect.minZ : minZ1;
 		this.maxX = rect.maxX > maxX1 ? rect.maxX : maxX1;
 		this.maxY = rect.maxY > maxY1 ? rect.maxY : maxY1;
+		this.maxZ = rect.maxZ > maxZ1 ? rect.maxZ : maxZ1;
 		return this;
 	}
 
@@ -700,11 +791,12 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public boolean isDegenerate() {
-		return this.minX == this.maxX || this.minY == this.maxY;
+		return this.minX == this.maxX || this.minY == this.maxY || this.minZ == this.maxZ;
 	}
 
 	public boolean isDegenerate(float error) {
-		return MathUtils.abs(this.maxX - this.minX) <= error || MathUtils.abs(this.maxY - this.minY) <= error;
+		return MathUtils.abs(this.maxX - this.minX) <= error || MathUtils.abs(this.maxY - this.minY) <= error
+				|| MathUtils.abs(this.maxZ - this.minZ) <= error;
 	}
 
 	@Override
@@ -713,22 +805,24 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		int hashCode = 1;
 		hashCode = prime * LSystem.unite(hashCode, this.minX);
 		hashCode = prime * LSystem.unite(hashCode, this.minY);
+		hashCode = prime * LSystem.unite(hashCode, this.minZ);
 		hashCode = prime * LSystem.unite(hashCode, this.maxX);
 		hashCode = prime * LSystem.unite(hashCode, this.maxY);
+		hashCode = prime * LSystem.unite(hashCode, this.maxZ);
 		return hashCode;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("AABB");
-		builder.kv("minX", this.minX).comma().kv("minY", this.minY).comma().kv("maxX", this.maxX).comma().kv("maxY",
-				this.maxY);
+		builder.kv("minX", this.minX).comma().kv("minY", this.minY).kv("minZ", this.minZ).comma().kv("maxX", this.maxX)
+				.comma().kv("maxY", this.maxY).comma().kv("maxZ", this.maxZ);
 		return builder.toString();
 	}
 
 	@Override
 	public void close() {
-		this.minX = this.minY = this.maxX = this.maxY = 0f;
+		this.minX = this.minY = this.minZ = this.maxX = this.maxY = this.maxZ = 0f;
 	}
 
 }

@@ -151,7 +151,7 @@ public class LTabContainer extends LContainer {
 
 	@Override
 	protected void renderComponents(GLEx g) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		LComponent node = getCurTab();
@@ -162,7 +162,7 @@ public class LTabContainer extends LContainer {
 
 	@Override
 	public void keyPressed(GameKey key) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		super.keyPressed(key);
@@ -174,7 +174,7 @@ public class LTabContainer extends LContainer {
 
 	@Override
 	public void keyReleased(GameKey key) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		super.keyReleased(key);
@@ -186,7 +186,7 @@ public class LTabContainer extends LContainer {
 
 	@Override
 	protected void processResize() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		LComponent node = getCurTab();

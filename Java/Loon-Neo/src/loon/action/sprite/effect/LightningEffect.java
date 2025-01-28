@@ -49,7 +49,7 @@ public class LightningEffect extends BaseAbstractEffect {
 
 	final static LightningEffect get() {
 		synchronized (LightningEffect.class) {
-			if (instance == null || instance.isClosed()) {
+			if (instance == null || instance.isDestroyed()) {
 				instance = make();
 			}
 			return instance;
@@ -187,8 +187,8 @@ public class LightningEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		if (lists != null) {
 			for (ILightning light : lists) {
 				if (light != null) {

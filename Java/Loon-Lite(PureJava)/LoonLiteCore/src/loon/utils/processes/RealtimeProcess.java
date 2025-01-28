@@ -201,6 +201,10 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		return this;
 	}
 
+	public boolean toggle() {
+		return _timer.toggle();
+	}
+
 	public RealtimeProcess interrupt() {
 		_timer.stop();
 		return this;
@@ -299,12 +303,8 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 
 	@Override
 	public String toString() {
-		StringKeyValue kv = new StringKeyValue("Process")
-				.kv("id", id).comma()
-				.kv("timeout", _timeOutDelay).comma()
-				.kv("type", _processType).comma()
-				.kv("priority", _priority).comma()
-				.kv("finish", isDead);
+		StringKeyValue kv = new StringKeyValue("Process").kv("id", id).comma().kv("timeout", _timeOutDelay).comma()
+				.kv("type", _processType).comma().kv("priority", _priority).comma().kv("finish", isDead);
 		return kv.toString();
 	}
 

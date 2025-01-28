@@ -21,7 +21,6 @@
 package loon.action.sprite;
 
 import loon.LObject;
-import loon.LRelease;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.action.ActionTween;
@@ -43,7 +42,7 @@ import loon.utils.timer.LTimerContext;
  * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
  * 
  */
-public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease {
+public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
 
@@ -59,7 +58,6 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 	private Animation animation;
 
 	private boolean dirToAngle;
-	private boolean closed;
 	private boolean visible;
 	private boolean active;
 
@@ -131,7 +129,6 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 		this.visible = true;
 		this.dirToAngle = true;
 		this.active = true;
-		this.closed = false;
 		this._width = w;
 		this._height = h;
 		this.setDirection(this.direction);
@@ -142,7 +139,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 	}
 
 	public void draw(GLEx g, float offsetX, float offsetY) {
-		if (!visible || closed) {
+		if (!visible || _destroyed) {
 			return;
 		}
 		if (animation != null) {
@@ -158,7 +155,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 
 	@Override
 	public void update(long elapsedTime) {
-		if (closed) {
+		if (_destroyed) {
 			return;
 		}
 		if ((speed.getX() == 0) && (speed.getY() == 0)) {
@@ -418,12 +415,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject, LRelease
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		if (animation != null) {
 			animation.close();
 			animation = null;
 		}
-		closed = true;
 		visible = false;
 	}
 

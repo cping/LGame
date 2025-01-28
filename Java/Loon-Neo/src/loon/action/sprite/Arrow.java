@@ -87,8 +87,8 @@ public class Arrow extends Entity {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		_arrow.close();
 	}
 }

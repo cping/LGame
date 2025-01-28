@@ -112,4 +112,8 @@ public class EventDispatcher extends LObject<ISprite> {
 	public float getHeight() {
 		return 0;
 	}
+
+	@Override
+	protected void _onDestroy() {
+	}
 }

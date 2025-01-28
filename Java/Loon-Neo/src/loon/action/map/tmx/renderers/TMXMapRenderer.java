@@ -642,10 +642,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return false;
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	public boolean isAllowCache() {
 		return allowCache;
 	}
@@ -694,7 +690,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		visible = false;
 		if (textureMap != null) {
 			for (LTexture texture : textureMap.values()) {
@@ -716,7 +712,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		lastHashCode = 1;
 		_resizeListener = null;
 		_collSpriteListener = null;
-		setState(State.DISPOSED);
 	}
 
 }

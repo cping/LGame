@@ -222,8 +222,8 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		conversions = null;
 	}
 

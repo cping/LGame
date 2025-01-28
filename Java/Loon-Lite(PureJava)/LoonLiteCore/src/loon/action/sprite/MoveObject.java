@@ -773,8 +773,8 @@ public class MoveObject extends ActionObject {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		if (findPath != null) {
 			findPath.clear();
 			findPath = null;

@@ -1284,19 +1284,14 @@ public class Actor extends LObject<Actor>
 		return PlayerUtils.isActionCompleted(this);
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		if (image != null) {
 			image.close();
 		}
 		if (animation != null) {
 			animation.close();
 		}
-		setState(State.DISPOSED);
 		removeActionEvents(this);
 	}
 

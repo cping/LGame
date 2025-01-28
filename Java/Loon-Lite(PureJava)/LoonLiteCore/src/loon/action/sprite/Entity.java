@@ -1651,15 +1651,13 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		if (_disposed != null) {
 			_disposed.close();
 		}
-		if (!isDisposed()) {
-			if (_image != null) {
-				_image.close();
-				_image = null;
-			}
+		if (_image != null) {
+			_image.close();
+			_image = null;
 		}
 		_stopUpdate = false;
 		_ignoreUpdate = false;
@@ -1672,7 +1670,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		_oldNodeType = null;
 		_drawListener = null;
 		_disposed = null;
-		setState(State.DISPOSED);
 		removeComponents();
 		removeChildren();
 		removeActionEvents(this);

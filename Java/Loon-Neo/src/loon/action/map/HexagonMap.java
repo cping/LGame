@@ -2303,12 +2303,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return field2d.getTileHeight();
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		roll = false;
 		visible = false;
 		playAnimation = false;

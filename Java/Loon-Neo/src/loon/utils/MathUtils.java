@@ -846,6 +846,15 @@ public final class MathUtils {
 		return new Vector2f(MathUtils.sqrt((x * x) + (y * y)), degreesFrom(x, y));
 	}
 
+	public static float gauss(float amplitude, float x, float y, float centerX, float centerY, float sigmaX,
+			float sigmaY) {
+		float cx = x - centerX;
+		float cy = y - centerY;
+		float componentX = cx * cx / (2f * sigmaX * sigmaX);
+		float componentY = cy * cy / (2f * sigmaY * sigmaY);
+		return amplitude * exp(-(componentX + componentY));
+	}
+
 	public static float trunc(float x) {
 		return x < 0f ? MathUtils.ceil(x) : MathUtils.floor(x);
 	}

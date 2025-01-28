@@ -272,8 +272,8 @@ public class TextEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		clear();
 		packed = false;
 	}

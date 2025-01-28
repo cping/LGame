@@ -343,8 +343,8 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		this._dirty = true;
 		if (paintBlocks != null) {
 			this.paintBlocks.clear();

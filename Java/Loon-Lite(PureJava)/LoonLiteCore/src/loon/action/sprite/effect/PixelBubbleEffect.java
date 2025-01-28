@@ -183,8 +183,8 @@ public class PixelBubbleEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		_bubbleBlocks.clear();
 	}
 

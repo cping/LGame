@@ -2298,12 +2298,8 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		return this;
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		roll = false;
 		visible = false;
 		playAnimation = false;
@@ -2331,7 +2327,6 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		_resizeListener = null;
 		_collSpriteListener = null;
 		removeActionEvents(this);
-		setState(State.DISPOSED);
 	}
 
 }

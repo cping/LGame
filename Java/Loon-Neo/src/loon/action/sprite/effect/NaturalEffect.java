@@ -324,8 +324,8 @@ public class NaturalEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		if (kernels != null) {
 			int size = kernels.length;
 			for (int i = 0; i < size; i++) {

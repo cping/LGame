@@ -559,6 +559,10 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return !isEmpty();
 	}
 
+	public boolean isValidIndex(int idx) {
+		return idx < this.size && idx >= 0;
+	}
+
 	public T shift() {
 		return removeIndex(0);
 	}
@@ -982,6 +986,10 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	public SwappableArray<T> getSwappableArray() {
 		return new SwappableArray<T>(this);
+	}
+
+	public boolean hasItems() {
+		return size != 0;
 	}
 
 	@Override

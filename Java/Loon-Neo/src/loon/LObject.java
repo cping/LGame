@@ -45,7 +45,7 @@ import loon.utils.reply.VarView;
 /**
  * 一个通用的Loon对象,除Screen外,Loon中所有可移动并展示的对象都继承于此类
  */
-public abstract class LObject<T> extends BlendMethod implements Comparator<T>, XY, SetXY, ZIndex {
+public abstract class LObject<T> extends BlendMethod implements Comparator<T>, XY, SetXY, ZIndex, LRelease {
 
 	private static int _SYS_GLOBAL_SEQNO = 0;
 
@@ -286,6 +286,8 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	// 当前对象层级
 	protected int _objectLayer = 0;
 
+	protected boolean _destroyed;
+
 	// 数字标记,用以定义对象序列号
 	private int _objectSeqNo = 0;
 	// 数字标记,用以定义对象状态(比如生死,中毒,能力加强或衰弱)
@@ -304,6 +306,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		this._objectAlpha = 1f;
 		this._objectFlag = null;
 		this._objectName = null;
+		this._destroyed = false;
 		this.nextSequenceNo();
 	}
 
@@ -1205,6 +1208,29 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return 0;
 	}
 
+	public boolean isDestroyed() {
+		return _destroyed;
+	}
+
+	public boolean isClosed() {
+		return _destroyed;
+	}
+
+	@Override
+	public void close() {
+		if (this._destroyed) {
+			return;
+		}
+		this._onDestroy();
+		this.setState(State.DISPOSED);
+		this._destroyed = true;
+	}
+
+	/**
+	 * 所有继承自LObject对象的统一资源释放函数
+	 */
+	protected abstract void _onDestroy();
+
 	@Override
 	public int hashCode() {
 		return _objectSeqNo;
@@ -1216,7 +1242,8 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 				.kv("state", _objectState.get()).comma()
 				.kv("super", _objectSuper == null ? "empty" : _objectSuper.getClass()).comma()
 				.kv("pos", _objectLocation).comma().kv("size", _objectRect).comma().kv("alpha", _objectAlpha).comma()
-				.kv("rotation", _objectRotation).comma().kv("layer", _objectLayer).comma().kv("tag", Tag).toString();
+				.kv("rotation", _objectRotation).comma().kv("layer", _objectLayer).comma().kv("tag", Tag).comma()
+				.kv("destroyed", _destroyed).toString();
 	}
 
 }

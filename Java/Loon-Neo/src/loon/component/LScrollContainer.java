@@ -143,7 +143,7 @@ public class LScrollContainer extends LContainer {
 
 	@Override
 	public void createUI(GLEx g) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (!this.isVisible()) {

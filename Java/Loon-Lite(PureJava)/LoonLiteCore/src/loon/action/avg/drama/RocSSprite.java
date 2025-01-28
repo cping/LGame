@@ -264,10 +264,6 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
 	public float getFixedWidthOffset() {
 		return _sprite != null ? _sprite.getFixedWidthOffset() : 0f;
@@ -412,8 +408,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void close() {
-		setState(State.DISPOSED);
+	public void _onDestroy() {
 		if (_sprite != null) {
 			_sprite.close();
 		}

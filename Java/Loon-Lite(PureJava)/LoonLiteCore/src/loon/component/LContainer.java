@@ -98,7 +98,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent addPadding(LComponent comp, float offX, float offY, int code) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return comp;
 		}
 		if (comp == null) {
@@ -173,7 +173,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent add(LComponent... comps) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		for (int i = 0; i < comps.length; i++) {
@@ -187,7 +187,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent add(LComponent comp, int x, int y) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		add(comp);
@@ -196,7 +196,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent add(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (this == comp) {
@@ -239,7 +239,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent add(LComponent comp, int index) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (comp.getContainer() != null) {
@@ -278,7 +278,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findTags(Object... tags) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -306,7 +306,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findNotTags(Object... tags) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		final TArray<LComponent> list = new TArray<LComponent>();
@@ -334,7 +334,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findUINames(String... names) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -360,7 +360,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findNotUINames(String... names) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -388,7 +388,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findNames(String... names) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -410,7 +410,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public TArray<LComponent> findNameContains(String... names) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -438,7 +438,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findNotNames(String... names) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		TArray<LComponent> list = new TArray<LComponent>();
@@ -466,7 +466,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public boolean contains(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (comp == null) {
@@ -504,7 +504,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findFlagTypes(int flag) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		final TArray<LComponent> list = new TArray<LComponent>();
@@ -526,7 +526,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> findFlagObjects(String flag) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		final TArray<LComponent> list = new TArray<LComponent>();
@@ -575,7 +575,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent getRandomComponent(int min, int max) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		min = MathUtils.max(0, min);
@@ -584,7 +584,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public int remove(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return -1;
 		}
 		final int size = this._childCount;
@@ -613,7 +613,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeWhen(QueryEvent<LComponent> query) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (query == null) {
@@ -633,7 +633,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeTag(Object tag) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		boolean flag = false;
@@ -650,7 +650,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeNotTag(Object tag) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (tag == null) {
@@ -670,7 +670,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeUIName(String name) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (name == null) {
@@ -690,7 +690,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeNotUIName(String name) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (name == null) {
@@ -710,7 +710,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeName(String name) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (name == null) {
@@ -730,7 +730,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public boolean removeNotName(String name) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (name == null) {
@@ -750,7 +750,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent remove(int index) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		LComponent comp = this._childs[index];
@@ -777,7 +777,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public LContainer swap(int first, int second) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if (first == second) {
@@ -804,7 +804,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public LContainer swap(LComponent first, LComponent second) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if ((first == null && second == null) || (first == second)) {
@@ -852,7 +852,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void clear() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		this._desktop.clearComponentsStat(this._childs);
@@ -876,7 +876,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent replace(LComponent oldComp, LComponent newComp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		int index = this.remove(oldComp);
@@ -886,7 +886,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void update(long elapsedTime) {
-		if (this._component_isClose) {
+		if (this._destroyed) {
 			return;
 		}
 		if (!this._component_visible) {
@@ -912,7 +912,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void validatePosition() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		super.validatePosition();
@@ -940,7 +940,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void createUI(GLEx g) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (!this._component_visible) {
@@ -978,7 +978,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	protected void renderComponents(GLEx g) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		final int size = this._childCount;
@@ -992,7 +992,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent sendToFront(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if (this._childCount <= 1 || this._childs[0] == comp) {
@@ -1018,7 +1018,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent sendToBack(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if (this._childCount <= 1 || this._childs[this._childCount - 1] == comp) {
@@ -1044,7 +1044,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent sortComponents() {
-		if (this._component_isClose) {
+		if (this._destroyed) {
 			return this;
 		}
 		if (this._childCount <= 1) {
@@ -1055,7 +1055,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	protected void transferFocus(LComponent component) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (component == null) {
@@ -1082,7 +1082,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	protected void transferFocusBackward(LComponent component) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (component == null) {
@@ -1109,7 +1109,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public boolean isSelected() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return false;
 		}
 		if (!super.isSelected()) {
@@ -1133,7 +1133,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent findComponent(int x1, int y1) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (!this.intersects(x1, y1)) {
@@ -1183,7 +1183,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent[] getComponents() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		return CollectionUtils.copyOf(this._childs, this._childCount);
@@ -1232,7 +1232,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LContainer layoutElements(final LayoutManager manager, final LComponent... comps) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if (manager == null) {
@@ -1259,7 +1259,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		if (manager == null) {
@@ -1283,7 +1283,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	void setDesktops(Desktop d) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		final LComponent[] comps = this._childs;
@@ -1304,7 +1304,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> remove(QueryEvent<LComponent> query) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (query == null) {
@@ -1332,7 +1332,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> find(QueryEvent<LComponent> query) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (query == null) {
@@ -1359,7 +1359,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> delete(QueryEvent<LComponent> query) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (query == null) {
@@ -1387,7 +1387,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @return
 	 */
 	public TArray<LComponent> select(QueryEvent<LComponent> query) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (query == null) {
@@ -1409,7 +1409,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public LComponent in() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		final LComponent[] comps = this._childs;
@@ -1426,7 +1426,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public LComponent out() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		final LComponent[] comps = this._childs;
@@ -1509,7 +1509,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public int get(LComponent comp) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return -1;
 		}
 		if (comp == null) {
@@ -1531,7 +1531,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public TArray<LComponent> get(String name) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return null;
 		}
 		if (StringUtils.isEmpty(name)) {
@@ -1566,7 +1566,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void keyPressed(GameKey key) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		super.keyPressed(key);
@@ -1582,7 +1582,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void keyReleased(GameKey key) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		super.keyReleased(key);
@@ -1620,7 +1620,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	protected void processResize() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (_childs != null && _childCount > 0) {
@@ -1637,7 +1637,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	protected LContainer validateResize() {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return this;
 		}
 		super.validateResize();
@@ -1738,7 +1738,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public Margin margin(boolean vertical, float left, float top, float right, float bottom) {
 		float size = vertical ? getHeight() : getWidth();
-		if (_component_isClose) {
+		if (_destroyed) {
 			return new Margin(size, vertical);
 		}
 		if (_margin == null) {
@@ -1806,17 +1806,16 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		this._newLineHeight = 0;
-		this._component_isClose = true;
 		if (_component_autoDestroy) {
 			if (_childs != null) {
 				final int size = this._childCount;
 				final LComponent[] comps = this._childs;
 				for (int i = size - 1; i > -1; i--) {
 					final LComponent child = comps[i];
-					if (child != null && !child._component_isClose) {
+					if (child != null && !child.isDestroyed()) {
 						child.close();
 					}
 				}

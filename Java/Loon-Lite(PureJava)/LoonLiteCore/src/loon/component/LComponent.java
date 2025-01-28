@@ -102,8 +102,6 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected boolean _component_autoDestroy = true;
 
-	protected boolean _component_isClose = false;
-
 	protected boolean isFull = false;
 
 	protected boolean isSelectDraw = false;
@@ -231,7 +229,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_paused = false;
 		this._component_elastic = false;
 		this._component_autoDestroy = true;
-		this._component_isClose = false;
+		this._destroyed = false;
 		this._flipX = _flipY = false;
 		this._scaleX = _scaleY = 1f;
 		this._cam_x = _cam_y = 0;
@@ -362,7 +360,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	@Override
 	public void update(long elapsedTime) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (_objectSuper != null) {
@@ -399,7 +397,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @param g
 	 */
 	public void createUI(GLEx g) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 		if (!this._component_visible) {
@@ -2087,10 +2085,6 @@ public abstract class LComponent extends LObject<LContainer>
 		return desktopContainer;
 	}
 
-	public boolean isClosed() {
-		return _component_isClose;
-	}
-
 	public LTextureFree freeRes() {
 		if (_freeTextures == null) {
 			_freeTextures = new LTextureFree();
@@ -2442,17 +2436,13 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		if (!_component_autoDestroy) {
-			return;
-		}
-		if (_component_isClose) {
 			return;
 		}
 		if (_disposed != null) {
 			_disposed.close();
 		}
-		this._component_isClose = true;
 		this._component_visible = false;
 		this._component_paused = false;
 		this._component_selected = false;
@@ -2485,7 +2475,6 @@ public abstract class LComponent extends LObject<LContainer>
 		this._loopAction = null;
 		this._click = null;
 		this.input = null;
-		setState(State.DISPOSED);
 		removeActionEvents(this);
 		destory();
 	}

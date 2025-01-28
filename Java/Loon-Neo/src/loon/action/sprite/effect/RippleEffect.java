@@ -201,8 +201,8 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		if (processArray != null) {
 			for (RippleProcess process : processArray) {
 				if (process != null) {

@@ -271,8 +271,8 @@ public class ScrollText extends Entity {
 	}
 
 	@Override
-	public void close() {
-		super.close();
+	public void _onDestroy() {
+		super._onDestroy();
 		_text.close();
 		_ignoreUpdate = true;
 	}

@@ -320,7 +320,7 @@ public class LRadar extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if (_component_isClose) {
+		if (_destroyed) {
 			return;
 		}
 

@@ -1541,17 +1541,13 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		return this;
 	}
 
-	public boolean isClosed() {
-		return isDisposed();
-	}
-
 	@Override
 	public String toString() {
 		return _field2d.toString();
 	}
 
 	@Override
-	public void close() {
+	public void _onDestroy() {
 		_visible = false;
 		_playAnimation = false;
 		_roll = false;
@@ -1575,7 +1571,6 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		lastTileX = lastTileY = 0;
 		lastTileScale = 0f;
 		removeActionEvents(this);
-		setState(State.DISPOSED);
 	}
 
 }
