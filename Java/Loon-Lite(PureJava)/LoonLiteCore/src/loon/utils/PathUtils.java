@@ -38,9 +38,9 @@ public class PathUtils {
 	 */
 	public static String normalize(String filename) {
 		if (StringUtils.isEmpty(filename)) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		String result = StringUtils.filter(filename, new char[] { '\\', '/' }, LSystem.FS);
+		String result = StringUtils.filter(filename, new char[] { LSystem.BACKSLASH, LSystem.SLASH }, LSystem.FS);
 		String doubleTag = LSystem.FS + LSystem.FS;
 		if (result.indexOf(doubleTag) != -1) {
 			result = StringUtils.replace(result, doubleTag, LSystem.FS);
@@ -64,17 +64,17 @@ public class PathUtils {
 	 */
 	public static String getBaseFileName(String filename) {
 		if (StringUtils.isEmpty(filename)) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		String result = "";
-		if (filename.indexOf('\\') != -1) {
-			result = filename.substring(filename.lastIndexOf('\\') + 1);
-		} else if (filename.indexOf('/') != -1) {
-			result = filename.substring(filename.lastIndexOf('/') + 1);
+		String result = LSystem.EMPTY;
+		if (filename.indexOf(LSystem.BACKSLASH) != -1) {
+			result = filename.substring(filename.lastIndexOf(LSystem.BACKSLASH) + 1);
+		} else if (filename.indexOf(LSystem.SLASH) != -1) {
+			result = filename.substring(filename.lastIndexOf(LSystem.SLASH) + 1);
 		} else {
 			result = filename.substring(filename.lastIndexOf(LSystem.FS) + 1);
 		}
-		int idx = result.indexOf('.');
+		int idx = result.indexOf(LSystem.DOT);
 		if (idx != -1) {
 			result = result.substring(0, idx);
 		}
@@ -89,29 +89,29 @@ public class PathUtils {
 	 */
 	public static String getFullFileName(String filename) {
 		if (StringUtils.isEmpty(filename)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int length = filename.length();
-		if (filename.indexOf('\\') != -1) {
-			int size = filename.lastIndexOf('\\') + 1;
+		if (filename.indexOf(LSystem.BACKSLASH) != -1) {
+			int size = filename.lastIndexOf(LSystem.BACKSLASH) + 1;
 			if (size < length) {
 				return filename.substring(size, length);
 			} else {
-				return "";
+				return LSystem.EMPTY;
 			}
-		} else if (filename.indexOf('/') != -1) {
-			int size = filename.lastIndexOf('/') + 1;
+		} else if (filename.indexOf(LSystem.SLASH) != -1) {
+			int size = filename.lastIndexOf(LSystem.SLASH) + 1;
 			if (size < length) {
 				return filename.substring(size, length);
 			} else {
-				return "";
+				return LSystem.EMPTY;
 			}
 		} else {
 			int size = filename.lastIndexOf(LSystem.FS) + 1;
 			if (size < length) {
 				return filename.substring(size, length);
 			} else {
-				return "";
+				return LSystem.EMPTY;
 			}
 		}
 	}
@@ -124,16 +124,16 @@ public class PathUtils {
 	 */
 	public static String getLastDirName(String dir) {
 		if (StringUtils.isEmpty(dir)) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		if (dir.indexOf('\\') != -1) {
-			String[] list = StringUtils.split(dir, '\\');
+		if (dir.indexOf(LSystem.BACKSLASH) != -1) {
+			String[] list = StringUtils.split(dir, LSystem.BACKSLASH);
 			if (list.length > 1) {
 				return list[list.length - 2];
 			}
 			return list[list.length - 1];
-		} else if (dir.indexOf('/') != -1) {
-			String[] list = StringUtils.split(dir, '/');
+		} else if (dir.indexOf(LSystem.SLASH) != -1) {
+			String[] list = StringUtils.split(dir, LSystem.SLASH);
 			if (list.length > 1) {
 				return list[list.length - 2];
 			}
@@ -158,11 +158,11 @@ public class PathUtils {
 	 */
 	public static String getExtension(String filename) {
 		if (StringUtils.isEmpty(filename)) {
-			return "";
+			return LSystem.EMPTY;
 		}
-		int index = filename.lastIndexOf(".") + 1;
+		int index = filename.lastIndexOf(LSystem.DOT) + 1;
 		if (index <= 0) {
-			return "";
+			return LSystem.EMPTY;
 		} else {
 			return filename.substring(index, filename.length());
 		}
@@ -176,17 +176,34 @@ public class PathUtils {
 	 */
 	public static String getDirName(String dir) {
 		if (StringUtils.isEmpty(dir)) {
-			return "";
+			return LSystem.EMPTY;
 		}
 		int size = dir.length();
-		if (dir.indexOf('\\') != -1) {
-			size = dir.lastIndexOf('\\') + 1;
-		} else if (dir.indexOf('/') != -1) {
-			size = dir.lastIndexOf('/') + 1;
+		if (dir.indexOf(LSystem.BACKSLASH) != -1) {
+			size = dir.lastIndexOf(LSystem.BACKSLASH) + 1;
+		} else if (dir.indexOf(LSystem.SLASH) != -1) {
+			size = dir.lastIndexOf(LSystem.SLASH) + 1;
 		} else {
 			size = dir.lastIndexOf(LSystem.FS) + 1;
 		}
 		return dir.substring(0, size);
+	}
+
+	public static String getCombinePaths(String left, String right) {
+		if (left == null || right == null) {
+			return LSystem.EMPTY;
+		}
+		int cnt = left.length();
+		if (cnt > 1 && left.charAt(cnt - 1) != LSystem.SLASH && left.charAt(cnt - 1) != LSystem.BACKSLASH
+				&& (right.length() == 0
+						|| (right.charAt(0) != LSystem.SLASH && right.charAt(0) != LSystem.BACKSLASH))) {
+			left += LSystem.SLASH;
+		}
+		return left + right;
+	}
+
+	public static String getCombinePaths(String left, String middle, String right) {
+		return getCombinePaths(getCombinePaths(left, middle), right);
 	}
 
 	/**
@@ -196,15 +213,25 @@ public class PathUtils {
 	 * @return
 	 */
 	public static boolean isRelativePath(String filename) {
-		return filename.charAt(0) != '/' && StringUtils.isMatch(filename, ":\\/\\/");
+		return filename.charAt(0) != LSystem.SLASH && StringUtils.isMatch(filename, ":\\/\\/");
+	}
+
+	public static String convertRelativePathToAbsolute(String basePath, String path) {
+		String result;
+		if (isRelativePath(path)) {
+			result = getCombinePaths(basePath, path);
+		} else {
+			result = path;
+		}
+		return normalize(result);
 	}
 
 	public static String extractPath(String filename) {
-		return extractPath(filename, '/');
+		return extractPath(filename, LSystem.SLASH);
 	}
 
 	/**
-	 * 返回不带文件名的路徑，如果文件名是相对路径，以'.'开头
+	 * 返回不带文件名的路徑，如果文件名是相对路径，以.开头
 	 * 
 	 * @param filename
 	 * @param delimiter
@@ -241,5 +268,9 @@ public class PathUtils {
 			}
 		}
 		return result;
+	}
+
+	public static String removeNewLine(String s) {
+		return StringUtils.replacesTrim(s, "\n", "\r");
 	}
 }

@@ -985,7 +985,7 @@ final public class StringUtils extends CharUtils {
 	 * @param oldStrings
 	 * @return
 	 */
-	public static String replacesTrim(String message, String newTag, String... oldStrings) {
+	public static String replacesTrim(String message, String... oldStrings) {
 		return replaces(message, LSystem.EMPTY, oldStrings);
 	}
 

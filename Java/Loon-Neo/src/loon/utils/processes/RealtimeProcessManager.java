@@ -26,6 +26,8 @@ import java.util.Iterator;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.events.EventAction;
+import loon.utils.HelperUtils;
 import loon.utils.IArray;
 import loon.utils.LIterator;
 import loon.utils.SortedList;
@@ -37,6 +39,52 @@ import loon.utils.timer.LTimerContext;
  * loon围绕时间帧提供的进程管理用类
  */
 public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
+
+	private static class RealtimeProcessRunnable extends RealtimeProcess {
+
+		private Runnable _runnable = null;
+
+		public RealtimeProcessRunnable(final String name, final long delay, final Runnable r) {
+			super(name, delay);
+			this._runnable = r;
+			this.setProcessType(GameProcessType.Other);
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			if (_runnable != null) {
+				_runnable.run();
+			}
+		}
+
+	}
+
+	private static class RealtimeProcessEventAction extends RealtimeProcess {
+
+		private EventAction _runnable = null;
+
+		public RealtimeProcessEventAction(final String name, final long delay, final EventAction r) {
+			super(name, delay);
+			this._runnable = r;
+			this.setProcessType(GameProcessType.Other);
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			if (_runnable != null) {
+				HelperUtils.callEventAction(_runnable, time);
+			}
+		}
+
+	}
+
+	public final static RealtimeProcess ofProcess(final String name, final long delay, final EventAction runnable) {
+		return new RealtimeProcessEventAction(name, delay, runnable);
+	}
+
+	public final static RealtimeProcess ofProcess(final String name, final long delay, final Runnable runnable) {
+		return new RealtimeProcessRunnable(name, delay, runnable);
+	}
 
 	static class ProcessComparator implements Comparator<GameProcess> {
 
