@@ -1186,6 +1186,9 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		if (obj == null) {
 			return false;
 		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
 		if (obj == this) {
 			return true;
 		}

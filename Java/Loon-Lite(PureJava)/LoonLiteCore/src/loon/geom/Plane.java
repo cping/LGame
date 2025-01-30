@@ -20,42 +20,38 @@
  */
 package loon.geom;
 
+import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 
 public class Plane implements XY {
 
-	public enum Side {
-		FRONT, BACK, ON_PLANE
-	}
+	public static void fromPoints(Vector3f point0, Vector3f point1, Vector3f point2, Plane o) {
 
-	private Vector3f _normal;
-	
-	private float _dot;
-
-	public Plane() {
-		this(Vector3f.ZERO(), 0);
-	}
-
-	public Plane(Vector3f normal, float d) {
-		this._normal = new Vector3f(normal);
-		this._dot = d;
-	}
-
-	public Plane(float a, float b, float c, float d) {
-		this._normal = new Vector3f(a, b, c);
-		this._dot = d;
-
-		float length = _normal.length();
-		_normal.scaleSelf(1 / length);
-		this._dot /= length;
-	}
-
-	public Plane(Plane plane) {
-		this(plane._normal, plane._dot);
+		final float x0 = point0.x;
+		final float y0 = point0.y;
+		final float z0 = point0.z;
+		final float x1 = point1.x - x0;
+		final float y1 = point1.y - y0;
+		final float z1 = point1.z - z0;
+		final float x2 = point2.x - x0;
+		final float y2 = point2.y - y0;
+		final float z2 = point2.z - z0;
+		final float yz = y1 * z2 - z1 * y2;
+		final float xz = z1 * x2 - x1 * z2;
+		final float xy = x1 * y2 - y1 * x2;
+		final float invPyth = 1f / MathUtils.sqrt(yz * yz + xz * xz + xy * xy);
+		final float x = yz * invPyth;
+		final float y = xz * invPyth;
+		final float z = xy * invPyth;
+		o._normal.x = x;
+		o._normal.y = y;
+		o._normal.z = z;
+		o._distance = -(x * x0 + y * y0 + z * z0);
 	}
 
 	public static Vector3f intersection(Plane p1, Plane p2, Plane p3, Vector3f dest) {
+
 		if (dest == null) {
 			dest = new Vector3f();
 		}
@@ -77,11 +73,64 @@ public class Plane implements XY {
 		c12z = p1._normal.x * p2._normal.y - p1._normal.y * p2._normal.x;
 
 		float dot = p1._normal.dot(c23x, c23y, c23z);
-		dest.x = (-c23x * p1._dot - c31x * p2._dot - c12x * p3._dot) / dot;
-		dest.y = (-c23y * p1._dot - c31y * p2._dot - c12y * p3._dot) / dot;
-		dest.z = (-c23z * p1._dot - c31z * p2._dot - c12z * p3._dot) / dot;
+		dest.x = (-c23x * p1._distance - c31x * p2._distance - c12x * p3._distance) / dot;
+		dest.y = (-c23y * p1._distance - c31y * p2._distance - c12y * p3._distance) / dot;
+		dest.z = (-c23z * p1._distance - c31z * p2._distance - c12z * p3._distance) / dot;
 
 		return dest;
+	}
+
+	public enum Side {
+		FRONT, BACK, ON_PLANE
+	}
+
+	private final Vector3f _normal = new Vector3f();
+
+	private float _distance;
+
+	public Plane() {
+		this(Vector3f.ZERO(), 0);
+	}
+
+	public Plane(Vector3f normal, float d) {
+		this._normal.set(normal);
+		this._distance = d;
+	}
+
+	public Plane(float a, float b, float c, float d) {
+		this._normal.set(a, b, c);
+		this._distance = d;
+
+		float length = _normal.length();
+		_normal.scaleSelf(1 / length);
+		this._distance /= length;
+	}
+
+	public Plane(Plane plane) {
+		this(plane._normal, plane._distance);
+	}
+
+	public Vector3f getNormal() {
+		return _normal;
+	}
+
+	public Plane setDistance(float d) {
+		this._distance = d;
+		return this;
+	}
+
+	public void fromPoints(Vector3f point0, Vector3f point1, Vector3f point2) {
+		Plane.fromPoints(point0, point1, point2, this);
+	}
+
+	public void normalize() {
+		this.normalize(this);
+	}
+
+	public void normalize(Plane o) {
+		final float factor = 1f / _normal.length();
+		o._normal.scaleSelf(factor);
+		o._distance = this._distance * factor;
 	}
 
 	public Side testPoint(Vector3f point) {
@@ -89,7 +138,7 @@ public class Plane implements XY {
 	}
 
 	public Side testPoint(float x, float y, float z) {
-		float test = _normal.dot(x, y, z) + _dot;
+		float test = _normal.dot(x, y, z) + _distance;
 
 		if (test == 0)
 			return Side.ON_PLANE;
@@ -102,33 +151,37 @@ public class Plane implements XY {
 
 	public Plane set(Vector3f normal, float d) {
 		this._normal.set(normal);
-		this._dot = d;
+		this._distance = d;
 
 		return this;
 	}
 
 	public Plane set(float a, float b, float c, float d) {
 		this._normal.set(a, b, c);
-		this._dot = d;
+		this._distance = d;
 
 		float length = _normal.length();
 		_normal.scaleSelf(1 / length);
-		this._dot /= length;
+		this._distance /= length;
 
 		return this;
 	}
 
 	public Plane set(Plane plane) {
 		this._normal.set(plane._normal);
-		this._dot = plane._dot;
+		this._distance = plane._distance;
 
 		return this;
+	}
+
+	public Plane copyFrom(Plane src) {
+		return set(src);
 	}
 
 	@Override
 	public int hashCode() {
 		int result = _normal.hashCode();
-		result = 31 * result + (_dot != +0.0f ? NumberUtils.floatToIntBits(_dot) : 0);
+		result = 31 * result + (_distance != +0.0f ? NumberUtils.floatToIntBits(_distance) : 0);
 		return result;
 	}
 
@@ -142,7 +195,7 @@ public class Plane implements XY {
 		}
 
 		Plane plane = (Plane) o;
-		return NumberUtils.compare(plane._dot, _dot) == 0 && _normal.equals(plane._normal);
+		return NumberUtils.compare(plane._distance, _distance) == 0 && _normal.equals(plane._normal);
 	}
 
 	@Override
@@ -154,15 +207,15 @@ public class Plane implements XY {
 	public float getY() {
 		return _normal.y;
 	}
-	
-	public float getDot() {
-		return this._dot;
+
+	public float getDistance() {
+		return this._distance;
 	}
 
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("Plane");
-		builder.kv("normal", _normal).comma().kv("dot", _dot);
+		builder.kv("normal", _normal).comma().kv("distance", _distance);
 		return builder.toString();
 	}
 

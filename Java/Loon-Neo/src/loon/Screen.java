@@ -7185,6 +7185,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 注销Screen
 	 */
 	public final void destroy() {
+		if (_isClose) {
+			return;
+		}
 		synchronized (Screen.class) {
 			try {
 				_screenIndex = 0;

@@ -77,6 +77,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		return new AABB(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
 	}
 
+	private final Vector3f _min = new Vector3f();
+
+	private final Vector3f _max = new Vector3f();
+
 	public float minX, minY, minZ;
 
 	public float maxX, maxY, maxZ;
@@ -187,6 +191,14 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 
 	public int AABBZ() {
 		return MathUtils.iceil(maxZ + minZ) / 2;
+	}
+
+	public Vector3f min() {
+		return _min.set(minX, minY, minZ);
+	}
+
+	public Vector3f max() {
+		return _max.set(maxX, maxY, maxZ);
 	}
 
 	public int width() {
