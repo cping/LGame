@@ -60,15 +60,18 @@ public class OrthographicCamera extends EmptyCamera {
 		return this;
 	}
 
-	public OrthographicCamera center(float x, float y) {
-		return center(new Vector2f(x, y));
+	public OrthographicCamera center(float x1, float y1) {
+		_viewMatrix4.idt();
+		float x = (width / 2) - x1;
+		float y = (height / 2) - y1;
+		return translate(x, y);
 	}
 
 	public OrthographicCamera center(Vector2f v) {
-		_viewMatrix4.idt();
-		float x = (width / 2) - v.getX();
-		float y = (height / 2) - v.getY();
-		return translate(x, y);
+		if (v == null) {
+			return this;
+		}
+		return center(v.x, v.y);
 	}
 
 	public OrthographicCamera translate(float x, float y) {

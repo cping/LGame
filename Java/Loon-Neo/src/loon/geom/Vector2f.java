@@ -262,15 +262,23 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f add(Vector2f pos, Vector2f vectorB) {
-		pos.x += vectorB.x;
-		pos.y += vectorB.y;
-		return pos;
+		return add(pos, vectorB, new Vector2f());
+	}
+
+	public final static Vector2f add(Vector2f pos, Vector2f vectorB, Vector2f out) {
+		out.x = pos.x + vectorB.x;
+		out.y = pos.y + vectorB.y;
+		return out;
 	}
 
 	public final static Vector2f add(Vector2f pos, float x, float y) {
-		pos.x += x;
-		pos.y += y;
-		return pos;
+		return add(pos, x, y, new Vector2f());
+	}
+
+	public final static Vector2f add(Vector2f pos, float x, float y, Vector2f out) {
+		out.x = pos.x + x;
+		out.y = pos.y + y;
+		return out;
 	}
 
 	public final static Vector2f smoothStep(Vector2f a, Vector2f b, float amount) {

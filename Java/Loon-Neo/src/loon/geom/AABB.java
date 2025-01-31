@@ -378,16 +378,8 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return false;
 		}
-		if (other.maxX > maxX || other.minX < minX) {
-			return false;
-		}
-		if (other.maxY > maxY || other.minY < minY) {
-			return false;
-		}
-		if (other.maxZ > maxZ || other.minZ < minZ) {
-			return false;
-		}
-		return true;
+		return this.minX <= other.maxX && this.maxX >= other.minX && this.maxY >= other.minY && this.minY <= other.maxY
+				&& !(other.maxZ > maxZ || other.minZ < minZ);
 	}
 
 	public boolean overlaps(XYZ point) {

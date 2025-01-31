@@ -21,10 +21,19 @@
 package loon;
 
 import loon.Log.Level;
+import loon.action.ActionControl;
 import loon.action.MoveTo;
+import loon.action.avg.AVGDialog;
+import loon.action.avg.drama.Command;
+import loon.action.collision.CollisionFilter;
 import loon.action.sprite.Sprites;
+import loon.action.sprite.effect.LightningEffect;
+import loon.canvas.LColorList;
+import loon.canvas.LColorPool;
+import loon.canvas.LGradation;
 import loon.component.DefUI;
 import loon.component.Desktop;
+import loon.component.skin.SkinManager;
 import loon.events.KeyMake;
 import loon.events.SysInput;
 import loon.events.Updateable;
@@ -36,10 +45,15 @@ import loon.opengl.Mesh;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.Scale;
+import loon.utils.TempVars;
 import loon.utils.json.JsonImpl;
+import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
 import loon.utils.reply.FutureResult;
 import loon.utils.reply.GoFuture;
+import loon.utils.timer.Duration;
+import loon.utils.timer.GameTime;
+import loon.utils.timer.LTimer;
 
 /**
  * loon的基础操作用类统一调用器及静态参数保存用类
@@ -759,6 +773,28 @@ public final class LSystem {
 
 	public static final boolean isAudio(String extension) {
 		return extension.equals("mp3") || extension.equals("ogg") || extension.equals("wav") || extension.equals("mid");
+	}
+
+	public static final void freeStaticObject() {
+		LGame.freeStatic();
+		ActionControl.freeStatic();
+		RealtimeProcessManager.freeStatic();
+		LGradation.freeStatic();
+		SkinManager.freeStatic();
+		AVGDialog.freeStatic();
+		LColorPool.freeStatic();
+		LColorList.freeStatic();
+		CollisionFilter.freeStatic();
+		LightningEffect.freeStatic();
+		Command.freeStatic();
+		LTimer.freeStatic();
+		GameTime.freeStatic();
+		Duration.freeStatic();
+		DefUI.freeStatic();
+		TempVars.freeStatic();
+		PAUSED = false;
+		_scaleWidth = 1f;
+		_scaleHeight = 1f;
 	}
 
 	public static final void stopRepaint() {

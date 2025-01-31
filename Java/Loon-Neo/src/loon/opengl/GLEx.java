@@ -52,6 +52,7 @@ import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
+import loon.utils.TempVars;
 
 /**
  * 一个全局使用的渲染器,内部为OpenGL封装,混合有JavaSE(JavaME)的Graphics和Android的Canvas主要API功能
@@ -94,8 +95,6 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	// 如果此项为true,则GLEx循环中每次begin会启动一个FrameBuffer保存,每次end会关闭一个FrameBuffer并将对应纹理保存至Texture
 	// 以此完整保存全局FrameBuffer内容(否则GLEx中每次begin时FrameBuffer绑定都会刷新，如果多次begin和end，将无法保存全部内容)
 	private boolean saveToFrameBufferTexture;
-
-	private final Vector2f tempLocation = new Vector2f();
 
 	private final Affine2f tempAffine = new Affine2f();
 
@@ -2117,25 +2116,25 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (gaps <= 0) {
 			drawLine(x1, y1, x2, y2, width, color);
 		} else {
-			Vector2f w = new Vector2f(x2 - x1, y2 - y1);
+			TempVars vars = TempVars.get();
+			Vector2f w = vars.vec2f1.set(x2 - x1, y2 - y1);
 			float l = w.length();
 			Vector2f dir = w.div(l);
 			int totalGaps = gaps * 2 + 1;
 			float size = l / totalGaps;
 			Vector2f offset = dir.mul(size);
-			Vector2f cur = new Vector2f(x1, y1);
+			Vector2f cur = vars.vec2f2.set(x1, y1);
 			for (int i = 0; i < totalGaps; i++) {
 				if (i % 2 == 0) {
-					Vector2f next = cur.add(offset);
+					Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
 					if (edges) {
 						fillCircle(cur.x, cur.y, width * 0.5f, color);
 						fillCircle(next.x, next.y, width * 0.5f, color);
 					}
 					drawLine(cur, next, width, color);
 					cur = next;
-
 				} else {
-					cur = cur.add(offset);
+					cur = vars.vec2f4.set(cur.x + offset.x, cur.y + offset.y);
 				}
 			}
 		}
@@ -2168,8 +2167,9 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (gaps <= 0) {
 			drawLine(x1, y1, x2, y2, width, color);
 		} else {
-			Vector2f cur = new Vector2f(x1, y1);
-			Vector2f w = new Vector2f(x2, y2).sub(cur);
+			TempVars vars = TempVars.get();
+			Vector2f cur = vars.vec2f1.set(x1, y1);
+			Vector2f w = vars.vec2f2.set(x2 - x1, y2 - y1);
 			float l = w.length();
 			Vector2f dir = w.div(l);
 
@@ -2185,7 +2185,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 			for (int i = 0; i < totalGaps; i++) {
 				if (i % 2 == 0) {
-					Vector2f next = cur.add(offset);
+					Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
 					if (edges) {
 						fillCircle(cur.x, cur.y, width * 0.5f, color);
 						fillCircle(next.x, next.y, width * 0.5f, color);
@@ -2193,7 +2193,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 					drawLine(cur, next, width, color);
 					cur = next;
 				} else {
-					cur = cur.add(gapOffset);
+					cur = vars.vec2f4.set(cur.x + gapOffset.x, cur.y + gapOffset.y);
 				}
 			}
 		}
@@ -2212,14 +2212,19 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float height = h;
 		float hGap = width / lines;
 		float vGap = height / lines;
-		Vector2f tl = new Vector2f(x, y);
+		TempVars vars = TempVars.get();
+		Vector2f tl = vars.vec2f1.set(x, y);
+		Vector2f v1 = vars.vec2f2.set(hGap, 0f);
+		Vector2f v2 = vars.vec2f3.set(0f, vGap);
 		Vector2f tr = tl.add(width - hGap, 0f);
 		Vector2f bl = tl.add(0f, height - vGap);
 		for (int l = 0; l < lines; l++) {
-			Vector2f xOffset = new Vector2f(hGap, 0f).mul(l);
-			Vector2f yOffset = new Vector2f(0f, vGap).mul(l);
-			drawLine(tl.add(xOffset), bl.add(xOffset), size, color);
-			drawLine(tl.add(yOffset), tr.add(yOffset), size, color);
+			v1.set(hGap, 0f);
+			v2.set(0f, vGap);
+			Vector2f xOffset = v1.mulSelf(l);
+			Vector2f yOffset = v2.mulSelf(l);
+			drawLine(tl.x + xOffset.x, tl.y + xOffset.y, bl.x + xOffset.x, bl.y + xOffset.y, size, color);
+			drawLine(tl.x + yOffset.x, tl.y + yOffset.y, tr.x + yOffset.x, tr.y + yOffset.y, size, color);
 		}
 		return this;
 	}
@@ -2255,13 +2260,15 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx drawAngleLine(float x, float y, float angle, float length) {
-		tempLocation.set(1f).setLength(length).setAngle(angle);
-		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y(), this.lastBrush.lineWidth);
+		Vector2f v = TempVars.get().vec2f1;
+		v.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + v.x(), y + v.y(), this.lastBrush.lineWidth);
 	}
 
 	public GLEx drawAngleLine(float x, float y, float angle, float length, float width) {
-		tempLocation.set(1f).setLength(length).setAngle(angle);
-		return drawLine(x, y, x + tempLocation.x(), y + tempLocation.y(), width);
+		Vector2f v = TempVars.get().vec2f1;
+		v.set(1f).setLength(length).setAngle(angle);
+		return drawLine(x, y, x + v.x(), y + v.y(), width);
 	}
 
 	/**
@@ -2371,20 +2378,19 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		int sides = 10 + MathUtils.floor(newRadius * scaleFactor);
 
 		final int startSide = (int) (sides / 360f * startAngle);
-
-		tempLocation.set(0f);
+		Vector2f tempv = TempVars.get().vec2f1.set(0f);
 
 		for (int i = startSide; i < sides; i++) {
 
 			float v = endAngle / sides * i;
 
-			tempLocation.set(newRadius, 0).setAngle(v + fixV);
-			float x1 = tempLocation.x;
-			float y1 = tempLocation.y;
+			tempv.set(newRadius, 0).setAngle(v + fixV);
+			float x1 = tempv.x;
+			float y1 = tempv.y;
 
-			tempLocation.set(newRadius, 0).setAngle(endAngle / sides * (i + 1) + fixV);
+			tempv.set(newRadius, 0).setAngle(endAngle / sides * (i + 1) + fixV);
 
-			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+			drawLine(x1 + newX, y1 + newY, tempv.x + newX, tempv.y + newY, width);
 
 		}
 		return this;
@@ -2498,22 +2504,22 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 		final int startSide = (int) (sides / 360f * startAngle);
 
-		tempLocation.set(0f);
+		Vector2f tempv = TempVars.get().vec2f1.set(0f);
 
 		final int argb = this.lastBrush.baseColor;
 
 		for (int i = startSide; i < sides; i++) {
 
-			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * i + fixV) + angle);
-			float x1 = tempLocation.x;
-			float y1 = tempLocation.y;
+			tempv.set(newRadius, 0).setAngle((endAngle / sides * i + fixV) + angle);
+			float x1 = tempv.x;
+			float y1 = tempv.y;
 
-			tempLocation.set(newRadius, 0).setAngle((endAngle / sides * (i + space) + fixV) + angle);
+			tempv.set(newRadius, 0).setAngle((endAngle / sides * (i + space) + fixV) + angle);
 
 			int color = LColor.getGradient(startColor, endColor, i / (float) sides);
 
 			setColor(color);
-			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+			drawLine(x1 + newX, y1 + newY, tempv.x + newX, tempv.y + newY, width);
 		}
 		setColor(argb);
 
@@ -2521,16 +2527,17 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx drawSpikes(float x, float y, float radius, float length, int spikes, float rot, float width) {
-		tempLocation.set(0f, 1f);
+
+		Vector2f tempv = TempVars.get().vec2f1.set(0f, 1f);
 		float step = 360f / spikes;
 
 		for (int i = 0; i < spikes; i++) {
-			tempLocation.setAngle(i * step + rot);
-			tempLocation.setLength(radius);
-			float x1 = tempLocation.x, y1 = tempLocation.y;
-			tempLocation.setLength(radius + length);
+			tempv.setAngle(i * step + rot);
+			tempv.setLength(radius);
+			float x1 = tempv.x, y1 = tempv.y;
+			tempv.setLength(radius + length);
 
-			drawLine(x + x1, y + y1, x + tempLocation.x, y + tempLocation.y, width);
+			drawLine(x + x1, y + y1, x + tempv.x, y + tempv.y, width);
 		}
 		return this;
 	}
@@ -3310,16 +3317,27 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float size = sideLength * sidesPerGap;
 		float remainingSize = size;
 		boolean gap = false;
-		tempLocation.set(centerX, centerY);
+
+		TempVars vars = TempVars.get();
+
+		Vector2f tempv = vars.vec2f1.set(centerX, centerY);
+		Vector2f right1 = vars.vec2f2.set(1, 0);
+		Vector2f right2 = vars.vec2f3.set(1, 0);
+
+		float x1 = tempv.x;
+		float y1 = tempv.y;
+
 		for (int i = 0; i < sides; i++) {
 			if (!gap) {
-				Vector2f start = tempLocation.add(Vector2f.RIGHT().mul(radius).rotate(angleStep * i));
-				Vector2f end = tempLocation.add(Vector2f.RIGHT().mul(radius).rotate(angleStep * (i + 1)));
+				right1.set(1, 0);
+				right2.set(1, 0);
+				Vector2f start = right1.mulSelf(radius).rotateSelf(angleStep * i);
+				Vector2f end = right2.mulSelf(radius).rotateSelf(angleStep * (i + 1));
 				if (edges) {
-					fillCircle(start, width * 0.5f, color);
-					fillCircle(end, width * 0.5f, color);
+					fillCircle(start.x + x1, start.y + y1, width * 0.5f, color);
+					fillCircle(end.x + x1, end.y + y1, width * 0.5f, color);
 				}
-				drawLine(start, end, width, color);
+				drawLine(start.x + x1, start.y + y1, end.x + x1, end.y + y1, width, color);
 			}
 			remainingSize -= sideLength;
 			if (remainingSize <= 0f) {
@@ -3355,19 +3373,20 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (sides % side == 1) {
 			sides++;
 		}
-		tempLocation.set(0f);
+
+		Vector2f tempv = TempVars.get().vec2f1.set(0f);
 
 		for (int i = 0; i < sides; i++) {
 			if (i % side == 0) {
 				continue;
 			}
-			tempLocation.set(newRadius, 0).setAngle(360f / sides * i + 90);
-			float x1 = tempLocation.x;
-			float y1 = tempLocation.y;
+			tempv.set(newRadius, 0).setAngle(360f / sides * i + 90);
+			float x1 = tempv.x;
+			float y1 = tempv.y;
 
-			tempLocation.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
+			tempv.set(newRadius, 0).setAngle(360f / sides * (i + 1) + 90);
 
-			drawLine(x1 + newX, y1 + newY, tempLocation.x + newX, tempLocation.y + newY, width);
+			drawLine(x1 + newX, y1 + newY, tempv.x + newX, tempv.y + newY, width);
 		}
 		return this;
 	}

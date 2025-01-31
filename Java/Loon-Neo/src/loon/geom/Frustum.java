@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.geom.Plane.PlaneIntersection;
 import loon.utils.MathUtils;
+import loon.utils.TempVars;
 
 public class Frustum {
 
@@ -185,7 +186,7 @@ public class Frustum {
 	public boolean intersectsAABB(AABB aabb) {
 		Vector3f min = aabb.min();
 		Vector3f max = aabb.max();
-		Vector3f p = new Vector3f();
+		Vector3f p = TempVars.get().vec3f1.setEmpty();
 		for (int i = 0; i < 6; ++i) {
 			Plane plane = getPlane(i);
 			Vector3f normal = plane.getNormal();
@@ -240,8 +241,9 @@ public class Frustum {
 	public Containment containsAABB(AABB aabb) {
 		Vector3f min = aabb.min();
 		Vector3f max = aabb.max();
-		Vector3f p = new Vector3f();
-		Vector3f n = new Vector3f();
+		TempVars vars = TempVars.getClean3f();
+		Vector3f p = vars.vec3f1;
+		Vector3f n = vars.vec3f2;
 		Containment result = Containment.Contains;
 		for (int i = 0; i < 6; ++i) {
 			Plane plane = getPlane(i);

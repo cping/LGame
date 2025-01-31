@@ -233,6 +233,7 @@ public abstract class LGame implements LRelease {
 					LSystem.PAUSED = true;
 					RealtimeProcessManager.get().dispose();
 					LSystem.disposeTextureAll();
+					LSystem.freeStaticObject();
 					close();
 					_stopGame = true;
 				}

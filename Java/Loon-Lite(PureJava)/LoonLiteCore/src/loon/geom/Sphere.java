@@ -22,6 +22,7 @@ package loon.geom;
 
 import loon.LSysException;
 import loon.utils.MathUtils;
+import loon.utils.TempVars;
 
 public class Sphere {
 
@@ -82,8 +83,7 @@ public class Sphere {
 			throw new LSysException("count" + count + "Must be in the range <= " + points.length);
 		}
 		int len = start + count;
-		Vector3f center = new Vector3f();
-		center.x = center.y = center.z = 0;
+		Vector3f center = TempVars.get().vec3f1.setEmpty();
 		for (int i = start; i < len; ++i) {
 			center.addSelf(points[i]);
 		}
@@ -106,7 +106,7 @@ public class Sphere {
 	public boolean intersectsAABB(AABB aabb) {
 		Vector3f max = aabb.max();
 		Vector3f min = aabb.min();
-		Vector3f closestPoint = new Vector3f();
+		Vector3f closestPoint = TempVars.get().vec3f1;
 		closestPoint.set(MathUtils.max(min.x, MathUtils.min(_center.x, max.x)),
 				MathUtils.max(min.y, MathUtils.min(_center.y, max.y)),
 				MathUtils.max(min.z, MathUtils.min(_center.z, max.z)));

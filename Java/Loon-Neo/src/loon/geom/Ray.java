@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.TempVars;
 
 public class Ray {
 
@@ -176,5 +177,20 @@ public class Ray {
 			distance = 0;
 		}
 		return distance;
+	}
+
+	public float distanceSquared(Vector3f point) {
+		TempVars vars = TempVars.getClean3f();
+		Vector3f tempVa = vars.vec3f1, tempVb = vars.vec3f2;
+		Vector3f.sub(point, _origin, tempVa);
+		float rayParam = _direction.dot(tempVa);
+		if (rayParam > 0) {
+			Vector3f.add(_origin, Vector3f.mul(_direction, rayParam, tempVb), tempVb);
+		} else {
+			tempVb.set(_origin);
+			rayParam = 0f;
+		}
+		Vector3f.sub(tempVb, point, tempVa);
+		return tempVa.lengthSquared();
 	}
 }
