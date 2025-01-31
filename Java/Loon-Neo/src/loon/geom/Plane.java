@@ -30,6 +30,31 @@ public class Plane implements XY {
 		Back, Front, Intersecting
 	}
 
+	public static Plane createPlaneBy(Vector3f p0, Vector3f p1, Vector3f p2, Plane o) {
+		float x1 = p1.x - p0.x;
+		float y1 = p1.y - p0.y;
+		float z1 = p1.z - p0.z;
+		float x2 = p2.x - p0.x;
+		float y2 = p2.y - p0.y;
+		float z2 = p2.z - p0.z;
+		float yz = (y1 * z2) - (z1 * y2);
+		float xz = (z1 * x2) - (x1 * z2);
+		float xy = (x1 * y2) - (y1 * x2);
+		float invPyth = 1f / (MathUtils.sqrt((yz * yz) + (xz * xz) + (xy * xy)));
+
+		float x = yz * invPyth;
+		float y = xz * invPyth;
+		float z = xy * invPyth;
+
+		Vector3f normal = o._normal;
+		normal.x = x;
+		normal.y = y;
+		normal.z = z;
+		o._normal.normalizeSelf();
+		o._distance = -((x * p0.x) + (y * p0.y) + (z * p0.z));
+		return o;
+	}
+
 	public static Vector3f intersectionPointThreePlanes(Plane p1, Plane p2, Plane p3) {
 		Vector3f p1Nor = p1.getNormal();
 		Vector3f p2Nor = p2.getNormal();

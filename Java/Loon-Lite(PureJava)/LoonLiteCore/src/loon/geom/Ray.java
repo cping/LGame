@@ -66,6 +66,10 @@ public class Ray {
 		return dir.addSelf(this._origin);
 	}
 
+	public Vector3f at(float distance) {
+		return getPoint(distance);
+	}
+
 	public float intersectsPlane(Plane p) {
 		Vector3f normal = p.getNormal();
 		float dir = normal.dot(this._direction);

@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.utils.MathUtils;
@@ -32,6 +33,24 @@ import loon.utils.TArray;
  * 一个最基础的矩形碰撞器
  */
 public class AABB implements XY, XYZW, BoxSize, LRelease {
+
+	public static void createfromPoints(Vector3f[] points, AABB o) {
+		if (points == null) {
+			throw new LSysException("points is null !");
+		}
+		Vector3f min = o.min();
+		Vector3f max = o.max();
+		min.x = Float.MAX_VALUE;
+		min.y = Float.MAX_VALUE;
+		min.z = Float.MAX_VALUE;
+		max.x = -Float.MAX_VALUE;
+		max.y = -Float.MAX_VALUE;
+		max.z = -Float.MAX_VALUE;
+		for (int i = 0, n = points.length; i < n; ++i) {
+			Vector3f.min(min, points[i], min);
+			Vector3f.max(max, points[i], max);
+		}
+	}
 
 	public final static void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
 		if (point.x < min.x) {
@@ -359,8 +378,32 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return false;
 		}
-		return (this.minX <= other.maxX && this.maxX >= other.minX && this.maxY >= other.minY
-				&& this.minY <= other.maxY);
+		if (other.maxX > maxX || other.minX < minX) {
+			return false;
+		}
+		if (other.maxY > maxY || other.minY < minY) {
+			return false;
+		}
+		if (other.maxZ > maxZ || other.minZ < minZ) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean overlaps(XYZ point) {
+		if (point == null) {
+			return false;
+		}
+		if (point.getX() > maxX || point.getX() < minX) {
+			return false;
+		}
+		if (point.getY() > maxY || point.getY() < minY) {
+			return false;
+		}
+		if (point.getZ() > maxZ || point.getZ() < minZ) {
+			return false;
+		}
+		return true;
 	}
 
 	public float distance(Vector2f other) {

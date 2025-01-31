@@ -89,6 +89,14 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return new Vector3f(0, 0, 1);
 	}
 
+	public final static Vector3f RH() {
+		return new Vector3f(0, 0, -1);
+	}
+
+	public final static Vector3f LH() {
+		return AXIS_Z();
+	}
+
 	public final static Vector3f all(float v) {
 		return new Vector3f(v, v, v);
 	}

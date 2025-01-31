@@ -65,18 +65,31 @@ public class Sphere {
 	}
 
 	public void fromPoints(Vector3f[] points) {
-		if (points == null || points.length == 0) {
-			throw new LSysException("points must be array and length must > 0");
+		if (points == null) {
+			throw new LSysException("points is null !");
 		}
-		int len = points.length;
+		fromPoints(points, 0, points.length);
+	}
+
+	public void fromPoints(Vector3f[] points, int start, int count) {
+		if (points == null) {
+			throw new LSysException("points is null !");
+		}
+		if (start < 0 || start >= points.length) {
+			throw new LSysException("start" + start + "Must be in the range 0, " + (points.length - 1));
+		}
+		if (count < 0 || (start + count) > points.length) {
+			throw new LSysException("count" + count + "Must be in the range <= " + points.length);
+		}
+		int len = start + count;
 		Vector3f center = new Vector3f();
 		center.x = center.y = center.z = 0;
-		for (int i = 0; i < len; ++i) {
+		for (int i = start; i < len; ++i) {
 			center.addSelf(points[i]);
 		}
 		center.scaleSelf(1 / len);
 		float radius = 0f;
-		for (int i = 0; i < len; ++i) {
+		for (int i = start; i < len; ++i) {
 			float distance = center.distanceSquared(points[i]);
 			if (distance > radius) {
 				radius = distance;

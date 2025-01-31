@@ -299,12 +299,16 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f abs(Vector2f a) {
-		return new Vector2f(MathUtils.abs(a.x), MathUtils.abs(a.y));
+		return abs(a, new Vector2f());
 	}
 
-	public final static void absToOut(Vector2f a, Vector2f out) {
+	public final static Vector2f abs(Vector2f a, Vector2f out) {
+		if (a == null) {
+			return new Vector2f();
+		}
 		out.x = MathUtils.abs(a.x);
 		out.y = MathUtils.abs(a.y);
+		return out;
 	}
 
 	public final static float dot(Vector2f a, Vector2f b) {
@@ -316,28 +320,41 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f cross(Vector2f a, float s) {
-		return new Vector2f(s * a.y, -s * a.x);
+		return cross(a, s, new Vector2f());
 	}
 
-	public final static void crossToOut(Vector2f a, float s, Vector2f out) {
+	public final static Vector2f cross(Vector2f a, float s, Vector2f out) {
 		float tempy = -s * a.x;
 		out.x = s * a.y;
 		out.y = tempy;
+		return out;
 	}
 
 	public final static Vector2f cross(float s, Vector2f a) {
-		return new Vector2f(-s * a.y, s * a.x);
+		return cross(s, a, new Vector2f());
 	}
 
-	public final static void crossToOut(float s, Vector2f a, Vector2f out) {
+	public final static Vector2f cross(float s, Vector2f a, Vector2f out) {
+		if (a == null) {
+			return new Vector2f();
+		}
 		float tempY = s * a.x;
 		out.x = -s * a.y;
 		out.y = tempY;
+		return out;
 	}
 
-	public final static void negateToOut(Vector2f a, Vector2f out) {
+	public final static Vector2f negate(Vector2f a) {
+		return negate(a, new Vector2f());
+	}
+
+	public final static Vector2f negate(Vector2f a, Vector2f out) {
+		if (a == null) {
+			return new Vector2f();
+		}
 		out.x = -a.x;
 		out.y = -a.y;
+		return out;
 	}
 
 	public final static Vector2f min(Vector2f a, Vector2f b) {

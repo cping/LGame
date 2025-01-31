@@ -26,6 +26,51 @@ import loon.utils.StringKeyValue;
 
 public class Plane implements XY {
 
+	public static enum PlaneIntersection {
+		Back, Front, Intersecting
+	}
+
+	public static Plane createPlaneBy(Vector3f p0, Vector3f p1, Vector3f p2, Plane o) {
+		float x1 = p1.x - p0.x;
+		float y1 = p1.y - p0.y;
+		float z1 = p1.z - p0.z;
+		float x2 = p2.x - p0.x;
+		float y2 = p2.y - p0.y;
+		float z2 = p2.z - p0.z;
+		float yz = (y1 * z2) - (z1 * y2);
+		float xz = (z1 * x2) - (x1 * z2);
+		float xy = (x1 * y2) - (y1 * x2);
+		float invPyth = 1f / (MathUtils.sqrt((yz * yz) + (xz * xz) + (xy * xy)));
+
+		float x = yz * invPyth;
+		float y = xz * invPyth;
+		float z = xy * invPyth;
+
+		Vector3f normal = o._normal;
+		normal.x = x;
+		normal.y = y;
+		normal.z = z;
+		o._normal.normalizeSelf();
+		o._distance = -((x * p0.x) + (y * p0.y) + (z * p0.z));
+		return o;
+	}
+
+	public static Vector3f intersectionPointThreePlanes(Plane p1, Plane p2, Plane p3) {
+		Vector3f p1Nor = p1.getNormal();
+		Vector3f p2Nor = p2.getNormal();
+		Vector3f p3Nor = p3.getNormal();
+		Vector3f vec30 = p2Nor.cross(p3Nor);
+		Vector3f vec31 = p3Nor.cross(p1Nor);
+		Vector3f vec32 = p1Nor.cross(p2Nor);
+		float a = -p1Nor.dot(vec30);
+		float b = -p2Nor.dot(vec31);
+		float c = -p3Nor.dot(vec32);
+		vec30.scaleSelf(p1._distance / a);
+		vec31.scaleSelf(p2._distance / b);
+		vec32.scaleSelf(p3._distance / c);
+		return vec30.add(vec31).addSelf(vec32);
+	}
+
 	public static void fromPoints(Vector3f point0, Vector3f point1, Vector3f point2, Plane o) {
 
 		final float x0 = point0.x;
@@ -117,6 +162,69 @@ public class Plane implements XY {
 	public Plane setDistance(float d) {
 		this._distance = d;
 		return this;
+	}
+
+	public float distancePoint(Vector3f p) {
+		return this._normal.dot(p) + this._distance;
+	}
+
+	public PlaneIntersection intersectsPoint(Vector3f p) {
+		float distance = distancePoint(p);
+		if (distance > 0) {
+			return PlaneIntersection.Front;
+		}
+		if (distance < 0) {
+			return PlaneIntersection.Back;
+		}
+		return PlaneIntersection.Intersecting;
+	}
+
+	public PlaneIntersection intersectsSphere(Sphere s) {
+		Vector3f center = s.getCenter();
+		float r = s.getRadius();
+		float distance = distancePoint(center);
+		if (distance > r) {
+			return PlaneIntersection.Front;
+		}
+		if (distance < -r) {
+			return PlaneIntersection.Back;
+		}
+		return PlaneIntersection.Intersecting;
+	}
+
+	public PlaneIntersection intersectsAABB(AABB aabb) {
+		final Vector3f min = aabb.min();
+		final Vector3f max = aabb.max();
+		final Vector3f front = new Vector3f();
+		final Vector3f back = new Vector3f();
+		if (_normal.x >= 0) {
+			front.x = max.x;
+			back.x = min.x;
+		} else {
+			front.x = min.x;
+			back.x = max.x;
+		}
+		if (_normal.y >= 0) {
+			front.y = max.y;
+			back.y = min.y;
+		} else {
+			front.y = min.y;
+			back.y = max.y;
+		}
+		if (_normal.z >= 0) {
+			front.z = max.z;
+			back.z = min.z;
+		} else {
+			front.z = min.z;
+			back.z = max.z;
+		}
+		if (distancePoint(front) < 0) {
+			return PlaneIntersection.Back;
+		}
+		if (distancePoint(back) > 0) {
+			return PlaneIntersection.Front;
+		}
+		return PlaneIntersection.Intersecting;
 	}
 
 	public void fromPoints(Vector3f point0, Vector3f point1, Vector3f point2) {
