@@ -40,7 +40,7 @@ public final class MathUtils {
 	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
 
 	public static final float ZEROTOLERANCE = 1e-6f;
-	
+
 	public static final int ZERO_FIXED = 0;
 
 	public static final int ONE_FIXED = 1 << 16;
@@ -179,6 +179,10 @@ public final class MathUtils {
 		return MathUtils.abs(value) <= tolerance;
 	}
 
+	public static boolean isZero(float value) {
+		return isZero(value, ZEROTOLERANCE);
+	}
+
 	public static boolean isEqual(float a, float b) {
 		return MathUtils.abs(a - b) <= FLOAT_ROUNDING_ERROR;
 	}
@@ -206,6 +210,20 @@ public final class MathUtils {
 			}
 			i = i * 2;
 		}
+	}
+
+	public static boolean nearEqual(float n1, float n2) {
+		if (isZero(n1 - n2)) {
+			return true;
+		}
+		return false;
+	}
+
+	public static float fastInvSqrt(float value) {
+		if (isZero(value)) {
+			return value;
+		}
+		return 1f / sqrt(value);
 	}
 
 	public static int previousPowerOfTwo(int value) {
@@ -489,10 +507,6 @@ public final class MathUtils {
 			return false;
 		}
 		return isNan(num.toString());
-	}
-
-	public static boolean isZero(float value) {
-		return MathUtils.abs(value) <= 0.00000001;
 	}
 
 	public static boolean isBeside(double x, double y) {

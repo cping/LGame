@@ -136,67 +136,93 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	}
 
 	public static Vector3f add(Vector3f v1, Vector3f v2) {
-		v1.x += v2.x;
-		v1.y += v2.y;
-		v1.z += v2.z;
+		return add(v1, v2, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f add(Vector3f v1, Vector3f v2, Vector3f out) {
+		out.x = v1.x + v2.x;
+		out.y = v1.y + v2.y;
+		out.z = v1.z + v2.z;
+		return out;
 	}
 
 	public static Vector3f add(Vector3f v1, float x, float y, float z) {
-		v1.x += x;
-		v1.y += y;
-		v1.z += z;
+		return add(v1, x, y, z, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f add(Vector3f v1, float x, float y, float z, Vector3f out) {
+		out.x = v1.x + x;
+		out.y = v1.y + y;
+		out.z = v1.z + z;
+		return out;
 	}
 
 	public static Vector3f add(Vector3f v1, float v) {
-		v1.x += v;
-		v1.y += v;
-		v1.z += v;
+		return add(v1, v, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f add(Vector3f v1, float v, Vector3f out) {
+		return add(v1, v, v, v, out);
 	}
 
 	public static Vector3f sub(Vector3f v1, Vector3f v2) {
-		v1.x -= v2.x;
-		v1.y -= v2.y;
-		v1.z -= v2.z;
+		return sub(v1, v2, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f sub(Vector3f v1, Vector3f v2, Vector3f out) {
+		out.x = v1.x - v2.x;
+		out.y = v1.y - v2.y;
+		out.z = v1.z - v2.z;
+		return out;
 	}
 
 	public static Vector3f sub(Vector3f v1, float x, float y, float z) {
-		v1.x -= x;
-		v1.y -= y;
-		v1.z -= z;
+		return sub(v1, x, y, z, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f sub(Vector3f v1, float x, float y, float z, Vector3f out) {
+		out.x = v1.x - x;
+		out.y = v1.y - y;
+		out.z = v1.z - z;
+		return out;
 	}
 
 	public static Vector3f sub(Vector3f v1, float v) {
-		v1.x -= v;
-		v1.y -= v;
-		v1.z -= v;
+		return sub(v1, v, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f sub(Vector3f v1, float v, Vector3f out) {
+		return sub(v1, v, v, v, out);
 	}
 
 	public static Vector3f mul(Vector3f v1, Vector3f v2) {
-		v1.x = v2.x * v1.x;
-		v1.y = v2.y * v1.y;
-		v1.z = v2.z * v1.z;
+		return mul(v1, v2, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f mul(Vector3f v1, Vector3f v2, Vector3f out) {
+		out.x = v1.x * v2.x;
+		out.y = v1.y * v2.y;
+		out.z = v1.z * v2.z;
+		return out;
+	}
+
+	public static Vector3f mul(Vector3f v1, float x, float y, float z) {
+		return mul(v1, x, y, z, new Vector3f());
+	}
+
+	public static Vector3f mul(Vector3f v1, float x, float y, float z, Vector3f out) {
+		out.x = v1.x * x;
+		out.y = v1.y * y;
+		out.z = v1.z * z;
+		return out;
 	}
 
 	public static Vector3f mul(Vector3f v1, float v) {
-		v1.x = v * v1.x;
-		v1.y = v * v1.y;
-		v1.z = v * v1.z;
+		return mul(v1, v, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f mul(Vector3f v1, float v, Vector3f out) {
+		return mul(v1, v, v, v, out);
 	}
 
 	public static void min(Vector3f a, Vector3f b, Vector3f o) {
@@ -211,13 +237,34 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		o.z = MathUtils.max(a.z, b.z);
 	}
 
-	public static Vector3f div(Vector3f v1, float v) {
-		float d = 1 / v;
-		v1.x = d * v1.x;
-		v1.y = d * v1.y;
-		v1.z = d * v1.z;
+	public static Vector3f div(Vector3f v1, Vector3f v2) {
+		return div(v1, v2, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f div(Vector3f v1, Vector3f v2, Vector3f out) {
+		out.x = v1.x / v2.x;
+		out.y = v1.y / v2.y;
+		out.z = v1.z / v2.z;
+		return out;
+	}
+
+	public static Vector3f div(Vector3f v1, float x, float y, float z) {
+		return div(v1, x, y, z, new Vector3f());
+	}
+
+	public static Vector3f div(Vector3f v1, float x, float y, float z, Vector3f out) {
+		out.x = v1.x / x;
+		out.y = v1.y / y;
+		out.z = v1.z / z;
+		return out;
+	}
+
+	public static Vector3f div(Vector3f v1, float v) {
+		return div(v1, v, new Vector3f());
+	}
+
+	public static Vector3f div(Vector3f v1, float v, Vector3f out) {
+		return div(v1, v, v, v, out);
 	}
 
 	public static float len(Vector3f v1) {
@@ -257,14 +304,29 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	}
 
 	public static Vector3f crs(Vector3f v1, Vector3f v2) {
-		v1.x = v1.y * v2.z - v1.z * v2.y;
-		v1.y = v1.z * v2.x - v1.x * v2.z;
-		v1.z = v1.x * v2.y - v1.y * v2.x;
+		return crs(v1, v2, new Vector3f());
+	}
 
-		return v1;
+	public static Vector3f crs(Vector3f v1, Vector3f v2, Vector3f out) {
+		out.x = v1.y * v2.z - v1.z * v2.y;
+		out.y = v1.z * v2.x - v1.x * v2.z;
+		out.z = v1.x * v2.y - v1.y * v2.x;
+		return out;
 	}
 
 	public static Vector3f crs(Vector3f v1, float x, float y, float z) {
+		return crs(v1, x, y, z, new Vector3f());
+	}
+
+	public static Vector3f crs(Vector3f v1, float v) {
+		return crs(v1, v, new Vector3f());
+	}
+
+	public static Vector3f crs(Vector3f v1, float v, Vector3f out) {
+		return crs(v1, v, v, v, out);
+	}
+
+	public static Vector3f crs(Vector3f v1, float x, float y, float z, Vector3f out) {
 		v1.x = v1.y * z - v1.z * y;
 		v1.y = v1.z * x - v1.x * z;
 		v1.z = v1.x * y - v1.y * x;

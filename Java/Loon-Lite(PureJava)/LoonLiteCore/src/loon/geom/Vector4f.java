@@ -86,7 +86,7 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);
 	}
 
-	public static float distance(Vector4f a, Vector4f b) {
+	public static float dst(Vector4f a, Vector4f b) {
 		float x = a.x - b.x;
 		float y = a.y - b.y;
 		float z = a.z - b.z;
@@ -95,13 +95,109 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return MathUtils.sqrt((x * x) + (y * y) + (z * z) + (w * w));
 	}
 
-	public static float distanceSquared(Vector4f a, Vector4f b) {
+	public static float dst2(Vector4f a, Vector4f b) {
 		float x = a.x - b.x;
 		float y = a.y - b.y;
 		float z = a.z - b.z;
 		float w = a.w - b.w;
 
 		return (x * x) + (y * y) + (z * z) + (w * w);
+	}
+
+	public static Vector4f add(Vector4f v1, Vector4f v2) {
+		return add(v1, v2, new Vector4f());
+	}
+
+	public static Vector4f add(Vector4f v1, Vector4f v2, Vector4f out) {
+		out.x = v1.x + v2.x;
+		out.y = v1.y + v2.y;
+		out.z = v1.z + v2.z;
+		out.w = v1.w + v2.w;
+		return out;
+	}
+
+	public static Vector4f add(Vector4f v1, float x, float y, float z, float w) {
+		return add(v1, x, y, z, w, new Vector4f());
+	}
+
+	public static Vector4f add(Vector4f v1, float x, float y, float z, float w, Vector4f out) {
+		out.x = v1.x + x;
+		out.y = v1.y + y;
+		out.z = v1.z + z;
+		out.w = v1.w + w;
+		return out;
+	}
+
+	public static Vector4f add(Vector4f v1, float v) {
+		return add(v1, v, new Vector4f());
+	}
+
+	public static Vector4f add(Vector4f v1, float v, Vector4f out) {
+		return add(v1, v, v, v, v, out);
+	}
+
+	public static Vector4f sub(Vector4f v1, Vector4f v2) {
+		return sub(v1, v2, new Vector4f());
+	}
+
+	public static Vector4f sub(Vector4f v1, Vector4f v2, Vector4f out) {
+		out.x = v1.x - v2.x;
+		out.y = v1.y - v2.y;
+		out.z = v1.z - v2.z;
+		out.w = v1.w - v2.w;
+		return out;
+	}
+
+	public static Vector4f sub(Vector4f v1, float x, float y, float z, float w) {
+		return sub(v1, x, y, z, w, new Vector4f());
+	}
+
+	public static Vector4f sub(Vector4f v1, float x, float y, float z, float w, Vector4f out) {
+		out.x = v1.x - x;
+		out.y = v1.y - y;
+		out.z = v1.z - z;
+		out.w = v1.w - w;
+		return out;
+	}
+
+	public static Vector4f sub(Vector4f v1, float v) {
+		return sub(v1, v, new Vector4f());
+	}
+
+	public static Vector4f sub(Vector4f v1, float v, Vector4f out) {
+		return sub(v1, v, v, v, v, out);
+	}
+
+	public static Vector4f mul(Vector4f v1, Vector4f v2) {
+		return mul(v1, v2, new Vector4f());
+	}
+
+	public static Vector4f mul(Vector4f v1, Vector4f v2, Vector4f out) {
+		out.x = v1.x * v2.x;
+		out.y = v1.y * v2.y;
+		out.z = v1.z * v2.z;
+		out.w = v1.w * v2.w;
+		return out;
+	}
+
+	public static Vector4f mul(Vector4f v1, float x, float y, float z, float w) {
+		return mul(v1, x, y, z, w, new Vector4f());
+	}
+
+	public static Vector4f mul(Vector4f v1, float x, float y, float z, float w, Vector4f out) {
+		out.x = v1.x * x;
+		out.y = v1.y * y;
+		out.z = v1.z * z;
+		out.w = v1.w * w;
+		return out;
+	}
+
+	public static Vector4f mul(Vector4f v1, float v) {
+		return mul(v1, v, new Vector4f());
+	}
+
+	public static Vector4f mul(Vector4f v1, float v, Vector4f out) {
+		return mul(v1, v, v, v, v, out);
 	}
 
 	public static void min(Vector4f a, Vector4f b, Vector4f o) {
@@ -116,6 +212,38 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		o.y = MathUtils.max(a.y, b.y);
 		o.z = MathUtils.max(a.z, b.z);
 		o.w = MathUtils.max(a.w, b.w);
+	}
+
+	public static Vector4f div(Vector4f v1, Vector4f v2) {
+		return div(v1, v2, new Vector4f());
+	}
+
+	public static Vector4f div(Vector4f v1, Vector4f v2, Vector4f out) {
+		out.x = v1.x / v2.x;
+		out.y = v1.y / v2.y;
+		out.z = v1.z / v2.z;
+		out.w = v1.w / v2.w;
+		return out;
+	}
+
+	public static Vector4f div(Vector4f v1, float x, float y, float z, float w) {
+		return div(v1, x, y, z, w, new Vector4f());
+	}
+
+	public static Vector4f div(Vector4f v1, float x, float y, float z, float w, Vector4f out) {
+		out.x = v1.x / x;
+		out.y = v1.y / y;
+		out.z = v1.z / z;
+		out.w = v1.w / w;
+		return out;
+	}
+
+	public static Vector4f div(Vector4f v1, float v) {
+		return div(v1, v, new Vector4f());
+	}
+
+	public static Vector4f div(Vector4f v1, float v, Vector4f out) {
+		return div(v1, v, v, v, v, out);
 	}
 
 	public static void clamp(Vector4f v, Vector4f min, Vector4f max, Vector4f o) {
