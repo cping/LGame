@@ -49,9 +49,9 @@ public class BezierTo extends BezierBy {
 	public void onLoad() {
 		super.onLoad();
 		Vector2f startPosition = new Vector2f(startX, startY);
-		bezier.controlPoint1.set(Vector2f.subNew(originalconfig.controlPoint1, startPosition));
-		bezier.controlPoint2.set(Vector2f.subNew(originalconfig.controlPoint2, startPosition));
-		bezier.endPosition.set(Vector2f.subNew(originalconfig.endPosition, startPosition));
+		bezier.controlPoint1.set(originalconfig.controlPoint1.sub(startPosition));
+		bezier.controlPoint2.set(originalconfig.controlPoint2.sub(startPosition));
+		bezier.endPosition.set(originalconfig.endPosition.sub(startPosition));
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public class BezierTo extends BezierBy {
 	public ActionEvent reverse() {
 		Bezier b = new Bezier();
 		b.endPosition = bezier.endPosition.negate();
-		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2, bezier.endPosition.negate());
-		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1, bezier.endPosition.negate());
+		b.controlPoint1 = bezier.controlPoint2.add(bezier.endPosition.negate());
+		b.controlPoint2 = bezier.controlPoint1.add(bezier.endPosition.negate());
 		BezierTo bto = new BezierTo(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), b);
 		bto.set(this);
 		return bto;

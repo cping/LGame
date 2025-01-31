@@ -130,6 +130,14 @@ public class TableLayoutRow {
 		return columns.length;
 	}
 
+	public TableLayoutRow setSize(int x, int y, int w, int h) {
+		setX(x);
+		setY(y);
+		setWidth(h);
+		setHeight(h);
+		return this;
+	}
+
 	private void initColumns() {
 		int xStep = getWidth() / columns.length;
 		for (int i = 0; i < columns.length; i++) {

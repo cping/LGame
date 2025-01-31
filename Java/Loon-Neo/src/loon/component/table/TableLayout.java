@@ -64,11 +64,17 @@ public class TableLayout extends LContainer {
 	}
 
 	private void prepareTable(int cols, int rows) {
-		tableRows = new TableLayoutRow[rows];
+		if (tableRows == null || tableRows.length != rows) {
+			tableRows = new TableLayoutRow[rows];
+		}
 		if (rows > 0 && cols > 0) {
 			int rowHeight = (int) (getHeight() / rows);
 			for (int i = 0; i < rows; i++) {
-				tableRows[i] = new TableLayoutRow(x(), y() + (i * rowHeight), (int) getWidth(), rowHeight, cols);
+				if (tableRows[i] == null) {
+					tableRows[i] = new TableLayoutRow(x(), y() + (i * rowHeight), (int) getWidth(), rowHeight, cols);
+				} else {
+					tableRows[i].setSize(x(), y() + (i * rowHeight), (int) getWidth(), rowHeight);
+				}
 			}
 		}
 	}

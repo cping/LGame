@@ -114,7 +114,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	public final static Vector2f reflect(Vector2f ri, Vector2f normal) {
 		final Vector2f normalized = nor(normal);
 		final float product = dot(ri, normalized);
-		final Vector2f n = mult(normalized, product);
+		final Vector2f n = mul(normalized, product);
 		return sub(ri, n.mulSelf(2));
 	}
 
@@ -195,16 +195,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return fromAngle(MathUtils.toRadians(degAngle));
 	}
 
-	public final static Vector2f sum(Vector2f a, Vector2f b) {
-		Vector2f answer = new Vector2f(a);
-		return answer.add(b);
-	}
-
-	public final static Vector2f mult(Vector2f vector, float scalar) {
-		Vector2f answer = new Vector2f(vector);
-		return answer.mul(scalar);
-	}
-
 	public final static Vector2f cpy(Vector2f pos) {
 		Vector2f newSVector2 = new Vector2f();
 
@@ -234,20 +224,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return pos;
 	}
 
-	public final Vector2f subNew(Vector2f vectorB) {
-		return subNew(this, vectorB);
-	}
-
-	public final static Vector2f subNew(Vector2f pos, Vector2f vectorB) {
-		return at(pos.x - vectorB.x, pos.y - vectorB.y);
-	}
-
-	public final static Vector2f sub(Vector2f pos, Vector2f vectorB) {
-		pos.x -= vectorB.x;
-		pos.y -= vectorB.y;
-		return pos;
-	}
-
 	public final static Vector2f nor(Vector2f pos) {
 		float len = len(pos);
 		if (len != 0) {
@@ -255,10 +231,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 			pos.y /= len;
 		}
 		return pos;
-	}
-
-	public final static Vector2f addNew(Vector2f pos, Vector2f vectorB) {
-		return at(pos.x + vectorB.x, pos.y + vectorB.y);
 	}
 
 	public final static Vector2f add(Vector2f pos, Vector2f vectorB) {
@@ -385,10 +357,44 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return out;
 	}
 
+	public final static Vector2f mul(Vector2f a, Vector2f b, Vector2f out) {
+		out.x = a.x * b.x;
+		out.y = a.y * b.y;
+		return out;
+	}
+
+	public final static Vector2f mul(Vector2f a, Vector2f b) {
+		return mul(a, b, new Vector2f());
+	}
+
+	public final static Vector2f mul(Vector2f pos, float scalar, Vector2f out) {
+		out.x = pos.x * scalar;
+		out.y = pos.y * scalar;
+		return out;
+	}
+
 	public final static Vector2f mul(Vector2f pos, float scalar) {
-		pos.x *= scalar;
-		pos.y *= scalar;
-		return pos;
+		return mul(pos, scalar, new Vector2f());
+	}
+
+	public final static Vector2f div(Vector2f a, Vector2f b, Vector2f out) {
+		out.x = a.x / b.x;
+		out.y = a.y / b.y;
+		return out;
+	}
+
+	public final static Vector2f div(Vector2f a, Vector2f b) {
+		return mul(a, b, new Vector2f());
+	}
+
+	public final static Vector2f div(Vector2f pos, float scalar, Vector2f out) {
+		out.x = pos.x / scalar;
+		out.y = pos.y / scalar;
+		return out;
+	}
+
+	public final static Vector2f div(Vector2f pos, float scalar) {
+		return mul(pos, scalar, new Vector2f());
 	}
 
 	public final static Vector2f direction(Vector2f v1, Vector2f v2) {
@@ -415,10 +421,24 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return x_d * x_d + y_d * y_d;
 	}
 
+	public final static Vector2f sub(Vector2f pos, float x, float y, Vector2f out) {
+		out.x = pos.x - x;
+		out.y = pos.y - y;
+		return out;
+	}
+
 	public final static Vector2f sub(Vector2f pos, float x, float y) {
-		pos.x -= x;
-		pos.y -= y;
-		return pos;
+		return sub(pos, x, y, new Vector2f());
+	}
+
+	public final static Vector2f sub(Vector2f a, Vector2f b, Vector2f out) {
+		out.x = a.x - b.x;
+		out.y = a.y - b.y;
+		return out;
+	}
+
+	public final static Vector2f sub(Vector2f a, Vector2f b) {
+		return sub(a, b, new Vector2f());
 	}
 
 	public final static float crs(Vector2f pos, Vector2f vectorB) {

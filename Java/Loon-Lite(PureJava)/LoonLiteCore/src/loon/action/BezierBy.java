@@ -21,7 +21,6 @@
 package loon.action;
 
 import loon.geom.Bezier;
-import loon.geom.Vector2f;
 import loon.utils.StringKeyValue;
 import loon.utils.Easing.EasingMode;
 import loon.utils.timer.EaseTimer;
@@ -87,8 +86,8 @@ public class BezierBy extends ActionEvent {
 	public ActionEvent reverse() {
 		Bezier b = new Bezier();
 		b.endPosition = bezier.endPosition.negate();
-		b.controlPoint1 = Vector2f.addNew(bezier.controlPoint2, bezier.endPosition.negate());
-		b.controlPoint2 = Vector2f.addNew(bezier.controlPoint1, bezier.endPosition.negate());
+		b.controlPoint1 = bezier.controlPoint2.add(bezier.endPosition.negate());
+		b.controlPoint2 = bezier.controlPoint1.add(bezier.endPosition.negate());
 		BezierBy by = new BezierBy(startX, startY, _easeTimer.getDuration(), _easeTimer.getEasingMode(), b);
 		by.set(this);
 		return this;
