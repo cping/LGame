@@ -33,6 +33,27 @@ import loon.utils.TArray;
  */
 public class AABB implements XY, XYZW, BoxSize, LRelease {
 
+	public final static void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
+		if (point.x < min.x) {
+			min.x = point.x;
+		}
+		if (point.x > max.x) {
+			max.x = point.x;
+		}
+		if (point.y < min.y) {
+			min.y = point.y;
+		}
+		if (point.y > max.y) {
+			max.y = point.y;
+		}
+		if (point.z < min.z) {
+			min.z = point.z;
+		}
+		if (point.z > max.z) {
+			max.z = point.z;
+		}
+	}
+
 	public final static AABB at(String v) {
 		if (StringUtils.isEmpty(v)) {
 			return new AABB();
@@ -318,7 +339,13 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		if (other == null) {
 			return false;
 		}
-		return this.maxX > other.minX && this.minX < other.maxX && this.maxY > other.minY && this.minY < other.maxY;
+		if (this.minX > other.maxX || other.minX > this.maxX) {
+			return false;
+		}
+		if (this.minY > other.maxY || other.minY > this.maxY) {
+			return false;
+		}
+		return !(this.minZ > other.maxZ || other.minZ > this.maxZ);
 	}
 
 	public boolean contains(XY pos) {
@@ -343,13 +370,13 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 	}
 
 	public AABB merge(AABB other) {
-		float x0 = MathUtils.min(this.getX(), other.getX());
-		float y0 = MathUtils.min(this.getY(), other.getY());
-
-		float maxW = MathUtils.max(this.getWidth(), other.getWidth());
-		float maxH = MathUtils.max(this.getHeight(), other.getHeight());
-
-		return new AABB(x0, y0, maxW, maxH);
+		float minx = MathUtils.min(this.minX, other.minX);
+		float miny = MathUtils.min(this.minY, other.minY);
+		float minz = MathUtils.min(this.minZ, other.minZ);
+		float maxx = MathUtils.max(this.maxX, other.maxX);
+		float maxy = MathUtils.max(this.maxY, other.maxY);
+		float maxz = MathUtils.max(this.maxY, other.maxY);
+		return new AABB(minx, miny, minz, maxx, maxy, maxz);
 	}
 
 	public Vector2f getPosition(Vector2f pos) {

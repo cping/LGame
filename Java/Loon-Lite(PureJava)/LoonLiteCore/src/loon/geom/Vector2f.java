@@ -341,21 +341,23 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f min(Vector2f a, Vector2f b) {
-		return new Vector2f(a.x < b.x ? a.x : b.x, a.y < b.y ? a.y : b.y);
+		return min(a, b, new Vector2f());
 	}
 
 	public final static Vector2f max(Vector2f a, Vector2f b) {
-		return new Vector2f(a.x > b.x ? a.x : b.x, a.y > b.y ? a.y : b.y);
+		return max(a, b, new Vector2f());
 	}
 
-	public final static void minToOut(Vector2f a, Vector2f b, Vector2f out) {
+	public final static Vector2f min(Vector2f a, Vector2f b, Vector2f out) {
 		out.x = a.x < b.x ? a.x : b.x;
 		out.y = a.y < b.y ? a.y : b.y;
+		return out;
 	}
 
-	public final static void maxToOut(Vector2f a, Vector2f b, Vector2f out) {
+	public final static Vector2f max(Vector2f a, Vector2f b, Vector2f out) {
 		out.x = a.x > b.x ? a.x : b.x;
 		out.y = a.y > b.y ? a.y : b.y;
+		return out;
 	}
 
 	public final static Vector2f mul(Vector2f pos, float scalar) {
@@ -627,6 +629,20 @@ public class Vector2f implements Serializable, SetXY, XY {
 			return cpy();
 		}
 		return min(this, v);
+	}
+
+	public Vector2f maxSelf(Vector2f v) {
+		if (v == null) {
+			return this;
+		}
+		return max(this, v, this);
+	}
+
+	public Vector2f minSelf(Vector2f v) {
+		if (v == null) {
+			return this;
+		}
+		return min(this, v, this);
 	}
 
 	public float maxX(XY v) {

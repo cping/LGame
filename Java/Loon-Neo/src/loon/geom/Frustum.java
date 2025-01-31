@@ -20,7 +20,14 @@
  */
 package loon.geom;
 
+import loon.geom.Plane.PlaneIntersection;
+import loon.utils.MathUtils;
+
 public class Frustum {
+
+	public static enum Containment {
+		Disjoint, Contains, Intersects
+	}
 
 	public static enum FrustumFace {
 		Near, Far, Left, Right, Bottom, Top
@@ -47,6 +54,25 @@ public class Frustum {
 		this._bottom = new Plane();
 		if (m != null) {
 			setMatrix(m);
+		}
+	}
+
+	public Plane getPlane(int idx) {
+		switch (idx) {
+		case 0:
+			return getPlane(FrustumFace.Near);
+		case 1:
+			return getPlane(FrustumFace.Far);
+		case 2:
+			return getPlane(FrustumFace.Left);
+		case 3:
+			return getPlane(FrustumFace.Right);
+		case 4:
+			return getPlane(FrustumFace.Bottom);
+		case 5:
+			return getPlane(FrustumFace.Top);
+		default:
+			return null;
 		}
 	}
 
@@ -156,4 +182,113 @@ public class Frustum {
 		return _top;
 	}
 
+	public boolean intersectsAABB(AABB aabb) {
+		Vector3f min = aabb.min();
+		Vector3f max = aabb.max();
+		Vector3f p = new Vector3f();
+		for (int i = 0; i < 6; ++i) {
+			Plane plane = getPlane(i);
+			Vector3f normal = plane.getNormal();
+			p.set(normal.x >= 0 ? max.x : min.x, normal.y >= 0 ? max.y : min.y, normal.z >= 0 ? max.z : min.z);
+			if (normal.dot(p) < -plane.getDistance()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public Containment frustumContainsPoint(Vector3f point) {
+		float distance = _near.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		distance = _far.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		distance = _left.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		distance = _right.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		distance = _top.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		distance = _bottom.distancePoint(point);
+		if (MathUtils.abs(distance) < MathUtils.ZEROTOLERANCE) {
+			return Containment.Intersects;
+		} else if (distance < 0) {
+			return Containment.Disjoint;
+		}
+		return Containment.Contains;
+	}
+
+	public Containment containsAABB(AABB aabb) {
+		Vector3f min = aabb.min();
+		Vector3f max = aabb.max();
+		Vector3f p = new Vector3f();
+		Vector3f n = new Vector3f();
+		Containment result = Containment.Contains;
+		for (int i = 0; i < 6; ++i) {
+			Plane plane = getPlane(i);
+			Vector3f normal = plane.getNormal();
+			if (normal.x >= 0) {
+				p.x = max.x;
+				n.x = min.x;
+			} else {
+				p.x = min.x;
+				n.x = max.x;
+			}
+			if (normal.y >= 0) {
+				p.y = max.y;
+				n.y = min.y;
+			} else {
+				p.y = min.y;
+				n.y = max.y;
+			}
+			if (normal.z >= 0) {
+				p.z = max.z;
+				n.z = min.z;
+			} else {
+				p.z = min.z;
+				n.z = max.z;
+			}
+			if (plane.intersectsPoint(p) == PlaneIntersection.Back) {
+				return Containment.Disjoint;
+			}
+			if (plane.intersectsPoint(n) == PlaneIntersection.Back) {
+				result = Containment.Intersects;
+			}
+		}
+		return result;
+	}
+
+	public Containment containsSphere(Sphere s) {
+		Containment result = Containment.Contains;
+		for (int i = 0; i < 6; ++i) {
+			Plane plane = getPlane(i);
+			PlaneIntersection intersection = plane.intersectsSphere(s);
+			if (intersection == PlaneIntersection.Back) {
+				return Containment.Disjoint;
+			} else if (intersection == PlaneIntersection.Intersecting) {
+				result = Containment.Intersects;
+				break;
+			}
+		}
+		return result;
+	}
 }

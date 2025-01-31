@@ -85,4 +85,19 @@ public class Sphere {
 		this._radius = MathUtils.sqrt(radius);
 	}
 
+	public boolean intersectsSphere(Sphere s) {
+		float r2 = this._radius + s._radius;
+		return _center.distanceSquared(s._center) < r2 * r2;
+	}
+
+	public boolean intersectsAABB(AABB aabb) {
+		Vector3f max = aabb.max();
+		Vector3f min = aabb.min();
+		Vector3f closestPoint = new Vector3f();
+		closestPoint.set(MathUtils.max(min.x, MathUtils.min(_center.x, max.x)),
+				MathUtils.max(min.y, MathUtils.min(_center.y, max.y)),
+				MathUtils.max(min.z, MathUtils.min(_center.z, max.z)));
+		float distance = _center.distanceSquared(closestPoint);
+		return distance <= this._radius * this._radius;
+	}
 }

@@ -191,6 +191,18 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return v1;
 	}
 
+	public static void min(Vector3f a, Vector3f b, Vector3f o) {
+		o.x = MathUtils.min(a.x, b.x);
+		o.y = MathUtils.min(a.y, b.y);
+		o.z = MathUtils.min(a.z, b.z);
+	}
+
+	public static void max(Vector3f a, Vector3f b, Vector3f o) {
+		o.x = MathUtils.max(a.x, b.x);
+		o.y = MathUtils.max(a.y, b.y);
+		o.z = MathUtils.max(a.z, b.z);
+	}
+
 	public static Vector3f div(Vector3f v1, float v) {
 		float d = 1 / v;
 		v1.x = d * v1.x;
@@ -1073,6 +1085,26 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 			return v;
 		}
 		return v.add(vd.div(len).mul(delta));
+	}
+
+	public Vector3f min(Vector3f other) {
+		min(this, other, cpy());
+		return this;
+	}
+
+	public Vector3f max(Vector3f other) {
+		max(this, other, cpy());
+		return this;
+	}
+
+	public Vector3f minSelf(Vector3f other) {
+		min(this, other, this);
+		return this;
+	}
+
+	public Vector3f maxSelf(Vector3f other) {
+		max(this, other, this);
+		return this;
 	}
 
 	public Vector3f set(float v) {

@@ -39,6 +39,8 @@ public final class MathUtils {
 
 	public static final float FLOAT_ROUNDING_ERROR = 0.000001f;
 
+	public static final float ZEROTOLERANCE = 1e-6f;
+	
 	public static final int ZERO_FIXED = 0;
 
 	public static final int ONE_FIXED = 1 << 16;

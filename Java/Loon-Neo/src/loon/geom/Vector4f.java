@@ -82,6 +82,76 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 				MathUtils.smoothStep(a.z, b.z, amount), MathUtils.smoothStep(a.w, b.w, amount));
 	}
 
+	public static float dot(Vector4f a, Vector4f b) {
+		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z) + (a.w * b.w);
+	}
+
+	public static float distance(Vector4f a, Vector4f b) {
+		float x = a.x - b.x;
+		float y = a.y - b.y;
+		float z = a.z - b.z;
+		float w = a.w - b.w;
+
+		return MathUtils.sqrt((x * x) + (y * y) + (z * z) + (w * w));
+	}
+
+	public static float distanceSquared(Vector4f a, Vector4f b) {
+		float x = a.x - b.x;
+		float y = a.y - b.y;
+		float z = a.z - b.z;
+		float w = a.w - b.w;
+
+		return (x * x) + (y * y) + (z * z) + (w * w);
+	}
+
+	public static void min(Vector4f a, Vector4f b, Vector4f o) {
+		o.x = MathUtils.min(a.x, b.x);
+		o.y = MathUtils.min(a.y, b.y);
+		o.z = MathUtils.min(a.z, b.z);
+		o.w = MathUtils.min(a.w, b.w);
+	}
+
+	public static void max(Vector4f a, Vector4f b, Vector4f o) {
+		o.x = MathUtils.max(a.x, b.x);
+		o.y = MathUtils.max(a.y, b.y);
+		o.z = MathUtils.max(a.z, b.z);
+		o.w = MathUtils.max(a.w, b.w);
+	}
+
+	public static void clamp(Vector4f v, Vector4f min, Vector4f max, Vector4f o) {
+		float x = v.x;
+		float y = v.y;
+		float z = v.z;
+		float w = v.w;
+
+		float mineX = min.x;
+		float mineY = min.y;
+		float mineZ = min.z;
+		float mineW = min.w;
+
+		float maxeX = max.x;
+		float maxeY = max.y;
+		float maxeZ = max.z;
+		float maxeW = max.w;
+
+		x = (x > maxeX) ? maxeX : x;
+		x = (x < mineX) ? mineX : x;
+
+		y = (y > maxeY) ? maxeY : y;
+		y = (y < mineY) ? mineY : y;
+
+		z = (z > maxeZ) ? maxeZ : z;
+		z = (z < mineZ) ? mineZ : z;
+
+		w = (w > maxeW) ? maxeW : w;
+		w = (w < mineW) ? mineW : w;
+
+		o.x = x;
+		o.y = y;
+		o.z = z;
+		o.w = w;
+	}
+
 	public float x, y, z, w;
 
 	public Vector4f() {
@@ -318,6 +388,26 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 
 	public Vector4f multiplySelf(Vector4f v) {
 		return scaleSelf(v.x, v.y, v.z, v.w);
+	}
+
+	public Vector4f min(Vector4f other) {
+		min(this, other, cpy());
+		return this;
+	}
+
+	public Vector4f max(Vector4f other) {
+		max(this, other, cpy());
+		return this;
+	}
+
+	public Vector4f minSelf(Vector4f other) {
+		min(this, other, this);
+		return this;
+	}
+
+	public Vector4f maxSelf(Vector4f other) {
+		max(this, other, this);
+		return this;
 	}
 
 	public Vector4f scaleSelf(float sx, float sy, float sz, float sw) {
