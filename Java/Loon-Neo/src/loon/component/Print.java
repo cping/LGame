@@ -345,7 +345,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_interceptMaxString = 0;
 					_interceptCount = 0;
 				}
-				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == '\\') {
+				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == LSystem.BACKSLASH) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -364,7 +364,7 @@ public class Print implements FontSet<Print>, LRelease {
 					continue;
 				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
 					continue;
-				} else if (_textChar == '/') {
+				} else if (_textChar == LSystem.SLASH) {
 					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
 						_interceptMaxString = 1;
 						_fontColor = old;
@@ -375,7 +375,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					_newLine = false;
-				} else if (_textChar == '\\') {
+				} else if (_textChar == LSystem.BACKSLASH) {
 					continue;
 				}
 				_perfontSize = _defaultFont.charWidth(_textChar);
@@ -476,7 +476,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_interceptMaxString = 0;
 					_interceptCount = 0;
 				}
-				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == '\\') {
+				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == LSystem.BACKSLASH) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -495,7 +495,7 @@ public class Print implements FontSet<Print>, LRelease {
 					continue;
 				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
 					continue;
-				} else if (_textChar == '/') {
+				} else if (_textChar == LSystem.SLASH) {
 					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
 						_interceptMaxString = 1;
 						_fontColor = old;
@@ -506,7 +506,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					_newLine = false;
-				} else if (_textChar == '\\') {
+				} else if (_textChar == LSystem.BACKSLASH) {
 					continue;
 				}
 				String tmpText = String.valueOf(_textChar);
@@ -616,7 +616,7 @@ public class Print implements FontSet<Print>, LRelease {
 					_messageBuffer.delete(_messageBuffer.length() - 1, _messageBuffer.length());
 				}
 				this._messageBuffer.append(_messages.charAt(_messageCount));
-				this._messageBuffer.append('_');
+				this._messageBuffer.append(LSystem.UNDERLINE);
 				this._showMessages = _messageBuffer.toString().toCharArray();
 				this._textsize = _showMessages.length;
 				this._messageCount++;

@@ -96,6 +96,8 @@ public class Ellipse extends Shape {
 
 	protected static final int DEFAULT_SEGMENT_MAX_COUNT = 50;
 
+	private TArray<Float> _tempPoints = new TArray<Float>();
+
 	private int _segmentCount;
 
 	private float _radius1;
@@ -357,8 +359,8 @@ public class Ellipse extends Shape {
 
 	@Override
 	protected void createPoints() {
-		TArray<Float> tempPoints = new TArray<Float>();
 
+		_tempPoints.clear();
 		maxX = -Float.MIN_VALUE;
 		maxY = -Float.MIN_VALUE;
 		minX = Float.MAX_VALUE;
@@ -394,12 +396,12 @@ public class Ellipse extends Shape {
 				minY = newY;
 			}
 
-			tempPoints.add(newX);
-			tempPoints.add(newY);
+			_tempPoints.add(newX);
+			_tempPoints.add(newY);
 		}
-		points = new float[tempPoints.size];
+		points = new float[_tempPoints.size];
 		for (int i = 0; i < points.length; i++) {
-			points[i] = tempPoints.get(i);
+			points[i] = _tempPoints.get(i);
 		}
 	}
 

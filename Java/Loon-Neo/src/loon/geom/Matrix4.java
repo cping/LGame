@@ -78,6 +78,46 @@ public class Matrix4 implements Serializable, XY {
 
 	public static final int M33 = 15;
 
+	public final static Matrix4 createPerspectiveProjection(float x, float y, float width, float height,
+			float stageWidth, float stageHeight, Vector3f cameraPos) {
+		return createPerspectiveProjection(x, y, width, height, stageWidth, stageHeight, cameraPos, new Matrix4());
+	}
+
+	public final static Matrix4 createPerspectiveProjection(float x, float y, float width, float height,
+			float stageWidth, float stageHeight, Vector3f cameraPos, Matrix4 out) {
+		if (out == null) {
+			out = new Matrix4();
+		}
+		if (stageWidth <= 0) {
+			stageWidth = width;
+		}
+		if (stageHeight <= 0) {
+			stageHeight = height;
+		}
+		if (cameraPos == null) {
+			cameraPos = new Vector3f(stageWidth / 2f, stageHeight / 2f, stageWidth / MathUtils.tan(0.5f) * 0.5f);
+		}
+		float focalLength = MathUtils.abs(cameraPos.z);
+		float offsetX = cameraPos.x - stageWidth / 2;
+		float offsetY = cameraPos.y - stageHeight / 2;
+		float far = focalLength * 20;
+		float near = 1;
+		float scaleX = stageWidth / width;
+		float scaleY = stageHeight / height;
+		float[] vals = out.val;
+		vals[M00] = 2 * focalLength / stageWidth;
+		vals[M11] = -2 * focalLength / stageHeight;
+		vals[M22] = far / (far - near);
+		vals[M23] = -far * near / (far - near);
+		vals[M32] = 1;
+		vals[M00] *= scaleX;
+		vals[M11] *= scaleY;
+		vals[M02] = scaleX - 1 - 2 * scaleX * (x - offsetX) / stageWidth;
+		vals[M12] = -scaleY + 1 + 2 * scaleY * (y - offsetY) / stageHeight;
+		out.translate(-stageWidth / 2f - offsetX, -stageHeight / 2f - offsetY, focalLength);
+		return out;
+	}
+
 	public final float[] tmp = new float[16];
 
 	public final float[] val = new float[16];

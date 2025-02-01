@@ -80,6 +80,43 @@ import loon.utils.timer.StopwatchTimer;
 public abstract class LComponent extends LObject<LContainer>
 		implements Flip<LComponent>, CollisionObject, Visible, ActionBind, XY, BoxSize, LRelease {
 
+	private class HideComponent implements ActionListener {
+
+		private LComponent _component;
+
+		public HideComponent(LComponent c) {
+			this._component = c;
+		}
+
+		@Override
+		public void start(ActionBind o) {
+
+		}
+
+		@Override
+		public void process(ActionBind o) {
+
+		}
+
+		@Override
+		public void stop(ActionBind o) {
+			if (_component == null) {
+				return;
+			}
+			if (_component.getParent() != null) {
+				_component.getParent().remove((LComponent) o);
+			}
+			if (_component.getScreen() != null) {
+				_component.getScreen().remove((LComponent) o);
+			}
+			if (_component._desktop != null) {
+				_component._desktop.remove((LComponent) o);
+			}
+			_component.close();
+		}
+
+	}
+
 	private Origin _origin = Origin.CENTER;
 
 	private Vector2f _offset = new Vector2f();
@@ -1767,32 +1804,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @return
 	 */
 	public LComponent out(float speed) {
-		this.selfAction().fadeOut(speed).start().setActionListener(new ActionListener() {
-
-			@Override
-			public void stop(ActionBind o) {
-				if (getParent() != null) {
-					getParent().remove((LComponent) o);
-				}
-				if (getScreen() != null) {
-					getScreen().remove((LComponent) o);
-				}
-				if (_desktop != null) {
-					_desktop.remove((LComponent) o);
-				}
-				close();
-			}
-
-			@Override
-			public void start(ActionBind o) {
-
-			}
-
-			@Override
-			public void process(ActionBind o) {
-
-			}
-		});
+		this.selfAction().fadeOut(speed).start().setActionListener(new HideComponent(this));
 		return this;
 	}
 

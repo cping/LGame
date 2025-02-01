@@ -131,10 +131,14 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			int positionX = 0;
 			int positionY = 0;
 			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
-			StrBuilder sbr = new StrBuilder(customCharsLength);
+
+			final StrBuilder contextbuilder = strfont._contextbuilder;
+			final OrderedSet<Character> outchached = strfont._outchached;
+			contextbuilder.reset(customCharsLength);
+			outchached.clear();
 			// 如果想本地文字精确剪切到loon系统,此项需要为true,默认为false是因为一个个字剪切会卡(html5模式可能卡死-_-)……
 			final boolean clipFont = LSystem.isTrueFontClip();
-			final OrderedSet<Character> outchached = new OrderedSet<Character>();
+
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = customCharsLength; i < size; i++) {
 
@@ -195,28 +199,28 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					// 一次渲染一整行本地字体到纹理，这样对系统开销最小，不过某些平台切的不整齐(实际上就是间距和从系统获取的不符合)
 					// 若显示有问题，请设定clipFont = true
 					if (!checkplusB) {
-						layout = strfont.font.getLayoutText(sbr.toString(), false);
+						layout = strfont.font.getLayoutText(contextbuilder.toString(), false);
 						if (checkplusA) {
 							canvas.fillText(layout, 0, positionY);
 						} else {
 							outchached.add(ch);
 							strfont._outBounds = true;
 							outchar = true;
-							if (sbr.length() > 0) {
-								for (int n = 0; n < sbr.length(); n++) {
-									char temp = sbr.charAt(n);
+							if (contextbuilder.length() > 0) {
+								for (int n = 0; n < contextbuilder.length(); n++) {
+									char temp = contextbuilder.charAt(n);
 									strfont._chars.removeValue(temp);
 									outchached.add(temp);
 								}
 							}
 						}
-						sbr.setLength(0);
+						contextbuilder.setLength(0);
 						positionX = 0;
 						positionY += rowHeight;
 						rowHeight = 0;
 					}
 					if (checkplusA) {
-						sbr.append(ch);
+						contextbuilder.append(ch);
 					} else {
 						outchached.add(ch);
 						strfont._outBounds = true;
@@ -243,17 +247,16 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					strfont._chars.add(ch);
 				}
 			}
-			if (sbr.length() > 0) {
-				TextLayout layout = strfont.font.getLayoutText(sbr.toString(), false);
+			if (contextbuilder.length() > 0) {
+				TextLayout layout = strfont.font.getLayoutText(contextbuilder.toString(), false);
 				if (positionY <= strfont.textureHeight - strfont.pixelFontSize) {
 					canvas.fillText(layout, 0, positionY);
 				} else {
-					for (int i = 0; i < sbr.length(); i++) {
-						outchached.add(sbr.charAt(i));
+					for (int i = 0; i < contextbuilder.length(); i++) {
+						outchached.add(contextbuilder.charAt(i));
 					}
 					strfont._outBounds = true;
 				}
-				sbr = null;
 			}
 			LTextureBatch tmpbatch = strfont.fontBatch;
 			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
@@ -263,12 +266,13 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			}
 			// 若字符串超过当前纹理大小,则创建新纹理保存
 			if (strfont._outBounds) {
-				StrBuilder temp = new StrBuilder(outchached.size());
+				contextbuilder.reset(outchached.size());
 				for (LIterator<Character> it = outchached.iterator(); it.hasNext();) {
-					temp.append(it.next());
+					contextbuilder.append(it.next());
 				}
-				strfont._childFont = new LSTRFont(strfont.font, temp.toString(), strfont.isasyn, strfont.textureWidth,
-						strfont.textureHeight, strfont._maxTextureWidth, strfont._maxTextureHeight);
+				strfont._childFont = new LSTRFont(strfont.font, contextbuilder.toString(), strfont.isasyn,
+						strfont.textureWidth, strfont.textureHeight, strfont._maxTextureWidth,
+						strfont._maxTextureHeight);
 			}
 			if (positionX > strfont.textureWidth || positionY > strfont.textureHeight) {
 				strfont._outBounds = true;
@@ -280,6 +284,10 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	private Updateable _submitUpdate;
+
+	private final OrderedSet<Character> _outchached = new OrderedSet<Character>();
+
+	private final StrBuilder _contextbuilder = new StrBuilder();
 
 	private final char newLineFlag = LSystem.LF;
 

@@ -96,6 +96,25 @@ public class Affine2f implements LTrans, XY {
 		return xform;
 	}
 
+	public final static void snapToPixels(Affine2f aff, float pixelSize) {
+		float E = MathUtils.EPSILON;
+		boolean doSnap = false;
+		float aSq, bSq, cSq, dSq;
+		if (aff.m01 + E > 0 && aff.m01 - E < 0 && aff.m10 + E > 0 && aff.m10 - E < 0) {
+			aSq = aff.m00 * aff.m00;
+			dSq = aff.m11 * aff.m11;
+			doSnap = aSq + E > 1 && aSq - E < 1 && dSq + E > 1 && dSq - E < 1;
+		} else if (aff.m00 + E > 0 && aff.m00 - E < 0 && aff.m11 + E > 0 && aff.m11 - E < 0) {
+			bSq = aff.m01 * aff.m01;
+			cSq = aff.m10 * aff.m10;
+			doSnap = bSq + E > 1 && bSq - E < 1 && cSq + E > 1 && cSq - E < 1;
+		}
+		if (doSnap) {
+			aff.tx = MathUtils.round(aff.tx / pixelSize) * pixelSize;
+			aff.ty = MathUtils.round(aff.ty / pixelSize) * pixelSize;
+		}
+	}
+
 	public final static Affine2f merge(Affine2f src, Affine2f dst, Affine2f result) {
 		float amaxx = src.tx + src.m00;
 		float amaxy = src.ty + src.m11;
@@ -1509,6 +1528,10 @@ public class Affine2f implements LTrans, XY {
 		Affine2f ot = (other instanceof Affine2f) ? (Affine2f) other : new Affine2f(other);
 		return new Affine2f(m00 + t * (ot.m00 - m00), m01 + t * (ot.m01 - m01), m10 + t * (ot.m10 - m10),
 				m11 + t * (ot.m11 - m11), tx + t * (ot.tx - tx), ty + t * (ot.ty - ty));
+	}
+
+	public void snapToPixel(float size) {
+		snapToPixels(this, size);
 	}
 
 	public void transform(Vector2f[] src, int srcOff, Vector2f[] dst, int dstOff, int count) {

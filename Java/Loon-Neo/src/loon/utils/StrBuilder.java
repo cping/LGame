@@ -623,7 +623,9 @@ public class StrBuilder implements CharSequence, Appendable {
 	public StrBuilder reset(int cap) {
 		this._currentIndex = 0;
 		this._hash = 0;
-		this._values = new char[cap];
+		if (this._values == null || cap != this._values.length) {
+			this._values = new char[cap];
+		}
 		this._dirty = true;
 		this._tempResult = null;
 		return this;

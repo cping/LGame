@@ -100,11 +100,11 @@ public final class LSTRDictionary implements LRelease {
 
 	private boolean _allowCacheBind = true;
 
-	private final ArrayMap cacheList = new ArrayMap(32);
+	private final ArrayMap cacheList = new ArrayMap(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
-	private final ArrayMap fontList = new ArrayMap(32);
+	private final ArrayMap fontList = new ArrayMap(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
-	private final ArrayMap englishFontList = new ArrayMap(32);
+	private final ArrayMap englishFontList = new ArrayMap(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理(有字符重复检测,用户使用中已有下列字符时则不会重复添加)
 	private final static String ADDED = "0123456789iabfghkdomcnpqrstuvwxyzljeIABFGHKDOMCNPQRSTUVWXYZLJE:.,!?@#$&%^*+(-){~}[│]<>\"'─\\/～▼▲◆【】：，。…？！";
