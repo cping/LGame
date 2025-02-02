@@ -126,7 +126,11 @@ public class Scale {
 				scaleValue = MathUtils.previousPowerOfTwo(MathUtils.ceil(scaleValue));
 			}
 			sizeResult.set(srcWidth * scaleValue, srcHeight * scaleValue);
+			if(powerOfTwo) {
 			scaleResult.set(scaleValue, scaleValue);
+			}else {
+				scaleResult.set(scaleValue, scaleValue);
+			}
 			break;
 		case FILL_X:
 			scaleValue = tarWidth / srcWidth;

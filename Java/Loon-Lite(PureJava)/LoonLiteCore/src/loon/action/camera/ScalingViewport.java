@@ -52,12 +52,17 @@ public class ScalingViewport extends Viewport {
 	public void onResize(int width, int height) {
 		scaling.scaledSize(mode, size, scale, powerOfTwo, worldWidth, worldHeight, width, height);
 
+		float scaleX = 1f;
+		float scaleY = 1f;
+		if (mode != Scale.Mode.FIT) {
+			scaleX = scale.x;
+			scaleY = scale.y;
+		}
 		final int viewWidth = MathUtils.round(size.x);
 		final int viewHeight = MathUtils.round(size.y);
 
-		setBounds((width - viewWidth) / MathUtils.round(2f * scale.x),
-				(height - viewHeight) / MathUtils.round(2f * scale.y), MathUtils.round(worldWidth),
-				MathUtils.round(worldHeight), scale.x, scale.y);
+		setBounds((width - viewWidth) / 2f, (height - viewHeight) / 2f, MathUtils.round(worldWidth),
+				MathUtils.round(worldHeight), (worldWidth / width) * scaleX, (worldHeight / height) * scaleY);
 	}
 
 	public boolean isPowerOfTwo() {

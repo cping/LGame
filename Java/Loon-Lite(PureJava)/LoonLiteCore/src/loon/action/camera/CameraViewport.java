@@ -32,7 +32,8 @@ public class CameraViewport extends Viewport {
 	}
 
 	public CameraViewport(float worldWidth, float worldHeight) {
-		setBounds(0f, 0f, worldWidth, worldHeight, 1f, 1f);
+		setBounds(0f, 0f, worldWidth, worldHeight, worldWidth / LSystem.viewSize.getWidth(),
+				worldHeight / LSystem.viewSize.getHeight());
 	}
 
 	public CameraViewport(float x, float y, float worldWidth, float worldHeight, float sx, float sy) {
