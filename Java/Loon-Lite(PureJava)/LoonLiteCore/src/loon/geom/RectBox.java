@@ -365,6 +365,31 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		this.setHeight(w);
 	}
 
+	public Vector2f getCenter(Vector2f o) {
+		o.x = x + width / 2;
+		o.y = y + height / 2;
+		return o;
+	}
+
+	public RectBox setCenter(float x, float y) {
+		super.setCenter(x, y);
+		setLocation(x - width / 2, y - height / 2);
+		return this;
+	}
+
+	@Override
+	public RectBox setCenter(Vector2f pos) {
+		return setCenter(pos.x, pos.y);
+	}
+
+	public RectBox setCentered(float x, float y, float size) {
+		return set(x - size / 2f, y - size / 2f, size, size);
+	}
+
+	public RectBox setCentered(float x, float y, float width, float height) {
+		return set(x - width / 2f, y - height / 2f, width, height);
+	}
+
 	public Polygon getPolygon() {
 		this.checkPoints();
 		Polygon poly = new Polygon(this.points);

@@ -112,7 +112,9 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 
 	private ActionBind _follow;
 
-	private Vector2f _offset = new Vector2f(0f, 0f);
+	private Vector2f _followOffset = new Vector2f();
+
+	private Vector2f _offset = new Vector2f();
 
 	private LColor _baseColor = LColor.white;
 
@@ -846,7 +848,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	/**
 	 * 设定偏移量
 	 *
-	 * @param _offset
+	 * @param offset
 	 */
 	@Override
 	public TileMap setOffset(Vector2f offset) {
@@ -862,6 +864,31 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	@Override
 	public Vector2f getOffset() {
 		return _offset;
+	}
+
+	/**
+	 * 设定跟随角色偏移量
+	 *
+	 * @param x
+	 * @param y
+	 */
+	public TileMap setFollowOffset(float x, float y) {
+		this._followOffset.set(x, y);
+		return this;
+	}
+
+	/**
+	 * 设定跟随角色偏移量
+	 *
+	 * @param offset
+	 */
+	public TileMap setFollowOffset(Vector2f offset) {
+		this._followOffset.set(offset);
+		return this;
+	}
+
+	public Vector2f getFollowOffset() {
+		return this._followOffset;
 	}
 
 	@Override
@@ -1040,14 +1067,14 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		float offsetX = getContainerWidth() / 2 - newOffsetX;
 		offsetX = MathUtils.min(offsetX, 0);
 		offsetX = MathUtils.max(offsetX, getContainerWidth() - getWidth());
-		return offsetX;
+		return offsetX + _followOffset.x;
 	}
 
 	protected float limitOffsetY(float newOffsetY) {
 		float offsetY = getContainerHeight() / 2 - newOffsetY;
 		offsetY = MathUtils.min(offsetY, 0);
 		offsetY = MathUtils.max(offsetY, getContainerHeight() - getHeight());
-		return offsetY;
+		return offsetY + _followOffset.y;
 	}
 
 	public TileMap followActionObject() {

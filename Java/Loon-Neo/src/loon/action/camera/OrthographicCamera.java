@@ -21,14 +21,19 @@
 package loon.action.camera;
 
 import loon.LSystem;
+import loon.geom.RectBox;
 import loon.geom.Transforms;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 
 public class OrthographicCamera extends EmptyCamera {
 
+	private final Vector2f _position = new Vector2f();
+
 	private final Vector3f _tempVector3f = new Vector3f();
+
 	private float width;
+
 	private float height;
 
 	public OrthographicCamera() {
@@ -43,6 +48,12 @@ public class OrthographicCamera extends EmptyCamera {
 		this.width = right - left;
 		this.height = bottom - top;
 		this._viewMatrix4 = Transforms.createOrtho2d(left, right, bottom, top, 0, 100f);
+	}
+
+	public void resize(float viewportWidth, float viewportHeight) {
+		this.width = viewportWidth;
+		this.height = viewportHeight;
+		update();
 	}
 
 	public OrthographicCamera translate(Vector2f v) {
@@ -142,5 +153,28 @@ public class OrthographicCamera extends EmptyCamera {
 		_tempVector3f.set(x, y, 0);
 		unproject(_tempVector3f);
 		return dst.set(_tempVector3f.x, _tempVector3f.y);
+	}
+
+	public RectBox bounds(RectBox o) {
+		return o.setSize(width, height).setCenter(_position);
+	}
+
+	public void update() {
+		_projMatrix4.setToOrtho2D(_position.x - width / 2f, _position.y - height / 2f, width, height);
+		_viewMatrix4.set(_projMatrix4).inv();
+	}
+
+	public Vector2f getPosition() {
+		return _position;
+	}
+
+	public OrthographicCamera setX(float x) {
+		_position.setX(x);
+		return this;
+	}
+
+	public OrthographicCamera setY(float y) {
+		_position.setY(y);
+		return this;
 	}
 }

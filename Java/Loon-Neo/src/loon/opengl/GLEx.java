@@ -483,6 +483,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return lastTrans;
 	}
 
+	public Affine2f mulAffine(Affine2f aff) {
+		return lastTrans.multiply(aff, lastTrans);
+	}
+
 	public GLEx saveBrush() {
 		if (isClosed) {
 			return this;

@@ -157,7 +157,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	private LTexture _background;
 
-	private Vector2f _offset = new Vector2f(0, 0);
+	private Vector2f _offset = new Vector2f();
 
 	private float _scaleX, _scaleY;
 

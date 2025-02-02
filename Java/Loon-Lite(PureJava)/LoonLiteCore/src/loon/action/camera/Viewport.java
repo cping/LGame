@@ -20,21 +20,53 @@
  */
 package loon.action.camera;
 
+import loon.LRelease;
+import loon.action.ActionBind;
+import loon.action.sprite.ISprite;
+import loon.action.sprite.Sprites;
+import loon.component.Desktop;
+import loon.component.LComponent;
+import loon.geom.Affine2f;
+import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
+import loon.utils.TArray;
+import loon.utils.timer.LTimerContext;
 
-public abstract class Viewport {
+public abstract class Viewport implements LRelease {
 
-	private int x, y, width, height;
-	private float scaleX, invScaleX;
-	private float scaleY, invScaleY;
+	private RectBox _bounds = new RectBox();
+	private RectBox _limitRect = null;
 
-	private int previousWindowWidth, previousWindowHeight;
+	private boolean _dirty;
+
+	private boolean _useBounds;
+
+	private Affine2f view = new Affine2f();
+	private float x, y, width, height;
+	private float scaleX = 1f, invScaleX = 1f;
+	private float scaleY = 1f, invScaleY = 1f;
+	private float scrollX;
+	private float scrollY;
+	private float originX = 0.5f;
+	private float originY = 0.5f;
+	private float rotation;
+	private float previousWindowWidth, previousWindowHeight;
 	private float previousScaleX, previousScaleY, previousTranslateX, previousTranslateY;
 
-	protected abstract void onResize(int windowWidth, int windowHeight);
+	private ActionBind follow;
+
+	private Vector2f followOffset = new Vector2f();
+
+	private Vector2f lerp = new Vector2f();
+
+	private Vector2f centerPoint = new Vector2f();
+
+	public abstract void onResize(int windowWidth, int windowHeight);
 
 	public Viewport apply(GLEx g) {
+
 		if (previousWindowWidth != g.getWidth() || previousWindowHeight != g.getHeight()) {
 			onResize(g.getWidth(), g.getHeight());
 			previousWindowWidth = g.getWidth();
@@ -45,17 +77,336 @@ public abstract class Viewport {
 		previousScaleY = g.getScaleY();
 		previousTranslateX = g.getTranslationX();
 		previousTranslateY = g.getTranslationY();
-		g.scale(scaleX, scaleY);
-		g.translate(-x, -y);
-		g.setClip(0, 0, width, height);
+
+		float width = this.width;
+		float height = this.height;
+
+		float halfWidth = width * 0.5f;
+		float halfHeight = height * 0.5f;
+
+		float zoomX = this.scaleX;
+		float zoomY = this.scaleY;
+
+		float curOriginX = width * this.originX;
+		float curOriginY = height * this.originY;
+
+		ActionBind follow = this.follow;
+
+		float sx = this.scrollX;
+		float sy = this.scrollY;
+
+		if (follow != null) {
+			Vector2f lerp = this.lerp;
+
+			float fx = follow.getX() + this.followOffset.x;
+			float fy = follow.getY() + this.followOffset.y;
+			if (this._limitRect != null) {
+				if (fx < _limitRect.x) {
+					sx = getLinear(sx, sx - (_limitRect.x - fx), lerp.x);
+				} else if (fx > _limitRect.getRight()) {
+					sx = getLinear(sx, sx + (fx - _limitRect.getRight()), lerp.x);
+				}
+				if (fy < _limitRect.y) {
+					sy = getLinear(sy, sy - (_limitRect.y - fy), lerp.y);
+				} else if (fy > _limitRect.getBottom()) {
+					sy = getLinear(sy, sy + (fy - _limitRect.getBottom()), lerp.y);
+				}
+			} else {
+				sx = getLinear(sx, fx - curOriginX, lerp.x);
+				sy = getLinear(sy, fy - curOriginY, lerp.y);
+			}
+
+		}
+
+		if (this._useBounds) {
+			sx = this.getClampX(sx);
+			sy = this.getClampY(sy);
+		}
+
+		this.scrollX = sx;
+		this.scrollY = sy;
+
+		float midX = sx + halfWidth;
+		float midY = sy + halfHeight;
+
+		this.centerPoint.set(midX, midY);
+
+		float displayWidth = MathUtils.ifloor((width / zoomX) + 0.5f);
+		float displayHeight = MathUtils.ifloor((height / zoomY) + 0.5f);
+
+		float newX = MathUtils.ifloor((midX - (displayWidth / 2)) + 0.5f);
+		float newY = MathUtils.ifloor((midY - (displayHeight / 2)) + 0.5f);
+
+		g.saveTx();
+		if (_dirty) {
+			view.setToOrtho2D(newX, newY, displayWidth, displayHeight);
+			view.applyITRS(MathUtils.ifloor(this.x + curOriginX + 0.5f), MathUtils.ifloor(this.y + curOriginY + 0.5f),
+					this.rotation, zoomX, zoomY);
+			view.translate(-curOriginX, -curOriginY);
+			updateCustom(g, view);
+			_dirty = false;
+		}
+		g.mulAffine(view);
+
 		return this;
 	}
 
+	public void updateCustom(GLEx g, Affine2f view) {
+
+	}
+
+	public void update(final LTimerContext timer) {
+
+	}
+
 	public Viewport unapply(GLEx g) {
-		g.clearClip();
-		g.translate(previousTranslateX, previousTranslateY);
-		g.scale(previousScaleX, previousScaleY);
+		g.restoreTx();
 		return this;
+	}
+
+	public Viewport follow(ActionBind target, float lerpX, float lerpY) {
+		return follow(target, lerpX, lerpY, 0f, 0f);
+	}
+
+	public Viewport follow(ActionBind target, float lerpX, float lerpY, float offsetX, float offsetY) {
+		this.follow = target;
+		lerpX = MathUtils.clamp(lerpX, 0f, 1f);
+		lerpY = MathUtils.clamp(lerpY, 0f, 1f);
+		this.lerp.set(lerpX, lerpY);
+		this.followOffset.set(offsetX, offsetY);
+		float originX = this.width / 2;
+		float originY = this.height / 2;
+		float fx = target.getX() - offsetX;
+		float fy = target.getY() - offsetY;
+		this.centerPoint.set(fx, fy);
+		this.scrollX = fx - originX;
+		this.scrollY = fy - originY;
+		if (this._useBounds) {
+			this.scrollX = this.getClampX(this.scrollX);
+			this.scrollY = this.getClampY(this.scrollY);
+		}
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setLmitRect(float width, float height) {
+		if (width <= 0 || height <= 0) {
+			this._limitRect = null;
+		} else {
+			if (this._limitRect != null) {
+				this._limitRect.setSize(width, height);
+			} else {
+				this._limitRect = new RectBox(0, 0, width, height);
+			}
+			if (this.follow != null) {
+				float originX = this.width / 2;
+				float originY = this.height / 2;
+				float fx = this.follow.getX() - this.followOffset.x;
+				float fy = this.follow.getY() - this.followOffset.y;
+				this.centerPoint.set(fx, fy);
+				this.scrollX = fx - originX;
+				this.scrollY = fy - originY;
+			}
+			centerOn(this._limitRect, this.follow, this.centerPoint.x, this.centerPoint.y);
+		}
+		return this;
+	}
+
+	public void centerOn(RectBox size, ActionBind follow, float x, float y) {
+
+	}
+
+	public TArray<ActionBind> getCullObjects(Sprites sprites) {
+		return getCullObjects(sprites, 1f, 1f, 0.5f, 0.5f);
+	}
+
+	public TArray<ActionBind> getCullObjects(Sprites sprites, float scrollFactorX, float scrollFactorY, float originX,
+			float originY) {
+		ISprite[] sprs = sprites.getSprites();
+		TArray<ActionBind> list = new TArray<ActionBind>(sprs.length);
+		for (int i = 0; i < list.size; i++) {
+			list.add(sprs[i]);
+		}
+		return getCullObjects(list, scrollFactorX, scrollFactorY, originX, originY);
+	}
+
+	public TArray<ActionBind> getCullObjects(Desktop desktop) {
+		return getCullObjects(desktop, 1f, 1f, 0.5f, 0.5f);
+	}
+
+	public TArray<ActionBind> getCullObjects(Desktop desktop, float scrollFactorX, float scrollFactorY, float originX,
+			float originY) {
+		LComponent[] comps = desktop.getComponents();
+		TArray<ActionBind> list = new TArray<ActionBind>(comps.length);
+		for (int i = 0; i < list.size; i++) {
+			list.add(comps[i]);
+		}
+		return getCullObjects(list, scrollFactorX, scrollFactorY, originX, originY);
+	}
+
+	public TArray<ActionBind> getCullObjects(TArray<ActionBind> renderableObjects) {
+		return getCullObjects(renderableObjects, 1f, 1f, 0.5f, 0.5f);
+	}
+
+	public TArray<ActionBind> getCullObjects(TArray<ActionBind> renderableObjects, float scrollFactorX,
+			float scrollFactorY, float originX, float originY) {
+
+		TArray<ActionBind> cullObjects = new TArray<ActionBind>();
+		Affine2f cameraMatrix = this.view;
+
+		float mva = cameraMatrix.m00;
+		float mvb = cameraMatrix.m01;
+		float mvc = cameraMatrix.m10;
+		float mvd = cameraMatrix.m11;
+
+		float determinant = (mva * mvd) - (mvb * mvc);
+
+		if (determinant <= 0f) {
+			return renderableObjects;
+		}
+
+		float mve = cameraMatrix.tx;
+		float mvf = cameraMatrix.ty;
+
+		float scrollX = this.scrollX;
+		float scrollY = this.scrollY;
+		float cameraW = this.width;
+		float cameraH = this.height;
+		float cullTop = this.y;
+		float cullBottom = cullTop + cameraH;
+		float cullLeft = this.x;
+		float cullRight = cullLeft + cameraW;
+
+		float length = renderableObjects.size;
+
+		determinant = 1 / determinant;
+
+		for (int index = 0; index < length; ++index) {
+			ActionBind object = renderableObjects.get(index);
+
+			float objectW = object.getWidth();
+			float objectH = object.getHeight();
+			float objectX = object.getX() - (scrollX * scrollFactorX) - (objectW * originX);
+			float objectY = object.getY() - (scrollY * scrollFactorY) - (objectH * originY);
+			float tx = (objectX * mva + objectY * mvc + mve);
+			float ty = (objectX * mvb + objectY * mvd + mvf);
+			float tw = ((objectX + objectW) * mva + (objectY + objectH) * mvc + mve);
+			float th = ((objectX + objectW) * mvb + (objectY + objectH) * mvd + mvf);
+
+			if ((tw > cullLeft && tx < cullRight) && (th > cullTop && ty < cullBottom)) {
+				cullObjects.add(object);
+			}
+		}
+
+		return cullObjects;
+	}
+
+	public Vector2f getWorldPoint(float x, float y) {
+		return getWorldPoint(x, y, new Vector2f());
+	}
+
+	public Vector2f getWorldPoint(float x, float y, Vector2f o) {
+
+		if (o == null) {
+			o = new Vector2f();
+		}
+
+		Affine2f matrix = this.view;
+
+		float mva = matrix.m00;
+		float mvb = matrix.m01;
+		float mvc = matrix.m10;
+		float mvd = matrix.m11;
+		float mve = matrix.tx;
+		float mvf = matrix.ty;
+
+		float determinant = (mva * mvd) - (mvb * mvc);
+
+		if (determinant <= 0) {
+			o.x = x;
+			o.y = y;
+			return o;
+		}
+
+		determinant = 1 / determinant;
+
+		float ima = mvd * determinant;
+		float imb = -mvb * determinant;
+		float imc = -mvc * determinant;
+		float imd = mva * determinant;
+		float ime = (mvc * mvf - mvd * mve) * determinant;
+		float imf = (mvb * mve - mva * mvf) * determinant;
+
+		float c = MathUtils.cos(this.rotation);
+		float s = MathUtils.sin(this.rotation);
+
+		float zoomX = this.scaleX;
+		float zoomY = this.scaleY;
+
+		float scrollX = this.scrollX;
+		float scrollY = this.scrollY;
+
+		float sx = x + ((scrollX * c - scrollY * s) * zoomX);
+		float sy = y + ((scrollX * s + scrollY * c) * zoomY);
+
+		o.x = (sx * ima + sy * imc) + ime;
+		o.y = (sx * imb + sy * imd) + imf;
+
+		return o;
+	}
+
+	public Viewport setAngle(float r) {
+		this.rotation = MathUtils.toRadians(r);
+		this._dirty = true;
+		return this;
+	}
+
+	public float getAngle() {
+		return MathUtils.toDegrees(this.rotation);
+	}
+
+	public Viewport centerToSize() {
+		this.scrollX = this.width * 0.5f;
+		this.scrollY = this.height * 0.5f;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport centerToBounds() {
+		if (this._useBounds) {
+			RectBox bounds = this._bounds;
+			float originX = this.width * 0.5f;
+			float originY = this.height * 0.5f;
+			this.centerPoint.set(bounds.getCenterX(), bounds.getCenterY());
+			this.scrollX = bounds.getCenterX() - originX;
+			this.scrollY = bounds.getCenterY() - originY;
+			this._dirty = true;
+		}
+		return this;
+	}
+
+	public Viewport centerOnX(float x) {
+		float originX = this.width * 0.5f;
+		this.centerPoint.x = x;
+		this.scrollX = x - originX;
+		if (this._useBounds) {
+			this.scrollX = this.getClampX(this.scrollX);
+		}
+		return this;
+	}
+
+	public Viewport centerOnY(float y) {
+		float originY = this.height * 0.5f;
+		this.centerPoint.y = y;
+		this.scrollY = y - originY;
+		if (this._useBounds) {
+			this.scrollY = this.getClampY(this.scrollY);
+		}
+		return this;
+	}
+
+	public float getLinear(float p0, float p1, float t) {
+		return (p1 - p0) * t + p0;
 	}
 
 	public Viewport toScreenCoordinates(Vector2f result, float worldX, float worldY) {
@@ -78,7 +429,7 @@ public abstract class Viewport {
 		return toWorldCoordinates(screenCoordinates, screenCoordinates.x, screenCoordinates.y);
 	}
 
-	protected Viewport setBounds(int x, int y, int width, int height, float scaleX, float scaleY) {
+	protected Viewport setBounds(float x, float y, float width, float height, float scaleX, float scaleY) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -87,23 +438,107 @@ public abstract class Viewport {
 		this.invScaleX = 1f / scaleX;
 		this.scaleY = scaleY;
 		this.invScaleY = 1f / scaleY;
+		this.centerPoint.set(width / 2f, height / 2f);
+		this._dirty = true;
 		return this;
 	}
 
-	public int getX() {
+	public Vector2f getScroll(float x, float y) {
+		return getScroll(x, y, new Vector2f());
+	}
+
+	public Vector2f getScroll(float x, float y, Vector2f o) {
+		if (o == null) {
+			o = new Vector2f();
+		}
+		float originX = this.width * 0.5f;
+		float originY = this.height * 0.5f;
+		o.x = x - originX;
+		o.y = y - originY;
+		if (this._useBounds) {
+			o.x = this.getClampX(o.x);
+			o.y = this.getClampY(o.y);
+		}
+		return o;
+	}
+
+	public float getDisplayWidth() {
+		return this.width / this.scaleX;
+	}
+
+	public float getDisplayHeight() {
+		return this.height / this.scaleY;
+	}
+
+	public float getClampX(float x) {
+		RectBox bounds = this._bounds;
+		float dw = this.getDisplayWidth();
+		float bx = bounds.x + ((dw - this.width) / 2);
+		float bw = MathUtils.max(bx, bx + bounds.width - dw);
+		if (x < bx) {
+			x = bx;
+		} else if (x > bw) {
+			x = bw;
+		}
 		return x;
 	}
 
-	public int getY() {
+	public float getClampY(float y) {
+		RectBox bounds = this._bounds;
+		float dh = this.getDisplayHeight();
+		float by = bounds.y + ((dh - this.height) / 2);
+		float bh = MathUtils.max(by, by + bounds.height - dh);
+		if (y < by) {
+			y = by;
+		} else if (y > bh) {
+			y = bh;
+		}
 		return y;
 	}
 
-	public int getWidth() {
+	public Viewport removeBounds() {
+		this._useBounds = false;
+		this._dirty = true;
+		this._bounds.setEmpty();
+		return this;
+	}
+
+	public Viewport setLocation(float x, float y) {
+		this.x = x;
+		this.y = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getX() {
+		return x;
+	}
+
+	public float getY() {
+		return y;
+	}
+
+	public float getWidth() {
 		return width;
 	}
 
-	public int getHeight() {
+	public float getHeight() {
 		return height;
+	}
+
+	public Viewport setSize(float w, float h) {
+		this.width = w;
+		this.height = h;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setSize(float x, float y, float width, float height) {
+		return setBounds(x, y, width, height, 1f, 1f);
+	}
+
+	public Viewport setSize(float x, float y, float width, float height, float sx, float sy) {
+		return setBounds(x, y, width, height, sx, sy);
 	}
 
 	public float getScaleX() {
@@ -120,5 +555,176 @@ public abstract class Viewport {
 
 	public float getInvScaleY() {
 		return invScaleY;
+	}
+
+	public float getPreviousWindowWidth() {
+		return previousWindowWidth;
+	}
+
+	public float getPreviousWindowHeight() {
+		return previousWindowHeight;
+	}
+
+	public float getPreviousScaleX() {
+		return previousScaleX;
+	}
+
+	public float getPreviousScaleY() {
+		return previousScaleY;
+	}
+
+	public float getPreviousTranslateX() {
+		return previousTranslateX;
+	}
+
+	public float getPreviousTranslateY() {
+		return previousTranslateY;
+	}
+
+	public Viewport setZoom(float x, float y) {
+		this.scaleX = x;
+		this.scaleY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setScroll(float x, float y) {
+		this.scrollX = x;
+		this.scrollY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getScrollX() {
+		return scrollX;
+	}
+
+	public Viewport setScrollX(float x) {
+		this.scrollX = x;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getScrollY() {
+		return scrollY;
+	}
+
+	public Viewport setScrollY(float y) {
+		this.scrollY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getOriginX() {
+		return originX;
+	}
+
+	public Viewport setOriginX(float x) {
+		this.originX = x;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getOriginY() {
+		return originY;
+	}
+
+	public Viewport setOriginY(float y) {
+		this.originY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public ActionBind getFollow() {
+		return follow;
+	}
+
+	public Viewport setFollow(ActionBind f) {
+		this.follow = f;
+		this._dirty = true;
+		return this;
+	}
+
+	public Vector2f getFollowOffset() {
+		return followOffset;
+	}
+
+	public Viewport setFollowOffset(float x, float y) {
+		this.followOffset.set(x, y);
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setFollowOffset(Vector2f f) {
+		return setFollowOffset(f.x, f.y);
+	}
+
+	public float getZoomWidth() {
+		return this.scaleX * this.width;
+	}
+
+	public float getZoomHeight() {
+		return this.scaleY * this.height;
+	}
+
+	public Viewport setX(int x) {
+		this.x = x;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setY(int y) {
+		this.y = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setWidth(int w) {
+		this.width = w;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setHeight(int h) {
+		this.height = h;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setScaleX(float x) {
+		this.scaleX = x;
+		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setScaleY(float y) {
+		this.scaleY = y;
+		this._dirty = true;
+		return this;
+	}
+
+	public boolean isUseBounds() {
+		return _useBounds;
+	}
+
+	public Viewport setUseBounds(boolean b) {
+		this._useBounds = b;
+		this._dirty = true;
+		return this;
+	}
+
+	public Vector2f getLerp() {
+		return this.lerp;
+	}
+
+	public Viewport setLerp(float x, float y) {
+		this.lerp.set(x, y);
+		this._dirty = true;
+		return this;
+	}
+
+	@Override
+	public void close() {
+
 	}
 }

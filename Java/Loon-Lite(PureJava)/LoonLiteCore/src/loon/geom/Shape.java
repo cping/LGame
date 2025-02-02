@@ -328,10 +328,14 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 		return this;
 	}
 
-	public Shape setCenter(Vector2f pos) {
-		setCenterX(pos.x);
-		setCenterY(pos.y);
+	public Shape setCenter(float x, float y) {
+		setCenterX(x);
+		setCenterY(y);
 		return this;
+	}
+
+	public Shape setCenter(Vector2f pos) {
+		return setCenter(pos.x, pos.y);
 	}
 
 	public float getMaxX() {

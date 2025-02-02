@@ -84,10 +84,19 @@ public class JavaFXImage extends ImageImpl {
 		sy *= f;
 		sw *= f;
 		sh *= f;
-		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
-		gfx.context.drawImage(buffer, MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw - sx),
-				MathUtils.ifloor(sh - sy), MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw - dx),
-				MathUtils.ifloor(dh - dy));
+		if (ctx instanceof loon.canvas.Canvas) {
+			JavaFXCanvas gfx = (JavaFXCanvas) ctx;
+			gfx.context.drawImage(buffer, MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw - sx),
+					MathUtils.ifloor(sh - sy), MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw - dx),
+					MathUtils.ifloor(dh - dy));
+		} else if (ctx instanceof loon.canvas.Image) {
+			JavaFXImage image = (JavaFXImage) ctx;
+			JavaFXCanvas gfx = (JavaFXCanvas) image.canvas;
+			gfx.snapshot();
+			gfx.context.drawImage(buffer, MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw - sx),
+					MathUtils.ifloor(sh - sy), MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw - dx),
+					MathUtils.ifloor(dh - dy));
+		}
 		isDirty = true;
 	}
 

@@ -1634,6 +1634,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (_isGravity && _gravityHandler != null) {
 			_gravityHandler.setLimit(getWidth(), getHeight());
 		}
+		if (_isExistViewport && _baseViewport != null) {
+			_baseViewport.onResize(getWidth(), getHeight());
+		}
 		this.resize(getWidth(), getHeight());
 	}
 
@@ -4412,6 +4415,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_curLastPaintFlag) {
 					_curLastOrder.update(timer);
 				}
+				if (_isExistViewport) {
+					_baseViewport.update(timer);
+				}
 			}
 		}
 		// 处理直接加入screen中的循环
@@ -7018,6 +7024,51 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public TArray<ActionBind> getViewportCullSprites() {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(this._currentSprites);
+		}
+		return null;
+	}
+
+	public TArray<ActionBind> getViewportCullDesktop() {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(this._currentDesktop);
+		}
+		return null;
+	}
+
+	public TArray<ActionBind> getViewportCullObjects(TArray<ActionBind> renderableObjects) {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(renderableObjects);
+		}
+		return null;
+	}
+
+	public TArray<ActionBind> getViewportCullSprites(float scrollFactorX, float scrollFactorY, float originX,
+			float originY) {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(this._currentSprites, scrollFactorX, scrollFactorY, originX, originY);
+		}
+		return null;
+	}
+
+	public TArray<ActionBind> getViewportCullDesktop(float scrollFactorX, float scrollFactorY, float originX,
+			float originY) {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(this._currentDesktop, scrollFactorX, scrollFactorY, originX, originY);
+		}
+		return null;
+	}
+
+	public TArray<ActionBind> getViewportCullObjects(TArray<ActionBind> renderableObjects, float scrollFactorX,
+			float scrollFactorY, float originX, float originY) {
+		if (_isExistViewport) {
+			return _baseViewport.getCullObjects(renderableObjects, scrollFactorX, scrollFactorY, originX, originY);
+		}
+		return null;
+	}
+
 	public float toPixelScaleX() {
 		return toPixelScaleX(getX());
 	}
@@ -7189,6 +7240,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_desktopPenetrate = false;
 				_endTime = getCurrentTimer();
 				_systemManager.close();
+				if (_baseViewport != null) {
+					_baseViewport.close();
+					_baseViewport = null;
+				}
 				if (_currentSprites != null) {
 					_curSpriteRun = false;
 					_currentSprites.close();

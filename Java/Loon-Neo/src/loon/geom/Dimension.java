@@ -20,7 +20,9 @@
  */
 package loon.geom;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
+import loon.utils.MathUtils;
 
 public class Dimension {
 
@@ -121,6 +123,14 @@ public class Dimension {
 
 	public int getWidth() {
 		return (int) width;
+	}
+
+	public int getZoomHeight() {
+		return MathUtils.ifloor(LSystem.getScaleHeight() * height);
+	}
+
+	public int getZoomWidth() {
+		return MathUtils.ifloor(LSystem.getScaleWidth() * width);
 	}
 
 	public Dimension setWidth(int w) {
