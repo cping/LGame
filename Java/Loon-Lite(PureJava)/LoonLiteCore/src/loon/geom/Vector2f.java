@@ -112,7 +112,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f reflect(Vector2f ri, Vector2f normal) {
-		final Vector2f normalized = nor(normal);
+		final Vector2f normalized = normal.nor();
 		final float product = dot(ri, normalized);
 		final Vector2f n = mul(normalized, product);
 		return sub(ri, n.mulSelf(2));
@@ -138,7 +138,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public final static Vector2f bounce(Vector2f ri, Vector2f normal, float restitution, float friction) {
 		friction = 1f - friction;
-		final Vector2f normalized = nor(normal);
+		final Vector2f normalized = normal.nor();
 		final Vector2f axis = normalized.right();
 		final float rest = dot(ri, normalized);
 		final float fric = dot(ri, axis);
@@ -171,19 +171,19 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return new Vector2f(xy.getX(), xy.getY());
 	}
 
-	public final static Vector2f rotationRight(Vector2f v) {
-		return new Vector2f(v.y, -v.x);
+	public final static Vector2f rotationRight(XY v) {
+		return new Vector2f(v.getY(), -v.getX());
 	}
 
-	public final static Vector2f rotationLeft(Vector2f v) {
-		return new Vector2f(-v.y, v.x);
+	public final static Vector2f rotationLeft(XY v) {
+		return new Vector2f(-v.getY(), v.getX());
 	}
 
-	public static Vector2f rotate90CCW(Vector2f v) {
+	public static Vector2f rotate90CCW(XY v) {
 		return rotationLeft(v);
 	}
 
-	public static Vector2f rotate90CW(Vector2f v) {
+	public static Vector2f rotate90CW(XY v) {
 		return rotationRight(v);
 	}
 
@@ -195,51 +195,73 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return fromAngle(MathUtils.toRadians(degAngle));
 	}
 
-	public final static Vector2f cpy(Vector2f pos) {
-		Vector2f newSVector2 = new Vector2f();
-
-		newSVector2.x = pos.x;
-		newSVector2.y = pos.y;
-
-		return newSVector2;
+	public final static Vector2f cpy(XY pos) {
+		return at(pos.getX(), pos.getY());
 	}
 
-	public final static float len(Vector2f pos) {
-		return MathUtils.sqrt(pos.x * pos.x + pos.y * pos.y);
-	}
-
-	public final static float len2(Vector2f pos) {
-		return pos.x * pos.x + pos.y * pos.y;
-	}
-
-	public final static Vector2f set(Vector2f pos, Vector2f vectorB) {
-		pos.x = vectorB.x;
-		pos.y = vectorB.y;
-		return pos;
-	}
-
-	public final static Vector2f set(Vector2f pos, float x, float y) {
-		pos.x = x;
-		pos.y = y;
-		return pos;
-	}
-
-	public final static Vector2f nor(Vector2f pos) {
-		float len = len(pos);
+	public final static Vector2f nor(float x, float y) {
+		Vector2f v = new Vector2f(x, y);
+		float len = len(v);
 		if (len != 0) {
-			pos.x /= len;
-			pos.y /= len;
+			v.x /= len;
+			v.y /= len;
 		}
-		return pos;
+		return v;
 	}
 
-	public final static Vector2f add(Vector2f pos, Vector2f vectorB) {
-		return add(pos, vectorB, new Vector2f());
+	public final static Vector2f nor(float x, float y, Vector2f o) {
+		Vector2f v = new Vector2f(x, y);
+		float len = len(v);
+		if (len != 0) {
+			o.x /= len;
+			o.y /= len;
+		}
+		return o;
 	}
 
-	public final static Vector2f add(Vector2f pos, Vector2f vectorB, Vector2f out) {
-		out.x = pos.x + vectorB.x;
-		out.y = pos.y + vectorB.y;
+	public final static Vector2f nor(XY pos) {
+		return nor(pos.getX(), pos.getY(), pos == null ? new Vector2f() : new Vector2f(pos.getX(), pos.getY()));
+	}
+
+	public final static float len(XY pos) {
+		return len(pos.getX(), pos.getY());
+	}
+
+	public final static float len2(XY pos) {
+		return len2(pos.getX(), pos.getY());
+	}
+
+	public final static float len(float x, float y) {
+		return MathUtils.sqrt(x * x + y * y);
+	}
+
+	public final static float len2(float x, float y) {
+		return x * x + y * y;
+	}
+
+	public final static Vector2f set(Vector2f o, Vector2f d) {
+		if (d == null) {
+			return o;
+		}
+		return set(o, d.getX(), d.getY());
+	}
+
+	public final static Vector2f set(Vector2f o, float x, float y) {
+		if (o == null) {
+			return o;
+		}
+		o.x = x;
+		o.y = y;
+		return o;
+	}
+
+	public final static Vector2f add(Vector2f pos, Vector2f dst) {
+		return add(pos, dst, new Vector2f());
+	}
+
+	public final static Vector2f add(Vector2f pos, Vector2f dst, Vector2f out) {
+		out.x = pos.x + dst.x;
+		out.y = pos.y + dst.y;
 		return out;
 	}
 
@@ -403,9 +425,9 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return vector;
 	}
 
-	public final static float dst(Vector2f pos, Vector2f vectorB) {
-		final float x_d = vectorB.x - pos.x;
-		final float y_d = vectorB.y - pos.y;
+	public final static float dst(Vector2f pos, Vector2f dst) {
+		final float x_d = dst.x - pos.x;
+		final float y_d = dst.y - pos.y;
 		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
 	}
 
@@ -415,9 +437,9 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.sqrt(x_d * x_d + y_d * y_d);
 	}
 
-	public final static float dst2(Vector2f pos, Vector2f vectorB) {
-		final float x_d = vectorB.x - pos.x;
-		final float y_d = vectorB.y - pos.y;
+	public final static float dst2(Vector2f pos, Vector2f dst) {
+		final float x_d = dst.x - pos.x;
+		final float y_d = dst.y - pos.y;
 		return x_d * x_d + y_d * y_d;
 	}
 
@@ -441,8 +463,8 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return sub(a, b, new Vector2f());
 	}
 
-	public final static float crs(Vector2f pos, Vector2f vectorB) {
-		return pos.x * vectorB.y - pos.y * vectorB.x;
+	public final static float crs(Vector2f pos, Vector2f dst) {
+		return pos.x * dst.y - pos.y * dst.x;
 	}
 
 	public final static float crs(Vector2f pos, float x, float y) {
@@ -576,10 +598,6 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public Vector2f nor(float n) {
 		return new Vector2f(this.x == 0 ? 0 : this.x / n, this.y == 0 ? 0 : this.y / n);
-	}
-
-	public Vector2f norNew(Vector2f v) {
-		return nor(v.cpy());
 	}
 
 	public Vector2f norLeft() {
@@ -887,7 +905,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f componentVector(Vector2f direction) {
-		Vector2f src = norNew(direction);
+		Vector2f src = direction.nor();
 		return scale(component(src, direction));
 	}
 
@@ -1623,6 +1641,24 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public static String pointToString(float x, float y) {
 		return MathUtils.toString(x) + "," + MathUtils.toString(y);
+	}
+
+	public final Vector2f approach(Vector2f target, float alpha) {
+		return cpy().approachSelf(target, alpha);
+	}
+
+	public final Vector2f approachSelf(Vector2f target, float alpha) {
+		float dx = x - target.x, dy = y - target.y;
+		float alpha2 = alpha * alpha;
+		float len2 = len2(dx, dy);
+		if (len2 > alpha2) {
+			float scl = MathUtils.sqrt(alpha2 / len2);
+			dx *= scl;
+			dy *= scl;
+			return subtractSelf(dx, dy);
+		} else {
+			return set(target);
+		}
 	}
 
 	public final Vector2f inverse() {

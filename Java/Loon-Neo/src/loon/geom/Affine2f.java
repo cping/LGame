@@ -592,6 +592,61 @@ public class Affine2f implements LTrans, XY {
 		return a2f.m00 == m00 && a2f.m01 == m01 && a2f.tx == tx && a2f.ty == ty && a2f.m10 == m10 && a2f.m11 == m11;
 	}
 
+	public float[] setQuad(float x, float y, float xw, float yh, boolean roundPixels, float[] quad) {
+
+		float a = m00;
+		float b = m01;
+		float c = m10;
+		float d = m11;
+		float e = tx;
+		float f = ty;
+		float x0 = x * a + y * c + e;
+		float y0 = x * b + y * d + f;
+		float x1 = x * a + yh * c + e;
+		float y1 = x * b + yh * d + f;
+		float x2 = xw * a + yh * c + e;
+		float y2 = xw * b + yh * d + f;
+		float x3 = xw * a + y * c + e;
+		float y3 = xw * b + y * d + f;
+
+		if (roundPixels) {
+
+			float rx0 = MathUtils.floor(x0 + 0.5f);
+			float ry0 = MathUtils.floor(y0 + 0.5f);
+
+			float dx = rx0 - x0;
+			float dy = ry0 - y0;
+
+			quad[0] = rx0;
+			quad[1] = ry0;
+
+			quad[2] = x1 + dx;
+			quad[3] = y1 + dy;
+
+			quad[4] = x2 + dx;
+			quad[5] = y2 + dy;
+
+			quad[6] = x3 + dx;
+			quad[7] = y3 + dy;
+
+		} else {
+
+			quad[0] = x0;
+			quad[1] = y0;
+
+			quad[2] = x1;
+			quad[3] = y1;
+
+			quad[4] = x2;
+			quad[5] = y2;
+
+			quad[6] = x3;
+			quad[7] = y3;
+		}
+
+		return quad;
+	}
+
 	/**
 	 * 设定当前矩阵参数为3x3(9元素)矩阵数值
 	 * 
@@ -878,6 +933,10 @@ public class Affine2f implements LTrans, XY {
 		return merge(this, dst, result);
 	}
 
+	public Affine2f multiply(Affine2f dst, Affine2f result) {
+		return multiply(this, dst, result);
+	}
+
 	/**
 	 * 获得矩阵转换后的X坐标
 	 * 
@@ -898,6 +957,22 @@ public class Affine2f implements LTrans, XY {
 	 */
 	public float getY(float x, float y) {
 		return x * this.m10 + y * this.m11 + this.ty;
+	}
+
+	public float getXRound(float x, float y, boolean round) {
+		float v = this.getX(x, y);
+		if (round) {
+			v = MathUtils.floor(v + 0.5f);
+		}
+		return v;
+	}
+
+	public float getYRound(float x, float y, boolean round) {
+		float v = this.getY(x, y);
+		if (round) {
+			v = MathUtils.floor(v + 0.5f);
+		}
+		return v;
 	}
 
 	public RectBox getRect(float w, float h) {

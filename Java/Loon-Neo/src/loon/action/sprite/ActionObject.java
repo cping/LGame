@@ -36,7 +36,13 @@ import loon.utils.StrBuilder;
  */
 public abstract class ActionObject extends Entity implements Config {
 
+	public static enum ObjectState {
+		StaticObject, DynamicObject
+	}
+
 	private Side _currentSide;
+
+	private ObjectState _currentObjectState;
 
 	protected boolean _groundedLeftRight;
 
@@ -69,6 +75,7 @@ public abstract class ActionObject extends Entity implements Config {
 		if (animation != null) {
 			this.setTexture(animation.getSpriteImage());
 		}
+		this._currentObjectState = ObjectState.DynamicObject;
 		this._currentSide = new Side();
 		this.tiles = map;
 		this.animation = animation;
@@ -357,6 +364,18 @@ public abstract class ActionObject extends Entity implements Config {
 		return animation.getSpriteImage();
 	}
 
+	public ObjectState getObjectState() {
+		return _currentObjectState;
+	}
+
+	public ActionObject setObjectState(ObjectState c) {
+		if (c == null) {
+			return this;
+		}
+		this._currentObjectState = c;
+		return this;
+	}
+
 	@Override
 	public void toString(final StrBuilder s) {
 		s.append(LSystem.LS);
@@ -385,6 +404,9 @@ public abstract class ActionObject extends Entity implements Config {
 		}
 		if (animation != null) {
 			hashCode = LSystem.unite(hashCode, animation.hashCode());
+		}
+		if (_currentObjectState != null) {
+			hashCode = LSystem.unite(hashCode, _currentObjectState == ObjectState.DynamicObject ? 0 : 1);
 		}
 		if (tiles != null) {
 			hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));

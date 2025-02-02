@@ -48,7 +48,7 @@ public class LightningBranch implements ILightning {
 
 	public LightningBranch(Vector2f s, Vector2f e, LColor c) {
 		this.end = e;
-		this.direction = Vector2f.nor(e.sub(s));
+		this.direction = e.sub(s).norSelf();
 		this.create(s, e, c);
 	}
 

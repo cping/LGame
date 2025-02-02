@@ -49,7 +49,7 @@ public class LightningBolt implements ILightning {
 	}
 
 	public LightningBolt(Vector2f source, Vector2f dest, LColor color) {
-		this.segments = CreateBolt(source, dest, 2);
+		this.segments = createBolt(source, dest, 2);
 		this.tint = color;
 		this.alpha = 1f;
 		this.alphaMultiplier = 0.6f;
@@ -95,10 +95,10 @@ public class LightningBolt implements ILightning {
 		return alpha <= 0;
 	}
 
-	protected static TArray<LightningLine> CreateBolt(Vector2f source, Vector2f dest, float thickness) {
+	protected static TArray<LightningLine> createBolt(Vector2f source, Vector2f dest, float thickness) {
 		TArray<LightningLine> results = new TArray<LightningLine>();
 		Vector2f tangent = dest.sub(source);
-		Vector2f normal = Vector2f.nor(new Vector2f(tangent.y, -tangent.x));
+		Vector2f normal = new Vector2f(tangent.y, -tangent.x).norSelf();
 		float length = tangent.length();
 
 		FloatArray positions = new FloatArray();
