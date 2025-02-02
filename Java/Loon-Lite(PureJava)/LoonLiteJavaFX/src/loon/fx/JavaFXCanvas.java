@@ -131,6 +131,7 @@ public class JavaFXCanvas extends Canvas {
 		return this;
 	}
 
+	@Override
 	public Canvas updateDirty() {
 		isDirty = true;
 		return this;

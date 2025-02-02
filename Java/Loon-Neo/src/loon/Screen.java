@@ -364,6 +364,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private float _touchPrevDifX, _touchPrevDifY;
 
+	private float _startTime;
+
+	private float _endTime;
+
 	public long elapsedTime;
 
 	private final IntMap<Boolean> _keyTypes = new IntMap<Boolean>();
@@ -1736,6 +1740,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._conns.reset();
 		this._delayTimer.setDelay(0);
 		this._pauseTimer.setDelay(LSystem.SECOND);
+		this._startTime = getCurrentTimer();
+		this._endTime = 0f;
 		if (_processHandler != null) {
 			setting(getBundle());
 		}
@@ -6966,6 +6972,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return false;
 	}
 
+	public float getStartTime() {
+		return _startTime;
+	}
+
+	public float getEndTime() {
+		return _endTime;
+	}
+
+	public float getDurationTime() {
+		if (_endTime <= 0) {
+			_endTime = getCurrentTimer();
+		}
+		return _endTime - _startTime;
+	}
+
 	@Override
 	public float getCurrentTimer() {
 		return TimeUtils.currentTime();
@@ -7228,6 +7249,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_isExistViewport = false;
 				_isAllowThroughUItoScreenTouch = false;
 				_desktopPenetrate = false;
+				_endTime = getCurrentTimer();
 				_systemManager.close();
 				if (_currentSprites != null) {
 					_curSpriteRun = false;

@@ -63,9 +63,17 @@ public class JavaFXImage extends ImageImpl {
 
 	@Override
 	public void draw(Object ctx, float x, float y, float w, float h) {
-		JavaFXCanvas gfx = (JavaFXCanvas) ctx;
-		gfx.context.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
-				MathUtils.ifloor(h));
+		if (ctx instanceof loon.canvas.Canvas) {
+			JavaFXCanvas gfx = (JavaFXCanvas) ctx;
+			gfx.context.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
+					MathUtils.ifloor(h));
+		} else if (ctx instanceof loon.canvas.Image) {
+			JavaFXImage image = (JavaFXImage) ctx;
+			JavaFXCanvas gfx = (JavaFXCanvas) image.canvas;
+			gfx.snapshot();
+			gfx.context.drawImage(image.buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w),
+					MathUtils.ifloor(h));
+		}
 		isDirty = true;
 	}
 
