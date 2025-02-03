@@ -28,7 +28,7 @@ import loon.utils.Scale.Mode;
 public class ScalingViewport extends Viewport {
 
 	private final Scale scaling;
-	private final float worldWidth, worldHeight;
+
 	private final Vector2f size = new Vector2f();
 	private final Vector2f scale = new Vector2f();
 
@@ -44,12 +44,13 @@ public class ScalingViewport extends Viewport {
 		this.mode = mode;
 		this.scaling = scaling;
 		this.powerOfTwo = powerOfTwo;
-		this.worldWidth = worldWidth;
-		this.worldHeight = worldHeight;
+		this.setBounds(worldWidth, worldHeight, 1f, 1f);
 	}
 
 	@Override
-	public void onResize(int width, int height) {
+	public void onResize(float width, float height) {
+		final float worldWidth = getWidth();
+		final float worldHeight = getHeight();
 		scaling.scaledSize(mode, size, scale, powerOfTwo, worldWidth, worldHeight, width, height);
 
 		float scaleX = 1f;

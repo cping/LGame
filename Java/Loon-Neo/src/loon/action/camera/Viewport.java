@@ -37,13 +37,15 @@ import loon.utils.timer.LTimerContext;
 public abstract class Viewport implements LRelease {
 
 	private RectBox _bounds = new RectBox();
+
 	private RectBox _limitRect = null;
 
 	private boolean _dirty;
 
 	private boolean _useBounds;
 
-	private Affine2f view = new Affine2f();
+	private final Affine2f view = new Affine2f();
+
 	private float x, y, width, height;
 	private float scaleX = 1f, invScaleX = 1f;
 	private float scaleY = 1f, invScaleY = 1f;
@@ -57,20 +59,23 @@ public abstract class Viewport implements LRelease {
 
 	private ActionBind follow;
 
-	private Vector2f followOffset = new Vector2f();
+	private final Vector2f followOffset = new Vector2f();
 
-	private Vector2f lerp = new Vector2f();
+	private final Vector2f lerp = new Vector2f();
 
-	private Vector2f centerPoint = new Vector2f();
+	private final Vector2f centerPoint = new Vector2f();
 
-	public abstract void onResize(int windowWidth, int windowHeight);
+	public abstract void onResize(float windowWidth, float windowHeight);
 
 	public Viewport apply(GLEx g) {
 
-		if (previousWindowWidth != g.getWidth() || previousWindowHeight != g.getHeight()) {
-			onResize(g.getWidth(), g.getHeight());
-			previousWindowWidth = g.getWidth();
-			previousWindowHeight = g.getHeight();
+		final float updateWidth = g.getWidth();
+		final float updateHeight = g.getHeight();
+
+		if (previousWindowWidth != updateWidth || previousWindowHeight != updateHeight) {
+			onResize(updateWidth, updateHeight);
+			previousWindowWidth = updateWidth;
+			previousWindowHeight = updateHeight;
 		}
 
 		previousScaleX = g.getScaleX();
@@ -161,6 +166,15 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport unapply(GLEx g) {
 		g.restoreTx();
+		return this;
+	}
+
+	public Affine2f getView() {
+		return this.view;
+	}
+
+	public Viewport updateDirty() {
+		this._dirty = !this._dirty;
 		return this;
 	}
 
@@ -427,6 +441,10 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport toWorldCoordinates(Vector2f screenCoordinates) {
 		return toWorldCoordinates(screenCoordinates, screenCoordinates.x, screenCoordinates.y);
+	}
+
+	protected Viewport setBounds(float width, float height, float scaleX, float scaleY) {
+		return setBounds(this.x, this.y, width, height, scaleX, scaleY);
 	}
 
 	protected Viewport setBounds(float x, float y, float width, float height, float scaleX, float scaleY) {
