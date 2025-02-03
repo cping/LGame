@@ -816,55 +816,44 @@ public class LProcess implements LRelease {
 
 	protected Vector2f convertYX(Viewport view, final float fx, final float fy, float x, float y, float w, float h,
 			Vector2f o) {
-		final float newX = ((x - fx) / view.getScaleX());
-		final float newY = ((y - fy) / view.getScaleY());
+		final float newX = ((x - fx) / (LSystem.getScaleWidth()));
+		final float newY = ((y - fy) / (LSystem.getScaleHeight()));
 		float oldW = w;
 		float oldH = h;
-		float newW = view.getWidth() * view.getScaleX();
-		float newH = view.getHeight() * view.getScaleY();
-		float offX = fx + (oldW - newW) / 2f;
-		float offY = fy + (oldH - newH) / 2f;
-		float posX = (newX - offX);
-		float posY = (newY - offY);
+		float newW = view.getDisplayWidth();
+		float newH = view.getDisplayHeight();
+		float offX = fx + (oldW - newW);
+		float offY = fy + (oldH - newH);
 		final int r = MathUtils.ifloor(view.getAngle());
 		switch (r) {
-		case -90:
-			offX = fx + (oldH - newW) / 2f;
-			offY = fy + (oldW - newH) / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(-90);
-			o.set(-(o.x - view.getWidth()), MathUtils.abs(o.y));
-			break;
 		case 0:
 		case 360:
-			o.set(posX / view.getScaleX(), posY / view.getScaleY());
+			view.getView().transformPoint(o, o);
 			break;
+		case -90:
 		case 90:
-			offX = fx + (oldH - newW) / 2f;
-			offY = fy + (oldW - newH) / 2f;
-			posX = (newX - offY);
-			posY = (newY - offX);
-			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(90);
-			o.set(-o.x, MathUtils.abs(o.y - view.getHeight()));
+			view.getView().transformPoint(o, o);
+			o.set(MathUtils.abs(view.getWidth() - o.x), MathUtils.abs(view.getHeight() - o.y));
 			break;
 		case -180:
 		case 180:
-			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(view.getAngle()).addSelf(
-					view.getWidth() - fx / view.getScaleX() - fx / LSystem.getScaleWidth(),
-					view.getHeight() - fy / view.getScaleY() - fy / LSystem.getScaleHeight());
+			view.getView().transformPoint(o, o);
 			break;
 		default: // 原则上不处理非水平角度的触点
 			float rad = MathUtils.toRadians(view.getAngle());
 			float sin = MathUtils.sin(rad);
 			float cos = MathUtils.cos(rad);
-			float dx = offX / view.getScaleX();
-			float dy = offY / view.getScaleY();
+			float dx = offX * view.getScaleX();
+			float dy = offY * view.getScaleY();
 			float dx2 = cos * dx - sin * dy;
 			float dy2 = sin * dx + cos * dy;
 			o.x = view.getWidth() - (newX - dx2);
 			o.y = view.getHeight() - (newY - dy2);
 			break;
+		}
+		if (view.isScaled()) {
+			o.x = MathUtils.abs(offX + o.x);
+			o.y = MathUtils.abs(offY + o.y);
 		}
 		return o;
 	}

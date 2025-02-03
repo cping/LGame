@@ -42,7 +42,8 @@ public class CameraViewport extends Viewport {
 
 	@Override
 	public void onResize(float width, float height) {
-		setBounds(this.getWidth(), this.getHeight(), this.getWidth() / width, this.getHeight() / height);
+		setBounds(this.getWidth(), this.getHeight(), this.getScaleX() * (this.getWidth() / width),
+				this.getScaleY() * (this.getHeight() / height));
 		if (_resized != null) {
 			_resized.onResize(this);
 		}

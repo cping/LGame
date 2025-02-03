@@ -73,9 +73,11 @@ public abstract class Viewport implements LRelease {
 		final float updateHeight = g.getHeight();
 
 		if (previousWindowWidth != updateWidth || previousWindowHeight != updateHeight) {
+
 			onResize(updateWidth, updateHeight);
 			previousWindowWidth = updateWidth;
 			previousWindowHeight = updateHeight;
+
 		}
 
 		previousScaleX = g.getScaleX();
@@ -443,6 +445,10 @@ public abstract class Viewport implements LRelease {
 		return toWorldCoordinates(screenCoordinates, screenCoordinates.x, screenCoordinates.y);
 	}
 
+	protected Viewport setBounds(float width, float height) {
+		return setBounds(width, height, this.scaleX, this.scaleY);
+	}
+
 	protected Viewport setBounds(float width, float height, float scaleX, float scaleY) {
 		return setBounds(this.x, this.y, width, height, scaleX, scaleY);
 	}
@@ -481,11 +487,11 @@ public abstract class Viewport implements LRelease {
 	}
 
 	public float getDisplayWidth() {
-		return this.width / this.scaleX;
+		return this.width * this.scaleX;
 	}
 
 	public float getDisplayHeight() {
-		return this.height / this.scaleY;
+		return this.height * this.scaleY;
 	}
 
 	public float getClampX(float x) {
@@ -557,6 +563,10 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport setSize(float x, float y, float width, float height, float sx, float sy) {
 		return setBounds(x, y, width, height, sx, sy);
+	}
+
+	public boolean isScaled() {
+		return scaleX != 1f && scaleY != 1f;
 	}
 
 	public float getScaleX() {
@@ -706,6 +716,16 @@ public abstract class Viewport implements LRelease {
 	public Viewport setHeight(int h) {
 		this.height = h;
 		this._dirty = true;
+		return this;
+	}
+
+	public Viewport setScale(float s) {
+		return setScale(s, s);
+	}
+
+	public Viewport setScale(float x, float y) {
+		this.setScaleX(x);
+		this.setScaleY(y);
 		return this;
 	}
 
