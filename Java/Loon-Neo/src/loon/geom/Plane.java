@@ -125,10 +125,6 @@ public class Plane implements XY {
 		return dest;
 	}
 
-	public enum Side {
-		FRONT, BACK, ON_PLANE
-	}
-
 	private final Vector3f _normal = new Vector3f();
 
 	private float _distance;
@@ -241,20 +237,20 @@ public class Plane implements XY {
 		o._distance = this._distance * factor;
 	}
 
-	public Side testPoint(Vector3f point) {
+	public PlaneIntersection testPoint(Vector3f point) {
 		return testPoint(point.x, point.y, point.z);
 	}
 
-	public Side testPoint(float x, float y, float z) {
+	public PlaneIntersection testPoint(float x, float y, float z) {
 		float test = _normal.dot(x, y, z) + _distance;
 
 		if (test == 0)
-			return Side.ON_PLANE;
+			return PlaneIntersection.Intersecting;
 
 		if (test > 0)
-			return Side.FRONT;
+			return PlaneIntersection.Front;
 
-		return Side.BACK;
+		return PlaneIntersection.Back;
 	}
 
 	public Plane set(Vector3f normal, float d) {

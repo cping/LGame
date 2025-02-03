@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.utils.MathUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.TempVars;
 
 public class Ray {
@@ -193,4 +194,39 @@ public class Ray {
 		Vector3f.sub(tempVb, point, tempVa);
 		return tempVa.lengthSquared();
 	}
+
+	public Vector3f getEndPoint(float distance, Vector3f o) {
+		return o.set(this._direction).scaleSelf(distance).addSelf(this._origin);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		if (o == this) {
+			return true;
+		}
+		Ray r = (Ray) o;
+		return this._direction.equals(r._direction) && this._origin.equals(r._origin);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 43;
+		int result = 1;
+		result = prime * result + this._direction.hashCode();
+		result = prime * result + this._origin.hashCode();
+		return result;
+	}
+
+	public Ray cpy() {
+		return new Ray(this._origin, this._direction);
+	}
+
+	@Override
+	public String toString() {
+		return new StringKeyValue("Ray").kv("origin", _origin).comma().kv("direction", _direction).toString();
+	}
+
 }

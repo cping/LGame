@@ -22,6 +22,8 @@ package loon.geom;
 
 import loon.LSysException;
 import loon.utils.MathUtils;
+import loon.utils.NumberUtils;
+import loon.utils.StringKeyValue;
 import loon.utils.TempVars;
 
 public class Sphere {
@@ -112,5 +114,47 @@ public class Sphere {
 				MathUtils.max(min.z, MathUtils.min(_center.z, max.z)));
 		float distance = _center.distanceSquared(closestPoint);
 		return distance <= this._radius * this._radius;
+	}
+
+	public boolean overlaps(Sphere sphere) {
+		return _center.dst2(sphere._center) < (_radius + sphere._radius) * (_radius + sphere._radius);
+	}
+
+	public float volume() {
+		return MathUtils.PI_4D3 * this._radius * this._radius * this._radius;
+	}
+
+	public float surfaceArea() {
+		return MathUtils.PI_4 * this._radius * this._radius;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || o.getClass() != this.getClass()) {
+			return false;
+		}
+		if (this == o) {
+			return true;
+		}
+		Sphere s = (Sphere) o;
+		return this._radius == s._radius && this._center.equals(s._center);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 41;
+		int result = 1;
+		result = prime * result + this._center.hashCode();
+		result = prime * result + NumberUtils.floatToRawIntBits(this._radius);
+		return result;
+	}
+
+	public Sphere cpy() {
+		return new Sphere(this._center, this._radius);
+	}
+
+	@Override
+	public String toString() {
+		return new StringKeyValue("Sphere").kv("center", _center).comma().kv("radius", _radius).toString();
 	}
 }

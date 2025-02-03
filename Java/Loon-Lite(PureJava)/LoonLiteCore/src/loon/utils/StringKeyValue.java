@@ -305,15 +305,35 @@ public class StringKeyValue {
 	}
 
 	public String toData() {
-		return toData(LSystem.EMPTY, LSystem.EMPTY);
+		return toData(null, null);
 	}
 
 	public String toData(String left, String right) {
+		if (left == null && right == null) {
+			return getKey() + getValue();
+		}
 		return getKey() + left + getValue() + right;
 	}
 
+	public String toJson() {
+		return "{\"" + getKey() + "\":[{" + getValue() + "}]}";
+	}
+
 	public String toHtml() {
-		return "<html>" + toData() + "</html>";
+		return "<html>\n" + toData() + "\n</html>";
+	}
+
+	public String toXml() {
+		String key = getKey();
+		return "<" + key + ">\n" + getValue() + "\n</" + key + ">";
+	}
+
+	public String toToml() {
+		return StringUtils.replace("[" + getKey() + "]\n" + getValue(), ",", "\n");
+	}
+
+	public String toFormatString(Object[] args) {
+		return StringUtils.format(toData(), args);
 	}
 
 	@Override

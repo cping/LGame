@@ -73,6 +73,10 @@ public final class MathUtils {
 
 	public static final float PHI = 0.618f;
 
+	public static final float PI_4 = 12.566371f;
+	
+	public static final float PI_4D3 = 4.1887903f;
+
 	public static final float TAU = 6.28318548f;
 
 	private static final float CEIL = 0.9999999f;

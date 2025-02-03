@@ -48,7 +48,7 @@ public class Frustum {
 
 	private Plane _top;
 
-	public Frustum(Matrix4 m) {
+	public Frustum() {
 		this._near = new Plane();
 		this._far = new Plane();
 		this._left = new Plane();
@@ -61,9 +61,6 @@ public class Frustum {
 		this._planes[3] = this._right;
 		this._planes[4] = this._bottom;
 		this._planes[5] = this._top;
-		if (m != null) {
-			setMatrix(m);
-		}
 	}
 
 	public Plane getPlane(int idx) {
@@ -105,56 +102,6 @@ public class Frustum {
 		default:
 			return null;
 		}
-	}
-
-	public void setMatrix(Matrix4 matrix) {
-		final float[] me = matrix.val;
-		final float m11 = me[0];
-		final float m12 = me[1];
-		final float m13 = me[2];
-		final float m14 = me[3];
-		final float m21 = me[4];
-		final float m22 = me[5];
-		final float m23 = me[6];
-		final float m24 = me[7];
-		final float m31 = me[8];
-		final float m32 = me[9];
-		final float m33 = me[10];
-		final float m34 = me[11];
-		final float m41 = me[12];
-		final float m42 = me[13];
-		final float m43 = me[14];
-		final float m44 = me[15];
-
-		final Vector3f nearNormal = this._near.getNormal();
-		nearNormal.set(m14 + m13, m24 + m23, m34 + m33);
-		this._near.setDistance(m44 + m43);
-		this._near.normalize();
-
-		final Vector3f farNormal = this._far.getNormal();
-		farNormal.set(m14 - m13, m24 - m23, m34 - m33);
-		this._far.setDistance(m44 - m43);
-		this._far.normalize();
-
-		final Vector3f leftNormal = this._left.getNormal();
-		leftNormal.set(m14 + m11, m24 + m21, m34 + m31);
-		this._left.setDistance(m44 + m41);
-		this._left.normalize();
-
-		final Vector3f rightNormal = this._right.getNormal();
-		rightNormal.set(m14 - m11, m24 - m21, m34 - m31);
-		this._right.setDistance(m44 - m41);
-		this._right.normalize();
-
-		final Vector3f bottomNormal = this._bottom.getNormal();
-		bottomNormal.set(m14 + m12, m24 + m22, m34 + m32);
-		this._bottom.setDistance(m44 + m42);
-		this._bottom.normalize();
-
-		final Vector3f topNormal = this._top.getNormal();
-		topNormal.set(m14 - m12, m24 - m22, m34 - m32);
-		this._top.setDistance(m44 - m42);
-		this._top.normalize();
 	}
 
 	public Frustum set(Frustum src) {
