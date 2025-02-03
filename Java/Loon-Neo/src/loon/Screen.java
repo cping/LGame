@@ -90,6 +90,7 @@ import loon.events.Updateable;
 import loon.events.LTouchArea.Event;
 import loon.font.Font.Style;
 import loon.font.IFont;
+import loon.geom.Affine2f;
 import loon.geom.BoxSize;
 import loon.geom.Circle;
 import loon.geom.Line;
@@ -5478,6 +5479,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public boolean isPosOffsetUpdate() {
 		return isTranslate() && (_scaleX == 1f && _scaleY == 1f && _rotation == 0 && !_flipX && !_flipY);
+	}
+
+	public Affine2f getViewportAffine() {
+		if (_baseViewport == null || !_isExistViewport) {
+			return null;
+		}
+		return _baseViewport.getView();
 	}
 
 	public Screen setAlpha(float a) {

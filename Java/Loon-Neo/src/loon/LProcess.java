@@ -22,6 +22,7 @@ package loon;
 
 import java.util.Iterator;
 
+import loon.action.camera.Viewport;
 import loon.canvas.LColor;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -813,6 +814,61 @@ public class LProcess implements LRelease {
 		return 0;
 	}
 
+	protected Vector2f convertYX(Viewport view, final float fx, final float fy, float x, float y, float w, float h,
+			Vector2f o) {
+		final float newX = ((x - fx) / view.getScaleX());
+		final float newY = ((y - fy) / view.getScaleY());
+		float oldW = w;
+		float oldH = h;
+		float newW = view.getWidth() * view.getScaleX();
+		float newH = view.getHeight() * view.getScaleY();
+		float offX = fx + (oldW - newW) / 2f;
+		float offY = fy + (oldH - newH) / 2f;
+		float posX = (newX - offX);
+		float posY = (newY - offY);
+		final int r = MathUtils.ifloor(view.getAngle());
+		switch (r) {
+		case -90:
+			offX = fx + (oldH - newW) / 2f;
+			offY = fy + (oldW - newH) / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(-90);
+			o.set(-(o.x - view.getWidth()), MathUtils.abs(o.y));
+			break;
+		case 0:
+		case 360:
+			o.set(posX / view.getScaleX(), posY / view.getScaleY());
+			break;
+		case 90:
+			offX = fx + (oldH - newW) / 2f;
+			offY = fy + (oldW - newH) / 2f;
+			posX = (newX - offY);
+			posY = (newY - offX);
+			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(90);
+			o.set(-o.x, MathUtils.abs(o.y - view.getHeight()));
+			break;
+		case -180:
+		case 180:
+			o.set(posX / view.getScaleX(), posY / view.getScaleY()).rotateSelf(view.getAngle()).addSelf(
+					view.getWidth() - fx / view.getScaleX() - fx / LSystem.getScaleWidth(),
+					view.getHeight() - fy / view.getScaleY() - fy / LSystem.getScaleHeight());
+			break;
+		default: // 原则上不处理非水平角度的触点
+			float rad = MathUtils.toRadians(view.getAngle());
+			float sin = MathUtils.sin(rad);
+			float cos = MathUtils.cos(rad);
+			float dx = offX / view.getScaleX();
+			float dy = offY / view.getScaleY();
+			float dx2 = cos * dx - sin * dy;
+			float dy2 = sin * dx + cos * dy;
+			o.x = view.getWidth() - (newX - dx2);
+			o.y = view.getHeight() - (newY - dy2);
+			break;
+		}
+		return o;
+	}
+
 	public Vector2f convertXY(final float fx, final float fy, float x, float y) {
 		final float newX = ((x - fx) / (LSystem.getScaleWidth()));
 		final float newY = ((y - fy) / (LSystem.getScaleHeight()));
@@ -878,7 +934,21 @@ public class LProcess implements LRelease {
 		if (isFlipX() || isFlipY()) {
 			HelperUtils.local2Global(isFlipX(), isFlipY(), fx + getWidth() / 2, fy + getHeight() / 2, _pointLocaltion.x,
 					_pointLocaltion.y, _pointLocaltion);
+			if (_isInstance) {
+				Viewport viewport = _currentScreen.getViewport();
+				if (viewport != null) {
+					convertYX(viewport, getX(), getY(), getWidth(), getHeight(), _pointLocaltion.x, _pointLocaltion.y,
+							_pointLocaltion);
+				}
+			}
 			return _pointLocaltion;
+		}
+		if (_isInstance) {
+			Viewport viewport = _currentScreen.getViewport();
+			if (viewport != null) {
+				convertYX(viewport, getX(), getY(), getWidth(), getHeight(), _pointLocaltion.x, _pointLocaltion.y,
+						_pointLocaltion);
+			}
 		}
 		return _pointLocaltion;
 	}
