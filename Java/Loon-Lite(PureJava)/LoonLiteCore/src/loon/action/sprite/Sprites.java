@@ -2079,6 +2079,54 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return _createShadow;
 	}
 
+	public int getMaxX() {
+		int maxX = 0;
+		final int size = this._size;
+		final ISprite[] childs = this._sprites;
+		for (int i = size - 1; i > -1; i--) {
+			ISprite comp = childs[i];
+			if (comp != null) {
+				int curX = comp.x();
+				if (curX > maxX) {
+					maxX = curX;
+				}
+			}
+		}
+		return maxX;
+	}
+
+	public int getMaxY() {
+		int maxY = 0;
+		final int size = this._size;
+		final ISprite[] childs = this._sprites;
+		for (int i = size - 1; i > -1; i--) {
+			ISprite comp = childs[i];
+			if (comp != null) {
+				int curY = comp.y();
+				if (curY > maxY) {
+					maxY = curY;
+				}
+			}
+		}
+		return maxY;
+	}
+
+	public int getMaxZ() {
+		int maxZ = 0;
+		final int size = this._size;
+		final ISprite[] childs = this._sprites;
+		for (int i = size - 1; i > -1; i--) {
+			ISprite comp = childs[i];
+			if (comp != null) {
+				int curZ = comp.getZ();
+				if (curZ > maxZ) {
+					maxZ = curZ;
+				}
+			}
+		}
+		return maxZ;
+	}
+
 	@Override
 	public int size() {
 		return this._size;

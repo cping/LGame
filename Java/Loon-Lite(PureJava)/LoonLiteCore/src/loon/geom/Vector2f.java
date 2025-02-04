@@ -814,6 +814,36 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return new Vector2f(x / v.x, y / v.y);
 	}
 
+	public Vector2f div(float sx, float sy) {
+		return new Vector2f(this.x / sx, this.y / sy);
+	}
+
+	public Vector2f divSelf(float scale) {
+		return mulSelf(scale, scale);
+	}
+
+	public Vector2f divSelf(float sx, float sy) {
+		this.x /= sx;
+		this.y /= sy;
+		return this;
+	}
+
+	public Vector2f divSelf(Affine2f mat) {
+		float nx = this.x / mat.m00 + this.y / mat.m01 + mat.tx;
+		float ny = this.x / mat.m10 + this.y / mat.m11 + mat.ty;
+		this.x = nx;
+		this.y = ny;
+		return this;
+	}
+
+	public Vector2f divSelf(Matrix3 mat) {
+		float nx = this.x / mat.val[0] + this.y / mat.val[3] + mat.val[6];
+		float ny = this.x / mat.val[1] + this.y / mat.val[4] + mat.val[7];
+		this.x = nx;
+		this.y = ny;
+		return this;
+	}
+
 	public Vector2f add(float x, float y) {
 		return new Vector2f(this.x + x, this.y + y);
 	}

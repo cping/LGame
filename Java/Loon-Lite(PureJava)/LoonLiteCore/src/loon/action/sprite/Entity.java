@@ -464,6 +464,54 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		}
 	}
 
+	public int getMaxX() {
+		int maxX = 0;
+		final int size = this._childrens.size;
+		final TArray<IEntity> childs = this._childrens;
+		for (int i = size - 1; i > -1; i--) {
+			IEntity comp = childs.get(i);
+			if (comp != null) {
+				int curX = comp.x();
+				if (curX > maxX) {
+					maxX = curX;
+				}
+			}
+		}
+		return maxX;
+	}
+
+	public int getMaxY() {
+		int maxY = 0;
+		final int size = this._childrens.size;
+		final TArray<IEntity> childs = this._childrens;
+		for (int i = size - 1; i > -1; i--) {
+			IEntity comp = childs.get(i);
+			if (comp != null) {
+				int curY = comp.y();
+				if (curY > maxY) {
+					maxY = curY;
+				}
+			}
+		}
+		return maxY;
+	}
+
+	public int getMaxZ() {
+		int maxZ = 0;
+		final int size = this._childrens.size;
+		final TArray<IEntity> childs = this._childrens;
+		for (int i = size - 1; i > -1; i--) {
+			IEntity comp = childs.get(i);
+			if (comp != null) {
+				int curZ = comp.getZ();
+				if (curZ > maxZ) {
+					maxZ = curZ;
+				}
+			}
+		}
+		return maxZ;
+	}
+
 	@Override
 	public void setColor(final LColor pColor) {
 		this._baseColor.setColor(pColor);

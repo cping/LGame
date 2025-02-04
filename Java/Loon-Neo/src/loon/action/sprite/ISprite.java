@@ -55,6 +55,8 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 	@Override
 	int y();
 
+	int getZ();
+
 	@Override
 	float getX();
 

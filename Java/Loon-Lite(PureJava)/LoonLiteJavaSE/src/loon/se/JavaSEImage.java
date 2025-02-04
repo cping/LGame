@@ -24,6 +24,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import loon.Graphics;
+import loon.an.JavaANCanvas;
+import loon.an.JavaANImage;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
@@ -60,8 +62,16 @@ public class JavaSEImage extends ImageImpl {
 
 	@Override
 	public void draw(Object ctx, float x, float y, float w, float h) {
-		Graphics2D gfx = (Graphics2D) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h), null);
+		if (ctx instanceof loon.canvas.Image) {
+			JavaSEImage image = (JavaSEImage) ctx;
+			Graphics2D gfx = (Graphics2D) image.buffer.getGraphics();
+			gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h),
+					null);
+		} else {
+			Graphics2D gfx = (Graphics2D) ctx;
+			gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h),
+					null);
+		}
 		isDirty = true;
 	}
 
@@ -72,9 +82,18 @@ public class JavaSEImage extends ImageImpl {
 		sy *= f;
 		sw *= f;
 		sh *= f;
-		Graphics2D gfx = (Graphics2D) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw), MathUtils.ifloor(dh),
-				MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw), MathUtils.ifloor(sh), null);
+		if (ctx instanceof loon.canvas.Image) {
+			JavaSEImage image = (JavaSEImage) ctx;
+			Graphics2D gfx = (Graphics2D) image.buffer.getGraphics();
+			gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw),
+					MathUtils.ifloor(dh), MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw),
+					MathUtils.ifloor(sh), null);
+		} else {
+			Graphics2D gfx = (Graphics2D) ctx;
+			gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw),
+					MathUtils.ifloor(dh), MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw),
+					MathUtils.ifloor(sh), null);
+		}
 		isDirty = true;
 	}
 

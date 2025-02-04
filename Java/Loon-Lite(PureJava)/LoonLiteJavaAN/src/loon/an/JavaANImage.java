@@ -65,10 +65,14 @@ public class JavaANImage extends ImageImpl {
 		sy *= scale.factor;
 		sw *= scale.factor;
 		sh *= scale.factor;
-
-		JavaANCanvas canvas = ((JavaANCanvas) ctx);
-
-		canvas.draw(buffer, dx, dy, dw, dh, sx, sy, sw, sh);
+		if (ctx instanceof loon.canvas.Canvas) {
+			JavaANCanvas canvas = ((JavaANCanvas) ctx);
+			canvas.draw(buffer, dx, dy, dw, dh, sx, sy, sw, sh);
+		} else if (ctx instanceof loon.canvas.Image) {
+			JavaANImage image = (JavaANImage) ctx;
+			JavaANCanvas canvas = (JavaANCanvas) image.canvas;
+			canvas.draw(buffer, dx, dy, dw, dh, sx, sy, sw, sh);
+		}
 	}
 
 	@Override

@@ -70,6 +70,11 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
+	public int getZ() {
+		return _sprite.getZ();
+	}
+
+	@Override
 	public boolean showShadow() {
 		return _sprite.showShadow();
 	}

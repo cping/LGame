@@ -218,8 +218,10 @@ public class JumpObject extends ActionObject {
 	@Override
 	public void onProcess(long elapsedTime) {
 		super.onProcess(elapsedTime);
-		final Vector2f pos = collisionTileMap();
-		setLocation(pos.x, pos.y);
+		if (!isStaticObject()) {
+			final Vector2f pos = collisionTileMap();
+			setLocation(pos.x, pos.y);
+		}
 		if (listener != null && listener instanceof JumpListener) {
 			((JumpListener) listener).update(elapsedTime);
 		}

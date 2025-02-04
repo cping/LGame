@@ -106,6 +106,10 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
+	public boolean isStaticObject() {
+		return _currentObjectState == ObjectState.StaticObject;
+	}
+
 	public ActionObject animationStart() {
 		animation.start();
 		return this;
