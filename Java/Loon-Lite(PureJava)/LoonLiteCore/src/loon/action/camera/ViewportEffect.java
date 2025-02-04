@@ -21,6 +21,7 @@
 package loon.action.camera;
 
 import loon.LRelease;
+import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.opengl.GLEx;
 import loon.utils.timer.EaseTimer;
@@ -30,11 +31,17 @@ public interface ViewportEffect extends LRelease {
 
 	void start();
 
+	void stop();
+
 	void update(LTimerContext timer);
 
 	void draw(GLEx g, Affine2f view);
 
 	void reset();
+
+	boolean isRunning();
+
+	ViewportEffect setUpdate(Updateable u);
 
 	EaseTimer getEaseTimer();
 

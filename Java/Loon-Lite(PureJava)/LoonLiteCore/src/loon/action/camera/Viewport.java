@@ -39,7 +39,7 @@ public abstract class Viewport implements LRelease {
 	private RectBox _bounds = new RectBox();
 
 	private RectBox _viewWorld = new RectBox();
-	
+
 	private RectBox _limitRect = null;
 
 	private boolean _dirty;
@@ -101,30 +101,30 @@ public abstract class Viewport implements LRelease {
 		float curOriginX = width * this.originX;
 		float curOriginY = height * this.originY;
 
-		ActionBind _follow = this._follow;
+		ActionBind follow = this._follow;
 
 		float sx = this.scrollX;
 		float sy = this.scrollY;
 
-		if (_follow != null) {
-			Vector2f _lerp = this._lerp;
+		if (follow != null) {
+			Vector2f lerp = this._lerp;
 
-			float fx = _follow.getX() + this._followOffset.x;
-			float fy = _follow.getY() + this._followOffset.y;
+			float fx = follow.getX() + this._followOffset.x;
+			float fy = follow.getY() + this._followOffset.y;
 			if (this._limitRect != null) {
 				if (fx < _limitRect.x) {
-					sx = getLinear(sx, sx - (_limitRect.x - fx), _lerp.x);
+					sx = getLinear(sx, sx - (_limitRect.x - fx), lerp.x);
 				} else if (fx > _limitRect.getRight()) {
-					sx = getLinear(sx, sx + (fx - _limitRect.getRight()), _lerp.x);
+					sx = getLinear(sx, sx + (fx - _limitRect.getRight()), lerp.x);
 				}
 				if (fy < _limitRect.y) {
-					sy = getLinear(sy, sy - (_limitRect.y - fy), _lerp.y);
+					sy = getLinear(sy, sy - (_limitRect.y - fy), lerp.y);
 				} else if (fy > _limitRect.getBottom()) {
-					sy = getLinear(sy, sy + (fy - _limitRect.getBottom()), _lerp.y);
+					sy = getLinear(sy, sy + (fy - _limitRect.getBottom()), lerp.y);
 				}
 			} else {
-				sx = getLinear(sx, fx - curOriginX, _lerp.x);
-				sy = getLinear(sy, fy - curOriginY, _lerp.y);
+				sx = getLinear(sx, fx - curOriginX, lerp.x);
+				sy = getLinear(sy, fy - curOriginY, lerp.y);
 			}
 
 		}
@@ -169,7 +169,7 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
-	public void updateCustom(GLEx g, Affine2f _view) {
+	public void updateCustom(GLEx g, Affine2f view) {
 
 	}
 
@@ -183,7 +183,7 @@ public abstract class Viewport implements LRelease {
 		g.restoreTx();
 		return this;
 	}
-	
+
 	public RectBox getViewWorld() {
 		return this._viewWorld;
 	}
@@ -202,11 +202,11 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
-	public Viewport _follow(ActionBind target, float lerpX, float lerpY) {
-		return _follow(target, lerpX, lerpY, 0f, 0f);
+	public Viewport follow(ActionBind target, float lerpX, float lerpY) {
+		return follow(target, lerpX, lerpY, 0f, 0f);
 	}
 
-	public Viewport _follow(ActionBind target, float lerpX, float lerpY, float offsetX, float offsetY) {
+	public Viewport follow(ActionBind target, float lerpX, float lerpY, float offsetX, float offsetY) {
 		this._follow = target;
 		lerpX = MathUtils.clamp(lerpX, 0f, 1f);
 		lerpY = MathUtils.clamp(lerpY, 0f, 1f);
@@ -250,7 +250,7 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
-	public void centerOn(RectBox size, ActionBind _follow, float x, float y) {
+	public void centerOn(RectBox size, ActionBind follow, float x, float y) {
 
 	}
 
@@ -595,6 +595,10 @@ public abstract class Viewport implements LRelease {
 		return scaleX != 1f && scaleY != 1f;
 	}
 
+	public Vector2f getScale() {
+		return new Vector2f(scaleX, scaleY);
+	}
+
 	public float getScaleX() {
 		return scaleX;
 	}
@@ -721,25 +725,25 @@ public abstract class Viewport implements LRelease {
 		return this.scaleY * this.height;
 	}
 
-	public Viewport setX(int x) {
+	public Viewport setX(float x) {
 		this.x = x;
 		this._dirty = true;
 		return this;
 	}
 
-	public Viewport setY(int y) {
+	public Viewport setY(float y) {
 		this.y = y;
 		this._dirty = true;
 		return this;
 	}
 
-	public Viewport setWidth(int w) {
+	public Viewport setWidth(float w) {
 		this.width = w;
 		this._dirty = true;
 		return this;
 	}
 
-	public Viewport setHeight(int h) {
+	public Viewport setHeight(float h) {
 		this.height = h;
 		this._dirty = true;
 		return this;
@@ -747,6 +751,10 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport setScale(float s) {
 		return setScale(s, s);
+	}
+
+	public Viewport setScale(Vector2f v) {
+		return setScale(v.x, v.y);
 	}
 
 	public Viewport setScale(float x, float y) {

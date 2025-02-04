@@ -31,7 +31,7 @@ import loon.utils.timer.LTimerContext;
 public class MoveEffect implements ViewportEffect {
 
 	private boolean _running;
-	
+
 	protected Viewport _viewport;
 
 	protected Vector2f _source = new Vector2f();
@@ -49,7 +49,8 @@ public class MoveEffect implements ViewportEffect {
 		this._destination.set(dstX, dstY);
 		this._viewport = view;
 	}
-	
+
+	@Override
 	public boolean isRunning() {
 		return _running;
 	}
@@ -72,10 +73,15 @@ public class MoveEffect implements ViewportEffect {
 	}
 
 	@Override
+	public void stop() {
+		_ease.stop();
+		_running = false;
+	}
+
+	@Override
 	public EaseTimer getEaseTimer() {
 		return _ease;
 	}
-
 
 	@Override
 	public void update(LTimerContext timer) {
@@ -109,6 +115,12 @@ public class MoveEffect implements ViewportEffect {
 		this._onUpdate = null;
 		this._running = false;
 		this._ease.stop();
+	}
+
+	@Override
+	public ViewportEffect setUpdate(Updateable u) {
+		this._onUpdate = u;
+		return this;
 	}
 
 	@Override

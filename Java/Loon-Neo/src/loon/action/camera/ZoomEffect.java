@@ -28,7 +28,7 @@ import loon.utils.Easing;
 import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
-public class MoveEffect implements ViewportEffect {
+public class ZoomEffect implements ViewportEffect {
 
 	private boolean _running;
 
@@ -44,10 +44,11 @@ public class MoveEffect implements ViewportEffect {
 
 	private Updateable _onUpdate;
 
-	public MoveEffect(Easing.EasingMode mode, float dstX, float dstY, float timer, Viewport view) {
+	public ZoomEffect(Easing.EasingMode mode, Vector2f zoom, float timer, Viewport view) {
 		this._ease = EaseTimer.at(timer, mode);
-		this._destination.set(dstX, dstY);
 		this._viewport = view;
+		this._source.set(_viewport.getScale());
+		this._destination.set(zoom);
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class MoveEffect implements ViewportEffect {
 		return _running;
 	}
 
-	public MoveEffect setDestination(float x, float y) {
+	public ZoomEffect setDestination(float x, float y) {
 		_destination.set(x, y);
 		return this;
 	}
@@ -66,8 +67,6 @@ public class MoveEffect implements ViewportEffect {
 
 	@Override
 	public void start() {
-		this._source.set(_viewport.getScrollX(), _viewport.getScrollY());
-		_viewport.getScroll(_destination.getX(), _destination.getY(), this.current);
 		_ease.start();
 		_running = true;
 	}
@@ -89,16 +88,13 @@ public class MoveEffect implements ViewportEffect {
 			return;
 		}
 		if (!_ease.action(timer)) {
-			float v = _ease.getProgress();
-			_viewport.getScroll(this._destination.x, this._destination.y, this.current);
-			float x = this._source.x + ((this.current.x - this._source.x) * v);
-			float y = this._source.y + ((this.current.y - this._source.y) * v);
-			_viewport.setScroll(x, y);
+			Vector2f src = this._source.add(((this._destination.sub(this._source)).mul(this._ease.getProgress())));
+			_viewport.setScale(src);
 			if (this._onUpdate != null) {
 				this._onUpdate.action(this);
 			}
 		} else {
-			_viewport.centerOn(this._destination.x, this._destination.y);
+			_viewport.setScale(this._destination);
 			if (this._onUpdate != null) {
 				this._onUpdate.action(this);
 			}
