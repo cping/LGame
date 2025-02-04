@@ -38,13 +38,15 @@ public abstract class Viewport implements LRelease {
 
 	private RectBox _bounds = new RectBox();
 
+	private RectBox _viewWorld = new RectBox();
+	
 	private RectBox _limitRect = null;
 
 	private boolean _dirty;
 
 	private boolean _useBounds;
 
-	private final Affine2f view = new Affine2f();
+	private final Affine2f _view = new Affine2f();
 
 	private float x, y, width, height;
 	private float scaleX = 1f, invScaleX = 1f;
@@ -57,13 +59,15 @@ public abstract class Viewport implements LRelease {
 	private float previousWindowWidth, previousWindowHeight;
 	private float previousScaleX, previousScaleY, previousTranslateX, previousTranslateY;
 
-	private ActionBind follow;
+	private ActionBind _follow;
 
-	private final Vector2f followOffset = new Vector2f();
+	private final Vector2f _followOffset = new Vector2f();
 
-	private final Vector2f lerp = new Vector2f();
+	private final Vector2f _lerp = new Vector2f();
 
-	private final Vector2f centerPoint = new Vector2f();
+	private final Vector2f _centerPoint = new Vector2f();
+
+	private ViewportEffect _effect;
 
 	public abstract void onResize(float windowWidth, float windowHeight);
 
@@ -97,30 +101,30 @@ public abstract class Viewport implements LRelease {
 		float curOriginX = width * this.originX;
 		float curOriginY = height * this.originY;
 
-		ActionBind follow = this.follow;
+		ActionBind _follow = this._follow;
 
 		float sx = this.scrollX;
 		float sy = this.scrollY;
 
-		if (follow != null) {
-			Vector2f lerp = this.lerp;
+		if (_follow != null) {
+			Vector2f _lerp = this._lerp;
 
-			float fx = follow.getX() + this.followOffset.x;
-			float fy = follow.getY() + this.followOffset.y;
+			float fx = _follow.getX() + this._followOffset.x;
+			float fy = _follow.getY() + this._followOffset.y;
 			if (this._limitRect != null) {
 				if (fx < _limitRect.x) {
-					sx = getLinear(sx, sx - (_limitRect.x - fx), lerp.x);
+					sx = getLinear(sx, sx - (_limitRect.x - fx), _lerp.x);
 				} else if (fx > _limitRect.getRight()) {
-					sx = getLinear(sx, sx + (fx - _limitRect.getRight()), lerp.x);
+					sx = getLinear(sx, sx + (fx - _limitRect.getRight()), _lerp.x);
 				}
 				if (fy < _limitRect.y) {
-					sy = getLinear(sy, sy - (_limitRect.y - fy), lerp.y);
+					sy = getLinear(sy, sy - (_limitRect.y - fy), _lerp.y);
 				} else if (fy > _limitRect.getBottom()) {
-					sy = getLinear(sy, sy + (fy - _limitRect.getBottom()), lerp.y);
+					sy = getLinear(sy, sy + (fy - _limitRect.getBottom()), _lerp.y);
 				}
 			} else {
-				sx = getLinear(sx, fx - curOriginX, lerp.x);
-				sy = getLinear(sy, fy - curOriginY, lerp.y);
+				sx = getLinear(sx, fx - curOriginX, _lerp.x);
+				sy = getLinear(sy, fy - curOriginY, _lerp.y);
 			}
 
 		}
@@ -136,7 +140,7 @@ public abstract class Viewport implements LRelease {
 		float midX = sx + halfWidth;
 		float midY = sy + halfHeight;
 
-		this.centerPoint.set(midX, midY);
+		this._centerPoint.set(midX, midY);
 
 		float displayWidth = MathUtils.ifloor((width / zoomX) + 0.5f);
 		float displayHeight = MathUtils.ifloor((height / zoomY) + 0.5f);
@@ -146,33 +150,51 @@ public abstract class Viewport implements LRelease {
 
 		g.saveTx();
 		if (_dirty) {
-			view.setToOrtho2D(newX, newY, displayWidth, displayHeight);
-			view.applyITRS(MathUtils.ifloor(this.x + curOriginX + 0.5f), MathUtils.ifloor(this.y + curOriginY + 0.5f),
+			_viewWorld.set(newX, newY, displayWidth, displayHeight);
+			_view.applyITRS(MathUtils.ifloor(this.x + curOriginX + 0.5f), MathUtils.ifloor(this.y + curOriginY + 0.5f),
 					this.rotation, zoomX, zoomY);
-			view.translate(-curOriginX, -curOriginY);
-			updateCustom(g, view);
+			if (scrollX != 0f || scrollY != 0f) {
+				_view.translate(-(curOriginX + newX), -(curOriginY + newY));
+			} else {
+				_view.translate(-curOriginX, -curOriginY);
+			}
+			if (_effect != null) {
+				_effect.draw(g, _view);
+			}
+			updateCustom(g, _view);
 			_dirty = false;
 		}
-		g.mulAffine(view);
+		g.mulAffine(_view);
 
 		return this;
 	}
 
-	public void updateCustom(GLEx g, Affine2f view) {
+	public void updateCustom(GLEx g, Affine2f _view) {
 
 	}
 
 	public void update(final LTimerContext timer) {
-
+		if (_effect != null) {
+			_effect.update(timer);
+		}
 	}
 
 	public Viewport unapply(GLEx g) {
 		g.restoreTx();
 		return this;
 	}
+	
+	public RectBox getViewWorld() {
+		return this._viewWorld;
+	}
 
 	public Affine2f getView() {
-		return this.view;
+		return this._view;
+	}
+
+	public Viewport setDirty(boolean d) {
+		this._dirty = d;
+		return this;
 	}
 
 	public Viewport updateDirty() {
@@ -180,21 +202,21 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
-	public Viewport follow(ActionBind target, float lerpX, float lerpY) {
-		return follow(target, lerpX, lerpY, 0f, 0f);
+	public Viewport _follow(ActionBind target, float lerpX, float lerpY) {
+		return _follow(target, lerpX, lerpY, 0f, 0f);
 	}
 
-	public Viewport follow(ActionBind target, float lerpX, float lerpY, float offsetX, float offsetY) {
-		this.follow = target;
+	public Viewport _follow(ActionBind target, float lerpX, float lerpY, float offsetX, float offsetY) {
+		this._follow = target;
 		lerpX = MathUtils.clamp(lerpX, 0f, 1f);
 		lerpY = MathUtils.clamp(lerpY, 0f, 1f);
-		this.lerp.set(lerpX, lerpY);
-		this.followOffset.set(offsetX, offsetY);
+		this._lerp.set(lerpX, lerpY);
+		this._followOffset.set(offsetX, offsetY);
 		float originX = this.width / 2;
 		float originY = this.height / 2;
 		float fx = target.getX() - offsetX;
 		float fy = target.getY() - offsetY;
-		this.centerPoint.set(fx, fy);
+		this._centerPoint.set(fx, fy);
 		this.scrollX = fx - originX;
 		this.scrollY = fy - originY;
 		if (this._useBounds) {
@@ -214,21 +236,25 @@ public abstract class Viewport implements LRelease {
 			} else {
 				this._limitRect = new RectBox(0, 0, width, height);
 			}
-			if (this.follow != null) {
+			if (this._follow != null) {
 				float originX = this.width / 2;
 				float originY = this.height / 2;
-				float fx = this.follow.getX() - this.followOffset.x;
-				float fy = this.follow.getY() - this.followOffset.y;
-				this.centerPoint.set(fx, fy);
+				float fx = this._follow.getX() - this._followOffset.x;
+				float fy = this._follow.getY() - this._followOffset.y;
+				this._centerPoint.set(fx, fy);
 				this.scrollX = fx - originX;
 				this.scrollY = fy - originY;
 			}
-			centerOn(this._limitRect, this.follow, this.centerPoint.x, this.centerPoint.y);
+			centerOn(this._limitRect, this._follow, this._centerPoint.x, this._centerPoint.y);
 		}
 		return this;
 	}
 
-	public void centerOn(RectBox size, ActionBind follow, float x, float y) {
+	public void centerOn(RectBox size, ActionBind _follow, float x, float y) {
+
+	}
+
+	public void centerOn(float x, float y) {
 
 	}
 
@@ -268,7 +294,7 @@ public abstract class Viewport implements LRelease {
 			float scrollFactorY, float originX, float originY) {
 
 		TArray<ActionBind> cullObjects = new TArray<ActionBind>();
-		Affine2f cameraMatrix = this.view;
+		Affine2f cameraMatrix = this._view;
 
 		float mva = cameraMatrix.m00;
 		float mvb = cameraMatrix.m01;
@@ -327,7 +353,7 @@ public abstract class Viewport implements LRelease {
 			o = new Vector2f();
 		}
 
-		Affine2f matrix = this.view;
+		Affine2f matrix = this._view;
 
 		float mva = matrix.m00;
 		float mvb = matrix.m01;
@@ -393,7 +419,7 @@ public abstract class Viewport implements LRelease {
 			RectBox bounds = this._bounds;
 			float originX = this.width * 0.5f;
 			float originY = this.height * 0.5f;
-			this.centerPoint.set(bounds.getCenterX(), bounds.getCenterY());
+			this._centerPoint.set(bounds.getCenterX(), bounds.getCenterY());
 			this.scrollX = bounds.getCenterX() - originX;
 			this.scrollY = bounds.getCenterY() - originY;
 			this._dirty = true;
@@ -403,7 +429,7 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport centerOnX(float x) {
 		float originX = this.width * 0.5f;
-		this.centerPoint.x = x;
+		this._centerPoint.x = x;
 		this.scrollX = x - originX;
 		if (this._useBounds) {
 			this.scrollX = this.getClampX(this.scrollX);
@@ -413,7 +439,7 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport centerOnY(float y) {
 		float originY = this.height * 0.5f;
-		this.centerPoint.y = y;
+		this._centerPoint.y = y;
 		this.scrollY = y - originY;
 		if (this._useBounds) {
 			this.scrollY = this.getClampY(this.scrollY);
@@ -462,7 +488,7 @@ public abstract class Viewport implements LRelease {
 		this.invScaleX = 1f / scaleX;
 		this.scaleY = scaleY;
 		this.invScaleY = 1f / scaleY;
-		this.centerPoint.set(width / 2f, height / 2f);
+		this._centerPoint.set(width / 2f, height / 2f);
 		this._dirty = true;
 		return this;
 	}
@@ -664,21 +690,21 @@ public abstract class Viewport implements LRelease {
 	}
 
 	public ActionBind getFollow() {
-		return follow;
+		return _follow;
 	}
 
 	public Viewport setFollow(ActionBind f) {
-		this.follow = f;
+		this._follow = f;
 		this._dirty = true;
 		return this;
 	}
 
 	public Vector2f getFollowOffset() {
-		return followOffset;
+		return _followOffset;
 	}
 
 	public Viewport setFollowOffset(float x, float y) {
-		this.followOffset.set(x, y);
+		this._followOffset.set(x, y);
 		this._dirty = true;
 		return this;
 	}
@@ -752,17 +778,28 @@ public abstract class Viewport implements LRelease {
 	}
 
 	public Vector2f getLerp() {
-		return this.lerp;
+		return this._lerp;
 	}
 
 	public Viewport setLerp(float x, float y) {
-		this.lerp.set(x, y);
+		this._lerp.set(x, y);
 		this._dirty = true;
 		return this;
 	}
 
+	public Viewport setEffect(ViewportEffect e) {
+		this._effect = e;
+		return this;
+	}
+
+	public ViewportEffect getEffect() {
+		return this._effect;
+	}
+
 	@Override
 	public void close() {
-
+		if (_effect != null) {
+			_effect.close();
+		}
 	}
 }

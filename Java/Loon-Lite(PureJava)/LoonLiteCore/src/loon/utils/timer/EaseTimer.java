@@ -35,7 +35,11 @@ public class EaseTimer extends BasicTimer {
 	}
 
 	public final static EaseTimer at(final float timer, final EasingMode mode, final int loop) {
-		return at(timer,1f, mode, loop);
+		return at(timer, 1f, mode, loop);
+	}
+
+	public final static EaseTimer at(final float timer, final float duration, final EasingMode mode) {
+		return at(timer, duration, mode, 0);
 	}
 
 	public final static EaseTimer at(final float timer, final float duration, final EasingMode mode, final int loop) {

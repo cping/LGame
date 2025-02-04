@@ -209,6 +209,10 @@ public class BasicTimer {
 		return _timer;
 	}
 
+	public BasicTimer start() {
+		return start(_duration);
+	}
+
 	public BasicTimer start(float duration) {
 		if (duration <= 0f) {
 			return this;

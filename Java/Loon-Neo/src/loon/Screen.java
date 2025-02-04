@@ -4713,6 +4713,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return MathUtils.ifloor(getViewHeight() * this._scaleY);
 	}
 
+	public float getAspectRatio() {
+		return ((float) this.getWidth()) / this.getHeight();
+	}
+
+	public float getScaledWidth() {
+		return this.getScreenWidth();
+	}
+
+	public float getScaledHeight() {
+		return this.getScreenHeight();
+	}
+
 	/**
 	 * 刷新基础设置
 	 */

@@ -62,8 +62,11 @@ public class ScalingViewport extends Viewport {
 		final int viewWidth = MathUtils.round(size.x);
 		final int viewHeight = MathUtils.round(size.y);
 
+		scaleX = this.getWidth() <= width ? (worldWidth / width) * scaleX : scaleX;
+		scaleY = this.getHeight() <= height ? (worldHeight / height) * scaleY : scaleY;
+
 		setBounds((width - viewWidth) / 2f, (height - viewHeight) / 2f, MathUtils.round(worldWidth),
-				MathUtils.round(worldHeight), (worldWidth / width) * scaleX, (worldHeight / height) * scaleY);
+				MathUtils.round(worldHeight), scaleX, scaleY);
 	}
 
 	public boolean isPowerOfTwo() {

@@ -22,6 +22,8 @@ package loon.action.camera;
 
 import loon.LSystem;
 import loon.events.ResizeListener;
+import loon.geom.Dimension;
+import loon.utils.Easing.EasingMode;
 
 public class CameraViewport extends Viewport {
 
@@ -32,8 +34,10 @@ public class CameraViewport extends Viewport {
 	}
 
 	public CameraViewport(float worldWidth, float worldHeight) {
-		setBounds(0f, 0f, worldWidth, worldHeight, worldWidth / LSystem.viewSize.getWidth(),
-				worldHeight / LSystem.viewSize.getHeight());
+		final Dimension dim = LSystem.viewSize;
+		float scaleX = worldWidth <= dim.getWidth() ? worldWidth / LSystem.viewSize.getWidth() : 1f;
+		float scaleY = worldHeight <= dim.getHeight() ? worldHeight / LSystem.viewSize.getHeight() : 1f;
+		setBounds(0f, 0f, worldWidth, worldHeight, scaleX, scaleY);
 	}
 
 	public CameraViewport(float x, float y, float worldWidth, float worldHeight, float sx, float sy) {
@@ -42,11 +46,51 @@ public class CameraViewport extends Viewport {
 
 	@Override
 	public void onResize(float width, float height) {
-		setBounds(this.getWidth(), this.getHeight(), this.getScaleX() * (this.getWidth() / width),
-				this.getScaleY() * (this.getHeight() / height));
+		float scaleX = this.getWidth() <= width ? (this.getScaleX() * (this.getWidth() / width)) : getScaleX();
+		float scaleY = this.getHeight() <= height ? (this.getScaleY() * (this.getHeight() / height)) : getScaleY();
+		setBounds(this.getWidth(), this.getHeight(), scaleX, scaleY);
 		if (_resized != null) {
 			_resized.onResize(this);
 		}
+	}
+
+	/**
+	 * 移动当前摄像机中心位置去指定中心点
+	 * 
+	 * @param ease
+	 * @param dstX
+	 * @param dsty
+	 * @param delay
+	 * @return
+	 */
+	public MoveEffect startMove(EasingMode ease, float dstX, float dsty, float delay) {
+		MoveEffect moved = new MoveEffect(ease, dstX, dsty, delay, this);
+		setEffect(moved);
+		moved.start();
+		return moved;
+	}
+
+	/**
+	 * 移动当前摄像机中心位置去指定中心点
+	 * 
+	 * @param ease
+	 * @param dstX
+	 * @param dsty
+	 * @return
+	 */
+	public MoveEffect startMove(EasingMode ease, float dstX, float dsty) {
+		return startMove(ease, dstX, dsty, LSystem.DEFAULT_EASE_DELAY);
+	}
+
+	/**
+	 * 移动当前摄像机中心位置去指定中心点
+	 * 
+	 * @param dstX
+	 * @param dsty
+	 * @return
+	 */
+	public MoveEffect startMove(float dstX, float dsty) {
+		return startMove(EasingMode.Linear, dstX, dsty);
 	}
 
 	public CameraViewport setResize(ResizeListener<CameraViewport> l) {

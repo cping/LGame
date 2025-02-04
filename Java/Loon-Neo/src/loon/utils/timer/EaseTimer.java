@@ -38,6 +38,10 @@ public class EaseTimer extends BasicTimer {
 		return at(timer, 1f, mode, loop);
 	}
 
+	public final static EaseTimer at(final float timer, final float duration, final EasingMode mode) {
+		return at(timer, duration, mode, 0);
+	}
+
 	public final static EaseTimer at(final float timer, final float duration, final EasingMode mode, final int loop) {
 		return new EaseTimer(timer, duration, LSystem.DEFAULT_EASE_DELAY, mode, loop);
 	}
