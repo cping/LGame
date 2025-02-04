@@ -24,8 +24,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import loon.Graphics;
-import loon.an.JavaANCanvas;
-import loon.an.JavaANImage;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
