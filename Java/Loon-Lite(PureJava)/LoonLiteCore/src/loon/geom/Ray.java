@@ -72,6 +72,35 @@ public class Ray {
 		return getPoint(distance);
 	}
 
+	public Vector3f intersectPoint(Line line) {
+		float time = this.intersectLine(line);
+		if (time < 0) {
+			return null;
+		}
+		return this.getPoint(time);
+	}
+
+	public float intersectLine(Line line) {
+		Vector2f pos = this._origin.getXY();
+		Vector2f dir = this._direction.getXY();
+		Vector2f numerator = line.getStart().sub(pos);
+		if (dir.cross(line.getSlope()) == 0 && numerator.cross(dir) != 0) {
+			return -1;
+		}
+		float divisor = dir.cross(line.getSlope());
+		if (divisor == 0) {
+			return -1;
+		}
+		float t = numerator.cross(line.getSlope()) / divisor;
+		if (t >= 0) {
+			float u = numerator.cross(dir) / divisor / line.length();
+			if (u >= 0 && u <= 1) {
+				return t;
+			}
+		}
+		return -1;
+	}
+
 	public float intersectsPlane(Plane p) {
 		Vector3f normal = p.getNormal();
 		float dir = normal.dot(this._direction);
@@ -228,4 +257,5 @@ public class Ray {
 	public String toString() {
 		return new StringKeyValue("Ray").kv("origin", _origin).comma().kv("direction", _direction).toString();
 	}
+
 }

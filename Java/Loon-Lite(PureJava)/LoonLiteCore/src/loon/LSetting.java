@@ -32,6 +32,21 @@ import loon.utils.timer.Duration;
  */
 public class LSetting {
 
+	public final static LSetting create(String appName, String fontName, int w, int h) {
+		return create(appName, fontName, w, h, w, h);
+	}
+
+	public final static LSetting create(String appName, String fontName, int w, int h, int zoomw, int zoomh) {
+		LSetting setting = new LSetting();
+		setting.appName = appName;
+		setting.fontName = fontName;
+		setting.width = w;
+		setting.height = h;
+		setting.width_zoom = zoomw;
+		setting.height_zoom = zoomh;
+		return setting;
+	}
+
 	/**
 	 * 若此项不为-1,则loon的Display类中LTimerContext在被传参时,以此数值替换动态计算出的paint刷新数值(也就是强制锁值),
 	 * 默认单位是毫秒，比如锁定1/60帧就是(long)((1f/60f) * 1000)
@@ -125,7 +140,7 @@ public class LSetting {
 	 * 是否显示渲染命令调用次数
 	 */
 	public boolean isDrawCall = false;
-	
+
 	/**
 	 * 是否显示logo（替换logo使用logoPath指定地址）
 	 */

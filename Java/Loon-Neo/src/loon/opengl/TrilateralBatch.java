@@ -272,6 +272,7 @@ public class TrilateralBatch extends BaseBatch {
 	public void end() {
 		super.end();
 		this._currentBlendMode = -1;
+		this._currentIntColor = -1;
 		this._currentAlpha = 255;
 	}
 

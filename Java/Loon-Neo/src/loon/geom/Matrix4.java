@@ -1201,6 +1201,13 @@ public class Matrix4 implements Serializable, XY {
 		return m;
 	}
 
+	public boolean isIdt() {
+		return (this.val[M00] == 1 && this.val[M10] == 0 && this.val[M20] == 0 && this.val[M30] == 0
+				&& this.val[M01] == 0 && this.val[M11] == 1 && this.val[M21] == 0 && this.val[M31] == 0
+				&& this.val[M02] == 0 && this.val[M12] == 0 && this.val[M22] == 1 && this.val[M32] == 0
+				&& this.val[M03] == 0 && this.val[M13] == 0 && this.val[M23] == 0 && this.val[M33] == 1);
+	}
+
 	public FloatBuffer getAsFloatBuffer() {
 		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
 	}

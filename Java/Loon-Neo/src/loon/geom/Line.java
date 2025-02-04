@@ -668,6 +668,34 @@ public class Line extends Shape {
 		}
 	}
 
+	public Line clip(Vector2f side, float length, boolean normalize) {
+		Vector2f dir = side;
+		if (normalize) {
+			dir = dir.nor();
+		}
+		float near = dir.dot(this._currentStart) - length;
+		float far = dir.dot(this._currentEnd) - length;
+		TArray<Vector2f> results = new TArray<Vector2f>();
+		if (near <= 0) {
+			results.add(this._currentStart);
+		}
+		if (far <= 0) {
+			results.add(this._currentEnd);
+		}
+		if (near * far < 0) {
+			float clipTime = near / (near - far);
+			results.add(this._currentStart
+					.add(this._currentEnd.cpy().subtractSelf(this._currentStart).scaleSelf(clipTime)));
+		}
+		if (results.size != 2) {
+			return null;
+		}
+		if (results.size > 1) {
+			return new Line(results.get(0), results.get(1));
+		}
+		return null;
+	}
+
 	public float side(XY v) {
 		if (v == null) {
 			return 0f;
@@ -678,6 +706,12 @@ public class Line extends Shape {
 	public float side(float x, float y) {
 		return (_currentEnd.x - _currentStart.x) * (y - _currentStart.y)
 				- (_currentEnd.y - _currentStart.y) * (x - _currentStart.x);
+	}
+
+	public boolean below(Vector2f pos) {
+		float above2 = (this._currentEnd.x - this._currentStart.x) * (pos.y - this._currentStart.y)
+				- (this._currentEnd.y - this._currentStart.y) * (pos.x - this._currentStart.x);
+		return above2 >= 0;
 	}
 
 	public Vector2f getMidPoint() {
@@ -728,6 +762,13 @@ public class Line extends Shape {
 
 	public float ptLineDistSq(XY pt) {
 		return ShapeUtils.ptLineDistSq(getX1(), getY1(), getX2(), getY2(), pt.getX(), pt.getY());
+	}
+
+	public Vector2f getSlope() {
+		Vector2f begin = this._currentStart;
+		Vector2f end = this._currentEnd;
+		float distance = begin.distance(end);
+		return end.sub(begin).scale(1f / distance);
 	}
 
 	public float slope() {
@@ -814,6 +855,10 @@ public class Line extends Shape {
 		}
 		checkPoints();
 		return this;
+	}
+
+	public Line flip() {
+		return new Line(this._currentEnd, this._currentStart);
 	}
 
 	public boolean equals(Line e) {
