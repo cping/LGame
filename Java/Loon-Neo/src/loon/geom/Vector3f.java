@@ -51,6 +51,18 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return temp;
 	}
 
+	public final static Vector3f[] of(int n) {
+		return of(n, 0f);
+	}
+
+	public final static Vector3f[] of(int n, float v) {
+		Vector3f[] result = new Vector3f[n];
+		for (int i = 0; i < n; i++) {
+			result[i] = new Vector3f(v);
+		}
+		return result;
+	}
+
 	public final static Vector3f ZERO() {
 		return new Vector3f(0);
 	}

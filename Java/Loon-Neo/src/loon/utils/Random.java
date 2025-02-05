@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.PointF;
@@ -360,4 +361,20 @@ public class Random {
 		return point;
 	}
 
+	public <T> T nextObject(TArray<T> list) {
+		return list.get(nextInt(list.size()));
+	}
+
+	public <T> T nextObject(ObjectSet<T> o) {
+		int index = nextInt(o.size());
+		int count = 0;
+		for (LIterator<T> it = o.iterator(); it.hasNext();) {
+			T v = it.next();
+			if (v != null && count == index) {
+				return v;
+			}
+			count++;
+		}
+		throw new LSysException("Set modified while selecting object !");
+	}
 }

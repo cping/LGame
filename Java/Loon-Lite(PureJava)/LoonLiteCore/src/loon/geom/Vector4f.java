@@ -45,6 +45,18 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return temp;
 	}
 
+	public final static Vector4f[] of(int n) {
+		return of(n, 0f);
+	}
+
+	public final static Vector4f[] of(int n, float v) {
+		Vector4f[] result = new Vector4f[n];
+		for (int i = 0; i < n; i++) {
+			result[i] = new Vector4f(v);
+		}
+		return result;
+	}
+
 	public final static Vector4f ZERO() {
 		return new Vector4f(0);
 	}

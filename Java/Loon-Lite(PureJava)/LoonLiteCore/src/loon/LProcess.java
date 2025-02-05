@@ -806,8 +806,8 @@ public class LProcess implements LRelease {
 
 	protected Vector2f convertYX(Viewport view, final float fx, final float fy, float x, float y, float w, float h,
 			Vector2f o) {
-		final float newX = ((x - fx) / (LSystem.getScaleWidth()));
-		final float newY = ((y - fy) / (LSystem.getScaleHeight()));
+		final float newX = MathUtils.ifloor(((x - fx) / (LSystem.getScaleWidth())));
+		final float newY = MathUtils.ifloor(((y - fy) / (LSystem.getScaleHeight())));
 		float oldW = w;
 		float oldH = h;
 		float newW = view.getDisplayWidth();
@@ -818,12 +818,13 @@ public class LProcess implements LRelease {
 		switch (r) {
 		case 0:
 		case 360:
-			view.getView().transformPoint(o, o);
 			break;
 		case -90:
 		case 90:
 			view.getView().transformPoint(o, o);
-			o.set(MathUtils.abs(view.getWidth() - o.x), MathUtils.abs(view.getHeight() - o.y));
+			if (!view.isScaled()) {
+				o.set(MathUtils.abs(view.getWidth() - o.x), MathUtils.abs(view.getHeight() - o.y));
+			}
 			break;
 		case -180:
 		case 180:
@@ -841,16 +842,26 @@ public class LProcess implements LRelease {
 			o.y = view.getHeight() - (newY - dy2);
 			break;
 		}
-		if (view.isScaled()) {
+		if (view.isScaled() && !view.isRotated()) {
 			o.x = MathUtils.abs(offX + o.x);
 			o.y = MathUtils.abs(offY + o.y);
+		} else if (view.isScaled() && view.isRotated()) {
+			RectBox rect = view.getViewWorld();
+			newW = rect.getWidth();
+			newH = rect.getHeight();
+			offX = rect.getX() + ((newW) / 2f);
+			offY = rect.getY() + ((newH) / 2f);
+			o.set(MathUtils.abs(offX + o.x), MathUtils.abs(offY + o.y));
+		}
+		if (r == 0 || r == 360) {
+			o.addSelf(-view.getX(), -view.getY());
 		}
 		return o;
 	}
 
 	public Vector2f convertXY(final float fx, final float fy, float x, float y) {
-		final float newX = ((x - fx) / (LSystem.getScaleWidth()));
-		final float newY = ((y - fy) / (LSystem.getScaleHeight()));
+		final float newX = MathUtils.ifloor(((x - fx) / (LSystem.getScaleWidth())));
+		final float newY = MathUtils.ifloor(((y - fy) / (LSystem.getScaleHeight())));
 		if (_isInstance && _currentScreen.isTxUpdate()) {
 			if (_currentScreen.isPosOffsetUpdate()) {
 				float posX = x / LSystem.getScaleWidth();

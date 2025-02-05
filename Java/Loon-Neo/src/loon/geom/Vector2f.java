@@ -50,6 +50,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return temp;
 	}
 
+	public final static Vector2f[] of(int n) {
+		return of(n, 0f);
+	}
+
+	public final static Vector2f[] of(int n, float v) {
+		Vector2f[] result = new Vector2f[n];
+		for (int i = 0; i < n; i++) {
+			result[i] = new Vector2f(v);
+		}
+		return result;
+	}
+
 	public final static boolean isNan(Vector2f v) {
 		return MathUtils.isNan(v.x) || MathUtils.isNan(v.y);
 	}

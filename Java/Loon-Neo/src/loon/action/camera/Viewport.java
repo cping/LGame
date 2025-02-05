@@ -142,8 +142,8 @@ public abstract class Viewport implements LRelease {
 
 		this._centerPoint.set(midX, midY);
 
-		float displayWidth = MathUtils.ifloor((width / zoomX) + 0.5f);
-		float displayHeight = MathUtils.ifloor((height / zoomY) + 0.5f);
+		float displayWidth = MathUtils.ifloor((width * zoomX) + 0.5f);
+		float displayHeight = MathUtils.ifloor((height * zoomY) + 0.5f);
 
 		float newX = MathUtils.ifloor((midX - (displayWidth / 2)) + 0.5f);
 		float newY = MathUtils.ifloor((midY - (displayHeight / 2)) + 0.5f);
@@ -589,6 +589,10 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport setSize(float x, float y, float width, float height, float sx, float sy) {
 		return setBounds(x, y, width, height, sx, sy);
+	}
+
+	public boolean isRotated() {
+		return rotation != 0f;
 	}
 
 	public boolean isScaled() {
