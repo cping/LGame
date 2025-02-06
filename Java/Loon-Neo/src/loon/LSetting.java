@@ -33,13 +33,15 @@ import loon.utils.timer.Duration;
 public class LSetting {
 
 	public final static LSetting create(String appName, String fontName, int w, int h) {
-		return create(appName, fontName, w, h, w, h);
+		return create(appName, fontName, LSystem.DEFAULT_SYS_FONT_SIZE, w, h, w, h);
 	}
 
-	public final static LSetting create(String appName, String fontName, int w, int h, int zoomw, int zoomh) {
+	public final static LSetting create(String appName, String fontName, int fontSize, int w, int h, int zoomw,
+			int zoomh) {
 		LSetting setting = new LSetting();
 		setting.appName = appName;
 		setting.fontName = fontName;
+		setting.fontSize = fontSize;
 		setting.width = w;
 		setting.height = h;
 		setting.width_zoom = zoomw;
@@ -271,9 +273,14 @@ public class LSetting {
 	public String logoPath = "loon_logo.png";
 
 	/**
-	 * 当前字体名
+	 * 当前默认字体名
 	 */
 	public String fontName = "Dialog";
+
+	/**
+	 * 当前默认字体大小
+	 */
+	public int fontSize = 20;
 
 	/**
 	 * 当前应用版本号
@@ -332,6 +339,7 @@ public class LSetting {
 		this.appName = setting.appName;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
+		this.fontSize = setting.fontSize;
 		this.version = setting.version;
 		this.fixedPaintLoopTime = setting.fixedPaintLoopTime;
 		this.fixedUpdateLoopTime = setting.fixedUpdateLoopTime;
@@ -342,6 +350,17 @@ public class LSetting {
 		this.allScreenRefresh = setting.allScreenRefresh;
 		this.args = setting.args;
 		return this;
+	}
+
+	/**
+	 * 设定默认的全局字体样式与大小
+	 * 
+	 * @param fname
+	 * @param fsize
+	 */
+	public void setDefaultFont(String fname, int fsize) {
+		this.fontName = fname;
+		this.fontSize = fsize;
 	}
 
 	/**

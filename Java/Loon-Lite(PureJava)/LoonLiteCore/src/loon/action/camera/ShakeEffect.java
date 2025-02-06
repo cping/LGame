@@ -20,33 +20,44 @@
  */
 package loon.action.camera;
 
+import loon.LSystem;
 import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.Easing;
+import loon.utils.MathUtils;
 import loon.utils.timer.EaseTimer;
 import loon.utils.timer.LTimerContext;
 
-public class ZoomEffect implements ViewportEffect {
+public class ShakeEffect implements ViewportEffect {
 
 	private boolean _running;
 
 	protected Viewport _viewport;
 
-	protected Vector2f _source = new Vector2f();
+	protected Vector2f _intensity = new Vector2f(0.05f);
 
-	protected Vector2f _destination = new Vector2f();
+	protected float _destination = 0f;
+
+	protected float _offsetX = 0f, _offsetY = 0f;
 
 	protected EaseTimer _ease;
 
 	private Updateable _onUpdate;
 
-	public ZoomEffect(Easing.EasingMode mode, Vector2f zoom, float timer, Viewport view) {
+	public ShakeEffect(Easing.EasingMode mode, float offset, Viewport view) {
+		this(mode, null, offset, offset, LSystem.DEFAULT_EASE_DELAY, view);
+	}
+
+	public ShakeEffect(Easing.EasingMode mode, Vector2f intensity, float offX, float offY, float timer, Viewport view) {
 		this._ease = EaseTimer.at(timer, mode);
+		if (intensity != null) {
+			_intensity.set(intensity);
+		}
+		this._offsetX = offX;
+		this._offsetY = offY;
 		this._viewport = view;
-		this._source.set(_viewport.getScale());
-		this._destination.set(zoom);
 	}
 
 	@Override
@@ -54,13 +65,27 @@ public class ZoomEffect implements ViewportEffect {
 		return _running;
 	}
 
-	public ZoomEffect setDestination(float x, float y) {
-		_destination.set(x, y);
+	public ShakeEffect setDestination(float d) {
+		_destination = d;
 		return this;
 	}
 
-	public Vector2f getDestination() {
+	public float getDestination() {
 		return _destination;
+	}
+
+	public ShakeEffect setOffset(float x, float y) {
+		this._offsetX = x;
+		this._offsetY = y;
+		return this;
+	}
+
+	public float getOffsetX() {
+		return this._offsetX;
+	}
+
+	public float getOffsetY() {
+		return this._offsetY;
 	}
 
 	@Override
@@ -86,13 +111,16 @@ public class ZoomEffect implements ViewportEffect {
 			return;
 		}
 		if (!_ease.action(timer)) {
-			Vector2f src = this._source.add(((this._destination.sub(this._source)).mul(this._ease.getProgress())));
-			_viewport.setScale(src);
+			float v = _ease.getProgress();
+			float width = _viewport.getDisplayWidth();
+			float height = _viewport.getDisplayHeight();
+			this._offsetX = (MathUtils.random() * _intensity.x * width * 2f - _intensity.x * width) * v;
+			this._offsetY = (MathUtils.random() * _intensity.y * height * 2f - _intensity.y * height) * v;
+			this._viewport.setDirty(true);
 			if (this._onUpdate != null) {
 				this._onUpdate.action(this);
 			}
 		} else {
-			_viewport.setScale(this._destination);
 			if (this._onUpdate != null) {
 				this._onUpdate.action(this);
 			}
@@ -102,12 +130,16 @@ public class ZoomEffect implements ViewportEffect {
 
 	@Override
 	public void draw(GLEx g, Affine2f view) {
-
+		if (this._running) {
+			view.translate(-this._offsetX, -this._offsetY);
+		}
 	}
 
 	protected void onEffectComplete() {
 		this._onUpdate = null;
 		this._running = false;
+		this._offsetX = this._offsetY = 0f;
+		this._viewport.setDirty(true);
 		this._ease.stop();
 	}
 
@@ -128,8 +160,8 @@ public class ZoomEffect implements ViewportEffect {
 	public void close() {
 		this.reset();
 		this._viewport = null;
-		this._source = null;
-		this._destination = null;
+		this._intensity.set(0.05f);
+		this._destination = 0f;
 		this._running = false;
 	}
 

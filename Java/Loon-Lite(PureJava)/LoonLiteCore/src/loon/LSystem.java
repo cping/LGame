@@ -99,6 +99,8 @@ public final class LSystem {
 
 	public static final char TF = '\t';
 
+	public static final char PB = '\f';
+
 	public static final char VERTICALLINE = '|';
 
 	public static final char HORIZONTALLINE = '—';
@@ -149,6 +151,9 @@ public final class LSystem {
 
 	// 默认缓存数量
 	public static final int DEFAULT_MAX_CACHE_SIZE = 32;
+
+	// 默认的系统字体大小
+	public static final int DEFAULT_SYS_FONT_SIZE = 20;
 
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
@@ -277,12 +282,9 @@ public final class LSystem {
 	 */
 	public static final IFont getSystemLogFont() {
 		if (base() != null) {
-			if (base().setting.defaultLogFont == null) {
-				base().setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
-			}
-			return base().setting.defaultLogFont;
+			return base().setDefaultLogFont();
 		}
-		return LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+		return LSTRFont.getFont(LSystem.isDesktop() ? DEFAULT_SYS_FONT_SIZE - 4 : DEFAULT_SYS_FONT_SIZE);
 	}
 
 	/**
@@ -303,12 +305,9 @@ public final class LSystem {
 	 */
 	public static final IFont getSystemGameFont() {
 		if (base() != null) {
-			if (base().setting.defaultGameFont == null) {
-				base().setting.defaultGameFont = LFont.getFont(20);
-			}
-			return base().setting.defaultGameFont;
+			return base().setDefaultGameFont();
 		}
-		return LFont.getFont(20);
+		return LFont.getFont(LSystem.isDesktop() ? DEFAULT_SYS_FONT_SIZE - 4 : DEFAULT_SYS_FONT_SIZE);
 	}
 
 	/**

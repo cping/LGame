@@ -36,7 +36,7 @@ import loon.utils.TArray;
 import loon.utils.timer.LTimerContext;
 
 /**
- * loon围绕时间帧提供的进程管理用类
+ * loon围绕时间帧提供的进程管理用类(无关单独线程,纯依附于主渲染线程中循环实现)
  */
 public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
 
@@ -219,6 +219,21 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return list;
 	}
 
+	public TArray<GameProcess> findIndex(String id) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p.getId().equals(id) || p.getId().indexOf(id) != -1) {
+						list.add(p);
+					}
+				}
+			}
+		}
+		return list;
+	}
+
 	public TArray<GameProcess> delete(GameProcessType pt) {
 		TArray<GameProcess> list = new TArray<GameProcess>();
 		if (pt == null) {
@@ -274,6 +289,26 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 					GameProcess p = ps.get(i);
 					if (p != null) {
 						if (p.getId() == id || p.getId().equals(id)) {
+							p.kill();
+							processes.remove(p);
+							list.add(p);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> deleteType(GameProcessType processType) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getProcessType() == processType) {
 							p.kill();
 							processes.remove(p);
 							list.add(p);

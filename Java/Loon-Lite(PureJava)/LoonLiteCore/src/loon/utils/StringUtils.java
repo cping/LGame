@@ -2407,6 +2407,74 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 以指定字符过滤一组字符串，并返回其数组形式。
+	 * 
+	 * @param line
+	 * @param delimiter
+	 * @return
+	 */
+	public static TArray<String> getDelimiterStrings(String line, char delimiter) {
+		TArray<String> tokens = new TArray<>();
+		boolean precedingBackslash = false;
+		boolean isToken = false;
+		int startIndex = 0;
+		int endIndex = 0;
+		for (; endIndex < line.length();) {
+			char c = line.charAt(endIndex);
+			if (c != LSystem.SPACE && c != LSystem.TF && c != LSystem.PB) {
+				isToken = true;
+			}
+			if ((c == delimiter) && !precedingBackslash) {
+				if (isToken) {
+					String token = line.substring(startIndex, endIndex);
+					token = getStripUnWhitespace(token);
+					tokens.add(token);
+					isToken = !Character.isWhitespace(c);
+				}
+				startIndex = endIndex + 1;
+			}
+			precedingBackslash = c == LSystem.BACKSLASH ? !precedingBackslash : false;
+			endIndex += 1;
+		}
+		if (isToken) {
+			String token = line.substring(startIndex);
+			token = getStripUnWhitespace(token);
+			tokens.add(token);
+		}
+		return tokens;
+	}
+
+	/**
+	 * 获得字符串过滤结果，省略一切空格与换行符号
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String getStripUnWhitespace(String str) {
+		if (str == null) {
+			return LSystem.EMPTY;
+		}
+		int start = 0;
+		int end = str.length();
+		while (start < end) {
+			char c = str.charAt(start);
+			if (c != LSystem.SPACE && c != LSystem.TF && c != LSystem.PB) {
+				break;
+			}
+			start += 1;
+		}
+		while (end > start) {
+			char c = str.charAt(end - 1);
+			if ((c != LSystem.SPACE && c != LSystem.TF && c != LSystem.PB)
+					|| (end - 2 >= start && str.charAt(end - 2) == LSystem.BACKSLASH)) {
+				break;
+			}
+			end -= 1;
+		}
+		return str.substring(start, end);
+	}
+
+	/**
 	 * 返回指定字符序列中指定标记出现的次数
 	 * 
 	 * @param chars

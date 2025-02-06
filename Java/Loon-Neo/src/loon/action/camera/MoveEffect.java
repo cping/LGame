@@ -36,7 +36,7 @@ public class MoveEffect implements ViewportEffect {
 
 	protected Vector2f _source = new Vector2f();
 
-	protected Vector2f current = new Vector2f();
+	protected Vector2f _current = new Vector2f();
 
 	protected Vector2f _destination = new Vector2f();
 
@@ -67,7 +67,7 @@ public class MoveEffect implements ViewportEffect {
 	@Override
 	public void start() {
 		this._source.set(_viewport.getScrollX(), _viewport.getScrollY());
-		_viewport.getScroll(_destination.getX(), _destination.getY(), this.current);
+		_viewport.getScroll(_destination.getX(), _destination.getY(), this._current);
 		_ease.start();
 		_running = true;
 	}
@@ -90,9 +90,9 @@ public class MoveEffect implements ViewportEffect {
 		}
 		if (!_ease.action(timer)) {
 			float v = _ease.getProgress();
-			_viewport.getScroll(this._destination.x, this._destination.y, this.current);
-			float x = this._source.x + ((this.current.x - this._source.x) * v);
-			float y = this._source.y + ((this.current.y - this._source.y) * v);
+			_viewport.getScroll(this._destination.x, this._destination.y, this._current);
+			float x = this._source.x + ((this._current.x - this._source.x) * v);
+			float y = this._source.y + ((this._current.y - this._source.y) * v);
 			_viewport.setScroll(x, y);
 			if (this._onUpdate != null) {
 				this._onUpdate.action(this);

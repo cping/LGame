@@ -36,8 +36,6 @@ public class ZoomEffect implements ViewportEffect {
 
 	protected Vector2f _source = new Vector2f();
 
-	protected Vector2f current = new Vector2f();
-
 	protected Vector2f _destination = new Vector2f();
 
 	protected EaseTimer _ease;

@@ -103,10 +103,10 @@ public class CameraViewport extends Viewport {
 	 * @return
 	 */
 	public ZoomEffect startZoom(EasingMode ease, Vector2f zoom, float delay) {
-		ZoomEffect moved = new ZoomEffect(ease, zoom, delay, this);
-		setEffect(moved);
-		moved.start();
-		return moved;
+		ZoomEffect scaled = new ZoomEffect(ease, zoom, delay, this);
+		setEffect(scaled);
+		scaled.start();
+		return scaled;
 	}
 
 	/**
@@ -128,6 +128,17 @@ public class CameraViewport extends Viewport {
 	 */
 	public ZoomEffect startZoom(Vector2f zoom) {
 		return startZoom(EasingMode.Linear, zoom);
+	}
+
+	public ShakeEffect startShake(EasingMode ease, float offset) {
+		ShakeEffect shake = new ShakeEffect(ease, offset, this);
+		setEffect(shake);
+		shake.start();
+		return shake;
+	}
+
+	public ShakeEffect startShake(float offset) {
+		return startShake(EasingMode.Linear, offset);
 	}
 
 	public CameraViewport setResize(ResizeListener<CameraViewport> l) {

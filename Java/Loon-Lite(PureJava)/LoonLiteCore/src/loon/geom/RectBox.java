@@ -37,6 +37,18 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static RectBox[] of(int width, int height, int tileWidth, int tileHeight) {
+		int widths = width / tileWidth;
+		int heights = height / tileHeight;
+		RectBox[] rects = new RectBox[width * height];
+		for (int h = 0; h < heights; h++) {
+			for (int w = 0; w < widths; w++) {
+				rects[h * widths + w] = new RectBox(w * tileWidth, h * tileHeight, tileWidth, tileHeight);
+			}
+		}
+		return rects;
+	}
+
 	public static RectBox ZERO() {
 		return new RectBox(0, 0, 0, 0);
 	}

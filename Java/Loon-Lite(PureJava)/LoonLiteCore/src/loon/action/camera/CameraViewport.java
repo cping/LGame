@@ -23,6 +23,7 @@ package loon.action.camera;
 import loon.LSystem;
 import loon.events.ResizeListener;
 import loon.geom.Dimension;
+import loon.geom.Vector2f;
 import loon.utils.Easing.EasingMode;
 
 public class CameraViewport extends Viewport {
@@ -91,6 +92,53 @@ public class CameraViewport extends Viewport {
 	 */
 	public MoveEffect startMove(float dstX, float dsty) {
 		return startMove(EasingMode.Linear, dstX, dsty);
+	}
+
+	/**
+	 * 缩放当前镜头为指定大小
+	 * 
+	 * @param ease
+	 * @param zoom
+	 * @param delay
+	 * @return
+	 */
+	public ZoomEffect startZoom(EasingMode ease, Vector2f zoom, float delay) {
+		ZoomEffect scaled = new ZoomEffect(ease, zoom, delay, this);
+		setEffect(scaled);
+		scaled.start();
+		return scaled;
+	}
+
+	/**
+	 * 缩放当前镜头为指定大小
+	 * 
+	 * @param ease
+	 * @param zoom
+	 * @return
+	 */
+	public ZoomEffect startZoom(EasingMode ease, Vector2f zoom) {
+		return startZoom(ease, zoom, LSystem.DEFAULT_EASE_DELAY);
+	}
+
+	/**
+	 * 缩放当前镜头为指定大小
+	 * 
+	 * @param zoom
+	 * @return
+	 */
+	public ZoomEffect startZoom(Vector2f zoom) {
+		return startZoom(EasingMode.Linear, zoom);
+	}
+
+	public ShakeEffect startShake(EasingMode ease, float offset) {
+		ShakeEffect shake = new ShakeEffect(ease, offset, this);
+		setEffect(shake);
+		shake.start();
+		return shake;
+	}
+
+	public ShakeEffect startShake(float offset) {
+		return startShake(EasingMode.Linear, offset);
 	}
 
 	public CameraViewport setResize(ResizeListener<CameraViewport> l) {

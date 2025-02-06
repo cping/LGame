@@ -184,6 +184,10 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
+	public RectBox getWorldBounds() {
+		return this._viewWorld.cpy().setRotate(this.rotation).addSelf(this.x, this.y);
+	}
+
 	public RectBox getViewWorld() {
 		return this._viewWorld;
 	}
@@ -199,6 +203,11 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport updateDirty() {
 		this._dirty = !this._dirty;
+		return this;
+	}
+
+	public Viewport stopFollow() {
+		this._follow = null;
 		return this;
 	}
 
@@ -246,6 +255,27 @@ public abstract class Viewport implements LRelease {
 				this.scrollY = fy - originY;
 			}
 			centerOn(this._limitRect, this._follow, this._centerPoint.x, this._centerPoint.y);
+		}
+		return this;
+	}
+
+	public boolean isEffectRunning() {
+		if (this._effect != null) {
+			return this._effect.isRunning();
+		}
+		return false;
+	}
+
+	public Viewport stopEffect() {
+		if (this._effect != null) {
+			this._effect.stop();
+		}
+		return this;
+	}
+
+	public Viewport resetEffect() {
+		if (this._effect != null) {
+			this._effect.reset();
 		}
 		return this;
 	}

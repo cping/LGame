@@ -276,14 +276,19 @@ public abstract class LGame implements LRelease {
 
 	public IFont setDefaultGameFont() {
 		if (setting.defaultGameFont == null) {
-			setting.defaultGameFont = LFont.getFont(setting.fontName, 20);
+			setting.defaultGameFont = LFont.getFont(setting.fontName, setting.fontSize);
 		}
 		return setting.defaultGameFont;
 	}
 
 	public IFont setDefaultLogFont() {
 		if (setting.defaultLogFont == null) {
-			setting.defaultLogFont = LSTRFont.getFont(LSystem.isDesktop() ? 16 : 20);
+			if (setting.fontSize <= LSystem.DEFAULT_SYS_FONT_SIZE) {
+				setting.defaultLogFont = LSTRFont.getFont(
+						LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE);
+			} else {
+				setting.defaultLogFont = LSTRFont.getFont(setting.fontSize);
+			}
 		}
 		return setting.defaultLogFont;
 	}
