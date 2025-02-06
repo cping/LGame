@@ -130,6 +130,62 @@ public class CameraViewport extends Viewport {
 		return startZoom(EasingMode.Linear, zoom);
 	}
 
+	/**
+	 * 旋转当前镜头为角度
+	 * 
+	 * @param ease
+	 * @param angle
+	 * @param path
+	 * @param delay
+	 * @return
+	 */
+	public RotateEffect startRotate(EasingMode ease, float angle, boolean path, float delay) {
+		RotateEffect rotated = new RotateEffect(ease, angle, path, delay, this);
+		setEffect(rotated);
+		rotated.start();
+		return rotated;
+	}
+
+	/**
+	 * 旋转当前镜头为角度
+	 * 
+	 * @param ease
+	 * @param angle
+	 * @param path
+	 * @return
+	 */
+	public RotateEffect startRotate(EasingMode ease, float angle, boolean path) {
+		return startRotate(ease, angle, path, LSystem.DEFAULT_EASE_DELAY);
+	}
+
+	/**
+	 * 旋转当前镜头为角度
+	 * 
+	 * @param ease
+	 * @param angle
+	 * @return
+	 */
+	public RotateEffect startRotate(EasingMode ease, float angle) {
+		return startRotate(ease, angle, false);
+	}
+
+	/**
+	 * 旋转当前镜头为角度
+	 * 
+	 * @param angle
+	 * @return
+	 */
+	public RotateEffect startRotate(float angle) {
+		return startRotate(EasingMode.Linear, angle);
+	}
+
+	/**
+	 * 缩放当前镜头为指定大小
+	 * 
+	 * @param ease
+	 * @param offset
+	 * @return
+	 */
 	public ShakeEffect startShake(EasingMode ease, float offset) {
 		ShakeEffect shake = new ShakeEffect(ease, offset, this);
 		setEffect(shake);
@@ -137,6 +193,12 @@ public class CameraViewport extends Viewport {
 		return shake;
 	}
 
+	/**
+	 * 缩放当前镜头为指定大小
+	 * 
+	 * @param offset
+	 * @return
+	 */
 	public ShakeEffect startShake(float offset) {
 		return startShake(EasingMode.Linear, offset);
 	}

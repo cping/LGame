@@ -806,14 +806,14 @@ public class LProcess implements LRelease {
 
 	protected Vector2f convertYX(Viewport view, final float fx, final float fy, float x, float y, float w, float h,
 			Vector2f o) {
-		final float newX = MathUtils.ifloor(((x - fx) / (LSystem.getScaleWidth())));
-		final float newY = MathUtils.ifloor(((y - fy) / (LSystem.getScaleHeight())));
+		final float newX = MathUtils.ifloor((x - (fx + view.getX())) / view.getScaleX());
+		final float newY = MathUtils.ifloor((y - (fy + view.getY())) / view.getScaleY());
 		float oldW = w;
 		float oldH = h;
 		float newW = view.getDisplayWidth();
 		float newH = view.getDisplayHeight();
-		float offX = fx + (oldW - newW);
-		float offY = fy + (oldH - newH);
+		float offX = fx - view.getX() + (oldW - newW);
+		float offY = fy - view.getY() + (oldH - newH);
 		final int r = MathUtils.ifloor(view.getAngle());
 		switch (r) {
 		case 0:

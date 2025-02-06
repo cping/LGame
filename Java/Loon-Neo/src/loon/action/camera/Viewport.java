@@ -184,6 +184,24 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
+	public Vector2f convertTo(Vector2f pos) {
+		return convertTo(pos, 0f, pos);
+	}
+
+	public Vector2f convertTo(Vector2f pos, float angle) {
+		return convertTo(pos, angle, pos);
+	}
+
+	public Vector2f convertTo(Vector2f pos, float angle, Vector2f o) {
+		RectBox viewport = this._viewWorld;
+		o.x = (pos.x - viewport.x) / this.scaleX;
+		o.y = (pos.y - viewport.y) / this.scaleY;
+		if (angle != 0f) {
+			o.rotateSelf(this.originX, this.originY, angle);
+		}
+		return o;
+	}
+
 	public RectBox getWorldBounds() {
 		return this._viewWorld.cpy().setRotate(this.rotation).addSelf(this.x, this.y);
 	}
@@ -425,6 +443,16 @@ public abstract class Viewport implements LRelease {
 		o.y = (sx * imb + sy * imd) + imf;
 
 		return o;
+	}
+
+	public Viewport setRotation(float r) {
+		this.rotation = r;
+		this._dirty = true;
+		return this;
+	}
+
+	public float getRotation() {
+		return this.rotation;
 	}
 
 	public Viewport setAngle(float r) {
