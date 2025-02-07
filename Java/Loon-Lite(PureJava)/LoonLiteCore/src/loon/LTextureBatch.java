@@ -24,6 +24,7 @@ import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.opengl.Mesh;
 import loon.opengl.MeshData;
@@ -159,6 +160,10 @@ public class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch end() {
+		return end(BlendMethod.MODE_SCREEN);
+	}
+
+	public LTextureBatch end(int blend) {
 		if (!isLoaded) {
 			return this;
 		}
@@ -166,7 +171,7 @@ public class LTextureBatch implements LRelease {
 			throw new LSysException("TextureBatch.begin must be called before end.");
 		}
 		if (vertexIdx > 0) {
-			submit(tx, ty);
+			submit(blend, tx, ty);
 		}
 		this.drawing = false;
 		this._drawCallCount = 0;
@@ -248,19 +253,22 @@ public class LTextureBatch implements LRelease {
 		return this;
 	}
 
-	public LTextureBatch submit() {
-		return submit(0f, 0f);
+	public LTextureBatch submit(int blend) {
+		return submit(blend, 0f, 0f);
 	}
 
-	public LTextureBatch submit(float x, float y) {
+	public LTextureBatch submit(int blend, float x, float y) {
 		if (isClosed) {
 			return this;
 		}
 		GLEx gl = LSystem.base().display().GL();
 		if (gl != null) {
+			int b = gl.getBlendMode();
+			gl.setBlendMode(blend);
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(gl.tx());
-			canvas.draw(_buffer.snapshot(), x, y);
+			canvas.draw(_buffer.getImage(), x, y);
+			gl.setBlendMode(b);
 			_drawCallCount++;
 			GraphicsDrawCall.add(_drawCallCount);
 		}
@@ -389,58 +397,56 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
-				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, 0f, 0, 0, _meshdata.texture.width(),
-				_meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width(), _meshdata.texture.height(), _meshdata.texture.width(),
+				_meshdata.texture.height(), 1f, 1f, 0f, 0, 0, _meshdata.texture.width(), _meshdata.texture.height(),
+				false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, 0f, 0, 0, _meshdata.texture.width(), _meshdata.texture.height(), false, false,
-				update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, 0, 0, _meshdata.texture.width(),
+				_meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, rotation, x1, y1, x2, y2, false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, rotation, x1, y1, x2, y2, false,
+				false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, 0f, x1, y1, x2, y2, false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, x1, y1, x2, y2, false, false,
+				update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
-				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, 0, 0,
-				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width(), _meshdata.texture.height(), _meshdata.texture.width(),
+				_meshdata.texture.height(), 1f, 1f, rotation, 0, 0, _meshdata.texture.width(),
+				_meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float rotation, LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, rotation, 0, 0, _meshdata.texture.width(), _meshdata.texture.height(), false, false,
-				update ? color : null);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, rotation, 0, 0,
+				_meshdata.texture.width(), _meshdata.texture.height(), false, false, update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight, float rotation,
 			LColor color) {
 		final boolean update = checkUpdateColor(color);
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2,
-				_meshdata.texture.width(), _meshdata.texture.height(), 1f, 1f, rotation, srcX, srcY, srcWidth,
-				srcHeight, false, false, update ? color : null);
+		return draw(x, y, -1f, -1f, _meshdata.texture.width(), _meshdata.texture.height(), _meshdata.texture.width(),
+				_meshdata.texture.height(), 1f, 1f, rotation, srcX, srcY, srcWidth, srcHeight, false, false,
+				update ? color : null);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, float rotation) {
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, rotation, srcX, srcY, srcWidth, srcHeight, false, false, _color);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
+				srcHeight, false, false, _color);
 	}
 
 	public LTextureBatch draw(float x, float y, float originX, float originY, float width, float height, float scaleX,
@@ -452,14 +458,14 @@ public class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY) {
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY, _color);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, srcX, srcY, srcWidth, srcHeight,
+				flipX, flipY, _color);
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY, LColor color) {
-		return draw(x, y, -1f, -1f, _meshdata.texture.width() / 2, _meshdata.texture.height() / 2, width, height, 1f,
-				1f, 0f, srcX, srcY, srcWidth, srcHeight, flipX, flipY, color);
+		return draw(x, y, -1f, -1f, width / 2, height / 2, width, height, 1f, 1f, 0f, srcX, srcY, srcWidth, srcHeight,
+				flipX, flipY, color);
 	}
 
 	public LTextureBatch draw(float x, float y, float pivotX, float pivotY, float originX, float originY, float width,
@@ -653,8 +659,6 @@ public class LTextureBatch implements LRelease {
 
 		float centerX = x + originX;
 		float centerY = y + originY;
-
-		display.translate(-originX, -originY);
 
 		if (rotDirty) {
 			if (pivotX != -1 && pivotY != -1) {

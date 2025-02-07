@@ -464,6 +464,9 @@ public class JavaFXCanvas extends Canvas {
 	public Canvas setCompositeOperation(Composite composite) {
 		BlendMode mode = null;
 		switch (composite) {
+		case ADD:
+			mode = BlendMode.ADD;
+			break;
 		case SRC_ATOP:
 			mode = BlendMode.SRC_ATOP;
 			break;
@@ -476,9 +479,15 @@ public class JavaFXCanvas extends Canvas {
 		case DST_OVER:
 		case SRC:
 		case SRC_IN:
+			mode = BlendMode.SRC_ATOP;
+			break;
 		case SRC_OUT:
 		case SRC_OVER:
+			mode = BlendMode.SRC_OVER;
+			break;
 		case XOR:
+			mode = BlendMode.OVERLAY;
+			break;
 		default:
 			mode = BlendMode.SRC_OVER;
 			break;
@@ -502,6 +511,7 @@ public class JavaFXCanvas extends Canvas {
 		case BlendMethod.MODE_MULTIPLY:
 			mode = BlendMode.MULTIPLY;
 			break;
+		case BlendMethod.MODE_SCREEN:
 		case BlendMethod.MODE_COLOR_MULTIPLY:
 			mode = BlendMode.SCREEN;
 			break;
