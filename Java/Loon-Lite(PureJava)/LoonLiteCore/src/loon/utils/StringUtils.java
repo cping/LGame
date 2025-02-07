@@ -2997,6 +2997,69 @@ final public class StringUtils extends CharUtils {
 		return cur;
 	}
 
+	public int getSymbolLength(String str) {
+		int length = str.length();
+		int count = 0;
+		char charCode = 0;
+		for (int i = 0; i < length; i++) {
+			charCode = str.charAt(i);
+			if (charCode == 0x200d) {
+				continue;
+			}
+			if (charCode >= 0xd800 && charCode <= 0xdbff) {
+				charCode = str.charAt(i + 1);
+				if (charCode >= 0xdc00 && charCode <= 0xdfff) {
+					if (i + 2 >= length || str.charAt(i + 2) != 0x200d) {
+						count++;
+					}
+					i++;
+					continue;
+				}
+			}
+			count++;
+		}
+		return count;
+	}
+
+	public String getSymbolAt(String str, int index) {
+		int length = str.length();
+		int len = 0;
+		int count = 0;
+		int start = 0;
+		char charCode = 0;
+		for (int i = 0; i < length; i++) {
+			charCode = str.charAt(i);
+			if (charCode == 0x200d) {
+				len++;
+				continue;
+			}
+			if (charCode >= 0xd800 && charCode <= 0xdbff) {
+				len++;
+				charCode = str.charAt(i + 1);
+				if (charCode >= 0xdc00 && charCode <= 0xdfff) {
+					len++;
+					if (i + 2 >= length || str.charAt(i + 2) != 0x200d) {
+						if (index == count) {
+							return str.substring(start, len);
+						}
+						start += len;
+						count++;
+						len = 0;
+					}
+					i++;
+					continue;
+				}
+			}
+			if (index == count) {
+				return String.valueOf(str.charAt(i));
+			}
+			start = i + 1;
+			count++;
+			len = 0;
+		}
+		return LSystem.EMPTY;
+	}
+
 	public static String byteArrayToString(final byte[] array) {
 		return byteArrayToString(array, 0, array.length);
 	}

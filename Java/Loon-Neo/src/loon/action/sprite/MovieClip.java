@@ -231,7 +231,7 @@ public class MovieClip extends DisplayObject {
 		}
 		RectBox rect = null;
 		if (LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null) {
-			rect = LSystem.getProcess().getScreen().getBox();
+			rect = LSystem.getProcess().getScreen().getRectBox();
 		} else {
 			rect = LSystem.viewSize.getRect();
 		}

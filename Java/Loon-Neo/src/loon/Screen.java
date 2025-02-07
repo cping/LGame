@@ -5544,10 +5544,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
-	public RectBox getBox() {
-		return getRectBox();
-	}
-
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
 			_rectBox.setBounds(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScreenWidth(),
@@ -5557,6 +5553,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_rotation, _rectBox);
 		}
 		return _rectBox;
+	}
+
+	public RectBox getWorldBounds() {
+		return getRectBox();
+	}
+
+	public RectBox getScreenBounds() {
+		return new RectBox(getX(), getY(), getWidth(), getHeight());
 	}
 
 	public float getScalePixelX() {
