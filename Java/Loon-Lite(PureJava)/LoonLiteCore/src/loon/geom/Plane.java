@@ -30,6 +30,10 @@ public class Plane implements XY {
 		Back, Front, Intersecting
 	}
 
+	public static Plane create(float nx, float ny, float nz, float d) {
+		return new Plane(nx, ny, nz, d);
+	}
+
 	public static Plane createPlaneBy(Vector3f p0, Vector3f p1, Vector3f p2, Plane o) {
 		float x1 = p1.x - p0.x;
 		float y1 = p1.y - p0.y;
@@ -134,14 +138,12 @@ public class Plane implements XY {
 	}
 
 	public Plane(Vector3f normal, float d) {
-		this._normal.set(normal);
-		this._distance = d;
+		this(normal.x, normal.y, normal.z, d);
 	}
 
 	public Plane(float a, float b, float c, float d) {
 		this._normal.set(a, b, c);
 		this._distance = d;
-
 		float length = _normal.length();
 		_normal.scaleSelf(1 / length);
 		this._distance /= length;

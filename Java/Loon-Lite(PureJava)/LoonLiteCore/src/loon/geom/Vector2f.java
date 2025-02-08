@@ -66,6 +66,32 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.isNan(v.x) || MathUtils.isNan(v.y);
 	}
 
+	public final static boolean greaterThan(Vector2f a, Vector2f b) {
+		float a1 = MathUtils.mag(a.x, a.y);
+		float b1 = MathUtils.mag(b.x, b.y);
+		return a1 > b1;
+	}
+
+	public final static boolean lessThan(Vector2f a, Vector2f b) {
+		float a1 = MathUtils.mag(a.x, a.y);
+		float b1 = MathUtils.mag(b.x, b.y);
+		return a1 < b1;
+	}
+
+	public final static boolean equal(Vector2f a, Vector2f b) {
+		float a1 = MathUtils.mag(a.x, a.y);
+		float b1 = MathUtils.mag(b.x, b.y);
+		return a1 == b1;
+	}
+
+	public final static boolean greaterThanOrEqual(Vector2f a, Vector2f b) {
+		return greaterThan(a, b) || equal(a, b);
+	}
+
+	public final static boolean lessThanOrEqual(Vector2f a, Vector2f b) {
+		return lessThan(a, b) || equal(a, b);
+	}
+
 	public final static Vector2f ZERO() {
 		return new Vector2f(0);
 	}
@@ -1599,6 +1625,22 @@ public class Vector2f implements Serializable, SetXY, XY {
 		if (MathUtils.abs(y - this.y) > epsilon)
 			return false;
 		return true;
+	}
+
+	public boolean greaterThan(Vector2f o) {
+		return greaterThan(this, o);
+	}
+
+	public boolean lessThan(Vector2f o) {
+		return lessThan(this, o);
+	}
+
+	public boolean greaterThanOrEqual(Vector2f o) {
+		return greaterThanOrEqual(this, o);
+	}
+
+	public boolean lessThanOrEqual(Vector2f o) {
+		return lessThanOrEqual(this, o);
 	}
 
 	public Vector2f unit() {

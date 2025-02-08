@@ -43,6 +43,8 @@ public class LTextureBatch implements LRelease {
 
 	private IntMap<Cache> _caches;
 
+	private boolean _updateBlend = false;
+
 	private boolean isClosed;
 
 	public boolean isCacheLocked;
@@ -263,16 +265,25 @@ public class LTextureBatch implements LRelease {
 		}
 		GLEx gl = LSystem.base().display().GL();
 		if (gl != null) {
-			int b = gl.getBlendMode();
-			gl.setBlendMode(blend);
+			final int curBlend = gl.getBlendMode();
+			_updateBlend = (BlendMethod.MODE_NORMAL != blend);
+			if (_updateBlend) {
+				gl.setBlendMode(blend);
+			}
 			Canvas canvas = gl.getCanvas();
 			canvas.setTransform(gl.tx());
 			canvas.draw(_buffer.getImage(), x, y);
-			gl.setBlendMode(b);
+			if (_updateBlend) {
+				gl.setBlendMode(curBlend);
+			}
 			_drawCallCount++;
 			GraphicsDrawCall.add(_drawCallCount);
 		}
 		return this;
+	}
+
+	public boolean isUpdateBlend() {
+		return this._updateBlend;
 	}
 
 	public LTextureBatch commit(final float x, final float y) {

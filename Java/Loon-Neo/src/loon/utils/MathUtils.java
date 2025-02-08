@@ -28,6 +28,7 @@ import loon.geom.RectBox;
 import loon.geom.SetXY;
 import loon.geom.Vector2f;
 import loon.geom.Vector3f;
+import loon.geom.Vector4f;
 import loon.geom.XY;
 
 public final class MathUtils {
@@ -74,7 +75,7 @@ public final class MathUtils {
 	public static final float PHI = 0.618f;
 
 	public static final float PI_4 = 12.566371f;
-	
+
 	public static final float PI_4D3 = 4.1887903f;
 
 	public static final float TAU = 6.28318548f;
@@ -943,6 +944,10 @@ public final class MathUtils {
 		return sqrt(a * a + b * b + c * c);
 	}
 
+	public static float mag(float a, float b, float c, float d) {
+		return sqrt(a * a + b * b + c * c + d * d);
+	}
+
 	public static float median(float a, float b, float c) {
 		return (a <= b) ? ((b <= c) ? b : ((a < c) ? c : a)) : ((a <= c) ? a : ((b < c) ? c : b));
 	}
@@ -1041,6 +1046,30 @@ public final class MathUtils {
 			s = (s + div(n, s)) >> 1;
 		}
 		return s;
+	}
+
+	public static Vector2f stepVector(Vector2f a, Vector2f b) {
+		if (Vector2f.lessThan(a, b)) {
+			return b;
+		} else {
+			return a;
+		}
+	}
+
+	public static Vector3f stepVector(Vector3f a, Vector3f b) {
+		if (Vector3f.lessThan(a, b)) {
+			return b;
+		} else {
+			return a;
+		}
+	}
+
+	public static Vector4f stepVector(Vector4f a, Vector4f b) {
+		if (Vector4f.lessThan(a, b)) {
+			return b;
+		} else {
+			return a;
+		}
 	}
 
 	public static float log(float a) {
@@ -1395,6 +1424,30 @@ public final class MathUtils {
 		return (int) x;
 	}
 
+	public static Vector2f floorVector(Vector2f v) {
+		Vector2f temp = v.cpy();
+		temp.x = floor(v.x);
+		temp.y = floor(v.y);
+		return temp;
+	}
+
+	public static Vector3f floorVector(Vector3f v) {
+		Vector3f temp = v.cpy();
+		temp.x = floor(v.x);
+		temp.y = floor(v.y);
+		temp.z = floor(v.z);
+		return temp;
+	}
+
+	public static Vector4f floorVector(Vector4f v) {
+		Vector4f temp = v.cpy();
+		temp.x = floor(v.x);
+		temp.y = floor(v.y);
+		temp.z = floor(v.z);
+		temp.w = floor(v.w);
+		return temp;
+	}
+
 	public static int iceil(float v) {
 		return (int) (v + BIG_ENOUGH_CEIL) - BIG_ENOUGH_INT;
 	}
@@ -1479,6 +1532,33 @@ public final class MathUtils {
 		obj.x = clamp(v.getX(), x + padding, x + width - padding);
 		obj.y = clamp(v.getY(), y + padding, y + height - padding);
 		return obj;
+	}
+
+	public static Vector2f clampVector(Vector2f v, Vector2f min, Vector2f max) {
+		if (Vector2f.greaterThan(min, max)) {
+			Vector2f temp = min;
+			min = max;
+			max = temp;
+		}
+		return Vector2f.lessThan(v, min) ? min : Vector2f.greaterThan(v, max) ? max : v;
+	}
+
+	public static Vector3f clampVector(Vector3f v, Vector3f min, Vector3f max) {
+		if (Vector3f.greaterThan(min, max)) {
+			Vector3f temp = min;
+			min = max;
+			max = temp;
+		}
+		return Vector3f.lessThan(v, min) ? min : Vector3f.greaterThan(v, max) ? max : v;
+	}
+
+	public static Vector4f clampVector(Vector4f v, Vector4f min, Vector4f max) {
+		if (Vector4f.greaterThan(min, max)) {
+			Vector4f temp = min;
+			min = max;
+			max = temp;
+		}
+		return Vector4f.lessThan(v, min) ? min : Vector4f.greaterThan(v, max) ? max : v;
 	}
 
 	public static float cameraLerp(float elapsed, float l) {

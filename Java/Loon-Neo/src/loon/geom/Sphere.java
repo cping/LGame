@@ -28,6 +28,10 @@ import loon.utils.TempVars;
 
 public class Sphere {
 
+	public static Sphere create(float cx, float cy, float cz, float r) {
+		return new Sphere(Vector3f.at(cx, cy, cz), r);
+	}
+
 	private final Vector3f _center = new Vector3f();
 
 	private float _radius;

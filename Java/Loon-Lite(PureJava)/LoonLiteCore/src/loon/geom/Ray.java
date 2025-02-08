@@ -26,6 +26,14 @@ import loon.utils.TempVars;
 
 public class Ray {
 
+	public static Ray create(float ox, float oy, float oz, float dx, float dy) {
+		return create(ox, oy, oz, dx, dy, 1f);
+	}
+
+	public static Ray create(float ox, float oy, float oz, float dx, float dy, float dz) {
+		return new Ray(Vector3f.at(ox, oy, oz), Vector3f.at(dx, dy, dz));
+	}
+
 	private final Vector3f _origin = new Vector3f();
 
 	private final Vector3f _direction = new Vector3f();

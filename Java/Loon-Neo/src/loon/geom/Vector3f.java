@@ -63,6 +63,32 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return result;
 	}
 
+	public final static boolean greaterThan(Vector3f a, Vector3f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z);
+		float b1 = MathUtils.mag(b.x, b.y, a.z);
+		return a1 > b1;
+	}
+
+	public final static boolean lessThan(Vector3f a, Vector3f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z);
+		float b1 = MathUtils.mag(b.x, b.y, a.z);
+		return a1 < b1;
+	}
+
+	public final static boolean equal(Vector3f a, Vector3f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z);
+		float b1 = MathUtils.mag(b.x, b.y, a.z);
+		return a1 == b1;
+	}
+
+	public final static boolean greaterThanOrEqual(Vector3f a, Vector3f b) {
+		return greaterThan(a, b) || equal(a, b);
+	}
+
+	public final static boolean lessThanOrEqual(Vector3f a, Vector3f b) {
+		return lessThan(a, b) || equal(a, b);
+	}
+
 	public final static Vector3f ZERO() {
 		return new Vector3f(0);
 	}
@@ -1001,6 +1027,22 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		if (MathUtils.abs(z - this.z) > epsilon)
 			return false;
 		return true;
+	}
+
+	public boolean greaterThan(Vector3f o) {
+		return greaterThan(this, o);
+	}
+
+	public boolean lessThan(Vector3f o) {
+		return lessThan(this, o);
+	}
+
+	public boolean greaterThanOrEqual(Vector3f o) {
+		return greaterThanOrEqual(this, o);
+	}
+
+	public boolean lessThanOrEqual(Vector3f o) {
+		return lessThanOrEqual(this, o);
 	}
 
 	public Vector3f zeroSelf() {

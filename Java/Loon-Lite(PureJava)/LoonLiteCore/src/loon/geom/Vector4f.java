@@ -57,6 +57,58 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return result;
 	}
 
+	public final static boolean greaterThan(Vector4f a, Vector4f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
+		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+		return a1 > b1;
+	}
+
+	public final static boolean lessThan(Vector4f a, Vector4f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
+		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+		return a1 < b1;
+	}
+
+	public final static boolean equal(Vector4f a, Vector4f b) {
+		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
+		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+		return a1 == b1;
+	}
+
+	public boolean epsilonEquals(final Vector4f other, float epsilon) {
+		if (other == null)
+			return false;
+		if (MathUtils.abs(other.x - x) > epsilon)
+			return false;
+		if (MathUtils.abs(other.y - y) > epsilon)
+			return false;
+		if (MathUtils.abs(other.z - z) > epsilon)
+			return false;
+		if (MathUtils.abs(other.w - w) > epsilon)
+			return false;
+		return true;
+	}
+
+	public boolean epsilonEquals(float x, float y, float z, float epsilon) {
+		if (MathUtils.abs(x - this.x) > epsilon)
+			return false;
+		if (MathUtils.abs(y - this.y) > epsilon)
+			return false;
+		if (MathUtils.abs(z - this.z) > epsilon)
+			return false;
+		if (MathUtils.abs(w - this.w) > epsilon)
+			return false;
+		return true;
+	}
+
+	public final static boolean greaterThanOrEqual(Vector4f a, Vector4f b) {
+		return greaterThan(a, b) || equal(a, b);
+	}
+
+	public final static boolean lessThanOrEqual(Vector4f a, Vector4f b) {
+		return lessThan(a, b) || equal(a, b);
+	}
+
 	public final static Vector4f ZERO() {
 		return new Vector4f(0);
 	}
@@ -1370,6 +1422,22 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		if (NumberUtils.floatToIntBits(w) != NumberUtils.floatToIntBits(w1))
 			return false;
 		return true;
+	}
+
+	public boolean greaterThan(Vector4f o) {
+		return greaterThan(this, o);
+	}
+
+	public boolean lessThan(Vector4f o) {
+		return lessThan(this, o);
+	}
+
+	public boolean greaterThanOrEqual(Vector4f o) {
+		return greaterThanOrEqual(this, o);
+	}
+
+	public boolean lessThanOrEqual(Vector4f o) {
+		return lessThanOrEqual(this, o);
 	}
 
 	@Override
