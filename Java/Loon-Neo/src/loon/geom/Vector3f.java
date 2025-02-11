@@ -63,29 +63,33 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return result;
 	}
 
-	public final static boolean greaterThan(Vector3f a, Vector3f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z);
-		float b1 = MathUtils.mag(b.x, b.y, a.z);
+	public final static boolean isNan(XYZ v) {
+		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY()) || MathUtils.isNan(v.getZ());
+	}
+
+	public final static boolean greaterThan(XYZ a, XYZ b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ());
 		return a1 > b1;
 	}
 
-	public final static boolean lessThan(Vector3f a, Vector3f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z);
-		float b1 = MathUtils.mag(b.x, b.y, a.z);
+	public final static boolean lessThan(XYZ a, XYZ b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ());
 		return a1 < b1;
 	}
 
-	public final static boolean equal(Vector3f a, Vector3f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z);
-		float b1 = MathUtils.mag(b.x, b.y, a.z);
+	public final static boolean equal(XYZ a, XYZ b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ());
 		return a1 == b1;
 	}
 
-	public final static boolean greaterThanOrEqual(Vector3f a, Vector3f b) {
+	public final static boolean greaterThanOrEqual(XYZ a, XYZ b) {
 		return greaterThan(a, b) || equal(a, b);
 	}
 
-	public final static boolean lessThanOrEqual(Vector3f a, Vector3f b) {
+	public final static boolean lessThanOrEqual(XYZ a, XYZ b) {
 		return lessThan(a, b) || equal(a, b);
 	}
 

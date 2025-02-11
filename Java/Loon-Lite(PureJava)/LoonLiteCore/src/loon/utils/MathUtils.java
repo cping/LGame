@@ -1460,6 +1460,14 @@ public final class MathUtils {
 		return (int) (x + CEIL);
 	}
 
+	public static float crt(float v) {
+		if (v < 0f) {
+			return -((-v) * (1f / 3f));
+		} else {
+			return v * (1f / 3f);
+		}
+	}
+
 	public static int round(float x) {
 		return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
 	}

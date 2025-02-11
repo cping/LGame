@@ -145,6 +145,26 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return new RectBox(x, y, w, h);
 	}
 
+	public final static RectBox fromMinMax(XY v1, XY v2, RectBox o) {
+		float minX = MathUtils.min(v1.getX(), v2.getX());
+		float minY = MathUtils.min(v1.getY(), v2.getY());
+		float maxX = MathUtils.max(v1.getX(), v2.getX());
+		float maxY = MathUtils.max(v1.getY(), v2.getY());
+		return o.set(minX, minY, maxX - minX, maxY - minY);
+	}
+
+	public final static RectBox fromLerp(RectBox src, RectBox dst, float ratio, RectBox o) {
+		float x = src.x;
+		float y = src.y;
+		float w = src.width;
+		float h = src.height;
+		o.x = x + (dst.x - x) * ratio;
+		o.y = y + (dst.y - y) * ratio;
+		o.width = MathUtils.ifloor(w + (dst.width - w) * ratio);
+		o.height = MathUtils.ifloor(h + (dst.height - h) * ratio);
+		return o;
+	}
+
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
 		float destWidth = src.width + xScale;
 		float destHeight = src.height + yScale;
@@ -1609,6 +1629,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		this.width += left + right;
 		this.height += top + bottom;
 		return this;
+	}
+
+	public RectBox minmax(XY v1, XY v2) {
+		return fromMinMax(v1, v2, this);
+	}
+
+	public RectBox lerp(RectBox dst, float ratio) {
+		return fromLerp(this, dst, ratio, this);
 	}
 
 	public ObservableXYZW<RectBox> observable(TChange<RectBox> v) {

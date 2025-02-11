@@ -187,11 +187,13 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		return this;
 	}
 
+	@Override
 	public RealtimeProcess pause() {
 		_timer.pause();
 		return this;
 	}
 
+	@Override
 	public RealtimeProcess resume() {
 		return unpause();
 	}

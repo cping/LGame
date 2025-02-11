@@ -39,6 +39,10 @@ public interface GameProcess {
 
 	void kill();
 
+	GameProcess pause();
+
+	GameProcess resume();
+
 	boolean isDead();
 
 	String getId();

@@ -57,55 +57,34 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return result;
 	}
 
-	public final static boolean greaterThan(Vector4f a, Vector4f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
-		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+	public final static boolean isNan(XYZW v) {
+		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY()) || MathUtils.isNan(v.getZ())
+				|| MathUtils.isNan(v.getW());
+	}
+
+	public final static boolean greaterThan(XYZW a, XYZW b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ(), a.getW());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ(), b.getW());
 		return a1 > b1;
 	}
 
-	public final static boolean lessThan(Vector4f a, Vector4f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
-		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+	public final static boolean lessThan(XYZW a, XYZW b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ(), a.getW());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ(), b.getW());
 		return a1 < b1;
 	}
 
-	public final static boolean equal(Vector4f a, Vector4f b) {
-		float a1 = MathUtils.mag(a.x, a.y, a.z, a.w);
-		float b1 = MathUtils.mag(b.x, b.y, a.z, a.w);
+	public final static boolean equal(XYZW a, XYZW b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY(), a.getZ(), a.getW());
+		float b1 = MathUtils.mag(b.getX(), b.getY(), b.getZ(), b.getW());
 		return a1 == b1;
 	}
 
-	public boolean epsilonEquals(final Vector4f other, float epsilon) {
-		if (other == null)
-			return false;
-		if (MathUtils.abs(other.x - x) > epsilon)
-			return false;
-		if (MathUtils.abs(other.y - y) > epsilon)
-			return false;
-		if (MathUtils.abs(other.z - z) > epsilon)
-			return false;
-		if (MathUtils.abs(other.w - w) > epsilon)
-			return false;
-		return true;
-	}
-
-	public boolean epsilonEquals(float x, float y, float z, float epsilon) {
-		if (MathUtils.abs(x - this.x) > epsilon)
-			return false;
-		if (MathUtils.abs(y - this.y) > epsilon)
-			return false;
-		if (MathUtils.abs(z - this.z) > epsilon)
-			return false;
-		if (MathUtils.abs(w - this.w) > epsilon)
-			return false;
-		return true;
-	}
-
-	public final static boolean greaterThanOrEqual(Vector4f a, Vector4f b) {
+	public final static boolean greaterThanOrEqual(XYZW a, XYZW b) {
 		return greaterThan(a, b) || equal(a, b);
 	}
 
-	public final static boolean lessThanOrEqual(Vector4f a, Vector4f b) {
+	public final static boolean lessThanOrEqual(XYZW a, XYZW b) {
 		return lessThan(a, b) || equal(a, b);
 	}
 
@@ -1420,6 +1399,32 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		if (NumberUtils.floatToIntBits(z) != NumberUtils.floatToIntBits(z1))
 			return false;
 		if (NumberUtils.floatToIntBits(w) != NumberUtils.floatToIntBits(w1))
+			return false;
+		return true;
+	}
+
+	public boolean epsilonEquals(final Vector4f other, float epsilon) {
+		if (other == null)
+			return false;
+		if (MathUtils.abs(other.x - x) > epsilon)
+			return false;
+		if (MathUtils.abs(other.y - y) > epsilon)
+			return false;
+		if (MathUtils.abs(other.z - z) > epsilon)
+			return false;
+		if (MathUtils.abs(other.w - w) > epsilon)
+			return false;
+		return true;
+	}
+
+	public boolean epsilonEquals(float x, float y, float z, float epsilon) {
+		if (MathUtils.abs(x - this.x) > epsilon)
+			return false;
+		if (MathUtils.abs(y - this.y) > epsilon)
+			return false;
+		if (MathUtils.abs(z - this.z) > epsilon)
+			return false;
+		if (MathUtils.abs(w - this.w) > epsilon)
 			return false;
 		return true;
 	}

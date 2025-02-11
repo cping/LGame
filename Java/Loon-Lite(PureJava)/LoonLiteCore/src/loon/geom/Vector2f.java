@@ -62,33 +62,33 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return result;
 	}
 
-	public final static boolean isNan(Vector2f v) {
-		return MathUtils.isNan(v.x) || MathUtils.isNan(v.y);
+	public final static boolean isNan(XY v) {
+		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY());
 	}
 
-	public final static boolean greaterThan(Vector2f a, Vector2f b) {
-		float a1 = MathUtils.mag(a.x, a.y);
-		float b1 = MathUtils.mag(b.x, b.y);
+	public final static boolean greaterThan(XY a, XY b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY());
+		float b1 = MathUtils.mag(b.getX(), b.getY());
 		return a1 > b1;
 	}
 
-	public final static boolean lessThan(Vector2f a, Vector2f b) {
-		float a1 = MathUtils.mag(a.x, a.y);
-		float b1 = MathUtils.mag(b.x, b.y);
+	public final static boolean lessThan(XY a, XY b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY());
+		float b1 = MathUtils.mag(b.getX(), b.getY());
 		return a1 < b1;
 	}
 
-	public final static boolean equal(Vector2f a, Vector2f b) {
-		float a1 = MathUtils.mag(a.x, a.y);
-		float b1 = MathUtils.mag(b.x, b.y);
+	public final static boolean equal(XY a, XY b) {
+		float a1 = MathUtils.mag(a.getX(), a.getY());
+		float b1 = MathUtils.mag(b.getX(), b.getY());
 		return a1 == b1;
 	}
 
-	public final static boolean greaterThanOrEqual(Vector2f a, Vector2f b) {
+	public final static boolean greaterThanOrEqual(XY a, XY b) {
 		return greaterThan(a, b) || equal(a, b);
 	}
 
-	public final static boolean lessThanOrEqual(Vector2f a, Vector2f b) {
+	public final static boolean lessThanOrEqual(XY a, XY b) {
 		return lessThan(a, b) || equal(a, b);
 	}
 
@@ -510,14 +510,19 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f rotate(Vector2f pos, Vector2f origin, float angle) {
-		float rad = MathUtils.toRadians(angle);
+		return rotate(pos, origin, angle, true);
+	}
 
+	public final static Vector2f rotate(Vector2f pos, Vector2f origin, float angle, boolean clockWise) {
+
+		float rad = MathUtils.toRadians(angle);
+		float angleRadians = clockWise ? rad : rad * -1;
 		Vector2f newVector = new Vector2f();
 
 		pos.x += -origin.x;
 		pos.y += -origin.y;
-		newVector.x = (pos.x * MathUtils.cos(rad) - (pos.y * MathUtils.sin(rad)));
-		newVector.y = (MathUtils.sin(rad * pos.x) + (MathUtils.cos(rad * pos.y)));
+		newVector.x = (pos.x * MathUtils.cos(angleRadians) - (pos.y * MathUtils.sin(angleRadians)));
+		newVector.y = (MathUtils.sin(angleRadians * pos.x) + (MathUtils.cos(angleRadians * pos.y)));
 
 		newVector.x += origin.x;
 		newVector.y += origin.y;

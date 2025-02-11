@@ -340,6 +340,98 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return list;
 	}
 
+	public TArray<GameProcess> pause(GameProcessType pt) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p != null && p.getProcessType() == pt) {
+						list.add(p.pause());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> resume(GameProcessType pt) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p != null && p.getProcessType() == pt) {
+						list.add(p.resume());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> pause() {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p != null) {
+						list.add(p.pause());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> resume() {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					if (p != null) {
+						list.add(p.resume());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> pauseWithMinPriority(int min, int max) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					int pindex = p.getPriority();
+					if (p != null && (pindex >= min && pindex <= max)) {
+						list.add(p.pause());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	public TArray<GameProcess> resumeWithMinPriority(int min, int max) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				for (LIterator<GameProcess> it = processes.listIterator(); it.hasNext();) {
+					GameProcess p = it.next();
+					int pindex = p.getPriority();
+					if (p != null && (pindex >= min && pindex <= max)) {
+						list.add(p.resume());
+					}
+				}
+			}
+		}
+		return list;
+	}
+
 	public RealtimeProcessManager sort() {
 		synchronized (this.processes) {
 			processes.sort(_processComparator);
