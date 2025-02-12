@@ -28,6 +28,7 @@ import loon.action.map.Field2D;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.TChange;
 
@@ -48,6 +49,23 @@ public class Vector2f implements Serializable, SetXY, XY {
 			_VEC2_CACHE.add(temp = new Vector2f(0, 0));
 		}
 		return temp;
+	}
+
+	public final static Vector2f at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Vector2f();
+		}
+		String[] result = StringUtils.split(v, LSystem.COMMA);
+		int len = result.length;
+		if (len > 1) {
+			try {
+				float x = Float.parseFloat(result[0].trim());
+				float y = Float.parseFloat(result[1].trim());
+				return new Vector2f(x, y);
+			} catch (Exception ex) {
+			}
+		}
+		return new Vector2f();
 	}
 
 	public final static Vector2f[] of(int n) {
@@ -510,7 +528,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f rotate(Vector2f pos, Vector2f origin, float angle) {
-		return rotate(pos,origin,angle,true);
+		return rotate(pos, origin, angle, true);
 	}
 
 	public final static Vector2f rotate(Vector2f pos, Vector2f origin, float angle, boolean clockWise) {

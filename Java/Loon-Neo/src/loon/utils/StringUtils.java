@@ -635,6 +635,31 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 过滤指定字符串中的开始与结束标记后返回新字符串结果
+	 * 
+	 * @param cs
+	 * @param startFlag
+	 * @param endFlag
+	 * @return
+	 */
+	public static String filterStartEnd(String cs, char startFlag, char endFlag) {
+		if (isEmpty(cs)) {
+			return LSystem.EMPTY;
+		}
+		String result = cs;
+		int start = cs.indexOf(startFlag);
+		int end = cs.lastIndexOf(endFlag);
+		if (start != -1 && end != -1 && end > start) {
+			result = cs.substring(start + 1, end).trim();
+		} else if (start != -1 && end == -1) {
+			result = cs.substring(start + 1).trim();
+		} else if (end != -1 && start == -1) {
+			result = cs.substring(0, end).trim();
+		}
+		return result;
+	}
+
+	/**
 	 * 过滤字符序列中所有不显示的占位符
 	 * 
 	 * @param s

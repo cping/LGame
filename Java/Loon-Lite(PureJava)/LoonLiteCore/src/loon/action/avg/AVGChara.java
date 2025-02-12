@@ -1,4 +1,3 @@
-
 /**
  * Copyright 2008 - 2010
  * 
@@ -71,22 +70,23 @@ public class AVGChara implements Visible, XY, LRelease {
 	 * @param image
 	 * @param x
 	 * @param y
-	 * @param _cgWidth
-	 * @param _cgHeight
+	 * @param cw
+	 * @param ch
 	 */
-	public AVGChara(LTexture image, final int x, final int y, int _cgWidth, int _cgHeight) {
-		this.load(image, x, y, _cgWidth, _cgHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public AVGChara(LTexture image, final int x, final int y, int cw, int ch) {
+		this.load(image, x, y, cw, ch, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public AVGChara(LTexture image, final int x, final int y) {
 		this.load(image, x, y);
 	}
 
-	public AVGChara(final String resName, final int x, final int y) {
-		this(resName, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public AVGChara(final String resName, final int x, final int y, final int sw, final int sh) {
+		this(resName, x, y, -1, -1, sw, sh);
 	}
 
-	public AVGChara(final String resName, final int x, final int y, final int w, final int h) {
+	public AVGChara(final String resName, final int x, final int y, final int w, final int h, final int sw,
+			final int sh) {
 		String path = resName;
 		if (StringUtils.startsWith(path, LSystem.DOUBLE_QUOTES)) {
 			path = resName.replaceAll("\"", LSystem.EMPTY);
@@ -94,12 +94,20 @@ public class AVGChara implements Visible, XY, LRelease {
 		if (path.endsWith(".an")) {
 			this.x = x;
 			this.y = y;
+			this._cgWidth = w;
+			this._cgHeight = h;
 			this.showAnimation = true;
 			this.anm = new AVGAnm(path);
-			this.maxWidth = w;
-			this.maxHeight = h;
+			if (_cgWidth <= 0) {
+				_cgWidth = anm.getWidth();
+			}
+			if (_cgHeight <= 0) {
+				_cgHeight = anm.getHeight();
+			}
+			this.maxWidth = sw;
+			this.maxHeight = sh;
 		} else {
-			this.load(LSystem.loadTexture(path), x, y);
+			this.load(LSystem.loadTexture(path), x, y, w, h, sw, sh);
 		}
 		this.visible = true;
 	}
@@ -109,15 +117,15 @@ public class AVGChara implements Visible, XY, LRelease {
 				LSystem.viewSize.getHeight());
 	}
 
-	private void load(LTexture image, final int x, final int y, int _cgWidth, int _cgHeight, final int w, final int h) {
+	private void load(LTexture image, final int x, final int y, int cw, int ch, final int w, final int h) {
 		this.maxWidth = w;
 		this.maxHeight = h;
 		this.showAnimation = false;
 		this._cgTexture = image;
 		this.moved = true;
 		this.visible = true;
-		this._cgWidth = _cgWidth;
-		this._cgHeight = _cgHeight;
+		this._cgWidth = cw;
+		this._cgHeight = ch;
 		this.x = x;
 		this.y = y;
 		this._cgMovePos = 0;
@@ -129,7 +137,7 @@ public class AVGChara implements Visible, XY, LRelease {
 		}
 	}
 
-	public void setFlag(int f, float delay) {
+	public AVGChara setFlag(int f, float delay) {
 		this.flag = f;
 		this.time = delay;
 		if (flag == ISprite.TYPE_FADE_IN) {
@@ -137,6 +145,7 @@ public class AVGChara implements Visible, XY, LRelease {
 		} else {
 			this.currentFrame = 0;
 		}
+		return this;
 	}
 
 	public int getScreenWidth() {
@@ -156,8 +165,9 @@ public class AVGChara implements Visible, XY, LRelease {
 		}
 	}
 
-	public void setMove(boolean move) {
+	public AVGChara setMove(boolean move) {
 		moved = move;
+		return this;
 	}
 
 	public boolean isMoved() {
@@ -212,14 +222,19 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	void draw(GLEx g) {
-		g.draw(_cgTexture, _cgMovePos, y);
+		if (_cgWidth <= 0f && _cgWidth <= 0f) {
+			g.draw(_cgTexture, _cgMovePos, y);
+		} else {
+			g.draw(_cgTexture, _cgMovePos, y, _cgWidth, _cgHeight);
+		}
 	}
 
+	@Override
 	public float getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public AVGChara setX(float x) {
 		if (moved) {
 			float move = x - this._cgMovePos;
 			if (move < 0) {
@@ -234,15 +249,17 @@ public class AVGChara implements Visible, XY, LRelease {
 			this._cgMovePos = x;
 			this.x = x;
 		}
-
+		return this;
 	}
 
+	@Override
 	public float getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public AVGChara setY(float y) {
 		this.y = y;
+		return this;
 	}
 
 	public float getHeight() {
@@ -277,8 +294,9 @@ public class AVGChara implements Visible, XY, LRelease {
 		return showAnimation;
 	}
 
-	void setAnimation(boolean a) {
+	public AVGChara setAnimation(boolean a) {
 		this.showAnimation = a;
+		return this;
 	}
 
 	@Override

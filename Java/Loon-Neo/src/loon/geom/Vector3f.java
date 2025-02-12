@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.reply.TChange;
 
 public class Vector3f implements Serializable, XYZ, SetXYZ {
@@ -49,6 +50,31 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 			_VEC3_CACHE.add(temp = new Vector3f(0, 0, 0));
 		}
 		return temp;
+	}
+
+	public final static Vector3f at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Vector3f();
+		}
+		String[] result = StringUtils.split(v, LSystem.COMMA);
+		int len = result.length;
+		if (len > 1) {
+			try {
+				float x = 0;
+				float y = 0;
+				float z = 0;
+				if (len >= 2) {
+					x = Float.parseFloat(result[0].trim());
+					y = Float.parseFloat(result[1].trim());
+				}
+				if (len >= 3) {
+					z = Float.parseFloat(result[2].trim());
+				}
+				return new Vector3f(x, y, z);
+			} catch (Exception ex) {
+			}
+		}
+		return new Vector3f();
 	}
 
 	public final static Vector3f[] of(int n) {
@@ -1399,6 +1425,18 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	@Override
 	public float getZ() {
 		return this.z;
+	}
+
+	public int x() {
+		return (int) x;
+	}
+
+	public int y() {
+		return (int) y;
+	}
+
+	public int z() {
+		return (int) z;
 	}
 
 	@Override

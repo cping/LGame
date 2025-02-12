@@ -54,6 +54,7 @@ import loon.events.Updateable;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.BooleanValue;
+import loon.geom.Vector4f;
 import loon.opengl.GLEx;
 import loon.utils.Array;
 import loon.utils.ListMap;
@@ -981,21 +982,18 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (!nextScript(result)) {
 					break;
 				}
-
 				TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE);
 				int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
-
 				String mesFlag = null, orderFlag = null, lastFlag = null;
-				if (size == 2) {
-					mesFlag = (String) commands.get(1);
-				} else if (size == 3) {
-					mesFlag = (String) commands.get(1);
-					orderFlag = (String) commands.get(2);
-				} else if (size == 4) {
-					mesFlag = (String) commands.get(1);
-					orderFlag = (String) commands.get(2);
-					lastFlag = (String) commands.get(3);
+				if (size >= 2) {
+					mesFlag = commands.get(1);
+				}
+				if (size >= 3) {
+					orderFlag = commands.get(2);
+				}
+				if (size >= 4) {
+					lastFlag = commands.get(3);
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CLEAR) || cmdFlag.equalsIgnoreCase(CommandType.L_DEL)) {
 					if (orderFlag == null) {
@@ -1444,17 +1442,37 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					} else if (lastFlag != null && CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
 						scrCG.replace(mesFlag, lastFlag);
 					} else {
-						int x = 0, y = 0;
-						if (orderFlag != null) {
-							x = Integer.parseInt(orderFlag);
+						if (orderFlag.startsWith("size")) {
+							String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
+									LSystem.PAREN_END);
+							Vector4f view = Vector4f.at(sizeResult);
+							if (view.z != 0f || view.w != 0f) {
+								scrCG.add(mesFlag, view.x(), view.y(), view.z(), view.w(), getWidth(), getHeight());
+							} else {
+								scrCG.add(mesFlag, view.x(), view.y(), getWidth(), getHeight());
+							}
+						} else {
+							int x = 0, y = 0;
+							if (orderFlag != null) {
+								x = Integer.parseInt(orderFlag);
+							}
+							int cgWidth = -1;
+							int cgHeight = -1;
+							if (size >= 4) {
+								y = Integer.parseInt(commands.get(3));
+							}
+							if (size >= 5) {
+								cgWidth = Integer.parseInt(commands.get(4));
+							}
+							if (size >= 6) {
+								cgHeight = Integer.parseInt(commands.get(5));
+							}
+							if (cgWidth != -1 || cgHeight != -1) {
+								scrCG.add(mesFlag, x, y, cgWidth, cgWidth, getWidth(), getHeight());
+							} else {
+								scrCG.add(mesFlag, x, y, getWidth(), getHeight());
+							}
 						}
-						if (size >= 4) {
-							y = Integer.parseInt((String) commands.get(3));
-						}
-						final int tx = x;
-						final int ty = y;
-						final String name = mesFlag;
-						scrCG.add(name, tx, ty, getWidth(), getHeight());
 					}
 					continue;
 				}

@@ -114,19 +114,33 @@ public class AVGCG implements LRelease {
 		add(resName, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 	}
 
-	public void add(final String resName, int x, int y, int w, int h) {
+	public void add(final String resName, int x, int y, int sw, int sh) {
+		add(resName, x, y, -1, -1, sw, sh);
+	}
+
+	public void add(final String resName, int x, int y, int w, int h, int sw, int sh) {
 		String path = update(resName);
 		synchronized (_roles) {
 			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = (AVGChara) _roles.get(keyName);
 			if (chara == null) {
-				chara = new AVGChara(path, x, y, w, h);
+				if (w > 0 || h > 0) {
+					chara = new AVGChara(path, x, y, w, h, sw, sh);
+				} else {
+					chara = new AVGChara(path, x, y, sw, sh);
+				}
 				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
 				_roles.put(keyName, chara);
 			} else {
 				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
 				chara.setX(x);
 				chara.setY(y);
+				if (w > 0) {
+					chara.setWidth(w);
+				}
+				if (h > 0) {
+					chara.setHeight(h);
+				}
 			}
 		}
 	}

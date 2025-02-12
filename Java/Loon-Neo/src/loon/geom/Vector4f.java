@@ -26,6 +26,7 @@ import loon.LSystem;
 import loon.utils.Array;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StringUtils;
 import loon.utils.reply.TChange;
 
 public class Vector4f implements Serializable, XYZW, SetXYZW {
@@ -43,6 +44,35 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 			_VEC4_CACHE.add(temp = new Vector4f(0, 0, 0, 0));
 		}
 		return temp;
+	}
+
+	public final static Vector4f at(String v) {
+		if (StringUtils.isEmpty(v)) {
+			return new Vector4f();
+		}
+		String[] result = StringUtils.split(v, LSystem.COMMA);
+		int len = result.length;
+		if (len > 1) {
+			try {
+				float x = 0;
+				float y = 0;
+				float z = 0;
+				float w = 0;
+				if (len >= 2) {
+					x = Float.parseFloat(result[0].trim());
+					y = Float.parseFloat(result[1].trim());
+				}
+				if (len >= 3) {
+					z = Float.parseFloat(result[2].trim());
+				}
+				if (len >= 4) {
+					w = Float.parseFloat(result[3].trim());
+				}
+				return new Vector4f(x, y, z, w);
+			} catch (Exception ex) {
+			}
+		}
+		return new Vector4f();
 	}
 
 	public final static Vector4f[] of(int n) {
@@ -637,6 +667,22 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 	@Override
 	public float getW() {
 		return w;
+	}
+
+	public int x() {
+		return (int) x;
+	}
+
+	public int y() {
+		return (int) y;
+	}
+
+	public int z() {
+		return (int) z;
+	}
+
+	public int w() {
+		return (int) w;
 	}
 
 	@Override
