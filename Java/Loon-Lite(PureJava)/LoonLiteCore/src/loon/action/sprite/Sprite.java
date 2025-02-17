@@ -1066,7 +1066,7 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		this._visible = false;
 		this._ignoreUpdate = false;
 		this._childrenVisible = false;

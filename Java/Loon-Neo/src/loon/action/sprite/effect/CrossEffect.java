@@ -193,7 +193,7 @@ public class CrossEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (otexture != null) {
 			otexture.close();

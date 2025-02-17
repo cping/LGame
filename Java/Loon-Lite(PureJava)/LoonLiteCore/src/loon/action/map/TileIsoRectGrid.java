@@ -1088,7 +1088,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		_visible = false;
 		_roll = false;
 		for (int x = 0; x < _cols; x++) {

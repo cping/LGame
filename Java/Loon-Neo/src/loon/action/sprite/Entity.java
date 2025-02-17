@@ -1702,7 +1702,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (_disposed != null) {
 			_disposed.close();
 		}

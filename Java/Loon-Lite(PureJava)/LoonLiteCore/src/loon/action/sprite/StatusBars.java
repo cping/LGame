@@ -119,7 +119,7 @@ public final class StatusBars extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		int size = barCaches.size;
 		for (int i = 0; i < size; i++) {

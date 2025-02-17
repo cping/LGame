@@ -901,7 +901,7 @@ public class AnimatedEntity extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		this.stopAnimation();
 		this.clearPlayEvents();

@@ -98,7 +98,7 @@ public class CanvasPlayer extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (canvas != null) {
 			canvas.close();

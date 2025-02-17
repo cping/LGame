@@ -414,7 +414,7 @@ public class LDTKMap extends Entity implements Config {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		freeMap();
 	}

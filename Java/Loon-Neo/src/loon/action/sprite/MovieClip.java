@@ -332,7 +332,7 @@ public class MovieClip extends DisplayObject {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (_sheet != null) {
 			_sheet.close();
 		}

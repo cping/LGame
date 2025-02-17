@@ -429,7 +429,7 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (_sprite != null) {
 			_sprite.close();
 		}

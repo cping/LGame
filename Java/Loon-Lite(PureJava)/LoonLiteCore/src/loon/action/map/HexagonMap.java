@@ -2299,7 +2299,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		roll = false;
 		visible = false;
 		playAnimation = false;

@@ -1285,7 +1285,7 @@ public class Actor extends LObject<Actor>
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (image != null) {
 			image.close();
 		}

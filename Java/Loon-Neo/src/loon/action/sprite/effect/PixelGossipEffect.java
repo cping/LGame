@@ -436,7 +436,7 @@ public class PixelGossipEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (tjtexture != null) {
 			tjtexture.close();

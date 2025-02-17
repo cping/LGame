@@ -402,7 +402,7 @@ public class FadeDoorEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		_door_left.clear();
 		_door_right.clear();

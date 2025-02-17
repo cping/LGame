@@ -221,7 +221,7 @@ public class MovieSprite extends DisplayObject implements IArray {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		for (DisplayObject obj : _childs) {
 			obj.close();
 		}

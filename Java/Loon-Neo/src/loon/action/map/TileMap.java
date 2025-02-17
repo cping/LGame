@@ -1614,7 +1614,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		_visible = false;
 		_playAnimation = false;
 		_roll = false;

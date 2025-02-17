@@ -175,7 +175,7 @@ public class PShadowEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (_pixmap != null) {
 			_pixmap.close();

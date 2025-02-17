@@ -243,7 +243,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (dots != null) {
 			dots.clear();

@@ -356,6 +356,14 @@ public class LTextBar extends LComponent {
 		return this;
 	}
 
+	public LTextBar addText(String mes) {
+		if (StringUtils.isEmpty(mes)) {
+			return this;
+		}
+		this._text += mes;
+		return this;
+	}
+
 	@Override
 	protected void processTouchDragged() {
 		this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());

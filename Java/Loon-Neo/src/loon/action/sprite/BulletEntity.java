@@ -479,7 +479,7 @@ public class BulletEntity extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		clearBullets();
 		if (textureFree != null) {

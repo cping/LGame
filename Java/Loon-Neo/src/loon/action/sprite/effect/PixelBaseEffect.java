@@ -154,7 +154,7 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		triangleEffects.clear();
 		startLocation = null;

@@ -185,7 +185,7 @@ public class FadeDoorIrregularEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		_horizontalgrids.clear();
 		_tmpInts.clear();

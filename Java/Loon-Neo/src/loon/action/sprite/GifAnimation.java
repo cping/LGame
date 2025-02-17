@@ -85,7 +85,7 @@ public class GifAnimation extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (_gifDecoder != null) {
 			_gifDecoder = null;

@@ -415,7 +415,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (animation != null) {
 			animation.close();
 			animation = null;

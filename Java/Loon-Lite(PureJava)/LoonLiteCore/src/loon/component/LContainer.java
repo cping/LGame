@@ -1854,7 +1854,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		this._newLineHeight = 0;
 		if (_component_autoDestroy) {

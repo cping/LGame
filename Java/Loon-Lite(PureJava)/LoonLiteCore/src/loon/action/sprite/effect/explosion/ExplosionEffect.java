@@ -493,7 +493,7 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		this.stop();
 		this.fragments = null;

@@ -174,7 +174,7 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		_completed = true;
 		_completedAfterBlack = false;

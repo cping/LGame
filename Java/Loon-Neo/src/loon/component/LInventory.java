@@ -975,7 +975,7 @@ public class LInventory extends LLayer {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (_cacheGridTexture != null) {
 			_cacheGridTexture.close();

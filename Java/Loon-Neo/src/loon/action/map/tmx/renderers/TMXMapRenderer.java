@@ -690,7 +690,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		visible = false;
 		if (textureMap != null) {
 			for (LTexture texture : textureMap.values()) {

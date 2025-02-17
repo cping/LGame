@@ -330,7 +330,7 @@ public class StringEffect extends BaseAbstractEffect {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		_font.close();
 	}

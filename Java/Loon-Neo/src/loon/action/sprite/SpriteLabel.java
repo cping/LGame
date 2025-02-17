@@ -94,7 +94,7 @@ public class SpriteLabel extends Entity {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		_text.close();
 	}

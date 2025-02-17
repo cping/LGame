@@ -427,7 +427,7 @@ public abstract class ActionObject extends Entity implements Config {
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		super._onDestroy();
 		if (animation != null) {
 			animation.close();

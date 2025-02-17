@@ -2451,7 +2451,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void _onDestroy() {
+	protected void _onDestroy() {
 		if (!_component_autoDestroy) {
 			return;
 		}
