@@ -268,14 +268,14 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	@Override
 	protected void processTouchPressed() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchReleased();
 		}
 	}
@@ -321,7 +321,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			this.move(this._input.getTouchDX(), this._input.getTouchDY());
 			if (_click != null) {
 				_click.DragClick(this, getUITouchX(), getUITouchY());
 			}

@@ -753,10 +753,10 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 					if (this.width > this.main_panel_size - 2) {
 						this.width = this.main_panel_size;
 					}
-					if (input.isMoving() && supportScroll) {
-						if (input.getTouchDY() > 5) {
+					if (_input.isMoving() && supportScroll) {
+						if (_input.getTouchDY() > 5) {
 							this.scroll -= this.scrollspeed * delta;
-						} else if (input.getTouchDY() < -5) {
+						} else if (_input.getTouchDY() < -5) {
 							this.scroll += this.scrollspeed * delta;
 						}
 					}
@@ -798,7 +798,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public boolean isDoClickItem() {
-		return !SysTouch.isDrag() && !input.isMoving() && (_tabOpening || _panelOpening);
+		return !SysTouch.isDrag() && !_input.isMoving() && (_tabOpening || _panelOpening);
 	}
 
 	public boolean isNotInMenuTouchClick() {

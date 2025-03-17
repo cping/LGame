@@ -459,6 +459,21 @@ public class LColor implements Serializable {
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
 	}
 
+	public static final LColor toDecreaseBrightness(LColor c, float brightness) {
+		brightness = brightness > 1f ? 1f : brightness;
+		brightness = brightness < 0f ? 0f : brightness;
+
+		float newRed = c.r - (c.r * brightness);
+		float newGreen = c.g - (c.g * brightness);
+		float newBlue = c.b - (c.b * brightness);
+
+		newRed = newRed < 0f ? 0f : newRed;
+		newGreen = newGreen < 0f ? 0f : newGreen;
+		newBlue = newBlue < 0f ? 0f : newBlue;
+
+		return new LColor(newRed, newGreen, newBlue, c.a);
+	}
+
 	public static final LColor hsvToColor(float h, float s, float v) {
 		if (h == 0 && s == 0) {
 			return new LColor(v, v, v);
@@ -650,6 +665,44 @@ public class LColor implements Serializable {
 			return true;
 		}
 		return isSimilarRGB(new LColor(srcColor), new LColor(dstColor), similarOffset);
+	}
+
+	/**
+	 * 转换颜色为ARGB格式的Color
+	 * 
+	 * @param a
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public final static LColor fromARGB(float a, float r, float g, float b) {
+		return new LColor(r, g, b, a);
+	}
+
+	/**
+	 * 转换颜色为RGBA格式的Color
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @param a
+	 * @return
+	 */
+	public final static LColor fromRGBA(float r, float g, float b, float a) {
+		return new LColor(r, g, b, a);
+	}
+
+	/**
+	 * 转换颜色为RGB格式的Color
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
+	public final static LColor fromRGB(float r, float g, float b) {
+		return new LColor(r, g, b);
 	}
 
 	/**

@@ -340,6 +340,58 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return list;
 	}
 
+	/**
+	 * 删除所有优先级小于指定数值的进程
+	 * 
+	 * @param minPriority
+	 * @return
+	 */
+	public TArray<GameProcess> deleteAllWithMinPriority(int minPriority) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getPriority() < minPriority) {
+							p.kill();
+							processes.remove(p);
+							list.add(p);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 删除所有优先级大于指定数值的进程
+	 * 
+	 * @param maxPriority
+	 * @return
+	 */
+	public TArray<GameProcess> deleteAllWithMaxPriority(int maxPriority) {
+		TArray<GameProcess> list = new TArray<GameProcess>();
+		if (processes != null && processes.size > 0) {
+			synchronized (this.processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getPriority() > maxPriority) {
+							p.kill();
+							processes.remove(p);
+							list.add(p);
+						}
+					}
+				}
+			}
+		}
+		return list;
+	}
+
 	public TArray<GameProcess> pause(GameProcessType pt) {
 		TArray<GameProcess> list = new TArray<GameProcess>();
 		if (processes != null && processes.size > 0) {

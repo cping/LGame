@@ -126,6 +126,8 @@ public class LProcess implements LRelease {
 
 	private boolean _screenLoading;
 
+	private boolean _screenAllowSyncTouch;
+
 	private int _curId;
 
 	private float _touchScaleX = 1f, _touchScaleY = 1f;
@@ -150,6 +152,19 @@ public class LProcess implements LRelease {
 			setInputFactory(null);
 			clearProcess();
 		}
+		this._isInstance = false;
+		this._waitTransition = false;
+		this._screenLoading = false;
+		this._screenAllowSyncTouch = true;
+		return this;
+	}
+
+	public boolean isScreenAllowSyncTouch() {
+		return this._screenAllowSyncTouch;
+	}
+
+	public LProcess setScreenAllowSyncTouch(boolean t) {
+		this._screenAllowSyncTouch = t;
 		return this;
 	}
 
@@ -954,7 +969,10 @@ public class LProcess implements LRelease {
 	}
 
 	public Vector2f convertXY(float x, float y) {
-		return convertXY(getX(), getY(), x, y);
+		if (_screenAllowSyncTouch) {
+			return convertXY(getX(), getY(), x, y);
+		}
+		return _pointLocaltion.set(x, y);
 	}
 
 	public Screen getScreen() {

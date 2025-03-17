@@ -401,21 +401,21 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 
 	@Override
 	protected void processTouchClicked() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchClicked();
 		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchReleased();
 		}
 	}

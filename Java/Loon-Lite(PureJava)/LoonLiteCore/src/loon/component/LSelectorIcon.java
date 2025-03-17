@@ -419,8 +419,8 @@ public class LSelectorIcon extends LComponent {
 
 	@Override
 	public void processKeyReleased() {
-		if (input != null) {
-			int key = input.getKeyReleased();
+		if (_input != null) {
+			int key = _input.getKeyReleased();
 			switch (key) {
 			case SysKey.UP:
 				move(Config.TUP);

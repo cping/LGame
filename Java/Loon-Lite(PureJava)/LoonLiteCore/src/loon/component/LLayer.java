@@ -514,7 +514,7 @@ public class LLayer extends ActorLayer {
 
 	@Override
 	protected void processTouchPressed() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchPressed();
 			final Vector2f pos = getUITouchXY();
 			int dx = MathUtils.floor(pos.x);
@@ -543,7 +543,7 @@ public class LLayer extends ActorLayer {
 		if (!_currentLayerTouchClick) {
 			return;
 		}
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchReleased();
 			final Vector2f pos = getUITouchXY();
 			int dx = MathUtils.floor(pos.x);
@@ -574,7 +574,7 @@ public class LLayer extends ActorLayer {
 		if (!_currentLayerTouchClick) {
 			return;
 		}
-		if (input.isMoving()) {
+		if (_input.isMoving()) {
 			int dropX = 0;
 			int dropY = 0;
 			if (!_dragLocked) {
@@ -583,10 +583,10 @@ public class LLayer extends ActorLayer {
 					moveActor = checkDragActor();
 				}
 				if (!moveActor) {
-					synchronized (input) {
+					synchronized (_input) {
 						validatePosition();
-						dropX = this.input.getTouchDX();
-						dropY = this.input.getTouchDY();
+						dropX = this._input.getTouchDX();
+						dropY = this._input.getTouchDY();
 						if (isNotMoveInScreen(dropX + x(), dropY + y())) {
 							return;
 						}

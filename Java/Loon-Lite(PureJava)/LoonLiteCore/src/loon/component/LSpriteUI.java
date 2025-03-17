@@ -73,7 +73,7 @@ public class LSpriteUI extends LContainer {
 
 	@Override
 	protected void processTouchClicked() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			this.doClick();
 		}
 	}
@@ -101,7 +101,7 @@ public class LSpriteUI extends LContainer {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
-			this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			this.move(this._input.getTouchDX(), this._input.getTouchDY());
 			if (_sprite != null) {
 				_sprite.setLocation(getX(), getY());
 			}
@@ -111,14 +111,14 @@ public class LSpriteUI extends LContainer {
 
 	@Override
 	protected void processTouchPressed() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchPressed();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (!input.isMoving()) {
+		if (!_input.isMoving()) {
 			super.processTouchReleased();
 		}
 	}

@@ -816,7 +816,7 @@ public class LInventory extends LLayer {
 	@Override
 	public void dragClick(int dx, int dy) {
 		super.dragClick(dx, dy);
-		final boolean draged = input == null ? false : (input.getTouchDX() == 0 && input.getTouchDY() == 0);
+		final boolean draged = _input == null ? false : (_input.getTouchDX() == 0 && _input.getTouchDY() == 0);
 		if (_isMobile && !_tipSelected && draged) {
 			checkTouchTip();
 		}

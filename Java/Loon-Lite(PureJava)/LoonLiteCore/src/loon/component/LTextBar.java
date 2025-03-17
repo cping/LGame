@@ -364,6 +364,24 @@ public class LTextBar extends LComponent {
 		return this;
 	}
 
+	public LTextBar replaceText(String src, String dst) {
+		if (StringUtils.isEmpty(src) || StringUtils.isEmpty(dst)) {
+			return this;
+		}
+		this._text = StringUtils.replace(_text, src, dst);
+		this._messages = Print.formatMessage(_text, _font, _maxWidth);
+		return this;
+	}
+
+	public LTextBar formatText(String src, Object... o) {
+		if (StringUtils.isEmpty(src) || o == null) {
+			return this;
+		}
+		this._text = StringUtils.format(_text, src, o);
+		this._messages = Print.formatMessage(_text, _font, _maxWidth);
+		return this;
+	}
+
 	@Override
 	protected void processTouchDragged() {
 		this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());

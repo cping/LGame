@@ -198,7 +198,7 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	@Override
 	protected void processTouchDragged() {
-		if (input != null) {
+		if (this._input != null) {
 			this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());
 		}
 		super.processTouchDragged();

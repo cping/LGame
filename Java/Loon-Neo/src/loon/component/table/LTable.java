@@ -330,8 +330,8 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			if (getContainer() != null) {
 				getContainer().sendToFront(this);
 			}
-			if (this.input != null) {
-				this.move(this.input.getTouchDX(), this.input.getTouchDY());
+			if (this._input != null) {
+				this.move(this._input.getTouchDX(), this._input.getTouchDY());
 			}
 		}
 		super.dragClick();

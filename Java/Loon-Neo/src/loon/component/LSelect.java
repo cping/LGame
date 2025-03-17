@@ -209,7 +209,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		}
 		if (!isClickUp()) {
 			if (selects != null) {
-				final int touchY = input.getTouchY();
+				final int touchY = _input.getTouchY();
 				selectFlag = selectSize - (((nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
 				if (selectFlag < 1) {
 					selectFlag = 0;

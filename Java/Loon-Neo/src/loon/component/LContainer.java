@@ -223,11 +223,11 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childCount++;
 		if (_desktop != null) {
 			this._desktop.setDesktop(comp);
-			if (this.input == null) {
-				this.input = _desktop.input;
+			if (this._input == null) {
+				this._input = _desktop._sysInput;
 			}
-			if (comp.input == null) {
-				comp.input = _desktop.input;
+			if (comp._input == null) {
+				comp._input = _desktop._sysInput;
 			}
 		}
 		if (_sortableChildren) {

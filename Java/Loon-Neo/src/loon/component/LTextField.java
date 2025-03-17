@@ -154,7 +154,7 @@ public class LTextField extends LTextBar {
 	}
 
 	public boolean wasEntered() {
-		return this.input.getKeyPressed() == SysKey.ENTER || !this.isFocusable();
+		return this._input.getKeyPressed() == SysKey.ENTER || !this.isFocusable();
 	}
 
 	@Override

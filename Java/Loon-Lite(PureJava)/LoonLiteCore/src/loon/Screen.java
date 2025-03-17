@@ -2574,6 +2574,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 获得Screen的主控制器
+	 * 
+	 * @return
+	 */
+	public LProcess getProcess() {
+		return this._processHandler;
+	}
+
+	/**
 	 * 返回精灵监听
 	 * 
 	 * @return

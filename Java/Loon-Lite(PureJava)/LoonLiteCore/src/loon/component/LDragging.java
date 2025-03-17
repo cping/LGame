@@ -144,7 +144,7 @@ public class LDragging extends LComponent {
 	@Override
 	public void processTouchPressed() {
 		super.processTouchPressed();
-		if (!(SysTouch.isDrag() && input.isMoving())) {
+		if (!(SysTouch.isDrag() && _input.isMoving())) {
 			if (!locked.isPressed()) {
 				start();
 				locked.press();

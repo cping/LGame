@@ -42,7 +42,6 @@ import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
-import loon.events.SysInput;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -95,10 +94,6 @@ public abstract class ActorLayer extends LContainer {
 	private void initialize(int cellSize) {
 		this.cellSize = cellSize;
 		this.collisionChecker.initialize(cellSize);
-	}
-
-	public SysInput screenInput() {
-		return input;
 	}
 
 	public int getCellSize() {

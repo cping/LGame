@@ -204,7 +204,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected LayoutConstraints _rootConstraints = null;
 
-	protected SysInput input;
+	protected SysInput _input;
 
 	// 点击事件监听
 	protected ClickListener _click;
@@ -1251,7 +1251,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 
 	 */
 	protected void checkFocusKey() {
-		if (this.input.getKeyPressed() == SysKey.ENTER) {
+		if (this._input.getKeyPressed() == SysKey.ENTER) {
 			this.transferFocus();
 		} else {
 			this.transferFocusBackward();
@@ -1519,19 +1519,19 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public float getTouchDX() {
-		return toPixelScaleX(input == null ? SysTouch.getDX() : input.getTouchDX());
+		return toPixelScaleX(_input == null ? SysTouch.getDX() : _input.getTouchDX());
 	}
 
 	public float getTouchDY() {
-		return toPixelScaleY(input == null ? SysTouch.getDY() : input.getTouchDY());
+		return toPixelScaleY(_input == null ? SysTouch.getDY() : _input.getTouchDY());
 	}
 
 	public float getTouchX() {
-		return toPixelScaleX(input == null ? SysTouch.getX() : input.getTouchX());
+		return toPixelScaleX(_input == null ? SysTouch.getX() : _input.getTouchX());
 	}
 
 	public float getTouchY() {
-		return toPixelScaleY(input == null ? SysTouch.getY() : input.getTouchY());
+		return toPixelScaleY(_input == null ? SysTouch.getY() : _input.getTouchY());
 	}
 
 	public Vector2f getUITouch(float x, float y) {
@@ -1604,8 +1604,8 @@ public abstract class LComponent extends LObject<LContainer>
 	public Vector2f getUITouchXY() {
 		float newX = 0f;
 		float newY = 0f;
-		float touchX = input == null ? SysTouch.getX() : input.getTouchX();
-		float touchY = input == null ? SysTouch.getY() : input.getTouchY();
+		float touchX = _input == null ? SysTouch.getX() : _input.getTouchX();
+		float touchY = _input == null ? SysTouch.getY() : _input.getTouchY();
 		if (getRotation() == 0) {
 			if (_objectSuper == null) {
 				newX = toPixelScaleX(touchX - getX());
@@ -1970,52 +1970,52 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isKeyDown(int key) {
-		if (input == null) {
+		if (_input == null) {
 			return SysKey.isKeyPressed(key);
 		}
-		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
+		return _input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
 	public boolean isKeyUp(int key) {
-		if (input == null) {
+		if (_input == null) {
 			return SysKey.isKeyReleased(key);
 		}
-		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
+		return _input.isKeyReleased(key) || SysKey.isKeyReleased(key);
 	}
 
 	public boolean isKeyDown(String key) {
-		if (input == null) {
+		if (_input == null) {
 			return SysKey.isKeyPressed(key);
 		}
-		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
+		return _input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
 	public boolean isKeyUp(String key) {
-		if (input == null) {
+		if (_input == null) {
 			return SysKey.isKeyReleased(key);
 		}
-		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
+		return _input.isKeyReleased(key) || SysKey.isKeyReleased(key);
 	}
 
 	public boolean isClickDown() {
-		if (input == null) {
+		if (_input == null) {
 			return SysTouch.isDown();
 		}
-		return input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
+		return _input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
 	}
 
 	public boolean isClickUp() {
-		if (input == null) {
+		if (_input == null) {
 			return SysTouch.isUp();
 		}
-		return input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
+		return _input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
 	}
 
 	public boolean isClickDrag() {
-		if (input == null) {
+		if (_input == null) {
 			return SysTouch.isDrag();
 		}
-		return input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
+		return _input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
 	}
 
 	public boolean isTouchResponseEvent(float x, float y) {
@@ -2055,7 +2055,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 		this._desktop = d;
 		if (d != null) {
-			this.input = d.input;
+			this._input = d._sysInput;
 		}
 		return this;
 	}
@@ -2064,8 +2064,17 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._desktop;
 	}
 
+	public LComponent setInput(SysInput i) {
+		this._input = i;
+		return this;
+	}
+
+	public SysInput screenInput() {
+		return this._input;
+	}
+
 	public Screen getScreen() {
-		return (_desktop == null || _desktop.input == null) ? LSystem.getProcess().getScreen() : _desktop.input;
+		return (_desktop == null || _desktop._sysInput == null) ? LSystem.getProcess().getScreen() : _desktop._curScreen;
 	}
 
 	public LContainer getParent(final QueryEvent<LComponent> test) {
@@ -2489,7 +2498,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._resizeListener = null;
 		this._loopAction = null;
 		this._click = null;
-		this.input = null;
+		this._input = null;
 		removeActionEvents(this);
 		destory();
 	}

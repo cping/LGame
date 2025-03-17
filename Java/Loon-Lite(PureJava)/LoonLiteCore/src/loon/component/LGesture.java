@@ -133,7 +133,7 @@ public class LGesture extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-		if (SysTouch.isDrag() && input.isMoving()) {
+		if (SysTouch.isDrag() && _input.isMoving()) {
 			final float x = getUITouchX();
 			final float y = getUITouchY();
 			if (isPointInUI(x, y)) {

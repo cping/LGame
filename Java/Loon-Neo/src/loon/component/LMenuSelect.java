@@ -496,8 +496,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			if (!_keyEvent.isPressed()) {
 				this._pressedTime = 5;
 				this._pressed = true;
-				if (input != null) {
-					int code = input.getKeyPressed();
+				if (_input != null) {
+					int code = _input.getKeyPressed();
 					switch (code) {
 					case SysKey.UP:
 						_selected--;

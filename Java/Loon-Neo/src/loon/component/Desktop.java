@@ -34,6 +34,7 @@ import loon.component.layout.Margin;
 import loon.events.GameKey;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.events.SysInput;
 import loon.events.SysTouch;
 import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
@@ -69,7 +70,10 @@ public class Desktop implements Visible, IArray, LRelease {
 	private final Vector2f _touchPoint = new Vector2f();
 
 	// 输入设备监听
-	protected final Screen input;
+	protected SysInput _sysInput;
+
+	// 当前运行屏幕
+	protected Screen _curScreen;
 
 	private ResizeListener<Desktop> _resizeListener;
 
@@ -138,7 +142,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	/**
 	 * 构造一个可用桌面
 	 * 
-	 * @param input
+	 * @param name
+	 * @param screen
 	 * @param width
 	 * @param height
 	 */
@@ -148,12 +153,23 @@ public class Desktop implements Visible, IArray, LRelease {
 		this._visible = true;
 		this._contentPane = new LPanel(0, 0, width, height);
 		this._contentPane.desktopContainer = true;
-		this.input = screen;
 		this._tooltip = new LToolTip();
 		this._contentPane.add(this._tooltip);
 		this._contentPane.setDesktop(this);
+		this.setScreenInput(screen);
 		this.setDesktop(this._contentPane);
 		LSystem.pushDesktopPool(this);
+	}
+
+	public Desktop setScreenInput(Screen screen) {
+		this._sysInput = screen;
+		this._curScreen = screen;
+		return this;
+	}
+
+	public Desktop setInput(SysInput i) {
+		this._sysInput = i;
+		return this;
 	}
 
 	@Override
@@ -225,7 +241,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		}
 		comp.setDesktop(this);
 		if (comp.isFull) {
-			this.input.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
+			this._sysInput.setRepaintMode(Screen.SCREEN_NOT_REPAINT);
 		}
 		this._contentPane.add(comp);
 		this.processTouchMotionEvent();
@@ -496,7 +512,7 @@ public class Desktop implements Visible, IArray, LRelease {
 		try {
 			g.saveTx();
 			if (_useLight && !_light.isClosed()) {
-				_light.setAutoTouchTimer(input.getTouchX(), input.getTouchY(), input.getCurrentTimer());
+				_light.setAutoTouchTimer(_sysInput.getTouchX(), _sysInput.getTouchY(), _sysInput.getCurrentTimer());
 				final ShaderMask lightMask = _light.getMask();
 				lightMask.pushBatch(g);
 				this._contentPane.createUI(g);
@@ -615,19 +631,19 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this._hoverComponent != null && _hoverComponent.isAllowTouch() && this.input.isMoving()) {
-			if (this.input.getTouchDX() != 0 || this.input.getTouchDY() != 0 || SysTouch.getDX() != 0
+		if (this._hoverComponent != null && _hoverComponent.isAllowTouch() && this._sysInput.isMoving()) {
+			if (this._sysInput.getTouchDX() != 0 || this._sysInput.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
 				this._hoverComponent.validatePosition();
 				this._hoverComponent.processTouchDragged();
 			}
 		} else {
 			final int typeButton = SysTouch.getButton();
-			int touchX = input == null ? SysTouch.x() : this.input.getTouchX();
-			int touchY = input == null ? SysTouch.y() : this.input.getTouchY();
-			int touchDx = (int) (input == null ? SysTouch.getDX() : this.input.getTouchDX());
-			int touchDy = (int) (input == null ? SysTouch.getDY() : this.input.getTouchDY());
-			if (input != null) {
+			int touchX = _sysInput == null ? SysTouch.x() : this._sysInput.getTouchX();
+			int touchY = _sysInput == null ? SysTouch.y() : this._sysInput.getTouchY();
+			int touchDx = (int) (_sysInput == null ? SysTouch.getDX() : this._sysInput.getTouchDX());
+			int touchDy = (int) (_sysInput == null ? SysTouch.getDY() : this._sysInput.getTouchDY());
+			if (_sysInput != null) {
 				final Vector2f touch = getUITouch(touchX, touchY, false);
 				touchX = touch.x();
 				touchY = touch.y();
@@ -702,7 +718,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchEvent() {
-		final int pressed = this.input.getTouchPressed(), released = this.input.getTouchReleased();
+		final int pressed = this._sysInput.getTouchPressed(), released = this._sysInput.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
 			final boolean mobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 			if (!mobile) {
@@ -754,12 +770,12 @@ public class Desktop implements Visible, IArray, LRelease {
 	 */
 	private void processKeyEvent() {
 		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
-				&& this.input.getKeyPressed() != Screen.NO_KEY) {
+				&& this._sysInput.getKeyPressed() != Screen.NO_KEY) {
 			this._selectedComponent.validatePosition();
 			this._selectedComponent.keyPressed();
 		}
 		if (this._selectedComponent != null && this._selectedComponent.isAllowKey()
-				&& this.input.getKeyReleased() != Screen.NO_KEY && this._selectedComponent != null) {
+				&& this._sysInput.getKeyReleased() != Screen.NO_KEY && this._selectedComponent != null) {
 			this._selectedComponent.validatePosition();
 			this._selectedComponent.keyReleased();
 		}
@@ -1327,16 +1343,20 @@ public class Desktop implements Visible, IArray, LRelease {
 		return true;
 	}
 
+	public SysInput getInput() {
+		return _sysInput;
+	}
+
 	public Screen getScreen() {
-		return input;
+		return _curScreen;
 	}
 
 	public float getScreenX() {
-		return input == null ? 0 : input.getX();
+		return _curScreen == null ? 0 : _curScreen.getX();
 	}
 
 	public float getScreenY() {
-		return input == null ? 0 : input.getY();
+		return _curScreen == null ? 0 : _curScreen.getY();
 	}
 
 	public float getX() {
@@ -1400,10 +1420,6 @@ public class Desktop implements Visible, IArray, LRelease {
 		return _dirtyList;
 	}
 
-	public Screen getInput() {
-		return input;
-	}
-
 	public String getName() {
 		return _desktop_name;
 	}
@@ -1418,7 +1434,7 @@ public class Desktop implements Visible, IArray, LRelease {
 	}
 
 	public RectBox getBoundingBox() {
-		return this._contentPane == null ? input.getRectBox().cpy() : this._contentPane.getRectBox().cpy();
+		return this._contentPane == null ? _curScreen.getRectBox().cpy() : this._contentPane.getRectBox().cpy();
 	}
 
 	public Vector2f getTouchOffset() {

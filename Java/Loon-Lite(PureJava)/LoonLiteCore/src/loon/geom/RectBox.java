@@ -846,6 +846,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	public RectBox expand(int e) {
+		this.x += e;
+		this.y += e;
+		this.width += e;
+		this.height += e;
+		return this;
+	}
+
 	public int getArea() {
 		return width * height;
 	}

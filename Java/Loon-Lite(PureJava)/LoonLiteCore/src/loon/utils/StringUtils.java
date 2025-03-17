@@ -1075,7 +1075,7 @@ final public class StringUtils extends CharUtils {
 	 * @param count
 	 * @return
 	 */
-	public static String replaceIgnoreCase(String line, String oldString, String newString, int count[]) {
+	public static String replaceIgnoreCase(String line, String oldString, String newString, int[] count) {
 		if (line == null)
 			return null;
 		String lcLine = line.toLowerCase();

@@ -32,6 +32,39 @@ public class Bezier {
 		return ((1f - percent) * (p1y + (p2y - p1y) * percent) * 3f + percent * percent) * percent;
 	}
 
+	public final static float cubic(float a, float b, float c, float d, float t) {
+		float t1 = 1f - t;
+		return ((t1 * t1 * t1) * a + 3f * t * (t1 * t1) * b + 3f * (t * t) * (t1) * c + (t * t * t) * d);
+	}
+
+	public final static float quad(float a, float b, float c, float t) {
+		float t1 = 1f - t;
+		return (t1 * t1) * a + 2f * (t1) * t * b + (t * t) * c;
+	}
+
+	public static Vector2f cardano(XY p0, XY p1, XY p2, XY p3, float tension, float t) {
+		if (tension < 0f) {
+			tension = 0f;
+		}
+		if (tension > 1f) {
+			tension = 1f;
+		}
+		float t2 = t * t;
+		float t3 = t2 * t;
+
+		float s = (1 - tension) / 2;
+
+		float b1 = s * ((-t3 + (2 * t2)) - t);
+		float b2 = s * (-t3 + t2) + (2 * t3 - 3 * t2 + 1);
+		float b3 = s * (t3 - 2 * t2 + t) + (-2 * t3 + 3 * t2);
+		float b4 = s * (t3 - t2);
+
+		float x = (p0.getX() * b1 + p1.getX() * b2 + p2.getX() * b3 + p3.getX() * b4);
+		float y = (p0.getY() * b1 + p1.getY() * b2 + p2.getY() * b3 + p3.getY() * b4);
+
+		return new Vector2f(x, y);
+	}
+
 	public final static float cardano(Bezier curve, float x) {
 		float pa = x - 0f;
 		float pb = x - curve.controlPoint1.x;
