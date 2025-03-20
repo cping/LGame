@@ -1179,7 +1179,7 @@ public class HelperUtils {
 	}
 
 	public static <T> void sort(final T[] arrays, final Comparator<T> comp) {
-		SortUtils.<T>quickSort(arrays, comp);
+		SortUtils.defaultSort(arrays, comp);
 	}
 
 	@SuppressWarnings("unchecked")

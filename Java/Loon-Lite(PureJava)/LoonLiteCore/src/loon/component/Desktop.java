@@ -129,7 +129,8 @@ public class Desktop implements Visible, IArray, LRelease {
 	/**
 	 * 构造一个可用桌面
 	 * 
-	 * @param input
+	 * @param name
+	 * @param screen
 	 * @param width
 	 * @param height
 	 */

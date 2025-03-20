@@ -950,7 +950,7 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 			return;
 		}
 		T[] obj = CollectionUtils.copyOf(items, 0, size);
-		SortUtils.quickSort(obj, compar);
+		SortUtils.defaultSort(obj, compar);
 		int count = 0;
 		for (int i = 0; i < obj.length; i++) {
 			if (obj[i] != null) {

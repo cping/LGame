@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import java.util.Arrays;
-
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -501,7 +499,7 @@ public class UIntArray implements IArray, LRelease {
 	}
 
 	public UIntArray sort() {
-		Arrays.sort(bytebuffer, 0, length);
+		SortUtils.defaultSort(bytebuffer, 0, length);
 		return this;
 	}
 

@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import java.util.Arrays;
-
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -427,7 +425,7 @@ public class FloatArray implements IArray, LRelease {
 	}
 
 	public FloatArray sort() {
-		Arrays.sort(items, 0, length);
+		SortUtils.defaultSort(items, 0, length);
 		return this;
 	}
 

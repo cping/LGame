@@ -1917,6 +1917,13 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
 			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
 			Vector2f pivot, Direction dir, boolean offset) {
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
+				origin, pivot, dir, offset, false);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,
+			float srcWidth, float srcHeight, LColor color, float rotation, float scaleX, float scaleY, Vector2f origin,
+			Vector2f pivot, Direction dir, boolean offset, boolean mirrorNotOrigin) {
 		if (isClosed) {
 			return this;
 		}
@@ -1971,18 +1978,35 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 				xf.translate(-centerX, -centerY);
 			}
 			if (dirDirty) {
-				switch (dir) {
-				case TRANS_MIRROR:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, originX, originY);
-					break;
-				case TRANS_FLIP:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
-					break;
-				case TRANS_MF:
-					Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, originX, originY);
-					break;
-				default:
-					break;
+				if (mirrorNotOrigin) {
+					switch (dir) {
+					case TRANS_MIRROR:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, width / 2f, height / 2f);
+						break;
+					case TRANS_FLIP:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, width / 2f, height / 2f);
+						break;
+					case TRANS_MF:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, width / 2f, height / 2f);
+						break;
+					default:
+						break;
+					}
+				} else {
+					switch (dir) {
+					case TRANS_MIRROR:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR, originX, originY);
+						break;
+					case TRANS_FLIP:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_MIRROR_ROT180, originX, originY);
+						break;
+					case TRANS_MF:
+						Affine2f.transformOrigin(xf, x, y, Affine2f.TRANS_ROT180, originX, originY);
+						break;
+					default:
+						break;
+					}
+
 				}
 			}
 			Affine2f.multiply(tx(), xf, xf);

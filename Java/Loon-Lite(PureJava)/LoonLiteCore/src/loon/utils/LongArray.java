@@ -20,8 +20,6 @@
  */
 package loon.utils;
 
-import java.util.Arrays;
-
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -429,7 +427,7 @@ public class LongArray implements IArray, LRelease {
 	}
 
 	public void sort() {
-		Arrays.sort(items, 0, length);
+		SortUtils.defaultSort(items, 0, length);
 	}
 
 	public void reverse() {

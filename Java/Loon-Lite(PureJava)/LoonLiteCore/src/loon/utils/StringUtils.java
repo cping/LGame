@@ -527,6 +527,28 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 联合指定对象并输出为字符串
+	 * 
+	 * @param flag
+	 * @param o
+	 * @return
+	 */
+	public static String join(char flag, Object... o) {
+		if (CollectionUtils.isEmpty(o)) {
+			return LSystem.EMPTY;
+		}
+		StrBuilder sbr = new StrBuilder();
+		int size = o.length;
+		for (int i = 0; i < size; i++) {
+			sbr.append(HelperUtils.toStr(o[i]));
+			if (i < size - 1) {
+				sbr.append(flag);
+			}
+		}
+		return sbr.toString();
+	}
+
+	/**
 	 * 拼接指定对象数组为String
 	 * 
 	 * @param o

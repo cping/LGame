@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain srcArray copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -20,6 +20,7 @@
  */
 package loon.utils;
 
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class SortUtils<T> {
@@ -28,6 +29,44 @@ public class SortUtils<T> {
 	private T[] _heap;
 	private int _num;
 	private int _target;
+
+	public static <T> void defaultSort(T[] srcArray) {
+		Arrays.sort(srcArray);
+		// TimComparableSort.sort(srcArray);
+	}
+
+	public static <T> void defaultSort(T[] srcArray, Comparator<T> compar) {
+		Arrays.sort(srcArray, compar);
+		// TimComparatorSort.sort(srcArray, compar);
+	}
+
+	public static <T> void defaultSort(char[] srcArray, int start, int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
+	public static <T> void defaultSort(byte[] srcArray, int start, int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
+	public static <T> void defaultSort(float[] srcArray, int start, int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
+	public static <T> void defaultSort(int[] srcArray, int start, int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
+	public static <T> void defaultSort(long[] srcArray, int start, int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
+	public static <T> void timSort(T[] srcArray, Comparator<T> compar) {
+		if (compar == null) {
+			TimComparableSort.sort(srcArray);
+		} else {
+			TimComparatorSort.sort(srcArray, compar);
+		}
+	}
 
 	public static <T> void msort(T[] srcArray, T[] dest, Comparator<T> compar) {
 		msort(srcArray, dest, 0, srcArray.length - 1, compar);
@@ -42,16 +81,25 @@ public class SortUtils<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static <T> void merge(T[] srcArray, T[] dest, int low, int middle, int high, Comparator<T> compar) {
 		int leftEnd = middle - 1;
 		int pos = low;
 		int numElements = high - low + 1;
 
 		for (; low <= leftEnd && middle <= high;) {
-			if (compar.compare(srcArray[low], srcArray[middle]) <= 0) {
-				dest[pos++] = srcArray[low++];
-			} else {
-				dest[pos++] = srcArray[middle++];
+			if (compar != null) {
+				if (compar.compare(srcArray[low], srcArray[middle]) <= 0) {
+					dest[pos++] = srcArray[low++];
+				} else {
+					dest[pos++] = srcArray[middle++];
+				}
+			} else if (srcArray[0] instanceof Comparable) {
+				if (((Comparable<T>) srcArray[low]).compareTo(srcArray[middle]) <= 0) {
+					dest[pos++] = srcArray[low++];
+				} else {
+					dest[pos++] = srcArray[middle++];
+				}
 			}
 		}
 
@@ -72,26 +120,43 @@ public class SortUtils<T> {
 		quickSort(a, 0, a.length - 1, compar);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> void quickSort(T[] a, int lo0, int hi0, Comparator<T> compar) {
 		if (hi0 <= lo0) {
 			return;
 		}
 		T t;
 		if (hi0 - lo0 == 1) {
-			if (compar.compare(a[hi0], a[lo0]) < 0) {
-				t = a[lo0];
-				a[lo0] = a[hi0];
-				a[hi0] = t;
+			if (compar != null) {
+				if (compar.compare(a[hi0], a[lo0]) < 0) {
+					t = a[lo0];
+					a[lo0] = a[hi0];
+					a[hi0] = t;
+				}
+			} else if (a[hi0] instanceof Comparable) {
+				if (((Comparable<T>) a[hi0]).compareTo(a[lo0]) < 0) {
+					t = a[lo0];
+					a[lo0] = a[hi0];
+					a[hi0] = t;
+				}
 			}
+
 			return;
 		}
 		T mid = a[(lo0 + hi0) / 2];
 		int lo = lo0 - 1, hi = hi0 + 1;
 		for (;;) {
-			for (; compar.compare(a[++lo], mid) < 0;)
-				;
-			for (; compar.compare(mid, a[--hi]) < 0;)
-				;
+			if (compar != null) {
+				for (; compar.compare(a[++lo], mid) < 0;)
+					;
+				for (; compar.compare(mid, a[--hi]) < 0;)
+					;
+			} else if (a[0] instanceof Comparable) {
+				for (; ((Comparable<T>) (a[++lo])).compareTo(mid) < 0;)
+					;
+				for (; ((Comparable<T>) mid).compareTo(a[--hi]) < 0;)
+					;
+			}
 			if (hi > lo) {
 				t = a[lo];
 				a[lo] = a[hi];
@@ -108,18 +173,28 @@ public class SortUtils<T> {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static <T> void gnomeSort(T[] srcArray, Comparator<T> compar) {
 		int pos = 1;
 		int last = 0;
 		int length = srcArray.length;
 		for (; pos < length;) {
-			if (compar.compare(srcArray[pos], srcArray[pos - 1]) >= 0) {
+			if (compar != null && compar.compare(srcArray[pos], srcArray[pos - 1]) >= 0) {
 				if (last != 0) {
 					pos = last;
 					last = 0;
 				}
 				pos++;
+			} else if (srcArray[0] instanceof Comparable) {
+				if ((((Comparable<T>) srcArray[pos]).compareTo(srcArray[pos - 1]) >= 0)) {
+					if (last != 0) {
+						pos = last;
+						last = 0;
+					}
+					pos++;
+				}
 			} else {
+
 				T tmp = srcArray[pos];
 				srcArray[pos] = srcArray[pos - 1];
 				srcArray[pos - 1] = tmp;

@@ -21,11 +21,10 @@
  */
 package loon.component;
 
-import java.util.Arrays;
-
 import loon.LSysException;
 import loon.utils.CollectionUtils;
 import loon.utils.LIterator;
+import loon.utils.SortUtils;
 import loon.utils.SortedList;
 
 public class ActorTreeSet {
@@ -142,7 +141,7 @@ public class ActorTreeSet {
 						o = CollectionUtils.cut(o, i);
 						o = CollectionUtils.expand(o, 1, true);
 						o[size - 1] = actor;
-						Arrays.sort(o);
+						SortUtils.defaultSort(o);
 						break;
 					}
 				}
@@ -165,7 +164,7 @@ public class ActorTreeSet {
 						o = CollectionUtils.cut(o, i);
 						o = CollectionUtils.expand(o, 1, false);
 						o[0] = actor;
-						Arrays.sort(o);
+						SortUtils.defaultSort(o);
 						break;
 					}
 				}

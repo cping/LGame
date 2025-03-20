@@ -1550,7 +1550,7 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
-	public void close() {
+	protected void _onDestroy() {
 		this._isClose = true;
 		if (this._objectSuper != null) {
 			this._objectSuper.removeNode(this);

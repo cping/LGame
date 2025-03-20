@@ -1,6 +1,5 @@
 package loon.utils;
 
-import java.util.Arrays;
 import java.util.Comparator;
 
 import loon.LRelease;
@@ -487,7 +486,7 @@ public class CharArray implements IArray, LRelease {
 		for (int i = 0; i < length; i++) {
 			newItems[i] = this.items[i];
 		}
-		SortUtils.quickSort(newItems, c);
+		SortUtils.defaultSort(newItems, c);
 		for (int i = 0; i < length; i++) {
 			this.items[i] = newItems[i].charValue();
 		}
@@ -495,7 +494,7 @@ public class CharArray implements IArray, LRelease {
 	}
 
 	public CharArray sort() {
-		Arrays.sort(items, 0, length);
+		SortUtils.defaultSort(items, 0, length);
 		return this;
 	}
 

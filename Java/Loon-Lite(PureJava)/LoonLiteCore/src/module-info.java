@@ -17,6 +17,7 @@ module loon.core {
 	exports loon.action.map.tmx;
 	exports loon.action.page;
 	exports loon.action.sprite;
+	exports loon.action.sprite.bone;
 	exports loon.action.sprite.effect;
 	exports loon.canvas;
 	exports loon.component;
