@@ -29,6 +29,25 @@ import loon.utils.TArray;
 
 public class Bone implements Comparable<Bone> {
 
+	public final static FloatArray createEmptyBones(float layer) {
+		FloatArray result = new FloatArray();
+		result.add(0f);
+		result.add(0f);
+		result.add(1000f);
+		result.add(1000f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(0f);
+		result.add(layer);
+		result.add(0f);
+		return result;
+	}
+
 	private TArray<BoneSheet> _boneSheet;
 
 	private RectBox _size;
@@ -58,6 +77,10 @@ public class Bone implements Comparable<Bone> {
 				layer, ssl);
 	}
 
+	public Bone(String name, float layer, TArray<BoneSheet> bs) {
+		load(name, createEmptyBones(layer), bs);
+	}
+
 	public Bone(String name, FloatArray v, TArray<BoneSheet> bs) {
 		load(name, v, bs);
 	}
@@ -83,22 +106,22 @@ public class Bone implements Comparable<Bone> {
 		return this;
 	}
 
-	public Bone load(String name, FloatArray valueList, TArray<BoneSheet> bs) {
+	public Bone load(String name, FloatArray result, TArray<BoneSheet> bs) {
 		this._name = name;
-		this._posX = valueList.get(BoneFlags.POS_X);
-		this._posY = valueList.get(BoneFlags.POS_Y);
-		this._scaleX = valueList.get(BoneFlags.SCALE_X);
-		this._scaleY = valueList.get(BoneFlags.SCALE_Y);
-		this._originX = valueList.get(BoneFlags.ORIGIN_X);
-		this._originY = valueList.get(BoneFlags.ORIGIN_Y);
-		this._angle = valueList.get(BoneFlags.ANGLE);
-		this._flipFlag = (int) valueList.get(BoneFlags.FLIP);
-		this._clipX = valueList.get(BoneFlags.CLIP_X);
-		this._clipY = valueList.get(BoneFlags.CLIP_Y);
-		this._clipWidth = (int) valueList.get(BoneFlags.CLIP_WIDTH);
-		this._clipHeight = (int) valueList.get(BoneFlags.CLIP_HEIGHT);
-		this._layer = valueList.get(BoneFlags.LAYER);
-		this._clipIndex = (int) valueList.get(BoneFlags.CLIP_INDEX);
+		this._posX = result.get(BoneFlags.POS_X);
+		this._posY = result.get(BoneFlags.POS_Y);
+		this._scaleX = result.get(BoneFlags.SCALE_X);
+		this._scaleY = result.get(BoneFlags.SCALE_Y);
+		this._originX = result.get(BoneFlags.ORIGIN_X);
+		this._originY = result.get(BoneFlags.ORIGIN_Y);
+		this._angle = result.get(BoneFlags.ANGLE);
+		this._flipFlag = (int) result.get(BoneFlags.FLIP);
+		this._clipX = result.get(BoneFlags.CLIP_X);
+		this._clipY = result.get(BoneFlags.CLIP_Y);
+		this._clipWidth = (int) result.get(BoneFlags.CLIP_WIDTH);
+		this._clipHeight = (int) result.get(BoneFlags.CLIP_HEIGHT);
+		this._layer = result.get(BoneFlags.LAYER);
+		this._clipIndex = (int) result.get(BoneFlags.CLIP_INDEX);
 		this._boneSheet = bs;
 		return this;
 	}
@@ -117,22 +140,22 @@ public class Bone implements Comparable<Bone> {
 	}
 
 	public FloatArray getBoneValues() {
-		FloatArray valueList = new FloatArray();
-		valueList.add(_posX);
-		valueList.add(_posY);
-		valueList.add(_scaleX);
-		valueList.add(_scaleY);
-		valueList.add(_originX);
-		valueList.add(_originY);
-		valueList.add(_angle);
-		valueList.add(_flipFlag);
-		valueList.add(_clipX);
-		valueList.add(_clipY);
-		valueList.add(_clipWidth);
-		valueList.add(_clipHeight);
-		valueList.add(_layer);
-		valueList.add(_clipIndex);
-		return valueList;
+		FloatArray result = new FloatArray();
+		result.add(_posX);
+		result.add(_posY);
+		result.add(_scaleX);
+		result.add(_scaleY);
+		result.add(_originX);
+		result.add(_originY);
+		result.add(_angle);
+		result.add(_flipFlag);
+		result.add(_clipX);
+		result.add(_clipY);
+		result.add(_clipWidth);
+		result.add(_clipHeight);
+		result.add(_layer);
+		result.add(_clipIndex);
+		return result;
 	}
 
 	public float getAngle() {
@@ -149,8 +172,10 @@ public class Bone implements Comparable<Bone> {
 	}
 
 	public void draw(GLEx g, float x, float y) {
-		_boneSheet.get(_clipIndex).draw(g, x + _posX, y + _posY, _scaleX, _scaleY, _clipX, _clipY, _clipWidth,
-				_clipHeight, _originX, _originY, _angle, _flipFlag);
+		if (_clipIndex < _boneSheet.size) {
+			_boneSheet.get(_clipIndex).draw(g, x + _posX, y + _posY, _scaleX, _scaleY, _clipX, _clipY, _clipWidth,
+					_clipHeight, _originX, _originY, _angle, _flipFlag);
+		}
 	}
 
 	@Override

@@ -23,13 +23,21 @@ package loon.action.sprite.bone;
 import loon.BaseIO;
 import loon.LSysException;
 import loon.LSystem;
+import loon.geom.RectBox;
 import loon.utils.ArrayByteReader;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
 public class SkeletonLoader {
+
+	private String _fileName;
+
+	private String[] _paths;
+
+	private ObjectMap<String, String> _kvs = new ObjectMap<String, String>();
 
 	private boolean _actUpdated;
 
@@ -42,7 +50,19 @@ public class SkeletonLoader {
 	private TArray<Skeleton> _skeletons = new TArray<Skeleton>();
 
 	public SkeletonLoader(String fileName, String... paths) {
-		load(fileName, paths);
+		this(fileName, true, paths);
+	}
+
+	public SkeletonLoader(String fileName, boolean loaded, String... paths) {
+		this._fileName = fileName;
+		this._paths = paths;
+		if (loaded) {
+			load(fileName, paths);
+		}
+	}
+
+	public SkeletonLoader load() {
+		return load(_fileName, _paths);
 	}
 
 	public SkeletonLoader load(String fileName, String... paths) {
@@ -65,7 +85,6 @@ public class SkeletonLoader {
 		while ((result = reader.readLine()) != null) {
 			parseLine(result.toLowerCase().trim(), boneSheets);
 		}
-		_bones = new TArray<Bone>();
 		clean();
 		reader.close();
 		return this;
@@ -73,11 +92,13 @@ public class SkeletonLoader {
 
 	public void parseLine(String line, TArray<BoneSheet> boneSheets) {
 		if (StringUtils.isEmpty(line)) {
+			submitBones(boneSheets, _actUpdated);
 		} else if (line.startsWith("model") || line.startsWith("pose") || line.startsWith("act")) {
 			int idx = line.indexOf(LSystem.COLON);
 			if (idx != -1) {
 				String newPoseName = line.substring(idx + 1, line.length()).trim();
 				if (!newPoseName.equals(_poseName)) {
+					submitBones(boneSheets, _actUpdated);
 					_poseName = newPoseName;
 					_actUpdated = true;
 				}
@@ -86,38 +107,51 @@ public class SkeletonLoader {
 			if (_poseName != null && _baseValues.size() == (BoneFlags.CLIP_INDEX + 1)) {
 				_baseValues.set(BoneFlags.ANGLE, _baseValues.get(BoneFlags.ANGLE) * MathUtils.DEG_FULL / 10000f);
 				_bones.add(new Bone(_poseName, _baseValues, boneSheets));
-				if (_actUpdated) {
-					_skeletons.add(new Skeleton(_bones, boneSheets));
-					_bones = new TArray<Bone>();
-				}
-				_baseValues = new FloatArray();
+				submitBones(boneSheets, _actUpdated);
+				_baseValues.clear();
 			}
 			filterValues(line);
 			_actUpdated = false;
 		}
 	}
 
+	private void submitBones(TArray<BoneSheet> boneSheets, boolean update) {
+		if (update) {
+			_skeletons.add(new Skeleton(_bones, boneSheets));
+			_bones = new TArray<Bone>();
+		}
+	}
+
 	public void filterValues(String line) {
-		String result = line;
-		for (; !StringUtils.isEmpty(result);) {
-			int index = result.indexOf(LSystem.COMMA);
-			if (index != -1) {
-				String temp = result.substring(0, index).trim();
-				if (temp.indexOf(LSystem.DASHED) != -1) {
-					_baseValues.add(-Float.valueOf(temp.substring(1)));
-				} else {
-					_baseValues.add(Float.valueOf(temp.substring(0)));
-				}
-				result = (result.substring(index + 1)).trim();
+		final String[] list = StringUtils.toList(line, ",");
+		for (int i = 0; i < list.length; i++) {
+			final String v = list[i].trim();
+			if (MathUtils.isNan(v)) {
+				_baseValues.add(Float.valueOf(v));
 			} else {
-				if (result.indexOf(LSystem.DASHED) != -1) {
-					_baseValues.add(-Float.valueOf(result));
-				} else {
-					_baseValues.add(Float.valueOf(result));
+				String result = _kvs.get(v);
+				if (result != null) {
+					filterValues(result);
 				}
-				result = LSystem.EMPTY;
 			}
 		}
+	}
+
+	public SkeletonLoader setClip(String key, float x, float y, float w, float h) {
+		_kvs.put(key, StringUtils.join(",", x, y, w, h));
+		return this;
+	}
+
+	public RectBox getClip(String key) {
+		String result = _kvs.get(key);
+		if (result != null) {
+			return RectBox.at(result);
+		}
+		return null;
+	}
+
+	public String getFileName() {
+		return _fileName;
 	}
 
 	public static float toScale(float x) {
@@ -125,8 +159,8 @@ public class SkeletonLoader {
 	}
 
 	public void clean() {
-		_baseValues = new FloatArray();
-		_bones = new TArray<Bone>();
+		_baseValues.clear();
+		_bones.clear();
 		_actUpdated = false;
 	}
 

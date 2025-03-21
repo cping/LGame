@@ -46,6 +46,14 @@ public class SkeletonAnimation {
 		this.createBoneAnimations();
 	}
 
+	public SkeletonAnimation createSubAnimationX(int x) {
+		return createSubAnimation(LSystem.UNKNOWN, x, _skeletons.size - 1);
+	}
+
+	public SkeletonAnimation createSubAnimationY(int y) {
+		return createSubAnimation(LSystem.UNKNOWN, 0, y);
+	}
+
 	public SkeletonAnimation createSubAnimation(int x, int y) {
 		return createSubAnimation(LSystem.UNKNOWN, x, y);
 	}
@@ -62,7 +70,10 @@ public class SkeletonAnimation {
 		for (int x = 0; x < _skeletons.get(0).getBones().size(); x++) {
 			TArray<Bone> boneList = new TArray<Bone>();
 			for (int y = 0; y < _skeletons.size(); y++) {
-				boneList.add(_skeletons.get(y).getBone(x));
+				Skeleton skeleton = _skeletons.get(y);
+				if (skeleton.getBones().size > x) {
+					boneList.add(skeleton.getBone(x));
+				}
 			}
 			_boneAnimations.add(new BoneAnimation(_name, boneList));
 		}
@@ -126,12 +137,24 @@ public class SkeletonAnimation {
 	}
 
 	public void draw(GLEx g, int x, int y, int direction) {
-		if (direction == 1) {
+		if (direction != 0) {
 			g.saveTx();
-			g.mulAffine(_mirror);
-			for (int i = 0; i < _boneAnimations.size; i++) {
-				BoneAnimation bone = _boneAnimations.get(i);
-				bone.draw(g, -x, y);
+			if (direction == 1) {
+				_mirror.reset();
+				_mirror.scale(-1, 1);
+				g.mulAffine(_mirror);
+				for (int i = 0; i < _boneAnimations.size; i++) {
+					BoneAnimation bone = _boneAnimations.get(i);
+					bone.draw(g, -x, y);
+				}
+			} else if (direction == 2) {
+				_mirror.reset();
+				_mirror.scale(-1, -1);
+				g.mulAffine(_mirror);
+				for (int i = 0; i < _boneAnimations.size; i++) {
+					BoneAnimation bone = _boneAnimations.get(i);
+					bone.draw(g, -x, -y);
+				}
 			}
 			g.restoreTx();
 		} else {

@@ -176,7 +176,7 @@ public abstract class BaseIO extends DefUI {
 			try {
 				return base.assets().getBytes(path);
 			} catch (Throwable e) {
-				return null;
+				throw new LSysException("The file " + path + " not found !");
 			}
 		}
 		return null;
@@ -188,7 +188,7 @@ public abstract class BaseIO extends DefUI {
 			try {
 				return base.assets().getBytesSync(path);
 			} catch (Throwable e) {
-				return null;
+				throw new LSysException("The file " + path + " not found !");
 			}
 		}
 		return null;
