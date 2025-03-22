@@ -20,6 +20,7 @@
  */
 package loon.action.sprite.bone;
 
+import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.FloatArray;
 import loon.utils.MathUtils;
@@ -46,14 +47,21 @@ public class BoneAnimation implements Comparable<BoneAnimation> {
 
 	private String _name;
 
+	private RectBox _boneRect;
+
 	public BoneAnimation(String name, TArray<Bone> bones) {
 		this._name = name;
 		this._deltaScaleValue = 0.2f;
 		this._targetFrames = 5;
+		this._boneRect = new RectBox();
 		this._boneSheet = bones.get(0).getSheetList();
 		TArray<FloatArray> animationValues = new TArray<FloatArray>();
 		for (int i = 0; i < bones.size; i++) {
-			animationValues.add(bones.get(i).getBoneValues());
+			Bone bone = bones.get(i);
+			if (bone != null) {
+				_boneRect.union(bone.getRectBox());
+				animationValues.add(bone.getBoneValues());
+			}
 		}
 		_animationValuesY = new TArray<FloatArray>();
 		for (int y = 0; y < animationValues.size(); y++) {
@@ -142,6 +150,10 @@ public class BoneAnimation implements Comparable<BoneAnimation> {
 	public void draw(GLEx g, int x, int y) {
 		updateAnimationValues();
 		_bone.draw(g, x, y);
+	}
+
+	public RectBox getRectBox() {
+		return this._boneRect;
 	}
 
 	public BoneAnimation setTargetFrames(int t) {

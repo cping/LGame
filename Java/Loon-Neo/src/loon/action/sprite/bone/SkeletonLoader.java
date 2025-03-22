@@ -154,10 +154,6 @@ public class SkeletonLoader {
 		return _fileName;
 	}
 
-	public static float toScale(float x) {
-		return x / 1000f;
-	}
-
 	public void clean() {
 		_baseValues.clear();
 		_bones.clear();

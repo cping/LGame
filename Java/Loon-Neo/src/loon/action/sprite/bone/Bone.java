@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.FloatArray;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
@@ -106,6 +107,10 @@ public class Bone implements Comparable<Bone> {
 		return this;
 	}
 
+	public static float toScale(float x) {
+		return x / 1000f;
+	}
+
 	public Bone load(String name, FloatArray result, TArray<BoneSheet> bs) {
 		this._name = name;
 		this._posX = result.get(BoneFlags.POS_X);
@@ -126,12 +131,38 @@ public class Bone implements Comparable<Bone> {
 		return this;
 	}
 
+	public float getScalePixelX() {
+		if (_originX != -1f) {
+			return this._posX + _originX;
+		}
+		float scaleX = getScaleX();
+		return ((scaleX == 1f) ? this._posX : (this._posX + (getScaleWidth() * 0.5f)));
+	}
+
+	public float getScalePixelY() {
+		if (_originY != -1f) {
+			return this._posY + _originY;
+		}
+		float scaleY = getScaleY();
+		return ((scaleY == 1f) ? this._posY : (this._posY + (getScaleHeight() * 0.5f)));
+	}
+
+	public float getScaleWidth() {
+		return (this._clipWidth * getScaleX());
+	}
+
+	public float getScaleHeight() {
+		return (this._clipHeight * getScaleY());
+	}
+
 	public RectBox getRectBox() {
 		if (_size == null) {
 			_size = new RectBox(_posX, _posY, _clipWidth, _clipHeight);
 		} else {
 			_size.set(_posX, _posY, _clipWidth, _clipHeight);
 		}
+		_size = MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScaleWidth(), getScaleHeight(), _angle,
+				_size);
 		return _size;
 	}
 
@@ -210,11 +241,11 @@ public class Bone implements Comparable<Bone> {
 	}
 
 	public float getScaleX() {
-		return _scaleX;
+		return toScale(_scaleX);
 	}
 
 	public float getScaleY() {
-		return _scaleY;
+		return toScale(_scaleY);
 	}
 
 	public float getOriginX() {

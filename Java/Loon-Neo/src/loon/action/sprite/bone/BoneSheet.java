@@ -72,8 +72,8 @@ public class BoneSheet {
 		} else {
 			dir = Direction.TRANS_MIRROR;
 		}
-		g.draw(_texture, x, y, clipWidth, clipHeight, clipX, clipY, clipWidth, clipHeight, _color, angle, SkeletonLoader.toScale(sx),
-				SkeletonLoader.toScale(sy), _origin, null, dir, false, true);
+		g.draw(_texture, x, y, clipWidth, clipHeight, clipX, clipY, clipWidth, clipHeight, _color, angle,
+				Bone.toScale(sx), Bone.toScale(sy), _origin, null, dir, false, true);
 	}
 
 	public LTexture getTexture() {
