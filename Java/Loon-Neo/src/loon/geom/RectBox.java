@@ -1417,6 +1417,12 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this.setBounds(0f, 0f, 0f, 0f);
 	}
 
+	@Override
+	public void clear() {
+		this.setEmpty();
+		super.clear();
+	}
+
 	public RectBox offset(Point point) {
 		x += point.x;
 		y += point.y;

@@ -1068,6 +1068,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _baseCamera;
 	}
 
+	public Vector2f getVisibleSize() {
+		return new Vector2f(this.getWidth(), this.getHeight());
+	}
+
+	public Vector2f getVisibleSizeInPixel() {
+		return new Vector2f(this.getWidth() * this._scaleX, this.getHeight() * this._scaleY);
+	}
+
+	public Vector2f getVisibleOrigin() {
+		return new Vector2f(this.getX(), this.getY());
+	}
+
+	public Vector2f getVisibleOriginInPixel() {
+		return new Vector2f(this.getX() * this._scaleX, this.getY() * this._scaleY);
+	}
+
 	public Screen stopRepaint() {
 		LSystem.stopRepaint();
 		return this;
@@ -5183,6 +5199,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public abstract void touchDrag(GameTouch e);
+
+	public boolean isAnyArrowKeysDown() {
+		return isKeyPressed(SysKey.LEFT) || isKeyPressed(SysKey.RIGHT) || isKeyPressed(SysKey.UP)
+				|| isKeyPressed(SysKey.DOWN);
+	}
+
+	public boolean isAnyArrowKeysUp() {
+		return isKeyReleased(SysKey.LEFT) || isKeyReleased(SysKey.RIGHT) || isKeyReleased(SysKey.UP)
+				|| isKeyReleased(SysKey.DOWN);
+	}
 
 	public LComponent getSelectedComponent() {
 		return getDesktop().getSelectedComponent();
