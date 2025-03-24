@@ -88,6 +88,21 @@ public class Curve extends Shape {
 		return this;
 	}
 
+	public Curve setEmpty() {
+		_p1.setEmpty();
+		_c1.setEmpty();
+		_c2.setEmpty();
+		_p2.setEmpty();
+		_segments = 0;
+		return this;
+	}
+	
+	@Override
+	public void clear() {
+		super.clear();
+		setEmpty();
+	}
+
 	public boolean intersects(Line line) {
 		return CollisionHelper.checkIntersectCubicBezierCurveAndLine(_p1, _c1, _c2, _p2, line.getStart(),
 				line.getEnd());

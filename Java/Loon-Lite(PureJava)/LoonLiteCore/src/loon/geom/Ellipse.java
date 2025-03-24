@@ -357,9 +357,22 @@ public class Ellipse extends Shape {
 		return this;
 	}
 
+	public Ellipse setEmpty() {
+		this._radius1 = 0f;
+		this._radius2 = 0f;
+		this._start = 0f;
+		this._end = 359f;
+		return this;
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		setEmpty();
+	}
+
 	@Override
 	protected void createPoints() {
-
 		_tempPoints.clear();
 		maxX = -Float.MIN_VALUE;
 		maxY = -Float.MIN_VALUE;

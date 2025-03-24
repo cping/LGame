@@ -365,6 +365,18 @@ public class Line extends Shape {
 		return this;
 	}
 
+	public Line setEmpty() {
+		_currentStart.setEmpty();
+		_currentEnd.setEmpty();
+		return this;
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		setEmpty();
+	}
+
 	public TArray<Point> getBresenhamPoints(int stepRate) {
 		return getBresenhamPoints(stepRate, null);
 	}

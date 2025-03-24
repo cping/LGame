@@ -35,6 +35,8 @@ public class SkeletonLoader {
 
 	private String _fileName;
 
+	private String _splitFlag;
+
 	private String[] _paths;
 
 	private ObjectMap<String, String> _kvs = new ObjectMap<String, String>();
@@ -54,7 +56,12 @@ public class SkeletonLoader {
 	}
 
 	public SkeletonLoader(String fileName, boolean loaded, String... paths) {
+		this(fileName, ",", loaded, paths);
+	}
+
+	public SkeletonLoader(String fileName, String flag, boolean loaded, String... paths) {
 		this._fileName = fileName;
+		this._splitFlag = flag;
 		this._paths = paths;
 		if (loaded) {
 			load(fileName, paths);
@@ -123,7 +130,7 @@ public class SkeletonLoader {
 	}
 
 	public void filterValues(String line) {
-		final String[] list = StringUtils.toList(line, ",");
+		final String[] list = StringUtils.toList(line, _splitFlag);
 		for (int i = 0; i < list.length; i++) {
 			final String v = list[i].trim();
 			if (MathUtils.isNan(v)) {
@@ -138,7 +145,7 @@ public class SkeletonLoader {
 	}
 
 	public SkeletonLoader setClip(String key, float x, float y, float w, float h) {
-		_kvs.put(key, StringUtils.join(",", x, y, w, h));
+		_kvs.put(key, StringUtils.join(_splitFlag, x, y, w, h));
 		return this;
 	}
 

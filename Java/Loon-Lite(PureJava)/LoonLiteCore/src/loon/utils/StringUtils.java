@@ -838,7 +838,7 @@ final public class StringUtils extends CharUtils {
 				p = length;
 			}
 			if (p > start) {
-				tokens.add(str.substring(start, p));
+				tokens.add(str.substring(start, p).trim());
 			}
 			start = p + sepLength;
 		} while (start < length);
@@ -880,7 +880,7 @@ final public class StringUtils extends CharUtils {
 			if (str.charAt(i) != LSystem.COMMA) {
 				sbr.append(str.charAt(i));
 			} else {
-				tempString = sbr.toString();
+				tempString = sbr.toString().trim();
 				stringList.add(tempString);
 				sbr.setLength(0);
 			}
@@ -1498,7 +1498,7 @@ final public class StringUtils extends CharUtils {
 			result = result.substring(1, result.length() - 1);
 		}
 		if (result.endsWith(",")) {
-			result = result.substring(0, result.length() - 1);
+			result = result.substring(0, result.length() - 1).trim();
 		}
 		String sep = flag;
 		if (sep == null) {
