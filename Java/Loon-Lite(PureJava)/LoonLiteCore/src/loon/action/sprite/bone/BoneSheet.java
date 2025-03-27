@@ -61,13 +61,13 @@ public class BoneSheet {
 	}
 
 	public void draw(GLEx g, float x, float y, float sx, float sy, float clipX, float clipY, int clipWidth,
-			int clipHeight, float ox, float oy, float angle, int flip) {
+			int clipHeight, float ox, float oy, float angle, int m) {
 		if (clipWidth <= 0 || clipHeight <= 0 || sx == 0 || sy == 0) {
 			return;
 		}
 		_origin.set(ox, oy);
 		Direction dir = null;
-		if (flip == 0) {
+		if (m == 0) {
 			dir = Direction.TRANS_NONE;
 		} else {
 			dir = Direction.TRANS_MIRROR;

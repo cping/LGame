@@ -5160,6 +5160,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				|| isKeyReleased(SysKey.DOWN);
 	}
 
+	public Vector2f getTouchLocation(Vector2f v) {
+		if (v == null) {
+			v = new Vector2f();
+		}
+		return v.set(this.getTouchX(), this.getTouchY());
+	}
+
+	public Vector2f getTouchLastLocation(Vector2f v) {
+		if (v == null) {
+			v = new Vector2f();
+		}
+		return v.set(this.getLastTouchX(), this.getLastTouchY());
+	}
+
 	public LComponent getSelectedComponent() {
 		return getDesktop().getSelectedComponent();
 	}

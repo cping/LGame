@@ -104,6 +104,13 @@ public class GameTouch {
 		}
 	}
 
+	public Vector2f getLocation(Vector2f o) {
+		if (o == null) {
+			o = new Vector2f();
+		}
+		return o.set(this.x, this.y);
+	}
+
 	public GameTouch convertOrientation() {
 		return convertOrientation(this.x, this.y);
 	}

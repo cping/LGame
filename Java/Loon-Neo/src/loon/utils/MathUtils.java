@@ -556,6 +556,15 @@ public final class MathUtils {
 		return limit(i, min, max);
 	}
 
+	public static int mapValue(int v, int fromStart, int fromStop, int toStart, int toStop) {
+		return (int) (toStart
+				+ ((toStop - (float) toStart) * ((v - (float) fromStart) / (fromStop - (float) fromStart))));
+	}
+
+	public static float mapValue(int v, float fromStart, float fromStop, float toStart, float toStop) {
+		return toStart + ((toStop - toStart) * ((v - fromStart) / (fromStop - fromStart)));
+	}
+
 	public static int div(int x, int y) {
 		long z = (((long) x) << 32);
 		return (int) ((z / y) >> 16);
@@ -1528,6 +1537,16 @@ public final class MathUtils {
 		return value;
 	}
 
+	public static float clampAngle(float angle, float center, float range) {
+		float halfRange = range / 2f;
+		angle = (angle - center + MathUtils.PI) % (2 * MathUtils.PI);
+		if (angle < 0) {
+			angle += 2 * MathUtils.PI;
+		}
+		angle = angle - MathUtils.PI + center;
+		return MathUtils.max(center - halfRange, MathUtils.min(center + halfRange, angle));
+	}
+
 	public static Vector2f clampInRect(XY v, float x, float y, float width, float height) {
 		return clampInRect(v, x, y, width, height, 0f);
 	}
@@ -1567,6 +1586,27 @@ public final class MathUtils {
 			max = temp;
 		}
 		return Vector4f.lessThan(v, min) ? min : Vector4f.greaterThan(v, max) ? max : v;
+	}
+
+	public static float clampTime(float start, float now, float duration) {
+		return clampTime(now - start, duration);
+	}
+
+	public static float clampTime(float elapsed, float maxTime) {
+		return clamp(MathUtils.clamp(elapsed, 0, MathUtils.max(0, maxTime)) / maxTime);
+	}
+
+	public static float clampTime(float elapsed, float inDuration, float delayDuration, float outDuration) {
+		if (elapsed < 0 || elapsed > inDuration + delayDuration + outDuration) {
+			return 0f;
+		}
+		if (elapsed < inDuration) {
+			return clampTime(elapsed, inDuration);
+		}
+		if (elapsed < inDuration + delayDuration) {
+			return 1f;
+		}
+		return 1f - clampTime(elapsed - inDuration - delayDuration, outDuration);
 	}
 
 	public static float cameraLerp(float elapsed, float l) {
@@ -2471,6 +2511,14 @@ public final class MathUtils {
 		int i1 = round(v1 * e);
 		int i2 = round(v2 * e);
 		return round(i1 % i2 / e, p);
+	}
+
+	public static float forcePositive(float v) {
+		return v < 0 ? v * -1 : v;
+	}
+
+	public static float forceNegative(float v) {
+		return v > 0 ? v * -1 : v;
 	}
 
 	/**

@@ -248,9 +248,15 @@ public class LInventory extends LLayer {
 
 	private boolean _isAllowShowTip;
 
+	private boolean _selectedGridFlag;
+
 	private int _currentRowTableSize;
 
 	private int _currentColTableSize;
+
+	private int _selectedGridFlagDashCount;
+
+	private float _selectedGridFlagSize;
 
 	private float _offsetGridActorX;
 
@@ -273,6 +279,8 @@ public class LInventory extends LLayer {
 	private boolean _dirty;
 
 	private boolean _isMobile;
+
+	private LColor _selectedGridFlagColor;
 
 	private LColor _tipFontColor;
 
@@ -349,11 +357,14 @@ public class LInventory extends LLayer {
 		this._titleSize = new Vector2f(w, h);
 		this._offsetGridActorX = 2f;
 		this._offsetGridActorY = 2f;
+		this._selectedGridFlagSize = 2f;
+		this._selectedGridFlagDashCount = 3;
 		this._actorFadeTime = 10f;
 		if (gridColor != null) {
 			this._gridColor = gridColor.lighter();
 		}
 		this._displayDrawGrid = _isDisplayBar = _isAllowShowTip = true;
+		this._selectedGridFlag = true;
 		this._isCircleGrid = false;
 		this._isMobile = LSystem.isMobile() || LSystem.isEmulateTouch();
 		this._tipFont = font;
@@ -516,7 +527,7 @@ public class LInventory extends LLayer {
 				info = new ItemInfo();
 			}
 			ItemUI item = new ItemUI(this, info.getName(), info, 0f, 0f, 0f, 0f);
-			item.bind(tex, 0f, 0f, 32f, 32f);
+			item.bind(tex, 0f, 0f, _gridTileWidth, _gridTileHeight);
 			_inventory.addItem(item);
 		}
 		return this;
@@ -593,7 +604,7 @@ public class LInventory extends LLayer {
 					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
 							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
 				} else {
-					item.bind(tex, 0f, 0f, 32f, 32f);
+					item.bind(tex, 0f, 0f, _gridTileWidth, _gridTileHeight);
 				}
 			}
 		}
@@ -709,6 +720,14 @@ public class LInventory extends LLayer {
 		return this._initialization;
 	}
 
+	protected void drawItemGrid(Canvas g, float x, float y, float w, float h, boolean oval) {
+		if (oval) {
+			g.drawOval(x, y, w, h);
+		} else {
+			g.strokeRect(x, y, w, h);
+		}
+	}
+
 	protected LTexture createGridCache() {
 		if (_dirty) {
 			if (_cacheGridTexture != null) {
@@ -723,11 +742,7 @@ public class LInventory extends LLayer {
 				RectBox rect = _inventory.getItem(i).getArea();
 				if (rect != null) {
 					if (_displayDrawGrid) {
-						if (_isCircleGrid) {
-							g.drawOval(rect.x, rect.y, rect.width, rect.height);
-						} else {
-							g.strokeRect(rect.x, rect.y, rect.width, rect.height);
-						}
+						drawItemGrid(g, rect.x, rect.y, rect.width, rect.height, _isCircleGrid);
 					}
 				}
 			}
@@ -739,11 +754,7 @@ public class LInventory extends LLayer {
 		return _cacheGridTexture;
 	}
 
-	@Override
-	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
-		if (!_component_visible) {
-			return;
-		}
+	protected void drawBarToUI(GLEx g, float x, float y, float w, float h) {
 		if (_isDisplayBar) {
 			if (_gridPaddingLeft > _gridPaddingX && _barTexture != null) {
 				g.draw(_barTexture, x, y, _gridPaddingLeft, h);
@@ -760,17 +771,23 @@ public class LInventory extends LLayer {
 						_gridPaddingBottom + _gridPaddingY);
 			}
 		}
-		if (_displayDrawGrid) {
-			createGridCache();
-			if (_cacheGridTexture != null) {
-				g.draw(_cacheGridTexture, x, y);
-			}
-		}
-		super.createCustomUI(g, x, y, w, h);
-		drawTip(g, x, y);
 	}
 
-	protected void drawTip(GLEx g, float x, float y) {
+	protected void drawSelectedFlagToUI(GLEx g, float x, float y) {
+		if (_selectedGridFlag && _tipSelected && _tipItem != null) {
+			RectBox rect = _tipItem.getArea();
+			drawItemSelectedFlagGrid(g, x + rect.x, y + rect.y, rect.width, rect.height);
+		}
+	}
+
+	protected void drawItemSelectedFlagGrid(GLEx g, float x, float y, float w, float h) {
+		float lineSize = g.getLineWidth();
+		g.setLineWidth(_selectedGridFlagSize);
+		g.drawDashRect(x, y, w, h, _selectedGridFlagColor, _selectedGridFlagDashCount);
+		g.setLineWidth(lineSize);
+	}
+
+	protected void drawTipToUI(GLEx g, float x, float y) {
 		if (!_isAllowShowTip) {
 			return;
 		}
@@ -787,6 +804,54 @@ public class LInventory extends LLayer {
 			g.draw(_tipTexture, posX - (width - texW + fontSize) / 2f, posY, width, height);
 			_tipText.paintString(g, posX - (width - texW) / 2f, posY + (height - texH) / 2f, _tipFontColor);
 		}
+	}
+
+	protected void drawGridToUI(GLEx g, int x, int y) {
+		if (_displayDrawGrid) {
+			createGridCache();
+			if (_cacheGridTexture != null) {
+				g.draw(_cacheGridTexture, x, y);
+			}
+		}
+	}
+
+	@Override
+	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
+		if (!_component_visible) {
+			return;
+		}
+		drawBarToUI(g, x, y, w, h);
+		drawGridToUI(g, x, y);
+		super.createCustomUI(g, x, y, w, h);
+		drawSelectedFlagToUI(g, x, y);
+		drawTipToUI(g, x, y);
+	}
+
+	public LInventory setSelectedGridFlagColor(LColor c) {
+		this._selectedGridFlagColor = c;
+		return this;
+	}
+
+	public LColor getSelectedGridFlagColor() {
+		return this._selectedGridFlagColor;
+	}
+
+	public LInventory setSelectedGridFlagSize(float s) {
+		this._selectedGridFlagSize = s;
+		return this;
+	}
+
+	public float getSelectedGridFlagSize() {
+		return this._selectedGridFlagSize;
+	}
+
+	public LInventory setSelectedGridFlagDashCount(int s) {
+		this._selectedGridFlagDashCount = s;
+		return this;
+	}
+
+	public int getSelectedGridFlagDashCount() {
+		return this._selectedGridFlagDashCount;
 	}
 
 	public LInventory freeTipSelected() {
