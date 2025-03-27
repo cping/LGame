@@ -35,10 +35,12 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.skin.InventorySkin;
 import loon.component.skin.SkinManager;
+import loon.events.SysKey;
 import loon.font.IFont;
 import loon.font.Text;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -250,6 +252,8 @@ public class LInventory extends LLayer {
 
 	private boolean _selectedGridFlag;
 
+	private boolean _useKeyboard;
+
 	private int _currentRowTableSize;
 
 	private int _currentColTableSize;
@@ -300,7 +304,7 @@ public class LInventory extends LLayer {
 
 	private boolean _tipSelected;
 
-	private ItemUI _tipItem;
+	private ItemUI _selectedItem;
 
 	public LInventory(float x, float y, float w, float h) {
 		this(SkinManager.get().getMessageSkin().getFont(), x, y, w, h, false);
@@ -527,7 +531,7 @@ public class LInventory extends LLayer {
 				info = new ItemInfo();
 			}
 			ItemUI item = new ItemUI(this, info.getName(), info, 0f, 0f, 0f, 0f);
-			item.bind(tex, 0f, 0f, _gridTileWidth, _gridTileHeight);
+			item.bind(tex, 0f, 0f, _titleSize.x, _titleSize.y);
 			_inventory.addItem(item);
 		}
 		return this;
@@ -604,7 +608,7 @@ public class LInventory extends LLayer {
 					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
 							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
 				} else {
-					item.bind(tex, 0f, 0f, _gridTileWidth, _gridTileHeight);
+					item.bind(tex, 0f, 0f, _titleSize.x, _titleSize.y);
 				}
 			}
 		}
@@ -651,10 +655,10 @@ public class LInventory extends LLayer {
 			freeTipSelected();
 			return this;
 		}
-		_tipItem = item;
-		if (_tipItem != null && _tipItem._saved) {
-			final String name = _tipItem.getItem().getName();
-			final String des = _tipItem.getItem().getDescription();
+		_selectedItem = item;
+		if (_selectedItem != null && _selectedItem._saved) {
+			final String name = _selectedItem.getItem().getName();
+			final String des = _selectedItem.getItem().getDescription();
 			final String context = name + LSystem.LF + des;
 			setTipText(context);
 			_tipSelected = true;
@@ -720,6 +724,52 @@ public class LInventory extends LLayer {
 		return this._initialization;
 	}
 
+	public IItem getSelectedItem() {
+		return _selectedItem;
+	}
+
+	public Vector2f getSelectedItemPos() {
+		if (_selectedItem != null) {
+			for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
+				IItem item = _inventory.getItem(i);
+				if (item == _selectedItem || item.equals(_selectedItem)) {
+					return item.getArea().getPosition();
+				}
+			}
+		}
+		return null;
+	}
+
+	public Vector2f getSelectedItemGridXY() {
+		if (_selectedItem != null) {
+			int idx = 0;
+			for (int x = 0; x < _currentColTableSize; x++) {
+				for (int y = 0; y < _currentRowTableSize; y++) {
+					IItem item = _inventory.getItem(idx);
+					if (item == _selectedItem || item.equals(_selectedItem)) {
+						return new Vector2f(x, y);
+					}
+					idx++;
+				}
+			}
+		}
+		return null;
+	}
+
+	public LInventory gotoSelectItemTo(XY pos) {
+		if (pos == null) {
+			return null;
+		}
+		return gotoSelectItemTo(MathUtils.iceil(pos.getX()), MathUtils.iceil(pos.getY()));
+	}
+
+	public LInventory gotoSelectItemTo(int tileX, int tileY) {
+		if (tileX >= 0 && tileX <= this._currentRowTableSize && tileY >= 0 && tileY <= this._currentColTableSize) {
+			return setTipItem(tileY + tileX * this._currentRowTableSize);
+		}
+		return this;
+	}
+
 	protected void drawItemGrid(Canvas g, float x, float y, float w, float h, boolean oval) {
 		if (oval) {
 			g.drawOval(x, y, w, h);
@@ -774,8 +824,8 @@ public class LInventory extends LLayer {
 	}
 
 	protected void drawSelectedFlagToUI(GLEx g, float x, float y) {
-		if (_selectedGridFlag && _tipSelected && _tipItem != null) {
-			RectBox rect = _tipItem.getArea();
+		if (_selectedGridFlag && _tipSelected && _selectedItem != null) {
+			RectBox rect = _selectedItem.getArea();
 			drawItemSelectedFlagGrid(g, x + rect.x, y + rect.y, rect.width, rect.height);
 		}
 	}
@@ -791,8 +841,8 @@ public class LInventory extends LLayer {
 		if (!_isAllowShowTip) {
 			return;
 		}
-		if (_tipSelected && _tipItem != null && _tipText != null) {
-			final RectBox rect = _tipItem.getArea();
+		if (_tipSelected && _selectedItem != null && _tipText != null) {
+			final RectBox rect = _selectedItem.getArea();
 			final IFont font = _tipText.getFont();
 			final float fontSize = font.getSize();
 			final float texW = _tipText.getWidth();
@@ -856,14 +906,14 @@ public class LInventory extends LLayer {
 
 	public LInventory freeTipSelected() {
 		_tipSelected = false;
-		_tipItem = null;
+		_selectedItem = null;
 		return this;
 	}
 
 	@Override
 	public void processTouchMoved() {
 		super.processTouchMoved();
-		if (!_isMobile) {
+		if (!_useKeyboard && !_isMobile) {
 			checkTouchTip();
 		}
 	}
@@ -871,39 +921,85 @@ public class LInventory extends LLayer {
 	@Override
 	public void downClick(int dx, int dy) {
 		super.downClick(dx, dy);
-		freeTipSelected();
-		if (_isMobile && isLongPressed()) {
-			checkTouchTip();
+		if (!_useKeyboard) {
+			freeTipSelected();
+			if (_isMobile && isLongPressed()) {
+				checkTouchTip();
+			}
 		}
 	}
 
 	@Override
 	public void dragClick(int dx, int dy) {
 		super.dragClick(dx, dy);
-		final boolean draged = _input == null ? false : (_input.getTouchDX() == 0 && _input.getTouchDY() == 0);
-		if (_isMobile && !_tipSelected && draged) {
-			checkTouchTip();
+		if (!_useKeyboard) {
+			final boolean draged = _input == null ? false : (_input.getTouchDX() == 0 && _input.getTouchDY() == 0);
+			if (_isMobile && !_tipSelected && draged) {
+				checkTouchTip();
+			}
 		}
 	}
 
 	@Override
 	public void upClick(int dx, int dy) {
 		super.upClick(dx, dy);
-		final Actor act = getClickActor();
-		if (act != null) {
-			final ItemUI itemDst = getItem(dx, dy);
-			final Object o = act.getTag();
-			if (itemDst != null) {
-				if (o != itemDst) {
-					if (!itemDst._saved || o == null) {
-						itemDst.bind(act);
-					} else {
-						itemDst.swap(act);
+		if (!_useKeyboard) {
+			final Actor act = getClickActor();
+			if (act != null) {
+				final ItemUI itemDst = getItem(dx, dy);
+				final Object o = act.getTag();
+				if (itemDst != null) {
+					if (o != itemDst) {
+						if (!itemDst._saved || o == null) {
+							itemDst.bind(act);
+						} else {
+							itemDst.swap(act);
+						}
 					}
 				}
 			}
+			freeTipSelected();
 		}
-		freeTipSelected();
+	}
+
+	/**
+	 * 此项为true时,使用键盘而非触屏选择物品
+	 * 
+	 * @param u
+	 * @return
+	 */
+	public LInventory useKeyboard(boolean u) {
+		this._useKeyboard = u;
+		if (u) {
+			this.getDesktop().selectComponent(this);
+		} else {
+			this.getDesktop().selectComponent(null);
+		}
+		return this;
+	}
+
+	public boolean isUseKeyboard() {
+		return _useKeyboard;
+	}
+
+	@Override
+	public void processKeyReleased() {
+		super.processKeyReleased();
+		if (_useKeyboard) {
+			Vector2f itemXY = getSelectedItemGridXY();
+			if (itemXY != null) {
+				if (isKeyUp(SysKey.LEFT)) {
+					itemXY.move_up(1);
+				} else if (isKeyUp(SysKey.RIGHT)) {
+					itemXY.move_down(1);
+				} else if (isKeyUp(SysKey.UP)) {
+					itemXY.move_left(1);
+				} else if (isKeyUp(SysKey.DOWN)) {
+					itemXY.move_right(1);
+				}
+				gotoSelectItemTo(itemXY);
+			}
+		}
 	}
 
 	public float getGridTileWidth() {
@@ -991,7 +1087,7 @@ public class LInventory extends LLayer {
 	}
 
 	public ItemUI getTipItem() {
-		return _tipItem;
+		return _selectedItem;
 	}
 
 	public LColor getTipFontColor() {
