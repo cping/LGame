@@ -743,8 +743,8 @@ public class LInventory extends LLayer {
 	public Vector2f getSelectedItemGridXY() {
 		if (_selectedItem != null) {
 			int idx = 0;
-			for (int x = 0; x < _currentColTableSize; x++) {
-				for (int y = 0; y < _currentRowTableSize; y++) {
+			for (int y = 0; y < _currentColTableSize; y++) {
+				for (int x = 0; x < _currentRowTableSize; x++) {
 					IItem item = _inventory.getItem(idx);
 					if (item == _selectedItem || item.equals(_selectedItem)) {
 						return new Vector2f(x, y);
@@ -764,8 +764,8 @@ public class LInventory extends LLayer {
 	}
 
 	public LInventory gotoSelectItemTo(int tileX, int tileY) {
-		if (tileX >= 0 && tileX <= this._currentRowTableSize && tileY >= 0 && tileY <= this._currentColTableSize) {
-			return setTipItem(tileY + tileX * this._currentRowTableSize);
+		if (tileX >= 0 && tileX <= this._currentColTableSize && tileY >= 0 && tileY <= this._currentRowTableSize) {
+			return setTipItem(tileX + tileY * this._currentRowTableSize);
 		}
 		return this;
 	}
@@ -971,9 +971,9 @@ public class LInventory extends LLayer {
 	public LInventory useKeyboard(boolean u) {
 		this._useKeyboard = u;
 		if (u) {
-			this.getDesktop().selectComponent(this);
+			this.focusIn();
 		} else {
-			this.getDesktop().selectComponent(null);
+			this.focusOut();
 		}
 		return this;
 	}
@@ -987,15 +987,17 @@ public class LInventory extends LLayer {
 		super.processKeyReleased();
 		if (_useKeyboard) {
 			Vector2f itemXY = getSelectedItemGridXY();
+			System.out.println(itemXY);
 			if (itemXY != null) {
+				
 				if (isKeyUp(SysKey.LEFT)) {
-					itemXY.move_up(1);
-				} else if (isKeyUp(SysKey.RIGHT)) {
-					itemXY.move_down(1);
-				} else if (isKeyUp(SysKey.UP)) {
 					itemXY.move_left(1);
-				} else if (isKeyUp(SysKey.DOWN)) {
+				} else if (isKeyUp(SysKey.RIGHT)) {
 					itemXY.move_right(1);
+				} else if (isKeyUp(SysKey.UP)) {
+					itemXY.move_up(1);
+				} else if (isKeyUp(SysKey.DOWN)) {
+					itemXY.move_down(1);
 				}
 				gotoSelectItemTo(itemXY);
 			}

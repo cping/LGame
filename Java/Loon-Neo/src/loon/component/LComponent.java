@@ -692,6 +692,22 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent focusIn() {
+		Desktop desktop = getDesktop();
+		if (desktop != null) {
+			desktop.selectComponent(this);
+		}
+		return this;
+	}
+
+	public LComponent focusOut() {
+		Desktop desktop = getDesktop();
+		if (desktop != null) {
+			desktop.selectComponent(null);
+		}
+		return this;
+	}
+
 	public LContainer getContainer() {
 		return getSuper();
 	}
@@ -2074,7 +2090,8 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public Screen getScreen() {
-		return (_desktop == null || _desktop._sysInput == null) ? LSystem.getProcess().getScreen() : _desktop._curScreen;
+		return (_desktop == null || _desktop._sysInput == null) ? LSystem.getProcess().getScreen()
+				: _desktop._curScreen;
 	}
 
 	public LContainer getParent(final QueryEvent<LComponent> test) {
