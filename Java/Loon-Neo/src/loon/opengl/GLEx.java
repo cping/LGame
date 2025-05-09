@@ -841,6 +841,21 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLEx flip(boolean flipHorizontal, boolean flipVertical) {
+		if (isClosed) {
+			return this;
+		}
+		if (flipHorizontal) {
+			translate(this.getWidth(), 0);
+			scale(-1, 1);
+		}
+		if (flipVertical) {
+			translate(0, -this.getHeight() / 2);
+			scale(1, -1);
+		}
+		return this;
+	}
+
 	public GLEx transform(float m00, float m01, float m10, float m11, float tx, float ty) {
 		if (isClosed) {
 			return this;

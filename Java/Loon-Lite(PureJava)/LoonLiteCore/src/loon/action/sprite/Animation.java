@@ -244,6 +244,35 @@ public class Animation implements IArray, LRelease {
 	}
 
 	/**
+	 * 转化一组AnimationFrame为动画图象
+	 * 
+	 * @param frames
+	 * @param totalDuration
+	 * @param max
+	 * @param reversed
+	 * @return
+	 */
+	public static Animation getDefaultAnimation(Animation.AnimationFrame[] frames, long totalDuration, int max,
+			boolean reversed) {
+		if (frames == null) {
+			return new Animation();
+		}
+		TArray<AnimationFrame> aniFrames = new TArray<AnimationFrame>();
+		for (int i = 0; i < frames.length; i++) {
+			aniFrames.add(frames[i]);
+		}
+		return new Animation(aniFrames, totalDuration, max, reversed);
+	}
+
+	public static Animation getDefaultAnimation(Animation.AnimationFrame[] frames, long totalDuration,
+			boolean reversed) {
+		if (frames == null) {
+			return new Animation();
+		}
+		return getDefaultAnimation(frames, totalDuration, frames.length, reversed);
+	}
+
+	/**
 	 * 转化MovieSpriteSheet为动画资源
 	 * 
 	 * @param sheet
@@ -253,6 +282,50 @@ public class Animation implements IArray, LRelease {
 	 */
 	public static Animation getDefaultAnimation(MovieSpriteSheet sheet, int maxFrame, int timer) {
 		return getDefaultAnimation(sheet.getTextures(), maxFrame, timer);
+	}
+
+	public static Animation of(String fileName) {
+		return getDefaultAnimation(fileName);
+	}
+
+	public static Animation of(LTexture texture) {
+		return getDefaultAnimation(texture);
+	}
+
+	public static Animation of(String fileName, int width, int height, int timer) {
+		return getDefaultAnimation(fileName, width, height, timer);
+	}
+
+	public static Animation of(String fileName, int width, int height, int timer, LColor filterColor) {
+		return getDefaultAnimation(fileName, width, height, timer, filterColor);
+	}
+
+	public static Animation of(String fileName, int maxFrame, int width, int height, int timer) {
+		return getDefaultAnimation(fileName, maxFrame, width, height, timer);
+	}
+
+	public static Animation of(LTexture[] images, int maxFrame, int timer) {
+		return getDefaultAnimation(images, maxFrame, timer);
+	}
+
+	public static Animation of(String[] paths, int maxFrame, int timer) {
+		return getDefaultAnimation(paths, maxFrame, timer);
+	}
+
+	public static Animation of(String[] paths, int timer) {
+		return getDefaultAnimation(paths, paths.length, timer);
+	}
+
+	public static Animation of(Animation.AnimationFrame[] frames, long totalDuration, int max, boolean reversed) {
+		return getDefaultAnimation(frames, totalDuration, max, reversed);
+	}
+
+	public static Animation of(Animation.AnimationFrame[] frames, long totalDuration, boolean reversed) {
+		return getDefaultAnimation(frames, totalDuration, reversed);
+	}
+
+	public static Animation of(MovieSpriteSheet sheet, int maxFrame, int timer) {
+		return getDefaultAnimation(sheet, maxFrame, timer);
 	}
 
 	/**

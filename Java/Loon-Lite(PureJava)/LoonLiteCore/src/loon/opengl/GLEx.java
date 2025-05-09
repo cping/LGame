@@ -574,6 +574,21 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
+	public GLEx flip(boolean flipHorizontal, boolean flipVertical) {
+		if (isClosed) {
+			return this;
+		}
+		if (flipHorizontal) {
+			translate(this.getWidth(), 0);
+			scale(-1, 1);
+		}
+		if (flipVertical) {
+			translate(0, -this.getHeight() / 2);
+			scale(1, -1);
+		}
+		return this;
+	}
+
 	public GLEx synchTransform() {
 		if (isClosed) {
 			return this;

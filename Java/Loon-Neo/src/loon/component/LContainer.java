@@ -991,6 +991,36 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 	}
 
+	@Override
+	protected void fireShowComponent() {
+		if (_destroyed) {
+			return;
+		}
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i >= 0; i--) {
+			LComponent comp = childs[i];
+			if (comp != null && comp != this) {
+				comp.fireShowComponent();
+			}
+		}
+	}
+
+	@Override
+	protected void fireHideComponent() {
+		if (_destroyed) {
+			return;
+		}
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i >= 0; i--) {
+			LComponent comp = childs[i];
+			if (comp != null && comp != this) {
+				comp.fireHideComponent();
+			}
+		}
+	}
+
 	public LComponent sendToFront(LComponent comp) {
 		if (_destroyed) {
 			return this;

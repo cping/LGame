@@ -617,9 +617,35 @@ public abstract class LComponent extends LObject<LContainer>
 			return;
 		}
 		this._component_visible = v;
+		if (this._component_visible) {
+			fireShowComponent();
+		} else {
+			fireHideComponent();
+		}
 		if (_desktop != null) {
 			this._desktop.setComponentStat(this, this._component_visible);
 		}
+	}
+
+	protected void fireShowComponent() {
+
+	}
+
+	protected void fireHideComponent() {
+
+	}
+
+	public boolean isShowing() {
+		boolean showing = true;
+		LComponent comp = this;
+		for (; comp != null;) {
+			if (comp.isVisible() == false) {
+				showing = false;
+				break;
+			}
+			comp = comp.getParent();
+		}
+		return showing;
 	}
 
 	public boolean isEnabled() {
@@ -1454,8 +1480,18 @@ public abstract class LComponent extends LObject<LContainer>
 		return _component_autoDestroy;
 	}
 
-	public void setAutoDestroy(boolean autoDestroy) {
+	public LComponent setAutoDestroy(boolean autoDestroy) {
 		this._component_autoDestroy = autoDestroy;
+		return this;
+	}
+
+	public boolean isActive() {
+		return this._component_enabled;
+	}
+
+	public LComponent setActive(boolean e) {
+		this._component_enabled = e;
+		return this;
 	}
 
 	@Override
@@ -2176,6 +2212,14 @@ public abstract class LComponent extends LObject<LContainer>
 			}
 			o = o.getParent();
 		}
+	}
+
+	public LComponent getTopLevelAncestor() {
+		LComponent parent = this;
+		for (; parent.getParent() != null;) {
+			parent = parent.getParent();
+		}
+		return parent;
 	}
 
 	public Vector2f getOffset() {

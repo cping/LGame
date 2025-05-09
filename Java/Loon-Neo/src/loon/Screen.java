@@ -788,6 +788,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen down(int keyCode, EventActionN e) {
+		return keyPress(keyCode, e);
+	}
+
+	public Screen down(String keyName, EventActionN e) {
+		return keyPress(keyName, e);
+	}
+
+	public Screen up(int keyCode, EventActionN e) {
+		return keyRelease(keyCode, e);
+	}
+
+	public Screen up(String keyName, EventActionN e) {
+		return keyRelease(keyName, e);
+	}
+
 	/**
 	 * 按下键盘触发事件
 	 * 

@@ -30,6 +30,8 @@ import loon.utils.timer.LTimer;
 
 public abstract class ActionEvent {
 
+	protected static int _ACTION_ID = 0;
+
 	protected EaseTimer _easeTimer;
 
 	private LTimer _currentTimer;
@@ -55,7 +57,16 @@ public abstract class ActionEvent {
 	protected float oldX, oldY;
 
 	public ActionEvent() {
-		_currentTimer = new LTimer(0);
+		this._currentTimer = new LTimer(0);
+		this.nextActionId();
+	}
+
+	protected int nextActionId() {
+		return _ACTION_ID++;
+	}
+
+	public int getActionId() {
+		return _ACTION_ID;
 	}
 
 	public LTimer getTimer() {
@@ -218,6 +229,16 @@ public abstract class ActionEvent {
 			}
 		}
 		return this;
+	}
+
+	public boolean isComplete(ActionBind bind) {
+		if (bind == null) {
+			return true;
+		}
+		if (bind == original || bind.equals(original)) {
+			return this._isCompleted;
+		}
+		return bind.isActionCompleted();
 	}
 
 	public boolean isComplete() {

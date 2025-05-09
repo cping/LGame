@@ -91,6 +91,10 @@ public class LWindow extends LContainer implements FontSet<LWindow> {
 				barheight, first, second, close, fontColor, vertical);
 	}
 
+	public static LWindow alert(String title, float x, float y, CallFunction first) {
+		return alert(title, title, x, y, first, false);
+	}
+
 	public static LWindow alert(String title, String firstButton, float x, float y, CallFunction first,
 			boolean vertical) {
 		return alert(title, firstButton, null, null, x, y, first, null, null, null, vertical);

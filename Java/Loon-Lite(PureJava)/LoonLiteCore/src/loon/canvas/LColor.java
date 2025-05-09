@@ -2777,6 +2777,10 @@ public class LColor implements Serializable {
 			return toString(getRGB());
 		} else if ("argb".equals(newFormat) || "rgba".equals(newFormat)) {
 			return toString(getARGB());
+		} else if ("bgr".equals(newFormat)) {
+			return toString(getBGR());
+		} else if ("abgr".equals(newFormat) || "bgra".equals(newFormat)) {
+			return toString(getABGR());
 		} else if ("hsl".equals(newFormat)) {
 			return toString(getRGBtoHSL().getARGB());
 		} else if ("alpha".equals(newFormat)) {

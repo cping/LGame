@@ -218,6 +218,39 @@ public final class TimeUtils {
 		return getDays(millis(), 0);
 	}
 
+	public static boolean isLeapYear(int year) {
+		return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+	}
+
+	public static long getTimeForYear(final int year) {
+		int previousYear = year - 1;
+		long days = previousYear * 365 + previousYear / 4 - previousYear / 100 + previousYear / 400;
+		days -= 1969 * 365 + 1969 / 4 - 1969 / 100 + 1969 / 400;
+		long time = days * LSystem.DAY;
+		return time;
+	}
+
+	public static int getDaysInMonth(int year, int month) {
+		int days = 0;
+		if (month == 1) {
+			days = isLeapYear(year) ? 29 : 28;
+		} else if (month < 7) {
+			days = month % 2 == 0 ? 31 : 30;
+		} else {
+			days = month % 2 == 1 ? 31 : 30;
+		}
+		return days;
+	}
+
+	public static int getDayOfWeek(final long ms, int year, int month) {
+		long days = ms / LSystem.DAY;
+		int result = (int) (days % 7) + 5;
+		if (result > 6) {
+			result -= 7;
+		}
+		return result;
+	}
+
 	public static long getDays(final long ms, final long offsetHour) {
 		return (ms + (offsetHour * LSystem.HOUR)) / 1000 / 60 / 60 / 24 % 365;
 	}
