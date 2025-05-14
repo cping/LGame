@@ -606,6 +606,24 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		return ((getContainerY() + getContainerHeight()) - (getY() + getHeight())) / 2f;
 	}
 
+	public boolean isContentPositionInBounds(float x, float y) {
+		float offX = MathUtils.min(this._offset.x);
+		float offY = MathUtils.min(this._offset.y);
+		if (x < offX) {
+			return false;
+		}
+		if (x >= offX + (getContainerWidth() - getWidth())) {
+			return false;
+		}
+		if (y < offY) {
+			return false;
+		}
+		if (y >= offY + (getContainerHeight() - getHeight())) {
+			return false;
+		}
+		return true;
+	}
+
 	public TileMap scrollDown(float distance) {
 		if (distance == 0) {
 			return this;

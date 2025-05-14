@@ -295,6 +295,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private LColor _baseColor;
 
+	private float _pointerStartX;
+
+	private float _pointerStartY;
+
 	private float _alpha = 1f;
 
 	private float _rotation = 0;
@@ -333,7 +337,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final Disposes _disposes = new Disposes();
 
-	private final PointF _lastTocuh = new PointF();
+	private final PointF _lastTouch = new PointF();
 
 	private final PointI _touch = new PointI();
 
@@ -1722,6 +1726,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._touchDifX = _touchDifY = 0f;
 		this._touchInitX = _touchInitY = 0f;
 		this._touchPrevDifX = _touchPrevDifY = 0f;
+		this._pointerStartX = _pointerStartY = 0f;
 		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
 		this._isLoad = _isLock = _isClose = _isGravity = false;
 		this._isProcessing = true;
@@ -1738,7 +1743,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		this._currentDesktop = new Desktop("ScreenDesktop", this, getWidth(), getHeight());
 		this._isNext = true;
-		this._lastTocuh.empty();
+		this._lastTouch.empty();
 		this._visible = true;
 		this._rotation = 0;
 		this._scaleX = _scaleY = _alpha = 1f;
@@ -4498,15 +4503,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public PointF getLastTouch() {
-		return _lastTocuh;
+		return _lastTouch;
 	}
 
 	public float getLastTouchX() {
-		return _lastTocuh.x;
+		return _lastTouch.x;
 	}
 
 	public float getLastTouchY() {
-		return _lastTocuh.y;
+		return _lastTouch.y;
 	}
 
 	public void runTimer(final LTimerContext timer) {
@@ -5089,12 +5094,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_touchListener.DownClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
-			_lastTocuh.set(e.getX(), e.getY());
+			_lastTouch.set(e.getX(), e.getY());
+			_pointerStartX = _lastTouch.x;
+			_pointerStartY = _lastTouch.y;
 		} catch (Throwable ex) {
 			_touchButtonPressed = NO_BUTTON;
 			_touchButtonReleased = NO_BUTTON;
 			error("Screen mousePressed() exception", ex);
 		}
+	}
+
+	public float getPointerStartX() {
+		return _pointerStartX;
+	}
+
+	public float getPointerStartY() {
+		return _pointerStartY;
 	}
 
 	public abstract void touchDown(GameTouch e);
@@ -5122,7 +5137,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_touchListener.UpClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 				}
 			}
-			_lastTocuh.set(e.getX(), e.getY());
+			_lastTouch.set(e.getX(), e.getY());
 		} catch (Throwable ex) {
 			_touchButtonPressed = NO_BUTTON;
 			_touchButtonReleased = NO_BUTTON;
@@ -5161,7 +5176,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_touchListener.DragClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
 			}
 		}
-		_lastTocuh.set(e.getX(), e.getY());
+		_lastTouch.set(e.getX(), e.getY());
 	}
 
 	public abstract void touchDrag(GameTouch e);
@@ -7293,6 +7308,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_screenIndex = 0;
 				_rotation = 0;
 				_scaleX = _scaleY = _alpha = 1f;
+				_pointerStartX = _pointerStartY = 0f;
 				_baseColor = null;
 				_visible = false;
 				_revent = null;

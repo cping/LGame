@@ -307,6 +307,24 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 				* 0.5f;
 	}
 
+	public boolean isContentPositionInBounds(float x, float y) {
+		float offX = MathUtils.min(this._offset.x);
+		float offY = MathUtils.min(this._offset.y);
+		if (x < offX) {
+			return false;
+		}
+		if (x >= offX + (_map.getContainerWidth() - this.getViewWidth())) {
+			return false;
+		}
+		if (y < offY) {
+			return false;
+		}
+		if (y >= offY + (_map.getContainerHeight() - this.getViewHeight())) {
+			return false;
+		}
+		return true;
+	}
+
 	public LDTKTileLayer scrollDown(float distance) {
 		if (distance == 0) {
 			return this;

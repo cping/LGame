@@ -32,11 +32,11 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	private ObjectMap<E, Object> _map;
 
 	public ObjectSet() {
-		_map = new ObjectMap<>(false);
+		_map = new ObjectMap<E, Object>(false);
 	}
 
 	public ObjectSet(ObjectSet<? extends E> c) {
-		_map = new ObjectMap<>(false);
+		_map = new ObjectMap<E, Object>(false);
 		addAll(c);
 	}
 
@@ -49,7 +49,7 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	}
 
 	ObjectSet(int initialCapacity, float loadFactor, boolean dummy) {
-		_map = new OrderedMap<>(initialCapacity, loadFactor, false, false);
+		_map = new OrderedMap<E, Object>(initialCapacity, loadFactor, false, false);
 	}
 
 	public void addAll(ObjectSet<? extends E> c) {

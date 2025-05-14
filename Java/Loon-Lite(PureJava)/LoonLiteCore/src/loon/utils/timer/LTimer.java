@@ -92,6 +92,14 @@ public class LTimer implements LTimerListener, LRelease {
 		}
 	}
 
+	public static int getTimeCount() {
+		return RealtimeProcessManager.get().findCount(GameProcessType.Time);
+	}
+
+	public static boolean isScheduled() {
+		return _instance != null;
+	}
+
 	public static Task postTask(EventActionT<Task> e) {
 		return postTask(LSystem.UNKNOWN, e, 0f);
 	}
@@ -258,6 +266,7 @@ public class LTimer implements LTimerListener, LRelease {
 
 	private long _delay = 0;
 	private long _currentTick = 0;
+
 	private boolean _active = true;
 
 	private TArray<LTimerListener> _currentListeners = null;

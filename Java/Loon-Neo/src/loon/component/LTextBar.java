@@ -166,6 +166,14 @@ public class LTextBar extends LComponent {
 		return this;
 	}
 
+	public boolean isEmpty() {
+		return _messages == null ? false : _messages.isEmpty();
+	}
+
+	public boolean isNotEmpty() {
+		return _messages == null ? false : _messages.isNotEmpty();
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		float height = (_messages == null ? getHeight() : _messages.size * _font.getHeight() + 5);

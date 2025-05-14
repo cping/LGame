@@ -185,6 +185,18 @@ final public class StringUtils extends CharUtils {
 
 	private final static String[] BOOL_POOL_FALSE = { "false", "no", "fake", "off" };
 
+	private final static String SELECTION_BOUND = "'\"|/\\<>()[]{}-";
+
+	/**
+	 * 判定是否存在范围符号
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static boolean isSelectionBound(String o) {
+		return isNotEmpty(o) && SELECTION_BOUND.indexOf(o) != -1;
+	}
+
 	/**
 	 * 判断指定字符串内容是否为布尔值(不判定数字为布尔，并且只判定布尔值，不考虑值真假问题)
 	 * 

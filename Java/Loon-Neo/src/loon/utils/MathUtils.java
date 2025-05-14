@@ -548,6 +548,22 @@ public final class MathUtils {
 		return f1 * f2 / f3;
 	}
 
+	public static int modUnsigned(int num, int den) {
+		int result = (num % den);
+		if (result < 0) {
+			result += den;
+		}
+		return result;
+	}
+
+	public static float modUnsigned(float num, float den) {
+		float result = (num % den);
+		if (result < 0) {
+			result += den;
+		}
+		return result;
+	}
+
 	public static int mid(int i, int min, int max) {
 		return limit(i, min, max);
 	}
@@ -1197,6 +1213,13 @@ public final class MathUtils {
 		return SinCos.SIN_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
 	}
 
+	public static float sinRatio(float v) {
+		if (v >= 1f) {
+			v = v % 1f;
+		}
+		return (MathUtils.sin(v * MathUtils.PI * 2f) + 1f) * 0.5f;
+	}
+
 	public static float cos(float n, float angle, float arc, boolean plus) {
 		return plus ? n + MathUtils.cos(angle) + arc : n - MathUtils.cos(angle) * arc;
 	}
@@ -1207,6 +1230,13 @@ public final class MathUtils {
 
 	public static float cosDeg(float deg) {
 		return SinCos.COS_LIST[(int) (deg * DEG_TO_INDEX) & SIN_MASK];
+	}
+
+	public static float cosRatio(float v) {
+		if (v >= 1f) {
+			v = v % 1f;
+		}
+		return (MathUtils.cos(v * MathUtils.PI * 2f) + 1f) * 0.5f;
 	}
 
 	public static float choose(float... choices) {

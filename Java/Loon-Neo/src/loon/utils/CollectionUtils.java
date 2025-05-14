@@ -397,6 +397,17 @@ final public class CollectionUtils {
 		return tempArr;
 	}
 
+	public static void copyWithStride(int[] src, int srcPos, int dest[], int destPos, int length, int chunk,
+			int stride) {
+		int total = length;
+		for (;total > 0;) {
+			System.arraycopy(src, srcPos, dest, destPos, chunk);
+			srcPos += stride;
+			destPos += chunk;
+			total -= chunk;
+		}
+	}
+
 	/**
 	 * 连接两个数组并返回为一个新数组
 	 * 

@@ -90,6 +90,31 @@ public class LColor implements Serializable {
 	}
 
 	/**
+	 * 计算一种颜色到另一种颜色之间的平滑过渡
+	 * 
+	 * @param c1
+	 * @param c2
+	 * @param ratio
+	 * @return
+	 */
+	public static LColor interpolate(LColor c1, LColor c2, float ratio) {
+		if (c1 != null && c2 == null) {
+			return c1;
+		}
+		if (c1 == null && c2 != null) {
+			return c2;
+		}
+		if (c1 == null && c2 == null) {
+			return null;
+		}
+		int r = (int) ((c2.getRed() - c1.getRed()) * ratio + c1.getRed());
+		int g = (int) ((c2.getGreen() - c1.getGreen()) * ratio + c1.getGreen());
+		int b = (int) ((c2.getBlue() - c1.getBlue()) * ratio + c1.getBlue());
+		int a = (int) ((c2.getAlpha() - c1.getAlpha()) * ratio + c1.getAlpha());
+		return new LColor(r, g, b, a);
+	}
+
+	/**
 	 * 获得24位色
 	 * 
 	 * @param r

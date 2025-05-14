@@ -77,6 +77,10 @@ public class PreloadControl implements LRelease {
 
 	private boolean _closedFreeResource;
 
+	private boolean _assetsFailure;
+
+	private boolean _assetsLoading;
+
 	private float _preMaxFileCount;
 
 	private float _percent;
@@ -96,6 +100,9 @@ public class PreloadControl implements LRelease {
 	}
 
 	public PreloadControl(PreloadLoader loader, TArray<String> others, boolean freeRes) {
+		if (loader == null) {
+			throw new LSysException("PreloadLoader cannot be null !");
+		}
 		this._loader = loader;
 		this._closedFreeResource = freeRes;
 		this.loadAssets(others);
@@ -107,6 +114,8 @@ public class PreloadControl implements LRelease {
 			this._preAssets = null;
 		}
 		this._preAssets = new PreloadAssets();
+		this._assetsLoading = true;
+		this._assetsFailure = false;
 	}
 
 	public PreloadControl loadAssets(String... others) {
@@ -142,14 +151,28 @@ public class PreloadControl implements LRelease {
 			throw new LSysException(
 					"The count of preloaded data cannot be greater than " + LSystem.DEFAULT_MAX_PRE_SIZE);
 		}
-		if (_preMaxFileCount == 0) {
-			this.prefinish();
-		} else {
-			PreloadProcess preload = new PreloadProcess(this, _preAssets, this._preMaxFileCount);
-			preload.setProcessType(GameProcessType.Preload);
-			preload.setDelay(this._preloadInterval);
-			RealtimeProcessManager.get().addProcess(preload);
+		try {
+			if (_preMaxFileCount == 0) {
+				this.prefinish();
+			} else {
+				PreloadProcess preload = new PreloadProcess(this, _preAssets, this._preMaxFileCount);
+				preload.setProcessType(GameProcessType.Preload);
+				preload.setDelay(this._preloadInterval);
+				RealtimeProcessManager.get().addProcess(preload);
+			}
+		} catch (Exception e) {
+			this.onError(e);
 		}
+	}
+
+	/**
+	 * 资源加载错误
+	 * 
+	 * @param e
+	 */
+	protected void onError(Exception e) {
+		this._assetsFailure = true;
+		throw new LSysException("The Preload asynchronous loading failed ! " + e.getMessage());
 	}
 
 	/**
@@ -157,6 +180,7 @@ public class PreloadControl implements LRelease {
 	 */
 	public void prefinish() {
 		_loader.prefinish();
+		_assetsLoading = false;
 	}
 
 	/**
@@ -175,6 +199,34 @@ public class PreloadControl implements LRelease {
 	 */
 	public void preloadProgress(float percent) {
 		_loader.preloadProgress(percent);
+	}
+
+	public float getProgress() {
+		if (_maxPercent >= 1f) {
+			if (_percent > _maxPercent) {
+				_percent = _maxPercent;
+			}
+			return (_percent * 1f / _maxPercent);
+		}
+		return 0f;
+	}
+
+	/**
+	 * 资源加载错误
+	 * 
+	 * @return
+	 */
+	public boolean isAssetsFailure() {
+		return this._assetsFailure;
+	}
+
+	/**
+	 * 资源加载中
+	 * 
+	 * @return
+	 */
+	public boolean isAssetsLoading() {
+		return this._assetsLoading;
 	}
 
 	public PreloadControl prereload() {
@@ -259,15 +311,17 @@ public class PreloadControl implements LRelease {
 			this._otherAssets.clear();
 			this._otherAssets = null;
 		}
+		this._assetsLoading = false;
 	}
 
 	public void clear() {
+		_assetsLoading = _assetsFailure = false;
 		_preMaxFileCount = _percent = _maxPercent = 0;
 		_preloadInterval = 0;
 	}
 
 	public boolean isFinished() {
-		return _preMaxFileCount == 0;
+		return !_assetsLoading && _preMaxFileCount == 0;
 	}
 
 	@Override

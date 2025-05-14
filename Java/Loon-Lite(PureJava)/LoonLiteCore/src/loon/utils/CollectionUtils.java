@@ -397,6 +397,17 @@ final public class CollectionUtils {
 		return tempArr;
 	}
 
+	public static void copyWithStride(int[] src, int srcPos, int dest[], int destPos, int length, int chunk,
+			int stride) {
+		int total = length;
+		for (;total > 0;) {
+			System.arraycopy(src, srcPos, dest, destPos, chunk);
+			srcPos += stride;
+			destPos += chunk;
+			total -= chunk;
+		}
+	}
+
 	/**
 	 * 连接两个数组并返回为一个新数组
 	 * 
@@ -1512,9 +1523,9 @@ final public class CollectionUtils {
 			if (cutData) {
 				Object[] items = new Object[len - count];
 				for (int i = 0, j = 0; i < len; i++) {
-					Object v = arrays[i];
-					if (v != null) {
-						items[j++] = v;
+					Object vo = arrays[i];
+					if (vo != null) {
+						items[j++] = vo;
 					}
 				}
 				return items;
