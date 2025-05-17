@@ -25,6 +25,27 @@ import loon.utils.StringKeyValue;
 
 public class Bezier {
 
+	public static Vector2f pointQuadraticCurve(float t, float ax, float ay, float bx, float by, float cx, float cy) {
+		t = MathUtils.clamp(t, 0f, 1f);
+		if (t == 0) {
+			return new Vector2f(ax, ay);
+		}
+		if (t == 1) {
+			return new Vector2f(cx, cy);
+		}
+
+		final float u = 1 - t;
+		final float tu = t * u;
+		final float tt = t * t;
+		final float uu = u * u;
+
+		return new Vector2f(pos(uu, tu, tt, ax, bx, cx), pos(uu, tu, tt, ay, by, cy));
+	}
+
+	public final static float pos(float uu, float tu, float tt, float a, float b, float c) {
+		return a * uu + b * 2 * tu + c * tt;
+	}
+
 	public final static float bezierByTime(Bezier c, float t) {
 		float percent = cardano(c, t);
 		float p1y = c.controlPoint1.y;

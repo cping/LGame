@@ -120,8 +120,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	protected float _skewCenterX = -1;
 	protected float _skewCenterY = -1;
 
-	private boolean _stopUpdate = false;
-
 	private DrawListener<Entity> _drawListener;
 
 	protected float _width, _height;
@@ -914,7 +912,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 	}
 
 	protected void onManagedUpdate(final long elapsedTime) {
-		if (_stopUpdate) {
+		if (_ignoreUpdate) {
 			return;
 		}
 		onBaseUpdate(elapsedTime);
@@ -1141,15 +1139,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	public IEntity setOrigin(Origin o) {
 		this._origin = o;
-		return this;
-	}
-
-	public boolean isStopUpdate() {
-		return _stopUpdate;
-	}
-
-	public IEntity setStopUpdate(boolean s) {
-		this._stopUpdate = s;
 		return this;
 	}
 
@@ -1707,7 +1696,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			_image.close();
 			_image = null;
 		}
-		_stopUpdate = false;
 		_ignoreUpdate = false;
 		_childrenIgnoreUpdate = false;
 		_componentsIgnoreUpdate = false;

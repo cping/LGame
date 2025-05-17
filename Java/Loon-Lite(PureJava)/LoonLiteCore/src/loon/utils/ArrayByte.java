@@ -278,6 +278,11 @@ public class ArrayByte implements IArray, LRelease {
 		return this;
 	}
 
+	public ArrayByte set(int idx, byte v) {
+		_buffer[idx] = v;
+		return this;
+	}
+
 	public ArrayByte reset() {
 		return setOrder(_byteOrder);
 	}

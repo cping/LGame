@@ -2782,6 +2782,19 @@ public class LColor implements Serializable {
 		return (max - min) / (float) div;
 	}
 
+	public LColor getUnit() {
+		float l = this.len();
+		return new LColor(r / l, g / l, b / l, a / l);
+	}
+
+	public float len2() {
+		return r * r + g * g + b * b + a * a;
+	}
+
+	public float len() {
+		return MathUtils.sqrt(len2());
+	}
+
 	public String toRGBAString() {
 		return new StrBuilder().append(r).append(LSystem.COMMA).append(g).append(LSystem.COMMA).append(b)
 				.append(LSystem.COMMA).append(a).toString();
