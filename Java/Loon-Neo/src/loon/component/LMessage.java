@@ -124,6 +124,34 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return this;
 	}
 
+	public float getSpaceTextX() {
+		return print.getSpaceTextX();
+	}
+
+	public float getSpaceTextY() {
+		return print.getSpaceTextY();
+	}
+
+	public LMessage setSpaceTextX(float x) {
+		print.setSpaceTextX(x);
+		return this;
+	}
+
+	public LMessage setSpaceTextY(float y) {
+		print.setSpaceTextY(y);
+		return this;
+	}
+
+	public LMessage setSpaceText(float off) {
+		return setSpaceText(off, off);
+	}
+
+	public LMessage setSpaceText(float x, float y) {
+		setSpaceTextX(x);
+		setSpaceTextY(y);
+		return this;
+	}
+
 	public LMessage setWait(boolean flag) {
 		print.setWait(flag);
 		return this;

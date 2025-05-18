@@ -111,7 +111,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private LColor _fontGradientTempColor = new LColor();
 
-	private float _alpha;
+	private float _alpha, _spaceTextX, _spaceTextY;
 
 	private int _width, _height, _leftoffset, _topoffset, _nextflag, _messageCount;
 
@@ -286,7 +286,7 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private LColor getGradientFontColor(float curIndex, float maxTextCount, LColor color) {
 		if (!_onComplete && _gradientFontColor) {
-			float alpha = MathUtils.clamp((1f - (float) curIndex / maxTextCount) + 0.05f, 0, 1f);
+			float alpha = MathUtils.clamp((1f - curIndex / maxTextCount) + 0.05f, 0, 1f);
 			_fontGradientTempColor.setColor(color, alpha);
 			return _fontGradientTempColor;
 		} else {
@@ -387,15 +387,16 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
-					g.drawString(String.valueOf(_textChar), _printLocation.x + _leftsize + _leftoffset,
-							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
+					g.drawString(String.valueOf(_textChar), (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
+							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
+							_fontColor);
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
 					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
 							+ _defaultFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
+						g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
 					}
 				}
 				_index++;
@@ -419,6 +420,24 @@ public class Print implements FontSet<Print>, LRelease {
 			_iconLocation.y += ih / fixValue - fixValue;
 		}
 		return _iconLocation;
+	}
+
+	public float getSpaceTextX() {
+		return _spaceTextX;
+	}
+
+	public float getSpaceTextY() {
+		return _spaceTextY;
+	}
+
+	public Print setSpaceTextX(float x) {
+		this._spaceTextX = x;
+		return this;
+	}
+
+	public Print setSpaceTextY(float y) {
+		this._spaceTextY = y;
+		return this;
 	}
 
 	public void drawBMFont(GLEx g, LColor old) {
@@ -514,8 +533,8 @@ public class Print implements FontSet<Print>, LRelease {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
-					_curFont.drawString(g, tmpText, _printLocation.x + _leftsize + _leftoffset,
-							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset,
+					_curFont.drawString(g, tmpText, (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
+							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
 							getGradientFontColor(i, _textsize, _fontColor));
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
@@ -523,7 +542,7 @@ public class Print implements FontSet<Print>, LRelease {
 							+ _curFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
+						g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
 					}
 				}
 				_index++;
@@ -531,7 +550,7 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_onComplete) {
 				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 					fixIconPos();
-					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
+					g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
 				}
 			}
 			if (_messageCount == _nextflag) {

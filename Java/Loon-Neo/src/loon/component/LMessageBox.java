@@ -85,8 +85,10 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 		LTexture imgFace;
 
-		private boolean drawFace;
+		private boolean _drawFace;
 		private boolean _showFlag;
+		private boolean _gradientFontColor;
+
 		private float faceX;
 		private float faceY;
 		private float faceCenterX;
@@ -105,7 +107,8 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 
 		private float _leading = 0;
 		private String _flagType = LSystem.FLAG_TAG;
-		private LColor flagColor;
+		private LColor _flagColor;
+		private LColor _fontGradientTempColor = new LColor();
 
 		protected DrawMessageBox(IFont font, LTexture face, LTexture box, String flag, int w, int h) {
 			super(font);
@@ -114,15 +117,24 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			this.drawWidth = w;
 			this.drawHeight = h;
 
-			this.flagColor = LColor.orange;
+			this._flagColor = LColor.orange;
 
 			this.imgFace = face;
-			this.drawFace = false;
+			this._drawFace = false;
 			this._showFlag = true;
 			this._drawScale = 0.023f;
 			this._radius = 10;
 			this._textureBox = box;
 			this._flagType = StringUtils.isEmpty(flag) ? LSystem.FLAG_TAG : flag;
+		}
+
+		public boolean isGradientFontColor() {
+			return _gradientFontColor;
+		}
+
+		public DrawMessageBox setGradientFontColor(boolean g) {
+			this._gradientFontColor = g;
+			return this;
 		}
 
 		public void setFlagShow(boolean f) {
@@ -145,7 +157,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 
 		private void setFaceDrawMode() {
-			if (this.drawFace) {
+			if (this._drawFace) {
 				final float faceScaleWidth = this._boxWidth * _drawScale;
 				this.faceWidth = this.faceHeight = (this._boxWidth * 0.18f);
 				this.faceX = faceScaleWidth - 5f;
@@ -164,62 +176,74 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			this.faceCenterY = (this.faceY + this.faceHeight / 2f);
 		}
 
-		public void draw(GLEx g, String message, int row, boolean isPage, LColor c) {
-			draw(g, this._boxX, this._boxY, message, row, isPage, c);
+		public void draw(GLEx g, String message, int row, boolean isPage, boolean finished, LColor c) {
+			draw(g, this._boxX, this._boxY, message, row, isPage, finished, c);
 		}
 
-		private void draw(GLEx g, float x, float y, String message, int row, boolean isPage, LColor c) {
+		private void draw(GLEx g, float x, float y, String message, int row, boolean isPage, boolean finished,
+				LColor c) {
 			this._boxX = x;
 			this._boxY = y;
 			drawBorder(g, this._boxX, this._boxY, c);
-			if (this.drawFace) {
-				drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
+			if (this._drawFace) {
+				_drawFace(g, this._boxX + offsetX, this._boxY + offsetY);
 			}
 			final float newX = this._boxX + this.messageX + offsetX;
 			final float newY = this._boxY + this.messageY + offsetY;
 
-			drawMessage(g, message, newX, newY);
+			drawMessage(g, message, newX, newY, finished);
 			if (_showFlag && isPage && _flagType != null) {
 				int size = StringUtils.charCount(message, LSystem.LF);
 				if (_leading > 0) {
-					if (drawFace) {
+					if (_drawFace) {
 						this.font.drawString(g, _flagType, newX + this.font.stringWidth(message) - this.font.getSize(),
-								newY + this.font.stringHeight(message) + (size * _leading), this.flagColor);
+								newY + this.font.stringHeight(message) + (size * _leading), this._flagColor);
 					} else {
 						this.font.drawString(g, _flagType, this._boxX + this.pageX + this.offsetX,
 								this._boxY + this.pageY + this.font.stringHeight(message) + this.offsetY
 										+ (this.font.getSize() * 0.10f) + (size * _leading),
-								this.flagColor);
+								this._flagColor);
 					}
 				} else {
-					if (drawFace) {
+					if (_drawFace) {
 						this.font.drawString(g, _flagType, newX + this.font.stringWidth(message) - this.font.getSize(),
-								newY + this.font.stringHeight(message), this.flagColor);
+								newY + this.font.stringHeight(message), this._flagColor);
 					} else {
 						this.font.drawString(g, _flagType, this._boxX + this.pageX + this.offsetX,
 								this._boxY + this.pageY + this.font.stringHeight(message) + this.offsetY
 										+ (this.font.getSize() * 0.10f),
-								this.flagColor);
+								this._flagColor);
 					}
 				}
 			}
 
 		}
 
-		private void drawMessage(GLEx g, String message, float x, float y) {
+		private LColor getGradientFontColor(float curIndex, float maxTextCount, boolean finished, LColor color) {
+			if (!finished && _gradientFontColor) {
+				float alpha = MathUtils.clamp((1f - curIndex / maxTextCount) + 0.05f, 0, 1f);
+				_fontGradientTempColor.setColor(color, alpha);
+				return _fontGradientTempColor;
+			} else {
+				return color;
+			}
+		}
+
+		private void drawMessage(GLEx g, String message, float x, float y, boolean finished) {
 			final IFont displayFont = (this.font == null) ? g.getFont() : this.font;
 			if (_leading > 0) {
 				final String[] texts = StringUtils.split(message, LSystem.LF);
 				final float height = displayFont.getHeight();
 				for (int i = 0, size = texts.length; i < size; i++) {
-					displayFont.drawString(g, texts[i], x, y + (i * (height + _leading)), this.fontColor);
+					displayFont.drawString(g, texts[i], x, y + (i * (height + _leading)),
+							getGradientFontColor(i, size, finished, fontColor));
 				}
 			} else {
 				displayFont.drawString(g, message, x, y, this.fontColor);
 			}
 		}
 
-		private void drawFace(GLEx g, float x, float y) {
+		private void _drawFace(GLEx g, float x, float y) {
 			g.draw(this.imgFace, x + this.faceX, y + this.faceY, this.faceWidth, this.faceHeight);
 		}
 
@@ -233,11 +257,11 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 
 		public LColor getFlagColor() {
-			return flagColor.cpy();
+			return _flagColor.cpy();
 		}
 
 		public DrawMessageBox setFlagColor(LColor c) {
-			this.flagColor = new LColor(c);
+			this._flagColor = new LColor(c);
 			return this;
 		}
 
@@ -274,7 +298,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		}
 
 		public boolean isFaceMode() {
-			return this.drawFace;
+			return this._drawFace;
 		}
 
 		public void setAutoFaceImage() {
@@ -282,7 +306,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				float sizeOffset = font.getSize() / 2f;
 				setOffsetX(sizeOffset);
 			}
-			this.drawFace = true;
+			this._drawFace = true;
 			setFaceDrawMode();
 			reinit();
 		}
@@ -313,7 +337,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 				return;
 			}
 			this.imgFace = face;
-			this.drawFace = (this.imgFace != null);
+			this._drawFace = (this.imgFace != null);
 		}
 
 		public void setFaceWidth(float w) {
@@ -584,6 +608,15 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 		this._delay = 30;
 		this._pageTime = 300;
 		freeRes().add(box);
+	}
+
+	public boolean isGradientFontColor() {
+		return _box.isGradientFontColor();
+	}
+
+	public LMessageBox setGradientFontColor(boolean g) {
+		this._box.setGradientFontColor(g);
+		return this;
 	}
 
 	public LMessageBox setMessages(TArray<Message> messages) {
@@ -863,7 +896,7 @@ public class LMessageBox extends LComponent implements FontSet<LMessageBox> {
 			this.isPaged = false;
 		}
 
-		this._box.draw(g, _message.toString(), renderRow, this.isPaged, this._component_baseColor);
+		this._box.draw(g, _message.toString(), renderRow, this.isPaged, this.finished, this._component_baseColor);
 	}
 
 	public boolean isCompleted() {

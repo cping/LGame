@@ -76,6 +76,8 @@ public class BMFont extends FontTrans implements IFont {
 
 	private int _initDraw = -1;
 
+	private int _drawLimit = 0;
+
 	private String _texPath = null;
 
 	private String _imagePath = null;
@@ -368,7 +370,7 @@ public class BMFont extends FontTrans implements IFont {
 			this.displayList = BaseIO.loadTexture(_imagePath);
 			return;
 		}
-		if (_initDraw < 1) {
+		if (_initDraw < _drawLimit) {
 			_initDraw++;
 			return;
 		}
@@ -499,7 +501,7 @@ public class BMFont extends FontTrans implements IFont {
 			this.displayList = BaseIO.loadTexture(_imagePath);
 			return;
 		}
-		if (_initDraw < 1) {
+		if (_initDraw < _drawLimit) {
 			_initDraw++;
 			return;
 		}
@@ -849,6 +851,15 @@ public class BMFont extends FontTrans implements IFont {
 	@Override
 	public IFont setTranslator(ITranslator translator) {
 		this._translator = translator;
+		return this;
+	}
+
+	public int getDrawLimit() {
+		return _drawLimit;
+	}
+
+	public BMFont setDrawLimit(int d) {
+		this._drawLimit = d;
 		return this;
 	}
 

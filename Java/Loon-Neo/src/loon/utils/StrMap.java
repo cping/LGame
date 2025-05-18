@@ -107,6 +107,14 @@ public class StrMap extends ObjectMap<String, String> {
 		return getLong(name, 0l);
 	}
 
+	public long getLong(String name, long def) {
+		String v = get(name);
+		if (!MathUtils.isNan(v)) {
+			return def;
+		}
+		return containsKey(name) ? Long.parseLong(v) : def;
+	}
+
 	public int getInt(String name, int def) {
 		String v = get(name);
 		if (!MathUtils.isNan(v)) {
@@ -121,14 +129,6 @@ public class StrMap extends ObjectMap<String, String> {
 			return def;
 		}
 		return containsKey(name) ? Float.parseFloat(v) : def;
-	}
-
-	public long getLong(String name, long def) {
-		String v = get(name);
-		if (!MathUtils.isNan(v)) {
-			return def;
-		}
-		return containsKey(name) ? Long.parseLong(v) : def;
 	}
 
 }
