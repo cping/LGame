@@ -115,6 +115,15 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this.setLocked(true);
 	}
 
+	public boolean isGradientFontColor() {
+		return print.isGradientFontColor();
+	}
+
+	public LMessage setGradientFontColor(boolean g) {
+		print.setGradientFontColor(g);
+		return this;
+	}
+
 	public LMessage setWait(boolean flag) {
 		print.setWait(flag);
 		return this;

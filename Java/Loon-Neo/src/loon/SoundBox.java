@@ -73,9 +73,9 @@ public abstract class SoundBox extends BaseIO {
 		}
 		_soundCache.clear();
 	}
-
+    /*
 	@Override
 	protected void finalize() {
 		release();
-	}
+	}*/
 }

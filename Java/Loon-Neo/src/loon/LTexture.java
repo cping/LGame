@@ -1457,13 +1457,14 @@ public class LTexture extends Painter implements LRelease {
 			}
 		};
 	}
-
+	
+    /*
 	@Override
 	protected void finalize() {
 		if (!_disposed && !_closed) {
 			gfx.queueForDispose(this);
 		}
-	}
+	}*/
 
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态

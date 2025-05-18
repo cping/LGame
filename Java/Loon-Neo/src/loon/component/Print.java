@@ -104,11 +104,15 @@ public class Print implements FontSet<Print>, LRelease {
 
 	private int _lazyFlag = 1;
 
+	private int _waitDealyMax = 100;
+
 	private String _messages;
 
 	private boolean _onComplete, _newLine, _visible, _closed;
 
 	private StrBuilder _messageBuffer = new StrBuilder(_messageLength);
+
+	private LColor _fontGradientTempColor = new LColor();
 
 	private float _alpha;
 
@@ -127,6 +131,8 @@ public class Print implements FontSet<Print>, LRelease {
 	private IFont _curFont;
 
 	private boolean _nativeFont = false;
+
+	private boolean _gradientFontColor = false;
 
 	private boolean _isEnglish, _isWait, _isIconFlag;
 
@@ -150,10 +156,6 @@ public class Print implements FontSet<Print>, LRelease {
 		this._isWait = false;
 		this._isIconFlag = true;
 		_iconLocation = new PointF();
-	}
-
-	public void setMessage(String context, IFont font) {
-		setMessage(context, font, false);
 	}
 
 	private static class PrintUpdate implements Updateable {
@@ -193,8 +195,10 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_font instanceof LFont) {
 				if (_drawDrawingFont) {
 					LSTRDictionary.Dict dict = LSTRDictionary.get().bind((LFont) _font, _context);
-					_print._defaultFont = dict.getSTR();
-					_print._curFont = _font;
+					if (dict != null) {
+						_print._defaultFont = dict.getSTR();
+						_print._curFont = _font;
+					}
 				} else {
 					_print._defaultFont = new LSTRFont((LFont) _font, _context, LSystem.isHTML5());
 				}
@@ -228,8 +232,22 @@ public class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
+	public boolean isGradientFontColor() {
+		return _gradientFontColor;
+	}
+
+	public Print setGradientFontColor(boolean g) {
+		this._gradientFontColor = g;
+		this._nativeFont = g;
+		return this;
+	}
+
+	public void setMessage(String context, IFont font) {
+		setMessage(context, font, _gradientFontColor);
+	}
+
 	public void setMessage(String context, IFont curfontSize, boolean isComplete) {
-		setMessage(context, curfontSize, isComplete, false);
+		setMessage(context, curfontSize, isComplete, _gradientFontColor);
 	}
 
 	public void setMessage(String context, IFont curfontSize, boolean isComplete, boolean drawFont) {
@@ -286,6 +304,16 @@ public class Print implements FontSet<Print>, LRelease {
 			height = MathUtils.max(height, curfontSize.stringHeight(String.valueOf(showMessages[i])));
 		}
 		return MathUtils.max(curfontSize.getHeight(), height);
+	}
+
+	private LColor getGradientFontColor(float curIndex, float maxTextCount, LColor color) {
+		if (!_onComplete && _gradientFontColor) {
+			float alpha = MathUtils.clamp((1f - (float) curIndex / maxTextCount) + 0.05f, 0, 1f);
+			_fontGradientTempColor.setColor(color, alpha);
+			return _fontGradientTempColor;
+		} else {
+			return color;
+		}
 	}
 
 	public void drawDefFont(GLEx g, LColor old) {
@@ -437,9 +465,12 @@ public class Print implements FontSet<Print>, LRelease {
 	}
 
 	public void drawBMFont(GLEx g, LColor old) {
+		if (_curFont == null) {
+			return;
+		}
 		synchronized (_showMessages) {
 			this._textsize = _showMessages.length;
-			if (_nativeFont) {
+			if (_nativeFont && _defaultFont != null) {
 				this._fontSize = _defaultFont.getSize();
 				this._fontHeight = maxFontHeignt(_defaultFont, _showMessages, _textsize);
 			} else {
@@ -530,7 +561,8 @@ public class Print implements FontSet<Print>, LRelease {
 				}
 				if (i != _textsize - 1) {
 					_curFont.drawString(g, tmpText, _printLocation.x + _leftsize + _leftoffset,
-							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset, _fontColor);
+							(_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset,
+							getGradientFontColor(i, _textsize, _fontColor));
 				} else if (!_newLine && !_onComplete) {
 					_iconX = _printLocation.x + _leftsize + _leftoffset;
 					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
@@ -600,9 +632,18 @@ public class Print implements FontSet<Print>, LRelease {
 			if (_onComplete) {
 				_waitdelay++;
 			}
-			return _onComplete && _waitdelay > 100;
+			return _onComplete && _waitdelay > _waitDealyMax;
 		}
 		return _onComplete;
+	}
+
+	public int getWaitDelayMax() {
+		return _waitDealyMax;
+	}
+
+	public Print setWaitDelayMax(int w) {
+		this._waitDealyMax = w;
+		return this;
 	}
 
 	public boolean next() {

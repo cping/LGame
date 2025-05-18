@@ -481,6 +481,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	private LTexture _dialogTexture;
 
+	private boolean _gradientFontAlpha;
+
 	private boolean isSelectMessage, isScriptRunning, isGameRunning, scrFlag;
 
 	// 若需要任意处点击皆可继续脚本，此标记应为true
@@ -612,27 +614,71 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 	}
 
+	/**
+	 * 构建一个AVG专用的Screen模板
+	 * 
+	 * @param initscript
+	 * @param initdialog
+	 */
 	public AVGScreen(final String initscript, final String initdialog) {
-		this(initscript, LSystem.loadTexture(initdialog));
+		this(initscript, initdialog, false);
 	}
 
+	/**
+	 * 构建一个AVG专用的Screen模板
+	 * 
+	 * @param initscript        初始脚本内容
+	 * @param initdialog        初始对话框纹理
+	 * @param gradientfontalpha 是否渐变显示的对话框文字透明度颜色
+	 */
+	public AVGScreen(final String initscript, final String initdialog, final boolean gradientfontalpha) {
+		this(initscript, LSystem.loadTexture(initdialog), gradientfontalpha);
+	}
+
+	/**
+	 * 构建一个AVG专用的Screen模板
+	 * 
+	 * @param initscript 初始脚本内容
+	 */
+	public AVGScreen(final String initscript) {
+		this(initscript, (LTexture) null);
+	}
+
+	/**
+	 * 构建一个AVG专用的Screen模板
+	 * 
+	 * @param initscript 初始脚本内容
+	 * @param img        纹理图
+	 */
 	public AVGScreen(final String initscript, final LTexture img) {
+		this(initscript, img, false);
+	}
+
+	/**
+	 * 构建一个AVG专用的Screen模板
+	 * 
+	 * @param initscript        初始脚本内容
+	 * @param img               纹理图
+	 * @param gradientfontalpha 是否渐变显示的对话框文字透明度颜色
+	 */
+	public AVGScreen(final String initscript, final LTexture img, final boolean gradientfontalpha) {
 		this._font = LSystem.getSystemGameFont();
 		this._scriptName = initscript;
-		if (initscript == null) {
-			return;
-		}
 		if (img != null) {
 			this._dialogFileName = img.getSource();
 			this._dialogTexture = img;
 		}
+		this._gradientFontAlpha = gradientfontalpha;
 	}
 
-	public AVGScreen(final String initscript) {
-		this._font = LSystem.getSystemGameFont();
-		this._scriptName = initscript;
-		if (initscript == null) {
-			return;
+	public boolean isGradientFontAlpha() {
+		return this.messageUI == null ? this._gradientFontAlpha : this.messageUI.isGradientFontColor();
+	}
+
+	public void setGradientFontAlpha(boolean g) {
+		this._gradientFontAlpha = g;
+		if (this.messageUI != null) {
+			this.messageUI.setGradientFontColor(g);
 		}
 	}
 
@@ -800,6 +846,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		}
 		this.messageUI = new LMessage(_font, _dialogTexture, 0, 0);
 		this.messageUI.setFontColor(_fontColor);
+		this.messageUI.setGradientFontColor(_gradientFontAlpha);
 		int size = MathUtils.ifloor(messageUI.getWidth() / messageUI.getMessageFont().getSize());
 		if (size % 2 != 0) {
 			size = size - 3;
@@ -810,13 +857,23 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 		this.messageUI.setLocation((getWidth() - messageUI.getWidth()) / 2, getHeight() - messageUI.getHeight() - 10);
 		this.messageUI.setTopOffset(-5);
 		this.messageUI.setVisible(false);
+		this.onMessage(messageUI);
 		this.selectUI = new LSelect(_font, _dialogTexture, messageUI.x(), messageUI.y());
 		this.selectUI.setFontColor(_fontColor);
 		this.selectUI.setTopOffset(5);
+		this.onSelect(selectUI);
 		this.scrCG = new AVGCG(this);
 		this.messageDesktop.add(messageUI);
 		this.messageDesktop.add(selectUI);
 		this.selectUI.setVisible(false);
+	}
+
+	protected void onMessage(LMessage message) {
+
+	}
+
+	protected void onSelect(LSelect select) {
+
 	}
 
 	/**
