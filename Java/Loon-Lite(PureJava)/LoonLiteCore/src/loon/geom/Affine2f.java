@@ -186,19 +186,19 @@ public class Affine2f implements LTrans, XY {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(x, y);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(x, y);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(x, y);
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.translate(-x, -y);
 			break;
 		}
@@ -210,7 +210,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(x, y);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -220,13 +220,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-x, -y);
 			tx.translate(x, y);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-x, -y);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(x, y);
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.translate(-x, -y);
 			tx.scale(-1, 1);
 			break;
@@ -242,19 +242,19 @@ public class Affine2f implements LTrans, XY {
 		switch (transform) {
 		case TRANS_ROT90: {
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT180: {
 			tx.translate(w, h);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_ROT270: {
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -266,7 +266,7 @@ public class Affine2f implements LTrans, XY {
 		}
 		case TRANS_MIRROR_ROT90: {
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -276,13 +276,13 @@ public class Affine2f implements LTrans, XY {
 			tx.scale(-1, 1);
 			tx.translate(-w, -h);
 			tx.translate(w, h);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -303,7 +303,7 @@ public class Affine2f implements LTrans, XY {
 			float w = height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -311,7 +311,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + width;
 			float h = y + height;
 			tx.translate(w, h);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -319,7 +319,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x;
 			float h = y + width;
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.translate(-w, -h);
 			break;
 		}
@@ -335,7 +335,7 @@ public class Affine2f implements LTrans, XY {
 			float w = x + height;
 			float h = y;
 			tx.translate(w, h);
-			tx.rotateDegrees(ANGLE_90);
+			tx.rotateRadians(ANGLE_90);
 			tx.translate(-w, -h);
 			tx.scale(-1, 1);
 			break;
@@ -349,12 +349,12 @@ public class Affine2f implements LTrans, XY {
 			w = x + width;
 			h = y + height;
 			tx.translate(w, h);
-			tx.rotateDegrees(MathUtils.PI);
+			tx.rotateRadians(MathUtils.PI);
 			tx.translate(-w, -h);
 			break;
 		}
 		case TRANS_MIRROR_ROT270: {
-			tx.rotateDegrees(ANGLE_270);
+			tx.rotateRadians(ANGLE_270);
 			tx.scale(-1, 1);
 			break;
 		}
@@ -897,18 +897,26 @@ public class Affine2f implements LTrans, XY {
 		return new Bound(dx, dy, dx + a, dy + b, dx + c, dy + d, dx + a + c, dy + b + d);
 	}
 
-	public Affine2f rotateDegrees(float degrees) {
-		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
+	public Affine2f rotateRadians(float radians) {
+		float sina = MathUtils.sin(radians), cosa = MathUtils.cos(radians);
 		return multiply(this, cosa, sina, -sina, cosa, 0, 0, this);
 	}
 
-	public Affine2f rotateDegrees(float degrees, float x, float y) {
-		float sina = MathUtils.sin(degrees), cosa = MathUtils.cos(degrees);
+	public Affine2f rotateRadians(float radians, float x, float y) {
+		float sina = MathUtils.sin(radians), cosa = MathUtils.cos(radians);
 		return multiply(this, cosa, sina, -sina, cosa, x, y, this);
 	}
 
+	public Affine2f rotateDegrees(float degrees) {
+		return rotateRadians(MathUtils.toRadians(degrees));
+	}
+
+	public Affine2f rotateDegrees(float degrees, float x, float y) {
+		return rotateRadians(MathUtils.toRadians(degrees), x, y);
+	}
+
 	public Affine2f toRotate(float angle, float x, float y) {
-		return rotateDegrees(MathUtils.toRadians(angle), x, y);
+		return rotateRadians(MathUtils.toRadians(angle), x, y);
 	}
 
 	public final Affine2f preRotate(final float angle) {

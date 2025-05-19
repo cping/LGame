@@ -34,7 +34,7 @@ public abstract class TurtleCommand {
 	protected float _schedule;
 
 	protected boolean _inited;
-	
+
 	protected boolean _visible;
 
 	public TurtleCommand(String name, float time) {
@@ -74,11 +74,11 @@ public abstract class TurtleCommand {
 		this._inited = false;
 		this._visible = true;
 	}
-	
+
 	public void setVisible(boolean v) {
 		this._visible = v;
 	}
-	
+
 	public boolean isVisible() {
 		return _visible;
 	}

@@ -680,6 +680,58 @@ public class Line extends Shape {
 		}
 	}
 
+	public RectBox bounds() {
+		return bounds(null);
+	}
+
+	public RectBox bounds(RectBox rect) {
+		float min_x = 0f;
+		float min_y = 0f;
+		float max_x = 0f;
+		float max_y = 0f;
+		if (_currentStart.x < _currentEnd.x) {
+			min_x = _currentStart.x;
+			max_x = _currentEnd.x;
+		} else {
+			min_x = _currentEnd.x;
+			max_x = _currentStart.x;
+		}
+		if (_currentStart.y < _currentEnd.y) {
+			min_y = _currentStart.y;
+			max_y = _currentEnd.y;
+		} else {
+			min_y = _currentEnd.y;
+			max_y = _currentStart.y;
+		}
+		if (min_x - max_x == 0) {
+			max_x += 1;
+		}
+		if (min_y + max_y == 0) {
+			max_y += 1;
+		}
+		return RectBox.fromMinMax(min_x, min_y, max_x, max_y, rect);
+	}
+
+	public float len() {
+		return _currentStart.distance(_currentEnd);
+	}
+
+	public float setRadians(float r) {
+		float len = len();
+		_currentEnd.x = _currentStart.x + MathUtils.cos(r) * len;
+		_currentEnd.y = _currentStart.y + MathUtils.sin(r) * len;
+		pointsDirty = true;
+		return r;
+	}
+
+	public float getRadians() {
+		return MathUtils.atan2(_currentEnd.y - _currentStart.y, _currentEnd.x - _currentStart.x);
+	}
+
+	public float setDegrees(float d) {
+		return setRadians(MathUtils.toRadians(d));
+	}
+
 	public Line clip(Vector2f side, float length, boolean normalize) {
 		Vector2f dir = side;
 		if (normalize) {

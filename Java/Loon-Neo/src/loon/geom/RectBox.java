@@ -145,12 +145,16 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return new RectBox(x, y, w, h);
 	}
 
-	public final static RectBox fromMinMax(XY v1, XY v2, RectBox o) {
-		float minX = MathUtils.min(v1.getX(), v2.getX());
-		float minY = MathUtils.min(v1.getY(), v2.getY());
-		float maxX = MathUtils.max(v1.getX(), v2.getX());
-		float maxY = MathUtils.max(v1.getY(), v2.getY());
+	public final static RectBox fromMinMax(float x1, float y1, float x2, float y2, RectBox o) {
+		float minX = MathUtils.min(x1, x2);
+		float minY = MathUtils.min(y1, y2);
+		float maxX = MathUtils.max(x1, x2);
+		float maxY = MathUtils.max(y1, y2);
 		return o.set(minX, minY, maxX - minX, maxY - minY);
+	}
+
+	public final static RectBox fromMinMax(XY v1, XY v2, RectBox o) {
+		return fromMinMax(v1.getX(), v1.getY(), v2.getX(), v2.getY(), o);
 	}
 
 	public final static RectBox fromLerp(RectBox src, RectBox dst, float ratio, RectBox o) {

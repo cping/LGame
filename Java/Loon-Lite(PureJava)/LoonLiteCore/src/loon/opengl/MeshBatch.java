@@ -81,7 +81,7 @@ public class MeshBatch extends BaseBatch {
 				a2f.scale(-1, 1);
 				a2f.translate(-w, -h);
 				a2f.translate(w, h);
-				a2f.rotateDegrees(MathUtils.PI);
+				a2f.rotateRadians(MathUtils.PI);
 				a2f.translate(-w, -h);
 			}
 		}

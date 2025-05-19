@@ -52,6 +52,8 @@ public class LTurtle extends LComponent {
 
 	private float _currentLineWidth;
 
+	private float _penSize;
+
 	public LTurtle(int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this._commands = new TArray<TurtleCommand>();
@@ -117,6 +119,15 @@ public class LTurtle extends LComponent {
 				_currentLineWidth, _currentSpeed));
 		this._currentX = endX;
 		this._currentY = endY;
+		return this;
+	}
+
+	public float getPanSize() {
+		return this._penSize;
+	}
+
+	public LTurtle setPanSize(float s) {
+		this._penSize = s;
 		return this;
 	}
 
@@ -255,10 +266,13 @@ public class LTurtle extends LComponent {
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		g.fillRect(x, y, getWidth(), getHeight(), this._turtleBgColor);
+		final float lineWidth = g.getLineWidth();
+		g.setLineWidth(_penSize);
 		final int size = this._commands.size;
 		for (int i = size - 1; i > -1; i--) {
 			_commands.get(i).doRender(g);
 		}
+		g.setLineWidth(lineWidth);
 	}
 
 	public LTurtle clearImages() {

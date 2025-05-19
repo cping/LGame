@@ -780,6 +780,24 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLEx skew(float s) {
+		lastTrans.skew(s, s);
+		return this;
+	}
+
+	public GLEx skew(float sx, float sy) {
+		lastTrans.skew(sx, sy);
+		return this;
+	}
+
+	public float skewX() {
+		return lastTrans.skewX();
+	}
+
+	public float skewY() {
+		return lastTrans.skewY();
+	}
+
 	public GLEx scale(float s) {
 		lastTrans.scale(s, s);
 		return this;
@@ -824,6 +842,38 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			return this;
 		}
 		tx().preRotate(angle);
+		return this;
+	}
+
+	public GLEx rotateDegrees(float d) {
+		if (isClosed) {
+			return this;
+		}
+		tx().rotateDegrees(d);
+		return this;
+	}
+
+	public GLEx rotateDegrees(float d, float x, float y) {
+		if (isClosed) {
+			return this;
+		}
+		tx().rotateDegrees(d, x, y);
+		return this;
+	}
+
+	public GLEx rotateRadians(float r) {
+		if (isClosed) {
+			return this;
+		}
+		tx().rotateRadians(r);
+		return this;
+	}
+
+	public GLEx rotateRadians(float r, float x, float y) {
+		if (isClosed) {
+			return this;
+		}
+		tx().rotateRadians(r, x, y);
 		return this;
 	}
 
