@@ -2156,7 +2156,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float a = (endColor.a - startColor.a) / steps;
 
 		for (int i = steps; i >= 0; i--) {
-			drawLine(x0, y0, x1, y1, width + step * i, currentColorUpdate.setColor((startColor.r + r * i),
+			drawLine(x0, y0, x1, y1, width + step * i, currentColorTemp.setColor((startColor.r + r * i),
 					(startColor.g + g * i), (startColor.b + b * i), (startColor.a + a * i)));
 		}
 		return this;

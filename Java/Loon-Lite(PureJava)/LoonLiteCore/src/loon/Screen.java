@@ -4758,6 +4758,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen pauseScreenPaint() {
+		return setNext(true);
+	}
+
+	public Screen resumeScreenPaint() {
+		return setNext(false);
+	}
+
 	public abstract void alter(LTimerContext context);
 
 	/**

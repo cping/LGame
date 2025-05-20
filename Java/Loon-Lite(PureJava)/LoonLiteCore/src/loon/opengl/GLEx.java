@@ -759,7 +759,12 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		gfx.getCanvas().clear();
+		getCanvas().setCompositeOperation(Composite.SRC_OVER);
+		if (red == 0f && green == 0f && blue == 0f && alpha == 0f) {
+			gfx.getCanvas().clear();
+		} else {
+			gfx.getCanvas().clear(currentColorTemp.setColor(red, green, blue, alpha));
+		}
 		this.setFont(LSystem.getSystemGameFont());
 		this.lastBrush.baseColor = LColor.DEF_COLOR;
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
@@ -774,7 +779,6 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		getCanvas().setCompositeOperation(Composite.SRC_OVER);
 		currentColorUpdate.setColor(this.lastBrush.baseColor);
 		return reset(currentColorUpdate.r, currentColorUpdate.g, currentColorUpdate.b, currentColorUpdate.a);
 	}
@@ -922,8 +926,8 @@ public class GLEx implements LRelease {
 
 	public GLEx clear(float red, float green, float blue, float alpha) {
 		Canvas canvas = gfx.getCanvas();
-		currentColorUpdate.setColor(red, green, blue, alpha);
-		canvas.clear(currentColorUpdate);
+		currentColorTemp.setColor(red, green, blue, alpha);
+		canvas.clear(currentColorTemp);
 		return this;
 	}
 
@@ -1748,7 +1752,7 @@ public class GLEx implements LRelease {
 		float a = (endColor.a - startColor.a) / steps;
 
 		for (int i = steps; i >= 0; i--) {
-			drawLine(x0, y0, x1, y1, width + step * i, currentColorUpdate.setColor((startColor.r + r * i),
+			drawLine(x0, y0, x1, y1, width + step * i, currentColorTemp.setColor((startColor.r + r * i),
 					(startColor.g + g * i), (startColor.b + b * i), (startColor.a + a * i)));
 		}
 		return this;
@@ -2690,7 +2694,7 @@ public class GLEx implements LRelease {
 	 * @param y2
 	 */
 	public final GLEx drawRect(final float x1, final float y1, final float x2, final float y2) {
-		return drawRect(x1, y1, x2, y2, this.currentColorTemp);
+		return drawRect(x1, y1, x2, y2, this.syncBrushColor());
 	}
 
 	/**

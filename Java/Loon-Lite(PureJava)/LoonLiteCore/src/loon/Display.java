@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -173,7 +173,9 @@ public class Display extends BaseIO implements LRelease {
 
 	private final LGame _game;
 
-	private boolean _closed, _autoRepaint;
+	private LColor _debugFontColor = LColor.white;
+
+	private boolean _closed, _autoUpdate, _autoRepaint;
 
 	private final long updateRate;
 
@@ -209,11 +211,15 @@ public class Display extends BaseIO implements LRelease {
 
 	private Runtime runtime;
 
-	private long frameCount = 0l;
+	private long _frameCount = 0l;
 
-	private long frameDelta = 0l;
+	private long _frameDelta = 0l;
 
-	private int frameRate = 0;
+	private long _sinceRefreshMaxInterval = 0l;
+
+	private int _frameRate = 0;
+
+	private int _debugTextSpace = 0;
 
 	private IFont displayFont;
 
@@ -247,10 +253,12 @@ public class Display extends BaseIO implements LRelease {
 		this._game.checkBaseGame(g);
 		this._setting = _game.setting;
 		this._process = _game.process();
+		this._sinceRefreshMaxInterval = LSystem.SECOND;
+		this._debugTextSpace = 5;
 		this.memorySelf = _game.isBrowser();
 		Graphics graphics = _game.graphics();
 		_glEx = new GLEx(graphics);
-		_glEx.update();
+		this._glEx.update();
 		updateSyncTween(_setting.isSyncTween);
 		this.displayMemony = MEMORY_STR + "0";
 		this.displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
@@ -264,7 +272,44 @@ public class Display extends BaseIO implements LRelease {
 				onFrame();
 			}
 		});
-		this._autoRepaint = true;
+		this.autoDisplay();
+	}
+
+	public Display autoDisplay() {
+		this._autoUpdate = this._autoRepaint = true;
+		return this;
+	}
+
+	public Display stopAutoDisplay() {
+		this._autoUpdate = this._autoRepaint = false;
+		return this;
+	}
+
+	public LColor getDebugFontColor() {
+		return this._debugFontColor;
+	}
+
+	public Display setDebugFontColor(LColor fc) {
+		this._debugFontColor = fc;
+		return this;
+	}
+
+	public int getDebugTextSpace() {
+		return this._debugTextSpace;
+	}
+
+	public Display setDebugTextSpace(int s) {
+		this._debugTextSpace = s;
+		return this;
+	}
+
+	public long getSinceRefreshMaxInterval() {
+		return this._sinceRefreshMaxInterval;
+	}
+
+	public Display setSinceRefreshMaxInterval(long s) {
+		this._sinceRefreshMaxInterval = s;
+		return this;
 	}
 
 	protected void newDefView(boolean show) {
@@ -340,7 +385,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 清空当前游戏窗体内容为指定色彩
-	 *
+	 * 
 	 * @param red
 	 * @param green
 	 * @param blue
@@ -355,7 +400,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 清空当前游戏窗体内容为指定色彩
-	 *
+	 * 
 	 * @param color
 	 */
 	public void clearColor(LColor color) {
@@ -419,18 +464,24 @@ public class Display extends BaseIO implements LRelease {
 		try {
 			_glEx.saveTx();
 			if (_setting.allScreenRefresh) {
-				_glEx.reset();
+				_glEx.reset(cred, cgreen, cblue, calpha);
 			}
+
 			_glEx.begin();
 
+			_process.drawFrist(_glEx);
 			_process.load();
 			_process.runTimer(clock);
+
 			_process.draw(_glEx);
 
 			// 渲染debug信息
 			drawDebug(_glEx, _setting, clock.timeSinceLastUpdate);
 
 			_process.drawEmulator(_glEx);
+			// 最后渲染的内容
+			_process.drawLast(_glEx);
+
 			_process.unload();
 
 			// 如果存在屏幕录像设置
@@ -469,52 +520,53 @@ public class Display extends BaseIO implements LRelease {
 		if (_closed) {
 			return;
 		}
-		if (!_autoRepaint) {
-			return;
-		}
-		final int updateTick = _game.tick();
 		final LSetting setting = _game.setting;
-		final long paintLoop = setting.fixedPaintLoopTime;
-		final long updateLoop = setting.fixedUpdateLoopTime;
 		final float fpsScale = setting.getScaleFPS();
-		long nextUpdate = this.nextUpdate;
-		if (updateTick >= nextUpdate) {
-			final long updateRate = this.updateRate;
-			long updates = 0;
-			while (updateTick >= nextUpdate) {
-				nextUpdate += updateRate;
-				updates++;
+		if (_autoUpdate) {
+			final int updateTick = _game.tick();
+			final long updateLoop = setting.fixedUpdateLoopTime;
+			long nextUpdate = this.nextUpdate;
+			if (updateTick >= nextUpdate) {
+				final long updateRate = this.updateRate;
+				long updates = 0;
+				while (updateTick >= nextUpdate) {
+					nextUpdate += updateRate;
+					updates++;
+				}
+				this.nextUpdate = nextUpdate;
+				final long updateDt = updates * updateRate;
+				updateClock.tick += updateDt;
+				if (updateLoop == -1) {
+					updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
+				} else {
+					updateClock.timeSinceLastUpdate = updateLoop;
+				}
+				if (updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+					updateClock.timeSinceLastUpdate = 0;
+				}
+				update(updateClock);
 			}
-			this.nextUpdate = nextUpdate;
-			final long updateDt = updates * updateRate;
-			updateClock.tick += updateDt;
-			if (updateLoop == -1) {
-				updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
+		}
+		if (_autoRepaint) {
+			final long paintLoop = setting.fixedPaintLoopTime;
+			final long paintTick = _game.tick();
+			if (paintLoop == -1) {
+				paintClock.timeSinceLastUpdate = (long) ((paintTick - paintClock.tick) * fpsScale);
 			} else {
-				updateClock.timeSinceLastUpdate = updateLoop;
+				paintClock.timeSinceLastUpdate = paintLoop;
 			}
-			if (updateClock.timeSinceLastUpdate > LSystem.SECOND) {
-				updateClock.timeSinceLastUpdate = 0;
+			if (paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+				paintClock.timeSinceLastUpdate = 0;
 			}
-			update(updateClock);
+			paintClock.tick = paintTick;
+			paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
+			paint(paintClock);
 		}
-		final long paintTick = _game.tick();
-		if (paintLoop == -1) {
-			paintClock.timeSinceLastUpdate = (long) ((paintTick - paintClock.tick) * fpsScale);
-		} else {
-			paintClock.timeSinceLastUpdate = paintLoop;
-		}
-		if (paintClock.timeSinceLastUpdate > LSystem.SECOND) {
-			paintClock.timeSinceLastUpdate = 0;
-		}
-		paintClock.tick = paintTick;
-		paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
-		paint(paintClock);
 	}
 
 	/**
 	 * 渲染debug信息到游戏画面
-	 *
+	 * 
 	 * @param gl
 	 * @param setting
 	 * @param delta
@@ -527,19 +579,18 @@ public class Display extends BaseIO implements LRelease {
 
 		if (debug || setting.isFPS || setting.isMemory || setting.isSprites || setting.isDrawCall) {
 
-			this.frameCount++;
-			this.frameDelta += delta;
+			this._frameCount++;
+			this._frameDelta += delta;
 
-			if (frameCount % 60 == 0 && frameDelta != 0) {
+			if (_frameCount % 60 == 0 && _frameDelta != 0) {
 				final int dstFPS = setting.fps;
-				final int newFps = MathUtils.round((LSystem.SECOND * frameCount * setting.getScaleFPS()) / frameDelta)
-						+ 1;
-				this.frameRate = MathUtils.clamp(newFps, 0, dstFPS);
-				if (frameRate == dstFPS - 1) {
-					frameRate = MathUtils.max(dstFPS, frameRate);
+				final int newFps = MathUtils
+						.round((_sinceRefreshMaxInterval * _frameCount * setting.getScaleFPS()) / _frameDelta) + 1;
+				this._frameRate = MathUtils.clamp(newFps, 0, dstFPS);
+				if (_frameRate == dstFPS - 1) {
+					_frameRate = MathUtils.max(dstFPS, _frameRate);
 				}
-				this.frameDelta = 0;
-				this.frameCount = 0;
+				this._frameDelta = this._frameCount = 0;
 
 				if (this.memorySelf) {
 					displayMessage.setLength(0);
@@ -556,9 +607,9 @@ public class Display extends BaseIO implements LRelease {
 					long currentMemory = totalMemory - runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
-					displayMessage.append(MathUtils.abs(((currentMemory * 10) >> 20) / 10f));
+					displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
 					displayMessage.append(" of ");
-					displayMessage.append(MathUtils.abs(((runtime.maxMemory() * 10) >> 20) / 10f));
+					displayMessage.append(MathUtils.abs((runtime.maxMemory() * 10) >> 20) / 10f);
 					displayMessage.append(" MB");
 				}
 				displayMemony = displayMessage.toString();
@@ -576,7 +627,7 @@ public class Display extends BaseIO implements LRelease {
 
 				displayMessage.setLength(0);
 				displayMessage.append(DRAWCALL_STR);
-				displayMessage.append(gl.getDrawCallCount() + GraphicsDrawCall.getCount());
+				displayMessage.append(GraphicsDrawCall.getCount() + gl.getDrawCallCount());
 
 				displayDrawCall = displayMessage.toString();
 
@@ -587,23 +638,27 @@ public class Display extends BaseIO implements LRelease {
 
 				// 显示fps速度
 				if (debug || setting.isFPS) {
-					displayFont.drawString(gl, FPS_STR + frameRate, 5, _displayTop += 5, 0, LColor.white);
+					displayFont.drawString(gl, FPS_STR + _frameRate, _debugTextSpace, _displayTop += _debugTextSpace, 0,
+							_debugFontColor);
 				}
 				// 显示内存占用
 				if (debug || setting.isMemory) {
-					displayFont.drawString(gl, displayMemony, 5, _displayTop += maxHeight, 0, LColor.white);
+					displayFont.drawString(gl, displayMemony, _debugTextSpace, _displayTop += maxHeight, 0,
+							_debugFontColor);
 				}
 				// 显示精灵与组件数量
 				if (debug || setting.isSprites) {
-					displayFont.drawString(gl, displaySprites, 5, _displayTop += maxHeight, 0, LColor.white);
+					displayFont.drawString(gl, displaySprites, _debugTextSpace, _displayTop += maxHeight, 0,
+							_debugFontColor);
 				}
 				// 显示渲染次数
 				if (debug || setting.isDrawCall) {
-					displayFont.drawString(gl, displayDrawCall, 5, _displayTop += maxHeight, 0, LColor.white);
+					displayFont.drawString(gl, displayDrawCall, _debugTextSpace, _displayTop += maxHeight, 0,
+							_debugFontColor);
 				}
 				// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
 				if (debug && setting.isDisplayLog) {
-					paintLog(gl, 5, _displayTop += maxHeight);
+					paintLog(gl, _debugTextSpace, _displayTop += maxHeight);
 				}
 				_displayTop = 0;
 			}
@@ -634,8 +689,27 @@ public class Display extends BaseIO implements LRelease {
 		return this;
 	}
 
+	public boolean isAutoUpdate() {
+		return _autoUpdate;
+	}
+
+	public Display setAutoUpdate(boolean u) {
+		this._autoUpdate = u;
+		return this;
+	}
+
+	public Display stopUpdate() {
+		this._autoUpdate = false;
+		return this;
+	}
+
+	public Display startUpdate() {
+		this._autoUpdate = true;
+		return this;
+	}
+
 	public int getFPS() {
-		return frameRate;
+		return _frameRate;
 	}
 
 	public float getAlpha() {
@@ -668,7 +742,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 返回video的缓存结果(不设置out对象时才会有效)
-	 *
+	 * 
 	 * @return
 	 */
 	public ArrayByte getVideoCache() {
@@ -677,7 +751,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 开始录像(默认使用ArrayByte缓存录像结果到内存中)
-	 *
+	 * 
 	 * @return
 	 */
 	public GifEncoder startVideo() {
@@ -686,17 +760,18 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 *
+	 * 
 	 * @param output
 	 * @return
 	 */
 	public GifEncoder startVideo(OutputStream output) {
-		return startVideo(output, LSystem.isDesktop() ? LSystem.SECOND : LSystem.SECOND + LSystem.SECOND / 2);
+		return startVideo(output, LSystem.isDesktop() ? _sinceRefreshMaxInterval
+				: _sinceRefreshMaxInterval + _sinceRefreshMaxInterval / 2);
 	}
 
 	/**
 	 * 开始录像(指定一个OutputStream对象,比如FileOutputStream 输出录像结果到指定硬盘位置)
-	 *
+	 * 
 	 * @param output
 	 * @param delay
 	 * @return
@@ -713,7 +788,7 @@ public class Display extends BaseIO implements LRelease {
 
 	/**
 	 * 结束录像
-	 *
+	 * 
 	 * @return
 	 */
 	public GifEncoder stopVideo() {
@@ -779,7 +854,7 @@ public class Display extends BaseIO implements LRelease {
 	@Override
 	public void close() {
 		this._closed = true;
-		this._autoRepaint = false;
+		this.stopAutoDisplay();
 		if (this.displayFont != null) {
 			this.displayFont.close();
 			this.displayFont = null;
@@ -791,8 +866,7 @@ public class Display extends BaseIO implements LRelease {
 		if (this._process != null) {
 			_process.close();
 		}
-		this.initDrawConfig = false;
-		logDisplayCreated = false;
+		this.initDrawConfig = logDisplayCreated = false;
 	}
 
 }
