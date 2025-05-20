@@ -4809,11 +4809,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen pauseScreenPaint() {
-		return setNext(true);
+		return setNext(false);
 	}
 
 	public Screen resumeScreenPaint() {
-		return setNext(false);
+		return setNext(true);
 	}
 
 	public abstract void alter(LTimerContext context);
