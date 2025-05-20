@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -160,16 +160,11 @@ public class DspState {
 		window[1][1][1] = new float[VI_WINDOWB][];
 
 		for (int i = 0; i < VI_WINDOWB; i++) {
-			window[0][0][0][i] = window(i, vi.blocksizes[0],
-					vi.blocksizes[0] / 2, vi.blocksizes[0] / 2);
-			window[1][0][0][i] = window(i, vi.blocksizes[1],
-					vi.blocksizes[0] / 2, vi.blocksizes[0] / 2);
-			window[1][0][1][i] = window(i, vi.blocksizes[1],
-					vi.blocksizes[0] / 2, vi.blocksizes[1] / 2);
-			window[1][1][0][i] = window(i, vi.blocksizes[1],
-					vi.blocksizes[1] / 2, vi.blocksizes[0] / 2);
-			window[1][1][1][i] = window(i, vi.blocksizes[1],
-					vi.blocksizes[1] / 2, vi.blocksizes[1] / 2);
+			window[0][0][0][i] = window(i, vi.blocksizes[0], vi.blocksizes[0] / 2, vi.blocksizes[0] / 2);
+			window[1][0][0][i] = window(i, vi.blocksizes[1], vi.blocksizes[0] / 2, vi.blocksizes[0] / 2);
+			window[1][0][1][i] = window(i, vi.blocksizes[1], vi.blocksizes[0] / 2, vi.blocksizes[1] / 2);
+			window[1][1][0][i] = window(i, vi.blocksizes[1], vi.blocksizes[1] / 2, vi.blocksizes[0] / 2);
+			window[1][1][1][i] = window(i, vi.blocksizes[1], vi.blocksizes[1] / 2, vi.blocksizes[1] / 2);
 		}
 
 		fullbooks = new CodeBook[vi.books];
@@ -206,8 +201,7 @@ public class DspState {
 		for (int i = 0; i < vi.modes; i++) {
 			int mapnum = vi.mode_param[i].mapping;
 			int maptype = vi.map_type[mapnum];
-			mode[i] = FuncMapping.mapping_P[maptype].look(this,
-					vi.mode_param[i], vi.map_param[mapnum]);
+			mode[i] = FuncMapping.mapping_P[maptype].look(this, vi.mode_param[i], vi.map_param[mapnum]);
 		}
 		return (0);
 	}
@@ -333,7 +327,7 @@ public class DspState {
 					if (granulepos > vb.granulepos && vb.eofflag != 0) {
 						// partial last frame. Strip the padding off
 						_centerW -= (granulepos - vb.granulepos);
-					}// else{ Shouldn't happen *unless* the bitstream is out of
+					} // else{ Shouldn't happen *unless* the bitstream is out of
 						// spec. Either way, believe the bitstream }
 					granulepos = vb.granulepos;
 				}

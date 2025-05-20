@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -58,23 +58,19 @@ class Lwjgl3CanvasState {
 	float alpha;
 
 	Lwjgl3CanvasState() {
-		this(0xff000000, 0xffffffff, null, null, new AffineTransform(), 1.0f,
-				LineCap.SQUARE, LineJoin.MITER, 10.0f, NOCLIP,
-				Composite.SRC_OVER, 1);
+		this(0xff000000, 0xffffffff, null, null, new AffineTransform(), 1.0f, LineCap.SQUARE, LineJoin.MITER, 10.0f,
+				NOCLIP, Composite.SRC_OVER, 1);
 	}
 
 	Lwjgl3CanvasState(Lwjgl3CanvasState toCopy) {
-		this(toCopy.fillColor, toCopy.strokeColor, toCopy.fillGradient,
-				toCopy.fillPattern, toCopy.transform, toCopy.strokeWidth,
-				toCopy.lineCap, toCopy.lineJoin, toCopy.miterLimit,
-				toCopy.clipper, toCopy.composite, toCopy.alpha);
+		this(toCopy.fillColor, toCopy.strokeColor, toCopy.fillGradient, toCopy.fillPattern, toCopy.transform,
+				toCopy.strokeWidth, toCopy.lineCap, toCopy.lineJoin, toCopy.miterLimit, toCopy.clipper,
+				toCopy.composite, toCopy.alpha);
 	}
 
-	Lwjgl3CanvasState(int fillColor, int strokeColor,
-			Lwjgl3Gradient fillGradient, Lwjgl3Pattern fillPattern,
-			AffineTransform transform, float strokeWidth, LineCap lineCap,
-			LineJoin lineJoin, float miterLimit, Clipper clipper,
-			Composite composite, float alpha) {
+	Lwjgl3CanvasState(int fillColor, int strokeColor, Lwjgl3Gradient fillGradient, Lwjgl3Pattern fillPattern,
+			AffineTransform transform, float strokeWidth, LineCap lineCap, LineJoin lineJoin, float miterLimit,
+			Clipper clipper, Composite composite, float alpha) {
 		this.fillColor = fillColor;
 		this.strokeColor = strokeColor;
 		this.fillGradient = fillGradient;
@@ -94,8 +90,7 @@ class Lwjgl3CanvasState {
 	}
 
 	void prepareStroke(Graphics2D gfx) {
-		gfx.setStroke(new BasicStroke(strokeWidth, convertLineCap(),
-				convertLineJoin(), miterLimit));
+		gfx.setStroke(new BasicStroke(strokeWidth, convertLineCap(), convertLineJoin(), miterLimit));
 		gfx.setColor(convertColor(strokeColor));
 		clipper.setClip(gfx);
 		gfx.setComposite(convertComposite(composite, alpha));
@@ -122,8 +117,7 @@ class Lwjgl3CanvasState {
 		return new Color(r, g, b, a);
 	}
 
-	private java.awt.Composite convertComposite(Canvas.Composite composite,
-			float alpha) {
+	private java.awt.Composite convertComposite(Canvas.Composite composite, float alpha) {
 		switch (composite) {
 		case DST_ATOP:
 			return AlphaComposite.DstAtop.derive(alpha);

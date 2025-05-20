@@ -43,7 +43,11 @@ import loon.utils.reply.Port;
 public class JavaSEGame extends LGame {
 
 	public static class JavaSetting extends LSetting {
+
+		public boolean resizable = false;
+
 		public boolean vSyncEnabled = true;
+
 		public String[] iconPaths = null;
 	}
 
@@ -117,7 +121,7 @@ public class JavaSEGame extends LGame {
 	public static boolean isBlackdown() {
 		return getProperty("java.vm.vendor").indexOf("Blackdown") != -1;
 	}
-	
+
 	public static boolean isLinux() {
 		return osIsLinux;
 	}
@@ -144,9 +148,9 @@ public class JavaSEGame extends LGame {
 
 	private final JavaSELog log = new JavaSELog();
 	private final JavaSEAsyn asyn = new JavaSEAsyn(pool, log, frame);
-	
+
 	private final JavaSEClipboard clipboard;
-	
+
 	private final JavaSEAccelerometer accelerometer = new JavaSEAccelerometer();
 	private final JavaSESave save;
 	private final JavaSEGraphics graphics;
@@ -219,6 +223,10 @@ public class JavaSEGame extends LGame {
 				}
 			});
 		}
+		if (config instanceof JavaSetting) {
+			JavaSetting nativeSetting = (JavaSetting) config;
+			Display.setResizable(nativeSetting.resizable);
+		}
 		Display.setInitialBackground(0, 0, 0);
 		this.setTitle(config.appName);
 		this.initProcess();
@@ -287,7 +295,7 @@ public class JavaSEGame extends LGame {
 	public JavaSEClipboard clipboard() {
 		return clipboard;
 	}
-	
+
 	@Override
 	public Support support() {
 		return support;
@@ -382,7 +390,7 @@ public class JavaSEGame extends LGame {
 	}
 
 	public void shutdown() {
-	    super.shutdown();
+		super.shutdown();
 		try {
 			pool.shutdown();
 			pool.awaitTermination(1, TimeUnit.SECONDS);
@@ -433,6 +441,11 @@ public class JavaSEGame extends LGame {
 	public void reset() {
 		boolean wasActive = Display.isActive();
 		while (!Display.isCloseRequested()) {
+			final int newWidth = (int) (Display.getWidth() * Display.getPixelScaleFactor());
+			final int newHeight = (int) (Display.getHeight() * Display.getPixelScaleFactor());
+			if (Display.wasResized() || newWidth != setting.width || newHeight != setting.height) {
+				graphics.updateViewport(graphics.scale(), newWidth, newHeight);
+			}
 			boolean newActive = active && Display.isActive();
 			if (wasActive != newActive) {
 				status.emit(wasActive ? Status.PAUSE : Status.RESUME);

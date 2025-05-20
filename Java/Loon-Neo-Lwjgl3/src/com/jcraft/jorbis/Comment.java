@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -26,14 +26,14 @@
 
 package com.jcraft.jorbis;
 
-import com.jcraft.jogg.*;
+import com.jcraft.jogg.Buffer;
+import com.jcraft.jogg.Packet;
 
 // the comments are not part of vorbis_info so that vorbis_info can be
 // static storage
 public class Comment {
 	private static byte[] _vorbis = "vorbis".getBytes();
-	private static byte[] _vendor = "Xiphophorus libVorbis I 20000508"
-			.getBytes();
+	private static byte[] _vendor = "Xiphophorus libVorbis I 20000508".getBytes();
 
 	private static final int OV_EIMPL = -130;
 
@@ -109,8 +109,7 @@ public class Comment {
 		byte[] comment = user_comments[foo];
 		for (int i = 0; i < comment_lengths[foo]; i++) {
 			if (comment[i] == '=') {
-				return new String(comment, i + 1, comment_lengths[foo]
-						- (i + 1));
+				return new String(comment, i + 1, comment_lengths[foo] - (i + 1));
 			}
 		}
 		return null;
@@ -231,13 +230,11 @@ public class Comment {
 		return new String(user_comments[i], 0, user_comments[i].length - 1);
 	}
 
+	@Override
 	public String toString() {
 		String foo = "Vendor: " + new String(vendor, 0, vendor.length - 1);
 		for (int i = 0; i < comments; i++) {
-			foo = foo
-					+ "\nComment: "
-					+ new String(user_comments[i], 0,
-							user_comments[i].length - 1);
+			foo = foo + "\nComment: " + new String(user_comments[i], 0, user_comments[i].length - 1);
 		}
 		foo = foo + "\n";
 		return foo;

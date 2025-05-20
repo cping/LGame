@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -112,8 +112,7 @@ public class SyncState {
 				return (0); // not enough for a header
 
 			/* verify capture pattern */
-			if (data[page] != 'O' || data[page + 1] != 'g'
-					|| data[page + 2] != 'g' || data[page + 3] != 'S') {
+			if (data[page] != 'O' || data[page + 1] != 'g' || data[page + 2] != 'g' || data[page + 3] != 'S') {
 				headerbytes = 0;
 				bodybytes = 0;
 
@@ -169,8 +168,7 @@ public class SyncState {
 			log.checksum();
 
 			// Compare
-			if (chksum[0] != data[page + 22] || chksum[1] != data[page + 23]
-					|| chksum[2] != data[page + 24]
+			if (chksum[0] != data[page + 22] || chksum[1] != data[page + 23] || chksum[2] != data[page + 24]
 					|| chksum[3] != data[page + 25]) {
 				// D'oh. Mismatch! Corrupt page (or miscapture and not a page at
 				// all)

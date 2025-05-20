@@ -2,14 +2,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -19,7 +19,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -27,10 +27,13 @@
 
 package com.jcraft.jorbis;
 
-import com.jcraft.jogg.*;
-
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import com.jcraft.jogg.Packet;
+import com.jcraft.jogg.Page;
+import com.jcraft.jogg.StreamState;
+import com.jcraft.jogg.SyncState;
 
 public class VorbisFile {
 	static final int CHUNKSIZE = 8500;
@@ -110,8 +113,7 @@ public class VorbisFile {
 		}
 	}
 
-	public VorbisFile(InputStream is, byte[] initial, int ibytes)
-			throws JOrbisException {
+	public VorbisFile(InputStream is, byte[] initial, int ibytes) throws JOrbisException {
 		super();
 		int ret = open(is, initial, ibytes);
 		if (ret == -1) {
@@ -199,8 +201,7 @@ public class VorbisFile {
 		return offst;
 	}
 
-	int bisect_forward_serialno(long begin, long searched, long end,
-			int currentno, int m) {
+	int bisect_forward_serialno(long begin, long searched, long end, int currentno, int m) {
 		long endsearched = end;
 		long next = end;
 		Page page = new Page();
@@ -236,8 +237,7 @@ public class VorbisFile {
 			offsets = new long[m + 2];
 			offsets[m + 1] = searched;
 		} else {
-			ret = bisect_forward_serialno(next, offset, end, page.serialno(),
-					m + 1);
+			ret = bisect_forward_serialno(next, offset, end, page.serialno(), m + 1);
 			if (ret == OV_EREAD)
 				return OV_EREAD;
 		}
@@ -279,13 +279,7 @@ public class VorbisFile {
 				int result = os.packetout(op);
 				if (result == 0)
 					break;
-				if (result == -1) {
-					vi.clear();
-					vc.clear();
-					os.clear();
-					return -1;
-				}
-				if (vi.synthesis_headerin(vc, op) != 0) {
+				if ((result == -1) || (vi.synthesis_headerin(vc, op) != 0)) {
 					vi.clear();
 					vc.clear();
 					os.clear();
@@ -308,8 +302,7 @@ public class VorbisFile {
 	// vorbis_info structs and PCM positions. Only called by the seekable
 	// initialization (local stream storage is hacked slightly; pay
 	// attention to how that's done)
-	void prefetch_all_headers(Info first_i, Comment first_c, int dataoffset)
-			throws JOrbisException {
+	void prefetch_all_headers(Info first_i, Comment first_c, int dataoffset) throws JOrbisException {
 		Page og = new Page();
 		int ret;
 
@@ -484,8 +477,7 @@ public class VorbisFile {
 						{
 							int oldsamples = vd.synthesis_pcmout(null, null);
 							vd.synthesis_blockin(vb);
-							samptrack += vd.synthesis_pcmout(null, null)
-									- oldsamples;
+							samptrack += vd.synthesis_pcmout(null, null) - oldsamples;
 							bittrack += op.bytes * 8;
 						}
 
@@ -526,9 +518,7 @@ public class VorbisFile {
 				}
 			}
 
-			if (readp == 0)
-				return (0);
-			if (get_next_page(og, -1) < 0)
+			if ((readp == 0) || (get_next_page(og, -1) < 0))
 				return (0); // eof. leave unitialized
 
 			// bitrate tracking; add the header's bytes here, the body bytes
@@ -729,8 +719,7 @@ public class VorbisFile {
 		} else {
 			if (seekable) {
 				// return the actual bitrate
-				return ((int) Math.rint((offsets[i + 1] - dataoffsets[i]) * 8
-						/ time_total(i)));
+				return ((int) Math.rint((offsets[i + 1] - dataoffsets[i]) * 8 / time_total(i)));
 			} else {
 				// return nominal if set
 				if (vi[i].bitrate_nominal > 0) {
@@ -968,13 +957,7 @@ public class VorbisFile {
 		}
 
 		// verify result
-		if (pcm_offset >= pos) {
-			// goto seek_error;
-			pcm_offset = -1;
-			decode_clear();
-			return -1;
-		}
-		if (pos > pcm_total(-1)) {
+		if ((pcm_offset >= pos) || (pos > pcm_total(-1))) {
 			// goto seek_error;
 			pcm_offset = -1;
 			decode_clear();
@@ -1036,8 +1019,7 @@ public class VorbisFile {
 
 		// enough information to convert time offset to pcm offset
 		{
-			long target = (long) (pcm_total + (seconds - time_total)
-					* vi[link].rate);
+			long target = (long) (pcm_total + (seconds - time_total) * vi[link].rate);
 			return (pcm_seek(target));
 		}
 
@@ -1080,8 +1062,7 @@ public class VorbisFile {
 			}
 		}
 
-		return ((float) time_total + (float) (pcm_offset - pcm_total)
-				/ vi[link].rate);
+		return (time_total + (float) (pcm_offset - pcm_total) / vi[link].rate);
 	}
 
 	// link: -1) return the vorbis_info struct for the bitstream section
@@ -1180,8 +1161,7 @@ public class VorbisFile {
 	//
 	// *section) set to the logical bitstream number
 
-	int read(byte[] buffer, int length, int bigendianp, int word, int sgned,
-			int[] bitstream) {
+	int read(byte[] buffer, int length, int bigendianp, int word, int sgned, int[] bitstream) {
 		int host_endian = host_is_big_endian();
 		int index = 0;
 
@@ -1324,20 +1304,24 @@ public class VorbisFile {
 			raf = new java.io.RandomAccessFile(file, mode);
 		}
 
+		@Override
 		public int read() throws java.io.IOException {
 			return raf.read();
 		}
 
+		@Override
 		public int read(byte[] buf) throws java.io.IOException {
 			return raf.read(buf);
 		}
 
+		@Override
 		public int read(byte[] buf, int s, int len) throws java.io.IOException {
 			return raf.read(buf, s, len);
 		}
 
+		@Override
 		public long skip(long n) throws java.io.IOException {
-			return (long) (raf.skipBytes((int) n));
+			return (raf.skipBytes((int) n));
 		}
 
 		public long getLength() throws java.io.IOException {
@@ -1348,20 +1332,25 @@ public class VorbisFile {
 			return raf.getFilePointer();
 		}
 
+		@Override
 		public int available() throws java.io.IOException {
 			return (raf.length() == raf.getFilePointer()) ? 0 : 1;
 		}
 
+		@Override
 		public void close() throws java.io.IOException {
 			raf.close();
 		}
 
+		@Override
 		public synchronized void mark(int m) {
 		}
 
+		@Override
 		public synchronized void reset() throws java.io.IOException {
 		}
 
+		@Override
 		public boolean markSupported() {
 			return false;
 		}

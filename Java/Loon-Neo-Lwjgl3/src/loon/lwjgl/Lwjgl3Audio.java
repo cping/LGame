@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -34,8 +34,7 @@ import loon.events.Updateable;
 
 public class Lwjgl3Audio {
 
-	protected static <I> void dispatchLoaded(final SoundImpl<I> sound,
-			final I impl) {
+	protected static <I> void dispatchLoaded(final SoundImpl<I> sound, final I impl) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -45,8 +44,7 @@ public class Lwjgl3Audio {
 		LSystem.unload(update);
 	}
 
-	protected static <I> void dispatchLoadError(final SoundImpl<I> sound,
-			final Throwable error) {
+	protected static <I> void dispatchLoadError(final SoundImpl<I> sound, final Throwable error) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -56,12 +54,12 @@ public class Lwjgl3Audio {
 		LSystem.unload(update);
 	}
 
-	public Lwjgl3Sound createSound(final String path, final InputStream in,
-			final boolean music) {
+	public Lwjgl3Sound createSound(final String path, final InputStream in, final boolean music) {
 		final Lwjgl3Sound sound = new Lwjgl3Sound();
 		String ext = LSystem.getExtension(path);
 		if ("ogg".equalsIgnoreCase(ext)) {
 			LSystem.load(new Updateable() {
+				@Override
 				public void action(Object o) {
 					try {
 						sound.loadOgg(in);
@@ -73,24 +71,20 @@ public class Lwjgl3Audio {
 			});
 		} else {
 			LSystem.load(new Updateable() {
+				@Override
 				public void action(Object o) {
 					try {
-						AudioInputStream ais = AudioSystem
-								.getAudioInputStream(in);
+						AudioInputStream ais = AudioSystem.getAudioInputStream(in);
 						Clip clip = AudioSystem.getClip();
 						if (music) {
 							clip = new Lwjgl3BigClip(clip);
 						}
 						AudioFormat baseFormat = ais.getFormat();
 						if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-							AudioFormat decodedFormat = new AudioFormat(
-									AudioFormat.Encoding.PCM_SIGNED, baseFormat
-											.getSampleRate(), 16, baseFormat
-											.getChannels(), baseFormat
-											.getChannels() * 2, baseFormat
-											.getSampleRate(), false);
-							ais = AudioSystem.getAudioInputStream(
-									decodedFormat, ais);
+							AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+									baseFormat.getSampleRate(), 16, baseFormat.getChannels(),
+									baseFormat.getChannels() * 2, baseFormat.getSampleRate(), false);
+							ais = AudioSystem.getAudioInputStream(decodedFormat, ais);
 						}
 						clip.open(ais);
 						dispatchLoaded(sound, clip);

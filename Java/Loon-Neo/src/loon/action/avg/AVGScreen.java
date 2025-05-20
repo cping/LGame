@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTransition;
 import loon.Screen;
+import loon.ScreenDrawOrder;
 import loon.action.ActionBind;
 import loon.action.avg.drama.Command;
 import loon.action.avg.drama.CommandType;
@@ -809,12 +810,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	@Override
 	public final void onLoaded() {
 		// 不同场合需要不同的渲染策略，此处将用户渲染置于底层
-		// 最先绘制用户画面
-		setFristOrder(DRAW_USER_PAINT());
-		// 其次绘制精灵
-		setSecondOrder(DRAW_SPRITE_PAINT());
-		// 最后绘制桌面
-		setLastOrder(DRAW_DESKTOP_PAINT());
+		// 最先绘制用户画面,其次绘制精灵,最后绘制桌面
+		setDrawOrder(ScreenDrawOrder.USER_SPRITE_DESKTOP);
 		if (_avgUpdate != null) {
 			removeLoad(_avgUpdate);
 		}

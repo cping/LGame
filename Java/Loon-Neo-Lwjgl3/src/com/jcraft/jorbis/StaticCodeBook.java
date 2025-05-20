@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -26,7 +26,7 @@
 
 package com.jcraft.jorbis;
 
-import com.jcraft.jogg.*;
+import com.jcraft.jogg.Buffer;
 
 class StaticCodeBook {
 	int dim; // codebook dimensions (elements per vector)
@@ -149,28 +149,28 @@ class StaticCodeBook {
 			opb.write(q_quant - 1, 4);
 			opb.write(q_sequencep, 1);
 
-			{
-				int quantvals = 0;
-				switch (maptype) {
-				case 1:
-					// a single column of (c->entries/c->dim) quantized values
-					// for
-					// building a full value list algorithmically (square
-					// lattice)
-					quantvals = maptype1_quantvals();
-					break;
-				case 2:
-					// every value (c->entries*c->dim total) specified
-					// explicitly
-					quantvals = entries * dim;
-					break;
-				}
-
-				// quantized values
-				for (i = 0; i < quantvals; i++) {
-					opb.write(Math.abs(quantlist[i]), q_quant);
-				}
+		{
+			int quantvals = 0;
+			switch (maptype) {
+			case 1:
+				// a single column of (c->entries/c->dim) quantized values
+				// for
+				// building a full value list algorithmically (square
+				// lattice)
+				quantvals = maptype1_quantvals();
+				break;
+			case 2:
+				// every value (c->entries*c->dim total) specified
+				// explicitly
+				quantvals = entries * dim;
+				break;
 			}
+
+			// quantized values
+			for (i = 0; i < quantvals; i++) {
+				opb.write(Math.abs(quantlist[i]), q_quant);
+			}
+		}
 			break;
 		default:
 			// error case; we don't have any other map types now
@@ -276,28 +276,28 @@ class StaticCodeBook {
 			q_quant = opb.read(4) + 1;
 			q_sequencep = opb.read(1);
 
-			{
-				int quantvals = 0;
-				switch (maptype) {
-				case 1:
-					quantvals = maptype1_quantvals();
-					break;
-				case 2:
-					quantvals = entries * dim;
-					break;
-				}
-
-				// quantized values
-				quantlist = new int[quantvals];
-				for (i = 0; i < quantvals; i++) {
-					quantlist[i] = opb.read(q_quant);
-				}
-				if (quantlist[quantvals - 1] == -1) {
-					// goto _eofout;
-					clear();
-					return (-1);
-				}
+		{
+			int quantvals = 0;
+			switch (maptype) {
+			case 1:
+				quantvals = maptype1_quantvals();
+				break;
+			case 2:
+				quantvals = entries * dim;
+				break;
 			}
+
+			// quantized values
+			quantlist = new int[quantvals];
+			for (i = 0; i < quantvals; i++) {
+				quantlist[i] = opb.read(q_quant);
+			}
+			if (quantlist[quantvals - 1] == -1) {
+				// goto _eofout;
+				clear();
+				return (-1);
+			}
+		}
 			break;
 		default:
 			// goto _eofout;

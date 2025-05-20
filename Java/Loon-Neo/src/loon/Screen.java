@@ -536,6 +536,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public final PaintOrder toPaintOrder(DrawOrder tree) {
+		if (tree == null) {
+			return null;
+		}
 		PaintOrder order = null;
 		switch (tree) {
 		case SPRITE:
@@ -584,6 +587,72 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this.setFristOrder(toPaintOrder(one));
 		this.setSecondOrder(toPaintOrder(two));
 		this.setLastOrder(toPaintOrder(three));
+		return this;
+	}
+
+	/**
+	 * 设置Screen中组件渲染顺序
+	 * 
+	 * @param order
+	 * @return
+	 */
+	public Screen setDrawOrder(ScreenDrawOrder order) {
+		if (order == null) {
+			return defaultDraw();
+		}
+		switch (order) {
+		case NONE:
+			emptyDraw();
+			break;
+		case DEFAULT:
+			defaultDraw();
+			break;
+		case ONLY_DESKTOP:
+			onlyDesktopDraw();
+			break;
+		case ONLY_SPRITE:
+			onlySpriteDraw();
+			break;
+		case ONLY_USER:
+			onlyUserDraw();
+			break;
+		case ONLY_DESKTOP_USER:
+			setDrawOrder(null, DrawOrder.DESKTOP, DrawOrder.USER);
+			break;
+		case ONLY_USER_DESKTOP:
+			setDrawOrder(null, DrawOrder.USER, DrawOrder.DESKTOP);
+			break;
+		case ONLY_SPRITE_USER:
+			setDrawOrder(null, DrawOrder.SPRITE, DrawOrder.USER);
+			break;
+		case ONLY_USER_SPRITE:
+			setDrawOrder(null, DrawOrder.USER, DrawOrder.SPRITE);
+			break;
+		case ONLY_SPRITE_DESKTOP:
+			setDrawOrder(null, DrawOrder.SPRITE, DrawOrder.DESKTOP);
+			break;
+		case ONLY_DESKTOP_SPRITE:
+			setDrawOrder(null, DrawOrder.DESKTOP, DrawOrder.SPRITE);
+			break;
+		case SPRITE_DESKTOP_USER:
+			setDrawOrder(DrawOrder.SPRITE, DrawOrder.DESKTOP, DrawOrder.USER);
+			break;
+		case SPRITE_USER_DESKTOP:
+			setDrawOrder(DrawOrder.SPRITE, DrawOrder.USER, DrawOrder.DESKTOP);
+			break;
+		case USER_DESKTOP_SPRITE:
+			setDrawOrder(DrawOrder.USER, DrawOrder.DESKTOP, DrawOrder.SPRITE);
+			break;
+		case USER_SPRITE_DESKTOP:
+			setDrawOrder(DrawOrder.USER, DrawOrder.SPRITE, DrawOrder.DESKTOP);
+			break;
+		case DESKTOP_SPRITE_USER:
+			setDrawOrder(DrawOrder.DESKTOP, DrawOrder.SPRITE, DrawOrder.USER);
+			break;
+		case DESKTOP_USER_SPRITE:
+			setDrawOrder(DrawOrder.DESKTOP, DrawOrder.USER, DrawOrder.SPRITE);
+			break;
+		}
 		return this;
 	}
 

@@ -1,24 +1,33 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
 package loon.lwjgl;
+
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowFrameSize;
+import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
+import static org.lwjgl.glfw.GLFW.nglfwGetFramebufferSize;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -28,14 +37,6 @@ import java.awt.image.DataBufferInt;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
-import loon.*;
-import loon.geom.Dimension;
-import loon.jni.NativeSupport;
-import loon.opengl.GL20;
-import loon.utils.GLUtils;
-import loon.utils.Scale;
-import static org.lwjgl.glfw.GLFW.*;
-
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -43,9 +44,17 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.system.MemoryUtil;
 
+import loon.LTexture;
+import loon.geom.Dimension;
+import loon.jni.NativeSupport;
+import loon.opengl.GL20;
+import loon.utils.GLUtils;
+import loon.utils.Scale;
+
 public class Lwjgl3Graphics extends Lwjgl3ImplGraphics {
 
 	private final GLFWFramebufferSizeCallback fbSizeCallback = new GLFWFramebufferSizeCallback() {
+		@Override
 		public void invoke(long windowId, int width, int height) {
 			viewportAndScaleChanged(width, height);
 		}

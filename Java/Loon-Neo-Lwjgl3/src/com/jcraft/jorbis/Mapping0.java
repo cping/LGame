@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -26,17 +26,20 @@
 
 package com.jcraft.jorbis;
 
-import com.jcraft.jogg.*;
+import com.jcraft.jogg.Buffer;
 
 class Mapping0 extends FuncMapping {
 	static int seq = 0;
 
+	@Override
 	void free_info(Object imap) {
-	};
+	}
 
+	@Override
 	void free_look(Object imap) {
 	}
 
+	@Override
 	Object look(DspState vd, InfoMode vm, Object m) {
 		// System.err.println("Mapping0.look");
 		Info vi = vd.vi;
@@ -58,14 +61,11 @@ class Mapping0 extends FuncMapping {
 			int resnum = info.residuesubmap[i];
 
 			look.time_func[i] = FuncTime.time_P[vi.time_type[timenum]];
-			look.time_look[i] = look.time_func[i].look(vd, vm,
-					vi.time_param[timenum]);
+			look.time_look[i] = look.time_func[i].look(vd, vm, vi.time_param[timenum]);
 			look.floor_func[i] = FuncFloor.floor_P[vi.floor_type[floornum]];
-			look.floor_look[i] = look.floor_func[i].look(vd, vm,
-					vi.floor_param[floornum]);
+			look.floor_look[i] = look.floor_func[i].look(vd, vm, vi.floor_param[floornum]);
 			look.residue_func[i] = FuncResidue.residue_P[vi.residue_type[resnum]];
-			look.residue_look[i] = look.residue_func[i].look(vd, vm,
-					vi.residue_param[resnum]);
+			look.residue_look[i] = look.residue_func[i].look(vd, vm, vi.residue_param[resnum]);
 
 		}
 
@@ -78,15 +78,16 @@ class Mapping0 extends FuncMapping {
 		return (look);
 	}
 
+	@Override
 	void pack(Info vi, Object imap, Buffer opb) {
 		InfoMapping0 info = (InfoMapping0) imap;
 
 		/*
-		 * another 'we meant to do it this way' hack... up to beta 4, we packed
-		 * 4 binary zeros here to signify one submapping in use. We now redefine
-		 * that to mean four bitflags that indicate use of deeper features;
-		 * bit0:submappings, bit1:coupling, bit2,3:reserved. This is backward
-		 * compatable with all actual uses of the beta code.
+		 * another 'we meant to do it this way' hack... up to beta 4, we packed 4 binary
+		 * zeros here to signify one submapping in use. We now redefine that to mean
+		 * four bitflags that indicate use of deeper features; bit0:submappings,
+		 * bit1:coupling, bit2,3:reserved. This is backward compatable with all actual
+		 * uses of the beta code.
 		 */
 
 		if (info.submaps > 1) {
@@ -122,6 +123,7 @@ class Mapping0 extends FuncMapping {
 	}
 
 	// also responsible for range checking
+	@Override
 	Object unpack(Info vi, Buffer opb) {
 		InfoMapping0 info = new InfoMapping0();
 
@@ -135,13 +137,10 @@ class Mapping0 extends FuncMapping {
 			info.coupling_steps = opb.read(8) + 1;
 
 			for (int i = 0; i < info.coupling_steps; i++) {
-				int testM = info.coupling_mag[i] = opb.read(Util
-						.ilog2(vi.channels));
-				int testA = info.coupling_ang[i] = opb.read(Util
-						.ilog2(vi.channels));
+				int testM = info.coupling_mag[i] = opb.read(Util.ilog2(vi.channels));
+				int testA = info.coupling_ang[i] = opb.read(Util.ilog2(vi.channels));
 
-				if (testM < 0 || testA < 0 || testM == testA
-						|| testM >= vi.channels || testA >= vi.channels) {
+				if (testM < 0 || testA < 0 || testM == testA || testM >= vi.channels || testA >= vi.channels) {
 					// goto err_out;
 					info.free();
 					return (null);
@@ -189,6 +188,7 @@ class Mapping0 extends FuncMapping {
 	int[] nonzero = null;
 	Object[] floormemo = null;
 
+	@Override
 	synchronized int inverse(Block vb, Object l) {
 		DspState vd = vb.vd;
 		Info vi = vd.vi;
@@ -215,8 +215,7 @@ class Mapping0 extends FuncMapping {
 			float[] pcm = vb.pcm[i];
 			int submap = info.chmuxlist[i];
 
-			floormemo[i] = look.floor_func[submap].inverse1(vb,
-					look.floor_look[submap], floormemo[i]);
+			floormemo[i] = look.floor_func[submap].inverse1(vb, look.floor_look[submap], floormemo[i]);
 			if (floormemo[i] != null) {
 				nonzero[i] = 1;
 			} else {
@@ -229,8 +228,7 @@ class Mapping0 extends FuncMapping {
 		}
 
 		for (int i = 0; i < info.coupling_steps; i++) {
-			if (nonzero[info.coupling_mag[i]] != 0
-					|| nonzero[info.coupling_ang[i]] != 0) {
+			if (nonzero[info.coupling_mag[i]] != 0 || nonzero[info.coupling_ang[i]] != 0) {
 				nonzero[info.coupling_mag[i]] = 1;
 				nonzero[info.coupling_ang[i]] = 1;
 			}
@@ -251,8 +249,7 @@ class Mapping0 extends FuncMapping {
 				}
 			}
 
-			look.residue_func[i].inverse(vb, look.residue_look[i], pcmbundle,
-					zerobundle, ch_in_bundle);
+			look.residue_func[i].inverse(vb, look.residue_look[i], pcmbundle, zerobundle, ch_in_bundle);
 		}
 
 		for (int i = info.coupling_steps - 1; i >= 0; i--) {
@@ -288,8 +285,7 @@ class Mapping0 extends FuncMapping {
 		for (int i = 0; i < vi.channels; i++) {
 			float[] pcm = vb.pcm[i];
 			int submap = info.chmuxlist[i];
-			look.floor_func[submap].inverse2(vb, look.floor_look[submap],
-					floormemo[i], pcm);
+			look.floor_func[submap].inverse2(vb, look.floor_look[submap], floormemo[i], pcm);
 		}
 
 		// transform the PCM data; takes PCM vector, vb; modifies PCM vector

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -39,13 +39,11 @@ public class Lwjgl3Image extends ImageImpl {
 
 	protected BufferedImage buffer;
 
-	public Lwjgl3Image(Graphics gfx, Scale scale, BufferedImage buffer,
-			String source) {
+	public Lwjgl3Image(Graphics gfx, Scale scale, BufferedImage buffer, String source) {
 		super(gfx, scale, buffer.getWidth(), buffer.getHeight(), source, buffer);
 	}
 
-	public Lwjgl3Image(Lwjgl3Game game, boolean async, int preWidth,
-			int preHeight, String source) {
+	public Lwjgl3Image(Lwjgl3Game game, boolean async, int preWidth, int preHeight, String source) {
 		super(game, async, Scale.ONE, preWidth, preHeight, source);
 	}
 
@@ -57,38 +55,33 @@ public class Lwjgl3Image extends ImageImpl {
 	public Pattern createPattern(boolean repeatX, boolean repeatY) {
 		assert buffer != null : "Cannot generate a pattern from unready image.";
 		Rectangle2D rect = new Rectangle2D.Float(0, 0, width(), height());
-		return new Lwjgl3Pattern(repeatX, repeatY, new TexturePaint(buffer,
-				rect));
+		return new Lwjgl3Pattern(repeatX, repeatY, new TexturePaint(buffer, rect));
 	}
 
 	@Override
 	public Image transform(BitmapTransformer xform) {
-		return new Lwjgl3Image(gfx, scale,
-				((Lwjgl3Transformer) xform).transform(buffer), source);
+		return new Lwjgl3Image(gfx, scale, ((Lwjgl3Transformer) xform).transform(buffer), source);
 	}
 
 	@Override
 	public void draw(Object ctx, float x, float y, float w, float h) {
 		Graphics2D gfx = (Graphics2D) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y),
-				MathUtils.ifloor(w), MathUtils.ifloor(h), null);
+		gfx.drawImage(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h), null);
 	}
 
 	@Override
-	public void draw(Object ctx, float dx, float dy, float dw, float dh,
-			float sx, float sy, float sw, float sh) {
+	public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
 		float f = scale().factor;
 		sx *= f;
 		sy *= f;
 		sw *= f;
 		sh *= f;
 		Graphics2D gfx = (Graphics2D) ctx;
-		gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy),
-				MathUtils.ifloor(dw), MathUtils.ifloor(dh),
-				MathUtils.ifloor(sx), MathUtils.ifloor(sy),
-				MathUtils.ifloor(sw), MathUtils.ifloor(sh), null);
+		gfx.drawImage(buffer, MathUtils.ifloor(dx), MathUtils.ifloor(dy), MathUtils.ifloor(dw), MathUtils.ifloor(dh),
+				MathUtils.ifloor(sx), MathUtils.ifloor(sy), MathUtils.ifloor(sw), MathUtils.ifloor(sh), null);
 	}
 
+	@Override
 	public void getLight(Image buffer, int v) {
 		int width = (int) buffer.width();
 		int height = (int) buffer.height();
@@ -103,6 +96,7 @@ public class Lwjgl3Image extends ImageImpl {
 		}
 	}
 
+	@Override
 	public int getLight(int color, int v) {
 		int red = LColor.getRed(color);
 		int green = LColor.getGreen(color);
@@ -119,6 +113,7 @@ public class Lwjgl3Image extends ImageImpl {
 		return LColor.getRGB(red, green, blue);
 	}
 
+	@Override
 	public int[] getPixels() {
 		int w = (int) width();
 		int h = (int) height();
@@ -127,6 +122,7 @@ public class Lwjgl3Image extends ImageImpl {
 		return pixels;
 	}
 
+	@Override
 	public int[] getPixels(int pixels[]) {
 		int w = (int) width();
 		int h = (int) height();
@@ -134,70 +130,77 @@ public class Lwjgl3Image extends ImageImpl {
 		return pixels;
 	}
 
+	@Override
 	public int[] getPixels(int x, int y, int w, int h) {
 		int[] pixels = new int[w * h];
 		buffer.getRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 
-	public int[] getPixels(int offset, int stride, int x, int y, int width,
-			int height) {
+	@Override
+	public int[] getPixels(int offset, int stride, int x, int y, int width, int height) {
 		int pixels[] = new int[width * height];
 		buffer.getRGB(x, y, width, height, pixels, offset, stride);
 		return pixels;
 	}
 
-	public int[] getPixels(int pixels[], int offset, int stride, int x, int y,
-			int width, int height) {
+	@Override
+	public int[] getPixels(int pixels[], int offset, int stride, int x, int y, int width, int height) {
 		buffer.getRGB(x, y, width, height, pixels, offset, stride);
 		return pixels;
 	}
 
+	@Override
 	public void setPixels(int[] pixels, int width, int height) {
 		buffer.setRGB(0, 0, width, height, pixels, 0, width);
 	}
 
-	public void setPixels(int[] pixels, int offset, int stride, int x, int y,
-			int width, int height) {
+	@Override
+	public void setPixels(int[] pixels, int offset, int stride, int x, int y, int width, int height) {
 		buffer.setRGB(x, y, width, height, pixels, offset, stride);
 	}
 
+	@Override
 	public int[] setPixels(int[] pixels, int x, int y, int w, int h) {
 		buffer.setRGB(x, y, w, h, pixels, 0, w);
 		return pixels;
 	}
 
+	@Override
 	public void setPixel(LColor c, int x, int y) {
 		buffer.setRGB(x, y, c.getRGB());
 	}
 
+	@Override
 	public void setPixel(int rgb, int x, int y) {
 		buffer.setRGB(x, y, rgb);
 	}
 
+	@Override
 	public int getPixel(int x, int y) {
 		return buffer.getRGB(x, y);
 	}
 
+	@Override
 	public int getRGB(int x, int y) {
 		return buffer.getRGB(x, y);
 	}
 
+	@Override
 	public void setRGB(int rgb, int x, int y) {
 		buffer.setRGB(x, y, rgb);
 	}
 
 	@Override
-	public void getRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scanSize) {
+	public void getRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scanSize) {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
 		buffer.getRGB(startX, startY, width, height, rgbArray, offset, scanSize);
 	}
 
-	public void setRGB(int startX, int startY, int width, int height,
-			int[] rgbArray, int offset, int scansize) {
+	@Override
+	public void setRGB(int startX, int startY, int width, int height, int[] rgbArray, int offset, int scansize) {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
@@ -221,8 +224,7 @@ public class Lwjgl3Image extends ImageImpl {
 
 	@Override
 	protected Object createErrorBitmap(int rawWidth, int rawHeight) {
-		BufferedImage bufferimage = new BufferedImage(rawWidth, rawHeight,
-				BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage bufferimage = new BufferedImage(rawWidth, rawHeight, BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D g = bufferimage.createGraphics();
 		try {
 			g.setColor(java.awt.Color.red);
@@ -237,14 +239,14 @@ public class Lwjgl3Image extends ImageImpl {
 		return bufferimage;
 	}
 
+	@Override
 	public boolean hasAlpha() {
 		return buffer.getColorModel().hasAlpha();
 	}
 
 	@Override
 	public Image getSubImage(int x, int y, int width, int height) {
-		return new Lwjgl3Image(gfx, scale, buffer.getSubimage(x, y, width,
-				height), TextureSource.RenderCanvas);
+		return new Lwjgl3Image(gfx, scale, buffer.getSubimage(x, y, width, height), TextureSource.RenderCanvas);
 	}
 
 	@Override

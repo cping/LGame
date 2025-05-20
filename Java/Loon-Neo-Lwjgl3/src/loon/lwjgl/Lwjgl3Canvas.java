@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -49,7 +49,7 @@ import loon.utils.MathUtils;
 class Lwjgl3Canvas extends Canvas {
 
 	final Graphics2D g2d;
-	private Deque<Lwjgl3CanvasState> stateStack = new LinkedList<Lwjgl3CanvasState>();
+	private Deque<Lwjgl3CanvasState> stateStack = new LinkedList<>();
 
 	private Ellipse2D.Float ellipse = new Ellipse2D.Float();
 	private Line2D.Float line = new Line2D.Float();
@@ -80,6 +80,7 @@ class Lwjgl3Canvas extends Canvas {
 		return currentState().fillColor;
 	}
 
+	@Override
 	public Canvas setColor(LColor color) {
 		int argb = color.getARGB();
 		this.setStrokeColor(argb);
@@ -142,6 +143,7 @@ class Lwjgl3Canvas extends Canvas {
 		final int cx = MathUtils.ifloor(x), cy = MathUtils.ifloor(y);
 		final int cwidth = MathUtils.iceil(width), cheight = MathUtils.iceil(height);
 		currentState().clipper = new Lwjgl3CanvasState.Clipper() {
+			@Override
 			public void setClip(Graphics2D g2d) {
 				g2d.setClip(cx, cy, cwidth, cheight);
 			}
@@ -297,6 +299,7 @@ class Lwjgl3Canvas extends Canvas {
 		return this;
 	}
 
+	@Override
 	public Canvas setAlpha(float alpha) {
 		if (alpha > 1f) {
 			alpha = 1f;

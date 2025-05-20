@@ -1,24 +1,51 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
 package loon.lwjgl;
+
+import static org.lwjgl.glfw.GLFW.GLFW_ALPHA_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_BLUE_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_DEPTH_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_GREEN_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_RED_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
+import static org.lwjgl.glfw.GLFW.GLFW_STENCIL_BITS;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowAttrib;
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowIcon;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,15 +55,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.GL_FALSE;
-import loon.*;
+import loon.LGame;
+import loon.LSetting;
+import loon.LTexture;
+import loon.Support;
 import loon.canvas.Image;
 import loon.canvas.Pixmap;
 import loon.events.KeyMake;
@@ -47,15 +76,30 @@ import loon.utils.reply.Port;
 
 public class Lwjgl3Game extends LGame {
 
+	public static class JavaSetting extends LSetting {
+
+		public boolean resizable = false;
+
+		public boolean maximized = false;
+
+		public boolean autoIconify = true;
+
+		public int r = 8, g = 8, b = 8, a = 8;
+
+		public int depth = 16, stencil = 0;
+
+		public int samples = 0;
+
+		public boolean vSyncEnabled = true;
+
+		public String[] iconPaths = null;
+
+		public int synMode = Lwjgl3Sync.LWJGL_GLFW;
+	}
+
 	private Lwjgl3Sync sync;
 
 	private final long windowId;
-
-	public static class JavaSetting extends LSetting {
-		public boolean vSyncEnabled = true;
-		public String[] iconPaths = null;
-		public int synMode = Lwjgl3Sync.LWJGL_GLFW;
-	}
 
 	final static private Runtime systemRuntime = Runtime.getRuntime();
 
@@ -209,6 +253,34 @@ public class Lwjgl3Game extends LGame {
 
 	}
 
+	public void restoreWindow() {
+		GLFW.glfwRestoreWindow(windowId);
+	}
+
+	public void maximizeWindow() {
+		GLFW.glfwMaximizeWindow(windowId);
+	}
+
+	public void focusWindow() {
+		GLFW.glfwFocusWindow(windowId);
+	}
+
+	public void closeWindow() {
+		GLFW.glfwSetWindowShouldClose(windowId, true);
+	}
+
+	public void iconifyWindow() {
+		GLFW.glfwIconifyWindow(windowId);
+	}
+
+	public void setVisible(boolean visible) {
+		if (visible) {
+			GLFW.glfwShowWindow(windowId);
+		} else {
+			GLFW.glfwHideWindow(windowId);
+		}
+	}
+
 	private final GLFWErrorCallback errorCallback;
 
 	public Lwjgl3Game(final Loon game, final LSetting config) {
@@ -243,15 +315,29 @@ public class Lwjgl3Game extends LGame {
 			monitor = 0;
 		}
 		glfwDefaultWindowHints();
-		glfwWindowHint(GLFW_VISIBLE, GL_FALSE);
-		glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-		glfwWindowHint(GLFW_RED_BITS, 8);
-		glfwWindowHint(GLFW_GREEN_BITS, 8);
-		glfwWindowHint(GLFW_BLUE_BITS, 8);
-		glfwWindowHint(GLFW_ALPHA_BITS, 8);
-		glfwWindowHint(GLFW_STENCIL_BITS, 0);
-		glfwWindowHint(GLFW_DEPTH_BITS, 16);
-		glfwWindowHint(GLFW_SAMPLES, 0);
+		glfwWindowHint(GLFW_VISIBLE, GLFW.GLFW_FALSE);
+		if (config instanceof JavaSetting) {
+			JavaSetting nativeSetting = (JavaSetting) setting;
+			glfwWindowHint(GLFW_RESIZABLE, nativeSetting.resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+			glfwWindowHint(GLFW.GLFW_MAXIMIZED, nativeSetting.maximized ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+			glfwWindowHint(GLFW.GLFW_AUTO_ICONIFY, nativeSetting.autoIconify ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+			glfwWindowHint(GLFW.GLFW_RED_BITS, nativeSetting.r);
+			glfwWindowHint(GLFW.GLFW_GREEN_BITS, nativeSetting.g);
+			glfwWindowHint(GLFW.GLFW_BLUE_BITS, nativeSetting.b);
+			glfwWindowHint(GLFW.GLFW_ALPHA_BITS, nativeSetting.a);
+			glfwWindowHint(GLFW.GLFW_STENCIL_BITS, nativeSetting.stencil);
+			glfwWindowHint(GLFW.GLFW_DEPTH_BITS, nativeSetting.depth);
+			glfwWindowHint(GLFW.GLFW_SAMPLES, nativeSetting.samples);
+		} else {
+			glfwWindowHint(GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+			glfwWindowHint(GLFW_RED_BITS, 8);
+			glfwWindowHint(GLFW_GREEN_BITS, 8);
+			glfwWindowHint(GLFW_BLUE_BITS, 8);
+			glfwWindowHint(GLFW_ALPHA_BITS, 8);
+			glfwWindowHint(GLFW_STENCIL_BITS, 0);
+			glfwWindowHint(GLFW_DEPTH_BITS, 16);
+			glfwWindowHint(GLFW_SAMPLES, 0);
+		}
 		windowId = glfwCreateWindow(width, height, config.appName, monitor, 0);
 		if (windowId == 0) {
 			throw new RuntimeException("Failed to create windowId; see error log.");
@@ -275,6 +361,7 @@ public class Lwjgl3Game extends LGame {
 
 		if (config.activationKey != -1) {
 			input.keyboardEvents.connect(new Port<KeyMake.Event>() {
+				@Override
 				public void onEmit(KeyMake.Event event) {
 					if (event instanceof KeyMake.KeyEvent) {
 						KeyMake.KeyEvent kevent = (KeyMake.KeyEvent) event;
@@ -456,6 +543,7 @@ public class Lwjgl3Game extends LGame {
 		return new Lwjgl3InputMake(this, windowId);
 	}
 
+	@Override
 	public void shutdown() {
 		super.shutdown();
 		try {
@@ -480,10 +568,7 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	static void setIcon(long win, String[] imagePaths) {
-		if (isMacOS()) {
-			return;
-		}
-		if (imagePaths == null || imagePaths.length == 0) {
+		if (isMacOS() || imagePaths == null || imagePaths.length == 0) {
 			return;
 		}
 		Pixmap[] pixmaps = new Pixmap[imagePaths.length];
@@ -497,18 +582,13 @@ public class Lwjgl3Game extends LGame {
 	}
 
 	static void setIcon(long win, Pixmap[] images) {
-		if (isMacOS()) {
-			return;
-		}
-		if (images == null || images.length == 0) {
+		if (isMacOS() || images == null || images.length == 0) {
 			return;
 		}
 		GLFWImage.Buffer buffer = GLFWImage.malloc(images.length);
 		Pixmap[] tmpPixmaps = new Pixmap[images.length];
 
-		for (int i = 0; i < images.length; i++) {
-			Pixmap pixmap = images[i];
-
+		for (Pixmap pixmap : images) {
 			GLFWImage icon = GLFWImage.malloc();
 			icon.set(pixmap.getWidth(), pixmap.getHeight(), pixmap.convertPixmapToByteBuffer(true));
 			buffer.put(icon);

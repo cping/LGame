@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -53,10 +53,8 @@ class Mdct {
 		for (int i = 0; i < n / 4; i++) {
 			trig[AE + i * 2] = (float) Math.cos((Math.PI / n) * (4 * i));
 			trig[AO + i * 2] = (float) -Math.sin((Math.PI / n) * (4 * i));
-			trig[BE + i * 2] = (float) Math.cos((Math.PI / (2 * n))
-					* (2 * i + 1));
-			trig[BO + i * 2] = (float) Math.sin((Math.PI / (2 * n))
-					* (2 * i + 1));
+			trig[BE + i * 2] = (float) Math.cos((Math.PI / (2 * n)) * (2 * i + 1));
+			trig[BO + i * 2] = (float) Math.sin((Math.PI / (2 * n)) * (2 * i + 1));
 		}
 		for (int i = 0; i < n / 8; i++) {
 			trig[CE + i * 2] = (float) Math.cos((Math.PI / n) * (4 * i + 2));
@@ -154,8 +152,7 @@ class Mdct {
 		}
 	}
 
-	private float[] mdct_kernel(float[] x, float[] w, int n, int n2, int n4,
-			int n8) {
+	private float[] mdct_kernel(float[] x, float[] w, int n, int n2, int n4, int n8) {
 		// step 2
 
 		int xA = n4;

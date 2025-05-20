@@ -4,8 +4,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class Lwjgl3Sync {
 
-	final static double NANO_RESOLUTION = 1000000000.0D,
-			GLFW_RESOLUTION = 1.0D;
+	final static double NANO_RESOLUTION = 1000000000.0D, GLFW_RESOLUTION = 1.0D;
 
 	public final static int JAVA_NANO = 1, LWJGL_GLFW = 2;
 

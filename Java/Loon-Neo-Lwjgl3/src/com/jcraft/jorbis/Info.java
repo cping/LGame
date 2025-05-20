@@ -1,14 +1,14 @@
 /* -*-mode:java; c-basic-offset:2; indent-tabs-mode:nil -*- */
 /* JOrbis
  * Copyright (C) 2000 ymnk, JCraft,Inc.
- *  
+ *
  * Written by: 2000 ymnk<ymnk@jcraft.com>
- *   
- * Many thanks to 
- *   Monty <monty@xiph.org> and 
+ *
+ * Many thanks to
+ *   Monty <monty@xiph.org> and
  *   The XIPHOPHORUS Company http://www.xiph.org/ .
  * JOrbis has been based on their awesome works, Vorbis codec.
- *   
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public License
  * as published by the Free Software Foundation; either version 2 of
@@ -18,7 +18,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Library General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Library General Public
  * License along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
@@ -26,7 +26,8 @@
 
 package com.jcraft.jorbis;
 
-import com.jcraft.jogg.*;
+import com.jcraft.jogg.Buffer;
+import com.jcraft.jogg.Packet;
 
 public class Info {
 	private static final int OV_EBADPACKET = -136;
@@ -326,11 +327,7 @@ public class Info {
 				}
 				switch (packtype) {
 				case 0x01: // least significant *bit* is read first
-					if (op.b_o_s == 0) {
-						// Not the initial packet
-						return (-1);
-					}
-					if (rate != 0) {
+					if ((op.b_o_s == 0) || (rate != 0)) {
 						// previously initialized info header
 						return (-1);
 					}
@@ -461,6 +458,7 @@ public class Info {
 		return (blocksizes[mode_param[mode].blockflag]);
 	}
 
+	@Override
 	public String toString() {
 		return "version:" + Integer.valueOf(version) + ", channels:" + Integer.valueOf(channels) + ", rate:"
 				+ Integer.valueOf(rate) + ", bitrate:" + Integer.valueOf(bitrate_upper) + ","
