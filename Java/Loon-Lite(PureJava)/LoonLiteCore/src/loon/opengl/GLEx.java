@@ -759,6 +759,16 @@ public class GLEx implements LRelease {
 		return addAlpha(this.lastBrush.baseAlpha * alpha);
 	}
 
+	public void resetConfig() {
+		this.setFont(LSystem.getSystemGameFont());
+		this.lastBrush.baseColor = LColor.DEF_COLOR;
+		this.lastBrush.fillColor = LColor.DEF_COLOR;
+		this.lastBrush.baseAlpha = 1f;
+		this.lastBrush.patternTex = null;
+		this.setBlendMode(BlendMethod.MODE_NORMAL);
+		this.resetLineWidth();
+	}
+
 	public GLEx reset(float red, float green, float blue, float alpha) {
 		if (isClosed) {
 			return this;
@@ -769,13 +779,7 @@ public class GLEx implements LRelease {
 		} else {
 			gfx.getCanvas().clear(currentColorTemp.setColor(red, green, blue, alpha));
 		}
-		this.setFont(LSystem.getSystemGameFont());
-		this.lastBrush.baseColor = LColor.DEF_COLOR;
-		this.lastBrush.fillColor = LColor.DEF_COLOR;
-		this.lastBrush.baseAlpha = 1f;
-		this.lastBrush.patternTex = null;
-		this.setBlendMode(BlendMethod.MODE_NORMAL);
-		this.resetLineWidth();
+		resetConfig();
 		return this;
 	}
 

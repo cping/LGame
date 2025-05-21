@@ -1037,11 +1037,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return addAlpha(this.lastBrush.baseAlpha * alpha);
 	}
 
-	public GLEx reset(float red, float green, float blue, float alpha) {
-		if (isClosed) {
-			return this;
-		}
-		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+	public void resetConfig() {
 		this.setFont(LSystem.getSystemGameFont());
 		this.lastBrush.baseColor = LColor.DEF_COLOR;
 		this.lastBrush.fillColor = LColor.DEF_COLOR;
@@ -1049,6 +1045,14 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		this.lastBrush.patternTex = null;
 		this.setBlendMode(BlendMethod.MODE_NORMAL);
 		this.resetLineWidth();
+	}
+
+	public GLEx reset(float red, float green, float blue, float alpha) {
+		if (isClosed) {
+			return this;
+		}
+		GLUtils.setClearColor(batch.gl, red, green, blue, alpha);
+		resetConfig();
 		return this;
 	}
 

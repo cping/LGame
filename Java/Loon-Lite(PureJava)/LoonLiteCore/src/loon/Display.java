@@ -463,12 +463,17 @@ public class Display extends BaseIO implements LRelease {
 		}
 		try {
 			_glEx.saveTx();
+
+			// 在某些情况下,比如存在全局背景时，因为旧有画面已被遮挡，不必全局刷新Screen画面,应禁止全局刷新画布内容
 			if (_setting.allScreenRefresh) {
 				_glEx.reset(cred, cgreen, cblue, calpha);
+			} else {
+				_glEx.resetConfig();
 			}
 
 			_glEx.begin();
 
+			// 最初渲染的内容
 			_process.drawFrist(_glEx);
 			_process.load();
 			_process.runTimer(clock);

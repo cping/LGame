@@ -65,6 +65,14 @@ public class LColor implements Serializable {
 		return false;
 	}
 
+	public final static LColorLinear linear(int[] colors) {
+		return new LColorLinear(colors);
+	}
+
+	public final static LColorLinear linear(LColor[] colors) {
+		return new LColorLinear(colors);
+	}
+
 	/**
 	 * 计算一种颜色到另一种颜色之间的平滑过渡
 	 * 
@@ -482,6 +490,15 @@ public class LColor implements Serializable {
 	public static final float toFloatBits(float r, float g, float b, float a) {
 		int color = ((int) (255 * a) << 24) | ((int) (255 * b) << 16) | ((int) (255 * g) << 8) | ((int) (255 * r));
 		return NumberUtils.intBitsToFloat(color & 0xfeffffff);
+	}
+
+	public static final float[] rgbaToFloats(int rgba) {
+		float[] rgbas = new float[4];
+		rgbas[0] = ((rgba >> 24) & 0xff) / 255f;
+		rgbas[1] = ((rgba >> 16) & 0xff) / 255f;
+		rgbas[2] = ((rgba >> 8) & 0xff) / 255f;
+		rgbas[3] = ((rgba) & 0xff) / 255f;
+		return rgbas;
 	}
 
 	public static final LColor toDecreaseBrightness(LColor c, float brightness) {
