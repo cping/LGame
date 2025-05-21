@@ -318,6 +318,9 @@ public class LSetting {
 	 * @param setting
 	 */
 	public LSetting copy(LSetting setting) {
+		if (setting == null) {
+			return this;
+		}
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;

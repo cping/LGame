@@ -1033,6 +1033,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLEx addAlpha(float alpha) {
+		return addAlpha(this.lastBrush.baseAlpha * alpha);
+	}
+
 	public GLEx reset(float red, float green, float blue, float alpha) {
 		if (isClosed) {
 			return this;

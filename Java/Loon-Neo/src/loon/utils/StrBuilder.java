@@ -67,9 +67,13 @@ import loon.LSystem;
  */
 public class StrBuilder implements CharSequence, Appendable {
 
+	private final static char[] _digits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+
 	private String _tempResult = null;
 
 	private boolean _dirty = false;
+
+	private char[] _numberBuffer = new char[25];
 
 	private char[] _values = null;
 
@@ -190,9 +194,92 @@ public class StrBuilder implements CharSequence, Appendable {
 		return insert(this._currentIndex, src, srcPos, length);
 	}
 
+	public StrBuilder appendNumber(long number) {
+		if (number < 0) {
+			append(LSystem.DASHED);
+			number = -number;
+		}
+		int index = 0;
+		do {
+			int digit = (int) (number % 10);
+			if ((index + 1) % 4 == 0) {
+				_numberBuffer[index] = (char) (LSystem.COMMA);
+				++index;
+			}
+			_numberBuffer[index] = _digits[digit];
+			number /= 10;
+			++index;
+		} while (number > 0);
+		for (--index; index >= 0; --index) {
+			append(_numberBuffer[index]);
+		}
+		return this;
+	}
+
+	public void appendNumber(long number, int minDigits) {
+		if (number < 0) {
+			append(LSystem.DASHED);
+			number = -number;
+		}
+		int index = 0;
+		do {
+			int digit = (int) (number % 10);
+			_numberBuffer[index] = _digits[digit];
+			number /= 10;
+			++index;
+		} while (number > 0 || index < minDigits);
+		for (--index; index >= 0; --index) {
+			append(_numberBuffer[index]);
+		}
+	}
+
+	public StrBuilder appendNumber(float number) {
+		number *= 100f;
+		if (number < 0) {
+			append(LSystem.DASHED);
+			number = -number;
+		}
+		float original = number;
+		int index = 0;
+		do {
+			if (index == 2) {
+				_numberBuffer[index] = (char) (LSystem.DOT);
+				++index;
+			}
+			int digit = (int) number % 10;
+			_numberBuffer[index] = (char) ('0' + digit);
+			number /= 10;
+			++index;
+		} while (number > 0.99f);
+		if (original < 100) {
+			if (original < 10) {
+				_numberBuffer[index] = (char) ('0');
+				++index;
+			}
+			_numberBuffer[index] = (char) (LSystem.DOT);
+			++index;
+			_numberBuffer[index] = (char) ('0');
+			++index;
+		}
+		for (--index; index >= 0; --index) {
+			append(_numberBuffer[index]);
+		}
+		return this;
+	}
+
 	@Override
 	public StrBuilder append(CharSequence cs) {
 		return insert(this._currentIndex, cs);
+	}
+
+	public StrBuilder append(CharSequence... cs) {
+		if (cs == null) {
+			return this;
+		}
+		for (int i = 0; i < cs.length; i++) {
+			append(cs[i]);
+		}
+		return this;
 	}
 
 	@Override

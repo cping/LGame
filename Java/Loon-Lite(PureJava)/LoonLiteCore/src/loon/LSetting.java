@@ -331,7 +331,10 @@ public class LSetting {
 	 *
 	 * @param setting
 	 */
-	public void copy(LSetting setting) {
+	public LSetting copy(LSetting setting) {
+		if (setting == null) {
+			return this;
+		}
 		this.isSyncTween = setting.isSyncTween;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
@@ -364,6 +367,7 @@ public class LSetting {
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.allScreenRefresh = setting.allScreenRefresh;
 		this.args = setting.args;
+		return this;
 	}
 
 	/**

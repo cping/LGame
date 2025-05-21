@@ -1478,7 +1478,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CG)) {
-
 					if (mesFlag == null) {
 						return this;
 					}
@@ -1495,37 +1494,35 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						}
 					} else if (lastFlag != null && CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
 						scrCG.replace(mesFlag, lastFlag);
-					} else {
-						if (orderFlag.startsWith("size")) {
-							String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
-									LSystem.PAREN_END);
-							Vector4f view = Vector4f.at(sizeResult);
-							if (view.z != 0f || view.w != 0f) {
-								scrCG.add(mesFlag, view.x(), view.y(), view.z(), view.w(), getWidth(), getHeight());
-							} else {
-								scrCG.add(mesFlag, view.x(), view.y(), getWidth(), getHeight());
-							}
+					} else if (orderFlag.startsWith("size")) {
+						String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
+								LSystem.PAREN_END);
+						Vector4f view = Vector4f.at(sizeResult);
+						if (view.z != 0f || view.w != 0f) {
+							scrCG.add(mesFlag, view.x(), view.y(), view.z(), view.w(), getWidth(), getHeight());
 						} else {
-							int x = 0, y = 0;
-							if (orderFlag != null) {
-								x = Integer.parseInt(orderFlag);
-							}
-							int cgWidth = -1;
-							int cgHeight = -1;
-							if (size >= 4) {
-								y = Integer.parseInt(commands.get(3));
-							}
-							if (size >= 5) {
-								cgWidth = Integer.parseInt(commands.get(4));
-							}
-							if (size >= 6) {
-								cgHeight = Integer.parseInt(commands.get(5));
-							}
-							if (cgWidth != -1 || cgHeight != -1) {
-								scrCG.add(mesFlag, x, y, cgWidth, cgWidth, getWidth(), getHeight());
-							} else {
-								scrCG.add(mesFlag, x, y, getWidth(), getHeight());
-							}
+							scrCG.add(mesFlag, view.x(), view.y(), getWidth(), getHeight());
+						}
+					} else {
+						int x = 0, y = 0;
+						if (orderFlag != null) {
+							x = Integer.parseInt(orderFlag);
+						}
+						int cgWidth = -1;
+						int cgHeight = -1;
+						if (size >= 4) {
+							y = Integer.parseInt(commands.get(3));
+						}
+						if (size >= 5) {
+							cgWidth = Integer.parseInt(commands.get(4));
+						}
+						if (size >= 6) {
+							cgHeight = Integer.parseInt(commands.get(5));
+						}
+						if (cgWidth != -1 || cgHeight != -1) {
+							scrCG.add(mesFlag, x, y, cgWidth, cgWidth, getWidth(), getHeight());
+						} else {
+							scrCG.add(mesFlag, x, y, getWidth(), getHeight());
 						}
 					}
 					continue;

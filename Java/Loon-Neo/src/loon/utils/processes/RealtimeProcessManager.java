@@ -477,9 +477,11 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 			synchronized (this._processes) {
 				for (LIterator<GameProcess> it = _processes.listIterator(); it.hasNext();) {
 					GameProcess p = it.next();
-					int pindex = p.getPriority();
-					if (p != null && (pindex >= min && pindex <= max)) {
-						list.add(p.pause());
+					if (p != null) {
+						int pindex = p.getPriority();
+						if (pindex >= min && pindex <= max) {
+							list.add(p.pause());
+						}
 					}
 				}
 			}
@@ -493,9 +495,11 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 			synchronized (this._processes) {
 				for (LIterator<GameProcess> it = _processes.listIterator(); it.hasNext();) {
 					GameProcess p = it.next();
-					int pindex = p.getPriority();
-					if (p != null && (pindex >= min && pindex <= max)) {
-						list.add(p.resume());
+					if (p != null) {
+						int pindex = p.getPriority();
+						if (pindex >= min && pindex <= max) {
+							list.add(p.resume());
+						}
 					}
 				}
 			}

@@ -211,7 +211,7 @@ public class LDTKLevel implements LRelease {
 		TArray<LDTKLayer> list = new TArray<LDTKLayer>();
 		for (Entries<String, LDTKLayer> it = _layerNames.entries(); it.hasNext();) {
 			Entry<String, LDTKLayer> o = it.next();
-			if (name.equals(o.getKey()) && o != null) {
+			if (o != null && name.equals(o.getKey())) {
 				list.add(o.getValue());
 			}
 		}

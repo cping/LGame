@@ -24,7 +24,7 @@ import loon.geom.Vector2f;
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
 
-public class TempVars {
+public final class TempVars {
 
 	private static TempVars instance;
 
@@ -36,6 +36,8 @@ public class TempVars {
 			return instance;
 		}
 	}
+	
+	private TempVars() {};
 
 	public static final TempVars getClean2f() {
 		return get().clean2f();

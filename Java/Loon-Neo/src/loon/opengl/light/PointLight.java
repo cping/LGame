@@ -100,7 +100,7 @@ public class PointLight extends BaseLight {
 				|| this.intensity != intensity || this.attenuation != attenuation) {
 			this._dirty = true;
 		}
-		if (color != null) {
+		if (!color.equals(r, g, b)) {
 			this.color.setColor(r, g, b);
 		} else {
 			this.color.setColor(DefLightColor);
