@@ -133,6 +133,14 @@ public class Side implements Config {
 	}
 
 	@Override
+	public int hashCode() {
+		int hashCode = 66;
+		hashCode = LSystem.unite(hashCode, _pos.hashCode());
+		hashCode = LSystem.unite(hashCode, _direction);
+		return hashCode;
+	}
+
+	@Override
 	public boolean equals(Object other) {
 		if (other == null) {
 			return false;
@@ -141,11 +149,12 @@ public class Side implements Config {
 			return true;
 		}
 		if (other instanceof Side) {
-			return (_direction == ((Side) other)._direction);
+			Side side = (Side) other;
+			return (_direction == side._direction) && (_pos.equals(side._pos));
 		}
 		return false;
 	}
-	
+
 	public Side reset() {
 		this._direction = EMPTY;
 		this._pos.setZero();

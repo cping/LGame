@@ -91,7 +91,11 @@ public class Triple<T1, T2, T3> {
 		if (o1 == null && o2 == null && o3 == null) {
 			return super.hashCode();
 		}
-		return o1.hashCode() ^ o2.hashCode() ^ o3.hashCode();
+		int hashCode = 128;
+		hashCode = LSystem.unite(hashCode, o1);
+		hashCode = LSystem.unite(hashCode, o2);
+		hashCode = LSystem.unite(hashCode, o3);
+		return hashCode;
 	}
 
 	@Override

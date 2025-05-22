@@ -24,12 +24,14 @@ import loon.LSystem;
 import loon.utils.StringUtils;
 import loon.utils.cache.CacheMap;
 
-public class BDFontCache extends CacheMap<BDFont> {
+public final class BDFontCache extends CacheMap<BDFont> {
 
 	private final static String DEF_PIXFONT = "pixfont";
 
 	private static BDFontCache _fontCache = null;
 
+	private BDFontCache() {}
+	
 	public static void freeStatic() {
 		_fontCache = null;
 	}

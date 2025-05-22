@@ -88,10 +88,10 @@ public abstract class Graphics {
 		return screenSize().getHeight();
 	}
 
-	public boolean isHidden(){
-        return width() < 2 || height() < 2;
-    }
-	
+	public boolean isHidden() {
+		return width() < 2 || height() < 2;
+	}
+
 	public Graphics setFlip(boolean flip) {
 		this.flipScreen = flip;
 		return this;
@@ -170,7 +170,7 @@ public abstract class Graphics {
 		if (lastViewWidth == viewWidth && lastViewHeight == viewHeight) {
 			return;
 		}
-		if (lastViewWidth == 0 || lastViewHeight == 0) {
+		if (lastViewWidth <= 0 || lastViewHeight <= 0) {
 			game.log().info("Updating size (" + game.setting.getShowWidth() + "x" + game.setting.getShowHeight() + " / "
 					+ scale.factor + ") -> " + "(" + viewWidth + "x" + viewHeight + ")");
 		} else {

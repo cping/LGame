@@ -22,6 +22,7 @@ package loon.utils.reply;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.EventAction;
 import loon.geom.IV;
 import loon.geom.SetIV;
@@ -134,6 +135,27 @@ public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T>, LReleas
 		_obj = null;
 		_tempValue = null;
 		_change = null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 31;
+		if (_observers != null) {
+			result = LSystem.unite(result, _observers);
+		}
+		if (_change != null) {
+			result = LSystem.unite(result, _change);
+		}
+		if (_value != null) {
+			result = LSystem.unite(result, _value);
+		}
+		if (_tempValue != null) {
+			result = LSystem.unite(result, _tempValue);
+		}
+		if (_obj != null) {
+			result = LSystem.unite(result, _obj);
+		}
+		return result;
 	}
 
 	@Override

@@ -22,6 +22,7 @@ package loon.utils.processes.state;
 
 import loon.LRelease;
 import loon.LSysException;
+import loon.LSystem;
 import loon.events.EventAction;
 import loon.geom.BooleanValue;
 import loon.utils.HelperUtils;
@@ -287,6 +288,20 @@ public class StateBase implements IState, LRelease {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 67;
+		hashCode = LSystem.unite(hashCode, _stateType);
+		hashCode = LSystem.unite(hashCode, _parent);
+		hashCode = LSystem.unite(hashCode, _stateName);
+		hashCode = LSystem.unite(hashCode, _conditions);
+		hashCode = LSystem.unite(hashCode, _events);
+		hashCode = LSystem.unite(hashCode, _stateChildren);
+		hashCode = LSystem.unite(hashCode, _activeChildren);
+		hashCode = LSystem.unite(hashCode, _closed);
+		return hashCode;
 	}
 
 	@Override

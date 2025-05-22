@@ -1034,7 +1034,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx addAlpha(float alpha) {
-		return addAlpha(this.lastBrush.baseAlpha * alpha);
+		return setAlpha(this.lastBrush.baseAlpha * alpha);
 	}
 
 	public void resetConfig() {

@@ -20,6 +20,7 @@
  */
 package loon.action.collision;
 
+import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
 import loon.geom.Vector2f;
@@ -88,6 +89,18 @@ public class GravityResult implements Poolable {
 
 	public int getSteps() {
 		return steps;
+	}
+
+	@Override
+	public int hashCode() {
+		int hashCode = 44;
+		hashCode = LSystem.unite(hashCode, normal);
+		hashCode = LSystem.unite(hashCode, position);
+		hashCode = LSystem.unite(hashCode, source);
+		hashCode = LSystem.unite(hashCode, targets);
+		hashCode = LSystem.unite(hashCode, collided);
+		hashCode = LSystem.unite(hashCode, steps);
+		return hashCode;
 	}
 
 	@Override

@@ -143,9 +143,11 @@ public class Inventory {
 		final String text = result.trim().toLowerCase();
 		for (int i = _items.size - 1; i > -1; i--) {
 			final IItem item = _items.get(i);
-			final String itemName = item.getName();
-			if (item != null && itemName != null && itemName.toLowerCase().indexOf(text) != -1) {
-				items.add(item);
+			if (item != null) {
+				final String itemName = item.getName();
+				if (itemName != null && itemName.toLowerCase().indexOf(text) != -1) {
+					items.add(item);
+				}
 			}
 		}
 		return items;

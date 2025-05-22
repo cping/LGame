@@ -44,7 +44,7 @@ public abstract class LayoutManager {
 	}
 
 	public static float roundTo2DP(float num) {
-		return num = MathUtils.round(num * 100f) / 100f;
+		return MathUtils.round(num * 100f) / 100f;
 	}
 
 	/**

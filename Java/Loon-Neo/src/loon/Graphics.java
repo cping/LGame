@@ -240,7 +240,7 @@ public abstract class Graphics {
 		if (lastViewWidth == viewWidth && lastViewHeight == viewHeight) {
 			return;
 		}
-		if (lastViewWidth == 0 || lastViewHeight == 0) {
+		if (lastViewWidth <= 0 || lastViewHeight <= 0) {
 			game.log().info("Updating size (" + game.setting.getShowWidth() + "x" + game.setting.getShowHeight() + " / "
 					+ scale.factor + ") -> " + "(" + viewWidth + "x" + viewHeight + ")");
 		} else {

@@ -1494,7 +1494,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						}
 					} else if (lastFlag != null && CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
 						scrCG.replace(mesFlag, lastFlag);
-					} else if (orderFlag.startsWith("size")) {
+					} else if (orderFlag != null && orderFlag.startsWith("size")) {
 						String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
 								LSystem.PAREN_END);
 						Vector4f view = Vector4f.at(sizeResult);

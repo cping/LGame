@@ -85,7 +85,10 @@ public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2> {
 		if (o1 == null && o2 == null) {
 			return super.hashCode();
 		}
-		return o1.hashCode() ^ o2.hashCode();
+		int hashCode = 86;
+		hashCode = LSystem.unite(hashCode, o1);
+		hashCode = LSystem.unite(hashCode, o2);
+		return hashCode;
 	}
 
 	@Override

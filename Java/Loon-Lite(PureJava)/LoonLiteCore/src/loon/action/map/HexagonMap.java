@@ -847,15 +847,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (positionFlag == null) {
 			return null;
 		}
+		int[] pFs = positionFlag.toInt();
 		xEnd += offsetXPixel(getViewRect().x);
 		yEnd += offsetYPixel(getViewRect().y);
 		focuses = null;
 		Vector2f position = decoordinate(xEnd, yEnd);
 		if (position != null && allowDisplayFindPath) {
-			focuses = lineRegion(positionFlag.toInt(), position.toInt());
-			return new SortedList<>(focuses);
+			focuses = lineRegion(pFs, position.toInt());
+			return new SortedList<int[]>(focuses);
 		}
-		return lineRegion(positionFlag.toInt(), position.toInt());
+		return lineRegion(pFs, position == null ? new int[0] : position.toInt());
 	}
 
 	public boolean isAllowDisplayFindPath() {
