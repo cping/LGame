@@ -70,6 +70,10 @@ public class Pair<T1, T2> implements IValueKey<T1>, IValueValue<T2> {
 		return o2;
 	}
 
+	public <T3> Triple<T1, T2, T3> extend(T3 right) {
+		return Triple.get(getLeft(), getRight(), right);
+	}
+
 	public final static <T1, T2> Pair<T1, T2> get(final T1 o1, final T2 o2) {
 		return new Pair<>(o1, o2);
 	}

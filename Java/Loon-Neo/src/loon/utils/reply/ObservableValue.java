@@ -80,6 +80,11 @@ public class ObservableValue<T> implements Observer<T>, SetIV<T>, IV<T>, LReleas
 		return this;
 	}
 
+	public ObservableValue<T> clear() {
+		this._observers.clear();
+		return this;
+	}
+
 	private boolean checkUpdate() {
 		return _value != null;
 	}

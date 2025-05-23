@@ -158,10 +158,10 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 			img.setPixels(glyphPixels, w, h);
-			int dx = MathUtils.round(x + this.x * scale);
-			int dy = MathUtils.round(y - this.y * scale);
-			int dw = MathUtils.round(w * scale);
-			int dh = MathUtils.round(h * scale);
+			int dx = MathUtils.iceil(x + this.x * scale);
+			int dy = MathUtils.iceil(y - this.y * scale);
+			int dw = MathUtils.iceil(w * scale);
+			int dh = MathUtils.iceil(h * scale);
 			g.draw(img, dx, dy, dx + dw, dy + dh, 0, 0, w, h);
 			img.close();
 			img = null;
@@ -439,6 +439,8 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 	protected static final int NAME_WWS_FAMILY = 21;
 	protected static final int NAME_WWS_STYLE = 22;
 
+	private int _fontBlend = BlendMethod.MODE_NORMAL;
+
 	private Updateable _submitUpdate;
 
 	private final static String fullflags = "，。？；：“‘‘”【】{}《》（）~！·￥";
@@ -590,6 +592,15 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
+	}
+
+	public int getFontBlend() {
+		return this._fontBlend;
+	}
+
+	public BDFont setFontBlend(int b) {
+		this._fontBlend = b;
+		return this;
 	}
 
 	public boolean containsTexture(String mes) {
@@ -1739,7 +1750,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		final boolean update = angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(BlendMethod.MODE_NORMAL);
+			gl.setBlendMode(_fontBlend);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -1822,7 +1833,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		final boolean update = angle || anchor;
 		final int blend = gl.getBlendMode();
 		try {
-			gl.setBlendMode(BlendMethod.MODE_NORMAL);
+			gl.setBlendMode(_fontBlend);
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
@@ -1957,7 +1968,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, BlendMethod.MODE_NORMAL);
+			GLUtils.setBlendMode(g, _fontBlend);
 			fontBatch.end();
 			GLUtils.setBlendMode(g, old);
 		}
@@ -1993,7 +2004,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		GL20 g = LSystem.base().graphics().gl;
 		if (g != null) {
 			int old = GLUtils.getBlendMode();
-			GLUtils.setBlendMode(g, BlendMethod.MODE_NORMAL);
+			GLUtils.setBlendMode(g, _fontBlend);
 			fontBatch.postLastCache();
 			GLUtils.setBlendMode(g, old);
 		}

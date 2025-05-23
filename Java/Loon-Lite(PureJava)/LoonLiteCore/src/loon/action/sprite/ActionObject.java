@@ -22,6 +22,7 @@ package loon.action.sprite;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.action.collision.Force;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.Side;
@@ -30,6 +31,7 @@ import loon.action.map.items.Attribute;
 import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.StrBuilder;
+import loon.utils.TArray;
 
 /**
  * 和瓦片地图绑定的动作对象,用来抽象一些简单的地图中精灵动作
@@ -43,6 +45,8 @@ public abstract class ActionObject extends Entity implements Config {
 	private Side _currentSide;
 
 	private ObjectState _currentObjectState;
+
+	private TArray<Force> _forces;
 
 	protected boolean _groundedLeftRight;
 
@@ -83,6 +87,17 @@ public abstract class ActionObject extends Entity implements Config {
 
 	@Override
 	void onProcess(long elapsedTime) {
+		if (_forces != null && _forces.size != 0) {
+			resetVelocity();
+			for (int i = 0; i < _forces.size; i++) {
+				Force force = _forces.get(i);
+				if (force != null) {
+					force.update(elapsedTime);
+					addVelocity(force.direction());
+				}
+			}
+			setLocation(getX() + velocityX, getY() + velocityY);
+		}
 		if (animation != null) {
 			animation.update(elapsedTime);
 			LTexture texture = animation.getSpriteImage();
@@ -90,6 +105,30 @@ public abstract class ActionObject extends Entity implements Config {
 				_image = texture;
 			}
 		}
+	}
+
+	public ActionObject applyForce(Force force) {
+		if (_forces == null) {
+			_forces = new TArray<Force>();
+		}
+		_forces.add(force);
+		return this;
+	}
+
+	public ActionObject clearForces() {
+		if (_forces == null) {
+			_forces = new TArray<Force>();
+		} else {
+			_forces.clear();
+		}
+		return this;
+	}
+
+	public TArray<Force> getForces() {
+		if (_forces == null) {
+			_forces = new TArray<Force>();
+		}
+		return _forces;
 	}
 
 	@Override
@@ -341,6 +380,26 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
+	public Vector2f getVelocity() {
+		return Vector2f.at(this.velocityX, this.velocityY);
+	}
+
+	public ActionObject addVelocity(final float vx, final float vy) {
+		return setVelocity(this.velocityX + vx, this.velocityY + vy);
+	}
+
+	public ActionObject addVelocity(final Vector2f v) {
+		if (v == null) {
+			return this;
+		}
+		return addVelocity(v.x, v.y);
+	}
+
+	public ActionObject resetVelocity() {
+		this.velocityX = this.velocityY = 0f;
+		return this;
+	}
+
 	public ActionObject drag(final float drag) {
 		this.velocityX = (drag * this.velocityX);
 		this.velocityY = (drag * this.velocityY);
@@ -431,6 +490,10 @@ public abstract class ActionObject extends Entity implements Config {
 		super._onDestroy();
 		if (animation != null) {
 			animation.close();
+		}
+		if (_forces != null) {
+			_forces.clear();
+			_forces = null;
 		}
 	}
 

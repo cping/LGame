@@ -1,0 +1,41 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: LoonGame
+message: Please cite LoonGame using the following metadata.
+type: software
+authors:
+  - given-names: peng
+    family-names: chen
+    email: javachenpeng@yahoo.com
+repository-code: 'https://github.com/cping/LGame'
+url: 'https://github.com/cping/LGame'
+abstract: >-
+  The LGame is a very cool and small game library designed
+  to simplify the complex and shorten the tedious for
+  beginners and veterans alike. With it, you can use the
+  best aspects of OpenGL/OpenGLES in an easy and organized
+  way optimized for game programming. It is built around the
+  concept that beginners should be able to start with the
+  basics and then move up into a more complex plane of
+  development with the veterans, all on the same platform.
+keywords:
+  - 2D
+  - game engine
+  - java
+  - c#
+  - framework
+  - easy
+  - tilemap
+  - ldtk
+  - awt
+  - swing
+  - javafx
+  - gwt
+  - teavm
+  - opengles
+  - loon
+license: Apache-2.0
+version: '0.5'
+date-released: '2025-05-01'

@@ -86,6 +86,8 @@ public abstract class Conversion implements Expression {
 			return true;
 		case '!':
 			return true;
+		case '^':
+			return true;
 		}
 		return false;
 	}
@@ -151,7 +153,7 @@ public abstract class Conversion implements Expression {
 
 		private boolean exp(String exp) {
 			return exp.indexOf("+") != -1 || exp.indexOf("-") != -1 || exp.indexOf("*") != -1 || exp.indexOf("/") != -1
-					|| exp.indexOf("%") != -1;
+					|| exp.indexOf("%") != -1 || exp.indexOf("^") != -1;
 		}
 
 		public float parse(Object v) {
@@ -205,7 +207,7 @@ public abstract class Conversion implements Expression {
 					do {
 						i--;
 					} while (expChr[i] != '(');
-				} else if (op[0] < 0 && (c == '*' || c == '/' || c == '%')) {
+				} else if (op[0] < 0 && (c == '*' || c == '/' || c == '%' || c == '^')) {
 					op[0] = i;
 				} else if (c == '+' || c == '-') {
 					op[1] = i;
@@ -231,6 +233,11 @@ public abstract class Conversion implements Expression {
 						evalExp(compute, stIdx, op[0]);
 						evalExp(compute, op[0] + 1, edIdx);
 						compute.setOperator(Calculator.MODULO);
+						break;
+					case '^':
+						evalExp(compute, stIdx, op[0]);
+						evalExp(compute, op[0] + 1, edIdx);
+						compute.setOperator(Calculator.XOR);
 						break;
 					}
 				}
@@ -330,6 +337,8 @@ public abstract class Conversion implements Expression {
 					return n1 / n2;
 				case Calculator.MODULO:
 					return n1 % n2;
+				case Calculator.XOR:
+					return MathUtils.pow(n1, n2);
 				}
 				return 0;
 			}

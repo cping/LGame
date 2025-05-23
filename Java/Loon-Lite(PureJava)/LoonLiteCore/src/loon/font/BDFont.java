@@ -152,10 +152,10 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 			img.setPixels(glyphPixels, w, h);
-			int dx = MathUtils.round(x + this.x * scale);
-			int dy = MathUtils.round(y - this.y * scale);
-			int dw = MathUtils.round(w * scale);
-			int dh = MathUtils.round(h * scale);
+			int dx = MathUtils.iceil(x + this.x * scale);
+			int dy = MathUtils.iceil(y - this.y * scale);
+			int dw = MathUtils.iceil(w * scale);
+			int dh = MathUtils.iceil(h * scale);
 			g.draw(img, dx, dy, dx + dw, dy + dh, 0, 0, w, h);
 			img.close();
 			img = null;
@@ -1366,7 +1366,6 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		if (!isLoaded) {
 			return loadFont();
 		}
-
 
 		make();
 		if (processing()) {

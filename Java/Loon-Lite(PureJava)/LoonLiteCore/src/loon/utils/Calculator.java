@@ -60,6 +60,8 @@ public class Calculator implements LRelease {
 
 	public static final int EQUAL = 6;
 
+	public static final int XOR = 7;
+
 	private float currentTotal;
 
 	public Calculator() {
@@ -118,6 +120,10 @@ public class Calculator implements LRelease {
 		return convertToFloat(num, MODULO);
 	}
 
+	public Calculator xor(String num) {
+		return convertToFloat(num, XOR);
+	}
+
 	private Calculator convertToFloat(String num, int operator) {
 		if (MathUtils.isNan(num)) {
 			float dblNumber = Float.parseFloat(num);
@@ -134,6 +140,8 @@ public class Calculator implements LRelease {
 				return mod(dblNumber);
 			case EQUAL:
 				return equal(dblNumber);
+			case XOR:
+				return xor(dblNumber);
 			default:
 				break;
 			}
@@ -217,6 +225,18 @@ public class Calculator implements LRelease {
 		if (MathUtils.isNan(num)) {
 			currentTotal = Float.parseFloat(num);
 		}
+		return this;
+	}
+
+	public Calculator xor(Calculator c) {
+		if (c == null) {
+			return this;
+		}
+		return xor(c.get());
+	}
+
+	public Calculator xor(float num) {
+		currentTotal = MathUtils.pow(currentTotal, num);
 		return this;
 	}
 
