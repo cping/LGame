@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>loon.tea</groupId>
+  <groupId>loon.teavm</groupId>
   <artifactId>loon-teavm</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>war</packaging>
@@ -103,7 +103,7 @@
                    of the WAR plugin -->
               <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
               <!-- Main class, containing static void main(String[]) -->
-              <mainClass>loon.tea.Client</mainClass>
+              <mainClass>loon.teavm.Main</mainClass>
               <!-- Whether TeaVM should produce minified JavaScript. Can reduce JavaScript file size more than
                    two times -->
               <minifying>false</minifying>
