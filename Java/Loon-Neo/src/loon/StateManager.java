@@ -140,42 +140,72 @@ public class StateManager implements LRelease {
 		return this._previousState;
 	}
 
+	private void beginState(State state) {
+		if (state != null) {
+			state.setState(State.BEGIN);
+			state.begin();
+		}
+	}
+
+	private void loadState(State state) {
+		if (state != null) {
+			if (!state._isLoaded) {
+				state.setState(State.LOADING);
+				state.load();
+				state._isLoaded = true;
+				state.setState(State.LOADED);
+			}
+		}
+	}
+
+	private void updateState(float d, State state) {
+		if (state != null) {
+			state.setState(State.UPDATING);
+			state.update(d);
+		}
+	}
+
+	private void drawState(GLEx g, State state) {
+		if (state != null) {
+			state.setState(State.DRAWING);
+			state.paint(g);
+		}
+	}
+
+	private void endState(State state) {
+		if (state != null) {
+			state.setState(State.END);
+			state.end();
+			state.close();
+			state.setState(State.DISPOSED);
+			state._isLoaded = false;
+		}
+	}
+
 	private State changeState(int oldidx, int newidx) {
 		if (this._currentIndex == newidx && oldidx != this._currentIndex) {
 			if (oldidx < _states.size) {
 				this._currentState = _states.get(oldidx);
-				if (_currentState != null) {
-					_currentState.end();
-					_currentState.close();
-					_currentState._isLoaded = false;
-				}
+				endState(_currentState);
 				this._previousState = _currentState;
 			}
 		} else {
 			if (oldidx != newidx) {
 				if (oldidx < _states.size) {
 					this._currentState = _states.get(oldidx);
-					if (_currentState != null) {
-						_currentState.end();
-						_currentState.close();
-						_currentState._isLoaded = false;
-					}
+					endState(_currentState);
 					this._previousState = _currentState;
 				}
 				this._currentIndex = newidx;
 				if (newidx < _states.size) {
 					this._currentState = _states.get(newidx);
-					if (_currentState != null) {
-						_currentState.begin();
-					}
+					beginState(_currentState);
 				}
 			} else {
 				this._currentIndex = newidx;
 				this._currentState = _states.get(_currentIndex);
 				this._previousState = _currentState;
-				if (_currentState != null) {
-					_currentState.begin();
-				}
+				beginState(_currentState);
 			}
 		}
 		return _currentState;
@@ -195,18 +225,14 @@ public class StateManager implements LRelease {
 	public StateManager pop() {
 		State oldState = _states.pop();
 		if (oldState != null) {
-			oldState.end();
-			oldState.close();
-			oldState._isLoaded = false;
+			endState(oldState);
 			_previousState = oldState;
 		}
 		if (_currentIndex >= _states.size) {
 			_currentIndex = (_states.size - 1);
 			if (_currentIndex > -1) {
 				this._currentState = _states.get(_currentIndex);
-				if (_currentState != null) {
-					_currentState.begin();
-				}
+				beginState(_currentState);
 			}
 		}
 		return this;
@@ -215,8 +241,17 @@ public class StateManager implements LRelease {
 	public StateManager load() {
 		for (int i = _states.size - 1; i > -1; i--) {
 			State state = _states.get(i);
-			state.load();
-			state._isLoaded = true;
+			loadState(state);
+		}
+		return this;
+	}
+
+	public StateManager resize(int w, int h) {
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
+			if (state != null) {
+				state.resize(w, h);
+			}
 		}
 		return this;
 	}
@@ -224,26 +259,20 @@ public class StateManager implements LRelease {
 	public void update(float delta) {
 		if (_currentIndex > -1) {
 			State state = _states.get(_currentIndex);
-			if (!state._isLoaded) {
-				state.load();
-				state._isLoaded = true;
-			}
-			state.update(delta);
+			loadState(state);
+			updateState(delta, state);
 		}
 	}
 
 	public void paint(GLEx g) {
 		if (_currentIndex > -1) {
 			State state = _states.get(_currentIndex);
-			if (!state._isLoaded) {
-				state.load();
-				state._isLoaded = true;
-			}
 			try {
+				loadState(state);
 				if (state._syncCamera) {
 					g.concat(state._camera);
 				}
-				state.paint(g);
+				drawState(g, state);
 			} finally {
 				if (state._syncCamera) {
 					g.restoreTx();
@@ -256,11 +285,7 @@ public class StateManager implements LRelease {
 	public void close() {
 		for (int i = _states.size - 1; i > -1; i--) {
 			State state = _states.get(i);
-			if (state != null) {
-				state.end();
-				state.close();
-				state._isLoaded = false;
-			}
+			endState(state);
 		}
 		_states.clear();
 		_currentIndex = -1;

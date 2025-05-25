@@ -83,7 +83,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	private PreloadControl _preload;
 
-	private boolean _existing;
+	private boolean _stateExisting;
 
 	public abstract void create();
 
@@ -200,7 +200,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 	@Override
 	public void prefinish() {
 		this.create();
-		if (_existing) {
+		if (_stateExisting) {
 			_stateManager.load();
 		}
 	}
@@ -208,7 +208,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 	protected StateManager createStateManager() {
 		if (_stateManager == null) {
 			_stateManager = new StateManager();
-			_existing = true;
+			_stateExisting = true;
 		}
 		return this._stateManager;
 	}
@@ -344,7 +344,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		}
 		update(timer);
 		commits();
-		if (_existing) {
+		if (_stateExisting) {
 			_stateManager.update(timer.getMilliseconds());
 		}
 	}
@@ -370,7 +370,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 			}
 		}
 		paint(g);
-		if (_existing) {
+		if (_stateExisting) {
 			_stateManager.paint(g);
 		}
 	}
@@ -390,6 +390,9 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void resize(int width, int height) {
+		if (_stateExisting) {
+			_stateManager.resize(width, height);
+		}
 	}
 
 	@Override
@@ -814,7 +817,7 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void close() {
-		this._existing = false;
+		this._stateExisting = false;
 		if (this._pendingAdd != null) {
 			this._pendingAdd.clear();
 		}

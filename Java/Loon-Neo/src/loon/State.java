@@ -35,6 +35,14 @@ import loon.utils.StringUtils;
  */
 public abstract class State implements LRelease {
 
+	public final static int BEGIN = 0;
+	public final static int LOADING = 1;
+	public final static int LOADED = 2;
+	public final static int UPDATING = 3;
+	public final static int DRAWING = 4;
+	public final static int END = 5;
+	public final static int DISPOSED = 6;
+
 	protected StateManager _stateManager;
 
 	protected String _stateName;
@@ -47,12 +55,19 @@ public abstract class State implements LRelease {
 
 	protected boolean _syncCamera;
 
+	private int _value;
+
 	public State() {
-		this(LSystem.UNKNOWN);
+		this(LSystem.UNKNOWN, -1);
 	}
 
 	public State(String name) {
+		this(name, -1);
+	}
+
+	public State(String name, int v) {
 		this._stateName = name;
+		this._value = v;
 		this._syncCamera = true;
 		this._isScalePos = false;
 		this._camera = new Affine2f();
@@ -126,10 +141,14 @@ public abstract class State implements LRelease {
 		this._stateManager = smr;
 	}
 
-	public void begin() {
+	protected void begin() {
 	}
 
-	public void end() {
+	protected void end() {
+	}
+
+	protected void resize(int w, int h) {
+
 	}
 
 	public abstract void load();
@@ -146,4 +165,28 @@ public abstract class State implements LRelease {
 		this._syncCamera = sync;
 	}
 
+	public State setState(int s) {
+		this._value = s;
+		return this;
+	}
+
+	public int getState() {
+		return _value;
+	}
+
+	public boolean hasBegined() {
+		return _value >= BEGIN;
+	}
+
+	public boolean hasLoaded() {
+		return _value >= LOADED;
+	}
+
+	public boolean isDisposed() {
+		return _value >= DISPOSED;
+	}
+
+	public boolean isActive() {
+		return _value >= BEGIN && _value < DISPOSED;
+	}
 }
