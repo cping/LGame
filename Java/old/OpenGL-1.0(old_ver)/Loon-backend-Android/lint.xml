@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<lint>
-    <issue id="DefaultLocale" severity="ignore" />
-    <issue id="FloatMath" severity="ignore" />
-    <issue id="SimpleDateFormat" severity="ignore" />
-    <issue id="UseSparseArrays" severity="ignore" />
-</lint>

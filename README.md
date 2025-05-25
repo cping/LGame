@@ -1,3 +1,5 @@
+![LGame Logo](libgdx_logo.svg)
+
 ## Loon Game Engine (Java Game Framework)
 
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
@@ -8,7 +10,7 @@
 
 [Free Game Resources Links](https://github.com/cping/LGame/blob/master/dev-res/README.md "Game Resources of Free")
 
-[Download Loon Game Engine](https://github.com/cping/LGame/releases/tag/LGame-0.5-Beta-fix1 "Loon Game Engine")
+[Download Loon Game Engine](https://github.com/cping/LGame "Loon Game Engine")
 
 Only Android-studio Template : androidstudio-template
 
@@ -23,6 +25,9 @@ All Java code Run Template : loon-gradle-template
 International Entertainment Machines
 
 ## Loon
+
+![LGame](https://raw.github.com/cping/LGame/master/loon_framework.png "loonframework")
+
 formal name : Loon
 
 A fast, simple & powerful game framework, powered by Java (also supports C# and C++).
