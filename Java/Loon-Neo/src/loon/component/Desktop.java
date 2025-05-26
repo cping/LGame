@@ -414,10 +414,41 @@ public class Desktop implements Visible, IArray, LRelease {
 		return this;
 	}
 
+	public Desktop packLayout(final LayoutManager manager, LComponent[] comps) {
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager, comps, 0, 0, 0, 0, false);
+		}
+		return this;
+	}
+
+	public Desktop packLayout(final LayoutManager manager, LComponent[] comps, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight, false);
+		}
+		return this;
+	}
+
 	public Desktop packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
 		if (_contentPane != null) {
 			_contentPane.packLayout(manager, spacex, spacey, spaceWidth, spaceHeight);
+		}
+		return this;
+	}
+
+	public Desktop packLayout(final LayoutManager manager, final TArray<LComponent> comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight);
+		}
+		return this;
+	}
+
+	public Desktop packLayout(final LayoutManager manager, final LComponent[] comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight, final boolean reversed) {
+		if (_contentPane != null) {
+			_contentPane.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight, reversed);
 		}
 		return this;
 	}

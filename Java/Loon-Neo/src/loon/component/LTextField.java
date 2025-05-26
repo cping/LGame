@@ -114,6 +114,10 @@ public class LTextField extends LTextBar {
 		this(txt, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, limit);
 	}
 
+	public LTextField() {
+		this(0, 0);
+	}
+
 	public LTextField(int x, int y) {
 		this(LSystem.EMPTY, x, y, SkinManager.get().getTextBarSkin().getFontColor(), INPUT_STRING, 128);
 	}

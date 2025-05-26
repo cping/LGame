@@ -87,16 +87,18 @@ public abstract class ActionObject extends Entity implements Config {
 
 	@Override
 	void onProcess(long elapsedTime) {
-		if (_forces != null && _forces.size != 0) {
-			resetVelocity();
-			for (int i = 0; i < _forces.size; i++) {
-				Force force = _forces.get(i);
-				if (force != null) {
-					force.update(elapsedTime);
-					addVelocity(force.direction());
+		if (!isStaticObject()) {
+			if (_forces != null && _forces.size != 0) {
+				resetVelocity();
+				for (int i = 0; i < _forces.size; i++) {
+					Force force = _forces.get(i);
+					if (force != null) {
+						force.update(elapsedTime);
+						addVelocity(force.direction());
+					}
 				}
+				setLocation(getX() + velocityX, getY() + velocityY);
 			}
-			setLocation(getX() + velocityX, getY() + velocityY);
 		}
 		if (animation != null) {
 			animation.update(elapsedTime);

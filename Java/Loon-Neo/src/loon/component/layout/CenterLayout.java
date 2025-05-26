@@ -32,26 +32,25 @@ public class CenterLayout extends LayoutManager {
 
 	@Override
 	public LayoutManager layoutElements(final LayoutPort rootElement, final LayoutPort... elements) {
-
 		if (rootElement == null || elements == null || elements.length == 0) {
 			return this;
 		}
-
 		BoxSize rootBox = rootElement.getBox();
 		LayoutConstraints rootBoxConstraints = rootElement.getBoxConstraints();
-
-		BoxSize box = elements[0].getBox();
-		LayoutConstraints constraint = elements[0].getBoxConstraints();
-
-		if (constraint.getWidth() != null && constraint.getWidth().hasHeightSuffix()) {
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
-		} else if (constraint.getHeight() != null && constraint.getHeight().hasWidthSuffix()) {
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
-		} else {
-			handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
-			handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+		for (int i = 0; i < elements.length; i++) {
+			LayoutPort ele = elements[i];
+			BoxSize box = ele.getBox();
+			LayoutConstraints constraint = ele.getBoxConstraints();
+			if (constraint.getWidth() != null && constraint.getWidth().hasHeightSuffix()) {
+				handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
+				handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			} else if (constraint.getHeight() != null && constraint.getHeight().hasWidthSuffix()) {
+				handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+				handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			} else {
+				handleVerticalAlignment(rootBox, rootBoxConstraints, box, constraint);
+				handleHorizontalAlignment(rootBox, rootBoxConstraints, box, constraint);
+			}
 		}
 		return this;
 	}

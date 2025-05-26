@@ -289,7 +289,6 @@ public class Text implements LRelease {
 			return;
 		}
 		initLFont();
-
 		if (_textOptions._autoWrap != AutoWrap.VERTICAL) {
 			switch (_textOptions._horizontalAlign) {
 			case CENTER:

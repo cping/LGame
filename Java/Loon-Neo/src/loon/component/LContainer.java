@@ -1284,29 +1284,79 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LContainer packLayout(final LayoutManager manager) {
-		return packLayout(manager, 0, 0, 0, 0);
+		return packLayout(manager, getComponents(), 0, 0, 0, 0, true);
+	}
+
+	public LContainer packLayout(final LayoutManager manager, final LComponent[] comps) {
+		return packLayout(manager, comps, 0, 0, 0, 0, false);
 	}
 
 	public LContainer packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
+		return packLayout(manager, getComponents(), spacex, spacey, spaceWidth, spaceHeight, true);
+	}
+
+	public LContainer packLayout(final LayoutManager manager, final TArray<LComponent> comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		if (comps == null) {
+			return this;
+		}
+		final int len = comps.size;
+		LComponent[] list = new LComponent[len];
+		for (int i = 0; i < len; i++) {
+			list[i] = comps.get(i);
+		}
+		return packLayout(manager, list, spacex, spacey, spaceWidth, spaceHeight, false);
+	}
+
+	public LContainer packLayout(final LayoutManager manager, final LComponent[] comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		return packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight, false);
+	}
+
+	public LContainer packLayout(final LayoutManager manager, final LComponent[] comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight, final boolean reversed) {
 		if (_destroyed) {
 			return this;
 		}
 		if (manager == null) {
 			return this;
 		}
-		LComponent[] comps = getComponents();
-		CollectionUtils.reverse(comps);
-		layoutElements(manager, comps);
-		if (spacex != 0 || spacey != 0 || spaceWidth != 0 || spaceHeight != 0) {
-			for (int i = 0; i < comps.length; i++) {
-				LComponent comp = comps[i];
-				if (comp != null && !(comp instanceof LToolTip)) {
-					comp.setX(comp.getX() + spacex);
-					comp.setY(comp.getY() + spacey);
-					comp.setWidth(comp.getWidth() + spaceWidth);
-					comp.setHeight(comp.getHeight() + spaceHeight);
+		if (comps == null) {
+			return this;
+		}
+		final RectBox maxSize = new RectBox();
+		final LComponent[] oldComps = getComponents();
+		if (oldComps != null) {
+			boolean eq = (comps.length == oldComps.length);
+			int count = 0;
+			for (int i = 0; i < oldComps.length; i++) {
+				LComponent srcComp = oldComps[i];
+				if (eq) {
+					LComponent dstComp = comps[i];
+					if ((srcComp == dstComp) || (srcComp.equals(dstComp))) {
+						count++;
+					}
 				}
+				if (srcComp != null && !(srcComp instanceof LToolTip)) {
+					maxSize.union(srcComp.getRectBox());
+				}
+			}
+			if (eq && count == comps.length) {
+				maxSize.setEmpty();
+			}
+		}
+		if (reversed) {
+			CollectionUtils.reverse(comps);
+		}
+		layoutElements(manager, comps);
+		for (int i = 0; i < comps.length; i++) {
+			LComponent comp = comps[i];
+			if (comp != null && !(comp instanceof LToolTip)) {
+				comp.setX(comp.getX() + spacex);
+				comp.setY(comp.getY() + spacey + maxSize.getMaxY());
+				comp.setWidth(comp.getWidth() + spaceWidth);
+				comp.setHeight(comp.getHeight() + spaceHeight);
 			}
 		}
 		return this;

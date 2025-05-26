@@ -957,6 +957,26 @@ public abstract class LComponent extends LObject<LContainer>
 		return MathUtils.ifloor(getScreenBottom() + getHeight());
 	}
 
+	public LComponent size(float s) {
+		return size(s, s);
+	}
+
+	public LComponent size(float w, float h) {
+		setWidth(w);
+		setHeight(h);
+		return this;
+	}
+
+	public LComponent width(float w) {
+		setWidth(w);
+		return this;
+	}
+
+	public LComponent height(float w) {
+		setHeight(w);
+		return this;
+	}
+
 	@Override
 	public void setHeight(float height) {
 		if (!MathUtils.equal(height, this._height)) {

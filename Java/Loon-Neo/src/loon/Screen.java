@@ -1133,10 +1133,41 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen packLayout(final LayoutManager manager, LComponent[] comps) {
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager, comps);
+		}
+		return this;
+	}
+
+	public Screen packLayout(final LayoutManager manager, LComponent[] comps, final float spacex, final float spacey,
+			final float spaceWidth, final float spaceHeight) {
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight);
+		}
+		return this;
+	}
+
 	public Screen packLayout(final LayoutManager manager, final float spacex, final float spacey,
 			final float spaceWidth, final float spaceHeight) {
 		if (_currentDesktop != null) {
 			_currentDesktop.packLayout(manager, spacex, spacey, spaceHeight, spaceHeight);
+		}
+		return this;
+	}
+
+	public Screen packLayout(final LayoutManager manager, final TArray<LComponent> comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight) {
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight);
+		}
+		return this;
+	}
+
+	public Screen packLayout(final LayoutManager manager, final LComponent[] comps, final float spacex,
+			final float spacey, final float spaceWidth, final float spaceHeight, final boolean reversed) {
+		if (_currentDesktop != null) {
+			_currentDesktop.packLayout(manager, comps, spacex, spacey, spaceWidth, spaceHeight, reversed);
 		}
 		return this;
 	}

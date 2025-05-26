@@ -21,6 +21,7 @@
 package loon.component.layout;
 
 import loon.LObject;
+import loon.LRelease;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.component.LClickButton;
@@ -37,7 +38,7 @@ import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public abstract class LayoutManager {
+public abstract class LayoutManager implements LRelease {
 
 	public static Vector2f pixelPerfect(Vector2f target) {
 		return new Vector2f(MathUtils.round(target.x * 100f) / 100f, MathUtils.round(target.y * 100f) / 100f);
@@ -376,6 +377,79 @@ public abstract class LayoutManager {
 
 	protected boolean _allow = true;
 
+	private LayoutStyles _currentLayoutStyles;
+
+	private void initStyles() {
+		if (_currentLayoutStyles == null) {
+			_currentLayoutStyles = new LayoutStyles(this);
+		}
+	}
+
+	public LayoutManager space(float s) {
+		initStyles();
+		_currentLayoutStyles.space(s);
+		return this;
+	}
+
+	public LayoutManager size(float s) {
+		initStyles();
+		_currentLayoutStyles.size(s);
+		return this;
+	}
+
+	public LayoutManager spaceX(float s) {
+		initStyles();
+		_currentLayoutStyles.setSpaceX(s);
+		return this;
+	}
+
+	public LayoutManager spaceY(float s) {
+		initStyles();
+		_currentLayoutStyles.setSpaceY(s);
+		return this;
+	}
+
+	public LayoutManager spaceWidth(float s) {
+		initStyles();
+		_currentLayoutStyles.setSpaceWidth(s);
+		return this;
+	}
+
+	public LayoutManager spaceHeight(float s) {
+		initStyles();
+		_currentLayoutStyles.setSpaceHeight(s);
+		return this;
+	}
+
+	public LayoutManager add(LComponent c) {
+		initStyles();
+		_currentLayoutStyles.add(c);
+		return this;
+	}
+
+	public boolean contains(LComponent c) {
+		initStyles();
+		return _currentLayoutStyles.contains(c);
+	}
+
+	public LayoutManager remove(LComponent c) {
+		initStyles();
+		_currentLayoutStyles.remove(c);
+		return this;
+	}
+
+	public LayoutManager clear() {
+		if (_currentLayoutStyles != null) {
+			_currentLayoutStyles.clear();
+		}
+		return this;
+	}
+
+	public LayoutStyles getLayoutStyles() {
+		initStyles();
+		return this._currentLayoutStyles;
+	}
+
 	public final LayoutManager setChangeSize(boolean allow) {
 		this._allow = allow;
 		return this;
@@ -409,4 +483,53 @@ public abstract class LayoutManager {
 	abstract SizeValue calculateConstraintWidth(LayoutPort root, TArray<LayoutPort> children);
 
 	abstract SizeValue calculateConstraintHeight(LayoutPort root, TArray<LayoutPort> children);
+
+	/**
+	 * 将当前样式列表中的组件添加到屏幕中去
+	 * 
+	 * @param root
+	 */
+	public void packTo(final Screen root) {
+		if (root == null) {
+			return;
+		}
+		if (_currentLayoutStyles != null) {
+			LComponent[] comps = _currentLayoutStyles.getComponents();
+			root.packLayout(this, comps, _currentLayoutStyles.getSpaceX(), _currentLayoutStyles.getSpaceY(),
+					_currentLayoutStyles.getSpaceWidth(), _currentLayoutStyles.getSpaceHeight(), false);
+			for (int i = 0; i < comps.length; i++) {
+				LComponent component = comps[i];
+				if (component != null && !root.contains(component)) {
+					root.add(component);
+				}
+			}
+		}
+	}
+
+	/**
+	 * 将当前样式列表中的组件添加到容器中去
+	 * 
+	 * @param root
+	 */
+	public void packTo(final LContainer root) {
+		if (root == null) {
+			return;
+		}
+		if (_currentLayoutStyles != null) {
+			LComponent[] comps = _currentLayoutStyles.getComponents();
+			root.packLayout(this, comps, _currentLayoutStyles.getSpaceX(), _currentLayoutStyles.getSpaceY(),
+					_currentLayoutStyles.getSpaceWidth(), _currentLayoutStyles.getSpaceHeight(), false);
+			for (int i = 0; i < comps.length; i++) {
+				LComponent component = comps[i];
+				if (component != null && !root.contains(component)) {
+					root.add(component);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void close() {
+		clear();
+	}
 }
