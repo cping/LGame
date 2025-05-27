@@ -44,12 +44,42 @@ import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.processes.TimeLineProcess;
 import loon.utils.processes.WaitProcess;
+import loon.utils.reply.Nullable;
 
 /**
  * 组件动作用工具类,主要用来处理一些和ActionBind相关的事物
  *
  */
 public class PlayerUtils extends Director {
+
+	/**
+	 * 转换指定对象为一个非空的Nullable实体对象
+	 * 
+	 * @param <T>
+	 * @param obj
+	 * @return
+	 */
+	public static <T> Nullable<T> nonNull(T o) {
+		if (o == null) {
+			throw new LSysException("The non-null object is null !");
+		}
+		return new Nullable<T>(o);
+	}
+
+	/**
+	 * 转换指定对象为一个非空的Nullable实体对象
+	 * 
+	 * @param <T>
+	 * @param name
+	 * @param obj
+	 * @return
+	 */
+	public static <T> Nullable<T> nonNull(String name, T o) {
+		if (o == null) {
+			throw new LSysException(name + " is null !");
+		}
+		return new Nullable<T>(o);
+	}
 
 	/**
 	 * 添加一个ActionUpdate进程到游戏,当completed为true时销毁

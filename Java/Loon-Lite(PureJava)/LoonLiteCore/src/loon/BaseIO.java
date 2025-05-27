@@ -225,6 +225,7 @@ public abstract class BaseIO extends DefUI {
 				try {
 					return base.json().parseArray(text);
 				} catch (Exception ex) {
+					base.log().debug("This data cannot be converted to json !");
 					return null;
 				}
 			}

@@ -558,8 +558,14 @@ public class ArrayMap implements IArray, LRelease {
 
 	@Override
 	public void close() {
-		this._keysTable = null;
-		this._valuesTable = null;
+		if (_keysTable != null) {
+			CollectionUtils.fill(_keysTable, null);
+			this._keysTable = null;
+		}
+		if (_valuesTable != null) {
+			CollectionUtils.fill(_valuesTable, null);
+			this._valuesTable = null;
+		}
 		this._size = 0;
 	}
 

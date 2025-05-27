@@ -27,6 +27,7 @@ import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
 import loon.component.Actor;
 import loon.component.LComponent;
+import loon.geom.Vector2f;
 
 final public class CollectionUtils {
 
@@ -206,6 +207,19 @@ final public class CollectionUtils {
 	 */
 	public static Actor[] copyOf(Actor[] data, int newSize) {
 		Actor tempArr[] = new Actor[newSize];
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
+	 * @param newSize
+	 * @return
+	 */
+	public static Vector2f[] copy(Vector2f[] data, int newSize) {
+		Vector2f tempArr[] = new Vector2f[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -400,12 +414,20 @@ final public class CollectionUtils {
 	public static void copyWithStride(int[] src, int srcPos, int dest[], int destPos, int length, int chunk,
 			int stride) {
 		int total = length;
-		for (;total > 0;) {
+		for (; total > 0;) {
 			System.arraycopy(src, srcPos, dest, destPos, chunk);
 			srcPos += stride;
 			destPos += chunk;
 			total -= chunk;
 		}
+	}
+
+	public static int copyOverWrite(float[] array, int fromIndex, int toIndex) {
+		int length = array.length;
+		if (fromIndex > toIndex || length <= fromIndex || length < toIndex)
+			return length;
+		System.arraycopy(array, toIndex, array, fromIndex, length - toIndex);
+		return length - (toIndex - fromIndex);
 	}
 
 	/**
@@ -1698,6 +1720,18 @@ final public class CollectionUtils {
 	 * @param val
 	 */
 	public static void fill(long[] arrays, long val) {
+		for (int i = 0, len = arrays.length; i < len; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
+	 * 填充指定對象数组
+	 * 
+	 * @param arrays
+	 * @param val
+	 */
+	public static void fill(Object[] arrays, Object val) {
 		for (int i = 0, len = arrays.length; i < len; i++) {
 			arrays[i] = val;
 		}

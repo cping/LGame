@@ -1032,6 +1032,9 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	@Override
 	public void close() {
 		this.size = 0;
-		this.items = null;
+		if (this.items != null) {
+			CollectionUtils.fill(this.items, null);
+			this.items = null;
+		}
 	}
 }

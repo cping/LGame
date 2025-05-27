@@ -20,9 +20,9 @@
  */
 package loon.font;
 
-import loon.HorizontalAlign;
 import loon.LSystem;
 import loon.canvas.LColor;
+import loon.component.layout.HorizontalAlign;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;

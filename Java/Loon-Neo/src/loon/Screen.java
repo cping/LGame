@@ -342,6 +342,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	// 桌面集合
 	private Desktop _currentDesktop;
 
+	// 资源释放处理器
 	private final Disposes _disposes = new Disposes();
 
 	private final PointF _lastTouch = new PointF();

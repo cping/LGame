@@ -1943,9 +1943,10 @@ public abstract class LContainer extends LComponent implements IArray {
 				final int size = this._childCount;
 				final LComponent[] comps = this._childs;
 				for (int i = size - 1; i > -1; i--) {
-					final LComponent child = comps[i];
+					LComponent child = comps[i];
 					if (child != null && !child.isDestroyed()) {
 						child.close();
+						child = null;
 					}
 				}
 			}

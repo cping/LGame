@@ -914,6 +914,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			headerTexture.close();
 			headerTexture = null;
 		}
+		bindIcons.clear();
 	}
 
 }

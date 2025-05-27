@@ -1102,7 +1102,10 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 	@Override
 	public void close() {
 		this.size = 0;
-		this.keyValueTable = null;
+		if (keyValueTable != null) {
+			CollectionUtils.fill(keyValueTable, null);
+			this.keyValueTable = null;
+		}
 	}
 
 }

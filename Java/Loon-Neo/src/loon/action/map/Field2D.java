@@ -644,6 +644,10 @@ public class Field2D implements IArray, Config, LRelease {
 		return setValues(val);
 	}
 
+	public Field2D blankMap() {
+		return fill(0);
+	}
+
 	public Field2D cpy() {
 		return new Field2D(this);
 	}
@@ -1034,6 +1038,35 @@ public class Field2D implements IArray, Config, LRelease {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * 检测指定范围内存在的不允许移动的标记数量
+	 * 
+	 * @param x
+	 * @param y
+	 * @param scopeX
+	 * @param scopeY
+	 * @return
+	 */
+	public int getAdjacentNotMoves(int x, int y, int scopeX, int scopeY) {
+		int startX = x - scopeX;
+		int startY = y - scopeY;
+		int endX = x + scopeX;
+		int endY = y + scopeY;
+		int newX = startX;
+		int newY = startY;
+		int wallCounter = 0;
+		for (newY = startY; newY <= endY; newY++) {
+			for (newX = startX; newX <= endX; newX++) {
+				if (!(newX == x && newY == y)) {
+					if (!isHit(newX, newY)) {
+						wallCounter += 1;
+					}
+				}
+			}
+		}
+		return wallCounter;
 	}
 
 	public Vector2f getRandomPos() {

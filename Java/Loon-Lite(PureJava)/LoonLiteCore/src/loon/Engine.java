@@ -27,8 +27,17 @@ import loon.utils.reply.Emitter;
 public final class Engine extends PlayerUtils implements EventActionT<Screen>, LRelease {
 
 	private static Engine instance;
-	
+
+	private final long _startMillis;
+
+	private boolean _running;
+
+	private float _deltaTime;
+
 	private Engine() {
+		_startMillis = System.currentTimeMillis();
+		_deltaTime = 0;
+		_running = true;
 	}
 
 	public static void freeStatic() {
@@ -58,6 +67,30 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 
 	private Emitter<Screen> _emitter;
 
+	public void started() {
+		this._running = true;
+	}
+
+	public void stopped() {
+		this._running = false;
+	}
+
+	public long millis() {
+		return System.currentTimeMillis() - _startMillis;
+	}
+
+	public float deltaTime() {
+		return _deltaTime;
+	}
+
+	public void updateDeltaTime(float deltaTime) {
+		this._deltaTime = deltaTime;
+	}
+
+	public boolean isRunning() {
+		return _running;
+	}
+
 	public BehaviorBuilder<Screen> getBehaviorBuilder(Screen s) {
 		_builder = BehaviorBuilder.begin(s);
 		return _builder;
@@ -78,10 +111,12 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 		}
 	}
 
+	@Override
 	public int getWidth() {
 		return getProcess().getWidth();
 	}
 
+	@Override
 	public int getHeight() {
 		return getProcess().getHeight();
 	}
@@ -187,6 +222,7 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 		if (_builder != null) {
 			_builder.close();
 		}
+		stopped();
 	}
 
 }
