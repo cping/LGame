@@ -33,14 +33,15 @@ public class TextureUtils {
 
 	public static LTexture filterGray(String res) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
-		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
-		LTexture texture = tmp.texture();
+		LTexture texture = null;
 		if (tmp != null) {
+			int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
+			tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
+			texture = tmp.texture();
 			tmp.close();
 			tmp = null;
+			pixels = null;
 		}
-		pixels = null;
 		return texture;
 	}
 

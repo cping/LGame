@@ -30,14 +30,11 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 
 	private final long _startMillis;
 
-	private boolean _running;
-
 	private float _deltaTime;
 
 	private Engine() {
 		_startMillis = System.currentTimeMillis();
 		_deltaTime = 0;
-		_running = true;
 	}
 
 	public static void freeStatic() {
@@ -67,14 +64,6 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 
 	private Emitter<Screen> _emitter;
 
-	public void started() {
-		this._running = true;
-	}
-
-	public void stopped() {
-		this._running = false;
-	}
-
 	public long millis() {
 		return System.currentTimeMillis() - _startMillis;
 	}
@@ -88,7 +77,8 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 	}
 
 	public boolean isRunning() {
-		return _running;
+		LGame game = getGame();
+		return game == null ? false : game.isRunning();
 	}
 
 	public BehaviorBuilder<Screen> getBehaviorBuilder(Screen s) {
@@ -222,7 +212,6 @@ public final class Engine extends PlayerUtils implements EventActionT<Screen>, L
 		if (_builder != null) {
 			_builder.close();
 		}
-		stopped();
 	}
 
 }

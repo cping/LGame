@@ -436,6 +436,17 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 
 	public abstract void sort();
 
+	public boolean isEqualLayer(ActionBind act) {
+		if (act == null) {
+			return false;
+		}
+		return act.getLayer() == this.getLayer();
+	}
+
+	public boolean isNotEqualLayer(ActionBind act) {
+		return !isEqualLayer(act);
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return getChildCount() == 0;

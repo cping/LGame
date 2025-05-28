@@ -438,7 +438,7 @@ public class LSetting {
 		final float ratio = w / h;
 		final float newHeight = w / ratio;
 		final float newWidth = h * ratio;
-		if (newWidth == newHeight) {
+		if (MathUtils.equal(newWidth, newHeight)) {
 			nWidth = max;
 			nHeight = max;
 		} else if (newWidth > newHeight) {
@@ -453,11 +453,19 @@ public class LSetting {
 		return this;
 	}
 
+	public float getDrawScalePixelWidth() {
+		return (float) width_zoom / (float) width;
+	}
+
+	public float getDrawScalePixelHeight() {
+		return (float) height_zoom / (float) height;
+	}
+
 	public LSetting updateScale() {
 		setView(width, height, width_zoom, height_zoom);
 		if (scaling()) {
-			LSystem.setScaleWidth((float) width_zoom / (float) width);
-			LSystem.setScaleHeight((float) height_zoom / (float) height);
+			LSystem.setScaleWidth(getDrawScalePixelWidth());
+			LSystem.setScaleHeight(getDrawScalePixelHeight());
 			LSystem.setSize(width, height);
 			if (LSystem.getProcess() != null) {
 				LSystem.getProcess().resize(width, height);
@@ -496,7 +504,7 @@ public class LSetting {
 		this.height = MathUtils.divTwoAbs(MathUtils.floor(h));
 		this.width_zoom = MathUtils.divTwoAbs(MathUtils.floor(zw));
 		this.height_zoom = MathUtils.divTwoAbs(MathUtils.floor(zh));
-		this.aspect = this.width / (float) this.height;
+		this.updateAspect();
 		return this;
 	}
 
@@ -504,8 +512,24 @@ public class LSetting {
 		return this.aspect;
 	}
 
+	public float updateAspect() {
+		return (this.aspect = (float) this.width / (float) this.height);
+	}
+
 	public DPI getDpi() {
 		return new Resolution(width, height).compareDPI(new Resolution(width_zoom, height_zoom));
+	}
+
+	public boolean isHiDpi() {
+		return LSystem.isHiDpi();
+	}
+
+	public void setPixelRatio(float s) {
+		LSystem.setPixelRatio(s);
+	}
+
+	public float getPixelRatio() {
+		return LSystem.getPixelRatio();
 	}
 
 	public boolean scaling() {

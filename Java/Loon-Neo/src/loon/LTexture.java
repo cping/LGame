@@ -90,9 +90,9 @@ public class LTexture extends Painter implements LRelease {
 						_texture._image.close();
 						_texture._image = null;
 					}
-					if (_texture.childs != null) {
-						_texture.childs.clear();
-						_texture.childs = null;
+					if (_texture._childs != null) {
+						_texture._childs.clear();
+						_texture._childs = null;
 					}
 					_texture._cachePixels = null;
 					_texture._isLoaded = false;
@@ -147,25 +147,25 @@ public class LTexture extends Painter implements LRelease {
 
 	private int[] _cachePixels;
 
-	private String source;
+	private String _source;
 
 	private Image _image;
 
 	private int _memorySize = 0;
 
-	private int imageWidth = 1, imageHeight = 1;
+	private int _imageWidth = 1, _imageHeight = 1;
 
 	private Clip _textureClip;
 
-	private LColor[] colors;
+	private LColor[] _colors;
 
-	private LTextureBatch batch;
+	private LTextureBatch _textureBatch;
 
 	private boolean _isBatch;
 
 	protected String tmpLazy = "tex" + TimeUtils.millis();
 
-	protected int refCount;
+	protected int _referenceCount;
 
 	public final static class Format {
 
@@ -221,45 +221,45 @@ public class LTexture extends Painter implements LRelease {
 
 	private int _lazyHashCode = -1;
 
-	private Format config;
+	private Format _config;
 
 	public int getID() {
 		return _id;
 	}
 
 	public Format getFormat() {
-		return config;
+		return _config;
 	}
 
-	private int pixelWidth;
+	private int _pixelWidth;
 
-	private int pixelHeight;
+	private int _pixelHeight;
 
-	private Scale scale;
+	private Scale _scale;
 
-	private Graphics gfx;
+	private Graphics _gfx;
 
 	// _closed是删除标记，disposed是已经真的被删掉
 	boolean _closed, _disposed;
 
-	IntMap<LTexture> childs;
+	IntMap<LTexture> _childs;
 
-	LTexture parent;
+	LTexture _parent;
 
 	public boolean isChild() {
-		return parent != null;
+		return _parent != null;
 	}
 
 	public LTexture getParent() {
-		return parent;
+		return _parent;
 	}
 
 	public int pixelWidth() {
-		return pixelWidth;
+		return _pixelWidth;
 	}
 
 	public int pixelHeight() {
-		return pixelHeight;
+		return _pixelHeight;
 	}
 
 	static int _countTexture = 0;
@@ -268,14 +268,14 @@ public class LTexture extends Painter implements LRelease {
 		this._isLoaded = false;
 	}
 
-	public LTexture(Graphics gfx, int _id, Format config, int pixWidth, int pixHeight, Scale scale, float dispWidth,
+	public LTexture(Graphics gfx, int id, Format config, int pixWidth, int pixHeight, Scale scale, float dispWidth,
 			float dispHeight) {
-		this.gfx = gfx;
-		this._id = _id;
-		this.config = config;
-		this.pixelWidth = pixWidth;
-		this.pixelHeight = pixHeight;
-		this.scale = scale;
+		this._gfx = gfx;
+		this._id = id;
+		this._config = config;
+		this._pixelWidth = pixWidth;
+		this._pixelHeight = pixHeight;
+		this._scale = scale;
 		this._textureClip = new Clip(0, 0, dispWidth, dispHeight, false);
 		this._isLoaded = false;
 		gfx.game.putTexture(this);
@@ -283,22 +283,22 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public float toTexWidth() {
-		return config.toTexWidth(pixelWidth);
+		return _config.toTexWidth(_pixelWidth);
 	}
 
 	public float toTexHeight() {
-		return config.toTexHeight(pixelHeight);
+		return _config.toTexHeight(_pixelHeight);
 	}
 
 	public void reference() {
-		if (config.managed) {
-			refCount++;
+		if (_config.managed) {
+			_referenceCount++;
 		}
 	}
 
 	public void release() {
-		if (config.managed) {
-			if (--refCount == 0) {
+		if (_config.managed) {
+			if (--_referenceCount == 0) {
 				close(true);
 			}
 		}
@@ -309,15 +309,15 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public String getSource() {
-		return StringUtils.isEmpty(source) ? LSystem.EMPTY : source;
+		return StringUtils.isEmpty(_source) ? LSystem.EMPTY : _source;
 	}
 
 	public boolean isDrawCanvas() {
-		return source != null && source.indexOf(RenderCanvas) != -1;
+		return _source != null && _source.indexOf(RenderCanvas) != -1;
 	}
 
 	public boolean isImageCanvas() {
-		return StringUtils.isEmpty(source) || (source.indexOf('<') != -1 && source.indexOf('>') != -1);
+		return StringUtils.isEmpty(_source) || (_source.indexOf('<') != -1 && _source.indexOf('>') != -1);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	private Image _getFramebufferData() {
-		GLEx glex = gfx.game.displayImpl.GL();
+		GLEx glex = _gfx.game.displayImpl.GL();
 		boolean saved = glex.isSaveFrameBuffer() && glex.running();
 		if (saved) {
 			glex.end();
@@ -342,7 +342,7 @@ public class LTexture extends Painter implements LRelease {
 		} else {
 			glex.flush();
 		}
-		GL20 gl = gfx.gl;
+		GL20 gl = _gfx.gl;
 		final int fb = gl.glGenFramebuffer();
 		if (fb == 0) {
 			throw new LSysException("Failed to gen framebuffer: " + gl.glGetError());
@@ -393,9 +393,12 @@ public class LTexture extends Painter implements LRelease {
 		if (_image != null) {
 			return _image.getPixels();
 		}
-
 		Image img = getImage();
-		return img == null ? null : img.getPixels();
+		if (img != null) {
+			return img.getPixels();
+		} else {
+			throw new LSysException("Unable to get pixels for this texture !");
+		}
 	}
 
 	public Image getImage() {
@@ -403,16 +406,16 @@ public class LTexture extends Painter implements LRelease {
 			return null;
 		}
 		if ((_image == null || _image.isClosed()) && !isImageCanvas()) {
-			_image = BaseIO.loadImage(source);
+			_image = BaseIO.loadImage(_source);
 		}
 		if (_image == null && _cachePixels != null) {
-			_image = Image.createImage(imageWidth, imageHeight);
-			_image.setPixels(_cachePixels, imageWidth, imageHeight);
+			_image = Image.createImage(_imageWidth, _imageHeight);
+			_image.setPixels(_cachePixels, _imageWidth, _imageHeight);
 		} else if (_image == null && _cachePixels == null) {
 			Image tmp = _getFramebufferData();
 			if (tmp != null) {
-				imageWidth = tmp.getWidth();
-				imageHeight = tmp.getHeight();
+				_imageWidth = tmp.getWidth();
+				_imageHeight = tmp.getHeight();
 				_cachePixels = tmp.getPixels();
 				_image = tmp;
 			}
@@ -442,8 +445,8 @@ public class LTexture extends Painter implements LRelease {
 		if (_closed || _disposed) {
 			return;
 		}
-		if (parent != null) {
-			parent.reload();
+		if (_parent != null) {
+			_parent.reload();
 			return;
 		}
 		this._closed = false;
@@ -455,12 +458,12 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void loadTexture() {
-		if (parent != null) {
-			parent.loadTexture();
+		if (_parent != null) {
+			_parent.loadTexture();
 			return;
 		}
-		if (!_isLoaded && childs != null) {
-			for (LTexture tex : childs.values()) {
+		if (!_isLoaded && _childs != null) {
+			for (LTexture tex : _childs.values()) {
 				tex._isLoaded = _isLoaded;
 				tex._closed = false;
 				tex._disposed = false;
@@ -473,10 +476,10 @@ public class LTexture extends Painter implements LRelease {
 			update(_image);
 		} else if (!_isLoaded) {
 			if (!isImageCanvas()) {
-				_image = BaseIO.loadImage(source);
+				_image = BaseIO.loadImage(_source);
 			} else if (_cachePixels != null) {
-				_image = Image.createCanvas(imageWidth, imageHeight).image;
-				_image.setPixels(_cachePixels, imageWidth, imageHeight);
+				_image = Image.createCanvas(_imageWidth, _imageHeight).image;
+				_image.setPixels(_cachePixels, _imageWidth, _imageHeight);
 			}
 			if (_image != null) {
 				update(_image);
@@ -497,43 +500,43 @@ public class LTexture extends Painter implements LRelease {
 		if (image == null) {
 			throw new LSysException("the image is null, can not conversion it into texture .");
 		}
-		if (parent != null) {
-			parent.update(image, closed);
+		if (_parent != null) {
+			_parent.update(image, closed);
 			return;
 		}
 		if (_drawing) {
 			return;
 		}
 		this._drawing = true;
-		this.source = image.getSource();
+		this._source = image.getSource();
 		if (image != null) {
-			if (config.repeatX || config.repeatY || config.mipmaps) {
+			if (_config.repeatX || _config.repeatY || _config.mipmaps) {
 				int pixWidth = image.pixelWidth(), pixHeight = image.pixelHeight();
-				int potWidth = config.toTexWidth(pixWidth), potHeight = config.toTexWidth(pixHeight);
+				int potWidth = _config.toTexWidth(pixWidth), potHeight = _config.toTexWidth(pixHeight);
 				if (potWidth != pixWidth || potHeight != pixHeight) {
-					Canvas scaled = gfx.createCanvasImpl(Scale.ONE, potWidth, potHeight);
+					Canvas scaled = _gfx.createCanvasImpl(Scale.ONE, potWidth, potHeight);
 					scaled.draw(image, 0, 0, potWidth, potHeight);
-					scaled.image.upload(gfx, LTexture.this);
+					scaled.image.upload(_gfx, LTexture.this);
 					scaled.close();
 				} else {
-					image.upload(gfx, LTexture.this);
+					image.upload(_gfx, LTexture.this);
 				}
 			} else {
-				image.upload(gfx, LTexture.this);
+				image.upload(_gfx, LTexture.this);
 			}
-			imageWidth = image.getWidth();
-			imageHeight = image.getHeight();
-			if (config.mipmaps) {
-				gfx.gl.glGenerateMipmap(GL20.GL_TEXTURE_2D);
+			_imageWidth = image.getWidth();
+			_imageHeight = image.getHeight();
+			if (_config.mipmaps) {
+				_gfx.gl.glGenerateMipmap(GL20.GL_TEXTURE_2D);
 			}
 		}
-		if (config.mipmaps) {
-			_memorySize = MathUtils.abs(imageWidth * imageHeight * 4 * (1 + 1 / 3));
+		if (_config.mipmaps) {
+			_memorySize = MathUtils.abs(_imageWidth * _imageHeight * 4 * (1 + 1 / 3));
 		} else {
-			_memorySize = MathUtils.abs(imageWidth * imageHeight * 4);
+			_memorySize = MathUtils.abs(_imageWidth * _imageHeight * 4);
 		}
 		if (closed && !_isReload) {
-			if (image != null && gfx.game != null && gfx.game.setting.saveTexturePixels) {
+			if (image != null && _gfx.game != null && _gfx.game.setting.saveTexturePixels) {
 				int[] pixels = image.getPixels();
 				if (pixels != null) {
 					_cachePixels = pixels;
@@ -555,8 +558,8 @@ public class LTexture extends Painter implements LRelease {
 		}
 		if (_isReload) {
 			_isReload = false;
-			if (childs != null) {
-				for (LTexture tex : childs.values()) {
+			if (_childs != null) {
+				for (LTexture tex : _childs.values()) {
 					tex._id = _id;
 					tex._isLoaded = _isLoaded;
 					tex._isReload = _isReload;
@@ -566,21 +569,21 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void bind() {
-		GLUtils.bindTexture(gfx.gl, _id);
+		GLUtils.bindTexture(_gfx.gl, _id);
 	}
 
 	public void unbind() {
-		GLUtils.bindTexture(gfx.gl, 0);
+		GLUtils.bindTexture(_gfx.gl, 0);
 	}
 
 	public void bind(int unit) {
-		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
-		GLUtils.bindTexture(gfx.gl, _id);
+		_gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
+		GLUtils.bindTexture(_gfx.gl, _id);
 	}
 
 	public void unbind(int unit) {
-		gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
-		GLUtils.bindTexture(gfx.gl, 0);
+		_gfx.gl.glActiveTexture(GL20.GL_TEXTURE0 + unit);
+		GLUtils.bindTexture(_gfx.gl, 0);
 	}
 
 	public void blit(final Pixmap pix) {
@@ -598,7 +601,7 @@ public class LTexture extends Painter implements LRelease {
 		if (pix == null) {
 			return;
 		}
-		final LGame game = gfx.game;
+		final LGame game = _gfx.game;
 		if (game == null || game.displayImpl == null) {
 			return;
 		}
@@ -617,8 +620,8 @@ public class LTexture extends Painter implements LRelease {
 				if (w != pix.getWidth() || h != pix.getHeight()) {
 					newPix = Pixmap.getResize(pix, w, h);
 				}
-				gfx.gl.glTexSubImage2D(GL20.GL_TEXTURE_2D, 0, x, y, newPix.getWidth(), newPix.getHeight(), GL20.GL_RGBA,
-						GL20.GL_UNSIGNED_BYTE, newPix.convertPixmapToByteBuffer());
+				_gfx.gl.glTexSubImage2D(GL20.GL_TEXTURE_2D, 0, x, y, newPix.getWidth(), newPix.getHeight(),
+						GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, newPix.convertPixmapToByteBuffer());
 			}
 		});
 
@@ -690,8 +693,8 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public void closeChildAll() {
-		if (childs != null) {
-			for (LTexture tex2d : childs.values()) {
+		if (_childs != null) {
+			for (LTexture tex2d : _childs.values()) {
 				if (tex2d != null) {
 					tex2d.close();
 					tex2d = null;
@@ -701,8 +704,8 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isChildAllClose() {
-		if (childs != null) {
-			for (LTexture tex2d : childs.values()) {
+		if (_childs != null) {
+			for (LTexture tex2d : _childs.values()) {
 				if (tex2d != null && !tex2d.isClosed()) {
 					return false;
 				}
@@ -714,10 +717,10 @@ public class LTexture extends Painter implements LRelease {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTexture");
-		builder.kv("_id", _id).comma().kv("pixelSize", (pixelWidth + "x" + pixelHeight)).comma()
+		builder.kv("_id", _id).comma().kv("pixelSize", (_pixelWidth + "x" + _pixelHeight)).comma()
 				.kv("displaySize",
-						(_textureClip.getRegionWidth() + "x" + _textureClip.getRegionHeight() + " @ " + scale))
-				.comma().kv("config", config);
+						(_textureClip.getRegionWidth() + "x" + _textureClip.getRegionHeight() + " @ " + _scale))
+				.comma().kv("config", _config);
 		return builder.toString();
 	}
 
@@ -771,35 +774,35 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, width);
 		hashCode = LSystem.unite(hashCode, height);
 
-		if (childs == null) {
-			childs = new IntMap<LTexture>(10);
+		if (_childs == null) {
+			_childs = new IntMap<LTexture>(10);
 		}
 
-		synchronized (childs) {
+		synchronized (_childs) {
 
-			LTexture cache = childs.get(hashCode);
+			LTexture cache = _childs.get(hashCode);
 
 			if (cache != null) {
 				return cache;
 			}
 			final LTexture copy = new LTexture();
 
-			refCount++;
-			copy.parent = LTexture.this;
+			_referenceCount++;
+			copy._parent = LTexture.this;
 			copy._id = _id;
 			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
-			copy.gfx = gfx;
-			copy.config = config;
-			copy.source = source;
-			copy.scale = scale;
-			copy.imageWidth = imageWidth;
-			copy.imageHeight = imageHeight;
+			copy._gfx = _gfx;
+			copy._config = _config;
+			copy._source = _source;
+			copy._scale = _scale;
+			copy._imageWidth = _imageWidth;
+			copy._imageHeight = _imageHeight;
 			copy._image = _image;
 			copy._cachePixels = _cachePixels;
 			copy._copySize = true;
-			copy.pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
-			copy.pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
+			copy._pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
+			copy._pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
 			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, x, y, width, height, true);
 			} else {
@@ -809,7 +812,7 @@ public class LTexture extends Painter implements LRelease {
 			copy._disabledImage = _disabledImage;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
 
-			childs.put(hashCode, copy);
+			_childs.put(hashCode, copy);
 			return copy;
 		}
 	}
@@ -829,13 +832,13 @@ public class LTexture extends Painter implements LRelease {
 		hashCode = LSystem.unite(hashCode, width);
 		hashCode = LSystem.unite(hashCode, height);
 
-		if (childs == null) {
-			childs = new IntMap<LTexture>(10);
+		if (_childs == null) {
+			_childs = new IntMap<LTexture>(10);
 		}
 
-		synchronized (childs) {
+		synchronized (_childs) {
 
-			LTexture cache = childs.get(hashCode);
+			LTexture cache = _childs.get(hashCode);
 
 			if (cache != null) {
 				return cache;
@@ -843,23 +846,23 @@ public class LTexture extends Painter implements LRelease {
 
 			final LTexture copy = new LTexture();
 
-			refCount++;
-			copy.parent = LTexture.this;
+			_referenceCount++;
+			copy._parent = LTexture.this;
 			copy._id = _id;
 			copy._lazyHashCode = hashCode;
 			copy._isLoaded = _isLoaded;
-			copy.gfx = gfx;
-			copy.config = config;
-			copy.source = source;
-			copy.scale = scale;
-			copy.imageWidth = imageWidth;
-			copy.imageHeight = imageHeight;
+			copy._gfx = _gfx;
+			copy._config = _config;
+			copy._source = _source;
+			copy._scale = _scale;
+			copy._imageWidth = _imageWidth;
+			copy._imageHeight = _imageHeight;
 			copy._image = _image;
 			copy._cachePixels = _cachePixels;
 			copy._copySize = true;
 			copy._scaleSize = true;
-			copy.pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
-			copy.pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
+			copy._pixelWidth = MathUtils.iceil(_textureClip.getDisplayWidth());
+			copy._pixelHeight = MathUtils.iceil(_textureClip.getDisplayHeight());
 			if (copy._scaleSize) {
 				copy._textureClip = new Clip(this._textureClip, 0, 0, width, height, true);
 			} else {
@@ -869,7 +872,7 @@ public class LTexture extends Painter implements LRelease {
 			copy._disabledImage = _disabledImage;
 			copy._forcedDeleteTexture = _forcedDeleteTexture;
 
-			childs.put(hashCode, copy);
+			_childs.put(hashCode, copy);
 			return copy;
 		}
 	}
@@ -899,41 +902,41 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture setColor(GLPaint paint) {
-		if (colors == null) {
-			colors = new LColor[4];
+		if (_colors == null) {
+			_colors = new LColor[4];
 		}
-		colors[0] = paint.getTopLeftColor();
-		colors[1] = paint.getTopRightColor();
-		colors[2] = paint.getBottomLeftColor();
-		colors[3] = paint.getBottomRightColor();
+		_colors[0] = paint.getTopLeftColor();
+		_colors[1] = paint.getTopRightColor();
+		_colors[2] = paint.getBottomLeftColor();
+		_colors[3] = paint.getBottomRightColor();
 		return this;
 	}
 
 	public LTexture setColor(int corner, float r, float g, float b, float a) {
-		if (colors == null) {
-			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+		if (_colors == null) {
+			_colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
 		}
-		colors[corner].r = r;
-		colors[corner].g = g;
-		colors[corner].b = b;
-		colors[corner].a = a;
+		_colors[corner].r = r;
+		_colors[corner].g = g;
+		_colors[corner].b = b;
+		_colors[corner].a = a;
 		return this;
 	}
 
 	public LTexture setColor(int corner, float r, float g, float b) {
-		if (colors == null) {
-			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+		if (_colors == null) {
+			_colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
 		}
-		colors[corner].r = r;
-		colors[corner].g = g;
-		colors[corner].b = b;
+		_colors[corner].r = r;
+		_colors[corner].g = g;
+		_colors[corner].b = b;
 		return this;
 	}
 
 	public boolean checkExistBatch() {
-		return _isBatch && batch != null && !batch.closed();
+		return _isBatch && _textureBatch != null && !_textureBatch.closed();
 	}
 
 	public LTextureBatch getTextureBatch() {
@@ -945,24 +948,24 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTextureBatch getTextureBatch(String name, int size) {
-		makeBatch(name, gfx.game.displayImpl.getShaderSource(), size);
-		return batch;
+		makeBatch(name, _gfx.game.displayImpl.getShaderSource(), size);
+		return _textureBatch;
 	}
 
 	public LTextureBatch getTextureBatch(String name, ShaderSource source, int size) {
 		makeBatch(name, source, size);
-		return batch;
+		return _textureBatch;
 	}
 
 	protected void makeBatch(String name, ShaderSource source, int size) {
 		if (!checkExistBatch()) {
-			batch = gfx.game.getBatchCache(this);
-			if (batch == null || batch.closed()) {
-				batch = new LTextureBatch(this, source, size);
+			_textureBatch = _gfx.game.getBatchCache(this);
+			if (_textureBatch == null || _textureBatch.closed()) {
+				_textureBatch = new LTextureBatch(this, source, size);
 				if (!StringUtils.isEmpty(name)) {
-					batch.setTextureBatchName(name);
+					_textureBatch.setTextureBatchName(name);
 				}
-				gfx.game.bindBatchCache(batch);
+				_gfx.game.bindBatchCache(_textureBatch);
 				_isBatch = true;
 			}
 		}
@@ -970,9 +973,9 @@ public class LTexture extends Painter implements LRelease {
 
 	protected void freeBatch() {
 		if (checkExistBatch()) {
-			if (batch != null) {
-				batch.close();
-				batch = null;
+			if (_textureBatch != null) {
+				_textureBatch.close();
+				_textureBatch = null;
 				_isBatch = false;
 			}
 		}
@@ -980,13 +983,13 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture postCache(Cache cache) {
 		if (isBatch()) {
-			batch.postCache(cache, colors == null ? null : colors[0], 0, 0);
+			_textureBatch.postCache(cache, _colors == null ? null : _colors[0], 0, 0);
 		}
 		return this;
 	}
 
 	public boolean isBatch() {
-		return (checkExistBatch() && batch.isLoaded);
+		return (checkExistBatch() && _textureBatch.isLoaded);
 	}
 
 	public LTexture begin() {
@@ -995,7 +998,7 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture glBegin() {
 		getTextureBatch();
-		batch.begin();
+		_textureBatch.begin();
 		return this;
 	}
 
@@ -1005,29 +1008,29 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture glEnd() {
 		if (checkExistBatch()) {
-			batch.end();
+			_textureBatch.end();
 		}
 		return this;
 	}
 
 	public LTexture setBatchPos(float x, float y) {
 		if (checkExistBatch()) {
-			batch.setLocation(x, y);
+			_textureBatch.setLocation(x, y);
 		}
 		return this;
 	}
 
 	public boolean isBatchLocked() {
-		return checkExistBatch() && batch.isCacheLocked;
+		return checkExistBatch() && _textureBatch.isCacheLocked;
 	}
 
 	public boolean existCache() {
-		return checkExistBatch() && batch.existCache();
+		return checkExistBatch() && _textureBatch.existCache();
 	}
 
 	public LTexture glCacheCommit() {
 		if (checkExistBatch()) {
-			batch.postLastCache();
+			_textureBatch.postLastCache();
 		}
 		return this;
 	}
@@ -1039,86 +1042,86 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float width, float height) {
 		if (checkExistBatch()) {
-			batch.draw(colors, x, y, width, height);
+			_textureBatch.draw(_colors, x, y, width, height);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, colors == null ? null : colors[0]);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, _colors == null ? null : _colors[0]);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, LColor[] c) {
 		if (checkExistBatch()) {
-			batch.draw(c, x, y, width(), height());
+			_textureBatch.draw(c, x, y, width(), height());
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width(), height(), c == null ? null : c[0]);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width(), height(), c == null ? null : c[0]);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width(), height());
+			_textureBatch.draw(_colors, x, y, width(), height());
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width(), height(), c);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width(), height(), c);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, float width, float height, LColor c) {
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width, height);
+			_textureBatch.draw(_colors, x, y, width, height);
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, c);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, c);
 		}
 		return this;
 	}
 
 	public LTexture drawFlipX(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width(), height(), 0, 0, width(), height(), true, false);
+			_textureBatch.draw(_colors, x, y, width(), height(), 0, 0, width(), height(), true, false);
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().drawFlip(this, x, y, c);
+			_gfx.game.displayImpl.GL().drawFlip(this, x, y, c);
 		}
 		return this;
 	}
 
 	public LTexture drawFlipY(float x, float y, LColor c) {
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width(), height(), 0, 0, width(), height(), false, true);
+			_textureBatch.draw(_colors, x, y, width(), height(), 0, 0, width(), height(), false, true);
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().drawMirror(this, x, y, c);
+			_gfx.game.displayImpl.GL().drawMirror(this, x, y, c);
 		}
 		return this;
 	}
@@ -1126,9 +1129,9 @@ public class LTexture extends Painter implements LRelease {
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor[] c) {
 		if (checkExistBatch()) {
-			batch.draw(c, x, y, width, height, x1, y1, x2, y2);
+			_textureBatch.draw(c, x, y, width, height, x1, y1, x2, y2);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c == null ? null : c[0]);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c == null ? null : c[0]);
 		}
 		return this;
 	}
@@ -1141,29 +1144,29 @@ public class LTexture extends Painter implements LRelease {
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2,
 			LColor c) {
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 
 			final boolean update = checkUpdateColor(c);
 
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
+			_textureBatch.draw(_colors, x, y, width, height, x1, y1, x2, y2);
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, float srcX, float srcY, float srcWidth, float srcHeight) {
 		if (checkExistBatch()) {
-			batch.draw(colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
+			_textureBatch.draw(_colors, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth, srcHeight);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth,
-					srcHeight, colors == null ? null : colors[0]);
+			_gfx.game.displayImpl.GL().draw(this, x, y, srcWidth - srcX, srcHeight - srcY, srcX, srcY, srcWidth,
+					srcHeight, _colors == null ? null : _colors[0]);
 		}
 		return this;
 	}
@@ -1174,17 +1177,17 @@ public class LTexture extends Painter implements LRelease {
 
 	public LTexture draw(float x, float y, float width, float height, float x1, float y1, float x2, float y2) {
 		if (checkExistBatch()) {
-			batch.draw(colors, x, y, width, height, x1, y1, x2, y2);
+			_textureBatch.draw(_colors, x, y, width, height, x1, y1, x2, y2);
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2,
-					colors == null ? null : colors[0]);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2,
+					_colors == null ? null : _colors[0]);
 		}
 		return this;
 	}
 
 	public LTexture draw(float x, float y, float rotation) {
 		return draw(x, y, this.width(), this.height(), 0, 0, this.width(), this.height(), rotation,
-				colors == null ? null : colors[0]);
+				_colors == null ? null : _colors[0]);
 	}
 
 	public LTexture draw(float x, float y, float w, float h, float rotation, LColor c) {
@@ -1198,17 +1201,17 @@ public class LTexture extends Painter implements LRelease {
 			return this;
 		}
 		if (checkExistBatch()) {
-			LColor old = (colors == null ? LColor.white : colors[0]);
+			LColor old = (_colors == null ? LColor.white : _colors[0]);
 			final boolean update = checkUpdateColor(c);
 			if (update) {
 				setImageColor(c);
 			}
-			batch.draw(colors, x, y, width, height, x1, y1, x2, y2, rotation);
+			_textureBatch.draw(_colors, x, y, width, height, x1, y1, x2, y2, rotation);
 			if (update) {
 				setImageColor(old);
 			}
 		} else {
-			gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c, rotation);
+			_gfx.game.displayImpl.GL().draw(this, x, y, width, height, x1, y1, x2, y2, c, rotation);
 		}
 		return this;
 	}
@@ -1229,21 +1232,21 @@ public class LTexture extends Painter implements LRelease {
 
 	public Cache newBatchCache() {
 		if (checkExistBatch()) {
-			return batch.newCache();
+			return _textureBatch.newCache();
 		}
 		return null;
 	}
 
 	public LTexture postLastBatchCache() {
 		if (checkExistBatch()) {
-			batch.postLastCache();
+			_textureBatch.postLastCache();
 		}
 		return this;
 	}
 
 	public LTexture disposeLastCache() {
 		if (checkExistBatch()) {
-			batch.disposeLastCache();
+			_textureBatch.disposeLastCache();
 		}
 		return this;
 	}
@@ -1261,7 +1264,7 @@ public class LTexture extends Painter implements LRelease {
 			if (this == tmp) {
 				return true;
 			}
-			if (source != null && !source.equals(tmp.source)) {
+			if (_source != null && !_source.equals(tmp._source)) {
 				return false;
 			}
 			if ((tmp.width() != width()) || (tmp.height() != height())) {
@@ -1271,8 +1274,8 @@ public class LTexture extends Painter implements LRelease {
 					&& this._textureClip.getRegionY() == tmp._textureClip.getRegionY()
 					&& this._textureClip.getRegionWidth() == tmp._textureClip.getRegionWidth()
 					&& this._textureClip.getRegionHeight() == tmp._textureClip.getRegionHeight()
-					&& this.config == tmp.config && this.parent == tmp.parent && this.pixelWidth == tmp.pixelWidth
-					&& this.pixelHeight == tmp.pixelHeight) {
+					&& this._config == tmp._config && this._parent == tmp._parent && this._pixelWidth == tmp._pixelWidth
+					&& this._pixelHeight == tmp._pixelHeight) {
 				if (_image != null && tmp._image != null) {
 					return CollectionUtils.equals(_image.getPixels(), tmp._image.getPixels());
 				}
@@ -1283,12 +1286,12 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isCloseSubmitting() {
-		return _closeSubmit != null && gfx.game.processImpl.containsUnLoad(_closeSubmit);
+		return _closeSubmit != null && _gfx.game.processImpl.containsUnLoad(_closeSubmit);
 	}
 
 	public LTexture cancalSubmit() {
 		if (isCloseSubmitting()) {
-			gfx.game.processImpl.removeUnLoad(_closeSubmit);
+			_gfx.game.processImpl.removeUnLoad(_closeSubmit);
 		}
 		return this;
 	}
@@ -1299,23 +1302,23 @@ public class LTexture extends Painter implements LRelease {
 		}
 		final int textureId = _id;
 		if (textureId > 0) {
-			if (!gfx.game.containsTexture(textureId)) {
+			if (!_gfx.game.containsTexture(textureId)) {
 				return;
 			}
-			if (parent != null) {
-				parent.close();
+			if (_parent != null) {
+				_parent.close();
 				return;
 			}
 			synchronized (LTextures.class) {
-				gfx.game.removeTexture(this);
-				if (batch != null) {
-					gfx.game.disposeBatchCache(batch, false);
+				_gfx.game.removeTexture(this);
+				if (_textureBatch != null) {
+					_gfx.game.disposeBatchCache(_textureBatch, false);
 				}
-				_closeSubmit = new TextureClosedUpdate(textureId, gfx, this);
+				_closeSubmit = new TextureClosedUpdate(textureId, _gfx, this);
 				if (!LTextureBatch.isRunningCache() && isDrawCanvas()) {
-					RealtimeProcessManager.get().addProcess(new PostTextureDelete(gfx, _closeSubmit));
+					RealtimeProcessManager.get().addProcess(new PostTextureDelete(_gfx, _closeSubmit));
 				} else {
-					gfx.game.processImpl.addLoad(_closeSubmit);
+					_gfx.game.processImpl.addLoad(_closeSubmit);
 				}
 			}
 		}
@@ -1355,7 +1358,7 @@ public class LTexture extends Painter implements LRelease {
 		result = LSystem.unite(result, _textureClip.getRegionY());
 		result = LSystem.unite(result, _textureClip.getRegionWidth());
 		result = LSystem.unite(result, _textureClip.getRegionHeight());
-		result = LSystem.unite(result, childs == null ? 0 : childs.size);
+		result = LSystem.unite(result, _childs == null ? 0 : _childs.size);
 		return result;
 	}
 
@@ -1432,19 +1435,19 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public int getRefCount() {
-		return this.refCount;
+		return this._referenceCount;
 	}
 
 	public boolean disposed() {
-		if (parent != null) {
-			return parent.disposed();
+		if (_parent != null) {
+			return _parent.disposed();
 		}
 		return _disposed && _closed;
 	}
 
 	public boolean isClosed() {
-		if (parent != null) {
-			return parent.isClosed();
+		if (_parent != null) {
+			return _parent.isClosed();
 		}
 		return _disposed || _closed;
 	}
@@ -1457,14 +1460,11 @@ public class LTexture extends Painter implements LRelease {
 			}
 		};
 	}
-	
-    /*
-	@Override
-	protected void finalize() {
-		if (!_disposed && !_closed) {
-			gfx.queueForDispose(this);
-		}
-	}*/
+
+	/*
+	 * @Override protected void finalize() { if (!_disposed && !_closed) {
+	 * gfx.queueForDispose(this); } }
+	 */
 
 	/**
 	 * 布尔值为真时，将强制关闭当前纹理，无论状态
@@ -1479,35 +1479,35 @@ public class LTexture extends Painter implements LRelease {
 			return;
 		}
 		if (forcedDelete) {
-			if (childs != null) {
-				childs.clear();
+			if (_childs != null) {
+				_childs.clear();
 			}
 		}
 		if (isChild()) {
-			final IntMap<LTexture> list = parent.childs;
+			final IntMap<LTexture> list = _parent._childs;
 			if (list != null) {
 				list.remove(_lazyHashCode);
 			}
-			parent.close();
+			_parent.close();
 			return;
 		}
-		this.refCount--;
+		this._referenceCount--;
 		if (!isChildAllClose()) {
 			return;
 		}
 		// forcedDelete时强制删除子纹理及父纹理，无论状态
 		if (forcedDelete) {
-			refCount = 0;
-			if (parent != null) {
-				parent.close(true);
+			_referenceCount = 0;
+			if (_parent != null) {
+				_parent.close(true);
 			} else {
 				_closed = true;
 				_countTexture--;
 				freeTexture();
 			}
-		} else if (refCount <= 0 && gfx.game.getRefTextureCount(getSource()) <= 0) {
-			if (parent != null && parent.isChildAllClose()) {
-				parent.close();
+		} else if (_referenceCount <= 0 && _gfx.game.getRefTextureCount(getSource()) <= 0) {
+			if (_parent != null && _parent.isChildAllClose()) {
+				_parent.close();
 			} else {
 				_closed = true;
 				_countTexture--;

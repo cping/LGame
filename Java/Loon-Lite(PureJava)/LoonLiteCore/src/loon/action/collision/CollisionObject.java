@@ -61,6 +61,7 @@ public interface CollisionObject extends ActionBind {
 	@Override
 	public RectBox getRectBox();
 
+	@Override
 	public int getLayer();
 
 }

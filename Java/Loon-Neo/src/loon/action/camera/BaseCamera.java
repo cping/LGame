@@ -24,10 +24,14 @@ import loon.geom.Matrix4;
 
 public abstract class BaseCamera {
 
-	public static BaseCamera DEF = new EmptyCamera();
+	private static BaseCamera instance = new EmptyCamera();
 
 	public void setup() {
-		DEF = this;
+		instance = this;
+	}
+
+	public static BaseCamera getCurrent() {
+		return instance;
 	}
 
 	public abstract Matrix4 getView();

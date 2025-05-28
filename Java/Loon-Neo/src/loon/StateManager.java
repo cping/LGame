@@ -25,7 +25,8 @@ import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * State管理器(简单的FSM状态机实现)
+ * State管理器(简单的FSM状态机实现，其最主要作用其实是在不切换Screen的前提下改变画面内容（Screen关联的对象太多，切换资源损耗大）)
+ * 标准状态机位于包 @see loon.utils.processes.state
  */
 public class StateManager implements LRelease {
 
@@ -110,9 +111,7 @@ public class StateManager implements LRelease {
 			if (newidx != -1 && newidx != this._currentIndex) {
 				this.changeState(oldidx, newidx);
 			} else if (oldState != null) {
-				oldState.end();
-				oldState.close();
-				oldState._isLoaded = false;
+				this.endState(oldState);
 			}
 			this._currentIndex = newidx;
 		}

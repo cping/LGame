@@ -196,38 +196,38 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 			if (role != null && role == this) {
 				switch (actionType) {
 				case Attack:
-					if(role.isAttack) {
+					if (role.isAttack) {
 						throw new LSysException("This role has completed the Attack !");
 					}
 					role.isAttack = true;
 					break;
 				case Defend:
-					if(role.isDefense) {
+					if (role.isDefense) {
 						throw new LSysException("This role has completed the Defense !");
 					}
 					role.isDefense = true;
 					break;
 				case Mana:
 				case Ability:
-					if(role.isDefense) {
+					if (role.isDefense) {
 						throw new LSysException("This role has completed the Mana/Ability !");
 					}
 					role.isSkill = true;
 					break;
 				case Move:
-					if(role.isMoved) {
+					if (role.isMoved) {
 						throw new LSysException("This role has completed the Move !");
 					}
 					role.isMoved = true;
 					break;
 				case Die:
-					if(role.isDead) {
+					if (role.isDead) {
 						throw new LSysException("This role has completed the Die !");
 					}
 					role.isDead = true;
 					break;
 				case Live:
-					if(!role.isDead) {
+					if (!role.isDead) {
 						throw new LSysException("This role has completed the Live !");
 					}
 					role.isDead = false;
@@ -626,6 +626,14 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 	public Role setBattleProcess(BattleProcess battleProcess) {
 		this._battleProcess = battleProcess;
 		return this;
+	}
+
+	@Override
+	public int getLayer() {
+		if (_roleObject == null) {
+			return 0;
+		}
+		return _roleObject.getLayer();
 	}
 
 	@Override

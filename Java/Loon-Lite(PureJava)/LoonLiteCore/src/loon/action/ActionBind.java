@@ -88,4 +88,6 @@ public interface ActionBind {
 	public ActionTween selfAction();
 
 	public boolean isActionCompleted();
+	
+	public int getLayer();
 }

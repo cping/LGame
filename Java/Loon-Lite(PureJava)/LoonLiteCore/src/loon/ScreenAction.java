@@ -247,4 +247,9 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 		return PlayerUtils.isActionCompleted(this);
 	}
 
+	@Override
+	public int getLayer() {
+		return 0;
+	}
+
 }

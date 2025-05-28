@@ -549,8 +549,14 @@ public class ListMap<K, V> implements Iterable<V>, IArray, LRelease {
 
 	@Override
 	public void close() {
-		this.keys = null;
-		this.values = null;
+		if (this.keys != null) {
+			CollectionUtils.fill(this.keys, null);
+			this.keys = null;
+		}
+		if (this.values != null) {
+			CollectionUtils.fill(this.values, null);
+			this.values = null;
+		}
 		this.size = 0;
 	}
 

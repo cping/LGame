@@ -94,6 +94,8 @@ public abstract class LGame implements LRelease {
 
 	protected static Platform _platform = null;
 
+	private boolean _running = false;
+
 	private boolean _stopGame = false;
 
 	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
@@ -255,6 +257,7 @@ public abstract class LGame implements LRelease {
 			}
 			_stopGame = true;
 		}
+		this._running = false;
 	}
 
 	/**
@@ -276,6 +279,7 @@ public abstract class LGame implements LRelease {
 		}
 		this._stopGame = false;
 		this.processImpl = new LProcess(game);
+		this._running = true;
 		log().debug("The Loon Game Engine is Begin");
 	}
 
@@ -385,6 +389,15 @@ public abstract class LGame implements LRelease {
 	 */
 	public boolean isDesktop() {
 		return !isMobile() && !isHTML5();
+	}
+
+	/**
+	 * 返回游戏是否正在运行
+	 * 
+	 * @return
+	 */
+	public boolean isRunning() {
+		return this._running;
 	}
 
 	/**
@@ -886,14 +899,14 @@ public abstract class LGame implements LRelease {
 		String key = fileName.trim();
 		LTexture texture = _texture_lazys.get(key);
 		if (texture != null) {
-			return texture.refCount;
+			return texture._referenceCount;
 		}
 		for (int i = 0, size = _texture_all_list.size; i < size; i++) {
 			LTexture tex2d = _texture_all_list.get(i);
 			String source = tex2d.getSource();
 			if (tex2d != null && source.indexOf(TextureSource.RenderCanvas) == -1) {
 				if (key.equalsIgnoreCase(source) || key.equalsIgnoreCase(tex2d.tmpLazy)) {
-					return tex2d.refCount;
+					return tex2d._referenceCount;
 				}
 			}
 		}
@@ -914,13 +927,13 @@ public abstract class LGame implements LRelease {
 		int refCount = -1;
 		LTexture texture = _texture_lazys.get(name);
 		if (texture != null) {
-			refCount = texture.refCount--;
+			refCount = texture._referenceCount--;
 		} else {
 			for (int i = 0; i < _texture_all_list.size; i++) {
 				LTexture tex = _texture_all_list.get(i);
 				if (tex != null && tex.tmpLazy.equals(name)) {
 					texture = tex;
-					refCount = tex.refCount--;
+					refCount = tex._referenceCount--;
 					break;
 				}
 			}
@@ -1006,7 +1019,7 @@ public abstract class LGame implements LRelease {
 				}
 			}
 			if (texture != null && !texture.disposed()) {
-				texture.refCount++;
+				texture._referenceCount++;
 				return texture;
 			}
 			texture = BaseIO.loadImage(fileName).onHaveToClose(true).createTexture(config);
@@ -1055,7 +1068,7 @@ public abstract class LGame implements LRelease {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed() && tex2d.getSource() != null
 						&& tex2d.getSource().indexOf(TextureSource.RenderCanvas) == -1) {
-					tex2d.refCount = 0;
+					tex2d._referenceCount = 0;
 					tex2d.close(true);
 					tex2d = null;
 				}
@@ -1073,7 +1086,7 @@ public abstract class LGame implements LRelease {
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed()) {
-					tex2d.refCount = 0;
+					tex2d._referenceCount = 0;
 					tex2d.close(true);
 					tex2d = null;
 				}

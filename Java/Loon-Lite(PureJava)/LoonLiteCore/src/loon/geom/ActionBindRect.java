@@ -246,4 +246,9 @@ public class ActionBindRect implements ActionBind, BoxSize {
 		return _actionBind.setSize(w, h);
 	}
 
+	@Override
+	public int getLayer() {
+		return _actionBind.getLayer();
+	}
+
 }

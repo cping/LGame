@@ -38,15 +38,16 @@ public class TextureUtils {
 
 	public static LTexture filterGray(String res, Format cofing) {
 		Image tmp = BaseIO.loadImage(res).cpy(true);
-		tmp.setFormat(cofing);
-		int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
-		tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
-		LTexture texture = tmp.texture();
+		LTexture texture = null;
 		if (tmp != null) {
+			tmp.setFormat(cofing);
+			int[] pixels = BufferUtils.toGray(tmp.getPixels(), (int) tmp.width(), (int) tmp.height());
+			tmp.setPixels(pixels, (int) tmp.width(), (int) tmp.height());
+			texture = tmp.texture();
 			tmp.close();
 			tmp = null;
+			pixels = null;
 		}
-		pixels = null;
 		return texture;
 	}
 

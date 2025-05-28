@@ -831,6 +831,15 @@ public final class LSystem {
 		return (_scaleWidth != 1f) || (_scaleHeight != 1f);
 	}
 
+	public static void setPixelRatio(float s) {
+		setScaleWidth(s);
+		setScaleHeight(s);
+	}
+
+	public static float getPixelRatio() {
+		return MathUtils.max(_scaleWidth, _scaleHeight);
+	}
+
 	public static float invXScaled(float length) {
 		return length / LSystem.getScaleWidth();
 	}

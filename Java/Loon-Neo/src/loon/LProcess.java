@@ -975,6 +975,14 @@ public class LProcess implements LRelease {
 		return _pointLocaltion.set(x, y);
 	}
 
+	public Screen getRootScreen() {
+		return _screenMap.size == 0 ? null : _screenMap.getValueAt(0);
+	}
+
+	public String getCurrentScreenName() {
+		return _currentScreen == null ? LSystem.UNKNOWN : _currentScreen.getScreenName();
+	}
+
 	public Screen getScreen() {
 		return _currentScreen;
 	}

@@ -31,19 +31,16 @@ import loon.utils.ObjectMap;
  * 一个专门解析RMXP素材对话框的专用类
  */
 public final class AVGDialog {
-	
+
 	private AVGDialog() {
 	}
-
 
 	private static AVGDialog _instance = null;
 
 	public static AVGDialog shared() {
-		if (_instance == null) {
-			synchronized (AVGDialog.class) {
-				if (_instance == null) {
-					_instance = new AVGDialog();
-				}
+		synchronized (AVGDialog.class) {
+			if (_instance == null) {
+				_instance = new AVGDialog();
 			}
 		}
 		return _instance;
@@ -188,50 +185,39 @@ public final class AVGDialog {
 
 				messageImage = Image.drawClipImage(rmxpImage, 128, 128, 0, 0, 128, 128);
 
-				Canvas g = lazyImage.getCanvas();
-
-				g.setAlpha(0.5f);
-
-				messageImage = Image.getResize(messageImage, width - offset + 1, height - offset + 1);
-
-				g.draw(messageImage, (lazyImage.getWidth() - messageImage.getWidth()) / 2,
-						(lazyImage.getHeight() - messageImage.getHeight()) / 2);
-
-				g.setAlpha(1.0f);
-
-				Image tmp = Image.getResize(centerTop, width - (size * 2), size);
-
-				g.draw(tmp, size, 0);
-				tmp = null;
-				tmp = Image.getResize(centerDown, width - (size * 2), size);
-
-				g.draw(tmp, size, height - size);
-				tmp = null;
-
-				g.draw(leftTop, 0, 0);
-
-				tmp = Image.getResize(leftCenter, leftCenter.getWidth(), width - (size * 2));
-
-				g.draw(tmp, 0, size);
-				tmp = null;
-				g.draw(leftDown, 0, height - size);
-
-				int right = width - size;
-
-				g.draw(rightTop, right, 0);
-
-				tmp = Image.getResize(rightCenter, leftCenter.getWidth(), width - (size * 2));
-
-				g.draw(tmp, right, size);
-				tmp = null;
-				g.draw(rightDown, right, height - size);
+				if (lazyImage != null) {
+					Canvas g = lazyImage.getCanvas();
+					if (g != null) {
+						g.setAlpha(0.5f);
+						messageImage = Image.getResize(messageImage, width - offset + 1, height - offset + 1);
+						g.draw(messageImage, (lazyImage.getWidth() - messageImage.getWidth()) / 2,
+								(lazyImage.getHeight() - messageImage.getHeight()) / 2);
+						g.setAlpha(1f);
+						Image tmp = Image.getResize(centerTop, width - (size * 2), size);
+						g.draw(tmp, size, 0);
+						tmp = null;
+						tmp = Image.getResize(centerDown, width - (size * 2), size);
+						g.draw(tmp, size, height - size);
+						tmp = null;
+						g.draw(leftTop, 0, 0);
+						tmp = Image.getResize(leftCenter, leftCenter.getWidth(), width - (size * 2));
+						g.draw(tmp, 0, size);
+						tmp = null;
+						g.draw(leftDown, 0, height - size);
+						int right = width - size;
+						g.draw(rightTop, right, 0);
+						tmp = Image.getResize(rightCenter, leftCenter.getWidth(), width - (size * 2));
+						g.draw(tmp, right, size);
+						tmp = null;
+						g.draw(rightDown, right, height - size);
+					}
+				}
 
 				lazy = lazyImage.texture();
 
-				if (lazyImage != null) {
-					lazyImage.close();
-					lazyImage = null;
-				}
+				lazyImage.close();
+				lazyImage = null;
+
 				lazy.setDisabledTexture(true);
 				_dialogCache.put(keyName, lazy);
 

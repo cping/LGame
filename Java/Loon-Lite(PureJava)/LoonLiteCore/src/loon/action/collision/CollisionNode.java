@@ -261,4 +261,9 @@ public class CollisionNode implements ActionBind {
 	public boolean isActionCompleted() {
 		return _actor.isActionCompleted();
 	}
+
+	@Override
+	public int getLayer() {
+		return _actor.getLayer();
+	}
 }
