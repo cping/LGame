@@ -1137,6 +1137,7 @@ public class ObjectMap<K, V> implements Iterable<ObjectMap.Entry<K, V>>, IArray,
 			CollectionUtils.fill(keyValueTable, null);
 			this.keyValueTable = null;
 		}
+		this.indexTable = null;
 	}
 
 }

@@ -315,6 +315,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final TArray<ActionBind> _actionLimits = new TArray<ActionBind>(10);
 
+	private TArray<FrameLoopEvent> _frameLooptoDeadEvents;
+
+	private TArray<FrameLoopEvent> _frameLooptoUpdated;
+
 	private TArray<FrameLoopEvent> _loopEvents;
 
 	private boolean _initLoopEvents = false;
@@ -2091,11 +2095,55 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	/**
 	 * 设定重力系统是否启动,并返回控制器
 	 * 
+	 * @return
+	 */
+	public GravityHandler setGravity() {
+		return setGravity(true);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
 	 * @param g
 	 * @return
 	 */
 	public GravityHandler setGravity(boolean g) {
 		return setGravity(EasingMode.Linear, g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
+	 * @param w
+	 * @param h
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler setGravity(int w, int h, boolean g) {
+		return setGravity(w, h, EasingMode.Linear, g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
+	 * @param w
+	 * @param h
+	 * @param ease
+	 * @param g
+	 * @return
+	 */
+	public GravityHandler setGravity(int w, int h, EasingMode ease, boolean g) {
+		return setGravity(w, h, ease, 1f, g);
+	}
+
+	/**
+	 * 设定重力系统是否启动,并返回控制器
+	 * 
+	 * @param ease
+	 * @return
+	 */
+	public GravityHandler setGravity(EasingMode ease) {
+		return setGravity(ease, true);
 	}
 
 	/**
@@ -3426,6 +3474,33 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 添加指定重力体对象
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public Gravity add(ActionBind act) {
+		if (act != null && _isGravity && _gravityHandler != null) {
+			return _gravityHandler.add(act);
+		}
+		return null;
+	}
+
+	/**
+	 * 删除指定重力体对象
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public Screen remove(Gravity g) {
+		if (g != null && _isGravity && _gravityHandler != null) {
+			_gravityHandler.remove(g);
+			remove(g.bind);
+		}
+		return this;
+	}
+
+	/**
 	 * 删除指定对象
 	 * 
 	 * @param obj
@@ -4525,12 +4600,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final void process(final LTimerContext timer) {
 		this.elapsedTime = timer.timeSinceLastUpdate;
-		for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
-			ActionKey act = it.next();
-			if (act != null && act.isPressed()) {
-				act.act(elapsedTime);
-				if (act.isInterrupt()) {
-					return;
+		if (_keyActions.size > 0) {
+			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
+				ActionKey act = it.next();
+				if (act != null && act.isPressed()) {
+					act.act(elapsedTime);
+					if (act.isInterrupt()) {
+						return;
+					}
 				}
 			}
 		}
@@ -4571,25 +4648,32 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		// 处理直接加入screen中的循环
 		if (_initLoopEvents) {
 			if (_loopEvents != null && _loopEvents.size > 0) {
-				final TArray<FrameLoopEvent> toUpdated;
 				synchronized (this._loopEvents) {
-					toUpdated = new TArray<FrameLoopEvent>(this._loopEvents);
+					if (_frameLooptoUpdated == null) {
+						_frameLooptoUpdated = new TArray<FrameLoopEvent>(this._loopEvents);
+					} else {
+						_frameLooptoUpdated.clear();
+						_frameLooptoUpdated.addAll(this._loopEvents);
+					}
 				}
-				final TArray<FrameLoopEvent> deadEvents = new TArray<FrameLoopEvent>();
 				try {
-					for (FrameLoopEvent eve : toUpdated) {
+					for (FrameLoopEvent eve : _frameLooptoUpdated) {
 						eve.call(elapsedTime, this);
 						if (eve.isDead()) {
-							deadEvents.add(eve);
+							if (_frameLooptoDeadEvents == null) {
+								_frameLooptoDeadEvents = new TArray<FrameLoopEvent>();
+							}
+							_frameLooptoDeadEvents.add(eve);
 						}
 					}
-					if (deadEvents.size > 0) {
-						for (FrameLoopEvent dead : deadEvents) {
+					if (_frameLooptoDeadEvents != null && _frameLooptoDeadEvents.size > 0) {
+						for (FrameLoopEvent dead : _frameLooptoDeadEvents) {
 							dead.completed();
 						}
 						synchronized (this._loopEvents) {
-							this._loopEvents.removeAll(deadEvents);
+							this._loopEvents.removeAll(_frameLooptoDeadEvents);
 						}
+						_frameLooptoDeadEvents.clear();
 					}
 				} catch (Throwable cause) {
 					LSystem.error("FrameLoopEvent dispatch failure", cause);
@@ -5469,9 +5553,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen clearListener() {
+		_frameLooptoDeadEvents = null;
+		_frameLooptoUpdated = null;
 		_touchListener = null;
 		_drawListener = null;
 		_loopEvents = null;
+		_initLoopEvents = false;
 		_touchAreas.clear();
 		return this;
 	}
@@ -7495,6 +7582,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_loopEvents != null) {
 					_loopEvents.clear();
 				}
+				_frameLooptoDeadEvents = null;
+				_frameLooptoUpdated = null;
 				_closeUpdate = null;
 				_resizeListener = null;
 				this._screenSwitch = null;

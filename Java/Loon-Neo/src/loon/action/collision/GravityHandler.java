@@ -138,6 +138,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean isGravityRunning() {
+		if (_closed) {
+			return false;
+		}
 		if (objects != null) {
 			for (int i = 0; i < objects.size; i++) {
 				Gravity g = objects.get(i);
@@ -150,6 +153,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public GravityHandler setView(float x, float y, float w, float h) {
+		if (_closed) {
+			return this;
+		}
 		if (w > 0 && h > 0) {
 			setBounded(true);
 		} else {
@@ -173,6 +179,9 @@ public class GravityHandler implements LRelease {
 
 	protected boolean checkCollideSolidObjects(Gravity gravityObject, float delta, float gravity, float newX,
 			float newY) {
+		if (_closed) {
+			return false;
+		}
 		if (gravityObject == null) {
 			return false;
 		}
@@ -374,6 +383,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity[] getObjects() {
+		if (_closed) {
+			return null;
+		}
 		int size = objects.size;
 		if (lazyObjects == null || lazyObjects.length != size) {
 			lazyObjects = new Gravity[size];
@@ -385,14 +397,23 @@ public class GravityHandler implements LRelease {
 	}
 
 	public int getCount() {
+		if (_closed) {
+			return 0;
+		}
 		return objects.size;
 	}
 
 	public int getConcreteCount() {
+		if (_closed) {
+			return 0;
+		}
 		return objects.size + pendingAdd.size - pendingRemove.size;
 	}
 
 	public Gravity get(int index) {
+		if (_closed) {
+			return null;
+		}
 		if (index > -1 && index < objects.size) {
 			return objects.get(index);
 		} else {
@@ -411,6 +432,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean contains(Gravity g) {
+		if (_closed) {
+			return false;
+		}
 		if (g == null) {
 			return false;
 		}
@@ -421,6 +445,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean intersect(ActionBind a, ActionBind b) {
+		if (_closed) {
+			return false;
+		}
 		if (a == null || b == null) {
 			return false;
 		}
@@ -428,6 +455,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public boolean intersect(Gravity a, Gravity b) {
+		if (_closed) {
+			return false;
+		}
 		if (a == null || b == null) {
 			return false;
 		}
@@ -439,6 +469,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity intersects(float x, float y, float w, float h) {
+		if (_closed) {
+			return null;
+		}
 		int size = pendingAdd.size;
 		for (int i = 0; i < size; i++) {
 			Gravity g = pendingAdd.get(i);
@@ -585,6 +618,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity add(ActionBind o, float vx, float vy, float ax, float ay, float ave) {
+		if (_closed) {
+			return null;
+		}
 		Gravity g = _gravityMap.get(o);
 		if (g == null) {
 			_gravityMap.put(o, (g = new Gravity(o)));
@@ -599,6 +635,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity add(ActionBind o) {
+		if (_closed) {
+			return null;
+		}
 		Gravity g = _gravityMap.get(o);
 		if (g == null) {
 			_gravityMap.put(o, (g = new Gravity(o)));
@@ -607,10 +646,16 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity get(ActionBind o) {
+		if (_closed) {
+			return null;
+		}
 		return _gravityMap.get(o);
 	}
 
 	public Gravity add(Gravity o) {
+		if (_closed) {
+			return null;
+		}
 		if (o == null) {
 			return o;
 		}
@@ -621,18 +666,26 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity remove(Gravity o) {
+		if (_closed) {
+			return null;
+		}
 		if (o == null) {
 			return o;
 		}
+		o.enabled = false;
 		pendingRemove.add(o);
 		return o;
 	}
 
 	public void removeAll() {
+		if (_closed) {
+			return;
+		}
 		final int count = objects.size;
 		for (int i = 0; i < count; i++) {
 			Gravity g = objects.get(i);
 			if (g != null) {
+				g.enabled = false;
 				pendingRemove.add(g);
 			}
 		}
@@ -640,6 +693,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	public Gravity getObject(String name) {
+		if (_closed) {
+			return null;
+		}
 		commits();
 		final int size = objects.size - 1;
 		for (int i = size; i > -1; i--) {
@@ -673,6 +729,9 @@ public class GravityHandler implements LRelease {
 
 	public GravityResult query(ActionBind bind, TArray<Gravity> otherObjects, RectBox pathBounds, float scale,
 			float deviation, boolean clearVelocity) {
+		if (_closed) {
+			return null;
+		}
 		Gravity g = _gravityMap.get(bind);
 		if (g != null) {
 			return getCollisionBetweenObjects(g, otherObjects, pathBounds, scale, deviation, clearVelocity);
@@ -732,7 +791,9 @@ public class GravityHandler implements LRelease {
 
 	public GravityResult getCollisionBetweenObjects(Gravity target, TArray<Gravity> otherObjects, RectBox pathBounds,
 			float scale, float deviation, boolean clearVelocity) {
-
+		if (_closed) {
+			return null;
+		}
 		GravityResult result = new GravityResult();
 
 		result.source = target;
@@ -925,6 +986,9 @@ public class GravityHandler implements LRelease {
 	}
 
 	protected GravityHandler movePos(Gravity g, float delta, float gravity, float x, float y) {
+		if (_closed) {
+			return null;
+		}
 		if (_collisionWorld == null) {
 			return movePos(g, delta, gravity, x, y, _lastX, _lastY);
 		}
@@ -933,6 +997,9 @@ public class GravityHandler implements LRelease {
 
 	protected GravityHandler movePos(Gravity g, float delta, float gravity, float x, float y, float lastX,
 			float lastY) {
+		if (_closed) {
+			return null;
+		}
 		if (g == null) {
 			return this;
 		}
@@ -1095,19 +1162,19 @@ public class GravityHandler implements LRelease {
 	public void close() {
 		this.isEnabled = false;
 		if (objects != null) {
-			objects.clear();
+			objects.close();
 			objects = null;
 		}
 		if (pendingAdd != null) {
-			pendingAdd.clear();
+			pendingAdd.close();
 			pendingAdd = null;
 		}
 		if (pendingAdd != null) {
-			pendingAdd.clear();
+			pendingAdd.close();
 			pendingAdd = null;
 		}
 		if (_gravityMap != null) {
-			_gravityMap.clear();
+			_gravityMap.close();
 			_gravityMap = null;
 		}
 		lazyObjects = null;

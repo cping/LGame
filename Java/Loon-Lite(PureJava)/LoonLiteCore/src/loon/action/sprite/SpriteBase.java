@@ -786,6 +786,22 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return _offset.y;
 	}
 
+	public boolean isCollision(ActionBind bind) {
+		if (bind == null) {
+			return false;
+		}
+		RectBox src = getCollisionArea();
+		return src.intersects(bind.getRectBox()) || src.contains(bind.getRectBox());
+	}
+
+	public boolean isCollision(Shape shape) {
+		if (shape == null) {
+			return false;
+		}
+		RectBox src = getCollisionArea();
+		return src.intersects(shape) || src.contains(shape);
+	}
+
 	public boolean isCollision(T o) {
 		if (o == null) {
 			return false;

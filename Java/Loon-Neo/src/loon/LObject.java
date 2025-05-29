@@ -764,6 +764,42 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		_objectLocation.setY(y);
 	}
 
+	public void randomScreenX(float screenW) {
+		randomScreenX(0, screenW);
+	}
+
+	public void randomScreenX(float minX, float screenW) {
+		setLocation(MathUtils.random(minX, screenW - getWidth()), 0f);
+	}
+
+	public void randomScreenY(float screenH) {
+		randomScreenY(0, screenH);
+	}
+
+	public void randomScreenY(float minY, float screenH) {
+		setLocation(0f, MathUtils.random(minY, screenH - getHeight()));
+	}
+
+	public void randomScreenXY(float minX, float minY, float screenW, float screenH) {
+		setLocation(MathUtils.random(minX, screenW - getWidth()), MathUtils.random(minY, screenH - getHeight()));
+	}
+
+	public void clampScreenX(float screenW) {
+		clampScreenX(0, screenW);
+	}
+
+	public void clampScreenX(float minX, float screenW) {
+		setX(MathUtils.clamp(getX(), minX, screenW - getWidth()));
+	}
+
+	public void clampScreenY(float screenH) {
+		clampScreenY(0, screenH);
+	}
+
+	public void clampScreenY(float minY, float screenH) {
+		setY(MathUtils.clamp(getY(), minY, screenH - getHeight()));
+	}
+
 	public void nextXY(float nextValue) {
 		setX(getX() + nextValue);
 		setY(getY() + nextValue);
