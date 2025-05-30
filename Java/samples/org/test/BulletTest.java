@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -31,7 +31,7 @@ import loon.events.Touched;
 import loon.events.Updateable;
 import loon.utils.Easing.EasingMode;
 
-public class ButtleTest extends Stage {
+public class BulletTest extends Stage {
 
 	@Override
 	public void create() {
@@ -48,7 +48,7 @@ public class ButtleTest extends Stage {
 
 		// 构建子弹Entity
 		final BulletEntity bullets = new BulletEntity();
-		bullets.initializeCollision(4);
+		bullets.initializeCollision(32);
 		// 注入子弹碰撞对象role
 		bullets.putCollision(fish);
 		// 注入Screen
@@ -74,9 +74,9 @@ public class ButtleTest extends Stage {
 				CollisionObject obj = bullets.getOnlyIntersectingButtle(fish);
 				// 存在
 				if (obj != null) {
-					//调用缓动动画,缩放到50%,fish变红,震动幅度5像素,还原颜色
+					// 调用缓动动画,缩放到50%,fish变红,震动幅度5像素,还原颜色
 					fish.selfAction().scaleTo(0.5f).colorTo(LColor.red).shakeTo(5f).colorTo(LColor.white).start();
-			
+
 				}
 
 			}

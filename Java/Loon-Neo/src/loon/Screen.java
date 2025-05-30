@@ -4701,6 +4701,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				synchronized (this._loopEvents) {
 					if (_frameLooptoUpdated == null) {
 						_frameLooptoUpdated = new TArray<FrameLoopEvent>(this._loopEvents);
+					} else if (_frameLooptoUpdated.size == this._loopEvents.size) {
+						_frameLooptoUpdated.fill(this._loopEvents);
 					} else {
 						_frameLooptoUpdated.clear();
 						_frameLooptoUpdated.addAll(this._loopEvents);

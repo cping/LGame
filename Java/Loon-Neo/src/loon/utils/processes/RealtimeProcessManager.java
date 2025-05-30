@@ -153,8 +153,12 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 	public void tick(LTimerContext time) {
 		if (_processes.size > 0) {
 			synchronized (this._processes) {
-				toBeUpdated.clear();
-				toBeUpdated.addAll(this._processes);
+				if (toBeUpdated.size == _processes.size) {
+					toBeUpdated.fill(this._processes);
+				} else {
+					toBeUpdated.clear();
+					toBeUpdated.addAll(this._processes);
+				}
 			}
 			deadProcesses.clear();
 			try {

@@ -118,6 +118,8 @@ public class LProcess implements LRelease {
 
 	private final LGame _game;
 
+	private TArray<Updateable> _loadcaches;
+
 	private ScreenProcess _screenProcess;
 
 	private boolean _isInstance;
@@ -196,6 +198,7 @@ public class LProcess implements LRelease {
 					});
 				} else {
 					input.touchEvents.connect(new Port<TouchMake.Event[]>() {
+
 						@Override
 						public void onEmit(TouchMake.Event[] events) {
 							_currentInput.callTouch(events);
@@ -209,6 +212,7 @@ public class LProcess implements LRelease {
 					}
 				});
 			}
+
 		}
 		return this;
 	}
@@ -226,27 +230,32 @@ public class LProcess implements LRelease {
 		return LSystem.getShaderSource();
 	}
 
-	private final static void callUpdateable(final TArray<Updateable> list) {
+	private final void callUpdateable(final TArray<Updateable> list) {
 		synchronized (LProcess.class) {
-			TArray<Updateable> loadCache;
 			synchronized (list) {
-				loadCache = new TArray<Updateable>(list);
-				list.clear();
-			}
-			for (int i = 0, size = loadCache.size; i < size; i++) {
-				Updateable r = loadCache.get(i);
-				if (r == null) {
-					continue;
-				}
-				synchronized (r) {
-					try {
-						r.action(null);
-					} catch (Throwable cause) {
-						LSystem.error("Updateable dispatch failure", cause);
-					}
+				if (_loadcaches == null) {
+					_loadcaches = new TArray<Updateable>(list);
+				} else if (_loadcaches.size == list.size) {
+					_loadcaches.fill(list);
+				} else {
+					_loadcaches.clear();
+					_loadcaches.addAll(list);
 				}
 			}
-			loadCache = null;
+			list.clear();
+		}
+		for (int i = 0, size = _loadcaches.size; i < size; i++) {
+			Updateable r = _loadcaches.get(i);
+			if (r == null) {
+				continue;
+			}
+			synchronized (r) {
+				try {
+					r.action(null);
+				} catch (Throwable cause) {
+					LSystem.error("Updateable dispatch failure", cause);
+				}
+			}
 		}
 	}
 
@@ -1547,6 +1556,9 @@ public class LProcess implements LRelease {
 			}
 			if (resumes != null) {
 				resumes.clear();
+			}
+			if (_loadcaches != null) {
+				_loadcaches.clear();
 			}
 			if (_currentScreen != null) {
 				_currentScreen.destroy();

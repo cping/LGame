@@ -541,6 +541,49 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return items[0];
 	}
 
+	public void fill(SortedList<T> list) {
+		fill(list, 0);
+	}
+
+	public void fill(SortedList<T> list, int idx) {
+		if (list == null) {
+			return;
+		}
+		int len = list.size;
+		T[] items = this.items;
+		for (int i = idx, n = size; i < n && i < len; i++)
+			items[i] = list.get(i);
+
+	}
+
+	public void fill(TArray<T> list) {
+		fill(list, 0);
+	}
+
+	public void fill(TArray<T> list, int idx) {
+		if (list == null) {
+			return;
+		}
+		int len = list.size;
+		T[] items = this.items;
+		for (int i = idx, n = size; i < n && i < len; i++)
+			items[i] = list.get(i);
+	}
+
+	public void fill(T[] list) {
+		fill(list, 0);
+	}
+
+	public void fill(T[] list, int idx) {
+		if (list == null) {
+			return;
+		}
+		int len = list.length;
+		T[] items = this.items;
+		for (int i = idx, n = size; i < n && i < len; i++)
+			items[i] = list[i];
+	}
+
 	@Override
 	public void clear() {
 		T[] items = this.items;

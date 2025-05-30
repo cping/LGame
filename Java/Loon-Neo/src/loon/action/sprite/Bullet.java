@@ -23,13 +23,16 @@ package loon.action.sprite;
 import loon.LObject;
 import loon.LTexture;
 import loon.PlayerUtils;
+import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionObject;
 import loon.action.map.Field2D;
+import loon.action.sprite.BulletEntity.BulletListener;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
@@ -56,6 +59,8 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	private Vector2f speed;
 	private Animation animation;
+
+	private BulletListener listener;
 
 	private boolean dirToAngle;
 	private boolean visible;
@@ -134,6 +139,15 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		this.setDirection(this.direction);
 	}
 
+	public Bullet setListener(BulletListener l) {
+		this.listener = l;
+		return this;
+	}
+
+	public BulletListener getListener() {
+		return this.listener;
+	}
+
 	public void draw(GLEx g) {
 		draw(g, 0, 0);
 	}
@@ -142,6 +156,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		if (!visible || _destroyed) {
 			return;
 		}
+		onDrawable(g, offsetX, offsetY);
 		if (animation != null) {
 			LTexture texture = animation.getSpriteImage();
 			float tmp = baseColor.a;
@@ -158,6 +173,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		if (_destroyed) {
 			return;
 		}
+		onUpdateable(elapsedTime);
 		if ((speed.getX() == 0) && (speed.getY() == 0)) {
 			this.active = false;
 		}
@@ -173,6 +189,30 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	public void update(LTimerContext time) {
 		update(time.timeSinceLastUpdate);
+	}
+
+	protected void onAttached() {
+		if (listener != null) {
+			listener.attached(this);
+		}
+	}
+
+	protected void onDetached() {
+		if (listener != null) {
+			listener.detached(this);
+		}
+	}
+
+	protected void onDrawable(GLEx g, float offsetX, float offsetY) {
+		if (listener != null) {
+			listener.drawable(g, this);
+		}
+	}
+
+	protected void onUpdateable(long elapsedTime) {
+		if (listener != null) {
+			listener.updateable(elapsedTime, this);
+		}
 	}
 
 	public int getDirection() {
@@ -202,6 +242,17 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		return this;
 	}
 
+	public Bullet fireTo(XY pos) {
+		if (pos == null) {
+			return this;
+		}
+		return setMoveTargetToRotation(Vector2f.at(pos));
+	}
+
+	public Bullet fireTo(float dstX, float dstY) {
+		return setMoveTargetToRotation(dstX, dstY);
+	}
+
 	public Bullet setMoveTargetToRotation(float dstX, float dstY) {
 		return setMoveTargetToRotation(Vector2f.at(dstX, dstY));
 	}
@@ -211,8 +262,18 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 			return this;
 		}
 		float rot = Field2D.rotation(getLocation(), target);
-		this.setRotation(rot);
+		if (dirToAngle) {
+			this.setRotation(rot);
+		}
 		this.direction = Field2D.getDirection(getLocation(), target);
+		float dir = MathUtils.atan2(target.getY() - getY(), target.getX() - getX());
+		float sx = (MathUtils.cos(dir) * this.initSpeed);
+		float sy = (MathUtils.sin(dir) * this.initSpeed);
+		if (this.speed == null) {
+			this.speed = new Vector2f(sx, sy);
+		} else {
+			this.speed.setLocation(sx, sy);
+		}
 		return this;
 	}
 
@@ -225,6 +286,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		}
 		this.direction = dir;
 		return this;
+	}
+
+	public boolean isCollision(ActionBind act) {
+		RectBox rect = getCollisionArea();
+		return rect.intersects(act.getRectBox()) || rect.contains(act.getRectBox());
 	}
 
 	public Animation getAnimation() {
@@ -405,21 +471,13 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		return PlayerUtils.isActionCompleted(this);
 	}
 
-	public static float getBallisticRange(float speed, float gravity, float iheight) {
-		float angle = 45f * MathUtils.DEG_TO_RAD;
-		float cos = MathUtils.cos(angle);
-		float sin = MathUtils.sin(angle);
-		float range = (speed * cos / gravity)
-				* (speed * sin + MathUtils.sqrt(speed * speed * sin * sin + 2f * gravity * iheight));
-		return range;
-	}
-
 	@Override
 	protected void _onDestroy() {
 		if (animation != null) {
 			animation.close();
 			animation = null;
 		}
+		listener = null;
 		visible = false;
 	}
 

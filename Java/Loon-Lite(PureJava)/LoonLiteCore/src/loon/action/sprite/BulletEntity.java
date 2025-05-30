@@ -33,6 +33,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
 import loon.utils.Easing.EasingMode;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -40,9 +41,31 @@ import loon.utils.TArray;
  */
 public class BulletEntity extends Entity {
 
+	public static interface BulletListener {
+
+		public void attached(Bullet bullet);
+
+		public void detached(Bullet bullet);
+
+		public void drawable(GLEx g, Bullet bullet);
+
+		public void updateable(long elapsedTime, Bullet bullet);
+	}
+
+	public static float getBallisticRange(float speed, float gravity, float iheight) {
+		float angle = 45f * MathUtils.DEG_TO_RAD;
+		float cos = MathUtils.cos(angle);
+		float sin = MathUtils.sin(angle);
+		float range = (speed * cos / gravity)
+				* (speed * sin + MathUtils.sqrt(speed * speed * sin * sin + 2f * gravity * iheight));
+		return range;
+	}
+
 	private CollisionWorld collisionWorld;
 
 	protected CollisionFilter worldCollisionFilter;
+
+	private BulletListener listener;
 
 	private boolean running;
 
@@ -90,6 +113,15 @@ public class BulletEntity extends Entity {
 		this.setSize(w, h);
 	}
 
+	public BulletEntity setListener(BulletListener l) {
+		this.listener = l;
+		return this;
+	}
+
+	public BulletListener getListener() {
+		return this.listener;
+	}
+
 	public BulletEntity setCollisionWorld(CollisionWorld world) {
 		if (world == null) {
 			return this;
@@ -110,58 +142,71 @@ public class BulletEntity extends Entity {
 		return collisionWorld.getCollisionManager();
 	}
 
-	public BulletEntity addBullet(LTexture texture, float x, float y, int dir) {
+	public Bullet addBullet(LTexture texture, float x, float y, int dir) {
 		return addBullet(easingMode, texture, x, y, dir);
 	}
 
-	public BulletEntity addBullet(Animation ani, float x, float y, int dir) {
+	public Bullet addBullet(Animation ani, float x, float y, int dir) {
 		return addBullet(easingMode, ani, x, y, dir);
 	}
 
-	public BulletEntity addBullet(String path, float x, float y, int dir) {
+	public Bullet addBullet(String path, float x, float y, int dir) {
 		return addBullet(easingMode, LSystem.loadTexture(path), x, y, dir);
 	}
 
-	public BulletEntity addBullet(Animation ani, float x, float y, int dir, int initSpeed, float duration) {
+	public Bullet addBullet(Animation ani, float x, float y, int dir, int initSpeed, float duration) {
 		return addBullet(easingMode, ani, x, y, dir, initSpeed, duration);
 	}
 
-	public BulletEntity addBullet(String path, float x, float y, int dir, int initSpeed, float duration) {
+	public Bullet addBullet(String path, float x, float y, int dir, int initSpeed, float duration) {
 		return addBullet(easingMode, path, x, y, dir, initSpeed, duration);
 	}
 
-	public BulletEntity addBullet(String path, float x, float y, int dir, int initSpeed) {
+	public Bullet addBullet(String path, float x, float y, int dir, int initSpeed) {
 		return addBullet(easingMode, path, x, y, dir, initSpeed);
 	}
 
-	public BulletEntity addBullet(EasingMode easing, LTexture texture, float x, float y, int dir) {
-		return addBullet(new Bullet(easing, texture, x, y, dir));
+	public Bullet addBullet(EasingMode easing, LTexture texture, float x, float y, int dir) {
+		Bullet bullet = new Bullet(easing, texture, x, y, dir);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir) {
-		return addBullet(new Bullet(easing, ani, x, y, dir));
+	public Bullet addBullet(EasingMode easing, Animation ani, float x, float y, int dir) {
+		Bullet bullet = new Bullet(easing, ani, x, y, dir);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir) {
-		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir));
+	public Bullet addBullet(EasingMode easing, String path, float x, float y, int dir) {
+		Bullet bullet = new Bullet(easing, LSystem.loadTexture(path), x, y, dir);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed,
+	public Bullet addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed,
 			float duration) {
-		return addBullet(new Bullet(easing, ani, x, y, dir, initSpeed, duration));
+		Bullet bullet = new Bullet(easing, ani, x, y, dir, initSpeed, duration);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed) {
-		return addBullet(new Bullet(easing, ani, x, y, dir, initSpeed));
+	public Bullet addBullet(EasingMode easing, Animation ani, float x, float y, int dir, int initSpeed) {
+		Bullet bullet = new Bullet(easing, ani, x, y, dir, initSpeed);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed) {
-		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed));
+	public Bullet addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed) {
+		Bullet bullet = new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed);
+		addBullet(bullet);
+		return bullet;
 	}
 
-	public BulletEntity addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed,
-			float duration) {
-		return addBullet(new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed, duration));
+	public Bullet addBullet(EasingMode easing, String path, float x, float y, int dir, int initSpeed, float duration) {
+		Bullet bullet = new Bullet(easing, LSystem.loadTexture(path), x, y, dir, initSpeed, duration);
+		addBullet(bullet);
+		return bullet;
 	}
 
 	public BulletEntity addBullet(Bullet bullet) {
@@ -178,16 +223,35 @@ public class BulletEntity extends Entity {
 		return this;
 	}
 
-	private void addWorld(Bullet bullet) {
+	protected void addWorld(Bullet bullet) {
+		if (_destroyed) {
+			return;
+		}
+		if (bullet == null) {
+			return;
+		}
 		bullets.add(bullet);
 		collisionWorld.add(bullet);
 		collisionWorld.getCollisionManager().addObject(bullet);
+		if (listener != null) {
+			listener.attached(bullet);
+		}
 	}
 
-	private void removeWorld(Bullet bullet) {
+	protected void removeWorld(Bullet bullet) {
+		if (_destroyed) {
+			return;
+		}
+		if (bullet == null) {
+			return;
+		}
 		bullets.remove(bullet);
 		collisionWorld.remove(bullet);
 		collisionWorld.getCollisionManager().removeObject(bullet);
+		bullet.onDetached();
+		if (listener != null) {
+			listener.detached(bullet);
+		}
 	}
 
 	@Override
@@ -196,10 +260,13 @@ public class BulletEntity extends Entity {
 			return;
 		}
 		for (int i = this.bullets.size - 1; i >= 0; i--) {
-			Bullet bu = bullets.get(i);
-			if (bu != null) {
-				movePos(bu);
-				bu.draw(g, drawX(offsetX), drawY(offsetX));
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				movePos(bullet);
+				bullet.draw(g, drawX(offsetX), drawY(offsetX));
+				if (listener != null) {
+					listener.drawable(g, bullet);
+				}
 			}
 		}
 	}
@@ -211,12 +278,15 @@ public class BulletEntity extends Entity {
 		}
 		if (running) {
 			for (int i = this.bullets.size - 1; i >= 0; i--) {
-				Bullet bu = bullets.get(i);
-				if (bu != null) {
-					movePos(bu);
-					bu.update(elapsedTime);
-					if (limitMoved && !getCollisionBox().contains(bu.getRectBox())) {
-						removeWorld(bu);
+				Bullet bullet = bullets.get(i);
+				if (bullet != null) {
+					movePos(bullet);
+					bullet.update(elapsedTime);
+					if (listener != null) {
+						listener.updateable(elapsedTime, bullet);
+					}
+					if (limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
+						removeWorld(bullet);
 					}
 				}
 			}
@@ -224,24 +294,60 @@ public class BulletEntity extends Entity {
 	}
 
 	public TArray<Bullet> getBullets() {
+		if (_destroyed) {
+			return null;
+		}
 		return bullets;
 	}
 
 	public Bullet getBullet(int idx) {
+		if (_destroyed) {
+			return null;
+		}
 		return bullets.get(idx);
 	}
 
 	public BulletEntity removeBullet(Bullet bullet) {
+		if (_destroyed) {
+			return null;
+		}
 		bullets.remove(bullet);
+		if (bullet != null) {
+			bullet.onDetached();
+			if (listener != null) {
+				listener.detached(bullet);
+			}
+		}
 		return this;
 	}
 
 	public BulletEntity removeBulletIndex(int bulletIdx) {
-		bullets.removeIndex(bulletIdx);
+		if (_destroyed) {
+			return null;
+		}
+		Bullet bullet = bullets.removeIndex(bulletIdx);
+		if (bullet != null) {
+			bullet.onDetached();
+			if (listener != null) {
+				listener.detached(bullet);
+			}
+		}
 		return this;
 	}
 
 	public BulletEntity clearBullets() {
+		if (_destroyed) {
+			return null;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.onDetached();
+				if (listener != null) {
+					listener.detached(bullet);
+				}
+			}
+		}
 		bullets.clear();
 		return this;
 	}
@@ -453,6 +559,9 @@ public class BulletEntity extends Entity {
 	}
 
 	private void movePos(ActionBind bind) {
+		if (_destroyed) {
+			return;
+		}
 		if (bind == null) {
 			return;
 		}
@@ -491,6 +600,7 @@ public class BulletEntity extends Entity {
 				collisionWorld = null;
 			}
 		}
+		listener = null;
 		running = false;
 	}
 
