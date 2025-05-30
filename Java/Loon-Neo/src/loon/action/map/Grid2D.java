@@ -20,6 +20,7 @@
  */
 package loon.action.map;
 
+import loon.LSystem;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileGenerator;
 import loon.action.map.colider.TileImpl;
@@ -48,7 +49,7 @@ public class Grid2D {
 	}
 
 	public Grid2D(int mapWidth, int mapHeight, TileGenerator generator) {
-		this(mapWidth, mapHeight, 32, 32, generator);
+		this(mapWidth, mapHeight, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, generator);
 	}
 
 	public Grid2D(int mapWidth, int mapHeight, int tileWidth, int tileHeight) {

@@ -20,6 +20,7 @@
  */
 package loon.action.map.colider;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 
 public class TileHelper implements Tile {
@@ -35,11 +36,11 @@ public class TileHelper implements Tile {
 	protected int tileHeight = 0;
 
 	public TileHelper(int x, int y) {
-		this(-1, x, y, 32, 32);
+		this(-1, x, y, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE);
 	}
 
 	public TileHelper(int id, int x, int y) {
-		this(id, x, y, 32, 32);
+		this(id, x, y, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE);
 	}
 
 	public TileHelper(int id, int x, int y, int tileWidth, int tileHeight) {

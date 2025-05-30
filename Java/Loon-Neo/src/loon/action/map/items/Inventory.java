@@ -22,6 +22,7 @@ package loon.action.map.items;
 
 import java.util.Comparator;
 
+import loon.LSystem;
 import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.utils.MathUtils;
@@ -45,7 +46,7 @@ public class Inventory {
 	}
 
 	public Inventory(int type) {
-		_items = new TArray<IItem>(32);
+		_items = new TArray<IItem>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 		_invType = type;
 		_gold = 0;
 	}

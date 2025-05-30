@@ -151,7 +151,7 @@ public class CustomPath implements LRelease {
 	}
 
 	public CustomPathObj arcTo(float endX, float endY, float angle) {
-		return arcTo(endX, endY, angle, 32, AngleType.Deg);
+		return arcTo(endX, endY, angle, LSystem.LAYER_TILE_SIZE, AngleType.Deg);
 	}
 
 	public CustomPathObj arcTo(float endX, float endY, float angle, int side) {

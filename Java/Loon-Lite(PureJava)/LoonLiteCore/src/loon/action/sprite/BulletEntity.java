@@ -23,6 +23,7 @@ package loon.action.sprite;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionManager;
@@ -67,9 +68,11 @@ public class BulletEntity extends Entity {
 
 	private BulletListener listener;
 
-	private boolean running;
+	private boolean _allowAutoFixMoved;
 
-	private boolean limitMoved;
+	private boolean _running;
+
+	private boolean _limitMoved;
 
 	private boolean selfWorld;
 
@@ -97,7 +100,7 @@ public class BulletEntity extends Entity {
 
 	public BulletEntity(CollisionWorld world, int x, int y, int w, int h) {
 		this.easingMode = EasingMode.Linear;
-		this.bullets = new TArray<Bullet>(32);
+		this.bullets = new TArray<Bullet>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 		this.textureFree = new LTextureFree();
 		if (world != null) {
 			this.collisionWorld = world;
@@ -106,8 +109,8 @@ public class BulletEntity extends Entity {
 			this.collisionWorld = new CollisionWorld();
 			this.selfWorld = true;
 		}
-		this.running = true;
-		this.limitMoved = true;
+		this._running = true;
+		this._limitMoved = true;
 		this.setRepaint(true);
 		this.setLocation(x, y);
 		this.setSize(w, h);
@@ -140,6 +143,109 @@ public class BulletEntity extends Entity {
 			selfWorld = true;
 		}
 		return collisionWorld.getCollisionManager();
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @param size
+	 * @param space
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h, float size, float space) {
+		float count = MathUtils.DEG_FULL / size;
+		float dot = count / 10f;
+		for (int i = 0; i < MathUtils.DEG_FULL; i += count) {
+			float newX = startX + MathUtils.cos(MathUtils.toRadians(i + space)) * dot;
+			float newY = startY + MathUtils.sin(MathUtils.toRadians(i + space)) * dot;
+			Bullet bullet = new Bullet(easing, ani, startX, startY);
+			if (w != -1f && h != -1f) {
+				bullet.setSize(w, h);
+			}
+			bullet.fireTo(newX, newY);
+			addWorld(bullet);
+		}
+		return new TArray<Bullet>(bullets);
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param size
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(EasingMode easing, Animation ani, float startX, float startY, float size) {
+		return addCircleBullets(easing, ani, startX, startY, -1f, -1f, size, 30f);
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param size
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(String path, float startX, float startY, float size) {
+		return addCircleBullets(easingMode, path, startX, startY, size);
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param easing
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param size
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(EasingMode easing, String path, float startX, float startY, float size) {
+		return addCircleBullets(easing, LTextures.loadTexture(path), startX, startY, size);
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param size
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(EasingMode easing, LTexture tex, float startX, float startY, float size) {
+		return addCircleBullets(easing, tex, startX, startY, -1f, -1f, size, 30f);
+	}
+
+	/**
+	 * 在指定位置同时添加一组子弹,自动成圆形扩散发射(弹幕效果)
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @param size
+	 * @param space
+	 * @return
+	 */
+	public TArray<Bullet> addCircleBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h, float size, float space) {
+		return addCircleBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h, size, space);
 	}
 
 	public Bullet addBullet(LTexture texture, float x, float y, int dir) {
@@ -276,7 +382,7 @@ public class BulletEntity extends Entity {
 		if (_destroyed) {
 			return;
 		}
-		if (running) {
+		if (_running) {
 			for (int i = this.bullets.size - 1; i >= 0; i--) {
 				Bullet bullet = bullets.get(i);
 				if (bullet != null) {
@@ -285,7 +391,7 @@ public class BulletEntity extends Entity {
 					if (listener != null) {
 						listener.updateable(elapsedTime, bullet);
 					}
-					if (limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
+					if (_limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
 						removeWorld(bullet);
 					}
 				}
@@ -353,11 +459,11 @@ public class BulletEntity extends Entity {
 	}
 
 	public boolean isRunning() {
-		return running;
+		return _running;
 	}
 
 	public BulletEntity setRunning(boolean r) {
-		this.running = r;
+		this._running = r;
 		return this;
 	}
 
@@ -370,11 +476,11 @@ public class BulletEntity extends Entity {
 	}
 
 	public boolean isLimitMoved() {
-		return limitMoved;
+		return _limitMoved;
 	}
 
 	public BulletEntity setLimitMoved(boolean limitMoved) {
-		this.limitMoved = limitMoved;
+		this._limitMoved = limitMoved;
 		return this;
 	}
 
@@ -565,13 +671,22 @@ public class BulletEntity extends Entity {
 		if (bind == null) {
 			return;
 		}
-		if (collisionWorld != null) {
+		if (collisionWorld != null && _allowAutoFixMoved) {
 			if (worldCollisionFilter == null) {
 				worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = collisionWorld.move(bind, bind.getX(), bind.getY(), worldCollisionFilter);
 			bind.setLocation(result.goalX, result.goalY);
 		}
+	}
+
+	public boolean isAllowAutoFixMoved() {
+		return this._allowAutoFixMoved;
+	}
+
+	public BulletEntity setAllowAutoFixMove(boolean a) {
+		this._allowAutoFixMoved = a;
+		return this;
 	}
 
 	public CollisionFilter getCollisionFilter() {
@@ -601,7 +716,8 @@ public class BulletEntity extends Entity {
 			}
 		}
 		listener = null;
-		running = false;
+		_running = false;
+		_allowAutoFixMoved = false;
 	}
 
 }

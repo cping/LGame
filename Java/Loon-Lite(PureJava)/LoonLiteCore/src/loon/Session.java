@@ -147,7 +147,7 @@ public class Session implements Bundle<String> {
 		}
 
 		public String encode() {
-			StrBuilder sbr = new StrBuilder(32);
+			StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
 			sbr.append(this.name);
 			sbr.append(flag);
 			sbr.append(this.active ? "1" : "0");

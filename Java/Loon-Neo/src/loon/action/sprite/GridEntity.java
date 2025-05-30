@@ -61,11 +61,11 @@ public class GridEntity extends Entity {
 	}
 
 	public GridEntity(LColor color) {
-		this(LSystem.viewSize.getRect(), 32, 32, 0f, 0f, 1f, 1f, color);
+		this(LSystem.viewSize.getRect(), LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 0f, 0f, 1f, 1f, color);
 	}
 
 	public GridEntity(float x, float y, float w, float h, LColor color) {
-		this(RectBox.at(x, y, w, h), 32, 32, 0f, 0f, 1f, 1f, color);
+		this(RectBox.at(x, y, w, h), LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 0f, 0f, 1f, 1f, color);
 	}
 
 	public GridEntity(float x, float y, float w, float h, int cellW, int cellH, LColor color) {
@@ -73,11 +73,11 @@ public class GridEntity extends Entity {
 	}
 
 	public GridEntity(RectBox viewRect, LColor color) {
-		this(viewRect, 32, 32, 0f, 0f, 1f, 1f, color);
+		this(viewRect, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 0f, 0f, 1f, 1f, color);
 	}
 
 	public GridEntity(RectBox viewRect, float scale, float lineWidth, LColor color) {
-		this(viewRect, 32, 32, 0f, 0f, scale, lineWidth, color);
+		this(viewRect, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 0f, 0f, scale, lineWidth, color);
 	}
 
 	public GridEntity(RectBox viewRect, int cellWidth, int cellHeight, float scale, float lineWidth, LColor color) {

@@ -197,7 +197,7 @@ public class Display extends BaseIO implements LRelease {
 
 	private String displayDrawCall = DRAWCALL_STR;
 
-	private StrBuilder displayMessage = new StrBuilder(32);
+	private StrBuilder displayMessage = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	private GifEncoder gifEncoder;
 

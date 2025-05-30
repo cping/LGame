@@ -241,8 +241,8 @@ public class CollisionWorld implements LRelease {
 		return col;
 	}
 
-	public void setTileMode(boolean _tileMode) {
-		this._tileMode = _tileMode;
+	public void setTileMode(boolean tileMode) {
+		this._tileMode = tileMode;
 	}
 
 	public boolean isTileMode() {

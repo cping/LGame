@@ -20,6 +20,7 @@
  */
 package loon.action.collision;
 
+import loon.LSystem;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
@@ -43,7 +44,7 @@ public class CollisionManager implements CollisionChecker {
 	private boolean _closed;
 
 	public CollisionManager() {
-		initialize(32);
+		initialize(LSystem.LAYER_TILE_SIZE);
 	}
 
 	@Override

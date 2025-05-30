@@ -1488,7 +1488,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent setElastic(boolean b) {
-		if (getWidth() > 32 || getHeight() > 32) {
+		if (getWidth() > LSystem.LAYER_TILE_SIZE || getHeight() > LSystem.LAYER_TILE_SIZE) {
 			this._component_elastic = b;
 		} else {
 			this._component_elastic = false;

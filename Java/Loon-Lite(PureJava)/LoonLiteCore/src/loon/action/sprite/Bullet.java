@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject;
+import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.action.ActionBind;
@@ -75,6 +76,18 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	private EaseTimer easeTimer;
 
+	public Bullet(EasingMode easingMode, LTexture tex, float x, float y) {
+		this(easingMode, tex, x, y, 0, INIT_DURATION);
+	}
+
+	public Bullet(EasingMode easingMode, Animation ani, float x, float y) {
+		this(easingMode, ani, x, y, 0);
+	}
+
+	public Bullet(EasingMode easingMode, float x, float y) {
+		this(easingMode, x, y, 0);
+	}
+
 	public Bullet(EasingMode easingMode, LTexture tex, float x, float y, int dir) {
 		this(easingMode, Animation.getDefaultAnimation(tex), x, y, dir);
 	}
@@ -98,7 +111,7 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	}
 
 	public Bullet(EasingMode easingMode, float x, float y, int dir) {
-		this(easingMode, null, x, y, 32, 32, dir, INIT_DURATION);
+		this(easingMode, null, x, y, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, dir, INIT_DURATION);
 	}
 
 	public Bullet(EasingMode easingMode, LTexture texture, float x, float y, int dir, int initSpeed, float duration) {
@@ -240,6 +253,30 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	public Bullet setInitSpeedY(int y) {
 		speed.setX(y);
 		return this;
+	}
+
+	public Bullet fireTo(ISprite spr) {
+		return fireTo(spr, 0f, 0f);
+	}
+
+	public Bullet fireTo(ISprite spr, float offsetX, float offsetY) {
+		if (spr == null) {
+			return this;
+		}
+		return setMoveTargetToRotation(
+				Vector2f.at(spr.getX() + spr.getWidth() / 2f + offsetX, spr.getY() + spr.getHeight() / 2f + offsetY));
+	}
+
+	public Bullet fireTo(ActionBind act) {
+		return fireTo(act, 0f, 0f);
+	}
+
+	public Bullet fireTo(ActionBind act, float offsetX, float offsetY) {
+		if (act == null) {
+			return this;
+		}
+		return setMoveTargetToRotation(
+				Vector2f.at(act.getX() + act.getWidth() / 2f + offsetX, act.getY() + act.getHeight() / 2f + offsetY));
 	}
 
 	public Bullet fireTo(XY pos) {

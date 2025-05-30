@@ -190,7 +190,7 @@ public class LDragging extends LComponent {
 		final float areaWidth = MathUtils.clamp(this._display_area.width, 1, getWidth());
 		final float areaHeight = MathUtils.clamp(this._display_area.height, 1, getHeight());
 		if (_circle) {
-			final float areaSize = MathUtils.max(areaWidth, areaHeight) + areaWidth / 32f;
+			final float areaSize = MathUtils.max(areaWidth, areaHeight) + areaWidth / LSystem.LAYER_TILE_SIZE;
 			if (_fillRect) {
 				float alpha = _fillColor.a;
 				if (alpha >= 1f) {
@@ -333,7 +333,7 @@ public class LDragging extends LComponent {
 		final float areaWidth = MathUtils.clamp(this._display_area.width, 1, getWidth());
 		final float areaHeight = MathUtils.clamp(this._display_area.height, 1, getHeight());
 		if (_circle) {
-			final float centerRadius = (MathUtils.max(areaWidth, areaHeight) + areaWidth / 32f / 2f + _lineWidth / 2f)
+			final float centerRadius = (MathUtils.max(areaWidth, areaHeight) + areaWidth / LSystem.LAYER_TILE_SIZE / 2f + _lineWidth / 2f)
 					/ 2f;
 			return new Circle(areaX + centerRadius, areaY + centerRadius, centerRadius);
 		} else {

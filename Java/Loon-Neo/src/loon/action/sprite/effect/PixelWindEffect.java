@@ -37,7 +37,7 @@ public class PixelWindEffect extends PixelBaseEffect {
 	private LColor[] colors;
 
 	public PixelWindEffect(LColor color) {
-		this(color, 32, 32, 64);
+		this(color, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 64);
 	}
 
 	public PixelWindEffect(LColor color, int s, int r, int time) {
