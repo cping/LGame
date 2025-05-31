@@ -916,6 +916,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new EffectTo(eff));
 	}
 
+	public ActionTween fireTo(ActionBind act, float speed) {
+		return event(new FireTo(act, speed));
+	}
+
 	public ActionTween fireTo(float endX, float endY, float speed) {
 		return event(new FireTo(endX, endY, speed));
 	}

@@ -280,6 +280,15 @@ public class StateManager implements LRelease {
 		}
 	}
 
+	public void pause() {
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
+			if (state != null) {
+				state.setState(State.WAIT);
+			}
+		}
+	}
+
 	@Override
 	public void close() {
 		for (int i = _states.size - 1; i > -1; i--) {

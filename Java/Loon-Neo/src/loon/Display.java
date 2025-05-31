@@ -26,7 +26,6 @@ import loon.action.ActionControl;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.font.IFont;
-import loon.opengl.GL20;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderSource;
 import loon.utils.ArrayByte;
@@ -179,9 +178,9 @@ public class Display extends BaseIO implements LRelease {
 
 	private boolean _closed, _autoUpdate, _autoRepaint;
 
-	private final long updateRate;
+	private final long _updateRate;
 
-	private long nextUpdate;
+	private long _nextUpdate;
 
 	private final static String FPS_STR = "FPS:";
 
@@ -203,15 +202,15 @@ public class Display extends BaseIO implements LRelease {
 
 	private GifEncoder gifEncoder;
 
-	private boolean videoScreenToGif;
+	private boolean _videoScreenToGif;
 
-	private boolean memorySelf;
+	private boolean _memorySelf;
 
 	private ArrayByteOutput videoCache;
 
 	private final LTimer videoDelay = new LTimer();
 
-	private Runtime runtime;
+	private Runtime _runtime;
 
 	private long _frameCount = 0l;
 
@@ -223,7 +222,7 @@ public class Display extends BaseIO implements LRelease {
 
 	private int _debugTextSpace = 0;
 
-	private IFont displayFont;
+	private IFont _displayFont;
 
 	private float cred, cgreen, cblue, calpha;
 
@@ -250,32 +249,31 @@ public class Display extends BaseIO implements LRelease {
 	private UpdatePort updatePort;
 
 	public Display(LGame g, long updateRate) {
-		this.updateRate = updateRate;
+		this._updateRate = updateRate;
 		this._game = g;
 		this._game.checkBaseGame(g);
 		this._setting = _game.setting;
 		this._process = _game.process();
 		this._sinceRefreshMaxInterval = LSystem.SECOND;
 		this._debugTextSpace = 5;
-		this.memorySelf = _game.isHTML5();
+		this._memorySelf = _game.isHTML5();
 		Graphics graphics = _game.graphics();
-		GL20 gl = graphics.gl;
-		this._glEx = new GLEx(graphics, graphics.defaultRenderTarget, gl);
+		this._glEx = new GLEx(graphics, graphics.defaultRenderTarget, graphics.gl);
 		this._glEx.update();
-		updateSyncTween(_setting.isSyncTween);
+		this.initGameDisplay(g);
+	}
+
+	protected void initGameDisplay(LGame game) {
+		this.updateSyncTween(game.setting.isSyncTween);
+		this.initDebugString();
+		this.autoDisplay();
+		game.setupDisplay(this);
+	}
+
+	protected void initDebugString() {
 		this.displayMemony = MEMORY_STR + "0";
 		this.displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
 		this.displayDrawCall = DRAWCALL_STR + "0";
-		if (!_setting.isLogo) {
-			_process.start();
-		}
-		_game.addStatus(new Port<LGame>() {
-			@Override
-			public void onEmit(LGame game) {
-				onFrame();
-			}
-		});
-		this.autoDisplay();
 	}
 
 	public Display autoDisplay() {
@@ -316,12 +314,12 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	protected void newDefView(boolean show) {
-		if (show && displayFont == null) {
-			this.displayFont = LSystem.getSystemLogFont();
+		if (show && _displayFont == null) {
+			this._displayFont = LSystem.getSystemLogFont();
 		}
 		if (show && _setting.isDisplayLog) {
-			if (displayFont != null) {
-				_logDisplay = new LogDisplay(displayFont);
+			if (_displayFont != null) {
+				_logDisplay = new LogDisplay(_displayFont);
 			} else {
 				_logDisplay = new LogDisplay();
 			}
@@ -518,7 +516,7 @@ public class Display extends BaseIO implements LRelease {
 			_process.unload();
 
 			// 如果存在屏幕录像设置
-			if (videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
+			if (_videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
 				if (videoDelay.action(clock)) {
 					Image tmp = GLUtils.getScreenshot();
 					Image image = null;
@@ -550,7 +548,7 @@ public class Display extends BaseIO implements LRelease {
 		}
 	}
 
-	private void onFrame() {
+	protected void onFrame() {
 		if (_closed) {
 			return;
 		}
@@ -559,15 +557,15 @@ public class Display extends BaseIO implements LRelease {
 		if (_autoUpdate) {
 			final int updateTick = _game.tick();
 			final long updateLoop = setting.fixedUpdateLoopTime;
-			long nextUpdate = this.nextUpdate;
+			long nextUpdate = this._nextUpdate;
 			if (updateTick >= nextUpdate) {
-				final long updateRate = this.updateRate;
+				final long updateRate = this._updateRate;
 				long updates = 0;
 				while (updateTick >= nextUpdate) {
 					nextUpdate += updateRate;
 					updates++;
 				}
-				this.nextUpdate = nextUpdate;
+				this._nextUpdate = nextUpdate;
 				final long updateDt = updates * updateRate;
 				updateClock.tick += updateDt;
 				if (updateLoop == -1) {
@@ -593,7 +591,7 @@ public class Display extends BaseIO implements LRelease {
 				paintClock.timeSinceLastUpdate = 0;
 			}
 			paintClock.tick = paintTick;
-			paintClock.alpha = 1f - (nextUpdate - paintTick) / (float) updateRate;
+			paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;
 			paint(paintClock);
 		}
 	}
@@ -626,7 +624,7 @@ public class Display extends BaseIO implements LRelease {
 				}
 				this._frameDelta = this._frameCount = 0;
 
-				if (this.memorySelf) {
+				if (this._memorySelf) {
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
 					displayMessage.append(MathUtils.abs(((LTextures.getMemSize() * 100) >> 20) / 10f));
@@ -634,16 +632,16 @@ public class Display extends BaseIO implements LRelease {
 					displayMessage.append('?');
 					displayMessage.append(" MB");
 				} else {
-					if (runtime == null) {
-						runtime = Runtime.getRuntime();
+					if (_runtime == null) {
+						_runtime = Runtime.getRuntime();
 					}
-					long totalMemory = runtime.totalMemory();
-					long currentMemory = totalMemory - runtime.freeMemory();
+					long totalMemory = _runtime.totalMemory();
+					long currentMemory = totalMemory - _runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
 					displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
 					displayMessage.append(" of ");
-					displayMessage.append(MathUtils.abs((runtime.maxMemory() * 10) >> 20) / 10f);
+					displayMessage.append(MathUtils.abs((_runtime.maxMemory() * 10) >> 20) / 10f);
 					displayMessage.append(" MB");
 				}
 				displayMemony = displayMessage.toString();
@@ -666,28 +664,28 @@ public class Display extends BaseIO implements LRelease {
 				displayDrawCall = displayMessage.toString();
 
 			}
-			if (displayFont != null) {
+			if (_displayFont != null) {
 
-				final int maxHeight = MathUtils.max(10, displayFont.getSize()) + 2;
+				final int maxHeight = MathUtils.max(10, _displayFont.getSize()) + 2;
 
 				// 显示fps速度
 				if (debug || setting.isFPS) {
-					displayFont.drawString(gl, FPS_STR + _frameRate, _debugTextSpace, _displayTop += _debugTextSpace, 0,
-							_debugFontColor);
+					_displayFont.drawString(gl, FPS_STR + _frameRate, _debugTextSpace, _displayTop += _debugTextSpace,
+							0, _debugFontColor);
 				}
 				// 显示内存占用
 				if (debug || setting.isMemory) {
-					displayFont.drawString(gl, displayMemony, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, displayMemony, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 显示精灵与组件数量
 				if (debug || setting.isSprites) {
-					displayFont.drawString(gl, displaySprites, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, displaySprites, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 显示渲染次数
 				if (debug || setting.isDrawCall) {
-					displayFont.drawString(gl, displayDrawCall, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, displayDrawCall, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
@@ -816,7 +814,7 @@ public class Display extends BaseIO implements LRelease {
 		gifEncoder = new GifEncoder();
 		gifEncoder.start(output);
 		gifEncoder.setDelay((int) delay);
-		videoScreenToGif = true;
+		_videoScreenToGif = true;
 		return gifEncoder;
 	}
 
@@ -829,7 +827,7 @@ public class Display extends BaseIO implements LRelease {
 		if (gifEncoder != null) {
 			gifEncoder.finish();
 		}
-		videoScreenToGif = false;
+		_videoScreenToGif = false;
 		return gifEncoder;
 	}
 
@@ -855,6 +853,9 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	public Display resize(int viewWidth, int viewHeight) {
+		if (_closed) {
+			return this;
+		}
 		_process.resize(viewWidth, viewHeight);
 		if (_glEx != null) {
 			_glEx.resize();
@@ -863,26 +864,35 @@ public class Display extends BaseIO implements LRelease {
 	}
 
 	public Display setScreen(Screen screen) {
+		if (_closed) {
+			return this;
+		}
 		_process.setScreen(screen);
 		return this;
 	}
 
 	public Display resume() {
+		if (_closed) {
+			return this;
+		}
 		_process.resume();
 		return this;
 	}
 
 	public Display pause() {
+		if (_closed) {
+			return this;
+		}
 		_process.pause();
 		return this;
 	}
 
 	public IFont getDisplayFont() {
-		return displayFont;
+		return _displayFont;
 	}
 
 	public Display setDisplayFont(IFont displayFont) {
-		this.displayFont = displayFont;
+		this._displayFont = displayFont;
 		return this;
 	}
 
@@ -902,9 +912,9 @@ public class Display extends BaseIO implements LRelease {
 	public void close() {
 		this._closed = true;
 		this.stopAutoDisplay();
-		if (this.displayFont != null) {
-			this.displayFont.close();
-			this.displayFont = null;
+		if (this._displayFont != null) {
+			this._displayFont.close();
+			this._displayFont = null;
 		}
 		if (this.logoTex != null) {
 			this.logoTex.close();

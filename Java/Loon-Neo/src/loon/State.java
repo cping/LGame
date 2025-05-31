@@ -40,8 +40,9 @@ public abstract class State implements LRelease {
 	public final static int LOADED = 2;
 	public final static int UPDATING = 3;
 	public final static int DRAWING = 4;
-	public final static int END = 5;
-	public final static int DISPOSED = 6;
+	public final static int WAIT = 5;
+	public final static int END = 6;
+	public final static int DISPOSED = 7;
 
 	protected StateManager _stateManager;
 
@@ -184,6 +185,10 @@ public abstract class State implements LRelease {
 
 	public boolean isDisposed() {
 		return _value >= DISPOSED;
+	}
+
+	public boolean isWaiting() {
+		return _value == WAIT;
 	}
 
 	public boolean isActive() {

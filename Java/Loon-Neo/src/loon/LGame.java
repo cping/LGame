@@ -86,6 +86,48 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
+	private final class DisplayPort extends Port<LGame> {
+
+		private final Display _display;
+
+		DisplayPort(Display d) {
+			this._display = d;
+		}
+
+		@Override
+		public void onEmit(LGame e) {
+			_display.onFrame();
+		}
+	}
+
+	private final class GameStatusPort extends Port<LGame.Status> {
+
+		private final LGame _game;
+
+		GameStatusPort(LGame g) {
+			this._game = g;
+		}
+
+		@Override
+		public void onEmit(LGame.Status e) {
+			switch (e) {
+			case EXIT:
+				_game.stop();
+				break;
+			case RESUME:
+				LSystem.PAUSED = false;
+				_game.resume();
+				break;
+			case PAUSE:
+				LSystem.PAUSED = true;
+				_game.pause();
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	protected static final String FONT_NAME = "Dialog";
 
 	protected static final String APP_NAME = "Loon";
@@ -176,39 +218,33 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
-	public LGame addStatus(Port<LGame> game) {
-		frame.connect(game);
-		status.connect(new Port<LGame.Status>() {
-
-			@Override
-			public void onEmit(Status event) {
-				switch (event) {
-				case EXIT:
-					stop();
-					break;
-				case RESUME:
-					LSystem.PAUSED = false;
-					resume();
-					break;
-				case PAUSE:
-					LSystem.PAUSED = true;
-					pause();
-					break;
-				default:
-					break;
-				}
-			}
-		});
-		return this;
+	protected void setupDisplay(Display d) {
+		frame.connect(new DisplayPort(d));
+		status.connect(new GameStatusPort(this));
+		if (!setting.isLogo && processImpl != null) {
+			processImpl.start();
+		}
 	}
 
-	public LGame removeStatus() {
+	public LGame removePorts() {
 		if (!errors.isClosed()) {
 			errors.clearConnections();
 		}
 		if (!status.isClosed()) {
 			status.clearConnections();
 		}
+		if (!frame.isClosed()) {
+			frame.clearConnections();
+		}
+		return this;
+	}
+
+	public LGame addFrame(Port<LGame> game) {
+		frame.connect(game);
+		return this;
+	}
+
+	public LGame removeFrame() {
 		if (!frame.isClosed()) {
 			frame.clearConnections();
 		}
@@ -1332,7 +1368,7 @@ public abstract class LGame implements LRelease {
 
 	@Override
 	public void close() {
-		removeStatus();
+		removePorts();
 		if (assets() != null) {
 			assets().close();
 		}

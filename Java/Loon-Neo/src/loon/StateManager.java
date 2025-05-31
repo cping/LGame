@@ -255,6 +255,15 @@ public class StateManager implements LRelease {
 		return this;
 	}
 
+	protected void pause() {
+		for (int i = _states.size - 1; i > -1; i--) {
+			State state = _states.get(i);
+			if (state != null) {
+				state.setState(State.WAIT);
+			}
+		}
+	}
+
 	public void update(float delta) {
 		if (_currentIndex > -1) {
 			State state = _states.get(_currentIndex);

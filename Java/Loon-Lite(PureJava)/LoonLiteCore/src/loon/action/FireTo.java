@@ -35,6 +35,11 @@ public class FireTo extends ActionEvent {
 
 	private float speed;
 
+	public FireTo(ActionBind act, float speed) {
+		this(act == null ? 0f : act.getX() + act.getWidth() / 2f, act == null ? 0f : act.getY() + act.getHeight() / 2f,
+				speed);
+	}
+
 	public FireTo(float endX, float endY, float speed) {
 		this.endX = endX;
 		this.endY = endY;

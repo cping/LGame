@@ -443,6 +443,9 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void pause() {
+		if (_stateExisting) {
+			_stateManager.pause();
+		}
 	}
 
 	/**

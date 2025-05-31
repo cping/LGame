@@ -271,6 +271,12 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		_stateManager.add(name, state);
 		return this;
 	}
+	
+	protected void onPause() {
+		if(_stateExisting) {
+			_stateManager.pause();
+		}
+	}
 
 	@Override
 	public LTransition onTransition() {
