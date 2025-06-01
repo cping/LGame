@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.action;
 
 public interface Flip<T> {
 

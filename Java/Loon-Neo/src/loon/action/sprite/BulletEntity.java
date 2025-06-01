@@ -163,6 +163,7 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addCircleBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
 			float h, float size, float space) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		float count = MathUtils.DEG_FULL / size;
 		float dot = count / 10f;
 		for (int i = 0; i < MathUtils.DEG_FULL; i += count) {
@@ -174,8 +175,9 @@ public class BulletEntity extends Entity {
 			}
 			bullet.fireTo(newX, newY);
 			addBullet(bullet);
+			result.add(bullet);
 		}
-		return new TArray<Bullet>(bullets);
+		return result;
 	}
 
 	/**
@@ -331,17 +333,20 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addUpDownBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
 			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.TUP);
 		if (w != -1f && h != -1f) {
 			upBullet.setSize(w, h);
 		}
 		addBullet(upBullet);
+		result.add(upBullet);
 		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.TDOWN);
 		if (w != -1f && h != -1f) {
 			downBullet.setSize(w, h);
 		}
 		addBullet(downBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(downBullet);
+		return result;
 	}
 
 	/**
@@ -399,27 +404,32 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addCorssBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
 			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.TUP);
 		if (w != -1f && h != -1f) {
 			upBullet.setSize(w, h);
 		}
 		addBullet(upBullet);
+		result.add(upBullet);
 		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.TDOWN);
 		if (w != -1f && h != -1f) {
 			downBullet.setSize(w, h);
 		}
 		addBullet(downBullet);
+		result.add(downBullet);
 		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.TLEFT);
 		if (w != -1f && h != -1f) {
 			leftBullet.setSize(w, h);
 		}
 		addBullet(leftBullet);
+		result.add(leftBullet);
 		Bullet rightBullet = new Bullet(easing, ani, startX, startY, Config.TRIGHT);
 		if (w != -1f && h != -1f) {
 			rightBullet.setSize(w, h);
 		}
 		addBullet(rightBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(rightBullet);
+		return result;
 	}
 
 	/**
@@ -475,27 +485,32 @@ public class BulletEntity extends Entity {
 	 * @return
 	 */
 	public TArray<Bullet> addXBullets(EasingMode easing, Animation ani, float startX, float startY, float w, float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.UP);
 		if (w != -1f && h != -1f) {
 			upBullet.setSize(w, h);
 		}
 		addBullet(upBullet);
+		result.add(upBullet);
 		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
 		if (w != -1f && h != -1f) {
 			downBullet.setSize(w, h);
 		}
 		addBullet(downBullet);
+		result.add(downBullet);
 		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
 		if (w != -1f && h != -1f) {
 			leftBullet.setSize(w, h);
 		}
 		addBullet(leftBullet);
+		result.add(leftBullet);
 		Bullet rightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
 		if (w != -1f && h != -1f) {
 			rightBullet.setSize(w, h);
 		}
 		addBullet(rightBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(rightBullet);
+		return result;
 	}
 
 	/**
@@ -553,17 +568,20 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addBevelUpDownBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
 			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.UP);
 		if (w != -1f && h != -1f) {
 			upBullet.setSize(w, h);
 		}
 		addBullet(upBullet);
+		result.add(upBullet);
 		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
 		if (w != -1f && h != -1f) {
 			downBullet.setSize(w, h);
 		}
 		addBullet(downBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(downBullet);
+		return result;
 	}
 
 	/**
@@ -621,17 +639,20 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addBevelLeftRightBullets(EasingMode easing, Animation ani, float startX, float startY,
 			float w, float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
 		if (w != -1f && h != -1f) {
 			leftBullet.setSize(w, h);
 		}
 		addBullet(leftBullet);
+		result.add(leftBullet);
 		Bullet rightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
 		if (w != -1f && h != -1f) {
 			rightBullet.setSize(w, h);
 		}
 		addBullet(rightBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(rightBullet);
+		return result;
 	}
 
 	/**
@@ -689,17 +710,328 @@ public class BulletEntity extends Entity {
 	 */
 	public TArray<Bullet> addLeftRightBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
 			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
 		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.TLEFT);
 		if (w != -1f && h != -1f) {
 			leftBullet.setSize(w, h);
 		}
 		addBullet(leftBullet);
+		result.add(leftBullet);
 		Bullet rightBullet = new Bullet(easing, ani, startX, startY, Config.TRIGHT);
 		if (w != -1f && h != -1f) {
 			rightBullet.setSize(w, h);
 		}
 		addBullet(rightBullet);
-		return new TArray<Bullet>(bullets);
+		result.add(rightBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向下方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addThreeDownBullets(String path, float startX, float startY) {
+		return addThreeDownBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向下方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeDownBullets(String path, float startX, float startY, float w, float h) {
+		return addThreeDownBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向下方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeDownBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addThreeDownBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向下方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeDownBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.TDOWN);
+		if (w != -1f && h != -1f) {
+			downBullet.setSize(w, h);
+		}
+		addBullet(downBullet);
+		result.add(downBullet);
+		Bullet dupBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
+		if (w != -1f && h != -1f) {
+			dupBullet.setSize(w, h);
+		}
+		addBullet(dupBullet);
+		result.add(dupBullet);
+		Bullet drightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
+		if (w != -1f && h != -1f) {
+			drightBullet.setSize(w, h);
+		}
+		addBullet(drightBullet);
+		result.add(drightBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向上方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addThreeUpBullets(String path, float startX, float startY) {
+		return addThreeUpBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向上方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeUpBullets(String path, float startX, float startY, float w, float h) {
+		return addThreeUpBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向上方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeUpBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addThreeUpBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向上方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeUpBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.TUP);
+		if (w != -1f && h != -1f) {
+			upBullet.setSize(w, h);
+		}
+		addBullet(upBullet);
+		result.add(upBullet);
+		Bullet dupBullet = new Bullet(easing, ani, startX, startY, Config.UP);
+		if (w != -1f && h != -1f) {
+			dupBullet.setSize(w, h);
+		}
+		addBullet(dupBullet);
+		result.add(dupBullet);
+		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
+		if (w != -1f && h != -1f) {
+			leftBullet.setSize(w, h);
+		}
+		addBullet(leftBullet);
+		result.add(leftBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向左方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addThreeLeftBullets(String path, float startX, float startY) {
+		return addThreeLeftBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向左方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeLeftBullets(String path, float startX, float startY, float w, float h) {
+		return addThreeLeftBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向左方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeLeftBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addThreeLeftBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向左方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeLeftBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.TLEFT);
+		if (w != -1f && h != -1f) {
+			leftBullet.setSize(w, h);
+		}
+		addBullet(leftBullet);
+		result.add(leftBullet);
+		Bullet dleftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
+		if (w != -1f && h != -1f) {
+			dleftBullet.setSize(w, h);
+		}
+		addBullet(dleftBullet);
+		result.add(dleftBullet);
+		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
+		if (w != -1f && h != -1f) {
+			downBullet.setSize(w, h);
+		}
+		addBullet(downBullet);
+		result.add(downBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向右方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addThreeRightBullets(String path, float startX, float startY) {
+		return addThreeRightBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向右方三个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeRightBullets(String path, float startX, float startY, float w, float h) {
+		return addThreeRightBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向右方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeRightBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addThreeRightBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向右方三个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addThreeRightBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet rightBullet = new Bullet(easing, ani, startX, startY, Config.TRIGHT);
+		if (w != -1f && h != -1f) {
+			rightBullet.setSize(w, h);
+		}
+		addBullet(rightBullet);
+		result.add(rightBullet);
+		Bullet drightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
+		if (w != -1f && h != -1f) {
+			drightBullet.setSize(w, h);
+		}
+		addBullet(drightBullet);
+		result.add(drightBullet);
+		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.UP);
+		if (w != -1f && h != -1f) {
+			upBullet.setSize(w, h);
+		}
+		addBullet(upBullet);
+		result.add(upBullet);
+		return result;
 	}
 
 	public Bullet addBullet(LTexture texture, float x, float y, int dir) {

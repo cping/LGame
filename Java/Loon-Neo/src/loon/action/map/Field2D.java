@@ -372,35 +372,42 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 	}
 
-	public final static Vector2f getDirectionToPoint(int dir, int value) {
-		Vector2f direction = null;
+	public final static Vector2f getDirectionToPoint(int dir, int v) {
+		return getDirectionToPoint(dir, v, new Vector2f());
+	}
+
+	public final static Vector2f getDirectionToPoint(int dir, int v, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		final Vector2f direction = out;
 		switch (dir) {
 		case Config.UP:
-			direction = new Vector2f(value, -value);
+			direction.set(v, -v);
 			break;
 		case Config.LEFT:
-			direction = new Vector2f(-value, -value);
+			direction.set(-v, -v);
 			break;
 		case Config.RIGHT:
-			direction = new Vector2f(value, value);
+			direction.set(v, v);
 			break;
 		case Config.DOWN:
-			direction = new Vector2f(-value, value);
+			direction.set(-v, v);
 			break;
 		case Config.TUP:
-			direction = new Vector2f(0, -value);
+			direction.set(0, -v);
 			break;
 		case Config.TLEFT:
-			direction = new Vector2f(-value, 0);
+			direction.set(-v, 0);
 			break;
 		case Config.TRIGHT:
-			direction = new Vector2f(value, 0);
+			direction.set(v, 0);
 			break;
 		case Config.TDOWN:
-			direction = new Vector2f(0, value);
+			direction.set(0, v);
 			break;
 		default:
-			direction = new Vector2f(0, 0);
+			direction.set(0, 0);
 			break;
 		}
 		return direction;

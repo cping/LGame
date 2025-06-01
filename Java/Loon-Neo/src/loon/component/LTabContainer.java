@@ -127,11 +127,13 @@ public class LTabContainer extends LContainer {
 		return setCurTab(getComponentCount() - 1);
 	}
 
+	@Override
 	public LTabContainer setActive(boolean a) {
 		this._active = a;
 		return this;
 	}
 
+	@Override
 	public boolean isActive() {
 		return this._active;
 	}

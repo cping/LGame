@@ -24,9 +24,9 @@ import java.util.Comparator;
 
 import loon.LRelease;
 import loon.LTexture;
+import loon.action.Flip;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
-import loon.utils.Flip;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 

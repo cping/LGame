@@ -20,7 +20,6 @@
  */
 package loon.action;
 
-import loon.utils.Flip;
 import loon.utils.StringKeyValue;
 
 public class FlipXTo extends ActionEvent {

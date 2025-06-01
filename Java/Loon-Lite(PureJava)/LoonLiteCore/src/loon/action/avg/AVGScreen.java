@@ -879,6 +879,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * @param font
 	 */
 	public AVGScreen setFont(final IFont font) {
+		if (font == this._font) {
+			return this;
+		}
 		this._font = font;
 		if (messageUI != null) {
 			messageUI.setMessageFont(font);

@@ -22,10 +22,10 @@ package loon;
 
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.Flip;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.geom.RectBox;
-import loon.utils.Flip;
 import loon.utils.MathUtils;
 
 public class ScreenAction implements Flip<Screen>, ActionBind {

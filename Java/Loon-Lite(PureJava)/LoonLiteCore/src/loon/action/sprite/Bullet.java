@@ -54,14 +54,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	protected static float INIT_DURATION = 1f;
 
-	private int bulletType;
-	private int direction;
-	private int initSpeed;
+	private int _bulletType;
+	private int _direction;
+	private int _initSpeed;
 
-	private Vector2f speed;
-	private Animation animation;
+	private final Vector2f _speed = new Vector2f();
+	private Animation _animation;
 
-	private BulletListener listener;
+	private BulletListener _listener;
 
 	private boolean _dirToAngle;
 	private boolean _visible;
@@ -73,9 +73,9 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	private float _scaleY;
 	private float _scaleSpeed;
 
-	private LColor baseColor;
+	private LColor _baseColor;
 
-	private EaseTimer easeTimer;
+	private EaseTimer _easeTimer;
 
 	public Bullet(EasingMode easingMode, LTexture tex, float x, float y) {
 		this(easingMode, tex, x, y, 0, INIT_DURATION);
@@ -138,12 +138,12 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 			int bulletInitSpeed, float duration) {
 		this.setLocation(x, y);
 		this.setObjectFlag(BUTTLE_DEFAULT_NAME);
-		this.easeTimer = new EaseTimer(duration, easingMode);
-		this.baseColor = LColor.white.cpy();
-		this.animation = ani;
-		this.direction = dir;
-		this.initSpeed = bulletInitSpeed;
-		this.bulletType = bulletType;
+		this._easeTimer = new EaseTimer(duration, easingMode);
+		this._baseColor = LColor.white.cpy();
+		this._animation = ani;
+		this._initSpeed = bulletInitSpeed;
+		this._bulletType = bulletType;
+		this._direction = -1;
 		this._scaleX = this._scaleY = 1f;
 		this._scaleSpeed = 1f;
 		this._visible = true;
@@ -151,16 +151,16 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		this._active = true;
 		this._width = w;
 		this._height = h;
-		this.setDirection(this.direction);
+		this.setDirection(dir);
 	}
 
 	public Bullet setListener(BulletListener l) {
-		this.listener = l;
+		this._listener = l;
 		return this;
 	}
 
 	public BulletListener getListener() {
-		return this.listener;
+		return this._listener;
 	}
 
 	public void draw(GLEx g) {
@@ -172,14 +172,14 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 			return;
 		}
 		onDrawable(g, offsetX, offsetY);
-		if (animation != null) {
-			LTexture texture = animation.getSpriteImage();
-			float tmp = baseColor.a;
+		if (_animation != null) {
+			LTexture texture = _animation.getSpriteImage();
+			float tmp = _baseColor.a;
 			if (texture != null) {
 				g.draw(texture, getX() + offsetX, getY() + offsetY, getWidth(), getHeight(),
-						baseColor.setAlpha(_objectAlpha), _objectRotation);
+						_baseColor.setAlpha(_objectAlpha), _objectRotation);
 			}
-			baseColor.a = tmp;
+			_baseColor.a = tmp;
 		}
 	}
 
@@ -188,16 +188,16 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		if (_destroyed) {
 			return;
 		}
-		if ((speed.getX() == 0) && (speed.getY() == 0)) {
+		if ((_speed.getX() == 0) && (_speed.getY() == 0)) {
 			this._active = false;
 		}
 		if (_active) {
 			onUpdateable(elapsedTime);
-			animation.update(elapsedTime);
-			easeTimer.update(elapsedTime);
-			float delta = easeTimer.getProgress();
-			float x = getX() + speed.getX() * delta;
-			float y = getY() + speed.getY() * delta;
+			_animation.update(elapsedTime);
+			_easeTimer.update(elapsedTime);
+			float delta = _easeTimer.getProgress();
+			float x = getX() + _speed.getX() * delta;
+			float y = getY() + _speed.getY() * delta;
 			setLocation(x, y);
 		}
 	}
@@ -215,38 +215,36 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 			return this;
 		}
 		this._scaleSpeed = s;
-		if (speed != null) {
-			speed.mulSelf(s);
-		}
+		this._speed.mulSelf(s);
 		return this;
 	}
 
 	protected void onAttached() {
-		if (listener != null) {
-			listener.attached(this);
+		if (_listener != null) {
+			_listener.attached(this);
 		}
 	}
 
 	protected void onDetached() {
-		if (listener != null) {
-			listener.detached(this);
+		if (_listener != null) {
+			_listener.detached(this);
 		}
 	}
 
 	protected void onDrawable(GLEx g, float offsetX, float offsetY) {
-		if (listener != null) {
-			listener.drawable(g, this);
+		if (_listener != null) {
+			_listener.drawable(g, this);
 		}
 	}
 
 	protected void onUpdateable(long elapsedTime) {
-		if (listener != null) {
-			listener.updateable(elapsedTime, this);
+		if (_listener != null) {
+			_listener.updateable(elapsedTime, this);
 		}
 	}
 
 	public int getDirection() {
-		return direction;
+		return _direction;
 	}
 
 	public boolean isDirToAngle() {
@@ -259,29 +257,29 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	}
 
 	public Vector2f getSpeed() {
-		return speed.cpy();
+		return _speed.cpy();
 	}
 
 	public Bullet setSpeedX(int x) {
-		speed.setX(x);
+		_speed.setX(x);
 		return this;
 	}
 
 	public Bullet setSpeedY(int y) {
-		speed.setX(y);
+		_speed.setX(y);
 		return this;
 	}
 
 	public Bullet setInitSpeed(int s) {
-		if (this.initSpeed != s) {
-			this.initSpeed = s;
-			this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
+		if (this._initSpeed != s) {
+			this._initSpeed = s;
+			Field2D.getDirectionToPoint(this._direction, this._initSpeed, this._speed);
 		}
 		return this;
 	}
 
 	public int getInitSpeed() {
-		return this.initSpeed;
+		return this._initSpeed;
 	}
 
 	public Bullet fireTo(ISprite spr) {
@@ -331,26 +329,20 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		if (_dirToAngle) {
 			this.setRotation(rot);
 		}
-		this.direction = Field2D.getDirection(getLocation(), target);
+		this._direction = Field2D.getDirection(getLocation(), target);
 		float dir = MathUtils.atan2(target.getY() - getY(), target.getX() - getX());
-		float sx = (MathUtils.cos(dir) * this.initSpeed);
-		float sy = (MathUtils.sin(dir) * this.initSpeed);
-		if (this.speed == null) {
-			this.speed = new Vector2f(sx, sy);
-		} else {
-			this.speed.setLocation(sx, sy);
-		}
+		float sx = (MathUtils.cos(dir) * this._initSpeed);
+		float sy = (MathUtils.sin(dir) * this._initSpeed);
+		this._speed.setLocation(sx, sy);
 		return this;
 	}
 
 	public Bullet setDirection(int dir) {
-		if (this.direction != dir || this.speed == null) {
-			this.speed = Field2D.getDirectionToPoint(this.direction, this.initSpeed);
-			if (_dirToAngle) {
-				this.setRotation(Field2D.getDirectionToAngle(dir));
-			}
+		Field2D.getDirectionToPoint(dir, this._initSpeed, _speed);
+		if (_dirToAngle) {
+			this.setRotation(Field2D.getDirectionToAngle(dir));
 		}
-		this.direction = dir;
+		this._direction = dir;
 		return this;
 	}
 
@@ -371,11 +363,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	}
 
 	public Animation getAnimation() {
-		return animation;
+		return _animation;
 	}
 
 	public LTexture getTexture() {
-		return animation.getSpriteImage();
+		return _animation == null ? null : _animation.getSpriteImage();
 	}
 
 	@Override
@@ -434,12 +426,13 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	@Override
 	public float getWidth() {
-		return _width > 1 ? (_width * this._scaleX) : animation == null ? 0 : (animation.getWidth() * this._scaleX);
+		return _width > 1 ? (_width * this._scaleX) : _animation == null ? 0 : (_animation.getWidth() * this._scaleX);
 	}
 
 	@Override
 	public float getHeight() {
-		return _height > 1 ? (_height * this._scaleY) : animation == null ? 0 : (animation.getHeight() * this._scaleY);
+		return _height > 1 ? (_height * this._scaleY)
+				: _animation == null ? 0 : (_animation.getHeight() * this._scaleY);
 	}
 
 	@Override
@@ -454,12 +447,12 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	@Override
 	public LColor getColor() {
-		return baseColor.cpy();
+		return _baseColor == null ? null : _baseColor.cpy();
 	}
 
 	@Override
 	public void setColor(LColor newColor) {
-		this.baseColor = newColor;
+		this._baseColor = newColor;
 	}
 
 	@Override
@@ -525,11 +518,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	}
 
 	public int getBulletType() {
-		return bulletType;
+		return _bulletType;
 	}
 
 	public Bullet setBulletType(int bulletType) {
-		this.bulletType = bulletType;
+		this._bulletType = bulletType;
 		return this;
 	}
 
@@ -550,11 +543,11 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	@Override
 	protected void _onDestroy() {
-		if (animation != null) {
-			animation.close();
-			animation = null;
+		if (_animation != null) {
+			_animation.close();
+			_animation = null;
 		}
-		listener = null;
+		_listener = null;
 		_visible = false;
 	}
 
