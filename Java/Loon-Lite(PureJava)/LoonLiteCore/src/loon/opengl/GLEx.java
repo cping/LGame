@@ -2082,11 +2082,11 @@ public class GLEx implements LRelease {
 		float y2 = y + (r * MathUtils.sin(triangleValue));
 		float x3 = x + (r * MathUtils.cos(triangleValue));
 		float y3 = y + (r * MathUtils.sin(triangleValue));
-		float[] xpos = new float[3];
+		final float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;
-		float[] ypos = new float[3];
+		final float[] ypos = new float[3];
 		ypos[0] = y1;
 		ypos[1] = y2;
 		ypos[2] = y3;
@@ -2110,11 +2110,11 @@ public class GLEx implements LRelease {
 		float y2 = y - (r * MathUtils.sin(triangleValue));
 		float x3 = x + (r * MathUtils.cos(triangleValue));
 		float y3 = y - (r * MathUtils.sin(triangleValue));
-		float[] xpos = new float[3];
+		final float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;
-		float[] ypos = new float[3];
+		final float[] ypos = new float[3];
 		ypos[0] = y1;
 		ypos[1] = y2;
 		ypos[2] = y3;
@@ -2135,8 +2135,8 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx drawTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-		float[] xpos = new float[3];
-		float[] ypos = new float[3];
+		final float[] xpos = new float[3];
+		final float[] ypos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;
@@ -2159,8 +2159,8 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx fillTriangle(final float x1, final float y1, final float x2, final float y2, final float x3,
 			final float y3) {
-		float[] xpos = new float[3];
-		float[] ypos = new float[3];
+		final float[] xpos = new float[3];
+		final float[] ypos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;

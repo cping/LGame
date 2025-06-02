@@ -850,6 +850,18 @@ public abstract class LContainer extends LComponent implements IArray {
 		return null;
 	}
 
+	public LComponent unparent() {
+		if (_destroyed) {
+			return this;
+		}
+		LContainer c = this.getSuper();
+		if (c != null) {
+			c.remove(this);
+			this.setSuper(null);
+		}
+		return this;
+	}
+
 	@Override
 	public void clear() {
 		if (_destroyed) {

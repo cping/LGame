@@ -46,19 +46,29 @@ import loon.utils.timer.LTimerContext;
  * 一个游戏中，可以存在多个甚至海量的Bullet, 如果子弹过多时,可以使用CacheManager管理子弹的生命周期.
  * 
  */
-public class Bullet extends LObject<Bullet> implements CollisionObject {
+public class Bullet extends LObject<BulletEntity> implements CollisionObject {
+
+	public static enum WaveType {
+		None, Cos, Sin
+	}
 
 	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
 
+	// 初始化的子弹移动速度设定
 	protected static int INIT_MOVE_SPEED = 50;
 
-	protected static float INIT_DURATION = 1f;
+	// 初始化的缓动动画持续时长设定
+	protected static float INIT_DURATION = 2f;
+
+	private WaveType _waveType;
 
 	private int _bulletType;
 	private int _direction;
 	private int _initSpeed;
 
 	private final Vector2f _speed = new Vector2f();
+	private final Vector2f _waveOffset = new Vector2f();
+
 	private Animation _animation;
 
 	private BulletListener _listener;
@@ -66,12 +76,17 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 	private boolean _dirToAngle;
 	private boolean _visible;
 	private boolean _active;
+	private boolean _autoRemoved;
 
 	private float _width;
 	private float _height;
 	private float _scaleX;
 	private float _scaleY;
 	private float _scaleSpeed;
+	private float _waveamplitude;
+	private float _wavefrequency;
+	private float _lifeTimer;
+	private float _lifeCounter;
 
 	private LColor _baseColor;
 
@@ -139,19 +154,74 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 		this.setLocation(x, y);
 		this.setObjectFlag(BUTTLE_DEFAULT_NAME);
 		this._easeTimer = new EaseTimer(duration, easingMode);
+		this._waveType = WaveType.None;
 		this._baseColor = LColor.white.cpy();
 		this._animation = ani;
 		this._initSpeed = bulletInitSpeed;
 		this._bulletType = bulletType;
 		this._direction = -1;
+		this._lifeTimer = this._lifeCounter = 0f;
 		this._scaleX = this._scaleY = 1f;
+		this._waveamplitude = this._wavefrequency = 1f;
 		this._scaleSpeed = 1f;
 		this._visible = true;
 		this._dirToAngle = true;
 		this._active = true;
+		this._autoRemoved = true;
 		this._width = w;
 		this._height = h;
 		this.setDirection(dir);
+	}
+
+	public WaveType getWaveType() {
+		return this._waveType;
+	}
+
+	public Bullet setWaveType(WaveType w) {
+		if (w == null) {
+			this._waveType = WaveType.None;
+			return this;
+		}
+		this._waveType = w;
+		return this;
+	}
+
+	public Bullet setWaveAmplitude(float a) {
+		this._waveamplitude = a;
+		return this;
+	}
+
+	public float getWaveAmplitude() {
+		return this._waveamplitude;
+	}
+
+	public Bullet setWaveFrequency(float f) {
+		this._wavefrequency = f;
+		return this;
+	}
+
+	public float getWaveFrequency() {
+		return this._wavefrequency;
+	}
+
+	public Bullet setEaseTimerLoop(boolean l) {
+		if (this._easeTimer != null) {
+			this._easeTimer.setLoop(l);
+		}
+		return this;
+	}
+
+	public boolean isEaseTimerLoop() {
+		return this._easeTimer != null ? false : this._easeTimer.isLoop();
+	}
+
+	public boolean isAutoRemoved() {
+		return this._autoRemoved;
+	}
+
+	public Bullet setAutoRemoved(boolean a) {
+		this._autoRemoved = a;
+		return this;
 	}
 
 	public Bullet setListener(BulletListener l) {
@@ -161,6 +231,20 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 
 	public BulletListener getListener() {
 		return this._listener;
+	}
+
+	public Bullet setDuration(float d) {
+		this._easeTimer.setDuration(d);
+		return this;
+	}
+
+	public float getLifeTimer() {
+		return this._lifeTimer;
+	}
+
+	public Bullet setLifeTimer(float f) {
+		this._lifeTimer = f;
+		return this;
 	}
 
 	public void draw(GLEx g) {
@@ -195,11 +279,61 @@ public class Bullet extends LObject<Bullet> implements CollisionObject {
 			onUpdateable(elapsedTime);
 			_animation.update(elapsedTime);
 			_easeTimer.update(elapsedTime);
-			float delta = _easeTimer.getProgress();
-			float x = getX() + _speed.getX() * delta;
-			float y = getY() + _speed.getY() * delta;
-			setLocation(x, y);
+			if (!checkLifeOver(_listener)) {
+				Vector2f speedOffset = getWaveSpeedOffset(_easeTimer);
+				setLocation(getX() + speedOffset.x, getY() + speedOffset.y);
+			}
 		}
+	}
+
+	/**
+	 * 如果子弹生命周期到时,触发监听
+	 * 
+	 * @param l
+	 */
+	protected boolean checkLifeOver(BulletListener l) {
+		if (_lifeTimer > 0f) {
+			if (_lifeCounter >= _lifeTimer) {
+				if (l != null) {
+					l.lifeover(this);
+				}
+				if (_autoRemoved) {
+					BulletEntity bm = getSuper();
+					if (bm != null) {
+						bm.removeBullet(this);
+					}
+				}
+				_lifeCounter = 0f;
+				return true;
+			}
+			_lifeCounter += _easeTimer.getDelta();
+		}
+		return false;
+	}
+
+	/**
+	 * 当设定waveType类型为sin或cos时,会根据waveamplitude以及wavefrequency参数调整子弹的波形轨迹
+	 * 
+	 * @param ease
+	 * @return
+	 */
+	protected Vector2f getWaveSpeedOffset(EaseTimer ease) {
+		float delta = _easeTimer.getProgress();
+		float angle = 0f;
+		switch (_waveType) {
+		case Sin:
+			angle = _waveamplitude * MathUtils.sin(delta * MathUtils.PI * 2f * _wavefrequency);
+			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
+			break;
+		case Cos:
+			angle = _waveamplitude * MathUtils.cos(delta * MathUtils.PI * 2f * _wavefrequency);
+			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
+			break;
+		default:
+			_waveOffset.set(_speed.getX() * delta, _speed.getY() * delta);
+			break;
+		}
+		return _waveOffset;
 	}
 
 	public void update(LTimerContext time) {

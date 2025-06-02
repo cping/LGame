@@ -31,6 +31,7 @@ import loon.action.collision.CollisionObject;
 import loon.action.collision.CollisionResult;
 import loon.action.collision.CollisionWorld;
 import loon.action.map.Config;
+import loon.action.sprite.Bullet.WaveType;
 import loon.canvas.LColor;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
@@ -45,6 +46,9 @@ import loon.utils.TArray;
  */
 public class BulletEntity extends Entity {
 
+	/**
+	 * 子弹状态监听用类
+	 */
 	public static interface BulletListener {
 
 		public void attached(Bullet bullet);
@@ -54,6 +58,8 @@ public class BulletEntity extends Entity {
 		public void drawable(GLEx g, Bullet bullet);
 
 		public void updateable(long elapsedTime, Bullet bullet);
+
+		public void lifeover(Bullet bullet);
 	}
 
 	public static float getBallisticRange(float speed, float gravity, float iheight) {
@@ -1034,6 +1040,290 @@ public class BulletEntity extends Entity {
 		return result;
 	}
 
+	/**
+	 * 同时向下方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addTwoDownBullets(String path, float startX, float startY) {
+		return addTwoDownBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向下方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoDownBullets(String path, float startX, float startY, float w, float h) {
+		return addTwoDownBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向下方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoDownBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addTwoDownBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向下方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoDownBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet dupBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
+		if (w != -1f && h != -1f) {
+			dupBullet.setSize(w, h);
+		}
+		addBullet(dupBullet);
+		result.add(dupBullet);
+		Bullet drightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
+		if (w != -1f && h != -1f) {
+			drightBullet.setSize(w, h);
+		}
+		addBullet(drightBullet);
+		result.add(drightBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向上方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addTwoUpBullets(String path, float startX, float startY) {
+		return addTwoUpBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向上方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoUpBullets(String path, float startX, float startY, float w, float h) {
+		return addTwoUpBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向上方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoUpBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addTwoUpBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向上方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoUpBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet dupBullet = new Bullet(easing, ani, startX, startY, Config.UP);
+		if (w != -1f && h != -1f) {
+			dupBullet.setSize(w, h);
+		}
+		addBullet(dupBullet);
+		result.add(dupBullet);
+		Bullet leftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
+		if (w != -1f && h != -1f) {
+			leftBullet.setSize(w, h);
+		}
+		addBullet(leftBullet);
+		result.add(leftBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向左方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addTwoLeftBullets(String path, float startX, float startY) {
+		return addTwoLeftBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向左方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoLeftBullets(String path, float startX, float startY, float w, float h) {
+		return addTwoLeftBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向左方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoLeftBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addTwoLeftBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向左方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoLeftBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet dleftBullet = new Bullet(easing, ani, startX, startY, Config.LEFT);
+		if (w != -1f && h != -1f) {
+			dleftBullet.setSize(w, h);
+		}
+		addBullet(dleftBullet);
+		result.add(dleftBullet);
+		Bullet downBullet = new Bullet(easing, ani, startX, startY, Config.DOWN);
+		if (w != -1f && h != -1f) {
+			downBullet.setSize(w, h);
+		}
+		addBullet(downBullet);
+		result.add(downBullet);
+		return result;
+	}
+
+	/**
+	 * 同时向右方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @return
+	 */
+	public TArray<Bullet> addTwoRightBullets(String path, float startX, float startY) {
+		return addTwoRightBullets(path, startX, startY, -1f, -1f);
+	}
+
+	/**
+	 * 同时向右方两个方向发射子弹
+	 * 
+	 * @param path
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoRightBullets(String path, float startX, float startY, float w, float h) {
+		return addTwoRightBullets(easingMode, LTextures.loadTexture(path), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向右方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param tex
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoRightBullets(EasingMode easing, LTexture tex, float startX, float startY, float w,
+			float h) {
+		return addTwoRightBullets(easing, Animation.getDefaultAnimation(tex), startX, startY, w, h);
+	}
+
+	/**
+	 * 同时向右方两个方向发射子弹
+	 * 
+	 * @param easing
+	 * @param ani
+	 * @param startX
+	 * @param startY
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public TArray<Bullet> addTwoRightBullets(EasingMode easing, Animation ani, float startX, float startY, float w,
+			float h) {
+		TArray<Bullet> result = new TArray<Bullet>();
+		Bullet drightBullet = new Bullet(easing, ani, startX, startY, Config.RIGHT);
+		if (w != -1f && h != -1f) {
+			drightBullet.setSize(w, h);
+		}
+		addBullet(drightBullet);
+		result.add(drightBullet);
+		Bullet upBullet = new Bullet(easing, ani, startX, startY, Config.UP);
+		if (w != -1f && h != -1f) {
+			upBullet.setSize(w, h);
+		}
+		addBullet(upBullet);
+		result.add(upBullet);
+		return result;
+	}
+
 	public Bullet addBullet(LTexture texture, float x, float y, int dir) {
 		return addBullet(easingMode, texture, x, y, dir);
 	}
@@ -1126,6 +1416,8 @@ public class BulletEntity extends Entity {
 			bullets.add(bullet);
 			collisionWorld.add(bullet);
 			collisionWorld.getCollisionManager().addObject(bullet);
+			bullet.setSuper(this);
+			bullet.onAttached();
 			if (listener != null) {
 				listener.attached(bullet);
 			}
@@ -1142,6 +1434,7 @@ public class BulletEntity extends Entity {
 		bullets.remove(bullet);
 		collisionWorld.remove(bullet);
 		collisionWorld.getCollisionManager().removeObject(bullet);
+		bullet.setSuper(null);
 		bullet.onDetached();
 		if (listener != null) {
 			listener.detached(bullet);
@@ -1213,6 +1506,84 @@ public class BulletEntity extends Entity {
 		return this;
 	}
 
+	public BulletEntity setWaveType(WaveType w) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setWaveType(w);
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity setWaveAmplitude(float a) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setWaveAmplitude(a);
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity setWaveFrequency(float f) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setWaveFrequency(f);
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity setEaseTimerLoop(boolean l) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setEaseTimerLoop(l);
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity setDuration(float d) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setDuration(d);
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity setLifeTimer(float l) {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.setLifeTimer(l);
+			}
+		}
+		return this;
+	}
+
 	public BulletEntity fireTo(ISprite spr) {
 		if (_destroyed) {
 			return this;
@@ -1256,6 +1627,7 @@ public class BulletEntity extends Entity {
 					bullet.update(elapsedTime);
 					if (listener != null) {
 						listener.updateable(elapsedTime, bullet);
+						bullet.checkLifeOver(listener);
 					}
 					if (_limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
 						removeWorld(bullet);

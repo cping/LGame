@@ -3179,11 +3179,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float y2 = y + (r * MathUtils.sin(triangleValue));
 		float x3 = x + (r * MathUtils.cos(triangleValue));
 		float y3 = y + (r * MathUtils.sin(triangleValue));
-		float[] xpos = new float[3];
+		final float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;
-		float[] ypos = new float[3];
+		final float[] ypos = new float[3];
 		ypos[0] = y1;
 		ypos[1] = y2;
 		ypos[2] = y3;
@@ -3207,11 +3207,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float y2 = y - (r * MathUtils.sin(triangleValue));
 		float x3 = x + (r * MathUtils.cos(triangleValue));
 		float y3 = y - (r * MathUtils.sin(triangleValue));
-		float[] xpos = new float[3];
+		final float[] xpos = new float[3];
 		xpos[0] = x1;
 		xpos[1] = x2;
 		xpos[2] = x3;
-		float[] ypos = new float[3];
+		final float[] ypos = new float[3];
 		ypos[0] = y1;
 		ypos[1] = y2;
 		ypos[2] = y3;
@@ -3309,8 +3309,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (t == null) {
 			return this;
 		}
-		float[] xpos = new float[3];
-		float[] ypos = new float[3];
+		final float[] xpos = new float[3];
+		final float[] ypos = new float[3];
 		xpos[0] = x + t.xpoints[0];
 		xpos[1] = x + t.xpoints[1];
 		xpos[2] = x + t.xpoints[2];
@@ -3368,8 +3368,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (t == null) {
 			return this;
 		}
-		float[] xpos = new float[3];
-		float[] ypos = new float[3];
+		final float[] xpos = new float[3];
+		final float[] ypos = new float[3];
 		xpos[0] = x + t.xpoints[0];
 		xpos[1] = x + t.xpoints[1];
 		xpos[2] = x + t.xpoints[2];

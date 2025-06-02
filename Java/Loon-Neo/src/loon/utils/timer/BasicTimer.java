@@ -169,6 +169,11 @@ public class BasicTimer {
 		return this;
 	}
 
+	public BasicTimer setDuration(float d) {
+		this._duration = d;
+		return this;
+	}
+
 	public boolean isRunning() {
 		return _timer < _duration;
 	}

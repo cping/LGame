@@ -615,7 +615,6 @@ public class LProcess implements LRelease {
 				}
 			} else {
 				_currentScreen.createUI(g);
-				return;
 			}
 		}
 	}

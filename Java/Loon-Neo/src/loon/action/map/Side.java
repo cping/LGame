@@ -132,6 +132,22 @@ public class Side implements Config {
 		return getPointCollisionSide(rect, _pos);
 	}
 
+	public int fromDirection(Vector2f direction) {
+		if (direction == null) {
+			return EMPTY;
+		}
+		if (MathUtils.abs(direction.x) >= MathUtils.abs(direction.y)) {
+			if (direction.x <= 0) {
+				return TLEFT;
+			}
+			return TRIGHT;
+		}
+		if (direction.y <= 0) {
+			return TUP;
+		}
+		return TDOWN;
+	}
+
 	@Override
 	public int hashCode() {
 		int hashCode = 66;
