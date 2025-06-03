@@ -212,7 +212,7 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	}
 
 	public boolean isEaseTimerLoop() {
-		return this._easeTimer != null ? false : this._easeTimer.isLoop();
+		return this._easeTimer == null ? false : this._easeTimer.isLoop();
 	}
 
 	public boolean isAutoRemoved() {

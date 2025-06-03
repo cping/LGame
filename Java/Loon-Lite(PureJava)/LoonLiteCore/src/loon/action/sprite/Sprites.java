@@ -1812,6 +1812,17 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		return createSpriteControls();
 	}
 
+	public SpriteControls createSpriteControls(TArray<ISprite> sprites) {
+		if (sprites == null || sprites.size == 0) {
+			return createSpriteControls();
+		}
+		return new SpriteControls(sprites);
+	}
+
+	public SpriteControls controls(TArray<ISprite> sprites) {
+		return createSpriteControls(sprites);
+	}
+
 	public SpriteControls findNamesToSpriteControls(String... names) {
 		if (_closed) {
 			return new SpriteControls();
@@ -1890,6 +1901,23 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return null;
 		}
 		return CollectionUtils.copyOf(this._sprites, this._size);
+	}
+
+	public TArray<ISprite> getSpritesArray() {
+		if (_closed) {
+			return null;
+		}
+		if (_sprites == null) {
+			return null;
+		}
+		TArray<ISprite> result = new TArray<ISprite>();
+		for (int i = 0; i < this._size; i++) {
+			ISprite spr = _sprites[i];
+			if (spr != null) {
+				result.add(spr);
+			}
+		}
+		return result;
 	}
 
 	/**

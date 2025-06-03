@@ -1,31 +1,33 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
- *
- *          新增类，用以同时处理多个组件对象到同一状态
+ * 
  */
 package loon.component;
 
+import loon.LObject;
 import loon.LSysException;
+import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
@@ -33,16 +35,17 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.ClickListener;
+import loon.events.EventActionT;
 import loon.events.QueryEvent;
 import loon.events.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
 import loon.utils.CollectionUtils;
-import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.Easing.EasingMode;
 
 /**
  * UI组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
@@ -85,7 +88,7 @@ public class UIControls {
 		return maxWidth;
 	}
 
-	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<>(
+	private ObjectMap<ActionBind, ActionTween> tweens = new ObjectMap<ActionBind, ActionTween>(
 			CollectionUtils.INITIAL_CAPACITY);
 
 	private Margin _margin;
@@ -103,7 +106,7 @@ public class UIControls {
 	}
 
 	public UIControls() {
-		this._comps = new TArray<>();
+		this._comps = new TArray<LComponent>();
 	}
 
 	public LComponent random() {
@@ -147,7 +150,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> intersects(RectBox rect) {
-		TArray<LComponent> comps = new TArray<>();
+		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (rect.intersects(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -159,7 +162,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> intersects(float x, float y, float width, float height) {
-		TArray<LComponent> comps = new TArray<>();
+		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (CollisionHelper.intersects(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -172,7 +175,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> contains(RectBox rect) {
-		TArray<LComponent> comps = new TArray<>();
+		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (rect.contains(child.getX(), child.getY(), child.getWidth(), child.getHeight())) {
@@ -184,7 +187,7 @@ public class UIControls {
 	}
 
 	public TArray<LComponent> contains(float x, float y, float width, float height) {
-		TArray<LComponent> comps = new TArray<>();
+		TArray<LComponent> comps = new TArray<LComponent>();
 		for (LComponent child : this._comps) {
 			if (child != null) {
 				if (CollisionHelper.contains(x, y, width, height, child.getX(), child.getY(), child.getWidth(),
@@ -205,7 +208,7 @@ public class UIControls {
 	}
 
 	public UIControls add(LComponent... comps) {
-		return add(new TArray<>(comps));
+		return add(new TArray<LComponent>(comps));
 	}
 
 	public UIControls add(TArray<LComponent> comps) {
@@ -271,7 +274,7 @@ public class UIControls {
 
 	/**
 	 * 附带一提，此处Set大写是为了显示作用比较特殊，以及建议使用一个ClickListener，监听多个组件，所以"S"
-	 *
+	 * 
 	 * @param click
 	 */
 	public UIControls SetClick(ClickListener click) {
@@ -697,6 +700,19 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls callEvents(EventActionT<LComponent> e) {
+		if (e == null) {
+			return this;
+		}
+		for (int i = _comps.size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && e != null) {
+				e.update(comp);
+			}
+		}
+		return this;
+	}
+
 	public UIControls clearTweens() {
 		for (ActionTween tween : tweens.values()) {
 			tween.free();
@@ -873,6 +889,250 @@ public class UIControls {
 					tweens.put(comp, tween);
 				}
 
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的左侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideLeftRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideLeftRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的右侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideRightRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideRightRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的上侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideTopRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideTopRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的下侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideBottomRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideBottomRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_left(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_left(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_right(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_right(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_up(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_up(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_down(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_down(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_left(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_left(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_right(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_right(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_up(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_up(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_down(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_down(v);
 			}
 		}
 		return this;
@@ -1115,5 +1375,4 @@ public class UIControls {
 		}
 		return _margin;
 	}
-
 }

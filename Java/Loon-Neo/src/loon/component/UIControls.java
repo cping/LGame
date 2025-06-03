@@ -19,13 +19,15 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.4.1
  * 
- *          新增类，用以同时处理多个组件对象到同一状态
  */
 package loon.component;
 
+import loon.LObject;
 import loon.LSysException;
+import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
@@ -33,6 +35,7 @@ import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
 import loon.events.ClickListener;
+import loon.events.EventActionT;
 import loon.events.QueryEvent;
 import loon.events.Touched;
 import loon.font.FontSet;
@@ -697,6 +700,19 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls callEvents(EventActionT<LComponent> e) {
+		if (e == null) {
+			return this;
+		}
+		for (int i = _comps.size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && e != null) {
+				e.update(comp);
+			}
+		}
+		return this;
+	}
+
 	public UIControls clearTweens() {
 		for (ActionTween tween : tweens.values()) {
 			tween.free();
@@ -873,6 +889,250 @@ public class UIControls {
 					tweens.put(comp, tween);
 				}
 
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的左侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideLeftRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideLeftRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的右侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideRightRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideRightRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的上侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideTopRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideTopRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的组件随机放置于Screen显示范围外的下侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public UIControls outsideBottomRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _comps.size;
+		for (int i = 0, n = size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				screen.outsideBottomRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					LComponent dst = _comps.get(j);
+					if (dst != null && dst != comp) {
+						RectBox rect = comp.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_left(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_left(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_right(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_right(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_up(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_up(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_down(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_down(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_left(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_left(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_right(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_right(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_up(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_up(v);
+			}
+		}
+		return this;
+	}
+
+	public UIControls move_45D_down(float v) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move_45D_down(v);
 			}
 		}
 		return this;

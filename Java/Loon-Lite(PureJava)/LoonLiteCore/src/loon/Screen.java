@@ -4099,6 +4099,182 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return onClick(component, SysTouch.getX(), SysTouch.getY());
 	}
 
+	public Vector2f getCenterSize() {
+		return getCenterSize(0f, 0f);
+	}
+
+	public Vector2f getCenterSize(float offsetX, float offsetY) {
+		return new Vector2f(getViewWidth() / 2f + offsetX, getViewHeight() / 2f + offsetY);
+	}
+
+	public Vector2f getCenterLocation() {
+		return getCenterLocation(0f, 0f);
+	}
+
+	public Vector2f getCenterLocation(float offsetX, float offsetY) {
+		return new Vector2f(getX() + getViewWidth() / 2f + offsetX, getY() + getViewHeight() / 2f + offsetY);
+	}
+
+	public Screen outsideTopRandOn(final LObject<?> object, final float newX) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideTopRandOn(object, newX, getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideTopRandOn(final LObject<?> object, final float newX, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideTopRandOn(object, newX, getY() - newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideTopRandOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideTopRandOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideBottomRandOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideBottomRandOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideBottomRandOn(final LObject<?> object, final float newX) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideBottomRandOn(object, newX, getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideBottomRandOn(final LObject<?> object, final float newX, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideBottomRandOn(object, newX, getY() + newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideLeftRandOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideLeftRandOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideLeftRandOn(final LObject<?> object, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideLeftRandOn(object, getX(), newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideLeftRandOn(final LObject<?> object, final float newX, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideLeftRandOn(object, getX() - newX, newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideRightRandOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideRightRandOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideRightRandOn(final LObject<?> object, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideRightRandOn(object, getX(), newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideRightRandOn(final LObject<?> object, final float newX, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideRightRandOn(object, getX() + newX, newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideTopOn(final LObject<?> object, final float newX) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideTopOn(object, newX, getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideTopOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideTopOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideBottomOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideBottomOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideBottomOn(final LObject<?> object, final float newX) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideBottomOn(object, newX, getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideLeftOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideLeftOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideLeftOn(final LObject<?> object, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideLeftOn(object, getX(), newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideRightOn(final LObject<?> object) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideRightOn(object, getX(), getY(), getViewWidth(), getViewHeight());
+		return this;
+	}
+
+	public Screen outsideRightOn(final LObject<?> object, final float newY) {
+		if (object == null) {
+			return this;
+		}
+		LObject.outsideRightOn(object, getX(), newY, getViewWidth(), getViewHeight());
+		return this;
+	}
+
 	public Screen centerOn(final LObject<?> object) {
 		if (object == null) {
 			return this;

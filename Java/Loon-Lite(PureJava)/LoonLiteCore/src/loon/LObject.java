@@ -826,6 +826,70 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return new Vector2f(getX() + getWidth() / 2f + offsetX, getY() + getHeight() / 2f + offsetY);
 	}
 
+	public static void outsideTopRandOn(final LObject<?> object, float w, float h) {
+		outsideTopRandOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideTopRandOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(MathUtils.random(x, x + w - object.getWidth() - 1f), y - object.getHeight() - 1f);
+	}
+
+	public static void outsideBottomRandOn(final LObject<?> object, float w, float h) {
+		outsideBottomRandOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideBottomRandOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(MathUtils.random(x, x + w - object.getWidth() - 1f), y + (h + object.getHeight()) + 1f);
+	}
+
+	public static void outsideLeftRandOn(final LObject<?> object, float w, float h) {
+		outsideLeftRandOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideLeftRandOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x - object.getWidth() - 1f, MathUtils.random(y, y + h - object.getHeight() - 1f));
+	}
+
+	public static void outsideRightRandOn(final LObject<?> object, float w, float h) {
+		outsideRightRandOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideRightRandOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w + object.getWidth()) + 1f, MathUtils.random(y, y + h - object.getHeight() - 1f));
+	}
+
+	public static void outsideTopOn(final LObject<?> object, float w, float h) {
+		outsideTopOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideTopOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2f - object.getWidth() / 2f), y - object.getHeight() - 1f);
+	}
+
+	public static void outsideBottomOn(final LObject<?> object, float w, float h) {
+		outsideBottomOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideBottomOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w / 2f - object.getWidth() / 2f), y + (h + object.getHeight()) + 1f);
+	}
+
+	public static void outsideLeftOn(final LObject<?> object, float w, float h) {
+		outsideLeftOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideLeftOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x - object.getWidth() - 1f, y + (h / 2f - object.getHeight() / 2f));
+	}
+
+	public static void outsideRightOn(final LObject<?> object, float w, float h) {
+		outsideRightOn(object, 0f, 0f, w, h);
+	}
+
+	public static void outsideRightOn(final LObject<?> object, float x, float y, float w, float h) {
+		object.setLocation(x + (w + object.getWidth()) + 1f, y + (h / 2f - object.getHeight() / 2f));
+	}
+
 	public static void centerOn(final LObject<?> object, float x, float y, float w, float h) {
 		object.setLocation(x + (w / 2f - object.getWidth() / 2f), y + (h / 2f - object.getHeight() / 2f));
 	}

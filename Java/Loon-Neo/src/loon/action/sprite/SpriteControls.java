@@ -22,13 +22,16 @@ package loon.action.sprite;
 
 import loon.LObject;
 import loon.LSysException;
+import loon.LSystem;
 import loon.PlayerUtils;
+import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
 import loon.component.layout.Margin;
+import loon.events.EventActionT;
 import loon.events.EventDispatcher;
 import loon.events.QueryEvent;
 import loon.font.FontSet;
@@ -563,6 +566,19 @@ public class SpriteControls {
 		return this;
 	}
 
+	public SpriteControls callEvents(EventActionT<ISprite> e) {
+		if (e == null) {
+			return this;
+		}
+		for (int i = _sprs.size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && e != null) {
+				e.update(spr);
+			}
+		}
+		return this;
+	}
+
 	public SpriteControls clearTweens() {
 		for (ActionTween tween : tweens.values()) {
 			tween.free();
@@ -739,6 +755,250 @@ public class SpriteControls {
 					tweens.put(spr, tween);
 				}
 
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的精灵随机放置于Screen显示范围外的左侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public SpriteControls outsideLeftRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _sprs.size;
+		for (int i = 0, n = size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				screen.outsideLeftRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					ISprite dst = _sprs.get(j);
+					if (dst != null && dst != spr) {
+						RectBox rect = spr.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				spr.setLocation(spr.getX() - spr.getWidth() * 2f, spr.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的精灵随机放置于Screen显示范围外的右侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public SpriteControls outsideRightRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _sprs.size;
+		for (int i = 0, n = size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				screen.outsideRightRandOn(o, MathUtils.random(0f, screen.getWidth()), 0f);
+				for (int j = size - 1; j > -1; --j) {
+					ISprite dst = _sprs.get(j);
+					if (dst != null && dst != spr) {
+						RectBox rect = spr.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				spr.setLocation(spr.getX() + spr.getWidth() * 2f, spr.getY());
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的精灵随机放置于Screen显示范围外的上侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public SpriteControls outsideTopRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _sprs.size;
+		for (int i = 0, n = size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				screen.outsideTopRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					ISprite dst = _sprs.get(j);
+					if (dst != null && dst != spr) {
+						RectBox rect = spr.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				spr.setLocation(spr.getX(), spr.getY() - spr.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 将控制器中的精灵随机放置于Screen显示范围外的下侧
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public SpriteControls outsideBottomRandOn(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		int count = 0;
+		final int size = _sprs.size;
+		for (int i = 0, n = size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				screen.outsideBottomRandOn(o, 0f, MathUtils.random(0f, screen.getHeight()));
+				for (int j = size - 1; j > -1; --j) {
+					ISprite dst = _sprs.get(j);
+					if (dst != null && dst != spr) {
+						RectBox rect = spr.getCollisionBox();
+						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
+							if (i > 0) {
+								i--;
+							}
+							count++;
+							continue;
+						}
+					}
+				}
+			}
+			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				spr.setLocation(spr.getX(), spr.getY() + spr.getHeight() * 2f);
+				return this;
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_left(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_left(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_right(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_right(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_up(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_up(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_down(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_down(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_45D_left(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_45D_left(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_45D_right(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_45D_right(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_45D_up(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_45D_up(v);
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls move_45D_down(float v) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move_45D_down(v);
 			}
 		}
 		return this;
