@@ -887,6 +887,48 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childCount = 0;
 	}
 
+	/**
+	 * 删除指定集合中的组件
+	 * 
+	 * @param removes
+	 * @return
+	 */
+	public TArray<Boolean> clear(TArray<LComponent> removes) {
+		if (_destroyed || removes == null) {
+			return new TArray<Boolean>();
+		}
+		TArray<Boolean> result = new TArray<Boolean>();
+		final int size = removes.size;
+		for (int i = size - 1; i > -1; i--) {
+			final LComponent comp = removes.get(i);
+			if (comp != null) {
+				result.add(remove(comp) > -1);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 删除指定集合中的组件
+	 * 
+	 * @param removes
+	 * @return
+	 */
+	public TArray<Boolean> clear(LComponent... removes) {
+		if (_destroyed || removes == null) {
+			return new TArray<Boolean>();
+		}
+		TArray<Boolean> result = new TArray<Boolean>();
+		final int size = removes.length;
+		for (int i = size - 1; i > -1; i--) {
+			final LComponent comp = removes[i];
+			if (comp != null) {
+				result.add(remove(comp) > -1);
+			}
+		}
+		return result;
+	}
+
 	public LComponent replace(LComponent oldComp, LComponent newComp) {
 		if (_destroyed) {
 			return this;
@@ -1229,6 +1271,24 @@ public abstract class LContainer extends LComponent implements IArray {
 			return null;
 		}
 		return CollectionUtils.copyOf(this._childs, this._childCount);
+	}
+
+	public TArray<LComponent> getComponentsArray() {
+		if (_destroyed) {
+			return null;
+		}
+		if (_childs == null) {
+			return null;
+		}
+		TArray<LComponent> result = new TArray<LComponent>();
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				result.add(comp);
+			}
+		}
+		return result;
 	}
 
 	public float getContextWidth() {

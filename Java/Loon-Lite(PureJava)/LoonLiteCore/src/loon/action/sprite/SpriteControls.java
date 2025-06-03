@@ -92,7 +92,7 @@ public class SpriteControls {
 
 	private Margin _margin;
 
-	private final TArray<ISprite> _sprs;
+	private TArray<ISprite> _sprs;
 
 	public SpriteControls(ISprite... comps) {
 		this();
@@ -108,11 +108,77 @@ public class SpriteControls {
 		this._sprs = new TArray<ISprite>();
 	}
 
+	public SpriteControls set(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		return set(screen.getSprites());
+	}
+
+	public SpriteControls set(Sprites sprites) {
+		if (sprites == null) {
+			return this;
+		}
+		synchronized (sprites) {
+			set(sprites.getSpritesArray());
+		}
+		return this;
+	}
+
+	public SpriteControls set(TArray<ISprite> sprites) {
+		if (sprites == null || sprites.size == 0 || sprites.equals(this._sprs)) {
+			return this;
+		}
+		synchronized (SpriteControls.class) {
+			clear();
+			this._sprs = sprites;
+		}
+		return this;
+	}
+
+	public SpriteControls clear() {
+		if (this._sprs.size == 0) {
+			return this;
+		}
+		this._sprs.clear();
+		return this;
+	}
+
+	public SpriteControls clear(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		return clear(screen.getSprites());
+	}
+
+	public SpriteControls clear(Sprites sprites) {
+		if (sprites == null) {
+			return this;
+		}
+		synchronized (sprites) {
+			sprites.clear(this._sprs);
+			clear();
+		}
+		return this;
+	}
+
 	public ISprite random() {
 		if (_sprs.size == 0) {
 			return null;
 		}
 		return _sprs.get(MathUtils.random(_sprs.size - 1));
+	}
+
+	public int size() {
+		return _sprs.size;
+	}
+
+	public boolean isEmpty() {
+		return _sprs.isEmpty();
+	}
+
+	public boolean isNotEmpty() {
+		return _sprs.isNotEmpty();
 	}
 
 	public int indexOf(QueryEvent<ISprite> q) {
@@ -146,6 +212,29 @@ public class SpriteControls {
 
 	public TArray<ISprite> list() {
 		return this._sprs;
+	}
+
+	public TArray<ISprite> intersects(float x, float y) {
+		TArray<ISprite> sprites = new TArray<ISprite>();
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (child.getRectBox().inPoint(x, y)) {
+					sprites.add(child);
+				}
+			}
+		}
+		return sprites;
+	}
+
+	public ISprite intersectsOnly(float x, float y) {
+		for (ISprite child : this._sprs) {
+			if (child != null) {
+				if (child.getRectBox().inPoint(x, y)) {
+					return child;
+				}
+			}
+		}
+		return null;
 	}
 
 	public TArray<ISprite> intersects(RectBox rect) {
@@ -198,6 +287,37 @@ public class SpriteControls {
 		return sprites;
 	}
 
+	public boolean allIn(Screen screen) {
+		return allIn(screen, true);
+	}
+
+	public boolean allIn(Screen screen, boolean canView) {
+		return getCountIn(screen, canView) >= _sprs.size;
+	}
+
+	public boolean allNotIn(Screen screen) {
+		return allNotIn(screen, true);
+	}
+
+	public boolean allNotIn(Screen screen, boolean canView) {
+		return getCountIn(screen, canView) == 0;
+	}
+
+	public int getCountIn(Screen screen) {
+		return getCountIn(screen, true);
+	}
+
+	public int getCountIn(Screen screen, boolean canView) {
+		int count = 0;
+		for (int i = _sprs.size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (screen.intersects(spr, canView) || screen.contains(spr, canView))) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	public SpriteControls add(ISprite spr) {
 		if (spr == null) {
 			throw new LSysException("ISprite cannot be null.");
@@ -212,6 +332,21 @@ public class SpriteControls {
 		}
 		_sprs.addAll(comps);
 		return this;
+	}
+
+	public SpriteControls remove(Screen screen, ISprite spr) {
+		if (screen == null) {
+			throw new LSysException("Screen cannot be null.");
+		}
+		return remove(screen.getSprites(), spr);
+	}
+
+	public SpriteControls remove(Sprites sprites, ISprite spr) {
+		if (sprites == null) {
+			throw new LSysException("Sprites cannot be null.");
+		}
+		sprites.remove(spr);
+		return remove(spr);
 	}
 
 	public SpriteControls remove(ISprite spr) {
@@ -243,6 +378,9 @@ public class SpriteControls {
 	}
 
 	public SpriteControls removeAll() {
+		if (this._sprs.size == 0) {
+			return this;
+		}
 		_sprs.clear();
 		return this;
 	}
@@ -783,7 +921,7 @@ public class SpriteControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				spr.setLocation(spr.getX() - spr.getWidth() * 2f, spr.getY());
 				return this;
 			}
@@ -822,7 +960,7 @@ public class SpriteControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				spr.setLocation(spr.getX() + spr.getWidth() * 2f, spr.getY());
 				return this;
 			}
@@ -861,7 +999,7 @@ public class SpriteControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				spr.setLocation(spr.getX(), spr.getY() - spr.getHeight() * 2f);
 				return this;
 			}
@@ -900,7 +1038,7 @@ public class SpriteControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				spr.setLocation(spr.getX(), spr.getY() + spr.getHeight() * 2f);
 				return this;
 			}

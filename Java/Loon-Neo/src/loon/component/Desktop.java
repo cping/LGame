@@ -983,6 +983,10 @@ public class Desktop implements Visible, IArray, LRelease {
 		return _contentPane.getComponents();
 	}
 
+	public TArray<LComponent> getComponentsArray() {
+		return _contentPane.getComponentsArray();
+	}
+
 	public LComponent getTopComponent() {
 		final LComponent[] components = _contentPane._childs;
 		final int size = components.length;
@@ -1204,6 +1208,18 @@ public class Desktop implements Visible, IArray, LRelease {
 	public void clear() {
 		if (_contentPane != null) {
 			_contentPane.clear();
+		}
+	}
+
+	public void clear(LComponent... removes) {
+		if (_contentPane != null) {
+			_contentPane.clear(removes);
+		}
+	}
+
+	public void clear(TArray<LComponent> removes) {
+		if (_contentPane != null) {
+			_contentPane.clear(removes);
 		}
 	}
 

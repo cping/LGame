@@ -93,7 +93,7 @@ public class UIControls {
 
 	private Margin _margin;
 
-	private final TArray<LComponent> _comps;
+	private TArray<LComponent> _comps;
 
 	public UIControls(LComponent... comps) {
 		this();
@@ -109,11 +109,72 @@ public class UIControls {
 		this._comps = new TArray<LComponent>();
 	}
 
+	public UIControls set(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		Desktop desktop = screen.getDesktop();
+		if (desktop == null) {
+			return this;
+		}
+		set(desktop.getComponentsArray());
+		return this;
+	}
+
+	public UIControls set(TArray<LComponent> comps) {
+		if (comps == null || comps.size == 0 || comps.equals(this._comps)) {
+			return this;
+		}
+		synchronized (UIControls.class) {
+			clear();
+			this._comps = comps;
+		}
+		return this;
+	}
+
+	public UIControls clear() {
+		if (this._comps.size == 0) {
+			return this;
+		}
+		this._comps.clear();
+		return this;
+	}
+
+	public UIControls clear(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		return clear(screen.getDesktop());
+	}
+
+	public UIControls clear(Desktop desktop) {
+		if (desktop == null) {
+			return this;
+		}
+		synchronized (desktop) {
+			desktop.clear(this._comps);
+			clear();
+		}
+		return this;
+	}
+
 	public LComponent random() {
 		if (_comps.size == 0) {
 			return null;
 		}
 		return _comps.get(MathUtils.random(_comps.size - 1));
+	}
+
+	public int size() {
+		return _comps.size;
+	}
+
+	public boolean isEmpty() {
+		return _comps.isEmpty();
+	}
+
+	public boolean isNotEmpty() {
+		return _comps.isNotEmpty();
 	}
 
 	public int indexOf(QueryEvent<LComponent> q) {
@@ -147,6 +208,29 @@ public class UIControls {
 
 	public TArray<LComponent> list() {
 		return this._comps;
+	}
+
+	public TArray<LComponent> intersects(float x, float y) {
+		TArray<LComponent> comps = new TArray<LComponent>();
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (child.getRectBox().inPoint(x, y)) {
+					comps.add(child);
+				}
+			}
+		}
+		return comps;
+	}
+
+	public LComponent intersectsOnly(float x, float y) {
+		for (LComponent child : this._comps) {
+			if (child != null) {
+				if (child.getRectBox().inPoint(x, y)) {
+					return child;
+				}
+			}
+		}
+		return null;
 	}
 
 	public TArray<LComponent> intersects(RectBox rect) {
@@ -199,6 +283,37 @@ public class UIControls {
 		return comps;
 	}
 
+	public boolean allIn(Screen screen) {
+		return allIn(screen, true);
+	}
+
+	public boolean allIn(Screen screen, boolean canView) {
+		return getCountIn(screen, canView) >= _comps.size;
+	}
+
+	public boolean allNotIn(Screen screen) {
+		return allNotIn(screen, true);
+	}
+
+	public boolean allNotIn(Screen screen, boolean canView) {
+		return getCountIn(screen, canView) == 0;
+	}
+
+	public int getCountIn(Screen screen) {
+		return getCountIn(screen, true);
+	}
+
+	public int getCountIn(Screen screen, boolean canView) {
+		int count = 0;
+		for (int i = _comps.size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (screen.intersects(comp, canView) || screen.contains(comp, canView))) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	public UIControls add(LComponent comp) {
 		if (comp == null) {
 			throw new LSysException("LComponent cannot be null.");
@@ -217,6 +332,21 @@ public class UIControls {
 		}
 		_comps.addAll(comps);
 		return this;
+	}
+
+	public UIControls remove(Screen screen, LComponent comp) {
+		if (screen == null) {
+			throw new LSysException("Screen cannot be null.");
+		}
+		return remove(screen.getDesktop(), comp);
+	}
+
+	public UIControls remove(Desktop desktop, LComponent comp) {
+		if (desktop == null) {
+			throw new LSysException("Desktop cannot be null.");
+		}
+		desktop.remove(comp);
+		return remove(comp);
 	}
 
 	public UIControls remove(LComponent comp) {
@@ -238,6 +368,9 @@ public class UIControls {
 	}
 
 	public UIControls removeAll() {
+		if (this._comps.size == 0) {
+			return this;
+		}
 		_comps.clear();
 		return this;
 	}
@@ -925,7 +1058,7 @@ public class UIControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
 				return this;
 			}
@@ -964,7 +1097,7 @@ public class UIControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
 				return this;
 			}
@@ -1003,7 +1136,7 @@ public class UIControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
 				return this;
 			}
@@ -1042,7 +1175,7 @@ public class UIControls {
 					}
 				}
 			}
-			if (count > size * LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
 				comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
 				return this;
 			}

@@ -2050,7 +2050,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return null;
 		}
 		TArray<ISprite> result = new TArray<ISprite>();
-		for (int i = 0; i < this._size; i++) {
+		int size = _sprites.length;
+		for (int i = size - 1; i > -1; i--) {
 			ISprite spr = _sprites[i];
 			if (spr != null) {
 				result.add(spr);
@@ -2765,6 +2766,48 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 		}
 		_size = 0;
 		return;
+	}
+
+	/**
+	 * 删除指定集合中的精灵
+	 * 
+	 * @param removes
+	 * @return
+	 */
+	public TArray<Boolean> clear(TArray<ISprite> removes) {
+		if (_closed || removes == null) {
+			return new TArray<Boolean>();
+		}
+		TArray<Boolean> result = new TArray<Boolean>();
+		final int size = removes.size;
+		for (int i = size - 1; i > -1; i--) {
+			final ISprite sprite = removes.get(i);
+			if (sprite != null) {
+				result.add(remove(sprite));
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * 删除指定集合中的精灵
+	 * 
+	 * @param removes
+	 * @return
+	 */
+	public TArray<Boolean> clear(ISprite... removes) {
+		if (_closed || removes == null) {
+			return new TArray<Boolean>();
+		}
+		TArray<Boolean> result = new TArray<Boolean>();
+		final int size = removes.length;
+		for (int i = size - 1; i > -1; i--) {
+			final ISprite sprite = removes[i];
+			if (sprite != null) {
+				result.add(remove(sprite));
+			}
+		}
+		return result;
 	}
 
 	public boolean isClosed() {
