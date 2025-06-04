@@ -49,7 +49,7 @@ import loon.utils.timer.LTimerContext;
 public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 
 	public static enum WaveType {
-		None, Cos, Sin
+		None, Cos, Sin, Cos_Rotate, Sin_Rotate
 	}
 
 	protected static String BUTTLE_DEFAULT_NAME = "Buttle";
@@ -322,11 +322,19 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		float angle = 0f;
 		switch (_waveType) {
 		case Sin:
-			angle = _waveamplitude * MathUtils.sin(delta * MathUtils.PI * 2f * _wavefrequency);
+			angle = _waveamplitude * MathUtils.sin(delta * MathUtils.TWO_PI * _wavefrequency);
 			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
 			break;
 		case Cos:
-			angle = _waveamplitude * MathUtils.cos(delta * MathUtils.PI * 2f * _wavefrequency);
+			angle = _waveamplitude * MathUtils.cos(delta * MathUtils.TWO_PI * _wavefrequency);
+			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
+			break;
+		case Sin_Rotate:
+			angle = MathUtils.waveSin(_wavefrequency, _waveamplitude, ease.getDelta()) * delta;
+			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
+			break;
+		case Cos_Rotate:
+			angle = MathUtils.waveCos(_wavefrequency, _waveamplitude, ease.getDelta()) * delta;
 			_waveOffset.set(_speed.getX() * MathUtils.cos(angle), _speed.getY() * MathUtils.sin(angle));
 			break;
 		default:

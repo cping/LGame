@@ -455,6 +455,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return mul(pos, scalar, new Vector2f());
 	}
 
+	public final static Vector2f moveTowards(Vector2f current, Vector2f target, float maxDistanceDelta) {
+		float vector_x = target.x - current.x;
+		float vector_y = target.y - current.y;
+		float sqdist = vector_x * vector_x + vector_y * vector_y;
+		if (sqdist == 0 || (maxDistanceDelta >= 0 && sqdist <= maxDistanceDelta * maxDistanceDelta)) {
+			return target;
+		}
+		float dist = MathUtils.sqrt(sqdist);
+		return new Vector2f(current.x + vector_x / dist * maxDistanceDelta,
+				current.y + vector_y / dist * maxDistanceDelta);
+	}
+
 	public final static Vector2f div(Vector2f a, Vector2f b, Vector2f out) {
 		out.x = a.x / b.x;
 		out.y = a.y / b.y;

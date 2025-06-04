@@ -287,6 +287,21 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		o.w = MathUtils.max(a.w, b.w);
 	}
 
+	public static Vector4f moveTowards(Vector4f current, Vector4f target, float maxDistanceDelta) {
+		float vector_x = target.x - current.x;
+		float vector_y = target.y - current.y;
+		float vector_z = target.z - current.z;
+		float vector_w = target.w - current.w;
+		float sqdist = vector_x * vector_x + vector_y * vector_y + vector_z * vector_z + vector_w * vector_w;
+		if (sqdist == 0 || (maxDistanceDelta >= 0 && sqdist <= maxDistanceDelta * maxDistanceDelta)) {
+			return target;
+		}
+		float dist = MathUtils.sqrt(sqdist);
+		return new Vector4f(current.x + vector_x / dist * maxDistanceDelta,
+				current.y + vector_y / dist * maxDistanceDelta, current.z + vector_z / dist * maxDistanceDelta,
+				current.w + vector_w / dist * maxDistanceDelta);
+	}
+
 	public static Vector4f div(Vector4f v1, Vector4f v2) {
 		return div(v1, v2, new Vector4f());
 	}

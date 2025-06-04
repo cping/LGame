@@ -302,6 +302,19 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		o.z = MathUtils.max(a.z, b.z);
 	}
 
+	public static Vector3f moveTowards(Vector3f current, Vector3f target, float maxDistanceDelta) {
+		float vector_x = target.x - current.x;
+		float vector_y = target.y - current.y;
+		float vector_z = target.z - current.z;
+		float sqdist = vector_x * vector_x + vector_y * vector_y + vector_z * vector_z;
+		if (sqdist == 0 || (maxDistanceDelta >= 0 && sqdist <= maxDistanceDelta * maxDistanceDelta)) {
+			return target;
+		}
+		float dist = MathUtils.sqrt(sqdist);
+		return new Vector3f(current.x + vector_x / dist * maxDistanceDelta,
+				current.y + vector_y / dist * maxDistanceDelta, current.z + vector_z / dist * maxDistanceDelta);
+	}
+
 	public static Vector3f div(Vector3f v1, Vector3f v2) {
 		return div(v1, v2, new Vector3f());
 	}

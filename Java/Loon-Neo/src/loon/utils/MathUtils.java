@@ -581,6 +581,12 @@ public final class MathUtils {
 		return toStart + ((toStop - toStart) * ((v - fromStart) / (fromStop - fromStart)));
 	}
 
+	public static float moveTowards(float start, float end, float max) {
+		float diff = end - start;
+		float s = MathUtils.sign(diff);
+		return start + MathUtils.min(max, MathUtils.abs(diff)) * s;
+	}
+
 	public static int div(int x, int y) {
 		long z = (((long) x) << 32);
 		return (int) ((z / y) >> 16);
@@ -1673,11 +1679,19 @@ public final class MathUtils {
 	}
 
 	public static float wave(float time) {
-		return wave(1f, 1f, time);
+		return waveCos(1f, 1f, time);
 	}
 
 	public static float wave(float frequency, float amplitude, float time) {
+		return waveCos(frequency, amplitude, time);
+	}
+
+	public static float waveCos(float frequency, float amplitude, float time) {
 		return amplitude / 2f * (1f - MathUtils.cos(time * frequency * MathUtils.TWO_PI));
+	}
+
+	public static float waveSin(float frequency, float amplitude, float time) {
+		return amplitude / 2f * (1f - MathUtils.sin(time * frequency * MathUtils.TWO_PI));
 	}
 
 	public static float wrapAngle(float angle) {
@@ -1869,6 +1883,18 @@ public final class MathUtils {
 			return 0f;
 		}
 		return atan2(dst.getY() - src.getY(), dst.getX() - src.getX());
+	}
+
+	public static float angle(float start, float end, float max) {
+		start = start % TWO_PI;
+		end = end % TWO_PI;
+		float diff = end - start;
+		float s = sign(diff);
+		if (MathUtils.abs(diff) > MathUtils.PI) {
+			diff = start - end;
+			s = -s;
+		}
+		return start + MathUtils.min(max, MathUtils.abs(diff)) * s;
 	}
 
 	public static Vector2f angleToVector(float angle) {
