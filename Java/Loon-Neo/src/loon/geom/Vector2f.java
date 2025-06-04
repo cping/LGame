@@ -252,22 +252,21 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f cpy(XY pos) {
+		if (pos == null) {
+			return new Vector2f();
+		}
 		return at(pos.getX(), pos.getY());
 	}
 
 	public final static Vector2f nor(float x, float y) {
-		Vector2f v = new Vector2f(x, y);
-		float len = len(v);
-		if (len != 0) {
-			v.x /= len;
-			v.y /= len;
-		}
-		return v;
+		return nor(x, y, new Vector2f(x, y));
 	}
 
 	public final static Vector2f nor(float x, float y, Vector2f o) {
-		Vector2f v = new Vector2f(x, y);
-		float len = len(v);
+		if (o == null) {
+			o = new Vector2f(x, y);
+		}
+		float len = len(o);
 		if (len != 0) {
 			o.x /= len;
 			o.y /= len;
@@ -276,14 +275,23 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f nor(XY pos) {
-		return nor(pos.getX(), pos.getY(), pos == null ? new Vector2f() : new Vector2f(pos.getX(), pos.getY()));
+		if (pos == null) {
+			return new Vector2f();
+		}
+		return nor(pos.getX(), pos.getY(), new Vector2f(pos.getX(), pos.getY()));
 	}
 
 	public final static float len(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
 		return len(pos.getX(), pos.getY());
 	}
 
 	public final static float len2(XY pos) {
+		if (pos == null) {
+			return 0f;
+		}
 		return len2(pos.getX(), pos.getY());
 	}
 
@@ -456,6 +464,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final static Vector2f moveTowards(Vector2f current, Vector2f target, float maxDistanceDelta) {
+		return moveTowards(current, target, maxDistanceDelta, new Vector2f());
+	}
+
+	public final static Vector2f moveTowards(Vector2f current, Vector2f target, float maxDistanceDelta, Vector2f out) {
 		float vector_x = target.x - current.x;
 		float vector_y = target.y - current.y;
 		float sqdist = vector_x * vector_x + vector_y * vector_y;
@@ -463,8 +475,14 @@ public class Vector2f implements Serializable, SetXY, XY {
 			return target;
 		}
 		float dist = MathUtils.sqrt(sqdist);
-		return new Vector2f(current.x + vector_x / dist * maxDistanceDelta,
-				current.y + vector_y / dist * maxDistanceDelta);
+		float newX = current.x + vector_x / dist * maxDistanceDelta;
+		float newY = current.y + vector_y / dist * maxDistanceDelta;
+		if (out == null) {
+			out = new Vector2f(newX, newY);
+		} else {
+			out.set(newX, newY);
+		}
+		return out;
 	}
 
 	public final static Vector2f div(Vector2f a, Vector2f b, Vector2f out) {

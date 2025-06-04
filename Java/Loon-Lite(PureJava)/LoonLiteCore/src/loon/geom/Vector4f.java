@@ -288,6 +288,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 	}
 
 	public static Vector4f moveTowards(Vector4f current, Vector4f target, float maxDistanceDelta) {
+		return moveTowards(current, target, maxDistanceDelta, new Vector4f());
+	}
+
+	public static Vector4f moveTowards(Vector4f current, Vector4f target, float maxDistanceDelta, Vector4f out) {
 		float vector_x = target.x - current.x;
 		float vector_y = target.y - current.y;
 		float vector_z = target.z - current.z;
@@ -297,9 +301,16 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 			return target;
 		}
 		float dist = MathUtils.sqrt(sqdist);
-		return new Vector4f(current.x + vector_x / dist * maxDistanceDelta,
-				current.y + vector_y / dist * maxDistanceDelta, current.z + vector_z / dist * maxDistanceDelta,
-				current.w + vector_w / dist * maxDistanceDelta);
+		float newX = current.x + vector_x / dist * maxDistanceDelta;
+		float newY = current.y + vector_y / dist * maxDistanceDelta;
+		float newZ = current.z + vector_z / dist * maxDistanceDelta;
+		float newW = current.w + vector_w / dist * maxDistanceDelta;
+		if (out == null) {
+			out = new Vector4f(newX, newY, newZ, newW);
+		} else {
+			out.set(newX, newY, newZ, newW);
+		}
+		return out;
 	}
 
 	public static Vector4f div(Vector4f v1, Vector4f v2) {

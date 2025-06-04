@@ -1308,6 +1308,13 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return 0;
 	}
 
+	public boolean compareTag(Object t) {
+		if (t == null) {
+			return false;
+		}
+		return isTag(t);
+	}
+
 	public boolean isDestroyed() {
 		return _destroyed;
 	}

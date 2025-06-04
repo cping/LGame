@@ -96,6 +96,10 @@ public class LTimer implements LTimerListener, LRelease {
 		return RealtimeProcessManager.get().findCount(GameProcessType.Time);
 	}
 
+	public static int clearTimes() {
+		return RealtimeProcessManager.get().remove(GameProcessType.Time);
+	}
+
 	public static boolean isScheduled() {
 		return _instance != null;
 	}

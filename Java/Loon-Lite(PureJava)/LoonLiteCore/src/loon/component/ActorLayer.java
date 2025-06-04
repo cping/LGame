@@ -48,7 +48,7 @@ import loon.utils.TArray;
 
 public abstract class ActorLayer extends LContainer {
 
-	private Field2D tmpField;
+	private Field2D arrayMap;
 
 	private boolean isBounded;
 
@@ -154,10 +154,10 @@ public abstract class ActorLayer extends LContainer {
 		if (_destroyed) {
 			return null;
 		}
-		if (tmpField == null) {
-			tmpField = createArrayMap(w, h);
+		if (arrayMap == null) {
+			arrayMap = createArrayMap(w, h);
 		}
-		MoveTo move = new MoveTo(tmpField, x, y, flag);
+		MoveTo move = new MoveTo(arrayMap, x, y, flag);
 		addActionEvent(move, o);
 		return move;
 	}
@@ -454,10 +454,10 @@ public abstract class ActorLayer extends LContainer {
 		if (_destroyed) {
 			return null;
 		}
-		tmpField = new Field2D(
+		arrayMap = new Field2D(
 				new int[MathUtils.iceil(getHeight() / tileHeight)][MathUtils.iceil(getWidth() / tileWidth)], tileWidth,
 				tileHeight);
-		return tmpField;
+		return arrayMap;
 	}
 
 	/**
@@ -472,13 +472,13 @@ public abstract class ActorLayer extends LContainer {
 		if (field == null) {
 			return;
 		}
-		if (tmpField != null) {
-			if ((field.getMap().length == tmpField.getMap().length) && (field.getTileWidth() == tmpField.getTileWidth())
-					&& (field.getTileHeight() == tmpField.getTileHeight())) {
-				tmpField.set(field.getMap(), field.getTileWidth(), field.getTileHeight());
+		if (arrayMap != null) {
+			if ((field.getMap().length == arrayMap.getMap().length) && (field.getTileWidth() == arrayMap.getTileWidth())
+					&& (field.getTileHeight() == arrayMap.getTileHeight())) {
+				arrayMap.set(field.getMap(), field.getTileWidth(), field.getTileHeight());
 			}
 		} else {
-			tmpField = field;
+			arrayMap = field;
 		}
 	}
 
@@ -489,7 +489,7 @@ public abstract class ActorLayer extends LContainer {
 	 */
 	@Override
 	public Field2D getField2D() {
-		return tmpField;
+		return arrayMap;
 	}
 
 	/**

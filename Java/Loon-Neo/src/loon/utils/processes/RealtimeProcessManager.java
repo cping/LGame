@@ -257,6 +257,86 @@ public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRe
 		return list;
 	}
 
+	public int remove(GameProcess process) {
+		int count = 0;
+		if (_processes != null && _processes.size > 0) {
+			synchronized (this._processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(_processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (process == p || process.getId() == p.getId() || process.getId().equals(p.getId())) {
+							p.kill();
+							_processes.remove(p);
+							count++;
+						}
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	public int remove(String id) {
+		int count = 0;
+		if (_processes != null && _processes.size > 0) {
+			synchronized (this._processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(_processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getId() == id || p.getId().equals(id)) {
+							p.kill();
+							_processes.remove(p);
+							count++;
+						}
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	public int remove(GameProcessType processType) {
+		int count = 0;
+		if (_processes != null && _processes.size > 0) {
+			synchronized (this._processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(_processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getProcessType() == processType) {
+							p.kill();
+							_processes.remove(p);
+							count++;
+						}
+					}
+				}
+			}
+		}
+		return count;
+	}
+
+	public int removeIndex(String id) {
+		int count = 0;
+		if (_processes != null && _processes.size > 0) {
+			synchronized (this._processes) {
+				final TArray<GameProcess> ps = new TArray<GameProcess>(_processes);
+				for (int i = 0; i < ps.size; i++) {
+					GameProcess p = ps.get(i);
+					if (p != null) {
+						if (p.getId().equals(id) || p.getId().indexOf(id) != -1) {
+							p.kill();
+							_processes.remove(p);
+							count++;
+						}
+					}
+				}
+			}
+		}
+		return count;
+	}
+
 	public TArray<GameProcess> delete(GameProcessType pt) {
 		TArray<GameProcess> list = new TArray<GameProcess>();
 		if (pt == null) {

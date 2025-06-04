@@ -69,6 +69,8 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	private final Vector2f _speed = new Vector2f();
 	private final Vector2f _waveOffset = new Vector2f();
 
+	private Field2D _arrayMap;
+
 	private Animation _animation;
 
 	private BulletListener _listener;
@@ -597,9 +599,14 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		this._baseColor = newColor;
 	}
 
+	public Bullet setField2D(Field2D arrayMap) {
+		this._arrayMap = arrayMap;
+		return this;
+	}
+
 	@Override
 	public Field2D getField2D() {
-		return null;
+		return _arrayMap;
 	}
 
 	@Override

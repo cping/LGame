@@ -306,6 +306,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 	}
 
 	public static Vector3f moveTowards(Vector3f current, Vector3f target, float maxDistanceDelta) {
+		return moveTowards(current, target, maxDistanceDelta, new Vector3f());
+	}
+
+	public static Vector3f moveTowards(Vector3f current, Vector3f target, float maxDistanceDelta, Vector3f out) {
 		float vector_x = target.x - current.x;
 		float vector_y = target.y - current.y;
 		float vector_z = target.z - current.z;
@@ -314,8 +318,15 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 			return target;
 		}
 		float dist = MathUtils.sqrt(sqdist);
-		return new Vector3f(current.x + vector_x / dist * maxDistanceDelta,
-				current.y + vector_y / dist * maxDistanceDelta, current.z + vector_z / dist * maxDistanceDelta);
+		float newX = current.x + vector_x / dist * maxDistanceDelta;
+		float newY = current.y + vector_y / dist * maxDistanceDelta;
+		float newZ = current.z + vector_z / dist * maxDistanceDelta;
+		if (out == null) {
+			out = new Vector3f(newX, newY, newZ);
+		} else {
+			out.set(newX, newY, newZ);
+		}
+		return out;
 	}
 
 	public static Vector3f div(Vector3f v1, Vector3f v2) {

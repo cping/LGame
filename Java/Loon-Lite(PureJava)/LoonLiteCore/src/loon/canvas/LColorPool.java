@@ -56,7 +56,7 @@ public class LColorPool implements LRelease {
 		this(LSystem.UNKNOWN);
 	}
 
-	public LColorPool(String name) {
+	private LColorPool(String name) {
 		this._name = name;
 	}
 

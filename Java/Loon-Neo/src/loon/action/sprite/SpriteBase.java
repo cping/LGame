@@ -97,6 +97,8 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected LTexture _image = null;
 	protected LColor _debugDrawColor = LColor.red;
 
+	protected Field2D _arrayMap;
+
 	protected Shape _otherShape = null;
 
 	protected ShapeNodeType _oldNodeType = null;
@@ -1053,9 +1055,14 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return getInScreenCollisionBox(width, height).intersects(x, y, width, height);
 	}
 
+	public SpriteBase<T> setField2D(Field2D arrayMap) {
+		this._arrayMap = arrayMap;
+		return this;
+	}
+
 	@Override
 	public Field2D getField2D() {
-		return null;
+		return _arrayMap;
 	}
 
 	@Override
