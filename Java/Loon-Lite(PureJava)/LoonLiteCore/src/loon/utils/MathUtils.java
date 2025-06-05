@@ -1513,6 +1513,23 @@ public final class MathUtils {
 		}
 	}
 
+	public static float calcPpf(float pps, float delta) {
+		return calcPpf(pps, LSystem.getFPS(), delta);
+	}
+
+	public static float calcPpf(float pps, float fps, float delta) {
+		if (fps <= 0f && delta <= 0f) {
+			return pps;
+		}
+		if (fps != 0f && delta <= 0f) {
+			return pps / fps;
+		}
+		if (fps <= 0f && delta != 0f) {
+			return pps / delta;
+		}
+		return pps / fps / delta;
+	}
+
 	public static int round(float x) {
 		return (int) (x + BIG_ENOUGH_ROUND) - BIG_ENOUGH_INT;
 	}

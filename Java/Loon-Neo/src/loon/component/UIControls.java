@@ -1097,6 +1097,7 @@ public class UIControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -1137,6 +1138,7 @@ public class UIControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -1177,6 +1179,7 @@ public class UIControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -1217,6 +1220,7 @@ public class UIControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;

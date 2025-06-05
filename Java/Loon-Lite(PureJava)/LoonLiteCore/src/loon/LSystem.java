@@ -361,6 +361,16 @@ public final class LSystem {
 		return 1f;
 	}
 
+	public static final float getFPS() {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.fps;
+			}
+		}
+		return 1f;
+	}
+
 	public static final float toFPSFixed(float v) {
 		if (base() != null) {
 			LSetting setting = LSystem.base().setting;

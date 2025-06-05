@@ -949,6 +949,7 @@ public class SpriteControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								spr.setLocation(spr.getX() - spr.getWidth() * 2f, spr.getY());
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -989,6 +990,7 @@ public class SpriteControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								spr.setLocation(spr.getX() + spr.getWidth() * 2f, spr.getY());
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -1029,6 +1031,7 @@ public class SpriteControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								spr.setLocation(spr.getX(), spr.getY() - spr.getHeight() * 2f);
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;
@@ -1069,6 +1072,7 @@ public class SpriteControls {
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
 							if (count > maxCount) {
 								spr.setLocation(spr.getX(), spr.getY() + spr.getHeight() * 2f);
+								count = 0;
 							} else {
 								if (i > 0) {
 									i--;

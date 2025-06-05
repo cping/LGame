@@ -61,7 +61,7 @@ public class ParticleConfigTest extends Screen {
 	@Override
 	public void alter(LTimerContext timer) {
 		if (isOnLoadComplete()) {
-			long delta = timer.timeSinceLastUpdate;
+			long delta = timer.getTimeSinceLastUpdate();
 			fire.update(delta);
 			trail.update(delta);
 		}

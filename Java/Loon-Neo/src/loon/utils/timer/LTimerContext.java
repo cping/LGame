@@ -32,11 +32,8 @@ public class LTimerContext {
 
 	public float alpha;
 
-	public float scale;
-
 	public LTimerContext() {
 		this.timeSinceLastUpdate = 0;
-		this.scale = 1f;
 	}
 
 	public float getMilliseconds() {
@@ -56,12 +53,16 @@ public class LTimerContext {
 		return delta;
 	}
 
-	public float dt() {
-		return getDelta() * scale;
+	public float calcPpf(float pps) {
+		return MathUtils.calcPpf(pps, getDelta());
 	}
 
-	public long getTimeScale() {
-		return (long) (timeSinceLastUpdate * scale);
+	public float calcPpfScale(float pps) {
+		return MathUtils.calcPpf(pps, dt());
+	}
+
+	public float dt() {
+		return getDelta();
 	}
 
 	public long getTimeSinceLastUpdate() {
@@ -70,6 +71,10 @@ public class LTimerContext {
 
 	public float getAlpha() {
 		return alpha;
+	}
+	
+	public float getScale() {
+		return LSystem.getScaleFPS();
 	}
 
 	@Override

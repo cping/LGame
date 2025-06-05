@@ -6300,6 +6300,16 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 按照当前游戏帧率与两帧间时间差值修正特定数值使其平滑
+	 * 
+	 * @param pps
+	 * @return
+	 */
+	public float calcPpf(float pps) {
+		return MathUtils.calcPpf(pps, getDeltaTime());
+	}
+
+	/**
 	 * 截屏screen并转化为base64字符串
 	 * 
 	 * @return

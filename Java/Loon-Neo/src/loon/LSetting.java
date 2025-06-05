@@ -216,6 +216,18 @@ public class LSetting {
 	}
 
 	/**
+	 * 使当前FPS速度变化为指定FPS时的每帧刷新速度
+	 * 
+	 * @param fps
+	 * @return
+	 */
+	public LSetting setFixedFPS(int fps) {
+		this.fps_time_fixed = true;
+		this.fps_time_fixed_value = fps;
+		return this;
+	}
+
+	/**
 	 * 获得fps的缩放值
 	 * 
 	 * @param v
