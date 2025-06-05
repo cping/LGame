@@ -69,6 +69,8 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	private final Vector2f _speed = new Vector2f();
 	private final Vector2f _waveOffset = new Vector2f();
 
+	private final EaseTimer _easeTimer;
+
 	private Field2D _arrayMap;
 
 	private Animation _animation;
@@ -91,8 +93,6 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	private float _lifeCounter;
 
 	private LColor _baseColor;
-
-	private EaseTimer _easeTimer;
 
 	public Bullet(EasingMode easingMode, LTexture tex, float x, float y) {
 		this(easingMode, tex, x, y, 0, INIT_DURATION);
@@ -206,15 +206,21 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		return this._wavefrequency;
 	}
 
+	public EaseTimer getEaseTimer() {
+		return this._easeTimer;
+	}
+
 	public Bullet setEaseTimerLoop(boolean l) {
-		if (this._easeTimer != null) {
-			this._easeTimer.setLoop(l);
-		}
+		this._easeTimer.setLoop(l);
 		return this;
 	}
 
 	public boolean isEaseTimerLoop() {
-		return this._easeTimer == null ? false : this._easeTimer.isLoop();
+		return this._easeTimer.isLoop();
+	}
+
+	public boolean isEaseCompleted() {
+		return this._easeTimer.isCompleted();
 	}
 
 	public boolean isAutoRemoved() {
@@ -284,6 +290,9 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 			if (!checkLifeOver(_listener)) {
 				Vector2f speedOffset = getWaveSpeedOffset(_easeTimer);
 				setLocation(getX() + speedOffset.x, getY() + speedOffset.y);
+			}
+			if (_listener != null && _easeTimer.isCompleted()) {
+				_listener.easeover(this);
 			}
 		}
 	}

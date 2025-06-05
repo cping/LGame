@@ -331,6 +331,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public static Path findPath(HexagonMap map, int[] start, int[] end, int endRadius) {
+		if (map == null) {
+			return null;
+		}
 		NodeList openNodes = new NodeList();
 		NodeList closedNodes = new NodeList();
 		openNodes.add(new Node(start));
@@ -340,6 +343,9 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 				return null;
 			}
 			Node node = openNodes.removeIndex(0);
+			if (node == null) {
+				continue;
+			}
 			int distance = map.distance(node.position, end);
 			if (distance <= endRadius) {
 				found = node;

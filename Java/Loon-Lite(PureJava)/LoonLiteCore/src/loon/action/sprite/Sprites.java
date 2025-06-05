@@ -28,6 +28,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.Screen;
 import loon.Visible;
+import loon.ZIndex;
 import loon.action.ActionBind;
 import loon.action.ActionControl;
 import loon.action.PlaceActions;
@@ -58,7 +59,7 @@ import loon.utils.reply.Callback;
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
-public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
+public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LRelease {
 
 	public static interface Created<T> {
 		T make();
@@ -75,6 +76,8 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 	private ISpritesShadow _spriteShadow;
 
 	private Margin _margin;
+
+	private int _indexLayer;
 
 	private boolean _createShadow;
 
@@ -2669,6 +2672,40 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			}
 		}
 		return result;
+	}
+
+	public Sprites setLayerTop() {
+		return this.setLayer(Integer.MAX_VALUE);
+	}
+
+	public Sprites setLayerBottom() {
+		return this.setLayer(Integer.MIN_VALUE);
+	}
+
+	public Sprites setLayer(int z) {
+		this._indexLayer = z;
+		return this;
+	}
+
+	public Sprites setZ(int z) {
+		return this.setZOrder(z);
+	}
+
+	public Sprites setZOrder(int z) {
+		return setLayer(-z);
+	}
+
+	public int getZOrder() {
+		return MathUtils.abs(getLayer());
+	}
+
+	public int getZ() {
+		return getZOrder();
+	}
+
+	@Override
+	public int getLayer() {
+		return _indexLayer;
 	}
 
 	public boolean isClosed() {

@@ -837,7 +837,7 @@ public abstract class Shape implements Serializable, IArray, XY, SetXY {
 			dx2 /= len2;
 			dy2 /= len2;
 
-			if ((dx1 != dx2) || (dy1 != dy2)) {
+			if ((!MathUtils.equal(dx1, dx2)) || (!MathUtils.equal(dy1, dy2))) {
 				result.addPoint(getPoint(i)[0], getPoint(i)[1]);
 			}
 		}

@@ -112,7 +112,7 @@ public class LColor implements Serializable {
 		if (c1 == null && c2 != null) {
 			return c2;
 		}
-		if (c1 == null && c2 == null) {
+		if (c1 == null || c2 == null) {
 			return null;
 		}
 		int r = (int) ((c2.getRed() - c1.getRed()) * ratio + c1.getRed());

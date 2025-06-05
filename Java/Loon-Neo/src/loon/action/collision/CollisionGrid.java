@@ -82,7 +82,7 @@ public class CollisionGrid {
 				cx = cx + stepX;
 				f.onTraverse(cx, cy);
 			} else {
-				if (tx == ty) {
+				if (MathUtils.equal(tx, ty)) {
 					f.onTraverse(cx + stepX, cy);
 				}
 				ty = ty + dy;

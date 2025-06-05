@@ -26,6 +26,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.Screen;
 import loon.Visible;
+import loon.ZIndex;
 import loon.action.sprite.ISprite;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
@@ -50,11 +51,13 @@ import loon.utils.reply.Callback;
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
  * 
  */
-public class Desktop implements Visible, IArray, LRelease {
+public class Desktop implements Visible, ZIndex, IArray, LRelease {
 
 	private final DirtyRectList _dirtyList = new DirtyRectList();
 
 	private final Vector2f _touchPoint = new Vector2f();
+
+	private int _indexLayer;
 
 	// 输入设备监听
 	protected SysInput _sysInput;
@@ -1434,6 +1437,40 @@ public class Desktop implements Visible, IArray, LRelease {
 
 	public Desktop setTouchOffset(float x, float y) {
 		return setTouchOffset(Vector2f.at(x, y));
+	}
+
+	public Desktop setLayerTop() {
+		return this.setLayer(Integer.MAX_VALUE);
+	}
+
+	public Desktop setLayerBottom() {
+		return this.setLayer(Integer.MIN_VALUE);
+	}
+
+	public Desktop setLayer(int z) {
+		this._indexLayer = z;
+		return this;
+	}
+
+	public Desktop setZ(int z) {
+		return this.setZOrder(z);
+	}
+
+	public Desktop setZOrder(int z) {
+		return setLayer(-z);
+	}
+
+	public int getZOrder() {
+		return MathUtils.abs(getLayer());
+	}
+
+	public int getZ() {
+		return getZOrder();
+	}
+
+	@Override
+	public int getLayer() {
+		return _indexLayer;
 	}
 
 	@Override

@@ -365,7 +365,7 @@ public abstract class PixmapFImpl {
 			float x2 = centerX + currentX + deltaX;
 			float y1 = centerY - currentY;
 			float y2 = centerY + currentY + deltaY;
-			if (!fill || lasty1 != y1) {
+			if (!fill || !MathUtils.equal(lasty1, y1)) {
 				listener.newPoint(lastx1, lasty1, lastx2, lasty2);
 				lasty1 = y1;
 				lasty2 = y2;

@@ -835,7 +835,7 @@ public final class CollisionHelper extends ShapeUtils {
 		float area1 = MathUtils.abs((x1 - px) * (y2 - py) - (x2 - px) * (y1 - py));
 		float area2 = MathUtils.abs((x2 - px) * (y3 - py) - (x3 - px) * (y2 - py));
 		float area3 = MathUtils.abs((x3 - px) * (y1 - py) - (x1 - px) * (y3 - py));
-		return area1 + area2 + area3 == areaOrig;
+		return MathUtils.equal(area1 + area2 + area3, areaOrig);
 	}
 
 	public static final <T extends XY> boolean checkPointvsPolygon(XY pos, TArray<T> vertices) {

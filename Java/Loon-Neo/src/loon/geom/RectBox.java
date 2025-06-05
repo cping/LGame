@@ -146,6 +146,9 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public final static RectBox fromMinMax(float x1, float y1, float x2, float y2, RectBox o) {
+		if (o == null) {
+			o = new RectBox();
+		}
 		float minX = MathUtils.min(x1, x2);
 		float minY = MathUtils.min(y1, y2);
 		float maxX = MathUtils.max(x1, x2);
@@ -158,6 +161,9 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public final static RectBox fromLerp(RectBox src, RectBox dst, float ratio, RectBox o) {
+		if (o == null) {
+			o = new RectBox();
+		}
 		float x = src.x;
 		float y = src.y;
 		float w = src.width;
@@ -170,6 +176,9 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
+		if (src == null) {
+			src = new RectBox();
+		}
 		float destWidth = src.width + xScale;
 		float destHeight = src.height + yScale;
 		float destX = src.x - xScale / 2;

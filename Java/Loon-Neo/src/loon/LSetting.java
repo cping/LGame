@@ -210,7 +210,10 @@ public class LSetting {
 	 */
 	public float getScaleFPS() {
 		if (fps_time_fixed) {
-			return ((float) fps_time_fixed_value / (float) fps);
+			if (fps_time_fixed_value == fps) {
+				return 1f;
+			}
+			return ((float) fps_time_fixed_value / fps);
 		}
 		return 1f;
 	}

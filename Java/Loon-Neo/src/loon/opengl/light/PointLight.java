@@ -73,14 +73,14 @@ public class PointLight extends BaseLight {
 		}
 	}
 
-	public PointLight set(final LColor color, final Vector3f position, final float radius, final float intensity,
+	public PointLight set(final LColor c, final Vector3f position, final float radius, final float intensity,
 			final float attenuation) {
-		if (!this.color.equals(color) || !this.position.equals(position) || this.radius != radius
+		if (!this.color.equals(c) || !this.position.equals(position) || this.radius != radius
 				|| this.intensity != intensity || this.attenuation != attenuation) {
 			this._dirty = true;
 		}
-		if (color != null) {
-			this.color.setColor(color);
+		if (c != null) {
+			this.color.setColor(c);
 		} else {
 			this.color.setColor(DefLightColor);
 		}
@@ -100,7 +100,7 @@ public class PointLight extends BaseLight {
 				|| this.intensity != intensity || this.attenuation != attenuation) {
 			this._dirty = true;
 		}
-		if (!color.equals(r, g, b)) {
+		if (!this.color.equals(r, g, b)) {
 			this.color.setColor(r, g, b);
 		} else {
 			this.color.setColor(DefLightColor);
@@ -117,14 +117,14 @@ public class PointLight extends BaseLight {
 		return this;
 	}
 
-	public PointLight set(final LColor color, final float x, final float y, final float z, final float radius,
+	public PointLight set(final LColor c, final float x, final float y, final float z, final float radius,
 			final float intensity, final float attenuation) {
-		if (!this.color.equals(color) || !this.position.equals(x, y, z) || this.radius != radius
+		if (!this.color.equals(c) || !this.position.equals(x, y, z) || this.radius != radius
 				|| this.intensity != intensity || this.attenuation != attenuation) {
 			this._dirty = true;
 		}
-		if (color != null) {
-			this.color.setColor(color);
+		if (c != null) {
+			this.color.setColor(c);
 		} else {
 			this.color.setColor(DefLightColor);
 		}
@@ -144,7 +144,7 @@ public class PointLight extends BaseLight {
 				|| this.intensity != intensity || this.attenuation != attenuation) {
 			this._dirty = true;
 		}
-		if (color != null) {
+		if (!this.color.equals(r, g, b)) {
 			this.color.setColor(r, g, b);
 		} else {
 			this.color.setColor(DefLightColor);
@@ -172,7 +172,7 @@ public class PointLight extends BaseLight {
 		if (!this.color.equals(r, g, b) || !this.position.equals(x, y, z) || this.intensity != intensity) {
 			this._dirty = true;
 		}
-		if (color != null) {
+		if (!this.color.equals(r, g, b)) {
 			this.color.setColor(r, g, b);
 		} else {
 			this.color.setColor(DefLightColor);

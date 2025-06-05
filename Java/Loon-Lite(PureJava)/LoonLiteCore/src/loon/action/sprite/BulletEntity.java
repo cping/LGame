@@ -60,6 +60,8 @@ public class BulletEntity extends Entity {
 		public void updateable(long elapsedTime, Bullet bullet);
 
 		public void lifeover(Bullet bullet);
+
+		public void easeover(Bullet bullet);
 	}
 
 	public static float getBallisticRange(float speed, float gravity, float iheight) {
@@ -71,11 +73,11 @@ public class BulletEntity extends Entity {
 		return range;
 	}
 
-	private CollisionWorld collisionWorld;
+	private CollisionWorld _collisionWorld;
 
-	protected CollisionFilter worldCollisionFilter;
+	private CollisionFilter _worldCollisionFilter;
 
-	private BulletListener listener;
+	private BulletListener _listener;
 
 	private boolean _allowAutoFixMoved;
 
@@ -83,7 +85,7 @@ public class BulletEntity extends Entity {
 
 	private boolean _limitMoved;
 
-	private boolean selfWorld;
+	private boolean _selfWorld;
 
 	private TArray<Bullet> bullets;
 
@@ -112,11 +114,11 @@ public class BulletEntity extends Entity {
 		this.bullets = new TArray<Bullet>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 		this.textureFree = new LTextureFree();
 		if (world != null) {
-			this.collisionWorld = world;
-			this.selfWorld = false;
+			this._collisionWorld = world;
+			this._selfWorld = false;
 		} else {
-			this.collisionWorld = new CollisionWorld();
-			this.selfWorld = true;
+			this._collisionWorld = new CollisionWorld();
+			this._selfWorld = true;
 		}
 		this._running = true;
 		this._limitMoved = true;
@@ -126,32 +128,32 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setListener(BulletListener l) {
-		this.listener = l;
+		this._listener = l;
 		return this;
 	}
 
 	public BulletListener getListener() {
-		return this.listener;
+		return this._listener;
 	}
 
 	public BulletEntity setCollisionWorld(CollisionWorld world) {
 		if (world == null) {
 			return this;
 		}
-		if (selfWorld && collisionWorld != null) {
-			collisionWorld.close();
+		if (_selfWorld && _collisionWorld != null) {
+			_collisionWorld.close();
 		}
-		this.selfWorld = false;
-		this.collisionWorld = world;
+		this._selfWorld = false;
+		this._collisionWorld = world;
 		return this;
 	}
 
 	public CollisionManager getCollisionManager() {
-		if (collisionWorld == null) {
-			collisionWorld = new CollisionWorld();
-			selfWorld = true;
+		if (_collisionWorld == null) {
+			_collisionWorld = new CollisionWorld();
+			_selfWorld = true;
 		}
-		return collisionWorld.getCollisionManager();
+		return _collisionWorld.getCollisionManager();
 	}
 
 	/**
@@ -1414,12 +1416,12 @@ public class BulletEntity extends Entity {
 		}
 		if (!bullets.contains(bullet)) {
 			bullets.add(bullet);
-			collisionWorld.add(bullet);
-			collisionWorld.getCollisionManager().addObject(bullet);
+			_collisionWorld.add(bullet);
+			_collisionWorld.getCollisionManager().addObject(bullet);
 			bullet.setSuper(this);
 			bullet.onAttached();
-			if (listener != null) {
-				listener.attached(bullet);
+			if (_listener != null) {
+				_listener.attached(bullet);
 			}
 		}
 	}
@@ -1432,12 +1434,12 @@ public class BulletEntity extends Entity {
 			return;
 		}
 		bullets.remove(bullet);
-		collisionWorld.remove(bullet);
-		collisionWorld.getCollisionManager().removeObject(bullet);
+		_collisionWorld.remove(bullet);
+		_collisionWorld.getCollisionManager().removeObject(bullet);
 		bullet.setSuper(null);
 		bullet.onDetached();
-		if (listener != null) {
-			listener.detached(bullet);
+		if (_listener != null) {
+			_listener.detached(bullet);
 		}
 	}
 
@@ -1607,8 +1609,8 @@ public class BulletEntity extends Entity {
 			if (bullet != null) {
 				movePos(bullet);
 				bullet.draw(g, drawX(offsetX), drawY(offsetX));
-				if (listener != null) {
-					listener.drawable(g, bullet);
+				if (_listener != null) {
+					_listener.drawable(g, bullet);
 				}
 			}
 		}
@@ -1625,9 +1627,12 @@ public class BulletEntity extends Entity {
 				if (bullet != null) {
 					movePos(bullet);
 					bullet.update(elapsedTime);
-					if (listener != null) {
-						listener.updateable(elapsedTime, bullet);
-						bullet.checkLifeOver(listener);
+					if (_listener != null) {
+						_listener.updateable(elapsedTime, bullet);
+						bullet.checkLifeOver(_listener);
+						if (bullet.isEaseCompleted()) {
+							_listener.easeover(bullet);
+						}
 					}
 					if (_limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
 						removeWorld(bullet);
@@ -1658,8 +1663,8 @@ public class BulletEntity extends Entity {
 		bullets.remove(bullet);
 		if (bullet != null) {
 			bullet.onDetached();
-			if (listener != null) {
-				listener.detached(bullet);
+			if (_listener != null) {
+				_listener.detached(bullet);
 			}
 		}
 		return this;
@@ -1672,8 +1677,8 @@ public class BulletEntity extends Entity {
 		Bullet bullet = bullets.removeIndex(bulletIdx);
 		if (bullet != null) {
 			bullet.onDetached();
-			if (listener != null) {
-				listener.detached(bullet);
+			if (_listener != null) {
+				_listener.detached(bullet);
 			}
 		}
 		return this;
@@ -1687,8 +1692,8 @@ public class BulletEntity extends Entity {
 			Bullet bullet = bullets.get(i);
 			if (bullet != null) {
 				bullet.onDetached();
-				if (listener != null) {
-					listener.detached(bullet);
+				if (_listener != null) {
+					_listener.detached(bullet);
 				}
 			}
 		}
@@ -1987,11 +1992,11 @@ public class BulletEntity extends Entity {
 		if (bind == null) {
 			return;
 		}
-		if (collisionWorld != null && _allowAutoFixMoved) {
-			if (worldCollisionFilter == null) {
-				worldCollisionFilter = CollisionFilter.getDefault();
+		if (_collisionWorld != null && _allowAutoFixMoved) {
+			if (_worldCollisionFilter == null) {
+				_worldCollisionFilter = CollisionFilter.getDefault();
 			}
-			CollisionResult.Result result = collisionWorld.move(bind, bind.getX(), bind.getY(), worldCollisionFilter);
+			CollisionResult.Result result = _collisionWorld.move(bind, bind.getX(), bind.getY(), _worldCollisionFilter);
 			bind.setLocation(result.goalX, result.goalY);
 		}
 	}
@@ -2006,15 +2011,15 @@ public class BulletEntity extends Entity {
 	}
 
 	public CollisionFilter getCollisionFilter() {
-		return worldCollisionFilter;
+		return _worldCollisionFilter;
 	}
 
 	public void setCollisionFilter(CollisionFilter filter) {
-		this.worldCollisionFilter = filter;
+		this._worldCollisionFilter = filter;
 	}
 
 	public CollisionWorld getCollisionWorld() {
-		return collisionWorld;
+		return _collisionWorld;
 	}
 
 	@Override
@@ -2025,13 +2030,13 @@ public class BulletEntity extends Entity {
 			textureFree.close();
 			textureFree = null;
 		}
-		if (selfWorld) {
-			if (collisionWorld != null) {
-				collisionWorld.close();
-				collisionWorld = null;
+		if (_selfWorld) {
+			if (_collisionWorld != null) {
+				_collisionWorld.close();
+				_collisionWorld = null;
 			}
 		}
-		listener = null;
+		_listener = null;
 		_running = false;
 		_allowAutoFixMoved = false;
 	}

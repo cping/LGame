@@ -136,6 +136,10 @@ public class LSelectorIcon extends LComponent {
 	@Override
 	public void setLocation(float x, float y) {
 		super.setLocation(x, y);
+		this.checkLocal(x, y);
+	}
+
+	private void checkLocal(float x, float y) {
 		if (_objectLocation != null && tileWidth != 0 && tileHeight != 0) {
 			this._objectLocation.x = x / tileWidth;
 			this._objectLocation.y = y / tileHeight;
