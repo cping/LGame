@@ -113,6 +113,7 @@ public class GameMapTest extends Stage {
 
 	@Override
 	public void create() {
+		
 		// 最先绘制用户画面
 		// setFristOrder(DRAW_USER_PAINT());
 		// 其次绘制精灵
@@ -128,6 +129,8 @@ public class GameMapTest extends Stage {
 		// 设置游戏滚动背景,向左方移动
 		setScrollBackground(Config.LEFT, "assets/tile_clouds.png");
 
+		// 不锁定角色操作
+		this.heroLocked.set(false);
 		// 以指定图片创建动画
 		this.coinAnimation = Animation.getDefaultAnimation("assets/coin.png", 32, 32, 200);
 		this.enemyAnimation = Animation.getDefaultAnimation("assets/enemy.gif", 32, 32, 200, LColor.black);

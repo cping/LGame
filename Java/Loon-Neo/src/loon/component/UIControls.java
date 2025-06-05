@@ -24,7 +24,6 @@ package loon.component;
 
 import loon.LObject;
 import loon.LSysException;
-import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
@@ -97,12 +96,16 @@ public class UIControls {
 
 	public UIControls(LComponent... comps) {
 		this();
-		add(comps);
+		if (comps != null) {
+			add(comps);
+		}
 	}
 
 	public UIControls(TArray<LComponent> comps) {
 		this();
-		add(comps);
+		if (comps != null) {
+			add(comps);
+		}
 	}
 
 	public UIControls() {
@@ -209,6 +212,31 @@ public class UIControls {
 			}
 		}
 		return null;
+	}
+
+	public UIControls fill(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		return set(screen.getDesktop());
+	}
+
+	public UIControls fill(Desktop desktop) {
+		if (desktop == null) {
+			return this;
+		}
+		synchronized (desktop) {
+			set(desktop.getComponentsArray());
+		}
+		return this;
+	}
+
+	public UIControls fill(TArray<LComponent> comps) {
+		if (comps == null || comps.size == 0 || comps.equals(this._comps)) {
+			return this;
+		}
+		this._comps.fill(comps);
+		return this;
 	}
 
 	public TArray<LComponent> list() {
@@ -328,7 +356,16 @@ public class UIControls {
 	}
 
 	public UIControls add(LComponent... comps) {
-		return add(new TArray<LComponent>(comps));
+		if (comps == null) {
+			throw new LSysException("LComponents cannot be null.");
+		}
+		for (int i = 0, n = comps.length; i < n; i++) {
+			LComponent comp = comps[i];
+			if (comp != null) {
+				add(comp);
+			}
+		}
+		return this;
 	}
 
 	public UIControls add(TArray<LComponent> comps) {
@@ -366,8 +403,11 @@ public class UIControls {
 		if (comps == null) {
 			throw new LSysException("LComponents cannot be null.");
 		}
-		for (LComponent comp : comps) {
-			remove(comp);
+		for (int i = comps.length - 1; i > -1; --i) {
+			LComponent comp = comps[i];
+			if (comp != null) {
+				remove(comp);
+			}
 		}
 		return this;
 	}
@@ -1044,6 +1084,7 @@ public class UIControls {
 		}
 		int count = 0;
 		final int size = _comps.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
@@ -1054,18 +1095,18 @@ public class UIControls {
 					if (dst != null && dst != comp) {
 						RectBox rect = comp.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				comp.setLocation(comp.getX() - comp.getWidth() * 2f, comp.getY());
-				return this;
 			}
 		}
 		return this;
@@ -1083,6 +1124,7 @@ public class UIControls {
 		}
 		int count = 0;
 		final int size = _comps.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
@@ -1093,18 +1135,18 @@ public class UIControls {
 					if (dst != null && dst != comp) {
 						RectBox rect = comp.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				comp.setLocation(comp.getX() + comp.getWidth() * 2f, comp.getY());
-				return this;
 			}
 		}
 		return this;
@@ -1122,6 +1164,7 @@ public class UIControls {
 		}
 		int count = 0;
 		final int size = _comps.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
@@ -1132,18 +1175,18 @@ public class UIControls {
 					if (dst != null && dst != comp) {
 						RectBox rect = comp.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				comp.setLocation(comp.getX(), comp.getY() - comp.getHeight() * 2f);
-				return this;
 			}
 		}
 		return this;
@@ -1161,6 +1204,7 @@ public class UIControls {
 		}
 		int count = 0;
 		final int size = _comps.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
@@ -1171,18 +1215,29 @@ public class UIControls {
 					if (dst != null && dst != comp) {
 						RectBox rect = comp.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
 			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				comp.setLocation(comp.getX(), comp.getY() + comp.getHeight() * 2f);
-				return this;
+		}
+		return this;
+	}
+
+	public UIControls move(float x, float y) {
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null && (comp instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) comp);
+				o.move(x, y);
 			}
 		}
 		return this;

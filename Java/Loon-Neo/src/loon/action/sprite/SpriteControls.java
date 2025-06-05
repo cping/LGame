@@ -22,7 +22,6 @@ package loon.action.sprite;
 
 import loon.LObject;
 import loon.LSysException;
-import loon.LSystem;
 import loon.PlayerUtils;
 import loon.Screen;
 import loon.action.ActionBind;
@@ -94,14 +93,18 @@ public class SpriteControls {
 
 	private TArray<ISprite> _sprs;
 
-	public SpriteControls(ISprite... comps) {
+	public SpriteControls(ISprite... sprs) {
 		this();
-		add(comps);
+		if (sprs != null) {
+			add(sprs);
+		}
 	}
 
-	public SpriteControls(TArray<ISprite> comps) {
+	public SpriteControls(TArray<ISprite> sprs) {
 		this();
-		add(comps);
+		if (sprs != null) {
+			add(sprs);
+		}
 	}
 
 	public SpriteControls() {
@@ -208,6 +211,31 @@ public class SpriteControls {
 			}
 		}
 		return null;
+	}
+
+	public SpriteControls fill(Screen screen) {
+		if (screen == null) {
+			return this;
+		}
+		return set(screen.getSprites());
+	}
+
+	public SpriteControls fill(Sprites sprites) {
+		if (sprites == null) {
+			return this;
+		}
+		synchronized (sprites) {
+			set(sprites.getSpritesArray());
+		}
+		return this;
+	}
+
+	public SpriteControls fill(TArray<ISprite> sprites) {
+		if (sprites == null || sprites.size == 0 || sprites.equals(this._sprs)) {
+			return this;
+		}
+		this._sprs.fill(sprites);
+		return this;
 	}
 
 	public TArray<ISprite> list() {
@@ -326,11 +354,24 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls add(TArray<ISprite> comps) {
-		if (comps == null) {
+	public SpriteControls add(TArray<ISprite> sprites) {
+		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		_sprs.addAll(comps);
+		_sprs.addAll(sprites);
+		return this;
+	}
+
+	public SpriteControls add(ISprite... sprites) {
+		if (sprites == null) {
+			throw new LSysException("Sprites cannot be null.");
+		}
+		for (int i = 0, n = sprites.length; i < n; i++) {
+			ISprite sprite = sprites[i];
+			if (sprite != null) {
+				add(sprite);
+			}
+		}
 		return this;
 	}
 
@@ -357,22 +398,15 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls add(ISprite... comps) {
-		if (comps == null) {
+	public SpriteControls remove(ISprite... sprites) {
+		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			add(comps[i]);
-		}
-		return this;
-	}
-
-	public SpriteControls remove(ISprite... comps) {
-		if (comps == null) {
-			throw new LSysException("Sprites cannot be null.");
-		}
-		for (int i = 0, n = comps.length; i < n; i++) {
-			remove(comps[i]);
+		for (int i = sprites.length - 1; i > -1; --i) {
+			ISprite sprite = sprites[i];
+			if (sprite != null) {
+				remove(sprite);
+			}
 		}
 		return this;
 	}
@@ -910,6 +944,7 @@ public class SpriteControls {
 		}
 		int count = 0;
 		final int size = _sprs.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
@@ -920,18 +955,18 @@ public class SpriteControls {
 					if (dst != null && dst != spr) {
 						RectBox rect = spr.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								spr.setLocation(spr.getX() - spr.getWidth() * 2f, spr.getY());
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				spr.setLocation(spr.getX() - spr.getWidth() * 2f, spr.getY());
-				return this;
 			}
 		}
 		return this;
@@ -949,6 +984,7 @@ public class SpriteControls {
 		}
 		int count = 0;
 		final int size = _sprs.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
@@ -959,18 +995,18 @@ public class SpriteControls {
 					if (dst != null && dst != spr) {
 						RectBox rect = spr.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								spr.setLocation(spr.getX() + spr.getWidth() * 2f, spr.getY());
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				spr.setLocation(spr.getX() + spr.getWidth() * 2f, spr.getY());
-				return this;
 			}
 		}
 		return this;
@@ -988,6 +1024,7 @@ public class SpriteControls {
 		}
 		int count = 0;
 		final int size = _sprs.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
@@ -998,18 +1035,18 @@ public class SpriteControls {
 					if (dst != null && dst != spr) {
 						RectBox rect = spr.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								spr.setLocation(spr.getX(), spr.getY() - spr.getHeight() * 2f);
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
-			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				spr.setLocation(spr.getX(), spr.getY() - spr.getHeight() * 2f);
-				return this;
 			}
 		}
 		return this;
@@ -1027,6 +1064,7 @@ public class SpriteControls {
 		}
 		int count = 0;
 		final int size = _sprs.size;
+		final int maxCount = size * size * 4;
 		for (int i = 0, n = size; i < n; i++) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
@@ -1037,18 +1075,29 @@ public class SpriteControls {
 					if (dst != null && dst != spr) {
 						RectBox rect = spr.getCollisionBox();
 						if (rect.collided(dst.getCollisionBox()) || rect.contains(dst.getCollisionBox())) {
-							if (i > 0) {
-								i--;
+							if (count > maxCount) {
+								spr.setLocation(spr.getX(), spr.getY() + spr.getHeight() * 2f);
+							} else {
+								if (i > 0) {
+									i--;
+								}
+								count++;
+								continue;
 							}
-							count++;
-							continue;
 						}
 					}
 				}
 			}
-			if (count > size * (LSystem.DEFAULT_MAX_CACHE_SIZE / 2)) {
-				spr.setLocation(spr.getX(), spr.getY() + spr.getHeight() * 2f);
-				return this;
+		}
+		return this;
+	}
+
+	public SpriteControls move(float x, float y) {
+		for (int i = 0, n = _sprs.size; i < n; i++) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof LObject<?>)) {
+				LObject<?> o = ((LObject<?>) spr);
+				o.move(x, y);
 			}
 		}
 		return this;

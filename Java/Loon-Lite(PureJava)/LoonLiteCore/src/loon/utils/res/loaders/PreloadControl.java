@@ -172,7 +172,8 @@ public class PreloadControl implements LRelease {
 	 */
 	protected void onError(Exception e) {
 		this._assetsFailure = true;
-		throw new LSysException("The Preload asynchronous loading failed ! " + e.getMessage());
+		LSystem.error("The Preload asynchronous loading failed ! " + e.getMessage());
+		e.printStackTrace();
 	}
 
 	/**

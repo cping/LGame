@@ -1939,7 +1939,7 @@ public class Sprites extends PlaceActions implements IArray, Visible, LRelease {
 			return new SpriteControls();
 		}
 		SpriteControls controls = null;
-		if (_sprites != null && _size > 0) {
+		if (_sprites != null && _sprites.length > 0 && _size > 0) {
 			controls = new SpriteControls(_sprites);
 		} else {
 			controls = new SpriteControls();
