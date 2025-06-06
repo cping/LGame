@@ -576,9 +576,6 @@ public class BattleProcess extends CoroutineProcess {
 				if (!turnEvent.completed() || _waiting) {
 					return false;
 				}
-				if (_waiting) {
-					return false;
-				}
 				turnEvent.reset();
 			}
 			_stateCompleted = state;
@@ -609,9 +606,6 @@ public class BattleProcess extends CoroutineProcess {
 						return false;
 					}
 					if (!turnEvent.completed() || _waiting) {
-						return false;
-					}
-					if (_waiting) {
 						return false;
 					}
 					turnEvent.reset();

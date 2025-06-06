@@ -934,12 +934,14 @@ public class GravityHandler implements LRelease {
 				}
 
 				if (positionX + rect.width > rb.x && positionX < rb.x + rb.width) {
-					if ((positionY + rect.height == rb.y && remainingVY > 0)
-							|| (positionY == rb.y + rb.height && remainingVY < 0)) {
+					if ((MathUtils.equal(positionY + rect.height, rb.y) && remainingVY > 0)
+							|| (MathUtils.equal(positionY, rb.y + rb.height) && remainingVY < 0)) {
 
-						if ((positionY + rect.height == rb.y && remainingVY > 0) && result.normal.y == 0) {
+						if ((MathUtils.equal(positionY + rect.height, rb.y) && remainingVY > 0)
+								&& result.normal.y == 0) {
 							result.normal.y = -1;
-						} else if ((positionY == rb.y + rb.height && remainingVY < 0) && result.normal.y == 0) {
+						} else if ((MathUtils.equal(positionY, rb.y + rb.height) && remainingVY < 0)
+								&& result.normal.y == 0) {
 							result.normal.y = 1;
 						}
 

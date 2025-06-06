@@ -371,7 +371,7 @@ public class Path2D implements Path {
 			float x2 = currentX + v * newAngle * radiusX;
 			float y2 = currentY - u * newAngle * radiusY;
 			this.cubicCurveTo(x1, y1, x2, y2, currentX, currentY);
-			if (end == endAngle) {
+			if (MathUtils.equal(end, endAngle)) {
 				break;
 			}
 			start = end;
@@ -447,8 +447,8 @@ public class Path2D implements Path {
 		if (radiusY > hh) {
 			radiusY = hh;
 		}
-		if (hw == radiusX && hh == radiusY) {
-			if (radiusX == radiusY) {
+		if (MathUtils.equal(hw, radiusX) && MathUtils.equal(hh, radiusY)) {
+			if (MathUtils.equal(radiusX, radiusY)) {
 				this.drawCircle(x + radiusX, y + radiusY, radiusX, segments);
 			} else {
 				this.drawEllipse(x, y, radiusX * 2, radiusY * 2, segments);

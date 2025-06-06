@@ -870,7 +870,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 		float startLength = MathUtils.sqrt(startLengthSquared);
 		float resultLength = MathUtils.lerp(startLength, MathUtils.sqrt(endLengthSquared), weight);
 		float angle = angleRad(v);
-		return rotateDegrees((angle * weight) * (resultLength / startLength));
+		return rotateRadians((angle * weight) * (resultLength / startLength));
 	}
 
 	public Vector2f slerpSelf(Vector2f v, float weight) {
@@ -1156,22 +1156,16 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return cpy().rotateSelf(cx, cy, angle);
 	}
 
-	public Vector2f rotateDegrees(float angle) {
-		return cpy().rotateDegrees(angle);
-	}
-
 	public Vector2f roundSelf() {
 		return set(MathUtils.round(this.x), MathUtils.round(this.y));
 	}
 
+	public Vector2f rotateDegrees(float angle) {
+		return rotate(angle);
+	}
+
 	public Vector2f rotateDegreesSelf(float angle) {
-		float cos = MathUtils.cos(angle);
-		float sin = MathUtils.sin(angle);
-		float newX = this.x * cos - this.y * sin;
-		float newY = this.x * sin + this.y * cos;
-		this.x = newX;
-		this.y = newY;
-		return this;
+		return rotateSelf(angle);
 	}
 
 	public Vector2f rotateSelf(float cx, float cy, float angle) {
@@ -1222,12 +1216,18 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public Vector2f rotateRadians(float radians) {
+		return cpy().rotateRadiansSelf(radians);
+	}
+
+	public Vector2f rotateRadiansSelf(float radians) {
 		if (x == 0f && y == 0f) {
-			return cpy();
+			return this;
 		} else {
 			float angle = getAngle();
 			float newAngle = angle + radians;
-			return fromAngle(newAngle).mul(length());
+			this.x = MathUtils.cos(newAngle);
+			this.y = MathUtils.sin(newAngle);
+			return mulSelf(length());
 		}
 	}
 

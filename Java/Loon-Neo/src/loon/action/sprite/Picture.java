@@ -81,7 +81,8 @@ public class Picture extends Entity {
 		if (this == p) {
 			return true;
 		}
-		if (MathUtils.equal(this._width, p._width) && MathUtils.equal(this._height, p._height)) {
+		if (MathUtils.equal(this._width, p._width) && MathUtils.equal(this._height, p._height)
+				&& this._baseColor.equals(p._baseColor)) {
 			if (_image.hashCode() == p._image.hashCode()) {
 				return true;
 			}

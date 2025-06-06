@@ -175,6 +175,51 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		this.setDirection(dir);
 	}
 
+	public Bullet randDirection() {
+		int randXDirection = MathUtils.random(0, 1);
+		if (randXDirection == 0) {
+			randXDirection--;
+		}
+		setSpeedX(randXDirection * _initSpeed);
+		int randYDirection = MathUtils.random(0, 1);
+		if (randYDirection == 0) {
+			randYDirection--;
+		}
+		setSpeedY(randYDirection * _initSpeed);
+		return this;
+	}
+
+	public Bullet reflect(Vector2f axis) {
+		_speed.reflectSelf(axis);
+		return this;
+	}
+
+	public Bullet reflectLeft() {
+		_speed.x = MathUtils.abs(_speed.x);
+		_speed.x++;
+		if (_speed.y > 0) {
+			_speed.y++;
+		} else {
+			_speed.y--;
+		}
+		setSpeedX(-_speed.x);
+		setSpeedY(_speed.y);
+		return this;
+	}
+
+	public Bullet reflectRight() {
+		_speed.x = MathUtils.abs(_speed.x);
+		_speed.x++;
+		if (_speed.y > 0) {
+			_speed.y++;
+		} else {
+			_speed.y--;
+		}
+		setSpeedX(_speed.x);
+		setSpeedY(_speed.y);
+		return this;
+	}
+
 	public WaveType getWaveType() {
 		return this._waveType;
 	}
@@ -182,9 +227,9 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	public Bullet setWaveType(WaveType w) {
 		if (w == null) {
 			this._waveType = WaveType.None;
-			return this;
+		} else {
+			this._waveType = w;
 		}
-		this._waveType = w;
 		return this;
 	}
 
@@ -252,6 +297,11 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 
 	public Bullet setLifeTimer(float f) {
 		this._lifeTimer = f;
+		return this;
+	}
+
+	public Bullet clearSpeed() {
+		this._speed.setEmpty();
 		return this;
 	}
 
@@ -372,6 +422,10 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		return this;
 	}
 
+	public Vector2f getWaveOffset() {
+		return this._waveOffset;
+	}
+
 	protected void onAttached() {
 		if (_listener != null) {
 			_listener.attached(this);
@@ -413,12 +467,12 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		return _speed.cpy();
 	}
 
-	public Bullet setSpeedX(int x) {
+	public Bullet setSpeedX(float x) {
 		_speed.setX(x);
 		return this;
 	}
 
-	public Bullet setSpeedY(int y) {
+	public Bullet setSpeedY(float y) {
 		_speed.setX(y);
 		return this;
 	}

@@ -1166,6 +1166,16 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		return this;
 	}
 
+	public LObject<T> rotateSelf(float angle) {
+		getLocation().rotateSelf(angle);
+		return this;
+	}
+
+	public LObject<T> rotateSelf(float x, float y, float angle) {
+		getLocation().rotateSelf(x, y, angle);
+		return this;
+	}
+
 	public final void setCollisionData(ActionBind data) {
 		this._collisionData = data;
 	}

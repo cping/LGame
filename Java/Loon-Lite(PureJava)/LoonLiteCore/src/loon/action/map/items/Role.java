@@ -23,6 +23,7 @@ package loon.action.map.items;
 import java.util.Comparator;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
@@ -634,6 +635,16 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 			return 0;
 		}
 		return _roleObject.getLayer();
+	}
+
+	@Override
+	public int hashCode() {
+		int result = 167;
+		result = LSystem.unite(result, this._roleObject);
+		result = LSystem.unite(result, this._tag);
+		result = LSystem.unite(result, this._attributes);
+		result = LSystem.unite(result, this._items);
+		return result;
 	}
 
 	@Override

@@ -110,7 +110,9 @@ public final class NativeSupport {
 				} catch (Throwable ex) {
 					throw new RuntimeException("Unable to extract LWJGL natives.", ex);
 				}
-				System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
+				if (nativesDir != null) {
+					System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
+				}
 			}
 			try {
 				loadJNI("lplus");
@@ -320,10 +322,14 @@ public final class NativeSupport {
 						"Error extracting file: " + sourcePath + "\nTo: " + extractedFile.getAbsolutePath(), ex);
 			} finally {
 				try {
-					input.close();
-					input = null;
-					output.close();
-					output = null;
+					if (input != null) {
+						input.close();
+						input = null;
+					}
+					if (output != null) {
+						output.close();
+						output = null;
+					}
 				} catch (Exception ignored) {
 				}
 			}

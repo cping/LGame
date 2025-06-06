@@ -1908,7 +1908,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public UIControls createUIControls() {
 		UIControls controls = null;
-		if (_childs != null && _childCount > 0) {
+		if (_childs != null && _childs.length > 0 && _childCount > 0) {
 			controls = new UIControls(_childs);
 		} else {
 			controls = new UIControls();
