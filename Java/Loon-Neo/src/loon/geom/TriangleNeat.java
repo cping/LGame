@@ -21,6 +21,7 @@
 package loon.geom;
 
 import loon.LSysException;
+import loon.utils.MathUtils;
 
 public class TriangleNeat implements Triangle {
 	/**
@@ -257,7 +258,7 @@ public class TriangleNeat implements Triangle {
 	@Override
 	public void addPolyPoint(float x, float y) {
 		for (int i = 0; i < numPoints; i++) {
-			if ((pointsX[i] == x) && (pointsY[i] == y)) {
+			if (MathUtils.equal(pointsX[i], x) && MathUtils.equal(pointsY[i], y)) {
 				y += offset;
 				offset += EPSILON;
 			}

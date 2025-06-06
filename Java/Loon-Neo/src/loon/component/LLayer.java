@@ -446,12 +446,14 @@ public class LLayer extends ActorLayer {
 
 		Image tempImage = Image.createImage(layerWidth, layerHeight);
 		Canvas g = tempImage.getCanvas();
-		for (int x = 0; x < layerWidth; x += tileWidth) {
-			for (int y = 0; y < layerHeight; y += tileHeight) {
-				g.draw(image, x, y);
+		if (g != null) {
+			for (int x = 0; x < layerWidth; x += tileWidth) {
+				for (int y = 0; y < layerHeight; y += tileHeight) {
+					g.draw(image, x, y);
+				}
 			}
+			g.close();
 		}
-		g.close();
 		if (isReturn) {
 			return tempImage;
 		}

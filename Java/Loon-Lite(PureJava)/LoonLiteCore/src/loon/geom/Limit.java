@@ -195,8 +195,8 @@ public class Limit {
 		yPoints[1] = tmp_point.y;
 		int i = 2;
 		for (int angle = 0; angle < arcAngle; i++, angle += 90) {
-			if (angle + 90 > arcAngle
-					&& ((startAngle + angle - 45) % 360) / 90 == ((startAngle + arcAngle + 45) % 360) / 90) {
+			if (angle + 90 > arcAngle && MathUtils.equal(((startAngle + angle - 45) % 360) / 90,
+					((startAngle + arcAngle + 45) % 360) / 90)) {
 				break;
 			}
 			float modAngle = (startAngle + angle) % 360;

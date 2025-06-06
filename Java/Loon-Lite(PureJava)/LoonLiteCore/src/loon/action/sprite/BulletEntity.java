@@ -1508,6 +1508,19 @@ public class BulletEntity extends Entity {
 		return this;
 	}
 
+	public BulletEntity clearSpeed() {
+		if (_destroyed) {
+			return this;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.clearSpeed();
+			}
+		}
+		return this;
+	}
+
 	public BulletEntity setWaveType(WaveType w) {
 		if (_destroyed) {
 			return this;

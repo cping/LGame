@@ -729,6 +729,14 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 		return this;
 	}
 
+	public Bullet pause() {
+		return setActive(false);
+	}
+
+	public Bullet resume() {
+		return setActive(true);
+	}
+
 	public int getBulletType() {
 		return _bulletType;
 	}

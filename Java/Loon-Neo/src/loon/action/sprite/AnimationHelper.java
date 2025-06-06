@@ -106,17 +106,18 @@ public class AnimationHelper implements LRelease {
 		canvas.fillRect(w / 4, 0, w / 2, h);
 		canvas.setColor(0, 0, 0, 255);
 		canvas.fillRect(0, h / 4, w, h / 2);
-		int[] basePixels = canvas.image.getPixels();
-		int length = basePixels.length;
-		int c = LColor.black.getRGB();
-		for (int i = 0; i < length; i++) {
-			if (basePixels[i] == c) {
-				basePixels[i] = 0xffffff;
-			}
-		}
-		canvas.image.setPixels(basePixels, w, h);
-		LTexture texture = canvas.image.texture();
+		LTexture texture = null;
 		if (canvas.image != null) {
+			int[] basePixels = canvas.image.getPixels();
+			int length = basePixels.length;
+			int c = LColor.black.getRGB();
+			for (int i = 0; i < length; i++) {
+				if (basePixels[i] == c) {
+					basePixels[i] = 0xffffff;
+				}
+			}
+			canvas.image.setPixels(basePixels, w, h);
+			texture = canvas.image.texture();
 			canvas.image.close();
 		}
 		canvas.close();

@@ -751,9 +751,6 @@ public class Line extends Shape {
 			results.add(this._currentStart
 					.add(this._currentEnd.cpy().subtractSelf(this._currentStart).scaleSelf(clipTime)));
 		}
-		if (results.size != 2) {
-			return null;
-		}
 		if (results.size > 1) {
 			return new Line(results.get(0), results.get(1));
 		}

@@ -248,6 +248,20 @@ public class AStarFinder implements Updateable, LRelease {
 	}
 
 	@Override
+	public int hashCode() {
+		int result = 144;
+		result = LSystem.unite(result, _findMap);
+		result = LSystem.unite(result, _startX);
+		result = LSystem.unite(result, _startY);
+		result = LSystem.unite(result, _endX);
+		result = LSystem.unite(result, _endY);
+		result = LSystem.unite(result, _flying);
+		result = LSystem.unite(result, _alldirMove);
+		result = LSystem.unite(result, _findHeuristic);
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) {
 			return false;

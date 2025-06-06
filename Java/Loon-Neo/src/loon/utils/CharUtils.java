@@ -564,6 +564,24 @@ public class CharUtils {
 		}
 	}
 
+	public static boolean isSymbol(char c) {
+		return c != '_' && ((c >= '!' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '`')
+				|| (c >= '{' && c <= '~') || c == '\t' || c == ' ');
+	}
+
+	public static boolean isControl(char c) {
+		return (c <= 0x001f) || (c >= 0x007f && c <= 0x009f);
+	}
+
+	public static boolean isLinebreak(char c) {
+		return (c >= 0x000a && c <= 0x000d) || (c == 0x0085) || (c == 0x2028) || (c == 0x2029);
+	}
+
+	public static boolean isPunct(char c) {
+		return (c >= ' ' && c <= '/') || (c >= ':' && c <= '@') || (c >= '[' && c <= '^') || (c == '`')
+				|| (c >= '{' && c <= '~') || (c >= 0x2000 && c <= 0x206f) || (c >= 0x3000 && c <= 0x303f);
+	}
+
 	public static char toUpper(int c) {
 		if (isLowercaseAlpha(c)) {
 			c -= 0x20;
