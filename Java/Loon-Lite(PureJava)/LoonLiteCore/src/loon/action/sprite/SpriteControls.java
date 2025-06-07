@@ -51,37 +51,53 @@ import loon.utils.Easing.EasingMode;
 public class SpriteControls {
 
 	public static float getChildrenHeight(Sprites s) {
+		if (s == null) {
+			return 0f;
+		}
 		float totalHeight = 0;
-		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
+		final ISprite[] list = s._sprites;
+		final int size = list.length;
+		for (int i = size - 1; i > -1; --i) {
 			totalHeight += list[i].getHeight();
 		}
 		return totalHeight;
 	}
 
 	public static float getChildrenWidth(Sprites s) {
+		if (s == null) {
+			return 0f;
+		}
 		float totalWidth = 0;
-		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
+		final ISprite[] list = s._sprites;
+		final int size = list.length;
+		for (int i = size - 1; i > -1; --i) {
 			totalWidth += list[i].getWidth();
 		}
 		return totalWidth;
 	}
 
 	public static float getMaxChildHeight(Sprites s) {
-		int maxHeight = 0;
-		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			maxHeight = MathUtils.max(maxHeight, (int) list[i].getHeight());
+		if (s == null) {
+			return 0f;
+		}
+		float maxHeight = 0;
+		final ISprite[] list = s._sprites;
+		final int size = list.length;
+		for (int i = size - 1; i > -1; --i) {
+			maxHeight = MathUtils.max(maxHeight, list[i].getHeight());
 		}
 		return maxHeight;
 	}
 
-	public static int getMaxChildWidth(Sprites s) {
-		int maxWidth = 0;
-		ISprite[] list = s._sprites;
-		for (int i = 0; i < list.length; i++) {
-			maxWidth = MathUtils.max(maxWidth, (int) list[i].getWidth());
+	public static float getMaxChildWidth(Sprites s) {
+		if (s == null) {
+			return 0f;
+		}
+		float maxWidth = 0;
+		final ISprite[] list = s._sprites;
+		final int size = list.length;
+		for (int i = size - 1; i > -1; --i) {
+			maxWidth = MathUtils.max(maxWidth, list[i].getWidth());
 		}
 		return maxWidth;
 	}
@@ -185,6 +201,9 @@ public class SpriteControls {
 	}
 
 	public int indexOf(QueryEvent<ISprite> q) {
+		if (q == null) {
+			return -1;
+		}
 		int i = 0;
 		for (ISprite s : _sprs) {
 			if (q.hit(s)) {
@@ -195,16 +214,24 @@ public class SpriteControls {
 		return -1;
 	}
 
-	public int indexOf(ISprite value) {
-		for (int i = 0; i < _sprs.size; i++) {
-			if (_sprs.get(i) == value) {
+	public int indexOf(ISprite v) {
+		if (v == null) {
+			return -1;
+		}
+		int i = 0;
+		for (ISprite s : _sprs) {
+			if (s != null && (s == v || s.equals(v))) {
 				return i;
 			}
+			i++;
 		}
 		return -1;
 	}
 
 	public ISprite find(QueryEvent<ISprite> q) {
+		if (q == null) {
+			return null;
+		}
 		for (ISprite s : _sprs) {
 			if (q.hit(s)) {
 				return s;
@@ -337,7 +364,8 @@ public class SpriteControls {
 
 	public int getCountIn(Screen screen, boolean canView) {
 		int count = 0;
-		for (int i = _sprs.size - 1; i > -1; --i) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (screen.intersects(spr, canView) || screen.contains(spr, canView))) {
 				count++;
@@ -402,7 +430,8 @@ public class SpriteControls {
 		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
-		for (int i = sprites.length - 1; i > -1; --i) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite sprite = sprites[i];
 			if (sprite != null) {
 				remove(sprite);
@@ -420,7 +449,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setSize(int w, int h) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -436,7 +466,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setColor(LColor c) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				spr.setColor(c);
@@ -446,7 +477,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setRunning(boolean running) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -462,7 +494,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setAlpha(float a) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -485,7 +518,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setScale(float s) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -503,7 +537,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setScale(float sx, float sy) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -521,7 +556,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setX(float x) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -543,7 +579,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setY(float y) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -565,7 +602,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls location(float x, float y) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -587,7 +625,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls offset(float x, float y) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				float oldX = spr.getX();
@@ -611,7 +650,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setWidth(int w) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -627,7 +667,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setHeight(int h) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -643,7 +684,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setFont(IFont font) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof FontSet<?>) {
@@ -655,7 +697,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setRotation(float r) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -675,7 +718,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setLocation(float dx, float dy) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -695,7 +739,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setLayer(int z) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -715,7 +760,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls setVisible(boolean v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				if (spr instanceof Sprite) {
@@ -780,7 +826,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls fadeOut(float speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -806,7 +853,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls fadeIn(float speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -832,7 +880,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls moveBy(float endX, float endY, int speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -850,7 +899,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls moveBy(float endX, float endY) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -868,7 +918,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls moveTo(float endX, float endY, int speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -887,7 +938,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls moveTo(float endX, float endY, boolean flag, int speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -906,7 +958,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1089,7 +1142,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move(float x, float y) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1100,7 +1154,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_left(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1111,7 +1166,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_right(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1122,7 +1178,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_up(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1133,7 +1190,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_down(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1144,7 +1202,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_45D_left(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1155,7 +1214,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_45D_right(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1166,7 +1226,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_45D_up(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1177,7 +1238,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls move_45D_down(float v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) spr);
@@ -1188,7 +1250,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls delay(float d) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1207,7 +1270,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls rotateTo(float angle) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1226,7 +1290,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls rotateTo(float angle, float speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1245,7 +1310,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls scaleTo(float sx, float sy) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1264,7 +1330,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls scaleTo(float sx, float sy, float speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1283,7 +1350,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls showTo(boolean v) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1302,7 +1370,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls colorTo(LColor end) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1321,7 +1390,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls shakeTo(float shakeX, float shakeY) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1340,7 +1410,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls followTo(ActionBind bind, float follow, float speed) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1359,7 +1430,8 @@ public class SpriteControls {
 	}
 
 	public SpriteControls flashTo(float duration) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1379,7 +1451,8 @@ public class SpriteControls {
 
 	public SpriteControls transferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
 			boolean controlY) {
-		for (int i = 0, n = _sprs.size; i < n; i++) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null && (spr instanceof ActionBind)) {
 				ActionTween tween = tweens.get(spr);
@@ -1417,7 +1490,8 @@ public class SpriteControls {
 		}
 		_margin.setMargin(left, top, right, bottom);
 		_margin.clear();
-		for (int i = 0; i < _sprs.size; i++) {
+		final int len = _sprs.size;
+		for (int i = len - 1; i > -1; --i) {
 			ISprite spr = _sprs.get(i);
 			if (spr != null) {
 				_margin.addChild(spr);

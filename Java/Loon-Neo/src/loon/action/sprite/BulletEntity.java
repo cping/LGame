@@ -24,7 +24,6 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
-import loon.action.ActionBind;
 import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
@@ -33,8 +32,11 @@ import loon.action.collision.CollisionWorld;
 import loon.action.map.Config;
 import loon.action.sprite.Bullet.WaveType;
 import loon.canvas.LColor;
+import loon.geom.RangeF;
+import loon.geom.RectBox;
 import loon.geom.Shape;
 import loon.geom.Vector2f;
+import loon.geom.XYZW;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
 import loon.utils.Easing.EasingMode;
@@ -83,9 +85,15 @@ public class BulletEntity extends Entity {
 
 	private boolean _running;
 
-	private boolean _limitMoved;
+	private boolean _autoRemoveOfBounds;
+
+	private boolean _limitMovedOfBounds;
 
 	private boolean _selfWorld;
+
+	private RangeF _limitRangeX;
+
+	private RangeF _limitRangeY;
 
 	private TArray<Bullet> bullets;
 
@@ -121,7 +129,7 @@ public class BulletEntity extends Entity {
 			this._selfWorld = true;
 		}
 		this._running = true;
-		this._limitMoved = true;
+		this._autoRemoveOfBounds = true;
 		this.setRepaint(true);
 		this.setLocation(x, y);
 		this.setSize(w, h);
@@ -134,6 +142,83 @@ public class BulletEntity extends Entity {
 
 	public BulletListener getListener() {
 		return this._listener;
+	}
+
+	public BulletEntity setLimitMoveRangeOfSelf() {
+		return setLimitMoveRangeOfSelf(0f, 0f, 0f, 0f);
+	}
+
+	public BulletEntity setLimitMoveRangeOfSelf(float offsetX, float offsetY) {
+		return setLimitMoveRangeOf(getX() + offsetX, getWidth() - offsetX, getY() + offsetY, getHeight() - offsetY);
+	}
+
+	public BulletEntity setLimitMoveRangeOfSelf(float offsetX, float offsetY, float offsetWidth, float offsetHeight) {
+		return setLimitMoveRangeOf(getX() + offsetX, getWidth() + offsetWidth, getY() + offsetY,
+				getHeight() + offsetHeight);
+	}
+
+	public BulletEntity setLimitMoveRangeOf(XYZW rect) {
+		if (rect == null) {
+			return this;
+		}
+		return setLimitMoveRangeOf(rect.getX(), rect.getZ(), rect.getY(), rect.getW());
+	}
+
+	public BulletEntity setLimitMoveRangeOf(float minX, float maxX, float minY, float maxY) {
+		setLimitRangeX(minX, maxX);
+		setLimitRangeY(minY, maxY);
+		return this;
+	}
+
+	public BulletEntity setLimitRangeX(float min, float max) {
+		if (_limitRangeX == null) {
+			_limitRangeX = new RangeF(min, max);
+		} else {
+			_limitRangeX.set(min, max);
+		}
+		_limitMovedOfBounds = true;
+		return this;
+	}
+
+	public BulletEntity setLimitRangeY(float min, float max) {
+		if (_limitRangeY == null) {
+			_limitRangeY = new RangeF(min, max);
+		} else {
+			_limitRangeX.set(min, max);
+		}
+		_limitMovedOfBounds = true;
+		return this;
+	}
+
+	public RangeF getLimitRangeX() {
+		return this._limitRangeX;
+	}
+
+	public RangeF getLimitRangeY() {
+		return this._limitRangeY;
+	}
+
+	public BulletEntity clearLimitRangeX() {
+		this._limitRangeX = null;
+		if (this._limitRangeY == null) {
+			this._limitMovedOfBounds = false;
+		}
+		return this;
+	}
+
+	public BulletEntity clearLimitRangeY() {
+		this._limitRangeY = null;
+		if (this._limitRangeX == null) {
+			this._limitMovedOfBounds = false;
+		}
+		return this;
+	}
+
+	public BulletEntity clearLimitRange() {
+		this._limitRangeX = null;
+		this._limitRangeY = null;
+		this._limitMovedOfBounds = false;
+		return this;
 	}
 
 	public BulletEntity setCollisionWorld(CollisionWorld world) {
@@ -1613,23 +1698,6 @@ public class BulletEntity extends Entity {
 	}
 
 	@Override
-	protected void repaint(GLEx g, float offsetX, float offsetY) {
-		if (_destroyed) {
-			return;
-		}
-		for (int i = this.bullets.size - 1; i >= 0; i--) {
-			Bullet bullet = bullets.get(i);
-			if (bullet != null) {
-				movePos(bullet);
-				bullet.draw(g, drawX(offsetX), drawY(offsetX));
-				if (_listener != null) {
-					_listener.drawable(g, bullet);
-				}
-			}
-		}
-	}
-
-	@Override
 	protected void onUpdate(final long elapsedTime) {
 		if (_destroyed) {
 			return;
@@ -1638,7 +1706,6 @@ public class BulletEntity extends Entity {
 			for (int i = this.bullets.size - 1; i >= 0; i--) {
 				Bullet bullet = bullets.get(i);
 				if (bullet != null) {
-					movePos(bullet);
 					bullet.update(elapsedTime);
 					if (_listener != null) {
 						_listener.updateable(elapsedTime, bullet);
@@ -1647,10 +1714,32 @@ public class BulletEntity extends Entity {
 							_listener.easeover(bullet);
 						}
 					}
-					if (_limitMoved && !getCollisionBox().contains(bullet.getRectBox())) {
-						removeWorld(bullet);
+					fixMovePosition(bullet);
+					if (_autoRemoveOfBounds) {
+						RectBox worldRect = getCollisionBox();
+						RectBox bulletRect = bullet.getRectBox();
+						if (!(worldRect.contains(bulletRect) || worldRect.intersects(bulletRect))) {
+							removeWorld(bullet);
+						}
 					}
 				}
+			}
+		}
+	}
+
+	@Override
+	protected void repaint(GLEx g, float offsetX, float offsetY) {
+		if (_destroyed) {
+			return;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				bullet.draw(g, drawX(offsetX), drawY(offsetX));
+				if (_listener != null) {
+					_listener.drawable(g, bullet);
+				}
+				fixMovePosition(bullet);
 			}
 		}
 	}
@@ -1809,12 +1898,12 @@ public class BulletEntity extends Entity {
 		return setRunning(false);
 	}
 
-	public boolean isLimitMoved() {
-		return _limitMoved;
+	public boolean isAutoRemoveOfBounds() {
+		return _autoRemoveOfBounds;
 	}
 
-	public BulletEntity setLimitMoved(boolean limitMoved) {
-		this._limitMoved = limitMoved;
+	public BulletEntity setAutoRemoveOfBounds(boolean a) {
+		this._autoRemoveOfBounds = a;
 		return this;
 	}
 
@@ -1998,19 +2087,29 @@ public class BulletEntity extends Entity {
 		this.easingMode = easingMode;
 	}
 
-	private void movePos(ActionBind bind) {
+	protected void fixMovePosition(Bullet bind) {
 		if (_destroyed) {
 			return;
 		}
 		if (bind == null) {
 			return;
 		}
-		if (_collisionWorld != null && _allowAutoFixMoved) {
+		if (_allowAutoFixMoved && _collisionWorld != null) {
 			if (_worldCollisionFilter == null) {
 				_worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = _collisionWorld.move(bind, bind.getX(), bind.getY(), _worldCollisionFilter);
 			bind.setLocation(result.goalX, result.goalY);
+		}
+		if (_limitMovedOfBounds) {
+			if (_limitRangeX != null) {
+				bind.setX(MathUtils.clamp(bind.getX(), _limitRangeX.getMin() - 1f,
+						_limitRangeX.getMax() - bind.getWidth() - 1f));
+			}
+			if (_limitRangeY != null) {
+				bind.setY(MathUtils.clamp(bind.getY(), _limitRangeY.getMin() - 1f,
+						_limitRangeY.getMax() - bind.getHeight() - 1f));
+			}
 		}
 	}
 
@@ -2052,6 +2151,8 @@ public class BulletEntity extends Entity {
 		_listener = null;
 		_running = false;
 		_allowAutoFixMoved = false;
+		_autoRemoveOfBounds = false;
+		_limitMovedOfBounds = false;
 	}
 
 }

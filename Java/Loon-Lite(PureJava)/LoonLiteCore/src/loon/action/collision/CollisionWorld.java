@@ -507,8 +507,10 @@ public class CollisionWorld implements LRelease {
 			return;
 		}
 		RectF rect = getRect(bind);
-		float w = rect.width, h = rect.height;
-		update(bind, x2, y2, w, h);
+		if (rect != null) {
+			float w = rect.width, h = rect.height;
+			update(bind, x2, y2, w, h);
+		}
 	}
 
 	public void update(ActionBind bind, float x2, float y2, float w2, float h2) {
@@ -516,40 +518,42 @@ public class CollisionWorld implements LRelease {
 			return;
 		}
 		RectF rect = getRect(bind);
-		float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
-		if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
+		if (rect != null) {
+			float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
+			if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
 
-			// size limit
-			RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
-			RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
+				// size limit
+				RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
+				RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
 
-			float cl1 = c1.x, ct1 = c1.y, cw1 = c1.width, ch1 = c1.height;
-			float cl2 = c2.x, ct2 = c2.y, cw2 = c2.width, ch2 = c2.height;
+				float cl1 = c1.x, ct1 = c1.y, cw1 = c1.width, ch1 = c1.height;
+				float cl2 = c2.x, ct2 = c2.y, cw2 = c2.width, ch2 = c2.height;
 
-			if (cl1 != cl2 || ct1 != ct2 || cw1 != cw2 || ch1 != ch2) {
-				float cr1 = cl1 + cw1 - 1, cb1 = ct1 + ch1 - 1;
-				float cr2 = cl2 + cw2 - 1, cb2 = ct2 + ch2 - 1;
-				boolean cyOut;
+				if (cl1 != cl2 || ct1 != ct2 || cw1 != cw2 || ch1 != ch2) {
+					float cr1 = cl1 + cw1 - 1, cb1 = ct1 + ch1 - 1;
+					float cr2 = cl2 + cw2 - 1, cb2 = ct2 + ch2 - 1;
+					boolean cyOut;
 
-				for (float cy = ct1; cy <= cb1; cy++) {
-					cyOut = cy < ct2 || cy > cb2;
-					for (float cx = cl1; cx <= cr1; cx++) {
-						if (cyOut || cx < cl2 || cx > cr2) {
-							removeItemFromCell(bind, cx, cy);
+					for (float cy = ct1; cy <= cb1; cy++) {
+						cyOut = cy < ct2 || cy > cb2;
+						for (float cx = cl1; cx <= cr1; cx++) {
+							if (cyOut || cx < cl2 || cx > cr2) {
+								removeItemFromCell(bind, cx, cy);
+							}
+						}
+					}
+
+					for (float cy = ct2; cy <= cb2; cy++) {
+						cyOut = cy < ct1 || cy > cb1;
+						for (float cx = cl2; cx <= cr2; cx++) {
+							if (cyOut || cx < cl1 || cy > cr1) {
+								addItemToCell(bind, cx, cy);
+							}
 						}
 					}
 				}
-
-				for (float cy = ct2; cy <= cb2; cy++) {
-					cyOut = cy < ct1 || cy > cb1;
-					for (float cx = cl2; cx <= cr2; cx++) {
-						if (cyOut || cx < cl1 || cy > cr1) {
-							addItemToCell(bind, cx, cy);
-						}
-					}
-				}
+				rect.set(x2, y2, w2, h2);
 			}
-			rect.set(x2, y2, w2, h2);
 		}
 	}
 

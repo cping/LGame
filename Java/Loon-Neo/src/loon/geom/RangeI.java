@@ -101,6 +101,12 @@ public class RangeI implements XY, SetXY {
 		this._max = MathUtils.ifloor(y);
 	}
 
+	public RangeI set(int min, int max) {
+		this.setMin(min);
+		this.setMax(max);
+		return this;
+	}
+
 	@Override
 	public float getX() {
 		return _min;

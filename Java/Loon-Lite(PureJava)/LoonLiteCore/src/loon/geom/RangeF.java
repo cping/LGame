@@ -101,6 +101,12 @@ public class RangeF implements XY, SetXY {
 		this._max = y;
 	}
 
+	public RangeF set(float min, float max) {
+		this.setMin(min);
+		this.setMax(max);
+		return this;
+	}
+
 	@Override
 	public float getX() {
 		return _min;

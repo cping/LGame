@@ -40,6 +40,9 @@ import loon.events.Touched;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.RectBox;
+import loon.geom.Sized;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
@@ -52,6 +55,9 @@ import loon.utils.Easing.EasingMode;
 public class UIControls {
 
 	public static float getChildrenHeight(LContainer c) {
+		if (c == null) {
+			return 0f;
+		}
 		float totalHeight = 0;
 		LComponent[] list = c._childs;
 		for (LComponent element : list) {
@@ -61,6 +67,9 @@ public class UIControls {
 	}
 
 	public static float getChildrenWidth(LContainer c) {
+		if (c == null) {
+			return 0f;
+		}
 		float totalWidth = 0;
 		LComponent[] list = c._childs;
 		for (LComponent element : list) {
@@ -70,19 +79,25 @@ public class UIControls {
 	}
 
 	public static float getMaxChildHeight(LContainer c) {
-		int maxHeight = 0;
+		if (c == null) {
+			return 0f;
+		}
+		float maxHeight = 0;
 		LComponent[] list = c._childs;
 		for (LComponent element : list) {
-			maxHeight = MathUtils.max(maxHeight, (int) element.getHeight());
+			maxHeight = MathUtils.max(maxHeight, element.getHeight());
 		}
 		return maxHeight;
 	}
 
-	public static int getMaxChildWidth(LContainer c) {
-		int maxWidth = 0;
+	public static float getMaxChildWidth(LContainer c) {
+		if (c == null) {
+			return 0f;
+		}
+		float maxWidth = 0;
 		LComponent[] list = c._childs;
 		for (LComponent element : list) {
-			maxWidth = MathUtils.max(maxWidth, (int) element.getWidth());
+			maxWidth = MathUtils.max(maxWidth, element.getWidth());
 		}
 		return maxWidth;
 	}
@@ -186,6 +201,9 @@ public class UIControls {
 	}
 
 	public int indexOf(QueryEvent<LComponent> q) {
+		if (q == null) {
+			return -1;
+		}
 		int i = 0;
 		for (LComponent s : _comps) {
 			if (q.hit(s)) {
@@ -196,11 +214,16 @@ public class UIControls {
 		return -1;
 	}
 
-	public int indexOf(LComponent value) {
-		for (int i = 0; i < _comps.size; i++) {
-			if (_comps.get(i) == value) {
+	public int indexOf(LComponent v) {
+		if (v == null) {
+			return -1;
+		}
+		int i = 0;
+		for (LComponent s : _comps) {
+			if (s != null && (s == v || s.equals(v))) {
 				return i;
 			}
+			i++;
 		}
 		return -1;
 	}
@@ -421,7 +444,8 @@ public class UIControls {
 	}
 
 	public UIControls setSize(int w, int h) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setSize(w, h);
@@ -431,7 +455,8 @@ public class UIControls {
 	}
 
 	public UIControls setFocusable(boolean focus) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setFocusable(focus);
@@ -441,7 +466,8 @@ public class UIControls {
 	}
 
 	public UIControls setEnabled(boolean e) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setEnabled(e);
@@ -456,7 +482,8 @@ public class UIControls {
 	 * @param click
 	 */
 	public UIControls SetClick(ClickListener click) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.SetClick(click);
@@ -474,7 +501,8 @@ public class UIControls {
 	}
 
 	public UIControls setAlpha(float a) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setAlpha(a);
@@ -484,7 +512,8 @@ public class UIControls {
 	}
 
 	public UIControls setTouchLocked(boolean locked) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setTouchLocked(locked);
@@ -494,7 +523,8 @@ public class UIControls {
 	}
 
 	public UIControls setKeyLocked(boolean locked) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setKeyLocked(locked);
@@ -504,7 +534,8 @@ public class UIControls {
 	}
 
 	public UIControls setTouch(ClickListener listener) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.SetClick(listener);
@@ -514,7 +545,8 @@ public class UIControls {
 	}
 
 	public UIControls addTouch(ClickListener listener) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.addClickListener(listener);
@@ -524,7 +556,8 @@ public class UIControls {
 	}
 
 	public UIControls up(Touched touched) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.up(touched);
@@ -534,7 +567,8 @@ public class UIControls {
 	}
 
 	public UIControls down(Touched touched) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.down(touched);
@@ -544,7 +578,8 @@ public class UIControls {
 	}
 
 	public UIControls all(Touched touched) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.all(touched);
@@ -554,7 +589,8 @@ public class UIControls {
 	}
 
 	public UIControls downClick() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processTouchPressed();
@@ -564,7 +600,8 @@ public class UIControls {
 	}
 
 	public UIControls upClick() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processTouchReleased();
@@ -574,7 +611,8 @@ public class UIControls {
 	}
 
 	public UIControls dragClick() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processTouchDragged();
@@ -584,7 +622,8 @@ public class UIControls {
 	}
 
 	public UIControls allClick() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processTouchClicked();
@@ -594,7 +633,8 @@ public class UIControls {
 	}
 
 	public UIControls keyDown() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processKeyPressed();
@@ -604,7 +644,8 @@ public class UIControls {
 	}
 
 	public UIControls keyUp() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.processKeyReleased();
@@ -618,7 +659,8 @@ public class UIControls {
 	}
 
 	public UIControls in(float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.in(speed);
@@ -632,7 +674,8 @@ public class UIControls {
 	}
 
 	public UIControls out(float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.out(speed);
@@ -642,7 +685,8 @@ public class UIControls {
 	}
 
 	public boolean isTransparent() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				return (comp.getAlpha() != 1f);
@@ -652,7 +696,8 @@ public class UIControls {
 	}
 
 	public UIControls setScale(float s) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setScale(s);
@@ -662,7 +707,8 @@ public class UIControls {
 	}
 
 	public UIControls setScale(float sx, float sy) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setScale(sx, sy);
@@ -672,7 +718,8 @@ public class UIControls {
 	}
 
 	public UIControls setX(float x) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setX(x);
@@ -682,7 +729,8 @@ public class UIControls {
 	}
 
 	public UIControls setY(float y) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setY(y);
@@ -692,7 +740,8 @@ public class UIControls {
 	}
 
 	public UIControls location(float x, float y) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setLocation(x, y);
@@ -702,7 +751,8 @@ public class UIControls {
 	}
 
 	public UIControls offset(float x, float y) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setLocation(comp.getX() + x, comp.getY() + y);
@@ -712,7 +762,8 @@ public class UIControls {
 	}
 
 	public UIControls setWidth(int w) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setWidth(w);
@@ -722,7 +773,8 @@ public class UIControls {
 	}
 
 	public UIControls setHeight(int h) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setHeight(h);
@@ -732,7 +784,8 @@ public class UIControls {
 	}
 
 	public UIControls setColor(LColor c) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setColor(c);
@@ -742,7 +795,8 @@ public class UIControls {
 	}
 
 	public UIControls setFont(IFont font) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof FontSet<?>)) {
 				((FontSet<?>) comp).setFont(font);
@@ -752,7 +806,8 @@ public class UIControls {
 	}
 
 	public UIControls setRotation(float r) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setRotation(r);
@@ -762,7 +817,8 @@ public class UIControls {
 	}
 
 	public UIControls setLocation(float dx, float dy) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setLocation(dx, dy);
@@ -772,7 +828,8 @@ public class UIControls {
 	}
 
 	public UIControls setLayer(int z) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setLayer(z);
@@ -782,7 +839,8 @@ public class UIControls {
 	}
 
 	public UIControls setBackground(LColor color) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setBackground(color);
@@ -792,7 +850,8 @@ public class UIControls {
 	}
 
 	public UIControls setBackground(LTexture tex) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setBackground(tex);
@@ -802,7 +861,8 @@ public class UIControls {
 	}
 
 	public UIControls setBackground(String imgPath) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setBackground(imgPath);
@@ -812,7 +872,8 @@ public class UIControls {
 	}
 
 	public UIControls setVisible(boolean v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.setVisible(v);
@@ -822,7 +883,8 @@ public class UIControls {
 	}
 
 	public UIControls setTicked(boolean c) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			Object o = _comps.get(i);
 			if (o != null && o instanceof LCheckBox) {
 				LCheckBox box = (LCheckBox) o;
@@ -833,7 +895,8 @@ public class UIControls {
 	}
 
 	public UIControls setPercentage(float p) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			Object o = _comps.get(i);
 			if (o != null) {
 				if (o instanceof LProgress) {
@@ -849,7 +912,8 @@ public class UIControls {
 	}
 
 	public UIControls transferFocus() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.transferFocus();
@@ -859,7 +923,8 @@ public class UIControls {
 	}
 
 	public UIControls transferFocusBackward() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.transferFocusBackward();
@@ -869,7 +934,8 @@ public class UIControls {
 	}
 
 	public UIControls requestFocus() {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				comp.requestFocus();
@@ -882,7 +948,8 @@ public class UIControls {
 		if (e == null) {
 			return this;
 		}
-		for (int i = _comps.size - 1; i > -1; --i) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && e != null) {
 				e.update(comp);
@@ -928,7 +995,8 @@ public class UIControls {
 	}
 
 	public UIControls fadeOut(float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -954,7 +1022,8 @@ public class UIControls {
 	}
 
 	public UIControls fadeIn(float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -980,7 +1049,8 @@ public class UIControls {
 	}
 
 	public UIControls moveBy(float endX, float endY, int speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -998,7 +1068,8 @@ public class UIControls {
 	}
 
 	public UIControls moveBy(float endX, float endY) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1016,7 +1087,8 @@ public class UIControls {
 	}
 
 	public UIControls moveTo(float endX, float endY, int speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1035,7 +1107,8 @@ public class UIControls {
 	}
 
 	public UIControls moveTo(float endX, float endY, boolean flag, int speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1054,7 +1127,8 @@ public class UIControls {
 	}
 
 	public UIControls moveTo(Field2D map, float endX, float endY, boolean flag, int speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1237,7 +1311,8 @@ public class UIControls {
 	}
 
 	public UIControls move(float x, float y) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1248,7 +1323,8 @@ public class UIControls {
 	}
 
 	public UIControls move_left(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1259,7 +1335,8 @@ public class UIControls {
 	}
 
 	public UIControls move_right(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1270,7 +1347,8 @@ public class UIControls {
 	}
 
 	public UIControls move_up(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1281,7 +1359,8 @@ public class UIControls {
 	}
 
 	public UIControls move_down(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1292,7 +1371,8 @@ public class UIControls {
 	}
 
 	public UIControls move_45D_left(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1303,7 +1383,8 @@ public class UIControls {
 	}
 
 	public UIControls move_45D_right(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1314,7 +1395,8 @@ public class UIControls {
 	}
 
 	public UIControls move_45D_up(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1325,7 +1407,8 @@ public class UIControls {
 	}
 
 	public UIControls move_45D_down(float v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof LObject<?>)) {
 				LObject<?> o = ((LObject<?>) comp);
@@ -1336,7 +1419,8 @@ public class UIControls {
 	}
 
 	public UIControls delay(float d) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1355,7 +1439,8 @@ public class UIControls {
 	}
 
 	public UIControls rotateTo(float angle) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1374,7 +1459,8 @@ public class UIControls {
 	}
 
 	public UIControls rotateTo(float angle, float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1393,7 +1479,8 @@ public class UIControls {
 	}
 
 	public UIControls scaleTo(float sx, float sy) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1412,7 +1499,8 @@ public class UIControls {
 	}
 
 	public UIControls scaleTo(float sx, float sy, float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1431,7 +1519,8 @@ public class UIControls {
 	}
 
 	public UIControls showTo(boolean v) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1450,7 +1539,8 @@ public class UIControls {
 	}
 
 	public UIControls colorTo(LColor end) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1469,7 +1559,8 @@ public class UIControls {
 	}
 
 	public UIControls shakeTo(float shakeX, float shakeY) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1488,7 +1579,8 @@ public class UIControls {
 	}
 
 	public UIControls followTo(ActionBind bind, float follow, float speed) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null && (comp instanceof ActionBind)) {
 				ActionTween tween = tweens.get(comp);
@@ -1507,7 +1599,8 @@ public class UIControls {
 	}
 
 	public UIControls flashTo(float duration) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1527,7 +1620,8 @@ public class UIControls {
 
 	public UIControls transferTo(float startPos, float endPos, float duration, EasingMode mode, boolean controlX,
 			boolean controlY) {
-		for (int i = 0, n = _comps.size; i < n; i++) {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
 			LComponent comp = _comps.get(i);
 			if (comp != null) {
 				ActionTween tween = tweens.get(comp);
@@ -1571,5 +1665,190 @@ public class UIControls {
 			}
 		}
 		return _margin;
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, LComponent comp, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		if (comp == null) {
+			return null;
+		}
+		LComponent parentSprite = comp.getParent() == null ? comp : comp.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(targets, comp, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public Vector2f getMoveTarget(XY pos, LComponent comp, Sized mapSize, float scrollWidth, float scrollHeight,
+			float orthogonalWidth, float orthogonalHeight) {
+		if (comp == null) {
+			return null;
+		}
+		LComponent parentSprite = comp.getParent() == null ? comp : comp.getParent();
+
+		Vector2f parentLocal = Vector2f.at(parentSprite.getX() + parentSprite.getOffsetX(),
+				parentSprite.getY() + parentSprite.getOffsetY());
+
+		return getMoveTarget(pos, comp, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight);
+	}
+
+	public Vector2f getMoveTarget(XY pos, LComponent comp, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (comp == null) {
+			return null;
+		}
+		return getMoveTarget(new TArray<XY>(pos), comp, parentLocal, mapSize, scrollWidth, scrollHeight,
+				orthogonalWidth, orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, LComponent comp, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		if (comp == null) {
+			return null;
+		}
+		return getMoveTarget(targets, comp, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, 0f, 0f);
+	}
+
+	public Vector2f getMoveTarget(TArray<XY> targets, LComponent comp, Vector2f parentLocal, Sized mapSize,
+			float scrollWidth, float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX,
+			float paddingY) {
+
+		if (comp == null) {
+			return null;
+		}
+
+		Vector2f center = Vector2f.at(comp.getX() + comp.getOffsetX(), comp.getY() + comp.getOffsetY());
+
+		if (targets.size > 0) {
+
+			XY first = targets.first();
+
+			float minX = first.getX();
+			float maxX = first.getX();
+
+			float minY = first.getY();
+			float maxY = first.getY();
+
+			if (mapSize != null) {
+				minX = MathUtils.max(minX, mapSize.left());
+				maxX = MathUtils.min(maxX, mapSize.left() + mapSize.right());
+
+				minY = MathUtils.max(minY, mapSize.top() - mapSize.bottom());
+				maxY = MathUtils.min(maxY, mapSize.top());
+			}
+
+			for (int i = 1; i < targets.size; i++) {
+
+				XY pos = targets.get(i);
+				Vector2f position = Vector2f.at(pos.getX(), pos.getY());
+
+				if (mapSize != null) {
+					position.x = MathUtils.max(position.x, mapSize.left());
+					position.x = MathUtils.min(position.x, mapSize.left() + mapSize.right());
+
+					position.y = MathUtils.max(position.y, mapSize.top() - mapSize.bottom());
+					position.y = MathUtils.min(position.y, mapSize.top());
+				}
+
+				if (position.x < minX) {
+					minX = position.x;
+				}
+				if (position.x > maxX) {
+					maxX = position.x;
+				}
+
+				if (position.y < minY) {
+					minY = position.y;
+				}
+				if (position.y > maxY) {
+					maxY = position.y;
+				}
+			}
+
+			center.x = (minX + maxX) / 2f;
+			center.y = (minY + maxY) / 2f;
+		}
+
+		Vector2f target = Vector2f.ZERO();
+
+		float widthHalf = scrollWidth / 2f;
+		float heightHalf = scrollHeight / 2f;
+
+		float left = parentLocal.x - widthHalf;
+		float right = parentLocal.x + widthHalf;
+		float top = parentLocal.y + heightHalf;
+		float bottom = parentLocal.y - heightHalf;
+
+		if (center.x < left) {
+			target.x = center.x + widthHalf;
+		} else if (center.x > right) {
+			target.x = center.x - widthHalf;
+		} else {
+			target.x = parentLocal.x;
+		}
+
+		if (center.y < bottom) {
+			target.y = center.y + heightHalf;
+		} else if (center.y > top) {
+			target.y = center.y - heightHalf;
+		} else {
+			target.y = parentLocal.y;
+		}
+
+		if (mapSize != null) {
+
+			float effectivePaddingX = paddingX;
+			float effectivePaddingY = paddingY;
+
+			float mapLeft = mapSize.left() + effectivePaddingX;
+			float mapRight = mapSize.left() + mapSize.right() - effectivePaddingX;
+
+			float mapBottom = mapSize.top() - mapSize.bottom() + effectivePaddingY;
+			float mapTop = mapSize.top() - effectivePaddingY;
+
+			if (orthogonalWidth > mapSize.right()) {
+				target.x = mapLeft + mapSize.right() / 2;
+			} else {
+				target.x = MathUtils.max(target.x, mapLeft + orthogonalWidth / 2);
+				target.x = MathUtils.min(target.x, mapRight - orthogonalWidth / 2);
+			}
+
+			if (orthogonalHeight > mapSize.bottom()) {
+				target.y = mapBottom + mapSize.bottom() / 2;
+			} else {
+				target.y = MathUtils.max(target.y, mapBottom + orthogonalHeight / 2);
+				target.y = MathUtils.min(target.y, mapTop - orthogonalHeight / 2);
+			}
+		}
+		return target;
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight) {
+		return moveTargets(pos, parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth, orthogonalHeight, 0f,
+				0f);
+	}
+
+	public TArray<Vector2f> moveTargets(XY pos, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		return moveTargets(new TArray<XY>(pos), parentLocal, mapSize, scrollWidth, scrollHeight, orthogonalWidth,
+				orthogonalHeight, paddingX, paddingY);
+	}
+
+	public TArray<Vector2f> moveTargets(TArray<XY> targets, Vector2f parentLocal, Sized mapSize, float scrollWidth,
+			float scrollHeight, float orthogonalWidth, float orthogonalHeight, float paddingX, float paddingY) {
+		TArray<Vector2f> moveList = new TArray<Vector2f>();
+		for (int i = 0, n = _comps.size; i < n; i++) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				moveList.add(getMoveTarget(targets, comp, parentLocal, mapSize, scrollWidth, scrollHeight,
+						orthogonalWidth, orthogonalHeight, paddingX, paddingY));
+			}
+		}
+		return moveList;
 	}
 }
