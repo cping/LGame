@@ -380,15 +380,17 @@ public class CollisionWorld implements LRelease {
 				visited.add(other);
 				CollisionResult response = filter.filter(bind, other);
 				if (response != null) {
-					RectF o = getRect(other);
-					float ox = o.x, oy = o.y, ow = o.width, oh = o.height;
-					CollisionData col = detectCollision(x, y, w, h, ox, oy, ow, oh, goalX, goalY);
+					RectF rect = getRect(other);
+					if (rect != null) {
+						float ox = rect.x, oy = rect.y, ow = rect.width, oh = rect.height;
+						CollisionData col = detectCollision(x, y, w, h, ox, oy, ow, oh, goalX, goalY);
 
-					if (col != null) {
-						collisions.add(col.overlaps, col.ti, col.move.x, col.move.y, col.normal.x, col.normal.y,
-								col.touch.x, col.touch.y, col.itemRect.x, col.itemRect.y, col.itemRect.width,
-								col.itemRect.height, col.otherRect.x, col.otherRect.y, col.otherRect.width,
-								col.otherRect.height, bind, other, response);
+						if (col != null) {
+							collisions.add(col.overlaps, col.ti, col.move.x, col.move.y, col.normal.x, col.normal.y,
+									col.touch.x, col.touch.y, col.itemRect.x, col.itemRect.y, col.itemRect.width,
+									col.itemRect.height, col.otherRect.x, col.otherRect.y, col.otherRect.width,
+									col.otherRect.height, bind, other, response);
+						}
 					}
 				}
 			}
@@ -487,17 +489,19 @@ public class CollisionWorld implements LRelease {
 			return;
 		}
 		RectF rect = getRect(bind);
-		float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
-		if (_gameScreen != null) {
-			_gameScreen.remove(bind);
-		}
-		rects.remove(bind);
-		grid.toCellRect(cellSizeX, cellSizeY, x, y, w, h, remove_c);
-		float cl = remove_c.x, ct = remove_c.y, cw = remove_c.width, ch = remove_c.height;
+		if (rect != null) {
+			float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
+			if (_gameScreen != null) {
+				_gameScreen.remove(bind);
+			}
+			rects.remove(bind);
+			grid.toCellRect(cellSizeX, cellSizeY, x, y, w, h, remove_c);
+			float cl = remove_c.x, ct = remove_c.y, cw = remove_c.width, ch = remove_c.height;
 
-		for (float cy = ct; cy < ct + ch; cy++) {
-			for (float cx = cl; cx < cl + cw; cx++) {
-				removeItemFromCell(bind, cx, cy);
+			for (float cy = ct; cy < ct + ch; cy++) {
+				for (float cx = cl; cx < cl + cw; cx++) {
+					removeItemFromCell(bind, cx, cy);
+				}
 			}
 		}
 	}
@@ -574,30 +578,33 @@ public class CollisionWorld implements LRelease {
 		final CollisionFilter visitedFilter = new WorldCollisionFilter(this, visited, filter);
 
 		RectF rect = getRect(bind);
-		float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
-		Collisions cols = check_cols;
-		cols.clear();
-		Collisions projectedCols = project(bind, x, y, w, h, goalX, goalY, filter, check_projectedCols);
-		CollisionResult.Result result = check_result;
-		while (projectedCols != null && !projectedCols.isEmpty()) {
-			CollisionData col = projectedCols.get(0);
-			cols.add(col.overlaps, col.ti, col.move.x, col.move.y, col.normal.x, col.normal.y, col.touch.x, col.touch.y,
-					col.itemRect.x, col.itemRect.y, col.itemRect.width, col.itemRect.height, col.otherRect.x,
-					col.otherRect.y, col.otherRect.width, col.otherRect.height, col.item, col.other, col.type);
+		CollisionResult.Result result = null;
+		if (rect != null) {
+			float x = rect.x, y = rect.y, w = rect.width, h = rect.height;
+			Collisions cols = check_cols;
+			cols.clear();
+			Collisions projectedCols = project(bind, x, y, w, h, goalX, goalY, filter, check_projectedCols);
+			result = check_result;
+			while (projectedCols != null && !projectedCols.isEmpty()) {
+				CollisionData col = projectedCols.get(0);
+				cols.add(col.overlaps, col.ti, col.move.x, col.move.y, col.normal.x, col.normal.y, col.touch.x,
+						col.touch.y, col.itemRect.x, col.itemRect.y, col.itemRect.width, col.itemRect.height,
+						col.otherRect.x, col.otherRect.y, col.otherRect.width, col.otherRect.height, col.item,
+						col.other, col.type);
 
-			visited.add(col.other);
+				visited.add(col.other);
+				CollisionResult response = col.type;
+				response.response(this, col, x, y, w, h, goalX, goalY, visitedFilter, result);
+				goalX = result.goalX;
+				goalY = result.goalY;
+				projectedCols = result.collisions;
+			}
 
-			CollisionResult response = col.type;
-			response.response(this, col, x, y, w, h, goalX, goalY, visitedFilter, result);
-			goalX = result.goalX;
-			goalY = result.goalY;
-			projectedCols = result.collisions;
-		}
-
-		result.set(goalX, goalY);
-		result.collisions.clear();
-		for (int i = 0; i < cols.size(); i++) {
-			result.collisions.add(cols.get(i));
+			result.set(goalX, goalY);
+			result.collisions.clear();
+			for (int i = 0; i < cols.size(); i++) {
+				result.collisions.add(cols.get(i));
+			}
 		}
 		return result;
 	}
@@ -613,7 +620,9 @@ public class CollisionWorld implements LRelease {
 			return check_result;
 		}
 		CollisionResult.Result result = check(bind, goalX, goalY, filter);
-		update(bind, result.goalX, result.goalY);
+		if (result != null) {
+			update(bind, result.goalX, result.goalY);
+		}
 		return result;
 	}
 

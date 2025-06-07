@@ -3479,9 +3479,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param g
 	 * @return
 	 */
-	public Gravity add(ActionBind act) {
-		if (act != null && _isGravity && _gravityHandler != null) {
-			return _gravityHandler.add(act);
+	public Gravity add(Gravity g) {
+		if (g != null && _isGravity && _gravityHandler != null) {
+			if (!contains(g.bind)) {
+				add(g.bind);
+			}
+			return _gravityHandler.add(g);
+		}
+		return null;
+	}
+
+	/**
+	 * 添加指定重力体对象
+	 * 
+	 * @param g
+	 * @return
+	 */
+	public Gravity addGravity(ActionBind g) {
+		if (g != null && _isGravity && _gravityHandler != null) {
+			if (!contains(g)) {
+				add(g);
+			}
+			return _gravityHandler.add(g);
 		}
 		return null;
 	}

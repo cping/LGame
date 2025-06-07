@@ -2099,7 +2099,9 @@ public class BulletEntity extends Entity {
 				_worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = _collisionWorld.move(bind, bind.getX(), bind.getY(), _worldCollisionFilter);
-			bind.setLocation(result.goalX, result.goalY);
+			if (result != null) {
+				bind.setLocation(result.goalX, result.goalY);
+			}
 		}
 		if (_limitMovedOfBounds) {
 			if (_limitRangeX != null) {

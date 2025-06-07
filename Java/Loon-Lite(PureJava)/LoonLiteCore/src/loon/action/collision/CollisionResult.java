@@ -21,6 +21,7 @@
 package loon.action.collision;
 
 import loon.geom.PointF;
+import loon.utils.MathUtils;
 
 public abstract class CollisionResult {
 
@@ -34,6 +35,10 @@ public abstract class CollisionResult {
 		public void set(float goalX, float goalY) {
 			this.goalX = goalX;
 			this.goalY = goalY;
+		}
+
+		public boolean equal(float x, float y) {
+			return MathUtils.equal(this.goalX, x) && MathUtils.equal(this.goalY, y);
 		}
 	}
 
