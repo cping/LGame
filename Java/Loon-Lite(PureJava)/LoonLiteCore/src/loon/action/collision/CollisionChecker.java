@@ -36,7 +36,7 @@ public interface CollisionChecker {
 	boolean getInTheLayer();
 
 	void setOffsetPos(Vector2f offset);
-	
+
 	void setOffsetPos(float x, float y);
 
 	void setOffsetX(float x);

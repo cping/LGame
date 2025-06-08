@@ -28,6 +28,7 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.action.collision.CollisionHelper;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.RectI;
@@ -1343,7 +1344,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 			xps[j] = (int) (points[i] + x1);
 			yps[j] = (int) (points[i + 1] + y1);
 		}
-		RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
 				if (contains(xps, yps, len, bounds, x, y)) {
@@ -1367,7 +1368,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 			xps[j] = (int) (points[i] + x1);
 			yps[j] = (int) (points[i + 1] + y1);
 		}
-		RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
 				if (contains(xps, yps, len, bounds, x, y)) {
@@ -2343,7 +2344,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 		final int yPoints[] = new int[7];
 		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX, centerY,
 				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
+		final RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
 				temp_rect);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
 			@Override
@@ -2541,8 +2542,8 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 				yPointsCopy[i] += _translateY;
 			}
 		}
-		RectI bounds = RectI.getIntersection(setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), clip,
-				temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints),
+				clip, temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
 				if (contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {

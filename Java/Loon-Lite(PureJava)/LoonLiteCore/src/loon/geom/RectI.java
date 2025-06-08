@@ -421,42 +421,6 @@ public class RectI implements XYZW, SetXY {
 		return new RectI(x1, y1, x2 - x1, y2 - y1);
 	}
 
-	public static RectI getIntersection(RectI a, RectI b) {
-		int a_x = a.x;
-		int a_r = a.getRight();
-		int a_y = a.y;
-		int a_t = a.getBottom();
-		int b_x = b.x;
-		int b_r = b.getRight();
-		int b_y = b.y;
-		int b_t = b.getBottom();
-		int i_x = MathUtils.max(a_x, b_x);
-		int i_r = MathUtils.min(a_r, b_r);
-		int i_y = MathUtils.max(a_y, b_y);
-		int i_t = MathUtils.min(a_t, b_t);
-		return i_x < i_r && i_y < i_t ? new RectI(i_x, i_y, i_r - i_x, i_t - i_y) : null;
-	}
-
-	public static RectI getIntersection(RectI a, RectI b, RectI result) {
-		int a_x = a.x;
-		int a_r = a.getRight();
-		int a_y = a.y;
-		int a_t = a.getBottom();
-		int b_x = b.x;
-		int b_r = b.getRight();
-		int b_y = b.y;
-		int b_t = b.getBottom();
-		int i_x = MathUtils.max(a_x, b_x);
-		int i_r = MathUtils.min(a_r, b_r);
-		int i_y = MathUtils.max(a_y, b_y);
-		int i_t = MathUtils.min(a_t, b_t);
-		if (i_x < i_r && i_y < i_t) {
-			result.set(i_x, i_y, i_r - i_x, i_t - i_y);
-			return result;
-		}
-		return result;
-	}
-
 	public boolean contains(int xp, int yp) {
 		return (xp >= this.getX()) && (yp >= this.getY()) && (xp < this.right()) && (yp < this.bottom());
 	}

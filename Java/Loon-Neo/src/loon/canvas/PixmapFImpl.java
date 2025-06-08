@@ -22,6 +22,7 @@ package loon.canvas;
 
 import loon.LSysException;
 import loon.LSystem;
+import loon.action.collision.CollisionHelper;
 import loon.geom.Limit;
 import loon.geom.RectBox;
 import loon.geom.RectF;
@@ -128,8 +129,8 @@ public abstract class PixmapFImpl {
 				yPointsCopy[i] += _translateY;
 			}
 		}
-		RectF bounds = RectF.getIntersection(Limit.setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), _clip,
-				temp_rect);
+		RectF bounds = CollisionHelper
+				.getIntersection(Limit.setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), _clip, temp_rect);
 		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
 			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
 				if (Limit.contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
@@ -221,8 +222,8 @@ public abstract class PixmapFImpl {
 		final float yPoints[] = new float[7];
 		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
 				centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectF bounds = RectF.getIntersection(Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints), _clip,
-				temp_rect);
+		final RectF bounds = CollisionHelper.getIntersection(Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints),
+				_clip, temp_rect);
 		this.drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
 			@Override
 			public void newPoint(float xLeft, float yTop, float xRight, float yBottom) {
@@ -413,7 +414,8 @@ public abstract class PixmapFImpl {
 			xps[j] = points[i] + x1;
 			yps[j] = points[i + 1] + y1;
 		}
-		RectF bounds = RectF.getIntersection(Limit.setBoundingBox(temp_rect, xps, yps, len), _clip, temp_rect);
+		RectF bounds = CollisionHelper.getIntersection(Limit.setBoundingBox(temp_rect, xps, yps, len), _clip,
+				temp_rect);
 		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
 			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
 				if (Limit.contains(xps, yps, len, bounds, x, y)) {

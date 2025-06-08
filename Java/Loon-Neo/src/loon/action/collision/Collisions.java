@@ -24,7 +24,6 @@ import java.util.Comparator;
 
 import loon.LRelease;
 import loon.action.ActionBind;
-import loon.geom.RectF;
 import loon.utils.BoolArray;
 import loon.utils.FloatArray;
 import loon.utils.IntArray;
@@ -283,10 +282,10 @@ public class Collisions implements Comparator<Integer>, LRelease {
 	public int compare(Integer a, Integer b) {
 		if (tis.get(a) == (tis.get(b))) {
 
-			float ad = RectF.getSquareDistance(x1s.get(a), y1s.get(a), w1s.get(a), h1s.get(a), x2s.get(a), y2s.get(a),
-					w2s.get(a), h2s.get(a));
-			float bd = RectF.getSquareDistance(x1s.get(a), y1s.get(a), w1s.get(a), h1s.get(a), x2s.get(b), y2s.get(b),
-					w2s.get(b), h2s.get(b));
+			float ad = CollisionHelper.getSquareDistance(x1s.get(a), y1s.get(a), w1s.get(a), h1s.get(a), x2s.get(a),
+					y2s.get(a), w2s.get(a), h2s.get(a));
+			float bd = CollisionHelper.getSquareDistance(x1s.get(a), y1s.get(a), w1s.get(a), h1s.get(a), x2s.get(b),
+					y2s.get(b), w2s.get(b), h2s.get(b));
 
 			return MathUtils.compare(ad, bd);
 		}

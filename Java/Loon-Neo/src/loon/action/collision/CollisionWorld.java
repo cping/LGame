@@ -21,6 +21,7 @@
 package loon.action.collision;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.Screen;
 import loon.action.ActionBind;
 import loon.action.collision.CollisionGrid.TraverseCallback;
@@ -30,6 +31,8 @@ import loon.geom.RectF;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 import loon.utils.ObjectMap.Keys;
 
 /**
@@ -103,6 +106,9 @@ public class CollisionWorld implements LRelease {
 	private boolean _tileMode = false;
 	private boolean _closed = false;
 
+	private boolean _autoRemoveItem = false;
+	private boolean _autoAddItem = true;
+
 	private CollisionManager collisionManager;
 
 	private final float cellSizeX;
@@ -132,11 +138,11 @@ public class CollisionWorld implements LRelease {
 	}
 
 	public CollisionWorld(Screen s) {
-		this(s, 64f, 64f, true);
+		this(s, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, true);
 	}
 
 	public CollisionWorld(Screen s, boolean mode) {
-		this(s, 64f, 64f, mode);
+		this(s, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, mode);
 	}
 
 	public CollisionWorld(Screen s, float cellx, float celly, boolean mode) {
@@ -145,6 +151,8 @@ public class CollisionWorld implements LRelease {
 		this.cellSizeY = celly;
 		this._tileMode = mode;
 		this._worldCollisionFilter = CollisionFilter.getDefault();
+		this._autoRemoveItem = false;
+		this._autoAddItem = true;
 	}
 
 	public CollisionManager getCollisionManager() {
@@ -167,7 +175,7 @@ public class CollisionWorld implements LRelease {
 		float dx = goalX - x1;
 		float dy = goalY - y1;
 
-		RectF.getDiff(x1, y1, w1, h1, x2, y2, w2, h2, detectCollisionDiff);
+		CollisionHelper.getDiff(x1, y1, w1, h1, x2, y2, w2, h2, detectCollisionDiff);
 		float x = detectCollisionDiff.x;
 		float y = detectCollisionDiff.y;
 		float w = detectCollisionDiff.width;
@@ -177,8 +185,8 @@ public class CollisionWorld implements LRelease {
 		float ti = -1f;
 		float nx = 0, ny = 0;
 
-		if (RectF.containsPoint(x, y, w, h, 0, 0, DELTA)) {
-			RectF.getNearestCorner(x, y, w, h, 0, 0, nearestCorner);
+		if (CollisionHelper.containsPoint(x, y, w, h, 0, 0, DELTA)) {
+			CollisionHelper.getNearestCorner(x, y, w, h, 0, 0, nearestCorner);
 			float px = nearestCorner.x;
 			float py = nearestCorner.y;
 			float wi = MathUtils.min(w1, MathUtils.abs(px));
@@ -187,8 +195,8 @@ public class CollisionWorld implements LRelease {
 			// ti = -wi * h1;
 			overlaps = true;
 		} else {
-			boolean intersect = RectF.getSegmentIntersectionIndices(x, y, w, h, 0, 0, dx, dy, -Float.MAX_VALUE,
-					Float.MAX_VALUE, segmentIntersectionIndices_ti, segmentIntersectionIndicesn1,
+			boolean intersect = CollisionHelper.getSegmentIntersectionIndices(x, y, w, h, 0, 0, dx, dy,
+					-Float.MAX_VALUE, Float.MAX_VALUE, segmentIntersectionIndices_ti, segmentIntersectionIndicesn1,
 					segmentIntersectionIndicesn2);
 			float ti1 = segmentIntersectionIndices_ti.x;
 			float ti2 = segmentIntersectionIndices_ti.y;
@@ -209,7 +217,7 @@ public class CollisionWorld implements LRelease {
 
 		if (overlaps) {
 			if (dx == 0 && dy == 0) {
-				RectF.getNearestCorner(x, y, w, h, 0, 0, nearestCorner);
+				CollisionHelper.getNearestCorner(x, y, w, h, 0, 0, nearestCorner);
 				float px = nearestCorner.x;
 				float py = nearestCorner.y;
 				if (MathUtils.abs(px) < MathUtils.abs(py)) {
@@ -222,8 +230,9 @@ public class CollisionWorld implements LRelease {
 				tx = x1 + px;
 				ty = y1 + py;
 			} else {
-				boolean intersect = RectF.getSegmentIntersectionIndices(x, y, w, h, 0, 0, dx, dy, -Float.MAX_VALUE, 1,
-						segmentIntersectionIndices_ti, segmentIntersectionIndicesn1, segmentIntersectionIndicesn2);
+				boolean intersect = CollisionHelper.getSegmentIntersectionIndices(x, y, w, h, 0, 0, dx, dy,
+						-Float.MAX_VALUE, 1, segmentIntersectionIndices_ti, segmentIntersectionIndicesn1,
+						segmentIntersectionIndicesn2);
 				float ti1 = segmentIntersectionIndices_ti.x;
 				nx = segmentIntersectionIndicesn1.x;
 				ny = segmentIntersectionIndicesn1.y;
@@ -234,8 +243,8 @@ public class CollisionWorld implements LRelease {
 				ty = y1 + dy * ti1;
 			}
 		} else {
-			tx = x1 + dx * ti;
-			ty = y1 + dy * ti;
+			tx = x1;
+			ty = y1;
 		}
 		col.set(overlaps, ti, dx, dy, nx, ny, tx, ty, x1, y1, w1, h1, x2, y2, w2, h2);
 		return col;
@@ -401,6 +410,41 @@ public class CollisionWorld implements LRelease {
 		return collisions;
 	}
 
+	public CollisionWorld syncBindToObject() {
+		if (_closed) {
+			return this;
+		}
+		for (Entries<ActionBind, RectF> it = rects.entries(); it.hasNext();) {
+			Entry<ActionBind, RectF> obj = it.next();
+			if (obj != null) {
+				RectF rect = obj.value;
+				ActionBind act = obj.key;
+				if (rect != null && act != null) {
+					act.setLocation(rect.x, rect.y);
+					act.setSize(rect.width, rect.height);
+				}
+			}
+		}
+		return this;
+	}
+
+	public CollisionWorld syncObjectToBind() {
+		if (_closed) {
+			return this;
+		}
+		for (Entries<ActionBind, RectF> it = rects.entries(); it.hasNext();) {
+			Entry<ActionBind, RectF> obj = it.next();
+			if (obj != null) {
+				RectF rect = obj.value;
+				ActionBind act = obj.key;
+				if (rect != null && act != null) {
+					rect.set(act.getX(), act.getY(), act.getWidth(), act.getHeight());
+				}
+			}
+		}
+		return this;
+	}
+
 	public RectF getRect(ActionBind bind) {
 		if (_closed) {
 			return null;
@@ -524,37 +568,45 @@ public class CollisionWorld implements LRelease {
 		RectF rect = getRect(bind);
 		if (rect != null) {
 			float x1 = rect.x, y1 = rect.y, w1 = rect.width, h1 = rect.height;
-			if (x1 != x2 || y1 != y2 || w1 != w2 || h1 != h2) {
+			if (!MathUtils.equal(x1, x2) || !MathUtils.equal(y1, y2) || !MathUtils.equal(w1, w2)
+					|| !MathUtils.equal(h1, h2)) {
 
 				// size limit
 				RectF c1 = grid.toCellRect(cellSizeX, cellSizeY, x1, y1, w1, h1, update_c1);
 				RectF c2 = grid.toCellRect(cellSizeX, cellSizeY, x2, y2, w2, h2, update_c2);
 
-				float cl1 = c1.x, ct1 = c1.y, cw1 = c1.width, ch1 = c1.height;
-				float cl2 = c2.x, ct2 = c2.y, cw2 = c2.width, ch2 = c2.height;
+				float cl1 = MathUtils.ceil(c1.x), ct1 = MathUtils.ceil(c1.y), cw1 = MathUtils.ceil(c1.width),
+						ch1 = MathUtils.ceil(c1.height);
+				float cl2 = MathUtils.ceil(c2.x), ct2 = MathUtils.ceil(c2.y), cw2 = MathUtils.ceil(c2.width),
+						ch2 = MathUtils.ceil(c2.height);
 
-				if (cl1 != cl2 || ct1 != ct2 || cw1 != cw2 || ch1 != ch2) {
+				if (!MathUtils.equal(cl1, cl2) || !MathUtils.equal(ct1, ct2) || !MathUtils.equal(cw1, cw2)
+						|| !MathUtils.equal(ch1, ch2)) {
 					float cr1 = cl1 + cw1 - 1, cb1 = ct1 + ch1 - 1;
 					float cr2 = cl2 + cw2 - 1, cb2 = ct2 + ch2 - 1;
 					boolean cyOut;
 
-					for (float cy = ct1; cy <= cb1; cy++) {
-						cyOut = cy < ct2 || cy > cb2;
-						for (float cx = cl1; cx <= cr1; cx++) {
-							if (cyOut || cx < cl2 || cx > cr2) {
-								removeItemFromCell(bind, cx, cy);
+					if (_autoAddItem) {
+						for (float cy = ct2; cy <= cb2; cy++) {
+							cyOut = cy < ct1 || cy > cb1;
+							for (float cx = cl2; cx <= cr2; cx++) {
+								if (cyOut || cx < cl1 || cy > cr1) {
+									addItemToCell(bind, cx, cy);
+								}
+							}
+						}
+					}
+					if (_autoRemoveItem) {
+						for (float cy = ct1; cy <= cb1; cy++) {
+							cyOut = cy < ct2 || cy > cb2;
+							for (float cx = cl1; cx <= cr1; cx++) {
+								if (cyOut || cx < cl2 || cx > cr2) {
+									removeItemFromCell(bind, cx, cy);
+								}
 							}
 						}
 					}
 
-					for (float cy = ct2; cy <= cb2; cy++) {
-						cyOut = cy < ct1 || cy > cb1;
-						for (float cx = cl2; cx <= cr2; cx++) {
-							if (cyOut || cx < cl1 || cy > cr1) {
-								addItemToCell(bind, cx, cy);
-							}
-						}
-					}
 				}
 				rect.set(x2, y2, w2, h2);
 			}
@@ -652,12 +704,32 @@ public class CollisionWorld implements LRelease {
 		return _closed;
 	}
 
+	public CollisionWorld setAutoRemoveItem(boolean a) {
+		this._autoRemoveItem = a;
+		return this;
+	}
+
+	public boolean isAutoRemoveItem() {
+		return _autoRemoveItem;
+	}
+
+	public CollisionWorld setAutoAddItem(boolean a) {
+		this._autoAddItem = a;
+		return this;
+	}
+
+	public boolean isAutoAddItem() {
+		return _autoAddItem;
+	}
+
 	@Override
 	public void close() {
 		if (_closed) {
 			return;
 		}
 		_closed = true;
+		_autoAddItem = false;
+		_autoRemoveItem = false;
 		if (rects != null) {
 			rects.clear();
 		}
