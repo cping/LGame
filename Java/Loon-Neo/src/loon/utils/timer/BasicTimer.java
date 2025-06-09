@@ -94,9 +94,11 @@ public class BasicTimer {
 	}
 
 	public void update(float dt) {
+
 		if (_finished) {
 			return;
 		}
+
 		if (_paused) {
 			return;
 		}
@@ -104,6 +106,7 @@ public class BasicTimer {
 			reset(dt);
 			_loopCount++;
 		}
+
 		this._delta = dt;
 		this._timer += dt;
 		this._elapsed = _duration - _timer;

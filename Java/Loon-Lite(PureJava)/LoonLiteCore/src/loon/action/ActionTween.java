@@ -1077,12 +1077,52 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new BezierTo(sx, sy, duration, mode, b));
 	}
 
+	public ActionTween flipXNoneEffect(boolean x) {
+		return event(new FlipXTo(EasingMode.Linear, 0f, x, false));
+	}
+
+	public ActionTween flipYNoneEffect(boolean x) {
+		return event(new FlipYTo(EasingMode.Linear, 0f, x, false));
+	}
+
+	public ActionTween flipX(EasingMode e, float d, boolean x) {
+		return event(new FlipXTo(e, d, x, true));
+	}
+
+	public ActionTween flipY(EasingMode e, float d, boolean y) {
+		return event(new FlipYTo(e, d, y, true));
+	}
+
+	public ActionTween flipX(float d, boolean x) {
+		return event(new FlipXTo(d, x));
+	}
+
+	public ActionTween flipY(float d, boolean y) {
+		return event(new FlipYTo(d, y));
+	}
+
 	public ActionTween flipX(boolean x) {
 		return event(new FlipXTo(x));
 	}
 
 	public ActionTween flipY(boolean y) {
 		return event(new FlipYTo(y));
+	}
+
+	public ActionTween flipX() {
+		if (_target != null && _target instanceof Flip<?>) {
+			Flip<?> flip = (Flip<?>) _target;
+			return event(new FlipXTo(!flip.isFlipX()));
+		}
+		return this;
+	}
+
+	public ActionTween flipY() {
+		if (_target != null && _target instanceof Flip<?>) {
+			Flip<?> flip = (Flip<?>) _target;
+			return event(new FlipYTo(!flip.isFlipY()));
+		}
+		return this;
 	}
 
 	public ActionTween removeActionsTo(ActionBind bind) {

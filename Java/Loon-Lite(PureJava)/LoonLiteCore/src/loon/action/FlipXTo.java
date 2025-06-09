@@ -20,44 +20,45 @@
  */
 package loon.action;
 
+import loon.utils.Easing.EasingMode;
 import loon.utils.StringKeyValue;
 
-public class FlipXTo extends ActionEvent {
+public class FlipXTo extends FlipEffectTo {
 
-	private boolean flipX;
-
-	public FlipXTo(boolean x) {
-		this.flipX = x;
+	public FlipXTo(boolean flip) {
+		this(1f, flip);
 	}
 
-	@Override
-	public void update(long elapsedTime) {
-		if (original != null && original instanceof Flip<?>) {
-			Flip<?> flip = (Flip<?>) original;
-			flip.setFlipX(flipX);
-			this._isCompleted = true;
-		}
+	public FlipXTo(float d, boolean flip) {
+		this(EasingMode.Linear, d, flip, true);
 	}
 
-	public boolean isFlipX() {
-		return flipX;
+	public FlipXTo(EasingMode e, float d, boolean flip, boolean eff) {
+		super(e, FlipType.FlipX, d, flip, eff);
 	}
 
-	@Override
-	public void onLoad() {
-
-	}
-	
 	@Override
 	public ActionEvent cpy() {
-		FlipXTo flip = new FlipXTo(flipX);
+		FlipXTo flip = null;
+		if (_easeTimer != null) {
+			flip = new FlipXTo(_easeTimer.getEasingMode(), _easeTimer.getDuration(), this._flipAllow,
+					this._effectRunning);
+		} else {
+			flip = new FlipXTo(EasingMode.Linear, 1f, this._flipAllow, this._effectRunning);
+		}
 		flip.set(this);
 		return flip;
 	}
 
 	@Override
 	public ActionEvent reverse() {
-		FlipXTo flip = new FlipXTo(!flipX);
+		FlipXTo flip = null;
+		if (_easeTimer != null) {
+			flip = new FlipXTo(_easeTimer.getEasingMode(), _easeTimer.getDuration(), !this._flipAllow,
+					this._effectRunning);
+		} else {
+			flip = new FlipXTo(EasingMode.Linear, 1f, !this._flipAllow, this._effectRunning);
+		}
 		flip.set(this);
 		return flip;
 	}
@@ -70,7 +71,7 @@ public class FlipXTo extends ActionEvent {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue(getName());
-		builder.kv("flipX", flipX);
+		builder.kv("flipType", _flipType).comma().kv("flipX", _flipAllow).comma().kv("effectRunning", _effectRunning);
 		return builder.toString();
 	}
 

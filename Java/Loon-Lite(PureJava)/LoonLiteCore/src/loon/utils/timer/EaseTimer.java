@@ -73,7 +73,7 @@ public class EaseTimer extends BasicTimer {
 
 	public EaseTimer(float timer, float duration, float delay, EasingMode mode, int loop) {
 		super(timer, duration, loop);
-		this._mode = mode;
+		this._mode = (mode == null ? EasingMode.Linear : mode);
 		this._delay = delay;
 		this._ease_value_max = 1f;
 		this._ease_value_min = 0f;
