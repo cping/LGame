@@ -23,7 +23,6 @@ package loon.action.sprite;
 import loon.LTexture;
 import loon.LSystem;
 import loon.canvas.Image;
-import loon.utils.MathUtils;
 
 /**
  * 显示图片用的精灵(本质上就是个显示图用的Entity)
@@ -81,11 +80,8 @@ public class Picture extends Entity {
 		if (this == p) {
 			return true;
 		}
-		if (MathUtils.equal(this._width, p._width) && MathUtils.equal(this._height, p._height)
-				&& this._baseColor.equals(p._baseColor)) {
-			if (_image.hashCode() == p._image.hashCode()) {
-				return true;
-			}
+		if (isImageEquals(p)) {
+			return true;
 		}
 		return false;
 	}

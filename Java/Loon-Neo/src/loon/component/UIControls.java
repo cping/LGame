@@ -1146,6 +1146,46 @@ public class UIControls {
 		return this;
 	}
 
+	public UIControls flipXTo() {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).flipX();
+				} else {
+					tween.flipX();
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public UIControls flipYTo() {
+		final int size = this._comps.size;
+		for (int i = size - 1; i > -1; --i) {
+			LComponent comp = _comps.get(i);
+			if (comp != null) {
+				ActionTween tween = tweens.get(comp);
+				if (tween == null) {
+					tween = PlayerUtils.set(comp).flipY();
+				} else {
+					tween.flipY();
+				}
+				if (!tweens.containsKey(comp)) {
+					tweens.put(comp, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	/**
 	 * 将控制器中的组件随机放置于Screen显示范围外的左侧
 	 * 

@@ -602,7 +602,12 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	 * @return
 	 */
 	public boolean hasMoved() {
-		return (_objectPreviousLocation.x != _objectLocation.x || _objectPreviousLocation.y != _objectLocation.y);
+		return (!MathUtils.equal(_objectPreviousLocation.x, _objectLocation.x))
+				|| (!MathUtils.equal(_objectPreviousLocation.y, _objectLocation.y));
+	}
+
+	public boolean isMoved() {
+		return hasMoved();
 	}
 
 	/**

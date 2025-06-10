@@ -587,6 +587,17 @@ public class LSelectorIcon extends LComponent {
 		return moveTo(bind.getX(), bind.getY(), bind.getWidth(), bind.getHeight());
 	}
 
+	public LSelectorIcon moveToTile(ActionBind bind, int tileX, int tileY) {
+		if (bind == null) {
+			return this;
+		}
+		if (bind == this) {
+			return this;
+		}
+		return moveTo(MathUtils.ifloor(bind.getX() / tileX), MathUtils.ifloor(bind.getY() / tileY), bind.getWidth(),
+				bind.getHeight());
+	}
+
 	public void drawGrid(GLEx g, int x, int y) {
 		final float oldAlpha = g.alpha();
 		int newAlpha = MathUtils.ifloor(_iconAlpha);

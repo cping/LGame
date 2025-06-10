@@ -977,6 +977,46 @@ public class SpriteControls {
 		return this;
 	}
 
+	public SpriteControls flipXTo() {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) spr).flipX();
+				} else {
+					tween.flipX();
+				}
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls flipYTo() {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof ActionBind)) {
+				ActionTween tween = tweens.get(spr);
+				if (tween == null) {
+					tween = PlayerUtils.set((ActionBind) spr).flipY();
+				} else {
+					tween.flipY();
+				}
+				if (!tweens.containsKey(spr)) {
+					tweens.put(spr, tween);
+				}
+
+			}
+		}
+		return this;
+	}
+
 	/**
 	 * 将控制器中的精灵随机放置于Screen显示范围外的左侧
 	 * 

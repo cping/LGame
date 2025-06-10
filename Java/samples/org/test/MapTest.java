@@ -28,6 +28,7 @@ public class MapTest extends Stage {
 	@Override
 	public void create() {
 		try {
+			// ELF().createGlobalLight(LightType.Singleton);
 			// 点击处波纹效果
 			RippleEffect ripple = RippleEffect.at(Model.OVAL);
 			// 红色
@@ -91,7 +92,7 @@ public class MapTest extends Stage {
 			// 添加hero到地图上
 			add(hero);
 
-			// 构建标记绘制器
+			// 构建角色移动位置标志器
 			final LSelectorIcon selector = new LSelectorIcon(0, 0, 32);
 			// 标记布局如下
 			selector.setGridLayout("  0  ", 
@@ -108,9 +109,16 @@ public class MapTest extends Stage {
 			selector.setOffset(hero.getOffset());
 			// 移动到hero位置
 			selector.moveTo(hero);
-
+			// 添加一个角色位置标志器
 			add(selector);
-
+			// 添加一个循环，用于监听
+			loop(() -> {
+				// 如果角色位置发生变动
+				if (hero.hasMoved()) {
+					// 改变标记显示位置
+					selector.moveTo(hero);
+				}
+			});
 			// 角色追随和地图滚动只能开一个(否则地图移动视角会乱跳),默认如果followAction注入则scroll无效化
 			/*
 			 * drag(new Touched() {
@@ -159,16 +167,16 @@ public class MapTest extends Stage {
 
 							@Override
 							public void stop(ActionBind o) {
-								// 移动箭头隐藏
-								arrow.setVisible(false);
 								// 1/5(20/100)遇敌率
 								if (MathUtils.chanceRoll(20)) {
 									// 随机使用一种Screen转场效果，进入战斗画面
 									gotoScreenEffectExitRand(new RpgBattleTest());
+								} else {
+									// 移动箭头隐藏
+									arrow.setVisible(false);
+									// 改变标记显示位置
+									selector.moveTo(o);
 								}
-
-								//改变标记显示位置
-								selector.moveTo(o);
 							}
 
 							@Override

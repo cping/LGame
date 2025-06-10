@@ -98,7 +98,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected LColor _debugDrawColor = LColor.red;
 
 	protected Field2D _arrayMap;
-	
+
 	protected Shape _otherShape = null;
 
 	protected ShapeNodeType _oldNodeType = null;
@@ -1065,7 +1065,6 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return _arrayMap;
 	}
 
-
 	@Override
 	public boolean isBounded() {
 		return false;
@@ -1439,5 +1438,21 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 			return;
 		}
 		this._sprites = ss;
+	}
+
+	public boolean isImageEquals(SpriteBase<T> o) {
+		if (null == o) {
+			return false;
+		}
+		if (this == o) {
+			return true;
+		}
+		if (MathUtils.equal(this.getWidth(), o.getWidth()) && MathUtils.equal(this.getHeight(), o.getHeight())
+				&& this.getColor().equals(o.getColor())) {
+			if (_image.hashCode() == o.getBitmap().hashCode()) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
