@@ -1344,10 +1344,11 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 			xps[j] = (int) (points[i] + x1);
 			yps[j] = (int) (points[i + 1] + y1);
 		}
-		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xps, yps, len), clip,
+				temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-				if (contains(xps, yps, len, bounds, x, y)) {
+				if (CollisionHelper.contains(xps, yps, len, bounds, x, y)) {
 					drawPoint(x, y, pixmap.getData(x, y));
 				}
 			}
@@ -1368,10 +1369,11 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 			xps[j] = (int) (points[i] + x1);
 			yps[j] = (int) (points[i + 1] + y1);
 		}
-		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xps, yps, len), clip, temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xps, yps, len), clip,
+				temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-				if (contains(xps, yps, len, bounds, x, y)) {
+				if (CollisionHelper.contains(xps, yps, len, bounds, x, y)) {
 					drawPoint(x, y);
 				}
 			}
@@ -2342,10 +2344,10 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 		final int centerY = y + _translateY + height / 2;
 		final int xPoints[] = new int[7];
 		final int yPoints[] = new int[7];
-		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX, centerY,
-				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip,
-				temp_rect);
+		final int nPoints = CollisionHelper.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle),
+				centerX, centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
+		final RectI bounds = CollisionHelper
+				.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xPoints, yPoints, nPoints), clip, temp_rect);
 		this.drawCircle(x, y, width, height, false, new CircleUpdate() {
 			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
@@ -2412,9 +2414,9 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 		final int centerY = y + _translateY + height / 2;
 		final int xPoints[] = new int[7];
 		final int yPoints[] = new int[7];
-		final int nPoints = getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX, centerY,
-				x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectI bounds = setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
+		final int nPoints = CollisionHelper.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle),
+				centerX, centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
+		final RectI bounds = CollisionHelper.setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 		this.drawCircle(x, y, width, height, true, new CircleUpdate() {
 			@Override
 			public void newPoint(int xLeft, int yTop, int xRight, int yBottom) {
@@ -2542,11 +2544,11 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 				yPointsCopy[i] += _translateY;
 			}
 		}
-		RectI bounds = CollisionHelper.getIntersection(setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints),
-				clip, temp_rect);
+		RectI bounds = CollisionHelper.getIntersection(
+				CollisionHelper.setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), clip, temp_rect);
 		for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
 			for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
-				if (contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
+				if (CollisionHelper.contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
 					drawPoint(x, y);
 				}
 			}
@@ -2712,7 +2714,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 	}
 
 	private void drawArcPoint(int xPoints[], int yPoints[], int nPoints, RectI bounds, int x, int y) {
-		if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
+		if (CollisionHelper.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 			drawPoint(x, y);
 		}
 	}
@@ -2720,7 +2722,7 @@ public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelea
 	private void drawArcImpl(int xPoints[], int yPoints[], int nPoints, RectI bounds, int xLeft, int xRight, int y) {
 		if (y >= clip.y && y < clip.y + clip.height) {
 			for (int x = MathUtils.max(xLeft, clip.x); x <= xRight; x++) {
-				if (contains(xPoints, yPoints, nPoints, bounds, x, y)) {
+				if (CollisionHelper.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 					drawPoint(x, y);
 				}
 			}

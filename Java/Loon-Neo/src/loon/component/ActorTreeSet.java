@@ -63,9 +63,12 @@ public class ActorTreeSet {
 	}
 
 	public Actor getOnlyCollisionObjectsAt(float x, float y, Object tag) {
+		if (tag == null) {
+			return null;
+		}
 		for (LIterator<Actor> it = iterator(); it.hasNext();) {
 			Actor a = it.next();
-			if (a.getRectBox().intersects(x, y) && a.getTag() == tag) {
+			if (a.getRectBox().intersects(x, y) && (tag == a.getTag() || tag.equals(a.getTag()))) {
 				return a;
 			}
 		}

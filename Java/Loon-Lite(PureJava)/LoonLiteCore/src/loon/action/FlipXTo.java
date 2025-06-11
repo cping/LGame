@@ -37,6 +37,10 @@ public class FlipXTo extends FlipEffectTo {
 		super(e, FlipType.FlipX, d, flip, eff);
 	}
 
+	public boolean isFlipX() {
+		return this._flipAllow;
+	}
+
 	@Override
 	public ActionEvent cpy() {
 		FlipXTo flip = null;

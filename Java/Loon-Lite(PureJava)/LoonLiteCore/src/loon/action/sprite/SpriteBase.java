@@ -1449,6 +1449,12 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		}
 		if (MathUtils.equal(this.getWidth(), o.getWidth()) && MathUtils.equal(this.getHeight(), o.getHeight())
 				&& this.getColor().equals(o.getColor())) {
+			if (_image == o.getBitmap()) {
+				return true;
+			}
+			if (_image == null || o.getBitmap() == null) {
+				return false;
+			}
 			if (_image.hashCode() == o.getBitmap().hashCode()) {
 				return true;
 			}

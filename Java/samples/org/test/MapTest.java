@@ -20,6 +20,7 @@ import loon.events.SysKey;
 import loon.events.Touched;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.ObjectBundle;
 import loon.utils.TArray;
 
 public class MapTest extends Stage {
@@ -60,10 +61,15 @@ public class MapTest extends Stage {
 			 */
 			// 注入地图到窗体
 			add(map);
+			// 获得一个全局的对象参数绑定器
+			final ObjectBundle bundle = getBundle();
+			// 获得xy参数,默认坐标3,4
+			int x = bundle.getInt("x", 3);
+			int y = bundle.getInt("y", 4);
 
 			// 制作动画角色,切分大小32x32每帧,显示位置到坐标3,4(换算为数组地图位置),显示大小32x32
-			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(3),
-					map.tilesToPixelsY(4), 32, 32);
+			final AnimatedEntity hero = new AnimatedEntity("assets/rpg/hero.gif", 32, 32, map.tilesToPixelsX(x),
+					map.tilesToPixelsY(y), 32, 32);
 			// 播放动画,速度每帧220
 			final long[] frames = { 220, 220, 220 };
 			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
@@ -80,7 +86,24 @@ public class MapTest extends Stage {
 			 */
 			// 播放动画,速度每帧220,播放顺序为第0,1,2帧
 			// hero.animate(new long[]{220, 220, 220 }, new int[]{0, 1, 2});
-			hero.animate(frames, downIds);
+			// 获得角色方向参数
+			int dir = bundle.getInt("dir", Config.TDOWN);
+			// 如果存在方向绑定则修正为绑定的方向
+			switch (dir) {
+			default:
+			case Config.TDOWN:
+				hero.animate(frames, downIds);
+				break;
+			case Config.TUP:
+				hero.animate(frames, upIds);
+				break;
+			case Config.TLEFT:
+				hero.animate(frames, leftIds);
+				break;
+			case Config.TRIGHT:
+				hero.animate(frames, rightIds);
+				break;
+			}
 			// 限制精灵到索引1,2,3,5位置的移动
 			map.setLimit(new int[] { 1, 2, 3, 5 });
 			// 设置一个高的z值,避免被精灵遮挡
@@ -169,6 +192,10 @@ public class MapTest extends Stage {
 							public void stop(ActionBind o) {
 								// 1/5(20/100)遇敌率
 								if (MathUtils.chanceRoll(20)) {
+									// 保存角色位置与方向
+									bundle.set("x", map.pixelsToTilesWidth(o.getX()));
+									bundle.set("y", map.pixelsToTilesHeight(o.getY()));
+									bundle.set("dir", move.getDirection());
 									// 随机使用一种Screen转场效果，进入战斗画面
 									gotoScreenEffectExitRand(new RpgBattleTest());
 								} else {

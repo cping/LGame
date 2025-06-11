@@ -102,10 +102,10 @@ public class AVGAnm implements Expression, LRelease {
 			this.posx[i] = (posxTmps.get(i));
 			this.posy[i] = (posyTmps.get(i));
 		}
-		if (width == 0) {
+		if (width <= 0) {
 			width = imageWidth;
 		}
-		if (height == 0) {
+		if (height <= 0) {
 			height = imageHeight;
 		}
 	}
@@ -209,16 +209,18 @@ public class AVGAnm implements Expression, LRelease {
 		return width;
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
+	public AVGAnm setWidth(int w) {
+		this.width = w;
+		return this;
 	}
 
 	public int getHeight() {
 		return height;
 	}
 
-	public void setHeight(int height) {
-		this.height = height;
+	public AVGAnm setHeight(int h) {
+		this.height = h;
+		return this;
 	}
 
 	public int getImageWidth() {
@@ -273,7 +275,7 @@ public class AVGAnm implements Expression, LRelease {
 		return angle;
 	}
 
-	public void start(long elapsedTime, boolean loop) {
+	public AVGAnm start(long elapsedTime, boolean loop) {
 		this.startTime = elapsedTime;
 		this.loop = loop;
 		if (texture != null) {
@@ -281,15 +283,17 @@ public class AVGAnm implements Expression, LRelease {
 				this.loop = false;
 			}
 		}
+		return this;
 	}
 
-	public void start() {
-		this.start(0, loop);
+	public AVGAnm start() {
+		return this.start(0, loop);
 	}
 
-	public void stop() {
+	public AVGAnm stop() {
 		this.startTime = -1;
 		this.loop = false;
+		return this;
 	}
 
 	public PointI getPos(long elapsedTime) {

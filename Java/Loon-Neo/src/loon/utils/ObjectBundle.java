@@ -83,19 +83,51 @@ public class ObjectBundle extends MapBundle<Object> {
 	}
 
 	public String getStr(String name) {
-		return HelperUtils.toStr(get(name));
+		return getStr(name, null);
+	}
+
+	public String getStr(String name, String v) {
+		Object result = get(name);
+		if (result == null) {
+			return v;
+		}
+		return HelperUtils.toStr(result);
 	}
 
 	public int getInt(String name) {
 		return HelperUtils.toInt(get(name));
 	}
 
+	public int getInt(String name, int v) {
+		int result = getInt(name);
+		if (result == -1) {
+			return v;
+		}
+		return result;
+	}
+
 	public long getLong(String name) {
 		return HelperUtils.toLong(get(name));
 	}
 
+	public long getLong(String name, long v) {
+		long result = getLong(name);
+		if (result == -1) {
+			return v;
+		}
+		return result;
+	}
+
 	public float getFloat(String name) {
 		return HelperUtils.toFloat(get(name));
+	}
+
+	public float getFloat(String name, float v) {
+		float result = getFloat(name);
+		if (result == -1) {
+			return v;
+		}
+		return result;
 	}
 
 	public boolean getBool(String name) {
@@ -103,7 +135,18 @@ public class ObjectBundle extends MapBundle<Object> {
 	}
 
 	public boolean isBool(String name) {
+		return isBool(name, false);
+	}
+
+	public boolean getBool(String name, boolean v) {
+		return isBool(name, v);
+	}
+
+	public boolean isBool(String name, boolean v) {
 		Object result = get(name);
+		if (result == null) {
+			return v;
+		}
 		if (result instanceof Boolean) {
 			return ((Boolean) result).booleanValue();
 		}

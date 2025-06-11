@@ -20,10 +20,9 @@
  */
 package loon.canvas;
 
-import loon.geom.Limit;
 import loon.utils.MathUtils;
 
-public class PixmapComposite extends Limit {
+public class PixmapComposite {
 
 	public final static int SRC_IN = 0;
 

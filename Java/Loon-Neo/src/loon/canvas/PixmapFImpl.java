@@ -23,7 +23,6 @@ package loon.canvas;
 import loon.LSysException;
 import loon.LSystem;
 import loon.action.collision.CollisionHelper;
-import loon.geom.Limit;
 import loon.geom.RectBox;
 import loon.geom.RectF;
 import loon.geom.Shape;
@@ -130,10 +129,10 @@ public abstract class PixmapFImpl {
 			}
 		}
 		RectF bounds = CollisionHelper
-				.getIntersection(Limit.setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), _clip, temp_rect);
+				.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xPointsCopy, yPointsCopy, nPoints), _clip, temp_rect);
 		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
 			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
-				if (Limit.contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
+				if (CollisionHelper.contains(xPointsCopy, yPointsCopy, nPoints, bounds, x, y)) {
 					drawPointImpl(x, y);
 				}
 			}
@@ -220,9 +219,9 @@ public abstract class PixmapFImpl {
 		final float centerY = y + _translateY + height / 2;
 		final float xPoints[] = new float[7];
 		final float yPoints[] = new float[7];
-		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
+		final int nPoints = CollisionHelper.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
 				centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectF bounds = CollisionHelper.getIntersection(Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints),
+		final RectF bounds = CollisionHelper.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xPoints, yPoints, nPoints),
 				_clip, temp_rect);
 		this.drawCircleImpl(x, y, width, height, false, new CircleUpdate() {
 			@Override
@@ -236,7 +235,7 @@ public abstract class PixmapFImpl {
 	}
 
 	protected void drawArcPointImpl(float[] xPoints, float[] yPoints, int nPoints, RectF bounds, float x, float y) {
-		if (Limit.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
+		if (CollisionHelper.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 			drawPointImpl(x, y);
 		}
 	}
@@ -292,9 +291,9 @@ public abstract class PixmapFImpl {
 		final float centerY = y + _translateY + height / 2;
 		final float xPoints[] = new float[7];
 		final float yPoints[] = new float[7];
-		final int nPoints = Limit.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
+		final int nPoints = CollisionHelper.getBoundingShape(xPoints, yPoints, startAngle, MathUtils.abs(arcAngle), centerX,
 				centerY, x + _translateX - 1, y + _translateY - 1, width + 2, height + 2);
-		final RectF bounds = Limit.setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
+		final RectF bounds = CollisionHelper.setBoundingBox(temp_rect, xPoints, yPoints, nPoints);
 
 		this.drawCircleImpl(x, y, width, height, true, new CircleUpdate() {
 			@Override
@@ -311,7 +310,7 @@ public abstract class PixmapFImpl {
 			float y) {
 		if (y >= _clip.y && y < _clip.y + _clip.height) {
 			for (int x = (int) MathUtils.max(xLeft, _clip.x); x <= xRight; x += _skip) {
-				if (Limit.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
+				if (CollisionHelper.contains(xPoints, yPoints, nPoints, bounds, x, y)) {
 					drawPointImpl(x, y);
 				}
 			}
@@ -414,11 +413,11 @@ public abstract class PixmapFImpl {
 			xps[j] = points[i] + x1;
 			yps[j] = points[i + 1] + y1;
 		}
-		RectF bounds = CollisionHelper.getIntersection(Limit.setBoundingBox(temp_rect, xps, yps, len), _clip,
+		RectF bounds = CollisionHelper.getIntersection(CollisionHelper.setBoundingBox(temp_rect, xps, yps, len), _clip,
 				temp_rect);
 		for (float x = bounds.x; x < bounds.x + bounds.width; x += _skip) {
 			for (float y = bounds.y; y < bounds.y + bounds.height; y += _skip) {
-				if (Limit.contains(xps, yps, len, bounds, x, y)) {
+				if (CollisionHelper.contains(xps, yps, len, bounds, x, y)) {
 					drawPointNative(x, y, _skip);
 				}
 			}
