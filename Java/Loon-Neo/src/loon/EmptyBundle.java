@@ -67,4 +67,9 @@ public class EmptyBundle implements Bundle<Object> {
 	public boolean isNotEmpty() {
 		return false;
 	}
+
+	@Override
+	public boolean hasKey(String key) {
+		return false;
+	}
 }

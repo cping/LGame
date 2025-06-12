@@ -67,6 +67,11 @@ public class MapBundle<T> implements Bundle<T> {
 		return !isEmpty();
 	}
 
+	@Override
+	public boolean hasKey(String key) {
+		return _mapBundle.containsKey(key);
+	}
+
 	@SuppressWarnings("unchecked")
 	public MapBundle<T> loadFrom(Session session) {
 		if (session != null) {

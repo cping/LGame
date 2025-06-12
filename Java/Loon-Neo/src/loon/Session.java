@@ -574,6 +574,11 @@ public class Session implements Bundle<String> {
 		return !isEmpty();
 	}
 
+	@Override
+	public boolean hasKey(String key) {
+		return hasData(key);
+	}
+
 	public Session dispose(String name) {
 		synchronized (_recordsList) {
 			clear(name);

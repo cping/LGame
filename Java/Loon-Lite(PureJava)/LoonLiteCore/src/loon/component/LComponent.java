@@ -655,10 +655,26 @@ public abstract class LComponent extends LObject<LContainer>
 			return this;
 		}
 		this._component_enabled = b;
+		if (this._component_enabled) {
+			this.onEnable();
+		} else {
+			this.onDisable();
+		}
 		if (_desktop != null) {
 			this._desktop.setComponentStat(this, this._component_enabled);
 		}
 		return this;
+	}
+
+	public LComponent setActiveX(boolean a) {
+		this._component_paused = !a;
+		this.setVisible(a);
+		this.setEnabled(a);
+		return this;
+	}
+
+	public boolean isActiveX() {
+		return (this._component_enabled && this._component_visible && !this._component_paused);
 	}
 
 	public boolean isSelected() {
@@ -1288,6 +1304,12 @@ public abstract class LComponent extends LObject<LContainer>
 	protected void onDetached() {
 	}
 
+	protected void onEnable() {
+	}
+
+	protected void onDisable() {
+	}
+
 	void keyPressed() {
 		this.checkFocusKey();
 		this.processKeyPressed();
@@ -1795,10 +1817,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent show() {
-		if (_component_visible && _objectAlpha == 1f) {
+		if (_component_visible && MathUtils.equal(_objectAlpha, 1f)) {
 			return this;
 		}
-		_component_visible = true;
+		this.setVisible(true);
 		if (!getScreen().contains(this)) {
 			getScreen().add(this);
 		}
@@ -1806,10 +1828,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent hide() {
-		if (!_component_visible && _objectAlpha == 0f) {
+		if (!_component_visible && MathUtils.equal(_objectAlpha, 0f)) {
 			return this;
 		}
-		_component_visible = false;
+		this.setVisible(false);
 		if (getScreen().contains(this)) {
 			getScreen().remove(this);
 		}

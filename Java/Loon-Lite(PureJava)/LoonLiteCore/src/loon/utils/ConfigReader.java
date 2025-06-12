@@ -661,6 +661,14 @@ public class ConfigReader implements Expression, Bundle<String>, LRelease {
 		return !isEmpty();
 	}
 
+	@Override
+	public boolean hasKey(String key) {
+		if (_configItems != null) {
+			return _configItems.containsKey(filter(key));
+		}
+		return false;
+	}
+
 	public boolean isClosed() {
 		return _closed;
 	}

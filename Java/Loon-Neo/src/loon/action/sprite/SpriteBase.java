@@ -1322,6 +1322,16 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		this._visible = v;
 	}
 
+	public SpriteBase<T> setActiveX(boolean a) {
+		this._ignoreUpdate = !a;
+		this.setVisible(a);
+		return this;
+	}
+
+	public boolean isActiveX() {
+		return (this._visible && !this._ignoreUpdate);
+	}
+
 	public boolean isScaled() {
 		return (this._scaleX != 1) || (this._scaleY != 1);
 	}

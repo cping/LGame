@@ -7,13 +7,15 @@ package loon.utils;
  */
 public interface Bundle<T> extends IArray {
 
-    void put(String key, T v);
+	void put(String key, T v);
 
-    T get(String key);
+	T get(String key);
 
-    T get(String key, T defaultValue);
+	T get(String key, T defaultValue);
 
-    T remove(String key);
+	T remove(String key);
 
-    T remove(String key, T defaultValue);
+	T remove(String key, T defaultValue);
+
+	boolean hasKey(String key);
 }

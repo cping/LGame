@@ -16,4 +16,6 @@ public interface Bundle<T> extends IArray {
 	T remove(String key);
 
 	T remove(String key, T defaultValue);
+	
+	boolean hasKey(String key);
 }
