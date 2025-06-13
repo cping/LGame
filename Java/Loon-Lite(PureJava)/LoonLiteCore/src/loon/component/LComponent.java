@@ -22,7 +22,6 @@
 package loon.component;
 
 import loon.Director.Origin;
-
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
@@ -128,6 +127,8 @@ public abstract class LComponent extends LObject<LContainer>
 	private EventActionN _validateEvent;
 
 	protected LTexture[] _imageUI = null;
+
+	protected Shape _otherShape = null;
 
 	protected float _fixedWidthOffset = 0f;
 
@@ -2525,6 +2526,15 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setTouchDownMovedValue(float m) {
 		this._touchDownMovedValue = m;
 		return this;
+	}
+
+	public LComponent setCustomShape(Shape s) {
+		this._otherShape = s;
+		return this;
+	}
+
+	public Shape getCustomShape() {
+		return this._otherShape;
 	}
 
 	public LComponent removeParent() {

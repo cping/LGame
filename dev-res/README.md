@@ -5,6 +5,7 @@
 * jMonkeyEngine: 目前最完善的Java3D游戏开发引擎，也可以跨平台，不过非台式机效率有限…… [项目地址](https://github.com/jMonkeyEngine/jmonkeyengine)
 * Korge: 一个基于Kotlin开发的2D/3D游戏引擎，基于Kotlin Native编译时可以支持多平台。[项目地址](https://github.com/korlibs/korge)
 * Slick2D: 最早出现的Java2D游戏引擎之一，只支持桌面游戏开发。[项目地址](http://slick.ninjacave.com)
+* ScrewBox: 是一款极简主义的纯Java游戏引擎，如果你想在不离开 IDE 的情况下构建自己的 2D 游戏，它或许是一个不错的选择。[项目地址](https://github.com/srcimon/screwbox)
 * libGDX: 支持2D/3D的Java跨平台框架。[项目地址](https://github.com/libgdx/libgdx)
 * XMage: 一个Java开发的，可以联网的万智牌游戏引擎，拥有多种卡牌及规则设定模式，可以自行定制自己的万智牌游戏。[项目地址](https://github.com/magefree/mage)
 * LGame: 包括Java/C#/C++等多种语法版本，可能运行于全平台，并且支持2D/3D（含Live2D这类伪3D模型的导入）的游戏引擎。 [项目地址](https://github.com/cping/lgame)

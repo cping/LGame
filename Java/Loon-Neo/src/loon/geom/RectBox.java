@@ -1460,6 +1460,12 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	public RectBox snap(int gridSize) {
+		Vector2f pos = new Vector2f(x, y);
+		Vector2f snap = pos.snap(gridSize);
+		return new RectBox(snap.x, snap.y, getWidth(), getHeight());
+	}
+
 	public RectBox inc(RectBox view) {
 		if (view == null) {
 			return cpy();

@@ -885,6 +885,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return smoothStep(this, v, amount);
 	}
 
+	public Vector2f snap(int gridSize) {
+		return Vector2f.at(MathUtils.snapFloor(x, gridSize), MathUtils.snapFloor(y, gridSize));
+	}
+
 	public Vector2f sub(float x, float y) {
 		return new Vector2f(this.x - x, this.y - y);
 	}

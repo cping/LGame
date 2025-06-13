@@ -1433,6 +1433,11 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return smoothStep(this, v, amount);
 	}
 
+	public Vector3f snap(int gridSize) {
+		return Vector3f.at(MathUtils.snapFloor(x, gridSize), MathUtils.snapFloor(y, gridSize),
+				MathUtils.snapFloor(z, gridSize));
+	}
+
 	public Vector3f mul(float argScalar) {
 		return new Vector3f(x * argScalar, y * argScalar, z * argScalar);
 	}

@@ -1182,6 +1182,15 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		ab.setLocation(getScreenScalePixelX() + (getWidth() - ab.getWidth()) / 2f, y);
 	}
 
+	public SpriteBase<T> setCustomShape(Shape s) {
+		this._otherShape = s;
+		return this;
+	}
+
+	public Shape getCustomShape() {
+		return this._otherShape;
+	}
+
 	public Shape getShape() {
 		return getShape(ShapeNodeType.Rectangle);
 	}

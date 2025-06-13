@@ -230,6 +230,14 @@ public class PreloadControl implements LRelease {
 		return this._assetsLoading;
 	}
 
+	public boolean isZero() {
+		return MathUtils.equal(_percent, 0f);
+	}
+
+	public boolean isMax() {
+		return MathUtils.equal(_percent, _maxPercent);
+	}
+
 	public PreloadControl prereload() {
 		clear();
 		prestart();

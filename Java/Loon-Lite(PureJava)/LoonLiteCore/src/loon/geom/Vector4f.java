@@ -486,6 +486,11 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return smoothStep(this, v, amount);
 	}
 
+	public Vector4f snap(int gridSize) {
+		return Vector4f.at(MathUtils.snapFloor(x, gridSize), MathUtils.snapFloor(y, gridSize),
+				MathUtils.snapFloor(z, gridSize), MathUtils.snapFloor(w, gridSize));
+	}
+
 	public Vector4f subtract(Vector4f v) {
 		return add(-v.x, -v.y, -v.z, -v.w);
 	}

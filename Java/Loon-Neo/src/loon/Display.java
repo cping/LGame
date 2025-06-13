@@ -567,15 +567,18 @@ public class Display extends BaseIO implements LRelease {
 				}
 				this._nextUpdate = nextUpdate;
 				final long updateDt = updates * updateRate;
-				updateClock.tick += updateDt;
 				if (updateLoop == -1) {
 					updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
+					updateClock.unscaledTimeSinceLastUpdate = updateDt;
 				} else {
 					updateClock.timeSinceLastUpdate = updateLoop;
+					updateClock.unscaledTimeSinceLastUpdate = updateLoop;
 				}
 				if (updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
 					updateClock.timeSinceLastUpdate = 0;
+					updateClock.unscaledTimeSinceLastUpdate = 0;
 				}
+				updateClock.tick += updateClock.timeSinceLastUpdate;
 				update(updateClock);
 			}
 		}
@@ -583,12 +586,16 @@ public class Display extends BaseIO implements LRelease {
 			final long paintLoop = setting.fixedPaintLoopTime;
 			final long paintTick = _game.tick();
 			if (paintLoop == -1) {
-				paintClock.timeSinceLastUpdate = (long) ((paintTick - paintClock.tick) * fpsScale);
+				final long clock = paintTick - paintClock.tick;
+				paintClock.timeSinceLastUpdate = (long) (clock * fpsScale);
+				paintClock.unscaledTimeSinceLastUpdate = clock;
 			} else {
 				paintClock.timeSinceLastUpdate = paintLoop;
+				paintClock.unscaledTimeSinceLastUpdate = paintLoop;
 			}
 			if (paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
 				paintClock.timeSinceLastUpdate = 0;
+				paintClock.unscaledTimeSinceLastUpdate = 0;
 			}
 			paintClock.tick = paintTick;
 			paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;

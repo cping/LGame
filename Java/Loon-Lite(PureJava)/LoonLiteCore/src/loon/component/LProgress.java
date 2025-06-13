@@ -137,7 +137,7 @@ public class LProgress extends LComponent {
 			float size = 0;
 			switch (progressType) {
 			case GAME:
-				size = getWidth() * (1 - percentage);
+				size = getWidth() * (1f - percentage);
 				float posY = getHeight() / 2;
 				batch.draw(bgTexture, x + getHeight() / 2 + getWidth() / 2, y - posY, size, getHeight(), 0f, 0f, 90);
 				batch.setColor(_component_baseColor);
@@ -194,6 +194,18 @@ public class LProgress extends LComponent {
 		this.minValue = 0f;
 		this.maxValue = 100f;
 		return this;
+	}
+
+	public boolean isZero() {
+		return MathUtils.equal(this.getValue(), 0f);
+	}
+
+	public boolean isMin() {
+		return MathUtils.equal(this.getValue(), this.minValue);
+	}
+
+	public boolean isMax() {
+		return MathUtils.equal(this.getValue(), this.maxValue);
 	}
 
 	public float getValue() {

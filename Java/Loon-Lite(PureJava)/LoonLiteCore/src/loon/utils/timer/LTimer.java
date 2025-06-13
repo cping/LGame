@@ -761,12 +761,34 @@ public class LTimer implements LTimerListener, LRelease {
 		return this;
 	}
 
-	public String getName() {
-		return _name;
+	public boolean isNotZero() {
+		return !this.isZero();
+	}
+
+	public boolean isZero() {
+		return this._currentTick == 0;
+	}
+
+	public boolean isAfter(LTimer t) {
+		if (t == null) {
+			return false;
+		}
+		return isNotZero() && this._currentTick > t._currentTick;
+	}
+
+	public boolean isBefore(LTimer t) {
+		if (t == null) {
+			return false;
+		}
+		return isNotZero() && this._currentTick < t._currentTick;
 	}
 
 	public boolean isClosed() {
 		return this._closed;
+	}
+
+	public String getName() {
+		return _name;
 	}
 
 	@Override
@@ -776,7 +798,7 @@ public class LTimer implements LTimerListener, LRelease {
 				.kv("factor", _speedFactor).comma().kv("active", _active).comma().kv("repeats", _repeats).comma()
 				.kv("maxNumberOfRepeats", _maxNumberOfRepeats).comma().kv("numberOfTicks", _numberOfTicks).comma()
 				.kv("timerListeners", _currentListeners == null ? 0 : _currentListeners.size).comma()
-				.kv("completed", _completed).comma().kv("process", _process);
+				.kv("completed", _completed).comma().kv("process", _process).comma().kv("closed", _closed);
 		return builder.toString();
 	}
 

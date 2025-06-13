@@ -28,12 +28,27 @@ public class LTimerContext {
 
 	public long timeSinceLastUpdate;
 
+	public long unscaledTimeSinceLastUpdate;
+
 	public long tick;
 
 	public float alpha;
 
 	public LTimerContext() {
-		this.timeSinceLastUpdate = 0;
+		this(0L);
+	}
+
+	public LTimerContext(long v) {
+		this.reset(v);
+	}
+
+	public void reset() {
+		this.reset(0L);
+	}
+
+	public void reset(long v) {
+		this.timeSinceLastUpdate = unscaledTimeSinceLastUpdate = tick = v;
+		this.alpha = 0f;
 	}
 
 	public float getMilliseconds() {
@@ -57,22 +72,34 @@ public class LTimerContext {
 		return MathUtils.calcPpf(pps, getDelta());
 	}
 
-	public float calcPpfScale(float pps) {
-		return MathUtils.calcPpf(pps, dt());
-	}
-
 	public float dt() {
 		return getDelta();
+	}
+
+	public float getUnscaledMilliseconds() {
+		return MathUtils.max(Duration.toS(unscaledTimeSinceLastUpdate), LSystem.MIN_SECONE_SPEED_FIXED);
+	}
+
+	public float getUnscaledDelta() {
+		return getDelta(getUnscaledMilliseconds());
+	}
+
+	public float calcUnscaledPpf(float pps) {
+		return MathUtils.calcPpf(pps, getUnscaledDelta());
 	}
 
 	public long getTimeSinceLastUpdate() {
 		return timeSinceLastUpdate;
 	}
 
+	public long getUnscaledTimeSinceLastUpdate() {
+		return unscaledTimeSinceLastUpdate;
+	}
+
 	public float getAlpha() {
 		return alpha;
 	}
-	
+
 	public float getScale() {
 		return LSystem.getScaleFPS();
 	}
@@ -80,8 +107,9 @@ public class LTimerContext {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimerContext");
-		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma().kv("tick", tick).comma().kv("alpha", alpha);
+		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma()
+				.kv("unscaledTimeSinceLastUpdate", timeSinceLastUpdate).comma().kv("tick", tick).comma()
+				.kv("alpha", alpha);
 		return builder.toString();
 	}
-
 }

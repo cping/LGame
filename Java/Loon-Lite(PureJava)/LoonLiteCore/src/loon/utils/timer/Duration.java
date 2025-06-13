@@ -362,6 +362,21 @@ public class Duration implements Comparable<Duration> {
 		return str;
 	}
 
+	public boolean isLeast(final Duration other) {
+		if (other == null) {
+			return false;
+		}
+		return _millisTime >= other._millisTime;
+	}
+
+	public boolean isLessThan(final Duration other) {
+		return !isLeast(other);
+	}
+
+	public boolean isNone() {
+		return MathUtils.equal(0f, _millisTime);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -373,7 +388,7 @@ public class Duration implements Comparable<Duration> {
 		if (obj == this) {
 			return true;
 		}
-		return ((Duration) obj)._millisTime == this._millisTime;
+		return MathUtils.equal(((Duration) obj)._millisTime, this._millisTime);
 	}
 
 	@Override
@@ -386,7 +401,7 @@ public class Duration implements Comparable<Duration> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 1;
+		int hashCode = 31;
 		hashCode = LSystem.unite(hashCode, _millisTime);
 		return hashCode;
 	}

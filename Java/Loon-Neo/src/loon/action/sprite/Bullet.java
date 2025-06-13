@@ -77,6 +77,8 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 
 	private BulletListener _listener;
 
+	private Shape _otherShape = null;
+
 	private boolean _dirToAngle;
 	private boolean _visible;
 	private boolean _active;
@@ -744,6 +746,15 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 	public Bullet setBulletType(int bulletType) {
 		this._bulletType = bulletType;
 		return this;
+	}
+
+	public Bullet setCustomShape(Shape s) {
+		this._otherShape = s;
+		return this;
+	}
+
+	public Shape getCustomShape() {
+		return this._otherShape;
 	}
 
 	@Override
