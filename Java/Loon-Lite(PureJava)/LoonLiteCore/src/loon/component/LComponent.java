@@ -195,6 +195,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected LColor _component_baseColor = null;
 
+	protected LColor _colorTemp = new LColor();
+
 	protected Desktop _desktop;
 
 	protected boolean _isLimitMove = false, _drawBackground = true;

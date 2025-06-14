@@ -29,38 +29,50 @@ import loon.opengl.GLEx;
  */
 public class ShapeEntity extends Entity {
 
-	private Shape _shape;
-
 	private boolean _fill;
+
+	public ShapeEntity(Shape shape, LColor c) {
+		this(shape, c, true);
+	}
 
 	public ShapeEntity(Shape shape, LColor c, boolean fill) {
 		this.setLocation(shape.getX(), shape.getY());
 		this.setSize(shape.getWidth(), shape.getHeight());
 		this.setColor(c == null ? LColor.white : c);
 		this.setRepaint(true);
-		this._fill = fill;
-		this._shape = shape;
+		this.setFill(fill);
+		this.setCustomShape(shape);
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		int color = g.color();
+		final int color = g.color();
 		g.setColor(_baseColor);
 		if (_fill) {
-			g.fill(_shape, drawX(offsetX), drawY(offsetY));
+			g.fill(_otherShape, drawX(offsetX), drawY(offsetY));
 		} else {
-			g.draw(_shape, drawX(offsetX), drawY(offsetY));
+			g.draw(_otherShape, drawX(offsetX), drawY(offsetY));
 		}
 		g.setColor(color);
 	}
 
 	public ShapeEntity setShape(Shape s) {
-		this._shape = s;
+		this.setCustomShape(s);
 		return this;
 	}
 
+	@Override
 	public Shape getShape() {
-		return _shape;
+		return this._otherShape;
+	}
+
+	public boolean isFill() {
+		return _fill;
+	}
+
+	public ShapeEntity setFill(boolean f) {
+		this._fill = f;
+		return this;
 	}
 
 }

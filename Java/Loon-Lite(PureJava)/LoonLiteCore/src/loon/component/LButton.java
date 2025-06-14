@@ -170,8 +170,8 @@ public class LButton extends LComponent implements FontSet<LButton> {
 				g.draw(_imageUI[1], x, y, _component_baseColor);
 			} else {
 				if (type == 1) {
-					g.draw(_imageUI[0], x, y,
-							_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+					g.draw(_imageUI[0], x, y, _colorTemp.setColor(_component_baseColor == null ? LColor.gray.getARGB()
+							: LColor.combine(_component_baseColor, LColor.gray)));
 				} else {
 					g.draw(_imageUI[0], x, y, _component_baseColor);
 				}

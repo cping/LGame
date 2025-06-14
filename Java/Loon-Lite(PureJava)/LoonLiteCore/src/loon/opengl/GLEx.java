@@ -1711,7 +1711,7 @@ public class GLEx implements LRelease {
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, float width) {
-		return drawLine(x0, y0, x1, y1, lastBrush.lineWidth, syncBrushColor());
+		return drawLine(x0, y0, x1, y1, width, syncBrushColor());
 	}
 
 	public GLEx drawLine(XY a, XY b, float width, LColor color) {

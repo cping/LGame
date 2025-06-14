@@ -236,11 +236,13 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 		if (_grayButton) {
 			if (!isEnabled()) {
 				g.draw(_disableClick, x, y, getWidth(), getHeight(),
-						_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+						_colorTemp.setColor(_component_baseColor == null ? LColor.gray.getARGB()
+								: LColor.combine(_component_baseColor, LColor.gray)));
 			} else if (isTouchPressed()) {
 				if (_lightClickedButton) {
-					g.draw(_idleClick, x, y, getWidth(), getHeight(), _component_baseColor == null ? LColor.lightGray
-							: _component_baseColor.mul(LColor.lightGray));
+					g.draw(_idleClick, x, y, getWidth(), getHeight(),
+							_colorTemp.setColor(_component_baseColor == null ? LColor.lightGray.getARGB()
+									: LColor.combine(_component_baseColor, LColor.lightGray)));
 				} else {
 					g.draw(_idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
 				}
@@ -248,15 +250,17 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 				g.draw(_hoverClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else {
 				g.draw(_idleClick, x, y, getWidth(), getHeight(),
-						_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+						_colorTemp.setColor(_component_baseColor == null ? LColor.gray.getARGB()
+								: LColor.combine(_component_baseColor, LColor.gray)));
 			}
 		} else {
 			if (!isEnabled()) {
 				g.draw(_disableClick, x, y, getWidth(), getHeight(), _component_baseColor);
 			} else if (isTouchPressed()) {
 				if (_lightClickedButton) {
-					g.draw(_idleClick, x, y, getWidth(), getHeight(), _component_baseColor == null ? LColor.lightGray
-							: _component_baseColor.mul(LColor.lightGray));
+					g.draw(_idleClick, x, y, getWidth(), getHeight(),
+							_colorTemp.setColor(_component_baseColor == null ? LColor.lightGray.getARGB()
+									: LColor.combine(_component_baseColor, LColor.lightGray)));
 				} else {
 					g.draw(_idleClick, x, y, getWidth(), getHeight(), _component_baseColor);
 				}

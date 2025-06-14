@@ -833,6 +833,26 @@ public class LColor implements Serializable {
 	}
 
 	/**
+	 * 混合两种不同的色彩
+	 * 
+	 * @param curColor
+	 * @param dstColor
+	 * @return
+	 */
+	public static final int combine(LColor curColor, LColor dstColor) {
+		if (curColor == null && dstColor == null) {
+			return TRANSPARENT;
+		}
+		if (curColor != null && dstColor == null) {
+			return curColor.getARGB();
+		}
+		if (curColor == null && dstColor != null) {
+			return dstColor.getARGB();
+		}
+		return combine(curColor.getARGB(), dstColor.getARGB());
+	}
+
+	/**
 	 * 获得RGB565格式数据
 	 * 
 	 * @param r
