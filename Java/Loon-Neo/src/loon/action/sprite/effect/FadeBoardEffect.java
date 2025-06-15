@@ -97,7 +97,7 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 				_currentDelta += MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 				float delta = MathUtils.sin(_currentDelta / _effect.blocDuration * 1.5707964f);
 				if (_effect.fadeType == TYPE_FADE_OUT) {
-					_angle += (delta * 100f);
+					_angle += (delta * 150f);
 					_alpha += delta;
 					if (_alpha > 1f) {
 						_alpha = 1f;
@@ -115,7 +115,7 @@ public class FadeBoardEffect extends BaseAbstractEffect {
 						_finished = true;
 					}
 				} else {
-					_angle -= (delta * 100f);
+					_angle -= (delta * 150f);
 					if (_angle < 0f) {
 						_angle = 0f;
 					}

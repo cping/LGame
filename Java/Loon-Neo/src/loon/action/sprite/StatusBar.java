@@ -201,10 +201,10 @@ public class StatusBar extends Entity {
 			return false;
 		}
 		if (currentWidth > goalWidth) {
-			currentWidth--;
+			currentWidth -= LSystem.toIScaleFPS(1);
 			initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
 		} else {
-			currentWidth++;
+			currentWidth += LSystem.toIScaleFPS(1);
 			initValue = MathUtils.mid(initValue, (int) ((currentWidth * maxValue) / _width), minValue);
 		}
 		return true;

@@ -348,7 +348,7 @@ public class LTimer implements LTimerListener, LRelease {
 			return false;
 		}
 		if (this._active) {
-			this._currentTick += (elapsedTime * _speedFactor);
+			this._currentTick += (elapsedTime * _speedFactor) / LSystem.getScaleFPS();
 			if (this._maxNumberOfRepeats > -1 && this._numberOfTicks >= this._maxNumberOfRepeats) {
 				this._completed = true;
 			}

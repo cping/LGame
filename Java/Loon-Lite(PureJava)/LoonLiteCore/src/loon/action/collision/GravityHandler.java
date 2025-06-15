@@ -246,10 +246,12 @@ public class GravityHandler implements LRelease {
 
 			if (g.enabled && g.bind != null) {
 
-				final float accelerationX = g.getAccelerationX();
-				final float accelerationY = g.getAccelerationY();
-				final float angularVelocity = g.getAngularVelocity();
-				final float gravity = getGravity(g);
+				final float v = LSystem.getScaleFPS();
+
+				final float accelerationX = g.getAccelerationX() * v;
+				final float accelerationY = g.getAccelerationY() * v;
+				final float angularVelocity = g.getAngularVelocity() * v;
+				final float gravity = getGravity(g) * v;
 
 				if (!g._collisioning) {
 

@@ -713,7 +713,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		}
 		checkTouchDownMenuTabPanel();
 		super.update(elapsedTime);
-		final float delta = (Duration.toS(elapsedTime)) * (60f / _menuSpeed);
+		final float delta = (Duration.toS(elapsedTime)) * (LSystem.getFPS() / _menuSpeed);
 		if (!this.active) {
 			if (_tabOpening && (selected == null)) {
 				this.active = true;

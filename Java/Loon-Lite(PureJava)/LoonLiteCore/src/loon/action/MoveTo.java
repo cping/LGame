@@ -30,6 +30,7 @@ import loon.action.map.Field2D;
 import loon.geom.Vector2f;
 import loon.utils.IntMap;
 import loon.utils.TArray;
+import loon.utils.timer.Duration;
 import loon.utils.timer.EaseTimer;
 import loon.utils.CollectionUtils;
 import loon.utils.Easing.EasingMode;
@@ -190,7 +191,12 @@ public class MoveTo extends ActionEvent {
 
 	protected float getMoveSpeed(long elapsedTime) {
 		_easeTimer.update(elapsedTime);
-		return speed * _easeTimer.getProgress();
+		final float result = speed * _easeTimer.getProgress();
+		if (LSystem.isScaleFPS()) {
+			return MathUtils.calcPpf(result, Duration.toS(elapsedTime));
+		} else {
+			return result;
+		}
 	}
 
 	public float[] getBeginPath() {

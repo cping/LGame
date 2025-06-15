@@ -241,6 +241,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public final static byte DRAW_DESKTOP = 2;
 
+	private int _skipFrame;
+
 	/**
 	 * 通用碰撞管理器(需要用户自行初始化(getCollisionManager或initializeCollision),不实例化默认不存在)
 	 */
@@ -1780,6 +1782,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			_baseViewport.onResize(getWidth(), getHeight());
 		}
 		this.resize(getWidth(), getHeight());
+		this.skipFrame();
 	}
 
 	final public void resetOrder() {
@@ -1792,6 +1795,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._curFristPaintFlag = true;
 		this._curSecondPaintFlag = true;
 		this._curLastPaintFlag = true;
+		this.skipFrame();
 	}
 
 	public boolean collided(Shape shape) {
@@ -4573,6 +4577,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private final void repaint(GLEx g) {
 		if (!_visible) {
+			return;
+		}
+		if (_skipFrame > 0) {
+			_skipFrame--;
 			return;
 		}
 		if (!_isClose) {
@@ -7394,6 +7402,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 每次Screen初始化时跳过n帧,防止上一个Screen设置干扰到下一个
+	 * 
+	 * @param n
+	 */
+	protected void skipFrame(int n) {
+		_skipFrame = n;
+	}
+
+	/**
+	 * 每次Screen初始化时跳过最初一帧,防止上一个Screen设置干扰到下一个
+	 */
+	protected void skipFrame() {
+		this.skipFrame(1);
+	}
+
+	/**
 	 * 是否允许自动排序桌面和精灵组件
 	 * 
 	 * @param v
@@ -7789,10 +7813,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_loopEvents != null) {
 					_loopEvents.clear();
 				}
-				_frameLooptoDeadEvents = null;
-				_frameLooptoUpdated = null;
-				_closeUpdate = null;
-				_resizeListener = null;
+				this._frameLooptoDeadEvents = null;
+				this._frameLooptoUpdated = null;
+				this._closeUpdate = null;
+				this._resizeListener = null;
 				this._screenSwitch = null;
 				this._curStageRun = false;
 				this._curLockedCallEvent = false;

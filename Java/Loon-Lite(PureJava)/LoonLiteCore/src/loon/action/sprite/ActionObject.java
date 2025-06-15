@@ -382,6 +382,10 @@ public abstract class ActionObject extends Entity implements Config {
 		return this;
 	}
 
+	public ActionObject clearVelocity() {
+		return setVelocity(0f);
+	}
+
 	public Vector2f getVelocity() {
 		return Vector2f.at(this.velocityX, this.velocityY);
 	}

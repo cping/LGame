@@ -508,7 +508,7 @@ public class Animation implements IArray, LRelease {
 				if (maxFrame <= 0) {
 					maxFrame = length;
 				}
-				animTime += timer;
+				animTime += (timer / LSystem.getScaleFPS());
 				if (animTime > totalDuration) {
 					if (listener != null) {
 						listener.onComplete(this);

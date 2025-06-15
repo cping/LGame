@@ -57,14 +57,14 @@ public class FadeDotEffect extends BaseAbstractEffect {
 			}
 			this.time = time;
 			if (type == ISprite.TYPE_FADE_IN) {
-				if (rad < 0 || rad > 360) {
+				if (rad <= 0 || rad >= 360) {
 					// 360速度较慢，越界的话索性改成260……
 					rad = 260;
 				}
 				this.rad = rad;
 				this.currentFrame = time;
 			} else {
-				if (rad < 0) {
+				if (rad <= 0) {
 					rad = 0;
 				}
 				this.rad = 0;
@@ -72,7 +72,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 			}
 			x = (MathUtils.random(0, 1f) * w);
 			y = (MathUtils.random(0, 1f) * h);
-			growSpeed = LSystem.toScaleFPS(sleep, 1f) + (MathUtils.random(0, 1f));
+			growSpeed = MathUtils.max(sleep, 1f) + (MathUtils.random(0, 1f));
 		}
 
 		public void update(long elapsedTime) {
@@ -94,7 +94,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		}
 
 		public void paint(GLEx g, float offsetX, float offsetY) {
-			if (rad > 0 && rad < 360) {
+			if (rad >= 0 && rad <= 360) {
 				float a = g.alpha();
 				if (!fade_allowed) {
 					float alpha = currentFrame / time;
@@ -160,7 +160,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	public FadeDotEffect setSleep(float s) {
-		this._sleep = LSystem.toScaleFPS(s, 1f);
+		this._sleep = MathUtils.max(s, 1f);
 		return this;
 	}
 

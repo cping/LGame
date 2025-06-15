@@ -510,7 +510,8 @@ public class LScrollBar extends LComponent {
 			if (_maxAutoScrollY == -1f) {
 				_maxAutoScrollY = getHeight();
 			}
-			final float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+			final float delta = MathUtils.max(Duration.toS((long) (elapsedTime / LSystem.getScaleFPS())),
+					LSystem.MIN_SECONE_SPEED_FIXED);
 			final float alpha = _scrollAmountTimer / _scrollTime;
 			_autoScrollX += _velocityX * alpha * delta;
 			_autoScrollY += _velocityY * alpha * delta;

@@ -219,6 +219,30 @@ public class LSetting {
 	}
 
 	/**
+	 * 设置游戏刷新率
+	 * 
+	 * @param fps
+	 * @return
+	 */
+	public LSetting setFPS(int fps) {
+		this.fps = MathUtils.clamp(fps, 1, 120);
+		return this;
+	}
+
+	/**
+	 * 以设置的当前刷新率为基础,修正为指定刷新率时近似效果
+	 * 
+	 * @param curFps
+	 * @param dstFps
+	 * @return
+	 */
+	public LSetting setFixedFPS(int curFps, int dstFps) {
+		this.setFPS(curFps);
+		this.setFixedFPS(dstFps);
+		return this;
+	}
+
+	/**
 	 * 使当前FPS速度变化为指定FPS时的每帧刷新速度
 	 * 
 	 * @param fps
@@ -226,7 +250,7 @@ public class LSetting {
 	 */
 	public LSetting setFixedFPS(int fps) {
 		this.fps_time_fixed = true;
-		this.fps_time_fixed_value = fps;
+		this.fps_time_fixed_value = MathUtils.clamp(fps, 1, 120);
 		return this;
 	}
 
@@ -492,6 +516,12 @@ public class LSetting {
 			if (LSystem.getProcess() != null) {
 				LSystem.getProcess().resize(width, height);
 			}
+		}
+		if (fps <= 0) {
+			this.fps = MathUtils.clamp(fps, 1, 120);
+		}
+		if (fps_time_fixed && fps_time_fixed_value <= 0) {
+			this.fps_time_fixed_value = MathUtils.clamp(fps_time_fixed_value, 1, 120);
 		}
 		return this;
 	}

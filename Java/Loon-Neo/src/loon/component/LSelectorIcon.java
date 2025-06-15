@@ -123,7 +123,7 @@ public class LSelectorIcon extends LComponent {
 		this.maxAlpha = 235;
 		this.tileWidth = tw;
 		this.tileHeight = th;
-		this._iconAlphaRate = 1f;
+		this.setAlphaRate(1f);
 		this._gridCenterX = -1f;
 		this._gridCenterY = -1f;
 		this._borderColor = b;
@@ -400,7 +400,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LSelectorIcon setAlphaRate(float a) {
-		this._iconAlphaRate = a;
+		this._iconAlphaRate = LSystem.toScaleFPS(a);
 		return this;
 	}
 

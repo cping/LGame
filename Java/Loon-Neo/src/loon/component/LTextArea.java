@@ -170,6 +170,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			tmp = LSystem.getSystemGameFont();
 		}
 		this.setFont(tmp);
+		this.setBrightSpeed(1);
 		this.showType = type;
 		this.waitFlagString = "new";
 		if (maxAmount < 0) {
@@ -671,8 +672,8 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		return brightSpeed;
 	}
 
-	public LTextArea setBrightSpeed(int brightSpeed) {
-		this.brightSpeed = brightSpeed;
+	public LTextArea setBrightSpeed(int b) {
+		this.brightSpeed = LSystem.toIScaleFPS(b);
 		return this;
 	}
 

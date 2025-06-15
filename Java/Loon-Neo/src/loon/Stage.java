@@ -337,8 +337,9 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	@Override
 	public void alter(LTimerContext timer) {
+		final long elapsedTime = timer.timeSinceLastUpdate;
 		if (_scrollBackground != null) {
-			_scrollBackground.update(timer.timeSinceLastUpdate);
+			_scrollBackground.update(elapsedTime);
 		}
 		if (_currentFollow != null && _childTiles != null && _childTiles.size > 0) {
 			for (TileMap tile : _childTiles) {
@@ -351,15 +352,15 @@ public abstract class Stage extends Screen implements PreloadLoader {
 				offsetY = MathUtils.max(offsetY, getHeight() - tile.getHeight());
 
 				setOffset(tile, offsetX, offsetY);
-				tile.update(timer.timeSinceLastUpdate);
+				tile.update(elapsedTime);
 			}
 		}
 		if (_objects != null && _objects.size > 0) {
 			for (ActionObject o : _objects) {
 				if (_updateListener != null) {
-					_updateListener.act(o, timer.timeSinceLastUpdate);
+					_updateListener.act(o, elapsedTime);
 				}
-				o.update(timer.timeSinceLastUpdate);
+				o.update(elapsedTime);
 			}
 		}
 		update(timer);

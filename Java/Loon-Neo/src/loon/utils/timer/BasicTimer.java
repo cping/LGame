@@ -90,7 +90,8 @@ public class BasicTimer {
 	}
 
 	public void update(long elapsedTime) {
-		update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
+		update(MathUtils.max(Duration.toS((long) (elapsedTime / LSystem.getScaleFPS())),
+				LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float dt) {

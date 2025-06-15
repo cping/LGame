@@ -79,17 +79,17 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 		}
 		if (_timer.action(elapsedTime)) {
 			if (type == TYPE_FADE_IN) {
-				this.elapsed += elapsedTime / 20f;
+				this.elapsed += (elapsedTime * 4) / LSystem.getScaleFPS();
 				float progress = this.elapsed / this.max_time;
 				this._width = (_width * MathUtils.pow(1f - progress, 2f));
 				this._height = (_height * MathUtils.pow(1f - progress, 2f));
-				if (this.elapsed >= this.max_time / 15f) {
+				if (this.elapsed >= this.max_time) {
 					this.elapsed = -1;
 					this._width = (this._height = 0f);
 					this._completed = true;
 				}
 			} else {
-				this.elapsed += elapsedTime;
+				this.elapsed += (elapsedTime * 4) / LSystem.getScaleFPS();
 				float progress = this.elapsed / this.max_time;
 				this._width = (_initWidth * MathUtils.pow(progress, 2f));
 				this._height = (_initHeight * MathUtils.pow(progress, 2f));

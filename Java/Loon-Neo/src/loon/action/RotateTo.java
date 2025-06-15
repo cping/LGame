@@ -91,7 +91,7 @@ public class RotateTo extends ActionEvent {
 		}
 		original.setRotation(
 				currentRotation = (startRotation + (dstAngle - startRotation) * _easeTimer.getProgress() * diffAngle)
-						+ speed);
+						+ LSystem.toScaleFPS(speed));
 	}
 
 	public float getDiffAngle() {

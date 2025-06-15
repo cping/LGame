@@ -131,7 +131,7 @@ public class MoveOvalTo extends ActionEvent {
 			return;
 		}
 
-		this.currentPosX = ((float) (this.per * _easeTimer.getProgress()));
+		this.currentPosX = this.per * _easeTimer.getProgress();
 		if (this.currentPosX > 1f) {
 			initDirection();
 			int cnt = MathUtils.ifloor(this.startAngle / 90f);

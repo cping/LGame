@@ -23,6 +23,7 @@ package loon.action.sprite;
 import loon.LSystem;
 import loon.action.map.TileMapCollision;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 /**
  * 一个可以做出'跳跃'动作的ActionObject实现
@@ -74,11 +75,9 @@ public class JumpObject extends ActionObject {
 	}
 
 	public JumpObject init() {
+		this.setG(0.6f);
 		this.velocityX = 0f;
 		this.velocityY = 0f;
-		this.GRAVITY = 0.6f;
-		this.speed = 6f;
-		this.jumpSpeed = 12f;
 		this.forceJump = false;
 		this.jumperTwo = false;
 		this.canJumperTwo = true;
@@ -162,7 +161,9 @@ public class JumpObject extends ActionObject {
 	}
 
 	public JumpObject setG(float g) {
-		this.GRAVITY = g;
+		this.GRAVITY = LSystem.isScaleFPS() ? MathUtils.iceil(LSystem.toScaleFPS(g)) : g;
+		this.speed = LSystem.toScaleFPS(g * 10f);
+		this.jumpSpeed = speed * 2;
 		return this;
 	}
 

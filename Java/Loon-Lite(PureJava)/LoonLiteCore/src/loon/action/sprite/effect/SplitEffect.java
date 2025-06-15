@@ -81,7 +81,7 @@ public class SplitEffect extends BaseAbstractEffect {
 		this.setDelay(10);
 		this.halfWidth = (int) (_width / 2f);
 		this.halfHeight = (int) (_height / 2f);
-		this.multiples = 2;
+		this.multiples = LSystem.toIScaleFPS(2);
 		this.movePosOne = new Vector2f();
 		this.movePosTwo = new Vector2f();
 		switch (direction) {
@@ -187,8 +187,8 @@ public class SplitEffect extends BaseAbstractEffect {
 		return multiples;
 	}
 
-	public SplitEffect setMultiples(int multiples) {
-		this.multiples = multiples;
+	public SplitEffect setMultiples(int m) {
+		this.multiples = LSystem.toIScaleFPS(m);
 		return this;
 	}
 

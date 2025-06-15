@@ -74,7 +74,7 @@ public class ScrollEffect extends BaseAbstractEffect {
 		this.setTexture(tex2d);
 		this.setRepaint(true);
 		this.setDelay(10);
-		this.count = 1;
+		this.count = LSystem.toIScaleFPS(1);
 		this.model = d;
 	}
 

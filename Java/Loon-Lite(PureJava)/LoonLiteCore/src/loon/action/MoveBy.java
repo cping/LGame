@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.action.map.Field2D;
 import loon.utils.Easing.EasingMode;
 import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
 import loon.utils.timer.EaseTimer;
 
 public class MoveBy extends ActionEvent {
@@ -73,7 +74,12 @@ public class MoveBy extends ActionEvent {
 
 	protected float getMoveSpeed(long elapsedTime) {
 		_easeTimer.update(elapsedTime);
-		return _speed * _easeTimer.getProgress();
+		final float result = _speed * _easeTimer.getProgress();
+		if (LSystem.isScaleFPS()) {
+			return MathUtils.calcPpf(result, Duration.toS(elapsedTime));
+		} else {
+			return result;
+		}
 	}
 
 	@Override

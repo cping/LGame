@@ -20,8 +20,10 @@
  */
 package loon.action.sprite.effect;
 
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
@@ -42,6 +44,8 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 
 	protected int limit;
 
+	private int _counter;
+
 	public abstract void draw(GLEx g, float tx, float ty);
 
 	public PixelBaseEffect(LColor c, float x1, float y1, float x2, float y2) {
@@ -57,6 +61,7 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 		this.limit = limit;
 		this.frame = 0;
 		this._completed = false;
+		this._counter = 1;
 		this.setRepaint(true);
 		this.setDeform(false);
 	}
@@ -92,8 +97,21 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 		return this;
 	}
 
+	public PixelBaseEffect setCounter(int c) {
+		this._counter = c;
+		return this;
+	}
+
+	public int getCounter() {
+		return this._counter;
+	}
+
 	public float next() {
-		this.frame++;
+		return next(this._counter);
+	}
+
+	public float next(int c) {
+		this.frame += c;
 		for (TriangleEffect[] ts : triangleEffects) {
 			if (ts != null) {
 				int size = ts.length;
@@ -125,7 +143,7 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			next();
+			next(MathUtils.iceil(this._counter * LSystem.getScaleFPS()));
 		}
 	}
 

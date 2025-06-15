@@ -340,8 +340,9 @@ public class Bullet extends LObject<BulletEntity> implements CollisionObject {
 			_animation.update(elapsedTime);
 			_easeTimer.update(elapsedTime);
 			if (!checkLifeOver(_listener)) {
+				final float v = LSystem.getScaleFPS();
 				Vector2f speedOffset = getWaveSpeedOffset(_easeTimer);
-				setLocation(getX() + speedOffset.x, getY() + speedOffset.y);
+				setLocation(getX() + speedOffset.x * v, getY() + speedOffset.y * v);
 			}
 			if (_listener != null && _easeTimer.isCompleted()) {
 				_listener.easeover(this);

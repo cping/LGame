@@ -379,7 +379,7 @@ public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 
 	@Override
 	public void update(long elapsedTime) {
-		_autoTime += elapsedTime;
+		_autoTime += elapsedTime / LSystem.getScaleFPS();
 		if (_autoTime < _autoInterval) {
 			return;
 		}

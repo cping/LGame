@@ -62,7 +62,7 @@ public class FlashTo extends ActionEvent {
 			original.setVisible(_initVisible);
 			return;
 		}
-		interval -= _easeTimer.getProgress();
+		interval -= LSystem.toScaleFPS(_easeTimer.getProgress());
 		if (this.interval <= 0) {
 			this.original.setVisible(!this.original.isVisible());
 			this.interval = _easeTimer.getDelay();

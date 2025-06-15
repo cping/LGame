@@ -226,7 +226,7 @@ public class AVGCG implements LRelease {
 				if (_style) {
 					if (chara.flag != -1) {
 						if (chara.flag == ISprite.TYPE_FADE_IN) {
-							chara.currentFrame--;
+							chara.currentFrame -= LSystem.toScaleFPS(1);
 							if (chara.currentFrame == 0) {
 								chara.opacity = 0;
 								chara.flag = -1;
@@ -234,7 +234,7 @@ public class AVGCG implements LRelease {
 								_roles.remove(chara);
 							}
 						} else {
-							chara.currentFrame++;
+							chara.currentFrame += LSystem.toScaleFPS(1);
 							if (MathUtils.equal(chara.currentFrame, chara.time)) {
 								chara.opacity = 0;
 								chara.flag = -1;

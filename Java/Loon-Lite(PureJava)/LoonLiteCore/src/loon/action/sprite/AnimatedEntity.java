@@ -444,7 +444,7 @@ public class AnimatedEntity extends Entity {
 					this._animationListener.onAnimationFrameChanged(this, AnimatedEntity.FRAMEINDEX_INVALID, 0);
 				}
 			}
-			this._animationProgress += Duration.ofS(elapsedTime);
+			this._animationProgress += Duration.ofS(elapsedTime / LSystem.getScaleFPS());
 			if (loopCount == AnimationData.LOOP_CONTINUOUS) {
 				while (this._animationProgress > animationDuration) {
 					this._animationProgress -= animationDuration;

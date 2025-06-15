@@ -20,6 +20,7 @@
  */
 package loon.action;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
@@ -85,8 +86,9 @@ public class FireTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		this.startX += this.vx;
-		this.startY += this.vy;
+		final float v = LSystem.getScaleFPS();
+		this.startX += this.vx * v;
+		this.startY += this.vy * v;
 		if (startX == 0 && startY == 0) {
 			_isCompleted = true;
 			return;
