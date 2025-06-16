@@ -68,6 +68,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 	private int[] drawNewCb;
 	private int[] drawNewLV;
 
+	private int textMoveSpeed = 10;
 	private int brightMax = 100;
 	private int brightSpeed = 1;
 	private int[] crs;
@@ -173,6 +174,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		this.setBrightSpeed(1);
 		this.showType = type;
 		this.waitFlagString = "new";
+		this.textMoveSpeed = 10;
 		if (maxAmount < 0) {
 			int size = MathUtils.min(tmp.getHeight(), tmp.getSize());
 			if ((size % 2) != 0) {
@@ -525,7 +527,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				if (this.slideMessage) {
 					this.posx += this.slideX[this.amount];
 					if (this.slideX[this.amount] < 0)
-						this.slideX[this.amount] += LSystem.toIScaleFPS(10);
+						this.slideX[this.amount] += LSystem.toIScaleFPS(textMoveSpeed);
 					else {
 						this.slideX[this.amount] = 0;
 					}
@@ -612,6 +614,15 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 			this.amount = (this.maxAmount - 1);
 		}
 		g.setColor(oldColor);
+	}
+
+	public int getTextMoveSpeed() {
+		return this.textMoveSpeed;
+	}
+
+	public LTextArea setTextMoveSpeed(int s) {
+		this.textMoveSpeed = s;
+		return this;
 	}
 
 	public LTextArea setWaitFlag(boolean w) {

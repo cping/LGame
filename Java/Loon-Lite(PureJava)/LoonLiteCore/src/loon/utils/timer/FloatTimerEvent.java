@@ -33,6 +33,7 @@ public abstract class FloatTimerEvent {
 	private float _delay;
 	private float _acc;
 
+	private boolean _syncFpsScaled = false;
 	private boolean _repeat;
 	private boolean _done;
 	private boolean _stopped;
@@ -45,6 +46,7 @@ public abstract class FloatTimerEvent {
 		this._delay = delay;
 		this._repeat = repeat;
 		this._acc = 0f;
+		this._syncFpsScaled = LSystem.isSyncScaledFPSToTimer();
 	}
 
 	public void update(LTimerContext context) {
@@ -57,7 +59,7 @@ public abstract class FloatTimerEvent {
 
 	public void update(float delta) {
 		if ((!this._done) && (!this._stopped)) {
-			this._acc += delta;
+			this._acc += _syncFpsScaled ? delta / LSystem.getScaleFPS() : delta;
 			if (this._acc >= this._delay) {
 				this._acc -= this._delay;
 				if (this._repeat) {
@@ -83,6 +85,15 @@ public abstract class FloatTimerEvent {
 
 	public boolean isRunning() {
 		return (!this._done) && (this._acc < this._delay) && (!this._stopped);
+	}
+
+	public boolean isSyncFpsScaled() {
+		return _syncFpsScaled;
+	}
+
+	public FloatTimerEvent setSyncFpsScaled(boolean s) {
+		this._syncFpsScaled = s;
+		return this;
 	}
 
 	public FloatTimerEvent stop() {

@@ -221,8 +221,8 @@ public class AVGCG implements LRelease {
 	}
 
 	public void paint(GLEx g) {
-		final float newX = actionRole.getScreenX();
-		final float newY = actionRole.getScreenY();
+		final float newX = actionRole.getX();
+		final float newY = actionRole.getY();
 		final float a = g.alpha();
 		if (_background != null) {
 			if (shakeNumber > 0) {

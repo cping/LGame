@@ -86,7 +86,7 @@ public class StateMachineProcess<T> extends RealtimeProcess {
 	@Override
 	public void run(LTimerContext time) {
 		if (_state != null) {
-			_state.update(time.timeSinceLastUpdate);
+			_state.update(time.unscaledTimeSinceLastUpdate);
 		}
 	}
 

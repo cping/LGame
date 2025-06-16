@@ -57,6 +57,23 @@ public class CacheObjectManager {
 
 	}
 
+	private class CacheProcess extends RealtimeProcess {
+
+		private CacheObjectManager _manager;
+
+		public CacheProcess(CacheObjectManager m) {
+			this._manager = m;
+		}
+
+		@Override
+		public void run(LTimerContext time) {
+			if (_manager != null) {
+				_manager.update(time.unscaledTimeSinceLastUpdate);
+			}
+		}
+
+	}
+
 	private int defCapacity;
 
 	private long defExpireTime;
@@ -79,15 +96,9 @@ public class CacheObjectManager {
 		this.defCapacity = Integer.MAX_VALUE;
 		this.defExpireTime = LSystem.YEAR;
 		this.defPriority = 0;
-		process = new RealtimeProcess() {
-
-			@Override
-			public void run(LTimerContext time) {
-				update(time.timeSinceLastUpdate);
-			}
-		};
-		process.setProcessType(GameProcessType.Progress);
-		process.setDelay(delay);
+		this.process = new CacheProcess(this);
+		this.process.setProcessType(GameProcessType.Progress);
+		this.process.setDelay(delay);
 	}
 
 	public void subimit() {
