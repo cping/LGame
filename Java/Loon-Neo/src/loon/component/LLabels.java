@@ -86,14 +86,16 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 			Info label = labels.get(i);
 			if (label.length == -1) {
 				font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
-						fontColor == null ? label.color : fontColor.mul(label.color));
+						_colorTemp.setColor(fontColor == null ? LColor.getColorARGBInt(label.color)
+								: LColor.combine(fontColor, label.color)));
 			} else {
 				label.stateTime += speed;
 				if (label.stateTime > label.length) {
 					labels.remove(label);
 				} else {
 					font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
-							fontColor == null ? label.color : fontColor.mul(label.color));
+							_colorTemp.setColor(fontColor == null ? LColor.getColorARGBInt(label.color)
+									: LColor.combine(fontColor, label.color)));
 				}
 			}
 		}

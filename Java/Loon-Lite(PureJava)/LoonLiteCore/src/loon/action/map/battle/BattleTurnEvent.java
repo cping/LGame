@@ -21,7 +21,6 @@
 package loon.action.map.battle;
 
 import loon.LRelease;
-import loon.LSystem;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.processes.WaitProcess;
@@ -158,7 +157,7 @@ public abstract class BattleTurnEvent implements BattleTimerListener, BattleEven
 	public boolean start(long elapsedTime) {
 		if (!_start.get()) {
 			onStart(elapsedTime, _start);
-			_turnTimer += (elapsedTime / LSystem.getScaleFPS());
+			_turnTimer += elapsedTime;
 			checkTimeOut(elapsedTime, _process);
 		}
 		return _start.get();
@@ -170,7 +169,7 @@ public abstract class BattleTurnEvent implements BattleTimerListener, BattleEven
 	public boolean process(long elapsedTime) {
 		if (!_process.get()) {
 			onProcess(elapsedTime, _process);
-			_turnTimer += (elapsedTime / LSystem.getScaleFPS());
+			_turnTimer += elapsedTime;
 			checkTimeOut(elapsedTime, _process);
 		}
 		return _process.get();
@@ -182,7 +181,7 @@ public abstract class BattleTurnEvent implements BattleTimerListener, BattleEven
 	public boolean end(long elapsedTime) {
 		if (!_end.get()) {
 			onEnd(elapsedTime, _end);
-			_turnTimer += (elapsedTime / LSystem.getScaleFPS());
+			_turnTimer += elapsedTime;
 			checkTimeOut(elapsedTime, _process);
 		}
 		return _end.get();

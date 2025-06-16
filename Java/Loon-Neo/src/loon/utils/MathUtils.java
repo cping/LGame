@@ -699,6 +699,13 @@ public final class MathUtils {
 		return true;
 	}
 
+	public static boolean equal(int a, int b, int epsilon) {
+		if (a > b)
+			return a - b <= epsilon;
+		else
+			return b - a <= epsilon;
+	}
+
 	public static boolean equal(int a, int b) {
 		return a == b;
 	}

@@ -494,7 +494,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 		}
 
 		final int oldColor = g.color();
-		this.countFrame += 1;
+		this.countFrame += LSystem.toIScaleFPS(1);
 		for (int i = 0; i < this.maxAmount - 1; i++) {
 			this.amount -= 1;
 			if (this.amount < 0) {
@@ -525,7 +525,7 @@ public class LTextArea extends LComponent implements FontSet<LTextArea> {
 				if (this.slideMessage) {
 					this.posx += this.slideX[this.amount];
 					if (this.slideX[this.amount] < 0)
-						this.slideX[this.amount] += 10;
+						this.slideX[this.amount] += LSystem.toIScaleFPS(10);
 					else {
 						this.slideX[this.amount] = 0;
 					}

@@ -505,7 +505,7 @@ public class LTextureBatch implements LRelease {
 					rotDirty, scaleDirty, flipX, flipY);
 		}
 
-		int argb = this._color.getABGR();
+		int argb = this._color.getARGB();
 		if (color != null && this._color != color) {
 			argb = LColor.combine(argb, color.getARGB());
 		}

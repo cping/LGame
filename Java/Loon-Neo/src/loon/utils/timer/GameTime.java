@@ -20,6 +20,7 @@
  */
 package loon.utils.timer;
 
+import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 
@@ -44,6 +45,8 @@ public class GameTime {
 		}
 	}
 
+	private boolean _syncFpsScaled = false;
+
 	float _elapsedTime;
 	float _totalTime;
 
@@ -64,12 +67,14 @@ public class GameTime {
 	public GameTime(float totalRealTime, float elapsedRealTime, boolean isRunningSlowly) {
 		this._totalTime = totalRealTime;
 		this._elapsedTime = elapsedRealTime;
-		_running = isRunningSlowly;
+		this._running = isRunningSlowly;
+		this._syncFpsScaled = LSystem.isSyncScaledFPSToTimer();
 	}
 
 	public void update(float elapsed) {
-		this._elapsedTime = elapsed;
-		this._totalTime += elapsed;
+		final float newElapsed = _syncFpsScaled ? elapsed / LSystem.getScaleFPS() : elapsed;
+		this._elapsedTime = newElapsed;
+		this._totalTime += newElapsed;
 	}
 
 	public void update(LTimerContext context) {
@@ -83,6 +88,15 @@ public class GameTime {
 
 	public boolean isRunningSlowly() {
 		return _running;
+	}
+
+	public boolean isSyncFpsScaled() {
+		return _syncFpsScaled;
+	}
+
+	public GameTime setSyncFpsScaled(boolean s) {
+		this._syncFpsScaled = s;
+		return this;
 	}
 
 	public float getMilliseconds() {

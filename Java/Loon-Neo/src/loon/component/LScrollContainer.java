@@ -156,7 +156,8 @@ public class LScrollContainer extends LContainer {
 				if (_visibleBackground) {
 					if (_background == null) {
 						g.fillRect(getScreenX(), getScreenY(), getWidth(), getHeight(),
-								_component_baseColor == null ? LColor.gray : _component_baseColor.mul(LColor.gray));
+								_colorTemp.setColor(_component_baseColor == null ? LColor.gray.getARGB()
+										: LColor.combine(_component_baseColor, LColor.gray)));
 					} else {
 						g.draw(_background, getScreenX(), getScreenY(), getWidth(), getHeight(), _component_baseColor);
 					}

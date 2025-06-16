@@ -1287,7 +1287,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			@Override
 			public void onEmit(LTimerContext event) {
 				if (timer.action(event) && update != null) {
-					callEventAction(update, this, event.getTimeSinceLastUpdate());
+					callEventAction(update, this, event.timeSinceLastUpdate);
 				}
 			}
 		}, true);

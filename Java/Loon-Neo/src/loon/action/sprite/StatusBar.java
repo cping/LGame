@@ -38,9 +38,13 @@ public class StatusBar extends Entity {
 
 	protected boolean showValue, hitObject, deadObject;
 
+	protected boolean updated = false;
+
 	private int initValue, maxValue, minValue;
 
 	private int currentWidth, goalWidth;
+
+	private int speed;
 
 	private LColor fontColor = new LColor(LColor.white);
 
@@ -97,6 +101,8 @@ public class StatusBar extends Entity {
 		} else {
 			this.colorafter = after;
 		}
+		this.speed = 1;
+		this.updated = false;
 		this.setLocation(x, y);
 		this.setRepaint(true);
 	}
@@ -119,9 +125,18 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar set(int v) {
+		return set(v, v, v);
+	}
+
+	public StatusBar set(int v, int min) {
+		return set(v, min, v);
+	}
+
+	public StatusBar set(int v, int min, int max) {
 		this.initValue = v;
-		this.maxValue = v;
-		this.minValue = v;
+		this.minValue = min;
+		this.maxValue = max;
+		this.updated = true;
 		this.matchProgressToWidth();
 		return this;
 	}
@@ -129,18 +144,19 @@ public class StatusBar extends Entity {
 	public StatusBar empty() {
 		this.initValue = 0;
 		this.minValue = 0;
+		this.updated = true;
 		this.matchProgressToWidth();
 		return this;
 	}
 
 	private void drawBar(GLEx g, float v1, float v2, float size, float x, float y) {
 		final float alpha = g.alpha();
-		final float cv1 = MathUtils.floorPositive(_width * v1) / size;
+		final float cv1 = MathUtils.ceilPositive(_width * v1) / size;
 		final float cv2;
 		if (MathUtils.equal(v1, v2)) {
 			cv2 = cv1;
 		} else {
-			cv2 = MathUtils.floorPositive((_width * v2) / size);
+			cv2 = MathUtils.ceilPositive((_width * v2) / size);
 		}
 		g.setAlpha(_objectAlpha);
 		if (cv1 <= _width || cv2 <= _height) {
@@ -187,6 +203,7 @@ public class StatusBar extends Entity {
 	 */
 	public StatusBar setUpdate(int v) {
 		this.minValue = MathUtils.mid(v, 0, maxValue);
+		this.updated = true;
 		this.matchProgressToWidth();
 		return this;
 	}
@@ -196,18 +213,44 @@ public class StatusBar extends Entity {
 		return this;
 	}
 
+	public StatusBar setSpeed(int v) {
+		this.speed = v;
+		return this;
+	}
+
+	public int getSpeed() {
+		return this.speed;
+	}
+
 	public boolean state() {
 		if (currentWidth == goalWidth) {
+			updated = false;
 			return false;
 		}
-		if (currentWidth > goalWidth) {
-			currentWidth -= LSystem.toIScaleFPS(1);
-			initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
-		} else {
-			currentWidth += LSystem.toIScaleFPS(1);
-			initValue = MathUtils.mid(initValue, (int) ((currentWidth * maxValue) / _width), minValue);
+		if (updated) {
+			if (currentWidth > goalWidth) {
+				currentWidth -= LSystem.toIScaleFPS(speed);
+				initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
+				if (currentWidth < goalWidth) {
+					currentWidth = goalWidth;
+					updated = false;
+					return false;
+				}
+			} else if (currentWidth < goalWidth) {
+				currentWidth += LSystem.toIScaleFPS(speed);
+				initValue = MathUtils.mid(initValue, (int) ((currentWidth * maxValue) / _width), minValue);
+				if (currentWidth > goalWidth) {
+					currentWidth = goalWidth;
+					updated = false;
+					return false;
+				}
+			}
 		}
 		return true;
+	}
+
+	public boolean isUpdated() {
+		return this.updated;
 	}
 
 	public float getPercentage() {
@@ -287,6 +330,7 @@ public class StatusBar extends Entity {
 
 	public StatusBar setMaxValue(int m) {
 		this.maxValue = MathUtils.max(m, this.minValue);
+		this.updated = true;
 		this.matchProgressToWidthMax(m);
 		this.state();
 		return this;
@@ -298,6 +342,7 @@ public class StatusBar extends Entity {
 
 	public StatusBar setMinValue(int m) {
 		this.minValue = MathUtils.min(m, this.maxValue);
+		this.updated = true;
 		this.matchProgressToWidthMin(m);
 		this.state();
 		return this;
@@ -309,6 +354,7 @@ public class StatusBar extends Entity {
 
 	public StatusBar setValue(int v) {
 		this.initValue = v;
+		this.updated = true;
 		return this;
 	}
 
@@ -420,6 +466,16 @@ public class StatusBar extends Entity {
 
 	public StatusBar setNumber(float v) {
 		set(MathUtils.iceil(v));
+		return setShowNumber(true);
+	}
+
+	public StatusBar setNumber(float v, float min) {
+		set(MathUtils.iceil(v), MathUtils.iceil(min));
+		return setShowNumber(true);
+	}
+
+	public StatusBar setNumber(float v, float min, float max) {
+		set(MathUtils.iceil(v), MathUtils.iceil(min), MathUtils.iceil(max));
 		return setShowNumber(true);
 	}
 

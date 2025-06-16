@@ -99,6 +99,11 @@ public class LSetting {
 	public boolean isSyncTween = false;
 
 	/**
+	 * 同步FPS缩放数据到计时器中
+	 */
+	public boolean isSyncFpsScaledToTimer = false;
+
+	/**
 	 * 若此处true,则fps,memory以及sprite数量之类数据强制显示
 	 */
 	public boolean isDebug = false;
@@ -171,98 +176,6 @@ public class LSetting {
 	public boolean fps_time_fixed = false;
 
 	private float aspect;
-
-	/**
-	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
-	 * 
-	 * @param v
-	 * @return
-	 */
-	public float toFPSFixed(float v) {
-		if (!fps_time_fixed) {
-			return v;
-		}
-		return v * ((float) fps / (float) fps_time_fixed_value);
-	}
-
-	/**
-	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
-	 * 
-	 * @return
-	 */
-	public float toFPSFixed() {
-		return toFPSFixed(1f);
-	}
-
-	/**
-	 * 判断是否允许缩放fps
-	 * 
-	 * @return
-	 */
-	public boolean isScaleFPS() {
-		return fps_time_fixed && (fps != fps_time_fixed_value);
-	}
-
-	/**
-	 * 获得当前fps的缩放值
-	 * 
-	 * @return
-	 */
-	public float getScaleFPS() {
-		if (fps_time_fixed) {
-			if (fps_time_fixed_value == fps) {
-				return 1f;
-			}
-			return ((float) fps_time_fixed_value / fps);
-		}
-		return 1f;
-	}
-
-	/**
-	 * 设置游戏刷新率
-	 * 
-	 * @param fps
-	 * @return
-	 */
-	public LSetting setFPS(int fps) {
-		this.fps = MathUtils.clamp(fps, 1, 120);
-		return this;
-	}
-
-	/**
-	 * 以设置的当前刷新率为基础,修正为指定刷新率时近似效果
-	 * 
-	 * @param curFps
-	 * @param dstFps
-	 * @return
-	 */
-	public LSetting setFixedFPS(int curFps, int dstFps) {
-		this.setFPS(curFps);
-		this.setFixedFPS(dstFps);
-		return this;
-	}
-
-	/**
-	 * 使当前FPS速度变化为指定FPS时的每帧刷新速度
-	 * 
-	 * @param fps
-	 * @return
-	 */
-	public LSetting setFixedFPS(int fps) {
-		this.fps_time_fixed = true;
-		this.fps_time_fixed_value = MathUtils.clamp(fps, 1, 120);
-		return this;
-	}
-
-	/**
-	 * 获得fps的缩放值
-	 * 
-	 * @param v
-	 * @return
-	 */
-	public float toScaleFPS(float v) {
-		return v * getScaleFPS();
-	}
 
 	/**
 	 * 游戏画面实际宽度
@@ -361,6 +274,7 @@ public class LSetting {
 			return this;
 		}
 		this.isSyncTween = setting.isSyncTween;
+		this.isSyncFpsScaledToTimer = setting.isSyncFpsScaledToTimer;
 		this.isFPS = setting.isFPS;
 		this.isLogo = setting.isLogo;
 		this.isCheckResize = setting.isCheckResize;
@@ -462,6 +376,99 @@ public class LSetting {
 
 	public boolean portrait() {
 		return this.height >= this.width;
+	}
+
+	/**
+	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public float toFPSFixed(float v) {
+		if (!fps_time_fixed) {
+			return v;
+		}
+		return v * ((float) fps / (float) fps_time_fixed_value);
+	}
+
+	/**
+	 * 返回一个修正数值,为设定默认fps与显示时fps的缩放值(比如最初设定是60,后来改30,那么返回就是0.5)
+	 * 
+	 * @return
+	 */
+	public float toFPSFixed() {
+		return toFPSFixed(1f);
+	}
+
+	/**
+	 * 判断是否允许缩放fps
+	 * 
+	 * @return
+	 */
+	public boolean isScaleFPS() {
+		return fps_time_fixed && (fps != fps_time_fixed_value);
+	}
+
+	/**
+	 * 获得当前fps的缩放值
+	 * 
+	 * @return
+	 */
+	public float getScaleFPS() {
+		if (fps_time_fixed) {
+			if (fps_time_fixed_value == fps) {
+				return 1f;
+			}
+			return ((float) fps_time_fixed_value / fps);
+		}
+		return 1f;
+	}
+
+	/**
+	 * 设置游戏刷新率
+	 * 
+	 * @param fps
+	 * @return
+	 */
+	public LSetting setFPS(int fps) {
+		this.fps = MathUtils.clamp(fps, 1, 120);
+		return this;
+	}
+
+	/**
+	 * 以设置的当前刷新率为基础,修正为指定刷新率时近似效果
+	 * 
+	 * @param curFps
+	 * @param dstFps
+	 * @return
+	 */
+	public LSetting setFixedFPS(int curFps, int dstFps) {
+		this.setFPS(curFps);
+		this.setFixedFPS(dstFps);
+		return this;
+	}
+
+	/**
+	 * 使当前FPS速度变化为指定FPS时的每帧刷新速度
+	 * 
+	 * @param fps
+	 * @return
+	 */
+	public LSetting setFixedFPS(int fps) {
+		this.fps_time_fixed = true;
+		this.fps_time_fixed_value = MathUtils.clamp(fps, 1, 120);
+		this.isSyncFpsScaledToTimer = true;
+		return this;
+	}
+
+	/**
+	 * 获得fps的缩放值
+	 * 
+	 * @param v
+	 * @return
+	 */
+	public float toScaleFPS(float v) {
+		return v * getScaleFPS();
 	}
 
 	public LSetting updateScale(float max) {

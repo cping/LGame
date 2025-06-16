@@ -724,7 +724,7 @@ public class BattleProcess extends CoroutineProcess {
 	public void run(LTimerContext time) {
 		if (isCoroutineRunning()) {
 			super.run(time);
-			update(time.timeSinceLastUpdate);
+			update(time.unscaledTimeSinceLastUpdate);
 		}
 	}
 

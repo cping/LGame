@@ -480,7 +480,7 @@ public class Display extends BaseIO implements LRelease {
 			_process.draw(_glEx);
 
 			// 渲染debug信息
-			drawDebug(_glEx, _setting, clock.timeSinceLastUpdate);
+			drawDebug(_glEx, _setting, clock.unscaledTimeSinceLastUpdate);
 
 			_process.drawEmulator(_glEx);
 			// 最后渲染的内容

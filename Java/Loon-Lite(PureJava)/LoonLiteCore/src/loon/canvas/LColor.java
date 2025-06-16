@@ -1165,6 +1165,34 @@ public class LColor implements Serializable {
 		}
 	}
 
+	public static final int getColorARGBInt(LColor color) {
+		if (color == null) {
+			return LColor.white.getARGB();
+		}
+		return color.getARGB();
+	}
+
+	public static final int getColorABGRInt(LColor color) {
+		if (color == null) {
+			return LColor.white.getABGR();
+		}
+		return color.getABGR();
+	}
+
+	public static final int getColorRGBInt(LColor color) {
+		if (color == null) {
+			return LColor.white.getRGB();
+		}
+		return color.getRGB();
+	}
+
+	public static final int getColorBGRInt(LColor color) {
+		if (color == null) {
+			return LColor.white.getBGR();
+		}
+		return color.getBGR();
+	}
+
 	public static final LColor toBlackWhite(LColor color) {
 		if (color == null) {
 			return gray.cpy();
@@ -2018,7 +2046,23 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor multiply(float v) {
-		return new LColor(r * v, g * v, b * v, a * v);
+		return multiply(v, new LColor());
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @param o
+	 * @return
+	 */
+	public LColor multiply(float v, LColor o) {
+		if (o == null) {
+			o = new LColor(r * v, g * v, b * v, a * v);
+		} else {
+			o.setColor(r * v, g * v, b * v, a * v);
+		}
+		return o;
 	}
 
 	/**
@@ -2028,7 +2072,23 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor multiply(int v) {
-		return new LColor(v);
+		return multiply(v, new LColor());
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param v
+	 * @param o
+	 * @return
+	 */
+	public LColor multiply(int v, LColor o) {
+		if (o == null) {
+			o = new LColor(v);
+		} else {
+			o.setColor(v);
+		}
+		return o;
 	}
 
 	/**
@@ -2038,10 +2098,26 @@ public class LColor implements Serializable {
 	 * @return
 	 */
 	public LColor multiply(LColor c) {
+		return multiply(c, new LColor());
+	}
+
+	/**
+	 * 让当前色彩做乘法运算(将产生数值构建为新的Color)
+	 * 
+	 * @param c
+	 * @param o
+	 * @return
+	 */
+	public LColor multiply(LColor c, LColor o) {
 		if (c == null) {
 			return cpy();
 		}
-		return new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+		if (o == null) {
+			o = new LColor(r * c.r, g * c.g, b * c.b, a * c.a);
+		} else {
+			o.setColor(r * c.r, g * c.g, b * c.b, a * c.a);
+		}
+		return o;
 	}
 
 	/**

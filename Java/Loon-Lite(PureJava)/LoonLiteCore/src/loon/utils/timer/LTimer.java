@@ -262,6 +262,7 @@ public class LTimer implements LTimerListener, LRelease {
 	private int _maxNumberOfRepeats = -1;
 	private int _numberOfTicks = 0;
 
+	private boolean _syncFpsScaled = false;
 	private boolean _repeats = true;
 	private boolean _completed = false;
 	private boolean _closed = false;
@@ -348,7 +349,11 @@ public class LTimer implements LTimerListener, LRelease {
 			return false;
 		}
 		if (this._active) {
-			this._currentTick += (elapsedTime * _speedFactor) / LSystem.getScaleFPS();
+			if (this._syncFpsScaled) {
+				this._currentTick += (elapsedTime * _speedFactor) / LSystem.getScaleFPS();
+			} else {
+				this._currentTick += (elapsedTime * _speedFactor);
+			}
 			if (this._maxNumberOfRepeats > -1 && this._numberOfTicks >= this._maxNumberOfRepeats) {
 				this._completed = true;
 			}
@@ -395,6 +400,7 @@ public class LTimer implements LTimerListener, LRelease {
 		this._currentTick = 0;
 		this._numberOfTicks = 0;
 		this._speedFactor = 1f;
+		this._syncFpsScaled = LSystem.isSyncScaledFPSToTimer();
 		return this;
 	}
 
@@ -414,6 +420,7 @@ public class LTimer implements LTimerListener, LRelease {
 		this._currentTick = other._currentTick;
 		this._numberOfTicks = other._numberOfTicks;
 		this._speedFactor = other._speedFactor;
+		this._syncFpsScaled = other._syncFpsScaled;
 		return this;
 	}
 
@@ -589,6 +596,15 @@ public class LTimer implements LTimerListener, LRelease {
 
 	public LTimer setSpeedFactor(float factor) {
 		this._speedFactor = factor;
+		return this;
+	}
+
+	public boolean isSyncFpsScaled() {
+		return _syncFpsScaled;
+	}
+
+	public LTimer setSyncFpsScaled(boolean s) {
+		this._syncFpsScaled = s;
 		return this;
 	}
 

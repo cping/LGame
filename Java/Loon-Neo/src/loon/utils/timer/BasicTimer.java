@@ -20,18 +20,21 @@
  */
 package loon.utils.timer;
 
+import loon.LRelease;
+import loon.LSysException;
 import loon.LSystem;
 import loon.utils.MathUtils;
 
 /**
  * 缓动动画用基础时间类(方便用户自行扩展)
  */
-public class BasicTimer {
+public class BasicTimer implements LRelease {
 
 	protected float _timer = 0f;
 	protected float _elapsed = 0f;
 	protected float _duration = 1f;
 
+	protected float _speedFactor = 1f;
 	protected float _timeInAfter = 0f;
 	protected float _progress = 0f;
 	protected float _delay = 0f;
@@ -39,6 +42,8 @@ public class BasicTimer {
 
 	protected boolean _finished = false;
 	protected boolean _paused = false;
+
+	private boolean _syncFpsScaled = false;
 
 	private float _initTimer;
 
@@ -57,14 +62,46 @@ public class BasicTimer {
 	}
 
 	public BasicTimer(float time, float duration, int loop) {
+		this(time, duration, loop, 1f);
+	}
+
+	public BasicTimer(float time, float duration, int loop, float scale) {
 		this._timer = time;
 		this._duration = duration;
 		this._initTimer = time;
 		this._initDuration = duration;
 		this._maxLoop = loop;
+		this._speedFactor = scale;
+		this._syncFpsScaled = LSystem.isSyncScaledFPSToTimer();
 	}
 
 	public BasicTimer(BasicTimer timer) {
+		this.reset(timer);
+	}
+
+	public BasicTimer reset() {
+		return reset(LSystem.DEFAULT_EASE_DELAY);
+	}
+
+	public BasicTimer reset(float delay) {
+		this._timer = _initTimer;
+		this._duration = _initDuration;
+		this._elapsed = 0f;
+		this._finished = false;
+		this._paused = false;
+		this._progress = 0f;
+		this._delta = 0;
+		this._delay = delay;
+		this._timeInAfter = 0;
+		this._speedFactor = 1f;
+		this._syncFpsScaled = LSystem.isSyncScaledFPSToTimer();
+		return this;
+	}
+
+	public BasicTimer reset(BasicTimer timer) {
+		if (timer == null) {
+			throw new LSysException("The BasicTimer cannot be null !");
+		}
 		this._timer = timer._timer;
 		this._elapsed = timer._elapsed;
 		this._duration = timer._duration;
@@ -72,12 +109,15 @@ public class BasicTimer {
 		this._progress = timer._progress;
 		this._delay = timer._delay;
 		this._delta = timer._delta;
+		this._speedFactor = timer._speedFactor;
 		this._finished = timer._finished;
 		this._paused = timer._paused;
 		this._initTimer = timer._initTimer;
 		this._initDuration = timer._initDuration;
 		this._maxLoop = timer._maxLoop;
 		this._loopCount = timer._loopCount;
+		this._syncFpsScaled = timer._syncFpsScaled;
+		return this;
 	}
 
 	public boolean action(LTimerContext context) {
@@ -90,29 +130,26 @@ public class BasicTimer {
 	}
 
 	public void update(long elapsedTime) {
-		update(MathUtils.max(Duration.toS((long) (elapsedTime / LSystem.getScaleFPS())),
-				LSystem.MIN_SECONE_SPEED_FIXED));
+		update(MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED));
 	}
 
 	public void update(float dt) {
-
-		if (_finished) {
+		if (this._finished) {
 			return;
 		}
-
-		if (_paused) {
+		if (this._paused) {
 			return;
 		}
+		final float newDelta = this._syncFpsScaled ? (dt / LSystem.getScaleFPS()) : dt;
 		if (isLoop() && !isRunning()) {
-			reset(dt);
-			_loopCount++;
+			this.reset(newDelta);
+			this._loopCount++;
 		}
-
-		this._delta = dt;
-		this._timer += dt;
+		this._delta = newDelta * _speedFactor;
+		this._timer += newDelta;
 		this._elapsed = _duration - _timer;
 		if (this._timer >= _delay) {
-			_timeInAfter += _delta / _duration;
+			this._timeInAfter += _delta / _duration;
 		}
 		if (this._timer >= this._duration) {
 			this._timer = this._duration;
@@ -121,6 +158,15 @@ public class BasicTimer {
 			}
 		}
 		this._progress = process();
+	}
+
+	public float getSpeedFactor() {
+		return this._speedFactor;
+	}
+
+	public BasicTimer setSpeedFactor(float s) {
+		this._speedFactor = s;
+		return this;
 	}
 
 	public boolean isLoop() {
@@ -156,23 +202,6 @@ public class BasicTimer {
 		return _timer / _duration;
 	}
 
-	public BasicTimer reset() {
-		return reset(LSystem.DEFAULT_EASE_DELAY);
-	}
-
-	public BasicTimer reset(float delay) {
-		this._timer = _initTimer;
-		this._duration = _initDuration;
-		this._elapsed = 0f;
-		this._finished = false;
-		this._paused = false;
-		this._progress = 0f;
-		this._delta = 0;
-		this._delay = delay;
-		this._timeInAfter = 0;
-		return this;
-	}
-
 	public BasicTimer setDuration(float d) {
 		this._duration = d;
 		return this;
@@ -192,6 +221,15 @@ public class BasicTimer {
 
 	public boolean isCompleted() {
 		return _finished;
+	}
+
+	public boolean isSyncFpsScaled() {
+		return _syncFpsScaled;
+	}
+
+	public BasicTimer setSyncFpsScaled(boolean s) {
+		this._syncFpsScaled = s;
+		return this;
 	}
 
 	public boolean wasStarted() {
@@ -305,5 +343,10 @@ public class BasicTimer {
 		}
 		reset();
 		return this;
+	}
+
+	@Override
+	public void close() {
+		this._finished = true;
 	}
 }

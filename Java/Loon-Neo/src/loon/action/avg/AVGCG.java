@@ -47,6 +47,8 @@ public class AVGCG implements LRelease {
 
 	private boolean _style, _loop, _closed;
 
+	private int _speed;
+
 	protected int sleep, sleepMax, shakeNumber;
 
 	public AVGCG(Screen screen) {
@@ -59,6 +61,16 @@ public class AVGCG implements LRelease {
 		this._style = true;
 		this._loop = true;
 		this._roleDelay = delay;
+		this.setSpeed(1);
+	}
+
+	public int getSpeed() {
+		return _speed;
+	}
+
+	public AVGCG setSpeed(int s) {
+		this._speed = LSystem.toIScaleFPS(s);
+		return this;
 	}
 
 	public LTexture getBackgroundCG() {
@@ -209,12 +221,15 @@ public class AVGCG implements LRelease {
 	}
 
 	public void paint(GLEx g) {
+		final float newX = actionRole.getScreenX();
+		final float newY = actionRole.getScreenY();
+		final float a = g.alpha();
 		if (_background != null) {
 			if (shakeNumber > 0) {
-				g.draw(_background, shakeNumber / 2 - MathUtils.random(shakeNumber),
-						shakeNumber / 2 - MathUtils.random(shakeNumber));
+				g.draw(_background, newX + shakeNumber / 2 - MathUtils.random(shakeNumber),
+						newY + shakeNumber / 2 - MathUtils.random(shakeNumber));
 			} else {
-				g.draw(_background, 0, 0);
+				g.draw(_background, newX, newY);
 			}
 		}
 		synchronized (_roles) {
@@ -226,7 +241,7 @@ public class AVGCG implements LRelease {
 				if (_style) {
 					if (chara.flag != -1) {
 						if (chara.flag == ISprite.TYPE_FADE_IN) {
-							chara.currentFrame -= LSystem.toScaleFPS(1);
+							chara.currentFrame -= _speed;
 							if (chara.currentFrame == 0) {
 								chara.opacity = 0;
 								chara.flag = -1;
@@ -234,7 +249,7 @@ public class AVGCG implements LRelease {
 								_roles.remove(chara);
 							}
 						} else {
-							chara.currentFrame += LSystem.toScaleFPS(1);
+							chara.currentFrame += _speed;
 							if (MathUtils.equal(chara.currentFrame, chara.time)) {
 								chara.opacity = 0;
 								chara.flag = -1;
@@ -256,16 +271,16 @@ public class AVGCG implements LRelease {
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}
-						g.draw(animation.texture, chara.getX(), chara.getY(), animation.width, animation.height,
-								point.x, point.y, point.x + animation.imageWidth, point.y + animation.imageHeight,
-								animation.color, animation.angle);
+						g.draw(animation.texture, newX + chara.getX(), newY + chara.getY(), animation.width,
+								animation.height, point.x, point.y, point.x + animation.imageWidth,
+								point.y + animation.imageHeight, animation.color, animation.angle);
 						if (animation.alpha != 1f) {
 							g.setAlpha(1f);
 						}
 					}
 				} else {
 					chara.next();
-					chara.draw(g);
+					chara.draw(g, newX, newY);
 				}
 				if (_style) {
 					if (chara.flag != -1 && chara.opacity > 0) {
@@ -275,6 +290,7 @@ public class AVGCG implements LRelease {
 			}
 		}
 		actionRole.createUI(g);
+		g.setAlpha(a);
 	}
 
 	public void clear() {

@@ -716,11 +716,24 @@ public class Vector2f implements Serializable, SetXY, XY {
 	}
 
 	public final Vector2f mul(float s) {
-		return new Vector2f(this.x * s, this.y * s);
+		return mul(s, new Vector2f());
 	}
 
 	public final Vector2f mul(float sx, float sy) {
-		return new Vector2f(this.x * sx, this.y * sy);
+		return mul(sx, sy, new Vector2f());
+	}
+
+	public final Vector2f mul(float s, Vector2f o) {
+		return mul(s, s, o);
+	}
+
+	public final Vector2f mul(float sx, float sy, Vector2f o) {
+		if (o == null) {
+			o = new Vector2f(this.x * sx, this.y * sy);
+		} else {
+			o.set(this.x * sx, this.y * sy);
+		}
+		return o;
 	}
 
 	public final Vector2f mulSelf(float scale) {

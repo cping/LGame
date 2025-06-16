@@ -27,6 +27,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -318,8 +319,9 @@ public class LLayer extends ActorLayer {
 						g.setAlpha(_colorAlpha);
 					}
 					g.draw(actorImage, _actorX, _actorY, width, height,
-							_component_baseColor == null ? _thing.filterColor
-									: _component_baseColor.mul(_thing.filterColor),
+							_colorTemp
+									.setColor(_component_baseColor == null ? LColor.getColorARGBInt(_thing.filterColor)
+											: LColor.combine(_component_baseColor, _thing.filterColor)),
 							_thing.getRotation(), _thing.scaleX, _thing.scaleY, _thing.flipX, _thing.flipY);
 					if (_colorAlpha != oldAlpha) {
 						g.setAlpha(oldAlpha);

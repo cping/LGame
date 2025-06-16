@@ -105,7 +105,7 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 			run(time);
 		}
 		if (_timeOutDelay != -1) {
-			_timeOutCount += time.timeSinceLastUpdate;
+			_timeOutCount += time.unscaledTimeSinceLastUpdate;
 		}
 		if (isTimeOut() && _timeOutEvent != null) {
 			_timeOutEvent.update();

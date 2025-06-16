@@ -221,11 +221,11 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	}
 
-	void draw(GLEx g) {
+	void draw(GLEx g, float nx, float ny) {
 		if (_cgWidth <= 0f && _cgHeight <= 0f) {
-			g.draw(_cgTexture, _cgMovePos, y);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y);
 		} else {
-			g.draw(_cgTexture, _cgMovePos, y, _cgWidth, _cgHeight);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight);
 		}
 	}
 

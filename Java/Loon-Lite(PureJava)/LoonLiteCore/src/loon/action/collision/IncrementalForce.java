@@ -55,7 +55,7 @@ public class IncrementalForce implements Force {
 			return;
 		}
 		_currentIncrement += _increment;
-		_current = _direction.mul(_currentIncrement);
+		_current = _direction.mul(_currentIncrement, _current);
 	}
 
 	@Override

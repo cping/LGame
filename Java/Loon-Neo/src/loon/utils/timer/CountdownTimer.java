@@ -65,7 +65,7 @@ public class CountdownTimer extends RealtimeProcess {
 	}
 
 	public CountdownTimer(float second, boolean displayMilliSecond) {
-		this("", second, displayMilliSecond);
+		this(LSystem.UNKNOWN, second, displayMilliSecond);
 	}
 
 	public CountdownTimer(String name, float second, boolean displayMilliSecond) {
@@ -187,7 +187,7 @@ public class CountdownTimer extends RealtimeProcess {
 
 	@Override
 	public void run(LTimerContext time) {
-		_millisecond -= MathUtils.min(time.timeSinceLastUpdate, 60f);
+		_millisecond -= MathUtils.min(time.unscaledTimeSinceLastUpdate, 60f);
 		if (_millisecond <= 0) {
 			kill();
 		}

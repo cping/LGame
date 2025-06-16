@@ -332,6 +332,21 @@ public final class LSystem {
 	}
 
 	/**
+	 * 同步FPS缩放到计时器中
+	 * 
+	 * @return
+	 */
+	public static final boolean isSyncScaledFPSToTimer() {
+		if (base() != null) {
+			LSetting setting = LSystem.base().setting;
+			if (setting != null) {
+				return setting.isSyncFpsScaledToTimer;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 返回fps是否存在时间轴缩放
 	 * 
 	 * @return

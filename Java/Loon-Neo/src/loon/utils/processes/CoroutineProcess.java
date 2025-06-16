@@ -331,7 +331,7 @@ public class CoroutineProcess extends RealtimeProcess implements LRelease {
 	@Override
 	public void run(LTimerContext time) {
 		if (_coroutineRunning) {
-			updateCoroutine(time.timeSinceLastUpdate);
+			updateCoroutine(time.unscaledTimeSinceLastUpdate);
 		}
 	}
 
