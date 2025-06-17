@@ -1816,7 +1816,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			_currentSprites.setSize(getViewWidth(), getViewHeight());
 		}
 		if (_curDesktopRun && _currentDesktop != null) {
-			_currentDesktop.setSize(getViewWidth(), getViewHeight());
+			_currentDesktop.setSize(getWidth(), getHeight());
 		}
 		if (_isGravity && _gravityHandler != null) {
 			_gravityHandler.setLimit(getViewWidth(), getViewHeight());
@@ -1893,7 +1893,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			_currentDesktop.clear();
 			_currentDesktop = null;
 		}
-		this._currentDesktop = new Desktop("ScreenDesktop", this, getViewWidth(), getViewHeight());
+		this._currentDesktop = new Desktop("ScreenDesktop", this, getWidth(), getHeight());
 		this._isNext = true;
 		this._lastTouch.empty();
 		this._visible = true;
