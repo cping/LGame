@@ -1750,6 +1750,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen setWidth(float w) {
+		setSize((int) w, getHeight());
+		return this;
+	}
+
+	public Screen setHeight(float h) {
+		setSize(getWidth(), (int) h);
+		return this;
+	}
+
+	public Screen setViewWidth(float w) {
+		setView(w, getViewHeight());
+		return this;
+	}
+
+	public Screen setViewHeight(float h) {
+		setView(getViewWidth(), h);
+		return this;
+	}
+
 	public void setSize(int w, int h, float ratio) {
 		setSize(MathUtils.ifloor(w * ratio), MathUtils.ifloor(h * ratio));
 	}
@@ -1770,13 +1790,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			_resizeListener.onResize(this);
 		}
 		if (_curSpriteRun && _currentSprites != null) {
-			_currentSprites.setSize(getWidth(), getHeight());
+			_currentSprites.setSize(getViewWidth(), getViewHeight());
 		}
 		if (_curDesktopRun && _currentDesktop != null) {
-			_currentDesktop.setSize(getWidth(), getHeight());
+			_currentDesktop.setSize(getViewWidth(), getViewHeight());
 		}
 		if (_isGravity && _gravityHandler != null) {
-			_gravityHandler.setLimit(getWidth(), getHeight());
+			_gravityHandler.setLimit(getViewWidth(), getViewHeight());
 		}
 		if (_isExistViewport && _baseViewport != null) {
 			_baseViewport.onResize(getWidth(), getHeight());
@@ -1844,13 +1864,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			_currentSprites.removeAll();
 			_currentSprites = null;
 		}
-		this._currentSprites = new Sprites("ScreenSprites", this, getWidth(), getHeight());
+		this._currentSprites = new Sprites("ScreenSprites", this, getViewWidth(), getViewHeight());
 		if (_currentDesktop != null) {
 			_currentDesktop.close();
 			_currentDesktop.clear();
 			_currentDesktop = null;
 		}
-		this._currentDesktop = new Desktop("ScreenDesktop", this, getWidth(), getHeight());
+		this._currentDesktop = new Desktop("ScreenDesktop", this, getViewWidth(), getViewHeight());
 		this._isNext = true;
 		this._lastTouch.empty();
 		this._visible = true;
@@ -4136,6 +4156,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	public Vector2f getCenterLocation(float offsetX, float offsetY) {
 		return new Vector2f(getX() + getViewWidth() / 2f + offsetX, getY() + getViewHeight() / 2f + offsetY);
+	}
+
+	public float getCenterX() {
+		return getX() + getViewWidth() / 2f;
+	}
+
+	public float getCenterY() {
+		return getY() + getViewHeight() / 2f;
 	}
 
 	public Screen outsideTopRandOn(final LObject<?> object, final float newX) {

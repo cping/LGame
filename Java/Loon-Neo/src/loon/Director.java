@@ -300,12 +300,52 @@ public class Director extends SoundBox {
 		}
 	}
 
+	public static boolean isLandscape(float width, float height) {
+		return height < width;
+	}
+
+	public static boolean isPortrait(float width, float height) {
+		return height >= width;
+	}
+
+	public boolean viewLandscape() {
+		return isLandscape(_viewRect.width, _viewRect.height);
+	}
+
+	public boolean viewPortrait() {
+		return isPortrait(_viewRect.width, _viewRect.height);
+	}
+
+	public boolean renderLandscape() {
+		return isLandscape(_renderRect.width, _renderRect.height);
+	}
+
+	public boolean renderPortrait() {
+		return isPortrait(_renderRect.width, _renderRect.height);
+	}
+
 	public void updateRenderSize(float x, float y, float width, float height) {
 		if (isRenderEqualView()) {
 			setDirectorRenderSize(x, y, width, height);
 			setDirectorViewSize(x, y, width, height);
 		} else {
 			setDirectorRenderSize(x, y, width, height);
+			boolean landscape = renderLandscape();
+			if (landscape && !viewLandscape()) {
+				if (isLandscape(_viewRect.width, _viewRect.height)) {
+					setDirectorViewSize(x, y, _viewRect.width, _viewRect.height);
+				} else if (isLandscape(_viewRect.height, _viewRect.width)) {
+					setDirectorViewSize(x, y, _viewRect.height, _viewRect.width);
+				}
+			}
+			boolean portrait = renderPortrait();
+			if (portrait && !viewPortrait()) {
+				if (isPortrait(_viewRect.width, _viewRect.height)) {
+					setDirectorViewSize(x, y, _viewRect.width, _viewRect.height);
+				} else if (isPortrait(_viewRect.height, _viewRect.width)) {
+					setDirectorViewSize(x, y, _viewRect.height, _viewRect.width);
+				}
+			}
 		}
 	}
 

@@ -25,10 +25,11 @@ import loon.action.ActionTween;
 import loon.action.Flip;
 import loon.action.map.Field2D;
 import loon.canvas.LColor;
+import loon.geom.BoxSize;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
 
-public class ScreenAction implements Flip<Screen>, ActionBind {
+public class ScreenAction implements Flip<Screen>, ActionBind, BoxSize {
 
 	public Screen _tempScreen;
 
@@ -233,8 +234,40 @@ public class ScreenAction implements Flip<Screen>, ActionBind {
 
 	@Override
 	public ScreenAction setSize(float w, float h) {
-		_tempScreen.setSize(MathUtils.ifloor(w), MathUtils.ifloor(h));
+		if (_tempScreen != null) {
+			_tempScreen.setSize(MathUtils.ifloor(w), MathUtils.ifloor(h));
+		}
 		return this;
+	}
+
+	@Override
+	public float getCenterX() {
+		if (_tempScreen != null) {
+			return _tempScreen.getCenterX();
+		}
+		return 0;
+	}
+
+	@Override
+	public float getCenterY() {
+		if (_tempScreen != null) {
+			return _tempScreen.getCenterY();
+		}
+		return 0;
+	}
+
+	@Override
+	public void setWidth(float w) {
+		if (_tempScreen != null) {
+			_tempScreen.setWidth(w);
+		}
+	}
+
+	@Override
+	public void setHeight(float h) {
+		if (_tempScreen != null) {
+			_tempScreen.setHeight(h);
+		}
 	}
 
 	@Override

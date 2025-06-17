@@ -223,11 +223,11 @@ public class StatusBar extends Entity {
 	}
 
 	public boolean state() {
-		if (currentWidth == goalWidth) {
-			updated = false;
-			return false;
-		}
 		if (updated) {
+			if (currentWidth == goalWidth) {
+				updated = false;
+				return false;
+			}
 			if (currentWidth > goalWidth) {
 				currentWidth -= LSystem.toIScaleFPS(speed);
 				initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
