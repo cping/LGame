@@ -587,8 +587,8 @@ public class LLayer extends ActorLayer {
 				if (!moveActor) {
 					synchronized (_input) {
 						validatePosition();
-						dropX = this._input.getTouchDX();
-						dropY = this._input.getTouchDY();
+						dropX = this._input.getTouchIntDX();
+						dropY = this._input.getTouchIntDY();
 						if (isNotMoveInScreen(dropX + x(), dropY + y())) {
 							return;
 						}

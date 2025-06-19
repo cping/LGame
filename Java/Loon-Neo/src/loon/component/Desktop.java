@@ -665,7 +665,8 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchMotionEvent() {
-		if (this._hoverComponent != null && _hoverComponent.isAllowTouch() && this._sysInput.isMoving()) {
+		if (this._hoverComponent != null && _hoverComponent.isAllowTouch()
+				&& (this._sysInput != null && this._sysInput.isMoving())) {
 			if (this._sysInput.getTouchDX() != 0 || this._sysInput.getTouchDY() != 0 || SysTouch.getDX() != 0
 					|| SysTouch.getDY() != 0) {
 				this._hoverComponent.validatePosition();
@@ -673,10 +674,10 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 			}
 		} else {
 			final int typeButton = SysTouch.getButton();
-			int touchX = _sysInput == null ? SysTouch.x() : this._sysInput.getTouchX();
-			int touchY = _sysInput == null ? SysTouch.y() : this._sysInput.getTouchY();
-			int touchDx = (int) (_sysInput == null ? SysTouch.getDX() : this._sysInput.getTouchDX());
-			int touchDy = (int) (_sysInput == null ? SysTouch.getDY() : this._sysInput.getTouchDY());
+			float touchX = _sysInput == null ? SysTouch.getX() : this._sysInput.getTouchX();
+			float touchY = _sysInput == null ? SysTouch.getY() : this._sysInput.getTouchY();
+			float touchDx = _sysInput == null ? SysTouch.getDX() : this._sysInput.getTouchDX();
+			float touchDy = _sysInput == null ? SysTouch.getDY() : this._sysInput.getTouchDY();
 			if (_sysInput != null) {
 				final Vector2f touch = getUITouch(touchX, touchY, false);
 				touchX = touch.x();
@@ -752,6 +753,9 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 	 * 
 	 */
 	private void processTouchEvent() {
+		if (this._sysInput == null) {
+			return;
+		}
 		final int pressed = this._sysInput.getTouchPressed(), released = this._sysInput.getTouchReleased();
 		if (pressed > Screen.NO_BUTTON) {
 			final boolean mobile = LSystem.isMobile() || LSystem.isEmulateTouch();
@@ -822,7 +826,7 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 	 * @param y
 	 * @return
 	 */
-	private LComponent findComponent(int x, int y) {
+	private LComponent findComponent(float x, float y) {
 		if (this._modal != null && !this._modal.isContainer()) {
 			return null;
 		}

@@ -1216,7 +1216,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		return comp;
 	}
 
-	public LComponent findComponent(int x1, int y1) {
+	public LComponent findComponent(float x1, float y1) {
 		if (_destroyed) {
 			return null;
 		}

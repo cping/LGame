@@ -32,10 +32,22 @@ public class ScreenLayoutInvoke implements BoxSize {
 
 	private final LayoutPort _layoutPort;
 
+	private boolean _acceptEventCall;
+
 	public ScreenLayoutInvoke(Screen s) {
 		this._screen = s;
-		this._screenSize = _screen.getRectBox().cpy();
+		this._screenSize = s.getRectBox().cpy();
 		this._layoutPort = new LayoutPort(this, new LayoutConstraints());
+		this._acceptEventCall = true;
+	}
+
+	public ScreenLayoutInvoke setAcceptEventCall(boolean a) {
+		this._acceptEventCall = a;
+		return this;
+	}
+
+	public boolean isAcceptEventCall() {
+		return this._acceptEventCall;
 	}
 
 	public LayoutPort getLayoutPort() {

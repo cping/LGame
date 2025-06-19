@@ -111,7 +111,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		this.totalDuration = 80;
 		this.customRendering = true;
 		this.setWait(false);
-		this.setElastic(true);
+		this.setElastic(false);
 		this.setLocked(true);
 	}
 

@@ -25,7 +25,6 @@ import loon.LTexture;
 import loon.action.collision.CollisionHelper;
 import loon.action.map.Config;
 import loon.component.skin.ControlSkin;
-import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -119,9 +118,9 @@ public class LControl extends LComponent {
 
 	@Override
 	public void processTouchPressed() {
-		final float relativeX = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX() - getScreenX()) / baseWidth
+		final float relativeX = MathUtils.bringToBounds(0, baseWidth, getTouchX() - getScreenX()) / baseWidth
 				- 0.5f;
-		final float relativeY = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY() - getScreenY()) / baseHeight
+		final float relativeY = MathUtils.bringToBounds(0, baseHeight, getTouchY() - getScreenY()) / baseHeight
 				- 0.5f;
 		onUpdateControlDot(relativeX, relativeY);
 		super.processTouchPressed();

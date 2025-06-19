@@ -23,12 +23,12 @@ package loon.action.node;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.Flip;
 import loon.action.sprite.SpriteBatch;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
-import loon.utils.Flip;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 

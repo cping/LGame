@@ -44,6 +44,8 @@ public class SysInputFactoryImpl extends SysInputFactory {
 
 	private LTouchCollection _touchCollection = new LTouchCollection();
 
+	private EventActionT<GameTouch> _filterTouch;
+
 	public SysInputFactoryImpl() {
 		this.update();
 	}
@@ -247,6 +249,9 @@ public class SysInputFactoryImpl extends SysInputFactory {
 			}
 			break;
 		}
+		if (_filterTouch != null) {
+			_filterTouch.update(finalTouch);
+		}
 	}
 
 	/**
@@ -398,6 +403,9 @@ public class SysInputFactoryImpl extends SysInputFactory {
 			isDraging = (dragCount > 0);
 		}
 		isDraging = (dragCount > 0);
+		if (_filterTouch != null) {
+			_filterTouch.update(finalTouch);
+		}
 	}
 
 }

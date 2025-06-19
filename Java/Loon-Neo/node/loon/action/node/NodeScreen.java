@@ -111,7 +111,7 @@ public abstract class NodeScreen extends PyhsicsScreen {
 			}
 		} else {
 			if (SysTouch.isDrag() || SysTouch.isMove() || SysTouch.isDown()) {
-				LNNode node = this.findNode(getTouchX(), getTouchY());
+				LNNode node = this.findNode(getTouchIntX(), getTouchIntY());
 				if (node != null) {
 					this.hoverNode = node;
 				}

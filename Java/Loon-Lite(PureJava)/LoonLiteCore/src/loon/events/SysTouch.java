@@ -211,6 +211,14 @@ public class SysTouch {
 		return SysInputFactory.finalTouch.timeUp;
 	}
 
+	public static void set(GameTouch touch) {
+		SysInputFactory.finalTouch.set(touch);
+	}
+
+	public static void set(float x, float y) {
+		SysInputFactory.finalTouch.set(x, y);
+	}
+
 	public static GameTouch cpy() {
 		return SysInputFactory.finalTouch.cpy();
 	}

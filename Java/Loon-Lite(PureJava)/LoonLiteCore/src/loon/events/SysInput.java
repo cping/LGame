@@ -66,13 +66,21 @@ public interface SysInput {
 
 	void refresh();
 
-	int getTouchX();
+	float getTouchX();
 
-	int getTouchY();
+	float getTouchY();
 
-	int getTouchDX();
+	float getTouchDX();
 
-	int getTouchDY();
+	float getTouchDY();
+
+	int getTouchIntX();
+
+	int getTouchIntY();
+
+	int getTouchIntDX();
+
+	int getTouchIntDY();
 
 	int getTouchReleased();
 

@@ -32,6 +32,17 @@ public abstract class SysInputFactory {
 
 	private static OnscreenKeyboard _defkeyboard = new DefaultOnscreenKeyboard();
 
+	protected EventActionT<GameTouch> _filterTouch;
+
+	public EventActionT<GameTouch> getFilterTouch() {
+		return this._filterTouch;
+	}
+
+	public SysInputFactory setFilterTouch(EventActionT<GameTouch> e) {
+		this._filterTouch = e;
+		return this;
+	}
+
 	static public interface OnscreenKeyboard {
 		public void show(boolean visible);
 	}
@@ -59,15 +70,15 @@ public abstract class SysInputFactory {
 
 	public abstract void stopTouchCollection();
 
-	public abstract LTouchCollection getTouchState() ;
+	public abstract LTouchCollection getTouchState();
 
 	public abstract void reset();
 
-	public abstract void resetTouch() ;
+	public abstract void resetTouch();
 
-	public abstract void resetSysTouch() ;
+	public abstract void resetSysTouch();
 
-	public abstract void callKey(KeyMake.KeyEvent e) ;
+	public abstract void callKey(KeyMake.KeyEvent e);
 
 	/**
 	 * 鼠标移动事件监听(仅在有鼠标的设备上生效,没有触屏的设备上(主要是台式机)触屏会由此监听模拟)

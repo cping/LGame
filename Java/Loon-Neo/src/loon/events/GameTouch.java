@@ -75,6 +75,14 @@ public class GameTouch {
 		this.set(x, y, pointer, id);
 	}
 
+	GameTouch(GameTouch touch) {
+		set(touch);
+	}
+
+	public GameTouch set(float x, float y) {
+		return set(x, y, this.pointer, this.id);
+	}
+
 	public GameTouch set(float x, float y, int pointer, int id) {
 		this.x = x;
 		this.y = y;
@@ -83,7 +91,7 @@ public class GameTouch {
 		return this;
 	}
 
-	GameTouch(GameTouch touch) {
+	public GameTouch set(GameTouch touch) {
 		if (touch == null) {
 			this.reset();
 		}
@@ -102,6 +110,7 @@ public class GameTouch {
 			this.timeUp = touch.timeUp;
 			this.timeDown = touch.timeDown;
 		}
+		return this;
 	}
 
 	public Vector2f getLocation(Vector2f o) {
@@ -405,9 +414,9 @@ public class GameTouch {
 	@Override
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("GameTouch");
-		builder.kv("id", id).comma().kv("point", pointer).comma().kv("button", button).comma().kv("timeDown", timeDown)
-				.comma().kv("timeUp", timeUp).comma().kv("duration", duration).comma().kv("active", _active).comma()
-				.kv("orientation", _orientation);
+		builder.kv("id", id).comma().kv("x", x).comma().kv("y", y).comma().kv("point", pointer).comma()
+				.kv("button", button).comma().kv("timeDown", timeDown).comma().kv("timeUp", timeUp).comma()
+				.kv("duration", duration).comma().kv("active", _active).comma().kv("orientation", _orientation);
 		return builder.toString();
 	}
 

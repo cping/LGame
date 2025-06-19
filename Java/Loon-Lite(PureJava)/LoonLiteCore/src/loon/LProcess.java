@@ -24,6 +24,8 @@ import java.util.Iterator;
 
 import loon.action.camera.Viewport;
 import loon.canvas.LColor;
+import loon.component.layout.SplitLayout;
+import loon.events.EventActionT;
 import loon.events.GameKey;
 import loon.events.GameTouch;
 import loon.events.InputMake;
@@ -210,6 +212,13 @@ public class LProcess implements LRelease {
 					}
 				});
 			}
+		}
+		return this;
+	}
+
+	public LProcess setFilterTouch(EventActionT<GameTouch> t) {
+		if (this._currentInput != null) {
+			this._currentInput.setFilterTouch(t);
 		}
 		return this;
 	}
@@ -1167,6 +1176,17 @@ public class LProcess implements LRelease {
 
 	public int getScreenCount() {
 		return _screenMap.size;
+	}
+
+	/**
+	 * 以指定布局同时加载多个Screen到画面中
+	 * 
+	 * @param layout
+	 * @param screens
+	 * @return
+	 */
+	public SplitScreen setScreen(final SplitLayout layout, final Screen... screens) {
+		return new SplitScreen(layout, screens);
 	}
 
 	public LProcess setScreen(final Screen screen) {

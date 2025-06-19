@@ -578,16 +578,16 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		float newY = 0f;
 		if (getRotation() == 0) {
 			if (_objectSuper == null) {
-				newX = toPixelScaleX(SysTouch.getX() - getX());
-				newY = toPixelScaleY(SysTouch.getY() - getY());
+				newX = toPixelScaleX(getInternalTouchX() - getX());
+				newY = toPixelScaleY(getInternalTouchY() - getY());
 			} else {
-				newX = toPixelScaleX(SysTouch.getX() - _objectSuper.getX() - getX());
-				newY = toPixelScaleY(SysTouch.getY() - _objectSuper.getY() - getY());
+				newX = toPixelScaleX(getInternalTouchX() - _objectSuper.getX() - getX());
+				newY = toPixelScaleY(getInternalTouchY() - _objectSuper.getY() - getY());
 			}
 			_touchPoint.set(newX, newY).addSelf(_touchOffset);
 		} else {
-			newX = SysTouch.getX();
-			newY = SysTouch.getY();
+			newX = getInternalTouchX();
+			newY = getInternalTouchY();
 			return getUITouch(newX, newY, _touchPoint);
 		}
 		return _touchPoint;
@@ -875,24 +875,40 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 				rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
 	}
 
-	public float getTouchDX() {
+	protected float getInternalTouchDX() {
 		final Screen screen = getScreen();
-		return toPixelScaleX(screen == null ? SysTouch.getDX() : screen.getTouchDX());
+		return screen == null ? SysTouch.getDX() : screen.getTouchDX();
+	}
+
+	protected float getInternalTouchDY() {
+		final Screen screen = getScreen();
+		return screen == null ? SysTouch.getDY() : screen.getTouchDY();
+	}
+
+	protected float getInternalTouchX() {
+		final Screen screen = getScreen();
+		return screen == null ? SysTouch.getX() : screen.getTouchX();
+	}
+
+	protected float getInternalTouchY() {
+		final Screen screen = getScreen();
+		return screen == null ? SysTouch.getY() : screen.getTouchY();
+	}
+
+	public float getTouchDX() {
+		return toPixelScaleX(getInternalTouchDX());
 	}
 
 	public float getTouchDY() {
-		final Screen screen = getScreen();
-		return toPixelScaleY(screen == null ? SysTouch.getDY() : screen.getTouchDY());
+		return toPixelScaleY(getInternalTouchDY());
 	}
 
 	public float getTouchX() {
-		final Screen screen = getScreen();
-		return toPixelScaleX(screen == null ? SysTouch.getX() : screen.getTouchX());
+		return toPixelScaleX(getInternalTouchX());
 	}
 
 	public float getTouchY() {
-		final Screen screen = getScreen();
-		return toPixelScaleY(screen == null ? SysTouch.getY() : screen.getTouchY());
+		return toPixelScaleY(getInternalTouchY());
 	}
 
 	public boolean isPointInUI(Vector2f v) {

@@ -739,10 +739,10 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return false;
 		}
-		int x = MathUtils.floor(x1 * LSystem.getScaleWidth());
-		int y = MathUtils.floor(y1 * LSystem.getScaleHeight());
-		int width = MathUtils.floor(w1 * LSystem.getScaleWidth());
-		int height = MathUtils.floor(h1 * LSystem.getScaleHeight());
+		int x = MathUtils.floorPositive(x1 * LSystem.getScaleWidth());
+		int y = MathUtils.floorPositive(y1 * LSystem.getScaleHeight());
+		int width = MathUtils.ceilPositive(w1 * LSystem.getScaleWidth());
+		int height = MathUtils.ceilPositive(h1 * LSystem.getScaleHeight());
 		batch.flush();
 		RectBox r = pushScissorState(x, target.flip() ? target.height() - y - height : y, width, height);
 		batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());

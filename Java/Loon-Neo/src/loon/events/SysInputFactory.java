@@ -32,6 +32,17 @@ public abstract class SysInputFactory {
 
 	private static OnscreenKeyboard _defkeyboard = new DefaultOnscreenKeyboard();
 
+	protected EventActionT<GameTouch> _filterTouch;
+
+	public EventActionT<GameTouch> getFilterTouch() {
+		return this._filterTouch;
+	}
+
+	public SysInputFactory setFilterTouch(EventActionT<GameTouch> e) {
+		this._filterTouch = e;
+		return this;
+	}
+
 	static public interface OnscreenKeyboard {
 		public void show(boolean visible);
 	}

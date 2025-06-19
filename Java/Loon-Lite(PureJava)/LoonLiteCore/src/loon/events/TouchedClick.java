@@ -71,7 +71,11 @@ public class TouchedClick implements ClickListener {
 			return;
 		}
 		if (_allTouch != null) {
-			_allTouch.on(SysTouch.getX(), SysTouch.getY());
+			if (comp == null) {
+				_allTouch.on(SysTouch.getX(), SysTouch.getY());
+			} else {
+				_allTouch.on(comp.getTouchX(), comp.getTouchY());
+			}
 		}
 		if (clicks != null) {
 			for (int i = 0, size = clicks.size; i < size; i++) {

@@ -63,6 +63,7 @@ import loon.component.layout.HorizontalAlign;
 import loon.component.layout.LayoutConstraints;
 import loon.component.layout.LayoutManager;
 import loon.component.layout.LayoutPort;
+import loon.component.layout.SplitLayout;
 import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.ClickListener;
@@ -71,6 +72,7 @@ import loon.events.DrawListener;
 import loon.events.DrawLoop;
 import loon.events.EventAction;
 import loon.events.EventActionN;
+import loon.events.EventActionT;
 import loon.events.FrameLoopEvent;
 import loon.events.GameKey;
 import loon.events.GameTouch;
@@ -1695,7 +1697,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean isClickLimit() {
-		return isClickLimit(SysTouch.x(), SysTouch.y());
+		return isClickLimit(getTouchIntX(), getTouchIntY());
 	}
 
 	/**
@@ -4110,7 +4112,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean onClick(ISprite sprite) {
-		return onClick(sprite, SysTouch.getX(), SysTouch.getY());
+		return onClick(sprite, getTouchX(), getTouchY());
 	}
 
 	/**
@@ -4139,7 +4141,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean onClick(LComponent component) {
-		return onClick(component, SysTouch.getX(), SysTouch.getY());
+		return onClick(component, getTouchX(), getTouchY());
 	}
 
 	public Vector2f getCenterSize() {
@@ -4835,7 +4837,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
 				ActionKey act = it.next();
 				if (act != null && act.isPressed()) {
-					act.act(elapsedTime);
+					act.act(timer.unscaledTimeSinceLastUpdate);
 					if (act.isInterrupt()) {
 						return;
 					}
@@ -4913,10 +4915,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				}
 			}
 		}
-		this._touchDX = SysTouch.getX() - _lastTouchX;
-		this._touchDY = SysTouch.getY() - _lastTouchY;
-		this._lastTouchX = SysTouch.getX();
-		this._lastTouchY = SysTouch.getY();
+		this._touchDX = getTouchX() - _lastTouchX;
+		this._touchDY = getTouchY() - _lastTouchY;
+		this._lastTouchX = getTouchX();
+		this._lastTouchY = getTouchY();
 		this._touchButtonReleased = NO_BUTTON;
 	}
 
@@ -5127,6 +5129,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	/**
+	 * 以指定布局同时加载多个Screen到画面中
+	 * 
+	 * @param layout
+	 * @param screens
+	 * @return
+	 */
+	public SplitScreen setScreen(final SplitLayout layout, final Screen... screens) {
+		if (_processHandler != null) {
+			return this._processHandler.setScreen(layout, screens);
+		}
+		return null;
+	}
+
 	public int getScreenWidth() {
 		return MathUtils.ifloor(getViewWidth() * this._scaleX);
 	}
@@ -5164,7 +5180,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	@Override
 	public PointI getTouch() {
-		_touch.set((int) SysTouch.getX(), (int) SysTouch.getY());
+		_touch.set(getTouchIntX(), getTouchIntY());
 		return _touch;
 	}
 
@@ -5300,23 +5316,43 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	@Override
-	public int getTouchX() {
-		return MathUtils.ifloor(SysTouch.getX());
+	public int getTouchIntX() {
+		return (int) _lastTouch.x;
 	}
 
 	@Override
-	public int getTouchY() {
-		return MathUtils.ifloor(SysTouch.getY());
+	public int getTouchIntY() {
+		return (int) _lastTouch.y;
 	}
 
 	@Override
-	public int getTouchDX() {
-		return MathUtils.ifloor(_touchDX);
+	public int getTouchIntDX() {
+		return (int) _touchDX;
 	}
 
 	@Override
-	public int getTouchDY() {
-		return MathUtils.ifloor(_touchDY);
+	public int getTouchIntDY() {
+		return (int) _touchDY;
+	}
+
+	@Override
+	public float getTouchX() {
+		return _lastTouch.x;
+	}
+
+	@Override
+	public float getTouchY() {
+		return _lastTouch.y;
+	}
+
+	@Override
+	public float getTouchDX() {
+		return _touchDX;
+	}
+
+	@Override
+	public float getTouchDY() {
+		return _touchDY;
 	}
 
 	@Override
@@ -5538,6 +5574,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return _pointerStartY;
 	}
 
+	public Screen setFilterTouch(EventActionT<GameTouch> t) {
+		if (this._processHandler != null) {
+			this._processHandler.setFilterTouch(t);
+		}
+		return this;
+	}
+
 	public abstract void touchDown(GameTouch e);
 
 	public void mouseReleased(GameTouch e) {
@@ -5584,6 +5627,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			updateTouchArea(Event.MOVE, e.getX(), e.getY());
 			touchMove(e);
 		}
+		_lastTouch.set(e.getX(), e.getY());
 	}
 
 	public abstract void touchMove(GameTouch e);

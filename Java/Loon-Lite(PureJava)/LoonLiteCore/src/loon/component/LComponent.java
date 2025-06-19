@@ -1335,7 +1335,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 
 	 */
 	protected void checkFocusKey() {
-		if (this._input.getKeyPressed() == SysKey.ENTER) {
+		if (this._input != null && this._input.getKeyPressed() == SysKey.ENTER) {
 			this.transferFocus();
 		} else {
 			this.transferFocusBackward();

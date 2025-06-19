@@ -21,7 +21,6 @@
 package loon.component;
 
 import loon.canvas.LColor;
-import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -139,7 +138,7 @@ public class LCheckGroup extends LComponent {
 	protected void processTouchPressed() {
 		super.processTouchPressed();
 		for (LCheckBox check : checks) {
-			if (check.contains(SysTouch.getX(), SysTouch.getY())) {
+			if (check.contains(getTouchX(), getTouchY())) {
 				check.processTouchPressed();
 				selectedBtn = check;
 			}
@@ -150,7 +149,7 @@ public class LCheckGroup extends LComponent {
 	protected void processTouchReleased() {
 		super.processTouchReleased();
 		if (selectedBtn != null) {
-			if (selectedBtn.contains(SysTouch.getX(), SysTouch.getY())) {
+			if (selectedBtn.contains(getTouchX(), getTouchY())) {
 				selectedBtn.processTouchReleased();
 			}
 			for (LCheckBox check : checks) {

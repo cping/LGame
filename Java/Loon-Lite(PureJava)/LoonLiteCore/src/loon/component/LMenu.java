@@ -284,11 +284,13 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				}
 
 			} else {
-				if (bounds().contains(SysTouch.getX(), SysTouch.getY()) && checked) {
-					if ((isDown && !isDrag) && checked && (!this.clicked)) {
-						ClickMenu menu = new ClickMenu(this._itemclick, this);
-						LSystem.load(menu);
-						this.clicked = true;
+				if (_parent != null) {
+					if (bounds().contains(_parent.getTouchX(), _parent.getTouchY()) && checked) {
+						if ((isDown && !isDrag) && checked && (!this.clicked)) {
+							ClickMenu menu = new ClickMenu(this._itemclick, this);
+							LSystem.load(menu);
+							this.clicked = true;
+						}
 					}
 				}
 				if (!checked) {

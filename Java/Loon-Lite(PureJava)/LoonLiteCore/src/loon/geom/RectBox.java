@@ -826,7 +826,8 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		if (rect == this) {
 			return true;
 		}
-		return (this.x == rect.x && this.y == rect.y && this.width == rect.width && this.height == rect.height)
+		return (MathUtils.equal(this.x, rect.x) && MathUtils.equal(this.y, rect.y)
+				&& MathUtils.equal(this.width, rect.width) && MathUtils.equal(this.height, rect.height))
 				&& equalsRotateScale(this.rotation, this.scaleX, this.scaleY);
 	}
 
@@ -837,12 +838,13 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		if (rect == this) {
 			return true;
 		}
-		return (this.x == rect.getX() && this.y == rect.getY() && this.width == rect.getZ()
-				&& this.height == rect.getW());
+		return (MathUtils.equal(this.x, rect.getX()) && MathUtils.equal(this.y, rect.getY())
+				&& MathUtils.equal(this.width, rect.getZ()) && MathUtils.equal(this.height, rect.getW()));
 	}
 
 	public boolean equals(float x, float y, float width, float height) {
-		return (this.x == x && this.y == y && this.width == width && this.height == height);
+		return (MathUtils.equal(this.x, x) && MathUtils.equal(this.y, y) && MathUtils.equal(this.width, width)
+				&& MathUtils.equal(this.height, height));
 	}
 
 	public RectBox enlarge(RectBox rect) {

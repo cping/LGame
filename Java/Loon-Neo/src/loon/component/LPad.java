@@ -24,7 +24,6 @@ import loon.LSystem;
 import loon.LTexture.Format;
 import loon.action.map.Config;
 import loon.events.ActionKey;
-import loon.events.SysTouch;
 import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
@@ -127,14 +126,17 @@ public class LPad extends LComponent {
 	}
 
 	private void clickedPad() {
+		if (_input == null) {
+			return;
+		}
 		if (limitClick) {
 			if (lockedKey.isPressed()) {
 				return;
 			}
 			lockedKey.press();
 		}
-		final float x = MathUtils.bringToBounds(0, baseWidth, SysTouch.getX() - getScreenX()) / baseWidth - 0.5f;
-		final float y = MathUtils.bringToBounds(0, baseHeight, SysTouch.getY() - getScreenY()) / baseHeight - 0.5f;
+		final float x = MathUtils.bringToBounds(0, baseWidth, getTouchX() - getScreenX()) / baseWidth - 0.5f;
+		final float y = MathUtils.bringToBounds(0, baseHeight, getTouchY() - getScreenY()) / baseHeight - 0.5f;
 		if (x == 0 && y == 0) {
 			return;
 		}
@@ -275,7 +277,7 @@ public class LPad extends LComponent {
 	}
 
 	public boolean isPadUp() {
-		return isClick && isClickUp();
+		return (isClick && isClickUp()) || !isPointInUI();
 	}
 
 	public ClickListener getListener() {
