@@ -165,7 +165,6 @@ public class SplitScreen extends Screen {
 							Screen screen = layout.get();
 							screen.setLock(true);
 							screen.setRepaintMode(SCREEN_NOT_REPAINT);
-
 							screen.setOnLoadState(false);
 							screen.onCreate(w, h);
 							screen.setClose(false);
@@ -304,7 +303,7 @@ public class SplitScreen extends Screen {
 				for (Iterator<ScreenLayoutInvoke> it = _screenPool.iterator(); it.hasNext();) {
 					ScreenLayoutInvoke layout = it.next();
 					if (layout != null && layout.isAcceptEventCall()) {
-						layout.get().onKeyDown(e);
+						layout.get().keyPressed(e);
 					}
 				}
 			}
@@ -318,7 +317,7 @@ public class SplitScreen extends Screen {
 				for (Iterator<ScreenLayoutInvoke> it = _screenPool.iterator(); it.hasNext();) {
 					ScreenLayoutInvoke layout = it.next();
 					if (layout != null && layout.isAcceptEventCall()) {
-						layout.get().onKeyUp(e);
+						layout.get().keyReleased(e);
 					}
 				}
 			}
@@ -332,7 +331,7 @@ public class SplitScreen extends Screen {
 				for (Iterator<ScreenLayoutInvoke> it = _screenPool.iterator(); it.hasNext();) {
 					ScreenLayoutInvoke layout = it.next();
 					if (layout != null && layout.isAcceptEventCall()) {
-						layout.get().onKeyTyped(e);
+						layout.get().keyTyped(e);
 					}
 				}
 			}

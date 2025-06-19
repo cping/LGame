@@ -108,7 +108,7 @@ public class LTimerContext {
 	public String toString() {
 		StringKeyValue builder = new StringKeyValue("LTimerContext");
 		builder.kv("timeSinceLastUpdate", timeSinceLastUpdate).comma()
-				.kv("unscaledTimeSinceLastUpdate", timeSinceLastUpdate).comma().kv("tick", tick).comma()
+				.kv("unscaledTimeSinceLastUpdate", unscaledTimeSinceLastUpdate).comma().kv("tick", tick).comma()
 				.kv("alpha", alpha);
 		return builder.toString();
 	}

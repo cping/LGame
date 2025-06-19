@@ -4837,7 +4837,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			for (Iterator<ActionKey> it = _keyActions.iterator(); it.hasNext();) {
 				ActionKey act = it.next();
 				if (act != null && act.isPressed()) {
-					act.act(timer.unscaledTimeSinceLastUpdate);
+					act.act(this.elapsedTime);
 					if (act.isInterrupt()) {
 						return;
 					}

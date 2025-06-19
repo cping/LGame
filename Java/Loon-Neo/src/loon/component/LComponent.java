@@ -1615,20 +1615,36 @@ public abstract class LComponent extends LObject<LContainer>
 		return MathUtils.iceil(y / _scaleY);
 	}
 
+	protected float getInternalTouchDX() {
+		return _input == null ? SysTouch.getDX() : _input.getTouchDX();
+	}
+
+	protected float getInternalTouchDY() {
+		return _input == null ? SysTouch.getDY() : _input.getTouchDY();
+	}
+
+	protected float getInternalTouchX() {
+		return _input == null ? SysTouch.getX() : _input.getTouchX();
+	}
+
+	protected float getInternalTouchY() {
+		return _input == null ? SysTouch.getY() : _input.getTouchY();
+	}
+
 	public float getTouchDX() {
-		return toPixelScaleX(_input == null ? SysTouch.getDX() : _input.getTouchDX());
+		return toPixelScaleX(getInternalTouchDX());
 	}
 
 	public float getTouchDY() {
-		return toPixelScaleY(_input == null ? SysTouch.getDY() : _input.getTouchDY());
+		return toPixelScaleY(getInternalTouchDY());
 	}
 
 	public float getTouchX() {
-		return toPixelScaleX(_input == null ? SysTouch.getX() : _input.getTouchX());
+		return toPixelScaleX(getInternalTouchX());
 	}
 
 	public float getTouchY() {
-		return toPixelScaleY(_input == null ? SysTouch.getY() : _input.getTouchY());
+		return toPixelScaleY(getInternalTouchY());
 	}
 
 	public Vector2f getUITouch(float x, float y) {
