@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,10 +21,11 @@
 package loon.utils;
 
 import loon.LSystem;
+import loon.utils.ObjectMap.Keys;
 
 /**
  * 存储单独value的线性数据集合,内部数据无序排列,不允许重复
- *
+ * 
  * @param <E>
  */
 public class ObjectSet<E> implements Iterable<E>, IArray {
@@ -35,17 +36,22 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 		_map = new ObjectMap<E, Object>(false);
 	}
 
+	public ObjectSet(TArray<E> array) {
+		_map = new ObjectMap<E, Object>(false);
+		addAll(array);
+	}
+
 	public ObjectSet(ObjectSet<? extends E> c) {
 		_map = new ObjectMap<E, Object>(false);
 		addAll(c);
 	}
 
 	public ObjectSet(int initialCapacity, float loadFactor) {
-		_map = new ObjectMap<>(initialCapacity, loadFactor, false);
+		_map = new ObjectMap<E, Object>(initialCapacity, loadFactor, false);
 	}
 
 	public ObjectSet(int initialCapacity) {
-		_map = new ObjectMap<>(initialCapacity, false);
+		_map = new ObjectMap<E, Object>(initialCapacity, false);
 	}
 
 	ObjectSet(int initialCapacity, float loadFactor, boolean dummy) {
@@ -53,9 +59,25 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	}
 
 	public void addAll(ObjectSet<? extends E> c) {
+		if (c == null) {
+			return;
+		}
 		for (E key : c) {
 			add(key);
 		}
+	}
+
+	public void addAll(TArray<? extends E> a) {
+		if (a == null) {
+			return;
+		}
+		for (int i = 0; i < a.size; i++) {
+			add(a.get(i));
+		}
+	}
+
+	public Keys<E> keys() {
+		return _map.keys();
 	}
 
 	@Override

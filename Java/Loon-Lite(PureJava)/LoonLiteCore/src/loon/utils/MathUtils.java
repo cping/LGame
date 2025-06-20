@@ -710,11 +710,25 @@ public final class MathUtils {
 		return a == b;
 	}
 
+	public static boolean equal(double a, double b, double e) {
+		if (a > b)
+			return a - b <= e;
+		else
+			return b - a <= e;
+	}
+
 	public static boolean equal(double a, double b) {
 		if (a > b)
 			return a - b <= EPSILON;
 		else
 			return b - a <= EPSILON;
+	}
+
+	public static boolean equal(float a, float b, float e) {
+		if (a > b)
+			return a - b <= e;
+		else
+			return b - a <= e;
 	}
 
 	public static boolean equal(float a, float b) {
@@ -1728,6 +1742,10 @@ public final class MathUtils {
 			angle -= 6.283185f;
 		}
 		return angle;
+	}
+
+	public static float warp(float v, float min, float max) {
+		return (((v - min) % (max - min) + (max - min)) % (max - min)) + min;
 	}
 
 	public static double signum(double d) {

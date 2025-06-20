@@ -6,6 +6,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
 import loon.Screen;
+import loon.action.sprite.Animation;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Picture;
 import loon.action.sprite.Sprite;
@@ -23,7 +24,6 @@ import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
-import loon.action.sprite.Animation;
 
 public class LLKTest extends Screen {
 
@@ -61,15 +61,13 @@ public class LLKTest extends Screen {
 			switch (type) {
 			case 0:
 				if (a1 == null) {
-					a1 = Animation.getDefaultAnimation("assets/llk/s.png", 3,
-							48, 48, 100);
+					a1 = Animation.getDefaultAnimation("assets/llk/s.png", 3, 48, 48, 100);
 				}
 				animation = a1;
 				break;
 			case 2:
 				if (a2 == null) {
-					a2 = Animation.getDefaultAnimation("assets/llk/s1.png", 48,
-							48, 100);
+					a2 = Animation.getDefaultAnimation("assets/llk/s1.png", 48, 48, 100);
 				}
 				animation = a2;
 				break;
@@ -82,8 +80,7 @@ public class LLKTest extends Screen {
 			if (type == 0 || type == 2) {
 				LTexture img = animation.getSpriteImage();
 				if (img != null) {
-					g.draw(img, x() + (getWidth() - img.getWidth()) / 2, y()
-							+ (getHeight() - img.getHeight()) / 2);
+					g.draw(img, x() + (getWidth() - img.getWidth()) / 2, y() + (getHeight() - img.getHeight()) / 2);
 				}
 			}
 		}
@@ -104,9 +101,9 @@ public class LLKTest extends Screen {
 
 	final private static String SORRY = "抱歉";
 
-	final private static String START_MES = "游戏开始！", SORRY1_MES = SORRY
-			+ ", <r刷新/> 在目前使用了。", SORRY2_MES = SORRY + ", <r提示/> 在目前无法使用了。",
-			SORRY3_MES = SORRY + ", <r炸弹/> 在目前无法使用了。", EASY_MES = "好的，这非常容易～";
+	final private static String START_MES = "游戏开始！", SORRY1_MES = SORRY + ", <r刷新/> 在目前使用了。",
+			SORRY2_MES = SORRY + ", <r提示/> 在目前无法使用了。", SORRY3_MES = SORRY + ", <r炸弹/> 在目前无法使用了。",
+			EASY_MES = "好的，这非常容易～";
 
 	final private static String WAIT_MES = "预备……", HELP_MES = "我能为你提供什么服务吗？";
 
@@ -170,10 +167,11 @@ public class LLKTest extends Screen {
 
 	private LTexture[] images;
 
+	@Override
 	public void onLoad() {
-		
-		add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,25));
-		
+	
+		add(MultiScreenTest.getBackButton(this, 1, getWidth() - 100, 25));
+
 		images = new LTexture[17];
 		for (int i = 0; i < 8; i++) {
 			images[i] = LTextures.loadTexture("assets/llk/" + i + ".jpg");
@@ -201,10 +199,11 @@ public class LLKTest extends Screen {
 			v = temp;
 		}
 
+		@Override
 		public void run() {
 			Grid prev = null;
 			for (int j = 0; j < v.size();) {
-				prev = (Grid) v.remove(0);
+				prev = v.remove(0);
 				prev.setVisible(true);
 				v.add(prev);
 				j++;
@@ -214,9 +213,9 @@ public class LLKTest extends Screen {
 				}
 			}
 			Grid current = prev;
-			prev = (Grid) v.remove(0);
+			prev = v.remove(0);
 			while (!v.isEmpty()) {
-				Grid o = (Grid) v.remove(0);
+				Grid o = v.remove(0);
 				o.setVisible(false);
 				try {
 					sleep(20L);
@@ -243,9 +242,9 @@ public class LLKTest extends Screen {
 		if (path == null) {
 			path = new LinkedList[3];
 		}
-		path[0] = new LinkedList<Grid>();
-		path[1] = new LinkedList<Grid>();
-		path[2] = new LinkedList<Grid>();
+		path[0] = new LinkedList<>();
+		path[1] = new LinkedList<>();
+		path[2] = new LinkedList<>();
 		init = false;
 		count = 0;
 		if (progress != null) {
@@ -256,7 +255,7 @@ public class LLKTest extends Screen {
 
 	/**
 	 * 选择游戏关卡
-	 * 
+	 *
 	 * @param no
 	 */
 	private void stage(int no) {
@@ -324,9 +323,10 @@ public class LLKTest extends Screen {
 	}
 
 	private void initRole() {
+		
 		role = new Picture(getImage(11));
-		mes = new LMessage(getImage(14), (getWidth() - 460) / 2,
-				getHeight() - 126 - 10) {
+		mes = new LMessage(getImage(14), (getWidth() - 460) / 2, getHeight() - 126 - 10) {
+			@Override
 			public void doClick() {
 				if (!init) {
 					if (count == 0) {
@@ -334,10 +334,10 @@ public class LLKTest extends Screen {
 						setMessage(START_MES);
 					} else if (isComplete()) {
 						Updateable runnable = new Updateable() {
+							@Override
 							public void action(Object o) {
 
-								stage = new SpriteLabel("Stage - " + stageNo,
-										160, 5);
+								stage = new SpriteLabel("Stage - " + stageNo, 160, 5);
 								stage.setColor(LColor.black);
 								stage.setFont(LFont.getFont("Dialog", 1, 20));
 								LLKTest.this.add(stage);
@@ -351,8 +351,7 @@ public class LLKTest extends Screen {
 								init = true;
 								count = 0;
 
-								progress = new StatusBar(progress_number,
-										progress_number, 325, 5, 150, 25);
+								progress = new StatusBar(progress_number, progress_number, 325, 5, 150, 25);
 								progress.setDead(true);
 								LLKTest.this.add(progress);
 								if (title == null) {
@@ -365,13 +364,8 @@ public class LLKTest extends Screen {
 								if (stageNo < 5) {
 									if (helpRole == null) {
 										helpRole = new Sprite(getImage(8));
-										helpRole.setLocation(
-												LLKTest.this.getWidth()
-														- helpRole.getWidth()
-														- 10,
-												LLKTest.this.getHeight()
-														- helpRole.getHeight()
-														- 10);
+										helpRole.setLocation(LLKTest.this.getWidth() - helpRole.getWidth() - 10,
+												LLKTest.this.getHeight() - helpRole.getHeight() - 10);
 										LLKTest.this.add(helpRole);
 									} else {
 										helpRole.setVisible(true);
@@ -393,9 +387,9 @@ public class LLKTest extends Screen {
 
 				if (HELP_MES.equalsIgnoreCase(getMessage()) && isComplete()) {
 					setVisible(false);
-					select = new LSelect(getImage(14),
-							(LLKTest.this.getWidth() - 460) / 2,
+					select = new LSelect(getImage(14), (LLKTest.this.getWidth() - 460) / 2,
 							LLKTest.this.getHeight() - 126 - 10) {
+						@Override
 						public void doClick() {
 
 							switch (getResultIndex()) {
@@ -448,13 +442,12 @@ public class LLKTest extends Screen {
 					select.setFontColor(LColor.black);
 					select.setAlpha(0.8f);
 					select.setTopOffset(-5);
-					select.setMessage(new String[] { "1.刷新", "2.提示", "3.炸弹",
-							"4.取消" });
+					select.setMessage(new String[] { "1.刷新", "2.提示", "3.炸弹", "4.取消" });
 					LLKTest.this.add(select);
 					return;
 
-				} else if ((EASY_MES.equalsIgnoreCase(getMessage()) || getMessage()
-						.startsWith(SORRY)) && isComplete()) {
+				} else if ((EASY_MES.equalsIgnoreCase(getMessage()) || getMessage().startsWith(SORRY))
+						&& isComplete()) {
 
 					mes.setVisible(false);
 					role.setVisible(false);
@@ -601,8 +594,7 @@ public class LLKTest extends Screen {
 			direct = -1;
 		}
 		path.clear();
-		for (int x = start.getXpos() + direct; x != end.getXpos() && x < xBound
-				&& x >= 0; x += direct) {
+		for (int x = start.getXpos() + direct; x != end.getXpos() && x < xBound && x >= 0; x += direct) {
 			if (grid[start.getYpos()][x].isVisible()) {
 				return false;
 			}
@@ -622,8 +614,7 @@ public class LLKTest extends Screen {
 			direct = -1;
 		}
 		path.clear();
-		for (int y = start.getYpos() + direct; y != end.getYpos() && y < yBound
-				&& y >= 0; y += direct) {
+		for (int y = start.getYpos() + direct; y != end.getYpos() && y < yBound && y >= 0; y += direct) {
 			if (grid[y][start.getXpos()].isVisible()) {
 				return false;
 			}
@@ -635,20 +626,15 @@ public class LLKTest extends Screen {
 	}
 
 	private int findPath(Grid start, Grid end) {
-		if (xdirect(start, end, path[0])) {
-			return 1;
-		}
-		if (ydirect(start, end, path[0])) {
+		if (xdirect(start, end, path[0]) || ydirect(start, end, path[0])) {
 			return 1;
 		}
 		Grid xy = grid[start.getYpos()][end.getXpos()];
-		if (!xy.isVisible() && xdirect(start, xy, path[0])
-				&& ydirect(xy, end, path[1])) {
+		if (!xy.isVisible() && xdirect(start, xy, path[0]) && ydirect(xy, end, path[1])) {
 			return 2;
 		}
 		Grid yx = grid[end.getYpos()][start.getXpos()];
-		if (!yx.isVisible() && ydirect(start, yx, path[0])
-				&& xdirect(yx, end, path[1])) {
+		if (!yx.isVisible() && ydirect(start, yx, path[0]) && xdirect(yx, end, path[1])) {
 			return 2;
 		}
 		path[0].clear();
@@ -659,8 +645,7 @@ public class LLKTest extends Screen {
 				break;
 			}
 			path[0].add(xy);
-			if (!yx.isVisible() && xdirect(xy, yx, path[1])
-					&& ydirect(yx, end, path[2])) {
+			if (!yx.isVisible() && xdirect(xy, yx, path[1]) && ydirect(yx, end, path[2])) {
 				return 3;
 			}
 		}
@@ -673,8 +658,7 @@ public class LLKTest extends Screen {
 				break;
 			}
 			path[0].add(xy);
-			if (!yx.isVisible() && xdirect(xy, yx, path[1])
-					&& ydirect(yx, end, path[2])) {
+			if (!yx.isVisible() && xdirect(xy, yx, path[1]) && ydirect(yx, end, path[2])) {
 				return 3;
 			}
 		}
@@ -687,8 +671,7 @@ public class LLKTest extends Screen {
 				break;
 			}
 			path[0].add(yx);
-			if (!xy.isVisible() && ydirect(yx, xy, path[1])
-					&& xdirect(xy, end, path[2])) {
+			if (!xy.isVisible() && ydirect(yx, xy, path[1]) && xdirect(xy, end, path[2])) {
 				return 3;
 			}
 		}
@@ -701,8 +684,7 @@ public class LLKTest extends Screen {
 				break;
 			}
 			path[0].add(yx);
-			if (!xy.isVisible() && ydirect(yx, xy, path[1])
-					&& xdirect(xy, end, path[2])) {
+			if (!xy.isVisible() && ydirect(yx, xy, path[1]) && xdirect(xy, end, path[2])) {
 				return 3;
 			}
 		}
@@ -711,7 +693,7 @@ public class LLKTest extends Screen {
 	}
 
 	private void deletePair(Grid prev, Grid current) {
-		LinkedList<Grid> temp = new LinkedList<Grid>();
+		LinkedList<Grid> temp = new LinkedList<>();
 		temp.add(prev);
 		for (int i = 0; i < pcount; i++) {
 			temp.addAll(path[i]);
@@ -753,8 +735,7 @@ public class LLKTest extends Screen {
 				if (grid[sy][sx].isVisible()) {
 					for (int ey = sy; ey < yBound - 1; ey++) {
 						for (int ex = 1; ex < xBound - 1; ex++)
-							if (grid[ey][ex].isVisible()
-									&& (ey != sy || ex != sx)
+							if (grid[ey][ex].isVisible() && (ey != sy || ex != sx)
 									&& grid[sy][sx].equals(grid[ey][ex])) {
 								pcount = findPath(grid[sy][sx], grid[ey][ex]);
 								if (pcount != 0) {
@@ -773,6 +754,7 @@ public class LLKTest extends Screen {
 		return false;
 	}
 
+	@Override
 	public void alter(LTimerContext t) {
 
 		if (isWait()) {
@@ -793,8 +775,7 @@ public class LLKTest extends Screen {
 				title = null;
 			}
 			return;
-		} else if (over != null && timer1.action(t.getTimeSinceLastUpdate())
-				&& !overFlag) {
+		} else if (over != null && timer1.action(t.getTimeSinceLastUpdate()) && !overFlag) {
 			if (over.getY() < (getHeight() - over.getHeight()) / 2) {
 				over.move_down(8);
 				over.validatePosition();
@@ -821,6 +802,7 @@ public class LLKTest extends Screen {
 						getSprites().setVisible(false);
 
 						over = new LPaper(getImage(16), 0, 0) {
+							@Override
 							public void doClick() {
 								if (getAlpha() >= 1.0 && overFlag) {
 									over = null;
@@ -842,25 +824,26 @@ public class LLKTest extends Screen {
 		} else {
 			wingame = false;
 			removeAll();
-			add(MultiScreenTest.getBackButton(this,1,getWidth() - 100,25));
+			add(MultiScreenTest.getBackButton(this, 1, getWidth() - 100, 25));
 			stage(stageNo + 1);
 		}
 	}
 
+	@Override
 	public void draw(GLEx g) {
 
 	}
 
-	private Grid getGrid(int x, int y) {
+	private Grid getGrid(float x, float y) {
 
 		Sprites ss = getSprites();
 		if (ss == null) {
 			return null;
 		}
 		ISprite[] s = ss.getSprites();
-		for (int i = 0; i < s.length; i++) {
-			if (s[i] instanceof Grid) {
-				Grid g = (Grid) s[i];
+		for (ISprite element : s) {
+			if (element instanceof Grid) {
+				Grid g = (Grid) element;
 				if (g.getCollisionBox().contains(x, y)) {
 					return g;
 				}
@@ -896,13 +879,7 @@ public class LLKTest extends Screen {
 
 	@Override
 	public void touchDown(GameTouch e) {
-		if (!init) {
-			return;
-		}
-		if (failgame) {
-			return;
-		}
-		if (wingame || progress.getValue() == 0) {
+		if (!init || failgame || wingame || progress.getValue() == 0) {
 			return;
 		}
 		if (nexte != null && nexts != null) {
@@ -928,6 +905,7 @@ public class LLKTest extends Screen {
 		}
 
 		Updateable runnable = new Updateable() {
+			@Override
 			public void action(Object o) {
 				Grid current = null;
 				try {
@@ -988,10 +966,12 @@ public class LLKTest extends Screen {
 
 	}
 
+	@Override
 	public void touchMove(GameTouch e) {
 
 	}
 
+	@Override
 	public void touchUp(GameTouch e) {
 
 	}
@@ -1022,9 +1002,8 @@ public class LLKTest extends Screen {
 
 	@Override
 	public void close() {
-	//LTextures.destroySourceAll();
+		// LTextures.destroySourceAll();
 
 	}
-
 
 }

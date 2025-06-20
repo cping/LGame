@@ -387,6 +387,10 @@ public class SplitScreen extends Screen {
 		return restart(this, w, h, true);
 	}
 
+	public TArray<ScreenLayoutInvoke> getScreenInvokes() {
+		return new TArray<ScreenLayoutInvoke>(_screenPool);
+	}
+
 	public SplitScreen setLayout(SplitLayout sl) {
 		this._layout = sl;
 		switch (this._layout) {

@@ -32,6 +32,10 @@ import loon.utils.timer.Duration;
  */
 public class LSetting {
 
+	private final static int MIN_RUN_FPS = 1;
+
+	private final static int MAX_RUN_FPS = 120;
+
 	public final static LSetting create(String appName, String fontName, int w, int h) {
 		return create(appName, fontName, LSystem.DEFAULT_SYS_FONT_SIZE, w, h, w, h);
 	}
@@ -443,7 +447,7 @@ public class LSetting {
 	 * @return
 	 */
 	public LSetting setFPS(int fps) {
-		this.fps = MathUtils.clamp(fps, 1, 120);
+		this.fps = MathUtils.clamp(fps, MIN_RUN_FPS, MAX_RUN_FPS);
 		return this;
 	}
 
@@ -469,7 +473,7 @@ public class LSetting {
 	 */
 	public LSetting setFixedFPS(int fps) {
 		this.fps_time_fixed = true;
-		this.fps_time_fixed_value = MathUtils.clamp(fps, 1, 120);
+		this.fps_time_fixed_value = MathUtils.clamp(fps, MIN_RUN_FPS, MAX_RUN_FPS);
 		return this;
 	}
 
@@ -537,10 +541,10 @@ public class LSetting {
 			}
 		}
 		if (fps <= 0) {
-			this.fps = MathUtils.clamp(fps, 1, 120);
+			this.fps = MathUtils.clamp(fps, MIN_RUN_FPS, MAX_RUN_FPS);
 		}
 		if (fps_time_fixed && fps_time_fixed_value <= 0) {
-			this.fps_time_fixed_value = MathUtils.clamp(fps_time_fixed_value, 1, 120);
+			this.fps_time_fixed_value = MathUtils.clamp(fps_time_fixed_value, MIN_RUN_FPS, MAX_RUN_FPS);
 		}
 		return this;
 	}

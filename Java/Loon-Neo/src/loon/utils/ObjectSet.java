@@ -21,6 +21,7 @@
 package loon.utils;
 
 import loon.LSystem;
+import loon.utils.ObjectMap.Keys;
 
 /**
  * 存储单独value的线性数据集合,内部数据无序排列,不允许重复
@@ -33,6 +34,11 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 
 	public ObjectSet() {
 		_map = new ObjectMap<E, Object>(false);
+	}
+
+	public ObjectSet(TArray<E> array) {
+		_map = new ObjectMap<E, Object>(false);
+		addAll(array);
 	}
 
 	public ObjectSet(ObjectSet<? extends E> c) {
@@ -53,9 +59,25 @@ public class ObjectSet<E> implements Iterable<E>, IArray {
 	}
 
 	public void addAll(ObjectSet<? extends E> c) {
+		if (c == null) {
+			return;
+		}
 		for (E key : c) {
 			add(key);
 		}
+	}
+
+	public void addAll(TArray<? extends E> a) {
+		if (a == null) {
+			return;
+		}
+		for (int i = 0; i < a.size; i++) {
+			add(a.get(i));
+		}
+	}
+
+	public Keys<E> keys() {
+		return _map.keys();
 	}
 
 	@Override

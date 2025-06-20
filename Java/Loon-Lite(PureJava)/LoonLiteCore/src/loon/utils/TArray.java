@@ -150,6 +150,30 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		return new TArray<T>(array);
 	}
 
+	public final static <T> TArray<T> combine(final TArray<T> array, final TArray<T> dst) {
+		if (array == null || array.isEmpty()) {
+			return dst;
+		}
+		if (dst == null || dst.isEmpty()) {
+			return array;
+		}
+		final TArray<T> result = new TArray<T>(array);
+		result.addAll(dst);
+		return result;
+	}
+
+	public static <T> TArray<T> merge(final TArray<T> array, final TArray<T> dst) {
+		if (array == null || array.isEmpty()) {
+			return dst;
+		}
+		if (dst == null || dst.isEmpty()) {
+			return array;
+		}
+		final ObjectSet<T> result = new ObjectSet<T>(array);
+		result.addAll(dst);
+		return new TArray<T>(result);
+	}
+
 	public T[] items;
 
 	public int size;
@@ -173,6 +197,11 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 		this(array.ordered, array.size);
 		size = array.size;
 		System.arraycopy(array.items, 0, items, 0, size);
+	}
+
+	public TArray(ObjectSet<? extends T> array) {
+		this(CollectionUtils.INITIAL_CAPACITY);
+		addAll(array.keys());
 	}
 
 	public TArray(T... array) {
@@ -219,15 +248,15 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	}
 
 	public TArray<T> addAll(Keys<? extends T> vals) {
-		for (T t : vals) {
-			add(t);
+		for (; vals.hasNext();) {
+			add(vals.next());
 		}
 		return this;
 	}
 
 	public TArray<T> addAll(Values<? extends T> vals) {
-		for (T t : vals) {
-			add(t);
+		for (; vals.hasNext();) {
+			add(vals.next());
 		}
 		return this;
 	}
@@ -934,9 +963,10 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	public TArray<T> clean(final QueryEvent<T> query) {
 		final TArray<T> list = new TArray<T>();
-		for (T c : this) {
-			if (c != null && !query.hit(c)) {
-				list.add(c);
+		for (Iterator<T> it = iterator(); it.hasNext();) {
+			T t = it.next();
+			if (t != null && !query.hit(t)) {
+				list.add(t);
 			}
 		}
 		return list;
@@ -962,7 +992,8 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 
 	public TArray<T> where(QueryEvent<T> q) {
 		TArray<T> list = new TArray<T>();
-		for (T t : this) {
+		for (Iterator<T> it = iterator(); it.hasNext();) {
+			T t = it.next();
 			if (t != null && q.hit(t)) {
 				list.add(t);
 			}
@@ -971,7 +1002,8 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	}
 
 	public T find(QueryEvent<T> q) {
-		for (T t : this) {
+		for (Iterator<T> it = iterator(); it.hasNext();) {
+			T t = it.next();
 			if (t != null && q.hit(t)) {
 				return t;
 			}
@@ -980,7 +1012,8 @@ public class TArray<T> implements Iterable<T>, IArray, LRelease {
 	}
 
 	public boolean remove(QueryEvent<T> q) {
-		for (T t : this) {
+		for (Iterator<T> it = iterator(); it.hasNext();) {
+			T t = it.next();
 			if (t != null && q.hit(t)) {
 				return remove(t);
 			}

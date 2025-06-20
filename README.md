@@ -1,7 +1,5 @@
-![LGame Logo](libgdx_logo.svg)
-
+![LGame Logo](https://raw.github.com/cping/LGame/master/loon_logo.svg)
 ## Loon Game Engine (Java Game Framework)
-
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
@@ -119,8 +117,6 @@ Built-in over 30 game example(Part screenshots):
 ![LGame](https://raw.github.com/cping/LGame/master/sample.jpg "samplelist")
 
 ![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
-
-PS : If there is a dependency problem such as a Loon-method NoSuchMethodError, the best way is of course to reset the environment yourself to ensure that the relevant jars are recognized by the compiler. But if not, then there is a simple and feasible solution, which is to delete all loon related jars, and then directly copy the relevant source code to your running environment src directory, so no matter what environment, as long as you can run, They Never have a dependency problem...
 _________
 
 #### 关于LGame

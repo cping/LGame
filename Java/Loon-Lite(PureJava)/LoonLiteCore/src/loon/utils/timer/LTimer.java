@@ -30,6 +30,7 @@ import loon.utils.HelperUtils;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.TArray;
+import loon.utils.TimeUtils;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -90,6 +91,10 @@ public class LTimer implements LTimerListener, LRelease {
 			}
 			return _instance;
 		}
+	}
+
+	public static LTimer now() {
+		return new LTimer(TimeUtils.millis());
 	}
 
 	public static int getTimeCount() {
