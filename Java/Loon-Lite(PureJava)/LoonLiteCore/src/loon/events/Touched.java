@@ -25,6 +25,6 @@ package loon.events;
  */
 public interface Touched {
 
-	public void on(float x, float y);
+	void on(float x, float y);
 
 }

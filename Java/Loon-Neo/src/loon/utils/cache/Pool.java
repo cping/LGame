@@ -201,7 +201,7 @@ public abstract class Pool<T> {
 	}
 
 	static public interface Poolable {
-		public void reset();
+		void reset();
 	}
 
 }

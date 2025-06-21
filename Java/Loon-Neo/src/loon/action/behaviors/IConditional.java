@@ -21,5 +21,7 @@
 package loon.action.behaviors;
 
 public interface IConditional<T> {
+	
 	TaskStatus update(T context);
+	
 }

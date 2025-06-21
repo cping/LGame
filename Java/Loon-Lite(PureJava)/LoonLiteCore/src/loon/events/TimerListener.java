@@ -22,6 +22,6 @@ package loon.events;
 
 public interface TimerListener {
 
-	public void onTimer(final TimerEvent event);
+	void onTimer(final TimerEvent event);
 
 }

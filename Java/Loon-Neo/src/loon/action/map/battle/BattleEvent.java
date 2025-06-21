@@ -25,30 +25,30 @@ import loon.utils.processes.WaitProcess;
 
 public interface BattleEvent {
 
-	public boolean isLocked();
+	boolean isLocked();
 
-	public BattleEvent lock(boolean lock);
+	BattleEvent lock(boolean lock);
 
-	public WaitProcess wait(Updateable update);
+	WaitProcess wait(Updateable update);
 
-	public WaitProcess wait(Updateable update, float s);
+	WaitProcess wait(Updateable update, float s);
 
-	public WaitProcess wait(WaitProcess waitProcess);
+	WaitProcess wait(WaitProcess waitProcess);
 
-	public BattleProcess getMainProcess();
+	BattleProcess getMainProcess();
 
-	public BattleEvent setMainProcess(BattleProcess p);
+	BattleEvent setMainProcess(BattleProcess p);
 
-	public boolean start(long elapsedTime);
+	boolean start(long elapsedTime);
 
-	public boolean process(long elapsedTime);
+	boolean process(long elapsedTime);
 
-	public boolean end(long elapsedTime);
+	boolean end(long elapsedTime);
 
-	public BattleState getState();
+	BattleState getState();
 
-	public boolean completed();
+	boolean completed();
 
-	public BattleEvent reset();
+	BattleEvent reset();
 
 }

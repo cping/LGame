@@ -31,40 +31,40 @@ public interface Accelerometer {
 
 	public static interface Event {
 
-		public void onDirection(SensorDirection direction, float x, float y, float z);
+		void onDirection(SensorDirection direction, float x, float y, float z);
 
-		public void onShakeChanged(float force);
+		void onShakeChanged(float force);
 	}
 
-	public void start();
+	void start();
 
-	public void stop();
+	void stop();
 
-	public float getLastX();
+	float getLastX();
 
-	public float getLastY();
+	float getLastY();
 
-	public float getLastZ();
+	float getLastZ();
 
-	public float getX();
+	float getX();
 
-	public float getY();
+	float getY();
 
-	public float getZ();
+	float getZ();
 
-	public AccelerometerState getState();
+	AccelerometerState getState();
 
-	public int getSleep();
+	int getSleep();
 
-	public void sleep(int sleep);
+	void sleep(int sleep);
 
-	public int getAllDirection();
+	int getAllDirection();
 
-	public Event getEvent();
+	Event getEvent();
 
-	public void setEvent(Event event);
+	void setEvent(Event event);
 
-	public float getOrientation();
+	float getOrientation();
 
-	public SensorDirection getDirection();
+	SensorDirection getDirection();
 }

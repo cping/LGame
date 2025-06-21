@@ -22,6 +22,6 @@ package loon.action.behaviors;
 
 public interface IBaseAction {
 
-	public IBaseAction getBaseAction();
+	IBaseAction getBaseAction();
 
 }

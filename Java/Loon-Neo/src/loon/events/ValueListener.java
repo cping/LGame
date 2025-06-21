@@ -24,6 +24,6 @@ import loon.component.LComponent;
 
 public interface ValueListener {
 
-	public void onChange(LComponent c, float value);
+	void onChange(LComponent c, float value);
 
 }

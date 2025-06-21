@@ -25,6 +25,6 @@ package loon.events;
  */
 public interface SelectAreaListener {
 
-	public void onArea(float x, float y, float w, float h);
+	void onArea(float x, float y, float w, float h);
 
 }

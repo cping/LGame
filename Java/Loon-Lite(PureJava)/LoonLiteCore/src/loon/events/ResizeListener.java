@@ -25,6 +25,6 @@ package loon.events;
  */
 public interface ResizeListener<T> {
 
-	public void onResize(T o);
+	void onResize(T o);
 
 }

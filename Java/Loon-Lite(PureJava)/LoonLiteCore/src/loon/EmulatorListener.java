@@ -22,36 +22,36 @@ package loon;
 
 public interface EmulatorListener {
 
-	public void onUpClick();
+	void onUpClick();
 
-	public void onLeftClick();
+	void onLeftClick();
 
-	public void onRightClick();
+	void onRightClick();
 
-	public void onDownClick();
+	void onDownClick();
 
-	public void onTriangleClick();
+	void onTriangleClick();
 
-	public void onSquareClick();
+	void onSquareClick();
 
-	public void onCircleClick();
+	void onCircleClick();
 
-	public void onCancelClick();
+	void onCancelClick();
 
-	public void unUpClick();
+	void unUpClick();
 
-	public void unLeftClick();
+	void unLeftClick();
 
-	public void unRightClick();
+	void unRightClick();
 
-	public void unDownClick();
+	void unDownClick();
 
-	public void unTriangleClick();
+	void unTriangleClick();
 
-	public void unSquareClick();
+	void unSquareClick();
 
-	public void unCircleClick();
+	void unCircleClick();
 
-	public void unCancelClick();
+	void unCancelClick();
 
 }

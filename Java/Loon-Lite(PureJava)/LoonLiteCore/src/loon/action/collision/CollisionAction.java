@@ -24,6 +24,6 @@ import loon.action.ActionBind;
 
 public interface CollisionAction<T extends ActionBind> {
 
-	public void onCollision(T src, T dst, int dir);
+	void onCollision(T src, T dst, int dir);
 
 }

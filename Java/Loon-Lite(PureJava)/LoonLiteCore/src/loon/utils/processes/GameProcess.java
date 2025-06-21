@@ -25,7 +25,7 @@ import loon.utils.timer.LTimerContext;
 
 public interface GameProcess {
 
-	public int getPriority();
+	int getPriority();
 
 	GameProcessType getProcessType();
 

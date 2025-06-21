@@ -22,6 +22,6 @@ package loon.utils.processes;
 
 public interface YieldLoop {
 
-	public void loop();
+	void loop();
 
 }

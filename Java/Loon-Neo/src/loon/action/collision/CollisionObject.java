@@ -26,42 +26,42 @@ import loon.geom.Shape;
 
 public interface CollisionObject extends ActionBind {
 
-	public RectBox getBoundingRect();
+	RectBox getBoundingRect();
 
-	public void setCollisionData(ActionBind data);
+	void setCollisionData(ActionBind data);
 
-	public ActionBind getCollisionData();
+	ActionBind getCollisionData();
 
-	public boolean containsPoint(float x, float y);
+	boolean containsPoint(float x, float y);
 
-	public boolean intersects(CollisionObject o);
+	boolean intersects(CollisionObject o);
 
-	public boolean intersects(Shape shape);
+	boolean intersects(Shape shape);
 
-	public boolean contains(CollisionObject o);
+	boolean contains(CollisionObject o);
 
-	public boolean contains(Shape shape);
+	boolean contains(Shape shape);
 
-	public boolean collided(Shape shape);
+	boolean collided(Shape shape);
 
-	public String getObjectFlag();
-
-	@Override
-	public float getX();
+	String getObjectFlag();
 
 	@Override
-	public float getY();
+	float getX();
 
 	@Override
-	public float getWidth();
+	float getY();
 
 	@Override
-	public float getHeight();
+	float getWidth();
 
 	@Override
-	public RectBox getRectBox();
+	float getHeight();
 
 	@Override
-	public int getLayer();
+	RectBox getRectBox();
+
+	@Override
+	int getLayer();
 
 }

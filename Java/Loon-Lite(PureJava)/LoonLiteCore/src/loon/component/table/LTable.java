@@ -249,6 +249,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	public LTable mouseReleased(float x, float y) {
 		if (header.columnResizeIndex > -1) {
 			header.columnResizeIndex = -1;
+			_dragged = false;
 		}
 		return this;
 	}
@@ -529,7 +530,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 				}
 				y += (cellHeight + cellSpacing);
 			}
-			if (!isClickDrag() && (font instanceof LFont)) {
+			if (!_dragged && !isClickDrag() && (font instanceof LFont)) {
 				if (model.isDirty()) {
 					if (_cacheFonts != null) {
 						_cacheFonts.cancalSubmit();

@@ -24,6 +24,6 @@ import loon.action.sprite.ActionObject;
 
 public interface UpdateListener {
 
-	public void act(ActionObject obj, long elapsedTime);
+	void act(ActionObject obj, long elapsedTime);
 
 }

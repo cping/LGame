@@ -26,5 +26,5 @@ public interface LazyLoading {
 		Screen onScreen();
 	}
 
-	public void register(LSetting setting, LazyLoading.Data lazy);
+	void register(LSetting setting, LazyLoading.Data lazy);
 }

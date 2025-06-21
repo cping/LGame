@@ -24,6 +24,6 @@ import loon.LSysException;
 
 public interface ProgressCallable<T> {
 
-	public T call(final ProgressListener p) throws LSysException;
+	T call(final ProgressListener p) throws LSysException;
 
 }

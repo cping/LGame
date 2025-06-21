@@ -22,6 +22,6 @@ package loon.utils.processes;
 
 public interface YieldExecute {
 
-	public WaitCoroutine execute(Yielderable y);
+	WaitCoroutine execute(Yielderable y);
 
 }

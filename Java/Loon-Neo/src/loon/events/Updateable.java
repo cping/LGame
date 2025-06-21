@@ -25,6 +25,6 @@ package loon.events;
  */
 public interface Updateable extends EventAction {
 
-	public void action(Object a);
+	void action(Object a);
 
 }

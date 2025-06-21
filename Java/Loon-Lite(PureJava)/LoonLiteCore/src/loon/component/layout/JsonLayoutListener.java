@@ -26,8 +26,8 @@ import loon.component.LComponent;
 
 public interface JsonLayoutListener {
 
-	public void on(Json.Object props, String name, LComponent comp);
+	void on(Json.Object props, String name, LComponent comp);
 
-	public void on(Json.Object props, String name, ISprite comp);
+	void on(Json.Object props, String name, ISprite comp);
 
 }
