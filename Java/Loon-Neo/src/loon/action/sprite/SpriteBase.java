@@ -968,7 +968,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		if (screen == null) {
 			return SysTouch.isDown();
 		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
+		return screen.getTouchPressed() == SysTouch.TOUCH_DOWN;
 	}
 
 	public boolean isClickUp() {
@@ -976,7 +976,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		if (screen == null) {
 			return SysTouch.isUp();
 		}
-		return screen.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
+		return screen.getTouchReleased() == SysTouch.TOUCH_UP;
 	}
 
 	public boolean isClickDrag() {

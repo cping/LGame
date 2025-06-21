@@ -29,65 +29,65 @@ import loon.geom.RectBox;
  */
 public interface ActionBind {
 
-	public Field2D getField2D();
+	Field2D getField2D();
 
-	public void setVisible(boolean v);
+	void setVisible(boolean v);
 
-	public boolean isVisible();
+	boolean isVisible();
 
-	public int x();
+	int x();
 
-	public int y();
+	int y();
 
-	public float getX();
+	float getX();
 
-	public float getY();
+	float getY();
 
-	public float getScaleX();
+	float getScaleX();
 
-	public float getScaleY();
+	float getScaleY();
 
-	public void setColor(LColor color);
+	void setColor(LColor color);
 
-	public LColor getColor();
+	LColor getColor();
 
-	public void setScale(float sx, float sy);
+	void setScale(float sx, float sy);
 
-	public float getRotation();
+	float getRotation();
 
-	public void setRotation(float r);
+	void setRotation(float r);
 
-	public float getWidth();
+	float getWidth();
 
-	public float getHeight();
+	float getHeight();
 
-	public ActionBind setSize(float w, float h);
+	ActionBind setSize(float w, float h);
 
-	public float getAlpha();
+	float getAlpha();
 
-	public void setAlpha(float alpha);
+	void setAlpha(float alpha);
 
-	public void setLocation(float x, float y);
+	void setLocation(float x, float y);
 
-	public void setX(float x);
+	void setX(float x);
 
-	public void setY(float y);
+	void setY(float y);
 
-	public boolean isBounded();
+	boolean isBounded();
 
-	public boolean isContainer();
+	boolean isContainer();
 
-	public boolean inContains(float x, float y, float w, float h);
+	boolean inContains(float x, float y, float w, float h);
 
-	public RectBox getRectBox();
+	RectBox getRectBox();
 
-	public float getContainerWidth();
+	float getContainerWidth();
 
-	public float getContainerHeight();
+	float getContainerHeight();
 
-	public ActionTween selfAction();
+	ActionTween selfAction();
 
-	public boolean isActionCompleted();
+	boolean isActionCompleted();
 
-	public int getLayer();
+	int getLayer();
 }

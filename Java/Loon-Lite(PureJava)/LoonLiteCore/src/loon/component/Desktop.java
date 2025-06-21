@@ -666,6 +666,12 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 					this._hoverComponent.processTouchExited();
 				}
 			}
+			if (this._hoverComponent != comp) {
+				if (this._hoverComponent != null && this._hoverComponent.isAllowTouch()
+						&& this._hoverComponent.isTouchDownClick() && !this._hoverComponent.isPointInUI()) {
+					this._hoverComponent.processTouchReleased();
+				}
+			}
 			this._hoverComponent = comp;
 		}
 	}

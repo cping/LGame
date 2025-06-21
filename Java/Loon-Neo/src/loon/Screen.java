@@ -982,23 +982,39 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	protected void clearInput() {
+		clearInput(true, true);
+	}
+
+	protected void clearInput(boolean clearTouch, boolean clearKey) {
+		if (clearTouch) {
+			this._touchButtonPressed = this._touchButtonReleased = NO_BUTTON;
+			this._touchDX = -1;
+			this._touchDY = -1;
+			this._lastTouchX = -1;
+			this._lastTouchY = -1;
+			this._touchDifX = _touchDifY = 0f;
+			this._touchInitX = _touchInitY = 0f;
+			this._touchPrevDifX = _touchPrevDifY = 0f;
+			if (_touchTypes != null) {
+				_touchTypes.clear();
+			}
+			SysTouch.resetTouch();
+		}
+		if (clearKey) {
+			this._keyTypes.clear();
+			this.clearActionKey();
+			SysKey.resetKey();
+		}
+	}
+
 	public Screen clearTouched() {
-		this._touchButtonPressed = NO_BUTTON;
-		this._touchButtonReleased = NO_BUTTON;
-		this._touchDX = -1;
-		this._touchDY = -1;
-		this._lastTouchX = -1;
-		this._lastTouchY = -1;
-		this._touchDifX = _touchDifY = 0f;
-		this._touchInitX = _touchInitY = 0f;
-		this._touchPrevDifX = _touchPrevDifY = 0f;
-		if (_touchTypes != null) {
-			_touchTypes.clear();
-		}
-		if (_touchListener != null) {
-			_touchListener.clear();
-			_touchListener = null;
-		}
+		clearInput(true, false);
+		return this;
+	}
+
+	public Screen clearKeyed() {
+		clearInput(false, true);
 		return this;
 	}
 
@@ -1810,6 +1826,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	final public void resetSize(int w, int h) {
 		this.updateRenderSize(0f, 0f, (w <= 0 ? LSystem.viewSize.getWidth() : w),
 				(h <= 0 ? LSystem.viewSize.getHeight() : h));
+		this.clearInput();
 		this._processHandler = LSystem.getProcess();
 		if (_resizeListener != null) {
 			_resizeListener.onResize(this);
@@ -1883,6 +1900,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._pointerStartX = _pointerStartY = 0f;
 		this._isScreenFrom = _isTimerPaused = _isAllowThroughUItoScreenTouch = false;
 		this._isLoad = _isLock = _isClose = _isGravity = false;
+		this._touchButtonPressed = this._touchButtonReleased = NO_BUTTON;
+		this._keyButtonPressed = this._keyButtonReleased = NO_KEY;
 		this._isProcessing = true;
 		if (_currentSprites != null) {
 			_currentSprites.close();

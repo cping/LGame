@@ -84,6 +84,10 @@ public class PointI implements XY, SetXY {
 		return this.set(0, 0);
 	}
 
+	public boolean isZero() {
+		return MathUtils.equal(this.x, 0) && MathUtils.equal(this.y, 0);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

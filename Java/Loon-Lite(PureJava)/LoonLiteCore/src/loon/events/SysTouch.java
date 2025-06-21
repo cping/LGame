@@ -81,7 +81,12 @@ public class SysTouch {
 	}
 
 	public static void resetTouch() {
-		LSystem.getProcess().getSysInputFactory().resetTouch();
+		if (LSystem.getProcess() != null) {
+			SysInputFactory input = LSystem.getProcess().getSysInputFactory();
+			if (input != null) {
+				input.resetTouch();
+			}
+		}
 	}
 
 	public static ActionKey getOnlyKey() {

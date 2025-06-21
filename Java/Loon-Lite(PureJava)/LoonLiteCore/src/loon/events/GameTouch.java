@@ -68,6 +68,7 @@ public class GameTouch {
 		this.button = -1;
 		this.pointer = -1;
 		this.id = -1;
+		this.isDraging = false;
 		return this;
 	}
 

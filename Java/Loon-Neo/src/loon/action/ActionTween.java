@@ -43,18 +43,18 @@ import loon.utils.StringKeyValue;
 
 public class ActionTween extends ActionTweenBase<ActionTween> {
 
-	private float initMoveSpeed = MoveTo._INIT_MOVE_SPEED;
+	private float _initMoveSpeed;
 
-	private int combinedAttrsLimit = 3;
+	private int _combinedAttrsLimit;
 
-	private int funPointsLimit = 0;
+	private int _funPointsLimit;
 
 	public void setCombinedAttributesLimit(int limit) {
-		this.combinedAttrsLimit = limit;
+		this._combinedAttrsLimit = limit;
 	}
 
 	public void setfunPointsLimit(int limit) {
-		this.funPointsLimit = limit;
+		this._funPointsLimit = limit;
 	}
 
 	private static final ActionTweenPool.Callback<ActionTween> _POOL_CALLBACK = new ActionTweenPool.Callback<ActionTween>() {
@@ -121,7 +121,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		tween.setup(target, tweenType, duration);
 		tween.ease(Easing.QUAD_INOUT);
 		tween.path(ActionControl.SMOOTH);
-		tween.isFrom = true;
+		tween._isFrom = true;
 		return tween;
 	}
 
@@ -172,28 +172,44 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		_POOLS.resize(minCapacity);
 	}
 
-	private int type;
-	private Easing equation;
-	private ActionPath path;
+	private ActionEvent _currentActionEvent;
 
-	private boolean isFrom;
-	private boolean isRelative;
-	private boolean isRepeat;
+	private Array<ActionEvent> _repeatList;
+
+	private int _type;
+	private Easing _equation;
+	private ActionPath _path;
+
+	private boolean _isFrom;
+	private boolean _isRelative;
+	private boolean _isRepeat;
 
 	private int _combinedAttrsSize;
 	private int _funPointsSize;
 
-	private final float[] startValues = new float[combinedAttrsLimit];
-	private final float[] targetValues = new float[combinedAttrsLimit];
-	private final float[] funPoints = new float[funPointsLimit * combinedAttrsLimit];
+	private final float[] _startValues;
+	private final float[] _targetValues;
+	private final float[] _funPoints;
 
-	private float[] accessorBuffer = new float[combinedAttrsLimit];
-	private float[] pathBuffer = new float[(2 + funPointsLimit) * combinedAttrsLimit];
+	private float[] _accessorBuffer;
+	private float[] _pathBuffer;
 
-	private Array<ActionEvent> actionEvents;
+	private Array<ActionEvent> _actionEvents;
 
 	private ActionTween() {
-		reset();
+		this(3, 0);
+	}
+
+	private ActionTween(int limit, int funlimit) {
+		this._initMoveSpeed = MoveTo._INIT_MOVE_SPEED;
+		this._combinedAttrsLimit = limit;
+		this._funPointsLimit = funlimit;
+		this._startValues = new float[_combinedAttrsLimit];
+		this._targetValues = new float[_combinedAttrsLimit];
+		this._funPoints = new float[_funPointsLimit * _combinedAttrsLimit];
+		this._accessorBuffer = new float[_combinedAttrsLimit];
+		this._pathBuffer = new float[(2 + _funPointsLimit) * _combinedAttrsLimit];
+		this.reset();
 	}
 
 	public ActionTween select(boolean selected, ActionEvent a, ActionEvent b) {
@@ -227,7 +243,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween defineMoveTo(CustomPath path) {
-		return defineMoveTo(null, path, true, initMoveSpeed);
+		return defineMoveTo(null, path, true, _initMoveSpeed);
 	}
 
 	/**
@@ -238,7 +254,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween defineMoveTo(CustomPath path, boolean all) {
-		return defineMoveTo(null, path, all, initMoveSpeed);
+		return defineMoveTo(null, path, all, _initMoveSpeed);
 	}
 
 	/**
@@ -274,7 +290,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween defineMoveTo(CustomPath path, ActionListener l) {
-		return defineMoveTo(null, path, true, initMoveSpeed, l);
+		return defineMoveTo(null, path, true, _initMoveSpeed, l);
 	}
 
 	/**
@@ -286,7 +302,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween defineMoveTo(CustomPath path, boolean all, ActionListener l) {
-		return defineMoveTo(null, path, all, initMoveSpeed, l);
+		return defineMoveTo(null, path, all, _initMoveSpeed, l);
 	}
 
 	/**
@@ -332,7 +348,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY) {
-		return moveTo(endX, endY, false, initMoveSpeed);
+		return moveTo(endX, endY, false, _initMoveSpeed);
 	}
 
 	/**
@@ -344,7 +360,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY, ActionListener l) {
-		return moveTo(endX, endY, false, initMoveSpeed, l);
+		return moveTo(endX, endY, false, _initMoveSpeed, l);
 	}
 
 	/**
@@ -381,7 +397,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag) {
-		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, null);
+		return moveTo(null, endX, endY, flag, _initMoveSpeed, 0, 0, null);
 	}
 
 	/**
@@ -394,7 +410,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, ActionListener l) {
-		return moveTo(null, endX, endY, flag, initMoveSpeed, 0, 0, l);
+		return moveTo(null, endX, endY, flag, _initMoveSpeed, 0, 0, l);
 	}
 
 	/**
@@ -435,7 +451,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY) {
-		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, null);
+		return moveTo(null, endX, endY, flag, _initMoveSpeed, offsetX, offsetY, null);
 	}
 
 	/**
@@ -450,7 +466,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween moveTo(float endX, float endY, boolean flag, float offsetX, float offsetY, ActionListener l) {
-		return moveTo(null, endX, endY, flag, initMoveSpeed, offsetX, offsetY, l);
+		return moveTo(null, endX, endY, flag, _initMoveSpeed, offsetX, offsetY, l);
 	}
 
 	/**
@@ -474,11 +490,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag) {
-		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, null);
+		return moveTo(map, endX, endY, flag, _initMoveSpeed, 0, 0, null);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, int delayTime, boolean flag) {
-		return moveTo(map, endX, endY, flag, initMoveSpeed, 0, 0, delayTime, null);
+		return moveTo(map, endX, endY, flag, _initMoveSpeed, 0, 0, delayTime, null);
 	}
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed) {
@@ -512,7 +528,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
 			boolean flag) {
-		return moveTo(map, startX, startY, endX, endY, delayTime, flag, initMoveSpeed);
+		return moveTo(map, startX, startY, endX, endY, delayTime, flag, _initMoveSpeed);
 	}
 
 	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
@@ -632,11 +648,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween moveBy(float endX, float endY) {
-		return moveBy(endX, endY, initMoveSpeed);
+		return moveBy(endX, endY, _initMoveSpeed);
 	}
 
 	public ActionTween moveBy(float endX, float endY, ActionListener l) {
-		return moveBy(endX, endY, initMoveSpeed, l);
+		return moveBy(endX, endY, _initMoveSpeed, l);
 	}
 
 	public ActionTween moveBy(float endX, float endY, float speed) {
@@ -974,19 +990,19 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	private TArray<ActionEvent> getCurrentActionEvents(boolean clear) {
-		if (actionEvents == null || actionEvents.size() == 0) {
+		if (_actionEvents == null || _actionEvents.size() == 0) {
 			return null;
 		}
-		final TArray<ActionEvent> events = new TArray<ActionEvent>(actionEvents.size());
-		for (; actionEvents.hashNext();) {
-			ActionEvent e = actionEvents.next();
+		final TArray<ActionEvent> events = new TArray<ActionEvent>(_actionEvents.size());
+		for (; _actionEvents.hashNext();) {
+			ActionEvent e = _actionEvents.next();
 			if (e != null) {
 				events.add(e);
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		if (clear) {
-			actionEvents.clear();
+			_actionEvents.clear();
 		}
 		return events;
 	}
@@ -1141,18 +1157,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween listenTags(Object tag, ActionListener listener) {
-		if (actionEvents == null || tag == null) {
+		if (_actionEvents == null || tag == null) {
 			return this;
 		}
-		for (; actionEvents.hashNext();) {
-			ActionEvent tmp = actionEvents.next();
+		for (; _actionEvents.hashNext();) {
+			ActionEvent tmp = _actionEvents.next();
 			if (tmp != null) {
 				if (tag.equals(tmp.tag) || tmp.tag == tag) {
 					tmp.setActionListener(listener);
 				}
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		return this;
 	}
 
@@ -1164,19 +1180,19 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween listenNames(String name, ActionListener listener) {
-		if (actionEvents == null || name == null) {
+		if (_actionEvents == null || name == null) {
 			return this;
 		}
 		String findName = name.trim().toLowerCase();
-		for (; actionEvents.hashNext();) {
-			ActionEvent tmp = actionEvents.next();
+		for (; _actionEvents.hashNext();) {
+			ActionEvent tmp = _actionEvents.next();
 			if (tmp != null) {
 				if (findName.equals(tmp.getName())) {
 					tmp.setActionListener(listener);
 				}
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		return this;
 	}
 
@@ -1187,19 +1203,19 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween killNames(String name) {
-		if (actionEvents == null || name == null) {
+		if (_actionEvents == null || name == null) {
 			return this;
 		}
 		String findName = name.trim().toLowerCase();
-		for (; actionEvents.hashNext();) {
-			ActionEvent tmp = actionEvents.next();
+		for (; _actionEvents.hashNext();) {
+			ActionEvent tmp = _actionEvents.next();
 			if (tmp != null) {
 				if (findName.equals(tmp.getName())) {
 					tmp.kill();
 				}
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		return this;
 	}
 
@@ -1210,18 +1226,18 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween killTags(Object tag) {
-		if (actionEvents == null || tag == null) {
+		if (_actionEvents == null || tag == null) {
 			return this;
 		}
-		for (; actionEvents.hashNext();) {
-			ActionEvent tmp = actionEvents.next();
+		for (; _actionEvents.hashNext();) {
+			ActionEvent tmp = _actionEvents.next();
 			if (tmp != null) {
 				if (tag.equals(tmp.tag) || tmp.tag == tag) {
 					tmp.kill();
 				}
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		return this;
 	}
 
@@ -1230,7 +1246,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween loop(int count, boolean reverse) {
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return this;
 		}
 		if (count < 1) {
@@ -1242,16 +1258,16 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		ActionEvent e = null;
 		Array<ActionEvent> tmps = new Array<ActionEvent>();
 		for (int i = 0; i < count - 1; i++) {
-			for (; actionEvents.hashNext();) {
-				ActionEvent tmp = actionEvents.next();
+			for (; _actionEvents.hashNext();) {
+				ActionEvent tmp = _actionEvents.next();
 				if (tmp != null) {
 					e = tmp;
 				}
 				tmps.add(reverse ? e.reverse() : e.cpy());
 			}
-			actionEvents.stopNext();
+			_actionEvents.stopNext();
 		}
-		actionEvents.addAll(tmps);
+		_actionEvents.addAll(tmps);
 		return this;
 	}
 
@@ -1260,7 +1276,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween loopLast(int count, boolean reverse) {
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return this;
 		}
 		if (count < 1) {
@@ -1271,23 +1287,23 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		}
 		Array<ActionEvent> tmps = new Array<ActionEvent>();
 		for (int i = 0; i < count - 1; i++) {
-			tmps.add(reverse ? actionEvents.last().reverse() : actionEvents.last().cpy());
+			tmps.add(reverse ? _actionEvents.last().reverse() : _actionEvents.last().cpy());
 		}
-		actionEvents.addAll(tmps);
+		_actionEvents.addAll(tmps);
 		return this;
 	}
 
 	public TArray<ActionEvent> getActionEvents() {
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return new TArray<ActionEvent>(0);
 		}
-		return new TArray<ActionEvent>(actionEvents);
+		return new TArray<ActionEvent>(_actionEvents);
 	}
 
 	@Override
 	public ActionTween delay(float d) {
 		super.delay(delay);
-		if (actionEvents != null && d > 0) {
+		if (_actionEvents != null && d > 0) {
 			DelayTo delay = new DelayTo(d);
 			delay.setDelay(0);
 			return event(delay);
@@ -1303,10 +1319,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	public ActionTween repeat(int count, float time) {
 		super.repeat(count, time);
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return this;
 		}
-		isRepeat = true;
+		_isRepeat = true;
 		boolean update = count > 1;
 		ReplayTo replay = new ReplayTo(null, update);
 		if (update) {
@@ -1319,10 +1335,10 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	@Override
 	public ActionTween repeatBackward(int count, float time) {
 		super.repeatBackward(count, time);
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return this;
 		}
-		isRepeat = true;
+		_isRepeat = true;
 		boolean update = count > 1;
 		ReplayTo replay = new ReplayTo(null, update);
 		if (update) {
@@ -1350,11 +1366,11 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	 * @return
 	 */
 	public ActionTween event(ActionEvent event, ActionListener listener) {
-		if (actionEvents == null) {
-			actionEvents = new Array<ActionEvent>();
+		if (_actionEvents == null) {
+			_actionEvents = new Array<ActionEvent>();
 		}
 		if (event != null) {
-			actionEvents.add(event);
+			_actionEvents.add(event);
 			if (listener != null) {
 				event.setActionListener(listener);
 			}
@@ -1363,37 +1379,37 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public boolean notEvent() {
-		return actionEvents == null || actionEvents.size() == 0;
+		return _actionEvents == null || _actionEvents.size() == 0;
 	}
 
 	public int countEvent() {
-		return actionEvents == null ? 0 : actionEvents.size();
+		return _actionEvents == null ? 0 : _actionEvents.size();
 	}
 
 	public boolean isRunning() {
-		return (!notEvent() || (this.currentActionEvent != null && !this.currentActionEvent.isComplete()));
+		return (!notEvent() || (this._currentActionEvent != null && !this._currentActionEvent.isComplete()));
 	}
 
 	public ActionEvent getCurrentActionEvent() {
-		return this.currentActionEvent;
+		return this._currentActionEvent;
 	}
 
 	@Override
 	protected void reset() {
 		super.reset();
 		_target = null;
-		actionEvents = null;
-		currentActionEvent = null;
-		type = -1;
-		equation = null;
-		path = null;
-		isFrom = isRelative = false;
+		_actionEvents = null;
+		_currentActionEvent = null;
+		_type = -1;
+		_equation = null;
+		_path = null;
+		_isFrom = _isRelative = false;
 		_combinedAttrsSize = _funPointsSize = 0;
-		if (accessorBuffer.length != combinedAttrsLimit) {
-			accessorBuffer = new float[combinedAttrsLimit];
+		if (_accessorBuffer.length != _combinedAttrsLimit) {
+			_accessorBuffer = new float[_combinedAttrsLimit];
 		}
-		if (pathBuffer.length != (2 + funPointsLimit) * combinedAttrsLimit) {
-			pathBuffer = new float[(2 + funPointsLimit) * combinedAttrsLimit];
+		if (_pathBuffer.length != (2 + _funPointsLimit) * _combinedAttrsLimit) {
+			_pathBuffer = new float[(2 + _funPointsLimit) * _combinedAttrsLimit];
 		}
 	}
 
@@ -1402,7 +1418,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 			throw new LSysException("Duration can't be negative .");
 		}
 		this._target = target;
-		this.type = tweenType;
+		this._type = tweenType;
 		this.duration = duration;
 	}
 
@@ -1412,110 +1428,110 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public ActionTween ease(Easing ease) {
-		this.equation = ease;
+		this._equation = ease;
 		return this;
 	}
 
 	public ActionTween target(float targetValue) {
-		targetValues[0] = targetValue;
+		_targetValues[0] = targetValue;
 		return this;
 	}
 
 	public ActionTween target(float targetValue1, float targetValue2) {
-		targetValues[0] = targetValue1;
-		targetValues[1] = targetValue2;
+		_targetValues[0] = targetValue1;
+		_targetValues[1] = targetValue2;
 		return this;
 	}
 
 	public ActionTween target(float targetValue1, float targetValue2, float targetValue3) {
-		targetValues[0] = targetValue1;
-		targetValues[1] = targetValue2;
-		targetValues[2] = targetValue3;
+		_targetValues[0] = targetValue1;
+		_targetValues[1] = targetValue2;
+		_targetValues[2] = targetValue3;
 		return this;
 	}
 
-	public ActionTween target(float... targetValues) {
-		if (targetValues.length > combinedAttrsLimit) {
+	public ActionTween target(float... ts) {
+		if (ts.length > _combinedAttrsLimit) {
 			return this;
 		}
-		System.arraycopy(targetValues, 0, this.targetValues, 0, targetValues.length);
+		System.arraycopy(ts, 0, this._targetValues, 0, ts.length);
 		return this;
 	}
 
 	public ActionTween targetRelative(float targetValue) {
-		isRelative = true;
-		targetValues[0] = isInitialized() ? targetValue + startValues[0] : targetValue;
+		_isRelative = true;
+		_targetValues[0] = isInitialized() ? targetValue + _startValues[0] : targetValue;
 		return this;
 	}
 
 	public ActionTween targetRelative(float targetValue1, float targetValue2) {
-		isRelative = true;
-		targetValues[0] = isInitialized() ? targetValue1 + startValues[0] : targetValue1;
-		targetValues[1] = isInitialized() ? targetValue2 + startValues[1] : targetValue2;
+		_isRelative = true;
+		_targetValues[0] = isInitialized() ? targetValue1 + _startValues[0] : targetValue1;
+		_targetValues[1] = isInitialized() ? targetValue2 + _startValues[1] : targetValue2;
 		return this;
 	}
 
 	public ActionTween targetRelative(float targetValue1, float targetValue2, float targetValue3) {
-		isRelative = true;
-		targetValues[0] = isInitialized() ? targetValue1 + startValues[0] : targetValue1;
-		targetValues[1] = isInitialized() ? targetValue2 + startValues[1] : targetValue2;
-		targetValues[2] = isInitialized() ? targetValue3 + startValues[2] : targetValue3;
+		_isRelative = true;
+		_targetValues[0] = isInitialized() ? targetValue1 + _startValues[0] : targetValue1;
+		_targetValues[1] = isInitialized() ? targetValue2 + _startValues[1] : targetValue2;
+		_targetValues[2] = isInitialized() ? targetValue3 + _startValues[2] : targetValue3;
 		return this;
 	}
 
-	public ActionTween targetRelative(float... targetValues) {
-		if (targetValues.length > combinedAttrsLimit) {
+	public ActionTween targetRelative(float... ts) {
+		if (ts.length > _combinedAttrsLimit) {
 			return this;
 		}
-		for (int i = 0; i < targetValues.length; i++) {
-			this.targetValues[i] = isInitialized() ? targetValues[i] + startValues[i] : targetValues[i];
+		for (int i = 0; i < ts.length; i++) {
+			this._targetValues[i] = isInitialized() ? ts[i] + _startValues[i] : ts[i];
 		}
 
-		isRelative = true;
+		_isRelative = true;
 		return this;
 	}
 
 	public ActionTween funPoint(float targetValue) {
-		if (_funPointsSize == funPointsLimit) {
+		if (_funPointsSize == _funPointsLimit) {
 			return this;
 		}
-		funPoints[_funPointsSize] = targetValue;
+		_funPoints[_funPointsSize] = targetValue;
 		_funPointsSize += 1;
 		return this;
 	}
 
 	public ActionTween funPoint(float targetValue1, float targetValue2) {
-		if (_funPointsSize == funPointsLimit) {
+		if (_funPointsSize == _funPointsLimit) {
 			return this;
 		}
-		funPoints[_funPointsSize * 2] = targetValue1;
-		funPoints[_funPointsSize * 2 + 1] = targetValue2;
+		_funPoints[_funPointsSize * 2] = targetValue1;
+		_funPoints[_funPointsSize * 2 + 1] = targetValue2;
 		_funPointsSize += 1;
 		return this;
 	}
 
 	public ActionTween funPoint(float targetValue1, float targetValue2, float targetValue3) {
-		if (_funPointsSize == funPointsLimit) {
+		if (_funPointsSize == _funPointsLimit) {
 			return this;
 		}
-		funPoints[_funPointsSize * 3] = targetValue1;
-		funPoints[_funPointsSize * 3 + 1] = targetValue2;
-		funPoints[_funPointsSize * 3 + 2] = targetValue3;
+		_funPoints[_funPointsSize * 3] = targetValue1;
+		_funPoints[_funPointsSize * 3 + 1] = targetValue2;
+		_funPoints[_funPointsSize * 3 + 2] = targetValue3;
 		_funPointsSize += 1;
 		return this;
 	}
 
-	public ActionTween funPoint(float... targetValues) {
-		if (_funPointsSize == funPointsLimit) {
+	public ActionTween funPoint(float... ts) {
+		if (_funPointsSize == _funPointsLimit) {
 			return this;
 		}
-		System.arraycopy(targetValues, 0, funPoints, _funPointsSize * targetValues.length, targetValues.length);
+		System.arraycopy(ts, 0, _funPoints, _funPointsSize * ts.length, ts.length);
 		_funPointsSize += 1;
 		return this;
 	}
 
 	public ActionTween path(ActionPath path) {
-		this.path = path;
+		this._path = path;
 		return this;
 	}
 
@@ -1524,15 +1540,15 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 	}
 
 	public int getTypeCode() {
-		return type;
+		return _type;
 	}
 
 	public Easing getEasing() {
-		return equation;
+		return _equation;
 	}
 
 	public float[] getTargetValues() {
-		return targetValues;
+		return _targetValues;
 	}
 
 	public int getCombinedAttributesCount() {
@@ -1552,116 +1568,113 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 			return;
 		}
 
-		ActionType.getValues(_target, type, startValues);
+		ActionType.getValues(_target, _type, _startValues);
 
 		for (int i = 0; i < _combinedAttrsSize; i++) {
-			targetValues[i] += isRelative ? startValues[i] : 0;
+			_targetValues[i] += _isRelative ? _startValues[i] : 0;
 
 			for (int ii = 0; ii < _funPointsSize; ii++) {
-				funPoints[ii * _combinedAttrsSize + i] += isRelative ? startValues[i] : 0;
+				_funPoints[ii * _combinedAttrsSize + i] += _isRelative ? _startValues[i] : 0;
 			}
 
-			if (isFrom) {
-				float tmp = startValues[i];
-				startValues[i] = targetValues[i];
-				targetValues[i] = tmp;
+			if (_isFrom) {
+				float tmp = _startValues[i];
+				_startValues[i] = _targetValues[i];
+				_targetValues[i] = tmp;
 			}
 		}
 	}
 
-	private ActionEvent currentActionEvent;
-
-	private Array<ActionEvent> repeatList;
-
 	@Override
 	protected boolean actionEventOver() {
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return true;
 		}
-		if (actionEvents != null) {
-			if (currentActionEvent != null && !currentActionEvent.isComplete()) {
+		if (_actionEvents != null) {
+			if (_currentActionEvent != null && !_currentActionEvent.isComplete()) {
 				return false;
-			} else if (currentActionEvent != null && currentActionEvent.isComplete()) {
-				if (repeatList == null) {
-					repeatList = new Array<ActionEvent>();
+			} else if (_currentActionEvent != null && _currentActionEvent.isComplete()) {
+				if (_repeatList == null) {
+					_repeatList = new Array<ActionEvent>();
 				}
-				if (!(currentActionEvent instanceof ReplayTo)) {
-					repeatList.add(currentActionEvent.reverse());
+				if (!(_currentActionEvent instanceof ReplayTo)) {
+					_repeatList.add(_currentActionEvent.reverse());
 				}
 			}
-			ActionEvent event = actionEvents.first();
-			if (event != currentActionEvent && event != null) {
-				actionEvents.remove(0);
-				if (isRepeat) {
-					if (event instanceof ReplayTo && repeatList != null && repeatList.size() > 0) {
+			ActionEvent event = _actionEvents.first();
+			if (event != _currentActionEvent && event != null) {
+				_actionEvents.remove(0);
+				if (_isRepeat) {
+					if (event instanceof ReplayTo && _repeatList != null && _repeatList.size() > 0) {
 						ReplayTo replayTo = ((ReplayTo) event);
 						int size = replayTo.count - 1;
 						if (size > 0) {
 							for (int i = 0; i < size; i++) {
-								repeatList.addFront(new ReplayTo(null));
-								repeatList.addFront(new DelayTo(0));
+								_repeatList.addFront(new ReplayTo(null));
+								_repeatList.addFront(new DelayTo(0));
 							}
 						}
-						replayTo.set(repeatList);
-						repeatList.clear();
+						replayTo.set(_repeatList);
+						_repeatList.clear();
 					}
 				}
 				ActionControl.get().addAction(event, _target);
-				currentActionEvent = event;
+				_currentActionEvent = event;
 			}
 		}
-		if (currentActionEvent != null && !currentActionEvent.isComplete()) {
+		if (_currentActionEvent != null && !_currentActionEvent.isComplete()) {
 			return false;
 		}
-		return (actionEvents == null || actionEvents.size() == 0);
+		return (_actionEvents == null || _actionEvents.size() == 0);
 	}
 
 	@Override
 	protected void update(int step, int lastStep, boolean isIterationStep, float delta) {
-		if (_target == null || equation == null) {
+		if (_target == null || _equation == null) {
 			return;
 		}
+		final float epsilon = MathUtils.EPSILON;
 		if (!isIterationStep && step > lastStep) {
-			ActionType.setValues(_target, type, isReverse(lastStep) ? startValues : targetValues);
+			ActionType.setValues(_target, _type, isReverse(lastStep) ? _startValues : _targetValues);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			ActionType.setValues(_target, type, isReverse(lastStep) ? targetValues : startValues);
+			ActionType.setValues(_target, _type, isReverse(lastStep) ? _targetValues : _startValues);
 			return;
 		}
 
-		if (duration < 0.00000000001f && delta > -0.00000000001f) {
-			ActionType.setValues(_target, type, isReverse(step) ? targetValues : startValues);
+		if (duration < epsilon && delta > -epsilon) {
+			ActionType.setValues(_target, _type, isReverse(step) ? _targetValues : _startValues);
 			return;
 		}
 
-		if (duration < 0.00000000001f && delta < 0.00000000001f) {
-			ActionType.setValues(_target, type, isReverse(step) ? startValues : targetValues);
+		if (duration < epsilon && delta < epsilon) {
+			ActionType.setValues(_target, _type, isReverse(step) ? _startValues : _targetValues);
 			return;
 		}
 
 		float time = isReverse(step) ? duration - getCurrentTime() : getCurrentTime();
 
-		float t = equation.apply(time, duration, false);
+		float t = _equation.apply(time, duration, false);
 
-		if (_funPointsSize == 0 || path == null) {
+		if (_funPointsSize == 0 || _path == null) {
 			for (int i = 0; i < _combinedAttrsSize; i++) {
-				accessorBuffer[i] = startValues[i] + t * (targetValues[i] - startValues[i]);
+				_accessorBuffer[i] = _startValues[i] + t * (_targetValues[i] - _startValues[i]);
 			}
 		} else {
 			for (int i = 0; i < _combinedAttrsSize; i++) {
-				pathBuffer[0] = startValues[i];
-				pathBuffer[1 + _funPointsSize] = targetValues[i];
+				_pathBuffer[0] = _startValues[i];
+				_pathBuffer[1 + _funPointsSize] = _targetValues[i];
 				for (int ii = 0; ii < _funPointsSize; ii++) {
-					pathBuffer[ii + 1] = funPoints[ii * _combinedAttrsSize + i];
+					_pathBuffer[ii + 1] = _funPoints[ii * _combinedAttrsSize + i];
 				}
 
-				accessorBuffer[i] = path.compute(t, pathBuffer, _funPointsSize + 2);
+				_accessorBuffer[i] = _path.compute(t, _pathBuffer, _funPointsSize + 2);
 			}
 		}
 
-		ActionType.setValues(_target, type, accessorBuffer);
+		ActionType.setValues(_target, _type, _accessorBuffer);
 	}
 
 	@Override
@@ -1669,7 +1682,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		if (_target == null) {
 			return;
 		}
-		ActionType.setValues(_target, type, startValues);
+		ActionType.setValues(_target, _type, _startValues);
 	}
 
 	@Override
@@ -1677,7 +1690,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		if (_target == null) {
 			return;
 		}
-		ActionType.setValues(_target, type, targetValues);
+		ActionType.setValues(_target, _type, _targetValues);
 	}
 
 	@Override
@@ -1685,7 +1698,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		if (_target == null) {
 			return this;
 		}
-		_combinedAttrsSize = ActionType.getValues(_target, type, accessorBuffer);
+		_combinedAttrsSize = ActionType.getValues(_target, _type, _accessorBuffer);
 		return this;
 	}
 
@@ -1696,32 +1709,32 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 
 	@Override
 	protected boolean containsTarget(ActionBind target, int tweenType) {
-		return this._target == target && this.type == tweenType;
+		return this._target == target && this._type == tweenType;
 	}
 
 	public float getInitMoveSpeed() {
-		return initMoveSpeed;
+		return _initMoveSpeed;
 	}
 
-	public ActionTween setInitMoveSpeed(float initMoveSpeed) {
-		this.initMoveSpeed = initMoveSpeed;
+	public ActionTween setInitMoveSpeed(float m) {
+		this._initMoveSpeed = m;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		if (actionEvents == null) {
+		if (_actionEvents == null) {
 			return "ActionTween []";
 		}
 		StringKeyValue builder = new StringKeyValue("ActionTween");
-		for (; actionEvents.hashNext();) {
-			ActionEvent eve = actionEvents.next();
+		for (; _actionEvents.hashNext();) {
+			ActionEvent eve = _actionEvents.next();
 			if (eve != null) {
 				builder.addValue(eve.toString());
 				builder.newLine();
 			}
 		}
-		actionEvents.stopNext();
+		_actionEvents.stopNext();
 		return builder.toString();
 	}
 

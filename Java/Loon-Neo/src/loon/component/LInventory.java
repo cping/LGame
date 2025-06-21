@@ -987,9 +987,7 @@ public class LInventory extends LLayer {
 		super.processKeyReleased();
 		if (_useKeyboard) {
 			Vector2f itemXY = getSelectedItemGridXY();
-			System.out.println(itemXY);
 			if (itemXY != null) {
-				
 				if (isKeyUp(SysKey.LEFT)) {
 					itemXY.move_left(1);
 				} else if (isKeyUp(SysKey.RIGHT)) {

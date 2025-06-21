@@ -32,7 +32,7 @@ public class ActionControl implements LRelease {
 
 	public static final ActionSmooth SMOOTH = new ActionSmooth();
 
-	private static ActionControl instanceAction;
+	private static ActionControl _instanceAction;
 
 	private final Array<ActionBindData> _currentBindDatas;
 
@@ -45,7 +45,7 @@ public class ActionControl implements LRelease {
 	private boolean _pause;
 
 	public static void freeStatic() {
-		instanceAction = null;
+		_instanceAction = null;
 	}
 
 	/**
@@ -62,10 +62,10 @@ public class ActionControl implements LRelease {
 	 */
 	public static final ActionControl get() {
 		synchronized (ActionControl.class) {
-			if (instanceAction == null) {
-				instanceAction = new ActionControl();
+			if (_instanceAction == null) {
+				_instanceAction = new ActionControl();
 			}
-			return instanceAction;
+			return _instanceAction;
 		}
 	}
 
@@ -217,20 +217,20 @@ public class ActionControl implements LRelease {
 	}
 
 	public static final void setDelay(long delay) {
-		if (instanceAction != null) {
-			instanceAction.delay(delay);
+		if (_instanceAction != null) {
+			_instanceAction.delay(delay);
 		}
 	}
 
 	public static final void setDelayS(float s) {
-		if (instanceAction != null) {
-			instanceAction.delayS(s);
+		if (_instanceAction != null) {
+			_instanceAction.delayS(s);
 		}
 	}
 
 	public static final void update(long elapsedTime) {
-		if (instanceAction != null) {
-			instanceAction.call(elapsedTime);
+		if (_instanceAction != null) {
+			_instanceAction.call(elapsedTime);
 		}
 	}
 

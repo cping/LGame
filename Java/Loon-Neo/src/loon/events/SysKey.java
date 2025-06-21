@@ -625,6 +625,10 @@ public class SysKey {
 		keys.removeValue(key);
 	}
 
+	public static void resetKey() {
+		clear();
+	}
+
 	public static ActionKey getOnlyKey() {
 		return SysInputFactory.onlyKey;
 	}

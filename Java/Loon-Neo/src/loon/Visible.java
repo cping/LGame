@@ -21,7 +21,8 @@
 package loon;
 
 public interface Visible {
-	public boolean isVisible();
 
-	public void setVisible(boolean v);
+	boolean isVisible();
+
+	void setVisible(boolean v);
 }

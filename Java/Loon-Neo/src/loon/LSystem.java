@@ -37,6 +37,8 @@ import loon.component.Desktop;
 import loon.component.skin.SkinManager;
 import loon.events.KeyMake;
 import loon.events.SysInput;
+import loon.events.SysKey;
+import loon.events.SysTouch;
 import loon.events.Updateable;
 import loon.font.BDFontCache;
 import loon.font.BMFontCache;
@@ -388,6 +390,8 @@ public final class LSystem {
 		clearDesktopPool();
 		DefUI.selfClear();
 		MoveTo.clearPathCache();
+		SysTouch.resetTouch();
+		SysKey.resetKey();
 	}
 
 	public static final boolean landscape() {

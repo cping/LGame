@@ -2111,14 +2111,14 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_input == null) {
 			return SysTouch.isDown();
 		}
-		return _input.getTouchPressed() == SysTouch.TOUCH_DOWN || SysTouch.isDown();
+		return _input.getTouchPressed() == SysTouch.TOUCH_DOWN;
 	}
 
 	public boolean isClickUp() {
 		if (_input == null) {
 			return SysTouch.isUp();
 		}
-		return _input.getTouchReleased() == SysTouch.TOUCH_UP || SysTouch.isUp();
+		return _input.getTouchReleased() == SysTouch.TOUCH_UP;
 	}
 
 	public boolean isClickDrag() {

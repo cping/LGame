@@ -22,10 +22,10 @@ package loon.action;
 
 public interface ActionListener {
 
-	public void start(ActionBind o);
+	void start(ActionBind o);
 
-	public void process(ActionBind o);
+	void process(ActionBind o);
 
-	public void stop(ActionBind o);
+	void stop(ActionBind o);
 
 }
