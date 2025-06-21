@@ -7881,7 +7881,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_gravityHandler.close();
 					_gravityHandler = null;
 				}
-				clearTouched();
+				clearInput();
 				clearFrameLoop();
 				if (_screenAction != null) {
 					removeAllActions(_screenAction);
@@ -7891,7 +7891,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_conns.close();
 				_steps.close();
 				release();
-				_keyActions.clear();
 				if (_currentScreenBackground != null) {
 					_currentScreenBackground.close();
 					_currentScreenBackground = null;

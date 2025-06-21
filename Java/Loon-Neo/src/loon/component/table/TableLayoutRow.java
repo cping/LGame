@@ -71,7 +71,7 @@ public class TableLayoutRow {
 
 	public boolean setWidth(int width) {
 		if (width > getWidth()) {
-			double newWidthDif = (width - getWidth()) / (double) columns.length;
+			float newWidthDif = (float) (width - getWidth()) / columns.length;
 			for (int i = 0; i < columns.length; i++) {
 				columns[i].setWidth(columns[i].getWidthf() + newWidthDif);
 			}
@@ -205,16 +205,28 @@ public class TableLayoutRow {
 		return true;
 	}
 
+	private TArray<TableColumnLayout> _tempColumns;
+
 	public void removeColumn(int column) {
 		int columnAdd = columns[column].getWidth() / (columns.length - 1);
-		TArray<TableColumnLayout> newColmns = new TArray<TableColumnLayout>();
+		if (_tempColumns == null) {
+			_tempColumns = new TArray<TableColumnLayout>();
+		} else {
+			_tempColumns.clear();
+		}
 		for (int i = 0; i < columns.length; i++) {
 			if (i != column) {
 				columns[i].setWidth(columns[i].getWidth() + columnAdd);
-				newColmns.add(columns[i]);
+				_tempColumns.add(columns[i]);
 			}
 		}
-		columns = (TableColumnLayout[]) newColmns.toArray();
+		if (columns.length != _tempColumns.size) {
+			columns = (TableColumnLayout[]) _tempColumns.toArray();
+		} else {
+			for (int i = 0; i < _tempColumns.size; i++) {
+				columns[i] = _tempColumns.get(i);
+			}
+		}
 		adjustColumns();
 	}
 

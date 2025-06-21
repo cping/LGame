@@ -29,6 +29,8 @@ public class DefaultTableModel implements ITableModel, LRelease {
 
 	private final static String OMIT = "...";
 
+	private StrBuilder _message;
+
 	private TableView _view;
 
 	public DefaultTableModel(TArray<ListItem> items) {
@@ -79,11 +81,15 @@ public class DefaultTableModel implements ITableModel, LRelease {
 		if (_view == null) {
 			return null;
 		}
-		StrBuilder sbr = new StrBuilder();
-		for (ListItem item : _view.all()) {
-			sbr.append(item.message());
+		if (_message == null) {
+			_message = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+		} else {
+			_message.setLength(0);
 		}
-		return sbr.toString();
+		for (ListItem item : _view.all()) {
+			_message.append(item.message());
+		}
+		return _message.toString();
 	}
 
 	@Override

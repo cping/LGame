@@ -22,6 +22,7 @@ package loon.events;
 
 import loon.LSystem;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
 public class SysTouch {
@@ -186,6 +187,17 @@ public class SysTouch {
 
 	public static boolean isDrag() {
 		return SysInputFactory.isDraging && SysInputFactory.finalTouch.isDrag();
+	}
+
+	public static boolean isDragMoved() {
+		return isDragMoved(0.5f);
+	}
+
+	public static boolean isDragMoved(float epsilon) {
+		GameTouch touch = SysInputFactory.finalTouch;
+		float dx = MathUtils.abs(touch.getDX());
+		float dy = MathUtils.abs(touch.getDY());
+		return SysInputFactory.isDraging && touch.isDrag() && (dx > epsilon || dy > epsilon);
 	}
 
 	public static boolean lowerLeft() {

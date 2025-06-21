@@ -434,8 +434,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 								cellRenderer.paint(g, icon, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							} else {
-								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex),
-										cellHeight);
+								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 							}
 						} else {
 							cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
@@ -481,8 +480,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 								cellRenderer.paint(g, icon, alignedX, alignedY, getColumnWidth(columnIndex),
 										cellHeight);
 							} else {
-								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex),
-										cellHeight);
+								cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
 							}
 						} else {
 							cellRenderer.paint(g, vl, alignedX, alignedY, getColumnWidth(columnIndex), cellHeight);
@@ -818,16 +816,14 @@ public class LTable extends LContainer implements FontSet<LTable> {
 	}
 
 	private void assertSelectionArraySize() {
-		if (selected.length == model.getRowCount()) {
+		int count = model.getRowCount();
+		if (selected.length == count) {
 			return;
 		}
-
-		boolean[] newSelected = new boolean[model.getRowCount()];
-
+		boolean[] newSelected = new boolean[count];
 		for (int i = 0; i < selected.length && i < newSelected.length; i++) {
 			newSelected[i] = selected[i];
 		}
-
 		this.selected = newSelected;
 	}
 

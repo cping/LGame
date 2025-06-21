@@ -2125,7 +2125,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_input == null) {
 			return SysTouch.isDrag();
 		}
-		return _input.getTouchPressed() == SysTouch.TOUCH_DRAG || SysTouch.isDrag();
+		return _input.getTouchPressed() == SysTouch.TOUCH_DRAG && (_downClick && SysTouch.isDragMoved());
 	}
 
 	public boolean isTouchResponseEvent(float x, float y) {

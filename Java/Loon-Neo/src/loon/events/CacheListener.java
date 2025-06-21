@@ -22,9 +22,9 @@ package loon.events;
 
 public interface CacheListener {
 
-	public void onSpawn();
+	void onSpawn();
 
-	public void onUnspawn();
+	void onUnspawn();
 
-	public void disposed(boolean close);
+	void disposed(boolean close);
 }

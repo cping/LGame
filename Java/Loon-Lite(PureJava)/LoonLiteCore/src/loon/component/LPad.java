@@ -270,7 +270,7 @@ public class LPad extends LComponent {
 	}
 
 	public boolean isPadUp() {
-		return (isClick && isClickUp()) || !isPointInUI();
+		return (isClick && isClickUp());
 	}
 
 	public ClickListener getListener() {

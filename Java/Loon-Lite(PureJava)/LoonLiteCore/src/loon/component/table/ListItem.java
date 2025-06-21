@@ -31,6 +31,8 @@ public class ListItem implements LRelease {
 
 	protected TArray<Object> _list;
 
+	private StrBuilder _message;
+
 	public ListItem() {
 		this(new TArray<Object>());
 	}
@@ -68,11 +70,15 @@ public class ListItem implements LRelease {
 		if (_list == null) {
 			return LSystem.EMPTY;
 		}
-		StrBuilder sbr = new StrBuilder();
-		for (Object o : _list) {
-			sbr.append(o);
+		if (_message == null) {
+			_message = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+		} else {
+			_message.setLength(0);
 		}
-		return sbr.toString();
+		for (Object o : _list) {
+			_message.append(o);
+		}
+		return _message.toString();
 	}
 
 	public TArray<Object> getList() {

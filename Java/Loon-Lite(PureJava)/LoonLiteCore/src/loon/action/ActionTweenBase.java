@@ -31,43 +31,43 @@ public abstract class ActionTweenBase<T> {
 	private TweenTo<T> _actionTween;
 	private LRelease _dispose;
 
-	private int step;
-	private boolean isIterationStep;
-	private boolean isBackward;
+	private int _step;
+	private boolean _isIterationStep;
+	private boolean _isBackward;
 
 	protected int repeatSize;
 	protected float delay;
 	protected float duration;
-	private float repeatDelay;
-	private float currentTime;
-	private float deltaTime;
-	private boolean isStarted;
-	private boolean isInitialized;
-	private boolean isFinished;
-	private boolean isKilled;
-	private boolean isPaused;
+	private float _repeatDelay;
+	private float _currentTime;
+	private float _deltaTime;
+	private boolean _isStarted;
+	private boolean _isInitialized;
+	private boolean _isFinished;
+	private boolean _isKilled;
+	private boolean _isPaused;
 
-	private ActionCallback callback;
-	private int callbackTriggers;
+	private ActionCallback _callback;
+	private int _callbackTriggers;
 
 	boolean _isAutoRemoveEnabled;
 	boolean _isAutoStartEnabled;
 
 	protected void reset() {
-		step = -2;
+		_step = -2;
 		repeatSize = 0;
-		isIterationStep = isBackward = false;
-		delay = duration = repeatDelay = currentTime = deltaTime = 0;
-		isStarted = isInitialized = isFinished = isKilled = isPaused = false;
-		callback = null;
-		callbackTriggers = ActionMode.COMPLETE;
+		_isIterationStep = _isBackward = false;
+		delay = duration = _repeatDelay = _currentTime = _deltaTime = 0;
+		_isStarted = _isInitialized = _isFinished = _isKilled = _isPaused = false;
+		_callback = null;
+		_callbackTriggers = ActionMode.COMPLETE;
 		_isAutoRemoveEnabled = _isAutoStartEnabled = true;
 	}
 
 	public TweenTo<T> start() {
 		build();
-		currentTime = 0;
-		isStarted = true;
+		_currentTime = 0;
+		_isStarted = true;
 		_actionTween = new TweenTo<T>(this);
 		if (this._dispose != null) {
 			_actionTween.dispose(this._dispose);
@@ -94,7 +94,7 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	public T kill() {
-		isKilled = true;
+		_isKilled = true;
 		return (T) this;
 	}
 
@@ -103,42 +103,42 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	public T pause() {
-		isPaused = true;
+		_isPaused = true;
 		return (T) this;
 	}
 
 	public T resume() {
-		isPaused = false;
+		_isPaused = false;
 		return (T) this;
 	}
 
 	public T repeat(int count, float delay) {
-		if (isStarted) {
+		if (_isStarted) {
 			return (T) this;
 		}
 		repeatSize = count;
-		repeatDelay = delay >= 0 ? delay : 0;
-		isBackward = false;
+		_repeatDelay = delay >= 0 ? delay : 0;
+		_isBackward = false;
 		return (T) this;
 	}
 
 	public T repeatBackward(int count, float delay) {
-		if (isStarted) {
+		if (_isStarted) {
 			return (T) this;
 		}
 		repeatSize = count;
-		repeatDelay = delay >= 0 ? delay : 0;
-		isBackward = true;
+		_repeatDelay = delay >= 0 ? delay : 0;
+		_isBackward = true;
 		return (T) this;
 	}
 
 	public T setCallback(ActionCallback callback) {
-		this.callback = callback;
+		this._callback = callback;
 		return (T) this;
 	}
 
 	public T setCallbackTriggers(int flags) {
-		this.callbackTriggers = flags;
+		this._callbackTriggers = flags;
 		return (T) this;
 	}
 
@@ -155,42 +155,42 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	public float getRepeatDelay() {
-		return repeatDelay;
+		return _repeatDelay;
 	}
 
 	public float getFullDuration() {
 		if (repeatSize < 0) {
 			return -1;
 		}
-		return delay + duration + (repeatDelay + duration) * repeatSize;
+		return delay + duration + (_repeatDelay + duration) * repeatSize;
 	}
 
 	public int getStep() {
-		return step;
+		return _step;
 	}
 
 	public float getCurrentTime() {
-		return currentTime;
+		return _currentTime;
 	}
 
 	public boolean isStarted() {
-		return isStarted;
+		return _isStarted;
 	}
 
 	public boolean isInitialized() {
-		return isInitialized;
+		return _isInitialized;
 	}
 
 	public boolean isFinished() {
-		return isFinished || isKilled;
+		return _isFinished || _isKilled;
 	}
 
 	public boolean isBackward() {
-		return isBackward;
+		return _isBackward;
 	}
 
 	public boolean isPaused() {
-		return isPaused;
+		return _isPaused;
 	}
 
 	protected abstract void forceStartValues();
@@ -208,9 +208,9 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	protected void forceToStart() {
-		currentTime = -delay;
-		step = -1;
-		isIterationStep = false;
+		_currentTime = -delay;
+		_step = -1;
+		_isIterationStep = false;
 		if (isReverse(0)) {
 			forceEndValues();
 		} else {
@@ -219,9 +219,9 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	protected void forceToEnd(float time) {
-		currentTime = time - getFullDuration();
-		step = repeatSize * 2 + 1;
-		isIterationStep = false;
+		_currentTime = time - getFullDuration();
+		_step = repeatSize * 2 + 1;
+		_isIterationStep = false;
 		if (isReverse(repeatSize * 2)) {
 			forceStartValues();
 		} else {
@@ -230,12 +230,12 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	protected void callCallback(int type) {
-		if (callback != null && (callbackTriggers & type) > 0)
-			callback.onEvent(type, this);
+		if (_callback != null && (_callbackTriggers & type) > 0)
+			_callback.onEvent(type, this);
 	}
 
 	protected boolean isReverse(int step) {
-		return isBackward && MathUtils.abs(step % 4) == 2;
+		return _isBackward && MathUtils.abs(step % 4) == 2;
 	}
 
 	protected boolean isValid(int step) {
@@ -255,7 +255,7 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	private void checkCompletion() {
-		isFinished = repeatSize >= 0 && (step > repeatSize * 2 || step < 0);
+		_isFinished = repeatSize >= 0 && (_step > repeatSize * 2 || _step < 0);
 	}
 
 	protected boolean actionEventOver() {
@@ -263,130 +263,130 @@ public abstract class ActionTweenBase<T> {
 	}
 
 	public void update(float delta) {
-		if (!isStarted || isPaused || isKilled) {
+		if (!_isStarted || _isPaused || _isKilled) {
 			return;
 		}
 
-		deltaTime = delta;
+		_deltaTime = delta;
 
-		if (!isInitialized) {
+		if (!_isInitialized) {
 			initialize();
 		}
 
-		if (isInitialized) {
+		if (_isInitialized) {
 			checkRelaunch();
 			updateStep();
 			checkCompletion();
 		}
 
-		currentTime += deltaTime;
-		deltaTime = 0;
+		_currentTime += _deltaTime;
+		_deltaTime = 0;
 	}
 
 	private void initialize() {
-		if (currentTime + deltaTime >= delay) {
+		if (_currentTime + _deltaTime >= delay) {
 			initializeOverride();
-			isInitialized = true;
-			isIterationStep = true;
-			step = 0;
-			deltaTime -= delay - currentTime;
-			currentTime = 0;
+			_isInitialized = true;
+			_isIterationStep = true;
+			_step = 0;
+			_deltaTime -= delay - _currentTime;
+			_currentTime = 0;
 			callCallback(ActionMode.BEGIN);
 			callCallback(ActionMode.START);
 		}
 	}
 
 	private void checkRelaunch() {
-		if (!isIterationStep && repeatSize >= 0 && step < 0 && currentTime + deltaTime >= 0) {
-			isIterationStep = true;
-			step = 0;
-			float delta = 0 - currentTime;
-			deltaTime -= delta;
-			currentTime = 0;
+		if (!_isIterationStep && repeatSize >= 0 && _step < 0 && _currentTime + _deltaTime >= 0) {
+			_isIterationStep = true;
+			_step = 0;
+			float delta = 0 - _currentTime;
+			_deltaTime -= delta;
+			_currentTime = 0;
 			callCallback(ActionMode.BEGIN);
 			callCallback(ActionMode.START);
-			update(step, step - 1, isIterationStep, delta);
+			update(_step, _step - 1, _isIterationStep, delta);
 
-		} else if (!isIterationStep && repeatSize >= 0 && step > repeatSize * 2 && currentTime + deltaTime < 0) {
-			isIterationStep = true;
-			step = repeatSize * 2;
-			float delta = 0 - currentTime;
-			deltaTime -= delta;
-			currentTime = duration;
+		} else if (!_isIterationStep && repeatSize >= 0 && _step > repeatSize * 2 && _currentTime + _deltaTime < 0) {
+			_isIterationStep = true;
+			_step = repeatSize * 2;
+			float delta = 0 - _currentTime;
+			_deltaTime -= delta;
+			_currentTime = duration;
 			callCallback(ActionMode.BACK_BEGIN);
 			callCallback(ActionMode.BACK_START);
-			update(step, step + 1, isIterationStep, delta);
+			update(_step, _step + 1, _isIterationStep, delta);
 		}
 	}
 
 	private void updateStep() {
-		for (; isValid(step);) {
-			if (!isIterationStep && currentTime + deltaTime <= 0) {
-				isIterationStep = true;
-				step -= 1;
-				float delta = -currentTime;
-				deltaTime -= delta;
-				currentTime = duration;
-				if (isReverse(step)) {
+		for (; isValid(_step);) {
+			if (!_isIterationStep && _currentTime + _deltaTime <= 0) {
+				_isIterationStep = true;
+				_step -= 1;
+				float delta = -_currentTime;
+				_deltaTime -= delta;
+				_currentTime = duration;
+				if (isReverse(_step)) {
 					forceStartValues();
 				} else {
 					forceEndValues();
 				}
 				callCallback(ActionMode.BACK_START);
-				update(step, step + 1, isIterationStep, delta);
+				update(_step, _step + 1, _isIterationStep, delta);
 
-			} else if (!isIterationStep && currentTime + deltaTime >= repeatDelay) {
-				isIterationStep = true;
-				step += 1;
+			} else if (!_isIterationStep && _currentTime + _deltaTime >= _repeatDelay) {
+				_isIterationStep = true;
+				_step += 1;
 
-				float delta = repeatDelay - currentTime;
-				deltaTime -= delta;
-				currentTime = 0;
+				float delta = _repeatDelay - _currentTime;
+				_deltaTime -= delta;
+				_currentTime = 0;
 
-				if (isReverse(step)) {
+				if (isReverse(_step)) {
 					forceEndValues();
 				} else {
 					forceStartValues();
 				}
 
 				callCallback(ActionMode.START);
-				update(step, step - 1, isIterationStep, delta);
+				update(_step, _step - 1, _isIterationStep, delta);
 
-			} else if (isIterationStep && currentTime + deltaTime < 0) {
-				isIterationStep = false;
-				step -= 1;
-				float delta = -currentTime;
-				deltaTime -= delta;
-				currentTime = 0;
-				update(step, step + 1, isIterationStep, delta);
+			} else if (_isIterationStep && _currentTime + _deltaTime < 0) {
+				_isIterationStep = false;
+				_step -= 1;
+				float delta = -_currentTime;
+				_deltaTime -= delta;
+				_currentTime = 0;
+				update(_step, _step + 1, _isIterationStep, delta);
 				callCallback(ActionMode.BACK_END);
-				if (step < 0 && repeatSize >= 0) {
+				if (_step < 0 && repeatSize >= 0) {
 					callCallback(ActionMode.BACK_COMPLETE);
 				} else {
-					currentTime = repeatDelay;
+					_currentTime = _repeatDelay;
 				}
-			} else if (isIterationStep && currentTime + deltaTime > duration) {
-				isIterationStep = false;
-				step += 1;
-				float delta = duration - currentTime;
-				deltaTime -= delta;
-				currentTime = duration;
-				update(step, step - 1, isIterationStep, delta);
+			} else if (_isIterationStep && _currentTime + _deltaTime > duration) {
+				_isIterationStep = false;
+				_step += 1;
+				float delta = duration - _currentTime;
+				_deltaTime -= delta;
+				_currentTime = duration;
+				update(_step, _step - 1, _isIterationStep, delta);
 				callCallback(ActionMode.END);
-				if (step > repeatSize * 2 && repeatSize >= 0) {
+				if (_step > repeatSize * 2 && repeatSize >= 0) {
 					callCallback(ActionMode.COMPLETE);
 				}
-				currentTime = 0;
-			} else if (isIterationStep) {
-				float delta = deltaTime;
-				deltaTime -= delta;
-				currentTime += delta;
-				update(step, step, isIterationStep, delta);
+				_currentTime = 0;
+			} else if (_isIterationStep) {
+				float delta = _deltaTime;
+				_deltaTime -= delta;
+				_currentTime += delta;
+				update(_step, _step, _isIterationStep, delta);
 				break;
 			} else {
-				float delta = deltaTime;
-				deltaTime -= delta;
-				currentTime += delta;
+				float delta = _deltaTime;
+				_deltaTime -= delta;
+				_currentTime += delta;
 				break;
 			}
 		}

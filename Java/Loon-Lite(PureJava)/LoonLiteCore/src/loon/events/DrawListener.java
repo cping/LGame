@@ -24,8 +24,8 @@ import loon.opengl.GLEx;
 
 public interface DrawListener<T> {
 
-	public T update(long elapsedTime);
+	T update(long elapsedTime);
 
-	public T draw(GLEx g, float x, float y);
+	T draw(GLEx g, float x, float y);
 
 }

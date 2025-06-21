@@ -71,6 +71,15 @@ public class SplitScreen extends Screen {
 	}
 
 	@Override
+	public LTransition onTransition() {
+		LTransition transition = getTransition();
+		if (transition == null) {
+			return LTransition.newEmpty();
+		}
+		return transition;
+	}
+
+	@Override
 	public void draw(GLEx g) {
 		if (_screenPool != null && _screenPool.size > 0) {
 			synchronized (this._screenPool) {

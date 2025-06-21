@@ -26,7 +26,7 @@ public interface LTouchArea {
 		DOWN, UP, MOVE, DRAG;
 	}
 
-	public boolean contains(final float x, final float y);
+	boolean contains(final float x, final float y);
 
-	public void onAreaTouched(final Event e, final float touchX, final float touchY);
+	void onAreaTouched(final Event e, final float touchX, final float touchY);
 }

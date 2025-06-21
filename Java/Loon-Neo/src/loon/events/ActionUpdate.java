@@ -26,6 +26,6 @@ package loon.events;
  */
 public interface ActionUpdate extends Updateable {
 
-	public boolean completed();
+	boolean completed();
 
 }
