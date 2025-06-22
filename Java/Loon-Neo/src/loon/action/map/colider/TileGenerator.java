@@ -22,6 +22,6 @@ package loon.action.map.colider;
 
 public interface TileGenerator {
 
-	public TileImpl apply(float x, float y);
+	TileImpl apply(float x, float y);
 
 }

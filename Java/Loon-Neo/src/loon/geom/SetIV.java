@@ -22,6 +22,6 @@ package loon.geom;
 
 public interface SetIV<T> {
 
-	public void set(T v);
+	void set(T v);
 
 }

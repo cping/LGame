@@ -24,13 +24,13 @@ import java.io.Serializable;
 
 public interface Triangle extends Serializable {
 
-	public int getTriangleCount();
+	int getTriangleCount();
 
-	public float[] getTrianglePoint(int t, int i);
+	float[] getTrianglePoint(int t, int i);
 
-	public void addPolyPoint(float x, float y);
+	void addPolyPoint(float x, float y);
 
-	public void startHole();
+	void startHole();
 
-	public boolean triangulate();
+	boolean triangulate();
 }

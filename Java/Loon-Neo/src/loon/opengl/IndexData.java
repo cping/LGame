@@ -26,23 +26,23 @@ import loon.LRelease;
 
 public interface IndexData extends LRelease {
 
-	public int getNumIndices();
+	int getNumIndices();
 
-	public int getNumMaxIndices();
+	int getNumMaxIndices();
 
-	public void setIndices(short[] indices, int offset, int count);
+	void setIndices(short[] indices, int offset, int count);
 
-	public void setIndices(ShortBuffer indices);
+	void setIndices(ShortBuffer indices);
 
-	public void updateIndices(int targetOffset, short[] indices, int offset, int count);
+	void updateIndices(int targetOffset, short[] indices, int offset, int count);
 
-	public ShortBuffer getBuffer(boolean dirty);
+	ShortBuffer getBuffer(boolean dirty);
 
-	public void bind();
+	void bind();
 
-	public void unbind();
+	void unbind();
 
-	public void invalidate();
+	void invalidate();
 
-	public void close();
+	void close();
 }

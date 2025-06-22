@@ -26,9 +26,9 @@ import loon.opengl.GLEx;
 
 public interface ICellRenderer {
 
-	public void paint(GLEx g, Object v, int x, int y, int width, int height);
+	void paint(GLEx g, Object v, int x, int y, int width, int height);
 
-	public void paint(Canvas g, Object v, int x, int y, int width, int height);
-	
-	public Dimension getCellContentSize(Object v);
+	void paint(Canvas g, Object v, int x, int y, int width, int height);
+
+	Dimension getCellContentSize(Object v);
 }

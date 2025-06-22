@@ -24,12 +24,12 @@ import loon.LRelease;
 
 public interface AssetLoader extends LRelease {
 
-	public boolean completed();
+	boolean completed();
 
-	public String getPath();
+	String getPath();
 
-	public String getNickName();
+	String getNickName();
 
-	public PreloadItem item();
+	PreloadItem item();
 
 }

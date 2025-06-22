@@ -22,26 +22,26 @@ package loon.action.map.colider;
 
 public interface Tile {
 
-	public Tile at(int x, int y, int w, int h);
+	Tile at(int x, int y, int w, int h);
 
-	public Tile at(int id, int x, int y, int w, int h);
+	Tile at(int id, int x, int y, int w, int h);
 
-	public void setX(int x);
+	void setX(int x);
 
-	public void setY(int y);
+	void setY(int y);
 
-	public void setWidth(int w);
+	void setWidth(int w);
 
-	public void setHeight(int h);
+	void setHeight(int h);
 
-	public int getX();
+	int getX();
 
-	public int getY();
+	int getY();
 
-	public int getWidth();
+	int getWidth();
 
-	public int getHeight();
+	int getHeight();
 
-	public Tile getTileImpl();
+	Tile getTileImpl();
 
 }

@@ -21,21 +21,21 @@
 package loon.component.table;
 
 public interface ITableModel {
-	
-	public boolean isDirty();
 
-	public ITableModel setDirty(boolean d);
-	
-	public ITableModel updateDirty();
+	boolean isDirty();
 
-	public String getColumnName(int columnIndex);
+	ITableModel setDirty(boolean d);
 
-	public int getColumnCount();
+	ITableModel updateDirty();
 
-	public Object getValue(int row, int column);
+	String getColumnName(int columnIndex);
 
-	public int getRowCount();
+	int getColumnCount();
 
-	public String message();
+	Object getValue(int row, int column);
+
+	int getRowCount();
+
+	String message();
 
 }

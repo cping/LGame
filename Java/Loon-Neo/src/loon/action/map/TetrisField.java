@@ -31,7 +31,7 @@ public class TetrisField {
 
 	public interface TetrisListener {
 
-		public void draw(GLEx g, float x, float y, LTexture[] stones);
+		void draw(GLEx g, float x, float y, LTexture[] stones);
 
 	}
 
@@ -45,7 +45,7 @@ public class TetrisField {
 
 		public TetrisBlock(TetrisField f, int blockID) {
 			this.field2d = f;
-			this.startPosition = new int[field2d.maxBlockSize][field2d.maxBlockLen];
+			this.startPosition = new int[field2d._maxBlockSize][field2d._maxBlockLen];
 			this.setBlockID(blockID);
 			createStone();
 		}
@@ -125,7 +125,7 @@ public class TetrisField {
 		}
 
 		public int[][] rotateStone(int[][] currentPosition) {
-			int[][] newPosition = new int[field2d.maxBlockSize][field2d.maxBlockLen];
+			int[][] newPosition = new int[field2d._maxBlockSize][field2d._maxBlockLen];
 
 			switch (this.blockID) {
 			case 2:
@@ -372,7 +372,7 @@ public class TetrisField {
 		public void noRoate() {
 			this.rotatePosition -= 1;
 			if (this.rotatePosition == -1) {
-				this.rotatePosition = (field2d.maxBlockSize - 1);
+				this.rotatePosition = (field2d._maxBlockSize - 1);
 			}
 		}
 
@@ -389,58 +389,58 @@ public class TetrisField {
 		}
 	}
 
-	private TetrisBlock stoneCurrent;
-	private TetrisBlock stoneNext;
+	private TetrisBlock _stoneCurrent;
+	private TetrisBlock _stoneNext;
 
-	private TetrisListener listener;
+	private TetrisListener _listener;
 
-	private final int maxBlockSize;
-	private final int maxBlockLen;
+	private final int _maxBlockSize;
+	private final int _maxBlockLen;
 
-	private int[][] stonePosition;
-	private int[][] gameFieldStones;
-	private int startStoneValue = 0;
-	private int endStoneValue = 1;
-	private int curLines = 0;
-	private int curLevel = 1;
-	private int maxLevel = 20;
-	private int curPoints = 0;
-	private int rows;
-	private int cols;
+	private int[][] _stonePosition;
+	private int[][] _gameFieldStones;
+	private int _startStoneValue = 0;
+	private int _endStoneValue = 1;
+	private int _curLines = 0;
+	private int _curLevel = 1;
+	private int _maxLevel = 20;
+	private int _curPoints = 0;
+	private int _rows;
+	private int _cols;
 
-	private boolean gameStart = false;
-	private boolean gameOver = false;
+	private boolean _gameStart = false;
+	private boolean _gameOver = false;
 
 	public TetrisField(int row, int col) {
 		this(row, col, 0);
 	}
 
 	public TetrisField(int row, int col, int v) {
-		this.rows = row;
-		this.cols = col;
-		this.maxBlockSize = 4;
-		this.maxBlockLen = 2;
-		this.stonePosition = new int[maxBlockSize][maxBlockLen];
-		this.gameFieldStones = new int[rows][cols];
-		for (int x = 0; x < rows; x++) {
-			for (int y = 0; y < cols; y++) {
-				this.gameFieldStones[x][y] = v;
+		this._rows = row;
+		this._cols = col;
+		this._maxBlockSize = 4;
+		this._maxBlockLen = 2;
+		this._stonePosition = new int[_maxBlockSize][_maxBlockLen];
+		this._gameFieldStones = new int[_rows][_cols];
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
+				this._gameFieldStones[x][y] = v;
 			}
 		}
-		this.gameStart = false;
-		this.gameOver = false;
+		this._gameStart = false;
+		this._gameOver = false;
 	}
 
 	public int getCols() {
-		return this.cols;
+		return this._cols;
 	}
 
 	public int getRows() {
-		return this.rows;
+		return this._rows;
 	}
 
 	public void createCurrentStone() {
-		createCurrentStone(startStoneValue, endStoneValue);
+		createCurrentStone(_startStoneValue, _endStoneValue);
 	}
 
 	public void createCurrentStone(int minStone, int maxStone) {
@@ -448,17 +448,17 @@ public class TetrisField {
 	}
 
 	public void createCurrentStone(int nextStoneID) {
-		this.stoneCurrent = this.stoneNext;
+		this._stoneCurrent = this._stoneNext;
 		createNextStone(nextStoneID);
-		this.stonePosition = this.stoneCurrent.getStartPosition();
-		if (this.gameFieldStones[5][4] != 0) {
-			this.gameOver = true;
+		this._stonePosition = this._stoneCurrent.getStartPosition();
+		if (this._gameFieldStones[5][4] != 0) {
+			this._gameOver = true;
 		}
-		setCurrentStonePosition(this.stonePosition);
+		setCurrentStonePosition(this._stonePosition);
 	}
 
 	public void createRandomStone() {
-		createRandomStone(startStoneValue, endStoneValue);
+		createRandomStone(_startStoneValue, _endStoneValue);
 	}
 
 	public void createRandomStone(int minStone, int maxStone) {
@@ -467,7 +467,7 @@ public class TetrisField {
 	}
 
 	public void createNextStone(int stoneID) {
-		this.stoneNext = new TetrisBlock(this, stoneID);
+		this._stoneNext = new TetrisBlock(this, stoneID);
 	}
 
 	public void setStoneValue(int minStone, int maxStone) {
@@ -476,41 +476,40 @@ public class TetrisField {
 	}
 
 	public void setCurrentStonePosition(int[][] stoneNewPosition) {
-		for (int i = 0; i < maxBlockSize; i++) {
-			this.gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] = this.stoneCurrent.getBlockID();
+		for (int i = 0; i < _maxBlockSize; i++) {
+			this._gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] = this._stoneCurrent.getBlockID();
 		}
 	}
 
-	public void setCurrentStonePosition(int[][] stoneNewPosition, int[][] StoneOldPosition) {
-		for (int i = 0; i < maxBlockSize; i++) {
-			this.gameFieldStones[StoneOldPosition[i][0]][StoneOldPosition[i][1]] = 0;
+	public void setCurrentStonePosition(int[][] stoneNewPosition, int[][] stoneOldPosition) {
+		for (int i = 0; i < _maxBlockSize; i++) {
+			this._gameFieldStones[stoneOldPosition[i][0]][stoneOldPosition[i][1]] = 0;
 		}
-		for (int i = 0; i < maxBlockSize; i++) {
-			this.gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] = this.stoneCurrent.getBlockID();
+		for (int i = 0; i < _maxBlockSize; i++) {
+			this._gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] = this._stoneCurrent.getBlockID();
 		}
-		this.stonePosition = stoneNewPosition;
+		this._stonePosition = stoneNewPosition;
 	}
 
 	public boolean incrementPositionY(boolean isThread) {
-		int[][] stoneNewPosition = new int[maxBlockSize][maxBlockLen];
+		int[][] stoneNewPosition = new int[_maxBlockSize][_maxBlockLen];
 		int canStart = 0;
-
-		for (int i = 0; i < maxBlockSize; i++) {
-			if (this.stonePosition[i][1] > (maxBlockSize - 1)) {
+		for (int i = 0; i < _maxBlockSize; i++) {
+			if (this._stonePosition[i][1] > (_maxBlockSize - 1)) {
 				canStart = 1;
 			}
 		}
 		if ((canStart == 1) || (isThread)) {
-			for (int i = 0; i < maxBlockSize; i++) {
-				stoneNewPosition[i][1] = (this.stonePosition[i][1] + 1);
-				stoneNewPosition[i][0] = this.stonePosition[i][0];
+			for (int i = 0; i < _maxBlockSize; i++) {
+				stoneNewPosition[i][1] = (this._stonePosition[i][1] + 1);
+				stoneNewPosition[i][0] = this._stonePosition[i][0];
 			}
 
 			if (!hasCollision(stoneNewPosition)) {
-				setCurrentStonePosition(stoneNewPosition, this.stonePosition);
+				setCurrentStonePosition(stoneNewPosition, this._stonePosition);
 				return true;
 			}
-			setCurrentStonePosition(this.stonePosition);
+			setCurrentStonePosition(this._stonePosition);
 			return false;
 		}
 
@@ -518,46 +517,46 @@ public class TetrisField {
 	}
 
 	public void rightPositionX() {
-		int[][] stoneNewPosition = new int[maxBlockSize][maxBlockLen];
+		int[][] stoneNewPosition = new int[_maxBlockSize][_maxBlockLen];
 		int canStart = 0;
-		for (int i = 0; i < maxBlockSize; i++) {
-			if (this.stonePosition[i][1] > (maxBlockSize - 1)) {
+		for (int i = 0; i < _maxBlockSize; i++) {
+			if (this._stonePosition[i][1] > (_maxBlockSize - 1)) {
 				canStart = 1;
 			}
 		}
 		if (canStart == 1) {
-			for (int i = 0; i < maxBlockSize; i++) {
-				stoneNewPosition[i][1] = this.stonePosition[i][1];
-				stoneNewPosition[i][0] = (this.stonePosition[i][0] + 1);
+			for (int i = 0; i < _maxBlockSize; i++) {
+				stoneNewPosition[i][1] = this._stonePosition[i][1];
+				stoneNewPosition[i][0] = (this._stonePosition[i][0] + 1);
 			}
 			if (!hasCollision(stoneNewPosition)) {
-				setCurrentStonePosition(stoneNewPosition, this.stonePosition);
+				setCurrentStonePosition(stoneNewPosition, this._stonePosition);
 			} else {
-				setCurrentStonePosition(this.stonePosition);
+				setCurrentStonePosition(this._stonePosition);
 			}
 		}
 	}
 
 	public void leftPositionX() {
-		int[][] stoneNewPosition = new int[maxBlockSize][maxBlockLen];
+		int[][] stoneNewPosition = new int[_maxBlockSize][_maxBlockLen];
 		int canStart = 0;
 
-		for (int i = 0; i < maxBlockSize; i++) {
-			if (this.stonePosition[i][1] > (maxBlockSize - 1)) {
+		for (int i = 0; i < _maxBlockSize; i++) {
+			if (this._stonePosition[i][1] > (_maxBlockSize - 1)) {
 				canStart = 1;
 			}
 		}
 
 		if (canStart == 1) {
-			for (int i = 0; i < maxBlockSize; i++) {
-				stoneNewPosition[i][1] = this.stonePosition[i][1];
-				stoneNewPosition[i][0] = (this.stonePosition[i][0] - 1);
+			for (int i = 0; i < _maxBlockSize; i++) {
+				stoneNewPosition[i][1] = this._stonePosition[i][1];
+				stoneNewPosition[i][0] = (this._stonePosition[i][0] - 1);
 			}
 
 			if (!hasCollision(stoneNewPosition)) {
-				setCurrentStonePosition(stoneNewPosition, this.stonePosition);
+				setCurrentStonePosition(stoneNewPosition, this._stonePosition);
 			} else {
-				setCurrentStonePosition(this.stonePosition);
+				setCurrentStonePosition(this._stonePosition);
 			}
 		}
 	}
@@ -567,33 +566,33 @@ public class TetrisField {
 	}
 
 	public void rotateStone() {
-		int[][] stoneNewPosition = new int[maxBlockSize][maxBlockLen];
+		int[][] stoneNewPosition = new int[_maxBlockSize][_maxBlockLen];
 
-		stoneNewPosition = this.stoneCurrent.rotateStone(this.stonePosition);
+		stoneNewPosition = this._stoneCurrent.rotateStone(this._stonePosition);
 
 		if (!hasCollision(stoneNewPosition)) {
-			setCurrentStonePosition(stoneNewPosition, this.stonePosition);
+			setCurrentStonePosition(stoneNewPosition, this._stonePosition);
 		} else {
-			this.stoneCurrent.noRoate();
-			setCurrentStonePosition(this.stonePosition);
+			this._stoneCurrent.noRoate();
+			setCurrentStonePosition(this._stonePosition);
 		}
 	}
 
 	public boolean hasCollision(int[][] stoneNewPosition) {
-		for (int i = 0; i < maxBlockSize; i++) {
-			this.gameFieldStones[this.stonePosition[i][0]][this.stonePosition[i][1]] = 0;
+		for (int i = 0; i < _maxBlockSize; i++) {
+			this._gameFieldStones[this._stonePosition[i][0]][this._stonePosition[i][1]] = 0;
 		}
-		for (int i = 0; i < maxBlockSize; i++) {
+		for (int i = 0; i < _maxBlockSize; i++) {
 			if (stoneNewPosition[i][0] < 0) {
 				return true;
 			}
-			if (stoneNewPosition[i][0] == this.rows) {
+			if (stoneNewPosition[i][0] == this._rows) {
 				return true;
 			}
-			if (stoneNewPosition[i][1] == this.cols) {
+			if (stoneNewPosition[i][1] == this._cols) {
 				return true;
 			}
-			if (this.gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] != 0) {
+			if (this._gameFieldStones[stoneNewPosition[i][0]][stoneNewPosition[i][1]] != 0) {
 				return true;
 			}
 		}
@@ -603,61 +602,61 @@ public class TetrisField {
 	public boolean hasLines() {
 		int i = 0;
 		int j = 0;
-		int[] lines = new int[maxBlockSize];
-		int Quantity = 0;
+		int[] lines = new int[_maxBlockSize];
+		int quantity = 0;
 		boolean isLine = false;
 
-		for (i = (maxBlockSize - 1); i < this.cols; i++) {
-			for (j = 0; j < this.rows; j++) {
+		for (i = (_maxBlockSize - 1); i < this._cols; i++) {
+			for (j = 0; j < this._rows; j++) {
 				isLine = true;
-				if (this.gameFieldStones[j][i] == 0) {
+				if (this._gameFieldStones[j][i] == 0) {
 					isLine = false;
 					break;
 				}
 			}
 
 			if (isLine) {
-				lines[Quantity] = i;
-				Quantity++;
+				lines[quantity] = i;
+				quantity++;
 			}
 		}
 
-		if (Quantity > 0) {
-			int[][] TempGameField = new int[this.rows][this.cols];
+		if (quantity > 0) {
+			int[][] tempGameField = new int[this._rows][this._cols];
 			int sum = 0;
-			this.curLines += Quantity;
-			this.curLevel = (MathUtils.round(this.curLines / this.rows) + 1);
+			this._curLines += quantity;
+			this._curLevel = (MathUtils.round(this._curLines / this._rows) + 1);
 
-			if (this.curLevel > this.maxLevel) {
-				this.curLevel = this.maxLevel;
+			if (this._curLevel > this._maxLevel) {
+				this._curLevel = this._maxLevel;
 			}
 
-			this.curPoints = ((int) (this.curPoints + MathUtils.pow(this.rows * this.curLevel, Quantity)));
+			this._curPoints = ((int) (this._curPoints + MathUtils.pow(this._rows * this._curLevel, quantity)));
 
-			for (i = this.cols - 1; i > (maxBlockSize - 1); i--) {
-				for (j = 0; j < this.rows; j++) {
+			for (i = this._cols - 1; i > (_maxBlockSize - 1); i--) {
+				for (j = 0; j < this._rows; j++) {
 					isLine = true;
-					if (this.gameFieldStones[j][i] == 0) {
+					if (this._gameFieldStones[j][i] == 0) {
 						isLine = false;
 						break;
 					}
 				}
 				if (!isLine) {
-					for (j = 0; j < this.rows; j++) {
-						TempGameField[j][(i + sum)] = this.gameFieldStones[j][i];
+					for (j = 0; j < this._rows; j++) {
+						tempGameField[j][(i + sum)] = this._gameFieldStones[j][i];
 					}
 				} else {
 					sum++;
 				}
 			}
 
-			for (i = 0; i < maxBlockSize; i++) {
-				for (j = 0; j < this.rows; j++) {
-					TempGameField[j][i] = this.gameFieldStones[j][i];
+			for (i = 0; i < _maxBlockSize; i++) {
+				for (j = 0; j < this._rows; j++) {
+					tempGameField[j][i] = this._gameFieldStones[j][i];
 				}
 			}
 
-			this.gameFieldStones = TempGameField;
+			this._gameFieldStones = tempGameField;
 
 			return true;
 		}
@@ -665,7 +664,7 @@ public class TetrisField {
 	}
 
 	public int[][] getStonePosition() {
-		return this.gameFieldStones;
+		return this._gameFieldStones;
 	}
 
 	public void draw(GLEx g, LTexture[] stones) {
@@ -673,75 +672,75 @@ public class TetrisField {
 	}
 
 	public void draw(GLEx g, float x, float y, LTexture[] stones) {
-		if (listener != null) {
-			listener.draw(g, x, y, stones);
+		if (_listener != null) {
+			_listener.draw(g, x, y, stones);
 		}
 	}
 
 	public int getNextStone() {
-		if (this.stoneNext == null) {
-			this.stoneNext = new TetrisBlock(this, MathUtils.random(startStoneValue, endStoneValue));
+		if (this._stoneNext == null) {
+			this._stoneNext = new TetrisBlock(this, MathUtils.random(_startStoneValue, _endStoneValue));
 		}
-		return this.stoneNext.getBlockID();
+		return this._stoneNext.getBlockID();
 	}
 
 	public int getLines() {
-		return this.curLines;
+		return this._curLines;
 	}
 
 	public int getLevel() {
-		return this.curLevel;
+		return this._curLevel;
 	}
 
 	public int getMaxLevel() {
-		return maxLevel;
+		return _maxLevel;
 	}
 
 	public void setMaxLevel(int maxLevel) {
-		this.maxLevel = maxLevel;
+		this._maxLevel = maxLevel;
 	}
 
 	public int getPoints() {
-		return this.curPoints;
+		return this._curPoints;
 	}
 
 	public TetrisListener getListener() {
-		return listener;
+		return _listener;
 	}
 
 	public void setListener(TetrisListener listener) {
-		this.listener = listener;
+		this._listener = listener;
 	}
 
 	public int getStartStoneValue() {
-		return startStoneValue;
+		return _startStoneValue;
 	}
 
 	public void setStartStoneValue(int startStoneValue) {
-		this.startStoneValue = startStoneValue;
-		if (this.startStoneValue <= 0) {
-			this.startStoneValue = 1;
+		this._startStoneValue = startStoneValue;
+		if (this._startStoneValue <= 0) {
+			this._startStoneValue = 1;
 		}
 	}
 
 	public int getEndStoneValue() {
-		return endStoneValue;
+		return _endStoneValue;
 	}
 
 	public void setEndStoneValue(int endStoneValue) {
-		this.endStoneValue = endStoneValue;
+		this._endStoneValue = endStoneValue;
 	}
 
 	public boolean isGameOver() {
-		return this.gameOver;
+		return this._gameOver;
 	}
 
 	public boolean isGameStart() {
-		return gameStart;
+		return _gameStart;
 	}
 
 	public void setGameStart(boolean gameStart) {
-		this.gameStart = gameStart;
+		this._gameStart = gameStart;
 	}
 
 	public boolean isGameRunning() {
@@ -749,8 +748,8 @@ public class TetrisField {
 	}
 
 	public void start() {
-		this.gameStart = true;
-		this.gameOver = false;
+		this._gameStart = true;
+		this._gameOver = false;
 		this.createRandomStone();
 	}
 

@@ -22,14 +22,14 @@ package loon.geom;
 
 public interface Sized extends XY {
 
-	public float left();
+	float left();
 
-	public float top();
+	float top();
 
-	public float right();
+	float right();
 
-	public float bottom();
-	
-	public int getZ();
+	float bottom();
+
+	int getZ();
 
 }

@@ -1768,6 +1768,19 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	@Override
+	public boolean isDragMoved() {
+		return isDragMoved(0.5f);
+	}
+
+	@Override
+	public boolean isDragMoved(float epsilon) {
+		if (MathUtils.abs(_touchDX) > epsilon || MathUtils.abs(_touchDY) > epsilon) {
+			return isMoving();
+		}
+		return false;
+	}
+
 	public Screen setWidth(float w) {
 		setSize((int) w, getHeight());
 		return this;

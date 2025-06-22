@@ -26,16 +26,16 @@ import loon.opengl.GLEx;
 
 public interface IKernel extends LRelease {
 
-	public int id();
+	int id();
 
-	public void draw(GLEx g, float mx, float my);
+	void draw(GLEx g, float mx, float my);
 
-	public void update();
+	void update();
 
-	public LTexture get();
+	LTexture get();
 
-	public float getHeight();
+	float getHeight();
 
-	public float getWidth();
+	float getWidth();
 
 }

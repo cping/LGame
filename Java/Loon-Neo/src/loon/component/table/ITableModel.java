@@ -22,20 +22,20 @@ package loon.component.table;
 
 public interface ITableModel {
 
-	public boolean isDirty();
+	boolean isDirty();
 
-	public ITableModel setDirty(boolean d);
+	ITableModel setDirty(boolean d);
 
-	public ITableModel updateDirty();
+	ITableModel updateDirty();
 
-	public String getColumnName(int columnIndex);
+	String getColumnName(int columnIndex);
 
-	public int getColumnCount();
+	int getColumnCount();
 
-	public Object getValue(int row, int column);
+	Object getValue(int row, int column);
 
-	public int getRowCount();
+	int getRowCount();
 
-	public String message();
+	String message();
 
 }

@@ -22,24 +22,24 @@ package loon.geom;
 
 public interface BoxSize {
 
-	public float getX();
+	float getX();
 
-	public float getY();
+	float getY();
 
-	public float getCenterX();
+	float getCenterX();
 
-	public float getCenterY();
+	float getCenterY();
 
-	public float getWidth();
+	float getWidth();
 
-	public float getHeight();
+	float getHeight();
 
-	public void setX(float x);
+	void setX(float x);
 
-	public void setY(float y);
+	void setY(float y);
 
-	public void setWidth(float w);
+	void setWidth(float w);
 
-	public void setHeight(float h);
+	void setHeight(float h);
 
 }

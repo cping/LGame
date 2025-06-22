@@ -26,27 +26,28 @@ import loon.LRelease;
 
 public interface VertexData extends LRelease {
 
-	public int getNumVertices();
+	int getNumVertices();
 
-	public int getNumMaxVertices();
+	int getNumMaxVertices();
 
-	public VertexAttributes getAttributes();
+	VertexAttributes getAttributes();
 
-	public void setVertices(float[] vertices, int offset, int count);
+	void setVertices(float[] vertices, int offset, int count);
 
-	public void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count);
+	void updateVertices(int targetOffset, float[] vertices, int sourceOffset, int count);
 
-	public FloatBuffer getBuffer(boolean dirty);
+	FloatBuffer getBuffer(boolean dirty);
 
-	public void bind(ShaderProgram shader);
+	void bind(ShaderProgram shader);
 
-	public void bind(ShaderProgram shader, int[] locations);
+	void bind(ShaderProgram shader, int[] locations);
 
-	public void unbind(ShaderProgram shader);
+	void unbind(ShaderProgram shader);
 
-	public void unbind(ShaderProgram shader, int[] locations);
+	void unbind(ShaderProgram shader, int[] locations);
 
-	public void invalidate();
+	void invalidate();
 
-	public void close();
+	@Override
+	void close();
 }

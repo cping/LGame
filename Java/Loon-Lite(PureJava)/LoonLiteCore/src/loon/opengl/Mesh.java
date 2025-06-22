@@ -24,33 +24,33 @@ import loon.geom.Affine2f;
 
 public interface Mesh {
 
-	public void save();
+	void save();
 
-	public void restore();
+	void restore();
 
-	public void transform(float m00, float m01, float m10, float m11, float tx, float ty);
+	void transform(float m00, float m01, float m10, float m11, float tx, float ty);
 
-	public void transform(Affine2f aff);
+	void transform(Affine2f aff);
 
-	public void setVertices(float[] vers);
+	void setVertices(float[] vers);
 
-	public void setIndices(int[] inds);
+	void setIndices(int[] inds);
 
-	public void paint();
+	void paint();
 
-	public void paint(int tint, Affine2f tx, float left, float top,
+	void paint(int tint, Affine2f tx, float left, float top, float right, float bottom, float sl, float st, float sr,
+			float sb);
+
+	void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
 			float right, float bottom, float sl, float st, float sr, float sb);
 
-	public void paint(int tint, float m00, float m01, float m10, float m11, float tx, float ty, float left, float top,
-			float right, float bottom, float sl, float st, float sr, float sb);
+	void renderNoIndexes(MeshData mesh);
 
-	public void renderNoIndexes(MeshData mesh);
+	void renderWithIndexes(MeshData mesh);
 
-	public void renderWithIndexes(MeshData mesh);
+	void renderDrawTriangle(MeshData mesh, int index0, int index1, int index2);
 
-	public void renderDrawTriangle(MeshData mesh, int index0, int index1, int index2);
+	MeshData getMesh();
 
-	public MeshData getMesh();
-
-	public void setMesh(MeshData mesh);
+	void setMesh(MeshData mesh);
 }

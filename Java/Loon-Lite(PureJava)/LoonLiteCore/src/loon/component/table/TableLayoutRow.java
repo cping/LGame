@@ -26,21 +26,23 @@ import loon.utils.TArray;
 
 public class TableLayoutRow {
 
-	private int x;
+	private TArray<TableColumnLayout> _tempColumns;
 
-	private int y;
+	private int _x;
 
-	private int width;
+	private int _y;
 
-	private int height;
+	private int _width;
+
+	private int _height;
 
 	private TableColumnLayout[] columns;
 
 	public TableLayoutRow(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		this._x = x;
+		this._y = y;
+		this._width = width;
+		this._height = height;
 	}
 
 	public TableLayoutRow(int x, int y, int width, int height, int columns) {
@@ -50,23 +52,23 @@ public class TableLayoutRow {
 	}
 
 	public int getX() {
-		return x;
+		return _x;
 	}
 
 	public void setX(int x) {
-		this.x = x;
+		this._x = x;
 	}
 
 	public int getY() {
-		return y;
+		return _y;
 	}
 
 	public void setY(int y) {
-		this.y = y;
+		this._y = y;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public boolean setWidth(int width) {
@@ -76,7 +78,7 @@ public class TableLayoutRow {
 				columns[i].setWidth(columns[i].getWidthf() + newWidthDif);
 			}
 			adjustColumns();
-			this.width = width;
+			this._width = width;
 			return true;
 		}
 		int difX = getWidth() - width;
@@ -88,7 +90,7 @@ public class TableLayoutRow {
 				int maxDif = columns[i].getWidth() - columns[i].getMinWidth();
 				if (maxDif >= difX) {
 					columns[i].setWidth(columns[i].getWidth() - difX);
-					this.width = width;
+					this._width = width;
 					adjustColumns();
 					return true;
 				} else {
@@ -109,11 +111,11 @@ public class TableLayoutRow {
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public void setHeight(int height) {
-		this.height = height;
+		this._height = height;
 		adjustColumns();
 	}
 
@@ -141,12 +143,12 @@ public class TableLayoutRow {
 	private void initColumns() {
 		int xStep = getWidth() / columns.length;
 		for (int i = 0; i < columns.length; i++) {
-			columns[i] = new TableColumnLayout(null, getX() + (i * xStep), y, xStep, height);
+			columns[i] = new TableColumnLayout(null, getX() + (i * xStep), _y, xStep, _height);
 		}
 	}
 
 	private void adjustColumns() {
-		int startX = this.x;
+		int startX = this._x;
 		for (int i = 0; i < columns.length; i++) {
 			columns[i].setX(startX);
 			startX += columns[i].getWidth();
@@ -204,8 +206,6 @@ public class TableLayoutRow {
 		adjustColumns();
 		return true;
 	}
-
-	private TArray<TableColumnLayout> _tempColumns;
 
 	public void removeColumn(int column) {
 		int columnAdd = columns[column].getWidth() / (columns.length - 1);

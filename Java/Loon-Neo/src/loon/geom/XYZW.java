@@ -25,6 +25,6 @@ package loon.geom;
  */
 public interface XYZW extends XYZ {
 
-	public float getW();
+	float getW();
 
 }

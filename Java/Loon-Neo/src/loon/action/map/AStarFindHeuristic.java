@@ -46,8 +46,8 @@ public interface AStarFindHeuristic {
 
 	public final static int DIAGONAL_MAX = 11;
 
-	public float getScore(float sx, float sy, float tx, float ty);
+	float getScore(float sx, float sy, float tx, float ty);
 
-	public int getTypeCode();
+	int getTypeCode();
 
 }

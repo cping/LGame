@@ -54,6 +54,10 @@ public interface SysInput {
 
 	boolean isMoving();
 
+	boolean isDragMoved();
+
+	boolean isDragMoved(float epsilon);
+
 	int getRepaintMode();
 
 	void setRepaintMode(int mode);

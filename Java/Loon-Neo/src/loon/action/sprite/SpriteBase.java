@@ -984,7 +984,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		if (screen == null) {
 			return SysTouch.isDrag();
 		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DRAG && SysTouch.isDragMoved();
+		return screen.getTouchPressed() == SysTouch.TOUCH_DRAG && screen.isDragMoved();
 	}
 
 	public boolean isFlipX() {

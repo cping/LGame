@@ -22,7 +22,7 @@ package loon;
 
 public interface Save {
 
-	interface Batch {
+	public interface Batch {
 
 		void setItem(String key, String data);
 
@@ -31,15 +31,15 @@ public interface Save {
 		void commit();
 	}
 
-	public void setItem(String key, String data);
+	void setItem(String key, String data);
 
-	public void removeItem(String key);
+	void removeItem(String key);
 
-	public String getItem(String key);
+	String getItem(String key);
 
-	public Batch startBatch();
+	Batch startBatch();
 
-	public Iterable<String> keys();
+	Iterable<String> keys();
 
-	public boolean isPersisted();
+	boolean isPersisted();
 }
