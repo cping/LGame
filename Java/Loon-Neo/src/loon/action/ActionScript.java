@@ -149,6 +149,18 @@ public class ActionScript {
 							} else {
 								_tween.fadeOut(60);
 							}
+						} else if ("flipx".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									_tween.flipX(StringUtils.toBoolean(parameters[0]));
+								}
+							}
+						} else if ("flipy".equals(name)) {
+							if (parameters != null) {
+								if (parameters.length == 1) {
+									_tween.flipY(StringUtils.toBoolean(parameters[0]));
+								}
+							}
 						} else if ("color".equals(name) || "colorto".equals(name)) {
 							if (parameters != null) {
 								if (parameters.length == 1) {

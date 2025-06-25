@@ -37,6 +37,7 @@ import loon.action.map.Side;
 import loon.component.layout.Margin;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.events.SysInput;
 import loon.geom.Circle;
 import loon.geom.DirtyRectList;
 import loon.geom.Ellipse;
@@ -133,6 +134,8 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 
 	private Screen _screen;
 
+	private SysInput _input;
+
 	protected ISprite[] _sprites;
 
 	public Sprites(Screen screen, int w, int h) {
@@ -152,7 +155,6 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	public Sprites(String name, Screen screen, int w, int h) {
-		this._screen = screen;
 		this._sortableChildren = this._visible = true;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
@@ -160,8 +162,41 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		this._sizeExpandCount = 1;
 		this._currentPosHash = _lastPosHash = 1;
 		this._newLineHeight = -1f;
+		this.setScreen(screen);
 		this.setSize(w, h);
 		LSystem.pushSpritesPool(this);
+	}
+
+	/**
+	 * 设定当前精灵管理器对应的屏幕
+	 * 
+	 * @param screen
+	 * @return
+	 */
+	public Sprites setScreen(Screen screen) {
+		this._screen = screen;
+		this.setInput(screen);
+		return this;
+	}
+
+	/**
+	 * 设定当前精灵管理器对应的操作输入器
+	 * 
+	 * @param input
+	 * @return
+	 */
+	public Sprites setInput(SysInput input) {
+		this._input = input;
+		return this;
+	}
+
+	/**
+	 * 获得当前屏幕对应的操作输入器
+	 * 
+	 * @return
+	 */
+	public SysInput screenInput() {
+		return this._input;
 	}
 
 	/**
@@ -175,17 +210,17 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		if (this._width != w || this._height != h) {
 			this._width = w;
 			this._height = h;
-			if (this._width == 0) {
+			if (this._width <= 0) {
 				this._width = 1;
 			}
-			if (this._height == 0) {
+			if (this._height <= 0) {
 				this._height = 1;
 			}
-			if (_viewWidth < this._width) {
-				_viewWidth = this._width;
+			if (this._viewWidth < this._width) {
+				this._viewWidth = this._width;
 			}
-			if (_viewHeight < this._height) {
-				_viewHeight = this._height;
+			if (this._viewHeight < this._height) {
+				this._viewHeight = this._height;
 			}
 			this.resize(w, h, true);
 		}
@@ -495,12 +530,23 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 			return;
 		}
 		if (sprite.getWidth() > getWidth()) {
-			setViewWindow(_viewX, _viewY, MathUtils.iceil(MathUtils.max(sprite.getWidth(), LSystem.viewSize.width)),
-					_height);
+			if (_screen == null) {
+				setViewWindow(_viewX, _viewY, MathUtils.iceil(MathUtils.max(sprite.getWidth(), LSystem.viewSize.width)),
+						_height);
+			} else {
+				setViewWindow(_viewX, _viewY, MathUtils.iceil(MathUtils.max(sprite.getWidth(), _screen.getWidth())),
+						_height);
+			}
 		}
 		if (sprite.getHeight() > getHeight()) {
-			setViewWindow(_viewX, _viewY, _width,
-					MathUtils.iceil(MathUtils.max(sprite.getWidth(), LSystem.viewSize.width)));
+			if (_screen == null) {
+				setViewWindow(_viewX, _viewY, _width,
+						MathUtils.iceil(MathUtils.max(sprite.getHeight(), LSystem.viewSize.height)));
+			} else {
+				setViewWindow(_viewX, _viewY, _width,
+						MathUtils.iceil(MathUtils.max(sprite.getHeight(), _screen.getHeight())));
+
+			}
 		}
 	}
 
@@ -683,7 +729,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		if (this._size == this._sprites.length) {
 			expandCapacity((_size + 1) * 2);
 		}
-		boolean result = (_sprites[_size++] = sprite) != null;
+		final boolean result = (_sprites[_size++] = sprite) != null;
 		if (_sortableChildren) {
 			sortSprites();
 		}
@@ -1795,9 +1841,20 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		this._isViewWindowSet = true;
 		this._viewX = x;
 		this._viewY = y;
+		if (this._viewWidth <= 0) {
+			this._viewWidth = getWidth();
+		}
+		if (this._viewHeight <= 0) {
+			this._viewHeight = getHeight();
+		}
 		return this;
 	}
 
+	/**
+	 * 创建对应当前精灵集合的精灵控制器
+	 * 
+	 * @return
+	 */
 	public SpriteControls createSpriteControls() {
 		if (_closed) {
 			return new SpriteControls();
@@ -1896,6 +1953,11 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return controls;
 	}
 
+	/**
+	 * 获得当前精灵集合中的全部精灵
+	 * 
+	 * @return
+	 */
 	public ISprite[] getSprites() {
 		if (_closed) {
 			return null;
@@ -1906,6 +1968,11 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return CollectionUtils.copyOf(this._sprites, this._size);
 	}
 
+	/**
+	 * 获得当前精灵集合中的全部精灵
+	 * 
+	 * @return
+	 */
 	public TArray<ISprite> getSpritesArray() {
 		if (_closed) {
 			return null;
@@ -1913,7 +1980,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		if (_sprites == null) {
 			return null;
 		}
-		TArray<ISprite> result = new TArray<ISprite>();
+		final TArray<ISprite> result = new TArray<ISprite>();
 		int size = _sprites.length;
 		for (int i = size - 1; i > -1; i--) {
 			ISprite spr = _sprites[i];
@@ -2165,7 +2232,10 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	public RectBox getBoundingBox() {
-		return new RectBox(this._viewX, this._viewY, this._viewWidth, this._viewHeight);
+		if (_isViewWindowSet) {
+			return new RectBox(this._viewX, this._viewY, this._viewWidth, this._viewHeight);
+		}
+		return new RectBox(this._viewX, this._viewY, this._width, this._height);
 	}
 
 	public int getHeight() {

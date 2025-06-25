@@ -25,8 +25,8 @@ package loon.font;
  */
 public interface ITranslator {
 
-	public boolean isAllow();
+	boolean isAllow();
 
-	public String toTanslation(String original, String def);
+	String toTanslation(String original, String def);
 
 }

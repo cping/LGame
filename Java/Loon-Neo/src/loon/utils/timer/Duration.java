@@ -108,6 +108,10 @@ public class Duration implements Comparable<Duration> {
 		return (float) millis / (float) LSystem.DAY;
 	}
 
+	public final static Duration since(final Duration time) {
+		return new Duration(TimeUtils.millis() - time._millisTime);
+	}
+
 	public final static Duration at(float ms) {
 		return new Duration(ms);
 	}

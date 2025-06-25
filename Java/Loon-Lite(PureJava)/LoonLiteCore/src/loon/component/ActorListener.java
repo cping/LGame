@@ -24,13 +24,13 @@ import loon.opengl.GLEx;
 
 public interface ActorListener {
 
-	public void draw(GLEx g);
+	void draw(GLEx g);
 
-	public void update(long elapsedTime);
+	void update(long elapsedTime);
 
-	public void downClick(int x, int y);
+	void downClick(int x, int y);
 
-	public void upClick(int x, int y);
+	void upClick(int x, int y);
 
-	public void drag(int x, int y);
+	void drag(int x, int y);
 }

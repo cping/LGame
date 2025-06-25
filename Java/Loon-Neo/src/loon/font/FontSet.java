@@ -24,11 +24,11 @@ import loon.canvas.LColor;
 
 public interface FontSet<T> {
 
-	public T setFont(IFont font);
+	T setFont(IFont font);
 
-	public IFont getFont();
+	IFont getFont();
 
-	public T setFontColor(LColor color);
+	T setFontColor(LColor color);
 
-	public LColor getFontColor();
+	LColor getFontColor();
 }

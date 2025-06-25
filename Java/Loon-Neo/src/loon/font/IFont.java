@@ -35,7 +35,7 @@ public interface IFont extends LRelease {
 	 * 
 	 * @return
 	 */
-	public ITranslator getTranslator();
+	ITranslator getTranslator();
 
 	/**
 	 * 翻译器注入
@@ -43,7 +43,7 @@ public interface IFont extends LRelease {
 	 * @param translator
 	 * @return
 	 */
-	public IFont setTranslator(ITranslator translator);
+	IFont setTranslator(ITranslator translator);
 
 	void drawString(GLEx g, String string, float x, float y);
 

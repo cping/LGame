@@ -40,6 +40,7 @@ import loon.canvas.LColor;
 import loon.events.EventAction;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
+import loon.events.SysInput;
 import loon.events.SysKey;
 import loon.events.SysTouch;
 import loon.geom.BoxSize;
@@ -876,23 +877,23 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	protected float getInternalTouchDX() {
-		final Screen screen = getScreen();
-		return screen == null ? SysTouch.getDX() : screen.getTouchDX();
+		final SysInput input = getInput();
+		return input == null ? SysTouch.getDX() : input.getTouchDX();
 	}
 
 	protected float getInternalTouchDY() {
-		final Screen screen = getScreen();
-		return screen == null ? SysTouch.getDY() : screen.getTouchDY();
+		final SysInput input = getInput();
+		return input == null ? SysTouch.getDY() : input.getTouchDY();
 	}
 
 	protected float getInternalTouchX() {
-		final Screen screen = getScreen();
-		return screen == null ? SysTouch.getX() : screen.getTouchX();
+		final SysInput input = getInput();
+		return input == null ? SysTouch.getX() : input.getTouchX();
 	}
 
 	protected float getInternalTouchY() {
-		final Screen screen = getScreen();
-		return screen == null ? SysTouch.getY() : screen.getTouchY();
+		final SysInput input = getInput();
+		return input == null ? SysTouch.getY() : input.getTouchY();
 	}
 
 	public float getTouchDX() {
@@ -932,59 +933,59 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isKeyDown(int key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysKey.isKeyPressed(key);
 		}
-		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
+		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
 	public boolean isKeyUp(int key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysKey.isKeyReleased(key);
 		}
-		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
+		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
 	}
 
 	public boolean isKeyDown(String key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysKey.isKeyPressed(key);
 		}
-		return screen.isKeyPressed(key) || SysKey.isKeyPressed(key);
+		return input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
 	public boolean isKeyUp(String key) {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysKey.isKeyReleased(key);
 		}
-		return screen.isKeyReleased(key) || SysKey.isKeyReleased(key);
+		return input.isKeyReleased(key) || SysKey.isKeyReleased(key);
 	}
 
 	public boolean isClickDown() {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysTouch.isDown();
 		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DOWN;
+		return input.getTouchPressed() == SysTouch.TOUCH_DOWN;
 	}
 
 	public boolean isClickUp() {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysTouch.isUp();
 		}
-		return screen.getTouchReleased() == SysTouch.TOUCH_UP;
+		return input.getTouchReleased() == SysTouch.TOUCH_UP;
 	}
 
 	public boolean isClickDrag() {
-		final Screen screen = getScreen();
-		if (screen == null) {
+		final SysInput input = getInput();
+		if (input == null) {
 			return SysTouch.isDrag();
 		}
-		return screen.getTouchPressed() == SysTouch.TOUCH_DRAG && screen.isDragMoved();
+		return input.getTouchPressed() == SysTouch.TOUCH_DRAG && input.isDragMoved();
 	}
 
 	public boolean isFlipX() {
@@ -1462,6 +1463,13 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 			return LSystem.getProcess().getScreen();
 		}
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
+	}
+
+	public SysInput getInput() {
+		if (this._sprites == null) {
+			return null;
+		}
+		return this._sprites.screenInput();
 	}
 
 	public Sprites getSprites() {

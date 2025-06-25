@@ -71,17 +71,17 @@ public abstract class Canvas implements LRelease {
 
 	public interface ColorPixel {
 
-		public int getPixelWidth();
+		int getPixelWidth();
 
-		public int getPixelHeight();
+		int getPixelHeight();
 
-		public int get(float x, float y);
+		int get(float x, float y);
 
-		public void set(float x, float y, int pixel);
+		void set(float x, float y, int pixel);
 
-		public int[] pixels();
+		int[] pixels();
 
-		public void bindPixels(int[] pixels);
+		void bindPixels(int[] pixels);
 
 	}
 
