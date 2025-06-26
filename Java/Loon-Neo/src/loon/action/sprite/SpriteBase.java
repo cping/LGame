@@ -877,22 +877,22 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	protected float getInternalTouchDX() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		return input == null ? SysTouch.getDX() : input.getTouchDX();
 	}
 
 	protected float getInternalTouchDY() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		return input == null ? SysTouch.getDY() : input.getTouchDY();
 	}
 
 	protected float getInternalTouchX() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		return input == null ? SysTouch.getX() : input.getTouchX();
 	}
 
 	protected float getInternalTouchY() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		return input == null ? SysTouch.getY() : input.getTouchY();
 	}
 
@@ -933,7 +933,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isKeyDown(int key) {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysKey.isKeyPressed(key);
 		}
@@ -941,7 +941,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isKeyUp(int key) {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysKey.isKeyReleased(key);
 		}
@@ -949,7 +949,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isKeyDown(String key) {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysKey.isKeyPressed(key);
 		}
@@ -957,7 +957,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isKeyUp(String key) {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysKey.isKeyReleased(key);
 		}
@@ -965,7 +965,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isClickDown() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysTouch.isDown();
 		}
@@ -973,7 +973,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isClickUp() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysTouch.isUp();
 		}
@@ -981,7 +981,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	public boolean isClickDrag() {
-		final SysInput input = getInput();
+		final SysInput input = screenInput();
 		if (input == null) {
 			return SysTouch.isDrag();
 		}
@@ -1465,7 +1465,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return this._sprites.getScreen() == null ? LSystem.getProcess().getScreen() : this._sprites.getScreen();
 	}
 
-	public SysInput getInput() {
+	public SysInput screenInput() {
 		if (this._sprites == null) {
 			return null;
 		}

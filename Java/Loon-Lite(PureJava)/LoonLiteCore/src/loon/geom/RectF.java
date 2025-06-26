@@ -506,6 +506,11 @@ public class RectF implements XYZW, SetXY {
 		return width <= 0 && height <= 0;
 	}
 
+	public RectF reset() {
+		this.x = this.y = this.width = this.height = 0f;
+		return this;
+	}
+
 	public RectF random() {
 		this.x = MathUtils.random(0f, LSystem.viewSize.getWidth());
 		this.y = MathUtils.random(0f, LSystem.viewSize.getHeight());

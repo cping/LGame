@@ -1305,7 +1305,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEOUT) || cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
 					this.scrFlag = true;
-					this._gameColor = new LColor(mesFlag);
+					if (_gameColor == null) {
+						this._gameColor = new LColor(mesFlag);
+					} else {
+						this._gameColor.setColor(mesFlag);
+					}
 					if (effectSprites != null) {
 						effectSprites.removeAll();
 						if (cmdFlag.equalsIgnoreCase(CommandType.L_FADEIN)) {
@@ -1460,8 +1464,13 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 						colors = new String[] { "0", "0", "0" };
 					}
 					if (_gameColor == null && colors != null && colors.length == 3) {
-						_gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
-								Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
+						if (_gameColor == null) {
+							_gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
+									Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
+						} else {
+							_gameColor.setColor(Integer.valueOf(colors[0]).intValue(),
+									Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
+						}
 						scrCG.sleep = 20;
 						scrCG.sleepMax = scrCG.sleep;
 						scrFlag = false;

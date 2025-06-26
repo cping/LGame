@@ -2184,7 +2184,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public Screen getScreen() {
-		return (_desktop == null || _desktop._sysInput == null) ? LSystem.getProcess().getScreen()
+		return (_desktop == null || _desktop._curScreen == null) ? LSystem.getProcess().getScreen()
 				: _desktop._curScreen;
 	}
 

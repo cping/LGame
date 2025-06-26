@@ -61,7 +61,7 @@ public class AVGAnm implements Expression, LRelease {
 
 	protected long startTime = -1;
 
-	protected boolean loop = true, loaded = false, closed = false;;
+	protected boolean loop = true, loaded = false, closed = false;
 
 	protected LTexture texture;
 
@@ -146,14 +146,27 @@ public class AVGAnm implements Expression, LRelease {
 						p[i] = p[i].replaceAll("^[\\t ]*", "").replaceAll("[\\t ]*$", LSystem.EMPTY);
 					}
 					if (p.length == 3) {
-						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						if (color == null) {
+							color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						} else {
+							color.setColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						}
 					}
 					if (p.length == 4) {
-						color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]),
-								Integer.parseInt(p[3]));
+						if (color == null) {
+							color = new LColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]),
+									Integer.parseInt(p[3]));
+						} else {
+							color.setColor(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]),
+									Integer.parseInt(p[3]));
+						}
 					}
 				} else {
-					color = new LColor(vv);
+					if (color == null) {
+						color = new LColor(vv);
+					} else {
+						color.setColor(vv);
+					}
 				}
 			} else if ("imageheight".equalsIgnoreCase(key)) {
 				if (MathUtils.isNan(vv))

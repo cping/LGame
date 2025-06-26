@@ -28,6 +28,7 @@ import loon.component.Desktop;
 import loon.component.LComponent;
 import loon.geom.Affine2f;
 import loon.geom.RectBox;
+import loon.geom.RectF;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -36,11 +37,11 @@ import loon.utils.timer.LTimerContext;
 
 public abstract class Viewport implements LRelease {
 
-	private RectBox _bounds = new RectBox();
-
 	private RectBox _viewWorld = new RectBox();
+	
+	private RectF _bounds = new RectF();
 
-	private RectBox _limitRect = null;
+	private RectF _limitRect = null;
 
 	private boolean _dirty;
 
@@ -259,9 +260,9 @@ public abstract class Viewport implements LRelease {
 			this._limitRect = null;
 		} else {
 			if (this._limitRect != null) {
-				this._limitRect.setSize(width, height);
+				this._limitRect.set(width, height);
 			} else {
-				this._limitRect = new RectBox(0, 0, width, height);
+				this._limitRect = new RectF(0f, 0f, width, height);
 			}
 			if (this._follow != null) {
 				float originX = this.width / 2;
@@ -298,7 +299,7 @@ public abstract class Viewport implements LRelease {
 		return this;
 	}
 
-	public void centerOn(RectBox size, ActionBind follow, float x, float y) {
+	public void centerOn(RectF size, ActionBind follow, float x, float y) {
 
 	}
 
@@ -474,12 +475,12 @@ public abstract class Viewport implements LRelease {
 
 	public Viewport centerToBounds() {
 		if (this._useBounds) {
-			RectBox bounds = this._bounds;
+			RectF bounds = this._bounds;
 			float originX = this.width * 0.5f;
 			float originY = this.height * 0.5f;
-			this._centerPoint.set(bounds.getCenterX(), bounds.getCenterY());
-			this.scrollX = bounds.getCenterX() - originX;
-			this.scrollY = bounds.getCenterY() - originY;
+			this._centerPoint.set(bounds.centerX(), bounds.centerY());
+			this.scrollX = bounds.centerX() - originX;
+			this.scrollY = bounds.centerY() - originY;
 			this._dirty = true;
 		}
 		return this;
@@ -579,7 +580,7 @@ public abstract class Viewport implements LRelease {
 	}
 
 	public float getClampX(float x) {
-		RectBox bounds = this._bounds;
+		RectF bounds = this._bounds;
 		float dw = this.getDisplayWidth();
 		float bx = bounds.x + ((dw - this.width) / 2);
 		float bw = MathUtils.max(bx, bx + bounds.width - dw);
@@ -592,7 +593,7 @@ public abstract class Viewport implements LRelease {
 	}
 
 	public float getClampY(float y) {
-		RectBox bounds = this._bounds;
+		RectF bounds = this._bounds;
 		float dh = this.getDisplayHeight();
 		float by = bounds.y + ((dh - this.height) / 2);
 		float bh = MathUtils.max(by, by + bounds.height - dh);

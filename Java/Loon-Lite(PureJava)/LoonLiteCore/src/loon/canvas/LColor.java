@@ -1037,7 +1037,7 @@ public class LColor implements Serializable {
 		if (!MathUtils.isNan(v)) {
 			return 0;
 		}
-		if (v.indexOf('.') == -1) {
+		if (v.indexOf(LSystem.DOT) == -1) {
 			return Integer.parseInt(v);
 		}
 		return (int) Double.parseDouble(v);
@@ -1363,50 +1363,7 @@ public class LColor implements Serializable {
 			this._locked = locked;
 			return;
 		}
-		c = c.trim().toLowerCase();
-		// 识别字符串格式颜色
-		if (c.startsWith("#") || c.startsWith("0x")) {
-			setColor(hexToColor(c));
-		} else if (c.startsWith("rgb")) {
-			int start = c.indexOf('(');
-			int end = c.lastIndexOf(')');
-			if (start != -1 && end != -1 && end > start) {
-				String result = c.substring(start + 1, end).trim();
-				String[] list = StringUtils.split(result, LSystem.COMMA);
-				if (list.length == 3) {
-					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()));
-				} else if (list.length == 4) {
-					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()),
-							convertInt(list[3].trim()));
-				}
-			}
-		} else if (c.startsWith("argb")) {
-			int start = c.indexOf('(');
-			int end = c.lastIndexOf(')');
-			if (start != -1 && end != -1 && end > start) {
-				String result = c.substring(start + 1, end).trim();
-				String[] list = StringUtils.split(result, LSystem.COMMA);
-				if (list.length == 3) {
-					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[0].trim()));
-				} else if (list.length == 4) {
-					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[3].trim()),
-							convertInt(list[0].trim()));
-				}
-			}
-		} else if (c.startsWith("transparent")) {
-			setColor(TRANSPARENT);
-		} else if (MathUtils.isNan(c)) {
-			setColor(convertInt(c));
-		} else if (StringUtils.isHex(c)) {
-			setColor(hexToColor(c));
-		} else {
-			LColor color = LColorList.get().find(c);
-			if (color != null) {
-				setColor(color);
-			} else {
-				setColor(hexToColor(c));
-			}
-		}
+		this.setColor(c);
 		this.initLockData(locked);
 	}
 
@@ -2911,6 +2868,57 @@ public class LColor implements Serializable {
 	public String toRGBAString() {
 		return new StrBuilder().append(r).append(LSystem.COMMA).append(g).append(LSystem.COMMA).append(b)
 				.append(LSystem.COMMA).append(a).toString();
+	}
+
+	public LColor setColor(String c) {
+		if (c == null) {
+			return this;
+		}
+		c = c.trim().toLowerCase();
+		// 识别字符串格式颜色
+		if (c.startsWith("#") || c.startsWith("0x")) {
+			setColor(hexToColor(c));
+		} else if (c.startsWith("rgb")) {
+			int start = c.indexOf('(');
+			int end = c.lastIndexOf(')');
+			if (start != -1 && end != -1 && end > start) {
+				String result = c.substring(start + 1, end).trim();
+				String[] list = StringUtils.split(result, LSystem.COMMA);
+				if (list.length == 3) {
+					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()));
+				} else if (list.length == 4) {
+					setColor(convertInt(list[0].trim()), convertInt(list[1].trim()), convertInt(list[2].trim()),
+							convertInt(list[3].trim()));
+				}
+			}
+		} else if (c.startsWith("argb")) {
+			int start = c.indexOf('(');
+			int end = c.lastIndexOf(')');
+			if (start != -1 && end != -1 && end > start) {
+				String result = c.substring(start + 1, end).trim();
+				String[] list = StringUtils.split(result, LSystem.COMMA);
+				if (list.length == 3) {
+					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[0].trim()));
+				} else if (list.length == 4) {
+					setColor(convertInt(list[1].trim()), convertInt(list[2].trim()), convertInt(list[3].trim()),
+							convertInt(list[0].trim()));
+				}
+			}
+		} else if (c.startsWith("transparent")) {
+			setColor(TRANSPARENT);
+		} else if (MathUtils.isNan(c)) {
+			setColor(convertInt(c));
+		} else if (StringUtils.isHex(c)) {
+			setColor(hexToColor(c));
+		} else {
+			LColor color = LColorList.get().find(c);
+			if (color != null) {
+				setColor(color);
+			} else {
+				setColor(hexToColor(c));
+			}
+		}
+		return this;
 	}
 
 	/**

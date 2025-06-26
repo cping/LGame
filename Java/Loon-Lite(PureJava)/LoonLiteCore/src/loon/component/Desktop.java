@@ -146,14 +146,14 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 		this._tooltip = new LToolTip();
 		this._contentPane.add(this._tooltip);
 		this._contentPane.setDesktop(this);
-		this.setScreenInput(screen);
+		this.setScreen(screen);
 		this.setDesktop(this._contentPane);
 		LSystem.pushDesktopPool(this);
 	}
 
-	public Desktop setScreenInput(Screen screen) {
-		this._sysInput = screen;
+	public Desktop setScreen(Screen screen) {
 		this._curScreen = screen;
+		this.setInput(screen);
 		return this;
 	}
 

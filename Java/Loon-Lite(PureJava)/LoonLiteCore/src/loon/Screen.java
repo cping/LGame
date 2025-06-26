@@ -6079,6 +6079,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen setInput(SysInput i) {
+		setDesktopInput(i);
+		setSpritesInput(i);
+		return this;
+	}
+
+	public Screen setDesktopInput(SysInput i) {
+		if (_currentDesktop != null) {
+			_currentDesktop.setInput(i);
+		}
+		return this;
+	}
+
+	public Screen setSpritesInput(SysInput i) {
+		if (_currentSprites != null) {
+			_currentSprites.setInput(i);
+		}
+		return this;
+	}
+
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
 			_rectBox.setBounds(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScreenWidth(),

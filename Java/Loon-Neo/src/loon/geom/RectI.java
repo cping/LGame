@@ -507,6 +507,11 @@ public class RectI implements XYZW, SetXY {
 		return width <= 0 && height <= 0;
 	}
 
+	public RectI reset() {
+		this.x = this.y = this.width = this.height = 0;
+		return this;
+	}
+
 	public static void getNearestCorner(int x, int y, int w, int h, int px, int py, PointI result) {
 		result.set((int) MathUtils.nearest(px, x, x + w), (int) MathUtils.nearest(y, y, y + h));
 	}
