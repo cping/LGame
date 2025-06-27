@@ -122,7 +122,7 @@ public abstract class LComponent extends LObject<LContainer>
 
 	private ResizeListener<LComponent> _resizeListener;
 
-	private EventAction _loopAction;
+	private EventAction _loopActionListener;
 
 	private EventActionN _validateEvent;
 
@@ -210,7 +210,7 @@ public abstract class LComponent extends LObject<LContainer>
 	protected SysInput _input;
 
 	// 点击事件监听
-	protected ClickListener _click;
+	protected ClickListener _clickListener;
 
 	private TouchedClick _touchListener;
 
@@ -410,13 +410,13 @@ public abstract class LComponent extends LObject<LContainer>
 			return;
 		}
 		process(elapsedTime);
-		if (_loopAction != null) {
-			HelperUtils.callEventAction(_loopAction, this);
+		if (_loopActionListener != null) {
+			HelperUtils.callEventAction(_loopActionListener, this);
 		}
 	}
 
 	public LComponent loop(EventAction la) {
-		this._loopAction = la;
+		this._loopActionListener = la;
 		return this;
 	}
 
@@ -1172,9 +1172,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void doClick() {
-		if (_click != null) {
+		if (_clickListener != null) {
 			try {
-				_click.DoClick(this);
+				_clickListener.DoClick(this);
 			} catch (Throwable cause) {
 				LSystem.error("Component doClick() exception", cause);
 			}
@@ -1182,9 +1182,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void downClick() {
-		if (_click != null) {
+		if (_clickListener != null) {
 			try {
-				_click.DownClick(this, getUITouchX(), getUITouchY());
+				_clickListener.DownClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component downClick() exception", cause);
 			}
@@ -1192,9 +1192,9 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void dragClick() {
-		if (_click != null) {
+		if (_clickListener != null) {
 			try {
-				_click.DragClick(this, getUITouchX(), getUITouchY());
+				_clickListener.DragClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component dragClick() exception", cause);
 			}
@@ -1202,12 +1202,30 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public void upClick() {
-		if (_click != null) {
+		if (_clickListener != null) {
 			try {
-				_click.UpClick(this, getUITouchX(), getUITouchY());
+				_clickListener.UpClick(this, getUITouchX(), getUITouchY());
 			} catch (Throwable cause) {
 				LSystem.error("Component upClick() exception", cause);
 			}
+		}
+	}
+
+	public void downClick(int x, int y) {
+		if (_clickListener != null) {
+			_clickListener.DownClick(this, x, y);
+		}
+	}
+
+	public void upClick(int x, int y) {
+		if (_clickListener != null) {
+			_clickListener.UpClick(this, x, y);
+		}
+	}
+
+	public void dragClick(int x, int y) {
+		if (_clickListener != null) {
+			_clickListener.DragClick(this, x, y);
 		}
 	}
 
@@ -1274,9 +1292,15 @@ public abstract class LComponent extends LObject<LContainer>
 
 	// 键盘操作
 	protected void processKeyPressed() {
+		if (this.isSelected()) {
+			this.downKey();
+		}
 	}
 
 	protected void processKeyReleased() {
+		if (this.isSelected()) {
+			this.upKey();
+		}
 	}
 
 	protected void processResize() {
@@ -1311,6 +1335,12 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void onDisable() {
+	}
+
+	public void downKey() {
+	}
+
+	public void upKey() {
 	}
 
 	void keyPressed() {
@@ -2367,7 +2397,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public boolean isClickedListener() {
-		return _click != null;
+		return _clickListener != null;
 	}
 
 	public boolean isLocked() {
@@ -2417,10 +2447,10 @@ public abstract class LComponent extends LObject<LContainer>
 		if (_touchListener == null) {
 			_touchListener = new TouchedClick();
 		}
-		if (_click != null) {
-			_touchListener.addClickListener(_click);
+		if (_clickListener != null) {
+			_touchListener.addClickListener(_clickListener);
 		}
-		this._click = _touchListener;
+		this._clickListener = _touchListener;
 		return _touchListener;
 	}
 
@@ -2471,7 +2501,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent addClickListener(ClickListener c) {
-		this._click = c;
+		this._clickListener = c;
 		makeTouched();
 		return this;
 	}
@@ -2481,18 +2511,18 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent SetClick(ClickListener c) {
-		this._click = c;
+		this._clickListener = c;
 		return this;
 	}
 
 	public ClickListener getClick() {
-		return _click;
+		return _clickListener;
 	}
 
 	public LComponent clearListener() {
-		this._click = null;
-		this._loopAction = null;
+		this._clickListener = null;
 		this._touchListener = null;
+		this._loopActionListener = null;
 		return this;
 	}
 
@@ -2622,11 +2652,11 @@ public abstract class LComponent extends LObject<LContainer>
 			this._freeTextures.close();
 			this._freeTextures = null;
 		}
-		this._touchListener = null;
-		this._resizeListener = null;
-		this._loopAction = null;
-		this._click = null;
 		this._input = null;
+		this._touchListener = null;
+		this._clickListener = null;
+		this._resizeListener = null;
+		this._loopActionListener = null;
 		removeActionEvents(this);
 		destory();
 	}

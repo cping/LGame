@@ -37,6 +37,7 @@ import loon.canvas.LColor;
 import loon.events.Updateable;
 import loon.geom.BooleanValue;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 /**
  * Screen场景切换用类,用于同时设定当前场景的离场效果,以及转化新场景的入场效果 (全部为成对的对称效果,不对称的请自动构建)
@@ -117,6 +118,51 @@ public class ScreenExitEffect {
 	 * 瓦片淡出,淡入
 	 */
 	public final static int TILES_FADE = 14;
+
+	/**
+	 * 转换过渡效果字符串为对应的索引
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public final static int toEffectTypeIndex(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return ScreenExitEffect.STANDARD_FADE;
+		}
+		final String key = name.toLowerCase().trim();
+		if (key.equals("standard_fade") || key.equals("standardfade")) {
+			return STANDARD_FADE;
+		} else if (key.equals("oval_hollow_fade") || key.equals("ovalhollowfade")) {
+			return OVAL_HOLLOW_FADE;
+		} else if (key.equals("oval_solid_fade") || key.equals("ovalsolidfade")) {
+			return OVAL_SOLID_FADE;
+		} else if (key.equals("dot_fade") || key.equals("dotfade")) {
+			return DOT_FADE;
+		} else if (key.equals("board_left_fade") || key.equals("boardleftfade")) {
+			return BOARD_LEFT_FADE;
+		} else if (key.equals("board_right_fade") || key.equals("boardrightfade")) {
+			return BOARD_RIGHT_FADE;
+		} else if (key.equals("spiral_fade") || key.equals("spiralfade")) {
+			return SPIRAL_FADE;
+		} else if (key.equals("door_lr_fade") || key.equals("doorlrfade")) {
+			return DOOR_LR_FADE;
+		} else if (key.equals("door_tb_fade") || key.equals("doortbfade")) {
+			return DOOR_TB_FADE;
+		} else if (key.equals("door_lcr_fade") || key.equals("doorlcrfade")) {
+			return DOOR_LCR_FADE;
+		} else if (key.equals("door_tcb_fade") || key.equals("doortcbfade")) {
+			return DOOR_TCB_FADE;
+		} else if (key.equals("door_irregular_fade") || key.equals("doorirregularfade")) {
+			return DOOR_IRREGULAR_FADE;
+		} else if (key.equals("swipe_fade") || key.equals("swipefade")) {
+			return SWIPE_FADE;
+		} else if (key.equals("arc_fade") || key.equals("arcfade")) {
+			return ARC_FADE;
+		} else if (key.equals("tiles_fade") || key.equals("tilesfade")) {
+			return TILES_FADE;
+		}
+		return STANDARD_FADE;
+	}
 
 	static class ReleasedScreen implements LRelease {
 
@@ -357,6 +403,10 @@ public class ScreenExitEffect {
 		this(-1, LColor.black, true);
 	}
 
+	public ScreenExitEffect(String name, LColor c, boolean hideUI) {
+		this(toEffectTypeIndex(name), c, hideUI);
+	}
+
 	public ScreenExitEffect(int idx, LColor c, boolean hideUI) {
 		this._index = idx;
 		this._color = c;
@@ -371,12 +421,20 @@ public class ScreenExitEffect {
 		gotoEffectExit(index, _color, src, dst, _effectLocked, _hideUI);
 	}
 
+	public void gotoEffectExit(final String name, final Screen src, final Screen dst) {
+		gotoEffectExit(toEffectTypeIndex(name), src, dst);
+	}
+
 	public void gotoEffectExit(final LColor color, final Screen src, final Screen dst) {
 		gotoEffectExit(_index, color, src, dst);
 	}
 
 	public void gotoEffectExit(final int index, final LColor color, final Screen src, final Screen dst) {
 		gotoEffectExit(index, color, src, dst, _effectLocked, _hideUI);
+	}
+
+	public void gotoEffectExit(final String name, final LColor color, final Screen src, final Screen dst) {
+		gotoEffectExit(toEffectTypeIndex(name), color, src, dst);
 	}
 
 	public void gotoEffectExitRand(final Screen src, final Screen dst) {
@@ -398,6 +456,10 @@ public class ScreenExitEffect {
 
 	public int getEffectExitIndex() {
 		return this._index;
+	}
+
+	public ScreenExitEffect setEffectExitIndex(String name) {
+		return setEffectExitIndex(toEffectTypeIndex(name));
 	}
 
 	public ScreenExitEffect setEffectExitIndex(int idx) {

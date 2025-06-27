@@ -1801,6 +1801,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen setViewSize(float w, float h) {
+		setView(w, h);
+		setSize(getWidth(), getHeight());
+		return this;
+	}
+
 	public void setSize(int w, int h, float ratio) {
 		setSize(MathUtils.ifloor(w * ratio), MathUtils.ifloor(h * ratio));
 	}
@@ -1809,11 +1815,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		resetSize(w, h);
 	}
 
-	final public void resetSize() {
+	final protected void resetSize() {
 		resetSize(0, 0);
 	}
 
-	final public void resetSize(int w, int h) {
+	final protected void resetSize(int w, int h) {
 		this.updateRenderSize(0f, 0f, (w <= 0 ? LSystem.viewSize.getWidth() : w),
 				(h <= 0 ? LSystem.viewSize.getHeight() : h));
 		this.clearInput();
@@ -1837,7 +1843,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this.skipFrame();
 	}
 
-	final public void resetOrder() {
+	final protected void resetOrder() {
 		// 最先精灵
 		this._curFristOrder = DRAW_SPRITE_PAINT();
 		// 其次桌面
@@ -2696,6 +2702,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 以指定特效的效果离开当前Screen再跳转去指定Screen
+	 * 
+	 * @param name
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final String name, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(name, dst);
+		}
+		return this;
+	}
+
+	/**
 	 * 以指定色彩离开当前Screen再跳转去指定Screen(具体效果可以由getScreenExitEffect函数设置)
 	 * 
 	 * @param color
@@ -2720,6 +2740,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public Screen gotoScreenEffectExit(final int index, final LColor color, final Screen dst) {
 		if (_processHandler != null) {
 			_processHandler.gotoEffectExit(index, color, dst);
+		}
+		return this;
+	}
+
+	/**
+	 * 以指定特效,指定色彩的效果,离开当前Screen再跳转去指定Screen
+	 * 
+	 * @param name
+	 * @param color
+	 * @param dst
+	 * @return
+	 */
+	public Screen gotoScreenEffectExit(final String name, final LColor color, final Screen dst) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(name, color, dst);
 		}
 		return this;
 	}
@@ -2758,6 +2793,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen gotoScreenEffectExit(final String name, final LColor color, final int dstIndex) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(name, color, dstIndex);
+		}
+		return this;
+	}
+
 	public Screen gotoScreenEffectExitName(final int index, final LColor color, final CharSequence name) {
 		if (_processHandler != null) {
 			_processHandler.gotoEffectExitName(index, color, name);
@@ -2765,9 +2807,23 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen gotoScreenEffectExitName(final String key, final LColor color, final CharSequence name) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExitName(key, color, name);
+		}
+		return this;
+	}
+
 	public Screen gotoScreenEffectExit(final int index, final LColor color, final CharSequence name) {
 		if (_processHandler != null) {
 			_processHandler.gotoEffectExit(index, color, name);
+		}
+		return this;
+	}
+
+	public Screen gotoScreenEffectExit(final String key, final LColor color, final CharSequence name) {
+		if (_processHandler != null) {
+			_processHandler.gotoEffectExit(key, color, name);
 		}
 		return this;
 	}

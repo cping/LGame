@@ -359,8 +359,8 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 				getContainer().sendToFront(this);
 			}
 			this.move(this._input.getTouchDX(), this._input.getTouchDY());
-			if (_click != null) {
-				_click.DragClick(this, getUITouchX(), getUITouchY());
+			if (_clickListener != null) {
+				_clickListener.DragClick(this, getUITouchX(), getUITouchY());
 			}
 			this.updateIcon();
 		}

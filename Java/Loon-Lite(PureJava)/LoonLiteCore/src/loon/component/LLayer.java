@@ -28,6 +28,7 @@ import loon.action.sprite.Sprites;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.events.DrawListener;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
@@ -57,7 +58,7 @@ public class LLayer extends ActorLayer {
 
 	private float _actorHeight;
 
-	protected boolean _actorDrag, _pressed;
+	protected boolean _actorDrag;
 
 	private Actor _dragActor;
 
@@ -74,6 +75,8 @@ public class LLayer extends ActorLayer {
 	private boolean _currentLayerVSync = false;
 
 	private int _paintSeq = 0;
+
+	private DrawListener<LLayer> _drawListener;
 
 	public LLayer(int w, int h) {
 		this(0, 0, w, h);
@@ -167,30 +170,6 @@ public class LLayer extends ActorLayer {
 		return _currentLayerVSync;
 	}
 
-	public void downClick(int x, int y) {
-		if (_click != null) {
-			_click.DownClick(this, x, y);
-		}
-	}
-
-	public void upClick(int x, int y) {
-		if (_click != null) {
-			_click.UpClick(this, x, y);
-		}
-	}
-
-	public void dragClick(int x, int y) {
-		if (_click != null) {
-			_click.DragClick(this, x, y);
-		}
-	}
-
-	public void downKey() {
-	}
-
-	public void upKey() {
-	}
-
 	/**
 	 * 设定动作触发延迟时间
 	 * 
@@ -249,6 +228,9 @@ public class LLayer extends ActorLayer {
 					_layerSprites.update(elapsed);
 				}
 			}
+			if (_drawListener != null) {
+				_drawListener.update(elapsedTime);
+			}
 		}
 	}
 
@@ -274,6 +256,9 @@ public class LLayer extends ActorLayer {
 			} finally {
 				g.translate(-x, -y);
 			}
+		}
+		if (_drawListener != null) {
+			_drawListener.draw(g, x, y);
 		}
 		g.setTint(tint);
 	}
@@ -352,6 +337,15 @@ public class LLayer extends ActorLayer {
 			}
 
 		}
+	}
+
+	public LLayer setDrawListener(DrawListener<LLayer> d) {
+		this._drawListener = d;
+		return this;
+	}
+
+	public DrawListener<LLayer> getDrawListener() {
+		return this._drawListener;
 	}
 
 	public LLayer moveCamera(Actor actor) {
@@ -448,12 +442,14 @@ public class LLayer extends ActorLayer {
 
 		Image tempImage = Image.createImage(layerWidth, layerHeight);
 		Canvas g = tempImage.getCanvas();
-		for (int x = 0; x < layerWidth; x += tileWidth) {
-			for (int y = 0; y < layerHeight; y += tileHeight) {
-				g.draw(image, x, y);
+		if (g != null) {
+			for (int x = 0; x < layerWidth; x += tileWidth) {
+				for (int y = 0; y < layerHeight; y += tileHeight) {
+					g.draw(image, x, y);
+				}
 			}
+			g.close();
 		}
-		g.close();
 		if (isReturn) {
 			return tempImage;
 		}
@@ -488,30 +484,6 @@ public class LLayer extends ActorLayer {
 
 	public Actor getClickActor() {
 		return _dragActor;
-	}
-
-	@Override
-	protected void processTouchEntered() {
-		this._pressed = true;
-	}
-
-	@Override
-	protected void processTouchExited() {
-		this._pressed = false;
-	}
-
-	@Override
-	protected void processKeyPressed() {
-		if (this.isSelected()) {
-			this.downKey();
-		}
-	}
-
-	@Override
-	protected void processKeyReleased() {
-		if (this.isSelected()) {
-			this.upKey();
-		}
 	}
 
 	@Override
@@ -664,7 +636,7 @@ public class LLayer extends ActorLayer {
 	}
 
 	public boolean isTouchPressed() {
-		return this._pressed;
+		return this.isTouchDownClick();
 	}
 
 	public boolean isActorDrag() {

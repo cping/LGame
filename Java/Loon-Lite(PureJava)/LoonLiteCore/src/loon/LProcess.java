@@ -1243,6 +1243,10 @@ public class LProcess implements LRelease {
 		return this;
 	}
 
+	public LProcess gotoEffectExit(final String name, final Screen dst) {
+		return gotoEffectExit(ScreenExitEffect.toEffectTypeIndex(name), dst);
+	}
+
 	public LProcess gotoEffectExit(final LColor color, final Screen dst) {
 		if (checkWaiting()) {
 			return this;
@@ -1269,6 +1273,10 @@ public class LProcess implements LRelease {
 		}
 		_exitEffect.gotoEffectExit(index, color, _currentScreen, dst);
 		return this;
+	}
+
+	public LProcess gotoEffectExit(final String name, final LColor color, final Screen dst) {
+		return gotoEffectExit(ScreenExitEffect.toEffectTypeIndex(name), color, dst);
 	}
 
 	public LProcess gotoEffectExitRand(final Screen dst) {
@@ -1310,6 +1318,10 @@ public class LProcess implements LRelease {
 		return this;
 	}
 
+	public LProcess gotoEffectExit(final String name, final LColor color, final int dstIndex) {
+		return gotoEffectExit(ScreenExitEffect.toEffectTypeIndex(name), color, dstIndex);
+	}
+
 	public LProcess gotoEffectExitName(final int index, final LColor color, final CharSequence name) {
 		for (Iterator<Screen> it = _screenMap.iterator(); it.hasNext();) {
 			Screen screen = it.next();
@@ -1322,12 +1334,20 @@ public class LProcess implements LRelease {
 		return this;
 	}
 
+	public LProcess gotoEffectExitName(final String name, final LColor color, final CharSequence ch) {
+		return gotoEffectExitName(ScreenExitEffect.toEffectTypeIndex(name), color, ch);
+	}
+
 	public LProcess gotoEffectExit(final int index, final LColor color, final CharSequence name) {
 		final Screen screen = getScreen(name);
 		if (screen != null) {
 			return gotoEffectExit(index, color, screen);
 		}
 		return this;
+	}
+
+	public LProcess gotoEffectExit(final String name, final LColor color, final CharSequence ch) {
+		return gotoEffectExit(ScreenExitEffect.toEffectTypeIndex(name), color, ch);
 	}
 
 	public LProcess gotoEffectExitRand(final LColor color, final CharSequence name) {

@@ -565,8 +565,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		float touchX = _input == null ? getTouchX() : _input.getTouchX();
-		float touchY = _input == null ? getTouchY() : _input.getTouchY();
+		float touchX = getTouchX();
+		float touchY = getTouchY();
 		Desktop desk = getDesktop();
 		if (desk != null) {
 			final Vector2f pos = desk.getUITouch(touchX, touchY, false);
