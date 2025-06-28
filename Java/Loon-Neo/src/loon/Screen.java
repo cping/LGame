@@ -320,9 +320,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private boolean _visible = true;
 
-	private final TArray<RectBox> _rectLimits = new TArray<RectBox>(10);
+	private final TArray<RectBox> _rectLimits = new TArray<RectBox>();
 
-	private final TArray<ActionBind> _actionLimits = new TArray<ActionBind>(10);
+	private final TArray<ActionBind> _actionLimits = new TArray<ActionBind>();
 
 	private TArray<FrameLoopEvent> _frameLooptoDeadEvents;
 
@@ -1281,7 +1281,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		final TArray<LTouchArea> touchAreas = this._touchAreas;
 		final int touchAreaCount = touchAreas.size;
 		if (touchAreaCount > 0) {
-			for (int i = 0; i < touchAreaCount; i++) {
+			for (int i = touchAreas.size - 1; i > -1; i--) {
 				final LTouchArea touchArea = touchAreas.get(i);
 				if (touchArea.contains(touchX, touchY)) {
 					touchArea.onAreaTouched(e, touchX, touchY);
@@ -1746,7 +1746,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public boolean isClickLimit(GameTouch e) {
-		return isClickLimit(e.x(), e.y());
+		return isClickLimit(e.getX(), e.getY());
 	}
 
 	/**
@@ -1756,21 +1756,25 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @param y
 	 * @return
 	 */
-	public boolean isClickLimit(int x, int y) {
+	public boolean isClickLimit(float x, float y) {
 		if (_isAllowThroughUItoScreenTouch) {
 			return false;
 		}
-		if (_rectLimits.size == 0 && _actionLimits.size == 0) {
+		final int rectSize = _rectLimits.size;
+		final int actionSize = _actionLimits.size;
+		if (rectSize == 0 && actionSize == 0) {
 			return false;
 		}
-		for (RectBox rect : _rectLimits) {
-			if (rect.contains(x, y)) {
+		for (int i = rectSize - 1; i > -1; i--) {
+			final RectBox rectLimit = _rectLimits.get(i);
+			if (rectLimit.contains(x, y)) {
 				return true;
 			}
 		}
-		for (ActionBind act : _actionLimits) {
-			final boolean show = (act.isVisible() && act.getAlpha() > 0f);
-			if (show && act.getRectBox().contains(x, y)) {
+		for (int i = actionSize - 1; i > -1; i--) {
+			final ActionBind actionLimit = _actionLimits.get(i);
+			final boolean show = (actionLimit.isVisible() && actionLimit.getAlpha() > 0f);
+			if (show && actionLimit.getRectBox().contains(x, y)) {
 				return true;
 			}
 		}
@@ -5327,6 +5331,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return LSystem.PAUSED;
 	}
 
+	public boolean isTouchDown() {
+		return _touchButtonPressed > NO_BUTTON;
+	}
+
+	public boolean isTouchUp() {
+		return _touchButtonReleased > NO_BUTTON;
+	}
+
 	@Override
 	public int getTouchPressed() {
 		return _touchButtonPressed > NO_BUTTON ? _touchButtonPressed : NO_BUTTON;
@@ -5679,17 +5691,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isTranslate()) {
 			e.offset(getX(), getY());
 		}
-		int type = e.getTypeCode();
-		int button = e.getButton();
+		final int type = e.getTypeCode();
+		final int button = e.getButton();
 		try {
 			if (!isTouchPressed()) {
 				_downUpTimer.start();
 			}
+			final boolean clickDown = isTouchPressed();
 			_touchTypes.put(type, Boolean.TRUE);
 			_touchButtonPressed = button;
 			_touchButtonReleased = NO_BUTTON;
 			if (!isClickLimit(e)) {
-				updateTouchArea(Event.DOWN, e.getX(), e.getY());
+				if (!clickDown) {
+					updateTouchArea(Event.DOWN, e.getX(), e.getY());
+				}
 				touchDown(e);
 				if (_touchListener != null && _currentDesktop != null) {
 					_touchListener.DownClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());
@@ -5729,17 +5744,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		if (isTranslate()) {
 			e.offset(getX(), getY());
 		}
-		int type = e.getTypeCode();
-		int button = e.getButton();
+		final int type = e.getTypeCode();
+		final int button = e.getButton();
 		try {
 			if (isTouchPressed()) {
 				_downUpTimer.stop();
 			}
+			final boolean clickUp = isTouchReleased();
 			_touchTypes.put(type, Boolean.FALSE);
 			_touchButtonReleased = button;
 			_touchButtonPressed = NO_BUTTON;
 			if (!isClickLimit(e)) {
-				updateTouchArea(Event.UP, e.getX(), e.getY());
+				if (!clickUp) {
+					updateTouchArea(Event.UP, e.getX(), e.getY());
+				}
 				touchUp(e);
 				if (_touchListener != null && _currentDesktop != null) {
 					_touchListener.UpClick(_currentDesktop.getSelectedComponent(), e.getX(), e.getY());

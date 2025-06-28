@@ -139,7 +139,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 
 	private ResizeListener<Sprites> _resizeListener;
 
-	private CollisionAction<ISprite> _collisionAction;
+	private CollisionAction<ISprite> _collisionActionListener;
 
 	private RectBox _collViewSize;
 
@@ -1450,7 +1450,9 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 				if (i != j) {
 					final ISprite dst = sprs[j];
 					if (src != null && dst != null && src != dst) {
-						if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+						final RectBox srcCollision = src.getCollisionBox();
+						final RectBox dstCollision = dst.getCollisionBox();
+						if (srcCollision.collided(dstCollision)) {
 							onTriggerCollision(src, dst);
 						}
 					}
@@ -1529,8 +1531,8 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		}
 		final int dir = Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox());
 		spr.onCollision(dst, dir);
-		if (_collisionAction != null) {
-			_collisionAction.onCollision(spr, dst, dir);
+		if (_collisionActionListener != null) {
+			_collisionActionListener.onCollision(spr, dst, dir);
 		}
 	}
 
@@ -1555,12 +1557,12 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	public Sprites setCollisionAction(CollisionAction<ISprite> c) {
-		this._collisionAction = c;
+		this._collisionActionListener = c;
 		return this;
 	}
 
 	public CollisionAction<ISprite> getCollisionAction() {
-		return _collisionAction;
+		return _collisionActionListener;
 	}
 
 	public boolean checkAdd(ISprite spr, QueryEvent<ISprite> e) {
@@ -2917,6 +2919,13 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return _indexLayer;
 	}
 
+	public Sprites clearListerner() {
+		this._sprListerner = null;
+		this._resizeListener = null;
+		this._collisionActionListener = null;
+		return this;
+	}
+
 	public boolean isClosed() {
 		return _closed;
 	}
@@ -2958,9 +2967,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		this._closed = true;
 		this._sprites = null;
 		this._collViewSize = null;
-		this._collisionObjects = null;
-		this._resizeListener = null;
-		this._collisionAction = null;
+		this.clearListerner();
 		LSystem.popSpritesPool(this);
 	}
 

@@ -2522,6 +2522,7 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent clearListener() {
 		this._clickListener = null;
 		this._touchListener = null;
+		this._resizeListener = null;
 		this._loopActionListener = null;
 		return this;
 	}
@@ -2617,6 +2618,29 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent freeImages() {
+		if (!_component_autoDestroy) {
+			return this;
+		}
+		if (_imageUI != null) {
+			final int size = _imageUI.length;
+			for (int i = 0; i < size; i++) {
+				_imageUI[i].close();
+				_imageUI[i] = null;
+			}
+			this._imageUI = null;
+		}
+		if (_background != null) {
+			this._background.close();
+			this._background = null;
+		}
+		if (_freeTextures != null) {
+			this._freeTextures.close();
+			this._freeTextures = null;
+		}
+		return this;
+	}
+
 	@Override
 	protected void _onDestroy() {
 		if (!_component_autoDestroy) {
@@ -2636,27 +2660,9 @@ public abstract class LComponent extends LObject<LContainer>
 			this._objectSuper.remove(this);
 		}
 		this._objectSuper = null;
-		if (_imageUI != null) {
-			final int size = _imageUI.length;
-			for (int i = 0; i < size; i++) {
-				_imageUI[i].close();
-				_imageUI[i] = null;
-			}
-			this._imageUI = null;
-		}
-		if (_background != null) {
-			this._background.close();
-			this._background = null;
-		}
-		if (_freeTextures != null) {
-			this._freeTextures.close();
-			this._freeTextures = null;
-		}
 		this._input = null;
-		this._touchListener = null;
-		this._clickListener = null;
-		this._resizeListener = null;
-		this._loopActionListener = null;
+		this.freeImages();
+		this.clearListener();
 		removeActionEvents(this);
 		destory();
 	}

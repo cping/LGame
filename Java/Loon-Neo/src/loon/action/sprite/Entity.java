@@ -1699,6 +1699,7 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			_image.close();
 			_image = null;
 		}
+		_visible = false;
 		_ignoreUpdate = false;
 		_childrenIgnoreUpdate = false;
 		_componentsIgnoreUpdate = false;
