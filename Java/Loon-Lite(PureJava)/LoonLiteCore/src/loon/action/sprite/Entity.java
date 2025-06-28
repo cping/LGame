@@ -45,9 +45,11 @@ import loon.geom.Dimension;
 import loon.geom.Ellipse;
 import loon.geom.Line;
 import loon.geom.RectBox;
+import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.geom.XYZW;
 import loon.opengl.GLEx;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
@@ -508,6 +510,38 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 			}
 		}
 		return maxZ;
+	}
+
+	public IEntity name(String n) {
+		setName(n);
+		return this;
+	}
+
+	public IEntity tag(String t) {
+		setTag(t);
+		return this;
+	}
+
+	public IEntity bounds(XYZW rect) {
+		if (rect == null) {
+			return this;
+		}
+		return setBounds(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
+	}
+
+	public IEntity bounds(RectBox rect) {
+		if (rect == null) {
+			return this;
+		}
+		return setBounds(rect.getX(), rect.getY(), rect.getWidth(), rect.getHeight());
+	}
+
+	public IEntity shape(Shape shape) {
+		if (shape == null) {
+			return this;
+		}
+		setCustomShape(shape);
+		return this;
 	}
 
 	@Override

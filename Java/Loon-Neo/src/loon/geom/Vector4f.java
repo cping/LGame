@@ -1522,6 +1522,26 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return lessThanOrEqual(this, o);
 	}
 
+	public float len() {
+		return MathUtils.sqrt(x * x + y * y + z * z + w * w);
+	}
+
+	public static float len2(final float x, final float y, final float z, final float w) {
+		return x * x + y * y + z * z + w * w;
+	}
+
+	public float len2() {
+		return x * x + y * y + z * z + w * w;
+	}
+
+	public boolean isZero() {
+		return x == 0 && y == 0 && w == 0 && z == 0;
+	}
+
+	public boolean isZero(final float margin) {
+		return len2() < margin;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

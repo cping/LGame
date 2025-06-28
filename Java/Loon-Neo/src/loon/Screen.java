@@ -1718,6 +1718,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
+	 * 添加一个针对组件区域的触屏限制
+	 * 
+	 * @param comp
+	 * @return
+	 */
+	public Screen addTouchLimit(LComponent comp) {
+		if (comp != null && !_actionLimits.contains(comp) && !(comp instanceof LDragging)) {
+			if (comp instanceof ActionBind) {
+				_actionLimits.add((ActionBind) comp);
+			}
+		}
+		return this;
+	}
+
+	/**
 	 * 添加一个针对RectBox区域的触屏限制
 	 * 
 	 * @param rect
