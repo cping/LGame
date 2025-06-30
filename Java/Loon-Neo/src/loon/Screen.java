@@ -46,6 +46,7 @@ import loon.action.sprite.Sprite;
 import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
+import loon.action.sprite.TComponent;
 import loon.action.sprite.Sprites.Created;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
@@ -3219,6 +3220,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen addSpriteGroup(int count) {
+		if (_currentSprites == null) {
+			return this;
+		}
+		_currentSprites.addSpriteGroup(count);
+		return this;
+	}
+
+	public Screen addEntityGroup(int count) {
+		if (_currentSprites == null) {
+			return this;
+		}
+		_currentSprites.addEntityGroup(count);
+		return this;
+	}
+
 	public Screen addSpriteGroup(LTexture tex, int count) {
 		if (_currentSprites == null) {
 			return this;
@@ -3257,6 +3274,96 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		}
 		_currentSprites.addEntityGroup(e, count);
 		return this;
+	}
+
+	public ISprite addSprite(final String name, final TArray<TComponent<ISprite>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, comps);
+	}
+
+	public ISprite addSprite(final String name, final String imagePath, final TArray<TComponent<ISprite>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, imagePath, comps);
+	}
+
+	public ISprite addSprite(final String name, final LTexture tex, final TArray<TComponent<ISprite>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, tex, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final TComponent<ISprite>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final String imagePath, final TComponent<ISprite>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, imagePath, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final LTexture tex, final TComponent<ISprite>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addSprite(name, tex, comps);
+	}
+
+	public IEntity addEntity(final String name, final TArray<TComponent<IEntity>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, comps);
+	}
+
+	public IEntity addEntity(final String name, final String imagePath, final TArray<TComponent<IEntity>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, imagePath, comps);
+	}
+
+	public IEntity addEntity(final String name, final LTexture tex, final TArray<TComponent<IEntity>> comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, tex, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final TComponent<IEntity>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final String imagePath, final TComponent<IEntity>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, imagePath, comps);
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final LTexture tex, final TComponent<IEntity>... comps) {
+		if (_currentSprites == null) {
+			return null;
+		}
+		return _currentSprites.addEntity(name, tex, comps);
 	}
 
 	/**

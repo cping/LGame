@@ -1891,9 +1891,9 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		}
 	}
 
-	public Sprites addSpriteGroup(LTexture tex, int count) {
+	public Sprites addEntityGroup(int count) {
 		for (int i = 0; i < count; i++) {
-			add(new Sprite(tex));
+			add(new Entity());
 		}
 		return this;
 	}
@@ -1901,13 +1901,6 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	public Sprites addEntityGroup(LTexture tex, int count) {
 		for (int i = 0; i < count; i++) {
 			add(new Entity(tex));
-		}
-		return this;
-	}
-
-	public Sprites addSpriteGroup(String path, int count) {
-		for (int i = 0; i < count; i++) {
-			add(new Sprite(path));
 		}
 		return this;
 	}
@@ -1929,6 +1922,27 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return this;
 	}
 
+	public Sprites addSpriteGroup(int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Sprite());
+		}
+		return this;
+	}
+
+	public Sprites addSpriteGroup(LTexture tex, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Sprite(tex));
+		}
+		return this;
+	}
+
+	public Sprites addSpriteGroup(String path, int count) {
+		for (int i = 0; i < count; i++) {
+			add(new Sprite(path));
+		}
+		return this;
+	}
+
 	public Sprites addSpriteGroup(Created<? extends ISprite> s, int count) {
 		if (s == null) {
 			return this;
@@ -1937,6 +1951,168 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 			add(s.make());
 		}
 		return this;
+	}
+
+	public ISprite addSprite(final String name, final TArray<TComponent<ISprite>> comps) {
+		Sprite newSprite = new Sprite();
+		newSprite.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<ISprite> t = comps.get(i);
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	public ISprite addSprite(final String name, final String imagePath, final TArray<TComponent<ISprite>> comps) {
+		Sprite newSprite = new Sprite(imagePath);
+		newSprite.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<ISprite> t = comps.get(i);
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	public ISprite addSprite(final String name, final LTexture tex, final TArray<TComponent<ISprite>> comps) {
+		Sprite newSprite = new Sprite(tex);
+		newSprite.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<ISprite> t = comps.get(i);
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final TComponent<ISprite>... comps) {
+		Sprite newSprite = new Sprite();
+		newSprite.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<ISprite> t = comps[i];
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final String imagePath, final TComponent<ISprite>... comps) {
+		Sprite newSprite = new Sprite(imagePath);
+		newSprite.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<ISprite> t = comps[i];
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	@SuppressWarnings("unchecked")
+	public ISprite addSprite(final String name, final LTexture tex, final TComponent<ISprite>... comps) {
+		Sprite newSprite = new Sprite(tex);
+		newSprite.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<ISprite> t = comps[i];
+			if (t != null) {
+				newSprite.addComponent(t);
+			}
+		}
+		add(newSprite);
+		return newSprite;
+	}
+
+	public IEntity addEntity(final String name, final TArray<TComponent<IEntity>> comps) {
+		Entity newEntity = new Entity();
+		newEntity.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<IEntity> t = comps.get(i);
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
+	}
+
+	public IEntity addEntity(final String name, final String imagePath, final TArray<TComponent<IEntity>> comps) {
+		Entity newEntity = new Entity(imagePath);
+		newEntity.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<IEntity> t = comps.get(i);
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
+	}
+
+	public IEntity addEntity(final String name, final LTexture tex, final TArray<TComponent<IEntity>> comps) {
+		Entity newEntity = new Entity(tex);
+		newEntity.setName(name);
+		for (int i = 0; i < comps.size; i++) {
+			TComponent<IEntity> t = comps.get(i);
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final TComponent<IEntity>... comps) {
+		Entity newEntity = new Entity();
+		newEntity.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<IEntity> t = comps[i];
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final String imagePath, final TComponent<IEntity>... comps) {
+		Entity newEntity = new Entity(imagePath);
+		newEntity.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<IEntity> t = comps[i];
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
+	}
+
+	@SuppressWarnings("unchecked")
+	public IEntity addEntity(final String name, final LTexture tex, final TComponent<IEntity>... comps) {
+		Entity newEntity = new Entity(tex);
+		newEntity.setName(name);
+		for (int i = 0; i < comps.length; i++) {
+			TComponent<IEntity> t = comps[i];
+			if (t != null) {
+				newEntity.addComponent(t);
+			}
+		}
+		add(newEntity);
+		return newEntity;
 	}
 
 	public float getX() {

@@ -24,11 +24,15 @@ import loon.LSystem;
 import loon.action.ActionBind;
 import loon.events.EventActionT;
 import loon.geom.BooleanValue;
+import loon.utils.MathUtils;
+import loon.utils.timer.Duration;
 
 /**
  * 控制Entity用的Component，具体实现后可用于注入Entity从而产生特定操作效果
  */
 public abstract class TComponent<T extends ActionBind> implements EventActionT<T> {
+
+	private int _componentId;
 
 	protected final BooleanValue _paused = new BooleanValue();
 
@@ -43,6 +47,11 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 	}
 
 	public TComponent(String name) {
+		this(-1, name);
+	}
+
+	public TComponent(int id, String name) {
+		this._componentId = id;
 		this._name = name;
 	}
 
@@ -72,9 +81,22 @@ public abstract class TComponent<T extends ActionBind> implements EventActionT<T
 		return _elapsedTime;
 	}
 
+	public float getDelta() {
+		return MathUtils.max(Duration.toS(_elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+	}
+
+	public int getId() {
+		return _componentId;
+	}
+
+	public TComponent<T> setId(int id) {
+		this._componentId = id;
+		return this;
+	}
+
 	public void onUpdate(long elapsedTime) {
 		this._elapsedTime = elapsedTime;
-		update(_currentSprite);
+		this.update(_currentSprite);
 	}
 
 	public abstract void onAttached(T on);

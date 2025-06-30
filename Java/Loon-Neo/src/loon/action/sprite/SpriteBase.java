@@ -130,21 +130,24 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	protected void onBaseUpdate(long elapsedTime) {
-		if ((this._components != null) && !this._componentsIgnoreUpdate) {
+		if (!this._componentsIgnoreUpdate && (this._components != null)) {
 			final TArray<TComponent<T>> comps = this._components;
-			final int entityCount = comps.size;
-			for (int i = 0; i < entityCount; i++) {
+			final int compCount = comps.size;
+			for (int i = compCount - 1; i > -1; i--) {
 				final TComponent<T> c = comps.get(i);
 				if (c != null && !c._paused.get()) {
 					c.onUpdate(elapsedTime);
 				}
 			}
 		}
-		if ((this._childrens != null) && !this._childrenIgnoreUpdate) {
+		if (!this._childrenIgnoreUpdate && (this._childrens != null)) {
 			final TArray<T> entities = this._childrens;
 			final int entityCount = entities.size;
-			for (int i = 0; i < entityCount; i++) {
-				entities.get(i).update(elapsedTime);
+			for (int i = entityCount - 1; i > -1; i--) {
+				final T e = entities.get(i);
+				if (e != null) {
+					e.update(elapsedTime);
+				}
 			}
 		}
 		onUpdate(elapsedTime);
@@ -188,6 +191,16 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return null;
 	}
 
+	public T addComponents(final TComponent<T>... ts) {
+		for (int i = 0; i < ts.length; i++) {
+			TComponent<T> comp = ts[i];
+			if (comp != null) {
+				addComponent(comp);
+			}
+		}
+		return (T) this;
+	}
+
 	public T addComponent(TComponent<T> c) {
 		if (_components == null) {
 			allocateComponents();
@@ -198,7 +211,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 			c.onAttached(bind);
 			c.setCurrent(bind);
 		}
-		return null;
+		return (T) this;
 	}
 
 	public void clearComponentAll() {

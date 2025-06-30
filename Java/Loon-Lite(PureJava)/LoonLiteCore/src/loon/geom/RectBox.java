@@ -1186,6 +1186,74 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return true;
 	}
 
+	public RectBox update(Affine2f transform) {
+		if (transform == null) {
+			return this;
+		}
+		if (this.width == 0 || this.height == 0) {
+			this.setEmpty();
+			return this;
+		}
+		final Affine2f m = transform;
+		final float a = m.m00;
+		final float b = m.m01;
+		final float c = m.m10;
+		final float d = m.m11;
+		final float tx = m.tx;
+		final float ty = m.ty;
+		final float x = this.x;
+		final float y = this.y;
+		final float xMax = x + this.width;
+		final float yMax = y + this.height;
+		final float minX, minY, maxX, maxY;
+
+		if (a == 1f && b == 0f && c == 0f && d == 1f) {
+			minX = x + tx - 1;
+			minY = y + ty - 1;
+			maxX = xMax + tx + 1;
+			maxY = yMax + ty + 1;
+		} else {
+			float x0 = a * x + c * y + tx;
+			float y0 = b * x + d * y + ty;
+			float x1 = a * xMax + c * y + tx;
+			float y1 = b * xMax + d * y + ty;
+			float x2 = a * xMax + c * yMax + tx;
+			float y2 = b * xMax + d * yMax + ty;
+			float x3 = a * x + c * yMax + tx;
+			float y3 = b * x + d * yMax + ty;
+			float tmp = 0f;
+			if (x0 > x1) {
+				tmp = x0;
+				x0 = x1;
+				x1 = tmp;
+			}
+			if (x2 > x3) {
+				tmp = x2;
+				x2 = x3;
+				x3 = tmp;
+			}
+
+			minX = (x0 < x2 ? x0 : x2) - 1;
+			maxX = (x1 > x3 ? x1 : x3) + 1;
+
+			if (y0 > y1) {
+				tmp = y0;
+				y0 = y1;
+				y1 = tmp;
+			}
+			if (y2 > y3) {
+				tmp = y2;
+				y2 = y3;
+				y3 = tmp;
+			}
+
+			minY = (y0 < y2 ? y0 : y2) - 1;
+			maxY = (y1 > y3 ? y1 : y3) + 1;
+		}
+
+		return this.setBounds(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	/**
 	 * 返回当前的矩形选框交集
 	 * 

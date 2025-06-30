@@ -731,6 +731,22 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 		_objectLocation.setLocation(x, y);
 	}
 
+	public void setPreviousLocation(float x, float y) {
+		_objectPreviousLocation.setLocation(x, y);
+	}
+
+	public Vector2f getDeltaLocation() {
+		return new Vector2f(getDeltaX(), getDeltaY());
+	}
+
+	public float getDeltaX() {
+		return this._objectLocation.x - this._objectPreviousLocation.x;
+	}
+
+	public float getDeltaY() {
+		return this._objectLocation.y - this._objectPreviousLocation.y;
+	}
+
 	public int x() {
 		return _objectLocation.x();
 	}

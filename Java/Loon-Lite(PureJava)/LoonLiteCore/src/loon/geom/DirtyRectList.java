@@ -20,6 +20,8 @@
  */
 package loon.geom;
 
+import java.util.Iterator;
+
 import loon.utils.MathUtils;
 import loon.utils.SortedList;
 import loon.utils.StringKeyValue;
@@ -146,9 +148,10 @@ public class DirtyRectList {
 		}
 		if (_dirty) {
 			_dirtyMergeRect.clear();
-			for (RectBox r : _dirtyList) {
-				if (r != null) {
-					_dirtyMergeRect.add(r);
+			for (Iterator<RectBox> it = _dirtyList.iterator(); it.hasNext();) {
+				RectBox dirtyRect = it.next();
+				if (dirtyRect != null) {
+					_dirtyMergeRect.add(dirtyRect);
 				}
 			}
 			_dirty = false;
@@ -178,6 +181,24 @@ public class DirtyRectList {
 		return _dirtysCount;
 	}
 
+	public int getDirtysCount() {
+		return _dirtysCount;
+	}
+
+	public DirtyRectList update(Affine2f transform) {
+		for (Iterator<RectBox> it = _dirtyList.iterator(); it.hasNext();) {
+			RectBox dirtyRect = it.next();
+			if (dirtyRect != null) {
+				dirtyRect.update(transform);
+			}
+		}
+		return this;
+	}
+
+	public int getSavedCount() {
+		return _originalList.size;
+	}
+
 	public SortedList<RectBox> list() {
 		return _dirtyList;
 	}
@@ -186,26 +207,53 @@ public class DirtyRectList {
 		return _originalList;
 	}
 
+	public boolean isSaved() {
+		return _saveInitList;
+	}
+
+	public DirtyRectList save() {
+		if (_dirtyList.size > 0) {
+			_originalList.clear();
+			for (Iterator<RectBox> it = _dirtyList.iterator(); it.hasNext();) {
+				RectBox newRect = it.next();
+				if (newRect != null) {
+					_originalList.add(newRect.cpy());
+				}
+			}
+			_saveInitList = true;
+		}
+		return this;
+	}
+
+	public DirtyRectList restore() {
+		if (_saveInitList && _originalList.size > 0) {
+			_dirtyList.clear();
+			for (Iterator<RectBox> it = _originalList.iterator(); it.hasNext();) {
+				RectBox oldRect = it.next();
+				if (oldRect != null) {
+					_dirtyList.add(oldRect.cpy());
+				}
+			}
+		}
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		StringKeyValue kv = new StringKeyValue("DirtyRectList");
 		kv.newLine();
 		int idx = 0;
-		for (RectBox rect : _dirtyList) {
-			kv.pushBracket()
-			.addValue(rect.x)
-			.comma()
-			.addValue(rect.y)
-			.comma()
-			.addValue(rect.width)
-			.comma()
-			.addValue(rect.height)
-			.popBracket();
-			if (idx < _dirtyList.size - 1) {
-				kv.comma();
+		for (Iterator<RectBox> it = _dirtyList.iterator(); it.hasNext();) {
+			RectBox rect = it.next();
+			if (rect != null) {
+				kv.pushBracket().addValue(rect.x).comma().addValue(rect.y).comma().addValue(rect.width).comma()
+						.addValue(rect.height).popBracket();
+				if (idx < _dirtyList.size - 1) {
+					kv.comma();
+				}
+				kv.newLine();
+				idx++;
 			}
-			kv.newLine();
-			idx++;
 		}
 		return kv.toString();
 	}

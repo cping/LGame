@@ -551,11 +551,24 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
-	public int saveCount() {
-		save();
-		int size = affineStack.size();
-		int idx = size > 0 ? size - 1 : 0;
-		return idx;
+	public int getAffineCount() {
+		final int size = affineStack.size();
+		return size > 0 ? size - 1 : 0;
+	}
+
+	public int getBrushCount() {
+		final int size = brushStack.size();
+		return size > 0 ? size - 1 : 0;
+	}
+
+	public int saveAffineCount() {
+		saveTx();
+		return getAffineCount();
+	}
+
+	public int saveBrushCount() {
+		saveBrush();
+		return getBrushCount();
 	}
 
 	public GLEx restore() {
@@ -2714,6 +2727,17 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 		drawLine(fx, fy, x2, y2, width);
 		return this;
+	}
+
+	public GLEx fillWith(String c) {
+		if (c == null) {
+			return fillRect(0f, 0f, getWidth(), getHeight());
+		}
+		return fillRect(0f, 0f, getWidth(), getHeight(), LColor.hexToColor(c));
+	}
+
+	public GLEx fillWith(LColor c) {
+		return fillRect(0f, 0f, getWidth(), getHeight(), c);
 	}
 
 	public GLEx fillRect(float x, float y, float width, float height) {
