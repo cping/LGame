@@ -49,8 +49,10 @@ import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
+import loon.utils.IntArray;
 import loon.utils.LayerSorter;
 import loon.utils.MathUtils;
+import loon.utils.ObjectSet;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
@@ -77,6 +79,10 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	private ISpritesShadow _spriteShadow;
 
 	private Margin _margin;
+
+	private ObjectSet<String> _collisionIgnoreStrings;
+
+	private IntArray _collisionIgnoreTypes;
 
 	private int _indexLayer;
 
@@ -1416,6 +1422,14 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		}
 	}
 
+	public Sprites collidable() {
+		return setCheckAllCollision(true);
+	}
+
+	public Sprites collidableView() {
+		return setCheckViewCollision(true);
+	}
+
 	public boolean isCheckAllCollision() {
 		return _checkAllCollision;
 	}
@@ -1436,7 +1450,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 			for (int j = 0; j < size; j++) {
 				if (i != j) {
 					final ISprite dst = sprs[j];
-					if (src != null && dst != null && src != dst) {
+					if (src != null && dst != null && src != dst && dst.isVisible() && src.isVisible()) {
 						final RectBox srcCollision = src.getCollisionBox();
 						final RectBox dstCollision = dst.getCollisionBox();
 						if (srcCollision.collided(dstCollision)) {
@@ -1488,7 +1502,8 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 			_collisionObjects.clear();
 		}
 		final ISprite[] sprs = this._sprites;
-		for (int i = 0; i < this._size; i++) {
+		int size = sprs.length;
+		for (int i = size - 1; i > -1; i--) {
 			final ISprite spr = sprs[i];
 			if (spr != null && spr.isVisible()) {
 				if (_collViewSize.collided(spr.getCollisionBox())) {
@@ -1496,14 +1511,16 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 				}
 			}
 		}
-		final int size = _collisionObjects.size;
+		size = _collisionObjects.size;
 		for (int i = size - 1; i > -1; i--) {
 			final ISprite src = _collisionObjects.get(i);
 			for (int j = 0; j < size; j++) {
 				if (i != j) {
 					final ISprite dst = _collisionObjects.get(j);
-					if (src != dst) {
-						if (src.getCollisionBox().collided(dst.getCollisionBox())) {
+					if (src != null && dst != null && src != dst && dst.isVisible() && src.isVisible()) {
+						final RectBox srcCollision = src.getCollisionBox();
+						final RectBox dstCollision = dst.getCollisionBox();
+						if (srcCollision.collided(dstCollision)) {
 							onTriggerCollision(src, dst);
 						}
 					}
@@ -1512,8 +1529,11 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		}
 	}
 
-	private void onTriggerCollision(ISprite spr, ISprite dst) {
+	private void onTriggerCollision(final ISprite spr, final ISprite dst) {
 		if (spr == null || dst == null) {
+			return;
+		}
+		if (checkCollisionSkip(spr, dst)) {
 			return;
 		}
 		final int dir = Side.getCollisionSide(spr.getCollisionBox(), dst.getCollisionBox());
@@ -1521,6 +1541,54 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		if (_collisionActionListener != null) {
 			_collisionActionListener.onCollision(spr, dst, dir);
 		}
+	}
+
+	private boolean checkCollisionSkip(final ISprite spr, final ISprite dst) {
+		if (_collisionIgnoreTypes != null) {
+			if (_collisionIgnoreTypes.contains(spr.getFlagType())
+					|| _collisionIgnoreTypes.contains(dst.getFlagType())) {
+				return true;
+			}
+		}
+		if (_collisionIgnoreStrings != null) {
+			if (_collisionIgnoreStrings.contains(spr.getObjectFlag())
+					|| _collisionIgnoreStrings.contains(dst.getObjectFlag())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Sprites addCollisionIgnoreType(int t) {
+		if (_collisionIgnoreTypes == null) {
+			_collisionIgnoreTypes = new IntArray();
+		}
+		if (!_collisionIgnoreTypes.contains(t)) {
+			_collisionIgnoreTypes.add(t);
+		}
+		return this;
+	}
+
+	public boolean removeCollisionIgnoreType(int t) {
+		if (_collisionIgnoreTypes == null) {
+			_collisionIgnoreTypes = new IntArray();
+		}
+		return _collisionIgnoreTypes.removeValue(t);
+	}
+
+	public Sprites addCollisionIgnoreString(String t) {
+		if (_collisionIgnoreStrings == null) {
+			_collisionIgnoreStrings = new ObjectSet<String>();
+		}
+		_collisionIgnoreStrings.add(t);
+		return this;
+	}
+
+	public boolean removeCollisionIgnoreString(String t) {
+		if (_collisionIgnoreStrings == null) {
+			_collisionIgnoreStrings = new ObjectSet<String>();
+		}
+		return _collisionIgnoreStrings.remove(t);
 	}
 
 	public Sprites triggerCollision(CollisionAction<ISprite> c) {
@@ -2960,6 +3028,14 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		this._sprListerner = null;
 		this._resizeListener = null;
 		this._collisionActionListener = null;
+		if (this._collisionIgnoreStrings != null) {
+			this._collisionIgnoreStrings.clear();
+			this._collisionIgnoreStrings = null;
+		}
+		if (this._collisionIgnoreTypes != null) {
+			this._collisionIgnoreTypes.clear();
+			this._collisionIgnoreTypes = null;
+		}
 		return this;
 	}
 

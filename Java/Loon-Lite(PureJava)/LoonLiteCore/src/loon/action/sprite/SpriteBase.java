@@ -191,6 +191,14 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return null;
 	}
 
+	public T withs(final TComponent<T>... ts) {
+		return addComponents(ts);
+	}
+
+	public T with(final TComponent<T> c) {
+		return addComponent(c);
+	}
+
 	public T addComponents(final TComponent<T>... ts) {
 		for (int i = 0; i < ts.length; i++) {
 			TComponent<T> comp = ts[i];
@@ -201,7 +209,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return (T) this;
 	}
 
-	public T addComponent(TComponent<T> c) {
+	public T addComponent(final TComponent<T> c) {
 		if (_components == null) {
 			allocateComponents();
 		}
