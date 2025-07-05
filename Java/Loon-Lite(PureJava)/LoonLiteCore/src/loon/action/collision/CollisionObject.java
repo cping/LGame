@@ -44,6 +44,8 @@ public interface CollisionObject extends ActionBind {
 
 	boolean collided(Shape shape);
 
+	int getFlagType();
+	
 	String getObjectFlag();
 
 	@Override

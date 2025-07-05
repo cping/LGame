@@ -43,6 +43,8 @@ public interface CollisionObject extends ActionBind {
 	boolean contains(Shape shape);
 
 	boolean collided(Shape shape);
+	
+	int getFlagType();
 
 	String getObjectFlag();
 

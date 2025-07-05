@@ -7954,7 +7954,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
-	public Screen addSystem(final ScreenSystem... systems) {
+	public Screen addSystems(final ScreenSystem... systems) {
 		for (int i = 0; i < systems.length; i++) {
 			final ScreenSystem s = systems[i];
 			if (s != null) {

@@ -20,16 +20,20 @@
  */
 package loon.action.sprite;
 
+import java.util.Iterator;
+
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.LTextures;
+import loon.action.collision.CollisionAction;
 import loon.action.collision.CollisionFilter;
 import loon.action.collision.CollisionManager;
 import loon.action.collision.CollisionObject;
 import loon.action.collision.CollisionResult;
 import loon.action.collision.CollisionWorld;
 import loon.action.map.Config;
+import loon.action.map.Side;
 import loon.action.sprite.Bullet.WaveType;
 import loon.canvas.LColor;
 import loon.geom.RangeF;
@@ -40,7 +44,9 @@ import loon.geom.XYZW;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureFree;
 import loon.utils.Easing.EasingMode;
+import loon.utils.IntArray;
 import loon.utils.MathUtils;
+import loon.utils.ObjectSet;
 import loon.utils.TArray;
 
 /**
@@ -75,11 +81,19 @@ public class BulletEntity extends Entity {
 		return range;
 	}
 
+	private IntArray _collisionIgnoreTypes;
+
+	private ObjectSet<String> _collisionIgnoreStrings;
+
 	private CollisionWorld _collisionWorld;
 
 	private CollisionFilter _worldCollisionFilter;
 
-	private BulletListener _listener;
+	private CollisionAction<CollisionObject> _collisionActionListener;
+
+	private BulletListener _bulletListener;
+
+	private boolean _checkCollision;
 
 	private boolean _allowAutoFixMoved;
 
@@ -136,12 +150,12 @@ public class BulletEntity extends Entity {
 	}
 
 	public BulletEntity setListener(BulletListener l) {
-		this._listener = l;
+		this._bulletListener = l;
 		return this;
 	}
 
 	public BulletListener getListener() {
-		return this._listener;
+		return this._bulletListener;
 	}
 
 	public BulletEntity setLimitMoveRangeOfSelf() {
@@ -1505,8 +1519,8 @@ public class BulletEntity extends Entity {
 			_collisionWorld.getCollisionManager().addObject(bullet);
 			bullet.setSuper(this);
 			bullet.onAttached();
-			if (_listener != null) {
-				_listener.attached(bullet);
+			if (_bulletListener != null) {
+				_bulletListener.attached(bullet);
 			}
 		}
 	}
@@ -1523,8 +1537,8 @@ public class BulletEntity extends Entity {
 		_collisionWorld.getCollisionManager().removeObject(bullet);
 		bullet.setSuper(null);
 		bullet.onDetached();
-		if (_listener != null) {
-			_listener.detached(bullet);
+		if (_bulletListener != null) {
+			_bulletListener.detached(bullet);
 		}
 	}
 
@@ -1707,11 +1721,11 @@ public class BulletEntity extends Entity {
 				Bullet bullet = bullets.get(i);
 				if (bullet != null) {
 					bullet.update(elapsedTime);
-					if (_listener != null) {
-						_listener.updateable(elapsedTime, bullet);
-						bullet.checkLifeOver(_listener);
+					if (_bulletListener != null) {
+						_bulletListener.updateable(elapsedTime, bullet);
+						bullet.checkLifeOver(_bulletListener);
 						if (bullet.isEaseCompleted()) {
-							_listener.easeover(bullet);
+							_bulletListener.easeover(bullet);
 						}
 					}
 					fixMovePosition(bullet);
@@ -1720,6 +1734,23 @@ public class BulletEntity extends Entity {
 						RectBox bulletRect = bullet.getRectBox();
 						if (!(worldRect.contains(bulletRect) || worldRect.intersects(bulletRect))) {
 							removeWorld(bullet);
+						}
+					}
+					if (_checkCollision) {
+						final Sprites sprs = _sprites;
+						if (sprs != null) {
+							final ISprite[] list = sprs._sprites;
+							if (list != null) {
+								for (int j = list.length - 1; j >= 0; j--) {
+									final ISprite spr = list[j];
+									if (spr != null && spr != this && spr instanceof CollisionObject) {
+										CollisionObject dstObject = (CollisionObject) spr;
+										if (bullet.intersects(dstObject) || bullet.contains(dstObject)) {
+											onTriggerCollision(bullet, dstObject, _collisionActionListener);
+										}
+									}
+								}
+							}
 						}
 					}
 				}
@@ -1736,12 +1767,256 @@ public class BulletEntity extends Entity {
 			Bullet bullet = bullets.get(i);
 			if (bullet != null) {
 				bullet.draw(g, drawX(offsetX), drawY(offsetX));
-				if (_listener != null) {
-					_listener.drawable(g, bullet);
+				if (_bulletListener != null) {
+					_bulletListener.drawable(g, bullet);
 				}
 				fixMovePosition(bullet);
 			}
 		}
+	}
+
+	public BulletEntity collidable() {
+		return setCollision(true);
+	}
+
+	public BulletEntity disableCollidable() {
+		return setCollision(false);
+	}
+
+	public boolean isCollision() {
+		return this._checkCollision;
+	}
+
+	public BulletEntity setCollision(boolean c) {
+		this._checkCollision = c;
+		return this;
+	}
+
+	public BulletEntity setCollisionAction(CollisionAction<CollisionObject> c) {
+		this._collisionActionListener = c;
+		return this;
+	}
+
+	public BulletEntity triggerCollision(CollisionAction<CollisionObject> c) {
+		setCollision(c != null);
+		setCollisionAction(c);
+		return this;
+	}
+
+	public CollisionAction<CollisionObject> getCollisionAction() {
+		return _collisionActionListener;
+	}
+
+	private void onTriggerCollision(final CollisionObject src, final CollisionObject dst,
+			final CollisionAction<CollisionObject> collisionAction) {
+		if (src == null || dst == null) {
+			return;
+		}
+		if (src == this || dst == this) {
+			return;
+		}
+		if (checkCollisionSkip(src, dst)) {
+			return;
+		}
+		if (collisionAction != null) {
+			collisionAction.onCollision(src, dst, Side.getCollisionSide(src.getRectBox(), dst.getRectBox()));
+		}
+	}
+
+	private boolean checkCollisionSkip(final CollisionObject spr, final CollisionObject dst) {
+		if (_collisionIgnoreTypes != null) {
+			if (_collisionIgnoreTypes.contains(spr.getFlagType())
+					|| _collisionIgnoreTypes.contains(dst.getFlagType())) {
+				return true;
+			}
+		}
+		if (_collisionIgnoreStrings != null) {
+			if (_collisionIgnoreStrings.contains(spr.getObjectFlag())
+					|| _collisionIgnoreStrings.contains(dst.getObjectFlag())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public IntArray getCollisionIgnoreTypes() {
+		return _collisionIgnoreTypes.cpy();
+	}
+
+	public BulletEntity addCollisionIgnoreType(int t) {
+		if (_collisionIgnoreTypes == null) {
+			_collisionIgnoreTypes = new IntArray();
+		}
+		if (!_collisionIgnoreTypes.contains(t)) {
+			_collisionIgnoreTypes.add(t);
+		}
+		return this;
+	}
+
+	public boolean removeCollisionIgnoreType(int t) {
+		if (_collisionIgnoreTypes == null) {
+			_collisionIgnoreTypes = new IntArray();
+		}
+		return _collisionIgnoreTypes.removeValue(t);
+	}
+
+	public TArray<String> getCollisionIgnoreStrings() {
+		final TArray<String> result = new TArray<String>(_collisionIgnoreStrings.size());
+		for (Iterator<String> it = _collisionIgnoreStrings.keys(); it.hasNext();) {
+			final String key = it.next();
+			if (key != null) {
+				result.add(key);
+			}
+		}
+		return result;
+	}
+
+	public BulletEntity addCollisionIgnoreString(String t) {
+		if (_collisionIgnoreStrings == null) {
+			_collisionIgnoreStrings = new ObjectSet<String>();
+		}
+		_collisionIgnoreStrings.add(t);
+		return this;
+	}
+
+	public boolean removeCollisionIgnoreString(String t) {
+		if (_collisionIgnoreStrings == null) {
+			_collisionIgnoreStrings = new ObjectSet<String>();
+		}
+		return _collisionIgnoreStrings.remove(t);
+	}
+
+	public BulletEntity checkBulletCollision() {
+		return checkBulletCollision(_collisionActionListener);
+	}
+
+	public BulletEntity checkBulletCollision(final CollisionAction<CollisionObject> collisionAction) {
+		return checkBulletCollision(getSprites(), collisionAction);
+	}
+
+	public BulletEntity checkBulletCollision(final Sprites sprs,
+			final CollisionAction<CollisionObject> collisionAction) {
+		if (sprs == null) {
+			return null;
+		}
+		return checkBulletCollision(sprs._sprites, collisionAction);
+	}
+
+	public BulletEntity checkBulletCollision(final TArray<ISprite> sprs,
+			final CollisionAction<CollisionObject> collisionAction) {
+		if (_destroyed) {
+			return null;
+		}
+		if (collisionAction == null) {
+			return null;
+		}
+		if (sprs == null) {
+			return null;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			final Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				for (int j = sprs.size - 1; j >= 0; j--) {
+					final ISprite spr = sprs.get(j);
+					if (spr != null && spr != this && spr instanceof CollisionObject) {
+						final CollisionObject dstObject = (CollisionObject) spr;
+						if (bullet.intersects(dstObject) || bullet.contains(dstObject)) {
+							onTriggerCollision(bullet, dstObject, collisionAction);
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}
+
+	public BulletEntity checkBulletCollision(final ISprite[] sprs,
+			final CollisionAction<CollisionObject> collisionAction) {
+		if (_destroyed) {
+			return null;
+		}
+		if (collisionAction == null) {
+			return null;
+		}
+		if (sprs == null) {
+			return null;
+		}
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			final Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				for (int j = sprs.length - 1; j >= 0; j--) {
+					final ISprite spr = sprs[j];
+					if (spr != null && spr != this && spr instanceof CollisionObject) {
+						final CollisionObject dstObject = (CollisionObject) spr;
+						if (bullet.intersects(dstObject) || bullet.contains(dstObject)) {
+							onTriggerCollision(bullet, dstObject, collisionAction);
+						}
+					}
+				}
+			}
+		}
+		return this;
+	}
+
+	public TArray<ISprite> findBulletCollision() {
+		return findBulletCollision(getSprites());
+	}
+
+	public TArray<ISprite> findBulletCollision(final Sprites sprs) {
+		if (sprs == null) {
+			return null;
+		}
+		return findBulletCollision(sprs._sprites);
+	}
+
+	public TArray<ISprite> findBulletCollision(final TArray<ISprite> sprs) {
+		if (_destroyed) {
+			return null;
+		}
+		if (sprs == null) {
+			return null;
+		}
+		final TArray<ISprite> result = new TArray<ISprite>();
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			final Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				for (int j = sprs.size - 1; j >= 0; j--) {
+					final ISprite spr = sprs.get(j);
+					if (spr != null && spr != this && spr instanceof CollisionObject) {
+						final CollisionObject dstObject = (CollisionObject) spr;
+						if (bullet.intersects(dstObject) || bullet.contains(dstObject)) {
+							result.add(spr);
+						}
+					}
+				}
+			}
+		}
+		return result;
+	}
+
+	public TArray<ISprite> findBulletCollision(final ISprite... sprs) {
+		if (_destroyed) {
+			return null;
+		}
+		if (sprs == null) {
+			return null;
+		}
+		final TArray<ISprite> result = new TArray<ISprite>();
+		for (int i = this.bullets.size - 1; i >= 0; i--) {
+			final Bullet bullet = bullets.get(i);
+			if (bullet != null) {
+				for (int j = sprs.length - 1; j >= 0; j--) {
+					final ISprite spr = sprs[j];
+					if (spr != null && spr != this && spr instanceof CollisionObject) {
+						final CollisionObject dstObject = (CollisionObject) spr;
+						if (bullet.intersects(dstObject) || bullet.contains(dstObject)) {
+							result.add(spr);
+						}
+					}
+				}
+			}
+		}
+		return result;
 	}
 
 	public TArray<Bullet> getBullets() {
@@ -1765,8 +2040,8 @@ public class BulletEntity extends Entity {
 		bullets.remove(bullet);
 		if (bullet != null) {
 			bullet.onDetached();
-			if (_listener != null) {
-				_listener.detached(bullet);
+			if (_bulletListener != null) {
+				_bulletListener.detached(bullet);
 			}
 		}
 		return this;
@@ -1779,8 +2054,8 @@ public class BulletEntity extends Entity {
 		Bullet bullet = bullets.removeIndex(bulletIdx);
 		if (bullet != null) {
 			bullet.onDetached();
-			if (_listener != null) {
-				_listener.detached(bullet);
+			if (_bulletListener != null) {
+				_bulletListener.detached(bullet);
 			}
 		}
 		return this;
@@ -1794,8 +2069,8 @@ public class BulletEntity extends Entity {
 			Bullet bullet = bullets.get(i);
 			if (bullet != null) {
 				bullet.onDetached();
-				if (_listener != null) {
-					_listener.detached(bullet);
+				if (_bulletListener != null) {
+					_bulletListener.detached(bullet);
 				}
 			}
 		}
@@ -2099,7 +2374,9 @@ public class BulletEntity extends Entity {
 				_worldCollisionFilter = CollisionFilter.getDefault();
 			}
 			CollisionResult.Result result = _collisionWorld.move(bind, bind.getX(), bind.getY(), _worldCollisionFilter);
-			bind.setLocation(result.goalX, result.goalY);
+			if (result != null) {
+				bind.setLocation(result.goalX, result.goalY);
+			}
 		}
 		if (_limitMovedOfBounds) {
 			if (_limitRangeX != null) {
@@ -2134,10 +2411,26 @@ public class BulletEntity extends Entity {
 		return _collisionWorld;
 	}
 
+	public BulletEntity clearListerner() {
+		this._bulletListener = null;
+		this._resizeListener = null;
+		this._collisionActionListener = null;
+		if (this._collisionIgnoreTypes != null) {
+			this._collisionIgnoreTypes.clear();
+			this._collisionIgnoreTypes = null;
+		}
+		if (this._collisionIgnoreStrings != null) {
+			this._collisionIgnoreStrings.clear();
+			this._collisionIgnoreStrings = null;
+		}
+		return this;
+	}
+
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
 		clearBullets();
+		clearListerner();
 		if (textureFree != null) {
 			textureFree.close();
 			textureFree = null;
@@ -2148,11 +2441,11 @@ public class BulletEntity extends Entity {
 				_collisionWorld = null;
 			}
 		}
-		_listener = null;
 		_running = false;
 		_allowAutoFixMoved = false;
 		_autoRemoveOfBounds = false;
 		_limitMovedOfBounds = false;
+		_checkCollision = false;
 	}
 
 }

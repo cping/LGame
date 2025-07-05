@@ -21,6 +21,9 @@
 package loon.action.sprite;
 
 import loon.LObject.State;
+
+import java.util.Iterator;
+
 import loon.LObject;
 import loon.LRelease;
 import loon.LSysException;
@@ -1426,8 +1429,16 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return setCheckAllCollision(true);
 	}
 
+	public Sprites disableCollidable() {
+		return setCheckAllCollision(false);
+	}
+
 	public Sprites collidableView() {
 		return setCheckViewCollision(true);
+	}
+
+	public Sprites disableCollidableView() {
+		return setCheckViewCollision(false);
 	}
 
 	public boolean isCheckAllCollision() {
@@ -1559,6 +1570,10 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return false;
 	}
 
+	public IntArray getCollisionIgnoreTypes() {
+		return _collisionIgnoreTypes.cpy();
+	}
+
 	public Sprites addCollisionIgnoreType(int t) {
 		if (_collisionIgnoreTypes == null) {
 			_collisionIgnoreTypes = new IntArray();
@@ -1574,6 +1589,17 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 			_collisionIgnoreTypes = new IntArray();
 		}
 		return _collisionIgnoreTypes.removeValue(t);
+	}
+
+	public TArray<String> getCollisionIgnoreStrings() {
+		final TArray<String> result = new TArray<String>(_collisionIgnoreStrings.size());
+		for (Iterator<String> it = _collisionIgnoreStrings.keys(); it.hasNext();) {
+			final String key = it.next();
+			if (key != null) {
+				result.add(key);
+			}
+		}
+		return result;
 	}
 
 	public Sprites addCollisionIgnoreString(String t) {
@@ -1592,10 +1618,6 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	public Sprites triggerCollision(CollisionAction<ISprite> c) {
-		return triggerAllCollision(c);
-	}
-
-	public Sprites triggerAllCollision(CollisionAction<ISprite> c) {
 		setCheckAllCollision(c != null);
 		setCollisionAction(c);
 		return this;
@@ -3028,13 +3050,13 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		this._sprListerner = null;
 		this._resizeListener = null;
 		this._collisionActionListener = null;
-		if (this._collisionIgnoreStrings != null) {
-			this._collisionIgnoreStrings.clear();
-			this._collisionIgnoreStrings = null;
-		}
 		if (this._collisionIgnoreTypes != null) {
 			this._collisionIgnoreTypes.clear();
 			this._collisionIgnoreTypes = null;
+		}
+		if (this._collisionIgnoreStrings != null) {
+			this._collisionIgnoreStrings.clear();
+			this._collisionIgnoreStrings = null;
 		}
 		return this;
 	}
