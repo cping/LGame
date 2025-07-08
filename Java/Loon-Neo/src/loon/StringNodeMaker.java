@@ -64,7 +64,7 @@ public class StringNodeMaker<T extends ActionBind> implements IV<T> {
 				|| (tName.equals("select") || (tName.equals("m")))) {
 			return StringNodeType.Select;
 		} else if (tName.equals("scrolltext") || tName.equals("scroll")
-				|| (tName.equals("st") || (tName.equals("s")))) {
+				|| (tName.equals("st") || (tName.equals("stext")))) {
 			return StringNodeType.ScrollText;
 		} else if (tName.equals("status") || tName.equals("progress")) {
 			return StringNodeType.Status;

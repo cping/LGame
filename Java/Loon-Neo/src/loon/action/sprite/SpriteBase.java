@@ -257,7 +257,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return count > 0;
 	}
 
-	public boolean removeComponentType(Class<? extends TComponent<IEntity>> typeClazz) {
+	public boolean removeComponentType(Class<? extends TComponent<T>> typeClazz) {
 		if (_components == null) {
 			allocateComponents();
 		}

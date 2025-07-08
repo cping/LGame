@@ -48,6 +48,7 @@ import loon.utils.Easing.EasingMode;
 /**
  * Sprite组件的群组化操作控制器，可以同时改变一组精灵的参数或动画事件
  */
+@SuppressWarnings("unchecked")
 public class SpriteControls {
 
 	public static float getChildrenHeight(Sprites s) {
@@ -374,7 +375,7 @@ public class SpriteControls {
 		return count;
 	}
 
-	public SpriteControls add(ISprite spr) {
+	public SpriteControls add(final ISprite spr) {
 		if (spr == null) {
 			throw new LSysException("ISprite cannot be null.");
 		}
@@ -382,7 +383,7 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls add(TArray<ISprite> sprites) {
+	public SpriteControls add(final TArray<ISprite> sprites) {
 		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
@@ -390,7 +391,7 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls add(ISprite... sprites) {
+	public SpriteControls add(final ISprite... sprites) {
 		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
@@ -401,6 +402,175 @@ public class SpriteControls {
 			}
 		}
 		return this;
+	}
+
+	public <T extends ISprite> SpriteControls addComponent(final TComponent<T> comp) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.addComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls addComponent(final Object tag, final TComponent<T> comp) {
+		if (tag == null) {
+			return this;
+		}
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getTag() == tag || tag.equals(spr.getTag())) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.addComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls addComponent(final int flag, final TComponent<T> comp) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getFlagType() == flag) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.addComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls addComponents(final TComponent<T>... comps) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.addComponents(comps);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final TComponent<T> comp) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final Class<? extends TComponent<T>> typeClazz) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponentType(typeClazz);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponentName(final String typeName) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponentName(typeName);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final int flag, final TComponent<T> comp) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getFlagType() == flag) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final Object tag, final TComponent<T> comp) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getTag() == tag || tag.equals(spr.getTag())) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponent(comp);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final int flag,
+			final Class<? extends TComponent<T>> typeClazz) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getFlagType() == flag) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponentType(typeClazz);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> SpriteControls removeComponent(final Object tag,
+			final Class<? extends TComponent<T>> typeClazz) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr.getTag() == tag || tag.equals(spr.getTag())) && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				o.removeComponentType(typeClazz);
+			}
+		}
+		return this;
+	}
+
+	public <T extends ISprite> TArray<TComponent<T>> findComponent(final String typeName) {
+		final TArray<TComponent<T>> result = new TArray<TComponent<T>>();
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				TComponent<T> ret = o.findComponent(typeName);
+				if (ret != null) {
+					result.add(ret);
+				}
+			}
+		}
+		return result;
+	}
+
+	public <T extends ISprite> TArray<TComponent<T>> findComponent(final Class<? extends TComponent<T>> typeClazz) {
+		final TArray<TComponent<T>> result = new TArray<TComponent<T>>();
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null && (spr instanceof SpriteBase<?>)) {
+				SpriteBase<T> o = ((SpriteBase<T>) spr);
+				TComponent<T> ret = o.findComponent(typeClazz);
+				if (ret != null) {
+					result.add(ret);
+				}
+			}
+		}
+		return result;
 	}
 
 	public SpriteControls remove(Screen screen, ISprite spr) {
@@ -418,7 +588,7 @@ public class SpriteControls {
 		return remove(spr);
 	}
 
-	public SpriteControls remove(ISprite spr) {
+	public SpriteControls remove(final ISprite spr) {
 		if (spr == null) {
 			throw new LSysException("ISprite cannot be null.");
 		}
@@ -426,7 +596,7 @@ public class SpriteControls {
 		return this;
 	}
 
-	public SpriteControls remove(ISprite... sprites) {
+	public SpriteControls remove(final ISprite... sprites) {
 		if (sprites == null) {
 			throw new LSysException("Sprites cannot be null.");
 		}
@@ -677,6 +847,32 @@ public class SpriteControls {
 					((Entity) spr).setHeight(h);
 				} else if (spr instanceof ActionObject) {
 					((ActionObject) spr).setHeight(h);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls setFlag(int flag) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setFlagType(flag);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteControls setTag(Object tag) {
+		final int size = _sprs.size;
+		for (int i = size - 1; i > -1; --i) {
+			ISprite spr = _sprs.get(i);
+			if (spr != null) {
+				if (spr instanceof LObject<?>) {
+					((LObject<?>) spr).setTag(tag);
 				}
 			}
 		}

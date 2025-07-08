@@ -1809,7 +1809,7 @@ public class BulletEntity extends Entity {
 
 	private void onTriggerCollision(final CollisionObject src, final CollisionObject dst,
 			final CollisionAction<CollisionObject> collisionAction) {
-		if (src == null || dst == null) {
+		if (src == null || dst == null || src == dst) {
 			return;
 		}
 		if (src == this || dst == this) {
@@ -1818,8 +1818,16 @@ public class BulletEntity extends Entity {
 		if (checkCollisionSkip(src, dst)) {
 			return;
 		}
+		final int dir = Side.getCollisionSide(src.getRectBox(), dst.getRectBox());
+		if (src instanceof ISprite && dst instanceof ISprite) {
+			((ISprite) src).onCollision((ISprite) dst, dir);
+		} else if (dst instanceof ISprite) {
+			((ISprite) dst).onCollision(this, dir);
+		} else if (src instanceof ISprite) {
+			((ISprite) src).onCollision(this, dir);
+		}
 		if (collisionAction != null) {
-			collisionAction.onCollision(src, dst, Side.getCollisionSide(src.getRectBox(), dst.getRectBox()));
+			collisionAction.onCollision(src, dst, dir);
 		}
 	}
 

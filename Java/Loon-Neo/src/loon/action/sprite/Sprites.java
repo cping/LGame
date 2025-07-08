@@ -1554,7 +1554,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	private void onTriggerCollision(final ISprite spr, final ISprite dst) {
-		if (spr == null || dst == null) {
+		if (spr == null || dst == null || spr == dst) {
 			return;
 		}
 		if (checkCollisionSkip(spr, dst)) {
