@@ -108,6 +108,8 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 
 	private boolean _isViewWindowSet = false, _limitViewWindows = false, _visible = true, _closed = false;
 
+	private boolean _resizabled = true;
+
 	private final static LayerSorter<ISprite> spriteLayerSorter = new LayerSorter<ISprite>();
 
 	private final static SpriteSorter<ISprite> spriteXYSorter = new SpriteSorter<ISprite>();
@@ -177,7 +179,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 	}
 
 	public Sprites(String name, Screen screen, int w, int h) {
-		this._sortableChildren = this._visible = true;
+		this._sortableChildren = this._visible = this._resizabled = true;
 		this._sprites = new ISprite[CollectionUtils.INITIAL_CAPACITY];
 		this._sprites_name = StringUtils.isEmpty(name) ? "Sprites" + LSystem.getSpritesSize() : name;
 		this._size = 0;
@@ -823,6 +825,58 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 					if (child != null && !tag.equals(child.getTag())) {
 						list.add(child);
 					}
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组拥有指定标签的精灵
+	 * 
+	 * @param flags
+	 * @return
+	 */
+	public TArray<ISprite> findFlags(int... flags) {
+		if (_closed) {
+			return null;
+		}
+		TArray<ISprite> list = new TArray<ISprite>();
+		final int size = this._size;
+		final int len = flags.length;
+		final ISprite[] childs = this._sprites;
+		for (int j = 0; j < len; j++) {
+			final int f = flags[j];
+			for (int i = size - 1; i > -1; i--) {
+				ISprite child = childs[i];
+				if (child != null && f == child.getFlagType()) {
+					list.add(child);
+				}
+			}
+		}
+		return list;
+	}
+
+	/**
+	 * 返回一组不具备指定标签的精灵
+	 * 
+	 * @param flags
+	 * @return
+	 */
+	public TArray<ISprite> findNotFlags(int... flags) {
+		if (_closed) {
+			return null;
+		}
+		TArray<ISprite> list = new TArray<ISprite>();
+		final int size = this._size;
+		final int len = flags.length;
+		final ISprite[] childs = this._sprites;
+		for (int j = 0; j < len; j++) {
+			final int f = flags[j];
+			for (int i = size - 1; i > -1; i--) {
+				ISprite child = childs[i];
+				if (child != null && f != child.getFlagType()) {
+					list.add(child);
 				}
 			}
 		}
@@ -2360,6 +2414,34 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return controls;
 	}
 
+	public SpriteControls findFlagsToSpriteControls(int... flags) {
+		if (_closed) {
+			return new SpriteControls();
+		}
+		SpriteControls controls = null;
+		if (_sprites != null) {
+			TArray<ISprite> sps = findFlags(flags);
+			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
+		}
+		return controls;
+	}
+
+	public SpriteControls findNotFlagsToSpriteControls(int... flags) {
+		if (_closed) {
+			return new SpriteControls();
+		}
+		SpriteControls controls = null;
+		if (_sprites != null) {
+			TArray<ISprite> sps = findNotFlags(flags);
+			controls = new SpriteControls(sps);
+		} else {
+			controls = new SpriteControls();
+		}
+		return controls;
+	}
+
 	/**
 	 * 获得当前精灵集合中的全部精灵
 	 * 
@@ -2768,22 +2850,33 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return this;
 	}
 
+	public boolean isResizabled() {
+		return this._resizabled;
+	}
+
+	public Sprites setResizabled(boolean r) {
+		this._resizabled = r;
+		return this;
+	}
+
 	public Sprites resize(float width, float height, boolean forceResize) {
 		if (_closed) {
 			return this;
 		}
-		if (_resizeListener != null) {
-			_resizeListener.onResize(this);
-		}
-		if (forceResize || (!MathUtils.equal(this._width, width) && !MathUtils.equal(this._height, height))) {
-			this._width = (int) width;
-			this._height = (int) height;
-			final ISprite[] childs = _sprites;
-			final int size = _size;
-			for (int i = size - 1; i > -1; i--) {
-				final ISprite child = childs[i];
-				if (child != null) {
-					child.onResize();
+		if (_resizabled) {
+			if (_resizeListener != null) {
+				_resizeListener.onResize(this);
+			}
+			if (forceResize || (!MathUtils.equal(this._width, width) && !MathUtils.equal(this._height, height))) {
+				this._width = (int) width;
+				this._height = (int) height;
+				final ISprite[] childs = _sprites;
+				final int size = _size;
+				for (int i = size - 1; i > -1; i--) {
+					final ISprite child = childs[i];
+					if (child != null) {
+						child.onResize();
+					}
 				}
 			}
 		}
@@ -3239,6 +3332,7 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		}
 		this._size = 0;
 		this._closed = true;
+		this._resizabled = false;
 		this._sprites = null;
 		this._collViewSize = null;
 		this.clearListerner();

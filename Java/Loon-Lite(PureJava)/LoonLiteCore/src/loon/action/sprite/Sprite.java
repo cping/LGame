@@ -21,7 +21,7 @@
 package loon.action.sprite;
 
 import loon.Director.Origin;
-
+import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -1065,20 +1065,20 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return new SpriteEntity(this);
 	}
 
+	public Sprite dispose(LRelease r) {
+		_disposed = r;
+		return this;
+	}
+
 	@Override
 	protected void _onDestroy() {
-		this._visible = false;
-		this._ignoreUpdate = false;
-		this._childrenVisible = false;
 		if (_image != null) {
 			_image.close();
 		}
 		if (_animation != null) {
 			_animation.close();
 		}
-		_loopAction = null;
-		_resizeListener = null;
-		_collSpriteListener = null;
+		closeBase();
 		removeChilds();
 		removeActionEvents(this);
 	}

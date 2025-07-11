@@ -21,6 +21,7 @@
 package loon.action.sprite;
 
 import loon.LObject;
+import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
@@ -81,6 +82,7 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected float _scaleCenterX = -1;
 	protected float _scaleCenterY = -1;
 
+	protected boolean _resizabled = true;
 	protected boolean _childrenVisible = true;
 	protected boolean _childrenIgnoreUpdate = false;
 	protected boolean _flipX = false, _flipY = false;
@@ -97,6 +99,8 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	protected Vector2f _offset = new Vector2f();
 	protected LTexture _image = null;
 	protected LColor _debugDrawColor = LColor.red;
+
+	protected LRelease _disposed;
 
 	protected Field2D _arrayMap;
 
@@ -1299,15 +1303,26 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return this._image;
 	}
 
+	public boolean isResizabled() {
+		return this._resizabled;
+	}
+
+	public SpriteBase<T> setResizabled(boolean r) {
+		this._resizabled = r;
+		return this;
+	}
+
 	public void onResize() {
-		if (_resizeListener != null) {
-			_resizeListener.onResize((T) this);
-		}
-		if (_childrens != null) {
-			for (int i = this._childrens.size - 1; i >= 0; i--) {
-				final T child = this._childrens.get(i);
-				if (child != null && child != this) {
-					child.onResize();
+		if (_resizabled) {
+			if (_resizeListener != null) {
+				_resizeListener.onResize((T) this);
+			}
+			if (_childrens != null) {
+				for (int i = this._childrens.size - 1; i >= 0; i--) {
+					final T child = this._childrens.get(i);
+					if (child != null && child != this) {
+						child.onResize();
+					}
 				}
 			}
 		}
@@ -1526,4 +1541,25 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return false;
 	}
 
+	protected void closeBase() {
+		if (_disposed != null) {
+			_disposed.close();
+		}
+		this._loopAction = null;
+		this._resizeListener = null;
+		this._collSpriteListener = null;
+		this._otherShape = null;
+		this._oldNodeType = null;
+		this._disposed = null;
+		this._resizabled = false;
+		this._childrenVisible = false;
+		this._childrenIgnoreUpdate = false;
+		this._flipX = _flipY = false;
+		this._visible = false;
+		this._debugDraw = false;
+		this._ignoreUpdate = false;
+		this._createShadow = false;
+		this._xySort = false;
+		this._componentsIgnoreUpdate = false;
+	}
 }

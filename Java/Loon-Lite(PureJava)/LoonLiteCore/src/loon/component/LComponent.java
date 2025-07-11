@@ -140,6 +140,8 @@ public abstract class LComponent extends LObject<LContainer>
 
 	protected boolean _component_autoDestroy = true;
 
+	protected boolean _component_resizabled = true;
+
 	protected boolean isFull = false;
 
 	protected boolean isSelectDraw = false;
@@ -254,6 +256,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this.setLocation(x, y);
 		this._width = MathUtils.max(1f, width);
 		this._height = MathUtils.max(1f, height);
+		this._component_resizabled = true;
 		this.isAllowSelectOfSelf = true;
 	}
 
@@ -264,6 +267,9 @@ public abstract class LComponent extends LObject<LContainer>
 	 */
 	public LComponent reset() {
 		this.isAllowSelectOfSelf = true;
+		this.isFull = false;
+		this.isSelectDraw = false;
+		this.customRendering = false;
 		this._fixedWidthOffset = 0f;
 		this._fixedHeightOffset = 0f;
 		this._component_paused = false;
@@ -279,6 +285,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._pivotX = _pivotY = -1;
 		this._component_visible = true;
 		this._component_enabled = true;
+		this._component_resizabled = true;
 		this._component_focusable = false;
 		this._component_selected = false;
 		this._component_downmoved = false;
@@ -829,6 +836,15 @@ public abstract class LComponent extends LObject<LContainer>
 	public LComponent setBounds(float dx, float dy, float width, float height) {
 		this.setLocation(dx, dy);
 		this.setSize(width, height);
+		return this;
+	}
+
+	public boolean isResizabled() {
+		return this._component_resizabled;
+	}
+
+	public LComponent setResizabled(boolean r) {
+		this._component_resizabled = r;
 		return this;
 	}
 
@@ -1784,10 +1800,12 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected LComponent validateResize() {
-		if (this._resizeListener != null) {
-			this._resizeListener.onResize(this);
+		if (_component_resizabled) {
+			if (this._resizeListener != null) {
+				this._resizeListener.onResize(this);
+			}
+			this.processResize();
 		}
-		this.processResize();
 		return this;
 	}
 
@@ -2653,6 +2671,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._component_paused = false;
 		this._component_selected = false;
 		this._component_downmoved = false;
+		this._component_resizabled = false;
 		if (_desktop != null) {
 			this._desktop.setComponentStat(this, false);
 		}

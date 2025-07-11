@@ -126,8 +126,6 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	protected float _width, _height;
 
-	protected LRelease _disposed;
-
 	public Entity() {
 		this((LTexture) null);
 	}
@@ -1726,24 +1724,12 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	@Override
 	protected void _onDestroy() {
-		if (_disposed != null) {
-			_disposed.close();
-		}
 		if (_image != null) {
 			_image.close();
 			_image = null;
 		}
-		_visible = false;
-		_ignoreUpdate = false;
-		_childrenIgnoreUpdate = false;
-		_componentsIgnoreUpdate = false;
-		_loopAction = null;
-		_resizeListener = null;
-		_collSpriteListener = null;
-		_otherShape = null;
-		_oldNodeType = null;
 		_drawListener = null;
-		_disposed = null;
+		closeBase();
 		removeComponents();
 		removeChildren();
 		removeActionEvents(this);

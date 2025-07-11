@@ -418,6 +418,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private MoveMethod _curReplaceMethod = MoveMethod.FROM_LEFT;
 
+	private boolean _screenResizabled = true;
+
 	private boolean _isScreenFrom = false;
 
 	// Screen系统模块类管理器
@@ -527,6 +529,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	protected void initialization(String name, int w, int h) {
 		this._screenName = name;
+		this._screenResizabled = true;
 		this.resetSize(w, h);
 	}
 
@@ -1867,22 +1870,24 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				(h <= 0 ? LSystem.viewSize.getHeight() : h));
 		this.clearInput();
 		this._processHandler = LSystem.getProcess();
-		if (_resizeListener != null) {
-			_resizeListener.onResize(this);
+		if (_screenResizabled) {
+			if (_resizeListener != null) {
+				_resizeListener.onResize(this);
+			}
+			if (_curSpriteRun && _currentSprites != null) {
+				_currentSprites.setSize(getViewWidth(), getViewHeight());
+			}
+			if (_curDesktopRun && _currentDesktop != null) {
+				_currentDesktop.setSize(getWidth(), getHeight());
+			}
+			if (_isGravity && _gravityHandler != null) {
+				_gravityHandler.setLimit(getViewWidth(), getViewHeight());
+			}
+			if (_isExistViewport && _baseViewport != null) {
+				_baseViewport.onResize(getWidth(), getHeight());
+			}
+			this.resize(getWidth(), getHeight());
 		}
-		if (_curSpriteRun && _currentSprites != null) {
-			_currentSprites.setSize(getViewWidth(), getViewHeight());
-		}
-		if (_curDesktopRun && _currentDesktop != null) {
-			_currentDesktop.setSize(getWidth(), getHeight());
-		}
-		if (_isGravity && _gravityHandler != null) {
-			_gravityHandler.setLimit(getViewWidth(), getViewHeight());
-		}
-		if (_isExistViewport && _baseViewport != null) {
-			_baseViewport.onResize(getWidth(), getHeight());
-		}
-		this.resize(getWidth(), getHeight());
 		this.skipFrame();
 	}
 
@@ -1932,6 +1937,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._currentMode = SCREEN_NOT_REPAINT;
 		this._curStageRun = true;
 		this._curLockedCallEvent = false;
+		this._screenResizabled = true;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
 		this._touchDifX = _touchDifY = 0f;
 		this._touchInitX = _touchInitY = 0f;
@@ -1976,6 +1982,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			setting(getBundle());
 		}
 		system(_systemManager.clear(false));
+	}
+
+	public boolean isResizabled() {
+		return this._screenResizabled;
+	}
+
+	public Screen setResizabled(boolean r) {
+		this._screenResizabled = r;
+		return this;
 	}
 
 	public void setting(ObjectBundle bundle) {
@@ -8163,6 +8178,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_isExistViewport = false;
 				_isAllowThroughUItoScreenTouch = false;
 				_desktopPenetrate = false;
+				_screenResizabled = false;
 				_endTime = getCurrentTimer();
 				_systemManager.close();
 				if (_baseViewport != null) {
