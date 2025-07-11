@@ -368,6 +368,45 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		return null;
 	}
 
+	public TileIsoRectGrid displayIDs(int id, boolean v) {
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && id == rect.getId()) {
+					rect.setVisible(v);
+				}
+			}
+		}
+		return this;
+	}
+
+	public TileIsoRectGrid displayFlags(int flag, boolean v) {
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && flag == rect.getFlag()) {
+					rect.setVisible(v);
+				}
+			}
+		}
+		return this;
+	}
+
+	public TileIsoRectGrid displayTags(Object tag, boolean v) {
+		if (tag == null) {
+			return this;
+		}
+		for (int x = 0; x < _cols; x++) {
+			for (int y = 0; y < _rows; y++) {
+				TileIsoRect rect = _grids[x][y];
+				if (rect != null && (tag == rect.getTag() || tag.equals(rect.getTag()))) {
+					rect.setVisible(v);
+				}
+			}
+		}
+		return this;
+	}
+
 	public TArray<TileIsoRect> findID(int id) {
 		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
 		for (int x = 0; x < _cols; x++) {
@@ -395,6 +434,9 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TArray<TileIsoRect> findTag(Object tag) {
+		if (tag == null) {
+			return new TArray<TileIsoRect>();
+		}
 		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
 		for (int x = 0; x < _cols; x++) {
 			for (int y = 0; y < _rows; y++) {

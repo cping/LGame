@@ -512,7 +512,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen(String name, int w, int h) {
-		initialization(name, w, h);
+		initialization(name, w, h, true);
+	}
+
+	public Screen(String name, int w, int h, boolean r) {
+		initialization(name, w, h, r);
 	}
 
 	public Screen(String name) {
@@ -527,9 +531,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this(LSystem.UNKNOWN, 0, 0);
 	}
 
-	protected void initialization(String name, int w, int h) {
+	protected void initialization(String name, int w, int h, boolean r) {
 		this._screenName = name;
-		this._screenResizabled = true;
+		this._screenResizabled = r;
 		this.resetSize(w, h);
 	}
 
@@ -1866,11 +1870,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	final protected void resetSize(int w, int h) {
-		this.updateRenderSize(0f, 0f, (w <= 0 ? LSystem.viewSize.getWidth() : w),
-				(h <= 0 ? LSystem.viewSize.getHeight() : h));
 		this.clearInput();
 		this._processHandler = LSystem.getProcess();
 		if (_screenResizabled) {
+			updateRenderSize(0f, 0f, (w <= 0 ? LSystem.viewSize.getWidth() : w),
+					(h <= 0 ? LSystem.viewSize.getHeight() : h));
 			if (_resizeListener != null) {
 				_resizeListener.onResize(this);
 			}
@@ -1937,7 +1941,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._currentMode = SCREEN_NOT_REPAINT;
 		this._curStageRun = true;
 		this._curLockedCallEvent = false;
-		this._screenResizabled = true;
 		this._lastTouchX = _lastTouchY = _touchDX = _touchDY = 0;
 		this._touchDifX = _touchDifY = 0f;
 		this._touchInitX = _touchInitY = 0f;
