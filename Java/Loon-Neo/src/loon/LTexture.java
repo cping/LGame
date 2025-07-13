@@ -826,6 +826,9 @@ public class LTexture extends Painter implements LRelease {
 	}
 
 	public LTexture scale(final float width, final float height) {
+		if (MathUtils.equal(getWidth(), width) && MathUtils.equal(getHeight(), height)) {
+			return this;
+		}
 
 		int hashCode = 1;
 

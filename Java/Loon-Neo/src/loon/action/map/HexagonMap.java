@@ -25,6 +25,7 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.LTextures;
 import loon.PlayerUtils;
 import loon.LTexture.Format;
 import loon.Screen;
@@ -1106,6 +1107,20 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	public HexagonMap setBackground(LTexture bg) {
 		this._background = bg;
 		return this;
+	}
+
+	public HexagonMap setBackground(String path) {
+		if (StringUtils.isEmpty(path)) {
+			return this;
+		}
+		return this.setBackground(LTextures.loadTexture(path));
+	}
+
+	public HexagonMap setBackground(String path, float w, float h) {
+		if (StringUtils.isEmpty(path)) {
+			return this;
+		}
+		return this.setBackground(LTextures.loadTexture(path).scale(w, h));
 	}
 
 	@Override

@@ -66,6 +66,8 @@ public class Field2D implements IArray, Config, LRelease {
 
 	private Tile _tileImpl = null;
 
+	private int[][] _proxyArrays;
+
 	private int[][] _mapArrays;
 
 	private int[] _moveLimited;
@@ -597,6 +599,18 @@ public class Field2D implements IArray, Config, LRelease {
 		return EMPTY;
 	}
 
+	public final static Field2D of(int w, int h, int tw, int th, int fill) {
+		return new Field2D(w, h, tw, th, fill);
+	}
+
+	public final static Field2D of(int w, int h, int fill) {
+		return of(w, h, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, fill);
+	}
+
+	public final static Field2D of(int w, int h) {
+		return of(w, h, 0);
+	}
+
 	public final static Field2D of(int tw, int th, String... map) {
 		return new Field2D(map, tw, th);
 	}
@@ -966,8 +980,19 @@ public class Field2D implements IArray, Config, LRelease {
 		return this;
 	}
 
-	public int[][] getMap() {
+	public int[][] getNewMap() {
 		return CollectionUtils.copyOf(_mapArrays);
+	}
+
+	public int[][] getMap() {
+		final int length = _mapArrays.length;
+		if (_proxyArrays == null || length != _proxyArrays.length) {
+			_proxyArrays = getNewMap();
+		}
+		for (int i = 0; i < length; i++) {
+			System.arraycopy(_mapArrays[i], 0, _proxyArrays[i], 0, length);
+		}
+		return _proxyArrays;
 	}
 
 	public Field2D setMap(int[][] arrays) {
