@@ -156,25 +156,25 @@ public class AStarFinder implements Updateable, LRelease {
 	}
 
 	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(TileMap map, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, map.getField2D().getMap(), map.getLimit(), x1, y1, x2, y2, flag);
+		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, maps.getMap(), maps.getLimit(), x1, y1, x2, y2, flag);
+		return find(null, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
-		return find(heuristic, maps.getMap(), maps.getLimit(), x1, y1, x2, y2, flag);
+		return find(heuristic, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, Vector2f start, Vector2f goal,
 			boolean flag) {
-		return find(heuristic, maps.getMap(), maps.getLimit(), start.x(), start.y(), goal.x(), goal.y(), flag);
+		return find(heuristic, maps.getThisMap(), maps.getLimit(), start.x(), start.y(), goal.x(), goal.y(), flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, Vector2f start, Vector2f goal,

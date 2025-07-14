@@ -173,6 +173,10 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		this(maps, screen, tileWidth, tileHeight, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
+	public TileMap(int w, int h, int tw, int th, int v) {
+		this(new Field2D(w, h, tw, th, v));
+	}
+
 	public TileMap(Field2D field2d) {
 		this(field2d, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), Format.LINEAR);
 	}
@@ -508,7 +512,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 				if (_playAnimation) {
 					final int tileWidth = _field2d.getTileWidth();
 					final int tileHeight = _field2d.getTileHeight();
-					final int[][] maps = _field2d.getMap();
+					final int[][] maps = _field2d.getThisMap();
 					for (int i = firstTileX; i < lastTileX; i++) {
 						for (int j = firstTileY; j < lastTileY; j++) {
 							if (i > -1 && j > -1 && i < _field2d.getWidth() && j < _field2d.getHeight()) {
@@ -548,7 +552,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 				final int height = _field2d.getHeight();
 				final int tileWidth = _field2d.getTileWidth();
 				final int tileHeight = _field2d.getTileHeight();
-				final int[][] maps = _field2d.getMap();
+				final int[][] maps = _field2d.getThisMap();
 				for (int i = firstTileX; i < lastTileX; i++) {
 					for (int j = firstTileY; j < lastTileY; j++) {
 						if (i > -1 && j > -1 && i < width && j < height) {

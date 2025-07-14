@@ -81,6 +81,8 @@ public class Field2D implements IArray, Config, LRelease {
 
 	private IntArray _allowMove;
 
+	private boolean _mapDirty;
+
 	public Object Tag;
 
 	public final static RectBox inflateBounds(RectBox rect, float x, float y) {
@@ -651,11 +653,11 @@ public class Field2D implements IArray, Config, LRelease {
 		this(w, h, tw, th, 0);
 	}
 
-	public Field2D(int w, int h, int tw, int th, int val) {
-		int[][] newMap = new int[h][w];
+	public Field2D(int w, int h, int tw, int th, int v) {
+		final int[][] newMap = new int[h][w];
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
-				newMap[i][j] = val;
+				newMap[i][j] = v;
 			}
 		}
 		this.set(newMap, tw, th);
@@ -674,7 +676,7 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public Field2D cpy(Field2D field) {
-		this.set(CollectionUtils.copyOf(field._mapArrays), field._tileWidth, field._tileHeight);
+		this.set(field._mapArrays, field._tileWidth, field._tileHeight);
 		if (field._offset != null) {
 			this._offset = field._offset.cpy();
 		}
@@ -708,6 +710,10 @@ public class Field2D implements IArray, Config, LRelease {
 		int x = MathUtils.ifloor(px / this._tileWidth);
 		int y = MathUtils.ifloor(py / this._tileHeight);
 		return getTile(x, y);
+	}
+
+	public Field2D set(int[][] arrays) {
+		return set(arrays, this._tileWidth, this._tileHeight);
 	}
 
 	public Field2D set(int[][] arrays, int tw, int th) {
@@ -911,6 +917,7 @@ public class Field2D implements IArray, Config, LRelease {
 				}
 			}
 		}
+		this._mapDirty = true;
 		return this;
 	}
 
@@ -951,6 +958,7 @@ public class Field2D implements IArray, Config, LRelease {
 				}
 			}
 		}
+		this._mapDirty = true;
 		return this;
 	}
 
@@ -975,9 +983,14 @@ public class Field2D implements IArray, Config, LRelease {
 				return this;
 			}
 			this._mapArrays[y][x] = tile;
+			this._mapDirty = true;
 		} catch (Throwable e) {
 		}
 		return this;
+	}
+
+	protected int[][] getThisMap() {
+		return _mapArrays;
 	}
 
 	public int[][] getNewMap() {
@@ -985,21 +998,46 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public int[][] getMap() {
+		final boolean isNull = (_proxyArrays == null);
 		final int length = _mapArrays.length;
-		if (_proxyArrays == null || length != _proxyArrays.length) {
+		if (isNull || ((length != _proxyArrays.length) || (_mapArrays[0].length != _proxyArrays[0].length))
+				|| (_proxyArrays == _mapArrays)) {
 			_proxyArrays = getNewMap();
-		}
-		for (int i = 0; i < length; i++) {
-			System.arraycopy(_mapArrays[i], 0, _proxyArrays[i], 0, length);
+		} else if (_mapDirty) {
+			for (int i = 0; i < length; i++) {
+				System.arraycopy(_mapArrays[i], 0, _proxyArrays[i], 0, length);
+			}
+			_mapDirty = false;
 		}
 		return _proxyArrays;
 	}
 
-	public Field2D setMap(int[][] arrays) {
-		if (arrays == null) {
+	protected Field2D setMap(int[][] arrays) {
+		if (arrays == null || arrays == this._mapArrays) {
 			return this;
 		}
-		this._mapArrays = arrays;
+		if (this._mapArrays != null
+				&& (arrays.length == this._mapArrays.length && arrays[0].length == _mapArrays[0].length)) {
+			final int w = arrays[0].length;
+			final int h = arrays.length;
+			for (int i = 0; i < h; i++) {
+				for (int j = 0; j < w; j++) {
+					_mapArrays[i][j] = arrays[i][j];
+				}
+			}
+		} else {
+			this._mapArrays = CollectionUtils.copyOf(arrays);
+		}
+		this._mapDirty = true;
+		return this;
+	}
+
+	public boolean isDirty() {
+		return this._mapDirty;
+	}
+
+	public Field2D setDirty(boolean d) {
+		this._mapDirty = d;
 		return this;
 	}
 
@@ -1284,6 +1322,7 @@ public class Field2D implements IArray, Config, LRelease {
 				_mapArrays[i][j] = val;
 			}
 		}
+		this._mapDirty = true;
 		return this;
 	}
 
