@@ -1232,22 +1232,39 @@ public class Field2D implements IArray, Config, LRelease {
 		return toXY(index, this._width, this._height);
 	}
 
-	public int[][] neighbors(int px, int py, boolean flag) {
-		int[][] pos = new int[flag ? 8 : 4][2];
-		insertArrays(pos, 0, px, py - 1);
-		insertArrays(pos, 0, px + 1, py);
-		insertArrays(pos, 0, px, py + 1);
-		insertArrays(pos, 0, px - 1, py);
-		if (flag) {
+	public int[][] neighbors(int px, int py, boolean bevel, boolean diagonal) {
+		final int[][] pos = new int[diagonal ? 8 : 4][2];
+		if (bevel) {
 			insertArrays(pos, 0, px - 1, py - 1);
 			insertArrays(pos, 0, px + 1, py - 1);
 			insertArrays(pos, 0, px + 1, py + 1);
 			insertArrays(pos, 0, px - 1, py + 1);
+			if (diagonal) {
+				insertArrays(pos, 0, px, py - 1);
+				insertArrays(pos, 0, px + 1, py);
+				insertArrays(pos, 0, px, py + 1);
+				insertArrays(pos, 0, px - 1, py);
+			}
+		} else {
+			insertArrays(pos, 0, px, py - 1);
+			insertArrays(pos, 0, px + 1, py);
+			insertArrays(pos, 0, px, py + 1);
+			insertArrays(pos, 0, px - 1, py);
+			if (diagonal) {
+				insertArrays(pos, 0, px - 1, py - 1);
+				insertArrays(pos, 0, px + 1, py - 1);
+				insertArrays(pos, 0, px + 1, py + 1);
+				insertArrays(pos, 0, px - 1, py + 1);
+			}
 		}
 		return pos;
 	}
 
 	public TArray<Vector2f> neighbors(Vector2f pos, boolean diagonal) {
+		return neighbors(pos, false, diagonal);
+	}
+
+	public TArray<Vector2f> neighbors(Vector2f pos, boolean bevel, boolean diagonal) {
 		if (_result == null) {
 			_result = new TArray<Vector2f>(diagonal ? 8 : 4);
 		} else {
@@ -1255,15 +1272,28 @@ public class Field2D implements IArray, Config, LRelease {
 		}
 		int x = pos.x();
 		int y = pos.y();
-		_result.add(new Vector2f(x, y - 1));
-		_result.add(new Vector2f(x + 1, y));
-		_result.add(new Vector2f(x, y + 1));
-		_result.add(new Vector2f(x - 1, y));
-		if (diagonal) {
+		if (bevel) {
 			_result.add(new Vector2f(x - 1, y - 1));
 			_result.add(new Vector2f(x + 1, y - 1));
 			_result.add(new Vector2f(x + 1, y + 1));
 			_result.add(new Vector2f(x - 1, y + 1));
+			if (diagonal) {
+				_result.add(new Vector2f(x, y - 1));
+				_result.add(new Vector2f(x + 1, y));
+				_result.add(new Vector2f(x, y + 1));
+				_result.add(new Vector2f(x - 1, y));
+			}
+		} else {
+			_result.add(new Vector2f(x, y - 1));
+			_result.add(new Vector2f(x + 1, y));
+			_result.add(new Vector2f(x, y + 1));
+			_result.add(new Vector2f(x - 1, y));
+			if (diagonal) {
+				_result.add(new Vector2f(x - 1, y - 1));
+				_result.add(new Vector2f(x + 1, y - 1));
+				_result.add(new Vector2f(x + 1, y + 1));
+				_result.add(new Vector2f(x - 1, y + 1));
+			}
 		}
 		return _result;
 	}

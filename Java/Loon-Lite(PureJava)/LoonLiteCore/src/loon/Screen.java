@@ -1869,7 +1869,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			}
 			this.resize(getWidth(), getHeight());
 		}
-		this.skipFrame();
 	}
 
 	final protected void resetOrder() {
@@ -1882,7 +1881,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		this._curFristPaintFlag = true;
 		this._curSecondPaintFlag = true;
 		this._curLastPaintFlag = true;
-		this.skipFrame();
 	}
 
 	public boolean collided(Shape shape) {

@@ -72,9 +72,11 @@ public class MoveTo extends ActionEvent {
 
 	private Vector2f pLocation = new Vector2f();
 
-	private boolean moveByMode = false;
+	private boolean moveByMode;
 
-	private boolean isDirUpdate = false;
+	private boolean moveBevel;
+
+	private boolean isDirUpdate;
 
 	public MoveTo(float x, float y, boolean all) {
 		this(null, x, y, all, _INIT_MOVE_SPEED);
@@ -119,6 +121,11 @@ public class MoveTo extends ActionEvent {
 
 	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean all, float speed, boolean cache,
 			boolean synField, int delayTime) {
+		this(map, sx, sy, ex, ey, false, all, speed, cache, synField, delayTime);
+	}
+
+	public MoveTo(final Field2D map, float sx, float sy, float ex, float ey, boolean bevel, boolean all, float speed,
+			boolean cache, boolean synField, int delayTime) {
 		this._easeTimer = EaseTimer.at(1f, EasingMode.Linear);
 		this.startLocation = new Vector2f(sx, sy);
 		this.endLocation = new Vector2f(ex, ey);
@@ -126,6 +133,7 @@ public class MoveTo extends ActionEvent {
 		this.allDir = all;
 		this.speed = speed;
 		this.useCache = cache;
+		this.moveBevel = bevel;
 		this.synchroLayerField = synField;
 		this.process_delay_time = delayTime;
 		this.direction = Config.EMPTY;
@@ -285,6 +293,7 @@ public class MoveTo extends ActionEvent {
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, allDir);
+		hashCode = LSystem.unite(hashCode, moveBevel);
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(original.x()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesHeight(original.y()));
 		hashCode = LSystem.unite(hashCode, layerMap.pixelsToTilesWidth(endLocation.x()));
@@ -313,21 +322,47 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public TArray<Vector2f> findPath() {
-		return findPath(startLocation.getX(), startLocation.getY(), endLocation.getX(), endLocation.getY(), allDir);
+		return findPath(startLocation.getX(), startLocation.getY(), endLocation.getX(), endLocation.getY(), moveBevel,
+				allDir);
+	}
+
+	public TArray<Vector2f> findPathBevelBegin(float x, float y, boolean all) {
+		return findPath(x, y, endLocation.getX(), endLocation.getY(), true, all);
+	}
+
+	public TArray<Vector2f> findPathBevelEnd(float x, float y, boolean all) {
+		return findPath(startLocation.getX(), startLocation.getY(), x, y, true, all);
 	}
 
 	public TArray<Vector2f> findPathBegin(float x, float y, boolean all) {
-		return findPath(x, y, endLocation.getX(), endLocation.getY(), all);
+		return findPath(x, y, endLocation.getX(), endLocation.getY(), false, all);
 	}
 
 	public TArray<Vector2f> findPathEnd(float x, float y, boolean all) {
-		return findPath(startLocation.getX(), startLocation.getY(), x, y, all);
+		return findPath(startLocation.getX(), startLocation.getY(), x, y, false, all);
 	}
 
-	public TArray<Vector2f> findPath(float startX, float startY, float endX, float endY, boolean all) {
+	public TArray<Vector2f> findPathBegin(float x, float y, boolean bevel, boolean all) {
+		return findPath(x, y, endLocation.getX(), endLocation.getY(), bevel, all);
+	}
+
+	public TArray<Vector2f> findPathEnd(float x, float y, boolean bevel, boolean all) {
+		return findPath(startLocation.getX(), startLocation.getY(), x, y, bevel, all);
+	}
+
+	public TArray<Vector2f> findPath(float startX, float startY, float endX, float endY, boolean bevel, boolean all) {
 		return pActorPath = AStarFinder.find(heuristic, layerMap, layerMap.pixelsToTilesWidth(startX),
 				layerMap.pixelsToTilesHeight(startY), layerMap.pixelsToTilesWidth(endX),
-				layerMap.pixelsToTilesHeight(endY), all);
+				layerMap.pixelsToTilesHeight(endY), bevel, all);
+	}
+
+	public boolean isBevel() {
+		return this.moveBevel;
+	}
+
+	public MoveTo setBevel(boolean b) {
+		this.moveBevel = b;
+		return this;
 	}
 
 	public TArray<Vector2f> getPath() {
@@ -840,7 +875,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, allDir, speed, useCache,
+		MoveTo move = new MoveTo(layerMap, -1, -1, endLocation.x, endLocation.y, moveBevel, allDir, speed, useCache,
 				synchroLayerField, process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;
@@ -849,7 +884,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, allDir, speed, useCache, synchroLayerField,
+		MoveTo move = new MoveTo(layerMap, -1, -1, oldX, oldY, moveBevel, allDir, speed, useCache, synchroLayerField,
 				process_delay_time);
 		move.set(this);
 		move.heuristic = this.heuristic;

@@ -90,7 +90,7 @@ public class AStarFinder implements Updateable, LRelease {
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
 	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
-			int ex, int ey, boolean flag) {
+			int ex, int ey, boolean bevel, boolean flag) {
 		int hashCode = 1;
 		int w = map.length;
 		int h = map[0].length;
@@ -109,18 +109,19 @@ public class AStarFinder implements Updateable, LRelease {
 		hashCode = LSystem.unite(hashCode, sy);
 		hashCode = LSystem.unite(hashCode, ex);
 		hashCode = LSystem.unite(hashCode, ey);
+		hashCode = LSystem.unite(hashCode, bevel);
 		hashCode = LSystem.unite(hashCode, flag);
 		return hashCode;
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int[] limits, int x1, int y1,
-			int x2, int y2, boolean flag) {
+			int x2, int y2, boolean bevel, boolean flag) {
 		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
 		synchronized (FINDER_LAZY) {
 			if (FINDER_LAZY.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
 				FINDER_LAZY.clear();
 			}
-			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, flag);
+			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, bevel, flag);
 			TArray<Vector2f> result = FINDER_LAZY.get(key);
 			if (result == null) {
 				AStarFinder astar = new AStarFinder(heuristic, ASTAR);
@@ -130,7 +131,7 @@ public class AStarFinder implements Updateable, LRelease {
 				}
 				Vector2f start = new Vector2f(x1, y1);
 				Vector2f over = new Vector2f(x2, y2);
-				result = astar.calc(fieldMap, start, over, flag);
+				result = astar.calc(fieldMap, start, over, bevel, flag);
 				FINDER_LAZY.put(key, result);
 				astar.close();
 			}
@@ -146,40 +147,77 @@ public class AStarFinder implements Updateable, LRelease {
 		}
 	}
 
+	public static TArray<Vector2f> find(int[][] maps, int x1, int y1, int x2, int y2, boolean bevel, boolean flag) {
+		return find(null, maps, x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
+			boolean bevel, boolean flag) {
+		return find(heuristic, maps, null, x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean bevel, boolean flag) {
+		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(TileMap map, int x1, int y1, int x2, int y2, boolean bevel, boolean flag) {
+		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(Field2D maps, int x1, int y1, int x2, int y2, boolean bevel, boolean flag) {
+		return find(null, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
+			boolean bevel, boolean flag) {
+		return find(heuristic, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, bevel, flag);
+	}
+
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, Vector2f start, Vector2f goal,
+			boolean bevel, boolean flag) {
+		return find(heuristic, maps.getThisMap(), maps.getLimit(), start.x(), start.y(), goal.x(), goal.y(), bevel,
+				flag);
+	}
+
+	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, Vector2f start, Vector2f goal,
+			boolean bevel, boolean flag) {
+		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(), bevel, flag);
+	}
+
 	public static TArray<Vector2f> find(int[][] maps, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, maps, x1, y1, x2, y2, flag);
+		return find(maps, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
-		return find(heuristic, maps, null, x1, y1, x2, y2, flag);
+		return find(heuristic, maps, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(HexagonMap map, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, flag);
+		return find(map, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(TileMap map, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, map.getField2D().getThisMap(), map.getLimit(), x1, y1, x2, y2, flag);
+		return find(map, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(Field2D maps, int x1, int y1, int x2, int y2, boolean flag) {
-		return find(null, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, flag);
+		return find(maps, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, int x1, int y1, int x2, int y2,
 			boolean flag) {
-		return find(heuristic, maps.getThisMap(), maps.getLimit(), x1, y1, x2, y2, flag);
+		return find(heuristic, maps, x1, y1, x2, y2, false, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, Field2D maps, Vector2f start, Vector2f goal,
 			boolean flag) {
-		return find(heuristic, maps.getThisMap(), maps.getLimit(), start.x(), start.y(), goal.x(), goal.y(), flag);
+		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(), false, flag);
 	}
 
 	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, Vector2f start, Vector2f goal,
 			boolean flag) {
-		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(), flag);
+		return find(heuristic, maps, start.x(), start.y(), goal.x(), goal.y(), false, flag);
 	}
 
 	private Vector2f _goal;
@@ -194,7 +232,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private ScoredPath _spath;
 
-	private boolean _flying, _alldirMove, _closed, _running;
+	private boolean _flying, _alldirMove, _closed, _running, _bevel;
 
 	private Field2D _findMap;
 
@@ -223,12 +261,18 @@ public class AStarFinder implements Updateable, LRelease {
 
 	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
 			boolean flying, boolean flag, AStarFinderListener callback, int algorithm) {
+		this(heuristic, m, startX, startY, endX, endY, flying, false, flag, callback, algorithm);
+	}
+
+	public AStarFinder(AStarFindHeuristic heuristic, Field2D m, int startX, int startY, int endX, int endY,
+			boolean flying, boolean bevel, boolean flag, AStarFinderListener callback, int algorithm) {
 		this._findMap = m;
 		this._startX = startX;
 		this._startY = startY;
 		this._endX = endX;
 		this._endY = endY;
 		this._flying = flying;
+		this._bevel = bevel;
 		this._alldirMove = flag;
 		this._pathFoundListener = callback;
 		this._findHeuristic = heuristic;
@@ -242,6 +286,7 @@ public class AStarFinder implements Updateable, LRelease {
 		this._endX = find._endX;
 		this._endY = find._endY;
 		this._flying = find._flying;
+		this._bevel = find._bevel;
 		this._alldirMove = find._alldirMove;
 		this._findHeuristic = find._findHeuristic;
 		return this;
@@ -256,6 +301,7 @@ public class AStarFinder implements Updateable, LRelease {
 		result = LSystem.unite(result, _endX);
 		result = LSystem.unite(result, _endY);
 		result = LSystem.unite(result, _flying);
+		result = LSystem.unite(result, _bevel);
 		result = LSystem.unite(result, _alldirMove);
 		result = LSystem.unite(result, _findHeuristic);
 		return result;
@@ -272,7 +318,7 @@ public class AStarFinder implements Updateable, LRelease {
 		return false;
 	}
 
-	private TArray<Vector2f> calc(Field2D m, Vector2f start, Vector2f goal, boolean flag) {
+	private TArray<Vector2f> calc(Field2D m, Vector2f start, Vector2f goal, boolean bevel, boolean diagonal) {
 		if (start.equals(goal)) {
 			TArray<Vector2f> v = new TArray<Vector2f>();
 			v.add(start);
@@ -308,7 +354,7 @@ public class AStarFinder implements Updateable, LRelease {
 			_spath.pathList = _pathList;
 		}
 		_nextList.add(_spath);
-		return findPath(m, flag, _algorithm);
+		return findPath(m, bevel, diagonal, _algorithm);
 	}
 
 	public AStarFinder setOverflow(int over) {
@@ -329,13 +375,26 @@ public class AStarFinder implements Updateable, LRelease {
 		return this._running;
 	}
 
-	public TArray<Vector2f> findPath() {
-		Vector2f start = new Vector2f(_startX, _startY);
-		Vector2f over = new Vector2f(_endX, _endY);
-		return calc(_findMap, start, over, _alldirMove);
+	public AStarFinder setBevel(boolean b) {
+		this._bevel = b;
+		return this;
 	}
 
-	public TArray<Vector2f> findPath(Field2D map, boolean diagonal, int algorithm) {
+	public boolean isBevel() {
+		return this._bevel;
+	}
+
+	public TArray<Vector2f> findPath() {
+		return findPath(_bevel);
+	}
+
+	public TArray<Vector2f> findPath(boolean bevel) {
+		Vector2f start = new Vector2f(_startX, _startY);
+		Vector2f over = new Vector2f(_endX, _endY);
+		return calc(_findMap, start, over, bevel, _alldirMove);
+	}
+
+	public TArray<Vector2f> findPath(Field2D map, boolean bevel, boolean diagonal, int algorithm) {
 		_running = true;
 		for (int j = 0; _nextList.size > 0; j++) {
 			if (j > _overflow) {
@@ -353,7 +412,7 @@ public class AStarFinder implements Updateable, LRelease {
 			if (current.equals(_goal)) {
 				return new TArray<Vector2f>(spath.pathList);
 			}
-			TArray<Vector2f> step = map.neighbors(current, diagonal);
+			TArray<Vector2f> step = map.neighbors(current, bevel, diagonal);
 			final int size = step.size;
 			for (int i = 0; i < size; i++) {
 				Vector2f next = step.get(i);
@@ -449,6 +508,7 @@ public class AStarFinder implements Updateable, LRelease {
 		_goal = null;
 		_closed = true;
 		_running = false;
+		_bevel = false;
 	}
 
 }

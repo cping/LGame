@@ -62,6 +62,8 @@ public class MoveObject extends ActionObject {
 
 	private boolean allDirection;
 
+	private boolean bevelDirection;
+
 	private float startX, startY, endX, endY;
 
 	private float speed;
@@ -114,7 +116,7 @@ public class MoveObject extends ActionObject {
 				}
 				findPath = AStarFinder.find(heuristic, tiles.getField2D(), tiles.pixelsToTilesWidth(x()),
 						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x),
-						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), allDirection);
+						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), bevelDirection, allDirection);
 			} else if (findPath != null) {
 				findPath.clear();
 			}
@@ -716,6 +718,15 @@ public class MoveObject extends ActionObject {
 		return this;
 	}
 
+	public boolean isBevelDirection() {
+		return bevelDirection;
+	}
+
+	public MoveObject setBevelDirection(boolean bevelDirection) {
+		this.bevelDirection = bevelDirection;
+		return this;
+	}
+
 	public boolean isAllowCheckCollision() {
 		return isCheckCollision;
 	}
@@ -763,6 +774,7 @@ public class MoveObject extends ActionObject {
 		}
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, allDirection);
+		hashCode = LSystem.unite(hashCode, bevelDirection);
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
