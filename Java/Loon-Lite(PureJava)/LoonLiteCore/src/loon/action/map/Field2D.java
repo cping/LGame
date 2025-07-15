@@ -1239,11 +1239,11 @@ public class Field2D implements IArray, Config, LRelease {
 			insertArrays(pos, 0, px + 1, py - 1);
 			insertArrays(pos, 0, px + 1, py + 1);
 			insertArrays(pos, 0, px - 1, py + 1);
+			insertArrays(pos, 0, px + 1, py);
+			insertArrays(pos, 0, px - 1, py);
 			if (diagonal) {
 				insertArrays(pos, 0, px, py - 1);
-				insertArrays(pos, 0, px + 1, py);
 				insertArrays(pos, 0, px, py + 1);
-				insertArrays(pos, 0, px - 1, py);
 			}
 		} else {
 			insertArrays(pos, 0, px, py - 1);
@@ -1277,11 +1277,11 @@ public class Field2D implements IArray, Config, LRelease {
 			_result.add(new Vector2f(x + 1, y - 1));
 			_result.add(new Vector2f(x + 1, y + 1));
 			_result.add(new Vector2f(x - 1, y + 1));
+			_result.add(new Vector2f(x + 1, y));
+			_result.add(new Vector2f(x - 1, y));
 			if (diagonal) {
 				_result.add(new Vector2f(x, y - 1));
-				_result.add(new Vector2f(x + 1, y));
 				_result.add(new Vector2f(x, y + 1));
-				_result.add(new Vector2f(x - 1, y));
 			}
 		} else {
 			_result.add(new Vector2f(x, y - 1));

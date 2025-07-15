@@ -89,8 +89,8 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private final static IntMap<TArray<Vector2f>> FINDER_LAZY = new IntMap<TArray<Vector2f>>(128);
 
-	private final static int makeLazyKey(AStarFindHeuristic heuristic, int[][] map, int[] limits, int sx, int sy,
-			int ex, int ey, boolean bevel, boolean flag) {
+	private final static int makeLazyKey(final AStarFindHeuristic heuristic, final int[][] map, final int[] limits,
+			final int sx, final int sy, final int ex, final int ey, final boolean bevel, final boolean flag) {
 		int hashCode = 1;
 		int w = map.length;
 		int h = map[0].length;
@@ -114,29 +114,29 @@ public class AStarFinder implements Updateable, LRelease {
 		return hashCode;
 	}
 
-	public static TArray<Vector2f> find(AStarFindHeuristic heuristic, int[][] maps, int[] limits, int x1, int y1,
-			int x2, int y2, boolean bevel, boolean flag) {
-		heuristic = (heuristic == null ? ASTAR_MANHATTAN : heuristic);
+	public static TArray<Vector2f> find(final AStarFindHeuristic astarHeuristic, final int[][] maps, final int[] limits,
+			final int x1, final int y1, final int x2, final int y2, final boolean bevel, final boolean flag) {
+		final AStarFindHeuristic heuristic = (astarHeuristic == null ? ASTAR_MANHATTAN : astarHeuristic);
 		synchronized (FINDER_LAZY) {
 			if (FINDER_LAZY.size >= LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
 				FINDER_LAZY.clear();
 			}
-			int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, bevel, flag);
+			final int key = makeLazyKey(heuristic, maps, limits, x1, y1, x2, y2, bevel, flag);
 			TArray<Vector2f> result = FINDER_LAZY.get(key);
 			if (result == null) {
-				AStarFinder astar = new AStarFinder(heuristic, ASTAR);
-				Field2D fieldMap = new Field2D(maps);
+				final AStarFinder astar = new AStarFinder(heuristic, ASTAR);
+				final Field2D fieldMap = new Field2D(maps);
 				if (limits != null) {
 					fieldMap.setLimit(limits);
 				}
-				Vector2f start = new Vector2f(x1, y1);
-				Vector2f over = new Vector2f(x2, y2);
+				final Vector2f start = new Vector2f(x1, y1);
+				final Vector2f over = new Vector2f(x2, y2);
 				result = astar.calc(fieldMap, start, over, bevel, flag);
 				FINDER_LAZY.put(key, result);
 				astar.close();
 			}
 			if (result != null) {
-				TArray<Vector2f> newResult = new TArray<Vector2f>();
+				final TArray<Vector2f> newResult = new TArray<Vector2f>();
 				newResult.addAll(result);
 				result = newResult;
 			}

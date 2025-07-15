@@ -6311,6 +6311,22 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Field2D newField2D(int w, int h, int tw, int th, int v) {
+		return new Field2D(w, h, tw, th, v);
+	}
+
+	public Field2D newField2D(int tw, int th, int v) {
+		return newField2D(getViewWidth() / tw, getViewHeight() / tw, tw, th, v);
+	}
+
+	public Field2D newField2D(int v) {
+		return newField2D(LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, v);
+	}
+
+	public Field2D newField2D() {
+		return newField2D(0);
+	}
+
 	public RectBox getRectBox() {
 		if (_rectBox != null) {
 			_rectBox.setBounds(MathUtils.getBounds(getScalePixelX(), getScalePixelY(), getScreenWidth(),

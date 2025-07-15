@@ -98,10 +98,11 @@ public class Dimension {
 	}
 
 	public Field2D newField2D(int tileWidth, int tileHeight) {
-		final int w = getWidth() / tileWidth;
-		final int h = getHeight() / tileHeight;
-		final int[][] tmp = new int[h][w];
-		return new Field2D(tmp, tileWidth, tileHeight);
+		return newField2D(tileWidth, tileHeight, 0);
+	}
+
+	public Field2D newField2D(int tileWidth, int tileHeight, int fill) {
+		return new Field2D(getWidth() / tileWidth, getHeight() / tileHeight, tileWidth, tileHeight, fill);
 	}
 
 	public int getHeight() {
