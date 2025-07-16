@@ -26,5 +26,5 @@ public enum CssDisplay {
 
 	Block,
 
-	None;
+	None
 }

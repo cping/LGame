@@ -21,5 +21,5 @@
 package loon.opengl;
 
 public enum BlendState {
-	Additive, AlphaBlend, NonPremultiplied, Opaque, Null;
+	Additive, AlphaBlend, NonPremultiplied, Opaque, Null
 }

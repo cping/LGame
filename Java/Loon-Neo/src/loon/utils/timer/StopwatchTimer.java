@@ -138,6 +138,14 @@ public class StopwatchTimer {
 		return this;
 	}
 
+	public long getPercentage(float timeScale) {
+		return (long) (this._from + (this._to - this._from) * timeScale);
+	}
+
+	public long getPercentage() {
+		return getPercentage(1f);
+	}
+
 	public long getTime() {
 		return isWaiting() ? currentTime() - _from + _to : _lastStop;
 	}

@@ -86,6 +86,10 @@ public abstract class RealtimeProcess implements GameProcess, LRelease {
 		this._timeOutDelay = -1;
 	}
 
+	public LTimer getRealTime() {
+		return this._timer;
+	}
+
 	@Override
 	public void setProcessHost(RealtimeProcessHost processHost) {
 		this._processHost = processHost;

@@ -41,7 +41,7 @@ import loon.utils.TArray;
 public abstract class GLFrameBuffer implements LRelease {
 
 	public enum FrameBufferDepthFormat {
-		DEPTHSTENCIL_NONE, DEPTH_16, STENCIL_8, DEPTHSTENCIL_24_8;
+		DEPTHSTENCIL_NONE, DEPTH_16, STENCIL_8, DEPTHSTENCIL_24_8
 	}
 
 	public static class FrameBufferBuilder extends GLFrameBufferBuilder<FrameBuffer> {

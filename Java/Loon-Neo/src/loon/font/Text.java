@@ -210,8 +210,9 @@ public class Text implements LRelease {
 		}
 		if (this._lines == null) {
 			this._lines = new TArray<CharSequence>();
+		} else {
+			this._lines.clear();
 		}
-		this._lines.clear();
 		this._lineWidths.clear();
 		if (this._textOptions._autoWrap == AutoWrap.NONE) {
 			this._lines = FontUtils.splitLines(this._chars, this._lines);

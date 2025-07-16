@@ -21,5 +21,5 @@
 package loon.utils.processes;
 
 public enum CoroutineStatus {
-	Paused, Running, Completed, Cancel, Error;
+	Paused, Running, Completed, Cancel, Error
 }

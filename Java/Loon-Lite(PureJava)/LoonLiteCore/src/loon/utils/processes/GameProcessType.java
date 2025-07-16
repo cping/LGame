@@ -60,6 +60,10 @@ public enum GameProcessType {
 
 	Behavior,
 
-	Other;
+	LimitedTimeTask,
+
+	SimulationTime,
+
+	Other
 
 }

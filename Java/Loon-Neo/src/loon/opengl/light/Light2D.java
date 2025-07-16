@@ -41,7 +41,7 @@ import loon.utils.TArray;
 public class Light2D implements EventActionN, LRelease {
 
 	public enum LightType {
-		Singleton, Multiple;
+		Singleton, Multiple
 	}
 
 	public static class LightMultipleShader extends ShaderSource implements ChangeEvent<Object> {

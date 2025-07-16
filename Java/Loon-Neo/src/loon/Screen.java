@@ -6367,7 +6367,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Field2D newField2D(int tw, int th, int v) {
-		return newField2D(getViewWidth() / tw, getViewHeight() / tw, tw, th, v);
+		return newField2D(getViewWidth() / tw, getViewHeight() / th, tw, th, v);
 	}
 
 	public Field2D newField2D(int v) {

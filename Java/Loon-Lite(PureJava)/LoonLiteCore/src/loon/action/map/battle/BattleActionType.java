@@ -46,5 +46,5 @@ public enum BattleActionType {
 	// 失败
 	Failure,
 	// 取消操作
-	Cancel,
+	Cancel
 }

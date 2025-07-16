@@ -34,5 +34,5 @@ public enum DPI {
     HDPI,
     XHDPI,
     XXHDPI,
-    XXXHDPI;
+    XXXHDPI
 }

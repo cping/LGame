@@ -22,6 +22,6 @@ package loon.events;
 
 public enum Orientation {
 
-	Portrait, PortraitUpsideDown, LandscapeRight, LandscapeLeft;
+	Portrait, PortraitUpsideDown, LandscapeRight, LandscapeLeft
 
 }

@@ -26,6 +26,6 @@ package loon.action.map.items;
 public enum TaskType {
 
 	ARREST, SAVE, STEAL, FETCH, DELIVERY, DISCOVER, DAMAGE, GUARD, GAME, UPGRADE, ESCORT, RETURN, KILL, KILLTEAMALL,
-	HELP;
+	HELP, HOUR, DAY, MONTH, YEAR
 
 }

@@ -48,7 +48,7 @@ public class ShaderCmd {
 	}
 
 	public enum VarType {
-		Attribute, Uniform, Varying, Struct, Const;
+		Attribute, Uniform, Varying, Struct, Const
 	}
 
 	private String command;

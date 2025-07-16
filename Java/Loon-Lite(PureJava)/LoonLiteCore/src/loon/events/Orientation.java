@@ -25,6 +25,6 @@ public enum Orientation {
 	Portrait,
 	PortraitUpsideDown,
 	LandscapeRight,
-	LandscapeLeft;
+	LandscapeLeft
 
 }

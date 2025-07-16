@@ -21,5 +21,5 @@
 package loon.action.behaviors;
 
 public enum TaskStatus {
-	Invalid, Success, Failure, Running;
+	Invalid, Success, Failure, Running
 }
