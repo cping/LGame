@@ -184,7 +184,7 @@ public class TransferTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startPos", startPos).comma().kv("endPos", endPos).comma().kv("travelDistance", travelDistance)
 				.comma().kv("currentPosition", currentPosition).comma().kv("controllingX", controllingX).comma()
 				.kv("controllingY", controllingY).comma().kv("EaseTimer", _easeTimer);

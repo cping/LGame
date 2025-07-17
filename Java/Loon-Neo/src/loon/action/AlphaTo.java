@@ -86,7 +86,7 @@ public class AlphaTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startAlpha", _startAlpha).comma().kv("endAlpha", _endAlpha);
 		return builder.toString();
 	}

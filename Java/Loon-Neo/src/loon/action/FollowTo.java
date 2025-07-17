@@ -236,7 +236,7 @@ public class FollowTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("speed", _speed).comma().kv("currentX", _newX).comma().kv("currentY", _newY).comma()
 				.kv("endX", _end.x).comma().kv("endY", _end.y);
 		return builder.toString();

@@ -129,7 +129,7 @@ public class SizeBy extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startWidth", _startWidth).comma().kv("startHeight", _startHeight).comma()
 				.kv("amountWidth", _amountWidth).comma().kv("amountHeight", _amountHeight);
 		return builder.toString();

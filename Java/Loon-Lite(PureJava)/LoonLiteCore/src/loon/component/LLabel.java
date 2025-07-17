@@ -228,6 +228,9 @@ public class LLabel extends LComponent implements FontSet<LLabel> {
 		if (_text == null || ch == null) {
 			return this;
 		}
+		if (ch == _text.getText() || ch.equals(_text.getText())) {
+			return this;
+		}
 		_text.setText(ch);
 		setWidth(MathUtils.max(_text.getWidth(), getWidth()));
 		setHeight(MathUtils.max(_text.getHeight(), getHeight()));

@@ -196,7 +196,7 @@ public class FlipEffectTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("flipType", _flipType).comma().kv("flip", _flipAllow).comma().kv("effectRunning", _effectRunning);
 		return builder.toString();
 	}

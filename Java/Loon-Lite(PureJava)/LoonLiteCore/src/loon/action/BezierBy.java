@@ -108,7 +108,7 @@ public class BezierBy extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("bezier", bezier).comma().kv("startX", startX).comma().kv("startY", startY).comma().kv("EaseTimer",
 				_easeTimer);
 		return builder.toString();

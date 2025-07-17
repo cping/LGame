@@ -223,7 +223,7 @@ public class TransformTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("newX", newX).comma().kv("newY", newY).comma().kv("newScaleX", newScaleX).comma()
 				.kv("newScaleY", newScaleY).comma().kv("newRotation", newRotation).comma().kv("newAlpha", newAlpha)
 				.comma().kv("newColor", newColor);

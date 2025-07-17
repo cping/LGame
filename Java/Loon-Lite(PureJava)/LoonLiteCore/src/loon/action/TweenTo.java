@@ -93,7 +93,7 @@ public class TweenTo<T> extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		if (_base != null) {
 			builder.kv("ActionTweenBase", _base);
 		}

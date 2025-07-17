@@ -130,7 +130,7 @@ public class ReplayTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		if (_replays != null && _replays.size() > 0) {
 			for (; _replays.hashNext();) {
 				ActionEvent event = _replays.next();

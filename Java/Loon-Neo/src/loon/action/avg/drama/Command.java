@@ -1218,7 +1218,7 @@ public class Command extends Conversion implements LRelease {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue("command");
+		final StringKeyValue builder = new StringKeyValue("command");
 		builder.kv("script", scriptList);
 		return builder.toString();
 	}

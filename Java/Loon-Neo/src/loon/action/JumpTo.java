@@ -141,7 +141,7 @@ public class JumpTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("moveX", moveX).comma().kv("moveY", moveY).comma().kv("moveJump", moveJump).comma().kv("gravity",
 				gravity);
 		return builder.toString();

@@ -379,7 +379,7 @@ public abstract class ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("loaded", isInit).comma().kv("bind", original).comma().kv("offset", (offsetX + " x " + offsetY))
 				.comma().kv("tag", tag);
 		return builder.toString();

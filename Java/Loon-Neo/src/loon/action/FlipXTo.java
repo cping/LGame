@@ -74,7 +74,7 @@ public class FlipXTo extends FlipEffectTo {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("flipType", _flipType).comma().kv("flipX", _flipAllow).comma().kv("effectRunning", _effectRunning);
 		return builder.toString();
 	}

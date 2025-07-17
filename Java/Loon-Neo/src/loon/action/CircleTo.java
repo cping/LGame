@@ -142,7 +142,7 @@ public class CircleTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startX", startX).comma().kv("startY", startY).comma().kv("radius", radius).comma()
 				.kv("speed", speed).comma().kv("velocity", velocity).comma().kv("delta", delta);
 		return builder.toString();

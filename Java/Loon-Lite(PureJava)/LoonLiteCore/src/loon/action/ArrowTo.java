@@ -200,7 +200,7 @@ public class ArrowTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("gravity", gravity).comma().kv("startX", startX).comma().kv("startY", startY).comma()
 				.kv("currentX", currentX).comma().kv("currentY", currentY).comma().kv("direction", dir).comma()
 				.kv("EaseTimer", _easeTimer);

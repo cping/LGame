@@ -256,7 +256,7 @@ public class ColorTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startColor", start).comma().kv("endColor", end).comma().kv("EaseTimer", easeTimer);
 		return builder.toString();
 	}

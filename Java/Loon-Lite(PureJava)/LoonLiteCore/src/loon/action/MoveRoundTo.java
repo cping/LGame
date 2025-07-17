@@ -146,7 +146,7 @@ public class MoveRoundTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("startRadius", startRadius).comma()
 				.kv("radius", radius).comma().kv("startPoint", startPoint).comma().kv("centerPoint", centerPoint)
 				.comma().kv("EaseTimer", _easeTimer);

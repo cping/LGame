@@ -404,7 +404,7 @@ public class PathMove extends RealtimeProcess implements LRelease {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue("PathMove");
+		final StringKeyValue builder = new StringKeyValue("PathMove");
 		builder.kv("origin", origin).comma().kv("target", target).comma().kv("speed", speed).comma()
 				.kv("horizontal", horizontal).comma().kv("running", running).comma().kv("closed", closed);
 		return builder.toString();

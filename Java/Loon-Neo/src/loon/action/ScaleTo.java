@@ -164,7 +164,7 @@ public class ScaleTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startX", _startX).comma().kv("startY", _startY).comma().kv("deltaX", _deltaX).comma()
 				.kv("deltaY", _deltaY).comma().kv("endX", _endX).comma().kv("endY", _endY).comma().kv("speed", _speed)
 				.comma().kv("delta", _delta);

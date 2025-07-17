@@ -137,7 +137,7 @@ public class TaskState {
 
 	@Override
 	public String toString() {
-		StringKeyValue kv = new StringKeyValue(_name);
+		final StringKeyValue kv = new StringKeyValue(_name);
 		kv.addValue(_name).comma().addValue(_taskType.toString()).comma().addValue(_completed);
 		return kv.toString();
 	}

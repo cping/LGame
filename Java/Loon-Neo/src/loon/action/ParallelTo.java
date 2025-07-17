@@ -206,7 +206,7 @@ public class ParallelTo extends ActionEvent {
 		if (events == null) {
 			return getName();
 		}
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		int size = events.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {

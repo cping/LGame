@@ -580,7 +580,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		String find = StringUtils.unificationStrings(mes);
 		for (int i = 0; i < find.length(); i++) {
 			char ch = find.charAt(i);
-			if (!StringUtils.isSpace(ch) && text.indexOf(ch) == -1) {
+			if (!StringUtils.isWhitespace(ch) && text.indexOf(ch) == -1) {
 				boolean child = false;
 				if (_childFont != null) {
 					child = _childFont.containsTexture(mes);
@@ -595,7 +595,7 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(text)) {
 			return false;
 		}
-		if (StringUtils.isSpace(ch)) {
+		if (StringUtils.isWhitespace(ch)) {
 			return true;
 		}
 		boolean child = false;

@@ -649,7 +649,7 @@ public class CustomPath implements LRelease {
 	@Override
 	public String toString() {
 		updateSteps();
-		StringKeyValue builder = new StringKeyValue("CustomPath");
+		final StringKeyValue builder = new StringKeyValue("CustomPath");
 		builder.kv("name", _name).comma().kv("positionX", _positionX).comma().kv("positionY", _positionY).comma()
 				.kv("scaleX", _scaleX).comma().kv("scaleY", _scaleY).comma().kv("steps", _steps.toString());
 		return builder.toString();

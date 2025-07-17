@@ -139,7 +139,7 @@ public class RotateTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("speed", speed).comma().kv("diffAngle", diffAngle).comma().kv("startRotation", startRotation).comma()
 				.kv("dstAngle", dstAngle).comma().kv("currentRotation", currentRotation).comma()
 				.kv("EaseTimer", _easeTimer);

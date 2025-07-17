@@ -221,7 +221,7 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("speed", _speed).comma().kv("startX", _startX).comma().kv("startY", _startY).comma()
 				.kv("endX", _endX).comma().kv("endY", _endY).comma().kv("EaseTimer", _easeTimer);
 		return builder.toString();

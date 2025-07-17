@@ -86,7 +86,7 @@ public class EventTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("frameLoopEvent", _event);
 		return builder.toString();
 	}

@@ -131,7 +131,7 @@ public class FadeTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		if (original != null) {
 			builder.kv("alpha", original.getAlpha()).comma();
 		}

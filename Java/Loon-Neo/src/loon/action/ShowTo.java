@@ -68,7 +68,7 @@ public class ShowTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("visible", visible);
 		return builder.toString();
 	}

@@ -721,7 +721,7 @@ public class DefineMoveTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("layerMap", layerMap).comma().kv("layerPath", layerPath).comma().kv("direction", direction).comma()
 				.kv("speed", speed);
 		return builder.toString();

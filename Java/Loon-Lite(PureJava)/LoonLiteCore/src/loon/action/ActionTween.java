@@ -1726,7 +1726,7 @@ public class ActionTween extends ActionTweenBase<ActionTween> {
 		if (_actionEvents == null) {
 			return "ActionTween []";
 		}
-		StringKeyValue builder = new StringKeyValue("ActionTween");
+		final StringKeyValue builder = new StringKeyValue("ActionTween");
 		for (; _actionEvents.hashNext();) {
 			ActionEvent eve = _actionEvents.next();
 			if (eve != null) {

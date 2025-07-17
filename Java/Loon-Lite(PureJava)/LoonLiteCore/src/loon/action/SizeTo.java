@@ -128,7 +128,7 @@ public class SizeTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startWidth", _startWidth).comma().kv("startHeight", _startHeight).comma().kv("endWidth", _endWidth)
 				.comma().kv("endHeight", _endHeight);
 		return builder.toString();

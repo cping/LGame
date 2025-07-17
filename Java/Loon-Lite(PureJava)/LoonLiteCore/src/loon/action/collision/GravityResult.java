@@ -133,7 +133,7 @@ public class GravityResult implements Poolable {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue("GravityResult").kv("normal", normal).comma()
+		final StringKeyValue builder = new StringKeyValue("GravityResult").kv("normal", normal).comma()
 				.kv("position", position).comma().kv("collided", collided);
 		return builder.toString();
 	}

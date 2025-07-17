@@ -133,6 +133,9 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar set(int v, int min, int max) {
+		if (this.initValue == v && this.minValue == min && this.maxValue == max) {
+			return this;
+		}
 		this.initValue = v;
 		this.minValue = min;
 		this.maxValue = max;
@@ -202,9 +205,11 @@ public class StatusBar extends Entity {
 	 * @return
 	 */
 	public StatusBar setUpdate(int v) {
-		this.minValue = MathUtils.mid(v, 0, maxValue);
-		this.updated = true;
-		this.matchProgressToWidth();
+		if (v != this.minValue) {
+			this.minValue = MathUtils.mid(v, 0, maxValue);
+			this.updated = true;
+			this.matchProgressToWidth();
+		}
 		return this;
 	}
 
@@ -329,10 +334,12 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar setMaxValue(int m) {
-		this.maxValue = MathUtils.max(m, this.minValue);
-		this.updated = true;
-		this.matchProgressToWidthMax(m);
-		this.state();
+		if (m != this.maxValue) {
+			this.maxValue = MathUtils.max(m, this.minValue);
+			this.updated = true;
+			this.matchProgressToWidthMax(m);
+			this.state();
+		}
 		return this;
 	}
 
@@ -341,10 +348,12 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar setMinValue(int m) {
-		this.minValue = MathUtils.min(m, this.maxValue);
-		this.updated = true;
-		this.matchProgressToWidthMin(m);
-		this.state();
+		if (m != this.minValue) {
+			this.minValue = MathUtils.min(m, this.maxValue);
+			this.updated = true;
+			this.matchProgressToWidthMin(m);
+			this.state();
+		}
 		return this;
 	}
 
@@ -353,8 +362,10 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar setValue(int v) {
-		this.initValue = v;
-		this.updated = true;
+		if (initValue != v) {
+			this.initValue = v;
+			this.updated = true;
+		}
 		return this;
 	}
 

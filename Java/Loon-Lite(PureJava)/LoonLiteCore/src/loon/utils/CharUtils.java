@@ -432,7 +432,7 @@ public class CharUtils {
 	}
 
 	public static boolean isWhitespace(int c) {
-		return c == ' ' || c == '\n' || c == '\r' || c == '\t';
+		return c == LSystem.SPACE || c == LSystem.LF || c == LSystem.CR || c == LSystem.TF || c == LSystem.PB;
 	}
 
 	public static boolean isEol(char c) {

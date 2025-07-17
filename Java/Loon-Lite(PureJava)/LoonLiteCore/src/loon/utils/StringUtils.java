@@ -707,7 +707,7 @@ final public class StringUtils extends CharUtils {
 		final int size = s.length();
 		for (int i = 0; i < size; i++) {
 			char c = s.charAt(i);
-			if (!isSpace(c)) {
+			if (!isWhitespace(c)) {
 				sbr.append(c);
 			}
 		}
@@ -2023,7 +2023,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	private static boolean unificationAllow(char ch) {
-		return !isSpace(ch);
+		return !isWhitespace(ch);
 	}
 
 	public static String merge(String[] messages) {
@@ -2132,8 +2132,9 @@ final public class StringUtils extends CharUtils {
 			return LSystem.EMPTY;
 		}
 		tempChars.clear();
-		boolean mode = (limit == null || limit.length() == 0);
-		for (CharSequence mes : messages) {
+		final boolean mode = (limit == null || limit.length() == 0);
+		for (int idx = 0; idx < messages.length; idx++) {
+			final CharSequence mes = messages[idx];
 			if (mes == null) {
 				continue;
 			}
@@ -2186,7 +2187,8 @@ final public class StringUtils extends CharUtils {
 		}
 		tempChars.clear();
 		boolean mode = (limit == null || limit.length() == 0);
-		for (String mes : messages) {
+		for (int idx = 0; idx < messages.length; idx++) {
+			final CharSequence mes = messages[idx];
 			if (mes == null) {
 				continue;
 			}
@@ -2639,29 +2641,6 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 判定指定字符串是否仅占位而不显示
-	 * 
-	 * @param c
-	 * @return
-	 */
-	public static boolean isSpace(char c) {
-		switch (c) {
-		case ' ':
-			return true;
-		case LSystem.LF:
-			return true;
-		case '\t':
-			return true;
-		case '\f':
-			return true;
-		case '\r':
-			return true;
-		default:
-			return false;
-		}
-	}
-
-	/**
 	 * 判定是否全角
 	 * 
 	 * @param ch
@@ -2714,7 +2693,7 @@ final public class StringUtils extends CharUtils {
 				final CharSequence text = chars.get(i);
 				for (int j = text.length() - 1; j >= 0; j--) {
 					final char character = text.charAt(j);
-					if (!isSpace(character)) {
+					if (!isWhitespace(character)) {
 						characters++;
 					}
 				}

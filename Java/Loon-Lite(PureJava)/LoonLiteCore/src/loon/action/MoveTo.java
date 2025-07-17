@@ -898,7 +898,7 @@ public class MoveTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startLocation", startLocation).comma().kv("endLocation", endLocation).comma()
 				.kv("layerMap", layerMap).comma().kv("direction", direction).comma().kv("speed", speed).comma()
 				.kv("heuristic", heuristic);

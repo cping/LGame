@@ -409,7 +409,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
+		final StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
 		builder.kv("startingCharacter", startingCharacter).comma().kv("horizontalCount", horizontalCount).comma()
 				.kv("verticalCount", verticalCount).comma().kv("charWidth", charWidth).comma()
 				.kv("charHeight", charHeight).comma().kv("numChars", numChars);

@@ -123,14 +123,14 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				strfont._outBounds = true;
 			}
 
-			Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
+			final Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setFillColor(strfont.pixelColor);
 			canvas.clearRect(0f, 0f, strfont.textureWidth, strfont.textureHeight);
 			canvas.setFont(strfont.font);
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
-			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
+			final int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 
 			final StrBuilder contextbuilder = strfont._contextbuilder;
 			final OrderedSet<Character> outchached = strfont._outchached;
@@ -142,10 +142,13 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = customCharsLength; i < size; i++) {
 
+				final char ch = strfont.additionalChars[i];
+
+				if (StringUtils.isWhitespace(ch)) {
+					continue;
+				}
+
 				boolean outchar = false;
-
-				char ch = strfont.additionalChars[i];
-
 				TextLayout layout = strfont.font.getLayoutText(String.valueOf(ch), false);
 
 				int charwidth = layout.charWidth(ch);
@@ -160,13 +163,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 				final boolean alphabet = StringUtils.isAlphaOrDigit(ch);
 
-				IntObject newIntObject = new IntObject(clipFont ? (alphabet ? 0 : 1) : 0);
-
-				if (!clipFont) {
-					if (ch == 'i' && charheight > 24) {
-						charheight -= 4;
-					}
-				}
+				final IntObject newIntObject = new IntObject(clipFont ? (alphabet ? 0 : 1) : 0);
 
 				if (clipFont) {
 					newIntObject.width = charwidth + newIntObject.offsetX;
@@ -193,8 +190,8 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 						rowHeight = 0;
 					}
 				} else {
-					boolean checkplusA = positionY + newIntObject.height <= strfont.textureHeight;
-					boolean checkplusB = positionX + newIntObject.width <= strfont.textureWidth;
+					final boolean checkplusA = positionY + newIntObject.height <= strfont.textureHeight;
+					final boolean checkplusB = positionX + newIntObject.width <= strfont.textureWidth;
 
 					// 一次渲染一整行本地字体到纹理，这样对系统开销最小，不过某些平台切的不整齐(实际上就是间距和从系统获取的不符合)
 					// 若显示有问题，请设定clipFont = true
@@ -248,7 +245,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 			if (contextbuilder.length() > 0) {
-				TextLayout layout = strfont.font.getLayoutText(contextbuilder.toString(), false);
+				final TextLayout layout = strfont.font.getLayoutText(contextbuilder.toString(), false);
 				if (positionY <= strfont.textureHeight - strfont.pixelFontSize) {
 					canvas.fillText(layout, 0, positionY);
 				} else {
@@ -258,7 +255,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					strfont._outBounds = true;
 				}
 			}
-			LTextureBatch tmpbatch = strfont.fontBatch;
+			final LTextureBatch tmpbatch = strfont.fontBatch;
 			strfont.fontBatch = new LTextureBatch(strfont.displayList = canvas.toTexture());
 			strfont.fontBatch.setBlendState(BlendState.AlphaBlend);
 			if (tmpbatch != null) {
@@ -468,7 +465,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		String find = StringUtils.unificationStrings(mes);
 		for (int i = 0; i < find.length(); i++) {
 			char ch = find.charAt(i);
-			if (!StringUtils.isSpace(ch) && text.indexOf(ch) == -1) {
+			if (!StringUtils.isWhitespace(ch) && text.indexOf(ch) == -1) {
 				boolean child = false;
 				if (_childFont != null) {
 					child = _childFont.containsTexture(mes);
@@ -483,7 +480,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(text)) {
 			return false;
 		}
-		if (StringUtils.isSpace(ch)) {
+		if (StringUtils.isWhitespace(ch)) {
 			return true;
 		}
 		boolean child = false;

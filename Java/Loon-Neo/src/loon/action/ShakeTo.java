@@ -128,7 +128,7 @@ public class ShakeTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("shakeTimer", shakeTimer).comma().kv("shakeX", shakeX).comma().kv("shakeY", shakeY).comma()
 				.kv("startOffsetX", startOffsetX).comma().kv("startOffsetY", startOffsetY).comma()
 				.kv("EaseTimer", _easeTimer);

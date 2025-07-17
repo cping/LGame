@@ -88,7 +88,7 @@ public class WaitTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		if (actionUpdate != null) {
 			builder.kv("ActionUpdate", actionUpdate.completed());
 		}

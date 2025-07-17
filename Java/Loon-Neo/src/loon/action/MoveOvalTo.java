@@ -231,7 +231,7 @@ public class MoveOvalTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		StringKeyValue builder = new StringKeyValue(getName());
+		final StringKeyValue builder = new StringKeyValue(getName());
 		builder.kv("startAngle", startAngle).comma().kv("angle", angle).comma().kv("rotateScale", rotateScale).comma()
 				.kv("size", (width + " x " + height)).comma().kv("per", per).comma().kv("startPoint", startPoint)
 				.comma().kv("currentPosX", currentPosX).comma().kv("directionX", directionX).comma()
