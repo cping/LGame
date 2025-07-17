@@ -87,6 +87,8 @@ public class GLEx implements LRelease {
 		TRANS_NONE, TRANS_MIRROR, TRANS_FLIP, TRANS_MF;
 	}
 
+	private final LColor emptyColor = LColor.white;
+
 	private final Affine2f tempAffine = new Affine2f();
 
 	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
@@ -1408,7 +1410,7 @@ public class GLEx implements LRelease {
 		if (isClosed || (texture == null)) {
 			return this;
 		}
-		if (LColor.white.equals(color)) {
+		if (emptyColor.equals(color)) {
 			texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 			return this;
 		}

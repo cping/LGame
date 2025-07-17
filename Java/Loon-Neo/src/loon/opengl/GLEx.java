@@ -96,6 +96,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	// 以此完整保存全局FrameBuffer内容(否则GLEx中每次begin时FrameBuffer绑定都会刷新，如果多次begin和end，将无法保存全部内容)
 	private boolean saveToFrameBufferTexture;
 
+	private final LColor emptyColor = LColor.white;
+
 	private final Affine2f tempAffine = new Affine2f();
 
 	private final IntMap<PointF> rhombusArray = new IntMap<PointF>();
@@ -1753,7 +1755,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		if (LColor.white.equals(color)) {
+		if (emptyColor.equals(color)) {
 			texture.addToBatch(batch, this.lastBrush.baseColor, tx(), dx, dy, dw, dh, sx, sy, sw, sh);
 			return this;
 		}
@@ -1798,7 +1800,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		return drawFlip(texture, x, y, LColor.white);
+		return drawFlip(texture, x, y, emptyColor);
 	}
 
 	public GLEx drawFlip(Painter texture, float x, float y, LColor color) {
@@ -1819,7 +1821,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (texture == null) {
 			return this;
 		}
-		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), LColor.white, 0f, null,
+		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), emptyColor, 0f, null,
 				Direction.TRANS_FLIP);
 	}
 

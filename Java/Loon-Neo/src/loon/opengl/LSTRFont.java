@@ -282,6 +282,8 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private Updateable _submitUpdate;
 
+	private final int _fontMaxCache = LSystem.DEFAULT_MAX_CACHE_SIZE;
+
 	private final OrderedSet<Character> _outchached = new OrderedSet<Character>();
 
 	private final StrBuilder _contextbuilder = new StrBuilder();
@@ -662,7 +664,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (!cehckRunning(newMessage)) {
 			return;
 		}
-		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+		if (displays.size > _fontMaxCache) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
 					if (cache != null) {
@@ -695,7 +697,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				float old = fontBatch.getFloatColor();
 				fontBatch.setColor(c);
 				for (int i = startIndex; i < endIndex; i++) {
-					char ch = newMessage.charAt(i);
+					final char ch = newMessage.charAt(i);
 					charCurrent = ch;
 					if (charCurrent == newRFlag) {
 						continue;
@@ -711,6 +713,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					}
 					if (charCurrent == newTabSpaceFlag) {
 						totalWidth += (advanceSpace * 3);
+						continue;
+					}
+					if (StringUtils.isWhitespace(ch)) {
 						continue;
 					}
 
@@ -745,7 +750,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			fontBatch.setColor(c);
 
 			for (int i = startIndex; i < endIndex; i++) {
-				char ch = newMessage.charAt(i);
+				final char ch = newMessage.charAt(i);
 				charCurrent = ch;
 				if (charCurrent == newRFlag) {
 					continue;
@@ -761,6 +766,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 				if (charCurrent == newTabSpaceFlag) {
 					totalWidth += (advanceSpace * 3);
+					continue;
+				}
+				if (StringUtils.isWhitespace(ch)) {
 					continue;
 				}
 
@@ -797,7 +805,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (!cehckRunning(chars)) {
 			return;
 		}
-		if (displays.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+		if (displays.size > _fontMaxCache) {
 			synchronized (displays) {
 				for (Cache cache : displays.values()) {
 					if (cache != null) {
@@ -919,7 +927,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
 			endIndex = newMessage.length();
 		}
@@ -958,7 +966,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 			for (int i = startIndex; i < endIndex; i++) {
-				char ch = newMessage.charAt(i);
+				final char ch = newMessage.charAt(i);
 
 				charCurrent = ch;
 
@@ -980,6 +988,10 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 					totalWidth += (advanceSpace * 3);
 					continue;
 				}
+				if (StringUtils.isWhitespace(ch)) {
+					continue;
+				}
+
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
 						gl.draw(displayList, x + (totalWidth * nsx), y + (totalHeight * nsy),
@@ -1275,11 +1287,11 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return _chars.contains(c);
 	}
 
-	public boolean containsChars(String msg) {
+	public boolean containsChars(final String msg) {
 		return containsChars(msg, true);
 	}
 
-	public boolean containsChars(String msg, boolean filter) {
+	public boolean containsChars(final String msg, boolean filter) {
 		if (StringUtils.isEmpty(msg)) {
 			return true;
 		}
@@ -1343,10 +1355,9 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		int totalWidth = 0;
 		IntObject intObject = null;
 		int currentChar = 0;
-		char[] charList = newMessage.toCharArray();
 		int maxWidth = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (int i = 0; i < newMessage.length(); i++) {
+			currentChar = newMessage.charAt(i);
 			intObject = customChars.get(currentChar);
 			if (intObject != null) {
 				if (currentChar == newLineFlag) {
@@ -1379,12 +1390,12 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			return 0;
 		}
 		int currentChar = 0;
-		char[] charList = newMessage.toCharArray();
+
 		int lines = 0;
 		int height = 0;
 		int maxHeight = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (int i = 0; i < newMessage.length(); i++) {
+			currentChar = newMessage.charAt(i);
 			intObject = customChars.get(currentChar);
 			if (intObject != null) {
 				maxHeight = MathUtils.max(maxHeight, intObject.getDrawHeight());

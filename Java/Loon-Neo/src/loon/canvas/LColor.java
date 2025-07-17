@@ -2973,7 +2973,7 @@ public class LColor implements Serializable {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		LColor color = (LColor) o;
+		final LColor color = (LColor) o;
 		if (NumberUtils.compare(color.a, a) != 0) {
 			return false;
 		}

@@ -1367,13 +1367,13 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 判断是否为null
+	 * 判断是否为null或者不显示的占位符
 	 * 
 	 * @param param
 	 * @return
 	 */
 	public static boolean isEmpty(CharSequence v) {
-		return v == null || v.length() == 0 || LSystem.EMPTY.equals(v.toString().trim());
+		return isNullOrWhitespace(v);
 	}
 
 	/**
@@ -1386,7 +1386,7 @@ final public class StringUtils extends CharUtils {
 		return v == null || v.length() == 0;
 	}
 
-	public static boolean IsNullOrWhitespace(CharSequence v) {
+	public static boolean isNullOrWhitespace(CharSequence v) {
 		if (v == null) {
 			return true;
 		}
@@ -2939,7 +2939,7 @@ final public class StringUtils extends CharUtils {
 				sbr.append(LSystem.LS + indent);
 			}
 			return sbr.toString();
-		} else if (LSystem.EMPTY.equals(text)) {
+		} else if (isNullOrWhitespace(text)) {
 			return quote(text);
 		} else {
 			final String indicators = ":[]{},\"'|*&";
