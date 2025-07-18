@@ -1072,15 +1072,13 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 
 	@Override
 	protected void _onDestroy() {
+		closeBase();
 		if (_image != null) {
 			_image.close();
 		}
 		if (_animation != null) {
 			_animation.close();
 		}
-		closeBase();
-		removeChilds();
-		removeActionEvents(this);
 	}
 
 }

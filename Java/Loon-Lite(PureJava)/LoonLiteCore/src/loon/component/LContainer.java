@@ -271,6 +271,44 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	public void closeChilds() {
+		removeChilds(true);
+	}
+
+	public void removeChilds() {
+		removeChilds(false);
+	}
+
+	public void removeChilds(boolean closed) {
+		if (_destroyed) {
+			return;
+		}
+		if (this._childs == null) {
+			return;
+		}
+		this._desktop.clearComponentsStat(this._childs);
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = 0; i < size; i++) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				this._desktop.setComponentStat(comp, false);
+				comp.setContainer(null);
+				comp.setState(State.REMOVED);
+				comp.onDetached();
+				if (comp instanceof ActionBind) {
+					removeActionEvents((ActionBind) comp);
+				}
+				if (closed && !comp.isDestroyed()) {
+					comp.close();
+				}
+			}
+		}
+		this._childs = null;
+		this._childs = new LComponent[0];
+		this._childCount = 0;
+	}
+
 	/**
 	 * 返回一组拥有指定标签的组件
 	 * 
@@ -465,6 +503,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	 * @param comp
 	 * @return
 	 */
+	@Override
 	public boolean contains(LComponent comp) {
 		if (_destroyed) {
 			return false;
@@ -864,27 +903,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public void clear() {
-		if (_destroyed) {
-			return;
-		}
-		this._desktop.clearComponentsStat(this._childs);
-		final int size = this._childCount;
-		final LComponent[] childs = this._childs;
-		for (int i = 0; i < size; i++) {
-			LComponent comp = childs[i];
-			if (comp != null) {
-				comp.setContainer(null);
-				comp.setState(State.REMOVED);
-				comp.onDetached();
-				if (comp instanceof ActionBind) {
-					removeActionEvents((ActionBind) comp);
-				}
-				// comp.close();
-			}
-		}
-		this._childs = null;
-		this._childs = new LComponent[0];
-		this._childCount = 0;
+		removeChilds();
 	}
 
 	/**
@@ -1999,7 +2018,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	@Override
 	public String toString() {
-		StrBuilder buffer = new StrBuilder(128);
+		final StrBuilder buffer = new StrBuilder(128);
 		toString(buffer, 1);
 		buffer.setLength(buffer.length() - 1);
 		return buffer.toString();
@@ -2008,21 +2027,11 @@ public abstract class LContainer extends LComponent implements IArray {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		this._newLineHeight = 0;
 		if (_component_autoDestroy) {
-			if (_childs != null) {
-				final int size = this._childCount;
-				final LComponent[] comps = this._childs;
-				for (int i = size - 1; i > -1; i--) {
-					LComponent child = comps[i];
-					if (child != null && !child.isDestroyed()) {
-						child.close();
-						child = null;
-					}
-				}
-			}
-			_childs = null;
+			closeChilds();
 		}
+		this._newLineHeight = 0;
+		this._destroyed = true;
 	}
 
 }

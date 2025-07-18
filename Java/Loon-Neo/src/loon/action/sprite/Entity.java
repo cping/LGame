@@ -1724,15 +1724,12 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 
 	@Override
 	protected void _onDestroy() {
+		closeBase();
 		if (_image != null) {
 			_image.close();
 			_image = null;
 		}
 		_drawListener = null;
-		closeBase();
-		removeComponents();
-		removeChildren();
-		removeActionEvents(this);
 	}
 
 }

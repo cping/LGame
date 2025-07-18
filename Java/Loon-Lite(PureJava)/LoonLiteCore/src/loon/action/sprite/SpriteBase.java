@@ -410,7 +410,15 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return result;
 	}
 
+	public void closeChilds() {
+		removeChilds(true);
+	}
+
 	public void removeChilds() {
+		removeChilds(false);
+	}
+
+	public void removeChilds(boolean closed) {
 		if (this._childrens == null) {
 			return;
 		}
@@ -423,6 +431,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 				removed.setState(State.REMOVED);
 				if (removed instanceof IEntity) {
 					((IEntity) removed).onDetached();
+
+				}
+				if (closed && (removed instanceof LRelease)) {
+					((LRelease) removed).close();
 				}
 			}
 			// 删除精灵同时，删除缓动动画
@@ -1542,7 +1554,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 	}
 
 	protected void closeBase() {
-		if (_disposed != null) {
+		clearComponentAll();
+		closeChilds();
+		removeActionEvents(this);
+		if (_disposed != null && _disposed != this) {
 			_disposed.close();
 		}
 		this._loopAction = null;

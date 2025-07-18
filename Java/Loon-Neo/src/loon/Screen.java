@@ -1423,8 +1423,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	private boolean checkRelease(LRelease r) {
+		if (r == null) {
+			return false;
+		}
+		if (r == this) {
+			throw new LSysException("Cannot set " + r.getClass() + " as the target of resource release !");
+		}
+		return true;
+	}
+
 	public Screen putRelease(LRelease r) {
-		_disposes.put(r);
+		if (checkRelease(r)) {
+			_disposes.put(r);
+		}
 		return this;
 	}
 
@@ -1438,6 +1450,12 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen putReleases(LRelease... rs) {
+		if (rs == null) {
+			return this;
+		}
+		for (int i = 0; i < rs.length; i++) {
+			checkRelease(rs[i]);
+		}
 		_disposes.put(rs);
 		return this;
 	}

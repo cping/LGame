@@ -2667,7 +2667,7 @@ public abstract class LComponent extends LObject<LContainer>
 		if (!_component_autoDestroy) {
 			return;
 		}
-		if (_disposed != null) {
+		if (_disposed != null && _disposed != this) {
 			_disposed.close();
 		}
 		this._component_visible = false;
