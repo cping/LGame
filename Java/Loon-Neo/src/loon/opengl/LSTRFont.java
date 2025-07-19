@@ -280,6 +280,8 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	}
 
+	private final static CharArray _globalChars = new CharArray();
+
 	private Updateable _submitUpdate;
 
 	private final int _fontMaxCache = LSystem.DEFAULT_MAX_CACHE_SIZE;
@@ -419,7 +421,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
-		CharSequence chs = StringUtils.unificationChars(charMessage);
+		CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
 		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
@@ -448,7 +450,11 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	private void expandTexture() {
 		this.additionalChars = text == null ? null : text.toCharArray();
 		if (additionalChars != null) {
-			additionalChars = new CharArray(additionalChars).newSortAscii().toArray();
+			if (!_globalChars.equals(additionalChars)) {
+				_globalChars.clear();
+				_globalChars.addAll(additionalChars);
+			}
+			additionalChars = _globalChars.getSortAscii().getThisArray();
 		}
 		totalCharSet = getMaxTextCount();
 		if (additionalChars != null && additionalChars.length > totalCharSet) {

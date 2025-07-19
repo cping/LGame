@@ -97,6 +97,11 @@ public class StrBuilder implements CharSequence, Appendable {
 		this(CollectionUtils.INITIAL_CAPACITY);
 	}
 
+	public StrBuilder(char[] chars) {
+		this(chars != null ? chars.length : CollectionUtils.INITIAL_CAPACITY);
+		append(chars);
+	}
+
 	public StrBuilder(int cap) {
 		this.reset(cap);
 	}
@@ -874,10 +879,33 @@ public class StrBuilder implements CharSequence, Appendable {
 		final CharSequence another = cs;
 		int len = _currentIndex;
 		if (len == another.length()) {
-			char[] selfChars = _values;
+			final char[] selfChars = _values;
 			int i = 0;
 			while (len-- != 0) {
 				if (selfChars[i] != another.charAt(i)) {
+					return false;
+				}
+				i++;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	public boolean equals(final char[] cs) {
+		if (cs == null) {
+			return false;
+		}
+		if (cs.length == 0 && this._currentIndex == 0) {
+			return true;
+		}
+		final char[] dstChars = cs;
+		int len = _currentIndex;
+		if (len == dstChars.length) {
+			final char[] selfChars = _values;
+			int i = 0;
+			while (len-- != 0) {
+				if (selfChars[i] != dstChars[i]) {
 					return false;
 				}
 				i++;

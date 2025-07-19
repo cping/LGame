@@ -66,9 +66,33 @@ public class CharArray implements IArray, LRelease {
 		return new CharArray(charArrays);
 	}
 
+	private StrBuilder _tempStrings;
+
+	private StrBuilder _sortAsciiBuilder;
+
+	private CharArray _sortAsciiArrays;
+
+	private CharArray _sorteal;
+
+	private CharArray _sorteau;
+
+	private CharArray _sortnum;
+
+	private CharArray _sortcjk;
+
+	private CharArray _sortpun;
+
+	private CharArray _sortother;
+
 	public char[] items;
+
 	public int length;
+
 	public boolean ordered;
+
+	private boolean _sortAsciiDirty;
+
+	private boolean _charDirty;
 
 	public CharArray() {
 		this(true, CollectionUtils.INITIAL_CAPACITY);
@@ -81,13 +105,19 @@ public class CharArray implements IArray, LRelease {
 	public CharArray(boolean ordered, int capacity) {
 		this.ordered = ordered;
 		this.items = new char[capacity];
+		this.onCharDirty();
 	}
 
 	public CharArray(CharArray array) {
-		this.ordered = array.ordered;
-		length = array.length;
-		items = new char[length];
-		System.arraycopy(array.items, 0, items, 0, length);
+		if (array != null) {
+			this.ordered = array.ordered;
+			length = array.length;
+			items = new char[length];
+			System.arraycopy(array.items, 0, items, 0, length);
+		} else {
+			items = new char[0];
+		}
+		this.onCharDirty();
 	}
 
 	public CharArray(char[] array) {
@@ -100,8 +130,18 @@ public class CharArray implements IArray, LRelease {
 
 	public CharArray(boolean ordered, char[] array, int startIndex, int count) {
 		this(ordered, count);
-		length = count;
+		this.length = count;
 		System.arraycopy(array, startIndex, items, 0, count);
+		this.onCharDirty();
+	}
+
+	protected void onCharDirty() {
+		onCharDirty(true);
+	}
+
+	protected void onCharDirty(boolean d) {
+		_sortAsciiDirty = d;
+		_charDirty = d;
 	}
 
 	public void unshift(char value) {
@@ -112,6 +152,7 @@ public class CharArray implements IArray, LRelease {
 			System.arraycopy(items, 0, newItems, 1, length);
 			this.length = newItems.length;
 			this.items = newItems;
+			this.onCharDirty();
 		} else {
 			add(value);
 		}
@@ -127,6 +168,7 @@ public class CharArray implements IArray, LRelease {
 			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
 		}
 		items[length++] = (char) value;
+		this.onCharDirty();
 	}
 
 	public void add(char value) {
@@ -135,6 +177,7 @@ public class CharArray implements IArray, LRelease {
 			items = relength(MathUtils.max(8, (int) (length * 1.75f)));
 		}
 		items[length++] = value;
+		this.onCharDirty();
 	}
 
 	public void addAll(CharArray array) {
@@ -160,6 +203,7 @@ public class CharArray implements IArray, LRelease {
 		}
 		System.arraycopy(array, offset, items, this.length, len);
 		this.length += len;
+		this.onCharDirty();
 	}
 
 	public char get(int index) {
@@ -179,18 +223,21 @@ public class CharArray implements IArray, LRelease {
 			return;
 		}
 		items[index] = value;
+		this.onCharDirty();
 	}
 
 	public void incr(int index, char value) {
 		if (index >= length)
 			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] += value;
+		this.onCharDirty();
 	}
 
 	public void mul(int index, char value) {
 		if (index >= length)
 			throw new LSysException("index can't be >= length: " + index + " >= " + length);
 		items[index] *= value;
+		this.onCharDirty();
 	}
 
 	public void insert(int index, char value) {
@@ -206,6 +253,7 @@ public class CharArray implements IArray, LRelease {
 			items[length] = items[index];
 		length++;
 		items[index] = value;
+		this.onCharDirty();
 	}
 
 	public void swap(int first, int second) {
@@ -217,6 +265,7 @@ public class CharArray implements IArray, LRelease {
 		char firstValue = items[first];
 		items[first] = items[second];
 		items[second] = firstValue;
+		this.onCharDirty();
 	}
 
 	public boolean contains(char value) {
@@ -267,6 +316,7 @@ public class CharArray implements IArray, LRelease {
 		} else {
 			items[index] = items[length];
 		}
+		this.onCharDirty();
 		return value;
 	}
 
@@ -287,6 +337,7 @@ public class CharArray implements IArray, LRelease {
 				items[start + i] = items[lastIndex - i];
 		}
 		length -= count;
+		this.onCharDirty();
 	}
 
 	public boolean removeAll(CharArray array) {
@@ -311,6 +362,7 @@ public class CharArray implements IArray, LRelease {
 		int index2 = indexOf(dst);
 		if (index1 != -1 && index2 == -1) {
 			items[index1] = dst;
+			this.onCharDirty();
 			return true;
 		}
 		return false;
@@ -320,6 +372,7 @@ public class CharArray implements IArray, LRelease {
 		final int idx = indexOf(src);
 		if (idx != -1) {
 			items[idx] = dst;
+			this.onCharDirty();
 			return true;
 		}
 		return false;
@@ -329,6 +382,7 @@ public class CharArray implements IArray, LRelease {
 		final int idx = lastIndexOf(src);
 		if (idx != -1) {
 			items[idx] = dst;
+			this.onCharDirty();
 			return true;
 		}
 		return false;
@@ -342,6 +396,9 @@ public class CharArray implements IArray, LRelease {
 				items[i] = dst;
 				count++;
 			}
+		}
+		if (count != -1) {
+			this.onCharDirty();
 		}
 		return count;
 	}
@@ -367,7 +424,8 @@ public class CharArray implements IArray, LRelease {
 
 	@Override
 	public void clear() {
-		length = 0;
+		this.length = 0;
+		this.onCharDirty();
 	}
 
 	public char[] shrink() {
@@ -388,6 +446,7 @@ public class CharArray implements IArray, LRelease {
 		char[] items = this.items;
 		System.arraycopy(items, 0, newItems, 0, MathUtils.min(length, newItems.length));
 		this.items = newItems;
+		this.onCharDirty();
 		return newItems;
 	}
 
@@ -418,7 +477,6 @@ public class CharArray implements IArray, LRelease {
 				}
 				break;
 			}
-
 		}
 		return result;
 	}
@@ -439,46 +497,70 @@ public class CharArray implements IArray, LRelease {
 		return getFilterAllChar(3);
 	}
 
-	public CharArray newSortAscii() {
-		final int size = length / 4;
-		final CharArray eal = new CharArray(size);
-		final CharArray eau = new CharArray(size);
-		final CharArray num = new CharArray(size);
-		final CharArray cjk = new CharArray(size);
-		final CharArray pun = new CharArray(size);
-		final CharArray other = new CharArray(size);
-		for (int i = 0; i < length; i++) {
-			char ch = this.items[i];
-			if (CharUtils.isAlphabetLower(ch)) {
-				eal.add(ch);
-			} else if (CharUtils.isAlphabetUpper(ch)) {
-				eau.add(ch);
-			} else if (CharUtils.isDigit(ch)) {
-				num.add(ch);
-			} else if (CharUtils.isPunctuation(ch)) {
-				pun.add(ch);
-			} else if (CharUtils.isCJK(ch)) {
-				cjk.add(ch);
-			} else {
-				other.add(ch);
-			}
+	private CharArray clearCharArrayCache(CharArray arrays, int size) {
+		if (arrays == null) {
+			arrays = new CharArray(size);
+		} else {
+			arrays.clear();
 		}
-		StrBuilder sbr = new StrBuilder();
-		sbr.append(pun.toArray());
-		sbr.append(cjk.toArray());
-		sbr.append(eau.toArray());
-		sbr.append(eal.toArray());
-		sbr.append(num.toArray());
-		sbr.append(other.toArray());
-		final String text = sbr.toString();
-		sbr = null;
-		eal.close();
-		eau.close();
-		num.close();
-		cjk.close();
-		pun.close();
-		other.close();
-		return new CharArray(text.toCharArray());
+		return arrays;
+	}
+
+	public CharArray getSortAscii() {
+		return newSortAscii(false);
+	}
+
+	public CharArray newSortAscii() {
+		return newSortAscii(true);
+	}
+
+	public CharArray newSortAscii(boolean cpy) {
+		if (_sortAsciiDirty || _sortAsciiArrays == null) {
+			if (_sortAsciiArrays == null) {
+				_sortAsciiArrays = new CharArray();
+			} else {
+				_sortAsciiArrays.clear();
+			}
+			final int size = length / 4;
+			_sorteal = clearCharArrayCache(_sorteal, size);
+			_sorteau = clearCharArrayCache(_sorteau, size);
+			_sortnum = clearCharArrayCache(_sortnum, size);
+			_sortcjk = clearCharArrayCache(_sortcjk, size);
+			_sortpun = clearCharArrayCache(_sortpun, size);
+			_sortother = clearCharArrayCache(_sortother, size);
+			for (int i = 0; i < length; i++) {
+				char ch = this.items[i];
+				if (CharUtils.isAlphabetLower(ch)) {
+					_sorteal.add(ch);
+				} else if (CharUtils.isAlphabetUpper(ch)) {
+					_sorteau.add(ch);
+				} else if (CharUtils.isDigit(ch)) {
+					_sortnum.add(ch);
+				} else if (CharUtils.isPunctuation(ch)) {
+					_sortpun.add(ch);
+				} else if (CharUtils.isCJK(ch)) {
+					_sortcjk.add(ch);
+				} else {
+					_sortother.add(ch);
+				}
+			}
+			if (_sortAsciiBuilder == null) {
+				_sortAsciiBuilder = new StrBuilder(length);
+			} else {
+				_sortAsciiBuilder.clear();
+			}
+			_sortAsciiBuilder.append(_sortpun.items, 0, length);
+			_sortAsciiBuilder.append(_sortcjk.items, 0, length);
+			_sortAsciiBuilder.append(_sorteau.items, 0, length);
+			_sortAsciiBuilder.append(_sorteal.items, 0, length);
+			_sortAsciiBuilder.append(_sortnum.items, 0, length);
+			_sortAsciiBuilder.append(_sortother.items, 0, length);
+			final String text = _sortAsciiBuilder.toString();
+			_sortAsciiArrays.clear();
+			_sortAsciiArrays.addAll(text.toCharArray());
+			this._sortAsciiDirty = false;
+		}
+		return cpy ? _sortAsciiArrays.cpy() : _sortAsciiArrays;
 	}
 
 	public CharArray sort(Comparator<Character> c) {
@@ -490,11 +572,13 @@ public class CharArray implements IArray, LRelease {
 		for (int i = 0; i < length; i++) {
 			this.items[i] = newItems[i].charValue();
 		}
+		this.onCharDirty();
 		return this;
 	}
 
 	public CharArray sort() {
 		SortUtils.defaultSort(items, 0, length);
+		this.onCharDirty();
 		return this;
 	}
 
@@ -506,6 +590,7 @@ public class CharArray implements IArray, LRelease {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		this.onCharDirty();
 	}
 
 	public void shuffle() {
@@ -516,6 +601,7 @@ public class CharArray implements IArray, LRelease {
 			items[i] = items[ii];
 			items[ii] = temp;
 		}
+		this.onCharDirty();
 	}
 
 	public void truncate(int newlength) {
@@ -560,18 +646,33 @@ public class CharArray implements IArray, LRelease {
 		return array;
 	}
 
+	public char[] getThisArray() {
+		if (items.length == length) {
+			return items;
+		}
+		return toArray();
+	}
+
 	@Override
 	public boolean equals(Object o) {
+		if (o == null)
+			return false;
 		if (o == this)
 			return true;
 		if (!(o instanceof CharArray))
 			return false;
 		CharArray array = (CharArray) o;
-		int n = length;
-		if (n != array.length)
+		return equals(array.items);
+	}
+
+	public boolean equals(char[] cs) {
+		if (cs == null)
+			return true;
+		final int n = length;
+		if (n != cs.length)
 			return false;
 		for (int i = 0; i < n; i++)
-			if (items[i] != array.items[i])
+			if (items[i] != cs[i])
 				return false;
 		return true;
 	}
@@ -585,6 +686,7 @@ public class CharArray implements IArray, LRelease {
 		if (end - begin >= length) {
 			items = new char[0];
 			length = 0;
+			this.onCharDirty();
 			return longs;
 		} else {
 			removeRange(begin, end - 1);
@@ -700,12 +802,21 @@ public class CharArray implements IArray, LRelease {
 		return false;
 	}
 
+	public boolean isDirty() {
+		return this._charDirty;
+	}
+
+	public CharArray setDirty(boolean d) {
+		this._charDirty = d;
+		return this;
+	}
+
 	public String toString(char split) {
 		if (length == 0) {
 			return "[]";
 		}
-		char[] items = this.items;
-		StrBuilder buffer = new StrBuilder(32);
+		final char[] items = this.items;
+		final StrBuilder buffer = new StrBuilder(32);
 		buffer.append('[');
 		buffer.append(items[0]);
 		for (int i = 1; i < length; i++) {
@@ -721,7 +832,16 @@ public class CharArray implements IArray, LRelease {
 	}
 
 	public String getString() {
-		return new String(items);
+		if (_tempStrings == null) {
+			_tempStrings = new StrBuilder(items);
+		} else if (this._charDirty) {
+			if (!_tempStrings.equals(items)) {
+				_tempStrings.delete(0, _tempStrings.length());
+				_tempStrings.append(items);
+			}
+			this._charDirty = false;
+		}
+		return _tempStrings.toString();
 	}
 
 	@Override

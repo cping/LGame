@@ -1938,6 +1938,24 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return addSelf(-x, -y);
 	}
 
+	public Vector2f subSelf(Vector2f v) {
+		return subSelf(v.x, v.y);
+	}
+
+	public Vector2f subSelf(float x, float y) {
+		return addSelf(-x, -y);
+	}
+
+	public Vector2f subSelfX(float x) {
+		this.x = this.x - x;
+		return this;
+	}
+
+	public Vector2f subSelfY(float y) {
+		this.y = this.y - y;
+		return this;
+	}
+
 	public float lenManhattan() {
 		return MathUtils.abs(this.x) + MathUtils.abs(this.y);
 	}
