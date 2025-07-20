@@ -324,8 +324,8 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		lastBrush.blend = mode;
 		GLUtils.setBlendMode(batch.gl, mode);
+		lastBrush.blend = mode;
 		return this;
 	}
 

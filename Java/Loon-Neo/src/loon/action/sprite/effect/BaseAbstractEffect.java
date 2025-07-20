@@ -87,6 +87,8 @@ public abstract class BaseAbstractEffect extends Entity implements BaseEffect {
 			} else {
 				_completedDrawable.draw(g, x, y);
 			}
+		} else {
+			g.flush();
 		}
 		return result;
 	}

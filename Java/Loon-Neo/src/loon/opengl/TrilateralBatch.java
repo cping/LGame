@@ -268,12 +268,16 @@ public class TrilateralBatch extends BaseBatch {
 		return _expandVertices.vertexSize();
 	}
 
-	@Override
-	public void end() {
-		super.end();
+	protected void reset() {
 		this._currentBlendMode = -1;
 		this._currentIntColor = -1;
 		this._currentAlpha = 255;
+	}
+
+	@Override
+	public void end() {
+		super.end();
+		reset();
 	}
 
 	@Override

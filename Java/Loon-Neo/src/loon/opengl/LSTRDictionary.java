@@ -100,7 +100,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private final static StrBuilder _lazyKey = new StrBuilder(1024);
 
-	public final static char split = '$';
+	private final static char split = '$';
 
 	private final CharArray _templateChars = new CharArray(256);
 
@@ -368,10 +368,10 @@ public final class LSTRDictionary implements LRelease {
 		if (StringUtils.isEmpty(mes)) {
 			return null;
 		}
-		if (mes.equals(_lastMessage) && _lastDict != null && !_lastDict.isClosed()) {
+		if ((mes.equals(_lastMessage) || (_lastMessage != null && _lastMessage.indexOf(mes) != -1)) && _lastDict != null
+				&& !_lastDict.isClosed()) {
 			return _lastDict;
 		}
-		_lastMessage = mes;
 		if (checkEnglishString(mes)) {
 			Dict pDict = (Dict) _englishFontList.get(font);
 			if (pDict != null && pDict.isClosed()) {
@@ -383,6 +383,7 @@ public final class LSTRDictionary implements LRelease {
 				pDict.font = new LSTRFont(font, ADDED, tmp_asyn);
 				_englishFontList.put(font, pDict);
 			}
+			_lastMessage = mes;
 			return (_lastDict = pDict);
 		}
 		final String message;
@@ -395,6 +396,7 @@ public final class LSTRDictionary implements LRelease {
 		Dict cacheDict = searchCacheDict(font, message);
 
 		if (cacheDict != null && !cacheDict.isClosed()) {
+			_lastMessage = mes;
 			return _lastDict = cacheDict;
 		}
 
@@ -434,12 +436,10 @@ public final class LSTRDictionary implements LRelease {
 						pDict.font = null;
 					}
 					if (_tmpBuffer == null) {
-						_tmpBuffer = new StrBuilder(newSize);
+						_tmpBuffer = new StrBuilder(charas);
 					} else {
 						_tmpBuffer.setLength(0);
-					}
-					for (int i = 0; i < newSize; i++) {
-						_tmpBuffer.append(charas.get(i));
+						_tmpBuffer.append(charas);
 					}
 					// 个别浏览器纹理同步会卡出国，只能异步……
 					pDict.font = new LSTRFont(font, _tmpBuffer.toString(), tmp_asyn);
@@ -448,6 +448,8 @@ public final class LSTRDictionary implements LRelease {
 		}
 		if (pDict == null || pDict.isClosed()) {
 			return (_lastDict = null);
+		} else {
+			_lastMessage = mes;
 		}
 		return (_lastDict = pDict);
 	}

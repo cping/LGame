@@ -102,22 +102,18 @@ public class EmulatorButton {
 		if (disabled) {
 			return this;
 		}
-		if (flag) {
-			if (nid == id) {
-				onClick = bounds.intersects(x, y);
-				if (_monitor != null) {
-					if (onClick) {
-						_monitor.call();
-					}
-				}
-			}
-		} else {
-			if (!onClick) {
-				onClick = bounds.intersects(x, y);
-				id = nid;
-				if (onClick && _monitor != null) {
+		if (flag && nid == id) {
+			onClick = bounds.intersects(x, y);
+			if (_monitor != null) {
+				if (onClick) {
 					_monitor.call();
 				}
+			}
+		} else if (!onClick) {
+			onClick = bounds.intersects(x, y);
+			id = nid;
+			if (onClick && _monitor != null) {
+				_monitor.call();
 			}
 		}
 		return this;

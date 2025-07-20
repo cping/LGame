@@ -36,7 +36,7 @@ import loon.utils.MathUtils;
 public class StringEffect extends BaseAbstractEffect {
 
 	public static enum StringEffectModel {
-		BASE, AWAY, ZOOM, SHAKE, ROTATED, ZOOM_ROTATED, AWAY_ZOOM_ROTATED, AWAY_SHAKE_ZOOM_ROTATED
+		BASE, AWAY, ZOOM, SHAKE, ROTATED, ZOOM_ROTATED, AWAY_ZOOM_ROTATED, AWAY_SHAKE_ROTATED, AWAY_SHAKE_ZOOM_ROTATED
 	}
 
 	private final static float MOVE_VALUE = 1.5f;
@@ -440,6 +440,11 @@ public class StringEffect extends BaseAbstractEffect {
 			case AWAY_ZOOM_ROTATED:
 				onAwayEffect();
 				onZoomEffect();
+				onRotatedEffect();
+				break;
+			case AWAY_SHAKE_ROTATED:
+				onAwayEffect();
+				onShakeEffect();
 				onRotatedEffect();
 				break;
 			case AWAY_SHAKE_ZOOM_ROTATED:

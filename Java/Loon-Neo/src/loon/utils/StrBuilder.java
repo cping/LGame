@@ -109,10 +109,7 @@ public class StrBuilder implements CharSequence, Appendable {
 	public StrBuilder(CharArray chars) {
 		this(chars != null ? chars.length : CollectionUtils.INITIAL_CAPACITY);
 		if (chars != null) {
-			final int size = chars.length;
-			for (int i = 0; i < size; i++) {
-				append(chars.get(i));
-			}
+			append(chars.items, 0, chars.length);
 		}
 	}
 
@@ -193,6 +190,13 @@ public class StrBuilder implements CharSequence, Appendable {
 			return this;
 		}
 		return append(src, 0, src.length);
+	}
+
+	public StrBuilder append(CharArray chars) {
+		if (chars == null) {
+			return this;
+		}
+		return append(chars.items, 0, chars.length);
 	}
 
 	public StrBuilder append(char[] src, int srcPos, int length) {
