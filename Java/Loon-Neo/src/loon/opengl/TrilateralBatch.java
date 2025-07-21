@@ -118,6 +118,8 @@ public class TrilateralBatch extends BaseBatch {
 			return;
 		}
 
+		this.updateTexture();
+
 		final float colorFloat = toFloatColor(tint);
 
 		final float nx1 = addX(m00, m01, m10, m11, x1, y1, tx);
@@ -156,9 +158,6 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, sy3);
 
 		this._currentIndexCount = index;
-		if (lastTexId != curTexId) {
-			flush();
-		}
 	}
 
 	@Override
@@ -175,6 +174,12 @@ public class TrilateralBatch extends BaseBatch {
 	public void quad(float m00, float m01, float m10, float m11, float tx, float ty, float x1, float y1, float c1,
 			float x2, float y2, float c2, float x3, float y3, float c3, float x4, float y4, float c4, float u, float v,
 			float u2, float v2) {
+
+		if (_locked) {
+			return;
+		}
+
+		this.updateTexture();
 
 		final float nx1 = addX(m00, m01, m10, m11, x1, y1, tx);
 		final float ny1 = addY(m00, m01, m10, m11, x1, y1, ty);
@@ -212,13 +217,11 @@ public class TrilateralBatch extends BaseBatch {
 		_expandVertices.setVertice(index++, v);
 
 		this._currentIndexCount = index;
-		if (lastTexId != curTexId) {
-			flush();
-		}
 	}
 
 	@Override
 	public void begin(float fbufWidth, float fbufHeight, boolean flip) {
+		super.begin(fbufWidth, fbufHeight, flip);
 		if (this._ubufWidth != fbufWidth || this._ubufHeight != fbufHeight || this._uflip != flip) {
 			this._ubufWidth = fbufWidth;
 			this._ubufHeight = fbufHeight;

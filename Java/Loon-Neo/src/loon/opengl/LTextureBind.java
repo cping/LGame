@@ -45,6 +45,13 @@ public class LTextureBind extends GLBase {
 		this.curTexId = id;
 	}
 
+	protected void updateTexture() {
+		if (curTexId != lastTexId) {
+			flush();
+			this.lastTexId = this.curTexId;
+		}
+	}
+
 	@Override
 	public void end() {
 		super.end();

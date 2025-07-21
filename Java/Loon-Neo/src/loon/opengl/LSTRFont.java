@@ -540,7 +540,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (_childChars != null) {
 			_childChars.clear();
 		}
-		CharSequence chs = StringUtils.unificationChars(charMessage);
+		CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
 		this._initChars = _outBounds = isDrawing = false;
 		this._initDraw = -1;
 		this.isasyn = asyn;

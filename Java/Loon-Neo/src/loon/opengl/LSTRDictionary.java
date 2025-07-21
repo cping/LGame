@@ -118,8 +118,6 @@ public final class LSTRDictionary implements LRelease {
 
 	private final ArrayMap _englishFontList = new ArrayMap(_CACHE_SIZE);
 
-	private StrBuilder _tmpBuffer = null;
-
 	private Dict _lastDict;
 
 	private String _lastMessage;
@@ -431,18 +429,15 @@ public final class LSTRDictionary implements LRelease {
 				final int newSize = charas.length;
 				// 如果旧有大小，不等于新的纹理字符大小，重新扩展LSTRFont纹理字符
 				if (oldSize != newSize) {
-					if (pDict.font != null) {
-						pDict.font.close();
-						pDict.font = null;
-					}
-					if (_tmpBuffer == null) {
-						_tmpBuffer = new StrBuilder(charas);
-					} else {
-						_tmpBuffer.setLength(0);
-						_tmpBuffer.append(charas);
-					}
+					/*
+					 * if (pDict.font != null) { pDict.font.close(); pDict.font = null; }
+					 */
 					// 个别浏览器纹理同步会卡出国，只能异步……
-					pDict.font = new LSTRFont(font, _tmpBuffer.toString(), tmp_asyn);
+					if (pDict.font == null) {
+						pDict.font = new LSTRFont(font, charas.getThisArray(), tmp_asyn);
+					} else {
+						pDict.font.updateTexture(charas.getThisArray(), tmp_asyn);
+					}
 				}
 			}
 		}

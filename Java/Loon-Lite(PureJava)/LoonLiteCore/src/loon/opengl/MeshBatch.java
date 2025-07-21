@@ -69,6 +69,7 @@ public class MeshBatch extends BaseBatch {
 
 	@Override
 	public void begin(float fbufWidth, float fbufHeight, boolean flip) {
+		super.begin(fbufWidth, fbufHeight, flip);
 		if (this.ubufWidth != fbufWidth || this.ubufHeight != fbufHeight || this.uflip != flip) {
 			this.ubufWidth = fbufWidth;
 			this.ubufHeight = fbufHeight;

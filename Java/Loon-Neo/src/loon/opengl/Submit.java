@@ -23,30 +23,33 @@ package loon.opengl;
 import java.nio.Buffer;
 import java.nio.ShortBuffer;
 
+import loon.LRelease;
 import loon.LSystem;
 
-public class Submit {
+public class Submit implements LRelease {
 
 	private int glType = GL20.GL_TRIANGLES;
 
-	private boolean running = false;
+	private boolean main_draw_running = false;
 
-	private boolean stop_main_readering = false;
+	private boolean need_stop_main_readering = false;
 
-	public Mesh getMesh(String n, int size) {
+	public final Mesh getMesh(String n, int size) {
 		return LSystem.getMeshPool(n, size);
 	}
 
-	public Mesh getMesh(String n, int size, int trisize) {
+	public final Mesh getMesh(String n, int size, int trisize) {
 		return LSystem.getMeshTrianglePool(n, size, trisize);
 	}
 
-	public void reset(String n, int size) {
+	public final void reset(String n, int size) {
 		LSystem.resetMeshPool(n, size);
+		resetRunningState();
 	}
 
-	public void reset(String n, int size, int trisize) {
+	public final void reset(String n, int size, int trisize) {
 		LSystem.resetMeshTrianglePool(n, size, trisize);
+		resetRunningState();
 	}
 
 	public Submit setGLType(int type) {
@@ -58,19 +61,26 @@ public class Submit {
 		return this.glType;
 	}
 
+	private void resetRunningState() {
+		this.need_stop_main_readering = false;
+	}
+
 	public void setVertices(String name, int size, float[] vertices) {
 		Mesh mesh = getMesh(name, size);
 		mesh.setVertices(vertices);
+		resetRunningState();
 	}
 
 	public void setIndices(String name, int size, short[] indices) {
 		Mesh mesh = getMesh(name, size);
 		mesh.setIndices(indices);
+		resetRunningState();
 	}
 
 	public void resetIndices(String name, int size) {
 		Mesh mesh = getMesh(name, size);
 		LSystem.resetIndices(size, mesh);
+		resetRunningState();
 	}
 
 	public int size() {
@@ -85,22 +95,27 @@ public class Submit {
 		LSystem.disposeMeshPool();
 	}
 
+	public boolean isMainDrawRunning() {
+		return this.main_draw_running;
+	}
+
+	public boolean isNeedStopMainReadering() {
+		return this.need_stop_main_readering;
+	}
+
 	public void post(final String name, final int size, ShaderProgram shader, float[] vertices, int vertexIdx,
 			int count) {
 		// 防止与主画面渲染器GLEx冲突
-		this.running = LSystem.mainDrawRunning();
-		if (!running) {
+		this.main_draw_running = LSystem.mainDrawRunning();
+		if (!main_draw_running) {
 			shader.glUseProgramBind();
 		} else {
-			LSystem.mainEndDraw();
-			stop_main_readering = true;
+			need_stop_main_readering = true;
 		}
 		Mesh mesh = getMesh(name, size);
 		if (mesh == null) {
-			if (!running) {
+			if (!main_draw_running) {
 				shader.glUseProgramUnBind();
-			} else if (stop_main_readering) {
-				LSystem.mainBeginDraw();
 			}
 			return;
 		}
@@ -108,34 +123,30 @@ public class Submit {
 		final ShortBuffer buffer = mesh.getIndicesBuffer(false);
 		final int oldPosition = buffer.position();
 		final int oldLimit = buffer.limit();
-		((Buffer) buffer).position(0);
-		((Buffer) buffer).limit(count);
+		final Buffer result = ((Buffer) buffer);
+		result.position(0);
+		result.limit(count);
 		mesh.render(shader, glType, 0, count);
-		((Buffer) buffer).position(oldPosition);
-		((Buffer) buffer).limit(oldLimit);
-		if (!running) {
+		result.position(oldPosition);
+		result.limit(oldLimit);
+		if (!main_draw_running) {
 			shader.glUseProgramUnBind();
-		} else if (stop_main_readering) {
-			LSystem.mainBeginDraw();
 		}
 	}
 
 	public void post(final String name, final int size, final int trisize, ShaderProgram shader, short[] indices,
 			int indicesIdx, float[] vertices, int vertexIdx, int countInBatch) {
 		// 防止与主画面渲染器GLEx冲突
-		this.running = LSystem.mainDrawRunning();
-		if (!running) {
+		this.main_draw_running = LSystem.mainDrawRunning();
+		if (!main_draw_running) {
 			shader.glUseProgramBind();
 		} else {
-			LSystem.mainEndDraw();
-			stop_main_readering = true;
+			need_stop_main_readering = true;
 		}
 		Mesh mesh = getMesh(name, size, trisize);
 		if (mesh == null) {
-			if (!running) {
+			if (!main_draw_running) {
 				shader.glUseProgramUnBind();
-			} else if (stop_main_readering) {
-				LSystem.mainBeginDraw();
 			}
 			return;
 		}
@@ -144,16 +155,20 @@ public class Submit {
 		final ShortBuffer buffer = mesh.getIndicesBuffer(false);
 		final int oldPosition = buffer.position();
 		final int oldLimit = buffer.limit();
-		((Buffer) buffer).position(0);
-		((Buffer) buffer).limit(countInBatch);
+		final Buffer result = ((Buffer) buffer);
+		result.position(0);
+		result.limit(countInBatch);
 		mesh.render(shader, glType, 0, countInBatch);
-		((Buffer) buffer).position(oldPosition);
-		((Buffer) buffer).limit(oldLimit);
-		if (!running) {
+		result.position(oldPosition);
+		result.limit(oldLimit);
+		if (!main_draw_running) {
 			shader.glUseProgramUnBind();
-		} else if (stop_main_readering) {
-			LSystem.mainBeginDraw();
 		}
+	}
+
+	@Override
+	public void close() {
+		this.resetRunningState();
 	}
 
 }
