@@ -576,7 +576,6 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		this.isLoading = isLoaded = false;
 		this.pixelSize = fontSize;
 		this._displayLazy = useCache = true;
-		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
 		this.textureWidth = tw;
@@ -585,8 +584,11 @@ public class BDFont extends FontTrans implements IFont, LRelease {
 		this.displays = new IntMap<Cache>(totalCharSet);
 		this.isasyn = asyn;
 		if (chs != null && chs.length() > 0) {
+			this._chars = new CharArray(chs.length());
 			this.text = StringUtils.getString(chs);
 			this.expandTexture();
+		} else {
+			this._chars = new CharArray();
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;

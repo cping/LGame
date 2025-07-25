@@ -38,7 +38,9 @@ public class ExpandVertices {
 	}
 
 	public void init() {
-		vertices = new float[START_VERTS * maxSize];
+		if (vertices == null) {
+			vertices = new float[START_VERTS * maxSize];
+		}
 	}
 
 	public int vertexSize() {

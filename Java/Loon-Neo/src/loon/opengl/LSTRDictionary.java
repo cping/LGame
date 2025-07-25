@@ -236,6 +236,17 @@ public final class LSTRDictionary implements LRelease {
 		}
 		return cFont;
 	}
+	
+	public Dict searchCacheDict(LFont font) {
+		if (font != null) {
+			final int fontFlag = toFontStringHash(font);
+			final Dict pDict = _fontList.get(fontFlag);
+			if (pDict != null) {
+				return pDict;
+			}
+		}
+		return null;
+	} 
 
 	public Dict searchCacheDict(LFont font, String mes) {
 		if (font != null) {
@@ -422,7 +433,7 @@ public final class LSTRDictionary implements LRelease {
 				final int size = message.length();
 				for (int i = 0; i < size; i++) {
 					final char flag = message.charAt(i);
-					if (!charas.contains(flag)) {
+					if (!charas.contains(flag) && !StringUtils.isWhitespace(flag)) {
 						charas.add(flag);
 					}
 				}

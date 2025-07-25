@@ -1573,7 +1573,8 @@ public class Vector2f implements Serializable, SetXY, XY {
 	public final Vector2f setLength(float len) {
 		len = len * len;
 		float oldLength = lengthSquared();
-		return (oldLength == 0 || oldLength == len) ? this : scaleSelf(MathUtils.sqrt(len / oldLength));
+		return (MathUtils.equal(oldLength, 0) || MathUtils.equal(oldLength, len)) ? this
+				: scaleSelf(MathUtils.sqrt(len / oldLength));
 	}
 
 	public final Vector2f setAngle(float radians) {

@@ -939,10 +939,12 @@ public abstract class LGame implements LRelease {
 		}
 		for (int i = 0, size = _texture_all_list.size; i < size; i++) {
 			LTexture tex2d = _texture_all_list.get(i);
-			String source = tex2d.getSource();
-			if (tex2d != null && source.indexOf(TextureSource.RenderCanvas) == -1) {
-				if (key.equalsIgnoreCase(source) || key.equalsIgnoreCase(tex2d.tmpLazy)) {
-					return tex2d._referenceCount;
+			if (tex2d != null) {
+				String source = tex2d.getSource();
+				if (source != null && source.indexOf(TextureSource.RenderCanvas) == -1) {
+					if (key.equalsIgnoreCase(source) || key.equalsIgnoreCase(tex2d.tmpLazy)) {
+						return tex2d._referenceCount;
+					}
 				}
 			}
 		}

@@ -1637,6 +1637,15 @@ public abstract class LContainer extends LComponent implements IArray {
 		return true;
 	}
 
+	public boolean hasVisibleParent() {
+		final LComponent parent = this.getParent();
+		for (LComponent c = parent; c != null; c = c.getParent()) {
+			if (!c.isVisible())
+				return false;
+		}
+		return true;
+	}
+
 	public boolean hasChilds() {
 		return _childCount > 0;
 	}

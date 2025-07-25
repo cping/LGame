@@ -49,6 +49,7 @@ public class CharUtils {
 		static final char[] TABLE = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 				'e', 'f' };
 
+		static final char[] ZERO_WIDTH_CHARS = new char[] { '\u200B', '\uFEFF', '\u200C', '\u200D' };
 	}
 
 	public static byte[] toSBytes(int... bytes) {
@@ -432,7 +433,7 @@ public class CharUtils {
 	}
 
 	public static boolean isWhitespace(int c) {
-		return c == LSystem.SPACE || c == LSystem.LF || c == LSystem.CR || c == LSystem.TF || c == LSystem.PB;
+		return c == 0 || c == LSystem.SPACE || c == LSystem.LF || c == LSystem.CR || c == LSystem.TF || c == LSystem.PB;
 	}
 
 	public static boolean isEol(char c) {
@@ -477,6 +478,16 @@ public class CharUtils {
 
 	public static boolean isPropertyNameChar(int c) {
 		return isDigit(c) || isAlpha(c) || (c == '_') || (c == '.') || (c == '[') || (c == ']');
+	}
+
+	public static boolean isZeroWidthChar(int ch) {
+		final char[] chars = HexChars.ZERO_WIDTH_CHARS;
+		for (int i = 0; i < chars.length; i++) {
+			if (chars[i] == ch) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isGenericDelimiter(int c) {

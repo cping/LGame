@@ -2023,7 +2023,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	private static boolean unificationAllow(char ch) {
-		return !isWhitespace(ch);
+		return !isWhitespace(ch) && !isZeroWidthChar(ch);
 	}
 
 	public static String merge(String[] messages) {
@@ -2081,6 +2081,10 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static String unificationStrings(CharArray tempChars, String mes, CharSequence limit) {
+		return unificationStrings(tempChars, mes, limit, false);
+	}
+
+	public static String unificationStrings(CharArray tempChars, String mes, CharSequence limit, boolean sorted) {
 		if (isEmpty(mes)) {
 			return LSystem.EMPTY;
 		}
@@ -2111,7 +2115,7 @@ final public class StringUtils extends CharUtils {
 		if (tempChars.length == 0) {
 			return LSystem.EMPTY;
 		} else {
-			return tempChars.sort().getString().trim();
+			return sorted ? tempChars.sort().getString() : tempChars.getString();
 		}
 	}
 
@@ -2128,6 +2132,11 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static String unificationCharSequence(CharArray tempChars, CharSequence[] messages, CharSequence limit) {
+		return unificationCharSequence(tempChars, messages, limit, false);
+	}
+
+	public static String unificationCharSequence(CharArray tempChars, CharSequence[] messages, CharSequence limit,
+			boolean sorted) {
 		if (messages == null || messages.length == 0) {
 			return LSystem.EMPTY;
 		}
@@ -2165,7 +2174,7 @@ final public class StringUtils extends CharUtils {
 		if (tempChars.length == 0) {
 			return LSystem.EMPTY;
 		} else {
-			return tempChars.sort().getString().trim();
+			return sorted ? tempChars.sort().getString() : tempChars.getString();
 		}
 	}
 
@@ -2182,11 +2191,16 @@ final public class StringUtils extends CharUtils {
 	}
 
 	public static String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit) {
+		return unificationStrings(tempChars, messages, limit, false);
+	}
+
+	public static String unificationStrings(CharArray tempChars, String[] messages, CharSequence limit,
+			boolean sorted) {
 		if (isEmpty(messages)) {
 			return LSystem.EMPTY;
 		}
 		tempChars.clear();
-		boolean mode = (limit == null || limit.length() == 0);
+		final boolean mode = (limit == null || limit.length() == 0);
 		for (int idx = 0; idx < messages.length; idx++) {
 			final CharSequence mes = messages[idx];
 			if (mes == null) {
@@ -2219,7 +2233,7 @@ final public class StringUtils extends CharUtils {
 		if (tempChars.length == 0) {
 			return LSystem.EMPTY;
 		} else {
-			return tempChars.sort().getString().trim();
+			return sorted ? tempChars.sort().getString() : tempChars.getString();
 		}
 	}
 
@@ -2232,7 +2246,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 合并字符数组到CharArray字符集合中去(不包含limit中限定的字符)
 	 * 
 	 * @param messages
 	 * @param limit
@@ -2243,7 +2257,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 合并字符数组到CharArray字符集合中去(不包含limit中限定的字符)
 	 * 
 	 * @param tempChars
 	 * @param messages
@@ -2255,7 +2269,7 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
-	 * 合并字符数组到CharArray字符集合中的去(不包含limit中限定的字符)
+	 * 合并字符数组到CharArray字符集合中去(不包含limit中限定的字符)
 	 * 
 	 * @param tempChars
 	 * @param messages
@@ -2268,7 +2282,7 @@ final public class StringUtils extends CharUtils {
 			return LSystem.EMPTY;
 		}
 		tempChars.clear();
-		boolean mode = (limit == null || limit.length() == 0);
+		final boolean mode = (limit == null || limit.length() == 0);
 		if (mode) {
 			for (int i = 0, size = messages.length; i < size; i++) {
 				char ch = messages[i];
@@ -2296,7 +2310,60 @@ final public class StringUtils extends CharUtils {
 		if (tempChars.length == 0) {
 			return LSystem.EMPTY;
 		} else {
-			return sorted ? tempChars.sort().getString().trim() : tempChars.getString().trim();
+			return sorted ? tempChars.sort().getString() : tempChars.getString();
+		}
+	}
+
+	public static CharArray unificationCharArray(char[] messages) {
+		return unificationCharArray(messages, null);
+	}
+
+	public static CharArray unificationCharArray(CharArray tempChars, char[] messages) {
+		return unificationCharArray(tempChars, messages, null);
+	}
+
+	public static CharArray unificationCharArray(char[] messages, CharSequence limit) {
+		return unificationCharArray(new CharArray(128), messages, null);
+	}
+
+	public static CharArray unificationCharArray(CharArray tempChars, char[] messages, CharSequence limit) {
+		return unificationCharArray(tempChars, messages, limit, false);
+	}
+
+	public static CharArray unificationCharArray(CharArray tempChars, char[] messages, CharSequence limit,
+			boolean sorted) {
+		if (messages == null || messages.length == 0) {
+			return new CharArray();
+		}
+		tempChars.clear();
+		final boolean mode = (limit == null || limit.length() == 0);
+		if (mode) {
+			for (int i = 0, size = messages.length; i < size; i++) {
+				char ch = messages[i];
+				if (unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
+				}
+			}
+		} else {
+			boolean running;
+			for (int i = 0, size = messages.length; i < size; i++) {
+				running = true;
+				char ch = messages[i];
+				for (int j = 0; j < limit.length(); j++) {
+					if (limit.charAt(j) == ch) {
+						running = false;
+						break;
+					}
+				}
+				if (running && unificationAllow(ch) && !tempChars.contains(ch)) {
+					tempChars.add(ch);
+				}
+			}
+		}
+		if (tempChars.length == 0) {
+			return new CharArray();
+		} else {
+			return sorted ? tempChars.sort() : tempChars;
 		}
 	}
 

@@ -38,10 +38,10 @@ import loon.utils.TArray;
 
 public class DefUI extends HelperUtils {
 
-	private static DefUI _instance;
+	private static DefUI _defUiInstance;
 
-	public static void freeStatic() {
-		_instance = null;
+	public static void freeUI() {
+		_defUiInstance = null;
 	}
 
 	public final static DefUI make() {
@@ -50,10 +50,10 @@ public class DefUI extends HelperUtils {
 
 	public final static DefUI self() {
 		synchronized (DefUI.class) {
-			if (_instance == null) {
-				_instance = make();
+			if (_defUiInstance == null) {
+				_defUiInstance = make();
 			}
-			return _instance;
+			return _defUiInstance;
 		}
 	}
 

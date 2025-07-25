@@ -364,8 +364,8 @@ public final class LSystem {
 		LTimer.freeStatic();
 		GameTime.freeStatic();
 		Duration.freeStatic();
-		DefUI.freeStatic();
 		TempVars.freeStatic();
+		DefUI.freeUI();
 		PAUSED = false;
 		_scaleWidth = 1f;
 		_scaleHeight = 1f;

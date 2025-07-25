@@ -709,7 +709,7 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	public StrBuilder reset() {
-		return reset(CollectionUtils.INITIAL_CAPACITY);
+		return reset(0);
 	}
 
 	public StrBuilder reset(int cap) {

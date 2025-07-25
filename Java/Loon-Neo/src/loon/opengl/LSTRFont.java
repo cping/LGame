@@ -422,7 +422,6 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
 		CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
-		this._chars = new CharArray(chs.length());
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
 		this._displayLazy = useCache = true;
@@ -437,9 +436,12 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		this.totalCharSet = getMaxTextCount();
 		this.displays = new IntMap<Cache>(totalCharSet);
 		if (chs != null && chs.length() > 0) {
+			this._chars = new CharArray(chs.length());
 			this.text = StringUtils.getString(chs);
 			this.expandTexture();
 			this.make(asyn);
+		} else {
+			this._chars = new CharArray();
 		}
 		if (StringUtils.isEmpty(text)) {
 			_isClose = true;
@@ -506,6 +508,10 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return updateTexture(message != null ? message.toCharArray() : null, asyn);
 	}
 
+	public LSTRFont updateTexture() {
+		return updateTexture((char[]) null);
+	}
+
 	public LSTRFont updateTexture(char[] charMessage) {
 		return updateTexture(charMessage, this.isasyn);
 	}
@@ -540,16 +546,18 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (_childChars != null) {
 			_childChars.clear();
 		}
-		CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
 		this._initChars = _outBounds = isDrawing = false;
 		this._initDraw = -1;
 		this.isasyn = asyn;
-		if (chs != null && chs.length() > 0) {
-			this.text = StringUtils.getString(chs);
-			this.expandTexture();
-		}
-		if (StringUtils.isEmpty(text)) {
-			_isClose = true;
+		if (charMessage != null) {
+			CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
+			if (chs != null && chs.length() > 0) {
+				this.text = StringUtils.getString(chs);
+				this.expandTexture();
+			}
+			if (StringUtils.isEmpty(text)) {
+				_isClose = true;
+			}
 		}
 		this._drawLimit = 0;
 		return this;

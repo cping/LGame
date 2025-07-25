@@ -2364,6 +2364,24 @@ public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LR
 		return result;
 	}
 
+	public TArray<ISprite> removeTagAndFlag(Object tag, int flag) {
+		if (_closed) {
+			return new TArray<ISprite>();
+		}
+		final TArray<ISprite> result = new TArray<ISprite>();
+		final int size = _size;
+		final ISprite[] childs = _sprites;
+		for (int i = size - 1; i > -1; i--) {
+			final ISprite sprite = childs[i];
+			if (sprite != null && (tag != null && (sprite.getTag() == tag || tag.equals(sprite.getTag()))
+					&& sprite.getFlagType() == flag)) {
+				result.add(sprite);
+				remove(i);
+			}
+		}
+		return result;
+	}
+
 	/**
 	 * 查找符合指定条件的精灵并返回操作的集合
 	 * 
