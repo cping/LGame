@@ -28,6 +28,8 @@ import loon.geom.PointI;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.opengl.LSTRFont;
+import loon.opengl.LSTRDictionary.Dict;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
@@ -53,11 +55,13 @@ public class LFont extends FontTrans implements IFont {
 
 	private final static String tmp = "H";
 
-	private IntMap<Vector2f> fontSizes = new IntMap<Vector2f>(50);
+	private Dict _lastDict;
+
+	private IntMap<Vector2f> _fontSizes;
 
 	private PointI _offset = new PointI();
 
-	private String lastText = tmp;
+	private String _lastText = tmp;
 
 	private TextFormat textFormat = null;
 
@@ -67,14 +71,14 @@ public class LFont extends FontTrans implements IFont {
 
 	private float _ascent = -1;
 
-	private boolean useCache, closed;
+	private boolean _useCache, _closed;
 
 	public boolean isUseCache() {
-		return useCache;
+		return _useCache;
 	}
 
 	public void setUseCache(boolean u) {
-		this.useCache = u;
+		this._useCache = u;
 	}
 
 	LFont() {
@@ -145,7 +149,7 @@ public class LFont extends FontTrans implements IFont {
 
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float angle, LColor c) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		if (c == null || c.a <= 0.01) {
@@ -154,18 +158,26 @@ public class LFont extends FontTrans implements IFont {
 		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
+		final Dict fontDict = getDict(newMessage);
+		if (fontDict == null || fontDict.isClosed()) {
+			return;
+		}
+		final LSTRFont str = fontDict.getSTR();
+		if (str == null) {
+			return;
+		}
 		if (isAllowCache()) {
-			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
+			str.drawString(newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 		} else {
-			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
+			str.drawString(g, newMessage, _offset.x + tx, _offset.y + ty, angle, c);
 		}
 	}
 
 	@Override
 	public void drawString(GLEx g, String msg, float tx, float ty, float sx, float sy, float ax, float ay, float angle,
 			LColor c) {
-		if (closed) {
+		if (_closed) {
 			return;
 		}
 		if (c == null || c.a <= 0.01) {
@@ -174,24 +186,43 @@ public class LFont extends FontTrans implements IFont {
 		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
+		final Dict fontDict = getDict(newMessage);
+		if (fontDict == null || fontDict.isClosed()) {
+			return;
+		}
+		final LSTRFont str = fontDict.getSTR();
+		if (str == null) {
+			return;
+		}
 		if (isAllowCache()) {
-			LSTRDictionary.get().drawString(this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
+			str.drawString(newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		} else {
-			LSTRDictionary.get().drawString(g, this, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle,
-					c);
+			str.drawString(g, newMessage, _offset.x + tx, _offset.y + ty, sx, sy, ax, ay, angle, c);
 		}
 	}
 
+	private Dict getDict(final String message) {
+		if (_lastDict != null && !_lastDict.isUpdateing() && _lastDict.include(message)) {
+			return _lastDict;
+		}
+		final Dict dict = LSTRDictionary.get().bind(this, message);
+		if (dict != null) {
+			_lastDict = dict;
+			return dict;
+		}
+		return null;
+	}
+
 	private boolean isAllowCache() {
-		return useCache && LSTRDictionary.get().isAllowCache();
+		return _useCache && LSTRDictionary.get().isAllowCache();
 	}
 
 	private void initLayout(String msg) {
 		if (LSystem.base() == null) {
 			return;
 		}
-		if (msg == null || textLayout == null || !msg.equals(lastText)) {
+		if (msg == null || textLayout == null || !msg.equals(_lastText)) {
 			textLayout = LSystem.base().graphics().layoutText(tmp, this.textFormat);
 		}
 	}
@@ -349,10 +380,13 @@ public class LFont extends FontTrans implements IFont {
 		if (filter) {
 			newMessage = toMessage(msg);
 		}
-		Vector2f result = fontSizes.get(newMessage);
+		if (_fontSizes == null) {
+			_fontSizes = new IntMap<Vector2f>();
+		}
+		Vector2f result = _fontSizes.get(newMessage);
 		if (result == null) {
 			result = new Vector2f(stringWidth(newMessage) / 2f, getHeight() / 2f);
-			fontSizes.put(newMessage, result);
+			_fontSizes.put(newMessage, result);
 		}
 		return result;
 	}
@@ -437,12 +471,14 @@ public class LFont extends FontTrans implements IFont {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		closed = true;
+		_closed = true;
+		_lastDict = null;
+		_fontSizes = null;
 		LSystem.popFontPool(this);
 	}
 }

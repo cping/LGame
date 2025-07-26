@@ -120,20 +120,20 @@ public final class LSTRDictionary implements LRelease {
 
 	private Dict _lastDict;
 
-	private String _lastMessage;
-
 	public static class Dict implements LRelease {
-
-		protected CharArray dicts;
 
 		protected LSTRFont font;
 
-		public static Dict newDict() {
-			return new Dict();
+		public static Dict newDict(LSTRFont font) {
+			return new Dict(font);
 		}
 
-		public Dict() {
-			dicts = new CharArray(128);
+		public static Dict newDict() {
+			return newDict(null);
+		}
+
+		private Dict(LSTRFont font) {
+			this.font = font;
 		}
 
 		public LTexture getTexture() {
@@ -143,19 +143,43 @@ public final class LSTRDictionary implements LRelease {
 			return null;
 		}
 
+		public CharArray getCharArray() {
+			if (font == null) {
+				return new CharArray();
+			}
+			return font.getCharArray();
+		}
+
 		public LSTRFont getSTR() {
 			return font;
 		}
 
+		public boolean equals(LFont f) {
+			if (f == null) {
+				return false;
+			}
+			if (font != null && (f == font.getFont() || f.equals(font.getFont()))) {
+				return true;
+			}
+			return false;
+		}
+
 		public boolean include(String mes) {
-			int size = mes.length();
+			if (font == null) {
+				return false;
+			}
+			final int size = mes.length();
 			for (int i = 0; i < size; i++) {
-				char flag = mes.charAt(i);
-				if (dicts != null && !dicts.contains(flag) && !StringUtils.isWhitespace(size)) {
+				final char flag = mes.charAt(i);
+				if (!font.containsChar(flag) && !StringUtils.isWhitespace(flag)) {
 					return false;
 				}
 			}
 			return true;
+		}
+
+		public boolean isUpdateing() {
+			return font == null ? true : font.isUpdateing();
 		}
 
 		public boolean isClosed() {
@@ -168,15 +192,11 @@ public final class LSTRDictionary implements LRelease {
 				font.close();
 				font = null;
 			}
-			if (dicts != null) {
-				dicts.clear();
-				dicts = null;
-			}
 		}
 
 		@Override
 		public String toString() {
-			return dicts.toString();
+			return font == null ? LSystem.EMPTY : font.getText();
 		}
 
 	}
@@ -236,7 +256,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 		return cFont;
 	}
-	
+
 	public Dict searchCacheDict(LFont font) {
 		if (font != null) {
 			final int fontFlag = toFontStringHash(font);
@@ -246,7 +266,7 @@ public final class LSTRDictionary implements LRelease {
 			}
 		}
 		return null;
-	} 
+	}
 
 	public Dict searchCacheDict(LFont font, String mes) {
 		if (font != null) {
@@ -377,8 +397,7 @@ public final class LSTRDictionary implements LRelease {
 		if (StringUtils.isEmpty(mes)) {
 			return null;
 		}
-		if ((mes.equals(_lastMessage) || (_lastMessage != null && _lastMessage.indexOf(mes) != -1)) && _lastDict != null
-				&& !_lastDict.isClosed()) {
+		if (_lastDict != null && !_lastDict.isUpdateing() && _lastDict.equals(font) && _lastDict.include(mes)) {
 			return _lastDict;
 		}
 		if (checkEnglishString(mes)) {
@@ -388,11 +407,9 @@ public final class LSTRDictionary implements LRelease {
 				pDict = null;
 			}
 			if (pDict == null) {
-				pDict = Dict.newDict();
-				pDict.font = new LSTRFont(font, ADDED, tmp_asyn);
+				pDict = Dict.newDict(new LSTRFont(font, ADDED, tmp_asyn));
 				_englishFontList.put(font, pDict);
 			}
-			_lastMessage = mes;
 			return (_lastDict = pDict);
 		}
 		final String message;
@@ -405,7 +422,6 @@ public final class LSTRDictionary implements LRelease {
 		Dict cacheDict = searchCacheDict(font, message);
 
 		if (cacheDict != null && !cacheDict.isClosed()) {
-			_lastMessage = mes;
 			return _lastDict = cacheDict;
 		}
 
@@ -428,7 +444,7 @@ public final class LSTRDictionary implements LRelease {
 			}
 			synchronized (pDict) {
 				_cacheList.put(message, font);
-				final CharArray charas = pDict.dicts;
+				final CharArray charas = pDict.getCharArray();
 				final int oldSize = charas.length;
 				final int size = message.length();
 				for (int i = 0; i < size; i++) {
@@ -454,8 +470,6 @@ public final class LSTRDictionary implements LRelease {
 		}
 		if (pDict == null || pDict.isClosed()) {
 			return (_lastDict = null);
-		} else {
-			_lastMessage = mes;
 		}
 		return (_lastDict = pDict);
 	}

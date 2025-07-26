@@ -53,15 +53,15 @@ public class LFont extends FontTrans implements IFont {
 
 	private final static String tmp = "H";
 
-	private IntMap<Vector2f> fontSizes = new IntMap<>(50);
+	private IntMap<Vector2f> _fontSizes;
 
 	private PointI _offset = new PointI();
 
 	private String lastText = tmp;
 
-	private final TextFormat _textFormat ;
+	private final TextFormat _textFormat;
 
-	private TextLayout textLayout = null;
+	private TextLayout _textLayout = null;
 
 	private int _size = -1;
 
@@ -125,7 +125,7 @@ public class LFont extends FontTrans implements IFont {
 	}
 
 	public TextLayout getTextLayout() {
-		return textLayout;
+		return _textLayout;
 	}
 
 	@Override
@@ -161,8 +161,8 @@ public class LFont extends FontTrans implements IFont {
 		if (LSystem.base() == null) {
 			return;
 		}
-		if (msg == null || textLayout == null || !msg.equals(lastText)) {
-			textLayout = LSystem.base().graphics().layoutText(tmp, this._textFormat);
+		if (msg == null || _textLayout == null || !msg.equals(lastText)) {
+			_textLayout = LSystem.base().graphics().layoutText(tmp, this._textFormat);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class LFont extends FontTrans implements IFont {
 			return 0;
 		}
 		initLayout(String.valueOf(ch));
-		return textLayout.bounds.width;
+		return _textLayout.bounds.width;
 	}
 
 	@Override
@@ -183,14 +183,14 @@ public class LFont extends FontTrans implements IFont {
 		String newMessage = toMessage(msg);
 		initLayout(newMessage);
 		if (newMessage.indexOf(LSystem.LF) == -1) {
-			return textLayout.stringWidth(newMessage);
+			return _textLayout.stringWidth(newMessage);
 		} else {
 			StrBuilder sbr = new StrBuilder();
 			int width = 0;
 			for (int i = 0, size = newMessage.length(); i < size; i++) {
 				char ch = newMessage.charAt(i);
 				if (ch == LSystem.LF) {
-					width = MathUtils.max(textLayout.stringWidth(sbr.toString()), width);
+					width = MathUtils.max(_textLayout.stringWidth(sbr.toString()), width);
 					sbr.setLength(0);
 				} else {
 					sbr.append(ch);
@@ -253,23 +253,23 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public int getHeight() {
 		initLayout(tmp);
-		return MathUtils.max(getSize(), textLayout == null ? 0 : textLayout.bounds.height);
+		return MathUtils.max(getSize(), _textLayout == null ? 0 : _textLayout.bounds.height);
 	}
 
 	@Override
 	public float getAscent() {
 		initLayout(tmp);
-		return this._ascent == -1 ? textLayout == null ? 0 : textLayout.ascent() : this._ascent;
+		return this._ascent == -1 ? _textLayout == null ? 0 : _textLayout.ascent() : this._ascent;
 	}
 
 	public float getDescent() {
 		initLayout(tmp);
-		return textLayout.descent();
+		return _textLayout.descent();
 	}
 
 	public float getLeading() {
 		initLayout(tmp);
-		return textLayout.leading();
+		return _textLayout.leading();
 	}
 
 	private int fontHash = 1;
@@ -318,10 +318,13 @@ public class LFont extends FontTrans implements IFont {
 		if (filter) {
 			newMessage = toMessage(msg);
 		}
-		Vector2f result = fontSizes.get(newMessage);
+		if (_fontSizes == null) {
+			_fontSizes = new IntMap<Vector2f>();
+		}
+		Vector2f result = _fontSizes.get(newMessage);
 		if (result == null) {
 			result = new Vector2f(stringWidth(newMessage) / 2f, getHeight() / 2f);
-			fontSizes.put(newMessage, result);
+			_fontSizes.put(newMessage, result);
 		}
 		return result;
 	}
@@ -412,6 +415,7 @@ public class LFont extends FontTrans implements IFont {
 	@Override
 	public void close() {
 		_closed = true;
+		_fontSizes = null;
 		LSystem.popFontPool(this);
 	}
 }

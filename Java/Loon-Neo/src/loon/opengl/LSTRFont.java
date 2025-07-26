@@ -37,6 +37,7 @@ import loon.geom.Affine2f;
 import loon.geom.PointI;
 import loon.geom.RectF;
 import loon.utils.CharArray;
+import loon.utils.CollectionUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.LIterator;
@@ -130,7 +131,8 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
-			final int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
+			final char[] customChars = strfont.getThisChars();
+			final int customCharsLength = customChars.length;
 
 			final StrBuilder contextbuilder = strfont._contextbuilder;
 			final OrderedSet<Character> outchached = strfont._outchached;
@@ -142,7 +144,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 			// 本地字体怎么都不如ttf或者fnt字体清晰准确,差异太大，只能尽量保证显示效果……
 			for (int i = 0, size = customCharsLength; i < size; i++) {
 
-				final char ch = strfont.additionalChars[i];
+				final char ch = customChars[i];
 
 				if (StringUtils.isWhitespace(ch)) {
 					continue;
@@ -174,15 +176,23 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 
 				if (clipFont) {
+					final int limitHeight = strfont.textureHeight - newIntObject.height;
+					final int limitWidth = strfont.textureWidth - newIntObject.width;
 					// 发现部分环境字体如果整体渲染到canvas的话，会导致纹理切的不整齐(实际上就是间距和从系统获取的不符合),
 					// 保险起见一个个字体粘贴……
-					if (positionY <= strfont.textureHeight - newIntObject.height
-							&& positionX <= strfont.textureWidth - newIntObject.width) {
+					if (positionY <= limitHeight && positionX <= limitWidth) {
 						canvas.fillText(layout, positionX, positionY);
 					} else {
-						outchached.add(ch);
-						strfont._outBounds = true;
-						outchar = true;
+						if (positionX >= limitWidth) {
+							positionX = 0;
+							positionY += rowHeight;
+							rowHeight = 0;
+							canvas.fillText(layout, positionX, positionY);
+						} else if (positionY >= limitHeight) {
+							outchached.add(ch);
+							strfont._outBounds = true;
+							outchar = true;
+						}
 					}
 					if (positionX + newIntObject.width >= strfont.textureWidth) {
 						positionX = 0;
@@ -1119,11 +1129,14 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public int getTextCount() {
-		return _chars != null ? _chars.size() : 0;
+		if (text == null && additionalChars == null) {
+			return 0;
+		}
+		return additionalChars != null ? additionalChars.length : text.length();
 	}
 
-	public String getChars() {
-		return _chars.getString();
+	public String getString() {
+		return getText();
 	}
 
 	private boolean checkCharRunning() {
@@ -1246,6 +1259,14 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		return fontBatch == null || isDrawing;
 	}
 
+	public boolean isUpdateing() {
+		boolean updated = _isClose || !_initChars || processing() || (_displayLazy && _initDraw < _drawLimit);
+		if (!updated && _childFont != null) {
+			updated = _childFont.isUpdateing();
+		}
+		return updated;
+	}
+
 	public void postCharCache() {
 		if (!checkCharRunning()) {
 			return;
@@ -1297,8 +1318,31 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		colors[corner].a = a;
 	}
 
+	protected char[] getThisChars() {
+		if (text == null && additionalChars == null) {
+			return new char[0];
+		}
+		return additionalChars != null ? additionalChars : (additionalChars = text.toCharArray());
+	}
+
+	public char[] getChars() {
+		return CollectionUtils.copyOf(getThisChars());
+	}
+
+	public CharArray getCharArray() {
+		return new CharArray(getThisChars());
+	}
+
 	public boolean containsChar(char c) {
-		return _chars.contains(c);
+		final char[] chars = getThisChars();
+		int i = chars.length - 1;
+		final char[] items = chars;
+		while (i >= 0) {
+			if (items[i--] == c) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public boolean containsChars(final String msg) {
@@ -1316,7 +1360,7 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 		int count = 0;
 		int len = newMessage.length();
 		for (int i = 0; i < len; i++) {
-			if (_chars.contains(newMessage.charAt(i))) {
+			if (containsChar(newMessage.charAt(i))) {
 				count++;
 			}
 		}
@@ -1544,11 +1588,11 @@ public class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public String getText() {
-		return text;
+		return text != null ? text : (text = new String(additionalChars));
 	}
 
 	public int getTextSize() {
-		return text.length();
+		return getText().length();
 	}
 
 	@Override
