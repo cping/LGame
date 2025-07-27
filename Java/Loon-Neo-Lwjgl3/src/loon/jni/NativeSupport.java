@@ -60,8 +60,9 @@ public final class NativeSupport {
 	static boolean isARM = getProperty("os.arch").startsWith("arm") || getProperty("os.arch").startsWith("aarch64");
 	static boolean is64Bit = getProperty("os.arch").contains("64") || getProperty("os.arch").startsWith("armv8");
 	static boolean isUnknown = !(isWindows && isLinux && isMac && isARM && is64Bit);
-	static boolean isAndroid = false;
-	static boolean isIos = false;
+	static boolean isAndroid;
+	static boolean isIos;
+	static boolean useLoonNative;
 
 	static {
 		try {
@@ -381,8 +382,6 @@ public final class NativeSupport {
 	public static final int SIZEOF_DOUBLE = 8;
 
 	public static final int SIZEOF_LONG = SIZEOF_DOUBLE;
-
-	private static boolean useLoonNative = false;
 
 	private static boolean isInJavaWebStart() {
 		try {

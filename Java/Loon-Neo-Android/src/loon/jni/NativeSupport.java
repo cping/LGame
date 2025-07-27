@@ -77,7 +77,7 @@ public final class NativeSupport {
 		}
 	}
 
-	private static boolean useLoonNative = false;
+	private static boolean useLoonNative;
 
 	static {
 		try {
