@@ -177,7 +177,17 @@ public abstract class Pool<T> {
 		return this;
 	}
 
+	protected void reset(T obj) {
+		if (obj != null && (obj instanceof Poolable)) {
+			((Poolable) obj).reset();
+		}
+	}
+
 	public Pool<T> clear() {
+		final TArray<T> freeObjects = this.freeObjects;
+		for (int i = 0, n = freeObjects.size; i < n; i++) {
+			reset(freeObjects.get(i));
+		}
 		freeObjects.clear();
 		peak = 0;
 		return this;

@@ -1450,6 +1450,14 @@ final public class StringUtils extends CharUtils {
 		return mes.substring(0, 1).toLowerCase() + mes.substring(1, mes.length());
 	}
 
+	public static String capitalize(String text) {
+		return toUpperCaseFirst(text);
+	}
+
+	public static String uncapitalize(String text) {
+		return toLowerCaseFirst(text);
+	}
+
 	/**
 	 * 大写字符序列的首字母,其余全部小写
 	 * 
@@ -1630,6 +1638,18 @@ final public class StringUtils extends CharUtils {
 			sbr = sbr.deleteCharAt(sbr.length() - 1);
 		}
 		return sbr.toString();
+	}
+
+	public static String toTime(float secondstime) {
+		return toTime(secondstime, 2);
+	}
+
+	public static String toTime(float secondstime, int numDigits) {
+		final int seconds = (int) (secondstime % 60);
+		final int minutes = (int) ((secondstime / 60) % 60);
+		final int hours = (int) ((secondstime / 3600) % 24);
+		return new String(MathUtils.addZeros(hours, numDigits) + ":" + MathUtils.addZeros(minutes, numDigits) + ":"
+				+ MathUtils.addZeros(seconds, numDigits));
 	}
 
 	/**

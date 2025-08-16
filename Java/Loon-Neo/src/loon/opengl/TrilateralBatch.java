@@ -78,7 +78,7 @@ public class TrilateralBatch extends BaseBatch {
 
 	@Override
 	public void init() {
-		this._currentSubmit = new Submit();
+		this._currentSubmit = Submit.create();
 		this._currentBlendMode = -1;
 		this._currentIntColor = -1;
 		this._currentFloatColor = LColor.white.toFloatBits();

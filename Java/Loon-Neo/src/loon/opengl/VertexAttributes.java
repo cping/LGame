@@ -121,7 +121,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		if (attributes.length == 0) {
 			throw new LSysException("attributes must be >= 1 !");
 		}
-		VertexAttribute[] list = new VertexAttribute[attributes.length];
+		final VertexAttribute[] list = new VertexAttribute[attributes.length];
 		for (int i = 0; i < attributes.length; i++) {
 			list[i] = attributes[i];
 		}

@@ -163,6 +163,10 @@ public class FontUtils {
 		return new PointF(defWidth, defHeight);
 	}
 
+	public static TArray<String> splitLines(String text, IFont font, float width) {
+		return splitLines(text, font, width, null);
+	}
+
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
 	 * 
@@ -173,13 +177,12 @@ public class FontUtils {
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> splitLines(String text, IFont font, float width) {
-
-		TArray<String> list = new TArray<String>();
-		if (text == null) {
-			return list;
+	public static TArray<String> splitLines(String text, IFont font, float width, TArray<String> temp) {
+		if (temp == null) {
+			temp = new TArray<String>();
+		} else {
+			temp.clear();
 		}
-
 		if (width <= 1) {
 			if (text.indexOf(LSystem.LF) == -1) {
 				width = (int) measureText(font, text);
@@ -197,7 +200,7 @@ public class FontUtils {
 
 		while (i <= str.length()) {
 			if (i == str.length()) {
-				list.add(line);
+				temp.add(line);
 				break;
 			}
 
@@ -216,7 +219,7 @@ public class FontUtils {
 					}
 				}
 				i += (c == LSystem.LF ? 1 : 0);
-				list.add(line);
+				temp.add(line);
 				line = LSystem.EMPTY;
 				str = str.substring(i);
 				i = 0;
@@ -225,8 +228,7 @@ public class FontUtils {
 				i++;
 			}
 		}
-
-		return list;
+		return temp;
 	}
 
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {

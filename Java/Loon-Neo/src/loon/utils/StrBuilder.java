@@ -126,9 +126,30 @@ public class StrBuilder implements CharSequence, Appendable {
 		if (index < this._currentIndex) {
 			System.arraycopy(this._values, index, this._values, index + length, this._currentIndex - index);
 		} else if (index > this._currentIndex) {
-			CollectionUtils.fill(this._values, this._currentIndex, index, LSystem.SPACE);
+			CollectionUtils.fill(this._values, this._currentIndex, index, '\0');
 		}
 		this._dirty = true;
+	}
+
+	public boolean endsWith(final String str) {
+		if (str == null) {
+			return false;
+		}
+		final int len = str.length();
+		if (len == 0) {
+			return true;
+		}
+		final int size = length();
+		if (len > size) {
+			return false;
+		}
+		int pos = size - len;
+		for (int i = 0; i < len; i++, pos++) {
+			if (_values[pos] != str.charAt(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private void ensureCapacity(int minimumCapacity) {
@@ -277,11 +298,11 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	@Override
-	public StrBuilder append(CharSequence cs) {
+	public StrBuilder append(final CharSequence cs) {
 		return insert(this._currentIndex, cs);
 	}
 
-	public StrBuilder append(CharSequence... cs) {
+	public StrBuilder append(final CharSequence... cs) {
 		if (cs == null) {
 			return this;
 		}
@@ -292,22 +313,22 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	@Override
-	public StrBuilder append(CharSequence cs, int start, int end) {
+	public StrBuilder append(final CharSequence cs, int start, int end) {
 		return insert(this._currentIndex, cs, start, end);
 	}
 
-	public StrBuilder line(CharSequence cs) {
+	public StrBuilder line(final CharSequence cs) {
 		return append(cs).append(LSystem.CR).append(LSystem.LF);
 	}
 
-	public StrBuilder insert(int index, Object o) {
+	public StrBuilder insert(int index, final Object o) {
 		if (o instanceof CharSequence) {
 			return insert(index, (CharSequence) o);
 		}
 		return insert(index, HelperUtils.toStr(o));
 	}
 
-	public StrBuilder insert(int index, char c) {
+	public StrBuilder insert(int index, final char c) {
 		updateIndex(index, 1);
 		this._values[index] = c;
 		this._currentIndex = MathUtils.max(this._currentIndex, index) + 1;
@@ -315,14 +336,14 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this;
 	}
 
-	public StrBuilder insert(int index, char[] src) {
+	public StrBuilder insert(int index, final char[] src) {
 		if (CollectionUtils.isEmpty(src)) {
 			return this;
 		}
 		return insert(index, src, 0, src.length);
 	}
 
-	public StrBuilder insert(int index, char[] src, int srcPos, int length) {
+	public StrBuilder insert(int index, final char[] src, int srcPos, int length) {
 		if (CollectionUtils.isEmpty(src) || srcPos > src.length || length <= 0) {
 			return this;
 		}
@@ -341,35 +362,42 @@ public class StrBuilder implements CharSequence, Appendable {
 		return this;
 	}
 
-	public StrBuilder insert(int index, CharSequence cs) {
-		if (cs == null) {
-			cs = LSystem.NULL;
+	public StrBuilder insert(int index, final CharSequence cs) {
+		CharSequence newStr = cs;
+		if (newStr == null) {
+			newStr = LSystem.NULL;
 		}
-		int len = cs.length();
-		updateIndex(index, cs.length());
-		if (cs instanceof String) {
-			((String) cs).getChars(0, len, this._values, index);
-		} else if (cs instanceof StringBuilder) {
-			((StringBuilder) cs).getChars(0, len, this._values, index);
-		} else if (cs instanceof StringBuffer) {
-			((StringBuffer) cs).getChars(0, len, this._values, index);
-		} else if (cs instanceof StrBuilder) {
-			((StrBuilder) cs).getChars(0, len, this._values, index);
-		} else {
-			for (int i = 0, j = this._currentIndex; i < len; i++, j++) {
-				this._values[j] = cs.charAt(i);
+		final int charLength = newStr.length();
+		if (charLength > 0) {
+			updateIndex(index, newStr.length());
+			if (newStr instanceof String) {
+				((String) newStr).getChars(0, charLength, this._values, index);
+			} else if (newStr instanceof StringBuilder) {
+				((StringBuilder) newStr).getChars(0, charLength, this._values, index);
+			} else if (newStr instanceof StringBuffer) {
+				((StringBuffer) newStr).getChars(0, charLength, this._values, index);
+			} else if (newStr instanceof StrBuilder) {
+				((StrBuilder) newStr).getChars(0, charLength, this._values, index);
+			} else {
+				for (int i = 0, j = this._currentIndex; i < charLength; i++, j++) {
+					this._values[j] = newStr.charAt(i);
+				}
 			}
+			this._currentIndex = MathUtils.max(this._currentIndex, index) + charLength;
+			this._dirty = true;
 		}
-		this._currentIndex = MathUtils.max(this._currentIndex, index) + len;
-		this._dirty = true;
 		return this;
 	}
 
-	public StrBuilder insert(int index, CharSequence cs, int start, int end) {
-		if (cs == null) {
-			cs = LSystem.NULL;
+	public StrBuilder insert(int index, final CharSequence cs, int start, int end) {
+		CharSequence newStr = cs;
+		if (newStr == null) {
+			newStr = LSystem.NULL;
 		}
-		final int charLength = cs.length();
+		final int charLength = newStr.length();
+		if (charLength == 0) {
+			return this;
+		}
 		if (start > charLength) {
 			return this;
 		}
@@ -388,11 +416,24 @@ public class StrBuilder implements CharSequence, Appendable {
 		final int length = end - start;
 		updateIndex(index, length);
 		for (int i = start, j = this._currentIndex; i < end; i++, j++) {
-			_values[j] = cs.charAt(i);
+			_values[j] = newStr.charAt(i);
 		}
 		this._currentIndex = MathUtils.max(this._currentIndex, index) + length;
 		this._dirty = true;
 		return this;
+	}
+
+	protected char[] getThisChars() {
+		return _values;
+	}
+
+	public char[] getChars(char[] target) {
+		final int len = length();
+		if (target == null || target.length < len) {
+			target = new char[len];
+		}
+		System.arraycopy(_values, 0, target, 0, len);
+		return target;
 	}
 
 	public StrBuilder getChars(int begin, int end, char[] dst, int dstBegin) {
@@ -713,7 +754,7 @@ public class StrBuilder implements CharSequence, Appendable {
 	}
 
 	public StrBuilder reset() {
-		return reset(0);
+		return reset(_values == null ? 0 : _values.length);
 	}
 
 	public StrBuilder reset(int cap) {
@@ -721,6 +762,8 @@ public class StrBuilder implements CharSequence, Appendable {
 		this._hash = 0;
 		if (this._values == null || cap != this._values.length) {
 			this._values = new char[cap];
+		} else {
+			CollectionUtils.fill(this._values, this._currentIndex, this._values.length, '\0');
 		}
 		this._dirty = true;
 		this._tempResult = null;

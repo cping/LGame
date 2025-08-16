@@ -120,7 +120,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		this.source = src;
 		this.font = LSystem.getSystemGameFont();
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
-		this.mesh = new Submit();
+		this.mesh = Submit.create();
 		this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
 	}

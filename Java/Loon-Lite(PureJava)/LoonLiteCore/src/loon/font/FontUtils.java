@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -145,7 +145,7 @@ public class FontUtils {
 
 	public static PointF getTextWidthAndHeight(IFont font, String message, float defWidth, float defHeight) {
 		if (font != null && message != null) {
-			TArray<CharSequence> result = new TArray<>();
+			TArray<CharSequence> result = new TArray<CharSequence>();
 			result = splitLines(message, result);
 			float maxWidth = 0f;
 			float space = font.getSize() / 4f;
@@ -162,23 +162,26 @@ public class FontUtils {
 		return new PointF(defWidth, defHeight);
 	}
 
+	public static TArray<String> splitLines(String text, IFont font, float width) {
+		return splitLines(text, font, width, null);
+	}
+
 	/**
 	 * 返回指定字符串，匹配指定字体后，在指定宽度内的每行应显示字符串.
-	 *
+	 * 
 	 * PS:此项不处理LSystem.LF外的特殊操作符
-	 *
+	 * 
 	 * @param text
 	 * @param font
 	 * @param width
 	 * @return
 	 */
-	public static TArray<String> splitLines(String text, IFont font, float width) {
-
-		TArray<String> list = new TArray<>();
-		if (text == null) {
-			return list;
+	public static TArray<String> splitLines(String text, IFont font, float width, TArray<String> temp) {
+		if (temp == null) {
+			temp = new TArray<String>();
+		} else {
+			temp.clear();
 		}
-
 		if (width <= 1) {
 			if (text.indexOf(LSystem.LF) == -1) {
 				width = (int) measureText(font, text);
@@ -196,7 +199,7 @@ public class FontUtils {
 
 		while (i <= str.length()) {
 			if (i == str.length()) {
-				list.add(line);
+				temp.add(line);
 				break;
 			}
 
@@ -215,7 +218,7 @@ public class FontUtils {
 					}
 				}
 				i += (c == LSystem.LF ? 1 : 0);
-				list.add(line);
+				temp.add(line);
 				line = LSystem.EMPTY;
 				str = str.substring(i);
 				i = 0;
@@ -224,8 +227,7 @@ public class FontUtils {
 				i++;
 			}
 		}
-
-		return list;
+		return temp;
 	}
 
 	public static <T extends TArray<CharSequence>> T splitLines(final CharSequence chars, final T result) {
@@ -515,4 +517,5 @@ public class FontUtils {
 		}
 		return new int[] { vy, hiddenIndex };
 	}
+
 }

@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,7 +21,7 @@
 package loon;
 
 import loon.canvas.LColor;
-import loon.component.Print;
+import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -42,7 +42,11 @@ public class LogDisplay {
 
 	}
 
+	private final static String _fontTest = "有";
+
 	private final TArray<LogDisplayItem> _texts;
+
+	private TArray<String> _textList;
 
 	private IFont _textFont;
 
@@ -56,6 +60,10 @@ public class LogDisplay {
 
 	private int _space = 5;
 
+	private int _defWidth = -1;
+
+	private int _defHeight = -1;
+
 	public LogDisplay() {
 		this(LSystem.getSystemLogFont());
 	}
@@ -65,7 +73,7 @@ public class LogDisplay {
 	}
 
 	public LogDisplay(IFont font, int w, int h, LColor color) {
-		this._texts = new TArray<>();
+		this._texts = new TArray<LogDisplayItem>();
 		this._textFontColor = color;
 		this.setSize(w, h);
 		this.setFont(font);
@@ -80,8 +88,12 @@ public class LogDisplay {
 	}
 
 	public void setSize(int w, int h) {
-		this._width = w;
-		this._height = h;
+		if (w != this._width || h != this._height) {
+			this._width = w;
+			this._height = h;
+			this._texts.clear();
+			this.resetDef();
+		}
 	}
 
 	public void paint(GLEx g, int x, int y) {
@@ -106,13 +118,12 @@ public class LogDisplay {
 		if (StringUtils.isEmpty(message)) {
 			return this;
 		}
-
-		int limitWidth = _width - _space;
-		TArray<String> textList = Print.formatMessage(message, _textFont, limitWidth);
-		boolean limit = (textList.size * _textFont.getSize() > limitWidth);
+		final int limitWidth = _width - _space;
+		TArray<String> textList = FontUtils.splitLines(message, _textFont, limitWidth, _textList);
+		final boolean limit = (textList.size * getFontWidth() > limitWidth);
 		if (limit || textList.size > 0 || message.indexOf(LSystem.LF) != -1) {
 			if (limit) {
-				textList = Print.formatMessage(message, _textFont, limitWidth - _space);
+				textList = FontUtils.splitLines(message, _textFont, limitWidth - _space, _textList);
 			}
 			for (String text : textList) {
 				_texts.add(new LogDisplayItem(text, color));
@@ -130,7 +141,7 @@ public class LogDisplay {
 	}
 
 	public String getText() {
-		StrBuilder sbr = new StrBuilder();
+		final StrBuilder sbr = new StrBuilder();
 		if (_texts != null) {
 			for (int i = 0; i < _texts.size; i++) {
 				sbr.append(_texts.get(i));
@@ -153,10 +164,39 @@ public class LogDisplay {
 	}
 
 	public void setFont(IFont font) {
+		if (font == null) {
+			return;
+		}
 		this._textFont = font;
-		this._textHeight = font.getSize() + 5;
-		this._textAmount = ((_height - font.getHeight()) / this._textHeight) - 3;
-		this._space = _textFont.getSize() / 4;
+		final int textHeight = getFontHeight();
+		this._textHeight = textHeight + 5;
+		this._textAmount = ((_height - textHeight) / this._textHeight) - 3;
+		this._space = LSystem.isMobile() ? (int) (getFontWidth() * 3.1f) : (int) (getFontWidth() * 2.1f);
+		this.resetDef();
+	}
+
+	private void resetDef() {
+		_defWidth = _defHeight = -1;
+	}
+
+	private int getFontWidth() {
+		if (_textFont != null) {
+			if (_defWidth <= 0) {
+				_defWidth = _textFont.stringWidth(_fontTest) + 1;
+			}
+			return MathUtils.max(_defWidth, LSystem.DEFAULT_SYS_FONT_SIZE);
+		}
+		return LSystem.DEFAULT_SYS_FONT_SIZE;
+	}
+
+	private int getFontHeight() {
+		if (_textFont != null) {
+			if (_defHeight <= 0) {
+				_defHeight = _textFont.stringHeight(_fontTest) + 1;
+			}
+			return MathUtils.max(_defHeight, LSystem.DEFAULT_SYS_FONT_SIZE);
+		}
+		return LSystem.DEFAULT_SYS_FONT_SIZE;
 	}
 
 	public IFont getFont() {

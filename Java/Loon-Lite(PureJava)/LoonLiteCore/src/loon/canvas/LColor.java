@@ -470,6 +470,22 @@ public class LColor implements Serializable {
 		}
 	}
 
+	public static final int premultiplyTint(int tint, float alpha) {
+		if (alpha == 1f) {
+			return ((int) (alpha * 255) << 24) + tint;
+		}
+		if (alpha == 0f) {
+			return 0;
+		}
+		int r = ((tint >> 16) & 0xFF);
+		int g = ((tint >> 8) & 0xFF);
+		int b = (tint & 0xFF);
+		r = ((int) ((r * alpha) + 0.5f)) | 0;
+		g = ((int) ((g * alpha) + 0.5)) | 0;
+		b = ((int) ((b * alpha) + 0.5)) | 0;
+		return ((int) (alpha * 255) << 24) + (r << 16) + (g << 8) + b;
+	}
+
 	public static final int[] getRGBs(final int pixel) {
 		int[] rgbs = new int[3];
 		rgbs[0] = (pixel >> 16) & 0xFF;

@@ -456,4 +456,10 @@ public class PlayerUtils extends Director {
 		return (src.getHeight() / 2f) + (dst.getHeight() / 2f - allowDistance);
 	}
 
+	public final static void destroy(LRelease r) {
+		if (r != null) {
+			r.close();
+		}
+	}
+
 }

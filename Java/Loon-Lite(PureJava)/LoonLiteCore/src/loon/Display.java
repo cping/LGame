@@ -822,6 +822,9 @@ public class Display extends BaseIO implements LRelease {
 		if (_closed) {
 			return this;
 		}
+		if (_logDisplay != null) {
+			_logDisplay.setSize(viewWidth, viewHeight);
+		}
 		_process.resize(viewWidth, viewHeight);
 		if (_glEx != null) {
 			_glEx.resize();

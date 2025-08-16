@@ -28,11 +28,18 @@ import loon.LSystem;
 
 public class Submit implements LRelease {
 
+	public static Submit create() {
+		return new Submit();
+	}
+
 	private int glType = GL20.GL_TRIANGLES;
 
 	private boolean main_draw_running = false;
 
 	private boolean need_stop_main_readering = false;
+
+	private Submit() {
+	}
 
 	public final Mesh getMesh(String n, int size) {
 		return LSystem.getMeshPool(n, size);

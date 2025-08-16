@@ -161,7 +161,7 @@ public class LTextureBatch implements LRelease {
 		this.source = src;
 		this.shader = defaultShader;
 		this.expandVertices = new ExpandVertices(size);
-		this.mesh = new Submit();
+		this.mesh = Submit.create();
 	}
 
 	/**

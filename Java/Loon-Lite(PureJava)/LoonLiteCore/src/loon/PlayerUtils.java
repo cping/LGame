@@ -46,7 +46,7 @@ import loon.utils.reply.Nullable;
  *
  */
 public class PlayerUtils extends Director {
-	
+
 	/**
 	 * 转换指定对象为一个非空的Nullable实体对象
 	 * 
@@ -440,4 +440,9 @@ public class PlayerUtils extends Director {
 		return (src.getHeight() / 2f) + (dst.getHeight() / 2f - allowDistance);
 	}
 
+	public final static void destroy(LRelease r) {
+		if (r != null) {
+			r.close();
+		}
+	}
 }
