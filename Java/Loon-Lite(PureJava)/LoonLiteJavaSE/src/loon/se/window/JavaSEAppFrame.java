@@ -347,6 +347,7 @@ public class JavaSEAppFrame extends JFrame implements JavaSEApp<JavaSEAppFrame>,
 					} catch (IllegalArgumentException ex) {
 					}
 					setSize(displayMode.getWidth(), displayMode.getHeight());
+					JavaSEGame.makeOSXFullscreen(frame);
 				}
 				setResizable(false);
 				setAlwaysOnTop(false);

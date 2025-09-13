@@ -39,6 +39,11 @@ public class ContextAssetLoader extends AssetAbstractLoader<String> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _context != null;
+	}
+
+	@Override
 	public boolean completed() {
 		return true;
 	}

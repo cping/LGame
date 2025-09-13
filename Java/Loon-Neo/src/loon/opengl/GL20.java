@@ -338,6 +338,10 @@ public abstract class GL20 {
 	public static final int GL_FRAMEBUFFER_UNSUPPORTED = 0x8CDD;
 	public static final int GL_FRAMEBUFFER_BINDING = 0x8CA6;
 	public static final int GL_RENDERBUFFER_BINDING = 0x8CA7;
+	public static final int GL_DRAW_FRAMEBUFFER_BINDING = 0x8CA6;
+	public static final int GL_READ_FRAMEBUFFER_BINDING = 0x8CAA;
+	public static final int GL_READ_FRAMEBUFFER = 0x8CA8;
+	public static final int GL_DRAW_FRAMEBUFFER = 0x8CA9;
 	public static final int GL_MAX_RENDERBUFFER_SIZE = 0x84E8;
 	public static final int GL_INVALID_FRAMEBUFFER_OPERATION = 0x0506;
 

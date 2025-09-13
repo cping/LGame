@@ -34,7 +34,9 @@ import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
+import loon.Support;
 import loon.canvas.Image;
+import loon.canvas.LColor;
 import loon.utils.GLUtils;
 import loon.utils.TArray;
 
@@ -445,6 +447,87 @@ public abstract class GLFrameBuffer implements LRelease {
 		}
 		gl.glDeleteFramebuffer(framebufferHandle);
 		LSystem.removeFrameBuffer(this);
+	}
+
+	public int[] readPixels(int x, int y, int width, int height) {
+		return readPixels(LSystem.base().graphics().gl, x, y, width, height);
+	}
+
+	public int[] readPixels(GL20 gl, int x, int y, int width, int height) {
+		return readPixels(gl, x, y, width, height, true, true);
+	}
+
+	public int[] readPixels(GL20 gl, int x, int y, int width, int height, boolean flipY, boolean alpha) {
+		final Support support = LSystem.base().support();
+		final int oldReadBuffer = gl.glGetInteger(GL20.GL_READ_FRAMEBUFFER_BINDING);
+		gl.glBindFramebuffer(GL20.GL_READ_FRAMEBUFFER, framebufferHandle);
+		final int bits = alpha ? 4 : 3;
+		final int pixelSize = width * height;
+		final int numBytes = pixelSize * bits;
+		final ByteBuffer pixels = support.newByteBuffer(numBytes);
+		gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+		gl.glReadPixels(x, y, width, height, alpha ? GL20.GL_RGBA : GL20.GL_RGB, GL20.GL_UNSIGNED_BYTE, pixels);
+		final int[] intPixels = new int[pixelSize];
+		int idx = 0;
+		if (flipY) {
+			final int offset = -width * 2;
+			int rev = width * (height - 1);
+			for (int j = 0; j < height; j++) {
+				for (int i = 0; i < width; i++) {
+					if (alpha) {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						int a = pixels.get(idx++) & 0xFF;
+						intPixels[rev] = LColor.argb(a, r, g, b);
+					} else {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						intPixels[rev] = LColor.rgb(r, g, b);
+					}
+					rev++;
+				}
+				rev += offset;
+			}
+		} else {
+			int dst = 0;
+			for (int y1 = 0; y1 < height; y1++) {
+				for (int x1 = 0; x1 < width; x1++) {
+					if (alpha) {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						int a = pixels.get(idx++) & 0xFF;
+						intPixels[dst + x1] = LColor.argb(a, r, g, b);
+					} else {
+						int r = pixels.get(idx++) & 0xFF;
+						int g = pixels.get(idx++) & 0xFF;
+						int b = pixels.get(idx++) & 0xFF;
+						intPixels[dst + x1] = LColor.rgb(r, g, b);
+					}
+				}
+				dst += width;
+			}
+		}
+		gl.glBindFramebuffer(GL20.GL_READ_FRAMEBUFFER, oldReadBuffer);
+		return intPixels;
+	}
+
+	public void copyToTexture(int texid) {
+		copyToTexture(LSystem.base().graphics().gl, texid);
+	}
+
+	public void copyToTexture(GL20 gl, int texid) {
+		copyToTexture(gl, texid, getWidth(), getHeight());
+	}
+
+	public void copyToTexture(GL20 gl, int texid, int w, int h) {
+		final int oldReadBuffer = gl.glGetInteger(GL20.GL_READ_FRAMEBUFFER_BINDING);
+		gl.glBindFramebuffer(GL20.GL_READ_FRAMEBUFFER, framebufferHandle);
+		gl.glBindTexture(GL_TEXTURE_2D, texid);
+		gl.glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, w, h);
+		gl.glBindFramebuffer(GL20.GL_READ_FRAMEBUFFER, oldReadBuffer);
 	}
 
 	public void bind() {

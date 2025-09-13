@@ -87,6 +87,22 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return result;
 	}
 
+	public final static Vector4f x(float x) {
+		return new Vector4f(x, 0f, 0f, 0f);
+	}
+
+	public final static Vector4f y(float y) {
+		return new Vector4f(0f, y, 0f, 0f);
+	}
+
+	public final static Vector4f z(float z) {
+		return new Vector4f(0f, 0f, z, 0f);
+	}
+
+	public final static Vector4f w(float w) {
+		return new Vector4f(0f, 0f, 0f, w);
+	}
+
 	public final static boolean isNan(XYZW v) {
 		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY()) || MathUtils.isNan(v.getZ())
 				|| MathUtils.isNan(v.getW());

@@ -33,6 +33,11 @@ public class PixmapAssetLoader extends AssetAbstractLoader<Pixmap> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _image != null && !_image.isClosed();
+	}
+
+	@Override
 	public boolean completed() {
 		Image img = BaseIO.loadImage(_path);
 		if (img == null) {

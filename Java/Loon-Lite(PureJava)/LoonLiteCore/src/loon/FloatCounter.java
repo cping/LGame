@@ -27,6 +27,10 @@ import loon.utils.StringKeyValue;
 
 public class FloatCounter implements SetIV<Float>, IV<Float> {
 
+	public static FloatCounter of(int n) {
+		return new FloatCounter(n);
+	}
+
 	private final float _min;
 
 	private final float _max;
@@ -70,7 +74,7 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 	public float limit(float min, float max) {
 		return MathUtils.limit(_value, min, max);
 	}
-	
+
 	public float next(float v) {
 		return increment(v);
 	}
@@ -197,6 +201,58 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 		return reduction(_def_value);
 	}
 
+	public int rangeValue(final int from, final int to) {
+		return (int) (from + this._value * (to - from));
+	}
+
+	public float rangeValue(final float from, final float to) {
+		return from + this._value * (to - from);
+	}
+
+	public boolean isZero() {
+		return this._value == 0;
+	}
+
+	public boolean isMin() {
+		return MathUtils.equal(this._max, this._value);
+	}
+
+	public boolean isMax() {
+		return MathUtils.equal(this._min, this._value);
+	}
+
+	public FloatCounter invert() {
+		return new FloatCounter(this._max - this._value);
+	}
+
+	public FloatCounter add(final FloatCounter v) {
+		if (v == null) {
+			return new FloatCounter();
+		}
+		return new FloatCounter(this._value + v._value);
+	}
+
+	public FloatCounter sub(final FloatCounter v) {
+		if (v == null) {
+			return new FloatCounter();
+		}
+		return new FloatCounter(this._value - v._value);
+	}
+
+	public FloatCounter mul(final FloatCounter v) {
+		if (v == null) {
+			return new FloatCounter();
+		}
+		return new FloatCounter(this._value * v._value);
+	}
+
+	public FloatCounter div(final FloatCounter v) {
+		if (v == null) {
+			return new FloatCounter();
+		}
+		return new FloatCounter(this._value / v._value);
+	}
+
 	public FloatCounter clear() {
 		this._value = 0;
 		return this;
@@ -205,10 +261,7 @@ public class FloatCounter implements SetIV<Float>, IV<Float> {
 	@Override
 	public String toString() {
 		StringKeyValue v = new StringKeyValue("FloatCounter");
-		v.kv("value", _value).comma()
-		       .kv("min", _min).comma()
-		       .kv("max", _max).comma()
-		       .kv("defaultUpdate", _def_value);
+		v.kv("value", _value).comma().kv("min", _min).comma().kv("max", _max).comma().kv("defaultUpdate", _def_value);
 		return v.toString();
 	}
 }

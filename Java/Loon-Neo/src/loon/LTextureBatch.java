@@ -75,9 +75,7 @@ public class LTextureBatch implements LRelease {
 		public Cache(LTextureBatch batch) {
 			count = batch.count;
 			vertexIdx = batch.vertexIdx;
-			float[] verts = batch.expandVertices.getVertices();
-			vertices = new float[verts.length];
-			System.arraycopy(verts, 0, vertices, 0, verts.length);
+			vertices = batch.expandVertices.cpy(vertexIdx);
 		}
 
 		public boolean isClosed() {
@@ -160,7 +158,7 @@ public class LTextureBatch implements LRelease {
 		this.setTexture(tex);
 		this.source = src;
 		this.shader = defaultShader;
-		this.expandVertices = new ExpandVertices(size);
+		this.expandVertices = ExpandVertices.getVerticeCache(size);
 		this.mesh = Submit.create();
 	}
 

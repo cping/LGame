@@ -32,6 +32,11 @@ public class ImageAssetLoader extends AssetAbstractLoader<Image> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _image != null && !_image.isClosed();
+	}
+
+	@Override
 	public boolean completed() {
 		_image = BaseIO.loadImage(_path);
 		return _image != null;

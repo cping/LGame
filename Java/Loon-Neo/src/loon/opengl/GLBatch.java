@@ -106,7 +106,7 @@ public class GLBatch implements LRelease {
 		if (customShader == null) {
 			VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
 			mesh = new Mesh(false, maxSize, 0, attribs);
-			expandVertices = new ExpandVertices(maxSize * (mesh.getVertexAttributes().vertexSize / 4));
+			expandVertices = ExpandVertices.getVerticeCache(maxSize * (mesh.getVertexAttributes().vertexSize / 4));
 			vertexSize = mesh.getVertexAttributes().vertexSize / 4;
 			normalOffset = mesh.getVertexAttribute(Usage.Normal) != null
 					? mesh.getVertexAttribute(Usage.Normal).offset / 4

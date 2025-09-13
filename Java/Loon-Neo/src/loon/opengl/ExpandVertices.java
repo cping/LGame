@@ -20,9 +20,30 @@
  */
 package loon.opengl;
 
+import loon.LSystem;
 import loon.utils.CollectionUtils;
+import loon.utils.IntMap;
+import loon.utils.MathUtils;
 
 public class ExpandVertices {
+
+	private final static IntMap<ExpandVertices> _verticeCaches = new IntMap<ExpandVertices>();
+
+	public final static ExpandVertices getVerticeCache(int cacheSize) {
+		if (_verticeCaches.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			_verticeCaches.clear();
+		}
+		ExpandVertices vertices = _verticeCaches.get(cacheSize);
+		if (vertices == null) {
+			vertices = new ExpandVertices(cacheSize);
+			_verticeCaches.put(cacheSize, vertices);
+		}
+		return vertices;
+	}
+
+	public final static void clearVerticeCache() {
+		_verticeCaches.clear();
+	}
 
 	private static final int START_VERTS = 20;
 
@@ -78,7 +99,8 @@ public class ExpandVertices {
 		while (newVerts < vertCount) {
 			newVerts += EXPAND_VERTS;
 		}
-		this.vertices = CollectionUtils.expand(this.vertices, newVerts * vertexSize());
+		final int size = MathUtils.iceil(newVerts * vertexSize() * 0.75f);
+		this.vertices = CollectionUtils.expand(this.vertices, size);
 	}
 
 	public final void setVertice(int index, float v) {
@@ -92,4 +114,11 @@ public class ExpandVertices {
 		return this.vertices;
 	}
 
+	public final float[] cpy() {
+		return CollectionUtils.copyOf(this.vertices);
+	}
+
+	public final float[] cpy(int size) {
+		return CollectionUtils.copyOf(this.vertices, size);
+	}
 }

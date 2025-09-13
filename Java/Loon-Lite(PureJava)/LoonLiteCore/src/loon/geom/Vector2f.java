@@ -80,6 +80,14 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return result;
 	}
 
+	public final static Vector2f x(float x) {
+		return new Vector2f(x, 0f);
+	}
+
+	public final static Vector2f y(float y) {
+		return new Vector2f(0f, y);
+	}
+
 	public final static boolean isNan(XY v) {
 		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY());
 	}
@@ -190,6 +198,19 @@ public class Vector2f implements Serializable, SetXY, XY {
 			return null;
 		}
 		return s.mul(u).addSelf(q);
+	}
+
+	public final static float getMaxLength(final Vector2f[] vecs) {
+		if (vecs == null) {
+			return 0f;
+		}
+		float maxLength = 0;
+		for (int i = 0; i < vecs.length - 1; i++) {
+			for (int j = i + 1; j < vecs.length; j++) {
+				maxLength = MathUtils.max(maxLength, vecs[i].distance(vecs[j]));
+			}
+		}
+		return maxLength;
 	}
 
 	public final static Vector2f bounce(Vector2f ri, Vector2f normal, float restitution, float friction) {

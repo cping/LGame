@@ -47,6 +47,20 @@ public class LColor implements Serializable {
 	// 默认黑色透明区域
 	public static final int TRANSPARENT = 0;
 
+	// 最小色彩数值
+	public static final int MIN_COLOR = 0;
+
+	// 最大色彩数值
+	public static final int MAX_COLOR = 255;
+
+	public final static boolean isColorValue(float c) {
+		return (c >= MIN_COLOR && c <= 1f);
+	}
+
+	public final static boolean isColorValue(int c) {
+		return (c >= MIN_COLOR && c <= MAX_COLOR);
+	}
+
 	public final static boolean isColorValue(String c) {
 		if (StringUtils.isNullOrEmpty(c)) {
 			return false;
@@ -1525,6 +1539,16 @@ public class LColor implements Serializable {
 	public float brightness() {
 		return (MathUtils.sqrt(0.299f * MathUtils.pow(this.r, 2f) + 0.587f * MathUtils.pow(this.g, 2f)
 				+ 0.114f * MathUtils.pow(this.b, 2f)));
+	}
+
+	public float difference(LColor c) {
+		if (c == null) {
+			return 0f;
+		}
+		final float ra = c.r - r;
+		final float ga = c.g - g;
+		final float ba = c.b - b;
+		return MathUtils.sqrt(ra * ra + ga * ga + ba * ba);
 	}
 
 	public LColor setColorValue(int r, int g, int b, int a) {

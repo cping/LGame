@@ -34,6 +34,11 @@ public class BDFontAssetLoader extends AssetAbstractLoader<BDFont> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _font != null && !_font.isClosed();
+	}
+
+	@Override
 	public boolean completed() {
 		if (_fontSize <= 0) {
 			_font = new BDFont(_path);

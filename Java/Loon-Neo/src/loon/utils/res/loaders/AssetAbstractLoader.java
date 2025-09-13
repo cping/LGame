@@ -37,7 +37,24 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 		this._nickname = nickname;
 	}
 
+	public T sync() {
+		if (!isLoaded()) {
+			completed();
+		}
+		return get();
+	}
+
+	public abstract boolean isLoaded();
+
 	public abstract T get();
+
+	public boolean load() {
+		return completed();
+	}
+
+	public void unload() {
+		close();
+	}
 
 	@Override
 	public String getPath() {

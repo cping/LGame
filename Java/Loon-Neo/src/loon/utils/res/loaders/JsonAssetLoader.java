@@ -35,6 +35,11 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _json != null;
+	}
+
+	@Override
 	public boolean completed() {
 		_context = BaseIO.loadText(_path);
 		if (_context == null && _path.indexOf('.') == -1) {

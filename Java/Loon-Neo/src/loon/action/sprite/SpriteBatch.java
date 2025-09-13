@@ -122,7 +122,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		this.colorTexture = LSystem.base().graphics().finalColorTex();
 		this.mesh = Submit.create();
 		this.shader = defaultShader;
-		this.expandVertices = new ExpandVertices(size);
+		this.expandVertices = ExpandVertices.getVerticeCache(size);
 	}
 
 	public void setShaderUniformf(String name, LColor color) {

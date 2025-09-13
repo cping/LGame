@@ -32,6 +32,11 @@ public class TextureAssetLoader extends AssetAbstractLoader<LTexture> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _texture != null && !_texture.isClosed() && _texture.isLoaded();
+	}
+
+	@Override
 	public boolean completed() {
 		_texture = BaseIO.loadTexture(_path);
 		return _texture != null;

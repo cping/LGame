@@ -32,6 +32,10 @@ import loon.utils.StringKeyValue;
  */
 public class Counter implements SetIV<Integer>, IV<Integer> {
 
+	public static Counter of(int n) {
+		return new Counter(n);
+	}
+
 	private final int _min;
 
 	private final int _max;
@@ -200,6 +204,58 @@ public class Counter implements SetIV<Integer>, IV<Integer> {
 
 	public int reduction() {
 		return reduction(_def_value);
+	}
+
+	public int rangeValue(final int from, final int to) {
+		return (int) (from + this._value * (to - from));
+	}
+
+	public float rangeValue(final float from, final float to) {
+		return from + this._value * (to - from);
+	}
+
+	public boolean isZero() {
+		return this._value == 0;
+	}
+
+	public boolean isMin() {
+		return this._max == this._value;
+	}
+
+	public boolean isMax() {
+		return this._min == this._value;
+	}
+
+	public Counter invert() {
+		return new Counter(this._max - this._value);
+	}
+
+	public Counter add(final Counter v) {
+		if (v == null) {
+			return new Counter();
+		}
+		return new Counter(this._value + v._value);
+	}
+
+	public Counter sub(final Counter v) {
+		if (v == null) {
+			return new Counter();
+		}
+		return new Counter(this._value - v._value);
+	}
+
+	public Counter mul(final Counter v) {
+		if (v == null) {
+			return new Counter();
+		}
+		return new Counter(this._value * v._value);
+	}
+
+	public Counter div(final Counter v) {
+		if (v == null) {
+			return new Counter();
+		}
+		return new Counter(this._value / v._value);
 	}
 
 	public Counter clear() {

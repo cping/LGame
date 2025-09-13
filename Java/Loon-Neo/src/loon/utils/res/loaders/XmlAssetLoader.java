@@ -41,6 +41,11 @@ public class XmlAssetLoader extends AssetAbstractLoader<XMLDocument> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _xmlDoc != null && !_xmlDoc.isClosed();
+	}
+
+	@Override
 	public boolean completed() {
 		return (_xmlDoc = XMLParser.parse(_path, _listener)) != null;
 	}

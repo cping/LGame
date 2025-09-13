@@ -87,8 +87,8 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static int[][] copyOf(int[][] data) {
-		int size = data.length;
-		int[][] copy = new int[size][];
+		final int size = data.length;
+		final int[][] copy = new int[size][];
 		for (int i = 0; i < size; i++) {
 			int len = data[i].length;
 			int[] res = new int[len];
@@ -116,7 +116,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static LComponent[] copyOf(LComponent[] data, int newSize) {
-		LComponent tempArr[] = new LComponent[newSize];
+		final LComponent[] tempArr = new LComponent[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -139,7 +139,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static String[] copyOf(String[] data, int newSize) {
-		String tempArr[] = new String[newSize];
+		final String[] tempArr = new String[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -153,7 +153,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static String[] copyOf(String[] data, int start, int end) {
-		String[] tempArr = new String[end - start];
+		final String[] tempArr = new String[end - start];
 		for (int i = start, j = 0; i < end; i++, j++) {
 			tempArr[j] = data[i];
 		}
@@ -161,7 +161,7 @@ final public class CollectionUtils {
 	}
 
 	public static ISprite[] copyOf(ISprite[] data, int start, int end) {
-		ISprite[] tempArr = new ISprite[end - start];
+		final ISprite[] tempArr = new ISprite[end - start];
 		for (int i = start, j = 0; i < end; i++, j++) {
 			tempArr[j] = data[i];
 		}
@@ -178,7 +178,7 @@ final public class CollectionUtils {
 	 */
 	public static <T> T[] copyOf(T[] data, int start, int end) {
 		@SuppressWarnings("unchecked")
-		T[] tempArr = (T[]) new Object[end - start];
+		final T[] tempArr = (T[]) new Object[end - start];
 		for (int i = start, j = 0; i < end; i++, j++) {
 			tempArr[j] = data[i];
 		}
@@ -193,7 +193,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static ISprite[] copyOf(ISprite[] data, int newSize) {
-		ISprite tempArr[] = new ISprite[newSize];
+		final ISprite[] tempArr = new ISprite[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -206,7 +206,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Actor[] copyOf(Actor[] data, int newSize) {
-		Actor tempArr[] = new Actor[newSize];
+		final Actor[] tempArr = new Actor[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -219,7 +219,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Vector2f[] copy(Vector2f[] data, int newSize) {
-		Vector2f tempArr[] = new Vector2f[newSize];
+		final Vector2f[] tempArr = new Vector2f[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -232,7 +232,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static LColor[] copyOf(LColor[] data, int newSize) {
-		LColor tempArr[] = new LColor[newSize];
+		final LColor tempArr[] = new LColor[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -245,7 +245,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Object[] copyOf(Object[] data, int newSize) {
-		Object tempArr[] = new Object[newSize];
+		final Object tempArr[] = new Object[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -268,7 +268,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static int[] copyOf(int[] data, int newSize) {
-		int tempArr[] = new int[newSize];
+		final int tempArr[] = new int[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -291,7 +291,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static double[] copyOf(double[] data, int newSize) {
-		double tempArr[] = new double[newSize];
+		final double tempArr[] = new double[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -314,7 +314,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static float[] copyOf(float[] data, int newSize) {
-		float tempArr[] = new float[newSize];
+		final float tempArr[] = new float[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -337,7 +337,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static byte[] copyOf(byte[] data, int newSize) {
-		byte tempArr[] = new byte[newSize];
+		final byte tempArr[] = new byte[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -360,7 +360,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static char[] copyOf(char[] data, int newSize) {
-		char tempArr[] = new char[newSize];
+		final char tempArr[] = new char[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -383,7 +383,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static long[] copyOf(long[] data, int newSize) {
-		long tempArr[] = new long[newSize];
+		final long tempArr[] = new long[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -406,7 +406,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static boolean[] copyOf(boolean[] data, int newSize) {
-		boolean tempArr[] = new boolean[newSize];
+		final boolean tempArr[] = new boolean[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}
@@ -423,7 +423,7 @@ final public class CollectionUtils {
 	}
 
 	public static int copyOverWrite(float[] array, int fromIndex, int toIndex) {
-		int length = array.length;
+		final int length = array.length;
 		if (fromIndex > toIndex || length <= fromIndex || length < toIndex)
 			return length;
 		System.arraycopy(array, toIndex, array, fromIndex, length - toIndex);
@@ -438,7 +438,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static byte[] concat(byte[] first, byte[] second) {
-		byte[] result = copyOf(first, first.length + second.length);
+		final byte[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -451,7 +451,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static int[] concat(int[] first, int[] second) {
-		int[] result = copyOf(first, first.length + second.length);
+		final int[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -464,7 +464,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static long[] concat(long[] first, long[] second) {
-		long[] result = copyOf(first, first.length + second.length);
+		final long[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -477,7 +477,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static float[] concat(float[] first, float[] second) {
-		float[] result = copyOf(first, first.length + second.length);
+		final float[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -490,7 +490,7 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static double[] concat(double[] first, double[] second) {
-		double[] result = copyOf(first, first.length + second.length);
+		final double[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -503,13 +503,13 @@ final public class CollectionUtils {
 	 * @return
 	 */
 	public static Object[] concat(Object[] first, Object[] second) {
-		Object[] result = copyOf(first, first.length + second.length);
+		final Object[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
 
 	public static ISprite[] concat(ISprite[] first, ISprite[] second) {
-		ISprite[] result = copyOf(first, first.length + second.length);
+		final ISprite[] result = copyOf(first, first.length + second.length);
 		System.arraycopy(second, 0, result, first.length, second.length);
 		return result;
 	}
@@ -563,8 +563,8 @@ final public class CollectionUtils {
 	}
 
 	public static String[] expand(String[] objs, int i, boolean flag) {
-		int size = objs.length;
-		String[] newArrays = new String[size + i];
+		final int size = objs.length;
+		final String[] newArrays = new String[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -574,8 +574,8 @@ final public class CollectionUtils {
 	}
 
 	public static int[] expand(int[] objs, int i, boolean flag) {
-		int size = objs.length;
-		int[] newArrays = new int[size + i];
+		final int size = objs.length;
+		final int[] newArrays = new int[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -585,8 +585,8 @@ final public class CollectionUtils {
 	}
 
 	public static byte[] expand(byte[] objs, int i, boolean flag) {
-		int size = objs.length;
-		byte[] newArrays = new byte[size + i];
+		final int size = objs.length;
+		final byte[] newArrays = new byte[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -596,8 +596,8 @@ final public class CollectionUtils {
 	}
 
 	public static float[] expand(float[] objs, int i, boolean flag) {
-		int size = objs.length;
-		float[] newArrays = new float[size + i];
+		final int size = objs.length;
+		final float[] newArrays = new float[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -607,8 +607,8 @@ final public class CollectionUtils {
 	}
 
 	public static boolean[] expand(boolean[] objs, int i, boolean flag) {
-		int size = objs.length;
-		boolean[] newArrays = new boolean[size + i];
+		final int size = objs.length;
+		final boolean[] newArrays = new boolean[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}
@@ -618,8 +618,8 @@ final public class CollectionUtils {
 	}
 
 	public static ISprite[] expand(ISprite[] objs, int i, boolean flag) {
-		int size = objs.length;
-		ISprite[] newArrays = new ISprite[size + i];
+		final int size = objs.length;
+		final ISprite[] newArrays = new ISprite[size + i];
 		System.arraycopy(objs, 0, newArrays, flag ? 0 : i, size);
 		return newArrays;
 	}

@@ -20,7 +20,9 @@
  */
 package loon.se;
 
+import java.awt.Window;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Method;
 import java.util.concurrent.Executors;
 
 import loon.Clipboard;
@@ -65,6 +67,51 @@ public class JavaSEGame extends LGame {
 		OS_ARCH = getProperty("os.arch");
 		osBit64 = OS_ARCH.indexOf("amd64") != -1 || OS_ARCH.indexOf("x86_64") != -1;
 		checkAndroid();
+	}
+
+	public static void makeOSXFullscreen(final Window window) {
+		if (window != null && osIsMacOs) {
+			try {
+				Thread.sleep(500);
+				enableOSXFullscreen(window);
+				requestOSXFullscreen(window);
+			} catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+			} catch (Exception ex) {
+				System.out.println("An exception occurred while trying to toggle full screen mode !");
+			}
+		}
+	}
+
+	public static void enableOSXFullscreen(final Window window) {
+		if (!osIsMacOs) {
+			return;
+		}
+		try {
+			final Class<?> util = Class.forName("com.apple.eawt.FullScreenUtilities");
+			final Class<?> params[] = new Class[] { Window.class, Boolean.TYPE };
+			final Method method = util.getMethod("setWindowCanFullScreen", params);
+			method.invoke(util, window, true);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void requestOSXFullscreen(final Window window) {
+		if (!osIsMacOs) {
+			return;
+		}
+		try {
+			final Class<?> appClass = Class.forName("com.apple.eawt.Application");
+			final Class<?> params[] = new Class[] {};
+			final Method getApplication = appClass.getMethod("getApplication", params);
+			final Object application = getApplication.invoke(appClass);
+			final Method requestToggleFulLScreen = application.getClass().getMethod("requestToggleFullScreen",
+					Window.class);
+			requestToggleFulLScreen.invoke(application, window);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public static boolean isJavaVersion(String versionPrefix) {

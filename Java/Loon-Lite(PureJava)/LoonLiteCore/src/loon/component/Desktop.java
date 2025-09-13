@@ -1134,6 +1134,12 @@ public class Desktop implements Visible, ZIndex, IArray, LRelease {
 		return this;
 	}
 
+	protected RectBox calculateBoxRect(float padding, float boxWidth, float boxHeight, int rowIndex, int colIndex) {
+		float x = colIndex * (boxWidth + padding);
+		float y = rowIndex * (boxHeight + padding);
+		return new RectBox(x, y, boxWidth, boxHeight);
+	}
+
 	public boolean contains(LComponent comp) {
 		return _contentPane.contains(comp);
 	}

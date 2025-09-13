@@ -32,6 +32,11 @@ public class BytesAssetLoader extends AssetAbstractLoader<ArrayByte> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _bytes != null && !_bytes.isEmpty();
+	}
+
+	@Override
 	public ArrayByte get() {
 		return _bytes;
 	}

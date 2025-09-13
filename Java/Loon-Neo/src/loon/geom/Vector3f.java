@@ -89,6 +89,18 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		return result;
 	}
 
+	public final static Vector3f x(float x) {
+		return new Vector3f(x, 0f, 0f);
+	}
+
+	public final static Vector3f y(float y) {
+		return new Vector3f(0f, y, 0f);
+	}
+
+	public final static Vector3f z(float z) {
+		return new Vector3f(0f, 0f, z);
+	}
+
 	public final static boolean isNan(XYZ v) {
 		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY()) || MathUtils.isNan(v.getZ());
 	}

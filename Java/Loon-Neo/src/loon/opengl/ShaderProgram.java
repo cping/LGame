@@ -242,6 +242,58 @@ public class ShaderProgram implements LRelease {
 		return location;
 	}
 
+	public void setUniform1iv(String name, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		int location = fetchUniformLocation(name);
+		gl.glUniform1iv(location, length, values, offset);
+	}
+
+	public void setUniform1iv(int location, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUniform1iv(location, length, values, offset);
+	}
+
+	public void setUniform2iv(String name, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		int location = fetchUniformLocation(name);
+		gl.glUniform2iv(location, length / 2, values, offset);
+	}
+
+	public void setUniform2iv(int location, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUniform2iv(location, length / 2, values, offset);
+	}
+
+	public void setUniform3iv(String name, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		int location = fetchUniformLocation(name);
+		gl.glUniform3iv(location, length / 3, values, offset);
+	}
+
+	public void setUniform3iv(int location, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUniform3iv(location, length / 3, values, offset);
+	}
+
+	public void setUniform4iv(String name, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		int location = fetchUniformLocation(name);
+		gl.glUniform4iv(location, length / 4, values, offset);
+	}
+
+	public void setUniform4iv(int location, int[] values, int offset, int length) {
+		GL20 gl = LSystem.base().graphics().gl;
+		checkManaged();
+		gl.glUniform4iv(location, length / 4, values, offset);
+	}
+
 	public void setUniformi(String name, int value) {
 		GL20 gl = LSystem.base().graphics().gl;
 		checkManaged();

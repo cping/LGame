@@ -1219,6 +1219,62 @@ public class LTexture extends Painter implements LRelease {
 		return this;
 	}
 
+	protected void bindFilter(int param) {
+		if (this._id < -1) {
+			final GL20 gl = _gfx.gl;
+			int old = GLUtils.getCurrentHardwareTextureID();
+			GLUtils.bindTexture(gl, _id);
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, param);
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, param);
+			GLUtils.bindTexture(gl, old);
+		}
+	}
+
+	public void minmapLinearFilter() {
+		if (this._id < -1) {
+			final GL20 gl = _gfx.gl;
+			int old = GLUtils.getCurrentHardwareTextureID();
+			GLUtils.bindTexture(gl, _id);
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MAG_FILTER, GL20.GL_LINEAR);
+			if (_config.mipmaps) {
+				_gfx.gl.glGenerateMipmap(GL20.GL_TEXTURE_2D);
+			}
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_MIN_FILTER, GL20.GL_LINEAR_MIPMAP_LINEAR);
+			GLUtils.bindTexture(gl, old);
+		}
+	}
+
+	public void nearestFilter() {
+		bindFilter(GL20.GL_NEAREST);
+	}
+
+	public void linearFilter() {
+		bindFilter(GL20.GL_LINEAR);
+	}
+
+	protected void bindParameter(int param) {
+		if (this._id < -1) {
+			final GL20 gl = _gfx.gl;
+			int old = GLUtils.getCurrentHardwareTextureID();
+			GLUtils.bindTexture(gl, _id);
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, param);
+			gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, param);
+			GLUtils.bindTexture(gl, old);
+		}
+	}
+
+	public void clampToEdge() {
+		bindParameter(GL20.GL_CLAMP_TO_EDGE);
+	}
+
+	public void repeat() {
+		bindParameter(GL20.GL_REPEAT);
+	}
+
+	public void mirrorRepeat() {
+		bindParameter(GL20.GL_MIRRORED_REPEAT);
+	}
+
 	private boolean checkUpdateColor(LColor c) {
 		if (c == null) {
 			setColor(TOP_LEFT, 1f, 1f, 1f, 1f);

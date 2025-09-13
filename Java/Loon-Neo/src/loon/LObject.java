@@ -30,6 +30,7 @@ import loon.action.map.Field2D;
 import loon.action.map.Side;
 import loon.canvas.Alpha;
 import loon.component.layout.LayoutAlign;
+import loon.geom.Affine2f;
 import loon.geom.RectBox;
 import loon.geom.SetXY;
 import loon.geom.Vector2f;
@@ -615,6 +616,47 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 	 */
 	protected void syncPreviousPos() {
 		_objectPreviousLocation.set(_objectLocation);
+	}
+
+	public Vector2f localToGlobal(Vector2f v) {
+		return localToGlobal(LSystem.base().display().GL().getAffine(), v);
+	}
+
+	public Vector2f localToGlobal(Affine2f aff, Vector2f v) {
+		syncPreviousPos();
+		if (v == null) {
+			v = new Vector2f();
+		}
+		if (aff == null) {
+			return v;
+		}
+		float px = v.x * aff.m00 + v.y * aff.m10 + getX();
+		float py = v.x * aff.m01 + v.y * aff.m11 + getY();
+		v.x = px;
+		v.y = py;
+		return v;
+	}
+
+	public Vector2f globalToLocal(Vector2f v) {
+		return globalToLocal(LSystem.base().display().GL().getAffine(), v);
+	}
+
+	public Vector2f globalToLocal(Affine2f aff, Vector2f v) {
+		syncPreviousPos();
+		if (v == null) {
+			v = new Vector2f();
+		}
+		if (aff == null) {
+			return v;
+		}
+		v.x -= getX();
+		v.y -= getY();
+		float invDet = 1f / (aff.m00 * aff.m11 - aff.m01 * aff.m10);
+		float px = (v.x * aff.m11 - v.y * aff.m10) * invDet;
+		float py = (-v.x * aff.m01 + v.y * aff.m00) * invDet;
+		v.x = px;
+		v.y = py;
+		return v;
 	}
 
 	public void move_45D_up() {

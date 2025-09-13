@@ -70,7 +70,7 @@ public class TrilateralBatch extends BaseBatch {
 
 	public TrilateralBatch(GL20 gl, int maxSize, ShaderSource src) {
 		super(gl);
-		this._expandVertices = new ExpandVertices(maxSize);
+		this._expandVertices = ExpandVertices.getVerticeCache(maxSize);
 		this._shader_source = src;
 		this._viewMatrix = new Matrix4();
 		this.init();

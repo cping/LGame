@@ -31,6 +31,11 @@ public class ConfigAssetLoader extends AssetAbstractLoader<ConfigReader> {
 	}
 
 	@Override
+	public boolean isLoaded() {
+		return _config != null && !_config.isClosed();
+	}
+
+	@Override
 	public boolean completed() {
 		return (_config = new ConfigReader(_path)) != null;
 	}
