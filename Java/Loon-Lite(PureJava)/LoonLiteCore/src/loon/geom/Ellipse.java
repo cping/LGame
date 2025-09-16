@@ -558,6 +558,24 @@ public class Ellipse extends Shape {
 		return MathUtils.max(this._radius1, this._radius2) / 2f;
 	}
 
+	public Line getAngleToLine() {
+		return getAngleToLine(null);
+	}
+
+	public Line getAngleToLine(Line line) {
+		if (line == null) {
+			line = new Line();
+		}
+		final float radians = MathUtils.toRadians(boundingCircleRadius);
+		final float sin = MathUtils.sin(radians);
+		final float cos = MathUtils.cos(radians);
+		final Vector2f lineStart = line.getStart();
+		final Vector2f tx = line.getEnd().sub(lineStart);
+		final float nx = tx.x() * cos - tx.y() * sin + lineStart.x();
+		final float ny = tx.x() * sin + tx.y() * cos + lineStart.y();
+		return Line.between(lineStart, Vector2f.at(nx, ny));
+	}
+
 	@Override
 	public Shape transform(Matrix3 transform) {
 		checkPoints();

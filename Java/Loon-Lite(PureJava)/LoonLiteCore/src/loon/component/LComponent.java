@@ -722,6 +722,16 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent getSelectedComponent() {
+		final Desktop desk = getDesktop();
+		return desk == null ? null : desk.getSelectedComponent();
+	}
+
+	public LComponent getClickedComponent() {
+		final Desktop desk = getDesktop();
+		return desk == null ? null : desk.getClickedComponent();
+	}
+
 	public boolean isDesktopClicked() {
 		final Desktop desk = getDesktop();
 		return desk == null ? false : desk.isCurrentClicked(this);

@@ -609,6 +609,40 @@ public abstract class LContainer extends LComponent implements IArray {
 		return this;
 	}
 
+	public boolean isChild(LComponent c) {
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent child = childs[i];
+			if (child != null && (child == c || child.equals(c))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isClickedChild() {
+		return isChild(getClickedComponent());
+	}
+
+	public boolean isSelectedChild() {
+		return isChild(getSelectedComponent());
+	}
+
+	public LComponent getClickedChild() {
+		if (isChild(getClickedComponent())) {
+			return getClickedComponent();
+		}
+		return null;
+	}
+
+	public LComponent getSelectedChild() {
+		if (isChild(getSelectedComponent())) {
+			return getSelectedComponent();
+		}
+		return null;
+	}
+
 	public LComponent getRandomComponent() {
 		return getRandomComponent(0, _childCount);
 	}
@@ -1299,6 +1333,154 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 		return findComponentChecked(comp);
+	}
+
+	public float getChildTotalWidth() {
+		if (_destroyed) {
+			return 0f;
+		}
+		if (_childs == null) {
+			return 0f;
+		}
+		float totalWidth = 0f;
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				totalWidth += comp.getWidth();
+			}
+		}
+		return totalWidth;
+	}
+
+	public float getChildTotalHeight() {
+		if (_destroyed) {
+			return 0f;
+		}
+		if (_childs == null) {
+			return 0f;
+		}
+		float totalHeight = 0f;
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				totalHeight += comp.getHeight();
+			}
+		}
+		return totalHeight;
+	}
+
+	public LContainer setChildFlipXYs(boolean x, boolean y) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setFlipXY(x, y);
+			}
+		}
+		return this;
+	}
+
+	public LContainer setChildZOrders(int sortOrder) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setZOrder(sortOrder + i);
+			}
+		}
+		sortComponents();
+		return this;
+	}
+
+	public LContainer setChildLayers(int sortOrder) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setLayer(sortOrder + i);
+			}
+		}
+		sortComponents();
+		return this;
+	}
+
+	public LContainer setChildRotations(float r) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setRotation(i);
+			}
+		}
+		return this;
+	}
+
+	public LContainer setChildScales(float v) {
+		return setChildScales(v, v);
+	}
+
+	public LContainer setChildScales(float vx, float vy) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setScale(vx, vy);
+			}
+		}
+		return this;
+	}
+
+	public LContainer setChildAnchors(float v) {
+		return setChildAnchors(v, v);
+	}
+
+	public LContainer setChildAnchors(float vx, float vy) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		int size = _childs.length;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null) {
+				comp.setAnchor(vx, vy);
+			}
+		}
+		return this;
 	}
 
 	public int getComponentCount() {

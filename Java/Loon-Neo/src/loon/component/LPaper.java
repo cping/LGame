@@ -51,7 +51,7 @@ public class LPaper extends LContainer {
 		} else {
 			this.setBackground(LColor.black);
 		}
-		this.setElastic(true);
+		this.setElastic(false);
 		this.setLocked(true);
 	}
 
