@@ -309,6 +309,85 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childCount = 0;
 	}
 
+	public int removeCurrentClickedChild() {
+		return remove(getClickedChild());
+	}
+
+	public int removeCurrentSelectedChild() {
+		return remove(getSelectedChild());
+	}
+
+	public LContainer removeAllName(String name) {
+		if (name == null) {
+			return this;
+		}
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && name.equals(comp.getName())) {
+				remove(i);
+			}
+		}
+		return this;
+	}
+
+	public LContainer removeAllFlag(int flag) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isFlagType(flag)) {
+				remove(i);
+			}
+		}
+		return this;
+	}
+
+	public LContainer removeAllTag(Object o) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isTag(o)) {
+				remove(i);
+			}
+		}
+		return this;
+	}
+
+	public LContainer removeAllFlagAndTag(int flag, Object o) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isFlagType(flag) && comp.isTag(o)) {
+				remove(i);
+			}
+		}
+		return this;
+	}
+
 	/**
 	 * 返回一组拥有指定标签的组件
 	 * 

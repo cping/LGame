@@ -23,8 +23,11 @@ package loon.utils.timer;
 import loon.LSystem;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
+import loon.utils.TimeUtils;
 
 public class LTimerContext {
+
+	public long startTimestamp;
 
 	public long timeSinceLastUpdate;
 
@@ -47,6 +50,7 @@ public class LTimerContext {
 	}
 
 	public void reset(long v) {
+		this.startTimestamp = TimeUtils.millis();
 		this.timeSinceLastUpdate = unscaledTimeSinceLastUpdate = tick = v;
 		this.alpha = 0f;
 	}
@@ -66,6 +70,14 @@ public class LTimerContext {
 			delta = LSystem.DEFAULT_EASE_DELAY;
 		}
 		return delta;
+	}
+
+	public float getTotalElapsed() {
+		return MathUtils.max(Duration.toS(getTotalElapsedMs()), LSystem.MIN_SECONE_SPEED_FIXED);
+	}
+
+	public long getTotalElapsedMs() {
+		return TimeUtils.millis() - startTimestamp;
 	}
 
 	public float calcPpf(float pps) {
