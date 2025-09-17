@@ -31,6 +31,7 @@ import loon.action.ActionBind;
 import loon.action.ActionBindData;
 import loon.action.ActionControl;
 import loon.action.ActionTween;
+import loon.action.Flip;
 import loon.action.collision.CollisionHelper;
 import loon.action.collision.CollisionMask;
 import loon.action.collision.CollisionObject;
@@ -451,6 +452,175 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		if (_childrens != null) {
 			removeChilds();
 		}
+	}
+
+	public TArray<T> getChildren(String name) {
+		if (name == null) {
+			return null;
+		}
+		if (_destroyed) {
+			return null;
+		}
+		if (_childrens == null) {
+			return null;
+		}
+		final TArray<T> result = new TArray<T>();
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			final T child = _childrens.get(i);
+			if (name.equals(child.getName())) {
+				result.add(child);
+			}
+		}
+		return result;
+	}
+
+	public float getChildTotalWidth() {
+		if (_destroyed) {
+			return 0f;
+		}
+		if (_childrens == null) {
+			return 0f;
+		}
+		float totalWidth = 0f;
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				totalWidth += child.getWidth();
+			}
+		}
+		return totalWidth;
+	}
+
+	public float getChildTotalHeight() {
+		if (_destroyed) {
+			return 0f;
+		}
+		if (_childrens == null) {
+			return 0f;
+		}
+		float totalHeight = 0f;
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				totalHeight += child.getHeight();
+			}
+		}
+		return totalHeight;
+	}
+
+	public SpriteBase<T> setChildFlipXYs(boolean x, boolean y) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childrens == null) {
+			return this;
+		}
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				if (child instanceof IEntity) {
+					((IEntity) child).setFlipXY(x, y);
+				} else if (child instanceof Flip) {
+					((Flip<T>) child).setFlipXY(x, y);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteBase<T> setChildLayers(int sortOrder) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childrens == null) {
+			return this;
+		}
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				if (child instanceof IEntity) {
+					((IEntity) child).setLayer(sortOrder + i);
+				} else if (child instanceof ISprite) {
+					((ISprite) child).setLayer(sortOrder + i);
+				}
+			}
+		}
+		sort();
+		return this;
+	}
+
+	public SpriteBase<T> setChildRotations(float r) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childrens == null) {
+			return this;
+		}
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				if (child instanceof IEntity) {
+					((IEntity) child).setRotation(r);
+				} else if (child instanceof ISprite) {
+					((ISprite) child).setRotation(r);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteBase<T> setChildScales(float v) {
+		return setChildScales(v, v);
+	}
+
+	public SpriteBase<T> setChildScales(float vx, float vy) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childrens == null) {
+			return this;
+		}
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				if (child instanceof IEntity) {
+					((IEntity) child).setScale(vx, vy);
+				} else if (child instanceof ISprite) {
+					((ISprite) child).setScale(vx, vy);
+				}
+			}
+		}
+		return this;
+	}
+
+	public SpriteBase<T> setChildAnchors(float v) {
+		return setChildAnchors(v, v);
+	}
+
+	public SpriteBase<T> setChildAnchors(float vx, float vy) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childrens == null) {
+			return this;
+		}
+		final int size = _childrens.size - 1;
+		for (int i = size; i > -1; i--) {
+			T child = _childrens.get(i);
+			if (child != null) {
+				if (child instanceof IEntity) {
+					((IEntity) child).setPivot(vx, vy);
+				}
+			}
+		}
+		return this;
 	}
 
 	public T getChildByIndex(int idx) {

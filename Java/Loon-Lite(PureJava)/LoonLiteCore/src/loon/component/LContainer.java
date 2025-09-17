@@ -1315,6 +1315,27 @@ public abstract class LContainer extends LComponent implements IArray {
 		return findComponentChecked(comp);
 	}
 
+	public TArray<LComponent> getChildren(String name) {
+		if (name == null) {
+			return null;
+		}
+		if (_destroyed) {
+			return null;
+		}
+		if (_childs == null) {
+			return null;
+		}
+		final TArray<LComponent> result = new TArray<LComponent>();
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
+			final LComponent comp = _childs[i];
+			if (name.equals(comp.getName())) {
+				result.add(comp);
+			}
+		}
+		return result;
+	}
+
 	public float getChildTotalWidth() {
 		if (_destroyed) {
 			return 0f;
@@ -1323,8 +1344,8 @@ public abstract class LContainer extends LComponent implements IArray {
 			return 0f;
 		}
 		float totalWidth = 0f;
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				totalWidth += comp.getWidth();
@@ -1341,8 +1362,8 @@ public abstract class LContainer extends LComponent implements IArray {
 			return 0f;
 		}
 		float totalHeight = 0f;
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				totalHeight += comp.getHeight();
@@ -1358,8 +1379,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setFlipXY(x, y);
@@ -1375,13 +1396,14 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setZOrder(sortOrder + i);
 			}
 		}
+		sortComponents();
 		return this;
 	}
 
@@ -1392,13 +1414,14 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setLayer(sortOrder + i);
 			}
 		}
+		sortComponents();
 		return this;
 	}
 
@@ -1409,8 +1432,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setRotation(i);
@@ -1430,8 +1453,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setScale(vx, vy);
@@ -1451,8 +1474,8 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
-		int size = _childs.length;
-		for (int i = size - 1; i > -1; i--) {
+		final int size = _childs.length - 1;
+		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null) {
 				comp.setAnchor(vx, vy);
@@ -1909,6 +1932,54 @@ public abstract class LContainer extends LComponent implements IArray {
 		return list;
 	}
 
+	public int getMinLayer() {
+		int minLayer = 0;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				int curLayer = comp.getLayer();
+				if (curLayer < minLayer) {
+					minLayer = curLayer;
+				}
+			}
+		}
+		return minLayer;
+	}
+
+	public int getMaxLayer() {
+		int maxLayer = 0;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				int curLayer = comp.getLayer();
+				if (curLayer > maxLayer) {
+					maxLayer = curLayer;
+				}
+			}
+		}
+		return maxLayer;
+	}
+
+	public int geMinX() {
+		int minX = 0;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				int curX = comp.x();
+				if (curX < minX) {
+					minX = curX;
+				}
+			}
+		}
+		return minX;
+	}
+
 	public int getMaxX() {
 		int maxX = 0;
 		final int size = this._childCount;
@@ -1925,6 +1996,22 @@ public abstract class LContainer extends LComponent implements IArray {
 		return maxX;
 	}
 
+	public int geMinY() {
+		int minY = 0;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				int curY = comp.y();
+				if (curY < minY) {
+					minY = curY;
+				}
+			}
+		}
+		return minY;
+	}
+
 	public int getMaxY() {
 		int maxY = 0;
 		final int size = this._childCount;
@@ -1939,6 +2026,22 @@ public abstract class LContainer extends LComponent implements IArray {
 			}
 		}
 		return maxY;
+	}
+
+	public int geMinZ() {
+		int minZ = 0;
+		final int size = this._childCount;
+		final LComponent[] childs = this._childs;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = childs[i];
+			if (comp != null) {
+				int curZ = comp.getZ();
+				if (curZ < minZ) {
+					minZ = curZ;
+				}
+			}
+		}
+		return minZ;
 	}
 
 	public int getMaxZ() {

@@ -24,6 +24,7 @@ import loon.LSystem;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public abstract class TextLayout {
 
@@ -48,7 +49,7 @@ public abstract class TextLayout {
 	public abstract int charWidth(char ch);
 
 	protected TextLayout(String text, TextFormat format, RectBox bounds, float height) {
-		this.text = text;
+		this.text = StringUtils.isEmpty(text) ? LSystem.EMPTY : text.trim();
 		this.format = format;
 		this.bounds = bounds;
 		this.size = new Dimension(MathUtils.max(bounds.x(), 0) + bounds.width(), height);

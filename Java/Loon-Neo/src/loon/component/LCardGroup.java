@@ -69,6 +69,112 @@ public class LCardGroup extends LContainer {
 		setLocked(false);
 	}
 
+	public LCardGroup addCard(LComponent... cs) {
+		add(cs);
+		setCardUpdate(false);
+		return this;
+	}
+
+	public LCardGroup removeCurrentCard() {
+		return removeCard(getClickedChild());
+	}
+
+	public LCardGroup removeCard(LComponent c) {
+		if (c == null) {
+			return this;
+		}
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && (c == comp || c.equals(comp))) {
+				remove(i);
+			}
+		}
+		setCardUpdate(false);
+		return this;
+	}
+
+	public LCardGroup removeCardName(String name) {
+		if (name == null) {
+			return this;
+		}
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && name.equals(comp.getName())) {
+				remove(i);
+			}
+		}
+		setCardUpdate(false);
+		return this;
+	}
+
+	public LCardGroup removeCardFlag(int flag) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isFlagType(flag)) {
+				remove(i);
+			}
+		}
+		setCardUpdate(false);
+		return this;
+	}
+
+	public LCardGroup removeCardTag(Object o) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isTag(o)) {
+				remove(i);
+			}
+		}
+		setCardUpdate(false);
+		return this;
+	}
+
+	public LCardGroup removeCardFlagAndTag(int flag, Object o) {
+		if (_destroyed) {
+			return this;
+		}
+		if (_childs == null) {
+			return this;
+		}
+		final int size = _childs.length - 1;
+		for (int i = size - 1; i > -1; i--) {
+			LComponent comp = _childs[i];
+			if (comp != null && comp.isFlagType(flag) && comp.isTag(o)) {
+				remove(i);
+			}
+		}
+		setCardUpdate(false);
+		return this;
+	}
+
 	public boolean isClickCardToMoveUp() {
 		return this._clickCardToMoveUp;
 	}
