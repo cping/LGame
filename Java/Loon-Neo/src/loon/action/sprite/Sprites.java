@@ -68,7 +68,7 @@ import loon.utils.reply.Callback;
  * 当LNode系列精灵和SpriteBatchScreen合用时，也支持触屏.）
  * 
  */
-public class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LRelease {
+public final class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LRelease {
 
 	public static interface Created<T> {
 		T make();

@@ -25,7 +25,7 @@ import loon.canvas.Canvas;
 import loon.geom.Affine2f;
 import loon.utils.MathUtils;
 
-public class MeshBatch extends BaseBatch {
+public final class MeshBatch extends BaseBatch {
 
 	private final MeshData meshData;
 

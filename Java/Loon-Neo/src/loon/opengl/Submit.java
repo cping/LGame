@@ -26,7 +26,7 @@ import java.nio.ShortBuffer;
 import loon.LRelease;
 import loon.LSystem;
 
-public class Submit implements LRelease {
+public final class Submit implements LRelease {
 
 	public static Submit create() {
 		return new Submit();

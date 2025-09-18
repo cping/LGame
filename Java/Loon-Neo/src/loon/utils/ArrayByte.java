@@ -257,6 +257,10 @@ public class ArrayByte implements IArray, LRelease {
 		this.setBuffer(Base64Coder.decodeBase64(base64.toCharArray()), pos, order);
 	}
 
+	public ArrayByte(ArrayByte b) {
+		this(b._buffer, b._position, b._byteOrder);
+	}
+
 	public ArrayByte(byte[] data) {
 		this(data, 0, BIG_ENDIAN);
 	}

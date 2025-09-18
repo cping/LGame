@@ -3,7 +3,7 @@ package loon.opengl;
 import loon.Graphics;
 import loon.LTexture;
 
-public class LTextureImage extends GLEx {
+public final class LTextureImage extends GLEx {
 
 	public final LTexture texture;
 

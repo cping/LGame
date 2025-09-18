@@ -317,75 +317,83 @@ public abstract class LContainer extends LComponent implements IArray {
 		return remove(getSelectedChild());
 	}
 
-	public LContainer removeAllName(String name) {
+	public int removeAllName(String name) {
 		if (name == null) {
-			return this;
+			return -1;
 		}
 		if (_destroyed) {
-			return this;
+			return -1;
 		}
 		if (_childs == null) {
-			return this;
+			return -1;
 		}
+		int removed = 0;
 		final int size = _childs.length - 1;
 		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && name.equals(comp.getName())) {
 				remove(i);
+				removed++;
 			}
 		}
-		return this;
+		return removed;
 	}
 
-	public LContainer removeAllFlag(int flag) {
+	public int removeAllFlag(int flag) {
 		if (_destroyed) {
-			return this;
+			return -1;
 		}
 		if (_childs == null) {
-			return this;
+			return -1;
 		}
+		int removed = 0;
 		final int size = _childs.length - 1;
 		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && comp.isFlagType(flag)) {
 				remove(i);
+				removed++;
 			}
 		}
-		return this;
+		return removed;
 	}
 
-	public LContainer removeAllTag(Object o) {
+	public int removeAllTag(Object o) {
 		if (_destroyed) {
-			return this;
+			return -1;
 		}
 		if (_childs == null) {
-			return this;
+			return -1;
 		}
+		int removed = 0;
 		final int size = _childs.length - 1;
 		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && comp.isTag(o)) {
 				remove(i);
+				removed++;
 			}
 		}
-		return this;
+		return removed;
 	}
 
-	public LContainer removeAllFlagAndTag(int flag, Object o) {
+	public int removeAllFlagAndTag(int flag, Object o) {
 		if (_destroyed) {
-			return this;
+			return -1;
 		}
 		if (_childs == null) {
-			return this;
+			return -1;
 		}
+		int removed = 0;
 		final int size = _childs.length - 1;
 		for (int i = size - 1; i > -1; i--) {
 			LComponent comp = _childs[i];
 			if (comp != null && comp.isFlagType(flag) && comp.isTag(o)) {
 				remove(i);
+				removed++;
 			}
 		}
-		return this;
+		return removed;
 	}
 
 	/**

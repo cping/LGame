@@ -54,7 +54,7 @@ import loon.utils.reply.Callback;
  * 桌面组件总父类，用来注册，控制，以及渲染所有桌面组件（所有默认支持触屏的组件，被置于此）
  * 
  */
-public class Desktop implements Visible, ZIndex, IArray, LRelease {
+public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;

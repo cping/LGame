@@ -28,7 +28,7 @@ import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.LSystem;
 
-public class TrilateralBatch extends BaseBatch {
+public final class TrilateralBatch extends BaseBatch {
 
 	private final static String BATCHNAME = "trilbatch";
 
