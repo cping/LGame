@@ -34,27 +34,23 @@ public class JarWrite {
 		return File.createTempFile(fn, null);
 	}
 
-	public static int writeFileList(File outf, File srcdir, File destdir)
-			throws Exception {
+	public static int writeFileList(File outf, File srcdir, File destdir) throws Exception {
 		int cnt = 0;
 		String base = srcdir.getCanonicalPath().replace('\\', '/');
 		if (!base.endsWith("/")) {
 			base = base + "/";
 		}
-		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(outf), LSystem.ENCODING));
+		BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outf), LSystem.ENCODING));
 		for (File f : new FileIterator(srcdir.getCanonicalPath())) {
 			String fn = f.getName();
 			if (f.isFile() && fn.endsWith(".java")) {
 				String fn1 = f.getCanonicalPath().replace('\\', '/');
 				if (!fn1.startsWith(base)) {
-					Log.log("[Warning]Cannot list java file, please check:"
-							+ fn1);
+					Log.log("[Warning]Cannot list java file, please check:" + fn1);
 					continue;
 				}
 				String fn2 = fn1.substring(base.length());
-				File cls = new File(destdir, fn2.substring(0, fn2.length() - 5)
-						+ ".class");
+				File cls = new File(destdir, fn2.substring(0, fn2.length() - 5) + ".class");
 				if (!isNewFile(f, cls)) {
 					continue;
 				}
@@ -74,16 +70,17 @@ public class JarWrite {
 	 * @param manifest
 	 * @throws IOException
 	 */
-	public static void writeManifest(File mf, ArrayMap manifest)
-			throws IOException {
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(
-				new FileOutputStream(mf), LSystem.ENCODING));
+	public static void writeManifest(File mf, ArrayMap manifest, boolean enableNative) throws IOException {
+		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(mf), LSystem.ENCODING));
 		out.println("Manifest-Version: 1.0");
 		for (int i = 0; i < manifest.size(); i++) {
 			ArrayMap.Entry entry = manifest.getEntry(i);
 			String key = entry.getKey().toString().trim();
 			String value = entry.getValue().toString().trim();
 			out.println(String.format("%s: %s", key, value));
+		}
+		if (enableNative) {
+			out.println("Enable-Native-Access: ALL-UNNAMED");
 		}
 		out.close();
 	}

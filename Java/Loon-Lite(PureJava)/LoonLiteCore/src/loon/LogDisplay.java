@@ -31,13 +31,22 @@ import loon.utils.TArray;
 
 public class LogDisplay {
 
-	private class LogDisplayItem {
-		public String text;
-		public LColor color;
+	public class LogDisplayItem {
+
+		final String _text;
+		final LColor _color;
 
 		public LogDisplayItem(String mes, LColor col) {
-			this.text = mes;
-			this.color = col;
+			this._text = StringUtils.isEmpty(mes) ? LSystem.EMPTY : mes.trim();
+			this._color = col;
+		}
+
+		public String getText() {
+			return _text;
+		}
+
+		public String getColor() {
+			return _text;
 		}
 
 	}
@@ -101,7 +110,7 @@ public class LogDisplay {
 		int height = _texts.size() * _textHeight;
 		for (int i = _texts.size - 1; i > -1; i--) {
 			LogDisplayItem mes = _texts.get(i);
-			paintText(g, mes.text, x, y, offset, height, mes.color);
+			paintText(g, mes._text, x, y, offset, height, mes._color);
 			offset++;
 		}
 	}
@@ -120,10 +129,10 @@ public class LogDisplay {
 		}
 		final int limitWidth = _width - _space;
 		TArray<String> textList = FontUtils.splitLines(message, _textFont, limitWidth, _textList);
-		final boolean limit = (textList.size * getFontWidth() > limitWidth);
+		final boolean limit = (message.length() * getFontWidth() > limitWidth);
 		if (limit || textList.size > 0 || message.indexOf(LSystem.LF) != -1) {
 			if (limit) {
-				textList = FontUtils.splitLines(message, _textFont, limitWidth - _space, _textList);
+				textList = FontUtils.splitLines(message, _textFont, limitWidth - _space - getFontWidth(), _textList);
 			}
 			for (String text : textList) {
 				_texts.add(new LogDisplayItem(text, color));
@@ -171,7 +180,7 @@ public class LogDisplay {
 		final int textHeight = getFontHeight();
 		this._textHeight = textHeight + 5;
 		this._textAmount = ((_height - textHeight) / this._textHeight) - 3;
-		this._space = LSystem.isMobile() ? (int) (getFontWidth() * 3.1f) : (int) (getFontWidth() * 2.1f);
+		this._space = (int) (getFontWidth() * 1.5f);
 		this.resetDef();
 	}
 

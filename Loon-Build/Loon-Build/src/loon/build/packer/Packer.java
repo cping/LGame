@@ -27,13 +27,11 @@ public class Packer {
 		try {
 			jarfile = new JarFile(jarPath);
 			if (jarfile.getManifest() != null) {
-				Attributes attributes = jarfile.getManifest()
-						.getMainAttributes();
+				Attributes attributes = jarfile.getManifest().getMainAttributes();
 				if (attributes != null) {
 					mainName = attributes.getValue("Main-Class");
 				}
-				if (mainName == null
-						|| mainName.toLowerCase().lastIndexOf("JarRsrcLoader") != -1
+				if (mainName == null || mainName.toLowerCase().lastIndexOf("JarRsrcLoader") != -1
 						|| mainName.toLowerCase().lastIndexOf("JarInternal") != -1) {
 					mainName = attributes.getValue("Rsrc-Main-Class");
 					if (mainName == null) {
@@ -41,8 +39,8 @@ public class Packer {
 					}
 				}
 				if (mainName != null && mainName.trim().length() > 0) {
-					return mainName == null ? null : mainName.replace("/", ".")
-							.replace("\\", ".").replace(".class", "");
+					return mainName == null ? null
+							: mainName.replace("/", ".").replace("\\", ".").replace(".class", "");
 				}
 			}
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -73,12 +71,10 @@ public class Packer {
 			} catch (IOException e) {
 			}
 		}
-		return mainName == null ? null : mainName.replace("/", ".")
-				.replace("\\", ".").replace(".class", "");
+		return mainName == null ? null : mainName.replace("/", ".").replace("\\", ".").replace(".class", "");
 	}
 
-	public static void outputLJar(String assets, String out, String other,
-			String mainClassName) {
+	public static void outputLJar(String assets, String out, String other, String mainClassName, boolean enableNative) {
 		ArrayList<String> list = new ArrayList<String>(10);
 		if (other.indexOf(",") != -1) {
 			String[] res = other.split(",");
@@ -101,11 +97,10 @@ public class Packer {
 			}
 		}
 
-		Packer.outputLJar(assets, out, list, mainClassName);
+		Packer.outputLJar(assets, out, list, mainClassName, enableNative);
 	}
 
-	public static byte[] getResourceZipFile(String name, String fileName)
-			throws Exception {
+	public static byte[] getResourceZipFile(String name, String fileName) throws Exception {
 		InputStream input = Resources.getResourceAsStream(name);
 
 		byte[] buffer = new byte[2048];
@@ -128,8 +123,8 @@ public class Packer {
 		return out.toByteArray();
 	}
 
-	public static void outputLJar(String assets, String out,
-			ArrayList<String> paths, String mainClassName) {
+	public static void outputLJar(String assets, String out, ArrayList<String> paths, String mainClassName,
+			boolean enableNative) {
 		ZipFileMake make = new ZipFileMake();
 		try {
 			ArrayList<EZipFile> res = make.classFileToEZipFile(assets);
@@ -144,8 +139,7 @@ public class Packer {
 			for (Iterator<EZipFile> it = res.iterator(); it.hasNext();) {
 				EZipFile file = it.next();
 				file.serialize(output);
-				if (file.name.indexOf(".class") == -1
-						&& file.name.indexOf("\\") == -1
+				if (file.name.indexOf(".class") == -1 && file.name.indexOf("\\") == -1
 						&& file.name.indexOf("/") == -1) {
 					libs.append(file.name);
 					libs.append(" ");
@@ -156,32 +150,34 @@ public class Packer {
 					String path = it.next();
 					File file = new File(path);
 					String name = file.getName();
-					EZipFile ezip = new EZipFile(name,
-							new FileInputStream(file));
+					EZipFile ezip = new EZipFile(name, new FileInputStream(file));
 					ezip.serialize(output);
-					if (ezip.name.indexOf(".class") == -1
-							&& ezip.name.indexOf("\\") == -1
+					if (ezip.name.indexOf(".class") == -1 && ezip.name.indexOf("\\") == -1
 							&& ezip.name.indexOf("/") == -1) {
 						libs.append(ezip.name);
 						libs.append(" ");
 					}
 				}
 			}
-			StringBuilder sbr = new StringBuilder(32);
+			final StringBuilder sbr = new StringBuilder(32);
+			final String newLine = System.getProperty("line.separator", "\n");
 			sbr.append("Manifest-Version: 1.0");
-			sbr.append(System.getProperty("line.separator", "\n"));
+			sbr.append(newLine);
 			sbr.append("Rsrc-Class-Path: ./ ");
 			sbr.append(libs.toString().trim());
-			sbr.append(System.getProperty("line.separator", "\n"));
+			sbr.append(newLine);
 			sbr.append("Class-Path: .");
-			sbr.append(System.getProperty("line.separator", "\n"));
+			sbr.append(newLine);
 			sbr.append("Rsrc-Main-Class: ");
 			sbr.append(mainClassName);
-			sbr.append(System.getProperty("line.separator", "\n"));
+			sbr.append(newLine);
 			sbr.append("Main-Class: loon.JarInternal");
-			sbr.append(System.getProperty("line.separator", "\n"));
-			EZipFile MANIFEST = new EZipFile("META-INF/MANIFEST.MF", sbr
-					.toString().getBytes("UTF-8"));
+			sbr.append(newLine);
+			if (enableNative) {
+				sbr.append("Enable-Native-Access: ALL-UNNAMED");
+				sbr.append(newLine);
+			}
+			EZipFile MANIFEST = new EZipFile("META-INF/MANIFEST.MF", sbr.toString().getBytes("UTF-8"));
 
 			MANIFEST.serialize(output);
 			output.flush();

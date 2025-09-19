@@ -39,7 +39,6 @@ public class JarFileCopy {
 
 	}
 
-
 	public int execute() throws IOException {
 		count = 0;
 		if (file != null) {
@@ -78,8 +77,7 @@ public class JarFileCopy {
 
 	private void copyFile(File src) throws IOException {
 		if (!src.exists()) {
-			JarWrite.err(prj.name + ":warning:file not exists for copy:"
-					+ src.getCanonicalPath());
+			JarWrite.err(prj.name + ":warning:file not exists for copy:" + src.getCanonicalPath());
 			return;
 		}
 		if (src.isFile()) {
@@ -90,8 +88,7 @@ public class JarFileCopy {
 			fs1.addFile(src);
 			copyFileSet(fs1);
 		} else {
-			JarWrite.err(prj.name + ":warning:file not copied, please check:"
-					+ src.getCanonicalPath());
+			JarWrite.err(prj.name + ":warning:file not copied, please check:" + src.getCanonicalPath());
 			return;
 		}
 
@@ -106,8 +103,7 @@ public class JarFileCopy {
 	private void toCopy(File src, File target) throws IOException {
 		target.getParentFile().mkdirs();
 		if (prj.projects.verbose) {
-			Log.log("[Info]" + prj.name + ":copy " + src.getCanonicalPath()
-					+ " -> " + target.getCanonicalPath());
+			Log.log("[Info]" + prj.name + ":copy " + src.getCanonicalPath() + " -> " + target.getCanonicalPath());
 		}
 		FileOutputStream out = new FileOutputStream(target);
 		FileInputStream in = new FileInputStream(src);
@@ -120,8 +116,7 @@ public class JarFileCopy {
 
 	}
 
-	public static long copy(InputStream in, OutputStream outstream)
-			throws IOException {
+	public static long copy(InputStream in, OutputStream outstream) throws IOException {
 		BufferedOutputStream out = new BufferedOutputStream(outstream);
 		byte[] buf = new byte[1024 * 10];
 		long total = 0;

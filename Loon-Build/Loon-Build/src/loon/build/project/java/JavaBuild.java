@@ -90,7 +90,7 @@ public class JavaBuild {
 					public void run() {
 						try {
 							buildProject(prj);
-							success.put(getId(), true);
+							success.put(threadId(), true);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -101,11 +101,11 @@ public class JavaBuild {
 			}
 			for (Thread t : ts) {
 				t.join();
-				Boolean succ = success.get(t.getId());
+				Boolean succ = success.get(t.threadId());
 				if (succ == null)
 					succ = false;
 				if (!succ) {
-					log("build fail:" + t.getId());
+					log("build fail:" + t.threadId());
 					throw new RuntimeException("build failed");
 				}
 			}
@@ -128,7 +128,7 @@ public class JavaBuild {
 		javac.setTarget(getParam("target", "1.8"));
 		javac.setSource(getParam("source", "1.8"));
 		javac.setEncoding(getParam("encoding", LSystem.ENCODING));
-		javac.setDebug(new Boolean(getParam("debug", "false")));
+		javac.setDebug( Boolean.valueOf(getParam("debug", "false")));
 		srcDirFile = new File(path.getCanonicalPath(), "/" + sourceFileName);
 		if (!srcDirFile.exists()) {
 			throw new RuntimeException("src dir not found:" + srcDirFile.getCanonicalPath());

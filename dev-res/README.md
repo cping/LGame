@@ -35,9 +35,11 @@
 * openjfx: JavaFX的开源社区版，由于JavaFX已经不是JDK的自带类库，所以openjfx已经可以看作是JavaFX的本体，两者关系近似于MonoGame和XNA，只不过openjfx现在没有monogame那么大使用量和那么多支持的平台罢了，仅仅是可以跑Windows、Linux、Mac、Android和IOS(而且android和ios支持也不太友好,还有个编译为js的纯收费项目不提也罢，官方示例在我手机上进浏览器就卡死|||)，但也不排除以后openjfx突然火了，变得能支持更多平台。[Github地址](https://github.com/javafxports/openjdk-jfx)
 * GraalVM: Oracle推出的一个多语言支持VM，本体以JDK为基础构建，但也套用了如LLVM之类第三方环境，除了如Java，Scala，Kotlin之类标准JVM语言运行外，还支持node.js环境模拟、以及C、C++之类编译型语言的虚拟机运行，某种程度上，可以把它看作一个Java环境的GCC。除此之外，它最大的特点是允许把运行在此虚拟机的程序利用Native-Image指令AOT静态编译为纯本地库（虽然目前只支持Linux环境，而且暂时没有支持Android的计划，IOS就更别提了，不过它的issues上有人询问过，未来可能支持，话说最近AOT化Java字节码为本地指令的项目很多，预订年底开源的华为方舟编译器也是类似的存在，不愁Java代码不能本地化）,对了，推特服务器现在跑的Java环境，就是[定制版]GraalVM本地化后运行的。[Github地址](https://github.com/oracle/graal)
 * AdoptOpenjdk: 本质上就是OpenJDK的打包版编译后可直接运行环境，因为Oracle对JDK(JRE)事实上商用收费的关系，Adopt这种免费的发布版本就有了生存空间。总体上讲，如果想商用新版本的JDK(JRE)而不花钱又懒得自己打包OpenJDK的话，用Adopt就是个不错的选择。[下载地址](https://adoptopenjdk.net)
+* Liberica JDK: 另一个第三方打包发行的JDK，在Windows系统上表现比AdoptOpenjdk更好，使用理由还是由于Oracle是个巨坑[项目地址](https://bell-sw.com/pages/downloads)
 
 ### Java的程序打包工具
 
+* JavaPackager: 一款Maven和Gradle的混合插件，它提供了一种简单的方法，可以将Java应用程序打包成原生Windows、MacOS或 GNU/Linux可执行文件，并为其生成安装程序。[官网](https://github.com/javapackager/JavaPackager)
 * packr: 一个基于命令行的Java部署工具，可以把jar和jre混合到windows、mac以及linux平台的可执行文件中去。[官网](https://github.com/libgdx/packr/)
 * izpack: 一个基于Java制作的跨平台部署工具，优点是跨平台，缺点是——这货的运行本身就基于Java，也就是没有jre无法运行…… [官网](http://izpack.org/)
 * Launch4j: 一款支持多平台的Java应用部署工具，可以把jre和jar打包到相应平台的可执行程序中去，附带一提，这和名字近似的install4j不同，是完全免费的。 [官网](http://launch4j.sourceforge.net/)
