@@ -43,6 +43,8 @@ import loon.canvas.LColor;
 
 public final class NativeSupport {
 
+	public static boolean isAllowLoonLoadLwjglLib = true;
+
 	private static HashSet<String> loadedLibraries = new HashSet<String>();
 
 	private static String getProperty(final String propName) {
@@ -87,22 +89,27 @@ public final class NativeSupport {
 		}
 		System.setProperty("org.lwjgl.input.Mouse.allowNegativeMouseCoords", "true");
 		if (!isInJavaWebStart()) {
-			File nativesDir = null;
 			try {
-				if (isWindows) {
-					nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll", null).getParentFile();
-					export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll", nativesDir.getName());
-				} else if (isMac) {
-					nativesDir = export("liblwjgl.jnilib", null).getParentFile();
-					export("openal.dylib", nativesDir.getName());
-				} else if (isLinux || isFreeBSD) {
-					nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null).getParentFile();
-					export(is64Bit ? "libopenal64.so" : "libopenal.so", nativesDir.getName());
+				if (isAllowLoonLoadLwjglLib) {
+					File nativesDir = null;
+					try {
+						if (isWindows) {
+							nativesDir = export(is64Bit ? "lwjgl64.dll" : "lwjgl.dll", null).getParentFile();
+							export(is64Bit ? "OpenAL64.dll" : "OpenAL32.dll", nativesDir.getName());
+						} else if (isMac) {
+							nativesDir = export("liblwjgl.jnilib", null).getParentFile();
+							export("openal.dylib", nativesDir.getName());
+						} else if (isLinux || isFreeBSD) {
+							nativesDir = export(is64Bit ? "liblwjgl64.so" : "liblwjgl.so", null).getParentFile();
+							export(is64Bit ? "libopenal64.so" : "libopenal.so", nativesDir.getName());
+						}
+					} catch (Throwable ex) {
+						throw new RuntimeException("Unable to extract LWJGL natives.", ex);
+					}
+					System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
 				}
-			} catch (Throwable ex) {
-				throw new RuntimeException("Unable to extract LWJGL natives.", ex);
+			} catch (Throwable e) {
 			}
-			System.setProperty("org.lwjgl.librarypath", nativesDir.getAbsolutePath());
 			try {
 				loadJNI("lplus");
 				useLoonNative = true;
