@@ -61,8 +61,7 @@ final public class FileUtils {
 	 * @param context
 	 * @throws IOException
 	 */
-	public static void write(String fileName, String context)
-			throws IOException {
+	public static void write(String fileName, String context) throws IOException {
 		write(fileName, context, false);
 	}
 
@@ -73,8 +72,7 @@ final public class FileUtils {
 	 * @param context
 	 * @throws IOException
 	 */
-	public static void write(File file, String context, String coding)
-			throws IOException {
+	public static void write(File file, String context, String coding) throws IOException {
 		write(file, context.getBytes(coding), false);
 	}
 
@@ -85,8 +83,7 @@ final public class FileUtils {
 	 * @param context
 	 * @throws IOException
 	 */
-	public static void write(String fileName, String context, boolean append)
-			throws IOException {
+	public static void write(String fileName, String context, boolean append) throws IOException {
 		write(new File(fileName), context.getBytes("UTF-8"), append);
 	}
 
@@ -109,8 +106,7 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, byte[] bytes, boolean append)
-			throws IOException {
+	public static void write(File file, byte[] bytes, boolean append) throws IOException {
 		write(file, new ByteArrayInputStream(bytes), append);
 	}
 
@@ -133,14 +129,12 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, InputStream input, boolean append)
-			throws IOException {
+	public static void write(File file, InputStream input, boolean append) throws IOException {
 		makedirs(file);
 		BufferedOutputStream output = null;
 		try {
 			int contentLength = input.available();
-			output = new BufferedOutputStream(
-					new FileOutputStream(file, append));
+			output = new BufferedOutputStream(new FileOutputStream(file, append));
 			while (contentLength-- > 0) {
 				output.write(input.read());
 			}
@@ -169,8 +163,7 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, char[] chars, boolean append)
-			throws IOException {
+	public static void write(File file, char[] chars, boolean append) throws IOException {
 		write(file, new CharArrayReader(chars), append);
 	}
 
@@ -193,8 +186,7 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, String string, boolean append)
-			throws IOException {
+	public static void write(File file, String string, boolean append) throws IOException {
 		write(file, new CharArrayReader(string.toCharArray()), append);
 	}
 
@@ -217,8 +209,7 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, Reader reader, boolean append)
-			throws IOException {
+	public static void write(File file, Reader reader, boolean append) throws IOException {
 		makedirs(file);
 		BufferedWriter writer = null;
 		try {
@@ -241,8 +232,7 @@ final public class FileUtils {
 	 * @param records
 	 * @throws IOException
 	 */
-	public static void write(File file, ArrayList<String> records)
-			throws IOException {
+	public static void write(File file, ArrayList<String> records) throws IOException {
 		write(file, records, false);
 	}
 
@@ -254,8 +244,7 @@ final public class FileUtils {
 	 * @param append
 	 * @throws IOException
 	 */
-	public static void write(File file, ArrayList<String> records,
-			boolean append) throws IOException {
+	public static void write(File file, ArrayList<String> records, boolean append) throws IOException {
 		makedirs(file);
 		BufferedWriter writer = null;
 		try {
@@ -286,8 +275,8 @@ final public class FileUtils {
 	 * @param path
 	 * @return
 	 */
-	public static void makedirs(File file) throws IOException {
-		checkFile(file);
+	public static boolean makedirs(File file) throws IOException {
+		boolean isFile = checkFile(file);
 		File parentFile = file.getParentFile();
 		if (parentFile != null) {
 			if (!parentFile.exists() && !parentFile.mkdirs()) {
@@ -296,11 +285,12 @@ final public class FileUtils {
 					parent = file.getParentFile();
 
 				if (parent == null) {
-					return;
+					return isFile;
 				}
 				parent.mkdirs();
 			}
 		}
+		return isFile;
 	}
 
 	/**
@@ -309,12 +299,12 @@ final public class FileUtils {
 	 * @param file
 	 * @throws IOException
 	 */
-	private static void checkFile(File file) throws IOException {
+	private static boolean checkFile(File file) throws IOException {
 		boolean exists = file.exists();
 		if (exists && !file.isFile()) {
-			throw new IOException("File " + file.getPath()
-					+ " is actually not a file.");
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -400,8 +390,7 @@ final public class FileUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static long copy(InputStream is, OutputStream os, long len)
-			throws IOException {
+	public static long copy(InputStream is, OutputStream os, long len) throws IOException {
 		byte[] buf = new byte[1024];
 		long copied = 0;
 		int read;
@@ -422,8 +411,7 @@ final public class FileUtils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static long copy(InputStream in, OutputStream out)
-			throws IOException {
+	public static long copy(InputStream in, OutputStream out) throws IOException {
 		long written = 0;
 		byte[] buffer = new byte[4096];
 		while (true) {
@@ -504,14 +492,12 @@ final public class FileUtils {
 	 * @throws IOException
 	 */
 	public static byte[] readBytesFromFile(File file) throws IOException {
-		InputStream is = new DataInputStream(new BufferedInputStream(
-				new FileInputStream(file)));
+		InputStream is = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		long length = file.length();
 		byte[] bytes = new byte[(int) length];
 		int offset = 0;
 		int numRead = 0;
-		while (offset < bytes.length
-				&& (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+		while (offset < bytes.length && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
 			offset += numRead;
 		}
 		if (offset < bytes.length) {
@@ -522,8 +508,7 @@ final public class FileUtils {
 	}
 
 	private static void extracted(File file) throws IOException {
-		throw new IOException("Could not completely read file "
-				+ file.getName());
+		throw new IOException("Could not completely read file " + file.getName());
 	}
 
 	/**
@@ -567,8 +552,7 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下的所有文件名(包含全路径)
 	 * 
-	 * @param path
-	 *            String 指定目录
+	 * @param path String 指定目录
 	 * @return ArrayList 所有文件名(包含全路径)
 	 * @throws IOException
 	 */
@@ -578,9 +562,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 				if (tempfile.isDirectory()) {
 					ArrayList<String> arr = getAllFiles(tempfile.getPath());
 					ret.addAll(arr);
@@ -598,8 +580,7 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下的所有目录(包含全路径)
 	 * 
-	 * @param path
-	 *            String 指定目录
+	 * @param path String 指定目录
 	 * @return ArrayList 所有目录(包含全路径)
 	 * @throws IOException
 	 */
@@ -609,9 +590,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 				if (tempfile.isDirectory()) {
 					ret.add(tempfile.getAbsolutePath());
 					ArrayList<String> arr = getAllDir(tempfile.getPath());
@@ -629,24 +608,19 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下指定扩展名的所有文件(包含全路径)
 	 * 
-	 * @param path
-	 *            String 指定路径
-	 * @param ext
-	 *            String 扩展名
+	 * @param path String 指定路径
+	 * @param ext  String 扩展名
 	 * @return ArrayList 所有文件(包含全路径)
 	 * @throws IOException
 	 */
-	public static ArrayList<String> getAllFiles(String path, String ext)
-			throws IOException {
+	public static ArrayList<String> getAllFiles(String path, String ext) throws IOException {
 		File file = new File(path);
 		ArrayList<String> ret = new ArrayList<String>();
 		String[] exts = ext.split(",");
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 				if (tempfile.isDirectory()) {
 					ArrayList<String> arr = getAllFiles(tempfile.getPath(), ext);
 					ret.addAll(arr);
@@ -654,8 +628,7 @@ final public class FileUtils {
 					arr = null;
 				} else {
 					for (int j = 0; j < exts.length; j++) {
-						if (getExtension(tempfile.getAbsolutePath())
-								.equalsIgnoreCase(exts[j])) {
+						if (getExtension(tempfile.getAbsolutePath()).equalsIgnoreCase(exts[j])) {
 							ret.add(tempfile.getAbsolutePath());
 						}
 					}
@@ -668,8 +641,7 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下的文件列表(包含全路径),仅包含一级目录
 	 * 
-	 * @param path
-	 *            String 指定路径
+	 * @param path String 指定路径
 	 * @return ArrayList 文件名
 	 * @throws IOException
 	 */
@@ -679,9 +651,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 
 				if (!tempfile.isDirectory()) {
 					Ret.add(tempfile.getAbsolutePath());
@@ -696,8 +666,7 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下的子目录(包含全路径),仅包含一级目录
 	 * 
-	 * @param path
-	 *            String 指定路径
+	 * @param path String 指定路径
 	 * @return ArrayList 子目录
 	 * @throws IOException
 	 */
@@ -707,9 +676,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 
 				if (tempfile.isDirectory()) {
 					ret.add(tempfile.getAbsolutePath());
@@ -723,27 +690,21 @@ final public class FileUtils {
 	/**
 	 * 获得指定路径下指定扩展名的文件(包含全路径),仅包含一级目录
 	 * 
-	 * @param path
-	 *            String 指定路径
-	 * @param ext
-	 *            String 扩展名
+	 * @param path String 指定路径
+	 * @param ext  String 扩展名
 	 * @return ArrayList 文件名
 	 * @throws IOException
 	 */
-	public static ArrayList<String> getFiles(String path, String ext)
-			throws IOException {
+	public static ArrayList<String> getFiles(String path, String ext) throws IOException {
 		File file = new File(path);
 		ArrayList<String> ret = new ArrayList<String>();
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 
 				if (!tempfile.isDirectory()) {
-					if (getExtension(tempfile.getAbsolutePath())
-							.equalsIgnoreCase(ext))
+					if (getExtension(tempfile.getAbsolutePath()).equalsIgnoreCase(ext))
 						ret.add(tempfile.getAbsolutePath());
 
 				}
@@ -792,8 +753,7 @@ final public class FileUtils {
 	/**
 	 * 删除指定目录下的所有文件
 	 * 
-	 * @param path
-	 *            String 指定目录
+	 * @param path String 指定目录
 	 * @throws Exception
 	 */
 	public static void deleteFile(String path) throws Exception {
@@ -801,9 +761,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 				// 如果是目录
 				if (tempfile.isDirectory()) {
 					deleteFile(tempfile.getPath());
@@ -818,8 +776,7 @@ final public class FileUtils {
 	/**
 	 * 删除指定目录下的所有目录
 	 * 
-	 * @param path
-	 *            String 指定目录
+	 * @param path String 指定目录
 	 * @throws Exception
 	 */
 	public static void deleteDir(String path) throws Exception {
@@ -827,9 +784,7 @@ final public class FileUtils {
 		String[] listFile = file.list();
 		if (listFile != null) {
 			for (int i = 0; i < listFile.length; i++) {
-				File tempfile = new File(path
-						+ System.getProperty("file.separator", "\\")
-						+ listFile[i]);
+				File tempfile = new File(path + System.getProperty("file.separator", "\\") + listFile[i]);
 				if (tempfile.isDirectory()) {
 					deleteDir(tempfile.getPath());
 					tempfile.delete();
@@ -947,8 +902,7 @@ final public class FileUtils {
 				Files.createDirectories(dir);
 
 			if (!Files.isDirectory(dir))
-				throw new RuntimeException(
-						"Can not create path inside non-directory " + dir);
+				throw new RuntimeException("Can not create path inside non-directory " + dir);
 
 			Path toMake = Paths.get(dir.toString(), newPath);
 			Files.createDirectories(toMake);
@@ -999,15 +953,13 @@ final public class FileUtils {
 		ArrayList<Path> paths = new ArrayList<>();
 
 		@Override
-		public FileVisitResult preVisitDirectory(Path dir,
-				BasicFileAttributes attr) throws IOException {
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attr) throws IOException {
 			paths.add(dir);
 			return FileVisitResult.CONTINUE;
 		}
 
 		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attr)
-				throws IOException {
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attr) throws IOException {
 			paths.add(file);
 			return FileVisitResult.CONTINUE;
 		}
@@ -1041,8 +993,7 @@ final public class FileUtils {
 
 	public static class DirRemove extends SimpleFileVisitor<Path> {
 		@Override
-		public FileVisitResult postVisitDirectory(Path dir, IOException e)
-				throws IOException {
+		public FileVisitResult postVisitDirectory(Path dir, IOException e) throws IOException {
 			if (e != null)
 				throw e;
 
@@ -1051,8 +1002,7 @@ final public class FileUtils {
 		}
 
 		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attr)
-				throws IOException {
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attr) throws IOException {
 			Files.delete(file);
 			return FileVisitResult.CONTINUE;
 		}
@@ -1068,8 +1018,7 @@ final public class FileUtils {
 		}
 
 		@Override
-		public FileVisitResult preVisitDirectory(Path dir,
-				BasicFileAttributes attr) throws IOException {
+		public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attr) throws IOException {
 			Path target = to.resolve(from.relativize(dir));
 			if (!Files.exists(target))
 				Files.createDirectories(target);
@@ -1078,10 +1027,8 @@ final public class FileUtils {
 		}
 
 		@Override
-		public FileVisitResult visitFile(Path file, BasicFileAttributes attr)
-				throws IOException {
-			Files.copy(file, to.resolve(from.relativize(file)),
-					StandardCopyOption.REPLACE_EXISTING);
+		public FileVisitResult visitFile(Path file, BasicFileAttributes attr) throws IOException {
+			Files.copy(file, to.resolve(from.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
 			return FileVisitResult.CONTINUE;
 		}
 	}
@@ -1092,8 +1039,7 @@ final public class FileUtils {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		try (FileOutputStream fo = new FileOutputStream(f);
-				ObjectOutputStream o = new ObjectOutputStream(fo);) {
+		try (FileOutputStream fo = new FileOutputStream(f); ObjectOutputStream o = new ObjectOutputStream(fo);) {
 			o.writeObject(t);
 		} catch (IOException e) {
 			throw new RuntimeException(e.getMessage(), e);
@@ -1103,40 +1049,49 @@ final public class FileUtils {
 	public static Object deserialize(File f) {
 		if (!f.exists())
 			return null;
-		try (FileInputStream fo = new FileInputStream(f);
-				ObjectInputStream in = new ObjectInputStream(fo);) {
+		try (FileInputStream fo = new FileInputStream(f); ObjectInputStream in = new ObjectInputStream(fo);) {
 			return in.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e.getMessage(), e);
 		}
 	}
 
-	public static void copyDirectory(File source, File target)
-			throws IOException {
+	public static ArrayList<String> copyDirectory(File source, File target) throws IOException {
+		return copyDirectory(source, target, null, null);
+	}
+
+	public static ArrayList<String> copyDirectory(File source, File target, String limitExt,
+			ArrayList<String> limitPaths) throws IOException {
 		if (source == null) {
-			return;
+			return null;
 		}
 		if (!target.exists()) {
 			target.mkdirs();
 		}
 
-		String[] files = source.list();
+		final String[] files = source.list();
 		if (files != null) {
 			for (String fileName : source.list()) {
+				if (!StringUtils.isEmpty(limitExt) && limitExt.equalsIgnoreCase(getExtension(fileName))) {
+					if (limitPaths != null && !limitPaths.contains(fileName)) {
+						limitPaths.add(fileName);
+					}
+					continue;
+				}
 				File s = new File(source, fileName);
 				File t = new File(target, fileName);
 				if (s.isDirectory()) {
-					copyDirectory(s, t);
+					copyDirectory(s, t, limitExt, limitPaths);
 				} else {
 					copy(s, t);
 				}
 			}
 		}
+		return limitPaths;
 	}
 
 	public static void copy(File source, File target) throws IOException {
-		try (InputStream in = new FileInputStream(source);
-				OutputStream out = new FileOutputStream(target)) {
+		try (InputStream in = new FileInputStream(source); OutputStream out = new FileOutputStream(target)) {
 			byte[] buf = new byte[1024];
 			int length;
 			while ((length = in.read(buf)) > 0) {

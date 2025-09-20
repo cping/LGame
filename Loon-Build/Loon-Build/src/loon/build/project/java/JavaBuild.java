@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +129,9 @@ public class JavaBuild {
 		javac.setTarget(getParam("target", "1.8"));
 		javac.setSource(getParam("source", "1.8"));
 		javac.setEncoding(getParam("encoding", LSystem.ENCODING));
-		javac.setDebug( Boolean.valueOf(getParam("debug", "false")));
+		javac.setDebug(Boolean.valueOf(getParam("debug", "false")));
+		javac.setJNINative(Boolean.valueOf(getParam("native", "false")));
+		javac.setMixJar(Boolean.valueOf(getParam("mixjar", "false")));
 		srcDirFile = new File(path.getCanonicalPath(), "/" + sourceFileName);
 		if (!srcDirFile.exists()) {
 			throw new RuntimeException("src dir not found:" + srcDirFile.getCanonicalPath());
@@ -138,8 +141,10 @@ public class JavaBuild {
 		buildDir.mkdirs();
 		String mainCalss = prj.mainClass;
 		if (mainCalss != null) {
+			final String jarInternal = "loon.JarInternal";
 			// 如果使用loon提供的内部类引用器
-			if ("loon.JarInternal".equals(mainCalss)) {
+			if (jarInternal.equals(mainCalss) || "loon".equals(mainCalss)) {
+				mainCalss = jarInternal;
 				File jarInternalFile = new File(srcDirFile, "/loon/JarInternal.java");
 				if (!jarInternalFile.exists()) {
 					byte[] buffer = Packer.getResourceZipFile("assets/loon.zip", "loon/JarInternal.java");
@@ -225,6 +230,8 @@ public class JavaBuild {
 		jarFile.getParentFile().mkdirs();
 		jar.setDestFile(jarFile);
 		jar.setBasedir(buildDir);
+
+		String newMainClass = mainCalss;
 		if (prj.manifests != null) {
 			for (Object o : prj.manifests) {
 				String result = o.toString().trim();
@@ -233,6 +240,11 @@ public class JavaBuild {
 					String key = result.substring(0, idx);
 					String value = result.substring(idx + 1, result.length());
 					jar.addManifest(key, value);
+					if (javac.mixJar) {
+						if ("Rsrc-Main-Class".equalsIgnoreCase(key)) {
+							newMainClass = StringUtils.trim(value);
+						}
+					}
 				}
 			}
 		}
@@ -240,7 +252,7 @@ public class JavaBuild {
 			// 主函数
 			jar.addManifest("Main-Class", mainCalss);
 		}
-		jar.execute();
+		jar.execute(javac.jniNative, false);
 		copyTo(prj, outputDir);
 
 		if (prj.run != null) {
@@ -249,7 +261,6 @@ public class JavaBuild {
 			run.setClasspath(cp);
 			run.setProject(project);
 			for (Object o : prj.run) {
-
 				List<Object> row = (List<Object>) o;
 				run.setClassname((String) row.get(0));
 				for (Object o1 : (List<Object>) row.get(2)) {
@@ -267,6 +278,37 @@ public class JavaBuild {
 				File output = addPath(prjList.sourceDir, outputDir);
 				String sourceFilePath = output.getCanonicalPath();
 				make.zipFolder(file.getCanonicalPath(), sourceFilePath + "/" + prjName + "-source.jar");
+			}
+		}
+
+		// 将所有class与资源混合到单独jar中,而不保留其它jar文件
+		if (javac.mixJar) {
+			String old_path = getPath(path.getCanonicalPath()) + "/" + "build";
+			File mixPath = new File(old_path);
+			if (mixPath.exists()) {
+				if (newMainClass != null) {
+					jar.addManifest("Main-Class", newMainClass);
+				}
+				String new_path = getPath(path.getCanonicalPath()) + "/" + "build_mix_temp";
+				File temp = new File(new_path);
+				if (temp.exists()) {
+					FileUtils.deleteDirectory(temp);
+				}
+				ArrayList<String> jarFiles = new ArrayList<String>();
+				ArrayList<String> paths = FileUtils.copyDirectory(mixPath, new File(new_path), "jar", jarFiles);
+				for (String fileName : paths) {
+					File zipFile = new File(old_path, fileName);
+					ZipFileMake.unzipToFile(zipFile, temp);
+				}
+				File jarMixFile = new File(getPath(path.getCanonicalPath() + "/completed/" + prjName + ".mix.jar"));
+				jar.setDirectoryToJar(true);
+				jar.execute(javac.jniNative, javac.mixJar, jarMixFile.getCanonicalPath(), temp.getCanonicalPath());
+				if (jarMixFile.exists()) {
+					FileUtils.copy(jarMixFile, (new File(path, jarMixFile.getName())));
+				}
+				if (temp.exists()) {
+					FileUtils.deleteDirectory(temp);
+				}
 			}
 		}
 	}

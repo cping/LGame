@@ -6,20 +6,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import loon.build.sys.LSystem;
 import loon.build.tools.FileUtils;
 
 public class ZipFileMake {
 
-	public ArrayList<EZipFile> classFileToEZipFile(String classRes)
-			throws Exception {
-		InputStream input = Packer.class.getClassLoader().getResourceAsStream(
-				classRes);
-		byte[] buffer = new byte[2048];
+	public ArrayList<EZipFile> classFileToEZipFile(String classRes) throws Exception {
+		final InputStream input = Packer.class.getClassLoader().getResourceAsStream(classRes);
+		final byte[] buffer = new byte[4096];
 		ZipInputStream it = new ZipInputStream(input);
 		ZipEntry zipentry = it.getNextEntry();
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -45,8 +45,7 @@ public class ZipFileMake {
 
 	public ArrayList<ZipEntry> classResList(String resName) {
 		ArrayList<ZipEntry> zips = new ArrayList<ZipEntry>(10);
-		ZipInputStream input = new ZipInputStream(Packer.class.getClassLoader()
-				.getResourceAsStream(resName));
+		ZipInputStream input = new ZipInputStream(Packer.class.getClassLoader().getResourceAsStream(resName));
 		ZipInputArchiveIterator it = new ZipInputArchiveIterator(input);
 		for (; it.hasNext();) {
 			ZipEntry entry = it.nextZip();
@@ -62,13 +61,11 @@ public class ZipFileMake {
 		return zips;
 	}
 
-	public void zipFolder(String srcFolder, String destZipFile)
-			throws Exception {
+	public void zipFolder(String srcFolder, String destZipFile) throws Exception {
 		zipFolder(srcFolder, destZipFile, true);
 	}
 
-	public void zipFolder(String srcFolder, String destZipFile, boolean remove)
-			throws Exception {
+	public void zipFolder(String srcFolder, String destZipFile, boolean remove) throws Exception {
 		ZipOutputStream zip = null;
 		FileOutputStream fileWriter = null;
 		File file = new File(destZipFile);
@@ -85,16 +82,15 @@ public class ZipFileMake {
 		zip.close();
 	}
 
-	static private void addFileToZip(String path, String srcFile,
-			ZipOutputStream zip) throws Exception {
+	static private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
 		File folder = new File(srcFile);
 		if (folder.isDirectory()) {
 			addFolderToZip(path, srcFile, zip);
 		} else {
-			String zipName = path + '/' + folder.getName();
-			int idx = zipName.indexOf('/');
+			String zipName = path + LSystem.FS + folder.getName();
+			int idx = zipName.indexOf(LSystem.FS);
 			if (idx != -1) {
-				byte[] buf = new byte[1024];
+				byte[] buf = new byte[4096];
 				int len;
 				FileInputStream in = new FileInputStream(srcFile);
 				String name = zipName.substring(idx + 1, zipName.length());
@@ -107,17 +103,67 @@ public class ZipFileMake {
 		}
 	}
 
-	static private void addFolderToZip(String path, String srcFolder,
-			ZipOutputStream zip) throws Exception {
+	static private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
 		File folder = new File(srcFolder);
-
 		for (String fileName : folder.list()) {
 			if (path.equals("")) {
-				addFileToZip(folder.getName(), srcFolder + '/' + fileName, zip);
+				addFileToZip(folder.getName(), srcFolder + LSystem.FS + fileName, zip);
 			} else {
-				addFileToZip(path + '/' + folder.getName(), srcFolder + '/'
-						+ fileName, zip);
+				addFileToZip(path + LSystem.FS + folder.getName(), srcFolder + LSystem.FS + fileName, zip);
 			}
+		}
+
+	}
+
+	public static void unzipToFile(File srcFile, File destFile) throws IOException {
+		try {
+			if (!srcFile.exists()) {
+				return;
+			}
+			if (!destFile.exists()) {
+				FileUtils.makedirs(destFile);
+			}
+			InputStream inZip = new FileInputStream(srcFile);
+			unzipStream(inZip, destFile.getCanonicalPath());
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void unzipStream(InputStream inputStream, String descDir) {
+		if (!descDir.endsWith(File.separator)) {
+			descDir = descDir + File.separator;
+		}
+		try (ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+			ZipEntry zipEntry;
+			for (; ((zipEntry = zipInputStream.getNextEntry()) != null);) {
+				String zipEntryNameAll = zipEntry.getName();
+				File outFile = new File((descDir + zipEntryNameAll).trim());
+				if (!zipEntry.isDirectory()) {
+					File par = outFile.getParentFile();
+					if (par != null) {
+						par.mkdirs();
+					}
+					writeFile(outFile.getAbsolutePath(), zipInputStream);
+				} else {
+					FileUtils.makedirs(outFile);
+				}
+				zipInputStream.closeEntry();
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
+	}
+
+	public static void writeFile(String filePath, ZipInputStream zipInputStream) {
+		try (OutputStream o = new FileOutputStream(filePath)) {
+			final byte[] buffer = new byte[4096];
+			int len;
+			for (; ((len = zipInputStream.read(buffer)) != -1);) {
+				o.write(buffer, 0, len);
+			}
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
 	}
 }

@@ -68,14 +68,20 @@ public class JarWrite {
 	 * 
 	 * @param mf
 	 * @param manifest
+	 * @param mixJar
+	 * @param enableNative
 	 * @throws IOException
 	 */
-	public static void writeManifest(File mf, ArrayMap manifest, boolean enableNative) throws IOException {
-		PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(mf), LSystem.ENCODING));
+	public static void writeManifest(File mf, ArrayMap manifest, boolean enableNative, boolean mixJar)
+			throws IOException {
+		final PrintWriter out = new PrintWriter(new OutputStreamWriter(new FileOutputStream(mf), LSystem.ENCODING));
 		out.println("Manifest-Version: 1.0");
 		for (int i = 0; i < manifest.size(); i++) {
-			ArrayMap.Entry entry = manifest.getEntry(i);
-			String key = entry.getKey().toString().trim();
+			final ArrayMap.Entry entry = manifest.getEntry(i);
+			final String key = entry.getKey().toString().trim();
+			if (mixJar && key.toLowerCase().startsWith("rsrc")) {
+				continue;
+			}
 			String value = entry.getValue().toString().trim();
 			out.println(String.format("%s: %s", key, value));
 		}

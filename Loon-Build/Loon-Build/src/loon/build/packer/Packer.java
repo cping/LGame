@@ -172,13 +172,12 @@ public class Packer {
 			sbr.append(mainClassName);
 			sbr.append(newLine);
 			sbr.append("Main-Class: loon.JarInternal");
-			sbr.append(newLine);
 			if (enableNative) {
-				sbr.append("Enable-Native-Access: ALL-UNNAMED");
 				sbr.append(newLine);
+				sbr.append("Enable-Native-Access: ALL-UNNAMED");
 			}
+			sbr.append(newLine);
 			EZipFile MANIFEST = new EZipFile("META-INF/MANIFEST.MF", sbr.toString().getBytes("UTF-8"));
-
 			MANIFEST.serialize(output);
 			output.flush();
 			output.close();

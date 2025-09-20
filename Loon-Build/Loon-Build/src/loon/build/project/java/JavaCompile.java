@@ -10,9 +10,15 @@ public class JavaCompile {
 	String source;
 	String encoding;
 	boolean debug;
+	boolean jniNative;
+	boolean mixJar;
 	String srcdir;
 	String destdir;
 	String executable;
+
+	public void setMixJar(boolean m) {
+		this.mixJar = m;
+	}
 
 	public void setExecutable(String executable) {
 		this.executable = executable;
@@ -38,6 +44,10 @@ public class JavaCompile {
 		this.debug = debug;
 	}
 
+	public void setJNINative(boolean n) {
+		this.jniNative = n;
+	}
+
 	public void setDestdir(String destdir) {
 		this.destdir = destdir;
 	}
@@ -45,12 +55,12 @@ public class JavaCompile {
 	public void setClasspath(JavaPath classpath) {
 		this.classpath = classpath;
 	}
-	
+
 	public int execute() throws Exception {
 		RunCompile exec = new RunCompile(prj);
 
 		exec.setCmd("\"" + executable + "\"");
-		
+
 		if (!debug) {
 			exec.addArg("-g:none");
 		}
@@ -61,19 +71,19 @@ public class JavaCompile {
 		}
 
 		if (encoding != null) {
-			exec.addArg("-encoding", "\"" +encoding+ "\"");
+			exec.addArg("-encoding", "\"" + encoding + "\"");
 		}
 
 		if (source != null) {
-			exec.addArg("-source", "\"" +source+ "\"");
+			exec.addArg("-source", "\"" + source + "\"");
 		}
-		
+
 		if (srcdir != null) {
 			exec.addArg("-sourcepath", "\"" + JavaBuild.getPath(srcdir.replace("/", "\\")) + "\"");
 		}
-		
+
 		if (target != null) {
-			exec.addArg("-target",  "\"" + target+ "\"");
+			exec.addArg("-target", "\"" + target + "\"");
 		}
 
 		if (classpath != null) {
@@ -82,7 +92,6 @@ public class JavaCompile {
 				exec.addArg("-cp", cp);
 			}
 		}
-		
 
 		File f = JarWrite.getTempFile("filelist");
 		int cnt = JarWrite.writeFileList(f, new File(srcdir), new File(destdir));

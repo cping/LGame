@@ -19,5 +19,9 @@ source:"1.8",
 /*编译的运行Java环境*/
 target:"1.8",
 /*是否debug信息到控制台*/
-debug:true
+debug:true,
+/*是否添加JNI接口安全标识*/
+native:false,
+/*是否将所有类库解包混合到单一jar中*/
+mixjar:false
 }
