@@ -1891,6 +1891,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public Vector2f localCenter() {
+		return new Vector2f(getCenterX() - this._pivotX * this.getWidth(),
+				getCenterY() - this._pivotY * this.getHeight());
+	}
+
 	public LComponent coord(float x, float y) {
 		setLocation(x, y);
 		return this;

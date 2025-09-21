@@ -212,6 +212,10 @@ public class PreloadControl implements LRelease {
 		return 0f;
 	}
 
+	public boolean isLoaded() {
+		return MathUtils.equal(this._percent, this._maxPercent);
+	}
+
 	/**
 	 * 资源加载错误
 	 * 

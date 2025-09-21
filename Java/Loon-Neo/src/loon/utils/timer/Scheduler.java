@@ -210,6 +210,17 @@ public class Scheduler implements LRelease {
 		return this;
 	}
 
+	public Scheduler cancel() {
+		this._loop_timer.cancel();
+		for (int i = _scheduled.size - 1; i > -1; i--) {
+			Interval u = _scheduled.get(i);
+			if (u != null) {
+				u._loop_timer.cancel();
+			}
+		}
+		return this;
+	}
+
 	public Scheduler resume() {
 		return unpause();
 	}

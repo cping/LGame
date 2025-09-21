@@ -279,6 +279,11 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		return this;
 	}
 
+	public Vector2f localCenter() {
+		return new Vector2f(getCenterX() - this.getPivotX() * this.getWidth(),
+				getCenterY() - this.getPivotY() * this.getHeight());
+	}
+
 	public IEntity coord(float x, float y) {
 		setLocation(x, y);
 		return this;

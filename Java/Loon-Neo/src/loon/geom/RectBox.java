@@ -175,6 +175,12 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return o;
 	}
 
+	public static Vector2f closestPoint(RectBox src, Vector2f point) {
+		final float closestX = MathUtils.clamp(point.x, src.getMinX(), src.getMaxX());
+		final float closestY = MathUtils.clamp(point.y, src.getMinY(), src.getMaxY());
+		return new Vector2f(closestX, closestY);
+	}
+
 	public final static RectBox inflate(RectBox src, int xScale, int yScale) {
 		if (src == null) {
 			src = new RectBox();

@@ -4440,6 +4440,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return getY() + getViewHeight() / 2f;
 	}
 
+	public Vector2f localCenter() {
+		return new Vector2f(getCenterX() - this.getPivotX() * this.getWidth(),
+				getCenterY() - this.getPivotY() * this.getHeight());
+	}
+
 	public Screen outsideTopRandOn(final LObject<?> object, final float newX) {
 		if (object == null) {
 			return this;

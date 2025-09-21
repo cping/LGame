@@ -128,6 +128,10 @@ public final class MathUtils {
 
 	public static final float DEG_TO_RAD = PI / 180.0f;
 
+	public enum RotationType {
+		Shortest, Longest, Clockwise, CounterClockwise
+	}
+
 	static final private class SinCos {
 
 		static final float[] SIN_LIST = new float[SIN_COUNT];
@@ -1706,14 +1710,54 @@ public final class MathUtils {
 		return (float) result;
 	}
 
-	public static float lerp(float value1, float value2, float amount) {
-		return value1 + (value2 - value1) * amount;
-	}
-
 	public static float smoothStep(float value1, float value2, float amount) {
 		float result = clamp(amount, 0f, 1f);
 		result = hermite(value1, 0f, value2, 0f, result);
 		return result;
+	}
+
+	public static float lerp(float value1, float value2, float amount) {
+		return value1 + (value2 - value1) * amount;
+	}
+
+	public static float lerpInverse(float value1, float value2, float amount) {
+		return (amount - value1) / (value2 - value1);
+	}
+
+	public static float lerpAngle(RotationType rotationType, float startAngle, float endAngle, float timer) {
+		final boolean pathIsPositive = (startAngle - endAngle + TWO_PI) % TWO_PI >= MathUtils.PI;
+		final float dst1 = MathUtils.abs(endAngle - startAngle);
+		final float dst2 = TWO_PI - dst1;
+		float shortDst = 0;
+		float longDst = 0;
+		if (dst1 > dst2) {
+			shortDst = dst2;
+			longDst = dst1;
+		} else {
+			shortDst = dst1;
+			longDst = dst2;
+		}
+		float distance = 0;
+		float dir = 1;
+		switch (rotationType) {
+		case Shortest:
+			distance = shortDst;
+			dir = pathIsPositive ? 1 : -1;
+			break;
+		case Longest:
+			distance = longDst;
+			dir = pathIsPositive ? -1 : 1;
+			break;
+		case Clockwise:
+			dir = 1;
+			distance = pathIsPositive ? shortDst : longDst;
+			break;
+		case CounterClockwise:
+			dir = -1;
+			distance = pathIsPositive ? longDst : shortDst;
+			break;
+		}
+		return startAngle + dir * (distance * timer);
 	}
 
 	public static float wave(float time) {

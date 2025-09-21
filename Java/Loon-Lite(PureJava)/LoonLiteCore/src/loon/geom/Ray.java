@@ -26,6 +26,23 @@ import loon.utils.TempVars;
 
 public class Ray {
 
+	public static boolean intersect2d(Ray ray, Ray other) {
+		if (ray == null || other == null) {
+			return false;
+		}
+		final Vector3f p1 = ray._origin;
+		final Vector3f p2 = ray._origin.add(ray._direction);
+		final Vector3f p3 = other._origin;
+		final Vector3f p4 = other._origin.add(other._direction);
+		final float denominator = (p4.y - p3.y) * (p2.x - p1.x) - (p4.x - p3.x) * (p2.y - p1.y);
+		if (denominator == 0) {
+			return false;
+		}
+		final float ua = ((p4.x - p3.x) * (p1.y - p3.y) - (p4.y - p3.y) * (p1.x - p3.x)) / denominator;
+		final float ub = ((p2.x - p1.x) * (p1.y - p3.y) - (p2.y - p1.y) * (p1.x - p3.x)) / denominator;
+		return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
+	}
+
 	public static Ray create(float ox, float oy, float oz, float dx, float dy) {
 		return create(ox, oy, oz, dx, dy, 1f);
 	}
@@ -78,6 +95,22 @@ public class Ray {
 
 	public Vector3f at(float distance) {
 		return getPoint(distance);
+	}
+
+	public AABB getAABB() {
+		return getAABB(Float.MAX_VALUE);
+	}
+
+	public AABB getAABB(float magnitude) {
+		final float minx = MathUtils.min(_origin.x, _origin.x + _direction.x * magnitude);
+		final float miny = MathUtils.min(_origin.y, _origin.y + _direction.y * magnitude);
+		final float maxx = MathUtils.max(_origin.x, _origin.x + _direction.x * magnitude);
+		final float maxy = MathUtils.max(_origin.y, _origin.y + _direction.y * magnitude);
+		return new AABB(minx, miny, maxx, maxy);
+	}
+
+	public boolean intersect(Ray r) {
+		return intersect2d(this, r);
 	}
 
 	public Vector3f intersectPoint(Line line) {

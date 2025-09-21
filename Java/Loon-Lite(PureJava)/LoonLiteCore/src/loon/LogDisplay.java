@@ -1,24 +1,26 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
 package loon;
+
+import java.util.Iterator;
 
 import loon.canvas.LColor;
 import loon.font.FontUtils;
@@ -127,15 +129,16 @@ public class LogDisplay {
 		if (StringUtils.isEmpty(message)) {
 			return this;
 		}
-		final int limitWidth = _width - _space;
+		final int limitWidth = _width - _space + getFontWidth();
 		TArray<String> textList = FontUtils.splitLines(message, _textFont, limitWidth, _textList);
 		final boolean limit = (message.length() * getFontWidth() > limitWidth);
-		if (limit || textList.size > 0 || message.indexOf(LSystem.LF) != -1) {
-			if (limit) {
+		final boolean multipleMessage = (textList.size > 1);
+		if (limit || multipleMessage) {
+			if (limit && multipleMessage) {
 				textList = FontUtils.splitLines(message, _textFont, limitWidth - _space - getFontWidth(), _textList);
 			}
-			for (String text : textList) {
-				_texts.add(new LogDisplayItem(text, color));
+			for (Iterator<String> it = textList.iterator(); it.hasNext();) {
+				_texts.add(new LogDisplayItem(it.next(), color));
 			}
 		} else {
 			_texts.add(new LogDisplayItem(message, color));
@@ -145,7 +148,6 @@ public class LogDisplay {
 		} else if (_texts.size() > _textAmount) {
 			_texts.removeIndex(0);
 		}
-
 		return this;
 	}
 
@@ -180,7 +182,7 @@ public class LogDisplay {
 		final int textHeight = getFontHeight();
 		this._textHeight = textHeight + 5;
 		this._textAmount = ((_height - textHeight) / this._textHeight) - 3;
-		this._space = (int) (getFontWidth() * 1.5f);
+		this._space = (int) (getFontWidth() * 1.6f);
 		this.resetDef();
 	}
 
