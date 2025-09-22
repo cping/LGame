@@ -139,8 +139,33 @@ public abstract class Conversion implements Expression {
 		return sbr.toString().trim();
 	}
 
-	public static final TArray<String> splitToList(final String string, final char tag) {
-		return new TArray<String>(StringUtils.split(string, tag));
+	public static final TArray<String> splitToList(final String mes, final char tag) {
+		return splitToList(mes, tag, null);
+	}
+
+	public static final TArray<String> splitToList(final String mes, final char tag, TArray<String> cmds) {
+		final StrBuilder str = new StrBuilder();
+		boolean flag = false;
+		for (int i = 0; i < mes.length(); i++) {
+			final char c = mes.charAt(i);
+			if (c == LSystem.DOUBLE_QUOTES) {
+				flag = !flag;
+			} else {
+				if (flag && c == LSystem.SPACE) {
+					str.append(LSystem.AMP);
+				} else {
+					str.append(c);
+				}
+			}
+		}
+		final String[] cmdList = StringUtils.split(str.toString(), tag);
+		if (cmds != null) {
+			cmds.clear();
+		} else {
+			cmds = new TArray<String>(cmdList.length);
+		}
+		cmds.addAll(cmdList);
+		return cmds;
 	}
 
 	public static class Exp implements LRelease {

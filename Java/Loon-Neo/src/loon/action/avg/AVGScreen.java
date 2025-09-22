@@ -1026,6 +1026,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	public abstract void drawScreen(GLEx g);
 
+	private TArray<String> _tempCommands;
+
 	/**
 	 * 读取一行AVG脚本命令
 	 */
@@ -1035,15 +1037,15 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (isSelectMessage) {
 					continue;
 				}
-				String result = command.doExecute();
+				final String result = command.doExecute();
 				if (result == null) {
 					continue;
 				}
 				if (!nextScript(result)) {
 					break;
 				}
-				TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE);
-				int size = commands.size;
+				final TArray<String> commands = Conversion.splitToList(result, LSystem.SPACE, _tempCommands);
+				final int size = commands.size;
 				String cmdFlag = (String) commands.get(0);
 				String mesFlag = null, orderFlag = null, lastFlag = null;
 				if (size >= 2) {
@@ -1594,10 +1596,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			return false;
 		}
 		boolean result = false;
-		if (LColor.isColorValue(orderFlag)) {
-			cg.setCharaColor(mesFlag, orderFlag);
-			result = true;
-		} else if (LColorList.get().isColorValue(orderFlag)) {
+		if (LColor.isColorValue(orderFlag) || LColorList.get().isColorValue(orderFlag)) {
 			cg.setCharaColor(mesFlag, orderFlag);
 			result = true;
 		}

@@ -131,6 +131,8 @@ public final class AVGChara implements Visible, XY, LRelease {
 			this._cgWidth = cw;
 			this._cgHeight = ch;
 		}
+		this.maxWidth = w;
+		this.maxHeight = h;
 		this.showAnimation = false;
 		this.moved = true;
 		this.visible = true;

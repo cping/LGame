@@ -152,6 +152,12 @@ public final class AVGCG implements LRelease {
 				_roles.put(keyName, chara);
 			} else {
 				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
+				if (w > 0) {
+					chara.setWidth(w);
+				}
+				if (h > 0) {
+					chara.setHeight(h);
+				}
 				chara.setX(x == -1 ? chara.getX() : x);
 				chara.setY(y == -1 ? chara.getY() : y);
 			}
