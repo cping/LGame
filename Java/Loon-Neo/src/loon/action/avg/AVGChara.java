@@ -25,12 +25,13 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.Visible;
 import loon.action.sprite.ISprite;
+import loon.canvas.LColor;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class AVGChara implements Visible, XY, LRelease {
+public final class AVGChara implements Visible, XY, LRelease {
 
 	private LTexture _cgTexture;
 
@@ -45,6 +46,10 @@ public class AVGChara implements Visible, XY, LRelease {
 	private int _cgMoveSleep = 10;
 
 	private boolean _cgMoving, _closed;
+
+	private LColor _tempColor = new LColor();
+
+	private LColor _charaColor;
 
 	protected AVGAnm anm;
 
@@ -118,14 +123,17 @@ public class AVGChara implements Visible, XY, LRelease {
 	}
 
 	private void load(LTexture image, final int x, final int y, int cw, int ch, final int w, final int h) {
-		this.maxWidth = w;
-		this.maxHeight = h;
-		this.showAnimation = false;
 		this._cgTexture = image;
+		if (_cgTexture != null) {
+			this._cgWidth = (cw == -1) ? _cgTexture.getWidth() : cw;
+			this._cgHeight = (ch == -1) ? _cgTexture.getHeight() : ch;
+		} else {
+			this._cgWidth = cw;
+			this._cgHeight = ch;
+		}
+		this.showAnimation = false;
 		this.moved = true;
 		this.visible = true;
-		this._cgWidth = cw;
-		this._cgHeight = ch;
 		this.x = x;
 		this.y = y;
 		this._cgMovePos = 0;
@@ -163,6 +171,28 @@ public class AVGChara implements Visible, XY, LRelease {
 		} else {
 			return 1;
 		}
+	}
+
+	public AVGChara setColor(String c) {
+		if (_charaColor == null) {
+			_charaColor = new LColor(c);
+		} else {
+			_charaColor.setColor(c);
+		}
+		return this;
+	}
+
+	public AVGChara setColor(LColor c) {
+		if (_charaColor == null) {
+			_charaColor = new LColor(c);
+		} else {
+			_charaColor.setColor(c);
+		}
+		return this;
+	}
+
+	public LColor getColor() {
+		return _charaColor;
 	}
 
 	public AVGChara setMove(boolean move) {
@@ -221,15 +251,16 @@ public class AVGChara implements Visible, XY, LRelease {
 
 	}
 
-	void draw(GLEx g) {
-		draw(g, 0f, 0f);
+	void draw(GLEx g, LColor color) {
+		draw(g, 0f, 0f, color);
 	}
 
-	void draw(GLEx g, float nx, float ny) {
+	void draw(GLEx g, float nx, float ny, LColor c) {
 		if (_cgWidth <= 0f && _cgHeight <= 0f) {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)));
 		} else {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight,
+					_tempColor.setColor(LColor.combine(c, _charaColor)));
 		}
 	}
 

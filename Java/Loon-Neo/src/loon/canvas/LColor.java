@@ -871,7 +871,7 @@ public class LColor implements Serializable {
 	 */
 	public static final int combine(LColor curColor, LColor dstColor) {
 		if (curColor == null && dstColor == null) {
-			return TRANSPARENT;
+			return DEF_COLOR;
 		}
 		if (curColor != null && dstColor == null) {
 			return curColor.getARGB();

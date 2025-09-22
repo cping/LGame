@@ -41,7 +41,7 @@ import loon.utils.MathUtils;
 import loon.utils.timer.Duration;
 import loon.utils.StringKeyValue;
 
-public class ActionTween extends ActionTweenBase<ActionTween> {
+public final class ActionTween extends ActionTweenBase<ActionTween> {
 
 	private float _initMoveSpeed;
 

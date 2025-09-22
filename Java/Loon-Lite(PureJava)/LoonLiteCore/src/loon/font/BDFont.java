@@ -50,7 +50,7 @@ import loon.utils.parse.StrTokenizer;
 /**
  * Adobe的DBF格式字体文件支持(主要是给C#版monogame环境用的,本地字库默认没法调用,除非调用本地api,问题是不想自己写环境适配才用的monogame……)
  */
-public class BDFont extends FontTrans implements IFont, LRelease {
+public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	public static class BDFGlyph {
 

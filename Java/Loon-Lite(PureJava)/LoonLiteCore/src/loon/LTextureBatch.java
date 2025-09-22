@@ -37,7 +37,7 @@ import loon.utils.TimeUtils;
  * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（_meshdata.texture.geTexturetBatch即可获得）,<br>
  * 方便针对特定纹理的缓存以及渲染.
  */
-public class LTextureBatch implements LRelease {
+public final class LTextureBatch implements LRelease {
 
 	private TArray<Cache> _tempCaches = new TArray<Cache>();
 

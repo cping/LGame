@@ -25,7 +25,7 @@ import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.TArray;
 
-public class FontBatch {
+public final class FontBatch {
 
 	private static class FontItem {
 

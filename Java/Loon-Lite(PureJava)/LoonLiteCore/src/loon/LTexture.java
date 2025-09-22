@@ -44,7 +44,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.UnitPort;
 import loon.utils.timer.LTimerContext;
 
-public class LTexture extends Painter implements LRelease {
+public final class LTexture extends Painter implements LRelease {
 
 	public static LTexture createTexture(int w, int h) {
 		final Image img = Image.createImage(w, h);

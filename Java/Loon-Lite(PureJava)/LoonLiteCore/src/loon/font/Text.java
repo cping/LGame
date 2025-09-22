@@ -36,7 +36,7 @@ import loon.utils.TArray;
 /**
  * 一个统一的文字显示用类，用以统一文字的基础显示效果
  */
-public class Text implements LRelease {
+public final class Text implements LRelease {
 
 	private CharSequence _lastCharSequence;
 	private boolean _initNativeDraw = false, _closed = false;

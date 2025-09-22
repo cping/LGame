@@ -20,7 +20,7 @@
  */
 package loon.font;
 
-public class TextWrap {
+public final class TextWrap {
 
 	public static final TextWrap MANUAL = new TextWrap(Float.MAX_VALUE);
 

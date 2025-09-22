@@ -39,6 +39,7 @@ import loon.action.sprite.effect.NaturalEffect.NaturalType;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.canvas.LColorList;
 import loon.component.Desktop;
 import loon.component.LButton;
 import loon.component.LClickButton;
@@ -55,6 +56,7 @@ import loon.events.Updateable;
 import loon.font.FontSet;
 import loon.font.IFont;
 import loon.geom.BooleanValue;
+import loon.geom.Vector2f;
 import loon.geom.Vector4f;
 import loon.opengl.GLEx;
 import loon.utils.Array;
@@ -1508,34 +1510,64 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					} else if (lastFlag != null && CommandType.L_TO.equalsIgnoreCase(orderFlag)) {
 						scrCG.replace(mesFlag, lastFlag);
 					} else if (orderFlag != null && orderFlag.startsWith("size")) {
-						String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
+						final String sizeResult = StringUtils.filterStartEnd(orderFlag, LSystem.PAREN_START,
 								LSystem.PAREN_END);
-						Vector4f view = Vector4f.at(sizeResult);
+						final Vector4f view = Vector4f.at(sizeResult);
 						if (view.z != 0f || view.w != 0f) {
 							scrCG.add(mesFlag, view.x(), view.y(), view.z(), view.w(), getWidth(), getHeight());
 						} else {
 							scrCG.add(mesFlag, view.x(), view.y(), getWidth(), getHeight());
 						}
 					} else {
-						int x = 0, y = 0;
-						if (orderFlag != null) {
+						int x = -1, y = -1;
+						if (orderFlag != null && MathUtils.isNan(orderFlag)) {
 							x = Integer.parseInt(orderFlag);
+						} else if (orderFlag != null && orderFlag.indexOf(LSystem.COMMA) != -1) {
+							final Vector2f pos = Vector2f.at(orderFlag);
+							x = pos.x();
+							y = pos.y();
+						} else if (orderFlag != null) {
+							checkCGCharaColor(scrCG, mesFlag, orderFlag);
 						}
+						String lastCmd = null;
 						int cgWidth = -1;
 						int cgHeight = -1;
 						if (size >= 4) {
-							y = Integer.parseInt(commands.get(3));
+							lastCmd = commands.get(3);
+							if (MathUtils.isNan(lastCmd)) {
+								if (x != -1 && y == -1) {
+									y = Integer.parseInt(lastCmd);
+								} else {
+									cgWidth = Integer.parseInt(lastCmd);
+								}
+							}
 						}
 						if (size >= 5) {
-							cgWidth = Integer.parseInt(commands.get(4));
+							lastCmd = commands.get(4);
+							if (MathUtils.isNan(lastCmd)) {
+								if (cgWidth == -1) {
+									cgWidth = Integer.parseInt(lastCmd);
+								} else {
+									cgHeight = Integer.parseInt(lastCmd);
+								}
+							}
 						}
 						if (size >= 6) {
-							cgHeight = Integer.parseInt(commands.get(5));
+							lastCmd = commands.get(5);
+							if (MathUtils.isNan(lastCmd)) {
+								cgHeight = Integer.parseInt(lastCmd);
+							}
+						}
+						if (size >= 7) {
+							lastCmd = commands.get(6);
 						}
 						if (cgWidth != -1 || cgHeight != -1) {
-							scrCG.add(mesFlag, x, y, cgWidth, cgWidth, getWidth(), getHeight());
+							scrCG.add(mesFlag, x, y, cgWidth, cgHeight, getWidth(), getHeight());
 						} else {
 							scrCG.add(mesFlag, x, y, getWidth(), getHeight());
+						}
+						if (lastCmd != null && !MathUtils.isNan(lastCmd)) {
+							checkCGCharaColor(scrCG, mesFlag, lastCmd);
 						}
 					}
 					continue;
@@ -1550,6 +1582,26 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * 变更cg角色颜色为指定颜色
+	 * 
+	 * @param cg
+	 */
+	private final static boolean checkCGCharaColor(AVGCG cg, String mesFlag, String orderFlag) {
+		if (cg == null || mesFlag == null || orderFlag == null) {
+			return false;
+		}
+		boolean result = false;
+		if (LColor.isColorValue(orderFlag)) {
+			cg.setCharaColor(mesFlag, orderFlag);
+			result = true;
+		} else if (LColorList.get().isColorValue(orderFlag)) {
+			cg.setCharaColor(mesFlag, orderFlag);
+			result = true;
+		}
+		return result;
 	}
 
 	// todo

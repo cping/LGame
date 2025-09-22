@@ -24,7 +24,7 @@ import loon.utils.ArrayMap;
 import loon.utils.CollectionUtils;
 import loon.utils.TArray;
 
-public class Actions {
+public final class Actions {
 
 	final static class ActionElement {
 

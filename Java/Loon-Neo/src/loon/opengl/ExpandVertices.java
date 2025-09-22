@@ -25,7 +25,7 @@ import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 
-public class ExpandVertices {
+public final class ExpandVertices {
 
 	private final static IntMap<ExpandVertices> _verticeCaches = new IntMap<ExpandVertices>();
 

@@ -160,6 +160,10 @@ public class AABB implements XY, XYZW, BoxSize, LRelease {
 		this(minX, minY, 0f, maxX, maxY, 0f);
 	}
 
+	public AABB(XY min, XY max) {
+		this(min.getX(), min.getY(), max.getX(), max.getY());
+	}
+
 	public AABB(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
 		this.minX = minX;
 		this.minY = minY;

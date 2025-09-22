@@ -584,6 +584,14 @@ public class LSetting {
 		return (this.aspect = (float) this.width / (float) this.height);
 	}
 
+	public boolean isSizeValid() {
+		return this.width > 0 && this.height > 0;
+	}
+
+	public boolean isScaleValid() {
+		return this.width_zoom > 0 && this.height_zoom > 0;
+	}
+
 	public DPI getDpi() {
 		return new Resolution(width, height).compareDPI(new Resolution(width_zoom, height_zoom));
 	}

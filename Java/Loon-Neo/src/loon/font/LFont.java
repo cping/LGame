@@ -39,7 +39,7 @@ import loon.utils.StringUtils;
 /**
  * Loon内置的Font实现,当用户无自定义IFont时,默认使用此类实现文字渲染
  */
-public class LFont extends FontTrans implements IFont {
+public final class LFont extends FontTrans implements IFont {
 
 	public static LFont getDefaultFont() {
 		return newFont();

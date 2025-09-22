@@ -35,7 +35,7 @@ import loon.geom.Vector3f;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.TArray;
 
-public class Mesh implements LRelease {
+public final class Mesh implements LRelease {
 
 	private static void addManagedMesh(Mesh mesh) {
 		LSystem.addMesh(mesh);

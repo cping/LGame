@@ -34,7 +34,7 @@ import loon.utils.TArray;
 /**
  * Loon的字体渲染辅助工具,它并非针对某一特定Font的,而是所有实现了IFont接口的类都可以使用此工具
  */
-public class FontUtils {
+public final class FontUtils {
 
 	protected static class WarpChars {
 

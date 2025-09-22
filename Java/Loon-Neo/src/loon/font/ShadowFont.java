@@ -28,7 +28,7 @@ import loon.opengl.LSTRFont;
 /**
  * 一个IFont的阴影字体实现,内部是LFont
  */
-public class ShadowFont implements IFont {
+public final class ShadowFont implements IFont {
 
 	private boolean withShadow = false, closed = false;
 	private LColor shadowColor = new LColor(0f, 0f, 0f, 1f);

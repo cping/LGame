@@ -40,7 +40,7 @@ import loon.utils.TimeUtils;
  * 这是一个针对单独纹理的批量渲染类,默认绑定在特定Texture上运行（普通纹理texture.geTexturetBatch即可获得）,<br>
  * 也就是当用户操作的纹理有仅有一个时,方便针对此纹理的特定缓存以及渲染操作.
  */
-public class LTextureBatch implements LRelease {
+public final class LTextureBatch implements LRelease {
 
 	private final static String _batch_name = "texbatch";
 

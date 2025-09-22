@@ -22,7 +22,7 @@ package loon.font;
 
 import loon.utils.StringKeyValue;
 
-public class TextFormat {
+public final class TextFormat {
 
 	public final Font font;
 

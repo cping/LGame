@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.Screen;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.Sprites;
+import loon.canvas.LColor;
 import loon.events.Updateable;
 import loon.geom.PointI;
 import loon.opengl.GLEx;
@@ -35,7 +36,7 @@ import loon.utils.StringUtils;
 import loon.utils.TimeUtils;
 import loon.utils.timer.LTimerContext;
 
-public class AVGCG implements LRelease {
+public final class AVGCG implements LRelease {
 
 	protected Sprites actionRole;
 
@@ -50,6 +51,10 @@ public class AVGCG implements LRelease {
 	private int _speed;
 
 	protected int sleep, sleepMax, shakeNumber;
+
+	private LColor _tempColor = new LColor();
+
+	private LColor _cgColor;
 
 	public AVGCG(Screen screen) {
 		this(screen, 60f);
@@ -136,23 +141,19 @@ public class AVGCG implements LRelease {
 			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = (AVGChara) _roles.get(keyName);
 			if (chara == null) {
+				final int newX = (x == -1) ? 0 : x;
+				final int newY = (y == -1) ? 0 : y;
 				if (w > 0 || h > 0) {
-					chara = new AVGChara(path, x, y, w, h, sw, sh);
+					chara = new AVGChara(path, newX, newY, w, h, sw, sh);
 				} else {
-					chara = new AVGChara(path, x, y, sw, sh);
+					chara = new AVGChara(path, newX, newY, sw, sh);
 				}
 				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
 				_roles.put(keyName, chara);
 			} else {
 				chara.setFlag(ISprite.TYPE_FADE_OUT, _roleDelay);
-				chara.setX(x);
-				chara.setY(y);
-				if (w > 0) {
-					chara.setWidth(w);
-				}
-				if (h > 0) {
-					chara.setHeight(h);
-				}
+				chara.setX(x == -1 ? chara.getX() : x);
+				chara.setY(y == -1 ? chara.getY() : y);
 			}
 		}
 	}
@@ -198,6 +199,7 @@ public class AVGCG implements LRelease {
 				final float x = old.getX();
 				final float y = old.getY();
 				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth, old.maxHeight);
+				newObject.setColor(old.getColor());
 				newObject.setMove(false);
 				newObject.setX(x);
 				newObject.setY(y);
@@ -218,6 +220,48 @@ public class AVGCG implements LRelease {
 
 	public void update(LTimerContext context) {
 		actionRole.update(context.timeSinceLastUpdate);
+	}
+
+	public LColor getCGColor() {
+		return _cgColor;
+	}
+
+	public AVGCG setCGColor(LColor c) {
+		if (this._cgColor == null) {
+			this._cgColor = new LColor(c);
+		} else {
+			this._cgColor.setColor(c);
+		}
+		return this;
+	}
+
+	public AVGCG setCGColor(String c) {
+		if (this._cgColor == null) {
+			this._cgColor = new LColor(c);
+		} else {
+			this._cgColor.setColor(c);
+		}
+		return this;
+	}
+
+	public AVGCG emptyCGColor() {
+		return setCGColor(LColor.white);
+	}
+
+	public AVGCG setCharaColor(String name, String color) {
+		AVGChara chara = (AVGChara) _roles.get(name);
+		if (chara != null) {
+			chara.setColor(color);
+		}
+		return this;
+	}
+
+	public AVGCG setCharaColor(String name, LColor color) {
+		AVGChara chara = (AVGChara) _roles.get(name);
+		if (chara != null) {
+			chara.setColor(color);
+		}
+		return this;
 	}
 
 	public void paint(GLEx g) {
@@ -273,14 +317,15 @@ public class AVGCG implements LRelease {
 						}
 						g.draw(animation.texture, newX + chara.getX(), newY + chara.getY(), animation.width,
 								animation.height, point.x, point.y, point.x + animation.imageWidth,
-								point.y + animation.imageHeight, animation.color, animation.angle);
+								point.y + animation.imageHeight,
+								_tempColor.setColor(LColor.combine(animation.color, _cgColor)), animation.angle);
 						if (animation.alpha != 1f) {
 							g.setAlpha(1f);
 						}
 					}
 				} else {
 					chara.next();
-					chara.draw(g, newX, newY);
+					chara.draw(g, newX, newY, _cgColor);
 				}
 				if (_style) {
 					if (chara.flag != -1 && chara.opacity > 0) {

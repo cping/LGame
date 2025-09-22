@@ -25,7 +25,7 @@ import loon.component.layout.HorizontalAlign;
 /**
  * Text配置用类
  */
-public class TextOptions {
+public final class TextOptions {
 
 	// 默认行间间隔
 	public static float LEADING_DEFAULT = 5;

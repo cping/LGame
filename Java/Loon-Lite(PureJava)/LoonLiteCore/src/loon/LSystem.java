@@ -789,6 +789,22 @@ public final class LSystem {
 		return 31 * hashCode + value;
 	}
 
+	public static final int set(int v, int[] ids) {
+		int result = v;
+		for (int i = 0; i < ids.length; i++) {
+			result |= (1 << ids[i]);
+		}
+		return result;
+	}
+
+	public static final int unset(int v, int[] ids) {
+		int result = v;
+		for (int i = 0; i < ids.length; i++) {
+			result &= ~(1 << ids[i]);
+		}
+		return result;
+	}
+
 	public static final boolean equals(final Object o1, final Object o2) {
 		return (o1 == null) ? (o2 == null) : o1.equals(o2);
 	}

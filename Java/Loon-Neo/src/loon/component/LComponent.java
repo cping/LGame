@@ -1650,6 +1650,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._scaleY;
 	}
 
+	public float[] getUVs() {
+		float left = _flipX ? 1f : 0f;
+		float right = _flipX ? 0f : 1f;
+		float top = _flipY ? 1f : 0f;
+		float bottom = _flipY ? 0f : 1f;
+		return new float[] { left, top, right, top, right, bottom, left, bottom };
+	}
+
 	@Override
 	public boolean isBounded() {
 		return true;

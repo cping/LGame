@@ -6,7 +6,7 @@ import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class ShaderUtils {
+public final class ShaderUtils {
 
 	private ShaderUtils() {
 	}

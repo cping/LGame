@@ -56,6 +56,12 @@ public class LColorList implements LRelease {
 		_dirty = true;
 	}
 
+	private void checkDirty() {
+		if (_dirty) {
+			init();
+		}
+	}
+
 	protected void pushColor(String name, LColor color) {
 		_colorList.put(name, color);
 	}
@@ -64,20 +70,24 @@ public class LColorList implements LRelease {
 		if (StringUtils.isEmpty(name) || (color == null)) {
 			return false;
 		}
-		if (_dirty) {
-			init();
-		}
+		checkDirty();
 		pushColor(name, color);
 		return true;
+	}
+
+	public boolean isColorValue(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return false;
+		}
+		checkDirty();
+		return _colorList.containsKey(name.trim().toLowerCase());
 	}
 
 	public LColor find(String name) {
 		if (StringUtils.isEmpty(name)) {
 			return LColor.white.cpy();
 		}
-		if (_dirty) {
-			init();
-		}
+		checkDirty();
 		LColor color = _colorList.get(name.trim().toLowerCase());
 		if (color != null) {
 			return color.cpy();
@@ -93,9 +103,7 @@ public class LColorList implements LRelease {
 	}
 
 	public String find(int pixel) {
-		if (_dirty) {
-			init();
-		}
+		checkDirty();
 		for (int i = 0; i < _colorList.size; i++) {
 			LColor c = _colorList.getValueAt(i);
 			if (c != null) {
@@ -555,7 +563,6 @@ public class LColorList implements LRelease {
 
 			_dirty = false;
 		}
-
 	}
 
 	public boolean isDirty() {

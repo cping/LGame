@@ -514,6 +514,20 @@ final public class CollectionUtils {
 		return result;
 	}
 
+	public static Object[] concatMany(Object[][] arrays) {
+		int len = 0;
+		for (int i = 0; i < arrays.length; i++) {
+			len += arrays[i].length;
+		}
+		final Object[] result = new Object[len];
+		int startIndex = 0;
+		for (int i = 0; i < arrays.length; i++) {
+			System.arraycopy(arrays[i], 0, result, startIndex, arrays[i].length);
+			startIndex += arrays[i].length;
+		}
+		return result;
+	}
+
 	// --为了兼容GWT，尽量减少反射的使用，所以只好针对不同类分别处理了……--//
 	/**
 	 * 

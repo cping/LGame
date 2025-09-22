@@ -44,7 +44,7 @@ import loon.utils.parse.StrTokenizer;
 
 // AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，
 // 但缺点在于，没有提供图像的文字不能被渲染).
-public class BMFont extends FontTrans implements IFont {
+public final class BMFont extends FontTrans implements IFont {
 
 	public static BMFont create(String file, String imgFile) {
 		try {
