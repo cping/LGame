@@ -4858,7 +4858,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return addUnLoad(update);
 	}
 
-	private final void repaint(GLEx g) {
+	private final void repaint(final GLEx g) {
 		if (!_visible) {
 			return;
 		}
@@ -4954,7 +4954,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	}
 
-	public synchronized void createUI(GLEx g) {
+	public synchronized void createUI(final GLEx g) {
 		if (_isClose) {
 			return;
 		}

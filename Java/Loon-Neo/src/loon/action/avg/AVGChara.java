@@ -26,6 +26,7 @@ import loon.LTexture;
 import loon.Visible;
 import loon.action.sprite.ISprite;
 import loon.canvas.LColor;
+import loon.events.DrawListener;
 import loon.geom.XY;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -35,15 +36,19 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	private LTexture _cgTexture;
 
+	private DrawListener<AVGChara> _listener;
+
 	private float _cgWidth;
 
 	private float _cgHeight;
 
 	private float _cgMovePos;
 
+	private float _moveSpeed;
+
 	private int _cgDirection;
 
-	private int _cgMoveSleep = 10;
+	private int _cgMoveSleep;
 
 	private boolean _cgMoving, _closed;
 
@@ -57,7 +62,7 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	protected float y;
 
-	protected int flag = -1;
+	protected int flag;
 
 	protected float time;
 
@@ -116,6 +121,9 @@ public final class AVGChara implements Visible, XY, LRelease {
 		} else {
 			this.load(LSystem.loadTexture(path), x, y, w, h, sw, sh);
 		}
+		this._moveSpeed = 1f;
+		this._cgMoveSleep = 10;
+		this.flag = -1;
 		this.visible = true;
 	}
 
@@ -140,13 +148,25 @@ public final class AVGChara implements Visible, XY, LRelease {
 		this.visible = true;
 		this.x = x;
 		this.y = y;
+		this.flag = -1;
 		this._cgMovePos = 0;
 		this._cgDirection = getDirection();
+		this._moveSpeed = 1f;
+		this._cgMoveSleep = 10;
 		if (_cgDirection == 0) {
 			this._cgMovePos = -(_cgWidth / 2);
 		} else {
 			this._cgMovePos = maxWidth;
 		}
+	}
+
+	public AVGChara setMoveSpeed(float s) {
+		this._moveSpeed = s;
+		return this;
+	}
+
+	public float getMoveSpeed() {
+		return this._moveSpeed;
 	}
 
 	public AVGChara setFlag(int f, float delay) {
@@ -217,7 +237,7 @@ public final class AVGChara implements Visible, XY, LRelease {
 	public float getNext() {
 		return _cgMovePos;
 	}
-	
+
 	public void clearMovePos() {
 		this._cgMovePos = 0f;
 	}
@@ -246,10 +266,10 @@ public final class AVGChara implements Visible, XY, LRelease {
 				if (_cgMoving) {
 					switch (_cgDirection) {
 					case 0:
-						_cgMovePos += 1;
+						_cgMovePos += LSystem.toIScaleFPS(_moveSpeed);
 						break;
 					case 1:
-						_cgMovePos -= 1;
+						_cgMovePos -= LSystem.toIScaleFPS(_moveSpeed);
 						break;
 					default:
 						_cgMovePos = x;
@@ -264,7 +284,9 @@ public final class AVGChara implements Visible, XY, LRelease {
 	}
 
 	void update(long t) {
-
+		if (_listener != null) {
+			_listener.update(t);
+		}
 	}
 
 	void draw(GLEx g, LColor color) {
@@ -279,6 +301,18 @@ public final class AVGChara implements Visible, XY, LRelease {
 			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight,
 					_tempColor.setColor(LColor.combine(c, _charaColor)), flipX, flipY);
 		}
+		if (_listener != null) {
+			_listener.draw(g, nx, ny);
+		}
+	}
+
+	public AVGChara setListener(DrawListener<AVGChara> l) {
+		this._listener = l;
+		return this;
+	}
+
+	public DrawListener<AVGChara> getListener() {
+		return this._listener;
 	}
 
 	public boolean isFlipX() {

@@ -240,7 +240,9 @@ public final class AVGCG implements LRelease {
 	}
 
 	public void update(LTimerContext context) {
-		actionRole.update(context.timeSinceLastUpdate);
+		final long time = context.timeSinceLastUpdate;
+		actionRole.update(time);
+		update(time);
 	}
 
 	public LColor getCGColor() {
@@ -310,8 +312,8 @@ public final class AVGCG implements LRelease {
 			}
 		}
 		synchronized (_roles) {
-			for (int i = 0; i < _roles.size(); i++) {
-				AVGChara chara = (AVGChara) _roles.get(i);
+			for (int i = _roles.size() - 1; i > -1; i--) {
+				final AVGChara chara = (AVGChara) _roles.get(i);
 				if (chara == null || !chara.visible) {
 					continue;
 				}
@@ -339,12 +341,12 @@ public final class AVGCG implements LRelease {
 					}
 				}
 				if (chara.showAnimation) {
-					AVGAnm animation = chara.anm;
+					final AVGAnm animation = chara.anm;
 					if (animation.loaded) {
 						if (animation.loop && animation.startTime == -1) {
 							animation.start(0, _loop);
 						}
-						PointI point = animation.getPos(TimeUtils.millis());
+						final PointI point = animation.getPos(TimeUtils.millis());
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}
@@ -369,6 +371,18 @@ public final class AVGCG implements LRelease {
 		}
 		actionRole.createUI(g);
 		g.setAlpha(a);
+	}
+
+	public void update(long t) {
+		synchronized (_roles) {
+			for (int i = _roles.size() - 1; i > -1; i--) {
+				final AVGChara chara = (AVGChara) _roles.get(i);
+				if (chara == null || !chara.visible) {
+					continue;
+				}
+				chara.update(t);
+			}
+		}
 	}
 
 	public void clear() {
@@ -429,14 +443,14 @@ public final class AVGCG implements LRelease {
 	public void close() {
 		synchronized (_roles) {
 			if (_style) {
-				for (int i = 0; i < _roles.size(); i++) {
+				for (int i = _roles.size() - 1; i > -1; i--) {
 					AVGChara ch = (AVGChara) _roles.get(i);
 					if (ch != null) {
 						ch.setFlag(ISprite.TYPE_FADE_IN, _roleDelay);
 					}
 				}
 			} else {
-				for (int i = 0; i < _roles.size(); i++) {
+				for (int i = _roles.size() - 1; i > -1; i--) {
 					AVGChara ch = (AVGChara) _roles.get(i);
 					if (ch != null) {
 						ch.close();
