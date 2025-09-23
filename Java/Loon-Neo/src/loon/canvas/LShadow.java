@@ -26,7 +26,7 @@ import loon.LTexture;
 /**
  * 一个图片阴影效果实现
  */
-public class LShadow {
+public final class LShadow {
 
 	private int shadowSize;
 

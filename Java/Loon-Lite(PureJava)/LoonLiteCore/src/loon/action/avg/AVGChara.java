@@ -65,6 +65,8 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	protected float opacity;
 
+	protected boolean flipX, flipY;
+
 	protected boolean moved, showAnimation, visible;
 
 	protected int maxWidth, maxHeight;
@@ -82,15 +84,15 @@ public final class AVGChara implements Visible, XY, LRelease {
 		this.load(image, x, y, cw, ch, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public AVGChara(LTexture image, final int x, final int y) {
+	public AVGChara(LTexture image, final float x, final float y) {
 		this.load(image, x, y);
 	}
 
-	public AVGChara(final String resName, final int x, final int y, final int sw, final int sh) {
+	public AVGChara(final String resName, final float x, final float y, final int sw, final int sh) {
 		this(resName, x, y, -1, -1, sw, sh);
 	}
 
-	public AVGChara(final String resName, final int x, final int y, final int w, final int h, final int sw,
+	public AVGChara(final String resName, final float x, final float y, final int w, final int h, final int sw,
 			final int sh) {
 		String path = resName;
 		if (StringUtils.startsWith(path, LSystem.DOUBLE_QUOTES)) {
@@ -117,12 +119,12 @@ public final class AVGChara implements Visible, XY, LRelease {
 		this.visible = true;
 	}
 
-	private void load(LTexture image, final int x, final int y) {
+	private void load(LTexture image, final float x, final float y) {
 		this.load(image, x, y, image.getWidth(), image.getHeight(), LSystem.viewSize.getWidth(),
 				LSystem.viewSize.getHeight());
 	}
 
-	private void load(LTexture image, final int x, final int y, int cw, int ch, final int w, final int h) {
+	private void load(LTexture image, final float x, final float y, int cw, int ch, final int w, final int h) {
 		this._cgTexture = image;
 		if (_cgTexture != null) {
 			this._cgWidth = (cw == -1) ? _cgTexture.getWidth() : cw;
@@ -215,14 +217,26 @@ public final class AVGChara implements Visible, XY, LRelease {
 	public float getNext() {
 		return _cgMovePos;
 	}
+	
+	public void clearMovePos() {
+		this._cgMovePos = 0f;
+	}
 
 	public float getMaxNext() {
 		return x;
 	}
 
+	public boolean isXMoved() {
+		return MathUtils.equal(_cgMovePos, x);
+	}
+
+	public boolean isYMoved() {
+		return MathUtils.equal(_cgMovePos, y);
+	}
+
 	public boolean next() {
 		_cgMoving = false;
-		if (!MathUtils.equal(_cgMovePos, x)) {
+		if (!isXMoved()) {
 			for (int sleep = 0; sleep < _cgMoveSleep; sleep++) {
 				if (_cgDirection == 0) {
 					_cgMoving = (x > _cgMovePos);
@@ -259,11 +273,36 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	void draw(GLEx g, float nx, float ny, LColor c) {
 		if (_cgWidth <= 0f && _cgHeight <= 0f) {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)));
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)), flipX,
+					flipY);
 		} else {
 			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight,
-					_tempColor.setColor(LColor.combine(c, _charaColor)));
+					_tempColor.setColor(LColor.combine(c, _charaColor)), flipX, flipY);
 		}
+	}
+
+	public boolean isFlipX() {
+		return this.flipX;
+	}
+
+	public boolean isFlipY() {
+		return this.flipY;
+	}
+
+	public AVGChara setFlipX(boolean x) {
+		this.flipX = x;
+		return this;
+	}
+
+	public AVGChara setFlipY(boolean y) {
+		this.flipY = y;
+		return this;
+	}
+
+	public AVGChara setFlip(boolean x, boolean y) {
+		this.setFlipX(x);
+		this.setFlipY(y);
+		return this;
 	}
 
 	@Override

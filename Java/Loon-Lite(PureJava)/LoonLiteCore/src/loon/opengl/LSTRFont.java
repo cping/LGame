@@ -34,7 +34,7 @@ import loon.utils.CharArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class LSTRFont extends FontTrans implements IFont, LRelease {
+public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	/*
 	 * 获得一个默认的LSTRFont.

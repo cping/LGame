@@ -2052,6 +2052,25 @@ public abstract class LComponent extends LObject<LContainer>
 		return y;
 	}
 
+	public boolean isTouchInUI(float rotation) {
+		return checkPointInRect(getUITouchXY(), getRectBox(), rotation);
+	}
+
+	protected boolean checkPointInRect(final Vector2f pos, final RectBox rect, final float rotation) {
+		if (pos == null || rect == null) {
+			return false;
+		}
+		final float radians = rotation * MathUtils.DEG_TO_RAD;
+		final float centerX = rect.x + rect.getWidth() / 2f;
+		final float centerY = rect.y + rect.getHeight() / 2f;
+		final float deltaX = pos.x - centerX;
+		final float deltaY = pos.y - centerY;
+		final float rotatedX = centerX + (deltaX * MathUtils.cos(radians) - deltaY * MathUtils.sin(radians));
+		final float rotatedY = centerY + (deltaX * MathUtils.sin(radians) + deltaY * MathUtils.cos(radians));
+		return rotatedX >= rect.x && rotatedY >= rect.y && rotatedX <= (rect.x + rect.width)
+				&& rotatedY <= (rect.y + rect.height);
+	}
+
 	public Vector2f getAbsolutePosition() {
 		Vector2f screenPos = new Vector2f(getPosition());
 		for (LComponent p = this.getParent(); p != null; p = p.getParent()) {

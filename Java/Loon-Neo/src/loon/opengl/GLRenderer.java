@@ -10,7 +10,7 @@ import loon.geom.Triangle;
 import loon.geom.XY;
 import loon.utils.MathUtils;
 
-public class GLRenderer implements LRelease {
+public final class GLRenderer implements LRelease {
 
 	public final static class GLType {
 

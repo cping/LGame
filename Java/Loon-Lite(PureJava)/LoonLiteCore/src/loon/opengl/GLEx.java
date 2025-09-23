@@ -1189,14 +1189,34 @@ public class GLEx implements LRelease {
 
 	public final GLEx draw(Painter texture, float x, float y, boolean flipX, boolean flipY) {
 		if (!flipX && !flipY) {
-			return draw(texture, x, y, Direction.TRANS_MIRROR);
+			return draw(texture, x, y, Direction.TRANS_NONE);
 		} else if (flipX && !flipY) {
-			return draw(texture, x, y, Direction.TRANS_FLIP);
-		} else if (!flipX && flipY) {
 			return draw(texture, x, y, Direction.TRANS_MIRROR);
+		} else if (!flipX && flipY) {
+			return draw(texture, x, y, Direction.TRANS_FLIP);
 		} else {
 			return draw(texture, x, y, Direction.TRANS_MF);
 		}
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, boolean flipX, boolean flipY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		Direction dir = Direction.TRANS_NONE;
+		if (!flipX && !flipY) {
+			dir = Direction.TRANS_NONE;
+		} else if (flipX && !flipY) {
+			dir = Direction.TRANS_MIRROR;
+		} else if (!flipX && flipY) {
+			dir = Direction.TRANS_FLIP;
+		} else {
+			dir = Direction.TRANS_MF;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, null, dir);
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, LColor color, float rotation) {
@@ -1209,11 +1229,11 @@ public class GLEx implements LRelease {
 
 	public final GLEx draw(Painter texture, float x, float y, LColor color, boolean flipX, boolean flipY) {
 		if (!flipX && !flipY) {
-			return draw(texture, x, y, color, Direction.TRANS_MIRROR);
+			return draw(texture, x, y, color, Direction.TRANS_NONE);
 		} else if (flipX && !flipY) {
-			return draw(texture, x, y, color, Direction.TRANS_FLIP);
-		} else if (!flipX && flipY) {
 			return draw(texture, x, y, color, Direction.TRANS_MIRROR);
+		} else if (!flipX && flipY) {
+			return draw(texture, x, y, color, Direction.TRANS_FLIP);
 		} else {
 			return draw(texture, x, y, color, Direction.TRANS_MF);
 		}
@@ -1579,10 +1599,10 @@ public class GLEx implements LRelease {
 					origin, Direction.TRANS_NONE);
 		} else if (flipX && !flipY) {
 			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_FLIP);
+					origin, Direction.TRANS_MIRROR);
 		} else if (!flipX && flipY) {
 			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_MIRROR);
+					origin, Direction.TRANS_FLIP);
 		} else {
 			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
 					origin, Direction.TRANS_MF);

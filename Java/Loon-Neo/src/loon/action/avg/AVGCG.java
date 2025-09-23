@@ -123,26 +123,34 @@ public final class AVGCG implements LRelease {
 		}
 	}
 
-	public void add(String resName, int x, int y) {
+	public void add(String resName, float x, float y) {
 		add(resName, x, y, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public void add(final String resName, float x, float y, float w, float h) {
-		add(resName, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
+		add(resName, x, y, w, h, true);
 	}
 
-	public void add(final String resName, int x, int y, int sw, int sh) {
-		add(resName, x, y, -1, -1, sw, sh);
+	public void add(final String resName, float x, float y, float w, float h, boolean updatePos) {
+		add(resName, x, y, MathUtils.ifloor(w), MathUtils.ifloor(h), updatePos);
 	}
 
-	public void add(final String resName, int x, int y, int w, int h, int sw, int sh) {
+	public void add(final String resName, float x, float y, int sw, int sh, boolean updatePos) {
+		add(resName, x, y, -1, -1, sw, sh, updatePos);
+	}
+
+	public void add(final String resName, float x, float y, int w, int h, int sw, int sh) {
+		add(resName, x, y, w, h, sw, sh, true);
+	}
+
+	public void add(final String resName, float x, float y, int w, int h, int sw, int sh, boolean updatePos) {
 		String path = update(resName);
 		synchronized (_roles) {
 			String keyName = path.replaceAll(" ", LSystem.EMPTY).toLowerCase();
 			AVGChara chara = (AVGChara) _roles.get(keyName);
 			if (chara == null) {
-				final int newX = (x == -1) ? 0 : x;
-				final int newY = (y == -1) ? 0 : y;
+				final float newX = (x == -1) ? 0 : x;
+				final float newY = (y == -1) ? 0 : y;
 				if (w > 0 || h > 0) {
 					chara = new AVGChara(path, newX, newY, w, h, sw, sh);
 				} else {
@@ -158,8 +166,13 @@ public final class AVGCG implements LRelease {
 				if (h > 0) {
 					chara.setHeight(h);
 				}
-				chara.setX(x == -1 ? chara.getX() : x);
-				chara.setY(y == -1 ? chara.getY() : y);
+				if (updatePos) {
+					chara.setX(x == -1 ? chara.getX() : x);
+					chara.setY(y == -1 ? chara.getY() : y);
+					if (chara.isMoved() && !chara.isXMoved()) {
+						chara.clearMovePos();
+					}
+				}
 			}
 		}
 	}
@@ -205,6 +218,8 @@ public final class AVGCG implements LRelease {
 				final float x = old.getX();
 				final float y = old.getY();
 				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth, old.maxHeight);
+				newObject.setFlip(old.flipX, old.flipY);
+				newObject.setVisible(old.visible);
 				newObject.setColor(old.getColor());
 				newObject.setMove(false);
 				newObject.setX(x);
@@ -252,6 +267,18 @@ public final class AVGCG implements LRelease {
 
 	public AVGCG emptyCGColor() {
 		return setCGColor(LColor.white);
+	}
+
+	public AVGChara getChara(String name) {
+		return (AVGChara) _roles.get(name);
+	}
+
+	public AVGCG setCharaFlip(String name, boolean flipX, boolean flipY) {
+		AVGChara chara = (AVGChara) _roles.get(name);
+		if (chara != null) {
+			chara.setFlip(flipX, flipY);
+		}
+		return this;
 	}
 
 	public AVGCG setCharaColor(String name, String color) {

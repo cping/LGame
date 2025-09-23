@@ -27,7 +27,7 @@ import loon.utils.IntMap;
 /**
  * 颜色对象缓存池
  */
-public class LColorPool implements LRelease {
+public final class LColorPool implements LRelease {
 
 	private static LColorPool _colorPool;
 

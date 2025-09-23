@@ -28,7 +28,7 @@ import loon.utils.StringUtils;
 /**
  * 符合html(w3c)标准的字体英文名称与颜色关系列表
  */
-public class LColorList implements LRelease {
+public final class LColorList implements LRelease {
 
 	private static LColorList _instance;
 

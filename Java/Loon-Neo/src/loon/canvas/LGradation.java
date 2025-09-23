@@ -29,7 +29,7 @@ import loon.utils.IntMap;
 /**
  * Color渲染Image的简单渐变实现
  */
-public class LGradation implements LRelease {
+public final class LGradation implements LRelease {
 
 	public final static PixmapGradient createLinear(float startX, float startY, float endX, float endY, LColor start,
 			LColor end) {

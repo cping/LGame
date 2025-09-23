@@ -47,7 +47,7 @@ import loon.utils.TArray;
  * 跨平台处理像素用类(不同平台内部渲染实现通常有细节差异，某些时候不如自己写同一方法更能保证效果一致，比如转换代码到C#或C++平台时,
  * 而且一些第三方支持库也可能没有类似于Image的本地图像渲染支持（如使用MonoGame或Unity3D为基础平台），这时就可以直接套用此类的实现)
  */
-public class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelease {
+public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelease {
 
 	private Canvas _paintCanvas = null;
 

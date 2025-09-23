@@ -40,7 +40,7 @@ import loon.geom.Vector4f;
 import loon.utils.IntMap;
 import loon.utils.TArray;
 
-public class ShaderProgram implements LRelease {
+public final class ShaderProgram implements LRelease {
 
 	public static final String POSITION_ATTRIBUTE = "a_position";
 

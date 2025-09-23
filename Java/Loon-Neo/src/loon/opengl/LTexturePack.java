@@ -47,7 +47,7 @@ import loon.utils.xml.XMLParser;
 /**
  * 这是一个纹理打包及管理用类,用以动态的将多个小图组合在一起并进行渲染及管理
  */
-public class LTexturePack implements LRelease {
+public final class LTexturePack implements LRelease {
 
 	private GLEx _glex;
 

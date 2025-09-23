@@ -42,7 +42,7 @@ import loon.utils.TArray;
 /**
  * LMessage的文字打印器具体实现
  */
-public class Print implements FontSet<Print>, LRelease {
+public final class Print implements FontSet<Print>, LRelease {
 
 	public static enum Mode {
 		NONE, LEFT, RIGHT, CENTER

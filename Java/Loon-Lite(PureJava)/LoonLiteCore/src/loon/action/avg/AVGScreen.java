@@ -472,6 +472,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	// 任务集合
 	private final ListMap<String, AVGScreen.Task> _tasks = new ListMap<String, AVGScreen.Task>(20);
 
+	private TArray<String> _tempCommands;
+
 	private IFont _font;
 
 	private long _plapDelay;
@@ -1026,8 +1028,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 	public abstract void drawScreen(GLEx g);
 
-	private TArray<String> _tempCommands;
-
 	/**
 	 * 读取一行AVG脚本命令
 	 */
@@ -1529,7 +1529,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							x = pos.x();
 							y = pos.y();
 						} else if (orderFlag != null) {
-							checkCGCharaColor(scrCG, mesFlag, orderFlag);
+							checkCGCharaUpdate(scrCG, mesFlag, orderFlag, x, y);
 						}
 						String lastCmd = null;
 						int cgWidth = -1;
@@ -1542,6 +1542,8 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								} else {
 									cgWidth = Integer.parseInt(lastCmd);
 								}
+							} else {
+								checkCGCharaUpdate(scrCG, mesFlag, lastCmd, x, y);
 							}
 						}
 						if (size >= 5) {
@@ -1552,24 +1554,34 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 								} else {
 									cgHeight = Integer.parseInt(lastCmd);
 								}
+							} else {
+								checkCGCharaUpdate(scrCG, mesFlag, lastCmd, x, y);
 							}
 						}
 						if (size >= 6) {
 							lastCmd = commands.get(5);
 							if (MathUtils.isNan(lastCmd)) {
 								cgHeight = Integer.parseInt(lastCmd);
+							} else {
+								checkCGCharaUpdate(scrCG, mesFlag, lastCmd, x, y);
 							}
-						}
-						if (size >= 7) {
-							lastCmd = commands.get(6);
 						}
 						if (cgWidth != -1 || cgHeight != -1) {
 							scrCG.add(mesFlag, x, y, cgWidth, cgHeight, getWidth(), getHeight());
 						} else {
 							scrCG.add(mesFlag, x, y, getWidth(), getHeight());
 						}
+						if (size >= 7) {
+							lastCmd = commands.get(6);
+						}
 						if (lastCmd != null && !MathUtils.isNan(lastCmd)) {
-							checkCGCharaColor(scrCG, mesFlag, lastCmd);
+							checkCGCharaUpdate(scrCG, mesFlag, lastCmd, x, y);
+						}
+						if (size >= 8) {
+							lastCmd = commands.get(7);
+						}
+						if (lastCmd != null && !MathUtils.isNan(lastCmd)) {
+							checkCGCharaUpdate(scrCG, mesFlag, lastCmd, x, y);
 						}
 					}
 					continue;
@@ -1591,12 +1603,28 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 	 * 
 	 * @param cg
 	 */
-	private final static boolean checkCGCharaColor(AVGCG cg, String mesFlag, String orderFlag) {
+	private final boolean checkCGCharaUpdate(AVGCG cg, String mesFlag, String orderFlag, float x, float y) {
 		if (cg == null || mesFlag == null || orderFlag == null) {
 			return false;
 		}
 		boolean result = false;
-		if (LColor.isColorValue(orderFlag) || LColorList.get().isColorValue(orderFlag)) {
+		String cmdName = orderFlag.toLowerCase();
+		if (cg.getChara(mesFlag) == null) {
+			cg.add(mesFlag, x, y, getWidth(), getHeight());
+		}
+		if ("flipx".equals(cmdName) || "mirror".equals(cmdName)) {
+			cg.setCharaFlip(mesFlag, true, false);
+			result = true;
+		} else if ("flipy".equals(cmdName) || "flip".equals(cmdName)) {
+			cg.setCharaFlip(mesFlag, false, true);
+			result = true;
+		} else if ("flipxy".equals(cmdName)) {
+			cg.setCharaFlip(mesFlag, true, true);
+			result = true;
+		} else if ("flipn".equals(cmdName)) {
+			cg.setCharaFlip(mesFlag, false, false);
+			result = true;
+		} else if (LColor.isColorValue(cmdName) || LColorList.get().isColorValue(cmdName)) {
 			cg.setCharaColor(mesFlag, orderFlag);
 			result = true;
 		}

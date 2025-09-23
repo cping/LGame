@@ -49,7 +49,7 @@ import loon.utils.Easing.EasingMode;
  * Sprite组件的群组化操作控制器，可以同时改变一组精灵的参数或动画事件
  */
 @SuppressWarnings("unchecked")
-public class SpriteControls {
+public final class SpriteControls {
 
 	public static float getChildrenHeight(Sprites s) {
 		if (s == null) {

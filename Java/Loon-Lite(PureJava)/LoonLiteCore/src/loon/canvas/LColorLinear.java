@@ -22,7 +22,7 @@ package loon.canvas;
 
 import loon.utils.MathUtils;
 
-public class LColorLinear {
+public final class LColorLinear {
 
 	private float[][] _colors;
 

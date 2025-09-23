@@ -28,7 +28,7 @@ import loon.utils.TArray;
 /**
  * 手动设置的9grid构建类
  */
-public class NineBuilder {
+public final class NineBuilder {
 
 	public static class SliceRects {
 		

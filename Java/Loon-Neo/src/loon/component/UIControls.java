@@ -52,7 +52,7 @@ import loon.utils.Easing.EasingMode;
 /**
  * UI组件的群组化操作控制器，可以同时改变一组组件的参数或动画事件
  */
-public class UIControls {
+public final class UIControls {
 
 	public static float getChildrenHeight(LContainer c) {
 		if (c == null) {
