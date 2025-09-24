@@ -56,8 +56,6 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	private boolean _cgFlashing;
 
-	private LColor _tempColor = new LColor();
-
 	private LColor _charaColor;
 
 	private AVGCG _avgParent;
@@ -391,17 +389,23 @@ public final class AVGChara implements Visible, XY, LRelease {
 		}
 	}
 
-	void draw(GLEx g, LColor color) {
-		draw(g, 0f, 0f, color);
+	protected float curScaleX() {
+		return scaleX * _flashScale;
 	}
 
-	void draw(GLEx g, float nx, float ny, LColor c) {
+	protected float curScaleY() {
+		return scaleY * _flashScale;
+	}
+
+	void draw(GLEx g) {
+		draw(g, 0f, 0f);
+	}
+
+	void draw(GLEx g, float nx, float ny) {
 		if (_cgWidth <= 0f && _cgHeight <= 0f) {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)),
-					scaleX * _flashScale, scaleY * _flashScale, flipX, flipY);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _charaColor, curScaleX(), curScaleY(), flipX, flipY);
 		} else {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight,
-					_tempColor.setColor(LColor.combine(c, _charaColor)), scaleX * _flashScale, scaleY * _flashScale,
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight, _charaColor, curScaleX(), curScaleY(),
 					flipX, flipY);
 		}
 		if (_listener != null) {

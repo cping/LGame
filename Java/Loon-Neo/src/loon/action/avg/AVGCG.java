@@ -64,13 +64,13 @@ public final class AVGCG implements LRelease {
 
 	private ArrayMap _roles;
 
+	private LColor _tempColor = new LColor();
+
 	private boolean _style, _loop, _closed;
 
 	private int _speed;
 
 	protected int sleep, sleepMax, shakeNumber;
-
-	private LColor _tempColor = new LColor();
 
 	private LColor _cgColor;
 
@@ -331,9 +331,9 @@ public final class AVGCG implements LRelease {
 		if (_background != null) {
 			if (shakeNumber > 0) {
 				g.draw(_background, newX + shakeNumber / 2 - MathUtils.random(shakeNumber),
-						newY + shakeNumber / 2 - MathUtils.random(shakeNumber));
+						newY + shakeNumber / 2 - MathUtils.random(shakeNumber), _cgColor);
 			} else {
-				g.draw(_background, newX, newY);
+				g.draw(_background, newX, newY, _cgColor);
 			}
 		}
 		synchronized (_roles) {
@@ -376,17 +376,18 @@ public final class AVGCG implements LRelease {
 						if (animation.alpha != 1f) {
 							g.setAlpha(animation.alpha);
 						}
+						final LColor newColor = _tempColor.setColor(LColor.combine(animation.color, chara.getColor()));
 						g.draw(animation.texture, newX + chara.getX(), newY + chara.getY(), animation.width,
-								animation.height, point.x, point.y, point.x + animation.imageWidth,
-								point.y + animation.imageHeight,
-								_tempColor.setColor(LColor.combine(animation.color, _cgColor)), animation.angle);
+								animation.height, point.x, point.y, animation.imageWidth, animation.imageHeight,
+								newColor, chara.curScaleX(), chara.curScaleY(), chara.flipX, chara.flipY,
+								animation.angle);
 						if (animation.alpha != 1f) {
 							g.setAlpha(1f);
 						}
 					}
 				} else {
 					chara.next();
-					chara.draw(g, newX, newY, _cgColor);
+					chara.draw(g, newX, newY);
 				}
 				if (_style) {
 					if (chara.flag != -1 && chara.opacity > 0) {
