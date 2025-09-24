@@ -1187,25 +1187,7 @@ public class GLEx implements LRelease {
 				null, dir);
 	}
 
-	public final GLEx draw(Painter texture, float x, float y, boolean flipX, boolean flipY) {
-		if (!flipX && !flipY) {
-			return draw(texture, x, y, Direction.TRANS_NONE);
-		} else if (flipX && !flipY) {
-			return draw(texture, x, y, Direction.TRANS_MIRROR);
-		} else if (!flipX && flipY) {
-			return draw(texture, x, y, Direction.TRANS_FLIP);
-		} else {
-			return draw(texture, x, y, Direction.TRANS_MF);
-		}
-	}
-
-	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, boolean flipX, boolean flipY) {
-		if (isClosed) {
-			return this;
-		}
-		if (texture == null) {
-			return this;
-		}
+	private final static Direction toDirection(boolean flipX, boolean flipY) {
 		Direction dir = Direction.TRANS_NONE;
 		if (!flipX && !flipY) {
 			dir = Direction.TRANS_NONE;
@@ -1216,11 +1198,18 @@ public class GLEx implements LRelease {
 		} else {
 			dir = Direction.TRANS_MF;
 		}
-		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, null, dir);
+		return dir;
+	}
+
+	public final GLEx draw(Painter texture, float x, float y, boolean flipX, boolean flipY) {
+		return draw(texture, x, y, toDirection(flipX, flipY));
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, LColor color, float rotation) {
-		if (isClosed || (texture == null)) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
 			return this;
 		}
 		return draw(texture, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height(), color,
@@ -1228,15 +1217,41 @@ public class GLEx implements LRelease {
 	}
 
 	public final GLEx draw(Painter texture, float x, float y, LColor color, boolean flipX, boolean flipY) {
-		if (!flipX && !flipY) {
-			return draw(texture, x, y, color, Direction.TRANS_NONE);
-		} else if (flipX && !flipY) {
-			return draw(texture, x, y, color, Direction.TRANS_MIRROR);
-		} else if (!flipX && flipY) {
-			return draw(texture, x, y, color, Direction.TRANS_FLIP);
-		} else {
-			return draw(texture, x, y, color, Direction.TRANS_MF);
+		return draw(texture, x, y, color, toDirection(flipX, flipY));
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, boolean flipX, boolean flipY) {
+		if (isClosed) {
+			return this;
 		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, null,
+				toDirection(flipX, flipY));
+	}
+
+	public GLEx draw(Painter texture, float x, float y, LColor color, float scaleX, float scaleY, boolean flipX,
+			boolean flipY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, texture.width(), texture.height(), color, scaleX, scaleY, flipX, flipY);
+	}
+
+	public GLEx draw(Painter texture, float x, float y, float w, float h, LColor color, float scaleX, float scaleY,
+			boolean flipX, boolean flipY) {
+		if (isClosed) {
+			return this;
+		}
+		if (texture == null) {
+			return this;
+		}
+		return draw(texture, x, y, w, h, 0, 0, texture.width(), texture.height(), color, 0, scaleX, scaleY, null, null,
+				toDirection(flipX, flipY));
 	}
 
 	public GLEx draw(Painter texture, float x, float y) {
@@ -1594,19 +1609,8 @@ public class GLEx implements LRelease {
 	public GLEx draw(Painter texture, float x, float y, Vector2f origin, float width, float height, float scaleX,
 			float scaleY, float rotation, float srcX, float srcY, float srcWidth, float srcHeight, boolean flipX,
 			boolean flipY, LColor color) {
-		if (!flipX && !flipY) {
-			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_NONE);
-		} else if (flipX && !flipY) {
-			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_MIRROR);
-		} else if (!flipX && flipY) {
-			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_FLIP);
-		} else {
-			return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
-					origin, Direction.TRANS_MF);
-		}
+		return draw(texture, x, y, width, height, srcX, srcY, srcWidth, srcHeight, color, rotation, scaleX, scaleY,
+				origin, toDirection(flipX, flipY));
 	}
 
 	public GLEx draw(Painter texture, float x, float y, float width, float height, float srcX, float srcY,

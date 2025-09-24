@@ -38,6 +38,24 @@ import loon.utils.timer.LTimerContext;
 
 public final class AVGCG implements LRelease {
 
+	private final static class DisposeChara implements Updateable {
+
+		final AVGChara _cgchara;
+
+		public DisposeChara(AVGChara c) {
+			this._cgchara = c;
+		}
+
+		@Override
+		public void action(Object a) {
+			if (_cgchara != null) {
+				_cgchara.setParent(null);
+				_cgchara.close();
+			}
+		}
+
+	}
+
 	protected Sprites actionRole;
 
 	private float _roleDelay = 60;
@@ -100,16 +118,16 @@ public final class AVGCG implements LRelease {
 		this._background = backgroundCG;
 	}
 
+	public void setBackgroundCG(final String resName) {
+		this.setBackgroundCG(LSystem.loadTexture(update(resName)));
+	}
+
 	private final static String update(final String n) {
 		String name = n;
 		if (StringUtils.startsWith(name, LSystem.DOUBLE_QUOTES)) {
 			name = StringUtils.replace(name, "\"", LSystem.EMPTY);
 		}
 		return name;
-	}
-
-	public void setBackgroundCG(final String resName) {
-		this.setBackgroundCG(LSystem.loadTexture(update(resName)));
 	}
 
 	public void add(final String resName, AVGChara chara) {
@@ -167,13 +185,16 @@ public final class AVGCG implements LRelease {
 					chara.setHeight(h);
 				}
 				if (updatePos) {
-					chara.setX(x == -1 ? chara.getX() : x);
-					chara.setY(y == -1 ? chara.getY() : y);
+					if (!chara.isFlashing()) {
+						chara.setX(x == -1 ? chara.getX() : x);
+						chara.setY(y == -1 ? chara.getY() : y);
+					}
 					if (chara.isMoved() && !chara.isXMoved()) {
 						chara.clearMovePos();
 					}
 				}
 			}
+			chara.setParent(this);
 		}
 	}
 
@@ -219,7 +240,9 @@ public final class AVGCG implements LRelease {
 				final float y = old.getY();
 				AVGChara newObject = new AVGChara(path2, 0, 0, old.maxWidth, old.maxHeight);
 				newObject.setFlip(old.flipX, old.flipY);
+				newObject.setScale(old.scaleX, old.scaleY);
 				newObject.setVisible(old.visible);
+				newObject.setFlashing(old.isFlashing());
 				newObject.setColor(old.getColor());
 				newObject.setMove(false);
 				newObject.setX(x);
@@ -229,14 +252,8 @@ public final class AVGCG implements LRelease {
 		}
 	}
 
-	private final static void dispose(final AVGChara c) {
-		final Updateable remove = new Updateable() {
-			@Override
-			public void action(Object a) {
-				c.close();
-			}
-		};
-		LSystem.load(remove);
+	public void dispose(final AVGChara c) {
+		LSystem.load(new DisposeChara(c));
 	}
 
 	public void update(LTimerContext context) {
@@ -283,6 +300,14 @@ public final class AVGCG implements LRelease {
 		return this;
 	}
 
+	public AVGCG setCharaFlashing(String name, boolean flash) {
+		AVGChara chara = (AVGChara) _roles.get(name);
+		if (chara != null) {
+			chara.setFlashing(flash);
+		}
+		return this;
+	}
+
 	public AVGCG setCharaColor(String name, String color) {
 		AVGChara chara = (AVGChara) _roles.get(name);
 		if (chara != null) {
@@ -324,6 +349,7 @@ public final class AVGCG implements LRelease {
 							if (chara.currentFrame == 0) {
 								chara.opacity = 0;
 								chara.flag = -1;
+								chara.setParent(null);
 								chara.close();
 								_roles.remove(chara);
 							}
@@ -454,6 +480,7 @@ public final class AVGCG implements LRelease {
 					AVGChara ch = (AVGChara) _roles.get(i);
 					if (ch != null) {
 						ch.close();
+						ch.setParent(null);
 						ch = null;
 					}
 				}

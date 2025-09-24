@@ -46,15 +46,27 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	private float _moveSpeed;
 
+	private float _flashScale;
+
 	private int _cgDirection;
 
 	private int _cgMoveSleep;
 
 	private boolean _cgMoving, _closed;
 
+	private boolean _cgFlashing;
+
 	private LColor _tempColor = new LColor();
 
 	private LColor _charaColor;
+
+	private AVGCG _avgParent;
+
+	private float _flashOffset;
+
+	private float _maxFlashZoom;
+
+	private boolean _zooming;
 
 	protected AVGAnm anm;
 
@@ -71,6 +83,8 @@ public final class AVGChara implements Visible, XY, LRelease {
 	protected float opacity;
 
 	protected boolean flipX, flipY;
+
+	protected float scaleX, scaleY;
 
 	protected boolean moved, showAnimation, visible;
 
@@ -118,13 +132,10 @@ public final class AVGChara implements Visible, XY, LRelease {
 			}
 			this.maxWidth = sw;
 			this.maxHeight = sh;
+			this.init();
 		} else {
 			this.load(LSystem.loadTexture(path), x, y, w, h, sw, sh);
 		}
-		this._moveSpeed = 1f;
-		this._cgMoveSleep = 10;
-		this.flag = -1;
-		this.visible = true;
 	}
 
 	private void load(LTexture image, final float x, final float y) {
@@ -133,6 +144,7 @@ public final class AVGChara implements Visible, XY, LRelease {
 	}
 
 	private void load(LTexture image, final float x, final float y, int cw, int ch, final int w, final int h) {
+		this.init();
 		this._cgTexture = image;
 		if (_cgTexture != null) {
 			this._cgWidth = (cw == -1) ? _cgTexture.getWidth() : cw;
@@ -148,16 +160,76 @@ public final class AVGChara implements Visible, XY, LRelease {
 		this.visible = true;
 		this.x = x;
 		this.y = y;
-		this.flag = -1;
-		this._cgMovePos = 0;
 		this._cgDirection = getDirection();
-		this._moveSpeed = 1f;
-		this._cgMoveSleep = 10;
 		if (_cgDirection == 0) {
 			this._cgMovePos = -(_cgWidth / 2);
 		} else {
 			this._cgMovePos = maxWidth;
 		}
+	}
+
+	private void init() {
+		this._cgMovePos = 0;
+		this._moveSpeed = 1f;
+		this._cgMoveSleep = 10;
+		this._flashScale = 1f;
+		this._flashOffset = 0.05f;
+		this._maxFlashZoom = 1.25f;
+		this._zooming = false;
+		this.flag = -1;
+		this.scaleX = scaleY = 1f;
+		this.visible = true;
+	}
+
+	public AVGChara setFlashOffset(float s) {
+		this._flashOffset = s;
+		return this;
+	}
+
+	public float getFlashOffset() {
+		return this._flashOffset;
+	}
+
+	public AVGChara setMaxFlashZoom(float z) {
+		this._maxFlashZoom = z;
+		return this;
+	}
+
+	public float getMaxFlashZoom() {
+		return this._maxFlashZoom;
+	}
+
+	public AVGChara setParent(AVGCG cg) {
+		this._avgParent = cg;
+		return this;
+	}
+
+	public AVGCG getParent() {
+		return this._avgParent;
+	}
+
+	public AVGChara setScale(float x, float y) {
+		setScaleX(x);
+		setScaleY(y);
+		return this;
+	}
+
+	public AVGChara setScaleX(float x) {
+		this.scaleX = x;
+		return this;
+	}
+
+	public AVGChara setScaleY(float y) {
+		this.scaleY = y;
+		return this;
+	}
+
+	public float getScaleX() {
+		return this.scaleX;
+	}
+
+	public float getScaleY() {
+		return this.scaleY;
 	}
 
 	public AVGChara setMoveSpeed(float s) {
@@ -283,7 +355,37 @@ public final class AVGChara implements Visible, XY, LRelease {
 		return _cgMoving;
 	}
 
+	public float getMaxScale() {
+		return MathUtils.max(scaleX, scaleY);
+	}
+
+	public void setFlashing(boolean f) {
+		this._cgFlashing = f;
+		this._zooming = false;
+		this._flashScale = 1f;
+	}
+
+	public boolean isFlashing() {
+		return this._cgFlashing;
+	}
+
 	void update(long t) {
+		if (!_cgMoving && _cgFlashing) {
+			final float defScale = getMaxScale();
+			final float maxScale = defScale * _maxFlashZoom;
+			if (!_zooming && _flashScale <= maxScale) {
+				_flashScale += LSystem.toScaleFPS(_flashOffset, LSystem.MIN_SECONE_SPEED_FIXED);
+				if (_flashScale >= maxScale) {
+					_zooming = true;
+				}
+			} else if (_zooming && _flashScale >= defScale) {
+				_flashScale -= LSystem.toScaleFPS(_flashOffset, LSystem.MIN_SECONE_SPEED_FIXED);
+				if (_flashScale <= defScale) {
+					_flashScale = 1f;
+					_cgFlashing = false;
+				}
+			}
+		}
 		if (_listener != null) {
 			_listener.update(t);
 		}
@@ -295,11 +397,12 @@ public final class AVGChara implements Visible, XY, LRelease {
 
 	void draw(GLEx g, float nx, float ny, LColor c) {
 		if (_cgWidth <= 0f && _cgHeight <= 0f) {
-			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)), flipX,
-					flipY);
+			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _tempColor.setColor(LColor.combine(c, _charaColor)),
+					scaleX * _flashScale, scaleY * _flashScale, flipX, flipY);
 		} else {
 			g.draw(_cgTexture, nx + _cgMovePos, ny + y, _cgWidth, _cgHeight,
-					_tempColor.setColor(LColor.combine(c, _charaColor)), flipX, flipY);
+					_tempColor.setColor(LColor.combine(c, _charaColor)), scaleX * _flashScale, scaleY * _flashScale,
+					flipX, flipY);
 		}
 		if (_listener != null) {
 			_listener.draw(g, nx, ny);
