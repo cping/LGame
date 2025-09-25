@@ -31,26 +31,35 @@ import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
+import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 /**
  * 信息显示用UI,支持一些简单的字符命令用于构建显示文字
  */
 public class LMessage extends LContainer implements FontSet<LMessage> {
 
-	private Animation animation;
+	private TArray<String> _tempMessageList;
 
-	private IFont messageFont;
+	private int _baseMessageLength;
 
-	private LColor fontColor = LColor.white;
+	private int _maxMessageLength;
 
-	private long printTime, totalDuration;
+	private Animation _animation;
 
-	private int tempColor;
+	private IFont _messageFont;
 
-	private float dx, dy, dw, dh;
+	private LColor _fontColor = LColor.white;
 
-	private Print print;
+	private long _printTime, _totalDuration;
+
+	private int _tempColor;
+
+	private float _dx, _dy, _dw, _dh;
+
+	private Print _print;
 
 	public LMessage(int width, int height) {
 		this(SkinManager.get().getMessageSkin().getFont(), 0, 0, width, height);
@@ -91,9 +100,9 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	public LMessage(IFont font, LTexture formImage, int x, int y, int width, int height, LColor color) {
 		super(x, y, width, height);
-		this.fontColor = color;
-		this.messageFont = (font == null ? SkinManager.get().getMessageSkin().getFont() : font);
-		this.animation = new Animation();
+		this._fontColor = color;
+		this._messageFont = (font == null ? SkinManager.get().getMessageSkin().getFont() : font);
+		this._animation = new Animation();
 		if (formImage == null) {
 			this.setBackground(LSystem.base().graphics().finalColorTex());
 			this.setAlpha(0.3F);
@@ -106,9 +115,9 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 				height = formImage.getHeight();
 			}
 		}
-		this.print = new Print(getLocation(), messageFont, width, height);
+		this._print = new Print(getLocation(), _messageFont, width, height);
 		this.setTipIcon(LSystem.getSystemImagePath() + "creese.png");
-		this.totalDuration = 80;
+		this._totalDuration = 80;
 		this.customRendering = true;
 		this.setWait(false);
 		this.setElastic(false);
@@ -116,29 +125,29 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public boolean isGradientFontColor() {
-		return print.isGradientFontColor();
+		return _print.isGradientFontColor();
 	}
 
 	public LMessage setGradientFontColor(boolean g) {
-		print.setGradientFontColor(g);
+		_print.setGradientFontColor(g);
 		return this;
 	}
 
 	public float getSpaceTextX() {
-		return print.getSpaceTextX();
+		return _print.getSpaceTextX();
 	}
 
 	public float getSpaceTextY() {
-		return print.getSpaceTextY();
+		return _print.getSpaceTextY();
 	}
 
 	public LMessage setSpaceTextX(float x) {
-		print.setSpaceTextX(x);
+		_print.setSpaceTextX(x);
 		return this;
 	}
 
 	public LMessage setSpaceTextY(float y) {
-		print.setSpaceTextY(y);
+		_print.setSpaceTextY(y);
 		return this;
 	}
 
@@ -153,44 +162,63 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public LMessage setWait(boolean flag) {
-		print.setWait(flag);
+		_print.setWait(flag);
 		return this;
 	}
 
 	public boolean isWait() {
-		return print.isWait();
+		return _print.isWait();
 	}
 
 	public LMessage complete() {
-		print.complete();
+		_print.complete();
 		return this;
 	}
 
 	public LMessage setLeftOffset(int left) {
-		print.setLeftOffset(left);
+		_print.setLeftOffset(left);
 		return this;
 	}
 
 	public LMessage setTopOffset(int top) {
-		print.setTopOffset(top);
+		_print.setTopOffset(top);
 		return this;
 	}
 
 	public int getLeftOffset() {
-		return print.getLeftOffset();
+		return _print.getLeftOffset();
 	}
 
 	public int getTopOffset() {
-		return print.getTopOffset();
+		return _print.getTopOffset();
 	}
 
 	public int getMessageLength() {
-		return print.getMessageLength();
+		return _print.getMessageLength();
 	}
 
 	public LMessage setMessageLength(int messageLength) {
-		print.setMessageLength(messageLength);
+		_print.setMessageLength(messageLength);
+		setBaseMessageLength(messageLength);
 		return this;
+	}
+
+	public LMessage setBaseMessageLength(int messageLength) {
+		this._baseMessageLength = messageLength;
+		return this;
+	}
+
+	public int getBaseMessageLength() {
+		return this._baseMessageLength;
+	}
+
+	public LMessage setMaxMessageLength(int messageLength) {
+		this._maxMessageLength = messageLength;
+		return this;
+	}
+
+	public int getMaxMessageLength() {
+		return this._maxMessageLength;
 	}
 
 	public LMessage setTipIcon(String fileName) {
@@ -200,70 +228,70 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	public LMessage setTipIcon(LTexture icon) {
 		if (icon != null) {
-			print.setCreeseIcon(icon);
+			_print.setCreeseIcon(icon);
 			setDisplayIconFlag(true);
 		}
 		return this;
 	}
 
 	public LMessage setNotTipIcon() {
-		print.setCreeseIcon(null);
+		_print.setCreeseIcon(null);
 		setDisplayIconFlag(false);
 		return this;
 	}
 
 	public LMessage setDisplayIconFlag(boolean flag) {
-		print.setIconFlag(flag);
+		_print.setIconFlag(flag);
 		return this;
 	}
 
 	public boolean isDisplayIconFlag() {
-		return print.isIconFlag();
+		return _print.isIconFlag();
 	}
 
 	public float getOffsetIconX() {
-		return print.getOffsetIconX();
+		return _print.getOffsetIconX();
 	}
 
 	public LMessage setOffsetIconX(float offsetIconX) {
-		print.setOffsetIconX(offsetIconX);
+		_print.setOffsetIconX(offsetIconX);
 		return this;
 	}
 
 	public float getOffsetIconY() {
-		return print.getOffsetIconY();
+		return _print.getOffsetIconY();
 	}
 
 	public LMessage setOffsetIconY(float offsetIconY) {
-		print.setOffsetIconX(offsetIconY);
+		_print.setOffsetIconX(offsetIconY);
 		return this;
 	}
 
 	public LMessage setEnglish(boolean e) {
-		print.setEnglish(true);
+		_print.setEnglish(true);
 		return this;
 	}
 
 	public boolean isEnglish() {
-		return print.isEnglish();
+		return _print.isEnglish();
 	}
 
 	public LMessage setDelay(long delay) {
-		this.totalDuration = (delay < 1 ? 1 : delay);
+		this._totalDuration = (delay < 1 ? 1 : delay);
 		return this;
 	}
 
 	public long getDelay() {
-		return totalDuration;
+		return _totalDuration;
 	}
 
 	public boolean isComplete() {
-		return print.isComplete();
+		return _print.isComplete();
 	}
 
 	public LMessage setPauseIconAnimationLocation(float dx, float dy) {
-		this.dx = dx;
-		this.dy = dy;
+		this._dx = dx;
+		this._dy = dy;
 		return this;
 	}
 
@@ -276,24 +304,45 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public LMessage setMessage(String context, boolean isComplete, boolean autoLength) {
-		PointF size = FontUtils.getTextWidthAndHeight(messageFont, context);
-		if (autoLength) {
-			if (getWidth() == 0) {
-				print.setMessageLength((int) ((MathUtils.min(getWidth(), size.x) / messageFont.getSize()) + 1));
-			} else {
-				print.setMessageLength((int) (size.x / messageFont.getSize()) + 1);
+		if (StringUtils.isEmpty(context)) {
+			return this;
+		}
+		if (_maxMessageLength > 0) {
+			_print.setMessageLength(_maxMessageLength);
+		} else {
+			final PointF size = FontUtils.getTextWidthAndHeight(_messageFont, context);
+			if ((autoLength || LSTRFont.isAllInBaseCharsPool(context))) {
+				int maxLen;
+				if (getWidth() == 0) {
+					maxLen = ((int) ((MathUtils.min(getWidth(), size.x) / _messageFont.getSize()) + 1));
+				} else {
+					maxLen = ((int) (size.x / _messageFont.getSize()) + 1);
+				}
+				final float maxSize = (getWidth() == 0) ? LSystem.viewSize.getWidth() : getWidth();
+				_tempMessageList = FontUtils.splitLines(context, _messageFont,
+						maxSize - MathUtils.ifloor(_messageFont.getSize() * 1.25f), _tempMessageList);
+				int curMaxLen = 0;
+				for (int i = _tempMessageList.size - 1; i > -1; i--) {
+					final String mes = _tempMessageList.get(i);
+					if (mes != null) {
+						curMaxLen = MathUtils.max(mes.length(), curMaxLen);
+					}
+				}
+				_print.setMessageLength(MathUtils.clamp(_baseMessageLength, curMaxLen, maxLen));
+			} else if (_baseMessageLength != 0) {
+				_print.setMessageLength(_baseMessageLength);
 			}
 		}
-		print.setMessage(context, messageFont, isComplete);
+		_print.setMessage(context, _messageFont, isComplete);
 		return this;
 	}
 
 	public String getMessage() {
-		return print.getMessage();
+		return _print.getMessage();
 	}
 
 	public Print getPrint() {
-		return print;
+		return _print;
 	}
 
 	@Override
@@ -323,13 +372,13 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (print.isComplete()) {
-			animation.update(elapsedTime);
+		if (_print.isComplete()) {
+			_animation.update(elapsedTime);
 		}
-		printTime += elapsedTime;
-		if (printTime >= totalDuration) {
-			printTime = printTime % totalDuration;
-			print.next();
+		_printTime += elapsedTime;
+		if (_printTime >= _totalDuration) {
+			_printTime = _printTime % _totalDuration;
+			_print.next();
 		}
 	}
 
@@ -338,18 +387,18 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		if (!isVisible()) {
 			return;
 		}
-		tempColor = g.color();
-		print.draw(g, fontColor);
-		if (print.isComplete() && animation != null) {
-			if (animation.getSpriteImage() != null) {
+		_tempColor = g.color();
+		_print.draw(g, _fontColor);
+		if (_print.isComplete() && _animation != null) {
+			if (_animation.getSpriteImage() != null) {
 				float alpha = g.getAlpha();
 				g.setAlpha(1f);
 				updateIcon();
-				g.draw(animation.getSpriteImage(), dx, dy);
+				g.draw(_animation.getSpriteImage(), _dx, _dy);
 				g.setAlpha(alpha);
 			}
 		}
-		g.setColor(tempColor);
+		g.setColor(_tempColor);
 	}
 
 	@Override
@@ -368,30 +417,30 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public void setPauseIconAnimation(Animation animation) {
-		this.animation = animation;
+		this._animation = animation;
 		if (animation != null) {
 			LTexture image = animation.getSpriteImage(0);
 			if (image != null) {
-				this.dw = image.getWidth();
-				this.dh = image.getHeight();
+				this._dw = image.getWidth();
+				this._dh = image.getHeight();
 				this.updateIcon();
 			}
 		}
 	}
 
 	private void updateIcon() {
-		this.setPauseIconAnimationLocation((int) (getScreenX() + getWidth() - dw / 2 - 20),
-				(int) (getScreenY() + getHeight() - dh - 10));
+		this.setPauseIconAnimationLocation((int) (getScreenX() + getWidth() - _dw / 2 - 20),
+				(int) (getScreenY() + getHeight() - _dh - 10));
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
 	public LMessage setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+		this._fontColor = fontColor;
 		return this;
 	}
 
@@ -401,7 +450,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public IFont getMessageFont() {
-		return messageFont;
+		return _messageFont;
 	}
 
 	@Override
@@ -415,7 +464,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	 * @param messageFont
 	 */
 	public LMessage setMessageFont(IFont messageFont) {
-		this.messageFont = messageFont;
+		this._messageFont = messageFont;
 		return this;
 	}
 
@@ -431,13 +480,13 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 
 	@Override
 	public void destory() {
-		if (print != null) {
-			print.close();
-			print = null;
+		if (_print != null) {
+			_print.close();
+			_print = null;
 		}
-		if (animation != null) {
-			animation.close();
-			animation = null;
+		if (_animation != null) {
+			_animation.close();
+			_animation = null;
 		}
 	}
 

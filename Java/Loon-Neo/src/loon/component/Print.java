@@ -170,12 +170,8 @@ public final class Print implements FontSet<Print>, LRelease {
 
 		private PrintUpdate(Print print, String context, IFont font, boolean complete, boolean drawFont) {
 			_print = print;
-			if (context != null) {
-				if (StringUtils.isEnglishAndNumeric(context)) {
-					_print.setEnglish(true);
-				} else {
-					_print.setEnglish(false);
-				}
+			if (context != null && print != null) {
+				_print.setEnglish(LSTRDictionary.isAllInBaseCharsPool(context));
 			}
 			_context = context;
 			_font = font;
@@ -358,6 +354,9 @@ public final class Print implements FontSet<Print>, LRelease {
 				return;
 			}
 
+			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
+			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
+
 			_defaultFont.startChar();
 			_fontColor = old;
 
@@ -418,10 +417,10 @@ public final class Print implements FontSet<Print>, LRelease {
 						_curfontSize = _fontSize;
 					}
 				} else {
-					_curfontSize = _perfontSize;
+					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
 				}
 				_leftsize += _curfontSize;
-				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+				if (!_isEnglish && _curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {
@@ -511,6 +510,9 @@ public final class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + (int) (_fontSize * 4);
 				break;
 			}
+
+			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
+			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
 			this._leftsize = _textoffsetSize;
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 			_fontColor = old;
@@ -572,10 +574,10 @@ public final class Print implements FontSet<Print>, LRelease {
 						_curfontSize = _fontSize;
 					}
 				} else {
-					_curfontSize = _perfontSize;
+					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
 				}
 				_leftsize += _curfontSize;
-				if (_curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
+				if (!_isEnglish && _curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
 					_leftsize += 12;
 				}
 				if (i != _textsize - 1) {

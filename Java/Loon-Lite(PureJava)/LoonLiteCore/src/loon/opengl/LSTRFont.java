@@ -36,6 +36,26 @@ import loon.utils.StringUtils;
 
 public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
+	private final static String ADDED = "0123456789iabfghkdomcnpqrstuvwxyzljeIABFGHKDOMCNPQRSTUVWXYZLJE=:.,!?@#$&%^*+(-){~}[│]<>\"'─\\/～▼▲◆【】：，。…？！";
+
+	public final static boolean isAllInBaseCharsPool(String c) {
+		if (StringUtils.isEmpty(c)) {
+			return false;
+		}
+		final int charsCount = c.length();
+		int idx = 0;
+		for (int j = 0; j < charsCount; j++) {
+			for (int i = 0; i < ADDED.length(); i++) {
+				final char ch = c.charAt(j);
+				if (ADDED.charAt(i) == ch || ch == LSystem.SPACE) {
+					idx++;
+					break;
+				}
+			}
+		}
+		return idx == charsCount;
+	}
+
 	/*
 	 * 获得一个默认的LSTRFont.
 	 *

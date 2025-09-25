@@ -49,6 +49,10 @@ import loon.utils.TArray;
 
 public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
+	public final static boolean isAllInBaseCharsPool(String c) {
+		return LSTRDictionary.isAllInBaseCharsPool(c);
+	}
+
 	/*
 	 * 获得一个默认的LSTRFont.
 	 * 

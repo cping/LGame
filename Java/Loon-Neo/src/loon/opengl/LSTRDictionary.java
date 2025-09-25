@@ -120,6 +120,24 @@ public final class LSTRDictionary implements LRelease {
 
 	private Dict _lastDict;
 
+	public final static boolean isAllInBaseCharsPool(String c) {
+		if (StringUtils.isEmpty(c)) {
+			return false;
+		}
+		final int charsCount = c.length();
+		int idx = 0;
+		for (int j = 0; j < charsCount; j++) {
+			for (int i = 0; i < ADDED.length(); i++) {
+				final char ch = c.charAt(j);
+				if (ADDED.charAt(i) == ch || ch == LSystem.SPACE) {
+					idx++;
+					break;
+				}
+			}
+		}
+		return idx == charsCount;
+	}
+
 	public static class Dict implements LRelease {
 
 		protected LSTRFont font;
