@@ -1292,6 +1292,25 @@ final public class StringUtils extends CharUtils {
 	}
 
 	/**
+	 * 判断字符串中是否包含中日韩文字符串
+	 * 
+	 * @param cs
+	 * @return
+	 */
+	public static boolean containCJKLanguage(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		int size = cs.length();
+		for (int i = 0; i < size; i++) {
+			if (isCJK(cs.charAt(i))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * 返回字符序列中出现的中文字符数量
 	 * 
 	 * @param cs

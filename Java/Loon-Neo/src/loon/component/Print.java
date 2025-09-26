@@ -34,6 +34,7 @@ import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
 import loon.opengl.LSTRFont;
+import loon.utils.CharUtils;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
@@ -86,6 +87,19 @@ public final class Print implements FontSet<Print>, LRelease {
 	 */
 	public static TArray<String> formatMessage(String text, IFont font, float width) {
 		return FontUtils.splitLines(text, font, width);
+	}
+
+	/**
+	 * 是否为某些些古国文字
+	 * 
+	 * @param mes
+	 * @return
+	 */
+	public static boolean isAncientChars(String mes) {
+		if (LSTRDictionary.isAllInBaseCharsPool(mes)) {
+			return false;
+		}
+		return StringUtils.containCJKLanguage(mes);
 	}
 
 	private int _index, _offsettext, _curfontSize, _perfontSize;
@@ -158,7 +172,7 @@ public final class Print implements FontSet<Print>, LRelease {
 		this._height = height;
 		this._waitdelay = 0;
 		this._lazyFlag = 1;
-		this._spaceTextX = 4;
+		this._spaceTextX = this._spaceTextY = 0;
 		this._messageLength = 10;
 		this._fixEnglishFontSpace = 0;
 		this._fixOtherFontSpace = 12;
@@ -181,7 +195,7 @@ public final class Print implements FontSet<Print>, LRelease {
 		private PrintUpdate(Print print, String context, IFont font, boolean complete, boolean drawFont) {
 			_print = print;
 			if (context != null && print != null) {
-				_print.setEnglish(LSTRDictionary.isAllInBaseCharsPool(context));
+				_print.setEnglish(!Print.isAncientChars(context));
 			}
 			_context = context;
 			_font = font;
@@ -418,7 +432,7 @@ public final class Print implements FontSet<Print>, LRelease {
 				}
 				_perfontSize = _defaultFont.charWidth(_textChar);
 				if (!_isEnglish) {
-					if (Character.isLetter(_textChar)) {
+					if (CharUtils.isAlphaOrDigit(_textChar)) {
 						if (_perfontSize < _fontSize) {
 							_curfontSize = _fontSize;
 						} else {
@@ -433,7 +447,6 @@ public final class Print implements FontSet<Print>, LRelease {
 					} else {
 						_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
 					}
-
 				}
 
 				_curfontSize = MathUtils.max(_fixMinFontSpace, _curfontSize);
@@ -445,14 +458,14 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize += _fixEnglishFontSpace;
 				}
 
-				final int _centerFont = _perfontSize / 2;
+				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + 4;
 				if (i != _textsize - 1) {
 					_defaultFont.addChar(_textChar,
-							(_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
+							midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
 							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
 							_fontColor);
 				} else if (!_newLine && !_onComplete) {
-					_iconX = (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
+					_iconX = midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
 					_iconY = ((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY
 							+ _defaultFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
@@ -590,7 +603,7 @@ public final class Print implements FontSet<Print>, LRelease {
 				String tmpText = String.valueOf(_textChar);
 				_perfontSize = _curFont.charWidth(_textChar);
 				if (!_isEnglish) {
-					if (Character.isLetter(_textChar)) {
+					if (CharUtils.isAlphaOrDigit(_textChar)) {
 						if (_perfontSize < _fontSize) {
 							_curfontSize = _fontSize;
 						} else {
@@ -614,14 +627,14 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize += _fixEnglishFontSpace;
 				}
 
-				final int _centerFont = _perfontSize / 2;
+				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + 4;
 				if (i != _textsize - 1) {
 					_curFont.drawString(g, tmpText,
-							(_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
+							midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
 							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
 							getGradientFontColor(i, _textsize, _fontColor));
 				} else if (!_newLine && !_onComplete) {
-					_iconX = (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
+					_iconX = midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
 					_iconY = ((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY
 							+ _curFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
@@ -634,7 +647,7 @@ public final class Print implements FontSet<Print>, LRelease {
 			if (_onComplete) {
 				if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 					fixIconPos();
-					g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
+					g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 				}
 			}
 			if (_messageCount == _nextflag) {

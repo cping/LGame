@@ -31,7 +31,6 @@ import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.geom.PointF;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRFont;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
@@ -338,7 +337,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 			_print.setMessageLength(_maxMessageLength);
 		} else {
 			final PointF size = FontUtils.getTextWidthAndHeight(_messageFont, context);
-			if ((autoLength || LSTRFont.isAllInBaseCharsPool(context))) {
+			if (autoLength || !Print.isAncientChars(context)) {
 				int maxLen;
 				if (getWidth() == 0) {
 					maxLen = ((int) ((MathUtils.min(getWidth(), size.x) / _messageFont.getSize()) + 1));
