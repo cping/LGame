@@ -106,6 +106,12 @@ public final class Print implements FontSet<Print>, LRelease {
 
 	private int _waitDealyMax = 100;
 
+	private int _fixEnglishFontSpace = 0;
+
+	private int _fixOtherFontSpace = 12;
+
+	private int _fixMinFontSpace = 6;
+
 	private String _messages;
 
 	private boolean _onComplete, _newLine, _visible, _closed;
@@ -153,6 +159,9 @@ public final class Print implements FontSet<Print>, LRelease {
 		this._waitdelay = 0;
 		this._lazyFlag = 1;
 		this._messageLength = 10;
+		this._fixEnglishFontSpace = 0;
+		this._fixOtherFontSpace = 12;
+		this._fixMinFontSpace = 6;
 		this._isWait = false;
 		this._isIconFlag = true;
 		_iconLocation = new PointF();
@@ -419,9 +428,12 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else {
 					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
 				}
+				_curfontSize = MathUtils.max(_fixMinFontSpace, _curfontSize);
 				_leftsize += _curfontSize;
-				if (!_isEnglish && _curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
-					_leftsize += 12;
+				if (!_isEnglish && _curfontSize <= _fixOtherFontSpace && StringUtils.isSingle(_textChar)) {
+					_leftsize += _fixOtherFontSpace;
+				} else if (_isEnglish) {
+					_leftsize += _fixEnglishFontSpace;
 				}
 				if (i != _textsize - 1) {
 					_defaultFont.addChar(_textChar, (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
@@ -576,9 +588,12 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else {
 					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
 				}
+				_curfontSize = MathUtils.max(_fixMinFontSpace, _curfontSize);
 				_leftsize += _curfontSize;
-				if (!_isEnglish && _curfontSize <= 10 && StringUtils.isSingle(_textChar)) {
-					_leftsize += 12;
+				if (!_isEnglish && _curfontSize <= _fixOtherFontSpace && StringUtils.isSingle(_textChar)) {
+					_leftsize += _fixOtherFontSpace;
+				} else if (_isEnglish) {
+					_leftsize += _fixEnglishFontSpace;
 				}
 				if (i != _textsize - 1) {
 					_curFont.drawString(g, tmpText, (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
@@ -606,6 +621,33 @@ public final class Print implements FontSet<Print>, LRelease {
 			}
 
 		}
+	}
+
+	public Print setFixOtherFontSpace(int f) {
+		this._fixOtherFontSpace = f;
+		return this;
+	}
+
+	public int getFixOtherFontSpace() {
+		return this._fixOtherFontSpace;
+	}
+
+	public Print setFixEnglishFontSpace(int f) {
+		this._fixEnglishFontSpace = f;
+		return this;
+	}
+
+	public int getFixEnglishFontSpace() {
+		return this._fixEnglishFontSpace;
+	}
+
+	public Print setFixMinFontSpace(int f) {
+		this._fixMinFontSpace = f;
+		return this;
+	}
+
+	public int getFixMinFontSpace() {
+		return this._fixMinFontSpace;
 	}
 
 	public synchronized void draw(GLEx g, LColor old) {

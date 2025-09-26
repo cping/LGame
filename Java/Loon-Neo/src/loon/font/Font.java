@@ -22,8 +22,26 @@ package loon.font;
 
 import loon.LSystem;
 import loon.utils.StringKeyValue;
+import loon.utils.StringUtils;
 
-public class Font {
+public final class Font {
+
+	public final static Style toFontStyle(String name) {
+		if (StringUtils.isEmpty(name)) {
+			return Style.PLAIN;
+		}
+		String newName = name.trim().toLowerCase();
+		if ("plain".equals(newName)) {
+			return Style.PLAIN;
+		} else if ("bold".equals(newName)) {
+			return Style.BOLD;
+		} else if ("italic".equals(newName)) {
+			return Style.ITALIC;
+		} else if ("bold_italic".equals(newName)) {
+			return Style.BOLD_ITALIC;
+		}
+		return Style.PLAIN;
+	}
 
 	public static enum Style {
 		PLAIN, BOLD, ITALIC, BOLD_ITALIC
@@ -64,7 +82,7 @@ public class Font {
 	}
 
 	public Font(String name, float size) {
-		this(name, Style.PLAIN, size);
+		this(name, Font.toFontStyle(LSystem.getSystemGameFontStyle()), size);
 	}
 
 	public Font derive(float size) {

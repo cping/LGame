@@ -48,7 +48,7 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	public static LFont newFont(int size) {
-		return LFont.getFont(LSystem.getSystemGameFontName(), Style.PLAIN, size);
+		return LFont.getFont(LSystem.getSystemGameFontName(), Font.toFontStyle(LSystem.getSystemGameFontStyle()), size);
 	}
 
 	private final static String tmp = "H";
@@ -72,7 +72,8 @@ public final class LFont extends FontTrans implements IFont {
 	private final LSTRFont _font;
 
 	LFont() {
-		this(LSystem.getSystemGameFontName(), Style.PLAIN, 20, true);
+		this(LSystem.getSystemGameFontName(), Font.toFontStyle(LSystem.getSystemGameFontStyle()),
+				LSystem.getSystemGameFontSize(), true);
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
@@ -89,7 +90,7 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	public static LFont getFont(String familyName, int size) {
-		return new LFont(familyName, Style.PLAIN, size, true);
+		return new LFont(familyName, Font.toFontStyle(LSystem.getSystemGameFontStyle()), size, true);
 	}
 
 	public static LFont getFont(String familyName, int styleType, int size) {

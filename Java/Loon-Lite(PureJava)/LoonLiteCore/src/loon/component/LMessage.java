@@ -213,12 +213,39 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 	}
 
 	public LMessage setMaxMessageLength(int messageLength) {
-		this._maxMessageLength = messageLength;
+		this._maxMessageLength = MathUtils.max(0, messageLength);
 		return this;
 	}
 
 	public int getMaxMessageLength() {
 		return this._maxMessageLength;
+	}
+
+	public LMessage setFixOtherFontSpace(int f) {
+		_print.setFixOtherFontSpace(f);
+		return this;
+	}
+
+	public int getFixOtherFontSpace() {
+		return _print.getFixOtherFontSpace();
+	}
+
+	public LMessage setFixEnglishFontSpace(int f) {
+		_print.setFixOtherFontSpace(f);
+		return this;
+	}
+
+	public int getFixEnglishFontSpace() {
+		return _print.getFixEnglishFontSpace();
+	}
+
+	public LMessage setFixMinFontSpace(int f) {
+		_print.setFixMinFontSpace(f);
+		return this;
+	}
+
+	public int getFixMinFontSpace() {
+		return _print.getFixMinFontSpace();
 	}
 
 	public LMessage setTipIcon(String fileName) {

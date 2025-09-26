@@ -1345,7 +1345,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
 					if (mesFlag != null) {
 						if (MathUtils.isNan(mesFlag)) {
-							messageUI.setMessageLength(Integer.parseInt(mesFlag));
+							final int maxLen = Integer.parseInt(mesFlag);
+							if (maxLen > 0) {
+								messageUI.setMessageLength(maxLen);
+							}
+							messageUI.setMaxMessageLength(maxLen);
 						}
 					}
 					continue;

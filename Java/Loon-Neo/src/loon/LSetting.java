@@ -221,7 +221,7 @@ public class LSetting {
 	/**
 	 * 当前游戏或应用名
 	 */
-	public String appName = "Loon";
+	public String appName = LSystem.APP_NAME;
 
 	/**
 	 * 使用的初始化logo
@@ -231,12 +231,17 @@ public class LSetting {
 	/**
 	 * 当前默认字体名
 	 */
-	public String fontName = "Dialog";
+	public String fontName = LSystem.FONT_NAME;
+
+	/**
+	 * 当前默认字体样式
+	 */
+	public String fontStyle = LSystem.FONT_STYLE;
 
 	/**
 	 * 当前默认字体大小
 	 */
-	public int fontSize = 20;
+	public int fontSize = LSystem.DEFAULT_SYS_FONT_SIZE;
 
 	/**
 	 * 当前应用版本号
@@ -299,6 +304,7 @@ public class LSetting {
 		this.appName = setting.appName;
 		this.logoPath = setting.logoPath;
 		this.fontName = setting.fontName;
+		this.fontStyle = setting.fontStyle;
 		this.fontSize = setting.fontSize;
 		this.version = setting.version;
 		this.fixedPaintLoopTime = setting.fixedPaintLoopTime;
@@ -319,7 +325,19 @@ public class LSetting {
 	 * @param fsize
 	 */
 	public void setDefaultFont(String fname, int fsize) {
+		this.setDefaultFont(fname, LSystem.FONT_STYLE, fsize);
+	}
+
+	/**
+	 * 设定默认的全局字体样式与大小
+	 * 
+	 * @param fname
+	 * @param fstyle
+	 * @param fsize
+	 */
+	public void setDefaultFont(String fname, String fstyle, int fsize) {
 		this.fontName = fname;
+		this.fontStyle = fstyle;
 		this.fontSize = fsize;
 	}
 

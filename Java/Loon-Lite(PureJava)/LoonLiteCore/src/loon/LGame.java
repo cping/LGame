@@ -129,10 +129,6 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
-	protected static final String FONT_NAME = "Dialog";
-
-	protected static final String APP_NAME = "Loon";
-
 	protected static LGame _base = null;
 
 	protected static Platform _platform = null;
@@ -196,11 +192,11 @@ public abstract class LGame implements LRelease {
 		this.jsonImpl = new JsonImpl();
 		String appName = config.appName;
 		if (StringUtils.isEmpty(appName)) {
-			setting.appName = APP_NAME;
+			setting.appName = LSystem.APP_NAME;
 		}
 		String fontName = config.fontName;
 		if (StringUtils.isEmpty(fontName)) {
-			setting.fontName = FONT_NAME;
+			setting.fontName = LSystem.FONT_NAME;
 		}
 	}
 

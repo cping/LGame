@@ -88,6 +88,11 @@ public final class LSystem {
 
 	public static final String INPUT = "input";
 
+	protected static final String FONT_NAME = "Dialog";
+
+	protected static final String FONT_STYLE = "plain";
+
+	protected static final String APP_NAME = "Loon";
 	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';
 
@@ -461,14 +466,28 @@ public final class LSystem {
 		if (base() != null) {
 			return base().setting.fontName;
 		}
-		return LGame.FONT_NAME;
+		return LSystem.FONT_NAME;
+	}
+
+	public static final String getSystemGameFontStyle() {
+		if (base() != null) {
+			return base().setting.fontStyle;
+		}
+		return LSystem.FONT_STYLE;
+	}
+
+	public static final int getSystemGameFontSize() {
+		if (base() != null) {
+			return base().setting.fontSize;
+		}
+		return LSystem.DEFAULT_SYS_FONT_SIZE;
 	}
 
 	public static final String getSystemAppName() {
 		if (base() != null) {
 			return base().setting.appName;
 		}
-		return LGame.APP_NAME;
+		return LSystem.APP_NAME;
 	}
 
 	public static final String getVersion() {
