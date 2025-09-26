@@ -153,6 +153,7 @@ public final class Print implements FontSet<Print>, LRelease {
 		this._width = width;
 		this._height = height;
 		this._waitdelay = 0;
+		this._spaceTextX = 4;
 		this._messageLength = 10;
 		this._fixEnglishFontSpace = 0;
 		this._fixOtherFontSpace = 12;
@@ -327,6 +328,8 @@ public final class Print implements FontSet<Print>, LRelease {
 
 			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
 			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
+			final int midTextSize = MathUtils.ifloor(_fontSize / 2f);
+
 			_fontColor = old;
 
 			for (int i = 0; i < _textsize; i++) {
@@ -385,8 +388,12 @@ public final class Print implements FontSet<Print>, LRelease {
 					} else {
 						_curfontSize = _fontSize;
 					}
-				} else {
-					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
+				} else if (_perfontSize != 0 && _textChar != LSystem.SPACE && _textChar != LSystem.TAB) {
+					if (_perfontSize < midTextSize) {
+						_curfontSize = MathUtils.max(_perfontSize, midTextSize - 1);
+					} else {
+						_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
+					}
 				}
 				_curfontSize = MathUtils.max(_fixMinFontSpace, _curfontSize);
 				_leftsize += _curfontSize;
@@ -395,17 +402,20 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else if (_isEnglish) {
 					_leftsize += _fixEnglishFontSpace;
 				}
+
+				final int _centerFont = _perfontSize / 2;
 				if (i != _textsize - 1) {
-					g.drawString(String.valueOf(_textChar), (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
+					g.drawString(String.valueOf(_textChar),
+							(_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
 							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
 							_fontColor);
 				} else if (!_newLine && !_onComplete) {
-					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+					_iconX = (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
+					_iconY = ((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY
 							+ _defaultFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
+						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 					}
 				}
 				_index++;
@@ -477,6 +487,8 @@ public final class Print implements FontSet<Print>, LRelease {
 
 			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
 			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
+			final int midTextSize = MathUtils.ifloor(_fontSize / 2f);
+
 			this._leftsize = _textoffsetSize;
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 			_fontColor = old;
@@ -537,8 +549,12 @@ public final class Print implements FontSet<Print>, LRelease {
 					} else {
 						_curfontSize = _fontSize;
 					}
-				} else {
-					_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
+				} else if (_perfontSize != 0 && _textChar != LSystem.SPACE && _textChar != LSystem.TAB) {
+					if (_perfontSize < midTextSize) {
+						_curfontSize = MathUtils.max(_perfontSize, midTextSize - 1);
+					} else {
+						_curfontSize = MathUtils.clamp(_perfontSize, minTextSize, maxTextSize);
+					}
 				}
 				_curfontSize = MathUtils.max(_fixMinFontSpace, _curfontSize);
 				_leftsize += _curfontSize;
@@ -547,17 +563,20 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else if (_isEnglish) {
 					_leftsize += _fixEnglishFontSpace;
 				}
+
+				final int _centerFont = _perfontSize / 2;
 				if (i != _textsize - 1) {
-					_curFont.drawString(g, tmpText, (_printLocation.x + _leftsize + _leftoffset) + _spaceTextX,
+					_curFont.drawString(g, tmpText,
+							(_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
 							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,
 							getGradientFontColor(i, _textsize, _fontColor));
 				} else if (!_newLine && !_onComplete) {
-					_iconX = _printLocation.x + _leftsize + _leftoffset;
-					_iconY = (_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset
+					_iconX = (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX;
+					_iconY = ((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY
 							+ _curFont.getAscent();
 					if (_isIconFlag && _iconX != 0 && _iconY != 0) {
 						fixIconPos();
-						g.draw(_creeseIcon, _iconLocation.x + _spaceTextX, _iconLocation.y + _spaceTextY);
+						g.draw(_creeseIcon, _iconLocation.x, _iconLocation.y);
 					}
 				}
 				_index++;

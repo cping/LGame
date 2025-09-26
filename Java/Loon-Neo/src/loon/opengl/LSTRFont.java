@@ -1110,6 +1110,38 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		}
 	}
 
+	public int internalFontX(char ch) {
+		if (!containsChar(ch)) {
+			return -1;
+		}
+		IntObject intObject = customChars.get(ch);
+		return intObject.storedX + intObject.offsetX;
+	}
+
+	public int internalFontY(char ch) {
+		if (!containsChar(ch)) {
+			return -1;
+		}
+		IntObject intObject = customChars.get(ch);
+		return intObject.storedY + intObject.offsetY;
+	}
+
+	public int internalFontWidth(char ch) {
+		if (!containsChar(ch)) {
+			return font.charWidth(ch);
+		}
+		IntObject intObject = customChars.get(ch);
+		return intObject.width;
+	}
+
+	public int internalFontHeight(char ch) {
+		if (!containsChar(ch)) {
+			return font.charHeight(ch);
+		}
+		IntObject intObject = customChars.get(ch);
+		return intObject.height;
+	}
+
 	public boolean isSizeLimit() {
 		return displayList != null
 				&& (displayList.getWidth() > _maxTextureWidth || displayList.getHeight() > _maxTextureHeight);
@@ -1386,9 +1418,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (displayList.isClosed()) {
 			return 0;
 		}
-
-		intObject = customChars.get((int) c);
-
+		intObject = customChars.get(c);
 		if (intObject != null) {
 			return intObject.getDrawWidth();
 		}
