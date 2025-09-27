@@ -708,7 +708,7 @@ public class Command extends Conversion implements LRelease {
 			}
 
 			nowPosFlagName = String.valueOf(offsetPos);
-			int length = conditionEnvironmentList.size();
+			final int length = conditionEnvironmentList.size();
 			if (length > 0) {
 				Object ifResult = conditionEnvironmentList.get(length - 1);
 				if (ifResult != null) {
@@ -726,7 +726,7 @@ public class Command extends Conversion implements LRelease {
 			}
 
 			// 获得全行命令
-			String cmd = scriptList[offsetPos];
+			final String cmd = scriptList[offsetPos].trim();
 
 			// 清空脚本缓存
 			if (cmd.startsWith(RESET_CACHE_TAG)) {
@@ -918,8 +918,7 @@ public class Command extends Conversion implements LRelease {
 						Object vl = setEnvironmentList.get(key);
 						if (vl != null) {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
-									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
-									vl.toString());
+									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
 						} else {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), key);
@@ -948,7 +947,7 @@ public class Command extends Conversion implements LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			throw new LSysException("Command read error !", ex);
+			throw new LSysException("Command index " + offsetPos + " read error !", ex);
 		} finally {
 			if (!isInnerCommand) {
 				offsetPos++;

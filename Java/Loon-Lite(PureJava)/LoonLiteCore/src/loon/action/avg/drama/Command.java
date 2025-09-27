@@ -464,8 +464,8 @@ public class Command extends Conversion implements LRelease {
 	 * @param key
 	 * @param v
 	 */
-	public Command setVariable(String key, Object v) {
-		setEnvironmentList.put(key, v);
+	public Command setVariable(String key, Object vl) {
+		setEnvironmentList.put(key, vl);
 		return this;
 	}
 
@@ -639,11 +639,11 @@ public class Command extends Conversion implements LRelease {
 			if (randTags != null) {
 				for (int i = 0; i < randTags.size; i++) {
 					String key = randTags.get(i);
-					Object v = setEnvironmentList.get(key);
+					Object vl = setEnvironmentList.get(key);
 					// 已存在变量
-					if (v != null) {
+					if (vl != null) {
 						cmd = StringUtils.replaceMatch(cmd,
-								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), v.toString());
+								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
 						// 设定有随机数生成范围
 					} else if (MathUtils.isNan(key)) {
 						cmd = StringUtils.replaceMatch(cmd,
@@ -708,7 +708,7 @@ public class Command extends Conversion implements LRelease {
 			}
 
 			nowPosFlagName = String.valueOf(offsetPos);
-			int length = conditionEnvironmentList.size();
+			final int length = conditionEnvironmentList.size();
 			if (length > 0) {
 				Object ifResult = conditionEnvironmentList.get(length - 1);
 				if (ifResult != null) {
@@ -726,7 +726,7 @@ public class Command extends Conversion implements LRelease {
 			}
 
 			// 获得全行命令
-			String cmd = scriptList[offsetPos];
+			final String cmd = scriptList[offsetPos].trim();
 
 			// 清空脚本缓存
 			if (cmd.startsWith(RESET_CACHE_TAG)) {
@@ -915,11 +915,10 @@ public class Command extends Conversion implements LRelease {
 				if (printTags != null) {
 					for (int i = 0; i < printTags.size; i++) {
 						String key = printTags.get(i);
-						Object v = setEnvironmentList.get(key);
-						if (v != null) {
+						Object vl = setEnvironmentList.get(key);
+						if (vl != null) {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
-									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
-									v.toString());
+									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
 						} else {
 							executeCommand = StringUtils.replaceMatch(executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), key);
@@ -948,7 +947,7 @@ public class Command extends Conversion implements LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			throw new LSysException("Command read error !", ex);
+			throw new LSysException("Command index " + offsetPos + " read error !", ex);
 		} finally {
 			if (!isInnerCommand) {
 				offsetPos++;

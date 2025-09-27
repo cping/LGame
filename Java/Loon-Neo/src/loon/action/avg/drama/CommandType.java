@@ -73,8 +73,11 @@ public interface CommandType {
 	// 信息框中文字顶部偏移
 	String L_MESSTOP = "messtop";
 
-	// 信息框中文字左侧偏移
+	// 信息框中文字左侧偏移(正负值皆可)
 	String L_MESLEFT = "mesleft";
+
+	// 信息框中文字右侧偏移(正负值皆可)
+	String L_MESRIGHT = "mesright";
 
 	// 信息框中文字颜色
 	String L_MESCOLOR = "mescolor";

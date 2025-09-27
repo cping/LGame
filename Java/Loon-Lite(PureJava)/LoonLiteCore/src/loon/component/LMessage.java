@@ -29,7 +29,6 @@ import loon.component.skin.SkinManager;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.geom.PointF;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -247,6 +246,15 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return _print.getFixMinFontSpace();
 	}
 
+	public LMessage setFixPixelSizeOfRightBorder(int f) {
+		_print.setFixPixelSizeOfRightBorder(f);
+		return this;
+	}
+
+	public int getFixPixelSizeOfRightBorder() {
+		return _print.getFixPixelSizeOfRightBorder();
+	}
+
 	public LMessage setTipIcon(String fileName) {
 		setTipIcon(LSystem.loadTexture(fileName));
 		return this;
@@ -336,17 +344,11 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		if (_maxMessageLength > 0) {
 			_print.setMessageLength(_maxMessageLength);
 		} else {
-			final PointF size = FontUtils.getTextWidthAndHeight(_messageFont, context);
 			if (autoLength || !Print.isAncientChars(context)) {
-				int maxLen;
-				if (getWidth() == 0) {
-					maxLen = ((int) ((MathUtils.min(getWidth(), size.x) / _messageFont.getSize()) + 1));
-				} else {
-					maxLen = ((int) (size.x / _messageFont.getSize()) + 1);
-				}
-				final float maxSize = (getWidth() == 0) ? LSystem.viewSize.getWidth() : getWidth();
+				final int fontSize = _messageFont.getSize();
+				final float curWidth = (getWidth() <= 1) ? LSystem.viewSize.getWidth() : getWidth();
 				_tempMessageList = FontUtils.splitLines(context, _messageFont,
-						maxSize - MathUtils.ifloor(_messageFont.getSize() * 1.25f), _tempMessageList);
+						curWidth - MathUtils.ifloor(fontSize * 1.25f), _tempMessageList);
 				int curMaxLen = 0;
 				for (int i = _tempMessageList.size - 1; i > -1; i--) {
 					final String mes = _tempMessageList.get(i);
@@ -354,7 +356,7 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 						curMaxLen = MathUtils.max(mes.length(), curMaxLen);
 					}
 				}
-				_print.setMessageLength(MathUtils.clamp(_baseMessageLength, curMaxLen, maxLen));
+				_print.setMessageLength(MathUtils.max(_baseMessageLength, curMaxLen));
 			} else if (_baseMessageLength != 0) {
 				_print.setMessageLength(_baseMessageLength);
 			}

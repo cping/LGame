@@ -1327,46 +1327,42 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELLEN)) {
-					if (mesFlag != null) {
-						if (MathUtils.isNan(mesFlag)) {
-							selectUI.setLeftOffset(Integer.parseInt(mesFlag));
-						}
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						selectUI.setLeftOffset(Integer.parseInt(mesFlag));
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SELTOP)) {
-					if (mesFlag != null) {
-						if (MathUtils.isNan(mesFlag)) {
-							selectUI.setTopOffset(Integer.parseInt(mesFlag));
-						}
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						selectUI.setTopOffset(Integer.parseInt(mesFlag));
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEN)) {
-					if (mesFlag != null) {
-						if (MathUtils.isNan(mesFlag)) {
-							final int maxLen = Integer.parseInt(mesFlag);
-							if (maxLen > 0) {
-								messageUI.setMessageLength(maxLen);
-							}
-							messageUI.setMaxMessageLength(maxLen);
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						final int maxLen = Integer.parseInt(mesFlag);
+						if (maxLen > 0) {
+							messageUI.setMessageLength(maxLen);
 						}
+						messageUI.setMaxMessageLength(maxLen);
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESTOP)) {
-					if (mesFlag != null) {
-						if (MathUtils.isNan(mesFlag)) {
-							messageUI.setTopOffset(Integer.parseInt(mesFlag));
-						}
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setTopOffset(Integer.parseInt(mesFlag));
 					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESLEFT)) {
-					if (mesFlag != null) {
-						if (MathUtils.isNan(mesFlag)) {
-							messageUI.setLeftOffset(Integer.parseInt(mesFlag));
-						}
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setLeftOffset(Integer.parseInt(mesFlag));
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESRIGHT)) {
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setFixPixelSizeOfRightBorder(Integer.parseInt(mesFlag));
 					}
 					continue;
 				}
@@ -1414,7 +1410,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 							scrFlag = true;
 							isSelectMessage = true;
 							_limitClickd = true;
-							String[] list = StringUtils.split(selectList, LSystem.COMMA);
+							final String[] list = StringUtils.split(selectList, LSystem.COMMA);
 							final int selectLength = list.length;
 							final int len = selectLength / 2;
 							final TArray<String> selects = new TArray<String>(len);
@@ -1450,7 +1446,9 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					break;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SHAKE)) {
-					scrCG.shakeNumber = Integer.valueOf(mesFlag).intValue();
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						scrCG.shakeNumber = Integer.parseInt(mesFlag);
+					}
 					continue;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_CGWAIT)) {
@@ -1458,8 +1456,10 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					break;
 				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_SLEEP)) {
-					scrCG.sleep = Integer.valueOf(mesFlag).intValue();
-					scrCG.sleepMax = Integer.valueOf(mesFlag).intValue();
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						scrCG.sleep = Integer.parseInt(mesFlag);
+						scrCG.sleepMax = scrCG.sleep;
+					}
 					scrFlag = false;
 					break;
 				}
@@ -1473,11 +1473,11 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					}
 					if (_gameColor == null && colors != null && colors.length == 3) {
 						if (_gameColor == null) {
-							_gameColor = new LColor(Integer.valueOf(colors[0]).intValue(),
-									Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
+							_gameColor = new LColor(Integer.parseInt(colors[0]), Integer.parseInt(colors[1]),
+									Integer.parseInt(colors[2]));
 						} else {
-							_gameColor.setColor(Integer.valueOf(colors[0]).intValue(),
-									Integer.valueOf(colors[1]).intValue(), Integer.valueOf(colors[2]).intValue());
+							_gameColor.setColor(Integer.parseInt(colors[0]), Integer.parseInt(colors[1]),
+									Integer.parseInt(colors[2]));
 						}
 						scrCG.sleep = 20;
 						scrCG.sleepMax = scrCG.sleep;

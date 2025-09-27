@@ -122,6 +122,8 @@ public final class Print implements FontSet<Print>, LRelease {
 
 	private int _fixMinFontSpace = 6;
 
+	private int _fixPixelSizeOfRightBorder = 4;
+
 	private String _messages;
 
 	private boolean _onComplete, _newLine, _visible, _closed;
@@ -172,6 +174,7 @@ public final class Print implements FontSet<Print>, LRelease {
 		this._fixEnglishFontSpace = 0;
 		this._fixOtherFontSpace = 12;
 		this._fixMinFontSpace = 6;
+		this._fixPixelSizeOfRightBorder = 4;
 		this._isWait = false;
 		this._isIconFlag = true;
 		_iconLocation = new PointF();
@@ -321,18 +324,19 @@ public final class Print implements FontSet<Print>, LRelease {
 			switch (dirmode) {
 			default:
 			case NONE:
-				this._textoffsetSize = 2;
+				this._textoffsetSize = 0;
 				break;
 			case LEFT:
-				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - (int) (_fontSize * 1.5);
+				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - MathUtils.ifloor(_fontSize * 1.5f);
 				break;
 			case RIGHT:
 				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + _fontSize * 4;
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + MathUtils.ifloor(_fontSize * 4f);
 				break;
 			}
+
 			this._leftsize = _textoffsetSize;
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 
@@ -363,11 +367,6 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					continue;
-				} else if (_textChar == LSystem.LF) {
-					_index = 0;
-					_leftsize = _textoffsetSize;
-					_offsettext++;
-					continue;
 				} else if (_textChar == '<') {
 					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
@@ -383,7 +382,8 @@ public final class Print implements FontSet<Print>, LRelease {
 						_fontColor = old;
 					}
 					continue;
-				} else if (_index > _messageLength) {
+				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_printLocation.x + _leftsize
+						+ _leftoffset >= (_width - midTextSize) + _fixPixelSizeOfRightBorder)) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -417,7 +417,7 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize += _fixEnglishFontSpace;
 				}
 
-				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + 4;
+				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + minTextSize / 2;
 				if (i != _textsize - 1) {
 					g.drawString(String.valueOf(_textChar),
 							midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
@@ -489,13 +489,13 @@ public final class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = 0;
 				break;
 			case LEFT:
-				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - (int) (_fontSize * 1.5);
+				this._textoffsetSize = (_width - (_fontSize * _messageLength)) / 2 - MathUtils.ifloor(_fontSize * 1.5f);
 				break;
 			case RIGHT:
 				this._textoffsetSize = (_fontSize * _messageLength) / 2;
 				break;
 			case CENTER:
-				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + _fontSize * 4;
+				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + MathUtils.ifloor(_fontSize * 4f);
 				break;
 			}
 
@@ -523,11 +523,6 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize = _textoffsetSize;
 					_offsettext++;
 					continue;
-				} else if (_textChar == LSystem.LF) {
-					_index = 0;
-					_leftsize = _textoffsetSize;
-					_offsettext++;
-					continue;
 				} else if (_textChar == '<') {
 					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
@@ -543,7 +538,8 @@ public final class Print implements FontSet<Print>, LRelease {
 						_fontColor = old;
 					}
 					continue;
-				} else if (_index > _messageLength) {
+				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_printLocation.x + _leftsize
+						+ _leftoffset >= (_width - midTextSize) + _fixPixelSizeOfRightBorder)) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -578,7 +574,7 @@ public final class Print implements FontSet<Print>, LRelease {
 					_leftsize += _fixEnglishFontSpace;
 				}
 
-				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + 4;
+				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + minTextSize / 2;
 				if (i != _textsize - 1) {
 					_curFont.drawString(g, tmpText,
 							midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
@@ -633,6 +629,15 @@ public final class Print implements FontSet<Print>, LRelease {
 
 	public int getFixMinFontSpace() {
 		return this._fixMinFontSpace;
+	}
+
+	public Print setFixPixelSizeOfRightBorder(int f) {
+		this._fixPixelSizeOfRightBorder = f;
+		return this;
+	}
+
+	public int getFixPixelSizeOfRightBorder() {
+		return this._fixPixelSizeOfRightBorder;
 	}
 
 	public synchronized void draw(GLEx g, LColor old) {
