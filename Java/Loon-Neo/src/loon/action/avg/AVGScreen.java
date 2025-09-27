@@ -1366,6 +1366,30 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 					}
 					continue;
 				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESX)) {
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setSpaceTextX(Integer.parseInt(mesFlag));
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESY)) {
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setSpaceTextY(Integer.parseInt(mesFlag));
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MES_BOX_X)) {
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setX(Integer.parseInt(mesFlag));
+					}
+					continue;
+				}
+				if (cmdFlag.equalsIgnoreCase(CommandType.L_MES_BOX_Y)) {
+					if (mesFlag != null && MathUtils.isNan(mesFlag)) {
+						messageUI.setY(Integer.parseInt(mesFlag));
+					}
+					continue;
+				}
 				if (cmdFlag.equalsIgnoreCase(CommandType.L_MESCOLOR)) {
 					if (mesFlag != null) {
 						messageUI.setFontColor(new LColor(mesFlag));

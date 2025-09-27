@@ -382,8 +382,8 @@ public final class Print implements FontSet<Print>, LRelease {
 						_fontColor = old;
 					}
 					continue;
-				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_printLocation.x + _leftsize
-						+ _leftoffset >= (_width - midTextSize) + _fixPixelSizeOfRightBorder)) {
+				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_leftsize
+						+ _leftoffset >= (_width - (maxTextSize + minTextSize) + _fixPixelSizeOfRightBorder))) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;
@@ -538,8 +538,8 @@ public final class Print implements FontSet<Print>, LRelease {
 						_fontColor = old;
 					}
 					continue;
-				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_printLocation.x + _leftsize
-						+ _leftoffset >= (_width - midTextSize) + _fixPixelSizeOfRightBorder)) {
+				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_leftsize
+						+ _leftoffset >= (_width - (maxTextSize + minTextSize) + _fixPixelSizeOfRightBorder))) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
 					_offsettext++;

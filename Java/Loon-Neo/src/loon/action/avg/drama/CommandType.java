@@ -73,11 +73,23 @@ public interface CommandType {
 	// 信息框中文字顶部偏移
 	String L_MESSTOP = "messtop";
 
-	// 信息框中文字左侧偏移(正负值皆可)
+	// 信息框中文字左侧偏移(正负值皆可,将改变信息框中内容可显示范围，会影响自动换行)
 	String L_MESLEFT = "mesleft";
 
-	// 信息框中文字右侧偏移(正负值皆可)
+	// 信息框中文字右侧偏移(正负值皆可,将改变信息框中内容可显示范围，会影响自动换行)
 	String L_MESRIGHT = "mesright";
+
+	// 改变信息框中内容偏移X轴(正负值皆可，单纯移动信息框中内容显示坐标，不会影响自动换行)
+	String L_MESX = "mesx";
+
+	// 改变信息框中文字偏移X轴(正负值皆可，单纯移动信息框中内容显示坐标，不会影响自动换行)
+	String L_MESY = "mesy";
+
+	// 信息框直接移动X轴(正负值皆可，此为移动信息框，而非信息框中内容坐标)
+	String L_MES_BOX_X = "mesboxx";
+
+	// 信息框直接移动Y轴(正负值皆可，此为移动信息框，而非信息框中内容坐标)
+	String L_MES_BOX_Y = "mesboxy";
 
 	// 信息框中文字颜色
 	String L_MESCOLOR = "mescolor";
