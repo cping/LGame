@@ -122,7 +122,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param fileName
 	 */
-	public Command(String fileName) {
+	public Command(final String fileName) {
 		createCache(false);
 		formatCommand(fileName);
 	}
@@ -132,13 +132,13 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param resource
 	 */
-	public Command(String fileName, String[] res) {
+	public Command(final String fileName, final String[] res) {
 		createCache(false);
 		formatCommand("function", res);
 		scriptName = fileName;
 	}
 
-	public static void createCache(boolean free) {
+	public static void createCache(final boolean free) {
 		if (free) {
 			if (scriptContext == null) {
 				scriptContext = new ArrayMap(1000);
@@ -176,17 +176,17 @@ public class Command extends Conversion implements LRelease {
 		}
 	}
 
-	public Command formatCommand(String fileName) {
+	public Command formatCommand(final String fileName) {
 		return formatCommand(fileName, Command.includeFile(fileName));
 	}
 
-	public Command formatCommand(CommandLink cmd) {
+	public Command formatCommand(final CommandLink cmd) {
 		String context = cmd.getValue();
 		String key = "key" + context.length() + context.charAt(0) + LSystem.DOT + context.charAt(context.length() - 1);
 		return formatCommand(key, Command.includeString(key, context));
 	}
 
-	public Command formatCommand(String name, String[] res) {
+	public Command formatCommand(final String name, final String[] res) {
 		if (res == null || res.length == 0) {
 			return this;
 		}
@@ -228,14 +228,14 @@ public class Command extends Conversion implements LRelease {
 		return this;
 	}
 
-	private void setDefaultIF(boolean flag) {
+	private void setDefaultIF(final boolean flag) {
 		conditionEnvironmentList.put(nowPosFlagName, flag);
 		esleover = elseflag = flag;
 		addCommand = false;
 	}
 
-	private boolean setupIF(String commandString, String nowPosFlagName, ArrayMap setEnvironmentList,
-			ArrayMap conditionEnvironmentList) {
+	private boolean setupIF(final String commandString, final String nowPosFlagName, final ArrayMap setEnvironmentList,
+			final ArrayMap conditionEnvironmentList) {
 		boolean result = false;
 		conditionEnvironmentList.put(nowPosFlagName, result);
 		try {
@@ -323,7 +323,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @return
 	 */
-	public String nowCacheOffsetName(String cmd) {
+	public String nowCacheOffsetName(final String cmd) {
 		return (scriptName + FLAG + offsetPos + FLAG + cmd).toLowerCase();
 	}
 
@@ -341,8 +341,8 @@ public class Command extends Conversion implements LRelease {
 		return isRead;
 	}
 
-	public Command setRead(boolean isRead) {
-		this.isRead = isRead;
+	public Command setRead(boolean r) {
+		this.isRead = r;
 		return this;
 	}
 
@@ -352,8 +352,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String[] getReads() {
-		String result = readBuffer.toString();
-		result = StringUtils.replace(result, SELECTS_TAG, LSystem.EMPTY);
+		final String result = StringUtils.replace(readBuffer.toString(), SELECTS_TAG, LSystem.EMPTY);
 		return StringUtils.split(result, FLAG_CHAR);
 	}
 
@@ -379,7 +378,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static String getNameTag(String messages, String startString, String endString) {
+	public static String getNameTag(final String messages, final String startString, final String endString) {
 		TArray<String> results = getNameTags(messages, startString, endString);
 		return (results == null || results.size == 0) ? null : results.get(0);
 	}
@@ -392,7 +391,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static TArray<String> getNameTags(String messages, String startString, String endString) {
+	public static TArray<String> getNameTags(final String messages, final String startString, final String endString) {
 		return Command.getNameTags(messages.toCharArray(), startString.toCharArray(), endString.toCharArray());
 	}
 
@@ -404,7 +403,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param endString
 	 * @return
 	 */
-	public static TArray<String> getNameTags(char[] messages, char[] startString, char[] endString) {
+	public static TArray<String> getNameTags(final char[] messages, final char[] startString, final char[] endString) {
 		int dlength = messages.length;
 		int slength = startString.length;
 		int elength = endString.length;
@@ -464,7 +463,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param key
 	 * @param v
 	 */
-	public Command setVariable(String key, Object vl) {
+	public Command setVariable(final String key, final Object vl) {
 		setEnvironmentList.put(key, vl);
 		return this;
 	}
@@ -474,7 +473,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param vars
 	 */
-	public Command setVariables(ArrayMap vars) {
+	public Command setVariables(final ArrayMap vars) {
 		setEnvironmentList.putAll(vars);
 		return this;
 	}
@@ -488,7 +487,7 @@ public class Command extends Conversion implements LRelease {
 		return setEnvironmentList;
 	}
 
-	public Object getVariable(String key) {
+	public Object getVariable(final String key) {
 		return setEnvironmentList.get(key);
 	}
 
@@ -497,7 +496,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 * @param key
 	 */
-	public void removeVariable(String key) {
+	public void removeVariable(final String key) {
 		setEnvironmentList.remove(key);
 	}
 
@@ -533,8 +532,8 @@ public class Command extends Conversion implements LRelease {
 	public boolean gotoIndex(final String gotoFlag) {
 		int idx = -1;
 		for (int i = 0; i < scriptSize; i++) {
-			String line = scriptList[i];
-			Object varName = setEnvironmentList.get(line);
+			final String line = scriptList[i];
+			final Object varName = setEnvironmentList.get(line);
 			if (line.equals(gotoFlag)) {
 				idx = i;
 				break;
@@ -560,9 +559,9 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public TArray<String> batchToList() {
-		TArray<String> reslist = new TArray<String>(scriptSize);
+		final TArray<String> reslist = new TArray<String>(scriptSize);
 		for (; next();) {
-			String execute = doExecute();
+			final String execute = doExecute();
 			if (execute != null) {
 				reslist.add(execute);
 			}
@@ -576,9 +575,9 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String batchToString() {
-		StrBuilder resString = new StrBuilder(scriptSize * 10);
+		final StrBuilder resString = new StrBuilder(scriptSize * 10);
 		for (; next();) {
-			String execute = doExecute();
+			final String execute = doExecute();
 			if (execute != null) {
 				resString.append(execute);
 				resString.append(LSystem.LF);
@@ -587,10 +586,10 @@ public class Command extends Conversion implements LRelease {
 		return resString.toString();
 	}
 
-	private void setupSET(String cmd) {
+	private void setupSET(final String cmd) {
 		if (cmd.startsWith(SET_TAG)) {
-			TArray<String> temps = commandSplit(cmd);
-			int len = temps.size;
+			final TArray<String> temps = commandSplit(cmd);
+			final int len = temps.size;
 			String result = null;
 			if (len == 4) {
 				result = temps.get(3).toString();
@@ -601,11 +600,9 @@ public class Command extends Conversion implements LRelease {
 				}
 				result = sbr.toString();
 			}
-
 			if (result != null) {
 				// 替换已有变量字符
 				for (int i = 0; i < setEnvironmentList.size(); i++) {
-
 					Entry entry = setEnvironmentList.getEntry(i);
 					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
 							&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
@@ -625,33 +622,33 @@ public class Command extends Conversion implements LRelease {
 			}
 			addCommand = false;
 		}
-
 	}
 
 	/**
 	 * 随机数处理
 	 * 
 	 */
-	private void setupRandom(String cmd) {
+	private void setupRandom(final String cmd) {
+		String text = cmd.trim();
 		// 随机数判定
-		if (cmd.indexOf(RAND_TAG) != -1) {
-			randTags = Command.getNameTags(cmd, RAND_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
+		if (text.indexOf(RAND_TAG) != -1) {
+			randTags = Command.getNameTags(text, RAND_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
 			if (randTags != null) {
 				for (int i = 0; i < randTags.size; i++) {
 					String key = randTags.get(i);
 					Object vl = setEnvironmentList.get(key);
 					// 已存在变量
 					if (vl != null) {
-						cmd = StringUtils.replaceMatch(cmd,
+						text = StringUtils.replaceMatch(text,
 								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
 						// 设定有随机数生成范围
 					} else if (MathUtils.isNan(key)) {
-						cmd = StringUtils.replaceMatch(cmd,
+						text = StringUtils.replaceMatch(text,
 								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
 								String.valueOf(GLOBAL_RAND.nextInt(Integer.parseInt(key))));
 						// 无设定
 					} else {
-						cmd = StringUtils.replaceMatch(cmd,
+						text = StringUtils.replaceMatch(text,
 								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
 								String.valueOf(GLOBAL_RAND.nextInt()));
 					}
@@ -784,9 +781,9 @@ public class Command extends Conversion implements LRelease {
 
 			// 开始记录代码段
 			if (functioning) {
-				int size = functions.size() - 1;
+				final int size = functions.size() - 1;
 				String[] function = (String[]) functions.get(size);
-				int index = function.length;
+				final int index = function.length;
 				function = CollectionUtils.expand(function, 1);
 				function[index] = cmd;
 				functions.set(size, function);
@@ -797,8 +794,8 @@ public class Command extends Conversion implements LRelease {
 			if (((!elseflag && !ifing) || (elseflag && ifing)) && cmd.startsWith(CALL_TAG) && !isCall) {
 				temps = commandSplit(cmd);
 				if (temps.size == 2) {
-					String functionName = temps.get(1);
-					String[] funs = (String[]) functions.get(functionName);
+					final String functionName = temps.get(1);
+					final String[] funs = (String[]) functions.get(functionName);
 					if (funs != null) {
 						innerCommand = new Command(scriptName + FLAG + functionName, funs);
 						innerCommand.closeCache();
@@ -937,7 +934,7 @@ public class Command extends Conversion implements LRelease {
 			if (cmd.startsWith(GOTO_TAG)) {
 				temps = commandSplit(cmd);
 				if (temps != null && temps.size == 2) {
-					String gotoFlag = temps.get(1);
+					final String gotoFlag = temps.get(1);
 					// 如果是数字，跳转到指定行数
 					if (MathUtils.isNan(gotoFlag)) {
 						gotoIndex(MathUtils.ifloor(Float.parseFloat(gotoFlag)));
@@ -1039,7 +1036,7 @@ public class Command extends Conversion implements LRelease {
 		if (name == null && temps != null && temps.size > 0) {
 			name = temps.get(1);
 		}
-		Session session = Session.load(getSaveName(name));
+		final Session session = Session.load(getSaveName(name));
 		if (session.getSize() > 0) {
 			setEnvironmentList.putAll(session.getRecords(0));
 			int offsetLine = session.getInt("cmd_offsetPos", offsetPos);
@@ -1088,11 +1085,11 @@ public class Command extends Conversion implements LRelease {
 	 */
 	private final boolean includeCommand(String cmd) {
 		temps = commandSplit(cmd);
-		StrBuilder sbr = new StrBuilder();
+		final StrBuilder sbr = new StrBuilder();
 		for (int i = 1; i < temps.size; i++) {
 			sbr.append(temps.get(i));
 		}
-		String fileName = sbr.toString();
+		final String fileName = sbr.toString();
 		if (fileName.length() > 0) {
 			innerCommand = new Command(fileName);
 			isInnerCommand = true;
@@ -1108,7 +1105,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeFile(String fileName) {
-		String context = BaseIO.loadText(fileName);
+		final String context = BaseIO.loadText(fileName);
 		if (StringUtils.isEmpty(context)) {
 			throw new LSysException("The script file [" + fileName + "] not found !");
 		}
@@ -1137,7 +1134,7 @@ public class Command extends Conversion implements LRelease {
 			int length = capacity;
 			int index = 0;
 			try {
-				StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
+				final StrTokenizer reader = new StrTokenizer(context, LSystem.NL);
 				String record = null;
 				for (; reader.hasMoreTokens();) {
 					record = reader.nextToken().trim();
@@ -1170,8 +1167,8 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public static TArray<String> commandSplit(final String src) {
-		String result = updateOperator(src);
-		String[] cmds = result.split(FLAG);
+		final String result = updateOperator(src);
+		final String[] cmds = result.split(FLAG);
 		return new TArray<String>(cmds);
 	}
 

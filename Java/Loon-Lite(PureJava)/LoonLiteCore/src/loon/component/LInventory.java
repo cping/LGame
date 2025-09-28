@@ -955,6 +955,8 @@ public class LInventory extends LLayer {
 						} else {
 							itemDst.swap(act);
 						}
+					} else {
+						itemDst.resetActor();
 					}
 				}
 			}
@@ -988,7 +990,6 @@ public class LInventory extends LLayer {
 		if (_useKeyboard) {
 			Vector2f itemXY = getSelectedItemGridXY();
 			if (itemXY != null) {
-				
 				if (isKeyUp(SysKey.LEFT)) {
 					itemXY.move_left(1);
 				} else if (isKeyUp(SysKey.RIGHT)) {

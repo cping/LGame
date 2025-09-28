@@ -30,10 +30,62 @@ import loon.utils.NumberUtils;
 public class Quaternion implements XY, Serializable {
 
 	public static Quaternion createFromAxisAngle(Vector3f axis, float angle) {
-		float half = angle * 0.5f;
-		float sin = MathUtils.sin(half);
-		float cos = MathUtils.cos(half);
+		final float half = angle * 0.5f;
+		final float sin = MathUtils.sin(half);
+		final float cos = MathUtils.cos(half);
 		return new Quaternion(axis.x * sin, axis.y * sin, axis.z * sin, cos);
+	}
+
+	public static Vector3f toEuler(Quaternion rotation) {
+
+		if (rotation == null) {
+			return new Vector3f();
+		}
+
+		final float xx = rotation.x * rotation.x;
+		final float yy = rotation.y * rotation.y;
+		final float zz = rotation.z * rotation.z;
+
+		final float m31 = 2f * rotation.x * rotation.z + 2f * rotation.y * rotation.w;
+		final float m32 = 2f * rotation.y * rotation.z - 2f * rotation.x * rotation.w;
+		final float m33 = 1f - 2f * xx - 2f * yy;
+
+		final float cy = MathUtils.sqrt(m33 * m33 + m31 * m31);
+		final float cx = MathUtils.atan2(-m32, cy);
+		if (cy > 16f * MathUtils.EPSILON) {
+			final float m12 = 2f * rotation.x * rotation.y + 2f * rotation.z * rotation.w;
+			final float m22 = 1f - 2f * xx - 2f * zz;
+			return new Vector3f(cx, MathUtils.atan2(m31, m33), MathUtils.atan2(m12, m22));
+		} else {
+			final float m11 = 1f - 2f * yy - 2f * zz;
+			final float m21 = 2f * rotation.x * rotation.y - 2.0f * rotation.z * rotation.w;
+			return new Vector3f(cx, 0f, MathUtils.atan2(-m21, m11));
+		}
+	}
+
+	public static Quaternion fromEuler(Vector3f v) {
+		final Quaternion rotation = new Quaternion();
+		if (v == null) {
+			return rotation;
+		}
+		final Vector3f halfAngles = v.mul(0.5f);
+
+		final float nSinX = MathUtils.sin(halfAngles.x);
+		final float nCosX = MathUtils.cos(halfAngles.x);
+		final float nSinY = MathUtils.sin(halfAngles.y);
+		final float nCosY = MathUtils.cos(halfAngles.y);
+		final float nSinZ = MathUtils.sin(halfAngles.z);
+		final float nCosZ = MathUtils.cos(halfAngles.z);
+
+		final float nCosXY = nCosX * nCosY;
+		final float nSinXY = nSinX * nSinY;
+
+		rotation.x = nSinX * nCosY * nCosZ - nSinZ * nSinY * nCosX;
+		rotation.y = nSinY * nCosX * nCosZ + nSinZ * nSinX * nCosY;
+		rotation.z = nSinZ * nCosXY - nSinXY * nCosZ;
+		rotation.w = nCosZ * nCosXY + nSinXY * nSinZ;
+
+		return rotation;
 	}
 
 	/**
@@ -154,8 +206,7 @@ public class Quaternion implements XY, Serializable {
 
 	public float getPitchRad() {
 		final int pole = getGimbalPole();
-		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z * y), -1f, 1f))
-				: pole * MathUtils.PI * 0.5f;
+		return pole == 0 ? MathUtils.asin(MathUtils.clamp(2f * (w * x - z * y), -1f, 1f)) : pole * MathUtils.PI * 0.5f;
 	}
 
 	public float getPitch() {

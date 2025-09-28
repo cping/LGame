@@ -128,6 +128,18 @@ public final class MathUtils {
 
 	public static final float DEG_TO_RAD = PI / 180.0f;
 
+	public static final float GRAD_TO_RAD = PI / 200.0f;
+
+	public static final float RAD_TO_GRAD = 200.0f / PI;
+
+	public static final float GRAD_TO_DEG = 9.0f / 10.0f;
+
+	public static final float MINUTE = 0.000046296296296296f;
+
+	public static final float SECOND = 0.000000771604938272f;
+
+	public static final float MILLIRADIAN = 0.0001591549431f;
+
 	public enum RotationType {
 		Shortest, Longest, Clockwise, CounterClockwise
 	}
@@ -1305,6 +1317,22 @@ public final class MathUtils {
 
 	public static float toRadians(final float degrees) {
 		return degrees * DEG_TO_RAD;
+	}
+
+	public static float toRadiansTAU(final float degrees) {
+		return toRadians(degrees) * TAU;
+	}
+
+	public static float toDegreesTAU(final float radians) {
+		return toDegrees(radians) * TAU;
+	}
+
+	public static float toGradiansDegrees(final float gradian) {
+		return gradian * GRAD_TO_DEG;
+	}
+
+	public static float toGradiansRadians(final float gradian) {
+		return gradian * GRAD_TO_RAD;
 	}
 
 	public static float translateX(float angle, float length) {

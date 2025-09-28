@@ -955,6 +955,8 @@ public class LInventory extends LLayer {
 						} else {
 							itemDst.swap(act);
 						}
+					} else {
+						itemDst.resetActor();
 					}
 				}
 			}
