@@ -134,7 +134,7 @@ public class ActorTreeSet {
 	public void sendToFront(Actor actor) {
 		if (_generalSet != null) {
 			synchronized (_generalSet) {
-				Actor[] o = _generalSet.toArray();
+				Actor[] o = _generalSet.toArray(false);
 				int size = o.length;
 				if (o == null || size <= 0 || (o[size - 1] == actor)) {
 					return;
@@ -157,7 +157,7 @@ public class ActorTreeSet {
 	public void sendToBack(Actor actor) {
 		if (_generalSet != null) {
 			synchronized (_generalSet) {
-				Actor[] o = _generalSet.toArray();
+				Actor[] o = _generalSet.toArray(false);
 				int size = o.length;
 				if (o == null || size <= 0 || (o[0] == actor)) {
 					return;

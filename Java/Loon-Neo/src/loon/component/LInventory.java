@@ -33,6 +33,7 @@ import loon.action.map.items.ItemInfo;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.component.LInventory.ItemUI;
 import loon.component.skin.InventorySkin;
 import loon.component.skin.SkinManager;
 import loon.events.SysKey;
@@ -109,6 +110,7 @@ public class LInventory extends LLayer {
 
 		public void resetActor() {
 			if (_actor != null) {
+				_actor.setTag(null);
 				updateActorSize(_actor);
 			}
 		}
@@ -142,8 +144,10 @@ public class LInventory extends LLayer {
 					final String tmpName = _name;
 					this._item = item._item;
 					this._name = item._name;
+					this._saved = true;
 					item._item = tmpInfo;
 					item._name = tmpName;
+					item._saved = false;
 				}
 			}
 			_actor = act;
@@ -159,6 +163,13 @@ public class LInventory extends LLayer {
 			}
 			_saved = true;
 			return this;
+		}
+
+		public void updateActorPos(Actor src, RectBox dstArea) {
+			src.setLocation((_itemArea.getX() + _inventory._offsetGridActorX),
+					(dstArea.getY() + _inventory._offsetGridActorY));
+			src.setSize((dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
+					(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
 		}
 
 		public ItemUI swap(Actor actor) {
@@ -199,10 +210,7 @@ public class LInventory extends LLayer {
 			item._item = dstItem;
 
 			if (srcActor != null) {
-				srcActor.setLocation((dstArea.getX() + _inventory._offsetGridActorX),
-						(dstArea.getY() + _inventory._offsetGridActorY));
-				srcActor.setSize((dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
-						(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
+				updateActorPos(srcActor, dstArea);
 			}
 			this._image = dstImg;
 			this._saved = dstSaved;
@@ -211,10 +219,7 @@ public class LInventory extends LLayer {
 			this._item = srcItem;
 
 			if (dstActor != null) {
-				dstActor.setLocation((srcArea.getX() + _inventory._offsetGridActorX),
-						(srcArea.getY() + _inventory._offsetGridActorY));
-				dstActor.setSize((srcArea.getWidth() - _inventory._offsetGridActorX * 2f),
-						(srcArea.getHeight() - _inventory._offsetGridActorY * 2f));
+				updateActorPos(dstActor, srcArea);
 			}
 			if (srcActor != null) {
 				bind(srcActor);
@@ -948,12 +953,13 @@ public class LInventory extends LLayer {
 			if (act != null) {
 				final ItemUI itemDst = getItem(dx, dy);
 				final Object o = act.getTag();
+				final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
 				if (itemDst != null) {
-					if (o != itemDst) {
-						if (!itemDst._saved || o == null) {
+					if (itemSrc != itemDst) {
+						if (!itemDst._saved || itemSrc == null) {
 							itemDst.bind(act);
 						} else {
-							itemDst.swap(act);
+							itemDst.swap(itemSrc);
 						}
 					} else {
 						itemDst.resetActor();

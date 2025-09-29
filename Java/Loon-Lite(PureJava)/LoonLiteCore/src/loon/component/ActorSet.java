@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2008 - 2011
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -29,12 +29,13 @@ public class ActorSet {
 
 	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
+	private Actor[] _tempActors;
+
 	private static int hugeCapacity(int minCapacity) {
 		if (minCapacity < 0) {
 			throw new LSysException("Required array size too large");
 		}
-		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE
-				: MAX_ARRAY_SIZE;
+		return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
 	}
 
 	public void clear() {
@@ -46,15 +47,26 @@ public class ActorSet {
 	}
 
 	public Actor[] toArray() {
-		Actor[] r = new Actor[size()];
-		LIterator<Actor> it = iterator();
-		for (int i = 0; i < r.length; i++) {
-			if (!it.hasNext()) {
-				return CollectionUtils.copyOf(r, i);
-			}
-			r[i] = it.next();
+		return toArray(true);
+	}
+
+	public Actor[] toArray(boolean newActions) {
+		final int len = size();
+		if (newActions || (_tempActors == null) || (_tempActors.length != len)) {
+			_tempActors = new Actor[size()];
 		}
-		return it.hasNext() ? finishToArray(r, it) : r;
+		final LIterator<Actor> it = iterator();
+		for (int i = 0; i < len; i++) {
+			if (!it.hasNext()) {
+				if (newActions) {
+					return CollectionUtils.copyOf(_tempActors, i);
+				} else {
+					return _tempActors;
+				}
+			}
+			_tempActors[i] = it.next();
+		}
+		return it.hasNext() ? finishToArray(_tempActors, it) : _tempActors;
 	}
 
 	private static Actor[] finishToArray(Actor[] r, LIterator<Actor> it) {
@@ -68,14 +80,14 @@ public class ActorSet {
 				}
 				r = CollectionUtils.copyOf(r, newCap);
 			}
-			r[i++] = it.next();
+			r[i++] = (Actor) it.next();
 		}
 		return (i == r.length) ? r : CollectionUtils.copyOf(r, i);
 	}
 
-	private ListNode listHeadTail = new ListNode();
+	private ActorSet.ListNode listHeadTail = new ActorSet.ListNode();
 
-	private ListNode[] hashMap = new ListNode[0];
+	private ActorSet.ListNode[] hashMap = new ActorSet.ListNode[0];
 
 	private int numActors = 0;
 
@@ -91,14 +103,13 @@ public class ActorSet {
 			return false;
 		} else {
 			++this.numActors;
-			ListNode newNode = new ListNode(actor,
-					this.listHeadTail.prev);
+			ActorSet.ListNode newNode = new ActorSet.ListNode(actor, this.listHeadTail.prev);
 			int seq = actor.getSequenceNumber();
 			if (this.numActors >= 2 * this.hashMap.length) {
 				this.resize();
 			} else {
 				int hash = seq % this.hashMap.length;
-				ListNode hashHead = this.hashMap[hash];
+				ActorSet.ListNode hashHead = this.hashMap[hash];
 				this.hashMap[hash] = newNode;
 				newNode.setHashListHead(hashHead);
 			}
@@ -113,11 +124,10 @@ public class ActorSet {
 		this.resize();
 		for (int i = 0; i < size; i++) {
 			Actor actor = (Actor) o[i];
-			ListNode newNode = new ListNode(actor,
-					this.listHeadTail.prev);
+			ActorSet.ListNode newNode = new ActorSet.ListNode(actor, this.listHeadTail.prev);
 			int seq = actor.getSequenceNumber();
 			int hash = seq % this.hashMap.length;
-			ListNode hashHead = this.hashMap[hash];
+			ActorSet.ListNode hashHead = this.hashMap[hash];
 			this.hashMap[hash] = newNode;
 			newNode.setHashListHead(hashHead);
 			this.code += seq;
@@ -125,11 +135,11 @@ public class ActorSet {
 	}
 
 	private void resize(int size) {
-		this.hashMap = new ListNode[size];
-		for (ListNode currentActor = this.listHeadTail.next; currentActor != this.listHeadTail; currentActor = currentActor.next) {
+		this.hashMap = new ActorSet.ListNode[size];
+		for (ActorSet.ListNode currentActor = this.listHeadTail.next; currentActor != this.listHeadTail; currentActor = currentActor.next) {
 			int seq = currentActor.actor.getSequenceNumber();
 			int hash = seq % size;
-			ListNode hashHead = this.hashMap[hash];
+			ActorSet.ListNode hashHead = this.hashMap[hash];
 			this.hashMap[hash] = currentActor;
 			currentActor.setHashListHead(hashHead);
 		}
@@ -143,19 +153,19 @@ public class ActorSet {
 		return this.getActorNode(actor) != null;
 	}
 
-	private ListNode getActorNode(Actor actor) {
+	private ActorSet.ListNode getActorNode(Actor actor) {
 		if (this.hashMap.length == 0) {
 			return null;
 		} else {
 			int seq = actor.getSequenceNumber();
 			int hash = seq % this.hashMap.length;
-			ListNode hashHead = this.hashMap[hash];
+			ActorSet.ListNode hashHead = this.hashMap[hash];
 			if (hashHead == null) {
 				return null;
 			} else if (hashHead.actor == actor) {
 				return hashHead;
 			} else {
-				for (ListNode curNode = hashHead.nextHash; curNode != hashHead; curNode = curNode.nextHash) {
+				for (ActorSet.ListNode curNode = hashHead.nextHash; curNode != hashHead; curNode = curNode.nextHash) {
 					if (curNode.actor == actor) {
 						return curNode;
 					}
@@ -167,7 +177,7 @@ public class ActorSet {
 	}
 
 	public boolean remove(Actor actor) {
-		ListNode actorNode = this.getActorNode(actor);
+		ActorSet.ListNode actorNode = this.getActorNode(actor);
 		if (actorNode != null) {
 			this.remove(actorNode);
 			this.code -= actor.getSequenceNumber();
@@ -177,7 +187,7 @@ public class ActorSet {
 		}
 	}
 
-	private void remove(ListNode actorNode) {
+	private void remove(ActorSet.ListNode actorNode) {
 		int seq = actorNode.actor.getSequenceNumber();
 		int hash = seq % this.hashMap.length;
 		if (this.hashMap[hash] == actorNode) {
@@ -200,27 +210,27 @@ public class ActorSet {
 	}
 
 	public LIterator<Actor> iterator() {
-		return new ActorSetIterator(this);
+		return new ActorSet.ActorSetIterator(this);
 	}
 
 	private static class ListNode {
 
 		Actor actor;
 
-		ListNode next;
+		ActorSet.ListNode next;
 
-		ListNode prev;
+		ActorSet.ListNode prev;
 
-		ListNode nextHash;
+		ActorSet.ListNode nextHash;
 
-		ListNode prevHash;
+		ActorSet.ListNode prevHash;
 
 		public ListNode() {
 			this.next = this;
 			this.prev = this;
 		}
 
-		public ListNode(Actor actor, ListNode listTail) {
+		public ListNode(Actor actor, ActorSet.ListNode listTail) {
 			this.actor = actor;
 			this.next = listTail.next;
 			this.prev = listTail;
@@ -228,7 +238,7 @@ public class ActorSet {
 			this.next.prev = this;
 		}
 
-		public void setHashListHead(ListNode oldHead) {
+		public void setHashListHead(ActorSet.ListNode oldHead) {
 			if (oldHead == null) {
 				this.nextHash = this;
 				this.prevHash = this;
@@ -251,7 +261,7 @@ public class ActorSet {
 
 	private static class ActorSetIterator implements LIterator<Actor> {
 
-		ListNode currentNode;
+		ActorSet.ListNode currentNode;
 
 		ActorSet actorSet;
 

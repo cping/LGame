@@ -29,6 +29,8 @@ public class ActorSet {
 
 	private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
+	private Actor[] _tempActors;
+
 	private static int hugeCapacity(int minCapacity) {
 		if (minCapacity < 0) {
 			throw new LSysException("Required array size too large");
@@ -45,15 +47,26 @@ public class ActorSet {
 	}
 
 	public Actor[] toArray() {
-		Actor[] r = new Actor[size()];
-		LIterator<Actor> it = iterator();
-		for (int i = 0; i < r.length; i++) {
-			if (!it.hasNext()) {
-				return CollectionUtils.copyOf(r, i);
-			}
-			r[i] = it.next();
+		return toArray(true);
+	}
+
+	public Actor[] toArray(boolean newActions) {
+		final int len = size();
+		if (newActions || (_tempActors == null) || (_tempActors.length != len)) {
+			_tempActors = new Actor[size()];
 		}
-		return it.hasNext() ? finishToArray(r, it) : r;
+		final LIterator<Actor> it = iterator();
+		for (int i = 0; i < len; i++) {
+			if (!it.hasNext()) {
+				if (newActions) {
+					return CollectionUtils.copyOf(_tempActors, i);
+				} else {
+					return _tempActors;
+				}
+			}
+			_tempActors[i] = it.next();
+		}
+		return it.hasNext() ? finishToArray(_tempActors, it) : _tempActors;
 	}
 
 	private static Actor[] finishToArray(Actor[] r, LIterator<Actor> it) {
