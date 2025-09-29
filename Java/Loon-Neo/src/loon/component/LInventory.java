@@ -129,10 +129,12 @@ public class LInventory extends LLayer {
 				if (_actor != null) {
 					_actor.setTag(null);
 					_actor = null;
+				} else {
+					this._item = new ItemInfo();
+					this._name = LSystem.UNKNOWN;
+					this._description = LSystem.UNKNOWN;
+					this._saved = false;
 				}
-				this._item = new ItemInfo();
-				this._name = LSystem.UNKNOWN;
-				this._saved = false;
 				return this;
 			}
 			Object o = act.getTag();
@@ -141,11 +143,14 @@ public class LInventory extends LLayer {
 				final ItemUI item = ((ItemUI) o);
 				final ItemInfo tmpInfo = _item.cpy();
 				final String tmpName = _name;
+				final String tempDes = _description;
 				this._item = item._item;
 				this._name = item._name;
+				this._description = item._description;
 				this._saved = true;
 				item._item = tmpInfo;
 				item._name = tmpName;
+				item._description = tempDes;
 				item._saved = false;
 			}
 			_actor = act;
