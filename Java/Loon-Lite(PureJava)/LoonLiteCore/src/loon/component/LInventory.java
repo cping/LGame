@@ -135,19 +135,18 @@ public class LInventory extends LLayer {
 				this._saved = false;
 				return this;
 			}
-			if (!_saved) {
-				Object o = act.getTag();
-				if (o != null && o instanceof ItemUI) {
-					final ItemUI item = ((ItemUI) o);
-					final ItemInfo tmpInfo = _item.cpy();
-					final String tmpName = _name;
-					this._item = item._item;
-					this._name = item._name;
-					this._saved = true;
-					item._item = tmpInfo;
-					item._name = tmpName;
-					item._saved = false;
-				}
+			Object o = act.getTag();
+			boolean isDst = ((o != null) && (o instanceof ItemUI));
+			if (!_saved && isDst) {
+				final ItemUI item = ((ItemUI) o);
+				final ItemInfo tmpInfo = _item.cpy();
+				final String tmpName = _name;
+				this._item = item._item;
+				this._name = item._name;
+				this._saved = true;
+				item._item = tmpInfo;
+				item._name = tmpName;
+				item._saved = false;
 			}
 			_actor = act;
 			_actor.setTag(this);
@@ -169,6 +168,16 @@ public class LInventory extends LLayer {
 					(dstArea.getY() + _inventory._offsetGridActorY));
 			src.setSize((dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
 					(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
+		}
+
+		public ItemUI swap(Actor actor) {
+			if (actor == null) {
+				return this;
+			}
+			if (actor.getTag() != null && actor.getTag() instanceof ItemUI) {
+				return swap((ItemUI) actor.getTag());
+			}
+			return this;
 		}
 
 		public ItemUI swap(ItemUI item) {
@@ -511,7 +520,7 @@ public class LInventory extends LLayer {
 			final int size = _inventory.getItemCount();
 			for (int i = 0; i < size; i++) {
 				ItemUI item = (ItemUI) _inventory.getItem(i);
-				if (item != null && !item._saved) {
+				if (item != null && !item._saved && (item.getActor() == null)) {
 					RectBox rect = item.getArea();
 					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
 							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);

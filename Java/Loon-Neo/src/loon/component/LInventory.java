@@ -33,7 +33,6 @@ import loon.action.map.items.ItemInfo;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 import loon.canvas.LColor;
-import loon.component.LInventory.ItemUI;
 import loon.component.skin.InventorySkin;
 import loon.component.skin.SkinManager;
 import loon.events.SysKey;
@@ -136,19 +135,18 @@ public class LInventory extends LLayer {
 				this._saved = false;
 				return this;
 			}
-			if (!_saved) {
-				Object o = act.getTag();
-				if (o != null && o instanceof ItemUI) {
-					final ItemUI item = ((ItemUI) o);
-					final ItemInfo tmpInfo = _item.cpy();
-					final String tmpName = _name;
-					this._item = item._item;
-					this._name = item._name;
-					this._saved = true;
-					item._item = tmpInfo;
-					item._name = tmpName;
-					item._saved = false;
-				}
+			Object o = act.getTag();
+			boolean isDst = ((o != null) && (o instanceof ItemUI));
+			if (!_saved && isDst) {
+				final ItemUI item = ((ItemUI) o);
+				final ItemInfo tmpInfo = _item.cpy();
+				final String tmpName = _name;
+				this._item = item._item;
+				this._name = item._name;
+				this._saved = true;
+				item._item = tmpInfo;
+				item._name = tmpName;
+				item._saved = false;
 			}
 			_actor = act;
 			_actor.setTag(this);
@@ -522,7 +520,7 @@ public class LInventory extends LLayer {
 			final int size = _inventory.getItemCount();
 			for (int i = 0; i < size; i++) {
 				ItemUI item = (ItemUI) _inventory.getItem(i);
-				if (item != null && !item._saved) {
+				if (item != null && !item._saved && (item.getActor() == null)) {
 					RectBox rect = item.getArea();
 					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
 							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
