@@ -161,10 +161,16 @@ public class LSetting {
 	 * 生成系统默认的LFont时,是否使用剪切生成
 	 */
 	public boolean useTrueFontClip = true;
+
 	/**
 	 * 此项为true时采用全屏刷新,为false则屏幕不会自动刷新
 	 */
 	public boolean allScreenRefresh = true;
+
+	/**
+	 * 此项为true时,画面翻转会触发screen的resize函数
+	 */
+	public boolean allowScreenResize = true;
 
 	/**
 	 * 主执行类实例
@@ -329,6 +335,7 @@ public class LSetting {
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.allScreenRefresh = setting.allScreenRefresh;
+		this.allowScreenResize = setting.allowScreenResize;
 		this.args = setting.args;
 		return this;
 	}

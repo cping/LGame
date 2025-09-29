@@ -505,7 +505,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public Screen(String name, int w, int h) {
-		initialization(name, w, h, true);
+		initialization(name, w, h, LSystem.isAllowScreenResize());
 	}
 
 	public Screen(String name, int w, int h, boolean r) {

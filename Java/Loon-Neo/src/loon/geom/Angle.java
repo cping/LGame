@@ -38,7 +38,7 @@ public final class Angle {
 
 	public static Angle ofPos(float x, float y) {
 		final float degrees = MathUtils.toDegrees(MathUtils.atan2(x, -1 * y));
-		final float inRangeDegrees = degrees + MathUtils.ceil(-degrees / 360) * 360;
+		final float inRangeDegrees = degrees + MathUtils.ceil(-degrees / 360f) * 360f;
 		return degrees(inRangeDegrees);
 	}
 
@@ -139,7 +139,7 @@ public final class Angle {
 	}
 
 	public Angle invertDegrees() {
-		return Angle.degrees(1f - _radians);
+		return Angle.degrees(360f - getDegrees());
 	}
 
 	public Angle invertRadians() {
@@ -154,17 +154,17 @@ public final class Angle {
 		final float degrees = MathUtils.toDegrees(_radians);
 		if (degrees < 0) {
 			final float degreesfloor = MathUtils.ceil(degrees);
-			return (degrees - degreesfloor) * 60.0f;
+			return (degrees - degreesfloor) * 60f;
 		} else {
 			final float degreesfloor = MathUtils.floor(degrees);
-			return (degrees - degreesfloor) * 60.0f;
+			return (degrees - degreesfloor) * 60f;
 		}
 	}
 
 	public Angle setMinutes(float v) {
 		final float degrees = MathUtils.toDegrees(_radians);
 		float degreesfloor = MathUtils.floor(degrees);
-		degreesfloor += v / 60.0f;
+		degreesfloor += v / 60f;
 		_radians = MathUtils.toRadians(degreesfloor);
 		return this;
 	}

@@ -38,7 +38,7 @@ import loon.utils.timer.LTimerContext;
 /**
  * loon围绕时间帧提供的进程管理用类(无关单独线程,纯依附于主渲染线程中循环实现)
  */
-public class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
+public final class RealtimeProcessManager implements RealtimeProcessEvent, IArray, LRelease {
 
 	private static class RealtimeProcessRunnable extends RealtimeProcess {
 

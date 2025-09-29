@@ -106,7 +106,7 @@ public final class LSystem {
 	protected static final String FONT_NAME = "Dialog";
 
 	protected static final String FONT_STYLE = "plain";
-	
+
 	protected static final String APP_NAME = "Loon";
 
 	/** 常见字符串操作用符号 **/
@@ -574,7 +574,6 @@ public final class LSystem {
 			return base().setting.lockAllTouchEvent;
 		}
 		return false;
-
 	}
 
 	public static final boolean isNotAllowDragAndMove() {
@@ -582,7 +581,20 @@ public final class LSystem {
 			return base().setting.notAllowDragAndMove;
 		}
 		return false;
+	}
 
+	public static final boolean isAllScreenRefresh() {
+		if (base() != null) {
+			return base().setting.allScreenRefresh;
+		}
+		return true;
+	}
+
+	public static final boolean isAllowScreenResize() {
+		if (base() != null) {
+			return base().setting.allowScreenResize;
+		}
+		return true;
 	}
 
 	public static final float getEmulatorScale() {

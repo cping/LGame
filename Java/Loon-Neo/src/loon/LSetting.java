@@ -158,6 +158,11 @@ public class LSetting {
 	public boolean allScreenRefresh = true;
 
 	/**
+	 * 此项为true时,画面翻转会触发screen的resize函数
+	 */
+	public boolean allowScreenResize = true;
+
+	/**
 	 * 默认帧率
 	 */
 	private final static int DEFAULT_MAX_FPS = 60;
@@ -314,6 +319,7 @@ public class LSetting {
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;
 		this.allScreenRefresh = setting.allScreenRefresh;
+		this.allowScreenResize = setting.allowScreenResize;
 		this.args = setting.args;
 		return this;
 	}

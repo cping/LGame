@@ -1860,6 +1860,75 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
+	public GLEx drawPlus(float x, float y, float radius, LColor color) {
+		return drawPlus(x, y, radius, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawPlus(float x, float y, float radius, float width, LColor color) {
+		drawLine(x - radius, y, x + radius, y, width, color);
+		drawLine(x, y - radius, x, y + radius, width, color);
+		return this;
+	}
+
+	public GLEx drawCross(float x, float y, float radius, LColor color) {
+		return drawCross(x, y, radius, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawCross(float x, float y, float radius, float width, LColor color) {
+		drawLine(x - radius, y - radius, x + radius, y + radius, width, color);
+		drawLine(x - radius, y + radius, x + radius, y - radius, width, color);
+		return this;
+	}
+
+	public GLEx drawRay(float x, float y, float dx, float dy, LColor color) {
+		return drawRay(x, y, dx, dy, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawRay(float x, float y, float dx, float dy, float width, LColor color) {
+		return drawLine(x, y, x + dx, y + dy, width, color);
+	}
+
+	public GLEx drawRayAngle(float x, float y, float degrees, float length, LColor color) {
+		return drawRayAngle(x, y, degrees, length, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawRayAngle(float x, float y, float degrees, float length, float width, LColor color) {
+		final float dx = MathUtils.cos(degrees * MathUtils.DEG_TO_RAD) * length;
+		final float dy = MathUtils.sin(degrees * MathUtils.DEG_TO_RAD) * length;
+		return drawLine(x, y, x + dx, y + dy, width, color);
+	}
+
+	public GLEx drawArrow(float x, float y, float dx, float dy, LColor color) {
+		return drawArrow(x, y, dx, dy, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawArrow(float x, float y, float dx, float dy, float width, LColor color) {
+		return drawArrow(x, y, dx, dy, 0.25f, width, color);
+	}
+
+	public GLEx drawArrow(float x, float y, float dx, float dy, float arrowSize, float width, LColor color) {
+		drawLine(x, y, x + dx, y + dy, width, color);
+		drawLine(x + dx, y + dy, x + dx * (1f - arrowSize) - dy * arrowSize, y + dy * (1f - arrowSize) + dx * arrowSize,
+				width, color);
+		return drawLine(x + dx, y + dy, x + dx * (1f - arrowSize) + dy * arrowSize,
+				y + dy * (1f - arrowSize) - dx * arrowSize, width, color);
+	}
+
+	public GLEx drawArrowAngle(float x, float y, float dx, float dy, LColor color) {
+		return drawArrowAngle(x, y, dx, dy, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawArrowAngle(float x, float y, float dx, float dy, float width, LColor color) {
+		return drawArrowAngle(x, y, dx, dy, 0.25f, width, color);
+	}
+
+	public GLEx drawArrowAngle(float x, float y, float degrees, float length, float arrowSize, float width,
+			LColor color) {
+		final float dx = MathUtils.cos(degrees * MathUtils.DEG_TO_RAD) * length;
+		final float dy = MathUtils.sin(degrees * MathUtils.DEG_TO_RAD) * length;
+		return drawArrow(x, y, dx, dy, arrowSize, width, color);
+	}
+
 	public GLEx drawGrid(XYZW rect, int lines, float size, LColor color) {
 		return drawGrid(rect.getX(), rect.getY(), rect.getZ(), rect.getW(), lines, size, color);
 	}
