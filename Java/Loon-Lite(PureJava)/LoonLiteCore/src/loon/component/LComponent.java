@@ -338,6 +338,14 @@ public abstract class LComponent extends LObject<LContainer>
 		this.setLocation(_cam_x, _cam_y);
 	}
 
+	@Override
+	public void setLayer(int z) {
+		if (_objectSuper != null && getLayer() != z) {
+			_objectSuper.setDirtyChildren(true);
+		}
+		super.setLayer(z);
+	}
+
 	protected boolean isNotMoveInScreen(int x, int y) {
 		if (!this._isLimitMove) {
 			return false;

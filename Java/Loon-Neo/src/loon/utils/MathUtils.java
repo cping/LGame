@@ -1375,6 +1375,10 @@ public final class MathUtils {
 		return (int) (dpValue * scale + 0.5f);
 	}
 
+	public static int px2dip(int pixels, float dpValue) {
+		return (int) (pixels * LSystem.DEFAULT_DPI / dpValue);
+	}
+
 	public static float oscilliate(float x, float min, float max, float period) {
 		return max - (sin(x * 2f * PI / period) * ((max - min) / 2f) + ((max - min) / 2f));
 	}

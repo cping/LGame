@@ -52,7 +52,9 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	protected boolean _scrolling = false;
 
-	private boolean _sortableChildren = false;
+	private boolean _dirtyChildren = true;
+
+	private boolean _sortableChildren = true;
 	// 滚动x轴
 	protected float _component_scrollX;
 	// 滚动y轴
@@ -72,6 +74,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		super(x, y, w, h);
 		this.setFocusable(false);
 		this.setSortableChildren(true);
+		this.setDirtyChildren(true);
 		this._childCount = 0;
 		this._childExpandCount = 1;
 		this._newLineHeight = -1f;
@@ -218,6 +221,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (comp.isContainer() && (comp instanceof LScrollContainer)) {
 			((LScrollContainer) comp).scrollContainerRealSizeChanged();
 		}
+		this._dirtyChildren = true;
 		this._childs = CollectionUtils.expand(this._childs, _childExpandCount, false);
 		this._childs[0] = comp;
 		this._childCount++;
@@ -229,9 +233,6 @@ public abstract class LContainer extends LComponent implements IArray {
 			if (comp._input == null) {
 				comp._input = _desktop._sysInput;
 			}
-		}
-		if (_sortableChildren) {
-			this.sortComponents();
 		}
 		this.latestInserted = comp;
 		this.setDesktops(this._desktop);
@@ -264,9 +265,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = newChilds;
 		this._childs[index] = comp;
 		this._desktop.setDesktop(comp);
-		if (_sortableChildren) {
-			this.sortComponents();
-		}
+		this._dirtyChildren = true;
 		this.latestInserted = comp;
 		return this;
 	}
@@ -307,6 +306,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = null;
 		this._childs = new LComponent[0];
 		this._childCount = 0;
+		this._dirtyChildren = true;
 	}
 
 	public int removeCurrentClickedChild() {
@@ -926,6 +926,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		}
 		this._childs = CollectionUtils.cut(this._childs, index);
 		this._childCount--;
+		this._dirtyChildren = true;
 		return comp;
 	}
 
@@ -953,6 +954,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		final LComponent firstValue = cs[first];
 		cs[first] = cs[second];
 		cs[second] = firstValue;
+		this._dirtyChildren = true;
 		return this;
 	}
 
@@ -1045,6 +1047,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs = null;
 		this._childs = new LComponent[0];
 		this._childCount = 0;
+		this._dirtyChildren = true;
 	}
 
 	/**
@@ -1160,6 +1163,9 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (!this._component_visible) {
 			return;
 		}
+
+		this.sortComponents();
+
 		final float newScrollX = _component_scrollX;
 		final float newScrollY = _component_scrollY;
 
@@ -1252,9 +1258,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(childs, i);
 				this._childs = CollectionUtils.expand(childs, _childExpandCount, false);
 				this._childs[0] = comp;
-				if (_sortableChildren) {
-					this.sortComponents();
-				}
+				this._dirtyChildren = true;
 				break;
 			}
 		}
@@ -1278,9 +1282,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				this._childs = CollectionUtils.cut(childs, i);
 				this._childs = CollectionUtils.expand(childs, _childExpandCount, true);
 				this._childs[size - 1] = comp;
-				if (_sortableChildren) {
-					this.sortComponents();
-				}
+				this._dirtyChildren = true;
 				break;
 			}
 		}
@@ -1294,7 +1296,13 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (this._childCount <= 1) {
 			return this;
 		}
-		componentSorter.sort(this._childs);
+		if (!_sortableChildren) {
+			return this;
+		}
+		if (_dirtyChildren) {
+			componentSorter.sort(this._childs);
+			_dirtyChildren = false;
+		}
 		return this;
 	}
 
@@ -1305,6 +1313,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (component == null) {
 			return;
 		}
+		this._dirtyChildren = true;
 		final int size = this._childCount;
 		final LComponent[] childs = this._childs;
 		for (int i = 0; i < size; i++) {
@@ -1332,6 +1341,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (component == null) {
 			return;
 		}
+		this._dirtyChildren = true;
 		final int size = this._childCount;
 		final LComponent[] childs = this._childs;
 		for (int i = 0; i < size; i++) {
@@ -1503,6 +1513,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
+		this._dirtyChildren = true;
 		final int size = _childs.length - 1;
 		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
@@ -1510,7 +1521,6 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setZOrder(sortOrder + i);
 			}
 		}
-		sortComponents();
 		return this;
 	}
 
@@ -1521,6 +1531,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (_childs == null) {
 			return this;
 		}
+		this._dirtyChildren = true;
 		final int size = _childs.length - 1;
 		for (int i = size; i > -1; i--) {
 			LComponent comp = _childs[i];
@@ -1528,7 +1539,6 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp.setLayer(sortOrder + i);
 			}
 		}
-		sortComponents();
 		return this;
 	}
 
@@ -2413,6 +2423,15 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	public boolean isSortableChildren() {
 		return this._sortableChildren;
+	}
+
+	public LContainer setDirtyChildren(boolean v) {
+		this._dirtyChildren = v;
+		return this;
+	}
+
+	public boolean isDirtyChildren() {
+		return this._dirtyChildren;
 	}
 
 	@Override

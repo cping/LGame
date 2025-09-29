@@ -1176,6 +1176,14 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		}
 	}
 
+	@Override
+	public void setLayer(int z) {
+		if (_sprites != null && getLayer() != z) {
+			_sprites.setDirtyChildren(true);
+		}
+		super.setLayer(z);
+	}
+
 	public IEntity setOrigin(Origin o) {
 		this._origin = o;
 		return this;

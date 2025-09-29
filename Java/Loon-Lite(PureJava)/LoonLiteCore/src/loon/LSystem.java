@@ -165,6 +165,9 @@ public final class LSystem {
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
 
+	// 默认的dpi参数
+	public static final float DEFAULT_DPI = 72f;
+
 	public static final float MIN_SECONE_SPEED_FIXED = 0.008f;
 
 	// 行分隔符

@@ -178,6 +178,9 @@ public final class LSystem {
 	// 默认缓动函数延迟
 	public static final float DEFAULT_EASE_DELAY = 1f / 60f;
 
+	// 默认的dpi参数
+	public static final float DEFAULT_DPI = 72f;
+
 	// 行分隔符
 	public static final String LS = System.getProperty("line.separator", "\n");
 

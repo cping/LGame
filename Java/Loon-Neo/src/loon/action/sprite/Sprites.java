@@ -146,6 +146,8 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 
 	private boolean _checkViewCollision;
 
+	private boolean _dirtyChildren;
+
 	private SpriteListener _sprListerner = null;
 
 	private ResizeListener<Sprites> _resizeListener;
@@ -186,6 +188,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this._sizeExpandCount = 1;
 		this._currentPosHash = _lastPosHash = 1;
 		this._newLineHeight = -1f;
+		this._dirtyChildren = true;
 		this.setScreen(screen);
 		this.setSize(w, h);
 		LSystem.pushSpritesPool(this);
@@ -271,9 +274,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, _sizeExpandCount, false);
 				this._sprites[0] = sprite;
-				if (_sortableChildren) {
-					this.sortSprites();
-				}
+				this._dirtyChildren = true;
 				break;
 			}
 		}
@@ -300,9 +301,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				this._sprites = CollectionUtils.cut(this._sprites, i);
 				this._sprites = CollectionUtils.expand(this._sprites, _sizeExpandCount, true);
 				this._sprites[this._size - 1] = sprite;
-				if (_sortableChildren) {
-					this.sortSprites();
-				}
+				this._dirtyChildren = true;
 				break;
 			}
 		}
@@ -320,12 +319,18 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (this._size <= 1) {
 			return this;
 		}
-		if (this._sprites.length != this._size) {
-			final ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
-			spriteLayerSorter.sort(sprs);
-			this._sprites = sprs;
-		} else {
-			spriteLayerSorter.sort(this._sprites);
+		if (!this._sortableChildren) {
+			return this;
+		}
+		if (_dirtyChildren) {
+			if (this._sprites.length != this._size) {
+				final ISprite[] sprs = CollectionUtils.copyOf(this._sprites, this._size);
+				spriteLayerSorter.sort(sprs);
+				this._sprites = sprs;
+			} else {
+				spriteLayerSorter.sort(this._sprites);
+			}
+			this._dirtyChildren = false;
 		}
 		return this;
 	}
@@ -614,9 +619,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 					((IEntity) sprite).onAttached();
 				}
 			}
-			if (_sortableChildren) {
-				sortSprites();
-			}
+			this._dirtyChildren = true;
 			return true;
 		}
 		return false;
@@ -656,13 +659,11 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				expandCapacity((_size + 1) * 2);
 			}
 			sprite.setSprites(this);
-			if (_sortableChildren) {
-				sortSprites();
-			}
 			sprite.setState(State.ADDED);
 			if (sprite instanceof IEntity) {
 				((IEntity) sprite).onAttached();
 			}
+			this._dirtyChildren = true;
 		}
 		boolean result = _sprites[idx] != null;
 		return result;
@@ -754,13 +755,11 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 			expandCapacity((_size + 1) * 2);
 		}
 		final boolean result = (_sprites[_size++] = sprite) != null;
-		if (_sortableChildren) {
-			sortSprites();
-		}
 		sprite.setState(State.ADDED);
 		if (sprite instanceof IEntity) {
 			((IEntity) sprite).onAttached();
 		}
+		this._dirtyChildren = true;
 		return result;
 	}
 
@@ -1134,6 +1133,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		final ISprite firstValue = sprs[first];
 		sprs[first] = sprs[second];
 		sprs[second] = firstValue;
+		this._dirtyChildren = true;
 		return this;
 	}
 
@@ -1288,6 +1288,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (size == 0) {
 			_sprites = new ISprite[0];
 		}
+		this._dirtyChildren = true;
 		return removed;
 	}
 
@@ -1824,6 +1825,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (!_visible || _closed) {
 			return;
 		}
+		this.sortSprites();
 		float spriteX;
 		float spriteY;
 		float spriteWidth;
@@ -1887,6 +1889,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (!_visible || _closed) {
 			return;
 		}
+		this.sortSprites();
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 		if (_useLight && !_light.isClosed()) {
@@ -1940,7 +1943,8 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (!_visible || _closed) {
 			return;
 		}
-
+		this.sortSprites();
+		
 		final float newScrollX = _scrollX;
 		final float newScrollY = _scrollY;
 
@@ -3217,6 +3221,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 			_sprites[i] = null;
 		}
 		_size = 0;
+		this._dirtyChildren = true;
 		return;
 	}
 
@@ -3260,6 +3265,15 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 			}
 		}
 		return result;
+	}
+
+	public Sprites setDirtyChildren(boolean v) {
+		this._dirtyChildren = v;
+		return this;
+	}
+
+	public boolean isDirtyChildren() {
+		return this._dirtyChildren;
 	}
 
 	public Sprites setLayerTop() {
@@ -3353,6 +3367,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this._resizabled = false;
 		this._sprites = null;
 		this._collViewSize = null;
+		this._collisionObjects = null;
 		this.clearListerner();
 		LSystem.popSpritesPool(this);
 	}
