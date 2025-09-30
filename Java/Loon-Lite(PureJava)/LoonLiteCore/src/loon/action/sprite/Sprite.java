@@ -864,6 +864,14 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return getFilterColor();
 	}
 
+	@Override
+	public void setLayer(int z) {
+		if (_sprites != null && getLayer() != z) {
+			_sprites.setDirtyChildren(true);
+		}
+		super.setLayer(z);
+	}
+
 	public Sprite setOrigin(Origin o) {
 		this._origin = o;
 		return this;

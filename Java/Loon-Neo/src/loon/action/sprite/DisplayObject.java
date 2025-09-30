@@ -162,6 +162,14 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 		_parent = parent;
 	}
 
+	@Override
+	public void setLayer(int z) {
+		if (_sprites != null && getLayer() != z) {
+			_sprites.setDirtyChildren(true);
+		}
+		super.setLayer(z);
+	}
+
 	public void setAnchor(int anchor) {
 		_anchor = anchor;
 	}

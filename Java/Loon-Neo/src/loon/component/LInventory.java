@@ -51,6 +51,24 @@ public class LInventory extends LLayer {
 
 	public static class ItemUI extends Item<ItemInfo> {
 
+		private class ItemUIClose implements LRelease {
+
+			private ItemUI _itemUI;
+
+			public ItemUIClose(ItemUI ui) {
+				this._itemUI = ui;
+			}
+
+			@Override
+			public void close() {
+				_itemUI._saved = false;
+				_itemUI.setItem(null);
+				_itemUI.setName(LSystem.UNKNOWN);
+				_itemUI.removeActor();
+			}
+
+		}
+
 		protected boolean _saved;
 
 		protected LInventory _inventory;
@@ -67,11 +85,23 @@ public class LInventory extends LLayer {
 		}
 
 		protected void updateActorSize(Actor actor) {
-			if (actor.isThereparent()) {
-				actor.setLocation((_itemArea.getX() + _inventory._offsetGridActorX),
-						(_itemArea.getY() + _inventory._offsetGridActorY));
-				actor.setSize((_itemArea.getWidth() - _inventory._offsetGridActorX * 2f),
-						(_itemArea.getHeight() - _inventory._offsetGridActorY * 2f));
+			if (actor != null && actor.isThereparent()) {
+				updateActorPos(actor, _itemArea);
+			}
+		}
+
+		public void updateActorPos(Actor src, RectBox dstArea) {
+			if (src != null && dstArea != null) {
+				src.setLocation(MathUtils.ifloor(dstArea.getX() + _inventory._offsetGridActorX),
+						MathUtils.ifloor(dstArea.getY() + _inventory._offsetGridActorY));
+				src.setSize(MathUtils.iceil(dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
+						MathUtils.iceil(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
+			}
+		}
+
+		public void updateActorPos() {
+			if (_actor != null) {
+				updateActorPos(_actor, _itemArea);
 			}
 		}
 
@@ -86,24 +116,18 @@ public class LInventory extends LLayer {
 			if (_actor != null) {
 				_inventory.removeObject(_actor);
 				bind(null);
+			} else {
+				bind(null);
 			}
 		}
 
 		protected void free() {
-			final LRelease release = new LRelease() {
-
-				@Override
-				public void close() {
-					setItem(null);
-					setName(LSystem.UNKNOWN);
-					removeActor();
-				}
-			};
+			final ItemUI.ItemUIClose released = new ItemUI.ItemUIClose(this);
 			if (_actor != null && _inventory._actorFadeTime > 0f && _actor.isActionCompleted()) {
 				this._saved = false;
-				this._actor.selfAction().fadeOut(_inventory._actorFadeTime).start().dispose(release);
+				this._actor.selfAction().fadeOut(_inventory._actorFadeTime).start().dispose(released);
 			} else {
-				release.close();
+				released.close();
 			}
 		}
 
@@ -114,7 +138,17 @@ public class LInventory extends LLayer {
 			}
 		}
 
-		public ItemUI bind(LTexture tex, float x, float y, float w, float h) {
+		public ItemUI bindTexture(LTexture tex) {
+			if (_actor == null) {
+				_actor = new Actor(tex);
+			} else {
+				_actor.setImage(tex);
+			}
+			bind(_actor);
+			return this;
+		}
+
+		public ItemUI bindTexture(LTexture tex, float x, float y, float w, float h) {
 			if (_actor == null) {
 				_actor = new Actor(tex, x, y, w, h);
 			} else {
@@ -166,13 +200,6 @@ public class LInventory extends LLayer {
 			}
 			_saved = true;
 			return this;
-		}
-
-		public void updateActorPos(Actor src, RectBox dstArea) {
-			src.setLocation((_itemArea.getX() + _inventory._offsetGridActorX),
-					(dstArea.getY() + _inventory._offsetGridActorY));
-			src.setSize((dstArea.getWidth() - _inventory._offsetGridActorX * 2f),
-					(dstArea.getHeight() - _inventory._offsetGridActorY * 2f));
 		}
 
 		public ItemUI swap(Actor actor) {
@@ -525,10 +552,9 @@ public class LInventory extends LLayer {
 			final int size = _inventory.getItemCount();
 			for (int i = 0; i < size; i++) {
 				ItemUI item = (ItemUI) _inventory.getItem(i);
-				if (item != null && !item._saved && (item.getActor() == null)) {
-					RectBox rect = item.getArea();
-					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
-							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+				if (item != null && !item._saved && (item._actor == null)) {
+					item.bindTexture(tex);
+					item.updateActorPos();
 					item.setName(info.getName());
 					item.setItem(info);
 					return this;
@@ -539,7 +565,7 @@ public class LInventory extends LLayer {
 				info = new ItemInfo();
 			}
 			ItemUI item = new ItemUI(this, info.getName(), info, 0f, 0f, 0f, 0f);
-			item.bind(tex, 0f, 0f, _titleSize.x, _titleSize.y);
+			item.bindTexture(tex, 0f, 0f, _titleSize.x, _titleSize.y);
 			_inventory.addItem(item);
 		}
 		return this;
@@ -547,7 +573,7 @@ public class LInventory extends LLayer {
 
 	public ItemUI removeItemIndex(int idx) {
 		ItemUI item = getItem(idx);
-		if (item != null && item._saved) {
+		if (item != null && (item._saved || item._actor != null)) {
 			item.free();
 		}
 		return item;
@@ -555,7 +581,7 @@ public class LInventory extends LLayer {
 
 	public boolean removeItem(float x, float y) {
 		ItemUI item = getItem(x, y);
-		if (item != null && item._saved) {
+		if (item != null && (item._saved || item._actor != null)) {
 			item.free();
 		}
 		return item != null;
@@ -565,7 +591,7 @@ public class LInventory extends LLayer {
 		ItemUI item = null;
 		for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
 			item = (ItemUI) _inventory.getItem(i);
-			if (item != null && item._saved) {
+			if (item != null && (item._saved || item._actor != null)) {
 				break;
 			}
 		}
@@ -596,8 +622,8 @@ public class LInventory extends LLayer {
 					RectBox rect = item.getArea();
 					if (rect.contains(x, y)) {
 						item.setItem(info);
-						item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
-								rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+						item.bindTexture(tex);
+						item.updateActorPos();
 					}
 					return this;
 				}
@@ -613,10 +639,10 @@ public class LInventory extends LLayer {
 				RectBox rect = item.getArea();
 				item.setItem(info);
 				if (rect != null) {
-					item.bind(tex, rect.x + _offsetGridActorX, rect.y + _offsetGridActorY,
-							rect.width - _offsetGridActorX * 2f, rect.height - _offsetGridActorY * 2f);
+					item.bindTexture(tex);
+					item.updateActorPos();
 				} else {
-					item.bind(tex, 0f, 0f, _titleSize.x, _titleSize.y);
+					item.bindTexture(tex, 0f, 0f, _titleSize.x, _titleSize.y);
 				}
 			}
 		}
@@ -665,11 +691,14 @@ public class LInventory extends LLayer {
 		}
 		_selectedItem = item;
 		if (_selectedItem != null && _selectedItem._saved) {
-			final String name = _selectedItem.getItem().getName();
-			final String des = _selectedItem.getItem().getDescription();
-			final String context = name + LSystem.LF + des;
-			setTipText(context);
-			_tipSelected = true;
+			ItemInfo iteminfo = _selectedItem.getItem();
+			if (iteminfo != null) {
+				final String name = iteminfo.getName();
+				final String des = iteminfo.getDescription();
+				final String context = name + LSystem.LF + des;
+				setTipText(context);
+				_tipSelected = true;
+			}
 		} else {
 			_tipSelected = false;
 		}
@@ -955,9 +984,9 @@ public class LInventory extends LLayer {
 			final Actor act = getClickActor();
 			if (act != null) {
 				final ItemUI itemDst = getItem(dx, dy);
-				final Object o = act.getTag();
-				final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
 				if (itemDst != null) {
+					final Object o = act.getTag();
+					final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
 					if (itemSrc != itemDst) {
 						if (!itemDst._saved || itemSrc == null) {
 							itemDst.bind(act);
