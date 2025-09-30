@@ -29,6 +29,10 @@ import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.HexagonMap;
 import loon.action.map.TileMap;
+import loon.component.LComponent;
+import loon.events.EventActionN;
+import loon.events.SysInput;
+import loon.events.SysKey;
 import loon.geom.ActionBindRect;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
@@ -90,7 +94,55 @@ public class MoveControl implements LRelease {
 
 	private Field2D _currentArrayMap;
 
+	private EventActionN _upEvent;
+
+	private EventActionN _downEvent;
+
+	private EventActionN _leftEvent;
+
+	private EventActionN _rightEvent;
+
+	private EventActionN _actionEvent;
+
 	private long _delay = 0;
+
+	private boolean _up = false;
+
+	private boolean _down = false;
+
+	private boolean _right = false;
+
+	private boolean _left = false;
+
+	private boolean _justUp = false;
+
+	private boolean _justDown = false;
+
+	private boolean _justRight = false;
+
+	private boolean _justLeft = false;
+
+	private boolean _isPressedKeyA = false;
+
+	private boolean _isReleasedKeyA = false;
+
+	private boolean _isPressedKeyS = false;
+
+	private boolean _isReleasedKeyS = false;
+
+	private boolean _isPressedKeyD = false;
+
+	private boolean _isReleasedKeyD = false;
+
+	private boolean _isPressedKeyW = false;
+
+	private boolean _isReleasedKeyW = false;
+
+	private boolean _isLeftOrRight = false;
+
+	private boolean _isDownOrUp = false;
+
+	private SysInput _currentInput;
 
 	public MoveControl(ActionBind bind, TileMap map) {
 		this(bind, map.getField2D());
@@ -113,6 +165,13 @@ public class MoveControl implements LRelease {
 	}
 
 	public MoveControl(ActionBind bind, Field2D field2d, int moveSpeed, int delay, float ws, float hs) {
+		if (bind != null) {
+			if (bind instanceof LComponent) {
+				_currentInput = ((LComponent) bind).getScreen();
+			} else if (bind instanceof ISprite) {
+				_currentInput = ((ISprite) bind).getScreen();
+			}
+		}
 		this._bindObject = bind;
 		this._currentArrayMap = field2d;
 		this._actionRect = new ActionBindRect(bind);
@@ -120,6 +179,143 @@ public class MoveControl implements LRelease {
 		this._moveSpeed = moveSpeed;
 		this._vagueWidthScale = ws;
 		this._vagueHeightScale = hs;
+	}
+
+	public void setCurrentInput(SysInput input) {
+		this._currentInput = input;
+	}
+
+	public SysInput getCurrentInput() {
+		return this._currentInput;
+	}
+
+	public MoveControl setActionEvent(EventActionN e) {
+		this._actionEvent = e;
+		return this;
+	}
+
+	public EventActionN getActionEvent() {
+		return this._actionEvent;
+	}
+
+	public void onInputCall() {
+		if (_currentInput != null) {
+			onInputCall(_currentInput);
+		}
+	}
+
+	public void onInputCall(SysInput input) {
+		if (!_running) {
+			return;
+		}
+		if (input == null) {
+			return;
+		}
+		_isPressedKeyD = input.isKeyPressed(SysKey.RIGHT) || input.isKeyPressed(SysKey.D);
+		_isPressedKeyA = input.isKeyPressed(SysKey.LEFT) || input.isKeyPressed(SysKey.A);
+		_isPressedKeyW = input.isKeyPressed(SysKey.UP) || input.isKeyPressed(SysKey.W);
+		_isPressedKeyS = input.isKeyPressed(SysKey.DOWN) || input.isKeyPressed(SysKey.S);
+		final boolean newRight = _isPressedKeyD;
+		boolean newLeft = _isPressedKeyA;
+		boolean newUp = _isPressedKeyW;
+		boolean newDown = _isPressedKeyS;
+		_isReleasedKeyD = (input.isKeyReleased(SysKey.RIGHT) || input.isKeyReleased(SysKey.D));
+		_isReleasedKeyA = (input.isKeyReleased(SysKey.LEFT) || input.isKeyReleased(SysKey.A));
+		_isReleasedKeyW = (input.isKeyReleased(SysKey.UP) || input.isKeyReleased(SysKey.W));
+		_isReleasedKeyS = (input.isKeyReleased(SysKey.DOWN) || input.isKeyReleased(SysKey.S));
+		_justRight = !(_left && newLeft) && _isReleasedKeyD;
+		_justLeft = !(_right && newRight) && _isReleasedKeyA;
+		_justUp = !(_down && newDown) && _isReleasedKeyW;
+		_justDown = !(_up && newUp) && _isReleasedKeyS;
+		if ((_right && newRight) || (_left && newLeft)) {
+			_isLeftOrRight = true;
+			_isDownOrUp = false;
+		} else if (newRight) {
+			_right = true;
+			_left = false;
+		} else if (newLeft) {
+			_right = false;
+			_left = true;
+		} else {
+			_left = false;
+			_right = _left;
+		}
+		if ((_up && newUp) || (_down && newDown)) {
+			_isDownOrUp = true;
+			_isLeftOrRight = false;
+		} else if (newUp) {
+			_up = true;
+			_down = false;
+		} else if (newDown) {
+			_up = false;
+			_down = true;
+		} else {
+			_down = false;
+			_up = false;
+		}
+		if (_left) {
+			if (_leftEvent != null) {
+				_leftEvent.update();
+			}
+			setDirection(Config.TLEFT);
+		}
+		if (_right) {
+			if (_rightEvent != null) {
+				_rightEvent.update();
+			}
+			setDirection(Config.TRIGHT);
+		}
+		if (_down) {
+			if (_downEvent != null) {
+				_downEvent.update();
+			}
+			setDirection(Config.TDOWN);
+		}
+		if (_up) {
+			if (_upEvent != null) {
+				_upEvent.update();
+			}
+			setDirection(Config.TUP);
+		}
+		if (_actionEvent != null) {
+			_actionEvent.update();
+		}
+	}
+
+	public MoveControl setUpAction(EventActionN e) {
+		this._upEvent = e;
+		return this;
+	}
+
+	public EventActionN getUpAction() {
+		return this._upEvent;
+	}
+
+	public MoveControl setDownAction(EventActionN e) {
+		this._downEvent = e;
+		return this;
+	}
+
+	public EventActionN getDownAction() {
+		return this._downEvent;
+	}
+
+	public MoveControl setLeftAction(EventActionN e) {
+		this._leftEvent = e;
+		return this;
+	}
+
+	public EventActionN getLeftAction() {
+		return this._leftEvent;
+	}
+
+	public MoveControl setRightAction(EventActionN e) {
+		this._rightEvent = e;
+		return this;
+	}
+
+	public EventActionN getRightAction() {
+		return this._rightEvent;
 	}
 
 	public MoveControl upIso() {
@@ -168,6 +364,7 @@ public class MoveControl implements LRelease {
 	}
 
 	public final MoveControl call() {
+		onInputCall();
 		move(_bindObject, _currentArrayMap, _direction);
 		return this;
 	}
@@ -498,6 +695,106 @@ public class MoveControl implements LRelease {
 	public MoveControl setVagueHeightScale(float hs) {
 		this._vagueHeightScale = hs;
 		return this;
+	}
+
+	public boolean isKeyUp() {
+		return _up;
+	}
+
+	public boolean isKeyDown() {
+		return _down;
+	}
+
+	public boolean isKeyRight() {
+		return _right;
+	}
+
+	public boolean isKeyLeft() {
+		return _left;
+	}
+
+	public boolean isDirChangeUpPressed() {
+		return isKeyUp() && !isTUp();
+	}
+
+	public boolean isDirChangeDownPressed() {
+		return isKeyDown() && !isTDown();
+	}
+
+	public boolean isDirChangeRightPressed() {
+		return isKeyRight() && !isTRight();
+	}
+
+	public boolean isDirChangeLeftPressed() {
+		return isKeyLeft() && !isTLeft();
+	}
+
+	public boolean isAnyDirKeyPressed() {
+		return _left || _right || _down || _up;
+	}
+
+	public boolean isAnyDirKeyReleased() {
+		return _isReleasedKeyA || _isReleasedKeyD || _isReleasedKeyS || _isReleasedKeyW;
+	}
+
+	public boolean isAnyDirKeyJust() {
+		return _justRight || _justLeft || _justUp || _justDown;
+	}
+
+	public boolean isJustUp() {
+		return _justUp;
+	}
+
+	public boolean isJustDown() {
+		return _justDown;
+	}
+
+	public boolean isJustRight() {
+		return _justRight;
+	}
+
+	public boolean isJustLeft() {
+		return _justLeft;
+	}
+
+	public boolean isPressedKeyA() {
+		return _isPressedKeyA;
+	}
+
+	public boolean isReleasedKeyA() {
+		return _isReleasedKeyA;
+	}
+
+	public boolean isPressedKeyS() {
+		return _isPressedKeyS;
+	}
+
+	public boolean isReleasedKeyS() {
+		return _isReleasedKeyS;
+	}
+
+	public boolean isPressedKeyD() {
+		return _isPressedKeyD;
+	}
+
+	public boolean isReleasedKeyD() {
+		return _isReleasedKeyD;
+	}
+
+	public boolean isPressedKeyW() {
+		return _isPressedKeyW;
+	}
+
+	public boolean isReleasedKeyW() {
+		return _isReleasedKeyW;
+	}
+
+	public boolean isLeftOrRight() {
+		return _isLeftOrRight;
+	}
+
+	public boolean isDownOrUp() {
+		return _isDownOrUp;
 	}
 
 	public boolean isClosed() {

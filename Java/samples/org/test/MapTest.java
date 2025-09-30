@@ -246,7 +246,24 @@ public class MapTest extends Stage {
 			// 注销窗体时关闭移动控制器
 			putRelease(mc);
 			// ----按键移动---
-			// 构建键盘监听
+			/*
+			// 构建针对控制器的键盘监听
+			mc.setActionEvent(() -> {
+				//仅在改变按键方向时改编动画播放
+				if (mc.isDirChangeUpPressed()) {
+					hero.animate(frames, upIds);
+				}
+				if (mc.isDirChangeDownPressed()) {
+					hero.animate(frames, downIds);
+				}
+				if (mc.isDirChangeLeftPressed()) {
+					hero.animate(frames, leftIds);
+				}
+				if (mc.isDirChangeRightPressed()) {
+					hero.animate(frames, rightIds);
+				}
+			});*/
+			// 构建Screen中的键盘监听
 
 			keyPress(SysKey.LEFT, () -> {
 				if (!mc.isTLeft()) {
