@@ -62,8 +62,10 @@ public class LInventory extends LLayer {
 			@Override
 			public void close() {
 				_itemUI._saved = false;
+				_itemUI._typeId = 0;
 				_itemUI.setItem(null);
 				_itemUI.setName(LSystem.UNKNOWN);
+				_itemUI.setDescription(LSystem.UNKNOWN);
 				_itemUI.removeActor();
 			}
 
@@ -75,9 +77,16 @@ public class LInventory extends LLayer {
 
 		protected Actor _actor;
 
-		ItemUI(LInventory inv, String name, ItemInfo item, float x, float y, float w, float h) {
+		protected int _itemId;
+
+		ItemUI(LInventory inv, int id, String name, ItemInfo item, float x, float y, float w, float h) {
 			super(name, x, y, w, h, item);
 			this._inventory = inv;
+			this._itemId = id;
+		}
+
+		public int getItemId() {
+			return this._itemId;
 		}
 
 		protected void setInventoryUI(LInventory ui) {
@@ -176,13 +185,18 @@ public class LInventory extends LLayer {
 			if (!_saved && isDst) {
 				final ItemUI item = ((ItemUI) o);
 				final ItemInfo tmpInfo = _item.cpy();
+				final int tempId = _itemId;
+				final int tempType = _typeId;
 				final String tmpName = _name;
 				final String tempDes = _description;
 				this._item = item._item;
+				this._itemId = item._itemId;
 				this._name = item._name;
 				this._description = item._description;
 				this._saved = true;
 				item._item = tmpInfo;
+				item._itemId = tempId;
+				item._typeId = tempType;
 				item._name = tmpName;
 				item._description = tempDes;
 				item._saved = false;
@@ -216,6 +230,9 @@ public class LInventory extends LLayer {
 			if (item == this) {
 				return this;
 			}
+			if (item._itemId == _itemId) {
+				return this;
+			}
 			if (item._actor == _actor) {
 				return this;
 			}
@@ -225,6 +242,9 @@ public class LInventory extends LLayer {
 			final RectBox srcArea = item._itemArea.cpy();
 			final String srcName = item._name;
 			final ItemInfo srcItem = item._item.cpy();
+			final int srcId = item._itemId;
+			final int srcType = item._typeId;
+			final String srcDes = item._description;
 
 			final LTexture dstImg = _image;
 			final Actor dstActor = _actor;
@@ -232,11 +252,17 @@ public class LInventory extends LLayer {
 			final RectBox dstArea = _itemArea.cpy();
 			final String dstName = _name;
 			final ItemInfo dstItem = _item.cpy();
+			final int dstId = _itemId;
+			final int dstType = _typeId;
+			final String dstDes = _description;
 
 			item._image = srcImg;
 			item._saved = srcSaved;
 			item._itemArea = srcArea;
+			item._itemId = srcId;
+			item._typeId = srcType;
 			item._name = srcName;
+			item._description = srcDes;
 			item._item = dstItem;
 
 			if (srcActor != null) {
@@ -245,7 +271,10 @@ public class LInventory extends LLayer {
 			this._image = dstImg;
 			this._saved = dstSaved;
 			this._itemArea = dstArea;
+			this._itemId = dstId;
+			this._typeId = dstType;
 			this._name = dstName;
+			this._description = dstDes;
 			this._item = srcItem;
 
 			if (dstActor != null) {
@@ -471,7 +500,7 @@ public class LInventory extends LLayer {
 		if (size == 0) {
 			for (int y = 0; y < col; y++) {
 				for (int x = 0; x < row; x++) {
-					ItemUI item = new ItemUI(this, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
+					ItemUI item = new ItemUI(this, idx, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
 							xTop + (y * tileHeight), tileWidth - spaceSizeX, tileHeight - spaceSizeY);
 					_inventory.addItem(item);
 					idx++;
@@ -486,7 +515,7 @@ public class LInventory extends LLayer {
 						item.setArea(xLeft + (x * tileWidth), xTop + (y * tileHeight), tileWidth - spaceSizeX,
 								tileHeight - spaceSizeY);
 					} else {
-						item = new ItemUI(this, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
+						item = new ItemUI(this, idx, LSystem.UNKNOWN + idx, new ItemInfo(), xLeft + (x * tileWidth),
 								xTop + (y * tileHeight), tileWidth - spaceSizeX, tileHeight - spaceSizeY);
 						_inventory.addItem(item);
 					}
@@ -564,7 +593,7 @@ public class LInventory extends LLayer {
 			if (info == null) {
 				info = new ItemInfo();
 			}
-			ItemUI item = new ItemUI(this, info.getName(), info, 0f, 0f, 0f, 0f);
+			ItemUI item = new ItemUI(this, _inventory.getItemCount(), info.getName(), info, 0f, 0f, 0f, 0f);
 			item.bindTexture(tex, 0f, 0f, _titleSize.x, _titleSize.y);
 			_inventory.addItem(item);
 		}
@@ -987,7 +1016,7 @@ public class LInventory extends LLayer {
 				if (itemDst != null) {
 					final Object o = act.getTag();
 					final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
-					if (itemSrc != itemDst) {
+					if (itemSrc != itemDst && (itemDst._itemId != itemSrc._itemId)) {
 						if (!itemDst._saved || itemSrc == null) {
 							itemDst.bind(act);
 						} else {

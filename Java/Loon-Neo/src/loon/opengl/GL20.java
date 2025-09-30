@@ -38,6 +38,7 @@ public abstract class GL20 {
 	public static final int GL_ACTIVE_TEXTURE = 0x84E0;
 	public static final int GL_DEPTH_BUFFER_BIT = 0x00000100;
 	public static final int GL_STENCIL_BUFFER_BIT = 0x00000400;
+	public static final int GL_COVERAGE_BUFFER_BIT_NV = 0x00008000;
 	public static final int GL_COLOR_BUFFER_BIT = 0x00004000;
 	public static final int GL_FALSE = 0;
 	public static final int GL_TRUE = 1;

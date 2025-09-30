@@ -223,6 +223,19 @@ public class GLUtils {
 		return;
 	}
 
+	public void setClearColor(final GL20 gl, float r, float g, float b, float a, boolean clearDepth,
+			boolean applyAntialiasing) {
+		gl.glClearColor(r, g, b, a);
+		int mask = GL20.GL_COLOR_BUFFER_BIT;
+		if (clearDepth) {
+			mask = mask | GL20.GL_DEPTH_BUFFER_BIT;
+		}
+		if (applyAntialiasing) {
+			mask = mask | GL20.GL_COVERAGE_BUFFER_BIT_NV;
+		}
+		gl.glClear(mask);
+	}
+
 	public static void setClearColor(final GL20 gl, float r, float g, float b, float a) {
 		gl.glClearColor(r, g, b, a);
 		gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
