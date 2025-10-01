@@ -35,6 +35,64 @@ public class Polygon extends Shape implements BoxSize {
 	 */
 	private static final long serialVersionUID = 7491444927273846690L;
 
+	/**
+	 * 构建一个尖锐且随机的不规则图形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param scale
+	 * @param vertexCount
+	 * @return
+	 */
+	public final static Polygon createRandomSharp(float x, float y, float scale, int vertexCount) {
+		final Vector2f[] points = new Vector2f[vertexCount];
+		float radius = scale / 4f;
+		Vector2f point;
+		for (int i = 0; i < vertexCount; i++) {
+			do {
+				if (i % 250 == 0) {
+					radius += scale / 2f * (0.5f - MathUtils.random());
+				} else if (i % 50 == 0) {
+					radius += scale / 5f * (0.5f - MathUtils.random());
+				} else {
+					radius += 25 * scale / vertexCount * (0.5f - MathUtils.random());
+				}
+				radius = radius > scale / 2 ? scale / 2 : radius;
+				radius = radius < scale / 10 ? scale / 10 : radius;
+			} while (radius < scale / 10 || radius > scale / 2);
+			point = new Vector2f(x + (radius * MathUtils.cos((MathUtils.TWO_PI * i) / vertexCount)),
+					y + (radius * MathUtils.sin((MathUtils.TWO_PI * i) / vertexCount)));
+			points[i] = point;
+		}
+		return new Polygon(points);
+	}
+
+	/**
+	 * 构建一个圆润且随机的不规则图形
+	 * 
+	 * @param x
+	 * @param y
+	 * @param scale
+	 * @param vertexCount
+	 * @return
+	 */
+	public static Polygon createRandomSmooth(float x, float y, float scale, int vertexCount) {
+		final Vector2f[] points = new Vector2f[vertexCount];
+		float radius = scale / 4f;
+		Vector2f point;
+		for (int i = 0; i < vertexCount; i++) {
+			do {
+				radius += scale / 5 * (0.5 - MathUtils.random());
+				radius = radius > scale / 2 ? scale / 2 : radius;
+				radius = radius < scale / 10 ? scale / 10 : radius;
+			} while (radius < scale / 10 || radius > scale / 2);
+			point = new Vector2f(x + (radius * MathUtils.cos((MathUtils.TWO_PI * i) / vertexCount)),
+					y + (radius * MathUtils.sin((MathUtils.TWO_PI * i) / vertexCount)));
+			points[i] = point;
+		}
+		return new Polygon(points);
+	}
+
 	public final static Polygon rect(float x, float y, float w, float h) {
 		return rect(Vector2f.at(x + w / 2f, y + h / 2f), Vector2f.at(w / 2f, h / 2f));
 	}

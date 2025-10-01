@@ -78,10 +78,9 @@ public final class LSystem {
 	}
 
 	/**
-	 * 版本号(正在不断完善中,试图把此版做成API以及功能基本稳定的版本,以后只优化与扩展api,
-	 * 而不替换删除api,所以0.5会持续的比较长(否则多语言版本来回改太麻烦)……)
+	 * 当前版本号(基本已是待发布正式版状态，0.5版将不会有更多的功能，仅进行代码优化与bug修正，多语言版将以此为基础构建)
 	 **/
-	private static final String _version = "0.5-beta";
+	private static final String _version = "0.5-RC";
 
 	// 默认的字符串打印完毕flag
 	public static final String FLAG_TAG = "▼";

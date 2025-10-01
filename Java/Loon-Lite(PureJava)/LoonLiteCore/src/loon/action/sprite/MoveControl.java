@@ -171,10 +171,10 @@ public class MoveControl implements LRelease {
 			} else if (bind instanceof ISprite) {
 				_currentInput = ((ISprite) bind).getScreen();
 			}
+			this._bindObject = bind;
+			this._actionRect = new ActionBindRect(bind);
 		}
-		this._bindObject = bind;
 		this._currentArrayMap = field2d;
-		this._actionRect = new ActionBindRect(bind);
 		this._delay = delay;
 		this._moveSpeed = moveSpeed;
 		this._vagueWidthScale = ws;

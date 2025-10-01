@@ -20,6 +20,7 @@
  */
 package loon.canvas;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.geom.Curve;
 import loon.geom.Polygon;
@@ -51,6 +52,8 @@ public class Path2D implements Path {
 	private final Curve _curve = new Curve();
 
 	private int _segments = LSystem.LAYER_TILE_SIZE;
+
+	private float _deltaT;
 
 	private float _lastX;
 	private float _lastY;
@@ -103,29 +106,170 @@ public class Path2D implements Path {
 		PathCommand cmd = _commands.last();
 		if (cmd != PathCommand.MoveTo) {
 			_commands.add(PathCommand.MoveTo);
-			_data.add(x);
-			_data.add(y);
+			add(x, y);
 		} else {
-			_data.set(_data.size() - 2, x);
-			_data.set(_data.size() - 1, y);
+			setDataLength(_data.size(), x, y);
 		}
 		_lastX = x;
 		_lastY = y;
 		_lastStartX = x;
 		_lastStartY = y;
-		_dirty = true;
 		return this;
 	}
 
 	@Override
 	public Path lineTo(float x, float y) {
 		_commands.add(PathCommand.LineTo);
-		_data.add(x);
-		_data.add(y);
+		add(x, y);
 		_lastX = x;
 		_lastY = y;
-		_dirty = true;
 		return this;
+	}
+
+	public int nextIndex(int index) {
+		if (index == length() - 1) {
+			return 0;
+		}
+		return index + 1;
+	}
+
+	public int previousIndex(int index) {
+		if (index == 0) {
+			return length() - 1;
+		}
+		return index - 1;
+	}
+
+	public void add(Vector2f pos) {
+		add(pos.x, pos.y);
+	}
+
+	public void add(float x, float y) {
+		_data.add(x);
+		_data.add(y);
+		_deltaT = 1f / (length() - 1);
+		_dirty = true;
+	}
+
+	public void set(int index, float x, float y) {
+		final int idx = index * 2;
+		setDataLength(idx, x, y);
+	}
+
+	public void setDataLength(int idx, float x, float y) {
+		_data.set(idx - 2, x);
+		_data.set(idx - 1, y);
+		_deltaT = 1f / (length() - 1);
+		_dirty = true;
+	}
+
+	public void addAll(float[] points) {
+		_data.addAll(points);
+		_deltaT = 1f / (length() - 1);
+		_dirty = true;
+	}
+
+	public Vector2f getVector(int index) {
+		final int idx = index * 2;
+		return new Vector2f(_data.get(idx), _data.get(idx + 1));
+	}
+
+	public float getDelta() {
+		return this._deltaT;
+	}
+
+	public void removeAt(int index) {
+		final int idx = index * 2;
+		_data.removeIndex(idx);
+		_data.removeIndex(idx + 1);
+		_deltaT = 1f / (length() - 1);
+		_dirty = true;
+	}
+
+	public TArray<Vector2f> getVertices(int divisions) {
+		return getVertices(divisions, isClosed());
+	}
+
+	public TArray<Vector2f> getVertices(int divisions, boolean closed) {
+		final TArray<Vector2f> verts = new TArray<Vector2f>();
+		final float timeStep = 1f / divisions;
+		for (float i = 0; i < 1f; i += timeStep) {
+			verts.add(getPosition(i, closed));
+		}
+		return verts;
+	}
+
+	public Vector2f getPosition(float time) {
+		return getPosition(time, isClosed());
+	}
+
+	public Vector2f getPosition(float time, boolean closed) {
+		Vector2f temp;
+		final int len = length();
+		if (len < 2) {
+			throw new LSysException("The position len < 2 !");
+		}
+		if (closed) {
+			add(_data.get(0), _data.get(1));
+			_deltaT = 1f / (len - 1);
+			final int p = (int) (time / _deltaT);
+			int p0 = p - 1;
+			if (p0 < 0) {
+				p0 = p0 + (len - 1);
+			} else if (p0 >= len - 1) {
+				p0 = p0 - (len - 1);
+			}
+			int p1 = p;
+			if (p1 < 0) {
+				p1 = p1 + (len - 1);
+			} else if (p1 >= len - 1) {
+				p1 = p1 - (len - 1);
+			}
+			int p2 = p + 1;
+			if (p2 < 0) {
+				p2 = p2 + (len - 1);
+			} else if (p2 >= len - 1) {
+				p2 = p2 - (len - 1);
+			}
+			int p3 = p + 2;
+			if (p3 < 0) {
+				p3 = p3 + (len - 1);
+			} else if (p3 >= len - 1) {
+				p3 = p3 - (len - 1);
+			}
+			final float lt = (time - _deltaT * p) / _deltaT;
+			temp = Vector2f.catmullRom(getVector(p0), getVector(p1), getVector(p2), getVector(p3), lt);
+			removeAt(len - 1);
+		} else {
+			final int p = (int) (time / _deltaT);
+			int p0 = p - 1;
+			if (p0 < 0) {
+				p0 = 0;
+			} else if (p0 >= len - 1) {
+				p0 = len - 1;
+			}
+			int p1 = p;
+			if (p1 < 0) {
+				p1 = 0;
+			} else if (p1 >= len - 1) {
+				p1 = len - 1;
+			}
+			int p2 = p + 1;
+			if (p2 < 0) {
+				p2 = 0;
+			} else if (p2 >= len - 1) {
+				p2 = len - 1;
+			}
+			int p3 = p + 2;
+			if (p3 < 0) {
+				p3 = 0;
+			} else if (p3 >= len - 1) {
+				p3 = len - 1;
+			}
+			final float lt = (time - _deltaT * p) / _deltaT;
+			temp = Vector2f.catmullRom(getVector(p0), getVector(p1), getVector(p2), getVector(p3), lt);
+		}
+		return temp;
 	}
 
 	public Path fill() {
@@ -145,10 +289,9 @@ public class Path2D implements Path {
 	public Path curveTo(float controlX, float controlY, float anchorX, float anchorY, int segments) {
 		_commands.add(PathCommand.CurveTo);
 		_curve.set(_lastX, _lastY, controlX, controlY, anchorX, anchorY, anchorX, anchorY, segments);
-		_data.addAll(_curve.getPoints());
+		addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
-		_dirty = true;
 		return this;
 	}
 
@@ -161,10 +304,9 @@ public class Path2D implements Path {
 			float anchorY, int segments) {
 		_commands.add(PathCommand.CubicCurveTo);
 		_curve.set(_lastX, _lastY, controlX1, controlY1, controlX2, controlY2, anchorX, anchorY, segments);
-		_data.addAll(_curve.getPoints());
+		addAll(_curve.getPoints());
 		_lastX = anchorX;
 		_lastY = anchorY;
-		_dirty = true;
 		return this;
 	}
 
@@ -476,6 +618,14 @@ public class Path2D implements Path {
 		return this;
 	}
 
+	public Path2D translate(Vector2f pos) {
+		for (int i = 0; i < _data.length; i += 2) {
+			_data.items[i] = _data.items[i] + pos.x;
+			_data.items[i + 1] = _data.items[i + 1] + pos.y;
+		}
+		return this;
+	}
+
 	public float getArea() {
 		_tempData.clear();
 		float area = 0;
@@ -664,40 +814,58 @@ public class Path2D implements Path {
 		return _data.size();
 	}
 
+	public int length() {
+		return _data.size() / 2;
+	}
+
 	public boolean isClosed() {
 		return _commands.last() == PathCommand.Closed;
 	}
 
+	public boolean isStroke() {
+		return _commands.last() == PathCommand.Stroke;
+	}
+
+	public boolean isFill() {
+		return _commands.last() == PathCommand.Fill;
+	}
+
 	public Path2D update(FloatArray arrays) {
 		_data.clear();
-		_data.addAll(arrays);
-		_dirty = true;
+		addAll(arrays.toArray());
 		return this;
 	}
 
 	public Polygon getShape() {
-		if (_dirty) {
-			_currentPolys.setPolygon(_data.toArray(), _data.length);
-			_dirty = false;
+		return getShape(isFill());
+	}
+
+	public Polygon getShape(boolean fill) {
+		if (fill) {
+			if (_dirty) {
+				final TArray<Vector2f> vers = getVertices(_segments);
+				_currentPolys.setPolygon(vers);
+				_dirty = false;
+			}
+		} else {
+			if (_dirty) {
+				_currentPolys.setPolygon(_data.toArray(), _data.length);
+				_dirty = false;
+			}
+			return _currentPolys;
 		}
 		return _currentPolys;
 	}
 
 	public TArray<Vector2f> getVecs() {
-		TArray<Vector2f> list = new TArray<Vector2f>(_data.size() / 2);
-		for (int i = 0; i < _data.size(); i += 2) {
-			list.add(new Vector2f(_data.get(i), _data.get(i + 1)));
-		}
-		return list;
+		return getVertices(_segments);
 	}
 
 	public Path2D addPath(Path2D p, float px, float py) {
 		_commands.addAll(p._commands);
 		for (int i = 0; i < p._data.size(); i += 2) {
-			_data.add(p._data.get(i) + px);
-			_data.add(p._data.get(i + 1) + py);
+			add(p._data.get(i) + px, p._data.get(i + 1) + py);
 		}
-		_dirty = true;
 		return this;
 	}
 
@@ -837,6 +1005,7 @@ public class Path2D implements Path {
 		_lastY = 0f;
 		_lastStartX = 0f;
 		_lastStartY = 0f;
+		_deltaT = 0f;
 		_dirty = true;
 		return this;
 	}

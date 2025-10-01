@@ -431,6 +431,12 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return out;
 	}
 
+	public final static Vector2f catmullRom(Vector2f value1, Vector2f value2, Vector2f value3, Vector2f value4,
+			float amount) {
+		return new Vector2f(MathUtils.catmullRom(value1.x, value2.x, value3.x, value4.x, amount),
+				MathUtils.catmullRom(value1.y, value2.y, value3.y, value4.y, amount));
+	}
+
 	public final static Vector2f negate(Vector2f a) {
 		return negate(a, new Vector2f());
 	}

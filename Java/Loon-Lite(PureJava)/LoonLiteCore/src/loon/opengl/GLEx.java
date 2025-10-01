@@ -3677,6 +3677,46 @@ public class GLEx implements LRelease {
 		return this;
 	}
 
+	public GLEx fillQuadBezier(float x1, float y1, float cx1, float cy1, float cx2, float cy2, int segments,
+			LColor color) {
+		return drawQuadBezier(x1, y1, cx1, cy1, cx2, cy2, segments, color, true);
+	}
+
+	public GLEx drawQuadBezier(float x1, float y1, float cx1, float cy1, float cx2, float cy2, int segments,
+			LColor color) {
+		return drawQuadBezier(x1, y1, cx1, cy1, cx2, cy2, segments, color, false);
+	}
+
+	public GLEx drawQuadBezier(float x1, float y1, float cx1, float cy1, float cx2, float cy2, int segments,
+			LColor color, boolean fill) {
+		if (isClosed) {
+			return this;
+		}
+		float t = 0;
+		final float increment = 1f / segments;
+		final float[] verticesX = new float[segments];
+		final float[] verticesY = new float[segments];
+		verticesX[0] = x1;
+		verticesY[0] = y1;
+		for (int i = 1; i < segments; ++i, t += increment) {
+			verticesX[i] = MathUtils.quadBezier(x1, cx1, cx2, t);
+			verticesY[i] = MathUtils.quadBezier(y1, cy1, cy2, t);
+		}
+		final int idx = segments - 1;
+		verticesX[idx] = cx2;
+		verticesY[idx] = cy2;
+		_currentPolys.setPolygon(verticesX, verticesY, segments);
+		final int oldColor = color();
+		setColor(color);
+		if (fill) {
+			fill(_currentPolys);
+		} else {
+			draw(_currentPolys);
+		}
+		setColor(oldColor);
+		return this;
+	}
+
 	/**
 	 * 统一偏移drawString的X轴
 	 *

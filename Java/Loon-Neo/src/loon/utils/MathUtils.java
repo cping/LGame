@@ -1603,12 +1603,42 @@ public final class MathUtils {
 		return value1 + (value2 - value1) * amount1 + (value3 - value1) * amount2;
 	}
 
+	public static float quadBezier(float a, float b, float c, float t) {
+		float t1 = 1f - t;
+		return (t1 * t1) * a + 2f * (t1) * t * b + (t * t) * c;
+	}
+
+	public static float cubicBezier(float a, float b, float c, float d, float t) {
+		float t1 = 1f - t;
+		return ((t1 * t1 * t1) * a + 3f * t * (t1 * t1) * b + 3f * (t * t) * (t1) * c + (t * t * t) * d);
+	}
+
 	public static float catmullRom(float value1, float value2, float value3, float value4, float amount) {
-		double amountSquared = amount * amount;
-		double amountCubed = amountSquared * amount;
-		return (float) (0.5 * (2.0 * value2 + (value3 - value1) * amount
-				+ (2.0 * value1 - 5.0 * value2 + 4.0 * value3 - value4) * amountSquared
-				+ (3.0 * value2 - value1 - 3.0 * value3 + value4) * amountCubed));
+		float amountSquared = amount * amount;
+		float amountCubed = amountSquared * amount;
+		return (0.5f * (2f * value2 + (value3 - value1) * amount
+				+ (2f * value1 - 5f * value2 + 4f * value3 - value4) * amountSquared
+				+ (3f * value2 - value1 - 3f * value3 + value4) * amountCubed));
+	}
+
+	public static Vector2f cardinalSplineAt(Vector2f p0, Vector2f p1, Vector2f p2, Vector2f p3, float tension,
+			float t) {
+		if (tension < 0f) {
+			tension = 0f;
+		}
+		if (tension > 1f) {
+			tension = 1f;
+		}
+		final float t2 = t * t;
+		final float t3 = t2 * t;
+		final float s = (1f - tension) / 2;
+		final float b1 = s * ((-t3 + (2 * t2)) - t);
+		final float b2 = s * (-t3 + t2) + (2 * t3 - 3 * t2 + 1);
+		final float b3 = s * (t3 - 2 * t2 + t) + (-2 * t3 + 3 * t2);
+		final float b4 = s * (t3 - t2);
+		final float x = (p0.x * b1 + p1.x * b2 + p2.x * b3 + p3.x * b4);
+		final float y = (p0.y * b1 + p1.y * b2 + p2.y * b3 + p3.y * b4);
+		return Vector2f.at(x, y);
 	}
 
 	public static int clamp(int value, int min, int max) {
