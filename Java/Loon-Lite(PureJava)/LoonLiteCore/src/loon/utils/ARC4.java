@@ -35,7 +35,7 @@ import loon.LSystem;
  * System.out.println(bytes.toUTF8String());
  * </pre>
  */
-public class ARC4 {
+public final class ARC4 {
 
 	/**
 	 * 用密钥加密指定数据(ARC4这算法加密一次是加密,加密两次就变成解密了……)

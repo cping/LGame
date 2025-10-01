@@ -25,7 +25,7 @@ import loon.LSysException;
 /**
  * 自0.3.2版起新增类，用以统一跨平台的BASE64处理方法
  */
-public class Base64Coder {
+public final class Base64Coder {
 
 	private static final int TWENTYFOURBITGROUP = 24;
 

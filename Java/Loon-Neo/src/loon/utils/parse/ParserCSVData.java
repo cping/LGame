@@ -32,7 +32,7 @@ import loon.utils.StrBuilder;
 /**
  * 工具类，用于解析csv的配置数据
  */
-public class ParserCSVData {
+public final class ParserCSVData {
 
 	public static class CSVRow {
 

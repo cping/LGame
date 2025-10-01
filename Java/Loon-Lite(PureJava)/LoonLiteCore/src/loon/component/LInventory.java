@@ -1017,9 +1017,10 @@ public class LInventory extends LLayer {
 					final Object o = act.getTag();
 					final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
 					if (itemDst != itemSrc) {
-						if (!itemDst._saved || itemSrc == null) {
+						final boolean srcNotDst = (itemSrc != null && itemDst._itemId != itemSrc._itemId);
+						if (!itemDst._saved && (srcNotDst || (itemSrc == null))) {
 							itemDst.bind(act);
-						} else if (itemSrc != null && (itemDst._itemId != itemSrc._itemId)) {
+						} else if (srcNotDst && itemDst._saved && itemSrc._saved) {
 							itemDst.swap(itemSrc);
 						} else {
 							itemDst.resetActor();

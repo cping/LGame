@@ -28,7 +28,7 @@ import loon.LSystem;
  * 
  * ps:因为加入了游戏动态纹理内存占用量和纹理数量还有精灵桌面组件数量为因素,[在游戏运行时]是真随机值,不运行就是伪随机……
  */
-public class UUID {
+public final class UUID {
 
 	public static UUID convertUUID(String id) {
 		if (id == null) {

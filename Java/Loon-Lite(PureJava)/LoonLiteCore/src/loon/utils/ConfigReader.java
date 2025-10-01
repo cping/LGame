@@ -52,7 +52,7 @@ import loon.utils.parse.StrTokenizer;
  * System.out.println(config.getFloatValues("key2")[1]);
  * </pre>
  */
-public class ConfigReader implements Expression, Bundle<String>, LRelease {
+public final class ConfigReader implements Expression, Bundle<String>, LRelease {
 
 	private final static ObjectMap<String, ConfigReader> CONFIG_CACHE = new ObjectMap<String, ConfigReader>();
 

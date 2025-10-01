@@ -22,7 +22,7 @@ package loon.utils.parse;
 
 import loon.LSysException;
 
-public class StrTokenizer {
+public final class StrTokenizer {
 
 	private String _strings;
 

@@ -30,7 +30,7 @@ import loon.utils.StringUtils;
 /**
  * 工具类，用于解析yaml文件的配置数据
  */
-public class ParserYamlData {
+public final class ParserYamlData {
 
 	public static ParserYamlData parseString(String str, YamlEvent eve) {
 		return new ParserYamlData(str, eve).parse();

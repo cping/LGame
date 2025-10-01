@@ -30,7 +30,7 @@ import loon.utils.TArray;
 /**
  * 工具类，用于解析python游戏的配置数据
  */
-public class ParserPythonData {
+public final class ParserPythonData {
 
 	protected class LoopStringBuilder {
 

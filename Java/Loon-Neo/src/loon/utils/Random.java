@@ -32,7 +32,7 @@ import loon.geom.Vector2f;
  * 一个[伪随机]数值生成用类(不过以游戏来说应该够了,取代java同名类,这个速度快)
  *
  */
-public class Random {
+public final class Random {
 
 	private final static float FLOAT_VALUE = 2.3283064E-10f;
 	private final static double DOUBLE_VALUE = 2.3283064E-10d;

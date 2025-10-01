@@ -43,7 +43,7 @@ import loon.utils.xml.XMLParser;
  * loon默认提供的本地资源加载器
  *
  */
-public class ResourceLocal extends ResourceGetter implements IEventListener {
+public final class ResourceLocal extends ResourceGetter implements IEventListener {
 
 	private ObjectMap<String, TArray<String>> _groupTable;
 

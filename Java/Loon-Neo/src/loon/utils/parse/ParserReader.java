@@ -25,7 +25,7 @@ import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 
-public class ParserReader {
+public final class ParserReader {
 
 	private char[] _context = null;
 	private int _currentIndex = 0;
