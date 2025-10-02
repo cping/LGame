@@ -34,7 +34,7 @@ import loon.utils.timer.Duration;
  * 
  * @param <T>
  */
-public class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
+public final class CacheObjectPool<T extends CacheObject> extends CacheObjectBase {
 
 	private final OrderedSet<GCCache<T>> _objects;
 

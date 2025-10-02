@@ -23,7 +23,7 @@ package loon.action.page;
 import loon.Screen;
 import loon.utils.MathUtils;
 
-public class ZoomInPage extends BasePage {
+public final class ZoomInPage extends BasePage {
 
 	@Override
 	public void onTransform(Screen screen, float position) {

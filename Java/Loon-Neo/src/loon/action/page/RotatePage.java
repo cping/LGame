@@ -23,7 +23,7 @@ package loon.action.page;
 import loon.Screen;
 import loon.utils.MathUtils;
 
-public class RotatePage extends BasePage {
+public final class RotatePage extends BasePage {
 
 	private float lastX = 0;
 

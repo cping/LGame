@@ -31,9 +31,9 @@ import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class LogDisplay {
+public final class LogDisplay {
 
-	public class LogDisplayItem {
+	public final class LogDisplayItem {
 
 		final String _text;
 		final LColor _color;

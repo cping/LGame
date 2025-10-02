@@ -28,7 +28,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class ShaderCmd {
+public final class ShaderCmd {
 
 	private final static ObjectMap<String, ShaderCmd> _instance = new ObjectMap<String, ShaderCmd>();
 

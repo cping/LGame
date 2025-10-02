@@ -24,7 +24,7 @@ package loon.action.collision;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 
-public class CollisionBaseQuery implements CollisionQuery {
+public final class CollisionBaseQuery implements CollisionQuery {
 
 	private final RectBox _collisionRect = RectBox.ZERO();
 

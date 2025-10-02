@@ -31,7 +31,7 @@ import loon.utils.ArrayByte;
 /**
  * TGA图片解码器
  */
-public class TGA {
+public final class TGA {
 
 	private static final int TGA_HEADER_SIZE = 18;
 

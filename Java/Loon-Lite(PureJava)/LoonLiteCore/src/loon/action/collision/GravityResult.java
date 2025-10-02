@@ -28,7 +28,7 @@ import loon.utils.ObjectSet;
 import loon.utils.StringKeyValue;
 import loon.utils.cache.Pool.Poolable;
 
-public class GravityResult implements Poolable {
+public final class GravityResult implements Poolable {
 
 	protected Vector2f normal = new Vector2f();
 	protected Vector2f position = new Vector2f();

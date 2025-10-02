@@ -2073,6 +2073,21 @@ public class GLEx implements LRelease {
 
 	/**
 	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @param color
+	 * @return
+	 */
+	public GLEx draw(Shape shape, LColor color) {
+		int tmp = getTint();
+		setTint(color);
+		fill(shape, 0f, 0f);
+		setTint(tmp);
+		return this;
+	}
+
+	/**
+	 * 绘制不特定Shape
 	 *
 	 * @param shape
 	 * @param x
@@ -2165,6 +2180,21 @@ public class GLEx implements LRelease {
 	 */
 	public GLEx fill(Shape shape) {
 		return fill(shape, 0f, 0f);
+	}
+
+	/**
+	 * 绘制不特定Shape
+	 * 
+	 * @param shape
+	 * @param color
+	 * @return
+	 */
+	public GLEx fill(Shape shape, LColor color) {
+		int tmp = getTint();
+		setTint(color);
+		fill(shape, 0f, 0f);
+		setTint(tmp);
+		return this;
 	}
 
 	/**
@@ -3706,14 +3736,11 @@ public class GLEx implements LRelease {
 		verticesX[idx] = cx2;
 		verticesY[idx] = cy2;
 		_currentPolys.setPolygon(verticesX, verticesY, segments);
-		final int oldColor = color();
-		setColor(color);
 		if (fill) {
-			fill(_currentPolys);
+			fill(_currentPolys, color);
 		} else {
-			draw(_currentPolys);
+			draw(_currentPolys, color);
 		}
-		setColor(oldColor);
 		return this;
 	}
 

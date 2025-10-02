@@ -20,7 +20,7 @@
  */
 package loon;
 
-public class LTextures {
+public final class LTextures {
 
 	public static boolean contains(int id) {
 		return LSystem.containsTexture(id);

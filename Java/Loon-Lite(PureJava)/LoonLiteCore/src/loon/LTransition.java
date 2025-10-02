@@ -58,7 +58,7 @@ import loon.utils.TArray;
  * 
  * 
  */
-public class LTransition {
+public final class LTransition {
 
 	public static interface TransitionListener extends LRelease {
 

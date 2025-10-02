@@ -35,7 +35,7 @@ import loon.geom.IV;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 
-public class StringNodeMaker<T extends ActionBind> implements IV<T> {
+public final class StringNodeMaker<T extends ActionBind> implements IV<T> {
 
 	public final static boolean isType(String typeName) {
 		if (StringUtils.isNullOrEmpty(typeName)) {

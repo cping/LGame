@@ -30,7 +30,7 @@ import loon.utils.SortedList;
 import loon.utils.TArray;
 import loon.utils.cache.Pool;
 
-public class BSPCollisionChecker implements CollisionChecker {
+public final class BSPCollisionChecker implements CollisionChecker {
 
 	private final static int MAX_SIZE = 1024;
 

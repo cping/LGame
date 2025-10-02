@@ -23,7 +23,7 @@ package loon.utils.cache;
 /**
  * 缓存基本信息封装,用以在不返回实际对象的情况下,封装返回缓存对象的基本信息
  */
-public class CacheObjectInfo {
+public final class CacheObjectInfo {
 
 	protected final String _name;
 

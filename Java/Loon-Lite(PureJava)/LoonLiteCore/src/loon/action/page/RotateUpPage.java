@@ -22,7 +22,7 @@ package loon.action.page;
 
 import loon.Screen;
 
-public class RotateUpPage extends BasePage {
+public final class RotateUpPage extends BasePage {
 
 	private static final float ROT_MOD = -15f;
 

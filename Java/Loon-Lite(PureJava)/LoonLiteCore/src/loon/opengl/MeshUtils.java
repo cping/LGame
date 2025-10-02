@@ -23,7 +23,7 @@ package loon.opengl;
 import loon.utils.FloatArray;
 import loon.utils.IntArray;
 
-public class MeshUtils {
+public final class MeshUtils {
 
 	public static FloatArray createVerticesGrid(FloatArray vertices, int columns, int rows, float width, float height,
 			float staggerX, float staggerY, int attrLength, FloatArray attrValues) {

@@ -22,7 +22,7 @@ package loon.action.page;
 
 import loon.Screen;
 
-public class CubeInPage extends BasePage {
+public final class CubeInPage extends BasePage {
 
 	@Override
 	public void onTransform(Screen screen, float position) {

@@ -23,7 +23,7 @@ package loon.action.page;
 import loon.Screen;
 import loon.utils.MathUtils;
 
-public class DepthPage extends BasePage {
+public final class DepthPage extends BasePage {
 
 	private static final float MIN_SCALE = 0.75f;
 

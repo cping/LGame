@@ -38,7 +38,7 @@ import loon.utils.timer.LTimerContext;
 /**
  * 缓存池管理器
  */
-public class CacheObjectManager {
+public final class CacheObjectManager {
 
 	private static class SortCacheComparator implements Comparator<CacheObjectBase> {
 

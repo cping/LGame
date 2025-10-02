@@ -24,7 +24,7 @@ import loon.Screen;
 import loon.Screen.PageMethod;
 import loon.utils.timer.EaseTimer;
 
-public class ScreenSwitchPage {
+public final class ScreenSwitchPage {
 
 	private Screen _target;
 

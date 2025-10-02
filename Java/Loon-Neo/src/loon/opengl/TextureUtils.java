@@ -30,7 +30,7 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.utils.BufferUtils;
 
-public class TextureUtils {
+public final class TextureUtils {
 
 	public static LTexture filterGray(String res) {
 		return filterGray(res, Format.LINEAR);

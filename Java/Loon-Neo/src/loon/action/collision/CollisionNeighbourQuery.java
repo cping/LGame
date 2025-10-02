@@ -24,7 +24,7 @@ package loon.action.collision;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
-public class CollisionNeighbourQuery implements CollisionQuery {
+public final class CollisionNeighbourQuery implements CollisionQuery {
 
 	private float _x;
 

@@ -25,7 +25,7 @@ import loon.geom.BooleanValue;
 /**
  * LRelease的结果反馈实现
  */
-public class LReleaseRef implements LRelease {
+public final class LReleaseRef implements LRelease {
 
 	private LRelease _released;
 

@@ -23,7 +23,7 @@ package loon.action.page;
 import loon.Screen;
 import loon.utils.MathUtils;
 
-public class BTFPage extends BasePage {
+public final class BTFPage extends BasePage {
 
 	@Override
 	public void onTransform(Screen screen, float position) {

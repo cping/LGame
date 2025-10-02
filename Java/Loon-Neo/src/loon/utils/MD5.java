@@ -3,7 +3,7 @@ package loon.utils;
 /**
  * 一个MD5的本地实现,方便跨平台移植
  */
-public class MD5 {
+public final class MD5 {
 
 	private static MD5 _instance;
 

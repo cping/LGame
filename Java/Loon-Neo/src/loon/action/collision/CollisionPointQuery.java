@@ -23,7 +23,7 @@ package loon.action.collision;
 
 import loon.geom.Vector2f;
 
-public class CollisionPointQuery implements CollisionQuery {
+public final class CollisionPointQuery implements CollisionQuery {
 
 	private float _x;
 

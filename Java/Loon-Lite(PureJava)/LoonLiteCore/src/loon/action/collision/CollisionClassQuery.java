@@ -23,7 +23,7 @@ package loon.action.collision;
 
 import loon.geom.Vector2f;
 
-public class CollisionClassQuery implements CollisionQuery {
+public final class CollisionClassQuery implements CollisionQuery {
 
 	private String _flag;
 

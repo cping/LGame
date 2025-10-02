@@ -25,7 +25,7 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 
-public class CollisionInRangeQuery implements CollisionQuery {
+public final class CollisionInRangeQuery implements CollisionQuery {
 
 	private float _dx;
 

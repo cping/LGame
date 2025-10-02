@@ -55,7 +55,7 @@ import loon.utils.timer.LTimerContext;
 /**
  * Screen的上级类,用于切换与存储多个Screen,并集中管理Screen功能
  */
-public class LProcess implements LRelease {
+public final class LProcess implements LRelease {
 
 	private final class ScreenProcess extends RealtimeProcess {
 

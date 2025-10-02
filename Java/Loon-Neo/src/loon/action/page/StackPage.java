@@ -22,7 +22,7 @@ package loon.action.page;
 
 import loon.Screen;
 
-public class StackPage extends BasePage {
+public final class StackPage extends BasePage {
 
 	@Override
 	public void onTransform(Screen screen, float position) {
