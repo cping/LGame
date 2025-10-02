@@ -108,6 +108,8 @@ public final class LSystem {
 
 	protected static final String APP_NAME = "Loon";
 
+	protected static final String APP_DEF_RES_DIRECTORY = "assets/";
+
 	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';
 
@@ -569,6 +571,19 @@ public final class LSystem {
 
 	public static final float toScaleFPS(float v, float m) {
 		return MathUtils.max(toScaleFPS(v), m);
+	}
+
+	public static final String getPathPrefix() {
+		if (base() != null) {
+			return base().setting.pathPrefix;
+		}
+		return APP_DEF_RES_DIRECTORY;
+	}
+
+	public static final void setPathPrefix(String path) {
+		if (base() != null) {
+			base().setting.pathPrefix = path;
+		}
 	}
 
 	public static final boolean isLockAllTouchEvent() {

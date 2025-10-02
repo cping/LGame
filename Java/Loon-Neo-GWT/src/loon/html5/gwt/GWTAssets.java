@@ -68,8 +68,6 @@ public class GWTAssets extends Assets {
 		imageManifest = manifest;
 	}
 
-	private final static String GWT_DEF_RES = "assets/";
-
 	private final static boolean LOG_XHR_SUCCESS = false;
 
 	private final GWTGame game;
@@ -79,13 +77,6 @@ public class GWTAssets extends Assets {
 	private final HashMap<String, PreloaderBundle> clientBundles = new HashMap<String, PreloaderBundle>();
 
 	private Scale assetScale = null;
-
-	@Override
-	public void setPathPrefix(String prefix) {
-		if (!prefix.startsWith(GWT_DEF_RES)) {
-			pathPrefix = prefix;
-		}
-	}
 
 	public void addClientBundle(String regExp, PreloaderBundle clientBundle) {
 		clientBundles.put(regExp, clientBundle);
@@ -101,7 +92,7 @@ public class GWTAssets extends Assets {
 			return getBundleImageSync(path);
 		}
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
-			return localImage(pathPrefix + path, rsrc.scale);
+			return localImage(LSystem.getPathPrefix() + path, rsrc.scale);
 		}
 		return new GWTImage(game.graphics(), new Throwable("Image missing from manifest: " + path));
 	}
@@ -135,7 +126,7 @@ public class GWTAssets extends Assets {
 	@Override
 	public Sound getSound(String path) {
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
-			String url = pathPrefix + path;
+			String url = LSystem.getPathPrefix() + path;
 			PreloaderBundle clientBundle = getBundle(path);
 			if (clientBundle != null) {
 				String key = toKey(path);
@@ -150,7 +141,7 @@ public class GWTAssets extends Assets {
 		}
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 		return new GWTSound(gwtFile.path());
@@ -160,7 +151,7 @@ public class GWTAssets extends Assets {
 	public String getTextSync(String path) throws Exception {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 		if (gwtFile.preloader.isText(path)) {
@@ -175,7 +166,7 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+			tmp = res.get(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 		}
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
@@ -188,7 +179,7 @@ public class GWTAssets extends Assets {
 		GoPromise<String> result = GoPromise.create();
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		try {
 			return doXhr(path, XMLHttpRequest.ResponseType.Default).map(new Function<XMLHttpRequest, String>() {
@@ -221,7 +212,7 @@ public class GWTAssets extends Assets {
 						tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 					}
 					if (tmp == null) {
-						tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+						tmp = res.get(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 					}
 					if (tmp == null) {
 						game.log().warn("file " + path + " not found");
@@ -241,7 +232,7 @@ public class GWTAssets extends Assets {
 	public GoFuture<byte[]> getBytes(final String path) {
 		String fullpath = getPath(path);
 		if (fullpath.startsWith(LSystem.getSystemImagePath())) {
-			fullpath = GWT_DEF_RES + path;
+			fullpath = LSystem.getPathPrefix() + path;
 		}
 		if (!TypedArrays.isSupported()) {
 			final GoPromise<byte[]> result = GoPromise.create();
@@ -277,7 +268,7 @@ public class GWTAssets extends Assets {
 	public byte[] getBytesSync(String path) throws Exception {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
 		if (gwtFile.preloader.isBinary(path)) {
@@ -292,7 +283,7 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+			tmp = res.get(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 		}
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
@@ -307,7 +298,7 @@ public class GWTAssets extends Assets {
 		}
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		Exception error = null;
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
@@ -343,9 +334,9 @@ public class GWTAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
-			GWTAssets.pathPrefix = GWT.getModuleBaseForStaticFiles() + "assets/";
+			setPathPrefix(GWT.getModuleBaseForStaticFiles() + "assets/");
 		} else {
-			GWTAssets.pathPrefix = "";
+			setPathPrefixEmpty();
 		}
 	}
 
@@ -432,7 +423,7 @@ public class GWTAssets extends Assets {
 	private GWTImage localImage(String path, Scale scale) {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
 		if (files.preloader.isImage(path)) {
@@ -447,7 +438,7 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = files.path()));
 		}
 		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+			tmp = res.get(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 		}
 		if (tmp == null) {
 			return getBundleImage(GWT.getModuleBaseForStaticFiles() + path, scale);
@@ -458,7 +449,7 @@ public class GWTAssets extends Assets {
 	private ImageElement localImageElement(String path) {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = GWT_DEF_RES + path;
+			path = LSystem.getPathPrefix() + path;
 		}
 		GWTResourcesLoader files = Loon.self.resources.internal(path);
 		if (files.preloader.isImage(path)) {
@@ -473,7 +464,7 @@ public class GWTAssets extends Assets {
 			tmp = res.get(LSystem.getFileName(path = files.path()));
 		}
 		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (GWT_DEF_RES + path)));
+			tmp = res.get(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 		}
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
@@ -519,7 +510,7 @@ public class GWTAssets extends Assets {
 	}
 
 	protected GWTImage getBundleImage(String path, Scale scale) {
-		String url = pathPrefix + path;
+		String url = LSystem.getPathPrefix() + path;
 		PreloaderBundle clientBundle = getBundle(path);
 		if (clientBundle != null) {
 			String key = toKey(path);

@@ -199,6 +199,11 @@ public class LSetting {
 	 */
 	public boolean fps_time_fixed = false;
 
+	/**
+	 * 默认资源文件夹所在路径
+	 */
+	public String pathPrefix = LSystem.APP_DEF_RES_DIRECTORY;
+
 	private float aspect;
 
 	/**
@@ -336,6 +341,7 @@ public class LSetting {
 		this.convertImagesOnLoad = setting.convertImagesOnLoad;
 		this.allScreenRefresh = setting.allScreenRefresh;
 		this.allowScreenResize = setting.allowScreenResize;
+		this.pathPrefix = setting.pathPrefix;
 		this.args = setting.args;
 		return this;
 	}

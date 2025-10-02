@@ -61,8 +61,6 @@ public class JavaFXAssets extends Assets {
 		return URI.create(url);
 	}
 
-	private final static String DEF_RES = "assets/";
-
 	public static interface JavaFXResource extends LRelease {
 
 		InputStream getInputStream();
@@ -391,7 +389,7 @@ public class JavaFXAssets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), LSystem.getPathPrefix(), ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -433,7 +431,6 @@ public class JavaFXAssets extends Assets {
 	public JavaFXAssets(JavaFXGame game) {
 		super(game.asyn());
 		this.game = game;
-		JavaFXAssets.pathPrefix = "assets/";
 	}
 
 	public void addDirectory(File dir) {
@@ -539,8 +536,9 @@ public class JavaFXAssets extends Assets {
 		}
 		if (url == null) {
 			serachPath = getPath(path);
-			final int idx = serachPath.indexOf(pathPrefix);
-			final int len = pathPrefix.length();
+			final String newPath = LSystem.getPathPrefix();
+			final int idx = serachPath.indexOf(newPath);
+			final int len = newPath.length();
 			serachPath = serachPath.substring(idx + len, serachPath.length());
 			url = getMainClass().getResource("/" + serachPath);
 			if (url == null) {
@@ -588,7 +586,7 @@ public class JavaFXAssets extends Assets {
 		if (!file.exists()) {
 			path = getPath(path);
 			if (path.startsWith(LSystem.getSystemImagePath())) {
-				path = DEF_RES + path;
+				path = LSystem.getPathPrefix() + path;
 			}
 			file = new File(path);
 			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -598,7 +596,7 @@ public class JavaFXAssets extends Assets {
 				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
 			}
 			if (!file.exists()) {
-				file = new File(LSystem.getFileName(path = (DEF_RES + path)));
+				file = new File(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 			}
 		}
 		return file;

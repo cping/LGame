@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2015 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -23,6 +23,7 @@ package loon;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.utils.ArrayByte;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
@@ -30,17 +31,17 @@ import loon.utils.res.ResourceLocal;
 
 public abstract class Assets {
 
-	private TArray<Sound> soundCache = new TArray<>(10);
+	private final TArray<Sound> soundCache = new TArray<Sound>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
 	private static class ImageRunnable implements Runnable {
 
-		private ImageImpl _impl;
+		private final ImageImpl _impl;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		ImageRunnable(ImageImpl img, String path, Assets assets) {
 			this._impl = img;
@@ -61,11 +62,11 @@ public abstract class Assets {
 
 	private static class TextRunnable implements Runnable {
 
-		private GoPromise<String> _result;
+		private final GoPromise<String> _result;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		TextRunnable(GoPromise<String> res, String path, Assets assets) {
 			this._result = res;
@@ -86,11 +87,11 @@ public abstract class Assets {
 
 	private static class ByteRunnable implements Runnable {
 
-		private GoPromise<byte[]> _result;
+		private final GoPromise<byte[]> _result;
 
-		private String _path;
+		private final String _path;
 
-		private Assets _assets;
+		private final Assets _assets;
 
 		ByteRunnable(GoPromise<byte[]> res, String path, Assets assets) {
 			this._result = res;
@@ -106,20 +107,25 @@ public abstract class Assets {
 				_result.fail(t);
 			}
 		}
-
 	}
 
-	protected static String pathPrefix = "assets/";
+	public void setPathPrefixEmpty() {
+		setPathPrefix(LSystem.EMPTY);
+	}
 
 	public void setPathPrefix(String prefix) {
+		if (StringUtils.isEmpty(prefix)) {
+			LSystem.setPathPrefix(LSystem.EMPTY);
+			return;
+		}
 		if (prefix.startsWith("/") || prefix.endsWith("/")) {
 			throw new LSysException("Prefix must not start or end with '/'.");
 		}
-		pathPrefix = (prefix.length() == 0) ? prefix : (prefix + "/");
+		LSystem.setPathPrefix((prefix.length() == 0) ? prefix : (prefix + LSystem.SLASH));
 	}
 
 	public String getPathPrefix() {
-		return pathPrefix;
+		return LSystem.getPathPrefix();
 	}
 
 	protected static final String[] SUFFIXES = { ".wav", ".mp3", ".ogg", ".m4a", ".aac" };
@@ -151,7 +157,8 @@ public abstract class Assets {
 	}
 
 	public Image getRemoteImage(String url, int width, int height) {
-		Exception error = new Exception("Remote image loading not yet supported: " + url + "@" + width + "x" + height);
+		LSysException error = new LSysException(
+				"Remote image loading not yet supported: " + url + "@" + width + "x" + height);
 		ImageImpl image = createImage(false, width, height, url);
 		image.fail(error);
 		return image;
@@ -194,13 +201,15 @@ public abstract class Assets {
 	protected abstract ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source);
 
 	protected static String getPath(String path) {
-		if (path.indexOf(pathPrefix) == -1) {
-			path = pathPrefix + path;
+		final String configPath = LSystem.getPathPrefix();
+		final String fixPath = StringUtils.isEmpty(configPath) ? LSystem.EMPTY : configPath;
+		if (path.indexOf(fixPath) == -1) {
+			path = fixPath + path;
 		}
 		int pathLen;
 		do {
 			pathLen = path.length();
-			path = path.replaceAll("[^/]+/\\.\\./", "");
+			path = path.replaceAll("[^/]+/\\.\\./", LSystem.EMPTY);
 		} while (path.length() != pathLen);
 		path = path.replace("\\", "/");
 		if (path.startsWith("/")) {

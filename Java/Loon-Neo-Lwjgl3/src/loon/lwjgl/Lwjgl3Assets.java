@@ -60,8 +60,6 @@ public class Lwjgl3Assets extends Assets {
 		return URI.create(url);
 	}
 
-	private final static String DEF_RES = "assets/";
-
 	public static interface JavaSEResource extends LRelease {
 
 		InputStream getInputStream();
@@ -378,7 +376,7 @@ public class Lwjgl3Assets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), LSystem.getPathPrefix(), ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -420,7 +418,6 @@ public class Lwjgl3Assets extends Assets {
 	public Lwjgl3Assets(Lwjgl3Game game) {
 		super(game.asyn());
 		this.game = game;
-		Assets.pathPrefix = "assets/";
 	}
 
 	public void addDirectory(File dir) {
@@ -557,7 +554,7 @@ public class Lwjgl3Assets extends Assets {
 		if (!file.exists()) {
 			path = getPath(path);
 			if (path.startsWith(LSystem.getSystemImagePath())) {
-				path = DEF_RES + path;
+				path = LSystem.getPathPrefix() + path;
 			}
 			file = new File(path);
 			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -567,7 +564,7 @@ public class Lwjgl3Assets extends Assets {
 				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
 			}
 			if (!file.exists()) {
-				file = new File(LSystem.getFileName(path = (DEF_RES + path)));
+				file = new File(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 			}
 		}
 		return file;

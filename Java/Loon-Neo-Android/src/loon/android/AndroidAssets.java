@@ -35,6 +35,7 @@ import java.net.URL;
 
 import loon.Assets;
 import loon.LRelease;
+import loon.LSystem;
 import loon.Sound;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
@@ -57,8 +58,6 @@ public class AndroidAssets extends Assets {
 	public static final URI convertURI(String url) {
 		return URI.create(url);
 	}
-	
-	private final static String DEF_RES = "assets/";
 
 	public static interface Resource extends LRelease {
 
@@ -407,7 +406,7 @@ public class AndroidAssets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), LSystem.getPathPrefix(), ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -473,10 +472,12 @@ public class AndroidAssets extends Assets {
 
 	public AndroidAssets(AndroidGame game) {
 		super(game.asyn());
-		Assets.pathPrefix = "";
 		this.game = game;
 		this.assetMgr = game.activity.getResources().getAssets();
-		this.setPathPrefix("");
+		final String newPath = getPathPrefix();
+		if (newPath.equals("assets\\") || newPath.equals("assets/")) {
+			this.setPathPrefixEmpty();
+		}
 	}
 
 	public void setAssetScale(float scaleFactor) {
@@ -595,7 +596,7 @@ public class AndroidAssets extends Assets {
 				break;
 			}
 		}
-		game.log().warn("Could not load image: " + pathPrefix + path, error);
+		game.log().warn("Could not load image: " + LSystem.getPathPrefix() + path, error);
 		throw error != null ? error : new FileNotFoundException(path);
 	}
 
@@ -632,8 +633,9 @@ public class AndroidAssets extends Assets {
 		if (resName.indexOf('\\') != -1) {
 			resName = resName.replace('\\', '/');
 		}
-		String fileName = resName.toLowerCase();
-		if (fileName.startsWith(DEF_RES) || fileName.startsWith('/' + DEF_RES)) {
+		final String fileName = resName.toLowerCase();
+		final String newPath = LSystem.getPathPrefix();
+		if (fileName.startsWith(newPath) || fileName.startsWith('/' + newPath)) {
 			boolean flag = resName.startsWith("/");
 			String file;
 			if (flag) {

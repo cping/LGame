@@ -23,6 +23,7 @@ package loon;
 import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.utils.ArrayByte;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
@@ -30,7 +31,7 @@ import loon.utils.res.ResourceLocal;
 
 public abstract class Assets {
 
-	private TArray<Sound> soundCache = new TArray<Sound>(10);
+	private final TArray<Sound> soundCache = new TArray<Sound>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 
 	// 为了方便直接转码到C#和C++，无法使用匿名内部类(也就是在构造内直接构造实现的方式)，只能都写出类来……
 	// PS:别提delegate，委托那玩意写出来太不优雅了，而且大多数J2C#的工具也不能直接转换过去……
@@ -106,20 +107,25 @@ public abstract class Assets {
 				_result.fail(t);
 			}
 		}
-
 	}
 
-	protected static String pathPrefix = "assets/";
+	public void setPathPrefixEmpty() {
+		setPathPrefix(LSystem.EMPTY);
+	}
 
 	public void setPathPrefix(String prefix) {
+		if (StringUtils.isEmpty(prefix)) {
+			LSystem.setPathPrefix(LSystem.EMPTY);
+			return;
+		}
 		if (prefix.startsWith("/") || prefix.endsWith("/")) {
 			throw new LSysException("Prefix must not start or end with '/'.");
 		}
-		pathPrefix = (prefix.length() == 0) ? prefix : (prefix + "/");
+		LSystem.setPathPrefix((prefix.length() == 0) ? prefix : (prefix + LSystem.SLASH));
 	}
 
 	public String getPathPrefix() {
-		return pathPrefix;
+		return LSystem.getPathPrefix();
 	}
 
 	protected static final String[] SUFFIXES = { ".wav", ".mp3", ".ogg", ".m4a", ".aac" };
@@ -195,8 +201,10 @@ public abstract class Assets {
 	protected abstract ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source);
 
 	protected static String getPath(String path) {
-		if (path.indexOf(pathPrefix) == -1) {
-			path = pathPrefix + path;
+		final String configPath = LSystem.getPathPrefix();
+		final String fixPath = StringUtils.isEmpty(configPath) ? LSystem.EMPTY : configPath;
+		if (path.indexOf(fixPath) == -1) {
+			path = fixPath + path;
 		}
 		int pathLen;
 		do {

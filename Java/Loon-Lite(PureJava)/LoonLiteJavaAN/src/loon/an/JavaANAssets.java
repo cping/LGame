@@ -39,8 +39,6 @@ public class JavaANAssets extends Assets {
 		return URI.create(url);
 	}
 
-	private final static String DEF_RES = "assets/";
-
 	public static interface Resource extends LRelease {
 
 		InputStream getInputStream();
@@ -397,7 +395,7 @@ public class JavaANAssets extends Assets {
 			if (file.exists()) {
 				return new FileInputStream(file);
 			} else {
-				file = new File(StringUtils.replaceIgnoreCase(getPath(path), DEF_RES, ""));
+				file = new File(StringUtils.replaceIgnoreCase(getPath(path), LSystem.getPathPrefix(), ""));
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
@@ -459,7 +457,10 @@ public class JavaANAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 		this.assetMgr = game.mainPlatform.getResAssets();
-		this.setPathPrefix("");
+		final String newPath = getPathPrefix();
+		if (newPath.equals("assets\\") || newPath.equals("assets/")) {
+			this.setPathPrefixEmpty();
+		}
 	}
 
 	public void setAssetScale(float scaleFactor) {
@@ -571,7 +572,7 @@ public class JavaANAssets extends Assets {
 				break;
 			}
 		}
-		game.log().warn("Could not load image: " + pathPrefix + path, error);
+		game.log().warn("Could not load image: " + getPathPrefix() + path, error);
 		throw error != null ? error : new FileNotFoundException(path);
 	}
 
@@ -608,8 +609,9 @@ public class JavaANAssets extends Assets {
 		if (resName.indexOf('\\') != -1) {
 			resName = resName.replace('\\', '/');
 		}
-		String fileName = resName.toLowerCase();
-		if (fileName.startsWith(DEF_RES) || fileName.startsWith('/' + DEF_RES)) {
+		final String fileName = resName.toLowerCase();
+		final String newPath = LSystem.getPathPrefix();
+		if (fileName.startsWith(newPath) || fileName.startsWith('/' + newPath)) {
 			boolean flag = resName.startsWith("/");
 			String file;
 			if (flag) {

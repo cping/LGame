@@ -432,7 +432,6 @@ public class JavaSEAssets extends Assets {
 	public JavaSEAssets(JavaSEGame game) {
 		super(game.asyn());
 		this.game = game;
-		JavaSEAssets.pathPrefix = "assets/";
 	}
 
 	public void addDirectory(File dir) {
@@ -527,8 +526,9 @@ public class JavaSEAssets extends Assets {
 		}
 		if (url == null) {
 			serachPath = getPath(path);
-			final int idx = serachPath.indexOf(pathPrefix);
-			final int len = pathPrefix.length();
+			final String newPath = LSystem.getPathPrefix();
+			final int idx = serachPath.indexOf(newPath);
+			final int len = newPath.length();
 			serachPath = serachPath.substring(idx + len, serachPath.length());
 			url = getMainClass().getResource("/" + serachPath);
 			if (url == null) {

@@ -41,46 +41,41 @@ import org.robovm.apple.uikit.UIImage;
 
 public class RoboVMAssets extends Assets {
 
-	private final static String IOS_DEF_RES = "assets/";
 	private RoboVMNet net;
 	private final RoboVMGame game;
-	private final File bundleRoot = new File(NSBundle.getMainBundle()
-			.getBundlePath());
-	private File assetRoot = new File(bundleRoot, pathPrefix);
+	private final File bundleRoot = new File(NSBundle.getMainBundle().getBundlePath());
+	private File assetRoot;
 
 	public RoboVMAssets(RoboVMGame game) {
 		super(game.asyn());
 		this.game = game;
 		this.net = new RoboVMNet(game.asyn());
-	}
-
-	public void setPathPrefix(String pathPrefix) {
-		Assets.pathPrefix = pathPrefix;
-		this.assetRoot = new File(bundleRoot, pathPrefix);
+		this.assetRoot = new File(bundleRoot, LSystem.getPathPrefix());
 	}
 
 	@Override
-	public Image getRemoteImage(final String url, final int width,
-			final int height) {
+	public void setPathPrefix(String pathPrefix) {
+		super.setPathPrefix(pathPrefix);
+		this.assetRoot = new File(bundleRoot, LSystem.getPathPrefix());
+	}
+
+	@Override
+	public Image getRemoteImage(final String url, final int width, final int height) {
 		final ImageImpl image = createImage(true, width, height, url);
-		net.req(url).execute()
-				.onSuccess(new Port<RoboVMAbstractNet.Response>() {
-					public void onEmit(RoboVMAbstractNet.Response rsp) {
-						try {
-							image.succeed(toData(Scale.ONE, new UIImage(
-									new NSData(rsp.payload()))));
-						} catch (Throwable t) {
-							game.log().warn(
-									"Failed to decode remote image [url=" + url
-											+ "]", t);
-							image.fail(t);
-						}
-					}
-				}).onFailure(new Port<Throwable>() {
-					public void onEmit(Throwable cause) {
-						image.fail(cause);
-					}
-				});
+		net.req(url).execute().onSuccess(new Port<RoboVMAbstractNet.Response>() {
+			public void onEmit(RoboVMAbstractNet.Response rsp) {
+				try {
+					image.succeed(toData(Scale.ONE, new UIImage(new NSData(rsp.payload()))));
+				} catch (Throwable t) {
+					game.log().warn("Failed to decode remote image [url=" + url + "]", t);
+					image.fail(t);
+				}
+			}
+		}).onFailure(new Port<Throwable>() {
+			public void onEmit(Throwable cause) {
+				image.fail(cause);
+			}
+		});
 		return image;
 	}
 
@@ -122,14 +117,13 @@ public class RoboVMAssets extends Assets {
 			return null;
 		}
 		Exception error = null;
-		for (Scale.ScaledResource rsrc : game.graphics().scale()
-				.getScaledResources(path)) {
+		for (Scale.ScaledResource rsrc : game.graphics().scale().getScaledResources(path)) {
 			File fullPath = resolvePath(rsrc.path);
 			if (!fullPath.exists()) {
 				continue;
 			}
 			try {
-				UIImage img =  UIImage.getImage(fullPath.toString());
+				UIImage img = UIImage.getImage(fullPath.toString());
 				if (img != null) {
 					return toData(rsrc.scale, img);
 				}
@@ -147,15 +141,13 @@ public class RoboVMAssets extends Assets {
 	}
 
 	@Override
-	protected ImageImpl createImage(boolean async, int rwid, int rhei,
-			String source) {
+	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
 		return new RoboVMImage(game, async, rwid, rhei, source);
 	}
 
 	private ImageImpl.Data toData(Scale scale, UIImage image) {
 		CGImage bitmap = image.getCGImage();
-		return new ImageImpl.Data(scale, bitmap, (int) bitmap.getWidth(),
-				(int) bitmap.getHeight());
+		return new ImageImpl.Data(scale, bitmap, (int) bitmap.getWidth(), (int) bitmap.getHeight());
 	}
 
 	protected File resolvePath(String path) {
@@ -163,19 +155,17 @@ public class RoboVMAssets extends Assets {
 		if (!file.exists()) {
 			path = getPath(path);
 			if (path.startsWith(LSystem.getSystemImagePath())) {
-				path = IOS_DEF_RES + path;
+				path = LSystem.getPathPrefix() + path;
 			}
 			file = new File(assetRoot, path);
-			if (!file.exists()
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-				file =  new File(assetRoot,path.substring(path.indexOf('/') + 1, path.length()));
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(assetRoot, path.substring(path.indexOf('/') + 1, path.length()));
 			}
-			if (!file.exists()
-					&& (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
 			}
 			if (!file.exists()) {
-				file =  new File(LSystem.getFileName(path = (IOS_DEF_RES + path)));
+				file = new File(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
 			}
 		}
 		return file;
@@ -194,8 +184,7 @@ public class RoboVMAssets extends Assets {
 		if (_audio == null) {
 			_audio = new RoboVMAudio(game, game.config.openALSources);
 		}
-		for (String encpath : new String[] { path + ".caf", path + ".aifc",
-				path + ".mp3" }) {
+		for (String encpath : new String[] { path + ".caf", path + ".aifc", path + ".mp3" }) {
 			File fullPath = resolvePath(encpath);
 			if (!fullPath.exists()) {
 				continue;
