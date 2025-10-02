@@ -25,7 +25,7 @@ import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Image;
 
-public class GLUtils {
+public final class GLUtils {
 
 	private GLUtils() {
 	}

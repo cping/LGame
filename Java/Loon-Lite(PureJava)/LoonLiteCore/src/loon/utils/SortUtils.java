@@ -30,37 +30,37 @@ public final class SortUtils<T> {
 	private int _num;
 	private int _target;
 
-	public static <T> void defaultSort(T[] srcArray) {
+	public final static <T> void defaultSort(final T[] srcArray) {
 		Arrays.sort(srcArray);
 		// TimComparableSort.sort(srcArray);
 	}
 
-	public static <T> void defaultSort(T[] srcArray, Comparator<T> compar) {
+	public final static <T> void defaultSort(final T[] srcArray, final Comparator<T> compar) {
 		Arrays.sort(srcArray, compar);
 		// TimComparatorSort.sort(srcArray, compar);
 	}
 
-	public static <T> void defaultSort(char[] srcArray, int start, int end) {
+	public final static <T> void defaultSort(final char[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}
 
-	public static <T> void defaultSort(byte[] srcArray, int start, int end) {
+	public final static <T> void defaultSort(final byte[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}
 
-	public static <T> void defaultSort(float[] srcArray, int start, int end) {
+	public final static <T> void defaultSort(final float[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}
 
-	public static <T> void defaultSort(int[] srcArray, int start, int end) {
+	public final static <T> void defaultSort(final int[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}
 
-	public static <T> void defaultSort(long[] srcArray, int start, int end) {
+	public final static <T> void defaultSort(final long[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}
 
-	public static <T> void timSort(T[] srcArray, Comparator<T> compar) {
+	public final static <T> void timSort(final T[] srcArray, final Comparator<T> compar) {
 		if (compar == null) {
 			TimComparableSort.sort(srcArray);
 		} else {
@@ -68,11 +68,12 @@ public final class SortUtils<T> {
 		}
 	}
 
-	public static <T> void msort(T[] srcArray, T[] dest, Comparator<T> compar) {
+	public final static <T> void msort(final T[] srcArray, T[] dest, final Comparator<T> compar) {
 		msort(srcArray, dest, 0, srcArray.length - 1, compar);
 	}
 
-	public static <T> void msort(T[] srcArray, T[] dest, int low, int high, Comparator<T> compar) {
+	public final static <T> void msort(final T[] srcArray, final T[] dest, final int low, final int high,
+			final Comparator<T> compar) {
 		if (low < high) {
 			int center = (low + high) / 2;
 			msort(srcArray, dest, low, center, compar);
@@ -82,7 +83,8 @@ public final class SortUtils<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> void merge(T[] srcArray, T[] dest, int low, int middle, int high, Comparator<T> compar) {
+	private final static <T> void merge(final T[] srcArray, final T[] dest, int low, int middle, int high,
+			Comparator<T> compar) {
 		int leftEnd = middle - 1;
 		int pos = low;
 		int numElements = high - low + 1;
@@ -116,12 +118,12 @@ public final class SortUtils<T> {
 		}
 	}
 
-	public static <T> void quickSort(T[] a, Comparator<T> compar) {
+	public final static <T> void quickSort(final T[] a, final Comparator<T> compar) {
 		quickSort(a, 0, a.length - 1, compar);
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> void quickSort(T[] a, int lo0, int hi0, Comparator<T> compar) {
+	public final static <T> void quickSort(final T[] a, final int lo0, final int hi0, final Comparator<T> compar) {
 		if (hi0 <= lo0) {
 			return;
 		}
@@ -174,7 +176,7 @@ public final class SortUtils<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> void gnomeSort(T[] srcArray, Comparator<T> compar) {
+	public final static <T> void gnomeSort(final T[] srcArray, final Comparator<T> compar) {
 		int pos = 1;
 		int last = 0;
 		int length = srcArray.length;

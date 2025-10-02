@@ -2081,7 +2081,7 @@ public class GLEx implements LRelease {
 	public GLEx draw(Shape shape, LColor color) {
 		int tmp = getTint();
 		setTint(color);
-		fill(shape, 0f, 0f);
+		draw(shape, 0f, 0f);
 		setTint(tmp);
 		return this;
 	}

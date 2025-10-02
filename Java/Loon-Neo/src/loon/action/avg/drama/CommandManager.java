@@ -25,7 +25,7 @@ import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Values;
 import loon.utils.StringUtils;
 
-public class CommandManager implements LRelease {
+public final class CommandManager implements LRelease {
 
 	private final ObjectMap<String, Command> _commands;
 

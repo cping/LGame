@@ -34,7 +34,6 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 			@Override
 			public String toString() {
-
 				return outer + ".map(" + func + ")";
 			}
 
@@ -42,7 +41,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 			protected Connection connect() {
 				return outer.connect(new VarViewListener<T>() {
 					@Override
-					public void onChange(T value, T ovalue) {
+					public void onChange(final T value, final T ovalue) {
 						notifyChange(func.apply(value), func.apply(ovalue));
 					}
 				});
@@ -51,12 +50,12 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	@Override
-	public Connection connect(VarViewListener<? super T> listener) {
+	public Connection connect(final VarViewListener<? super T> listener) {
 		return addConnection(listener);
 	}
 
 	@Override
-	public Connection connect(ActViewListener<? super T> listener) {
+	public Connection connect(final ActViewListener<? super T> listener) {
 		return connect(wrap(listener));
 	}
 
@@ -69,18 +68,18 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	}
 
 	@Override
-	public Connection connect(Port<? super T> port) {
+	public Connection connect(final Port<? super T> port) {
 		return connect((VarViewListener<? super T>) port);
 	}
 
 	@Override
-	public void disconnect(VarViewListener<? super T> listener) {
+	public void disconnect(final VarViewListener<? super T> listener) {
 		removeConnection(listener);
 	}
 
 	@Override
 	public int hashCode() {
-		T value = get();
+		final T value = get();
 		return (value == null) ? 0 : value.hashCode();
 	}
 
@@ -141,7 +140,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 	protected final Notifier<T> CHANGE = new Notifier<T>() {
 		@SuppressWarnings("unchecked")
 		@Override
-		public void notify(GoListener lner, T value, T oldValue, T ignored) {
+		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {
 			((VarViewListener<T>) lner).onChange(value, oldValue);
 		}
 	};

@@ -39,7 +39,7 @@ import loon.opengl.GL20;
 import loon.opengl.GlobalSource;
 import loon.opengl.ShaderProgram;
 
-public class GLUtils {
+public final class GLUtils {
 
 	private GLUtils() {
 	}

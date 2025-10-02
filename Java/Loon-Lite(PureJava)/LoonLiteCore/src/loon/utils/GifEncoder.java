@@ -30,7 +30,7 @@ import loon.canvas.LColor;
  * receive copies from any such party to do so, with the only requirement being
  * that this copyright notice remain intact.
  */
-public class GifEncoder {
+public final class GifEncoder {
 
 	protected int width; // image size
 

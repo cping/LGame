@@ -33,7 +33,7 @@ import loon.utils.TArray;
 /**
  * 自带的XML解析用类
  */
-public class XMLParser {
+public final class XMLParser {
 
 	public final static String jsonToXml(String data) {
 		if (StringUtils.isEmpty(data)) {

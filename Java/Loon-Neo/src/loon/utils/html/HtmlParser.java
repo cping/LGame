@@ -30,7 +30,7 @@ import loon.utils.xml.XMLTokenizer;
 /**
  * 自带的html解析用类
  */
-public class HtmlParser {
+public final class HtmlParser {
 
 	public static HtmlElement parse(String path) {
 		return new HtmlParser().parseText(BaseIO.loadText(path));

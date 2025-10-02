@@ -33,7 +33,7 @@ import loon.utils.StringUtils;
 import loon.utils.parse.StrTokenizer;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
-public class AVGAnm implements Expression, LRelease {
+public final class AVGAnm implements Expression, LRelease {
 
 	protected final PointI point = new PointI();
 

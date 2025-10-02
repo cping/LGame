@@ -5,23 +5,23 @@ import java.util.List;
 
 import loon.ZIndex;
 
-public class LayerSorter<T> extends InsertionSorter<T> {
+public final class LayerSorter<T> extends InsertionSorter<T> {
 
-	public static int calcLowToHigh(ZIndex p1, ZIndex p2) {
+	public final static int calcLowToHigh(ZIndex p1, ZIndex p2) {
 		if (p1 == p2) {
 			return 0;
 		}
 		return p1.getLayer() - p2.getLayer();
 	}
 
-	public static int calcHighToLow(ZIndex p1, ZIndex p2) {
+	public final static int calcHighToLow(ZIndex p1, ZIndex p2) {
 		if (p1 == p2) {
 			return 0;
 		}
 		return p2.getLayer() - p1.getLayer();
 	}
 
-	private class ZIndexComparator implements Comparator<T> {
+	private final class ZIndexComparator implements Comparator<T> {
 
 		private LayerSorter<T> _sorter;
 

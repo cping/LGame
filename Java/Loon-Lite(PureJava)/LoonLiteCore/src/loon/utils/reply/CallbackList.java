@@ -23,9 +23,9 @@ package loon.utils.reply;
 import loon.LSysException;
 import loon.utils.TArray;
 
-public class CallbackList<T> implements Callback<T> {
+public final class CallbackList<T> implements Callback<T> {
 
-	public static <T> TArray<Callback<T>> createAdd(TArray<Callback<T>> list, Callback<T> callback) {
+	public final static <T> TArray<Callback<T>> createAdd(TArray<Callback<T>> list, Callback<T> callback) {
 		if (list == null) {
 			list = new TArray<Callback<T>>();
 		}
@@ -33,7 +33,7 @@ public class CallbackList<T> implements Callback<T> {
 		return list;
 	}
 
-	public static <T> TArray<Callback<T>> dispatchSuccessClear(TArray<Callback<T>> list, T result) {
+	public final static <T> TArray<Callback<T>> dispatchSuccessClear(TArray<Callback<T>> list, T result) {
 		if (list != null) {
 			for (int ii = 0, ll = list.size; ii < ll; ii++) {
 				list.get(ii).onSuccess(result);
@@ -42,7 +42,7 @@ public class CallbackList<T> implements Callback<T> {
 		return null;
 	}
 
-	public static <T> TArray<Callback<T>> dispatchFailureClear(TArray<Callback<T>> list, Throwable cause) {
+	public final static <T> TArray<Callback<T>> dispatchFailureClear(TArray<Callback<T>> list, Throwable cause) {
 		if (list != null) {
 			for (int ii = 0, ll = list.size; ii < ll; ii++) {
 				list.get(ii).onFailure(cause);

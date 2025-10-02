@@ -20,9 +20,9 @@
  */
 package loon.utils.reply;
 
-public class Act<T> extends AbstractAct<T> {
+public final class Act<T> extends AbstractAct<T> {
 
-	public static <T> Act<T> create() {
+	public final static <T> Act<T> create() {
 		return new Act<T>();
 	}
 

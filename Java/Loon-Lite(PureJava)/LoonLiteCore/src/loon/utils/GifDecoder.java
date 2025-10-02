@@ -13,7 +13,7 @@ import loon.geom.RectBox;
 /*
  * gif动画解码器，用于解释gif图像数据流到Image
  */
-public class GifDecoder implements LRelease {
+public final class GifDecoder implements LRelease {
 
 	private String gifVersion = LSystem.UNKNOWN;
 
