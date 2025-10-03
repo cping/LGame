@@ -49,14 +49,30 @@ import loon.utils.MathUtils;
  */
 public class LInventory extends LLayer {
 
-	public static class ItemUI extends Item<ItemInfo> {
+	public static class ItemUI extends Item<ItemInfo> implements LRelease {
+
+		protected boolean _saved;
+
+		protected LInventory _inventory;
+
+		protected Actor _actor;
+
+		protected int _itemId;
+
+		private ItemUI.ItemUIClose _released;
 
 		private class ItemUIClose implements LRelease {
 
 			private ItemUI _itemUI;
 
+			private boolean _closed;
+
 			public ItemUIClose(ItemUI ui) {
 				this._itemUI = ui;
+			}
+
+			public boolean isClosed() {
+				return this._closed;
 			}
 
 			@Override
@@ -67,17 +83,9 @@ public class LInventory extends LLayer {
 				_itemUI.setName(LSystem.UNKNOWN);
 				_itemUI.setDescription(LSystem.UNKNOWN);
 				_itemUI.removeActor();
+				_closed = true;
 			}
-
 		}
-
-		protected boolean _saved;
-
-		protected LInventory _inventory;
-
-		protected Actor _actor;
-
-		protected int _itemId;
 
 		ItemUI(LInventory inv, int id, String name, ItemInfo item, float x, float y, float w, float h) {
 			super(name, x, y, w, h, item);
@@ -131,13 +139,22 @@ public class LInventory extends LLayer {
 		}
 
 		protected void free() {
-			final ItemUI.ItemUIClose released = new ItemUI.ItemUIClose(this);
-			if (_actor != null && _inventory._actorFadeTime > 0f && _actor.isActionCompleted()) {
-				this._saved = false;
-				this._actor.selfAction().fadeOut(_inventory._actorFadeTime).start().dispose(released);
-			} else {
-				released.close();
+			if ((_released == null) || (_released != null && _released.isClosed())) {
+				_released = new ItemUI.ItemUIClose(this);
+				if (_actor != null && _inventory._actorFadeTime > 0f && _actor.isActionCompleted()) {
+					this._actor.selfAction().fadeOut(_inventory._actorFadeTime).start().dispose(_released);
+				} else {
+					_released.close();
+				}
 			}
+		}
+
+		public boolean isExist() {
+			return this._saved && (_actor != null) && !isReleasing();
+		}
+
+		public boolean isReleasing() {
+			return _released != null && !_released._closed;
 		}
 
 		public void resetActor() {
@@ -297,11 +314,11 @@ public class LInventory extends LLayer {
 			return _actor;
 		}
 
-	}
+		@Override
+		public void close() {
+			free();
+		}
 
-	public LInventory swap(ItemUI a, ItemUI b) {
-		_inventory.swap(a, b);
-		return this;
 	}
 
 	private LColor _gridColor;
@@ -564,6 +581,11 @@ public class LInventory extends LLayer {
 		return this._dirty;
 	}
 
+	public LInventory swap(ItemUI a, ItemUI b) {
+		_inventory.swap(a, b);
+		return this;
+	}
+
 	public LInventory putItem(String path) {
 		return putItem(LTextures.loadTexture(path), new ItemInfo());
 	}
@@ -602,7 +624,7 @@ public class LInventory extends LLayer {
 
 	public ItemUI removeItemIndex(int idx) {
 		ItemUI item = getItem(idx);
-		if (item != null && (item._saved || item._actor != null)) {
+		if (item != null && item.isExist()) {
 			item.free();
 		}
 		return item;
@@ -610,7 +632,7 @@ public class LInventory extends LLayer {
 
 	public boolean removeItem(float x, float y) {
 		ItemUI item = getItem(x, y);
-		if (item != null && (item._saved || item._actor != null)) {
+		if (item != null && item.isExist()) {
 			item.free();
 		}
 		return item != null;
@@ -620,7 +642,7 @@ public class LInventory extends LLayer {
 		ItemUI item = null;
 		for (int i = _inventory.getItemCount() - 1; i > -1; i--) {
 			item = (ItemUI) _inventory.getItem(i);
-			if (item != null && (item._saved || item._actor != null)) {
+			if (item != null && item.isExist()) {
 				break;
 			}
 		}
@@ -1018,9 +1040,9 @@ public class LInventory extends LLayer {
 					final ItemUI itemSrc = (o instanceof ItemUI) ? ((ItemUI) o) : null;
 					if (itemDst != itemSrc) {
 						final boolean srcNotDst = (itemSrc != null && itemDst._itemId != itemSrc._itemId);
-						if (!itemDst._saved && (srcNotDst || (itemSrc == null))) {
+						if (!itemDst.isExist() && (srcNotDst || (itemSrc == null))) {
 							itemDst.bind(act);
-						} else if (srcNotDst && itemDst._saved && itemSrc._saved) {
+						} else if (srcNotDst && itemDst.isExist() && itemSrc.isExist()) {
 							itemDst.swap(itemSrc);
 						} else {
 							itemDst.resetActor();

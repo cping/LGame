@@ -22,11 +22,17 @@ package loon.action.map.items;
 
 public class Door {
 
+	private boolean _open;
+
 	private TileRoom _r1;
 
 	private TileRoom _r2;
 
 	private String _lockedMessage;
+
+	public Door(TileRoom r1, TileRoom r2) {
+		this(r1, r2, "Room" + r1.getId(), "Room" + r2.getId());
+	}
 
 	public Door(TileRoom r1, TileRoom r2, String dir1, String dir2) {
 		this._r1 = r1;
@@ -56,6 +62,15 @@ public class Door {
 
 	public TileRoom getRoom2() {
 		return _r2;
+	}
+
+	public Door setOpen(boolean o) {
+		this._open = o;
+		return this;
+	}
+
+	public boolean isOpen() {
+		return _open;
 	}
 
 }

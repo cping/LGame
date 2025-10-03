@@ -54,7 +54,7 @@ public class TileManager {
 	}
 
 	public void drawTiles(GLEx g, float offsetX, float offsetY) {
-		TileImpl[][] tiles = this.grid.getData();
+		final TileImpl[][] tiles = this.grid.getData();
 		for (int y = 0; y < tiles[0].length; y++) {
 			for (int x = 0; x < tiles.length; x++) {
 				TileImpl tile = grid.get(x, y);
@@ -68,7 +68,7 @@ public class TileManager {
 	}
 
 	public void updateTiles(long elapsedTime) {
-		TileImpl[][] tiles = this.grid.getData();
+		final TileImpl[][] tiles = this.grid.getData();
 		for (int y = 0; y < tiles[0].length; y++) {
 			for (int x = 0; x < tiles.length; x++) {
 				TileImpl tile = grid.get(x, y);

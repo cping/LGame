@@ -23,6 +23,7 @@ package loon.action.map.colider;
 import loon.LSystem;
 import loon.action.ActionBind;
 import loon.action.map.items.Attribute;
+import loon.action.map.items.TileRoom;
 import loon.action.sprite.Animation;
 import loon.geom.RectI;
 import loon.geom.RectI.Range;
@@ -32,8 +33,6 @@ import loon.utils.TArray;
 import loon.utils.reply.ObjRef;
 
 public class TileImpl implements Tile {
-
-	private RectI rect;
 
 	protected int idx = -1;
 
@@ -65,10 +64,18 @@ public class TileImpl implements Tile {
 
 	protected ObjRef<Object> userData = null;
 
-	private TArray<Vector2f> neighbours;
+	private RectI _rect;
 
-	private TileState state;
+	private TArray<Vector2f> _neighbours;
 
+	private TileState _state;
+
+	private TileRoom _tileRoom;
+
+	public TileImpl() {
+		this(-1);
+	}
+	
 	public TileImpl(int idx) {
 		this(idx, 0, 0);
 	}
@@ -89,8 +96,8 @@ public class TileImpl implements Tile {
 		this.idx = idx;
 		this.imgId = idx;
 		this.solidType = idx;
-		this.state = new TileState(0);
-		this.rect = new RectI(x, y, w, h);
+		this._state = new TileState(0);
+		this._rect = new RectI(x, y, w, h);
 		this.bind = bind;
 	}
 
@@ -99,12 +106,12 @@ public class TileImpl implements Tile {
 	}
 
 	public TileImpl cpy(TileImpl other) {
-		this.rect.set(other.rect);
+		this._rect.set(other._rect);
 		this.idx = other.idx;
 		this.solidType = other.solidType;
 		this.imgId = other.imgId;
 		this.userData = other.userData;
-		this.state.setResult(other.state.getResult());
+		this._state.setResult(other._state.getResult());
 		if (attribute != null) {
 			attribute.setAttribute(other.attribute);
 		} else {
@@ -123,45 +130,45 @@ public class TileImpl implements Tile {
 		H = other.H;
 		parent = other.parent;
 		bind = other.bind;
-		if (neighbours != null) {
-			neighbours.addAll(other.neighbours);
+		if (_neighbours != null) {
+			_neighbours.addAll(other._neighbours);
 		} else {
-			neighbours = other.neighbours;
+			_neighbours = other._neighbours;
 		}
 		return this;
 	}
 
-	public void calcNeighbours() {
-		this.calcNeighbours(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	public void calc_neighbours() {
+		this.calc_neighbours(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
-	public void calcNeighbours(int maxX, int maxY) {
-		if (this.neighbours == null) {
-			this.neighbours = new TArray<Vector2f>();
+	public void calc_neighbours(int maxX, int maxY) {
+		if (this._neighbours == null) {
+			this._neighbours = new TArray<Vector2f>();
 		} else {
-			this.neighbours.clear();
+			this._neighbours.clear();
 		}
-		if (this.rect.y > 0) {
-			if (this.rect.x > 0) {
-				this.neighbours.add(new Vector2f(this.rect.x - 1, this.rect.y - 1)); // 上
+		if (this._rect.y > 0) {
+			if (this._rect.x > 0) {
+				this._neighbours.add(new Vector2f(this._rect.x - 1, this._rect.y - 1)); // 上
 				// 左
-				this.neighbours.add(new Vector2f(this.rect.x - 1, this.rect.y)); // 左
+				this._neighbours.add(new Vector2f(this._rect.x - 1, this._rect.y)); // 左
 			}
-			this.neighbours.add(new Vector2f(this.rect.x, this.rect.y - 1)); // 上中
-			if (this.rect.x < maxX) {
-				this.neighbours.add(new Vector2f(this.rect.x + 1, this.rect.y - 1)); // 中
+			this._neighbours.add(new Vector2f(this._rect.x, this._rect.y - 1)); // 上中
+			if (this._rect.x < maxX) {
+				this._neighbours.add(new Vector2f(this._rect.x + 1, this._rect.y - 1)); // 中
 				// 右
-				this.neighbours.add(new Vector2f(this.rect.x + 1, this.rect.y)); // 右
+				this._neighbours.add(new Vector2f(this._rect.x + 1, this._rect.y)); // 右
 			}
 		}
-		if (this.rect.y < maxY) {
-			if (this.rect.x > 0) {
-				this.neighbours.add(new Vector2f(this.rect.x - 1, this.rect.y + 1)); // 下
+		if (this._rect.y < maxY) {
+			if (this._rect.x > 0) {
+				this._neighbours.add(new Vector2f(this._rect.x - 1, this._rect.y + 1)); // 下
 				// 左
 			}
-			this.neighbours.add(new Vector2f(this.rect.x, this.rect.y + 1)); // 下中
-			if (this.rect.x < maxX) {
-				this.neighbours.add(new Vector2f(this.rect.x + 1, this.rect.y + 1)); // 下
+			this._neighbours.add(new Vector2f(this._rect.x, this._rect.y + 1)); // 下中
+			if (this._rect.x < maxX) {
+				this._neighbours.add(new Vector2f(this._rect.x + 1, this._rect.y + 1)); // 下
 				// 右
 			}
 		}
@@ -171,10 +178,17 @@ public class TileImpl implements Tile {
 		return this.idx;
 	}
 
-	protected void setId(int id) {
+	public void setId(int id) {
 		this.idx = id;
 		this.imgId = id;
 		this.solidType = id;
+	}
+
+	public TileRoom getTileRoom() {
+		if (_tileRoom == null) {
+			_tileRoom = new TileRoom(idx, _rect);
+		}
+		return _tileRoom;
 	}
 
 	@Override
@@ -199,54 +213,54 @@ public class TileImpl implements Tile {
 
 	@Override
 	public void setX(int x) {
-		this.rect.x = x;
+		this._rect.x = x;
 	}
 
 	@Override
 	public void setY(int y) {
-		this.rect.x = y;
+		this._rect.x = y;
 	}
 
 	@Override
 	public void setWidth(int w) {
-		this.rect.width = w;
+		this._rect.width = w;
 	}
 
 	@Override
 	public void setHeight(int h) {
-		this.rect.height = h;
+		this._rect.height = h;
 	}
 
 	@Override
 	public int getX() {
-		return rect.x;
+		return _rect.x;
 	}
 
 	@Override
 	public int getY() {
-		return rect.y;
+		return _rect.y;
 	}
 
 	@Override
 	public int getWidth() {
-		return rect.width;
+		return _rect.width;
 	}
 
 	@Override
 	public int getHeight() {
-		return rect.height;
+		return _rect.height;
 	}
 
 	public boolean inside(int x, int y) {
-		return rect.inside(x, y);
+		return _rect.inside(x, y);
 	}
 
 	public Range getRange() {
-		return rect.getRange();
+		return _rect.getRange();
 	}
 
 	public TArray<Vector2f> getNeighbours() {
-		return neighbours;
+		return _neighbours;
 	}
 
 	public Attribute getAttribute() {
@@ -307,11 +321,11 @@ public class TileImpl implements Tile {
 	}
 
 	public TileState getState() {
-		return state;
+		return _state;
 	}
 
 	public TileImpl setState(TileState state) {
-		this.state = state;
+		this._state = state;
 		return this;
 	}
 

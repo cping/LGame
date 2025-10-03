@@ -25,7 +25,7 @@ import loon.LSystem;
 /**
  * 文件地址辅助用类,用以格式化文件地址为需要格式
  */
-public class PathUtils {
+public final class PathUtils {
 
 	private PathUtils() {
 	}
@@ -272,5 +272,18 @@ public class PathUtils {
 
 	public static String removeNewLine(String s) {
 		return StringUtils.replacesTrim(s, "\n", "\r");
+	}
+
+	public static String removeExtension(String fileName) {
+		final int len = fileName.lastIndexOf(LSystem.DOT);
+		if (len != -1) {
+			return fileName.substring(0, len);
+		}
+		return fileName;
+	}
+
+	public static String fullRelativeName(String relativeName, String filename) {
+		final String path = getDirName(relativeName);
+		return getCombinePaths(path, filename);
 	}
 }

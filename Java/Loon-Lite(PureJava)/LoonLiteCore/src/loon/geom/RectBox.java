@@ -1028,6 +1028,33 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 	}
 
 	/**
+	 * 判定矩形选框交集
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @return
+	 */
+	public boolean intersectsWith(float x, float y, float width, float height) {
+		return (x < this.x + this.width) && (this.x < (x + width)) && (y < this.y + this.height)
+				&& (this.y < y + height);
+	}
+
+	/**
+	 * 判定矩形选框交集
+	 * 
+	 * @param rect
+	 * @return
+	 */
+	public boolean intersectsWith(RectBox rect) {
+		if (rect == null) {
+			return false;
+		}
+		return intersectsWith(rect.x, rect.y, rect.width, rect.height);
+	}
+
+	/**
 	 * 获得矩形选框交集
 	 * 
 	 * @param rect

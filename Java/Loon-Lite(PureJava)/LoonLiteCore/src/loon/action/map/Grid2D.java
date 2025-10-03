@@ -20,29 +20,37 @@
  */
 package loon.action.map;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.action.map.colider.Tile;
 import loon.action.map.colider.TileGenerator;
 import loon.action.map.colider.TileImpl;
 import loon.action.map.colider.TileImplFinder;
+import loon.action.map.items.Door;
+import loon.action.map.items.TileRoom;
+import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 /**
- * Tile对象到地图的转化管理用类(Field2D类是处理简单的数组地图用的,这个是处理复杂的Tile对象集合的(主要是Tile对象功能上比较复杂),需要和TileManager配合使用)
+ * Tile对象到地图的转化管理用类(Field2D类是处理简单的数组地图用的,这个是处理复杂的Tile对象集合的(主要是Tile对象功能上比较复杂),渲染工具为TileManager)
  */
-public class Grid2D {
+public class Grid2D implements LRelease {
 
-	private TileImpl[][] data = null;
+	private TileImpl[][] _tiles = null;
 
-	private Field2D fieldMap = null;
+	private Field2D _fieldMap = null;
 
-	private int width;
-	private int height;
-	private int mapWidth;
-	private int mapHeight;
-	private int tileWidth;
-	private int tileHeight;
+	private int _viewWidth;
+	private int _viewHeight;
+	private int _mapWidth;
+	private int _mapHeight;
+	private int _tileWidth;
+	private int _tileHeight;
+
+	private final TArray<Door> _doors = new TArray<Door>();
+	private final TileGenerator _tileGenerator;
 
 	public Grid2D(int mapWidth, int mapHeight) {
 		this(mapWidth, mapHeight, null);
@@ -63,103 +71,174 @@ public class Grid2D {
 		if (tileWidth < 0 || tileHeight < 0) {
 			throw new IllegalArgumentException("Cannot create grid with tiles of negative size !");
 		}
+		this._tileGenerator = generator;
+		this.calcDefaultMap(mapWidth, mapHeight, tileWidth, tileHeight);
+	}
 
-		this.mapWidth = mapWidth;
-		this.mapHeight = mapHeight;
-		this.tileWidth = tileWidth;
-		this.tileHeight = tileHeight;
-		this.width = mapWidth * tileWidth;
-		this.height = mapHeight * tileHeight;
-
-		this.data = new TileImpl[width][height];
-		if (generator != null) {
-			for (int y = 0; y < data[0].length; y++) {
-				for (int x = 0; x < data.length; x++) {
-					set(x, y, generator.apply(x, y));
+	public boolean isGenerated() {
+		int id = -1;
+		for (int x = 0; x < _mapWidth; x++)
+			for (int y = 0; y < _mapHeight; y++)
+				if (id == -1) {
+					id = get(x, y).getId();
+				} else if (id != get(x, y).getId()) {
+					return false;
 				}
-			}
-		}
+
+		return true;
 	}
 
 	public Grid2D calcDefaultMap() {
-		return calcDefaultMap(this.tileWidth, this.tileHeight);
+		return calcDefaultMap(this._tileWidth, this._tileHeight);
 	}
 
 	public Grid2D calcDefaultMap(int tileWidth, int tileHeight) {
-		return calcDefaultMap(this.width / tileWidth, this.height / tileHeight, tileWidth, tileHeight);
+		return calcDefaultMap(this._mapWidth, this._mapHeight, tileWidth, tileHeight);
 	}
 
 	public Grid2D calcDefaultMap(int mapWidth, int mapHeight, int tileWidth, int tileHeight) {
-
-		this.mapWidth = mapWidth;
-		this.mapHeight = mapHeight;
-		this.tileWidth = tileWidth;
-		this.tileHeight = tileHeight;
-
-		this.width = (tileWidth * mapWidth);
-		this.height = (tileHeight * mapHeight);
-
-		this.data = new TileImpl[mapWidth][mapHeight];
-		for (int x = 0; x < mapWidth; ++x) {
-			for (int y = 0; y < mapHeight; ++y) {
-				this.data[x][y] = new TileImpl(0, x, y, tileWidth, tileHeight);
+		this._mapWidth = mapWidth;
+		this._mapHeight = mapHeight;
+		this._tileWidth = tileWidth;
+		this._tileHeight = tileHeight;
+		this._viewWidth = mapWidth * tileWidth;
+		this._viewHeight = mapHeight * tileHeight;
+		this._tiles = new TileImpl[mapWidth][mapHeight];
+		if (_tileGenerator != null) {
+			for (int x = 0; x < mapWidth; x++) {
+				for (int y = 0; y < mapHeight; y++) {
+					set(x, y, _tileGenerator.apply(x, y));
+				}
+			}
+		} else {
+			int count = 0;
+			for (int x = 0; x < mapWidth; x++) {
+				for (int y = 0; y < mapHeight; y++) {
+					set(x, y, new TileImpl(count++, x, y));
+				}
 			}
 		}
 		return this;
 	}
 
+	public TileGenerator getTileGenerator() {
+		return this._tileGenerator;
+	}
+
+	public Door getDoor(TileImpl tileA, TileImpl tileB) {
+		return getDoor(tileA.getTileRoom(), tileB.getTileRoom());
+	}
+
+	public Door getDoor(TileRoom tileA, TileRoom tileB) {
+		for (int i = _doors.size - 1; i > -1; i--) {
+			Door door = _doors.get(i);
+			if (door.getRoom1() == tileA && door.getRoom2() == tileB
+					|| door.getRoom1() == tileB && door.getRoom2() == tileA) {
+				return door;
+			}
+		}
+		return null;
+	}
+
+	public Grid2D generateMap() {
+		while (!isGenerated()) {
+			final int dir = MathUtils.random(Config.TLEFT, Config.TDOWN);
+			final Vector2f c0 = new Vector2f(MathUtils.random(0, _mapWidth - 1), MathUtils.random(0, _mapHeight - 1));
+			final Vector2f c1 = c0.add(Field2D.getDirection(dir));
+			if (c1.x >= 0 && c1.x < _mapWidth && c1.y >= 0 && c1.y < _mapHeight) {
+				final TileImpl cc0 = get(c0);
+				final TileImpl cc1 = get(c1);
+				if (cc0.getId() != cc1.getId()) {
+					Door door = getDoor(cc0, cc1);
+					if (door == null) {
+						door = new Door(cc0.getTileRoom(), cc1.getTileRoom());
+						_doors.add(door);
+						extendRegion(cc1.getId(), cc0.getId(), c1);
+					}
+					door.setOpen(true);
+				}
+			}
+		}
+		return this;
+	}
+
+	protected void extendRegion(int fromId, int toId, Vector2f w) {
+		if (w.x < 0 || w.x >= _mapWidth || w.y < 0 || w.y >= _mapHeight) {
+			return;
+		}
+		TileImpl c = get(w);
+		if (c.getId() != fromId) {
+			return;
+		}
+		c.setId(toId);
+		for (int i = Config.TLEFT; i <= Config.TDOWN; i++) {
+			Vector2f p = Field2D.getDirection(i);
+			extendRegion(fromId, toId, w.add(p));
+		}
+	}
+
+	public TArray<Door> getDoors() {
+		return new TArray<Door>(_doors);
+	}
+
 	public int getMapWidth() {
-		return mapWidth;
+		return _mapWidth;
 	}
 
 	public int getMapHeight() {
-		return mapHeight;
+		return _mapHeight;
 	}
 
 	public int getWidth() {
-		return width;
+		return _viewWidth;
 	}
 
 	public int getHeight() {
-		return height;
+		return _viewHeight;
 	}
 
 	public int getTileWidth() {
-		return tileWidth;
+		return _tileWidth;
 	}
 
 	public int getTileHeight() {
-		return tileHeight;
+		return _tileHeight;
 	}
 
 	public int toTileX(float x) {
-		return MathUtils.floor(x / tileHeight);
+		return MathUtils.floor(x / _tileHeight);
 	}
 
 	public int toTileY(float y) {
-		return MathUtils.floor(y / tileHeight);
+		return MathUtils.floor(y / _tileHeight);
 	}
 
 	public int toPixelX(float x) {
-		return MathUtils.floor(x * tileWidth);
+		return MathUtils.floor(x * _tileWidth);
 	}
 
 	public int toPixelY(float y) {
-		return MathUtils.floor(y * tileHeight);
+		return MathUtils.floor(y * _tileHeight);
 	}
 
 	public boolean isWithin(float x, float y) {
 		return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
 	}
 
+	public TileImpl get(XY pos) {
+		return get((int) pos.getX(), (int) pos.getY());
+	}
+
 	public TileImpl get(int x, int y) {
-		return data[x][y];
+		return _tiles[x][y];
 	}
 
 	public Grid2D set(int x, int y, TileImpl node) {
-		node.setWidth(tileWidth);
-		node.setHeight(tileHeight);
-		data[x][y] = node;
+		if (node != null) {
+			node.setWidth(_tileWidth);
+			node.setHeight(_tileHeight);
+			_tiles[x][y] = node;
+		}
 		return this;
 	}
 
@@ -284,32 +363,44 @@ public class Grid2D {
 	}
 
 	public TArray<TileImpl> getTiles() {
-		TArray<TileImpl> tiles = new TArray<TileImpl>();
-		for (int y = 0; y < data[0].length; y++) {
-			for (int x = 0; x < data.length; x++) {
-				tiles.add(get(x, y));
+		TArray<TileImpl> list = new TArray<TileImpl>();
+		for (int x = 0; x < _mapWidth; x++) {
+			for (int y = 0; y < _mapHeight; y++) {
+				list.add(get(x, y));
 			}
 		}
-		return tiles;
+		return list;
 	}
 
 	public Field2D getField2D() {
-		if (fieldMap == null) {
-			fieldMap = new Field2D(this.mapWidth, this.mapHeight, this.tileWidth, this.tileHeight);
+		if (_fieldMap == null) {
+			_fieldMap = new Field2D(this._mapWidth, this._mapHeight, this._tileWidth, this._tileHeight);
 		}
-		for (int x = 0; x < fieldMap.getWidth(); x++) {
-			for (int y = 0; y < fieldMap.getHeight(); y++) {
-				TileImpl impl = get(x, y);
+		for (int x = 0; x < _mapWidth; x++) {
+			for (int y = 0; y < _mapHeight; y++) {
+				final TileImpl impl = get(x, y);
 				if (impl != null) {
-					fieldMap.setTileType(x, y, impl.getId());
+					_fieldMap.setTileType(x, y, impl.getId());
 				}
 			}
 		}
-		return fieldMap;
+		return _fieldMap;
+	}
+
+	public Grid2D setFromField2D(Field2D f) {
+		for (int x = 0; x < _mapWidth; x++) {
+			for (int y = 0; y < _mapHeight; y++) {
+				final TileImpl impl = get(x, y);
+				if (impl != null) {
+					impl.setId(f.getTileType(x, y));
+				}
+			}
+		}
+		return this;
 	}
 
 	public TileImpl[][] getData() {
-		return data;
+		return _tiles;
 	}
 
 	public TileImplFinder getFinder() {
@@ -322,6 +413,12 @@ public class Grid2D {
 
 	public TileImplFinder getFinder(AStarFindHeuristic heuristic, boolean all) {
 		return new TileImplFinder(this, heuristic, all);
+	}
+
+	@Override
+	public void close() {
+		_tiles = null;
+		_doors.clear();
 	}
 
 }
