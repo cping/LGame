@@ -122,8 +122,12 @@ public class Loon implements Platform {
 		}
 		final Loon plat = new Loon(setting);
 		if (fixTempDir) {
-			System.setProperty("java.io.tmpdir", _prevTmpDir);
-			System.setProperty("user.name", _prevUser);
+			if (_prevTmpDir != null && _prevTmpDir.length() > 0) {
+				System.setProperty("java.io.tmpdir", _prevTmpDir);
+			}
+			if (_prevUser != null && _prevUser.length() > 0) {
+				System.setProperty("user.name", _prevUser);
+			}
 		}
 		plat.game.register(lazy.onScreen());
 		plat.game.reset();
