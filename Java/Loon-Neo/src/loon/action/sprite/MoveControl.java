@@ -72,11 +72,13 @@ public class MoveControl implements LRelease {
 
 	private final Vector2f _tempPos = new Vector2f();
 
-	private float _moveSpeed = 1f;
+	private float _moveSpeed;
 
-	private float _offsetX = 0f;
+	private float _offsetX;
 
-	private float _offsetY = 0f;
+	private float _offsetY;
+
+	private int _direction, _lastDirection;
 
 	private float _lastX;
 
@@ -84,11 +86,11 @@ public class MoveControl implements LRelease {
 
 	private float _vagueWidthScale, _vagueHeightScale;
 
-	private int _direction = -1, _lastDirection = -1;
+	private boolean _isMoving, _running, _freeDir, _closed;
 
-	private boolean _isMoving = false, _running = false, _freeDir = true, _closed = false;
+	private boolean _moveBlocked;
 
-	private boolean _moveBlocked = false;
+	private boolean _iso45DMovement;
 
 	private CollisionWorld _collisionWorld;
 
@@ -124,43 +126,43 @@ public class MoveControl implements LRelease {
 
 	private EventActionN _backEvent;
 
-	private long _delay = 0;
+	private long _delay;
 
-	private boolean _up = false;
+	private boolean _up;
 
-	private boolean _down = false;
+	private boolean _down;
 
-	private boolean _right = false;
+	private boolean _right;
 
-	private boolean _left = false;
+	private boolean _left;
 
-	private boolean _justUp = false;
+	private boolean _justUp;
 
-	private boolean _justDown = false;
+	private boolean _justDown;
 
-	private boolean _justRight = false;
+	private boolean _justRight;
 
-	private boolean _justLeft = false;
+	private boolean _justLeft;
 
-	private boolean _isPressedKeyA = false;
+	private boolean _isPressedKeyA;
 
-	private boolean _isReleasedKeyA = false;
+	private boolean _isReleasedKeyA;
 
-	private boolean _isPressedKeyS = false;
+	private boolean _isPressedKeyS;
 
-	private boolean _isReleasedKeyS = false;
+	private boolean _isReleasedKeyS;
 
-	private boolean _isPressedKeyD = false;
+	private boolean _isPressedKeyD;
 
-	private boolean _isReleasedKeyD = false;
+	private boolean _isReleasedKeyD;
 
-	private boolean _isPressedKeyW = false;
+	private boolean _isPressedKeyW;
 
-	private boolean _isReleasedKeyW = false;
+	private boolean _isReleasedKeyW;
 
-	private boolean _isLeftOrRight = false;
+	private boolean _isLeftOrRight;
 
-	private boolean _isDownOrUp = false;
+	private boolean _isDownOrUp;
 
 	private boolean _isAction1, _isAction2, _isAction3;
 
@@ -203,6 +205,7 @@ public class MoveControl implements LRelease {
 		this._moveSpeed = moveSpeed;
 		this._vagueWidthScale = ws;
 		this._vagueHeightScale = hs;
+		this._direction = _lastDirection = -1;
 		this._freeDir = true;
 	}
 
@@ -357,25 +360,25 @@ public class MoveControl implements LRelease {
 			if (_leftEvent != null) {
 				_leftEvent.update();
 			}
-			setDirection(Config.TLEFT);
+			setDirection(_iso45DMovement ? Config.LEFT : Config.TLEFT);
 		}
 		if (_right) {
 			if (_rightEvent != null) {
 				_rightEvent.update();
 			}
-			setDirection(Config.TRIGHT);
+			setDirection(_iso45DMovement ? Config.RIGHT : Config.TRIGHT);
 		}
 		if (_down) {
 			if (_downEvent != null) {
 				_downEvent.update();
 			}
-			setDirection(Config.TDOWN);
+			setDirection(_iso45DMovement ? Config.DOWN : Config.TDOWN);
 		}
 		if (_up) {
 			if (_upEvent != null) {
 				_upEvent.update();
 			}
-			setDirection(Config.TUP);
+			setDirection(_iso45DMovement ? Config.UP : Config.TUP);
 		}
 		if (_isAction1 && _action1Event != null) {
 			_action1Event.update();
@@ -482,6 +485,15 @@ public class MoveControl implements LRelease {
 
 	public int getDirection() {
 		return this._direction;
+	}
+
+	public boolean isIso45DMovement() {
+		return _iso45DMovement;
+	}
+
+	public MoveControl setIso45DMovement(boolean d) {
+		this._iso45DMovement = d;
+		return this;
 	}
 
 	public final MoveControl call() {
