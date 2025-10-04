@@ -301,6 +301,10 @@ public class Lwjgl3Game extends LGame {
 				log().error("GL Error (" + error + "):" + getDescription(description));
 			}
 		});
+		if (isMacOS()) {
+			GLFW.glfwInitHint(GLFW.GLFW_ANGLE_PLATFORM_TYPE, GLFW.GLFW_ANGLE_PLATFORM_TYPE_METAL);
+		}
+		GLFW.glfwInitHint(GLFW.GLFW_JOYSTICK_HAT_BUTTONS, GLFW.GLFW_FALSE);
 		if (!glfwInit())
 			throw new RuntimeException("Failed to init GLFW.");
 
