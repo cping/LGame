@@ -83,6 +83,8 @@ public class Field2D implements IArray, Config, LRelease {
 
 	private boolean _mapDirty;
 
+	private TileCollisionListener _tileCollisionListener;
+
 	public Object Tag;
 
 	public final static RectBox inflateBounds(RectBox rect, float x, float y) {
@@ -1191,6 +1193,9 @@ public class Field2D implements IArray, Config, LRelease {
 	}
 
 	public boolean checkTileCollision(float srcX, float srcY, float srcWidth, float srcHeight, float newX, float newY) {
+		if (_tileCollisionListener != null) {
+			return _tileCollisionListener.checkTileCollision(srcX, srcY, srcWidth, srcHeight, newX, newY);
+		}
 		newX = MathUtils.iceil(newX);
 		newY = MathUtils.iceil(newY);
 
@@ -1218,6 +1223,15 @@ public class Field2D implements IArray, Config, LRelease {
 			}
 		}
 		return false;
+	}
+
+	public TileCollisionListener getTileCollisionListener() {
+		return this._tileCollisionListener;
+	}
+
+	public Field2D setTileCollisionListener(TileCollisionListener t) {
+		this._tileCollisionListener = t;
+		return this;
 	}
 
 	public boolean notWidth(final int x) {

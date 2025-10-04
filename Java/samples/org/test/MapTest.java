@@ -248,7 +248,7 @@ public class MapTest extends Stage {
 			// ----按键移动---
 			/*
 			// 构建针对控制器的键盘监听
-			mc.setActionEvent(() -> {
+			mc.setActionAnyEvent(() -> {
 				//仅在改变按键方向时改编动画播放
 				if (mc.isDirChangeUpPressed()) {
 					hero.animate(frames, upIds);

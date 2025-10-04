@@ -28,12 +28,14 @@ import loon.action.collision.CollisionWorld;
 import loon.action.map.Config;
 import loon.action.map.Field2D;
 import loon.action.map.HexagonMap;
+import loon.action.map.TileCollisionListener;
 import loon.action.map.TileMap;
 import loon.component.LComponent;
 import loon.events.EventActionN;
 import loon.events.SysInput;
 import loon.events.SysKey;
 import loon.geom.ActionBindRect;
+import loon.geom.Vector2f;
 import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
@@ -65,6 +67,10 @@ public class MoveControl implements LRelease {
 		}
 
 	}
+
+	private TileCollisionListener _tileCollisionListener;
+
+	private final Vector2f _tempPos = new Vector2f();
 
 	private float _moveSpeed = 1f;
 
@@ -102,7 +108,21 @@ public class MoveControl implements LRelease {
 
 	private EventActionN _rightEvent;
 
-	private EventActionN _actionEvent;
+	private EventActionN _actionAnyEvent;
+
+	private EventActionN _action1Event;
+
+	private EventActionN _action2Event;
+
+	private EventActionN _action3Event;
+
+	private EventActionN _jumpEvent;
+
+	private EventActionN _submitEvent;
+
+	private EventActionN _cancelEvent;
+
+	private EventActionN _backEvent;
 
 	private long _delay = 0;
 
@@ -142,6 +162,10 @@ public class MoveControl implements LRelease {
 
 	private boolean _isDownOrUp = false;
 
+	private boolean _isAction1, _isAction2, _isAction3;
+
+	private boolean _isJump, _isSubmit, _isCancel, _isBack;
+
 	private SysInput _currentInput;
 
 	public MoveControl(ActionBind bind, TileMap map) {
@@ -179,6 +203,7 @@ public class MoveControl implements LRelease {
 		this._moveSpeed = moveSpeed;
 		this._vagueWidthScale = ws;
 		this._vagueHeightScale = hs;
+		this._freeDir = true;
 	}
 
 	public void setCurrentInput(SysInput input) {
@@ -189,13 +214,76 @@ public class MoveControl implements LRelease {
 		return this._currentInput;
 	}
 
-	public MoveControl setActionEvent(EventActionN e) {
-		this._actionEvent = e;
+	public MoveControl setActionAnyEvent(EventActionN e) {
+		this._actionAnyEvent = e;
 		return this;
 	}
 
-	public EventActionN getActionEvent() {
-		return this._actionEvent;
+	public EventActionN getActionAnyEvent() {
+		return this._actionAnyEvent;
+	}
+
+	public MoveControl setAction1Event(EventActionN e) {
+		this._action1Event = e;
+		return this;
+	}
+
+	public EventActionN getAction1Event() {
+		return this._action1Event;
+	}
+
+	public MoveControl setAction2Event(EventActionN e) {
+		this._action2Event = e;
+		return this;
+	}
+
+	public EventActionN getAction2Event() {
+		return this._action2Event;
+	}
+
+	public MoveControl setAction3Event(EventActionN e) {
+		this._action3Event = e;
+		return this;
+	}
+
+	public EventActionN getAction3Event() {
+		return this._action3Event;
+	}
+
+	public MoveControl setJumpEvent(EventActionN e) {
+		this._jumpEvent = e;
+		return this;
+	}
+
+	public EventActionN getJumpEvent() {
+		return this._jumpEvent;
+	}
+
+	public MoveControl setSubmitEvent(EventActionN e) {
+		this._submitEvent = e;
+		return this;
+	}
+
+	public EventActionN getSubmitEvent() {
+		return this._submitEvent;
+	}
+
+	public MoveControl setCancelEvent(EventActionN e) {
+		this._cancelEvent = e;
+		return this;
+	}
+
+	public EventActionN getCancelEvent() {
+		return this._cancelEvent;
+	}
+
+	public MoveControl setBackEvent(EventActionN e) {
+		this._backEvent = e;
+		return this;
+	}
+
+	public EventActionN getBackEvent() {
+		return this._backEvent;
 	}
 
 	public void onInputCall() {
@@ -215,14 +303,26 @@ public class MoveControl implements LRelease {
 		_isPressedKeyA = input.isKeyPressed(SysKey.LEFT) || input.isKeyPressed(SysKey.A);
 		_isPressedKeyW = input.isKeyPressed(SysKey.UP) || input.isKeyPressed(SysKey.W);
 		_isPressedKeyS = input.isKeyPressed(SysKey.DOWN) || input.isKeyPressed(SysKey.S);
+
+		_isAction1 = input.isKeyPressed(SysKey.Z);
+		_isAction2 = input.isKeyPressed(SysKey.X);
+		_isAction3 = input.isKeyPressed(SysKey.C);
+
 		final boolean newRight = _isPressedKeyD;
 		boolean newLeft = _isPressedKeyA;
 		boolean newUp = _isPressedKeyW;
 		boolean newDown = _isPressedKeyS;
+
 		_isReleasedKeyD = (input.isKeyReleased(SysKey.RIGHT) || input.isKeyReleased(SysKey.D));
 		_isReleasedKeyA = (input.isKeyReleased(SysKey.LEFT) || input.isKeyReleased(SysKey.A));
 		_isReleasedKeyW = (input.isKeyReleased(SysKey.UP) || input.isKeyReleased(SysKey.W));
 		_isReleasedKeyS = (input.isKeyReleased(SysKey.DOWN) || input.isKeyReleased(SysKey.S));
+
+		_isJump = input.isKeyReleased(SysKey.SPACE);
+		_isSubmit = input.isKeyReleased(SysKey.ENTER) || input.isKeyReleased(SysKey.END);
+		_isCancel = input.isKeyReleased(SysKey.ESCAPE);
+		_isBack = input.isKeyReleased(SysKey.BACKSPACE) || input.isKeyReleased(SysKey.BACK);
+
 		_justRight = !(_left && newLeft) && _isReleasedKeyD;
 		_justLeft = !(_right && newRight) && _isReleasedKeyA;
 		_justUp = !(_down && newDown) && _isReleasedKeyW;
@@ -277,8 +377,29 @@ public class MoveControl implements LRelease {
 			}
 			setDirection(Config.TUP);
 		}
-		if (_actionEvent != null) {
-			_actionEvent.update();
+		if (_isAction1 && _action1Event != null) {
+			_action1Event.update();
+		}
+		if (_isAction2 && _action2Event != null) {
+			_action2Event.update();
+		}
+		if (_isAction3 && _action3Event != null) {
+			_action3Event.update();
+		}
+		if (_isJump && _jumpEvent != null) {
+			_jumpEvent.update();
+		}
+		if (_isCancel && _cancelEvent != null) {
+			_cancelEvent.update();
+		}
+		if (_isSubmit && _submitEvent != null) {
+			_submitEvent.update();
+		}
+		if (_isBack && _backEvent != null) {
+			_backEvent.update();
+		}
+		if (_actionAnyEvent != null) {
+			_actionAnyEvent.update();
 		}
 	}
 
@@ -400,6 +521,10 @@ public class MoveControl implements LRelease {
 
 	protected final boolean checkTileCollision(Field2D field2d, ActionBind bind, float newX, float newY) {
 		if (field2d == null) {
+			if (!_moveBlocked && _tileCollisionListener != null) {
+				return _tileCollisionListener.checkTileCollision(bind.getX() - _offsetX, bind.getY() - _offsetY,
+						bind.getWidth() * _vagueWidthScale, bind.getHeight() * _vagueHeightScale, newX, newY);
+			}
 			return false;
 		}
 		return !_moveBlocked && field2d.checkTileCollision(bind.getX() - _offsetX, bind.getY() - _offsetY,
@@ -407,84 +532,99 @@ public class MoveControl implements LRelease {
 	}
 
 	public final boolean move(ActionBind bind, Field2D field2d, int direction) {
+		if (bind == null) {
+			return false;
+		}
 		float startX = bind.getX() - _offsetX;
 		float startY = bind.getY() - _offsetY;
 		float newX = 0;
 		float newY = 0;
 		_isMoving = true;
-		switch (direction) {
-		case Field2D.TUP:
-			newY = startY - _moveSpeed;
-			if (!checkTileCollision(field2d, bind, startX, newY)) {
-				startY = newY;
-			} else {
-				_isMoving = false;
+		if (field2d != null) {
+			switch (direction) {
+			case Field2D.TUP:
+				newY = startY - _moveSpeed;
+				if (!checkTileCollision(field2d, bind, startX, newY)) {
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.TDOWN:
+				newY = startY + _moveSpeed;
+				if (!checkTileCollision(field2d, bind, startX, newY)) {
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.TLEFT:
+				newX = startX - _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, startY)) {
+					startX = newX;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.TRIGHT:
+				newX = startX + _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, startY)) {
+					startX = newX;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.UP:
+				newX = startX + _moveSpeed;
+				newY = startY - _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, newY)) {
+					startX = newX;
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.DOWN:
+				newX = startX - _moveSpeed;
+				newY = startY + _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, newY)) {
+					startX = newX;
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.LEFT:
+				newX = startX - _moveSpeed;
+				newY = startY - _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, newY)) {
+					startX = newX;
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
+			case Field2D.RIGHT:
+				newX = startX + _moveSpeed;
+				newY = startY + _moveSpeed;
+				if (!checkTileCollision(field2d, bind, newX, newY)) {
+					startX = newX;
+					startY = newY;
+				} else {
+					_isMoving = false;
+				}
+				break;
 			}
-			break;
-		case Field2D.TDOWN:
-			newY = startY + _moveSpeed;
-			if (!checkTileCollision(field2d, bind, startX, newY)) {
-				startY = newY;
-			} else {
-				_isMoving = false;
-			}
-			break;
-		case Field2D.TLEFT:
-			newX = startX - _moveSpeed;
-			if (!checkTileCollision(field2d, bind, newX, startY)) {
-				startX = newX;
-			} else {
-				_isMoving = false;
-			}
-			break;
-		case Field2D.TRIGHT:
-			newX = startX + _moveSpeed;
-			if (!checkTileCollision(field2d, bind, newX, startY)) {
-				startX = newX;
-			} else {
-				_isMoving = false;
-			}
-			break;
-		case Field2D.UP:
-			newX = startX + _moveSpeed;
-			newY = startY - _moveSpeed;
+		} else if (!_moveBlocked) {
+			final Vector2f moved = Field2D.getDirectionToPoint(direction, 1, _tempPos);
+			newX = startX + (_moveSpeed * moved.x);
+			newY = startY + (_moveSpeed * moved.y);
 			if (!checkTileCollision(field2d, bind, newX, newY)) {
 				startX = newX;
 				startY = newY;
 			} else {
 				_isMoving = false;
 			}
-			break;
-		case Field2D.DOWN:
-			newX = startX - _moveSpeed;
-			newY = startY + _moveSpeed;
-			if (!checkTileCollision(field2d, bind, newX, newY)) {
-				startX = newX;
-				startY = newY;
-			} else {
-				_isMoving = false;
-			}
-			break;
-		case Field2D.LEFT:
-			newX = startX - _moveSpeed;
-			newY = startY - _moveSpeed;
-			if (!checkTileCollision(field2d, bind, newX, newY)) {
-				startX = newX;
-				startY = newY;
-			} else {
-				_isMoving = false;
-			}
-			break;
-		case Field2D.RIGHT:
-			newX = startX + _moveSpeed;
-			newY = startY + _moveSpeed;
-			if (!checkTileCollision(field2d, bind, newX, newY)) {
-				startX = newX;
-				startY = newY;
-			} else {
-				_isMoving = false;
-			}
-			break;
 		}
 		if (_isMoving) {
 			movePos(bind, startX, startY, direction);
@@ -527,6 +667,18 @@ public class MoveControl implements LRelease {
 
 	public boolean isMoving() {
 		return _isMoving;
+	}
+
+	public TileCollisionListener getTileCollisionListener() {
+		return _currentArrayMap == null ? _tileCollisionListener : _currentArrayMap.getTileCollisionListener();
+	}
+
+	public MoveControl setTileCollisionListener(TileCollisionListener t) {
+		if (_currentArrayMap != null) {
+			_currentArrayMap.setTileCollisionListener(t);
+		}
+		_tileCollisionListener = t;
+		return this;
 	}
 
 	public float getSpeed() {
@@ -795,6 +947,34 @@ public class MoveControl implements LRelease {
 
 	public boolean isDownOrUp() {
 		return _isDownOrUp;
+	}
+
+	public boolean isAction1() {
+		return _isAction1;
+	}
+
+	public boolean isAction2() {
+		return _isAction2;
+	}
+
+	public boolean isAction3() {
+		return _isAction3;
+	}
+
+	public boolean isJump() {
+		return _isJump;
+	}
+
+	public boolean isSubmit() {
+		return _isSubmit;
+	}
+
+	public boolean isCancel() {
+		return _isCancel;
+	}
+
+	public boolean isBack() {
+		return _isBack;
 	}
 
 	public boolean isClosed() {

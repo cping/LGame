@@ -151,7 +151,7 @@ public class TileCollision implements LRelease {
 				for (int y = 0; y < h; y++) {
 					final int tx = MathUtils.ifloor(x * _tileSize.x);
 					final int ty = MathUtils.ifloor(y * _tileSize.y);
-					BooleanValue v = getTileData(x, y);
+					final BooleanValue v = getTileData(x, y);
 					if (v.get()) {
 						g.setColor(_collisionColor);
 						g.fillRect(tx, ty, _tileSize.x, _tileSize.y);
