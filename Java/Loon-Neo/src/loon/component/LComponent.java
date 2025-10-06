@@ -1898,6 +1898,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public void resetPivot() {
+		setPivot(-1f, -1f);
+	}
+
 	public LComponent setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}

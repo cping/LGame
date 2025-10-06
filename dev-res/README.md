@@ -43,6 +43,7 @@
 * packr: 一个基于命令行的Java部署工具，可以把jar和jre混合到windows、mac以及linux平台的可执行文件中去。[官网](https://github.com/libgdx/packr/)
 * izpack: 一个基于Java制作的跨平台部署工具，优点是跨平台，缺点是——这货的运行本身就基于Java，也就是没有jre无法运行…… [官网](http://izpack.org/)
 * Launch4j: 一款支持多平台的Java应用部署工具，可以把jre和jar打包到相应平台的可执行程序中去，附带一提，这和名字近似的install4j不同，是完全免费的。 [官网](http://launch4j.sourceforge.net/)
+* ProGuard: ProGuard是一款压缩、优化和混淆Java字节码文件的工具。 [官网](https://github.com/Guardsquare/proguard)
 
 ### Java的脚本语言支持库(仅包含还在更新的)
 

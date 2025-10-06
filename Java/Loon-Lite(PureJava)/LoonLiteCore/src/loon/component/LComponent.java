@@ -1889,6 +1889,10 @@ public abstract class LComponent extends LObject<LContainer>
 		return _pivotY;
 	}
 
+	public void resetPivot() {
+		setPivot(-1f, -1f);
+	}
+
 	public LComponent setPivot(float pX, float pY) {
 		setPivotX(pX);
 		setPivotY(pY);

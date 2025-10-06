@@ -1351,6 +1351,10 @@ public abstract class SpriteBase<T extends ISprite> extends LObject<T> implement
 		return this._scaleCenterY;
 	}
 
+	public void resetScaleCenter() {
+		setScaleCenter(-1f, -1f);
+	}
+
 	public void setScaleCenterX(final float sx) {
 		this._scaleCenterX = sx;
 	}

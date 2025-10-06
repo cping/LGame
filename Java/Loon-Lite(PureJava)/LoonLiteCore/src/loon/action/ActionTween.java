@@ -236,6 +236,22 @@ public final class ActionTween extends ActionTweenBase<ActionTween> {
 		return event(new FlashTo(duration, delay, easing));
 	}
 
+	public ActionTween flashScaleTo(float endScale) {
+		return event(new FlashScaleTo(endScale));
+	}
+
+	public ActionTween flashScaleTo(float startScale, float endScale) {
+		return event(new FlashScaleTo(startScale, endScale));
+	}
+
+	public ActionTween flashScaleTo(float startScale, float endScale, float speed) {
+		return event(new FlashScaleTo(startScale, endScale, speed));
+	}
+
+	public ActionTween flashScaleTo(float startScale, float endScale, float speed, float duration, EasingMode mode) {
+		return event(new FlashScaleTo(startScale, endScale, speed, duration, mode));
+	}
+
 	/**
 	 * 按照指定路径移动
 	 * 
