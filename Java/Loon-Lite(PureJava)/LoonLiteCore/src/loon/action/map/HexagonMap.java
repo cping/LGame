@@ -2321,6 +2321,16 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		return this;
+	}
+
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		return this;
+	}
+
+	@Override
 	protected void _onDestroy() {
 		roll = false;
 		visible = false;

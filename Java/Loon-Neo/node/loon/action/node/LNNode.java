@@ -1550,6 +1550,19 @@ public class LNNode extends LObject<LNNode> implements ISprite, BoxSize {
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		_anchor.setEmpty();
+		return this;
+	}
+
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		_anchor.x = sx;
+		_anchor.y = sy;
+		return this;
+	}
+
+	@Override
 	protected void _onDestroy() {
 		this._isClose = true;
 		if (this._objectSuper != null) {

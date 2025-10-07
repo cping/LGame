@@ -38,10 +38,12 @@ public class LCardGroup extends LContainer {
 
 	private float _cardRotation;
 	private float _heightOffset;
+	private float _verticalOffsetY;
 
 	private boolean _clickCardToMoveUp;
 	private boolean _forceFitContainer;
 	private boolean _updateCards;
+	private boolean _middleProtrusion;
 
 	private LColor _selectedColor;
 
@@ -65,8 +67,18 @@ public class LCardGroup extends LContainer {
 		setAlignment(HorizontalAlign.CENTER);
 		setClickCardToMoveUp(true);
 		setForceFitContainer(true);
+		setMiddleProtrusionCard(true);
 		setElastic(false);
 		setLocked(false);
+	}
+
+	public boolean isMiddleProtrusionCard() {
+		return this._middleProtrusion;
+	}
+
+	public LCardGroup setMiddleProtrusionCard(boolean m) {
+		this._middleProtrusion = m;
+		return this;
 	}
 
 	public LCardGroup addCard(LComponent... cs) {
@@ -249,18 +261,14 @@ public class LCardGroup extends LContainer {
 		if (_childs == null) {
 			return;
 		}
-		int size = _childs.length;
+		final int size = _childs.length;
 		for (int i = 0; i < size; i++) {
-			LComponent comp = _childs[i];
+			final LComponent comp = _childs[i];
 			if (comp != null) {
-				int idx = i;
+				final int idx = i;
 				final float angle = getCardRotation(idx);
 				comp.setRotation(angle);
-				if (i == 0 || i == size - 1) {
-					comp.setLocation(comp.getX(), comp.getY() + getCardVerticalOffset(idx) + MathUtils.abs(angle) * 2f);
-				} else {
-					comp.setLocation(comp.getX(), comp.getY() + getCardVerticalOffset(idx) + MathUtils.abs(angle));
-				}
+				comp.setLocation(comp.getX(), comp.getY() + getCardVerticalOffset(idx));
 			}
 		}
 	}
@@ -297,16 +305,24 @@ public class LCardGroup extends LContainer {
 		if (count < 3) {
 			return 0;
 		}
-		return -_cardRotation * (index - (count - 1f) / 2f) / ((count - 1f) / 2f);
+		return -(_cardRotation * (index - (count - 1f) / 2f) / ((count - 1f) / 2f));
 	}
 
 	private float getCardVerticalOffset(int index) {
-		final int count = getChildCount();
-		if (count < 3) {
-			return 0;
+		if (!_updateCards || _verticalOffsetY == -1) {
+			final int count = getChildCount();
+			if (count < 3) {
+				return 0;
+			}
+			final float result = MathUtils.abs(_heightOffset
+					* (1f - MathUtils.pow(index - (count - 1f) / 2f, 2f) / MathUtils.pow((count - 1f) / 2f, 2f)));
+			float off = 0f;
+			if (_childs != null && _childs.length > 0) {
+				off = getChildTotalHeight() / count / 3f;
+			}
+			_verticalOffsetY = (_middleProtrusion ? -result : result) + off;
 		}
-		return _heightOffset
-				* (1f - MathUtils.pow(index - (count - 1f) / 2f, 2f) / MathUtils.pow((count - 1f) / 2f, 2f));
+		return _verticalOffsetY;
 	}
 
 	private void matchChildrenToFitContainer(float childrenTotalWidth) {

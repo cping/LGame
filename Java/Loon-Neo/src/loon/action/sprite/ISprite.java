@@ -131,6 +131,10 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	State getState();
 
+	ISprite resetAnchor();
+	
+	ISprite setAnchor(float sx, float sy);
+
 	ISprite setSprites(Sprites ss);
 
 	Sprites getSprites();

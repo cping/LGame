@@ -408,6 +408,16 @@ public class RocSSprite extends LObject<ISprite> implements ISprite {
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		return this;
+	}
+
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		return this;
+	}
+
+	@Override
 	protected void _onDestroy() {
 		if (_sprite != null) {
 			_sprite.close();

@@ -670,6 +670,16 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
+	public TMXMapRenderer resetAnchor() {
+		return this;
+	}
+
+	@Override
+	public TMXMapRenderer setAnchor(float sx, float sy) {
+		return this;
+	}
+
+	@Override
 	public ISprite buildToScreen() {
 		if (sprites != null) {
 			sprites.add(this);

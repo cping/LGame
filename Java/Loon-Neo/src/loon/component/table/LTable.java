@@ -502,8 +502,8 @@ public class LTable extends LContainer implements FontSet<LTable> {
 		if (!isVisible()) {
 			return;
 		}
-		ITableModel model = getModel();
-		HeaderControl header = getHeader();
+		final ITableModel model = getModel();
+		final HeaderControl header = getHeader();
 		if (model == null) {
 			return;
 		}
@@ -513,7 +513,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 			}
 			_initNativeDraw = true;
 		}
-		int old = g.color();
+		final int old = g.color();
 		try {
 			int x = displayX;
 			int y = displayY;
@@ -546,7 +546,7 @@ public class LTable extends LContainer implements FontSet<LTable> {
 						_cacheFonts.close();
 						_cacheFonts = null;
 					}
-					Image image = Image.createImage(_tableWidth, _tableHeight);
+					final Image image = Image.createImage(_tableWidth, _tableHeight);
 					createSystemFont(image.getCanvas(), 0, 0);
 					_cacheFonts = image.onHaveToClose(true).texture();
 					model.setDirty(false);

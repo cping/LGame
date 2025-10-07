@@ -312,8 +312,8 @@ public abstract class LComponent extends LObject<LContainer>
 		int tempWidth = (width() - getScreenWidth());
 		int tempHeight = (height() - getScreenHeight());
 
-		int limitX = tempX + tempWidth;
-		int limitY = tempY + tempHeight;
+		final int limitX = tempX + tempWidth;
+		final int limitY = tempY + tempHeight;
 
 		if (_width >= getScreenWidth()) {
 			if (limitX > tempWidth) {
@@ -339,7 +339,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setLayer(int z) {
+	public void setLayer(final int z) {
 		if (_objectSuper != null && getLayer() != z) {
 			_objectSuper.setDirtyChildren(true);
 		}
@@ -414,7 +414,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 
 	 */
 	@Override
-	public void update(long elapsedTime) {
+	public void update(final long elapsedTime) {
 		if (_destroyed) {
 			return;
 		}
@@ -430,20 +430,20 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public LComponent loop(EventAction la) {
+	public LComponent loop(final EventAction la) {
 		this._loopActionListener = la;
 		return this;
 	}
 
-	public void process(long elapsedTime) {
+	public void process(final long elapsedTime) {
 	}
 
-	public abstract void createUI(GLEx g, int x, int y);
+	public abstract void createUI(final GLEx g, final int x, final int y);
 
-	protected void preUI(GLEx g) {
+	protected void preUI(final GLEx g) {
 	}
 
-	protected void postUI(GLEx g) {
+	protected void postUI(final GLEx g) {
 	}
 
 	/**
@@ -451,7 +451,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * 
 	 * @param g
 	 */
-	public void createUI(GLEx g) {
+	public void createUI(final GLEx g) {
 		if (_destroyed) {
 			return;
 		}
@@ -479,7 +479,7 @@ public abstract class LComponent extends LObject<LContainer>
 			}
 			if (update) {
 				g.saveTx();
-				Affine2f tx = g.tx();
+				final Affine2f tx = g.tx();
 				final float centerX = (_pivotX == -1 ? newX + _origin.ox(width) : newX + _pivotX);
 				final float centerY = (_pivotY == -1 ? newY + _origin.oy(height) : newY + _pivotY);
 				if (_objectRotation != 0) {
@@ -538,25 +538,25 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @param w
 	 * @param h
 	 */
-	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
+	protected void createCustomUI(final GLEx g, final int x, final int y, final int w, final int h) {
 	}
 
-	protected void createCustomUI(int w, int h) {
+	protected void createCustomUI(final int w, final int h) {
 	}
 
-	public boolean contains(float x, float y) {
+	public boolean contains(final float x, final float y) {
 		return contains(x, y, 0, 0);
 	}
 
-	public boolean contains(float x, float y, float width, float height) {
+	public boolean contains(final float x, final float y, final float width, final float height) {
 		return (this._component_visible && getCollisionBox().contains(x, y, width, height));
 	}
 
-	public boolean intersects(float x1, float y1) {
+	public boolean intersects(final float x1, final float y1) {
 		return intersects(x1, y1, 1f, 1f);
 	}
 
-	public boolean intersects(float x1, float y1, float width, float height) {
+	public boolean intersects(final float x1, final float y1, final float width, final float height) {
 		return (this._component_visible) && getCollisionBox().intersects(x1, y1, width, height);
 	}
 
@@ -575,7 +575,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean intersects(CollisionObject obj) {
+	public boolean intersects(final CollisionObject obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -583,7 +583,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean intersects(Shape rect) {
+	public boolean intersects(final Shape rect) {
 		if (rect == null) {
 			return false;
 		}
@@ -591,7 +591,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean contains(CollisionObject obj) {
+	public boolean contains(final CollisionObject obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -599,7 +599,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean contains(Shape rect) {
+	public boolean contains(final Shape rect) {
 		if (rect == null) {
 			return false;
 		}
@@ -607,19 +607,19 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean collided(Shape rect) {
+	public boolean collided(final Shape rect) {
 		if (rect == null) {
 			return false;
 		}
 		return getCollisionBox().collided(rect);
 	}
 
-	public boolean intersects(LComponent comp) {
+	public boolean intersects(final LComponent comp) {
 		return (this._component_visible) && (comp != null && comp.isVisible())
 				&& getCollisionBox().intersects(comp.getCollisionBox());
 	}
 
-	public boolean contains(LComponent comp) {
+	public boolean contains(final LComponent comp) {
 		return (this._component_visible) && (comp != null && comp.isVisible())
 				&& getCollisionBox().contains(comp.getCollisionBox());
 	}
@@ -630,7 +630,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setVisible(boolean v) {
+	public void setVisible(final boolean v) {
 		if (this._component_visible == v) {
 			return;
 		}
@@ -671,7 +671,7 @@ public abstract class LComponent extends LObject<LContainer>
 				: (this._component_enabled && this._objectSuper.isEnabled());
 	}
 
-	public LComponent setEnabled(boolean b) {
+	public LComponent setEnabled(final boolean b) {
 		if (this._component_enabled == b) {
 			return this;
 		}
@@ -687,7 +687,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public LComponent setActiveX(boolean a) {
+	public LComponent setActiveX(final boolean a) {
 		this._component_paused = !a;
 		this.setVisible(a);
 		this.setEnabled(a);
@@ -702,7 +702,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._component_selected;
 	}
 
-	final LComponent setSelected(boolean b) {
+	final LComponent setSelected(final boolean b) {
 		this._component_selected = b;
 		if (_component_selected) {
 			processInFocus();
@@ -757,7 +757,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._component_focusable;
 	}
 
-	public LComponent setFocusable(boolean b) {
+	public LComponent setFocusable(final boolean b) {
 		this._component_focusable = b;
 		return this;
 	}
@@ -782,12 +782,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return getSuper();
 	}
 
-	protected final void setContainer(LContainer container) {
+	protected final void setContainer(final LContainer container) {
 		this.changeContainer(container);
 		this.validatePosition();
 	}
 
-	protected final void changeContainer(LContainer container) {
+	protected final void changeContainer(final LContainer container) {
 		LContainer comp = getSuper();
 		if (comp == this) {
 			return;
@@ -799,7 +799,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setX(Integer x) {
+	public void setX(final Integer x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
 			this.validatePosition();
@@ -807,7 +807,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setX(float x) {
+	public void setX(final float x) {
 		if (this.getX() != x || x == 0) {
 			super.setX(x);
 			this.validatePosition();
@@ -815,7 +815,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setY(Integer y) {
+	public void setY(final Integer y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
 			this.validatePosition();
@@ -823,7 +823,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setY(float y) {
+	public void setY(final float y) {
 		if (this.getY() != y || y == 0) {
 			super.setY(y);
 			this.validatePosition();
@@ -831,12 +831,12 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setLocation(Vector2f location) {
+	public void setLocation(final Vector2f location) {
 		setLocation(location.x, location.y);
 	}
 
 	@Override
-	public void setLocation(float dx, float dy) {
+	public void setLocation(final float dx, final float dy) {
 		if (this.getX() != dx || this.getY() != dy || dx == 0 || dy == 0) {
 			super.setLocation(dx, dy);
 			this.validatePosition();
@@ -844,7 +844,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void move(float dx, float dy) {
+	public void move(final float dx, final float dy) {
 		if (dx != 0 || dy != 0) {
 			final float moved = 128f;
 			if (dx > -moved && dx < moved && dy > -moved && dy < moved) {
@@ -854,7 +854,7 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public LComponent setBounds(float dx, float dy, float width, float height) {
+	public LComponent setBounds(final float dx, final float dy, final float width, final float height) {
 		this.setLocation(dx, dy);
 		this.setSize(width, height);
 		return this;
@@ -864,13 +864,13 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._component_resizabled;
 	}
 
-	public LComponent setResizabled(boolean r) {
+	public LComponent setResizabled(final boolean r) {
 		this._component_resizabled = r;
 		return this;
 	}
 
 	@Override
-	public LComponent setSize(float w, float h) {
+	public LComponent setSize(final float w, final float h) {
 		if (!MathUtils.equal(this._width, w) || !MathUtils.equal(this._height, h)) {
 			this._width = MathUtils.max(1f, w);
 			this._height = MathUtils.max(1f, h);
@@ -879,11 +879,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public LComponent sizeBy(float s) {
+	public LComponent sizeBy(final float s) {
 		return sizeBy(s, s);
 	}
 
-	public LComponent sizeBy(float w, float h) {
+	public LComponent sizeBy(final float w, final float h) {
 		if (!MathUtils.equal(this._width, w) || !MathUtils.equal(this._height, h)) {
 			this._width += MathUtils.max(1f, w);
 			this._height += MathUtils.max(1f, h);
@@ -892,7 +892,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public LComponent setValidateEvent(EventActionN n) {
+	public LComponent setValidateEvent(final EventActionN n) {
 		this._validateEvent = n;
 		return this;
 	}
@@ -1010,28 +1010,28 @@ public abstract class LComponent extends LObject<LContainer>
 		return MathUtils.ifloor(getScreenBottom() + getHeight());
 	}
 
-	public LComponent size(float s) {
+	public LComponent size(final float s) {
 		return size(s, s);
 	}
 
-	public LComponent size(float w, float h) {
+	public LComponent size(final float w, final float h) {
 		setWidth(w);
 		setHeight(h);
 		return this;
 	}
 
-	public LComponent width(float w) {
+	public LComponent width(final float w) {
 		setWidth(w);
 		return this;
 	}
 
-	public LComponent height(float w) {
+	public LComponent height(final float w) {
 		setHeight(w);
 		return this;
 	}
 
 	@Override
-	public void setHeight(float height) {
+	public void setHeight(final float height) {
 		if (!MathUtils.equal(height, this._height)) {
 			this._height = MathUtils.max(1f, height);
 			this.validateResize();
@@ -1039,7 +1039,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setWidth(float width) {
+	public void setWidth(final float width) {
 		if (!MathUtils.equal(width, this._width)) {
 			this._width = MathUtils.max(1f, width);
 			this.validateResize();
@@ -1060,7 +1060,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _fixedWidthOffset;
 	}
 
-	public LComponent setFixedWidthOffset(float fixedWidthOffset) {
+	public LComponent setFixedWidthOffset(final float fixedWidthOffset) {
 		this._fixedWidthOffset = fixedWidthOffset;
 		return this;
 	}
@@ -1069,12 +1069,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return _fixedHeightOffset;
 	}
 
-	public LComponent setFixedHeightOffset(float fixedHeightOffset) {
+	public LComponent setFixedHeightOffset(final float fixedHeightOffset) {
 		this._fixedHeightOffset = fixedHeightOffset;
 		return this;
 	}
 
-	public RectBox getInScreenCollisionBox(float offsetX, float offsetY) {
+	public RectBox getInScreenCollisionBox(final float offsetX, final float offsetY) {
 		validatePosition();
 		final Screen screen = getScreen();
 		float screenX = 0f;
@@ -1091,56 +1091,56 @@ public abstract class LComponent extends LObject<LContainer>
 				_objectRotation, _objectRect));
 	}
 
-	public boolean containsInScreen(XY xy) {
+	public boolean containsInScreen(final XY xy) {
 		return containsInScreen(xy.getX(), xy.getY());
 	}
 
-	public boolean containsInScreen(float x, float y) {
+	public boolean containsInScreen(final float x, final float y) {
 		return containsInScreen(x, y, 0f, 0f);
 	}
 
-	public boolean containsInScreen(RectBox rect) {
+	public boolean containsInScreen(final RectBox rect) {
 		return containsInScreen(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public boolean containsInScreen(CollisionObject obj) {
+	public boolean containsInScreen(final CollisionObject obj) {
 		if (obj == null) {
 			return false;
 		}
 		return containsInScreen(obj.getRectBox());
 	}
 
-	public boolean containsInScreen(float x, float y, float width, float height) {
+	public boolean containsInScreen(final float x, final float y, final float width, final float height) {
 		return getInScreenCollisionBox(width, height).contains(x, y, width, height);
 	}
 
-	public boolean containsInScreen(ActionBind obj) {
+	public boolean containsInScreen(final ActionBind obj) {
 		if (obj == null) {
 			return false;
 		}
 		return containsInScreen(obj.getRectBox());
 	}
 
-	public boolean intersectsInScreen(XY xy) {
+	public boolean intersectsInScreen(final XY xy) {
 		return intersectsInScreen(xy.getX(), xy.getY());
 	}
 
-	public boolean intersectsInScreen(float x, float y) {
+	public boolean intersectsInScreen(final float x, final float y) {
 		return intersectsInScreen(x, y, 1f, 1f);
 	}
 
-	public boolean intersectsInScreen(RectBox rect) {
+	public boolean intersectsInScreen(final RectBox rect) {
 		return intersectsInScreen(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public boolean intersectsInScreen(CollisionObject obj) {
+	public boolean intersectsInScreen(final CollisionObject obj) {
 		if (obj == null) {
 			return false;
 		}
 		return intersectsInScreen(obj.getRectBox());
 	}
 
-	public boolean intersectsInScreen(ActionBind obj) {
+	public boolean intersectsInScreen(final ActionBind obj) {
 		if (obj == null) {
 			return false;
 		}
@@ -1175,7 +1175,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.tooltipParent;
 	}
 
-	public void setToolTipParent(LComponent tipParent) {
+	public void setToolTipParent(final LComponent tipParent) {
 		this.tooltipParent = tipParent;
 	}
 
@@ -1183,7 +1183,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.tooltip;
 	}
 
-	public LComponent setToolTipText(String text) {
+	public LComponent setToolTipText(final String text) {
 		if (StringUtils.isEmpty(text)) {
 			return this;
 		}
@@ -1248,19 +1248,19 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public void downClick(int x, int y) {
+	public void downClick(final int x, final int y) {
 		if (_clickListener != null) {
 			_clickListener.DownClick(this, x, y);
 		}
 	}
 
-	public void upClick(int x, int y) {
+	public void upClick(final int x, final int y) {
 		if (_clickListener != null) {
 			_clickListener.UpClick(this, x, y);
 		}
 	}
 
-	public void dragClick(int x, int y) {
+	public void dragClick(final int x, final int y) {
 		if (_clickListener != null) {
 			_clickListener.DragClick(this, x, y);
 		}
@@ -1356,10 +1356,10 @@ public abstract class LComponent extends LObject<LContainer>
 
 	}
 
-	protected void keyPressed(GameKey key) {
+	protected void keyPressed(final GameKey key) {
 	}
 
-	protected void keyReleased(GameKey key) {
+	protected void keyReleased(final GameKey key) {
 	}
 
 	protected void onAttached() {
@@ -1449,7 +1449,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return isLongPressed(LSystem.LONG_PRESSED_TIME);
 	}
 
-	public boolean isLongPressed(float seconds) {
+	public boolean isLongPressed(final float seconds) {
 		if (_downUpTimer.completed()) {
 			return false;
 		}
@@ -1475,7 +1475,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._imageUI;
 	}
 
-	public void setImageUI(LTexture[] imageUI, boolean processUI) {
+	public void setImageUI(final LTexture[] imageUI, final boolean processUI) {
 		if (imageUI != null) {
 			this._width = imageUI[0].getWidth();
 			this._height = imageUI[0].getHeight();
@@ -1483,7 +1483,7 @@ public abstract class LComponent extends LObject<LContainer>
 		this._imageUI = imageUI;
 	}
 
-	public void setImageUI(int index, LTexture imageUI) {
+	public void setImageUI(final int index, final LTexture imageUI) {
 		if (imageUI != null) {
 			this._width = imageUI.getWidth();
 			this._height = imageUI.getHeight();
@@ -1501,29 +1501,29 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.setBackground(LSystem.base().graphics().finalColorTex(), false);
 	}
 
-	public LComponent setBackground(String fileName) {
+	public LComponent setBackground(final String fileName) {
 		return this.setBackground(LSystem.loadTexture(fileName));
 	}
 
-	public LComponent setBackground(LColor color) {
+	public LComponent setBackground(final LColor color) {
 		return setBackground(TextureUtils.createTexture(1, 1, color), false);
 	}
 
-	public LComponent setBackgroundString(String color) {
+	public LComponent setBackgroundString(final String color) {
 		return setBackground(new LColor(color));
 	}
 
-	public LComponent onlyBackground(LTexture b) {
+	public LComponent onlyBackground(final LTexture b) {
 		this._drawBackground = false;
 		this.setBackground(b);
 		return this;
 	}
 
-	public LComponent setBackground(LTexture b) {
+	public LComponent setBackground(final LTexture b) {
 		return setBackground(b, true);
 	}
 
-	public LComponent setBackground(LTexture b, boolean updateSize) {
+	public LComponent setBackground(final LTexture b, final boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -1537,11 +1537,11 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public LComponent setBackground(LTexture b, float w, float h) {
+	public LComponent setBackground(final LTexture b, final float w, final float h) {
 		return setBackground(b, w, h, true);
 	}
 
-	public LComponent setBackground(LTexture b, float w, float h, boolean updateSize) {
+	public LComponent setBackground(final LTexture b, final float w, final float h, final boolean updateSize) {
 		if (b == null) {
 			return this;
 		}
@@ -1564,7 +1564,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _cam_y == 0 ? y() : _cam_y;
 	}
 
-	public LComponent clip(boolean b) {
+	public LComponent clip(final boolean b) {
 		return setElastic(b);
 	}
 
@@ -1576,7 +1576,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._component_elastic;
 	}
 
-	public LComponent setElastic(boolean b) {
+	public LComponent setElastic(final boolean b) {
 		if (getWidth() > LSystem.LAYER_TILE_SIZE || getHeight() > LSystem.LAYER_TILE_SIZE) {
 			this._component_elastic = b;
 		} else {
@@ -1589,7 +1589,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _component_autoDestroy;
 	}
 
-	public LComponent setAutoDestroy(boolean autoDestroy) {
+	public LComponent setAutoDestroy(final boolean autoDestroy) {
 		this._component_autoDestroy = autoDestroy;
 		return this;
 	}
@@ -1598,7 +1598,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._component_enabled;
 	}
 
-	public LComponent setActive(boolean e) {
+	public LComponent setActive(final boolean e) {
 		this._component_enabled = e;
 		return this;
 	}
@@ -1612,12 +1612,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return this.isSelectDraw;
 	}
 
-	public LComponent setDrawSelect(boolean select) {
+	public LComponent setDrawSelect(final boolean select) {
 		this.isSelectDraw = select;
 		return this;
 	}
 
-	public LComponent debug(boolean select) {
+	public LComponent debug(final boolean select) {
 		return setDrawSelect(select);
 	}
 
@@ -1627,7 +1627,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public void setScale(float sx, float sy) {
+	public void setScale(final float sx, final float sy) {
 		if (!MathUtils.equal(this._scaleX, sx) || !MathUtils.equal(this._scaleY, sy)) {
 			this._scaleX = sx;
 			this._scaleY = sy;
@@ -1635,11 +1635,11 @@ public abstract class LComponent extends LObject<LContainer>
 		}
 	}
 
-	public LComponent scaleBy(float s) {
+	public LComponent scaleBy(final float s) {
 		return scaleBy(s, s);
 	}
 
-	public LComponent scaleBy(float sx, float sy) {
+	public LComponent scaleBy(final float sx, final float sy) {
 		if (!MathUtils.equal(this._scaleX, sx) || !MathUtils.equal(this._scaleY, sy)) {
 			this._scaleX += sx;
 			this._scaleY += sy;
@@ -1659,10 +1659,10 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public float[] getUVs() {
-		float left = _flipX ? 1f : 0f;
-		float right = _flipX ? 0f : 1f;
-		float top = _flipY ? 1f : 0f;
-		float bottom = _flipY ? 0f : 1f;
+		final float left = _flipX ? 1f : 0f;
+		final float right = _flipX ? 0f : 1f;
+		final float top = _flipY ? 1f : 0f;
+		final float bottom = _flipY ? 0f : 1f;
 		return new float[] { left, top, right, top, right, bottom, left, bottom };
 	}
 
@@ -1672,18 +1672,18 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean inContains(float x, float y, float w, float h) {
+	public boolean inContains(final float x, final float y, final float w, final float h) {
 		if (_objectSuper != null) {
 			return _objectSuper.contains(x, y, w, h);
 		}
 		return getCollisionBox().contains(x, y, w, h);
 	}
 
-	private float toPixelScaleX(float x) {
+	private float toPixelScaleX(final float x) {
 		return MathUtils.iceil(x / _scaleX);
 	}
 
-	private float toPixelScaleY(float y) {
+	private float toPixelScaleY(final float y) {
 		return MathUtils.iceil(y / _scaleY);
 	}
 
@@ -1719,11 +1719,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return toPixelScaleY(getInternalTouchY());
 	}
 
-	public Vector2f getUITouch(float x, float y) {
+	public Vector2f getUITouch(final float x, final float y) {
 		return getUITouch(x, y, null);
 	}
 
-	public Vector2f getUITouch(float x, float y, Vector2f pointResult) {
+	public Vector2f getUITouch(final float x, final float y, Vector2f pointResult) {
 		if (!(x == -1 && y == -1 && pointResult != null)) {
 			if (pointResult == null) {
 				pointResult = new Vector2f(x, y);
@@ -1747,10 +1747,10 @@ public abstract class LComponent extends LObject<LContainer>
 			pointResult.y = toPixelScaleY(newY) + _touchOffset.y;
 			return pointResult;
 		}
-		float oldWidth = _width;
-		float oldHeight = _height;
-		float newWidth = getWidth();
-		float newHeight = getHeight();
+		final float oldWidth = _width;
+		final float oldHeight = _height;
+		final float newWidth = getWidth();
+		final float newHeight = getHeight();
 		float offX = oldWidth / 2f - newWidth / 2f;
 		float offY = oldHeight / 2f - newHeight / 2f;
 		float posX = (newX - offX);
@@ -1874,12 +1874,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return _objectSuper.getHeight();
 	}
 
-	public LComponent setPivotX(float pX) {
+	public LComponent setPivotX(final float pX) {
 		_pivotX = pX;
 		return this;
 	}
 
-	public LComponent setPivotY(float pY) {
+	public LComponent setPivotY(final float pY) {
 		_pivotY = pY;
 		return this;
 	}
@@ -1892,7 +1892,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _pivotY;
 	}
 
-	public LComponent setPivot(float pX, float pY) {
+	public LComponent setPivot(final float pX, final float pY) {
 		setPivotX(pX);
 		setPivotY(pY);
 		return this;
@@ -1900,6 +1900,11 @@ public abstract class LComponent extends LObject<LContainer>
 
 	public void resetPivot() {
 		setPivot(-1f, -1f);
+	}
+
+	public LComponent resetAnchor() {
+		resetPivot();
+		return this;
 	}
 
 	public LComponent setAnchor(final float scale) {
@@ -1916,7 +1921,7 @@ public abstract class LComponent extends LObject<LContainer>
 				getCenterY() - this._pivotY * this.getHeight());
 	}
 
-	public LComponent coord(float x, float y) {
+	public LComponent coord(final float x, final float y) {
 		setLocation(x, y);
 		return this;
 	}
@@ -1981,7 +1986,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @param speed
 	 * @return
 	 */
-	public LComponent in(float speed) {
+	public LComponent in(final float speed) {
 		this.setAlpha(0f);
 		this.selfAction().fadeIn(speed).start();
 		return this;
@@ -2002,7 +2007,7 @@ public abstract class LComponent extends LObject<LContainer>
 	 * @param speed
 	 * @return
 	 */
-	public LComponent out(float speed) {
+	public LComponent out(final float speed) {
 		this.selfAction().fadeOut(speed).start().setActionListener(new HideComponent(this));
 		return this;
 	}
@@ -2064,7 +2069,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return y;
 	}
 
-	public boolean isTouchInUI(float rotation) {
+	public boolean isTouchInUI(final float rotation) {
 		return checkPointInRect(getUITouchXY(), getRectBox(), rotation);
 	}
 
@@ -2136,19 +2141,19 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public LComponent setFlipX(boolean x) {
+	public LComponent setFlipX(final boolean x) {
 		this._flipX = x;
 		return this;
 	}
 
 	@Override
-	public LComponent setFlipY(boolean y) {
+	public LComponent setFlipY(final boolean y) {
 		this._flipY = y;
 		return this;
 	}
 
 	@Override
-	public LComponent setFlipXY(boolean x, boolean y) {
+	public LComponent setFlipXY(final boolean x, final boolean y) {
 		setFlipX(x);
 		setFlipY(y);
 		return this;
@@ -2164,19 +2169,19 @@ public abstract class LComponent extends LObject<LContainer>
 		return _flipY;
 	}
 
-	public boolean isPointInUI(Vector2f v) {
+	public boolean isPointInUI(final Vector2f v) {
 		return isPointInUI(v.x, v.y);
 	}
 
-	public boolean isPointInUI(PointI p) {
+	public boolean isPointInUI(final PointI p) {
 		return isPointInUI(p.x, p.y);
 	}
 
-	public boolean isPointInUI(PointF p) {
+	public boolean isPointInUI(final PointF p) {
 		return isPointInUI(p.x, p.y);
 	}
 
-	public boolean isPointInUI(float x, float y) {
+	public boolean isPointInUI(final float x, final float y) {
 		return getCollisionBox().contains(x, y);
 	}
 
@@ -2184,28 +2189,28 @@ public abstract class LComponent extends LObject<LContainer>
 		return isPointInUI(getTouchX(), getTouchY());
 	}
 
-	public boolean isKeyDown(int key) {
+	public boolean isKeyDown(final int key) {
 		if (_input == null) {
 			return SysKey.isKeyPressed(key);
 		}
 		return _input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
-	public boolean isKeyUp(int key) {
+	public boolean isKeyUp(final int key) {
 		if (_input == null) {
 			return SysKey.isKeyReleased(key);
 		}
 		return _input.isKeyReleased(key) || SysKey.isKeyReleased(key);
 	}
 
-	public boolean isKeyDown(String key) {
+	public boolean isKeyDown(final String key) {
 		if (_input == null) {
 			return SysKey.isKeyPressed(key);
 		}
 		return _input.isKeyPressed(key) || SysKey.isKeyPressed(key);
 	}
 
-	public boolean isKeyUp(String key) {
+	public boolean isKeyUp(final String key) {
 		if (_input == null) {
 			return SysKey.isKeyReleased(key);
 		}
@@ -2233,11 +2238,11 @@ public abstract class LComponent extends LObject<LContainer>
 		return _input.getTouchPressed() == SysTouch.TOUCH_DRAG && (_downClick && _input.isDragMoved());
 	}
 
-	public boolean isTouchResponseEvent(float x, float y) {
+	public boolean isTouchResponseEvent(final float x, final float y) {
 		return isVisible() && isEnabled() && !isLocked() && contains(x, y);
 	}
 
-	public boolean isTouchNotResponseEvent(float x, float y) {
+	public boolean isTouchNotResponseEvent(final float x, final float y) {
 		return !isVisible() || !isEnabled() || isLocked() || !contains(x, y);
 	}
 
@@ -2264,7 +2269,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public LComponent setDesktop(Desktop d) {
+	public LComponent setDesktop(final Desktop d) {
 		if (this._desktop == d) {
 			return this;
 		}
@@ -2279,7 +2284,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._desktop;
 	}
 
-	public LComponent setInput(SysInput i) {
+	public LComponent setInput(final SysInput i) {
 		this._input = i;
 		return this;
 	}
@@ -2342,11 +2347,11 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	@Override
-	public boolean containsPoint(float x, float y) {
+	public boolean containsPoint(final float x, final float y) {
 		return getCollisionBox().contains(x, y, 1, 1);
 	}
 
-	public boolean isDescendantOf(LComponent o) {
+	public boolean isDescendantOf(final LComponent o) {
 		if (o == null) {
 			throw new LSysException("Component cannot be null");
 		}
@@ -2389,12 +2394,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return _offset;
 	}
 
-	public LComponent setOffset(float x, float y) {
+	public LComponent setOffset(final float x, final float y) {
 		this._offset.set(x, y);
 		return this;
 	}
 
-	public LComponent setOffset(Vector2f offset) {
+	public LComponent setOffset(final Vector2f offset) {
 		if (offset == null) {
 			return this;
 		}
@@ -2406,7 +2411,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _offset.x;
 	}
 
-	public LComponent setOffsetX(float offsetX) {
+	public LComponent setOffsetX(final float offsetX) {
 		this._offset.setX(offsetX);
 		return this;
 	}
@@ -2415,7 +2420,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _offset.y;
 	}
 
-	public LComponent setOffsetY(float offsetY) {
+	public LComponent setOffsetY(final float offsetY) {
 		this._offset.setY(offsetY);
 		return this;
 	}
@@ -2424,12 +2429,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return _resizeListener;
 	}
 
-	public LComponent setResizeListener(ResizeListener<LComponent> listener) {
+	public LComponent setResizeListener(final ResizeListener<LComponent> listener) {
 		this._resizeListener = listener;
 		return this;
 	}
 
-	public LComponent softCenterOn(float x, float y) {
+	public LComponent softCenterOn(final float x, final float y) {
 		final RectBox rect = getDesktop() == null ? LSystem.viewSize.getRect() : getDesktop().getBoundingBox();
 		final LComponent comp = this.getSuper();
 		if (x != 0) {
@@ -2479,7 +2484,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _dragLocked;
 	}
 
-	public LComponent setLocked(boolean locked) {
+	public LComponent setLocked(final boolean locked) {
 		this._dragLocked = locked;
 		return this;
 	}
@@ -2488,7 +2493,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return isLocked();
 	}
 
-	public LComponent setDragLocked(boolean locked) {
+	public LComponent setDragLocked(final boolean locked) {
 		return setLocked(locked);
 	}
 
@@ -2500,7 +2505,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return setDragLocked(false);
 	}
 
-	public LComponent setTouchLocked(boolean locked) {
+	public LComponent setTouchLocked(final boolean locked) {
 		this._touchLocked = locked;
 		return this;
 	}
@@ -2509,7 +2514,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this._touchLocked;
 	}
 
-	public LComponent setKeyLocked(boolean locked) {
+	public LComponent setKeyLocked(final boolean locked) {
 		this._keyLocked = locked;
 		return this;
 	}
@@ -2544,7 +2549,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return false;
 	}
 
-	public LComponent setTouchedEnabled(boolean e) {
+	public LComponent setTouchedEnabled(final boolean e) {
 		if (_touchListener != null) {
 			_touchListener.setEnabled(e);
 		}
@@ -2575,17 +2580,17 @@ public abstract class LComponent extends LObject<LContainer>
 		return addClickListener(c);
 	}
 
-	public LComponent addClickListener(ClickListener c) {
+	public LComponent addClickListener(final ClickListener c) {
 		this._clickListener = c;
 		makeTouched();
 		return this;
 	}
 
-	public LComponent S(ClickListener c) {
+	public LComponent S(final ClickListener c) {
 		return SetClick(c);
 	}
 
-	public LComponent SetClick(ClickListener c) {
+	public LComponent SetClick(final ClickListener c) {
 		this._clickListener = c;
 		return this;
 	}
@@ -2614,7 +2619,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return !_keyLocked && _component_enabled;
 	}
 
-	protected LComponent setAllowSelectOfSelf(boolean a) {
+	protected LComponent setAllowSelectOfSelf(final boolean a) {
 		this.isAllowSelectOfSelf = a;
 		return this;
 	}
@@ -2623,14 +2628,14 @@ public abstract class LComponent extends LObject<LContainer>
 		return _touchOffset;
 	}
 
-	public LComponent setTouchOffset(Vector2f offset) {
+	public LComponent setTouchOffset(final Vector2f offset) {
 		if (offset != null) {
 			this._touchOffset = offset;
 		}
 		return this;
 	}
 
-	public LComponent setTouchOffset(float x, float y) {
+	public LComponent setTouchOffset(final float x, final float y) {
 		return setTouchOffset(Vector2f.at(x, y));
 	}
 
@@ -2638,7 +2643,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return _component_downmoved;
 	}
 
-	public LComponent setTouchDownMoved(boolean m) {
+	public LComponent setTouchDownMoved(final boolean m) {
 		this._component_downmoved = m;
 		return this;
 	}
@@ -2647,12 +2652,12 @@ public abstract class LComponent extends LObject<LContainer>
 		return _touchDownMovedValue;
 	}
 
-	public LComponent setTouchDownMovedValue(float m) {
+	public LComponent setTouchDownMovedValue(final float m) {
 		this._touchDownMovedValue = m;
 		return this;
 	}
 
-	public LComponent setCustomShape(Shape s) {
+	public LComponent setCustomShape(final Shape s) {
 		this._otherShape = s;
 		return this;
 	}
@@ -2662,7 +2667,7 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	public LComponent removeParent() {
-		LComponent comp = this.getSuper();
+		final LComponent comp = this.getSuper();
 		if (comp != null && (comp instanceof LContainer)) {
 			((LContainer) comp).remove(this);
 			setParent(null);
@@ -2688,7 +2693,7 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
-	public LComponent dispose(LRelease r) {
+	public LComponent dispose(final LRelease r) {
 		_disposed = r;
 		return this;
 	}

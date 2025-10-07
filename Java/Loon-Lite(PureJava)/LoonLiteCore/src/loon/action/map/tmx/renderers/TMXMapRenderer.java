@@ -660,6 +660,16 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		return this;
+	}
+
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		return this;
+	}
+
+	@Override
 	public boolean autoXYSort() {
 		return false;
 	}

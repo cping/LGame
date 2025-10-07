@@ -270,10 +270,17 @@ public class Entity extends SpriteBase<IEntity> implements IEntity {
 		setPivotY(ry);
 	}
 
+	@Override
+	public IEntity resetAnchor() {
+		resetScaleCenter();
+		return this;
+	}
+
 	public IEntity setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}
 
+	@Override
 	public IEntity setAnchor(final float sx, final float sy) {
 		setPivot(_width * sx, _height * sy);
 		return this;

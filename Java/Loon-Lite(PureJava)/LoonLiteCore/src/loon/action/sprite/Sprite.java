@@ -726,10 +726,17 @@ public class Sprite extends SpriteBase<ISprite> implements Flip<Sprite>, ISprite
 		return this;
 	}
 
+	@Override
+	public Sprite resetAnchor() {
+		resetScaleCenter();
+		return this;
+	}
+
 	public Sprite setAnchor(final float scale) {
 		return setAnchor(scale, scale);
 	}
 
+	@Override
 	public Sprite setAnchor(final float sx, final float sy) {
 		setPivot(getAniWidth() * sx, getAniHeight() * sy);
 		return this;

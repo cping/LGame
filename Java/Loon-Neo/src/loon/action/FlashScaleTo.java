@@ -20,8 +20,7 @@
  */
 package loon.action;
 
-import loon.action.sprite.Entity;
-import loon.action.sprite.Sprite;
+import loon.action.sprite.ISprite;
 import loon.component.LComponent;
 import loon.utils.MathUtils;
 import loon.utils.StringKeyValue;
@@ -41,6 +40,8 @@ public class FlashScaleTo extends ActionEvent {
 
 	private float _endScale;
 
+	private float _initScaleX, _initScaleY;
+
 	private float _delta;
 
 	private float _speed;
@@ -50,7 +51,7 @@ public class FlashScaleTo extends ActionEvent {
 	}
 
 	public FlashScaleTo(float startScale, float endScale) {
-		this(startScale, endScale, 1f);
+		this(startScale, endScale, 1.5f);
 	}
 
 	public FlashScaleTo(float startScale, float endScale, float speed) {
@@ -76,7 +77,9 @@ public class FlashScaleTo extends ActionEvent {
 	@Override
 	public void onLoad() {
 		if (original != null) {
-			this._startScale = MathUtils.max(original.getScaleX(), original.getScaleY());
+			this._initScaleX = original.getScaleX();
+			this._initScaleY = original.getScaleY();
+			this._startScale = MathUtils.max(_initScaleX, _initScaleY);
 			_deltaScale = _endScale - _startScale;
 		}
 	}
@@ -114,28 +117,30 @@ public class FlashScaleTo extends ActionEvent {
 			_isCompleted = true;
 		}
 		if (_isCompleted && original != null) {
-			original.setScale(1f, 1f);
+			original.setScale(_initScaleX, _initScaleY);
 			resetAnchor();
 		}
 	}
 
 	private void setAnchor(float scale) {
-		if (original instanceof Entity) {
-			((Entity) original).setAnchor(scale, scale);
-		} else if (original instanceof Sprite) {
-			((Sprite) original).setAnchor(scale, scale);
+		if (original == null) {
+			return;
+		}
+		if (original instanceof ISprite) {
+			((ISprite) original).setAnchor(scale, scale);
 		} else if (original instanceof LComponent) {
 			((LComponent) original).setAnchor(scale, scale);
 		}
 	}
 
 	private void resetAnchor() {
-		if (original instanceof Entity) {
-			((Entity) original).resetScaleCenter();
-		} else if (original instanceof Sprite) {
-			((Sprite) original).resetScaleCenter();
+		if (original == null) {
+			return;
+		}
+		if (original instanceof ISprite) {
+			((ISprite) original).resetAnchor();
 		} else if (original instanceof LComponent) {
-			((LComponent) original).resetPivot();
+			((LComponent) original).resetAnchor();
 		}
 	}
 

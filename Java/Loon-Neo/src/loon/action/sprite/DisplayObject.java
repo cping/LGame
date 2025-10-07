@@ -640,6 +640,20 @@ public abstract class DisplayObject extends EventDispatcher implements Collision
 	}
 
 	@Override
+	public DisplayObject resetAnchor() {
+		setAnchorX(-1);
+		setAnchorY(-1);
+		return this;
+	}
+
+	@Override
+	public DisplayObject setAnchor(float sx, float sy) {
+		this.setAnchorX(sx);
+		this.setAnchorY(sy);
+		return this;
+	}
+
+	@Override
 	public ISprite buildToScreen() {
 		if (_sprites != null) {
 			_sprites.add(this);

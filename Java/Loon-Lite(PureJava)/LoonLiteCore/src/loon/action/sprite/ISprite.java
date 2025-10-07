@@ -54,7 +54,7 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 
 	@Override
 	int y();
-	
+
 	int getZ();
 
 	@Override
@@ -130,6 +130,10 @@ public interface ISprite extends ActionBind, Visible, LRelease, ZIndex, XY, SetX
 	void setState(State state);
 
 	State getState();
+
+	ISprite resetAnchor();
+	
+	ISprite setAnchor(float sx, float sy);
 
 	ISprite setSprites(Sprites ss);
 

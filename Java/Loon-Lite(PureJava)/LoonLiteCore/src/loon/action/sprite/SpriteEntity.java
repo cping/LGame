@@ -937,6 +937,16 @@ public class SpriteEntity implements IEntity {
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		return _sprite.resetAnchor();
+	}
+
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		return _sprite.setAnchor(sx, sy);
+	}
+
+	@Override
 	public IEntity buildToScreen() {
 		return this;
 	}

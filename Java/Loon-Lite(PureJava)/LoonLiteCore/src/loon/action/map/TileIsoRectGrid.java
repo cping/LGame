@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.PlayerUtils;
 import loon.Screen;
+import loon.Director.Origin;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.sprite.ISprite;
@@ -55,6 +56,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	private EventActionTN<TileIsoRectGrid, Long> _event;
 
 	private TileIsoRect[][] _grids;
+
+	private Origin _origin = Origin.CENTER;
 
 	private boolean _visible;
 
@@ -93,6 +96,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	private float _angle;
 
 	private float _scaleX = 1f, _scaleY = 1f;
+
+	protected float _pivotX = -1, _pivotY = -1;
 
 	public DrawListener<TileIsoRectGrid> _drawListener;
 
@@ -135,9 +140,20 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		this._initHeight = th;
 		this._sinUpdate = sin;
 		this._scaleX = _scaleY = 1f;
+		this._pivotX = _pivotY = -1;
 		this._visible = true;
+		this._origin = Origin.CENTER;
 		this.setLocation(px, py);
 		this.setAngle(angle, row, col, px, py, tw, th, sin);
+	}
+
+	public Origin getOrigin() {
+		return _origin;
+	}
+
+	public TileIsoRectGrid setOrigin(Origin o) {
+		this._origin = o;
+		return this;
 	}
 
 	public void draw(GLEx g) {
@@ -166,31 +182,29 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		if (!_visible || _destroyed) {
 			return;
 		}
-		boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
-		int tmp = g.color();
+		final boolean update = (_objectRotation != 0) || !(_scaleX == 1f && _scaleY == 1f);
+		final int tmp = g.color();
 		try {
 			g.setAlpha(_objectAlpha);
 			if (this._roll) {
 				this._offset = toRollPosition(this._offset);
 			}
-			float newX = this._objectLocation.x + _offsetX + _offset.getX();
-			float newY = this._objectLocation.y + _offsetY + _offset.getY();
+			final float newX = this._objectLocation.x + _offsetX + _offset.getX();
+			final float newY = this._objectLocation.y + _offsetY + _offset.getY();
+			final float rotationCenterX = (_pivotX == -1 ? newX + _origin.ox(_pixelInWidth) : newX + _pivotX);
+			final float rotationCenterY = (_pivotY == -1 ? newY + _origin.oy(_pixelInHeight) : newY + _pivotY);
 			if (update) {
 				g.saveTx();
-				Affine2f tx = g.tx();
+				final Affine2f tx = g.tx();
 				if (_objectRotation != 0) {
-					final float rotationCenterX = newX + getWidth() / 2f;
-					final float rotationCenterY = newY + getHeight() / 2f;
 					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preRotate(_objectRotation);
 					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 				if ((_scaleX != 1) || (_scaleY != 1)) {
-					final float scaleCenterX = newX + getWidth() / 2f;
-					final float scaleCenterY = newY + getHeight() / 2f;
-					tx.translate(scaleCenterX, scaleCenterY);
+					tx.translate(rotationCenterX, rotationCenterY);
 					tx.preScale(_scaleX, _scaleY);
-					tx.translate(-scaleCenterX, -scaleCenterY);
+					tx.translate(-rotationCenterX, -rotationCenterY);
 				}
 			}
 			followActionObject();
@@ -1127,6 +1141,48 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	@Override
 	public LTexture getBitmap() {
 		return _background;
+	}
+
+	public TileIsoRectGrid setPivotX(float pX) {
+		_pivotX = pX;
+		return this;
+	}
+
+	public TileIsoRectGrid setPivotY(float pY) {
+		_pivotY = pY;
+		return this;
+	}
+
+	public float getPivotX() {
+		return _pivotX;
+	}
+
+	public float getPivotY() {
+		return _pivotY;
+	}
+
+	public TileIsoRectGrid setPivot(float pX, float pY) {
+		setPivotX(pX);
+		setPivotY(pY);
+		return this;
+	}
+
+	public void resetPivot() {
+		setPivot(-1f, -1f);
+	}
+
+	public TileIsoRectGrid resetAnchor() {
+		resetPivot();
+		return this;
+	}
+
+	public TileIsoRectGrid setAnchor(final float scale) {
+		return setAnchor(scale, scale);
+	}
+
+	public TileIsoRectGrid setAnchor(final float sx, final float sy) {
+		setPivot(_pixelInWidth * sx, _pixelInHeight * sy);
+		return this;
 	}
 
 	@Override

@@ -1611,6 +1611,16 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 	}
 
 	@Override
+	public ISprite resetAnchor() {
+		return this;
+	}
+	
+	@Override
+	public ISprite setAnchor(float sx, float sy) {
+		return this;
+	}
+
+	@Override
 	public String toString() {
 		return _field2d.toString();
 	}
