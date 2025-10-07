@@ -754,12 +754,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return false;
 		}
-		int x = MathUtils.floorPositive(x1 * LSystem.getScaleWidth());
-		int y = MathUtils.floorPositive(y1 * LSystem.getScaleHeight());
-		int width = MathUtils.ceilPositive(w1 * LSystem.getScaleWidth());
-		int height = MathUtils.ceilPositive(h1 * LSystem.getScaleHeight());
+		final int x = MathUtils.floorPositive(x1 * LSystem.getScaleWidth());
+		final int y = MathUtils.floorPositive(y1 * LSystem.getScaleHeight());
+		final int width = MathUtils.ceilPositive(w1 * LSystem.getScaleWidth());
+		final int height = MathUtils.ceilPositive(h1 * LSystem.getScaleHeight());
 		batch.flush();
-		RectBox r = pushScissorState(x, target.flip() ? target.height() - y - height : y, width, height);
+		final RectBox r = pushScissorState(x, target.flip() ? target.height() - y - height : y, width, height);
 		batch.gl.glScissor(r.x(), r.y(), r.width(), r.height());
 		if (scissorDepth == 1) {
 			GLUtils.enablecissorTest(batch.gl);
@@ -781,7 +781,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			return this;
 		}
 		batch.flush();
-		RectBox r = popScissorState();
+		final RectBox r = popScissorState();
 		if (r == null) {
 			resetClip();
 		} else {
@@ -2173,7 +2173,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx drawLine(float x0, float y0, float x1, float y1, float width, LColor color) {
-		int tmp = this.lastBrush.baseColor;
+		final int tmp = this.lastBrush.baseColor;
 		setColor(color);
 		drawLine(x0, y0, x1, y1, width);
 		setColor(tmp);
@@ -2210,11 +2210,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (isClosed) {
 			return this;
 		}
-		float step = (endWidth - width) / steps;
-		float r = (endColor.r - startColor.r) / steps;
-		float g = (endColor.g - startColor.g) / steps;
-		float b = (endColor.b - startColor.b) / steps;
-		float a = (endColor.a - startColor.a) / steps;
+		final float step = (endWidth - width) / steps;
+		final float r = (endColor.r - startColor.r) / steps;
+		final float g = (endColor.g - startColor.g) / steps;
+		final float b = (endColor.b - startColor.b) / steps;
+		final float a = (endColor.a - startColor.a) / steps;
 
 		for (int i = steps; i >= 0; i--) {
 			drawLine(x0, y0, x1, y1, width + step * i, currentColorTemp.setColor((startColor.r + r * i),
@@ -2242,8 +2242,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			fillCircle(points[0].getX(), points[0].getY(), width / 2, color);
 		}
 		for (int i = 0; i < points.length - 1; i++) {
-			XY cur = points[i];
-			XY next = points[i + 1];
+			final XY cur = points[i];
+			final XY next = points[i + 1];
 			if (next != null) {
 				fillCircle(next.getX(), next.getY(), width / 2, color);
 			}
@@ -2270,13 +2270,13 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (gaps <= 0) {
 			drawLine(x1, y1, x2, y2, width, color);
 		} else {
-			TempVars vars = TempVars.get();
-			Vector2f w = vars.vec2f1.set(x2 - x1, y2 - y1);
-			float l = w.length();
-			Vector2f dir = w.div(l);
-			int totalGaps = gaps * 2 + 1;
-			float size = l / totalGaps;
-			Vector2f offset = dir.mul(size);
+			final TempVars vars = TempVars.get();
+			final Vector2f w = vars.vec2f1.set(x2 - x1, y2 - y1);
+			final float l = w.length();
+			final Vector2f dir = w.div(l);
+			final int totalGaps = gaps * 2 + 1;
+			final float size = l / totalGaps;
+			final Vector2f offset = dir.mul(size, vars.vec2f5);
 			Vector2f cur = vars.vec2f2.set(x1, y1);
 			for (int i = 0; i < totalGaps; i++) {
 				if (i % 2 == 0) {
@@ -2321,25 +2321,25 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		if (gaps <= 0) {
 			drawLine(x1, y1, x2, y2, width, color);
 		} else {
-			TempVars vars = TempVars.get();
+			final TempVars vars = TempVars.get();
 			Vector2f cur = vars.vec2f1.set(x1, y1);
-			Vector2f w = vars.vec2f2.set(x2 - x1, y2 - y1);
-			float l = w.length();
-			Vector2f dir = w.div(l);
+			final Vector2f w = vars.vec2f2.set(x2 - x1, y2 - y1);
+			final float l = w.length();
+			final Vector2f dir = w.div(l);
 
 			float totalGapSize = l * gapSizeF;
 			float remaining = l - totalGapSize;
 			float gapSize = totalGapSize / gaps;
 			float size = remaining / (gaps + 1);
 
-			Vector2f gapOffset = dir.mul(gapSize);
-			Vector2f offset = dir.mul(size);
+			final Vector2f gapOffset = dir.mul(gapSize, vars.vec2f5);
+			final Vector2f offset = dir.mul(size, vars.vec2f6);
 
-			int totalGaps = gaps * 2 + 1;
+			final int totalGaps = gaps * 2 + 1;
 
 			for (int i = 0; i < totalGaps; i++) {
 				if (i % 2 == 0) {
-					Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
+					final Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
 					if (edges) {
 						fillCircle(cur.x, cur.y, width * 0.5f, color);
 						fillCircle(next.x, next.y, width * 0.5f, color);
@@ -2433,19 +2433,19 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		}
 		float width = w;
 		float height = h;
-		float hGap = width / lines;
-		float vGap = height / lines;
-		TempVars vars = TempVars.get();
-		Vector2f tl = vars.vec2f1.set(x, y);
-		Vector2f v1 = vars.vec2f2.set(hGap, 0f);
-		Vector2f v2 = vars.vec2f3.set(0f, vGap);
-		Vector2f tr = tl.add(width - hGap, 0f);
-		Vector2f bl = tl.add(0f, height - vGap);
+		final float hGap = width / lines;
+		final float vGap = height / lines;
+		final TempVars vars = TempVars.get();
+		final Vector2f tl = vars.vec2f1.set(x, y);
+		final Vector2f v1 = vars.vec2f2.set(hGap, 0f);
+		final Vector2f v2 = vars.vec2f3.set(0f, vGap);
+		final Vector2f tr = tl.add(width - hGap, 0f);
+		final Vector2f bl = tl.add(0f, height - vGap);
 		for (int l = 0; l < lines; l++) {
 			v1.set(hGap, 0f);
 			v2.set(0f, vGap);
-			Vector2f xOffset = v1.mulSelf(l);
-			Vector2f yOffset = v2.mulSelf(l);
+			final Vector2f xOffset = v1.mulSelf(l);
+			final Vector2f yOffset = v2.mulSelf(l);
 			drawLine(tl.x + xOffset.x, tl.y + xOffset.y, bl.x + xOffset.x, bl.y + xOffset.y, size, color);
 			drawLine(tl.x + yOffset.x, tl.y + yOffset.y, tr.x + yOffset.x, tr.y + yOffset.y, size, color);
 		}
@@ -2519,11 +2519,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		float ddfx = tmp1x * pre4 + tmp2x * pre5;
 		float ddfy = tmp1y * pre4 + tmp2y * pre5;
 
-		float dddfx = tmp2x * pre5;
-		float dddfy = tmp2y * pre5;
+		final float dddfx = tmp2x * pre5;
+		final float dddfy = tmp2y * pre5;
 
 		for (; segments-- > 0;) {
-			float fxold = fx, fyold = fy;
+			final float fxold = fx, fyold = fy;
 			fx += dfx;
 			fy += dfy;
 			dfx += ddfx;
@@ -3714,6 +3714,16 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 			drawLine(x1 + newX, y1 + newY, tempv.x + newX, tempv.y + newY, width);
 		}
+		return this;
+	}
+
+	public GLEx drawDashCross(float x, float y, float radius, int divisions, LColor color) {
+		return drawDashCross(x, y, radius, divisions, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawDashCross(float x, float y, float radius, int divisions, float width, LColor color) {
+		drawDashLine(x - radius, y - radius, x + radius, y + radius, divisions, width, color);
+		drawDashLine(x - radius, y + radius, x + radius, y - radius, divisions, width, color);
 		return this;
 	}
 

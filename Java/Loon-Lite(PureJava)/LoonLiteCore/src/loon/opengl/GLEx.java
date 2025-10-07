@@ -475,12 +475,12 @@ public class GLEx implements LRelease {
 		if (isClosed) {
 			return false;
 		}
-		int x = MathUtils.floor(x1);
-		int y = MathUtils.floor(y1);
-		int width = MathUtils.floor(w1);
-		int height = MathUtils.floor(h1);
+		final int x = MathUtils.floor(x1);
+		final int y = MathUtils.floor(y1);
+		final int width = MathUtils.floor(w1);
+		final int height = MathUtils.floor(h1);
 		batch.flush();
-		RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
+		final RectBox r = pushScissorState(x, gfx.flip() ? gfx.height() - y - height : y, width, height);
 		if (scissorDepth > 0) {
 			synchTransform();
 			getCanvas().clipRect(r.x() - getScaleTransX(), r.y() - getScaleTransY(), r.width(), r.height());
@@ -502,7 +502,7 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		batch.flush();
-		RectBox r = popScissorState();
+		final RectBox r = popScissorState();
 		synchTransform();
 		if (r == null) {
 			resetClip();
@@ -3229,11 +3229,11 @@ public class GLEx implements LRelease {
 			final Vector2f dir = w.div(l);
 			final int totalGaps = gaps * 2 + 1;
 			final float size = l / totalGaps;
-			final Vector2f offset = dir.mul(size);
+			final Vector2f offset = dir.mul(size, vars.vec2f5);
 			Vector2f cur = vars.vec2f2.set(x1, y1);
 			for (int i = 0; i < totalGaps; i++) {
 				if (i % 2 == 0) {
-					Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
+					final Vector2f next = vars.vec2f3.set(cur.x + offset.x, cur.y + offset.y);
 					if (edges) {
 						fillCircle(cur.x, cur.y, width * 0.5f, color);
 						fillCircle(next.x, next.y, width * 0.5f, color);
@@ -3278,15 +3278,15 @@ public class GLEx implements LRelease {
 			Vector2f cur = vars.vec2f1.set(x1, y1);
 			final Vector2f w = vars.vec2f2.set(x2 - x1, y2 - y1);
 			float l = w.length();
-			Vector2f dir = w.div(l);
+			final Vector2f dir = w.div(l);
 
 			final float totalGapSize = l * gapSizeF;
 			final float remaining = l - totalGapSize;
 			final float gapSize = totalGapSize / gaps;
 			final float size = remaining / (gaps + 1);
 
-			final Vector2f gapOffset = dir.mul(gapSize);
-			final Vector2f offset = dir.mul(size);
+			final Vector2f gapOffset = dir.mul(gapSize, vars.vec2f5);
+			final Vector2f offset = dir.mul(size, vars.vec2f6);
 
 			final int totalGaps = gaps * 2 + 1;
 
@@ -3344,11 +3344,11 @@ public class GLEx implements LRelease {
 		float ddfx = tmp1x * pre4 + tmp2x * pre5;
 		float ddfy = tmp1y * pre4 + tmp2y * pre5;
 
-		float dddfx = tmp2x * pre5;
-		float dddfy = tmp2y * pre5;
+		final float dddfx = tmp2x * pre5;
+		final float dddfy = tmp2y * pre5;
 
 		for (; segments-- > 0;) {
-			float fxold = fx, fyold = fy;
+			final float fxold = fx, fyold = fy;
 			fx += dfx;
 			fy += dfy;
 			dfx += ddfx;
@@ -3413,6 +3413,16 @@ public class GLEx implements LRelease {
 
 			drawLine(x1 + newX, y1 + newY, tempv.x + newX, tempv.y + newY, width);
 		}
+		return this;
+	}
+
+	public GLEx drawDashCross(float x, float y, float radius, int divisions, LColor color) {
+		return drawDashCross(x, y, radius, divisions, this.lastBrush.lineWidth, color);
+	}
+
+	public GLEx drawDashCross(float x, float y, float radius, int divisions, float width, LColor color) {
+		drawDashLine(x - radius, y - radius, x + radius, y + radius, divisions, width, color);
+		drawDashLine(x - radius, y + radius, x + radius, y - radius, divisions, width, color);
 		return this;
 	}
 

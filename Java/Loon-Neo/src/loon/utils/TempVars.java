@@ -36,8 +36,9 @@ public final class TempVars {
 			return instance;
 		}
 	}
-	
-	private TempVars() {};
+
+	private TempVars() {
+	}
 
 	public static final TempVars getClean2f() {
 		return get().clean2f();
@@ -63,6 +64,8 @@ public final class TempVars {
 	public final Vector2f vec2f2 = new Vector2f();
 	public final Vector2f vec2f3 = new Vector2f();
 	public final Vector2f vec2f4 = new Vector2f();
+	public final Vector2f vec2f5 = new Vector2f();
+	public final Vector2f vec2f6 = new Vector2f();
 	public final Vector3f vec3f1 = new Vector3f();
 	public final Vector3f vec3f2 = new Vector3f();
 	public final Vector3f vec3f3 = new Vector3f();
@@ -81,6 +84,8 @@ public final class TempVars {
 		vec2f2.setEmpty();
 		vec2f3.setEmpty();
 		vec2f4.setEmpty();
+		vec2f5.setEmpty();
+		vec2f6.setEmpty();
 		return this;
 	}
 
