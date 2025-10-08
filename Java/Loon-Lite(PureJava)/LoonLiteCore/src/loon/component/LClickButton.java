@@ -268,9 +268,10 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			}
 		}
 		if (!StringUtils.isEmpty(_currentText)) {
-			_currentFont.drawString(g, _currentText,
-					x + getOffsetLeft() + (getWidth() - _currentFont.stringWidth(_currentText)) / 2,
-					(y + getOffsetTop() + (getHeight() - _currentFont.getHeight()) / 2), _fontColor);
+			final int offsetX = MathUtils
+					.iceil(x + getOffsetLeft() + (getWidth() - _currentFont.stringWidth(_currentText)) / 2);
+			final int offsetY = MathUtils.iceil((y + getOffsetTop() + (getHeight() - _currentFont.getHeight()) / 2));
+			_currentFont.drawString(g, _currentText, offsetX, offsetY, _fontColor);
 		}
 	}
 

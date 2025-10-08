@@ -550,10 +550,10 @@ public class CharArray implements IArray, LRelease {
 				_sortAsciiBuilder.clear();
 			}
 			_sortAsciiBuilder.append(_sortpun.items, 0, _sortpun.length);
-			_sortAsciiBuilder.append(_sortcjk.items, 0, _sortcjk.length);
 			_sortAsciiBuilder.append(_sorteau.items, 0, _sorteau.length);
 			_sortAsciiBuilder.append(_sorteal.items, 0, _sorteal.length);
 			_sortAsciiBuilder.append(_sortnum.items, 0, _sortnum.length);
+			_sortAsciiBuilder.append(_sortcjk.items, 0, _sortcjk.length);
 			_sortAsciiBuilder.append(_sortother.items, 0, _sortother.length);
 			final String text = _sortAsciiBuilder.toString();
 			_sortAsciiArrays.clear();
