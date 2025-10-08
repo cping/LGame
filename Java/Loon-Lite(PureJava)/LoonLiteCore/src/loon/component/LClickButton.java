@@ -29,7 +29,6 @@ import loon.component.skin.SkinManager;
 import loon.events.ActionKey;
 import loon.events.CallFunction;
 import loon.events.SysKey;
-import loon.font.BMFont;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
@@ -269,18 +268,9 @@ public class LClickButton extends LComponent implements FontSet<LClickButton> {
 			}
 		}
 		if (!StringUtils.isEmpty(_currentText)) {
-			if (_currentFont instanceof BMFont) {
-				_currentFont.drawString(g, _currentText,
-						x + getOffsetLeft() + (getWidth() - _currentFont.stringWidth(_currentText)) / 2,
-						(y + getOffsetTop() + (getHeight() - _currentFont.getHeight()) / 2) - 5, _fontColor);
-			} else {
-				_currentFont.drawString(g, _currentText,
-						x + getOffsetLeft() + (getWidth() - _currentFont.stringWidth(_currentText)) / 2,
-						(y + getOffsetTop() + (getHeight() - _currentFont.getHeight()) / 2)
-								- (LSystem.isDesktop() ? 2 : 0),
-						_fontColor);
-
-			}
+			_currentFont.drawString(g, _currentText,
+					x + getOffsetLeft() + (getWidth() - _currentFont.stringWidth(_currentText)) / 2,
+					(y + getOffsetTop() + (getHeight() - _currentFont.getHeight()) / 2), _fontColor);
 		}
 	}
 

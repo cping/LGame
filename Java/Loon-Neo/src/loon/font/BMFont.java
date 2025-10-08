@@ -772,7 +772,7 @@ public final class BMFont extends FontTrans implements IFont {
 	@Override
 	public int getHeight() {
 		make();
-		return (int) (lineHeight * fontScaleY) - halfHeight;
+		return MathUtils.iceil((lineHeight <= 0 ? _size : lineHeight) * fontScaleY);
 	}
 
 	public float getFontScaleX() {
@@ -803,13 +803,22 @@ public final class BMFont extends FontTrans implements IFont {
 	@Override
 	public float getAscent() {
 		make();
-		return _ascent == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 3 : _ascent;
+		return _ascent == -1 ? MathUtils.iceil(lineHeight * this.fontScaleY) - halfHeight / 3
+				: MathUtils.iceil(_ascent * this.fontScaleY);
 	}
 
 	@Override
 	public int getSize() {
 		make();
-		return _size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 4 : _size;
+		if (_dstFontSize > 0) {
+			return _dstFontSize;
+		}
+		return _size == -1 ? MathUtils.iceil(lineHeight * this.fontScaleY) - halfHeight / 4
+				: MathUtils.iceil(_size * this.fontScaleY);
+	}
+
+	public int getBaseSize() {
+		return _dstFontSize;
 	}
 
 	@Override
