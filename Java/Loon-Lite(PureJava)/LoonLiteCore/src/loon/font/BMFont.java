@@ -216,7 +216,7 @@ public final class BMFont extends FontTrans implements IFont {
 		} else {
 			displays.clear();
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			throw new LSysException("BMFont resource is null !");
 		}
 		StrTokenizer br = new StrTokenizer(text, LSystem.NL);
@@ -224,7 +224,7 @@ public final class BMFont extends FontTrans implements IFont {
 		common = br.nextToken();
 		page = br.nextToken();
 
-		if (info != null && !StringUtils.isEmpty(info)) {
+		if (info != null && !StringUtils.isNullOrEmpty(info)) {
 			int size = info.length();
 			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
@@ -382,11 +382,12 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 	}
 
-	private void drawString(GLEx g, String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
-		if (_isClose || StringUtils.isEmpty(msg)) {
+	private void drawString(final GLEx g, final String msg, final float tx, final float ty, final LColor c,
+			int startIndex, int endIndex) {
+		if (_isClose || StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
 			endIndex = newMessage.length();
 		}
@@ -399,47 +400,56 @@ public final class BMFont extends FontTrans implements IFont {
 			_initDraw++;
 			return;
 		}
-		int x = 0, y = 0;
-		CharDef lastCharDef = null;
-		for (int i = startIndex; i < endIndex; i++) {
-			char id = newMessage.charAt(i);
-			if (id == newRFlag) {
-				continue;
+		final int old = g.color();
+		try {
+			g.setTint(c);
+			int x = 0, y = 0;
+			CharDef lastCharDef = null;
+			for (int i = startIndex; i < endIndex; i++) {
+				char id = newMessage.charAt(i);
+				if (id == newRFlag) {
+					continue;
+				}
+				if (id == newLineFlag) {
+					x = 0;
+					y += lineHeight;
+					continue;
+				}
+				if (id == newSpaceFlag) {
+					x += advanceSpace;
+					continue;
+				}
+				if (id == newTabSpaceFlag) {
+					x += (advanceSpace * 3);
+					continue;
+				}
+				CharDef charDef = null;
+				if (id < totalCharSet) {
+					charDef = charArray[id];
+				} else {
+					charDef = customChars.get(id);
+				}
+				if (charDef == null) {
+					continue;
+				}
+				if (lastCharDef != null) {
+					x += lastCharDef.getKerning(id);
+				}
+				lastCharDef = charDef;
+				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
+				x += charDef.advance;
 			}
-			if (id == newLineFlag) {
-				x = 0;
-				y += lineHeight;
-				continue;
-			}
-			if (id == newSpaceFlag) {
-				x += advanceSpace;
-				continue;
-			}
-			if (id == newTabSpaceFlag) {
-				x += (advanceSpace * 3);
-				continue;
-			}
-			CharDef charDef = null;
-			if (id < totalCharSet) {
-				charDef = charArray[id];
-			} else {
-				charDef = customChars.get(id);
-			}
-			if (charDef == null) {
-				continue;
-			}
-			if (lastCharDef != null) {
-				x += lastCharDef.getKerning(id);
-			}
-			lastCharDef = charDef;
-			charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
-			x += charDef.advance;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			g.setTint(old);
 		}
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
-		if (_isClose || StringUtils.isEmpty(text)) {
+	public void drawString(final GLEx g, final String text, final float x, final float y, final float rotation,
+			final LColor c) {
+		if (_isClose || StringUtils.isNullOrEmpty(text)) {
 			return;
 		}
 		if (rotation == 0) {
@@ -458,16 +468,16 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
-			float rotation, LColor c) {
-		if (_isClose || StringUtils.isEmpty(msg)) {
+	public void drawString(final GLEx gl, final String msg, final float x, final float y, final float sx,
+			final float sy, final float ax, final float ay, final float rotation, final LColor c) {
+		if (_isClose || StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
-		boolean anchor = ax != 0 || ay != 0;
-		boolean scale = sx != 1f || sy != 1f;
-		boolean angle = rotation != 0;
-		boolean update = scale || angle || anchor;
+		final String newMessage = toMessage(msg);
+		final boolean anchor = ax != 0 || ay != 0;
+		final boolean scale = sx != 1f || sy != 1f;
+		final boolean angle = rotation != 0;
+		final boolean update = scale || angle || anchor;
 		try {
 			if (update) {
 				gl.saveTx();
@@ -499,11 +509,11 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String msg) {
-		if (StringUtils.isEmpty(msg)) {
+	public int stringHeight(final String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		make();
 		Display display = null;
 		for (Display d : displays.values()) {
@@ -563,12 +573,12 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public int stringWidth(String msg) {
-		if (StringUtils.isEmpty(msg)) {
+	public int stringWidth(final String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
 		make();
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		Display display = null;
 		for (Display d : displays.values()) {
 			if (d != null && newMessage.equals(d.text)) {

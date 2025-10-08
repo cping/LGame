@@ -30,6 +30,7 @@ import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
 import loon.geom.Affine2f;
 import loon.geom.PointI;
+import loon.opengl.BlendMethod;
 import loon.opengl.GLEx;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
@@ -169,7 +170,6 @@ public final class BMFont extends FontTrans implements IFont {
 			if (_bmFont._isClose) {
 				return;
 			}
-
 			g.draw(_bmFont.displayList, sx + (x + xoffset) * _bmFont.fontScaleX,
 					sy + (y + yoffset) * _bmFont.fontScaleX, width * _bmFont.fontScaleX, height * _bmFont.fontScaleY,
 					tx, ty, width, height, c);
@@ -232,7 +232,7 @@ public final class BMFont extends FontTrans implements IFont {
 		} else {
 			displays.clear();
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			throw new LSysException("BMFont resource is null !");
 		}
 		StrTokenizer br = new StrTokenizer(text, LSystem.NL);
@@ -240,7 +240,7 @@ public final class BMFont extends FontTrans implements IFont {
 		common = br.nextToken();
 		page = br.nextToken();
 
-		if (info != null && !StringUtils.isEmpty(info)) {
+		if (info != null && !StringUtils.isNullOrEmpty(info)) {
 			int size = info.length();
 			StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
@@ -385,14 +385,15 @@ public final class BMFont extends FontTrans implements IFont {
 		drawBatchString(text, x, y, col, 0, text.length());
 	}
 
-	private void drawBatchString(String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
+	private void drawBatchString(final String msg, final float tx, final float ty, final LColor c, int startIndex,
+			int endIndex) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
 			endIndex = newMessage.length();
 		}
@@ -496,12 +497,12 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y) {
+	public void drawString(final GLEx g, final String text, final float x, final float y) {
 		drawString(g, text, x, y, null);
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y, LColor col) {
+	public void drawString(final GLEx g, final String text, final float x, final float y, final LColor col) {
 		drawString(g, text, x, y, col, 0, text.length());
 	}
 
@@ -516,14 +517,15 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 	}
 
-	private void drawString(GLEx g, String msg, float tx, float ty, LColor c, int startIndex, int endIndex) {
+	private void drawString(final GLEx g, final String msg, final float tx, final float ty, final LColor c,
+			int startIndex, int endIndex) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		if (checkEndIndexUpdate(endIndex, msg, newMessage)) {
 			endIndex = newMessage.length();
 		}
@@ -536,50 +538,62 @@ public final class BMFont extends FontTrans implements IFont {
 			_initDraw++;
 			return;
 		}
-		int x = 0, y = 0;
-		CharDef lastCharDef = null;
-		for (int i = startIndex; i < endIndex; i++) {
-			char id = newMessage.charAt(i);
-			if (id == newRFlag) {
-				continue;
+		final int old = g.color();
+		final int blend = g.getBlendMode();
+		try {
+			g.setBlendMode(BlendMethod.MODE_NORMAL);
+			g.setTint(c);
+			int x = 0, y = 0;
+			CharDef lastCharDef = null;
+			for (int i = startIndex; i < endIndex; i++) {
+				char id = newMessage.charAt(i);
+				if (id == newRFlag) {
+					continue;
+				}
+				if (id == newLineFlag) {
+					x = 0;
+					y += lineHeight;
+					continue;
+				}
+				if (id == newSpaceFlag) {
+					x += advanceSpace;
+					continue;
+				}
+				if (id == newTabSpaceFlag) {
+					x += (advanceSpace * 3);
+					continue;
+				}
+				CharDef charDef = null;
+				if (id < totalCharSet) {
+					charDef = charArray[id];
+				} else {
+					charDef = customChars.get(id);
+				}
+				if (charDef == null) {
+					continue;
+				}
+				if (lastCharDef != null) {
+					x += lastCharDef.getKerning(id);
+				}
+				lastCharDef = charDef;
+				charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
+				x += charDef.advance;
 			}
-			if (id == newLineFlag) {
-				x = 0;
-				y += lineHeight;
-				continue;
-			}
-			if (id == newSpaceFlag) {
-				x += advanceSpace;
-				continue;
-			}
-			if (id == newTabSpaceFlag) {
-				x += (advanceSpace * 3);
-				continue;
-			}
-			CharDef charDef = null;
-			if (id < totalCharSet) {
-				charDef = charArray[id];
-			} else {
-				charDef = customChars.get(id);
-			}
-			if (charDef == null) {
-				continue;
-			}
-			if (lastCharDef != null) {
-				x += lastCharDef.getKerning(id);
-			}
-			lastCharDef = charDef;
-			charDef.draw(g, tx + _offset.x, ty + _offset.y, x, y, c);
-			x += charDef.advance;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			g.setBlendMode(blend);
+			g.setTint(old);
 		}
 	}
 
 	@Override
-	public void drawString(GLEx g, String text, float x, float y, float rotation, LColor c) {
+	public void drawString(final GLEx g, final String text, final float x, final float y, final float rotation,
+			final LColor c) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			return;
 		}
 		if (rotation == 0) {
@@ -598,12 +612,12 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String msg, float x, float y, float sx, float sy, float ax, float ay,
-			float rotation, LColor c) {
+	public void drawString(final GLEx gl, final String msg, final float x, final float y, final float sx,
+			final float sy, final float ax, final float ay, final float rotation, final LColor c) {
 		if (_isClose) {
 			return;
 		}
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		final String newMessage = toMessage(msg);
@@ -642,8 +656,8 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String msg) {
-		if (StringUtils.isEmpty(msg)) {
+	public int stringHeight(final String msg) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
 		final String newMessage = toMessage(msg);
@@ -707,7 +721,7 @@ public final class BMFont extends FontTrans implements IFont {
 
 	@Override
 	public int stringWidth(String msg) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
 		make();

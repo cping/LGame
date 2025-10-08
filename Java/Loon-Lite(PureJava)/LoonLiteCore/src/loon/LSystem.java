@@ -90,13 +90,20 @@ public final class LSystem {
 
 	public static final String INPUT = "input";
 
+	/** 默认字体 **/
 	protected static final String FONT_NAME = "Dialog";
 
+	/** 默认字体样式 **/
 	protected static final String FONT_STYLE = "plain";
 
+	/** 默认应用名 **/
 	protected static final String APP_NAME = "Loon";
 
+	/** 默认资源路径 **/
 	protected static final String APP_DEF_RES_DIRECTORY = "assets/";
+
+	/** 默认帧率 **/
+	protected static final int DEFAULT_MAX_FPS = 60;
 
 	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';

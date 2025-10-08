@@ -893,6 +893,22 @@ public class MoveControl implements LRelease {
 		return isKeyLeft() && !isTLeft();
 	}
 
+	public boolean isDirChangeIsoUpPressed() {
+		return isKeyUp() && !isUp();
+	}
+
+	public boolean isDirChangeIsoDownPressed() {
+		return isKeyDown() && !isDown();
+	}
+
+	public boolean isDirChangeIsoRightPressed() {
+		return isKeyRight() && !isRight();
+	}
+
+	public boolean isDirChangeIsoLeftPressed() {
+		return isKeyLeft() && !isLeft();
+	}
+
 	public boolean isAnyDirKeyPressed() {
 		return _left || _right || _down || _up;
 	}

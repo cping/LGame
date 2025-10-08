@@ -164,7 +164,7 @@ public class Director extends SoundBox {
 
 	private boolean _isTranslate;
 
-	private int[] _tempPoint = new int[2];
+	private final int[] _tempPoint = new int[2];
 
 	private final RectBox _renderRect;
 	private final RectBox _viewRect;
@@ -177,7 +177,7 @@ public class Director extends SoundBox {
 		this(LSystem.viewSize);
 	}
 
-	public Director(Dimension rect) {
+	public Director(final Dimension rect) {
 		if (rect != null) {
 			this._renderRect = new RectBox(0, 0, rect.width, rect.height);
 			this._viewRect = new RectBox(0, 0, rect.width, rect.height);

@@ -163,20 +163,15 @@ public class LSetting {
 	public boolean allowScreenResize = true;
 
 	/**
-	 * 默认帧率
-	 */
-	private final static int DEFAULT_MAX_FPS = 60;
-
-	/**
 	 * 允许的游戏帧率(默认60,改变此项会改变游戏运行速度)
 	 */
-	public int fps = DEFAULT_MAX_FPS;
+	public int fps = LSystem.DEFAULT_MAX_FPS;
 
 	/**
 	 * 想要修正的帧率(fps_time_fixed为true时生效,例如fps设定为30,但此项为60,则fps_time_fixed生效后,
 	 * 游戏帧率会向60帧时靠拢,也就是会跳帧加速游戏进程)
 	 */
-	public int fps_time_fixed_value = DEFAULT_MAX_FPS;
+	public int fps_time_fixed_value = LSystem.DEFAULT_MAX_FPS;
 
 	/**
 	 * 修正fps帧率,以保证按照要求帧的速度进行运算(此项为true时,会改变全部时间轴,比如最开始设定为60,

@@ -480,7 +480,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean containsTexture(String mes) {
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			return false;
 		}
 		if (StringUtils.isEmpty(mes)) {
@@ -501,7 +501,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean containsTexture(char ch) {
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			return false;
 		}
 		if (StringUtils.isWhitespace(ch)) {
@@ -661,7 +661,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (_isClose) {
 			return false;
 		}
-		if (StringUtils.isEmpty(chars)) {
+		if (StringUtils.isNullOrEmpty(chars)) {
 			return false;
 		}
 		make();
@@ -682,7 +682,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private void drawString(float mx, float my, float sx, float sy, float ax, float ay, float rotation, String msg,
 			LColor c, int startIndex, int endIndex) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -825,8 +825,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		}
 	}
 
-	private void _drawChildString(TArray<CharRect> child, float mx, float my, float sx, float sy, float ax, float ay,
-			float rotation, String chars, LColor c, int startIndex, int endIndex) {
+	private void _drawChildString(final TArray<CharRect> child, float mx, float my, float sx, float sy, float ax,
+			float ay, float rotation, String chars, LColor c, int startIndex, int endIndex) {
 		if (child == null) {
 			return;
 		}
@@ -913,46 +913,48 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	@Override
-	public void drawString(GLEx gl, String chars, float x, float y) {
+	public void drawString(final GLEx gl, String chars, float x, float y) {
 		drawString(gl, x, y, 1f, 1f, 0, chars, LColor.white);
 	}
 
 	@Override
-	public void drawString(GLEx gl, String chars, float x, float y, LColor color) {
+	public void drawString(final GLEx gl, String chars, float x, float y, LColor color) {
 		drawString(gl, x, y, 1f, 1f, 0, chars, color);
 	}
 
 	@Override
-	public void drawString(GLEx gl, String chars, float x, float y, float rotation, LColor color) {
+	public void drawString(final GLEx gl, String chars, float x, float y, float rotation, LColor color) {
 		drawString(gl, x, y, 1f, 1f, rotation, chars, color);
 	}
 
-	public void drawString(GLEx gl, String chars, float x, float y, float rotation) {
+	public void drawString(final GLEx gl, String chars, float x, float y, float rotation) {
 		drawString(gl, x, y, 1f, 1f, rotation, chars, LColor.white);
 	}
 
-	public void drawString(GLEx gl, String chars, float x, float y, float sx, float sy, float rotation, LColor c) {
+	public void drawString(final GLEx gl, String chars, float x, float y, float sx, float sy, float rotation,
+			LColor c) {
 		drawString(gl, x, y, sx, sy, rotation, chars, c);
 	}
 
-	public void drawString(GLEx gl, float x, float y, float sx, float sy, float rotation, String chars, LColor c) {
+	public void drawString(final GLEx gl, float x, float y, float sx, float sy, float rotation, String chars,
+			LColor c) {
 		drawString(gl, x, y, sx, sy, 0, 0, rotation, chars, c, 0, chars.length());
 	}
 
-	public void drawString(GLEx gl, float x, float y, float sx, float sy, float ax, float ay, float rotation,
+	public void drawString(final GLEx gl, float x, float y, float sx, float sy, float ax, float ay, float rotation,
 			String chars, LColor c) {
 		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
 	}
 
 	@Override
-	public void drawString(GLEx gl, String chars, float x, float y, float sx, float sy, float ax, float ay,
+	public void drawString(final GLEx gl, String chars, float x, float y, float sx, float sy, float ax, float ay,
 			float rotation, LColor c) {
 		drawString(gl, x, y, sx, sy, ax, ay, rotation, chars, c, 0, chars.length());
 	}
 
-	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
+	private void drawString(final GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
 			String msg, LColor c, int startIndex, int endIndex) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		final String newMessage = toMessage(msg);
@@ -970,7 +972,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		this.charCurrent = 0;
 		this.totalWidth = 0;
 		this.totalHeight = 0;
-		int old = gl.color();
+		final int old = gl.color();
 		boolean childDraw = false;
 		final boolean anchor = ax != 0 || ay != 0;
 		final boolean angle = rotation != 0;
@@ -981,10 +983,10 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 			gl.setTint(c);
 			if (update) {
 				gl.saveTx();
-				Affine2f xf = gl.tx();
+				final Affine2f xf = gl.tx();
 				if (angle) {
-					float centerX = x + this.getWidth(newMessage, false) / 2;
-					float centerY = y + this.getHeight(newMessage, false) / 2;
+					final float centerX = x + this.getWidth(newMessage, false) / 2;
+					final float centerY = y + this.getHeight(newMessage, false) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
@@ -1386,7 +1388,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean containsChars(final String msg, boolean filter) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return true;
 		}
 		String newMessage = msg;
@@ -1394,7 +1396,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 			newMessage = toMessage(msg);
 		}
 		int count = 0;
-		int len = newMessage.length();
+		final int len = newMessage.length();
 		for (int i = 0; i < len; i++) {
 			if (containsChar(newMessage.charAt(i))) {
 				count++;

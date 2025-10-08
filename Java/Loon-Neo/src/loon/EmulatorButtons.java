@@ -26,7 +26,7 @@ import loon.opengl.GLEx;
 import loon.opengl.LTexturePack;
 import loon.utils.MathUtils;
 
-public class EmulatorButtons implements LRelease {
+public final class EmulatorButtons implements LRelease {
 
 	private LTexture dpad, buttons;
 

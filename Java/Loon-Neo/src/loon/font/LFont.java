@@ -82,7 +82,8 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	LFont() {
-		this(LSystem.getSystemGameFontName(), Font.toFontStyle(LSystem.getSystemGameFontStyle()), LSystem.getSystemGameFontSize(), true);
+		this(LSystem.getSystemGameFontName(), Font.toFontStyle(LSystem.getSystemGameFontStyle()),
+				LSystem.getSystemGameFontSize(), true);
 	}
 
 	LFont(String name, Style style, int size, boolean antialias) {
@@ -138,17 +139,17 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String msg, float tx, float ty) {
+	public void drawString(final GLEx g, final String msg, float tx, float ty) {
 		drawString(g, msg, tx, ty, LColor.white);
 	}
 
 	@Override
-	public void drawString(GLEx g, String msg, float tx, float ty, LColor c) {
+	public void drawString(final GLEx g, final String msg, float tx, float ty, LColor c) {
 		drawString(g, msg, tx, ty, 0, c);
 	}
 
 	@Override
-	public void drawString(GLEx g, String msg, float tx, float ty, float angle, LColor c) {
+	public void drawString(final GLEx g, final String msg, float tx, float ty, float angle, LColor c) {
 		if (_closed) {
 			return;
 		}
@@ -175,8 +176,8 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(GLEx g, String msg, float tx, float ty, float sx, float sy, float ax, float ay, float angle,
-			LColor c) {
+	public void drawString(final GLEx g, final String msg, float tx, float ty, float sx, float sy, float ax, float ay,
+			float angle, LColor c) {
 		if (_closed) {
 			return;
 		}
@@ -237,11 +238,11 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public int stringWidth(String msg) {
+	public int stringWidth(final String msg) {
 		if (LSystem.base() == null || StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		initLayout(newMessage);
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return textLayout.stringWidth(newMessage);
@@ -271,11 +272,11 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public int stringHeight(String msg) {
+	public int stringHeight(final String msg) {
 		if (LSystem.base() == null || StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		initLayout(newMessage);
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getHeight();

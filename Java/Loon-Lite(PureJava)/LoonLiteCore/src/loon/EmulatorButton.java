@@ -24,7 +24,7 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 
-public class EmulatorButton {
+public final class EmulatorButton {
 
 	private final LColor color = new LColor(LColor.gray.r, LColor.gray.g, LColor.gray.b, 0.5f);
 
