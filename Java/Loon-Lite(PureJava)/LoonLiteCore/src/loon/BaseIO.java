@@ -35,7 +35,7 @@ import loon.utils.reply.GoFuture;
  */
 public abstract class BaseIO extends DefUI {
 
-	public final static GoFuture<String> loadAsynText(String path) {
+	public final static GoFuture<String> loadAsynText(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
@@ -48,7 +48,7 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static String loadText(String path) {
+	public final static String loadText(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
@@ -61,31 +61,31 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static LTexture newTexture(String path) {
+	public final static LTexture newTexture(final String path) {
 		return LSystem.newTexture(path);
 	}
 
-	public final static LTexture texture(String path) {
+	public final static LTexture texture(final String path) {
 		return LSystem.loadTexture(path);
 	}
 
-	public final static LTexture loadTexture(String path) {
+	public final static LTexture loadTexture(final String path) {
 		return LSystem.loadTexture(path);
 	}
 
-	public final static Image image(String path) {
+	public final static Image image(final String path) {
 		return loadImage(path, true);
 	}
 
-	public final static Image image(String path, boolean syn) {
+	public final static Image image(final String path, final boolean syn) {
 		return loadImage(path, syn);
 	}
 
-	public final static Image loadImage(String path) {
+	public final static Image loadImage(final String path) {
 		return loadImage(path, true);
 	}
 
-	public final static Image loadImage(String path, boolean syn) {
+	public final static Image loadImage(final String path, final boolean syn) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			String ext = LSystem.getExtension(path);
@@ -122,7 +122,7 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static ArrayByteReader loadArrayByteReader(String path) {
+	public final static ArrayByteReader loadArrayByteReader(final String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {
 			return new ArrayByteReader(new ArrayByte(1));
@@ -130,7 +130,7 @@ public abstract class BaseIO extends DefUI {
 		return new ArrayByteReader(new ArrayByte(buffer));
 	}
 
-	public final static ArrayByte loadArrayByte(String path) {
+	public final static ArrayByte loadArrayByte(final String path) {
 		final byte[] buffer = loadBytes(path);
 		if (buffer == null) {
 			return new ArrayByte(1);
@@ -138,11 +138,11 @@ public abstract class BaseIO extends DefUI {
 		return new ArrayByte(buffer);
 	}
 
-	public final static StrTokenizer loadStrTokenizer(String path) {
+	public final static StrTokenizer loadStrTokenizer(final String path) {
 		return loadStrTokenizer(path, null);
 	}
 
-	public final static StrTokenizer loadStrTokenizer(String path, String delimiters) {
+	public final static StrTokenizer loadStrTokenizer(final String path, final String delimiters) {
 		if (StringUtils.isEmpty(path)) {
 			return new StrTokenizer("");
 		}
@@ -157,7 +157,7 @@ public abstract class BaseIO extends DefUI {
 		}
 	}
 
-	public final static GoFuture<byte[]> loadAsynBytes(String path) {
+	public final static GoFuture<byte[]> loadAsynBytes(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
@@ -169,7 +169,7 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static byte[] loadBytes(String path) {
+	public final static byte[] loadBytes(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			try {
@@ -181,7 +181,7 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static Sound loadSound(String path) {
+	public final static Sound loadSound(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getSound(path);
@@ -189,7 +189,7 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static Sound loadMusic(String path) {
+	public final static Sound loadMusic(final String path) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getMusic(path);
@@ -197,11 +197,11 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static Image loadRemoteImage(String url) {
+	public final static Image loadRemoteImage(final String url) {
 		return loadRemoteImage(url, 0, 0);
 	}
 
-	public final static Image loadRemoteImage(String url, int w, int h) {
+	public final static Image loadRemoteImage(final String url, final int w, final int h) {
 		final LGame base = LSystem.base();
 		if (base != null) {
 			return base.assets().getRemoteImage(url, w, h);
@@ -209,11 +209,11 @@ public abstract class BaseIO extends DefUI {
 		return null;
 	}
 
-	public final static Object loadJsonObject(String path) {
+	public final static Object loadJsonObject(final String path) {
 		return loadJsonObjectContext(loadText(path));
 	}
 
-	public final static Object loadJsonObjectContext(String text) {
+	public final static Object loadJsonObjectContext(final String text) {
 		if (StringUtils.isEmpty(text)) {
 			return null;
 		}

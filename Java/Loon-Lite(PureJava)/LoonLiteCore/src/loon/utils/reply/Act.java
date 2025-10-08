@@ -26,14 +26,14 @@ public final class Act<T> extends AbstractAct<T> {
 		return new Act<T>();
 	}
 
-	public void emit(T e) {
+	public void emit(final T e) {
 		notifyEmit(e);
 	}
 
 	public Port<T> port() {
 		return new Port<T>() {
 			@Override
-			public void onEmit(T value) {
+			public void onEmit(final T value) {
 				emit(value);
 			}
 		};

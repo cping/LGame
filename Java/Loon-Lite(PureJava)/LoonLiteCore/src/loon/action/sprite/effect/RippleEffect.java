@@ -50,7 +50,10 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 		int existTime;
 
-		public RippleProcess(float x, float y, int time, RippleEffect effect) {
+		int lineWidth;
+
+		public RippleProcess(int width, float x, float y, int time, RippleEffect effect) {
+			this.lineWidth = width;
 			this.dstX = x;
 			this.dstY = y;
 			this.existTime = time;
@@ -60,7 +63,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 		@Override
 		public void run(LTimerContext time) {
-			rippleOther = new RippleKernel(dstX, dstY, existTime);
+			rippleOther = new RippleKernel(lineWidth, dstX, dstY, existTime);
 			rippleEffect.ripples.add(rippleOther);
 			kill();
 		}
@@ -71,7 +74,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	}
 
 	public enum Model {
-		OVAL, RECT, TRIANGLE, RHOMBUS
+		OVAL, RECT, TRIANGLE, RHOMBUS, DASHOVAL
 	}
 
 	private ActionKey touchLocked = new ActionKey();
@@ -85,6 +88,8 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	private Model model;
 
 	private int existTime;
+
+	private int lineWidth;
 
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
@@ -103,10 +108,15 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	}
 
 	public RippleEffect(Model m, LColor c, int time) {
+		this(m, c, 2, time);
+	}
+
+	public RippleEffect(Model m, LColor c, int width, int time) {
 		this.model = m;
 		this.ripples = new TArray<RippleKernel>();
 		this.processArray = new TArray<RippleProcess>();
 		this.existTime = time;
+		this.lineWidth = width;
 		this.setDelay(60);
 		this.setColor(c);
 		setRepaint(true);
@@ -114,9 +124,9 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 	public boolean addRipplePoint(final float x, final float y) {
 
-		this.ripples.add(new RippleKernel(x, y, existTime));
+		this.ripples.add(new RippleKernel(lineWidth, x, y, existTime));
 
-		this.lastProcess = new RippleProcess(x, y, existTime, this);
+		this.lastProcess = new RippleProcess(lineWidth, x, y, existTime, this);
 		this.lastProcess.setDelay(LSystem.SECOND / 5);
 		this.processArray.add(lastProcess);
 
@@ -152,6 +162,15 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 				}
 			}
 		}
+	}
+
+	public RippleEffect setLineWidth(int w) {
+		this.lineWidth = w;
+		return this;
+	}
+
+	public int getLineWidth() {
+		return lineWidth;
 	}
 
 	public boolean checkCompleted() {
@@ -213,6 +232,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 			processArray.clear();
 		}
 		touchLocked.release();
+		ripples.clear();
 	}
 
 }

@@ -58,6 +58,22 @@ import loon.utils.parse.StrTokenizer;
  */
 public final class BDFont extends FontTrans implements IFont, LRelease {
 
+	public static BDFont create(String path) {
+		try {
+			return new BDFont(path);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	public static BDFont create(String file, int size) {
+		try {
+			return new BDFont(file, size);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static class BDFGlyph {
 
 		protected byte[][] glyph;

@@ -424,7 +424,7 @@ public final class LTexturePack implements LRelease {
 		return pack(format);
 	}
 
-	public synchronized LTexture pack(Format format) {
+	public synchronized LTexture pack(final Format format) {
 		if (texture != null && !packing && !texture.isClosed()) {
 			return texture;
 		}
@@ -444,8 +444,8 @@ public final class LTexturePack implements LRelease {
 			}
 			if (colorMask != null) {
 				int[] pixels = image.getPixels();
-				int size = pixels.length;
-				int color = colorMask.getRGB();
+				final int size = pixels.length;
+				final int color = colorMask.getRGB();
 				for (int i = 0; i < size; i++) {
 					if (pixels[i] == color) {
 						pixels[i] = 0xffffff;
@@ -478,7 +478,7 @@ public final class LTexturePack implements LRelease {
 		if (temps == null || temps.size() == 0) {
 			return new int[] {};
 		}
-		IntArray ints = new IntArray();
+		final IntArray ints = new IntArray();
 		for (int i = 0; i < temps.size(); i++) {
 			Entry entry = (Entry) temps.getEntry(i);
 			if (entry != null) {

@@ -61,7 +61,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 	private static <T> VarViewListener<T> wrap(final ActViewListener<? super T> listener) {
 		return new VarViewListener<T>() {
-			public void onChange(T newValue, T oldValue) {
+			public void onChange(final T newValue, final T oldValue) {
 				listener.onEmit(newValue);
 			}
 		};
@@ -97,7 +97,7 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 
 	@Override
 	public String toString() {
-		String cname = getClass().getName();
+		final String cname = getClass().getName();
 		return cname.substring(cname.lastIndexOf(".") + 1) + "(" + get() + ")";
 	}
 
@@ -108,15 +108,15 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 		return p;
 	}
 
-	protected T updateAndNotifyIf(T value) {
+	protected T updateAndNotifyIf(final T value) {
 		return updateAndNotify(value, false);
 	}
 
-	protected T updateAndNotify(T value) {
+	protected T updateAndNotify(final T value) {
 		return updateAndNotify(value, true);
 	}
 
-	protected T updateAndNotify(T value, boolean force) {
+	protected T updateAndNotify(final T value, final boolean force) {
 		checkMutate();
 		T ovalue = updateLocal(value);
 		if (force || !areEqual(value, ovalue)) {
@@ -125,22 +125,22 @@ public abstract class AbstractValue<T> extends Bypass implements VarView<T> {
 		return ovalue;
 	}
 
-	protected void emitChange(T value, T oldValue) {
+	protected void emitChange(final T value, final T oldValue) {
 		notifyChange(value, oldValue);
 	}
 
-	protected void notifyChange(T value, T oldValue) {
+	protected void notifyChange(final T value, final T oldValue) {
 		notify(CHANGE, value, oldValue, null);
 	}
 
-	protected T updateLocal(T value) {
+	protected T updateLocal(final T value) {
 		throw new UnsupportedOperationException();
 	}
 
 	protected final Notifier<T> CHANGE = new Notifier<T>() {
 		@SuppressWarnings("unchecked")
 		@Override
-		public void notify(Bypass.GoListener lner, T value, T oldValue, T ignored) {
+		public void notify(final Bypass.GoListener lner, final T value, final T oldValue, final T ignored) {
 			((VarViewListener<T>) lner).onChange(value, oldValue);
 		}
 	};

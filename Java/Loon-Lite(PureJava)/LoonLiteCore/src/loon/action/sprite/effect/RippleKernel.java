@@ -31,6 +31,8 @@ import loon.utils.timer.LTimer;
  */
 public class RippleKernel {
 
+	protected int lineWidth;
+
 	protected LColor color;
 
 	protected float x, y;
@@ -44,18 +46,25 @@ public class RippleKernel {
 	private Triangle2f tempTriangle;
 
 	public RippleKernel(float x, float y) {
-		this(x, y, 25);
+		this(2, x, y);
 	}
 
-	public RippleKernel(float x, float y, int l) {
+	public RippleKernel(int width, float x, float y) {
+		this(width, x, y, 25);
+	}
+
+	public RippleKernel(int width, float x, float y, int l) {
 		this.x = x;
 		this.y = y;
 		this.existTime = 0;
 		this.limit = l;
+		this.lineWidth = width;
 	}
 
 	public void draw(final GLEx g, Model model, float mx, float my) {
-		int span = existTime * 2;
+		final int span = existTime * 2;
+		final float oldWidth = g.getLineWidth();
+		g.setLineWidth(lineWidth);
 		switch (model) {
 		case OVAL:
 			g.drawOval(mx + x - span / 2, my + y - span / 2, span, span);
@@ -66,6 +75,9 @@ public class RippleKernel {
 		case RHOMBUS:
 			g.drawRhombus(6, mx + x - span / 2, my + y - span / 2, span);
 			break;
+		case DASHOVAL:
+			g.drawDashCircle(mx + x - span / 2, my + y - span / 2, span);
+			break;
 		case TRIANGLE:
 			if (tempTriangle == null) {
 				tempTriangle = new Triangle2f(span, span);
@@ -75,6 +87,7 @@ public class RippleKernel {
 			g.drawTriangle(tempTriangle, mx + x - span / 2, my + y - span / 2);
 			break;
 		}
+		g.setLineWidth(oldWidth);
 		existTime++;
 	}
 

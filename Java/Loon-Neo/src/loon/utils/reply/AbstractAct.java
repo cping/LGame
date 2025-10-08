@@ -38,7 +38,7 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 			protected Connection connect() {
 				return outer.connect(new ActViewListener<T>() {
 					@Override
-					public void onEmit(T value) {
+					public void onEmit(final T value) {
 						notifyEmit(func.apply(value));
 					}
 				});
@@ -54,7 +54,7 @@ public class AbstractAct<T> extends Bypass implements ActView<T> {
 			protected Connection connect() {
 				return outer.connect(new ActViewListener<T>() {
 					@Override
-					public void onEmit(T value) {
+					public void onEmit(final T value) {
 						if (pred.apply(value)) {
 							notifyEmit(value);
 						}

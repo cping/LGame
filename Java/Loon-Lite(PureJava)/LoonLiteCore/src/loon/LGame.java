@@ -29,6 +29,8 @@ import loon.events.InputMake;
 import loon.events.RunnableUpdate;
 import loon.events.Updateable;
 import loon.events.UpdateableRun;
+import loon.font.BDFont;
+import loon.font.BMFont;
 import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.LSTRFont;
@@ -36,6 +38,7 @@ import loon.opengl.Mesh;
 import loon.opengl.TextureSource;
 import loon.utils.IntMap;
 import loon.utils.ObjectMap;
+import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.json.JsonImpl;
@@ -78,10 +81,10 @@ public abstract class LGame implements LRelease {
 	 */
 	public static class Error {
 
-		public String message;
-		public Throwable cause;
+		public final String message;
+		public final Throwable cause;
 
-		public Error(String message, Throwable cause) {
+		public Error(final String message, final Throwable cause) {
 			this.message = message;
 			this.cause = cause;
 		}
@@ -91,12 +94,12 @@ public abstract class LGame implements LRelease {
 
 		private final Display _display;
 
-		DisplayPort(Display d) {
+		DisplayPort(final Display d) {
 			this._display = d;
 		}
 
 		@Override
-		public void onEmit(LGame e) {
+		public void onEmit(final LGame e) {
 			_display.onFrame();
 		}
 	}
@@ -105,12 +108,12 @@ public abstract class LGame implements LRelease {
 
 		private final LGame _game;
 
-		GameStatusPort(LGame g) {
+		GameStatusPort(final LGame g) {
 			this._game = g;
 		}
 
 		@Override
-		public void onEmit(LGame.Status e) {
+		public void onEmit(final LGame.Status e) {
 			switch (e) {
 			case EXIT:
 				_game.stop();
@@ -176,7 +179,7 @@ public abstract class LGame implements LRelease {
 
 	protected JsonImpl jsonImpl;
 
-	public LGame(LSetting config, Platform plat) {
+	public LGame(LSetting config, final Platform plat) {
 		LGame._platform = plat;
 		this._mesh_all_pools = new TArray<>(128);
 		this._texture_batch_pools = new IntMap<>(12);
@@ -200,7 +203,7 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
-	protected void setupDisplay(Display d) {
+	protected void setupDisplay(final Display d) {
 		frame.connect(new DisplayPort(d));
 		status.connect(new GameStatusPort(this));
 		if (!setting.isLogo && processImpl != null) {
@@ -221,7 +224,7 @@ public abstract class LGame implements LRelease {
 		return this;
 	}
 
-	public LGame addFrame(Port<LGame> game) {
+	public LGame addFrame(final Port<LGame> game) {
 		frame.connect(game);
 		return this;
 	}
@@ -283,13 +286,13 @@ public abstract class LGame implements LRelease {
 	 * @param screen
 	 * @return
 	 */
-	public final Display register(Screen screen) {
+	public final Display register(final Screen screen) {
 		this.displayImpl = new Display(this, setting.fps);
 		this.displayImpl.setScreen(screen);
 		return displayImpl;
 	}
 
-	protected final void initProcess(LGame game) {
+	protected final void initProcess(final LGame game) {
 		LGame._base = game;
 		if (LGame._base == null && LGame._platform != null) {
 			LGame._base = LGame._platform.getGame();
@@ -310,20 +313,46 @@ public abstract class LGame implements LRelease {
 		return this;
 	}
 
+	private final IFont convertExtensionToFontModel(String fontName, int fontSize) {
+		if (fontName != null) {
+			final String fileName = fontName.toLowerCase().trim();
+			final String ext = PathUtils.getExtension(fontName);
+			if (StringUtils.isEmpty(ext)) {
+				return LFont.getFont(fontName, fontSize);
+			} else if ("fnt".equals(ext)) {
+				return BMFont.create(fileName, fontSize);
+			} else if ("bdf".equals(ext)) {
+				return new BDFont(fontName, fontSize);
+			}
+		}
+		return setting.defaultGameFont;
+	}
+
 	public IFont setDefaultGameFont() {
 		if (setting.defaultGameFont == null) {
-			setting.defaultGameFont = LFont.getFont(setting.fontName, setting.fontSize);
+			setting.defaultGameFont = convertExtensionToFontModel(setting.fontName, setting.fontSize);
 		}
 		return setting.defaultGameFont;
 	}
 
 	public IFont setDefaultLogFont() {
 		if (setting.defaultLogFont == null) {
-			if (setting.fontSize <= LSystem.DEFAULT_SYS_FONT_SIZE) {
-				setting.defaultLogFont = LSTRFont.getFont(
-						LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE);
+			final String fileName = setting.fontName.toLowerCase().trim();
+			final String ext = PathUtils.getExtension(fileName);
+			if (StringUtils.isEmpty(ext)) {
+				if (setting.fontSize <= LSystem.DEFAULT_SYS_FONT_SIZE) {
+					setting.defaultLogFont = LSTRFont.getFont(
+							LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE);
+				} else {
+					setting.defaultLogFont = LSTRFont.getFont(setting.fontSize);
+				}
 			} else {
-				setting.defaultLogFont = LSTRFont.getFont(setting.fontSize);
+				if (setting.fontSize <= LSystem.DEFAULT_SYS_FONT_SIZE) {
+					setting.defaultLogFont = convertExtensionToFontModel(setting.fontName,
+							LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE);
+				} else {
+					setting.defaultLogFont = convertExtensionToFontModel(setting.fontName, setting.fontSize);
+				}
 			}
 		}
 		return setting.defaultLogFont;
@@ -334,7 +363,7 @@ public abstract class LGame implements LRelease {
 	 *
 	 * @param plat
 	 */
-	public void setPlatform(Platform plat) {
+	public void setPlatform(final Platform plat) {
 		if (plat != null) {
 			LGame._platform = plat;
 			LGame game = plat.getGame();
@@ -349,7 +378,7 @@ public abstract class LGame implements LRelease {
 	 *
 	 * @param game
 	 */
-	protected final LGame checkBaseGame(LGame game) {
+	protected final LGame checkBaseGame(final LGame game) {
 		LGame oldGame = _base;
 		if (game != oldGame && game != null) {
 			oldGame = game;
@@ -382,7 +411,7 @@ public abstract class LGame implements LRelease {
 	 * @param cause
 	 * @return
 	 */
-	public LGame reportError(String message, Throwable cause) {
+	public LGame reportError(final String message, final Throwable cause) {
 		return reportError(message, cause, true);
 	}
 
@@ -394,7 +423,7 @@ public abstract class LGame implements LRelease {
 	 * @param logError
 	 * @return
 	 */
-	public LGame reportError(String message, Throwable cause, boolean logError) {
+	public LGame reportError(final String message, final Throwable cause, final boolean logError) {
 		errors.emit(new Error(message, cause));
 		if (logError) {
 			log().error(message, cause);
@@ -408,7 +437,7 @@ public abstract class LGame implements LRelease {
 	 * @param signal
 	 * @param event
 	 */
-	public <E> void dispatchEvent(Act<E> signal, E event) {
+	public <E> void dispatchEvent(final Act<E> signal, final E event) {
 		try {
 			signal.emit(event);
 		} catch (Throwable cause) {
@@ -436,7 +465,7 @@ public abstract class LGame implements LRelease {
 	 * @param runnable
 	 * @return
 	 */
-	public LGame invokeLater(Runnable runnable) {
+	public LGame invokeLater(final Runnable runnable) {
 		if (runnable == null) {
 			return this;
 		}
@@ -546,7 +575,7 @@ public abstract class LGame implements LRelease {
 	 * @param texture
 	 * @return
 	 */
-	public LTextureBatch getBatchCache(LTexture texture) {
+	public LTextureBatch getBatchCache(final LTexture texture) {
 		if (texture == null) {
 			return null;
 		}
@@ -559,7 +588,7 @@ public abstract class LGame implements LRelease {
 	 * @param batch
 	 * @return
 	 */
-	public LTextureBatch bindBatchCache(LTextureBatch batch) {
+	public LTextureBatch bindBatchCache(final LTextureBatch batch) {
 		if (_texture_batch_pools.size > LSystem.DEFAULT_MAX_CACHE_SIZE) {
 			clearBatchCaches();
 		}
@@ -580,7 +609,7 @@ public abstract class LGame implements LRelease {
 	 * @param batch
 	 * @return
 	 */
-	public LTextureBatch disposeBatchCache(LTextureBatch batch) {
+	public LTextureBatch disposeBatchCache(final LTextureBatch batch) {
 		return disposeBatchCache(batch, true);
 	}
 
@@ -591,7 +620,7 @@ public abstract class LGame implements LRelease {
 	 * @param closed
 	 * @return
 	 */
-	public LTextureBatch disposeBatchCache(LTextureBatch batch, boolean closed) {
+	public LTextureBatch disposeBatchCache(final LTextureBatch batch, final boolean closed) {
 		synchronized (_texture_batch_pools) {
 			LTextureBatch pBatch = _texture_batch_pools.remove(batch.getTextureID());
 			if (closed && pBatch != null) {
@@ -610,7 +639,7 @@ public abstract class LGame implements LRelease {
 	 * @param id
 	 * @return
 	 */
-	public boolean containsTexture(int id) {
+	public boolean containsTexture(final int id) {
 		synchronized (_texture_all_list) {
 			for (LTexture tex : _texture_all_list) {
 				if (tex.getID() == id) {
@@ -627,7 +656,7 @@ public abstract class LGame implements LRelease {
 	 * @param id
 	 * @return
 	 */
-	protected boolean delTexture(int id) {
+	protected boolean delTexture(final int id) {
 		synchronized (_texture_all_list) {
 			for (LTexture tex : _texture_all_list) {
 				if (tex.getID() == id) {
@@ -643,7 +672,7 @@ public abstract class LGame implements LRelease {
 	 *
 	 * @param tex2d
 	 */
-	protected void putTexture(LTexture tex2d) {
+	protected void putTexture(final LTexture tex2d) {
 		if (tex2d != null && !tex2d.isClosed() && !tex2d.isChild() && !_texture_all_list.contains(tex2d)) {
 			synchronized (_texture_all_list) {
 				_texture_all_list.add(tex2d);
@@ -716,7 +745,7 @@ public abstract class LGame implements LRelease {
 	 * @param texture
 	 * @return
 	 */
-	public boolean containsTextureValue(LTexture texture) {
+	public boolean containsTextureValue(final LTexture texture) {
 		return _texture_all_list.contains(texture);
 	}
 
@@ -726,11 +755,11 @@ public abstract class LGame implements LRelease {
 	 * @param fileName
 	 * @return
 	 */
-	public int getRefTextureCount(String fileName) {
+	public int getRefTextureCount(final String fileName) {
 		if (StringUtils.isEmpty(fileName)) {
 			return 0;
 		}
-		String key = fileName.trim();
+		final String key = fileName.trim();
 		LTexture texture = _texture_lazys.get(key);
 		if (texture != null) {
 			return texture._referenceCount;
@@ -756,7 +785,7 @@ public abstract class LGame implements LRelease {
 	 * @param remove
 	 * @return
 	 */
-	public int removeTextureRef(String name, final boolean remove) {
+	public int removeTextureRef(final String name, final boolean remove) {
 		if (StringUtils.isEmpty(name)) {
 			return 0;
 		}
@@ -787,7 +816,7 @@ public abstract class LGame implements LRelease {
 	 * @param remove
 	 * @return
 	 */
-	public int removeTextureRef(LTexture texture, final boolean remove) {
+	public int removeTextureRef(final LTexture texture, final boolean remove) {
 		if (texture == null) {
 			return -1;
 		}
@@ -801,7 +830,7 @@ public abstract class LGame implements LRelease {
 	 * @param height
 	 * @return
 	 */
-	public LTexture createTexture(int width, int height) {
+	public LTexture createTexture(final int width, final int height) {
 		return graphics().createTexture(width, height);
 	}
 
@@ -811,7 +840,7 @@ public abstract class LGame implements LRelease {
 	 * @param path
 	 * @return
 	 */
-	public LTexture newTexture(String path) {
+	public LTexture newTexture(final String path) {
 		if (StringUtils.isEmpty(path)) {
 			return null;
 		}
@@ -825,13 +854,13 @@ public abstract class LGame implements LRelease {
 	 * @param fileName
 	 * @return
 	 */
-	public LTexture loadTexture(String fileName) {
+	public LTexture loadTexture(final String fileName) {
 		if (StringUtils.isEmpty(fileName)) {
 			return null;
 		}
 		synchronized (_texture_lazys) {
-			String key = fileName.trim().toLowerCase();
-			ObjectMap<String, LTexture> texs = new ObjectMap<>(_texture_lazys);
+			final String key = fileName.trim().toLowerCase();
+			final ObjectMap<String, LTexture> texs = new ObjectMap<>(_texture_lazys);
 			LTexture texture = texs.get(key);
 			if (texture == null) {
 				for (LTexture tex : texs.values()) {
@@ -859,11 +888,11 @@ public abstract class LGame implements LRelease {
 	 * @param tex
 	 * @return
 	 */
-	protected LTexture removeTexture(LTexture tex) {
+	protected LTexture removeTexture(final LTexture tex) {
 		if (tex == null) {
 			return null;
 		}
-		String key = tex.src().trim().toLowerCase();
+		final String key = tex.src().trim().toLowerCase();
 		LTexture tex2d = _texture_lazys.remove(key);
 		if (tex2d == null) {
 			tex2d = _texture_lazys.remove(tex.tmpLazy);
@@ -877,7 +906,7 @@ public abstract class LGame implements LRelease {
 	 * @param id
 	 * @return
 	 */
-	public LTexture getTexture(int id) {
+	public LTexture getTexture(final int id) {
 		synchronized (_texture_all_list) {
 			for (LTexture tex : _texture_all_list) {
 				if (tex != null && !tex.isClosed() && tex.getID() == id) {
@@ -893,7 +922,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public void destroySourceAllCache() {
 		if (_texture_lazys.size > 0) {
-			TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
+			final TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed() && tex2d.getSource() != null
@@ -912,7 +941,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public void destroyAllCache() {
 		if (_texture_lazys.size > 0) {
-			TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
+			final TArray<LTexture> textures = new TArray<>(_texture_lazys.values());
 			for (int i = 0; i < textures.size; i++) {
 				LTexture tex2d = textures.get(i);
 				if (tex2d != null && !tex2d.isClosed()) {
@@ -961,14 +990,14 @@ public abstract class LGame implements LRelease {
 		return size;
 	}
 
-	public boolean pushSpritesPool(Sprites sprites) {
+	public boolean pushSpritesPool(final Sprites sprites) {
 		if (!_sprites_pools.contains(sprites)) {
 			return _sprites_pools.add(sprites);
 		}
 		return false;
 	}
 
-	public boolean popSpritesPool(Sprites sprites) {
+	public boolean popSpritesPool(final Sprites sprites) {
 		return _sprites_pools.remove(sprites);
 	}
 
@@ -998,14 +1027,14 @@ public abstract class LGame implements LRelease {
 		return size;
 	}
 
-	public boolean pushDesktopPool(Desktop desktop) {
+	public boolean pushDesktopPool(final Desktop desktop) {
 		if (!_desktop_pools.contains(desktop)) {
 			return _desktop_pools.add(desktop);
 		}
 		return false;
 	}
 
-	public boolean popDesktopPool(Desktop desktop) {
+	public boolean popDesktopPool(final Desktop desktop) {
 		return _desktop_pools.remove(desktop);
 	}
 
@@ -1027,18 +1056,18 @@ public abstract class LGame implements LRelease {
 		return _font_pools.size;
 	}
 
-	public boolean pushFontPool(IFont font) {
+	public boolean pushFontPool(final IFont font) {
 		if (!_font_pools.contains(font)) {
 			return _font_pools.add(font);
 		}
 		return false;
 	}
 
-	public boolean popFontPool(IFont font) {
+	public boolean popFontPool(final IFont font) {
 		return _font_pools.remove(font);
 	}
 
-	public IFont serachFontPool(String className, String fontName, int size) {
+	public IFont serachFontPool(final String className, final String fontName, final int size) {
 		if (className == null) {
 			return null;
 		}

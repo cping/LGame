@@ -34,13 +34,13 @@ public abstract class Asyn {
 
 		private Default _def;
 
-		CallDefaultPort(Default d) {
+		CallDefaultPort(final Default d) {
 			this._def = d;
 
 		}
 
 		@Override
-		public void onEmit(T e) {
+		public void onEmit(final T e) {
 			_def.dispatch();
 		}
 
@@ -52,7 +52,7 @@ public abstract class Asyn {
 		private final TArray<Runnable> running = new TArray<Runnable>();
 		protected final Log log;
 
-		public Default(Log log, Act<? extends Object> frame) {
+		public Default(final Log log, final Act<? extends Object> frame) {
 			this.log = log;
 			frame.connect(new CallDefaultPort<Object>(this)).setPriority(Short.MAX_VALUE);
 		}
@@ -63,12 +63,12 @@ public abstract class Asyn {
 		}
 
 		@Override
-		public void invokeAsync(Runnable action) {
+		public void invokeAsync(final Runnable action) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public synchronized void invokeLater(Runnable action) {
+		public synchronized void invokeLater(final Runnable action) {
 			pending.add(action);
 		}
 
@@ -78,7 +78,7 @@ public abstract class Asyn {
 				pending.clear();
 			}
 			for (int ii = 0, ll = running.size; ii < ll; ii++) {
-				Runnable action = running.get(ii);
+				final Runnable action = running.get(ii);
 				try {
 					action.run();
 				} catch (Throwable e) {
@@ -89,7 +89,7 @@ public abstract class Asyn {
 		}
 	}
 
-	public abstract void invokeLater(Runnable action);
+	public abstract void invokeLater(final Runnable action);
 
 	/** 为了语法转换到C#和C++，只能忍痛放弃匿名构造类了…… **/
 	private static class DeferredPromiseRunnable<T> implements Runnable {
@@ -102,7 +102,7 @@ public abstract class Asyn {
 
 		private Throwable _cause;
 
-		public DeferredPromiseRunnable(int m, GoPromise<T> p, T val, Throwable c) {
+		public DeferredPromiseRunnable(final int m, final GoPromise<T> p, final T val, final Throwable c) {
 			this._mode = m;
 			this._promise = p;
 			this._value = val;
@@ -128,7 +128,7 @@ public abstract class Asyn {
 
 		private EventActionFuture<T> _future;
 
-		public CallEventActionPromise(Asyn a, FutureResult<T> f) {
+		public CallEventActionPromise(final Asyn a, final FutureResult<T> f) {
 			this._asyn = a;
 			this._future = new EventActionFuture<T>(this, f);
 			if (_asyn != null) {
@@ -142,7 +142,7 @@ public abstract class Asyn {
 
 		private Asyn _asyn;
 
-		public CallDeferredPromise(Asyn a) {
+		public CallDeferredPromise(final Asyn a) {
 			this._asyn = a;
 		}
 
@@ -161,7 +161,7 @@ public abstract class Asyn {
 		return new CallDeferredPromise<T>(Asyn.this);
 	}
 
-	public <T> GoPromise<T> deferredPromise(FutureResult<T> result) {
+	public <T> GoPromise<T> deferredPromise(final FutureResult<T> result) {
 		return new CallEventActionPromise<T>(Asyn.this, result);
 	}
 

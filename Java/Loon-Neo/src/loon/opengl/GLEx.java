@@ -3679,7 +3679,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	public GLEx drawDashCircle(float x, float y, float radius, float width, LColor color) {
-		int argb = this.lastBrush.baseColor;
+		final int argb = this.lastBrush.baseColor;
 		setColor(color);
 		drawDashCircle(x, y, radius, width);
 		setColor(argb);

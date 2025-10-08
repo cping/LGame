@@ -63,7 +63,7 @@ public final class Cons extends Connection {
 	}
 
 	@Override
-	public Connection setPriority(int priority) {
+	public Connection setPriority(final int priority) {
 		if (_owner == null) {
 			throw new LSysException("cannot change priority of disconnected connection.");
 		}
@@ -74,7 +74,7 @@ public final class Cons extends Connection {
 		return this;
 	}
 
-	protected Cons(Bypass owner, GoListener listener) {
+	protected Cons(final Bypass owner, final GoListener listener) {
 		_owner = owner;
 		_ref = new StrongRef(listener);
 	}
@@ -88,11 +88,11 @@ public final class Cons extends Connection {
 		public abstract GoListener get(Cons cons);
 	}
 
-	private static class StrongRef extends ListenerRef {
+	private final static class StrongRef extends ListenerRef {
 
 		private GoListener _lner;
 
-		public StrongRef(GoListener lner) {
+		public StrongRef(final GoListener lner) {
 			_lner = lner;
 		}
 
@@ -102,17 +102,17 @@ public final class Cons extends Connection {
 		}
 
 		@Override
-		public void defang(GoListener def) {
+		public void defang(final GoListener def) {
 			_lner = def;
 		}
 
 		@Override
-		public GoListener get(Cons cons) {
+		public GoListener get(final Cons cons) {
 			return _lner;
 		}
 	}
 
-	protected static Cons insert(Cons head, Cons cons) {
+	protected static Cons insert(final Cons head, final Cons cons) {
 		if (head == null) {
 			return cons;
 		} else if (cons._priority > head._priority) {
@@ -124,7 +124,7 @@ public final class Cons extends Connection {
 		}
 	}
 
-	protected static Cons remove(Cons head, Cons cons) {
+	protected static Cons remove(final Cons head, final Cons cons) {
 		if (head == null) {
 			return head;
 		}
@@ -135,7 +135,7 @@ public final class Cons extends Connection {
 		return head;
 	}
 
-	protected static Cons removeAll(Cons head, GoListener listener) {
+	protected static Cons removeAll(final Cons head, final GoListener listener) {
 		if (head == null) {
 			return null;
 		}

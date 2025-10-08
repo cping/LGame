@@ -54,6 +54,14 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 	}
 
+	public static BMFont create(String file, int fontSize) {
+		try {
+			return new BMFont(file, fontSize);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static BMFont create(String file) {
 		try {
 			return new BMFont(file);
@@ -77,6 +85,8 @@ public final class BMFont extends FontTrans implements IFont {
 	private int _initDraw = -1;
 
 	private int _drawLimit = 0;
+
+	private int _dstFontSize = -1;
 
 	private String _texPath = null;
 
@@ -188,18 +198,32 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	public BMFont(String file, LTexture image) throws LSysException {
+		this(file, image, -1);
+	}
+
+	public BMFont(String file, LTexture image, int baseFontSize) throws LSysException {
 		this._imagePath = image.getSource();
 		this._texPath = file;
+		this._dstFontSize = baseFontSize;
 		this.displayList = image;
 	}
 
 	public BMFont(String file, String imgFile) throws LSysException {
+		this(file, imgFile, -1);
+	}
+
+	public BMFont(String file, String imgFile, int baseFontSize) throws LSysException {
 		this._texPath = file;
 		this._imagePath = imgFile;
+		this._dstFontSize = baseFontSize;
 	}
 
 	public BMFont(String file) throws LSysException {
-		this(file, LSystem.getAllFileName(file) + ".png");
+		this(file, -1);
+	}
+
+	public BMFont(String file, int baseFontSize) throws LSysException {
+		this(file, LSystem.getAllFileName(file) + ".png", baseFontSize);
 	}
 
 	private void parse(String text) throws LSysException {
@@ -308,6 +332,13 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 		this.advanceSpace = MathUtils.max(1,
 				(_size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 4 : _size) / 2);
+		if (_dstFontSize > 0 && (_size > 0 || lineHeight > 0)) {
+			if (_size > 0) {
+				setFontScale(((float) _dstFontSize / _size));
+			} else {
+				setFontScale(((float) _dstFontSize / lineHeight));
+			}
+		}
 		LSystem.pushFontPool(this);
 	}
 
@@ -575,7 +606,7 @@ public final class BMFont extends FontTrans implements IFont {
 		if (StringUtils.isEmpty(msg)) {
 			return;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		boolean anchor = ax != 0 || ay != 0;
 		boolean scale = sx != 1f || sy != 1f;
 		boolean angle = rotation != 0;
@@ -615,7 +646,7 @@ public final class BMFont extends FontTrans implements IFont {
 		if (StringUtils.isEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		make();
 		Display display = null;
 		for (Display d : displays.values()) {
@@ -680,7 +711,7 @@ public final class BMFont extends FontTrans implements IFont {
 			return 0;
 		}
 		make();
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		Display display = null;
 		for (Display d : displays.values()) {
 			if (d != null && newMessage.equals(d.text)) {

@@ -30,11 +30,11 @@ public class GoPromise<T> extends GoFuture<T> {
 		return new GoPromise<T>();
 	}
 
-	public void succeed(T value) {
+	public void succeed(final T value) {
 		_result.update(Try.createSuccess(value));
 	}
 
-	public void fail(Throwable cause) {
+	public void fail(final Throwable cause) {
 		_result.update(Try.createFailure(cause));
 	}
 
@@ -44,7 +44,7 @@ public class GoPromise<T> extends GoFuture<T> {
 
 	public Port<T> succeeder() {
 		return new Port<T>() {
-			public void onEmit(T result) {
+			public void onEmit(final T result) {
 				succeed(result);
 			}
 		};
@@ -52,7 +52,7 @@ public class GoPromise<T> extends GoFuture<T> {
 
 	public Port<Throwable> failer() {
 		return new Port<Throwable>() {
-			public void onEmit(Throwable cause) {
+			public void onEmit(final Throwable cause) {
 				fail(cause);
 			}
 		};
@@ -65,7 +65,7 @@ public class GoPromise<T> extends GoFuture<T> {
 	protected GoPromise() {
 		this(new Var<Try<T>>(null) {
 			@Override
-			protected synchronized Try<T> updateAndNotify(Try<T> value, boolean force) {
+			protected synchronized Try<T> updateAndNotify(final Try<T> value, final boolean force) {
 				if (_value != null) {
 					throw new LSysException("already completed");
 				}

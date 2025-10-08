@@ -30,12 +30,12 @@ public abstract class Bypass {
 		public Runs next;
 
 		@Override
-		public abstract void action(Object a);
+		public abstract void action(final Object a);
 	}
 
 	protected static abstract class Notifier<T> {
 
-		public abstract void notify(GoListener listener, T a1, T a2, T a3);
+		public abstract void notify(final Bypass.GoListener listener, final T a1, final T a2, final T a3);
 
 	}
 
@@ -49,11 +49,11 @@ public abstract class Bypass {
 
 	public abstract GoListener defaultListener();
 
-	protected static <T> boolean areEqual(T o1, T o2) {
+	protected static <T> boolean areEqual(final T o1, final T o2) {
 		return (o1 == o2 || (o1 != null && o1.equals(o2)));
 	}
 
-	protected static Runs append(Runs head, Runs action) {
+	protected static Runs append(final Runs head, final Runs action) {
 		if (head == null)
 			return action;
 		head.next = append(head.next, action);
@@ -80,7 +80,7 @@ public abstract class Bypass {
 		_listeners = null;
 	}
 
-	protected synchronized Cons addConnection(GoListener listener) {
+	protected synchronized Cons addConnection(final GoListener listener) {
 		if (listener == null)
 			throw new LSysException("null listener");
 		return addCons(new Cons(this, listener));
@@ -90,7 +90,7 @@ public abstract class Bypass {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
 				@Override
-				public void action(Object o) {
+				public void action(final Object o) {
 					_listeners = Cons.insert(_listeners, cons);
 					connectionAdded();
 				}
@@ -106,7 +106,7 @@ public abstract class Bypass {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
 				@Override
-				public void action(Object o) {
+				public void action(final Object o) {
 					_listeners = Cons.remove(_listeners, cons);
 					connectionRemoved();
 				}
@@ -121,7 +121,7 @@ public abstract class Bypass {
 		if (isDispatching()) {
 			_pendingRuns = append(_pendingRuns, new Runs() {
 				@Override
-				public void action(Object o) {
+				public void action(final Object o) {
 					_listeners = Cons.removeAll(_listeners, listener);
 					connectionRemoved();
 				}
@@ -138,7 +138,7 @@ public abstract class Bypass {
 			if (_listeners == DISPATCHING) {
 				_pendingRuns = append(_pendingRuns, new Runs() {
 					@Override
-					public void action(Object o) {
+					public void action(final Object o) {
 						Bypass.this.notify(notifier, a1, a2, a3);
 					}
 				});

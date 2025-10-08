@@ -43,7 +43,7 @@ public abstract class Assets {
 
 		private final Assets _assets;
 
-		ImageRunnable(ImageImpl img, String path, Assets assets) {
+		ImageRunnable(final ImageImpl img, final String path, final Assets assets) {
 			this._impl = img;
 			this._path = path;
 			this._assets = assets;
@@ -68,7 +68,7 @@ public abstract class Assets {
 
 		private final Assets _assets;
 
-		TextRunnable(GoPromise<String> res, String path, Assets assets) {
+		TextRunnable(final GoPromise<String> res, final String path, final Assets assets) {
 			this._result = res;
 			this._path = path;
 			this._assets = assets;
@@ -93,7 +93,7 @@ public abstract class Assets {
 
 		private final Assets _assets;
 
-		ByteRunnable(GoPromise<byte[]> res, String path, Assets assets) {
+		ByteRunnable(final GoPromise<byte[]> res, final String path, final Assets assets) {
 			this._result = res;
 			this._path = path;
 			this._assets = assets;
@@ -113,7 +113,7 @@ public abstract class Assets {
 		setPathPrefix(LSystem.EMPTY);
 	}
 
-	public void setPathPrefix(String prefix) {
+	public void setPathPrefix(final String prefix) {
 		if (StringUtils.isEmpty(prefix)) {
 			LSystem.setPathPrefix(LSystem.EMPTY);
 			return;
@@ -132,12 +132,12 @@ public abstract class Assets {
 
 	protected final Asyn asyn;
 
-	public final ResourceLocal getJsonResource(String path) {
+	public final ResourceLocal getJsonResource(final String path) {
 		return new ResourceLocal(path);
 	}
 
-	public Image getImageSync(String path) {
-		ImageImpl image = createImage(false, 0, 0, path);
+	public Image getImageSync(final String path) {
+		final ImageImpl image = createImage(false, 0, 0, path);
 		try {
 			image.succeed(load(path));
 		} catch (Throwable e) {
@@ -152,11 +152,11 @@ public abstract class Assets {
 		return image;
 	}
 
-	public Image getRemoteImage(String url) {
+	public Image getRemoteImage(final String url) {
 		return getRemoteImage(url, 0, 0);
 	}
 
-	public Image getRemoteImage(String url, int width, int height) {
+	public Image getRemoteImage(final String url, final int width, final int height) {
 		LSysException error = new LSysException(
 				"Remote image loading not yet supported: " + url + "@" + width + "x" + height);
 		ImageImpl image = createImage(false, width, height, url);
@@ -164,15 +164,15 @@ public abstract class Assets {
 		return image;
 	}
 
-	public abstract Sound getSound(String path);
+	public abstract Sound getSound(final String path);
 
-	public Sound getMusic(String path) {
-		Sound sound = getSound(path);
+	public Sound getMusic(final String path) {
+		final Sound sound = getSound(path);
 		soundCache.add(sound);
 		return sound;
 	}
 
-	public abstract String getTextSync(String path) throws Exception;
+	public abstract String getTextSync(final String path) throws Exception;
 
 	public GoFuture<String> getText(final String path) {
 		final GoPromise<String> result = asyn.deferredPromise();
@@ -180,11 +180,11 @@ public abstract class Assets {
 		return result;
 	}
 
-	public ArrayByte getArrayByte(String path) throws Exception {
+	public ArrayByte getArrayByte(final String path) throws Exception {
 		return new ArrayByte(getBytesSync(path));
 	}
 
-	public abstract byte[] getBytesSync(String path) throws Exception;
+	public abstract byte[] getBytesSync(final String path) throws Exception;
 
 	public GoFuture<byte[]> getBytes(final String path) {
 		final GoPromise<byte[]> result = asyn.deferredPromise();
@@ -192,13 +192,14 @@ public abstract class Assets {
 		return result;
 	}
 
-	protected Assets(Asyn s) {
+	protected Assets(final Asyn s) {
 		this.asyn = s;
 	}
 
-	protected abstract ImageImpl.Data load(String path) throws Exception;
+	protected abstract ImageImpl.Data load(final String path) throws Exception;
 
-	protected abstract ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source);
+	protected abstract ImageImpl createImage(final boolean async, final int rawWidth, final int rawHeight,
+			final String source);
 
 	protected static String getPath(String path) {
 		final String configPath = LSystem.getPathPrefix();
@@ -219,7 +220,8 @@ public abstract class Assets {
 	}
 
 	public void close() {
-		for (Sound s : soundCache) {
+		for (int i = soundCache.size - 1; i > -1; i--) {
+			final Sound s = soundCache.get(i);
 			if (s != null) {
 				s.stop();
 				s.release();

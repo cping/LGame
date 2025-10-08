@@ -1225,14 +1225,15 @@ public final class LSystem {
 
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
-				|| extension.equals("gif");
+				|| extension.equals("gif") || extension.equals("tga");
 	}
 
 	public static boolean isText(String extension) {
 		return extension.equals("json") || extension.equals("xml") || extension.equals("txt")
 				|| extension.equals("glsl") || extension.equals("fnt") || extension.equals("pack")
 				|| extension.equals("obj") || extension.equals("atlas") || extension.equals("g3dj")
-				|| extension.equals("tmx") || extension.equals("an") || extension.equals("text")
+				|| extension.equals("tmx") || extension.equals("tmj") || extension.equals("an")
+				|| extension.equals("text") || extension.equals("yaml") || extension.equals("lml")
 				|| extension.equals("cfg") || extension.equals("cvs");
 	}
 

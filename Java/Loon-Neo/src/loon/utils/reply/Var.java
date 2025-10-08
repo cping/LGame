@@ -24,26 +24,26 @@ public class Var<T> extends AbstractValue<T> {
 
 	protected T _value;
 
-	public static <T> Var<T> create(T value) {
+	public static <T> Var<T> create(final T value) {
 		return new Var<T>(value);
 	}
 
-	public Var(T value) {
+	public Var(final T value) {
 		_value = value;
 	}
 
-	public T update(T value) {
+	public T update(final T value) {
 		return updateAndNotifyIf(value);
 	}
 
-	public T updateForce(T value) {
+	public T updateForce(final T value) {
 		return updateAndNotify(value);
 	}
 
 	public Port<T> port() {
 		return new Port<T>() {
 			@Override
-			public void onEmit(T value) {
+			public void onEmit(final T value) {
 				update(value);
 			}
 		};
@@ -55,7 +55,7 @@ public class Var<T> extends AbstractValue<T> {
 	}
 
 	@Override
-	protected T updateLocal(T value) {
+	protected T updateLocal(final T value) {
 		T oldValue = _value;
 		_value = value;
 		return oldValue;

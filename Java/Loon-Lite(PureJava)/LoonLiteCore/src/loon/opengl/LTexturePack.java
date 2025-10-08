@@ -348,8 +348,8 @@ public final class LTexturePack implements LRelease {
 			}
 			if (colorMask != null) {
 				int[] pixels = image.getPixels();
-				int size = pixels.length;
-				int color = colorMask.getRGB();
+				final int size = pixels.length;
+				final int color = colorMask.getRGB();
 				for (int i = 0; i < size; i++) {
 					if (pixels[i] == color) {
 						pixels[i] = 0xffffff;

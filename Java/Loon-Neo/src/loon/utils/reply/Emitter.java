@@ -30,7 +30,7 @@ import loon.utils.ObjectMap.Keys;
 import loon.utils.OrderedMap;
 import loon.utils.SortedList;
 
-public class Emitter<T> implements EventActionT<T>, LRelease {
+public final class Emitter<T> implements EventActionT<T>, LRelease {
 
 	protected OrderedMap<T, SortedList<EventAction>> _emitterTable;
 

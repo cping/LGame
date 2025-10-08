@@ -52,12 +52,12 @@ public final class Display extends BaseIO implements LRelease {
 
 		private final Display _display;
 
-		PaintPort(Display d) {
+		PaintPort(final Display d) {
 			this._display = d;
 		}
 
 		@Override
-		public void onEmit(LTimerContext clock) {
+		public void onEmit(final LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
 					RealtimeProcessManager.get().tick(clock);
@@ -72,12 +72,12 @@ public final class Display extends BaseIO implements LRelease {
 
 		private final Display _display;
 
-		PaintAllPort(Display d) {
+		PaintAllPort(final Display d) {
 			this._display = d;
 		}
 
 		@Override
-		public void onEmit(LTimerContext clock) {
+		public void onEmit(final LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
 					RealtimeProcessManager.get().tick(clock);
@@ -95,7 +95,7 @@ public final class Display extends BaseIO implements LRelease {
 		}
 
 		@Override
-		public void onEmit(LTimerContext clock) {
+		public void onEmit(final LTimerContext clock) {
 			synchronized (clock) {
 				if (!LSystem.PAUSED) {
 					ActionControl.get().call(clock.timeSinceLastUpdate);
@@ -116,7 +116,7 @@ public final class Display extends BaseIO implements LRelease {
 
 		LTexture logo;
 
-		public Logo(LTexture texture) {
+		public Logo(final LTexture texture) {
 			this.logo = texture;
 			this.curTime = 60;
 			this.curFrame = 0;
@@ -248,7 +248,7 @@ public final class Display extends BaseIO implements LRelease {
 
 	private UpdatePort updatePort;
 
-	public Display(LGame g, long updateRate) {
+	public Display(final LGame g, final long updateRate) {
 		this._updateRate = updateRate;
 		this._game = g;
 		this._game.checkBaseGame(g);
@@ -263,7 +263,7 @@ public final class Display extends BaseIO implements LRelease {
 		this.initGameDisplay(g);
 	}
 
-	protected void initGameDisplay(LGame game) {
+	protected void initGameDisplay(final LGame game) {
 		this.updateSyncTween(game.setting.isSyncTween);
 		this.initDebugString();
 		this.autoDisplay();
@@ -290,7 +290,7 @@ public final class Display extends BaseIO implements LRelease {
 		return this._debugFontColor;
 	}
 
-	public Display setDebugFontColor(LColor fc) {
+	public Display setDebugFontColor(final LColor fc) {
 		this._debugFontColor = fc;
 		return this;
 	}
@@ -299,7 +299,7 @@ public final class Display extends BaseIO implements LRelease {
 		return this._debugTextSpace;
 	}
 
-	public Display setDebugTextSpace(int s) {
+	public Display setDebugTextSpace(final int s) {
 		this._debugTextSpace = s;
 		return this;
 	}
@@ -308,12 +308,12 @@ public final class Display extends BaseIO implements LRelease {
 		return this._sinceRefreshMaxInterval;
 	}
 
-	public Display setSinceRefreshMaxInterval(long s) {
+	public Display setSinceRefreshMaxInterval(final long s) {
 		this._sinceRefreshMaxInterval = s;
 		return this;
 	}
 
-	protected void newDefView(boolean show) {
+	protected void newDefView(final boolean show) {
 		if (show && _displayFont == null) {
 			this._displayFont = LSystem.getSystemLogFont();
 		}
@@ -341,14 +341,14 @@ public final class Display extends BaseIO implements LRelease {
 		}
 	}
 
-	public void addLog(String mes, LColor col) {
+	public void addLog(final String mes, final LColor col) {
 		if (!logDisplayCreated) {
 			return;
 		}
 		_logDisplay.addText(mes, col);
 	}
 
-	public void addLog(String mes) {
+	public void addLog(final String mes) {
 		if (!logDisplayCreated) {
 			return;
 		}
@@ -359,14 +359,14 @@ public final class Display extends BaseIO implements LRelease {
 		return _logDisplay;
 	}
 
-	protected void paintLog(final GLEx g, int x, int y) {
+	protected void paintLog(final GLEx g, final int x, final int y) {
 		if (!logDisplayCreated) {
 			return;
 		}
 		_logDisplay.paint(g, x, y);
 	}
 
-	public void updateSyncTween(boolean sync) {
+	public void updateSyncTween(final boolean sync) {
 		if (paintAllPort != null) {
 			paint.disconnect(paintAllPort);
 		}
@@ -392,7 +392,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * @param blue
 	 * @param alpha
 	 */
-	public void clearColor(float red, float green, float blue, float alpha) {
+	public void clearColor(final float red, final float green, final float blue, final float alpha) {
 		cred = red;
 		cgreen = green;
 		cblue = blue;
@@ -404,7 +404,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * 
 	 * @param color
 	 */
-	public void clearColor(LColor color) {
+	public void clearColor(final LColor color) {
 		this.clearColor(color.r, color.g, color.b, color.a);
 	}
 
@@ -433,15 +433,15 @@ public final class Display extends BaseIO implements LRelease {
 		}
 	}
 
-	public void update(LTimerContext clock) {
+	public void update(final LTimerContext clock) {
 		update.emit(clock);
 	}
 
-	public void paint(LTimerContext clock) {
+	public void paint(final LTimerContext clock) {
 		paint.emit(clock);
 	}
 
-	protected void draw(LTimerContext clock) {
+	protected void draw(final LTimerContext clock) {
 		if (_closed) {
 			return;
 		}
@@ -642,8 +642,8 @@ public final class Display extends BaseIO implements LRelease {
 					if (_runtime == null) {
 						_runtime = Runtime.getRuntime();
 					}
-					long totalMemory = _runtime.totalMemory();
-					long currentMemory = totalMemory - _runtime.freeMemory();
+					final long totalMemory = _runtime.totalMemory();
+					final long currentMemory = totalMemory - _runtime.freeMemory();
 					displayMessage.setLength(0);
 					displayMessage.append(MEMORY_STR);
 					displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
@@ -653,7 +653,7 @@ public final class Display extends BaseIO implements LRelease {
 				}
 				displayMemony = displayMessage.toString();
 
-				LGame game = getGame();
+				final LGame game = getGame();
 
 				displayMessage.setLength(0);
 				displayMessage.append(SPRITE_STR);
@@ -713,7 +713,7 @@ public final class Display extends BaseIO implements LRelease {
 		return _autoRepaint;
 	}
 
-	public Display setAutoRepaint(boolean r) {
+	public Display setAutoRepaint(final boolean r) {
 		this._autoRepaint = r;
 		return this;
 	}
@@ -732,7 +732,7 @@ public final class Display extends BaseIO implements LRelease {
 		return _autoUpdate;
 	}
 
-	public Display setAutoUpdate(boolean u) {
+	public Display setAutoUpdate(final boolean u) {
 		this._autoUpdate = u;
 		return this;
 	}
@@ -803,7 +803,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * @param output
 	 * @return
 	 */
-	public GifEncoder startVideo(OutputStream output) {
+	public GifEncoder startVideo(final OutputStream output) {
 		return startVideo(output, LSystem.isDesktop() ? _sinceRefreshMaxInterval
 				: _sinceRefreshMaxInterval + _sinceRefreshMaxInterval / 2);
 	}
@@ -815,7 +815,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * @param delay
 	 * @return
 	 */
-	public GifEncoder startVideo(OutputStream output, long delay) {
+	public GifEncoder startVideo(final OutputStream output, final long delay) {
 		stopVideo();
 		videoDelay.setDelay(delay);
 		gifEncoder = new GifEncoder();
@@ -846,7 +846,7 @@ public final class Display extends BaseIO implements LRelease {
 		return paintClock;
 	}
 
-	public void setShaderSource(ShaderSource src) {
+	public void setShaderSource(final ShaderSource src) {
 		if (_glEx != null && src != null) {
 			_glEx.setShaderSource(src);
 		}
@@ -859,7 +859,7 @@ public final class Display extends BaseIO implements LRelease {
 		return LSystem.DEF_SOURCE;
 	}
 
-	public Display resize(int viewWidth, int viewHeight) {
+	public Display resize(final int viewWidth, final int viewHeight) {
 		if (_closed) {
 			return this;
 		}
@@ -873,7 +873,7 @@ public final class Display extends BaseIO implements LRelease {
 		return this;
 	}
 
-	public Display setScreen(Screen screen) {
+	public Display setScreen(final Screen screen) {
 		if (_closed) {
 			return this;
 		}
@@ -901,7 +901,7 @@ public final class Display extends BaseIO implements LRelease {
 		return _displayFont;
 	}
 
-	public Display setDisplayFont(IFont displayFont) {
+	public Display setDisplayFont(final IFont displayFont) {
 		this._displayFont = displayFont;
 		return this;
 	}

@@ -54,6 +54,14 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 	}
 
+	public static BMFont create(String file, int fontSize) {
+		try {
+			return new BMFont(file, fontSize);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public static BMFont create(String file) {
 		try {
 			return new BMFont(file);
@@ -75,6 +83,8 @@ public final class BMFont extends FontTrans implements IFont {
 	private int totalCharSet = DEFAULT_MAX_CHAR;
 
 	private int _initDraw = -1;
+
+	private int _dstFontSize = -1;
 
 	private String _texPath = null;
 
@@ -175,24 +185,34 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 	}
 
-	public BMFont(String file, LTexture image) throws LSysException {
+	public BMFont(String file, LTexture image, int baseFontSize) throws LSysException {
 		this._imagePath = image.getSource();
 		this._texPath = file;
+		this._dstFontSize = baseFontSize;
 		this.displayList = image;
 	}
 
 	public BMFont(String file, String imgFile) throws LSysException {
+		this(file, imgFile, -1);
+	}
+
+	public BMFont(String file, String imgFile, int baseFontSize) throws LSysException {
 		this._texPath = file;
 		this._imagePath = imgFile;
+		this._dstFontSize = baseFontSize;
 	}
 
 	public BMFont(String file) throws LSysException {
-		this(file, LSystem.getAllFileName(file) + ".png");
+		this(file, -1);
+	}
+
+	public BMFont(String file, int baseFontSize) throws LSysException {
+		this(file, LSystem.getAllFileName(file) + ".png", baseFontSize);
 	}
 
 	private void parse(String text) throws LSysException {
 		if (displays == null) {
-			displays = new IntMap<>(DEFAULT_MAX_CHAR);
+			displays = new IntMap<Display>(DEFAULT_MAX_CHAR);
 		} else {
 			displays.clear();
 		}
@@ -230,8 +250,8 @@ public final class BMFont extends FontTrans implements IFont {
 			}
 		}
 
-		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<>(64);
-		TArray<CharDef> charDefs = new TArray<>(DEFAULT_MAX_CHAR);
+		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
+		TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
 
 		int maxChar = 0;
 		boolean done = false;
@@ -260,7 +280,7 @@ public final class BMFont extends FontTrans implements IFont {
 					int offset = Integer.parseInt(tokens.nextToken());
 					TArray<Short> values = kerning.get(Short.valueOf(first));
 					if (values == null) {
-						values = new TArray<>();
+						values = new TArray<Short>();
 						kerning.put(Short.valueOf(first), values);
 					}
 					values.add(Short.valueOf((short) ((offset << 8) | second)));
@@ -270,7 +290,8 @@ public final class BMFont extends FontTrans implements IFont {
 
 		this.charArray = new CharDef[totalCharSet];
 
-		for (CharDef def : charDefs) {
+		for (Iterator<CharDef> iter = charDefs.iterator(); iter.hasNext();) {
+			CharDef def = iter.next();
 			if (def.id < totalCharSet) {
 				charArray[def.id] = def;
 			} else {
@@ -290,11 +311,18 @@ public final class BMFont extends FontTrans implements IFont {
 			if (first < totalCharSet) {
 				charArray[first].kerning = valueArray;
 			} else {
-				customChars.get(first).kerning = valueArray;
+				customChars.get((int) first).kerning = valueArray;
 			}
 		}
 		this.advanceSpace = MathUtils.max(1,
 				(_size == -1 ? (int) (lineHeight * this.fontScaleY) - halfHeight / 4 : _size) / 2);
+		if (_dstFontSize > 0 && (_size > 0 || lineHeight > 0)) {
+			if (_size > 0) {
+				setFontScale(((float) _dstFontSize / _size));
+			} else {
+				setFontScale(((float) _dstFontSize / lineHeight));
+			}
+		}
 		LSystem.pushFontPool(this);
 	}
 

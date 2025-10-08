@@ -27,7 +27,7 @@ public class GoFuture<T> {
 	protected final VarView<Try<T>> _result;
 	protected VarView<Boolean> _isComplete;
 
-	public static <T> GoFuture<T> success(T value) {
+	public static <T> GoFuture<T> success(final T value) {
 		return result(Try.createSuccess(value));
 	}
 
@@ -35,11 +35,11 @@ public class GoFuture<T> {
 		return success(null);
 	}
 
-	public static <T> GoFuture<T> failure(Throwable cause) {
+	public static <T> GoFuture<T> failure(final Throwable cause) {
 		return result(Try.<T>createFailure(cause));
 	}
 
-	public static <T> GoFuture<T> result(Try<T> result) {
+	public static <T> GoFuture<T> result(final Try<T> result) {
 		return new GoFuture<T>(Var.create(result));
 	}
 
@@ -48,7 +48,7 @@ public class GoFuture<T> {
 		if (result == null)
 			_result.connect(new ActViewListener<Try<T>>() {
 				@Override
-				public void onEmit(Try<T> result) {
+				public void onEmit(final Try<T> result) {
 					if (result.isSuccess()) {
 						slot.onEmit(result.get());
 					}
@@ -64,7 +64,7 @@ public class GoFuture<T> {
 		Try<T> result = _result.get();
 		if (result == null)
 			_result.connect(new ActViewListener<Try<T>>() {
-				public void onEmit(Try<T> result) {
+				public void onEmit(final Try<T> result) {
 					if (result.isFailure()) {
 						slot.onEmit(result.getFailure());
 					}
@@ -93,7 +93,7 @@ public class GoFuture<T> {
 	public <R> GoFuture<R> map(final Function<? super T, R> func) {
 		return new GoFuture<R>(_result.map(new Function<Try<T>, Try<R>>() {
 			@Override
-			public Try<R> apply(Try<T> result) {
+			public Try<R> apply(final Try<T> result) {
 				return result == null ? null : result.map(func);
 			}
 		}));
@@ -103,7 +103,7 @@ public class GoFuture<T> {
 		return _result.get();
 	}
 
-	protected GoFuture(VarView<Try<T>> result) {
+	protected GoFuture(final VarView<Try<T>> result) {
 		_result = result;
 	}
 

@@ -118,6 +118,8 @@ public final class LSTRDictionary implements LRelease {
 
 	private final ArrayMap _englishFontList = new ArrayMap(_CACHE_SIZE);
 
+	private Dict _lastEnglishDict;
+
 	private Dict _lastDict;
 
 	public final static boolean isAllInBaseCharsPool(String c) {
@@ -418,18 +420,7 @@ public final class LSTRDictionary implements LRelease {
 		if (_lastDict != null && !_lastDict.isUpdateing() && _lastDict.equals(font) && _lastDict.include(mes)) {
 			return _lastDict;
 		}
-		if (checkEnglishString(mes)) {
-			Dict pDict = (Dict) _englishFontList.get(font);
-			if (pDict != null && pDict.isClosed()) {
-				_englishFontList.remove(font);
-				pDict = null;
-			}
-			if (pDict == null) {
-				pDict = Dict.newDict(new LSTRFont(font, ADDED, tmp_asyn));
-				_englishFontList.put(font, pDict);
-			}
-			return (_lastDict = pDict);
-		}
+
 		final String message;
 		if (autoStringFilter) {
 			message = StringUtils.unificationStrings(_templateChars, mes, ADDED) + ADDED;
@@ -490,6 +481,32 @@ public final class LSTRDictionary implements LRelease {
 			return (_lastDict = null);
 		}
 		return (_lastDict = pDict);
+	}
+
+	public final Dict bindEnglish(final LFont font, final String mes) {
+		if (!_allowCacheBind) {
+			return null;
+		}
+		if (StringUtils.isEmpty(mes)) {
+			return null;
+		}
+		if (checkEnglishString(mes)) {
+			if (_lastEnglishDict != null && !_lastEnglishDict.isUpdateing() && _lastEnglishDict.equals(font)
+					&& _lastEnglishDict.include(mes)) {
+				return _lastEnglishDict;
+			}
+			Dict pDict = (Dict) _englishFontList.get(font);
+			if (pDict != null && pDict.isClosed()) {
+				_englishFontList.remove(font);
+				pDict = null;
+			}
+			if (pDict == null) {
+				pDict = Dict.newDict(new LSTRFont(font, ADDED, tmp_asyn));
+				_englishFontList.put(font, pDict);
+			}
+			return (_lastEnglishDict = pDict);
+		}
+		return null;
 	}
 
 	public final LSTRDictionary unbind(final LFont font) {
@@ -606,6 +623,17 @@ public final class LSTRDictionary implements LRelease {
 		return null;
 	}
 
+	public void freeDictCache() {
+		if (_lastDict != null) {
+			_lastDict.close();
+			_lastDict = null;
+		}
+		if (_lastEnglishDict != null) {
+			_lastEnglishDict.close();
+			_lastEnglishDict = null;
+		}
+	}
+
 	public final static String getAddedString() {
 		return ADDED;
 	}
@@ -626,6 +654,7 @@ public final class LSTRDictionary implements LRelease {
 			clearStringLazy();
 			clearEnglishLazy();
 			clearFontCanvasLazy();
+			freeDictCache();
 		} catch (Exception ex) {
 		}
 	}

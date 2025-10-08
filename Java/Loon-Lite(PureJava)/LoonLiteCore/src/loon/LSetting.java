@@ -249,7 +249,7 @@ public class LSetting {
 	public String logoPath = "loon_logo.png";
 
 	/**
-	 * 当前默认字体名
+	 * 当前默认字体名(若设定有后缀,如fnt或bdf之类,则会按照文件解析，自行寻找对应位置的图片字体文件)
 	 */
 	public String fontName = LSystem.FONT_NAME;
 

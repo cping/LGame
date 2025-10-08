@@ -31,6 +31,20 @@ public final class PathUtils {
 	}
 
 	/**
+	 * 判定文件名是否为图像文件
+	 * 
+	 * @param fileName
+	 * @return
+	 */
+	public static boolean isImageFile(final String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return false;
+		}
+		final String newName = fileName.toLowerCase().trim();
+		return LSystem.isImage(PathUtils.getExtension(newName));
+	}
+
+	/**
 	 * 格式化文件路径反斜杆为系统默认的反斜杠样式
 	 *
 	 * @param filename

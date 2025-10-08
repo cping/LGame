@@ -23,14 +23,14 @@ package loon.utils.reply;
 public interface ActView<T> {
 	public interface ActViewListener<T> extends Bypass.GoListener {
 
-		void onEmit(T e);
+		void onEmit(final T e);
 	}
 
-	<M> ActView<M> map(Function<T, M> func);
+	<M> ActView<M> map(final Function<T, M> func);
 
-	ActView<T> filter(Function<T, Boolean> pred);
+	ActView<T> filter(final Function<T, Boolean> pred);
 
-	Connection connect(ActViewListener<? super T> slot);
+	Connection connect(final ActViewListener<? super T> slot);
 
-	void disconnect(ActViewListener<? super T> slot);
+	void disconnect(final ActViewListener<? super T> slot);
 }

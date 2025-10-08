@@ -300,7 +300,7 @@ public class LToolTip extends LComponent {
 		final float posX = _tooltip.getScreenX() + _tooltip.getWidth() / 2f;
 		final float posY = _tooltip.getScreenY() + _tooltip.getHeight() / 2f;
 		final float width = _text.getWidth() + font.getSize();
-		final float height = _text.getHeight() + font.getHeight() / 2f;
+		final float height = _text.getHeight() + (font.getHeight() + font.getSize()) / 2f;
 		float currentX = posX;
 		if (!getScreen().contains(posX, posY, width, height)) {
 			currentX = (getScreen().getX() + getScreen().getScreenWidth()) - width - font.getSize() / 2f;
