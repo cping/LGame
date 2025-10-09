@@ -1650,10 +1650,6 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		return this;
 	}
 
-	public boolean isClosed() {
-		return _isClose;
-	}
-
 	public int getDrawLimit() {
 		return _drawLimit;
 	}
@@ -1693,6 +1689,11 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	public IFont setTranslator(ITranslator translator) {
 		this._translator = translator;
 		return this;
+	}
+
+	@Override
+	public boolean isClosed() {
+		return _isClose;
 	}
 
 	@Override

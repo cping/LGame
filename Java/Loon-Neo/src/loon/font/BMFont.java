@@ -917,6 +917,7 @@ public final class BMFont extends FontTrans implements IFont {
 		return this;
 	}
 
+	@Override
 	public boolean isClosed() {
 		return _isClose;
 	}

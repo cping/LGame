@@ -35,6 +35,7 @@ import loon.geom.Affine2f;
 import loon.geom.PointF;
 import loon.geom.PointI;
 import loon.geom.RectF;
+import loon.geom.RectI;
 import loon.opengl.BlendMethod;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
@@ -83,6 +84,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		protected int x, y;
 		protected int advance;
 		protected int encoding;
+		protected RectI bbx = new RectI();
 
 		public BDFGlyph(IntMap<Pixmap> pixs) {
 			this.pixmaps = pixs;
@@ -115,6 +117,15 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		public BDFGlyph setGlyph(final byte[][] glyph) {
 			this.glyph = glyph;
 			return this;
+		}
+
+		public BDFGlyph setBBX(int x, int y, int w, int h) {
+			bbx.set(x, y, w, h);
+			return this;
+		}
+
+		public RectI getBBX() {
+			return bbx;
 		}
 
 		public int getX() {
@@ -152,7 +163,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 
 		public int getCharacterWidth() {
-			return advance;
+			return MathUtils.max(bbx.x, advance);
+		}
+
+		public int getCharacterHeight() {
+			return MathUtils.max(bbx.y, advance);
 		}
 
 		public BDFGlyph setCharacterWidth(int v) {
@@ -191,6 +206,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					pixmap.set(i, j, LColor.combine(glyph[j][i], color));
 				}
 			}
+
 			final int dx = MathUtils.ifloor(x + this.x * scale);
 			final int dy = MathUtils.ifloor(y - this.y * scale - 1);
 			final int dw = MathUtils.ifloor(w * scale);
@@ -351,11 +367,16 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					continue;
 				}
 
-				int charwidth = strfont.charWidth(ch);
+				final BDFGlyph g = strfont.getCharacter(ch);
+				if (g == null) {
+					continue;
+				}
+				int charwidth = g.getCharacterWidth();
 
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
+
 				int ocharwidth = charwidth;
 				int offset = 0;
 				if (CharUtils.isCJK(ch) || StringUtils.isAlphaOrDigit(ch)) {
@@ -836,6 +857,9 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 		}
+		if (this.fontSize > 0) {
+			setSize(MathUtils.iceil(this.fontSize));
+		}
 	}
 
 	public BDFont set(float ascent, float descent, float typoascent, float typodescent, float xheight, float linegap,
@@ -888,6 +912,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					final int h = (kv.length > 2) ? Integer.parseInt(StringUtils.dequote(kv[2])) : 0;
 					final int o = (kv.length > 3) ? Integer.parseInt(StringUtils.dequote(kv[3])) : 0;
 					final int d = (kv.length > 4) ? Integer.parseInt(StringUtils.dequote(kv[4])) : 0;
+					g.setBBX(w, h, o, d);
 					g.setGlyph(new byte[h][w]);
 					g.set(o, h + d);
 				} catch (LSysException ex) {
@@ -998,6 +1023,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	public int[] getCharacters() {
 		return characters.keys();
+	}
+
+	public boolean containsBDFontChar(int c) {
+		return characters.containsKey(c);
 	}
 
 	public int getTextureWidth() {
@@ -1252,8 +1281,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			return null;
 		}
 		float cx = bx, cy = by;
-		if (characters.containsKey(ch)) {
-			BDFGlyph bm = characters.get(ch);
+		final BDFGlyph bm = characters.get(ch);
+		if (bm != null) {
 			if (cx - bx + bm.getCharacterWidth() >= w) {
 				cx = bx;
 				cy += h;
@@ -2127,8 +2156,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	@Override
 	public int charWidth(char c) {
 		loadFont();
-		if (characters.containsKey(c)) {
-			BDFGlyph g = characters.get(c);
+		BDFGlyph g = characters.get(c);
+		if (g != null) {
 			return MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
 		}
 		return 0;
@@ -2143,8 +2172,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		int count = 0;
 		for (int i = 0, size = newMessage.length(); i < size; i++) {
 			char ch = newMessage.charAt(i);
-			if (characters.containsKey(ch)) {
-				BDFGlyph g = characters.get(ch);
+			BDFGlyph g = characters.get(ch);
+			if (g != null) {
 				count += MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
 			}
 		}
@@ -2212,6 +2241,9 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	@Override
 	public void setSize(int size) {
+		if (size <= 0) {
+			return;
+		}
 		this.fontSize = size;
 		this.fontScale = fontSize / getPixelFontSize();
 	}
@@ -2336,6 +2368,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		return this;
 	}
 
+	@Override
 	public boolean isClosed() {
 		return _isClose;
 	}

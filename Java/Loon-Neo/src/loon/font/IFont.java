@@ -81,4 +81,6 @@ public interface IFont extends LRelease {
 	void setOffsetY(int y);
 
 	String confineLength(String s, int width);
+	
+	boolean isClosed();
 }

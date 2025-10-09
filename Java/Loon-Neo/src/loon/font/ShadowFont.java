@@ -209,6 +209,7 @@ public final class ShadowFont implements IFont {
 		this.closed = true;
 	}
 
+	@Override
 	public boolean isClosed() {
 		return closed;
 	}
