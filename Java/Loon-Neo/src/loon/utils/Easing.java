@@ -25,7 +25,7 @@ import loon.geom.Vector2f;
 /**
  * 工具类,用以缓动计算
  */
-public class Easing {
+public final class Easing {
 
 	public static enum EasingMode {
 		InQuad, OutQuad, InOutQuad, InCubic, OutCubic, InOutCubic, InQuart, OutQuart, InOutQuart, InQuint, OutQuint,

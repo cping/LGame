@@ -5,7 +5,7 @@ import loon.LSystem;
 import loon.geom.RectBox;
 import loon.utils.TArray;
 
-public class LTexturePackClip {
+public final class LTexturePackClip {
 
 	public static final TArray<LTexturePackClip> getTextureSplit(String path, int tileWidth, int tileHeight,
 			int offsetX, int offsetY) {

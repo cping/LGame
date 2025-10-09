@@ -29,23 +29,23 @@ import java.nio.ShortBuffer;
 
 import loon.canvas.LColor;
 
-public class BufferUtils {
+public final class BufferUtils {
 
-	public static void makeBuffer(byte[] data, int size, int tag) {
+	public final static void makeBuffer(byte[] data, int size, int tag) {
 		for (int i = 0; i < size; i++) {
 			data[i] ^= tag;
 		}
 	}
 
-	public static void copy(float[] src, Buffer dst, int numFloats) {
+	public final static void copy(float[] src, Buffer dst, int numFloats) {
 		copy(src, dst, 0, numFloats);
 	}
 
-	public static void copy(float[] src, Buffer dst, int offset, int numFloats) {
+	public final static void copy(float[] src, Buffer dst, int offset, int numFloats) {
 		putBuffer(dst, src, offset, numFloats);
 	}
 
-	public static IntBuffer newIntBuffer(final int[] src) {
+	public final static IntBuffer newIntBuffer(final int[] src) {
 		if (src == null) {
 			return null;
 		}
@@ -55,41 +55,41 @@ public class BufferUtils {
 		return buffer;
 	}
 
-	public static FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
+	public final static FloatBuffer newFloatBuffer(float[] src, int offset, int numFloats) {
 		FloatBuffer buffer = newFloatBuffer(numFloats);
 		copy(src, buffer, offset, numFloats);
 		return buffer;
 	}
 
-	public static void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(byte[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(short[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(char[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(int[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(long[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(float[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	public static void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
+	public final static void copy(double[] src, int srcOffset, Buffer dst, int numElements) {
 		putBuffer(dst, src, srcOffset, numElements);
 	}
 
-	private static void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
+	private final static void putBuffer(Buffer dst, Object src, int offset, int numFloats) {
 		if (dst instanceof ByteBuffer) {
 			if (src instanceof byte[]) {
 				ByteBuffer byteBuffer = (ByteBuffer) dst;
@@ -142,93 +142,96 @@ public class BufferUtils {
 		return buffer;
 	}
 
-	public static ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
-		int size = src.length;
+	public final static ByteBuffer replaceBytes(ByteBuffer dst, float[] src) {
+		final int size = src.length;
 		dst.clear();
 		copy(src, 0, dst, size);
 		dst.position(0);
 		return dst;
 	}
 
-	public static FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
-		int size = src.length;
+	public final static FloatBuffer replaceFloats(FloatBuffer dst, float[] src) {
+		final int size = src.length;
 		dst.clear();
 		copy(src, 0, dst, size);
 		dst.position(0);
 		return dst;
 	}
 
-	public static ByteBuffer getByteBuffer(byte[] bytes) {
-		ByteBuffer buffer = newByteBuffer(bytes.length).put(bytes);
+	public final static ByteBuffer getByteBuffer(byte[] bytes) {
+		final ByteBuffer buffer = newByteBuffer(bytes.length).put(bytes);
 		buffer.position(0);
 		return buffer;
 
 	}
 
-	public static FloatBuffer getFloatBuffer(float[] floats) {
-		FloatBuffer buffer = newFloatBuffer(floats.length).put(floats);
+	public final static FloatBuffer getFloatBuffer(float[] floats) {
+		final FloatBuffer buffer = newFloatBuffer(floats.length).put(floats);
 		buffer.position(0);
 		return buffer;
 	}
 
-	public static ByteBuffer newByteBuffer(int numBytes) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
+	public final static ByteBuffer newByteBuffer(int numBytes) {
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer;
 	}
 
-	public static FloatBuffer newFloatBuffer(int numFloats) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
+	public final static FloatBuffer newFloatBuffer(int numFloats) {
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asFloatBuffer();
 	}
 
-	public static ShortBuffer newShortBuffer(int numShorts) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
+	public final static ShortBuffer newShortBuffer(int numShorts) {
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asShortBuffer();
 	}
 
-	public static IntBuffer newIntBuffer(int numInts) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
+	public final static IntBuffer newIntBuffer(int numInts) {
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asIntBuffer();
 	}
 
-	public static void put(final Buffer buffer, final float[] source, final int offset, final int length) {
+	public final static void put(final Buffer buffer, final float[] source, final int offset, final int length) {
 		putBuffer(buffer, source, offset, length);
 	}
 
 	private static int allocatedUnsafe = 0;
 
-	public static int getAllocatedBytesUnsafe() {
+	public final static int getAllocatedBytesUnsafe() {
 		return allocatedUnsafe;
 	}
 
-	public static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
+	public final static void disposeUnsafeByteBuffer(ByteBuffer buffer) {
 		freeMemory(buffer);
 	}
 
-	public static ByteBuffer newUnsafeByteBuffer(int numBytes) {
+	public final static ByteBuffer newUnsafeByteBuffer(int numBytes) {
 		return newByteBuffer(numBytes);
 	}
 
-	public static ByteBuffer allocateDirect(final int capacity) {
+	public final static ByteBuffer allocateDirect(final int capacity) {
 		return ByteBuffer.allocateDirect(capacity);
 	}
 
-	private static void freeMemory(Buffer buffer) {
-		buffer.clear();
-		buffer = null;
+	private final static void freeMemory(Buffer buffer) {
+		if (buffer != null) {
+			buffer.clear();
+			buffer = null;
+		}
 	}
 
-	public static void clear(Buffer buffer) {
-		buffer.clear();
+	public final static void clear(Buffer buffer) {
+		if (buffer != null) {
+			buffer.clear();
+		}
 	}
 
 	public static final void filterColor(int maxPixel, int pixelStart, int pixelEnd, int[] src, int[] dst, int[] colors,
 			int c1, int c2) {
-
 		final int length = src.length;
 		if (pixelStart < pixelEnd) {
 			final int start = pixelStart + 1;
@@ -310,7 +313,7 @@ public class BufferUtils {
 	public static final int M32 = 11;
 	public static final int M33 = 15;
 
-	public static void mul(float[] mata, float[] matb) {
+	public final static void mul(float[] mata, float[] matb) {
 
 		float[] tmp = new float[16];
 		tmp[M00] = mata[M00] * matb[M00] + mata[M01] * matb[M10] + mata[M02] * matb[M20] + mata[M03] * matb[M30];
@@ -333,7 +336,7 @@ public class BufferUtils {
 
 	}
 
-	public static void mulVec(float[] mat, float[] vec) {
+	public final static void mulVec(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12] + mat[M13];
@@ -344,7 +347,7 @@ public class BufferUtils {
 
 	}
 
-	public static void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public final static void mulVec(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -354,7 +357,7 @@ public class BufferUtils {
 
 	}
 
-	public static void prj(float[] mat, float[] vec) {
+	public final static void prj(float[] mat, float[] vec) {
 
 		float inv_w = 1.0f / (vec[0] * mat[M30] + vec[1] * mat[M31] + vec[2] * mat[M32] + mat[M33]);
 		float x = (vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02] + mat[M03]) * inv_w;
@@ -366,7 +369,7 @@ public class BufferUtils {
 
 	}
 
-	public static void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public final static void prj(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -376,7 +379,7 @@ public class BufferUtils {
 
 	}
 
-	public static void rot(float[] mat, float[] vec) {
+	public final static void rot(float[] mat, float[] vec) {
 
 		float x = vec[0] * mat[M00] + vec[1] * mat[M01] + vec[2] * mat[M02];
 		float y = vec[0] * mat[M10] + vec[1] * mat[M11] + vec[2] * mat[M12];
@@ -387,7 +390,7 @@ public class BufferUtils {
 
 	}
 
-	public static void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
+	public final static void rot(float[] mat, float[] vecs, int offset, int numVecs, int stride) {
 
 		for (int i = 0; i < numVecs; i++) {
 			float[] vecPtr = new float[stride];
@@ -397,9 +400,9 @@ public class BufferUtils {
 
 	}
 
-	public static boolean inv(float[] values) {
+	public final static boolean inv(float[] values) {
 
-		float[] tmp = new float[16];
+		final float[] tmp = new float[16];
 		float l_det = det(values);
 		if (l_det == 0)
 			return false;
@@ -473,7 +476,7 @@ public class BufferUtils {
 
 	}
 
-	public static float det(float[] values) {
+	public final static float det(float[] values) {
 
 		return values[M30] * values[M21] * values[M12] * values[M03]
 				- values[M20] * values[M31] * values[M12] * values[M03]
@@ -502,22 +505,22 @@ public class BufferUtils {
 
 	}
 
-	public static int[] toColorKey(int[] buffer, int colors) {
+	public final static int[] toColorKey(int[] buffer, int colors) {
 		return toColorKey(buffer, colors, LColor.TRANSPARENT, false);
 	}
 
-	public static int[] toColorKey(int[] buffer, int colors, int newColor) {
+	public final static int[] toColorKey(int[] buffer, int colors, int newColor) {
 		return toColorKey(buffer, colors, newColor, false);
 	}
 
-	public static int[] toColorKey(int[] buffer, int colors, int newColor, boolean alpha) {
+	public final static int[] toColorKey(int[] buffer, int colors, int newColor, boolean alpha) {
 		return toColorKey(buffer, colors, newColor, 0.15f, alpha);
 	}
 
-	public static int[] toColorKey(int[] buffer, int colorKey, int newColor, float vague, boolean alpha) {
+	public final static int[] toColorKey(int[] buffer, int colorKey, int newColor, float vague, boolean alpha) {
 		final LColor srcPixel = new LColor();
 		final LColor dstPixel = new LColor(colorKey);
-		int size = buffer.length;
+		final int size = buffer.length;
 		for (int i = 0; i < size; i++) {
 			int pixel = buffer[i];
 			srcPixel.setColor(pixel);
@@ -537,23 +540,23 @@ public class BufferUtils {
 		return buffer;
 	}
 
-	public static int[] toColorKeys(int[] buffer, int[] colors) {
+	public final static int[] toColorKeys(int[] buffer, int[] colors) {
 		return toColorKeys(buffer, colors, LColor.TRANSPARENT, false);
 	}
 
-	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor) {
+	public final static int[] toColorKeys(int[] buffer, int[] colors, int newColor) {
 		return toColorKeys(buffer, colors, newColor, false);
 	}
 
-	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor, boolean alpha) {
+	public final static int[] toColorKeys(int[] buffer, int[] colors, int newColor, boolean alpha) {
 		return toColorKeys(buffer, colors, newColor, 0.15f, alpha);
 	}
 
-	public static int[] toColorKeys(int[] buffer, int[] colors, int newColor, float vague, boolean alpha) {
+	public final static int[] toColorKeys(int[] buffer, int[] colors, int newColor, float vague, boolean alpha) {
 		final LColor srcPixel = new LColor();
 		final LColor dstPixel = new LColor();
-		int length = colors.length;
-		int size = buffer.length;
+		final int length = colors.length;
+		final int size = buffer.length;
 		for (int n = 0; n < length; n++) {
 			dstPixel.setColor(colors[n]);
 			for (int i = 0; i < size; i++) {
@@ -576,11 +579,11 @@ public class BufferUtils {
 		return buffer;
 	}
 
-	public static int[] toColorKeyLimit(int[] buffer, int start, int end) {
+	public final static int[] toColorKeyLimit(int[] buffer, int start, int end) {
 		return toColorKeyLimit(buffer, start, end, LColor.TRANSPARENT);
 	}
 
-	public static int[] toColorKeyLimit(int[] buffer, int start, int end, int newColor) {
+	public final static int[] toColorKeyLimit(int[] buffer, int start, int end, int newColor) {
 
 		int sred = LColor.getRed(start);
 		int sgreen = LColor.getGreen(start);
@@ -602,12 +605,12 @@ public class BufferUtils {
 		return buffer;
 	}
 
-	public static int[] toGray(int[] buffer, int w, int h) {
+	public final static int[] toGray(int[] buffer, int w, int h) {
 
-		int size = w * h;
-		int[] newResult = new int[size];
+		final int size = w * h;
+		final int[] newResult = new int[size];
 		System.arraycopy(buffer, 0, newResult, 0, size);
-		int alpha = 0xFF << 24;
+		final int alpha = 0xFF << 24;
 		for (int i = 0; i < h; i++) {
 			for (int j = 0; j < w; j++) {
 				int idx = w * i + j;

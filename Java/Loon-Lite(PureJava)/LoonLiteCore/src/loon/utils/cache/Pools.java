@@ -27,7 +27,7 @@ import loon.utils.ObjectMap;
  * 
  * @param <T>
  */
-public class Pools<T> {
+public final class Pools<T> {
 
 	private final ObjectMap<String, Pool<T>> _inPoolDic;
 

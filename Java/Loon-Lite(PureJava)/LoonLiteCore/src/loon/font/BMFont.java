@@ -457,8 +457,8 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 		try {
 			g.saveTx();
-			float centerX = x + stringWidth(text) / 2;
-			float centerY = y + stringHeight(text) / 2;
+			final float centerX = x + stringWidth(text) / 2;
+			final float centerY = y + stringHeight(text) / 2;
 			g.rotate(centerX, centerY, rotation);
 			drawString(g, text, x, y, c);
 		} finally {
@@ -480,17 +480,15 @@ public final class BMFont extends FontTrans implements IFont {
 		try {
 			if (update) {
 				gl.saveTx();
-				Affine2f xf = gl.tx();
+				final Affine2f xf = gl.tx();
+				final float centerX = x + this.stringWidth(newMessage) / 2;
+				final float centerY = y + this.stringHeight(newMessage) / 2;
 				if (angle) {
-					float centerX = x + this.stringWidth(newMessage) / 2;
-					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preRotate(rotation);
 					xf.translate(-centerX, -centerY);
 				}
 				if (scale) {
-					float centerX = x + this.stringWidth(newMessage) / 2;
-					float centerY = y + this.stringHeight(newMessage) / 2;
 					xf.translate(centerX, centerY);
 					xf.preScale(sx, sy);
 					xf.translate(-centerX, -centerY);

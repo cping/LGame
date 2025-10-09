@@ -42,7 +42,7 @@ import loon.utils.StringUtils;
 /**
  * Screen场景切换用类,用于同时设定当前场景的离场效果,以及转化新场景的入场效果 (全部为成对的对称效果,不对称的请自动构建)
  */
-public class ScreenExitEffect {
+public final class ScreenExitEffect {
 
 	/**
 	 * 普通全屏渐变淡出淡入

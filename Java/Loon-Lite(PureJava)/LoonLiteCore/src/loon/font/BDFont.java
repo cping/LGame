@@ -1064,12 +1064,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public int[] codePoints() {
-		int[] arr = new int[characters.size()];
-		int i = 0;
-		for (int cp : characters.keys()) {
-			arr[i++] = cp;
-		}
-		return arr;
+		return characters.keys();
 	}
 
 	public float getScale() {
