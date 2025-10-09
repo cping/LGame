@@ -116,7 +116,7 @@ public final class BMFont extends FontTrans implements IFont {
 
 	private String info, common, page, face, charset;
 
-	private static class Display {
+	private final static class Display {
 
 		String text;
 
@@ -127,7 +127,7 @@ public final class BMFont extends FontTrans implements IFont {
 		int height;
 	}
 
-	private static class CharDef {
+	private final static class CharDef {
 
 		int id;
 
@@ -149,15 +149,14 @@ public final class BMFont extends FontTrans implements IFont {
 
 		BMFont _bmFont;
 
-		public CharDef(BMFont font) {
+		public CharDef(final BMFont font) {
 			this._bmFont = font;
 		}
 
-		public void draw(GLEx g, float sx, float sy, float x, float y, LColor c) {
+		public void draw(final GLEx g, final float sx, final float sy, final float x, final float y, final LColor c) {
 			if (_bmFont._isClose) {
 				return;
 			}
-
 			g.draw(_bmFont.displayList, sx + (x + xoffset) * _bmFont.fontScaleX,
 					sy + (y + yoffset) * _bmFont.fontScaleX, width * _bmFont.fontScaleX, height * _bmFont.fontScaleY,
 					tx, ty, width, height, c);
@@ -219,16 +218,16 @@ public final class BMFont extends FontTrans implements IFont {
 		if (StringUtils.isNullOrEmpty(text)) {
 			throw new LSysException("BMFont resource is null !");
 		}
-		StrTokenizer br = new StrTokenizer(text, LSystem.NL);
+		final StrTokenizer br = new StrTokenizer(text, LSystem.NL);
 		info = br.nextToken();
 		common = br.nextToken();
 		page = br.nextToken();
 
 		if (info != null && !StringUtils.isNullOrEmpty(info)) {
-			int size = info.length();
-			StrBuilder sbr = new StrBuilder();
+			final int size = info.length();
+			final StrBuilder sbr = new StrBuilder();
 			for (int i = 0; i < size; i++) {
-				char ch = info.charAt(i);
+				final char ch = info.charAt(i);
 				if (ch == newSpaceFlag && sbr.length() > 0) {
 					String result = sbr.toString().toLowerCase().trim();
 					String[] list = StringUtils.split(result, LSystem.EQUAL);
@@ -250,19 +249,19 @@ public final class BMFont extends FontTrans implements IFont {
 			}
 		}
 
-		ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
-		TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
+		final ObjectMap<Short, TArray<Short>> kerning = new ObjectMap<Short, TArray<Short>>(64);
+		final TArray<CharDef> charDefs = new TArray<CharDef>(DEFAULT_MAX_CHAR);
 
 		int maxChar = 0;
 		boolean done = false;
 		for (; !done;) {
-			String line = br.hasMoreTokens() ? br.nextToken() : null;
+			final String line = br.hasMoreTokens() ? br.nextToken() : null;
 			if (line == null) {
 				done = true;
 			} else {
 				if (line.startsWith("chars c")) {
 				} else if (line.startsWith("char")) {
-					CharDef def = parseChar(line);
+					final CharDef def = parseChar(line);
 					if (def != null) {
 						maxChar = MathUtils.max(maxChar, def.id);
 						charDefs.add(def);
@@ -270,14 +269,14 @@ public final class BMFont extends FontTrans implements IFont {
 				}
 				if (line.startsWith("kernings c")) {
 				} else if (line.startsWith("kerning")) {
-					StrTokenizer tokens = new StrTokenizer(line, " =");
+					final StrTokenizer tokens = new StrTokenizer(line, " =");
 					tokens.nextToken();
 					tokens.nextToken();
-					short first = Short.parseShort(tokens.nextToken());
+					final short first = Short.parseShort(tokens.nextToken());
 					tokens.nextToken();
-					int second = Integer.parseInt(tokens.nextToken());
+					final int second = Integer.parseInt(tokens.nextToken());
 					tokens.nextToken();
-					int offset = Integer.parseInt(tokens.nextToken());
+					final int offset = Integer.parseInt(tokens.nextToken());
 					TArray<Short> values = kerning.get(Short.valueOf(first));
 					if (values == null) {
 						values = new TArray<Short>();
@@ -291,7 +290,7 @@ public final class BMFont extends FontTrans implements IFont {
 		this.charArray = new CharDef[totalCharSet];
 
 		for (Iterator<CharDef> iter = charDefs.iterator(); iter.hasNext();) {
-			CharDef def = iter.next();
+			final CharDef def = iter.next();
 			if (def.id < totalCharSet) {
 				charArray[def.id] = def;
 			} else {
@@ -300,10 +299,10 @@ public final class BMFont extends FontTrans implements IFont {
 		}
 
 		for (Entries<Short, TArray<Short>> iter = kerning.entries(); iter.hasNext();) {
-			Entry<Short, TArray<Short>> entry = iter.next();
-			short first = entry.key;
-			TArray<Short> valueList = entry.value;
-			short[] valueArray = new short[valueList.size];
+			final Entry<Short, TArray<Short>> entry = iter.next();
+			final short first = entry.key;
+			final TArray<Short> valueList = entry.value;
+			final short[] valueArray = new short[valueList.size];
 			int i = 0;
 			for (Iterator<Short> valueIter = valueList.iterator(); valueIter.hasNext(); i++) {
 				valueArray[i] = (valueIter.next()).shortValue();
@@ -327,8 +326,8 @@ public final class BMFont extends FontTrans implements IFont {
 	}
 
 	private CharDef parseChar(final String line) throws LSysException {
-		CharDef def = new CharDef(this);
-		StrTokenizer tokens = new StrTokenizer(line, " =");
+		final CharDef def = new CharDef(this);
+		final StrTokenizer tokens = new StrTokenizer(line, " =");
 		tokens.nextToken();
 		tokens.nextToken();
 
@@ -551,7 +550,7 @@ public final class BMFont extends FontTrans implements IFont {
 			display.height = MathUtils.max(charDef.height + charDef.yoffset, display.height);
 		}
 		display.height += lines * lineHeight;
-		return (int) (display.height * fontScaleY);
+		return MathUtils.iceil(display.height * fontScaleY);
 	}
 
 	@Override
@@ -621,7 +620,7 @@ public final class BMFont extends FontTrans implements IFont {
 			display.width = MathUtils.max(display.width, width);
 		}
 
-		return (int) (display.width * fontScaleX);
+		return MathUtils.iceil(display.width * fontScaleX);
 	}
 
 	public String getCommon() {

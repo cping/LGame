@@ -67,7 +67,7 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 	}
 
 	public Image getImage(boolean scaleUpdate) {
-		Scale scale = LSystem.getScale();
+		final Scale scale = LSystem.getScale();
 		if (scale.factor == 1f) {
 			if (_paintCanvas == null) {
 				_paintCanvas = getGraphics().createCanvas(getWidth(), getHeight());
@@ -76,8 +76,8 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 				_paintCanvas.image.setPixmap(this);
 			}
 		} else if (scaleUpdate) {
-			int newWidth = scale.scaledCeil(getWidth());
-			int newHeight = scale.scaledCeil(getHeight());
+			final int newWidth = scale.scaledCeil(getWidth());
+			final int newHeight = scale.scaledCeil(getHeight());
 			if (_paintCanvas == null) {
 				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
@@ -85,8 +85,8 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 				_paintCanvas.image.setPixmap(Pixmap.getResize(this, newWidth, newHeight));
 			}
 		} else {
-			int newWidth = scale.invScaledCeil(getWidth());
-			int newHeight = scale.invScaledCeil(getHeight());
+			final int newWidth = scale.invScaledCeil(getWidth());
+			final int newHeight = scale.invScaledCeil(getHeight());
 			if (_paintCanvas == null) {
 				_paintCanvas = getGraphics().createCanvas(newWidth, newHeight);
 			}
@@ -3331,6 +3331,10 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 	public void close() {
 		_isClosed = true;
 		_drawPixels = null;
+		if (_paintCanvas != null) {
+			_paintCanvas.close();
+			_paintCanvas = null;
+		}
 	}
 
 }

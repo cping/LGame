@@ -28,8 +28,8 @@ import loon.LTexture;
 import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.canvas.Canvas;
-import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.canvas.Pixmap;
 import loon.events.Updateable;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
@@ -40,9 +40,11 @@ import loon.opengl.BlendState;
 import loon.opengl.GL20;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.opengl.LSTRFont;
 import loon.opengl.Painter;
 import loon.utils.CharArray;
 import loon.utils.CharIterator;
+import loon.utils.CharUtils;
 import loon.utils.GLUtils;
 import loon.utils.IntMap;
 import loon.utils.LIterator;
@@ -74,28 +76,32 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 	}
 
-	public static class BDFGlyph {
+	public final static class BDFGlyph implements LRelease {
 
+		IntMap<Pixmap> pixmaps;
 		protected byte[][] glyph;
 		protected int x, y;
 		protected int advance;
 		protected int encoding;
 
-		public BDFGlyph() {
+		public BDFGlyph(IntMap<Pixmap> pixs) {
+			this.pixmaps = pixs;
 			this.glyph = new byte[0][0];
 			x = 0;
 			y = 0;
 			advance = 0;
 		}
 
-		public BDFGlyph(byte[][] glyph) {
+		public BDFGlyph(final byte[][] glyph, IntMap<Pixmap> pixs) {
+			this.pixmaps = pixs;
 			this.glyph = glyph;
 			x = 0;
 			y = glyph.length;
 			advance = (glyph.length < 1) ? 0 : (glyph[0].length);
 		}
 
-		public BDFGlyph(byte[][] glyph, int offset, int width, int ascent) {
+		public BDFGlyph(final byte[][] glyph, IntMap<Pixmap> pixs, int offset, int width, int ascent) {
+			this.pixmaps = pixs;
 			this.glyph = glyph;
 			x = offset;
 			y = ascent;
@@ -106,7 +112,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			return glyph;
 		}
 
-		public BDFGlyph setGlyph(byte[][] glyph) {
+		public BDFGlyph setGlyph(final byte[][] glyph) {
 			this.glyph = glyph;
 			return this;
 		}
@@ -164,28 +170,38 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 
 		public float paint(Canvas g, float x, float y, float scale, int color) {
-			int w = ((glyph.length < 1) ? 0 : (glyph[0].length));
-			int h = glyph.length;
-			Image img = Image.createImage(w, h);
-			int[] glyphPixels = new int[w * h];
-			for (int k = 0, j = 0; j < h; j++) {
-				for (int i = 0; i < w; k++, i++) {
-					glyphPixels[k] = LColor.combine(glyph[j][i], color);
+			final int w = ((glyph.length < 1) ? 0 : (glyph[0].length));
+			final int h = glyph.length;
+			final int key = w * h;
+			if (key <= 0) {
+				return 0f;
+			}
+			Pixmap pixmap = pixmaps.get(key);
+			if (pixmap == null || (pixmap.getWidth() != w || pixmap.getHeight() != h)) {
+				if (pixmap != null) {
+					pixmap.close();
+					pixmap = null;
+				}
+				pixmap = new Pixmap(w, h);
+			} else {
+				pixmap.clear();
+			}
+			for (int j = 0; j < h; j++) {
+				for (int i = 0; i < w; i++) {
+					pixmap.set(i, j, LColor.combine(glyph[j][i], color));
 				}
 			}
-			img.setPixels(glyphPixels, w, h);
-			int dx = MathUtils.iceil(x + this.x * scale);
-			int dy = MathUtils.iceil(y - this.y * scale);
-			int dw = MathUtils.iceil(w * scale);
-			int dh = MathUtils.iceil(h * scale);
-			g.draw(img, dx, dy, dx + dw, dy + dh, 0, 0, w, h);
-			img.close();
-			img = null;
+			final int dx = MathUtils.ifloor(x + this.x * scale);
+			final int dy = MathUtils.ifloor(y - this.y * scale - 1);
+			final int dw = MathUtils.ifloor(w * scale);
+			final int dh = MathUtils.ifloor(h * scale);
+			g.draw(pixmap.getImage(), dx, dy, dx + dw, dy + dh, 0, 0, w, h);
+			pixmaps.put(key, pixmap);
 			return advance * scale;
 		}
 
 		public byte getPixel(int x, int y) {
-			byte[][] data = getGlyph();
+			final byte[][] data = getGlyph();
 			int ix = x - getX();
 			int iy = y + getY();
 			if (iy >= 0 && iy < data.length) {
@@ -197,7 +213,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 
 		public void contract() {
-			byte[][] data = getGlyph();
+			final byte[][] data = getGlyph();
 			if (data.length == 0) {
 				set(0, 0);
 				return;
@@ -254,9 +270,14 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			}
 			return true;
 		}
+
+		@Override
+		public void close() {
+			glyph = null;
+		}
 	}
 
-	public class CharRect extends RectF {
+	public final class CharRect extends RectF {
 
 		public Character name;
 
@@ -264,7 +285,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	}
 
-	private static class IntObject {
+	private final static class IntObject {
 
 		public int width;
 
@@ -290,7 +311,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		_childChars.add(obj);
 	}
 
-	private static class UpdateFont implements Updateable {
+	private final static class UpdateFont implements Updateable {
 
 		private BDFont strfont;
 
@@ -316,7 +337,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
-			int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
+			final int customCharsLength = (strfont.additionalChars != null) ? strfont.additionalChars.length : 0;
 			StrBuilder sbr = new StrBuilder(customCharsLength);
 
 			final OrderedSet<Character> outchached = new OrderedSet<Character>();
@@ -326,34 +347,30 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 				char ch = strfont.additionalChars[i];
 
+				if (StringUtils.isWhitespace(ch)) {
+					continue;
+				}
+
 				int charwidth = strfont.charWidth(ch);
 
 				if (charwidth <= 0) {
 					charwidth = 1;
 				}
 				int ocharwidth = charwidth;
-
-				if (charwidth <= 15 && !StringUtils.isAlphaOrDigit(ch)) {
-					if (charwidth < strfont.getPixelFontSize()) {
-						charwidth = (int) strfont.getPixelFontSize();
-					}
-				} else if (fullflags.indexOf(ch) != -1 || halfflags.indexOf(ch) != -1) {
-					charwidth = (int) (ocharwidth * strfont.scalePixelFont);
-				}
-
-				if (charwidth >= 22) {
-					charwidth -= 1;
-				} else if (charwidth >= 20 && StringUtils.isAlphaOrDigit(ch)) {
-					charwidth += 1;
+				int offset = 0;
+				if (CharUtils.isCJK(ch) || StringUtils.isAlphaOrDigit(ch)) {
+					charwidth = MathUtils.iceil(charwidth) + (offset = 1);
+				} else {
+					charwidth = MathUtils.iceil(ocharwidth) + (offset = 4);
 				}
 
 				int charheight = strfont.getHeight();
 
 				if (charheight <= 0) {
-					charheight = (int) strfont.getPixelFontSize();
+					charheight = MathUtils.iceil(strfont.getPixelFontSize());
 				}
 
-				IntObject newIntObject = new IntObject();
+				final IntObject newIntObject = new IntObject();
 
 				newIntObject.width = charwidth;
 				newIntObject.height = charheight;
@@ -385,7 +402,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					rowHeight = newIntObject.height + 1;
 				}
 
-				positionX += newIntObject.width;
+				positionX += newIntObject.width + offset;
 
 				strfont.customChars.put(ch, newIntObject);
 
@@ -455,15 +472,19 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	protected static final int NAME_WWS_FAMILY = 21;
 	protected static final int NAME_WWS_STYLE = 22;
 
+	private final IntMap<Pixmap> bdPixmapList = new IntMap<Pixmap>();
+
 	private int _fontBlend = BlendMethod.MODE_NORMAL;
 
 	private Updateable _submitUpdate;
 
-	private final static String fullflags = "，。？；：“‘‘”【】{}《》（）~！·￥";
+	private final static String fullflags = "．，。？；：“‘”【】{}《》＜＞（）~！＠·￥＃＄％＆＇（）＊＋－／｛｜｝～［＼］＿＾｀└├─↓→";
 
-	private final static String halfflags = ",.:;\"'?[]{}\\|!`~@#$%^&*()-+=";
+	private final static String halfflags = ",.~:;\"'?[]{}\\|!`^_~@#$%^&*()-+<=>#";
 
 	private final static int defaultPixelMinFontSize = 12;
+
+	private PointF _rectPoint = new PointF();
 
 	private PointI offset;
 
@@ -585,7 +606,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	public BDFont(String path, int idx, float fontSize, char[] charMessage, boolean asyn, int tw, int th, int maxWidth,
 			int maxHeight) {
-		CharSequence chs = StringUtils.unificationChars(charMessage);
+		final CharSequence chs = (charMessage != null ? StringUtils.unificationChars(charMessage)
+				: LSTRFont.getBaseCharsPool());
 		this.set(0f, 0f, 0f, 0f, 0f, 0f, 1f);
 		this.path = path;
 		this.fontIndex = idx;
@@ -628,7 +650,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(mes)) {
 			return true;
 		}
-		String find = StringUtils.unificationStrings(mes);
+		final String find = StringUtils.unificationStrings(mes);
 		for (int i = 0; i < find.length(); i++) {
 			char ch = find.charAt(i);
 			if (!StringUtils.isWhitespace(ch) && text.indexOf(ch) == -1) {
@@ -698,7 +720,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (_childChars != null) {
 			_childChars.clear();
 		}
-		CharSequence chs = StringUtils.unificationChars(charMessage);
+		final CharSequence chs = StringUtils.unificationChars(charMessage);
 		this._initChars = _outBounds = isDrawing = false;
 		this._initDraw = -1;
 		this.isasyn = asyn;
@@ -803,7 +825,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	protected void loadFont(String path, int idx) {
-		StrTokenizer tokenizer = BaseIO.loadStrTokenizer(path, "\t\n\r\f");
+		final StrTokenizer tokenizer = BaseIO.loadStrTokenizer(path, "\t\n\r\f");
 		int count = 0;
 		while (tokenizer.hasMoreTokens()) {
 			String[] kv = nextSplitChars(tokenizer);
@@ -836,11 +858,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		return StringUtils.split(result, " ");
 	}
 
-	private static void readChar(StrTokenizer tokenizer, BDFont bm) {
-		BDFGlyph g = new BDFGlyph();
+	private void readChar(StrTokenizer tokenizer, BDFont bm) {
+		final BDFGlyph g = new BDFGlyph(bdPixmapList);
 		int encoding = -1;
 		while (tokenizer.hasMoreTokens()) {
-			String[] kv = nextSplitChars(tokenizer);
+			final String[] kv = nextSplitChars(tokenizer);
 			if (kv[0].equals("BITMAP")) {
 				if (readBitmap(tokenizer, g)) {
 					break;
@@ -857,20 +879,18 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				g.encoding = encoding;
 			} else if (kv[0].equals("DWIDTH")) {
 				try {
-					int i = Integer.parseInt(StringUtils.dequote(kv[1]));
-					g.setCharacterWidth(i);
+					g.setCharacterWidth(Integer.parseInt(StringUtils.dequote(kv[1])));
 				} catch (LSysException ex) {
 				}
 			} else if (kv[0].equals("BBX")) {
 				try {
-					int w = (kv.length > 1) ? Integer.parseInt(StringUtils.dequote(kv[1])) : 0;
-					int h = (kv.length > 2) ? Integer.parseInt(StringUtils.dequote(kv[2])) : 0;
-					int o = (kv.length > 3) ? Integer.parseInt(StringUtils.dequote(kv[3])) : 0;
-					int d = (kv.length > 4) ? Integer.parseInt(StringUtils.dequote(kv[4])) : 0;
+					final int w = (kv.length > 1) ? Integer.parseInt(StringUtils.dequote(kv[1])) : 0;
+					final int h = (kv.length > 2) ? Integer.parseInt(StringUtils.dequote(kv[2])) : 0;
+					final int o = (kv.length > 3) ? Integer.parseInt(StringUtils.dequote(kv[3])) : 0;
+					final int d = (kv.length > 4) ? Integer.parseInt(StringUtils.dequote(kv[4])) : 0;
 					g.setGlyph(new byte[h][w]);
 					g.set(o, h + d);
 				} catch (LSysException ex) {
-
 				}
 			}
 		}
@@ -880,10 +900,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	private static boolean readBitmap(StrTokenizer tokenizer, BDFGlyph g) {
-		byte[][] glyph = g.getGlyph();
+		final byte[][] glyph = g.getGlyph();
 		int row = 0;
 		while (tokenizer.hasMoreTokens() && row < glyph.length) {
-			String[] kv = nextSplitChars(tokenizer);
+			final String[] kv = nextSplitChars(tokenizer);
 			if (kv[0].equals("ENDCHAR")) {
 				return true;
 			} else {
@@ -893,9 +913,9 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		return false;
 	}
 
-	private static BDFont readFont(StrTokenizer tokenizer, BDFont bm) {
+	private BDFont readFont(StrTokenizer tokenizer, BDFont bm) {
 		while (tokenizer.hasMoreTokens()) {
-			String[] kv = nextSplitChars(tokenizer);
+			final String[] kv = nextSplitChars(tokenizer);
 			if (kv[0].equals("STARTCHAR")) {
 				readChar(tokenizer, bm);
 			} else if (kv[0].equals("ENDFONT")) {
@@ -944,13 +964,12 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				bm.encoding = StringUtils.dequote(kv[1]);
 			}
 		}
-
 		return bm;
 	}
 
 	private static void unpack(String h, byte[] b) {
 		int i = 0;
-		CharIterator ci = new CharIterator(h);
+		final CharIterator ci = new CharIterator(h);
 		for (char ch = ci.first(); ch != CharIterator.DONE; ch = ci.next()) {
 			int v;
 			if (ch >= '0' && ch <= '9') {
@@ -975,6 +994,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				b[i++] = (byte) (((v & 0x01) == 0) ? 0 : -1);
 			}
 		}
+	}
+
+	public int[] getCharacters() {
+		return characters.keys();
 	}
 
 	public int getTextureWidth() {
@@ -1171,24 +1194,24 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				break;
 			default:
 				if (characters.containsKey(ch)) {
-					BDFGlyph bm = characters.get(ch);
+					final BDFGlyph bm = characters.get(ch);
 					if (cx - bx + bm.getCharacterWidth() >= w) {
 						cx = bx;
 						cy += h;
 					}
-					float pos = offsetPos((char) ch, bm);
+					final float pos = offsetPos((char) ch, bm);
 					float hl = (bm.getCharacterWidth() * scalePixelFont);
 					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
 					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
 				} else if (characters.containsKey(-1)) {
-					BDFGlyph bm = characters.get(-1);
+					final BDFGlyph bm = characters.get(-1);
 					if (cx - bx + bm.getCharacterWidth() >= w) {
 						cx = bx;
 						cy += h;
 					}
-					float pos = offsetPos((char) ch, bm);
+					final float pos = offsetPos((char) ch, bm);
 					float hl = (bm.getCharacterWidth() * scalePixelFont);
 					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
@@ -1198,7 +1221,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				break;
 			}
 		}
-		return new PointF(cx, cy);
+		return _rectPoint.set(cx, cy);
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, PointF b) {
@@ -1246,10 +1269,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	private final static float offsetPos(char ch, BDFGlyph bm) {
-		if (halfflags.indexOf(ch) != -1) {
-			return bm.getCharacterWidth();
+		if (fullflags.indexOf(ch) != -1) {
+			return bm.getCharacterWidth() * 1.4f;
 		}
-		return fullflags.indexOf(ch) != -1 ? bm.getCharacterWidth() * 1.4f : 0;
+		return halfflags.indexOf(ch) != -1 ? bm.getCharacterWidth() / 2f : 0;
 	}
 
 	public BDFont contractGlyphs() {
@@ -2106,11 +2129,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		loadFont();
 		if (characters.containsKey(c)) {
 			BDFGlyph g = characters.get(c);
-			if (fullflags.indexOf(c) != -1) {
-				return (int) (g.getCharacterWidth() * 1.4f * scalePixelFont);
-			} else {
-				return (int) (g.getCharacterWidth() * scalePixelFont);
-			}
+			return MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
 		}
 		return 0;
 	}
@@ -2119,18 +2138,14 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		loadFont();
 		int count = 0;
 		for (int i = 0, size = newMessage.length(); i < size; i++) {
 			char ch = newMessage.charAt(i);
 			if (characters.containsKey(ch)) {
 				BDFGlyph g = characters.get(ch);
-				if (fullflags.indexOf(ch) != -1) {
-					count += (int) (g.getCharacterWidth() * 1.4f * scalePixelFont);
-				} else {
-					count += (int) (g.getCharacterWidth() * scalePixelFont);
-				}
+				count += MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
 			}
 		}
 		return count;
@@ -2141,12 +2156,12 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		loadFont();
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getLineWidth(newMessage);
 		} else {
-			StrBuilder sbr = new StrBuilder();
+			final StrBuilder sbr = new StrBuilder();
 			int width = 0;
 			for (int i = 0, size = newMessage.length(); i < size; i++) {
 				char ch = newMessage.charAt(i);
@@ -2166,19 +2181,19 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isNullOrEmpty(msg)) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		loadFont();
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getHeight();
 		} else {
-			String[] list = StringUtils.split(newMessage, LSystem.LF);
+			final String[] list = StringUtils.split(newMessage, LSystem.LF);
 			return list.length * getHeight();
 		}
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) MathUtils.max(fontHeight, getPixelFontSize()) + 1;
+		return MathUtils.iceil(MathUtils.max(fontHeight, fontSize, getPixelFontSize()) * scalePixelFont);
 	}
 
 	@Override
@@ -2192,7 +2207,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public void setFontSize(float size) {
-		setSize((int) size);
+		setSize(MathUtils.iceil(size));
 	}
 
 	@Override
@@ -2253,7 +2268,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (_isClose) {
 			return 0;
 		}
-		String newMessage = toMessage(msg);
+		final String newMessage = toMessage(msg);
 		make();
 		if (processing()) {
 			return stringWidth(newMessage);
@@ -2264,12 +2279,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		int totalWidth = 0;
 		IntObject intObject = null;
 		int currentChar = 0;
-		char[] charList = newMessage.toCharArray();
 		int maxWidth = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (int i = 0; i < newMessage.length(); i++) {
+			currentChar = newMessage.charAt(i);
 			intObject = customChars.get(currentChar);
-
 			if (intObject != null) {
 				if (currentChar == newLineFlag) {
 					maxWidth = MathUtils.max(maxWidth, totalWidth);
@@ -2294,14 +2307,12 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			return 0;
 		}
 		int currentChar = 0;
-		char[] charList = newMessage.toCharArray();
 		int lines = 0;
 		int height = 0;
 		int maxHeight = 0;
-		for (int i = 0; i < charList.length; i++) {
-			currentChar = charList[i];
+		for (int i = 0; i < newMessage.length(); i++) {
+			currentChar = newMessage.charAt(i);
 			intObject = customChars.get(currentChar);
-
 			if (intObject != null) {
 				maxHeight = MathUtils.max(maxHeight, intObject.height);
 				height = maxHeight;
@@ -2311,7 +2322,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				height = 0;
 			}
 		}
-		return (int) (lines * getLineAscent() + height);
+		return MathUtils.iceil(lines * getLineAscent() + height);
 	}
 
 	@Override
@@ -2340,6 +2351,13 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				c.close();
 			}
 		}
+		for (Pixmap pix : bdPixmapList) {
+			if (pix != null) {
+				pix.close();
+				pix = null;
+			}
+		}
+		bdPixmapList.clear();
 		displays.clear();
 		if (fontBatch != null) {
 			fontBatch.close();

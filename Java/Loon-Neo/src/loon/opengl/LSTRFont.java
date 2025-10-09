@@ -53,6 +53,10 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		return LSTRDictionary.isAllInBaseCharsPool(c);
 	}
 
+	public final static String getBaseCharsPool() {
+		return LSTRDictionary.getAddedString();
+	}
+
 	/*
 	 * 获得一个默认的LSTRFont.
 	 * 
@@ -79,7 +83,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	}
 
-	private static class IntObject {
+	private final static class IntObject {
 
 		public int width;
 
@@ -107,7 +111,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	}
 
-	private static class UpdateFont implements Updateable {
+	private final static class UpdateFont implements Updateable {
 
 		private LSTRFont strfont;
 
@@ -435,7 +439,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
-		CharSequence chs = StringUtils.unificationChars(_globalChars, charMessage);
+		CharSequence chs = charMessage != null ? StringUtils.unificationChars(_globalChars, charMessage)
+				: LSTRDictionary.getAddedString();
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
 		this._displayLazy = useCache = true;
