@@ -38,7 +38,7 @@ import loon.utils.TArray;
 /**
  * loon提供的2d单光源/多光源类管理用类
  */
-public class Light2D implements EventActionN, LRelease {
+public final class Light2D implements EventActionN, LRelease {
 
 	public enum LightType {
 		Singleton, Multiple

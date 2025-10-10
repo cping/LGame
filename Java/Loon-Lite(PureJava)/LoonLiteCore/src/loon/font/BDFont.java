@@ -70,6 +70,14 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 	}
 
+	public static BDFont create(String file, int size, String message) {
+		try {
+			return new BDFont(file, size, message);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
 	public final static class BDFGlyph implements LRelease {
 
 		IntMap<Pixmap> pixmaps;
@@ -372,9 +380,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
-			final Canvas canvas = createFontCanvas(strfont.textureWidth, strfont.textureHeight);
-			canvas.setFillColor(strfont.pixelColor);
-			canvas.clear(LColor.black);
+			Canvas canvas = createFontCanvas(strfont.textureWidth, strfont.textureHeight);
+			canvas.setFillColor(strfont._pixelColor);
+			canvas.clear();
+
 			int rowHeight = 0;
 			int positionX = 0;
 			int positionY = 0;
@@ -396,17 +405,15 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				if (g == null) {
 					continue;
 				}
-				int charwidth = g.getCharacterWidth();
+				int charwidth = MathUtils.abs(g.getCharacterWidth() - g.bbx.width);
 
-				if (charwidth <= 0) {
-					charwidth = 1;
-				}
-				int ocharwidth = charwidth;
 				int offset = 0;
 				if (CharUtils.isCJK(ch) || StringUtils.isAlphaOrDigit(ch)) {
 					charwidth = MathUtils.iceil(charwidth) + (offset = 1);
+				} else if (CharUtils.isFullChar(ch) || CharUtils.isHalfChar(ch)) {
+					charwidth = MathUtils.iceil(charwidth) + (offset = (charwidth + g.bbx.x + g.bbx.width));
 				} else {
-					charwidth = MathUtils.iceil(ocharwidth) + (offset = 4);
+					charwidth = MathUtils.iceil(charwidth) + (offset = 2);
 				}
 
 				int charheight = strfont.getHeight();
@@ -437,8 +444,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				newIntObject.storedX = positionX;
 				newIntObject.storedY = positionY;
 
-				if (newIntObject.height < strfont.fontHeight) {
-					newIntObject.height = (int) strfont.fontHeight;
+				if (newIntObject.height < strfont._fontHeight) {
+					newIntObject.height = (int) strfont._fontHeight;
 				}
 				if (newIntObject.height - 1 <= strfont.getPixelFontSize()) {
 					newIntObject.height += 1;
@@ -466,17 +473,17 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					strfont._outBounds = true;
 				}
 				sbr = null;
+
 			}
 
 			strfont.displayList = canvas.toTexture();
-
 			// 若字符串超过当前纹理大小,则创建新纹理保存
 			if (strfont._outBounds) {
 				StrBuilder temp = new StrBuilder(outchached.size());
 				for (LIterator<Character> it = outchached.iterator(); it.hasNext();) {
 					temp.append(it.next());
 				}
-				strfont._childFont = new BDFont(strfont.path, strfont.fontIndex, strfont.pixelSize,
+				strfont._childFont = new BDFont(strfont._path, strfont._fontIndex, strfont._pixelSize,
 						temp.toString().toCharArray(), strfont.isasyn, strfont.textureWidth, strfont.textureHeight,
 						strfont._maxTextureWidth, strfont._maxTextureHeight);
 				strfont._childFont.cpy(strfont);
@@ -517,39 +524,35 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	private Updateable _submitUpdate;
 
-	private final static String fullflags = "．，。？；：“‘”【】{}《》＜＞（）~！＠·￥＃＄％＆＇（）＊＋－／｛｜｝～［＼］＿＾｀└├─↓→";
-
-	private final static String halfflags = ",.~:;\"'?[]{}\\|!`^_~@#$%^&*()-+<=>#";
-
 	private final static int defaultPixelMinFontSize = 12;
 
 	private PointF _rectPoint = new PointF();
 
-	private PointI offset;
+	private PointI _offset;
 
-	private IntMap<String> names = new IntMap<String>();
+	private IntMap<String> _names = new IntMap<String>();
 
-	private IntMap<BDFGlyph> characters = new IntMap<BDFGlyph>();
+	private IntMap<BDFGlyph> _characters = new IntMap<BDFGlyph>();
 
-	private String fontVersionName;
+	private String _fontVersionName;
 
-	private String encoding;
+	private String _encoding;
 
-	private float pixelSize, pixelFontSize;
+	private float _pixelSize, _pixelFontSize;
 
-	private float ascent, descent;
+	private float _ascent, _descent;
 
-	private float typoascent, typodescent;
+	private float _typoascent, _typodescent;
 
-	private float xheight, fontHeight, linegap;
+	private float _xheight, _fontHeight, _linegap;
 
-	private int pixelColor = LColor.DEF_COLOR;
+	private int _pixelColor = LColor.DEF_COLOR;
 
-	private String path;
+	private String _path;
 
-	private boolean isLoading, isLoaded;
+	private boolean _isLoading, _isLoaded;
 
-	private int fontIndex = 0;
+	private int _fontIndex = 0;
 
 	private final char newLineFlag = LSystem.LF;
 
@@ -585,7 +588,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	private boolean isDrawing, isasyn;
 
-	private float fontScale = 1f, scalePixelFont = 1f, fontSize;
+	private float _fontScale = 1f, _scalePixelFont = 1f;
 
 	private final IntMap<Cache> displays;
 
@@ -640,10 +643,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		final CharSequence chs = (charMessage != null ? StringUtils.unificationChars(charMessage)
 				: LSTRFont.getBaseCharsPool());
 		this.set(0f, 0f, 0f, 0f, 0f, 0f, 1f);
-		this.path = path;
-		this.fontIndex = idx;
-		this.isLoading = isLoaded = false;
-		this.pixelSize = fontSize;
+		this._path = path;
+		this._fontIndex = idx;
+		this._isLoading = _isLoaded = false;
+		this._pixelSize = this._fontSize = fontSize;
 		this._displayLazy = true;
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
@@ -754,23 +757,24 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public void cpy(BDFont font) {
-		this.names = font.names;
-		this.characters = font.characters;
-		this.fontVersionName = font.fontVersionName;
-		this.encoding = font.encoding;
-		this.pixelSize = font.pixelSize;
-		this.pixelFontSize = font.pixelFontSize;
-		this.ascent = font.ascent;
-		this.descent = font.descent;
-		this.typoascent = font.typoascent;
-		this.typodescent = font.typodescent;
-		this.xheight = font.xheight;
-		this.fontHeight = font.fontHeight;
-		this.linegap = font.linegap;
-		this.scalePixelFont = font.scalePixelFont;
-		this.path = font.path;
-		this.isLoading = font.isLoading;
-		this.isLoaded = font.isLoaded;
+		this._names = font._names;
+		this._characters = font._characters;
+		this._fontVersionName = font._fontVersionName;
+		this._encoding = font._encoding;
+		this._pixelSize = font._pixelSize;
+		this._pixelFontSize = font._pixelFontSize;
+		this._ascent = font._ascent;
+		this._descent = font._descent;
+		this._typoascent = font._typoascent;
+		this._typodescent = font._typodescent;
+		this._xheight = font._xheight;
+		this._fontHeight = font._fontHeight;
+		this._linegap = font._linegap;
+		this._scalePixelFont = font._scalePixelFont;
+		this._fontScale = font._fontScale;
+		this._path = font._path;
+		this._isLoading = font._isLoading;
+		this._isLoaded = font._isLoaded;
 	}
 
 	private void make() {
@@ -809,18 +813,18 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean loadFont() {
-		if (!isLoading) {
-			isLoading = true;
-			if (!isLoaded && !StringUtils.isEmpty(path)) {
-				loadFont(path, fontIndex);
-				isLoaded = true;
+		if (!_isLoading) {
+			_isLoading = true;
+			if (!_isLoaded && !StringUtils.isEmpty(_path)) {
+				loadFont(_path, _fontIndex);
+				_isLoaded = true;
 			}
 		}
-		return isLoaded && isLoading;
+		return _isLoaded && _isLoading;
 	}
 
 	public boolean isLoaded() {
-		return this.isLoaded;
+		return this._isLoaded;
 	}
 
 	public BDFont reset() {
@@ -828,17 +832,17 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			return this;
 		}
 		this.updateTexture(this.text);
-		if (names != null) {
-			names.clear();
+		if (_names != null) {
+			_names.clear();
 		}
-		if (characters != null) {
-			characters.clear();
+		if (_characters != null) {
+			_characters.clear();
 		}
 		this._initDraw = 0;
 		this._initChars = false;
 		this.isDrawing = false;
-		this.isLoaded = false;
-		this.isLoading = false;
+		this._isLoaded = false;
+		this._isLoading = false;
 		return this;
 	}
 
@@ -854,23 +858,23 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 		}
-		if (this.fontSize > 0) {
-			setSize(MathUtils.iceil(this.fontSize));
+		if (this._fontSize > 0) {
+			setSize(MathUtils.iceil(this._fontSize));
 		}
 	}
 
 	public BDFont set(float ascent, float descent, float typoascent, float typodescent, float xheight, float linegap,
 			float scale) {
-		if (offset == null) {
-			offset = new PointI();
+		if (_offset == null) {
+			_offset = new PointI();
 		}
-		this.ascent = ascent;
-		this.descent = descent;
-		this.typoascent = typoascent;
-		this.typodescent = typodescent;
-		this.xheight = xheight;
-		this.linegap = linegap;
-		this.scalePixelFont = scale;
+		this._ascent = ascent;
+		this._descent = descent;
+		this._typoascent = typoascent;
+		this._typodescent = typodescent;
+		this._xheight = xheight;
+		this._linegap = linegap;
+		this._scalePixelFont = scale;
 		return this;
 	}
 
@@ -894,7 +898,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				continue;
 			} else if (kv[0].equals("ENCODING")) {
 				encoding = Integer.parseInt(StringUtils.dequote(kv[1]));
-				if (bm.encoding == "x") {
+				if (bm._encoding == "x") {
 					encoding += 0xF000;
 				}
 				g.encoding = encoding;
@@ -956,10 +960,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			} else if (kv[0].equals("FOUNDRY")) {
 				bm.setName(NAME_MANUFACTURER, StringUtils.dequote(kv[1]));
 			} else if (kv[0].equals("FONT")) {
-				bm.fontVersionName = StringUtils.dequote(kv[1]);
+				bm._fontVersionName = StringUtils.dequote(kv[1]);
 			} else if (kv[0].equals("SIZE") || kv[0].equals("PIXEL_SIZE")) {
 				try {
-					bm.pixelSize = Integer.parseInt(StringUtils.dequote(kv[1]));
+					bm._pixelSize = Integer.parseInt(StringUtils.dequote(kv[1]));
 				} catch (Exception ex) {
 				}
 			} else if (kv[0].equals("FONT_ASCENT")) {
@@ -983,7 +987,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				} catch (Exception ex) {
 				}
 			} else if (kv[0].equals("CHARSET_REGISTRY")) {
-				bm.encoding = StringUtils.dequote(kv[1]);
+				bm._encoding = StringUtils.dequote(kv[1]);
 			}
 		}
 		return bm;
@@ -1019,11 +1023,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public int[] getCharacters() {
-		return characters.keys();
+		return _characters.keys();
 	}
 
 	public boolean containsBDFontChar(int c) {
-		return characters.containsKey(c);
+		return _characters.containsKey(c);
 	}
 
 	public int getTextureWidth() {
@@ -1039,125 +1043,127 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isEmpty() {
-		return characters.isEmpty();
+		return _characters.isEmpty();
 	}
 
 	public boolean containsCharacter(int ch) {
-		return characters.containsKey(ch);
+		return _characters.containsKey(ch);
 	}
 
 	public int charsCount() {
-		return characters.size;
+		return _characters.size;
 	}
 
 	public BDFGlyph getCharacter(int ch) {
-		return characters.get(ch);
+		return _characters.get(ch);
 	}
 
 	public BDFGlyph putCharacter(int ch, BDFGlyph fc) {
-		characters.put(ch, fc);
+		_characters.put(ch, fc);
 		return fc;
 	}
 
 	public BDFGlyph removeCharacter(int ch) {
-		return characters.remove(ch);
+		return _characters.remove(ch);
 	}
 
 	public int[] codePoints() {
-		return characters.keys();
+		return _characters.keys();
 	}
 
 	public float getScale() {
-		return scalePixelFont;
+		return _scalePixelFont;
 	}
 
 	public BDFont setScale(float scale) {
 		this.loadFont();
-		this.scalePixelFont = scale;
+		this._scalePixelFont = scale;
 		return this;
 	}
 
 	public BDFont setPixelFontSize(float size) {
-		this.loadFont();
-		if (size > 15) {
-			this.pixelFontSize = size + 1;
-		} else {
-			this.pixelFontSize = size;
+		if (size <= 0) {
+			return this;
 		}
-		this.scalePixelFont = (pixelFontSize / this.pixelSize);
+		this.loadFont();
+		this._pixelFontSize = size;
+		this._scalePixelFont = (_pixelFontSize / this._pixelSize);
 		return this;
 	}
 
 	public float getPixelFontSize() {
 		this.loadFont();
-		return pixelFontSize <= 0 ? this.pixelSize : pixelFontSize;
+		return _pixelFontSize <= 0 ? this._pixelSize : _pixelFontSize;
 	}
 
 	@Override
 	public float getAscent() {
 		this.loadFont();
-		return ascent * scalePixelFont;
+		if (_ascent == 0) {
+			return getSize();
+		}
+		return _ascent * _scalePixelFont;
 	}
 
 	public float getDescent() {
 		this.loadFont();
-		return descent * scalePixelFont;
+		return _descent * _scalePixelFont;
 	}
 
 	public float getLineAscent() {
 		this.loadFont();
-		return typoascent * scalePixelFont;
+		return _typoascent * _scalePixelFont;
 	}
 
 	public float getLineDescent() {
 		this.loadFont();
-		return typodescent * scalePixelFont;
+		return _typodescent * _scalePixelFont;
 	}
 
 	public float getXHeight() {
 		this.loadFont();
-		return xheight * scalePixelFont;
+		return _xheight * _scalePixelFont;
 	}
 
 	public float getLineGap() {
 		this.loadFont();
-		return linegap * scalePixelFont;
+		return _linegap * _scalePixelFont;
 	}
 
 	public BDFont setAscent(float v) {
-		ascent = MathUtils.ceil(v);
+		_ascent = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setDescent(float v) {
-		descent = MathUtils.ceil(v);
+		_descent = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setLineAscent(float v) {
-		typoascent = MathUtils.ceil(v);
+		_typoascent = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setLineDescent(float v) {
-		typodescent = MathUtils.ceil(v);
+		_typodescent = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setXHeight(float v) {
-		xheight = MathUtils.ceil(v);
+		_xheight = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setLineGap(float v) {
-		linegap = MathUtils.ceil(v);
+		_linegap = MathUtils.ceil(v);
 		return this;
 	}
 
 	public BDFont setXHeight() {
-		if (characters.containsKey((int) 'x')) {
-			BDFGlyph g = characters.get((int) 'x');
-			xheight = g.getGlyphAscent();
+		if (_characters.containsKey((int) 'x')) {
+			BDFGlyph g = _characters.get((int) 'x');
+			_xheight = g.getGlyphAscent();
 		}
 		return this;
 	}
@@ -1172,11 +1178,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF draw(Canvas g, String s, PointF b) {
-		return draw(g, s, b.x, b.y, Integer.MAX_VALUE, typoascent + typodescent + linegap);
+		return draw(g, s, b.x, b.y, Integer.MAX_VALUE, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF draw(Canvas g, String s, PointF b, float w) {
-		return draw(g, s, b.x, b.y, w, typoascent + typodescent + linegap);
+		return draw(g, s, b.x, b.y, w, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF draw(Canvas g, String s, PointF b, float w, float h) {
@@ -1184,18 +1190,18 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF draw(Canvas g, String s, float bx, float by) {
-		return draw(g, s, bx, by, Integer.MAX_VALUE, typoascent + typodescent + linegap);
+		return draw(g, s, bx, by, Integer.MAX_VALUE, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF draw(Canvas g, String s, float bx, float by, float w) {
-		return draw(g, s, bx, by, w, typoascent + typodescent + linegap);
+		return draw(g, s, bx, by, w, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF draw(Canvas g, String s, float bx, float by, float w, float h) {
 		if (!loadFont()) {
 			return null;
 		}
-		if (characters.size == 0) {
+		if (_characters.size == 0) {
 			return null;
 		}
 		float cx = bx, cy = by;
@@ -1211,33 +1217,33 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			case LSystem.LF:
 			case LSystem.CR:
 				cx = bx;
-				cy += ((h + 1) * scalePixelFont);
+				cy += ((h + 1) * _scalePixelFont);
 				break;
 			default:
-				if (characters.containsKey(ch)) {
-					final BDFGlyph bm = characters.get(ch);
+				if (_characters.containsKey(ch)) {
+					final BDFGlyph bm = _characters.get(ch);
 					if (cx - bx + bm.getCharacterWidth() >= w) {
 						cx = bx;
 						cy += h;
 					}
 					final float pos = offsetPos((char) ch, bm);
-					float hl = (bm.getCharacterWidth() * scalePixelFont);
-					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+					float hl = (bm.getCharacterWidth() * _scalePixelFont);
+					if (CharUtils.isHalfChar(ch) || CharUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
-					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
-				} else if (characters.containsKey(-1)) {
-					final BDFGlyph bm = characters.get(-1);
+					cx += bm.paint(g, cx + pos, cy + hl, _scalePixelFont, _pixelColor);
+				} else if (_characters.containsKey(-1)) {
+					final BDFGlyph bm = _characters.get(-1);
 					if (cx - bx + bm.getCharacterWidth() >= w) {
 						cx = bx;
 						cy += h;
 					}
 					final float pos = offsetPos((char) ch, bm);
-					float hl = (bm.getCharacterWidth() * scalePixelFont);
-					if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+					float hl = (bm.getCharacterWidth() * _scalePixelFont);
+					if (CharUtils.isHalfChar(ch) || StringUtils.isAlphaOrDigit(ch)) {
 						hl *= 2;
 					}
-					cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
+					cx += bm.paint(g, cx + pos, cy + hl, _scalePixelFont, _pixelColor);
 				}
 				break;
 			}
@@ -1246,11 +1252,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, PointF b) {
-		return drawAlphabet(g, ch, b.x, b.y, Integer.MAX_VALUE, typoascent + typodescent + linegap);
+		return drawAlphabet(g, ch, b.x, b.y, Integer.MAX_VALUE, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, PointF b, float w) {
-		return drawAlphabet(g, ch, b.x, b.y, w, typoascent + typodescent + linegap);
+		return drawAlphabet(g, ch, b.x, b.y, w, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, PointF b, float w, float h) {
@@ -1258,70 +1264,77 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, float bx, float by) {
-		return drawAlphabet(g, ch, bx, by, Integer.MAX_VALUE, typoascent + typodescent + linegap);
+		return drawAlphabet(g, ch, bx, by, Integer.MAX_VALUE, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, float bx, float by, float w) {
-		return drawAlphabet(g, ch, bx, by, w, typoascent + typodescent + linegap);
+		return drawAlphabet(g, ch, bx, by, w, _typoascent + _typodescent + _linegap);
 	}
 
 	public PointF drawAlphabet(Canvas g, char ch, float bx, float by, float w, float h) {
 		if (!loadFont()) {
 			return null;
 		}
-		if (characters.size == 0) {
+		if (_characters.size == 0) {
 			return null;
 		}
 		float cx = bx, cy = by;
-		final BDFGlyph bm = characters.get(ch);
+		final BDFGlyph bm = _characters.get(ch);
 		if (bm != null) {
 			if (cx - bx + bm.getCharacterWidth() >= w) {
 				cx = bx;
 				cy += h;
 			}
 			float pos = offsetPos((char) ch, bm);
-			float hl = (bm.getCharacterWidth() * scalePixelFont);
-			if (halfflags.indexOf(ch) != -1 || StringUtils.isAlphaOrDigit(ch)) {
+			float hl = (bm.getCharacterWidth() * _scalePixelFont);
+			if (CharUtils.isHalfChar(ch) || CharUtils.isAlphaOrDigit(ch)) {
 				hl *= 2;
 			}
-			cx += bm.paint(g, cx + pos, cy + hl, scalePixelFont, pixelColor);
+
+			if (CharUtils.isFullChar(ch)) {
+				final int wbbx = bm.bbx.x + bm.bbx.width;
+				cx += bm.paint(g, cx + pos - MathUtils.abs(wbbx) - bm.getCharacterWidth() / 2 - 1, cy + hl,
+						_scalePixelFont, _pixelColor);
+			} else {
+				cx += bm.paint(g, cx + pos, cy + hl, _scalePixelFont, _pixelColor);
+			}
 		}
 		return new PointF(cx, cy);
 	}
 
 	private final static float offsetPos(char ch, BDFGlyph bm) {
-		if (fullflags.indexOf(ch) != -1) {
+		if (CharUtils.isFullChar(ch)) {
 			return bm.getCharacterWidth() * 1.4f;
 		}
-		return halfflags.indexOf(ch) != -1 ? bm.getCharacterWidth() / 2f : 0;
+		return CharUtils.isFullChar(ch) ? bm.getCharacterWidth() / 2f : 0;
 	}
 
 	public BDFont contractGlyphs() {
-		for (BDFGlyph glyph : characters.values()) {
+		for (BDFGlyph glyph : _characters.values()) {
 			glyph.contract();
 		}
 		return this;
 	}
 
 	public boolean containsName(int nametype) {
-		return names.containsKey(nametype);
+		return _names.containsKey(nametype);
 	}
 
 	public String getName(int nametype) {
-		return names.get(nametype);
+		return _names.get(nametype);
 	}
 
 	public void setName(int nametype, String name) {
-		names.put(nametype, name);
+		_names.put(nametype, name);
 	}
 
 	public void removeName(int nametype) {
-		names.remove(nametype);
+		_names.remove(nametype);
 	}
 
 	public int[] nameTypes() {
-		int[] nt = names.keys();
-		int[] nt2 = new int[nt.length];
+		final int[] nt = _names.keys();
+		final int[] nt2 = new int[nt.length];
 		for (int i = 0; i < nt.length; i++) {
 			nt2[i] = nt[i];
 		}
@@ -1329,8 +1342,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isBoldStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("BOLD") || s.contains("BLACK") || s.contains("HEAVY");
 		} else {
 			return false;
@@ -1338,8 +1351,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isItalicStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("ITALIC") || s.contains("OBLIQUE") || s.contains("SLANT");
 		} else {
 			return false;
@@ -1347,8 +1360,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isUnderlineStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("UNDERLINE") || s.contains("UNDERSCORE");
 		} else {
 			return false;
@@ -1356,8 +1369,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isOutlineStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("OUTLINE");
 		} else {
 			return false;
@@ -1365,8 +1378,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isShadowStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("SHADOW");
 		} else {
 			return false;
@@ -1374,8 +1387,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isCondensedStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("CONDENSE") || s.contains("NARROW");
 		} else {
 			return false;
@@ -1383,8 +1396,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isExtendedStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("EXTEND") || s.contains("EXPAND") || s.contains("WIDE");
 		} else {
 			return false;
@@ -1392,8 +1405,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isNegativeStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("NEGATIVE") || s.contains("REVERSE") || s.contains("INVERSE") || s.contains("INVERT");
 		} else {
 			return false;
@@ -1401,8 +1414,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isStrikeoutStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("STRIKEOUT") || s.contains("STRIKETHR");
 		} else {
 			return false;
@@ -1410,8 +1423,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isRegularStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).trim();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).trim();
 			return s.equalsIgnoreCase("") || s.equalsIgnoreCase("PLAIN") || s.equalsIgnoreCase("REGULAR")
 					|| s.equalsIgnoreCase("NORMAL") || s.equalsIgnoreCase("MEDIUM");
 		} else {
@@ -1420,8 +1433,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean isObliqueStyle() {
-		if (names.containsKey(NAME_STYLE)) {
-			String s = names.get(NAME_STYLE).toUpperCase();
+		if (_names.containsKey(NAME_STYLE)) {
+			String s = _names.get(NAME_STYLE).toUpperCase();
 			return s.contains("OBLIQUE") || s.contains("SLANT");
 		} else {
 			return false;
@@ -1477,7 +1490,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isEmpty(chars)) {
 			return false;
 		}
-		if (!isLoaded) {
+		if (!_isLoaded) {
 			return loadFont();
 		}
 
@@ -1547,10 +1560,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (!checkRunning(newMessage)) {
 			return;
 		}
-		final float nsx = sx * fontScale;
-		final float nsy = sy * fontScale;
-		final float x = mx + offset.x;
-		final float y = my + offset.y;
+		final float nsx = sx * _fontScale;
+		final float nsy = sy * _fontScale;
+		final float x = mx + _offset.x;
+		final float y = my + _offset.y;
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
@@ -1591,11 +1604,11 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					continue;
 				}
 				if (charCurrent == newSpaceFlag) {
-					totalWidth += ascent;
+					totalWidth += _ascent;
 					continue;
 				}
 				if (charCurrent == newTabSpaceFlag) {
-					totalWidth += (ascent * 3);
+					totalWidth += (_ascent * 3);
 					continue;
 				}
 				if (intObject != null) {
@@ -1629,8 +1642,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (!checkRunning(msg)) {
 			return;
 		}
-		final float x = mx + offset.x;
-		final float y = my + offset.y;
+		final float x = mx + _offset.x;
+		final float y = my + _offset.y;
 		this.intObject = null;
 		this.charCurrent = 0;
 		this.totalWidth = 0;
@@ -1684,7 +1697,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public int getMaxTextCount() {
-		float size = MathUtils.max(defaultPixelMinFontSize, pixelSize) + 1;
+		float size = MathUtils.max(defaultPixelMinFontSize, _pixelSize) + 1;
 		return MathUtils.max(0, (int) ((textureWidth / size) * (textureHeight / size)));
 	}
 
@@ -1724,27 +1737,34 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public int getPixelColor() {
-		return this.pixelColor;
+		return this._pixelColor;
 	}
 
 	public void setPixelColor(int pixel) {
-		this.pixelColor = pixel;
+		this._pixelColor = pixel;
 	}
 
 	public void setPixelColor(LColor color) {
-		this.pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
+		this._pixelColor = (color == null ? LColor.DEF_COLOR : color.getARGB());
 	}
 
 	public int charHeight(char c) {
-		return charWidth(c);
+		loadFont();
+		BDFGlyph g = _characters.get(c);
+		if (g != null) {
+			return MathUtils.iceil(g.bbx.y != 0 ? g.bbx.y * _scalePixelFont
+					: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize()));
+		}
+		return 0;
 	}
 
 	@Override
 	public int charWidth(char c) {
 		loadFont();
-		BDFGlyph g = characters.get(c);
+		BDFGlyph g = _characters.get(c);
 		if (g != null) {
-			return MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
+			return MathUtils.iceil(g.bbx.x != 0 ? (g.bbx.x + g.bbx.width) * _scalePixelFont
+					: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize()));
 		}
 		return 0;
 	}
@@ -1757,11 +1777,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		loadFont();
 		int count = 0;
 		for (int i = 0, size = newMessage.length(); i < size; i++) {
-			char ch = newMessage.charAt(i);
-			BDFGlyph g = characters.get(ch);
-			if (g != null) {
-				count += MathUtils.iceil(g.getCharacterWidth() * scalePixelFont);
-			}
+			final char ch = newMessage.charAt(i);
+			count += charWidth(ch);
 		}
 		return count;
 	}
@@ -1808,7 +1825,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	@Override
 	public int getHeight() {
-		return MathUtils.iceil(MathUtils.max(fontHeight, fontSize, getPixelFontSize()) * scalePixelFont);
+		return MathUtils.iceil(MathUtils.max(_fontHeight, _fontSize, getPixelFontSize()) * _scalePixelFont);
 	}
 
 	@Override
@@ -1818,20 +1835,22 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	@Override
 	public String getFontName() {
-		return names.get(NAME_FAMILY);
+		return _names.get(NAME_FAMILY);
 	}
 
 	public void setFontSize(float size) {
 		setSize(MathUtils.iceil(size));
 	}
 
+	private float _fontSize;
+
 	@Override
 	public void setSize(int size) {
 		if (size <= 0) {
 			return;
 		}
-		this.fontSize = size;
-		this.fontScale = fontSize / getPixelFontSize();
+		this._fontSize = size;
+		this._fontScale = _fontSize / getPixelFontSize();
 	}
 
 	public int getFontSize() {
@@ -1840,27 +1859,27 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	@Override
 	public int getSize() {
-		return this.fontSize == 0 ? (int) getPixelFontSize() : (int) fontSize;
+		return MathUtils.iceil(this._fontSize == 0 ? getPixelFontSize() : _fontSize);
 	}
 
 	@Override
 	public PointI getOffset() {
-		return offset;
+		return _offset;
 	}
 
 	@Override
 	public void setOffset(PointI v) {
-		offset.set(v);
+		_offset.set(v);
 	}
 
 	@Override
 	public void setOffsetX(int x) {
-		offset.x = x;
+		_offset.x = x;
 	}
 
 	@Override
 	public void setOffsetY(int y) {
-		this.offset.y = y;
+		this._offset.y = y;
 	}
 
 	@Override

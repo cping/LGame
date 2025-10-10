@@ -32,6 +32,10 @@ public class CharUtils {
 		CharWhitespace, CharAlphaNumeric, CharJapanese, CharKorean, CharChinese, CharUnknown
 	}
 
+	public static final String fullflags = "．，。？；：“‘”【】{}《》＜＞（）~！＠·￥＃＄％＆＇（）＊＋－／｛｜｝～［＼］＿＾｀└├─↓→…";
+
+	public static final String halfflags = ",.~:;\"'?[]{}\\|!`^_~@#$%^&*()-+<=>#";
+
 	public static final char MIN_HIGH_SURROGATE = '\uD800';
 
 	public static final char MAX_HIGH_SURROGATE = '\uDBFF';
@@ -543,7 +547,7 @@ public class CharUtils {
 	public static boolean isInherited(char c) {
 		return c == '~';
 	}
-	
+
 	protected static boolean isReserved(int c) {
 		return isGenericDelimiter(c) || isSubDelimiter(c);
 	}
@@ -757,4 +761,11 @@ public class CharUtils {
 		return i;
 	}
 
+	public static boolean isFullChar(int c) {
+		return fullflags.indexOf(c) != -1;
+	}
+
+	public static boolean isHalfChar(int c) {
+		return halfflags.indexOf(c) != -1;
+	}
 }

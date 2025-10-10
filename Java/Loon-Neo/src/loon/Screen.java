@@ -105,6 +105,7 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
 import loon.opengl.ShaderSource;
@@ -293,6 +294,11 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private boolean _curLastPaintFlag;
 
 	private boolean _curLockedCallEvent;
+
+	// 此项为true时，内置FrameBuffer将被启用,Screen内画面会渲染去内置FrameBuffer纹理中
+	private boolean _screenSavetoFrameBuffer;
+
+	private FrameBuffer _screenFrameBuffer;
 
 	// 0.3.2版新增的简易重力控制接口
 	private GravityHandler _gravityHandler;
@@ -4846,6 +4852,33 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), w, h, true);
 	}
 
+	private void afterSaveToBuffer(GLEx g) {
+		if (_screenSavetoFrameBuffer) {
+			if (_screenFrameBuffer == null
+					|| (_screenFrameBuffer.getWidth() != getWidth() || _screenFrameBuffer.getHeight() != getHeight())) {
+				if (_screenFrameBuffer != null) {
+					_screenFrameBuffer.close();
+					_screenFrameBuffer = null;
+				}
+				_screenFrameBuffer = new FrameBuffer(getWidth(), getHeight());
+			}
+			_screenFrameBuffer.begin();
+		}
+		afterUI(g);
+	}
+
+	private void beforeSaveToBuffer(GLEx g) {
+		if (_screenSavetoFrameBuffer && _screenFrameBuffer != null) {
+			g.flush();
+			_screenFrameBuffer.end();
+		}
+		beforeUI(g);
+	}
+
+	public FrameBuffer getFrameBuffer() {
+		return _screenFrameBuffer;
+	}
+
 	/**
 	 * 重载此函数,可以自定义渲染Screen的最下层图像
 	 * 
@@ -4919,7 +4952,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_isExistViewport) {
 					_baseViewport.apply(g);
 				}
-				int repaintMode = getRepaintMode();
+				// 最下一层渲染,可重载,如果保存画面为FrameBuffer时也会调用此函数
+				afterSaveToBuffer(g);
+				final int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
 					// 默认将background设置为和窗口一样大小
@@ -4946,8 +4981,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 							getViewHeight());
 					break;
 				}
-				// 最下一层渲染，可重载
-				afterUI(g);
 				// PS:下列项允许用户调整顺序
 				// 精灵
 				if (_curFristPaintFlag) {
@@ -4961,8 +4994,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_curLastPaintFlag) {
 					_curLastOrder.paint(g);
 				}
-				// 最前一层渲染，可重载
-				beforeUI(g);
+				// 最前一层渲染,可重载,如果保存画面为FrameBuffer时调用此函数
+				beforeSaveToBuffer(g);
 			} finally {
 				if (_isExistViewport) {
 					_baseViewport.unapply(g);
@@ -8162,6 +8195,15 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return StringUtils.format(msg, args);
 	}
 
+	public boolean isScreenSavetoFrameBuffer() {
+		return _screenSavetoFrameBuffer;
+	}
+
+	public Screen setScreenSavetoFrameBuffer(boolean s) {
+		_screenSavetoFrameBuffer = s;
+		return this;
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 
@@ -8260,6 +8302,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_loopEvents != null) {
 					_loopEvents.clear();
 				}
+				if (_screenFrameBuffer != null) {
+					_screenFrameBuffer.close();
+					_screenFrameBuffer = null;
+				}
 				this._frameLooptoDeadEvents = null;
 				this._frameLooptoUpdated = null;
 				this._closeUpdate = null;
@@ -8267,6 +8313,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				this._screenSwitch = null;
 				this._curStageRun = false;
 				this._curLockedCallEvent = false;
+				this._screenSavetoFrameBuffer = false;
 				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);

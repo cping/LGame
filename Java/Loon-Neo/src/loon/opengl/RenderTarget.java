@@ -173,13 +173,5 @@ public abstract class RenderTarget implements LRelease {
 			_inited = false;
 		}
 	}
-	
-    /*
-	@Override
-	protected void finalize() {
-		if (!_disposed) {
-			_gfx.queueForDispose(this);
-		}
-	}
-    */
+
 }

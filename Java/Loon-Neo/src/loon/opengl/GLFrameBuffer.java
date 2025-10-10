@@ -38,6 +38,7 @@ import loon.Support;
 import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.utils.GLUtils;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public abstract class GLFrameBuffer implements LRelease {
@@ -610,7 +611,9 @@ public abstract class GLFrameBuffer implements LRelease {
 			lastBoundFramebuffer.setFrameBufferViewport();
 		} else {
 			unbind();
-			LSystem.base().graphics().gl.glViewport(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+			LSystem.base().graphics().gl.glViewport(0, 0,
+					MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleHeight()),
+					MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
 		}
 		currentBoundFramebuffer = lastBoundFramebuffer;
 		lastBoundFramebuffer = null;

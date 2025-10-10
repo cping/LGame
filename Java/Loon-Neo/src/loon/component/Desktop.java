@@ -40,6 +40,7 @@ import loon.events.SysTouch;
 import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
@@ -101,6 +102,10 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 	private boolean _visible;
 
 	private boolean _closed;
+	// 此项为true时，内置FrameBuffer将被启用,画面会渲染去内置FrameBuffer纹理中
+	private boolean _desktopSavetoFrameBuffer;
+
+	private FrameBuffer _desktopFrameBuffer;
 
 	private final String _desktop_name;
 
@@ -544,6 +549,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			return;
 		}
 		try {
+			afterSaveToBuffer(g);
 			g.saveTx();
 			if (_useLight && !_light.isClosed()) {
 				_light.setAutoTouchTimer(_sysInput.getTouchX(), _sysInput.getTouchY(), _sysInput.getCurrentTimer());
@@ -560,6 +566,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 					_shaderMask.popBatch(g);
 				}
 			}
+			beforeSaveToBuffer(g);
 		} finally {
 			g.restoreTx();
 		}
@@ -1574,6 +1581,31 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 		this._visible = v;
 	}
 
+	public FrameBuffer getFrameBuffer() {
+		return _desktopFrameBuffer;
+	}
+
+	private void afterSaveToBuffer(GLEx g) {
+		if (_desktopSavetoFrameBuffer) {
+			if (_desktopFrameBuffer == null || (_desktopFrameBuffer.getWidth() != getWidth()
+					|| _desktopFrameBuffer.getHeight() != getHeight())) {
+				if (_desktopFrameBuffer != null) {
+					_desktopFrameBuffer.close();
+					_desktopFrameBuffer = null;
+				}
+				_desktopFrameBuffer = new FrameBuffer((int) getWidth(), (int) getHeight());
+			}
+			_desktopFrameBuffer.begin();
+		}
+	}
+
+	private void beforeSaveToBuffer(GLEx g) {
+		if (_desktopSavetoFrameBuffer && _desktopFrameBuffer != null) {
+			g.flush();
+			_desktopFrameBuffer.end();
+		}
+	}
+
 	@Override
 	public String toString() {
 		return super.toString() + " " + "[name=" + _desktop_name + ", total=" + size() + ", content=" + _contentPane
@@ -1602,6 +1634,11 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			_shaderMask.close();
 			_shaderMask = null;
 		}
+		if (_desktopFrameBuffer != null) {
+			_desktopFrameBuffer.close();
+			_desktopFrameBuffer = null;
+		}
+		this._desktopSavetoFrameBuffer = false;
 		LSystem.popDesktopPool(this);
 	}
 

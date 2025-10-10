@@ -1,0 +1,232 @@
+/**
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ * 
+ * @project loon
+ * @author cping
+ * @email：javachenpeng@yahoo.com
+ * @version 0.5
+ */
+package loon.opengl;
+
+import loon.LSystem;
+import loon.events.EventActionN;
+import loon.geom.Vector2f;
+
+public class BilinearMask implements EventActionN {
+
+	public static class BilinearShader extends ShaderSource {
+
+		private final Vector2f _topleft = new Vector2f();
+
+		private final Vector2f _topright = new Vector2f();
+		
+		private final Vector2f _bottomleft = new Vector2f();
+		
+		private final Vector2f _bottomright = new Vector2f();
+		
+		private final Vector2f _viewSize;
+
+		private boolean _autoViewResize;
+
+		private final static String _fragmentShaderSource = "#ifdef GL_ES\r\n"
+				+ "#define LOWP lowp\r\n"
+				+ "precision mediump float;\r\n"
+				+ "#else\r\n"
+				+ "#define LOWP \r\n"
+				+ "#endif\r\n"
+				+ "uniform sampler2D u_texture;\r\n"
+				+ "varying LOWP vec4 v_color;\r\n"
+				+ "varying vec2 v_texCoords;\r\n"
+				+ "uniform vec2 resolution;\r\n"
+				+ "\r\n"
+				+ "uniform vec2 topleft;\r\n"
+				+ "uniform vec2 topright;\r\n"
+				+ "uniform vec2 bottomleft;\r\n"
+				+ "uniform vec2 bottomright;\r\n"
+				+ "\r\n"
+				+ "float crossvec( in vec2 a, in vec2 b ) { return a.x*b.y - a.y*b.x; }\r\n"
+				+ "\r\n"
+				+ "vec2 invBilinear( in vec2 p, in vec2 a, in vec2 b, in vec2 c, in vec2 d ) {\r\n"
+				+ "	vec2 res = vec2(-1.0);\r\n"
+				+ "\r\n"
+				+ "	vec2 e = b-a;\r\n"
+				+ "	vec2 f = d-a;\r\n"
+				+ "	vec2 g = a-b+c-d;\r\n"
+				+ "	vec2 h = p-a;\r\n"
+				+ "\r\n"
+				+ "	float k2 = crossvec( g, f );\r\n"
+				+ "	float k1 = crossvec( e, f ) + crossvec( h, g );\r\n"
+				+ "	float k0 = crossvec( h, e );\r\n"
+				+ "\r\n"
+				+ "	if( abs(k2)<0.001 ) {\r\n"
+				+ "		res = vec2( (h.x*k1+f.x*k0)/(e.x*k1-g.x*k0), -k0/k1 );\r\n"
+				+ "	}else {\r\n"
+				+ "		float w = k1*k1 - 4.0*k0*k2;\r\n"
+				+ "		if( w<0.0 ) return vec2(-1.0);\r\n"
+				+ "		w = sqrt( w );\r\n"
+				+ "\r\n"
+				+ "		float ik2 = 0.5/k2;\r\n"
+				+ "		float v = (-k1 - w)*ik2;\r\n"
+				+ "		float u = (h.x - f.x*v)/(e.x + g.x*v);\r\n"
+				+ "		\r\n"
+				+ "		if( u<0.0 || u>1.0 || v<0.0 || v>1.0 ) {\r\n"
+				+ "		v = (-k1 + w)*ik2;\r\n"
+				+ "		   u = (h.x - f.x*v)/(e.x + g.x*v);\r\n"
+				+ "		}\r\n"
+				+ "		res = vec2( u, 1.0 - v );\r\n"
+				+ "	}	\r\n"
+				+ "	return res;\r\n"
+				+ "}\r\n"
+				+ "\r\n"
+				+ "void main()\r\n"
+				+ "{\r\n"
+				+ "  vec2 topleftUV = topleft / resolution;\r\n"
+				+ "  vec2 toprightUV = vec2(1.0,0.0)+topright / resolution;\r\n"
+				+ "  vec2 bottomrightUV = vec2(1.0,1.0)+bottomright / resolution;\r\n"
+				+ "  vec2 bottomleftUV =vec2(0.0,1.0)+ bottomleft / resolution;\r\n"
+				+ "  vec2 newUV = invBilinear(v_texCoords, topleftUV, toprightUV, bottomrightUV, bottomleftUV);\r\n"
+				+ "  if (topleft.y == 0.0 || topright.y == 0.0) {\r\n"
+				+ "      gl_FragColor = v_color * texture2D(u_texture, newUV);\r\n"
+				+ "  }else{\r\n"
+				+ "      if (newUV == vec2(-1.0)){\r\n"
+				+ "        gl_FragColor = v_color * texture2D(u_texture, v_texCoords);\r\n"
+				+ "      }else{\r\n"
+				+ "        gl_FragColor = v_color * texture2D(u_texture, newUV);\r\n"
+				+ "      }\r\n"
+				+ "  }\r\n"
+				+ "}";
+
+		public BilinearShader(boolean autoResize, float w, float h) {
+			super(LSystem.getGLExVertexShader(), _fragmentShaderSource);
+			_autoViewResize = autoResize;
+			_viewSize = new Vector2f(w, h);
+		}
+
+		public void setXTopLeftRight(float x,float y) {
+			_topleft.set(x,0);
+			_topright.set(y,0);
+		}
+		
+		public void setYTopLeftRight(float x,float y) {
+			_topleft.set(0,x);
+			_topright.set(0,y);
+		}
+
+		public void setXBottomLeftRight(float x,float y) {
+			_bottomleft.set(x,0);
+			_bottomright.set(y,0);
+		}
+		
+		public void setYBottomLeftRight(float x,float y) {
+			_bottomleft.set(0,x);
+			_bottomright.set(0,y);
+		}
+		
+		public void setTopLeft(float x,float y) {
+			_topleft.set(x,y);
+		}
+
+		public void setTopRight(float x,float y) {
+			_topright.set(x,y);
+		}
+
+		public void setBottomLeft(float x,float y) {
+			_bottomleft.set(x,y);
+		}
+
+		public void setBottomRight(float x,float y) {
+			_bottomright.set(x,y);
+		}
+		
+		public void setViewSize(float w, float h) {
+			_viewSize.set(w, h);
+		}
+
+		public void updateToScreen() {
+			if (_autoViewResize) {
+				_viewSize.set(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+			}
+		}
+		
+		
+		@Override
+		public void setupShader(ShaderProgram program) {
+			float scaleX = LSystem.getScaleHeight();
+			float scaleY = LSystem.getScaleHeight();
+			program.setUniformf("resolution", _viewSize.x *scaleX, _viewSize.y *scaleY);
+			program.setUniformf("topleft", _topleft);
+			program.setUniformf("topright", _topright);
+			program.setUniformf("bottomleft", _bottomleft);
+			program.setUniformf("bottomright", _bottomright);
+		}
+	}
+
+	private boolean _shaderInited, _shaderDirty;
+	private final ShaderMask _shaderMask;
+	private final BilinearShader _bilinearShader;
+
+	public BilinearMask() {
+		this(true, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public BilinearMask(boolean a, float w, float h) {
+		this(BlendMethod.MODE_ALPHA, a, w, h);
+	}
+
+	public BilinearMask(int b, boolean a, float w, float h) {
+		this._shaderMask = new ShaderMask(b, this);
+		this._bilinearShader = new BilinearShader(a, w, h);
+		this._shaderDirty = true;
+		this.update();
+	}
+	
+	public BilinearShader getBilinearShader() {
+		return _bilinearShader;
+	}
+
+	public ShaderMask getMask() {
+		return _shaderMask;
+	}
+
+	public void setXTopLeftRight(float x,float y) {
+		_bilinearShader.setXTopLeftRight(x, y);
+	}
+	
+	public void setYTopLeftRight(float x,float y) {
+		_bilinearShader.setYTopLeftRight(x, y);
+	}
+
+	public void setXBottomLeftRight(float x,float y) {
+		_bilinearShader.setXBottomLeftRight(x, y);
+	}
+	
+	public void setYBottomLeftRight(float x,float y) {
+		_bilinearShader.setYBottomLeftRight(x, y);
+	}
+	
+	public void setViewSize(float w, float h) {
+		_bilinearShader.setViewSize(w, h);
+	}
+	
+	@Override
+	public void update() {
+		if (!_shaderInited || _shaderDirty) {
+			_shaderMask.setShaderSource(_bilinearShader);
+			_shaderInited = true;
+			_shaderDirty = false;
+		}
+		_bilinearShader.updateToScreen();
+	}
+}

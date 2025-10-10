@@ -4892,7 +4892,9 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_isExistViewport) {
 					_baseViewport.apply(g);
 				}
-				int repaintMode = getRepaintMode();
+				// 最下一层渲染，可重载
+				afterUI(g);
+				final int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
 					// 默认将background设置为和窗口一样大小
@@ -4919,8 +4921,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 							getViewHeight());
 					break;
 				}
-				// 最下一层渲染，可重载
-				afterUI(g);
 				// PS:下列项允许用户调整顺序
 				// 精灵
 				if (_curFristPaintFlag) {

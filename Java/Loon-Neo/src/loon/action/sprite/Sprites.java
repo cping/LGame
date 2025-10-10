@@ -49,6 +49,7 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
+import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
 import loon.opengl.light.Light2D;
@@ -87,6 +88,10 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 
 	// 是否使用shadermask改变画面显示效果
 	private boolean _useShaderMask = false;
+	// 此项为true时，内置FrameBuffer将被启用,画面会渲染去内置FrameBuffer纹理中
+	private boolean _spriteSavetoFrameBuffer;
+
+	private FrameBuffer _spriteFrameBuffer;
 
 	private ShaderMask _shaderMask;
 
@@ -1832,6 +1837,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		float spriteHeight;
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
+		afterSaveToBuffer(g);
 		if (_useLight && !_light.isClosed()) {
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			final ShaderMask lightMask = _light.getMask();
@@ -1883,6 +1889,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				_shaderMask.popBatch(g);
 			}
 		}
+		beforeSaveToBuffer(g);
 	}
 
 	public void paintPos(final GLEx g, final float offsetX, final float offsetY) {
@@ -1892,6 +1899,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this.sortSprites();
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
+		afterSaveToBuffer(g);
 		if (_useLight && !_light.isClosed()) {
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			final ShaderMask lightMask = _light.getMask();
@@ -1923,6 +1931,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				_shaderMask.popBatch(g);
 			}
 		}
+		beforeSaveToBuffer(g);
 	}
 
 	/**
@@ -1944,7 +1953,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 			return;
 		}
 		this.sortSprites();
-		
+
 		final float newScrollX = _scrollX;
 		final float newScrollY = _scrollY;
 
@@ -1980,6 +1989,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 
+		afterSaveToBuffer(g);
 		if (_useLight && !_light.isClosed()) {
 			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 			final ShaderMask lightMask = _light.getMask();
@@ -2037,6 +2047,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (update) {
 			g.translate(-startX, -startY);
 		}
+		beforeSaveToBuffer(g);
 	}
 
 	public Sprites addEntityGroup(int count) {
@@ -3325,6 +3336,31 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		return this;
 	}
 
+	private void afterSaveToBuffer(GLEx g) {
+		if (_spriteSavetoFrameBuffer) {
+			if (_spriteFrameBuffer == null
+					|| (_spriteFrameBuffer.getWidth() != getWidth() || _spriteFrameBuffer.getHeight() != getHeight())) {
+				if (_spriteFrameBuffer != null) {
+					_spriteFrameBuffer.close();
+					_spriteFrameBuffer = null;
+				}
+				_spriteFrameBuffer = new FrameBuffer(getWidth(), getHeight());
+			}
+			_spriteFrameBuffer.begin();
+		}
+	}
+
+	private void beforeSaveToBuffer(GLEx g) {
+		if (_spriteSavetoFrameBuffer && _spriteFrameBuffer != null) {
+			g.flush();
+			_spriteFrameBuffer.end();
+		}
+	}
+
+	public FrameBuffer getFrameBuffer() {
+		return _spriteFrameBuffer;
+	}
+
 	public boolean isClosed() {
 		return _closed;
 	}
@@ -3368,6 +3404,11 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this._sprites = null;
 		this._collViewSize = null;
 		this._collisionObjects = null;
+		if (_spriteFrameBuffer != null) {
+			_spriteFrameBuffer.close();
+			_spriteFrameBuffer = null;
+		}
+		this._spriteSavetoFrameBuffer = false;
 		this.clearListerner();
 		LSystem.popSpritesPool(this);
 	}
