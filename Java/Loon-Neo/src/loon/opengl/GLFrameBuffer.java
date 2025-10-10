@@ -612,7 +612,7 @@ public abstract class GLFrameBuffer implements LRelease {
 		} else {
 			unbind();
 			LSystem.base().graphics().gl.glViewport(0, 0,
-					MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleHeight()),
+					MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
 					MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
 		}
 		currentBoundFramebuffer = lastBoundFramebuffer;

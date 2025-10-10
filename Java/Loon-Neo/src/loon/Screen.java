@@ -4869,7 +4869,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_screenSavetoFrameBuffer && _screenFrameBuffer != null) {
-			g.flush();
 			_screenFrameBuffer.end();
 		}
 		beforeUI(g);

@@ -1601,7 +1601,6 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_desktopSavetoFrameBuffer && _desktopFrameBuffer != null) {
-			g.flush();
 			_desktopFrameBuffer.end();
 		}
 	}

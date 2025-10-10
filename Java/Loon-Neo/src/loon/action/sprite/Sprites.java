@@ -3352,7 +3352,6 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_spriteSavetoFrameBuffer && _spriteFrameBuffer != null) {
-			g.flush();
 			_spriteFrameBuffer.end();
 		}
 	}
