@@ -385,8 +385,6 @@ public final class ScreenExitEffect {
 		if (hideUI) {
 			src.hideUI();
 		}
-		// 最后渲染精灵类,避免被其它组件遮挡
-		src.lastSpriteDraw();
 		src.setLock(true);
 		src.add(baseEffect);
 	}

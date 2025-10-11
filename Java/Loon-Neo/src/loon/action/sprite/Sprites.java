@@ -49,9 +49,11 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
+import loon.opengl.BilinearMask;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
+import loon.opengl.ShaderSource;
 import loon.opengl.light.Light2D;
 import loon.opengl.light.Light2D.LightType;
 import loon.utils.CollectionUtils;
@@ -80,6 +82,13 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		public Sprites update(ISprite spr);
 
 	}
+
+	// 改变画面UV斜率
+	private boolean _changeUVTilt = false;
+
+	private BilinearMask _uvMask;
+
+	private float _offsetUVx, _offsetUVy;
 
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
@@ -3375,7 +3384,72 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_spriteSavetoFrameBuffer && _spriteFrameBuffer != null) {
 			_spriteFrameBuffer.end(g);
+			if (_changeUVTilt && _uvMask != null) {
+				_uvMask.setViewSize(getWidth(), getHeight());
+				_uvMask.update();
+				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
+				g.draw(_spriteFrameBuffer.texture(), _offsetUVx, _offsetUVy);
+				g.updateShaderSource(oldShader);
+			}
 		}
+	}
+
+	public float getOffsetUVx() {
+		return _offsetUVx;
+	}
+
+	public float getOffsetUVy() {
+		return _offsetUVy;
+	}
+
+	public Sprites setOffsetUVx(float x) {
+		_offsetUVx = x;
+		return this;
+	}
+
+	public Sprites setOffsetUVy(float y) {
+		_offsetUVy = y;
+		return this;
+	}
+
+	public BilinearMask getUVMask() {
+		if (_uvMask == null) {
+			_uvMask = new BilinearMask(true, getWidth(), getHeight());
+		}
+		return _uvMask;
+	}
+
+	public Sprites updateUVXTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setXTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Sprites updateUVYTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setYTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Sprites setAllowUVChange(boolean a) {
+		saveToFrameBuffer(_changeUVTilt = a);
+		return this;
+	}
+
+	public boolean isAllowUVChange() {
+		return _changeUVTilt;
+	}
+
+	public Sprites freeUVMask() {
+		_changeUVTilt = false;
+		_uvMask = null;
+		return this;
 	}
 
 	public Sprites freeFrameBuffer() {
@@ -3434,6 +3508,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this._sprites = null;
 		this._collViewSize = null;
 		this._collisionObjects = null;
+		this.freeUVMask();
 		this.freeFrameBuffer();
 		this.clearListerner();
 		LSystem.popSpritesPool(this);

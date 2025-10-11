@@ -40,9 +40,11 @@ import loon.events.SysTouch;
 import loon.geom.DirtyRectList;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.opengl.BilinearMask;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
+import loon.opengl.ShaderSource;
 import loon.opengl.light.Light2D;
 import loon.opengl.light.Light2D.LightType;
 import loon.utils.IArray;
@@ -56,6 +58,13 @@ import loon.utils.reply.Callback;
  * 
  */
 public final class Desktop implements Visible, ZIndex, IArray, LRelease {
+
+	// 改变画面UV斜率
+	private boolean _changeUVTilt = false;
+
+	private BilinearMask _uvMask;
+
+	private float _offsetUVx, _offsetUVy;
 
 	// 是否在整个桌面组件中使用光源
 	private boolean _useLight = false;
@@ -1620,7 +1629,72 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_desktopSavetoFrameBuffer && _desktopFrameBuffer != null) {
 			_desktopFrameBuffer.end(g);
+			if (_changeUVTilt && _uvMask != null) {
+				_uvMask.setViewSize(getWidth(), getHeight());
+				_uvMask.update();
+				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
+				g.draw(_desktopFrameBuffer.texture(), _offsetUVx, _offsetUVy);
+				g.updateShaderSource(oldShader);
+			}
 		}
+	}
+
+	public float getOffsetUVx() {
+		return _offsetUVx;
+	}
+
+	public float getOffsetUVy() {
+		return _offsetUVy;
+	}
+
+	public Desktop setOffsetUVx(float x) {
+		_offsetUVx = x;
+		return this;
+	}
+
+	public Desktop setOffsetUVy(float y) {
+		_offsetUVy = y;
+		return this;
+	}
+
+	public BilinearMask getUVMask() {
+		if (_uvMask == null) {
+			_uvMask = new BilinearMask(true, getWidth(), getHeight());
+		}
+		return _uvMask;
+	}
+
+	public Desktop updateUVXTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setXTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Desktop updateUVYTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setYTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Desktop setAllowUVChange(boolean a) {
+		saveToFrameBuffer(_changeUVTilt = a);
+		return this;
+	}
+
+	public boolean isAllowUVChange() {
+		return _changeUVTilt;
+	}
+
+	public Desktop freeUVMask() {
+		_changeUVTilt = false;
+		_uvMask = null;
+		return this;
 	}
 
 	@Override

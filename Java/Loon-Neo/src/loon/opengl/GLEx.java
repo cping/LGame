@@ -387,6 +387,25 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 	}
 
 	/**
+	 * 切换当前GLEx的Shader资源(会直接调用begin和end函数改变画面改变，而不会等到自动end时)
+	 * 
+	 * @param shaderSource
+	 * @return
+	 */
+	public ShaderSource updateShaderSource(ShaderSource shaderSource) {
+		final ShaderSource old = getShaderSource();
+		final boolean updated = (shaderSource != old);
+		if (batch.begun && updated) {
+			end();
+			setShaderSource(shaderSource);
+			begin();
+		} else if (updated) {
+			setShaderSource(shaderSource);
+		}
+		return old;
+	}
+
+	/**
 	 * 判断当前GLEx的Batch是否正在运行
 	 * 
 	 * @return

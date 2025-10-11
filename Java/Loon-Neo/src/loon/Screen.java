@@ -47,6 +47,7 @@ import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.TComponent;
+import loon.action.sprite.UIEntity;
 import loon.action.sprite.Sprites.Created;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
@@ -105,6 +106,7 @@ import loon.geom.Shape;
 import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.geom.XY;
+import loon.opengl.BilinearMask;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.LTextureImage;
@@ -249,6 +251,13 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public final static byte DRAW_DESKTOP = 2;
 
 	private int _skipFrame;
+
+	// 改变画面UV斜率
+	private boolean _changeUVTilt = false;
+
+	private BilinearMask _uvMask;
+
+	private float _offsetUVx, _offsetUVy;
 
 	/**
 	 * 通用碰撞管理器(需要用户自行初始化(getCollisionManager或initializeCollision),不实例化默认不存在)
@@ -3858,7 +3867,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param sprite
 	 */
-
 	public Screen add(ISprite sprite) {
 		if (_currentSprites != null) {
 			_currentSprites.add(sprite);
@@ -3885,6 +3893,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * 转化UI组件为精灵组件并返回
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public UIEntity convertUIToSprite(LComponent c) {
+		final UIEntity uisprite = new UIEntity(c);
+		add(uisprite);
+		return uisprite;
+	}
+
+	/**
+	 * 转化精灵组件为UI组件并返回
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public LSpriteUI convertSpriteToUI(ISprite s) {
+		final LSpriteUI scomp = new LSpriteUI(s);
+		add(scomp);
+		return scomp;
 	}
 
 	public boolean isDesktopPenetrate() {
@@ -3938,7 +3970,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * 
 	 * @param s
 	 */
-
 	public Screen addSpriteToUI(ISprite s) {
 		if (_currentDesktop != null) {
 			LSpriteUI ui = _currentDesktop.addSprite(s);
@@ -4870,8 +4901,73 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_screenSavetoFrameBuffer && _screenFrameBuffer != null) {
 			_screenFrameBuffer.end(g);
+			if (_changeUVTilt && _uvMask != null) {
+				_uvMask.setViewSize(getWidth(), getHeight());
+				_uvMask.update();
+				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
+				g.draw(_screenFrameBuffer.texture(), _offsetUVx, _offsetUVy);
+				g.updateShaderSource(oldShader);
+			}
 		}
 		beforeUI(g);
+	}
+
+	public float getOffsetUVx() {
+		return _offsetUVx;
+	}
+
+	public float getOffsetUVy() {
+		return _offsetUVy;
+	}
+
+	public Screen setOffsetUVx(float x) {
+		_offsetUVx = x;
+		return this;
+	}
+
+	public Screen setOffsetUVy(float y) {
+		_offsetUVy = y;
+		return this;
+	}
+
+	public BilinearMask getUVMask() {
+		if (_uvMask == null) {
+			_uvMask = new BilinearMask(true, getWidth(), getHeight());
+		}
+		return _uvMask;
+	}
+
+	public Screen updateUVXTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setXTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Screen updateUVYTopLeftRight(float topLeft, float topRight) {
+		_uvMask = getUVMask();
+		_uvMask.setViewSize(getWidth(), getHeight());
+		_uvMask.setYTopLeftRight(topLeft, topRight);
+		_uvMask.update();
+		setAllowUVChange(true);
+		return this;
+	}
+
+	public Screen setAllowUVChange(boolean a) {
+		saveToFrameBuffer(_changeUVTilt = a);
+		return this;
+	}
+
+	public boolean isAllowUVChange() {
+		return _changeUVTilt;
+	}
+
+	public Screen freeUVMask() {
+		_changeUVTilt = false;
+		_uvMask = null;
+		return this;
 	}
 
 	public FrameBuffer getFrameBuffer() {
@@ -8324,6 +8420,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				this._screenSwitch = null;
 				this._curStageRun = false;
 				this._curLockedCallEvent = false;
+				this.freeUVMask();
 				this.freeFrameBuffer();
 				LSystem.closeTemp();
 			} catch (Throwable cause) {

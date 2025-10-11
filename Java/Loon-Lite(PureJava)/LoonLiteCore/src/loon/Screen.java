@@ -45,6 +45,7 @@ import loon.action.sprite.SpriteControls;
 import loon.action.sprite.SpriteLabel;
 import loon.action.sprite.Sprites;
 import loon.action.sprite.TComponent;
+import loon.action.sprite.UIEntity;
 import loon.action.sprite.Sprites.Created;
 import loon.action.sprite.Sprites.SpriteListener;
 import loon.canvas.Image;
@@ -3855,6 +3856,30 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			}
 		}
 		return this;
+	}
+
+	/**
+	 * 转化UI组件为精灵组件并返回
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public UIEntity convertUIToSprite(LComponent c) {
+		final UIEntity uisprite = new UIEntity(c);
+		add(uisprite);
+		return uisprite;
+	}
+
+	/**
+	 * 转化精灵组件为UI组件并返回
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public LSpriteUI convertSpriteToUI(ISprite s) {
+		final LSpriteUI scomp = new LSpriteUI(s);
+		add(scomp);
+		return scomp;
 	}
 
 	public boolean isDesktopPenetrate() {

@@ -16,8 +16,8 @@ import loon.canvas.LColor;
 import loon.component.LClickButton;
 import loon.component.LPad;
 import loon.component.LSelectorIcon;
-import loon.events.SysKey;
 import loon.events.Touched;
+import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
 import loon.utils.ObjectBundle;
@@ -25,10 +25,21 @@ import loon.utils.TArray;
 
 public class MapTest extends Stage {
 
-	// 此示例演示了三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动,并且有移动路径箭头显示精灵的使用
+	// 此示例演示了2D画面斜视伪3D化，以及三种角色的地图移动方式，分别是触屏移动,键盘移动,以及虚拟按钮移动,并且有移动路径箭头显示精灵的使用
 	@Override
 	public void create() {
 		try {
+			// 改变精灵组件画面x轴左右边角各倾斜45,让2D游戏伪3D化,大部分有正面斜视效果的RPG和卡牌游戏(嗯，我说的就是游戏王)斜视画面都是这个路子
+			ELF().updateUVXTopLeftRight(45, -45);
+			// 绘制两个三角,遮挡因2D画面扭曲变形渲染未涉及区域(如果是正式游戏，应该用特色图片替代，星空蓝天大海沙漠什么的)
+			final Triangle2f leftMask = new Triangle2f(0, 0, 25, 0, 0, getHeight());
+			final Triangle2f rightMask = new Triangle2f(getWidth() - 25, 0, getWidth(), 0, getWidth(), getHeight());
+			drawable((g, x, y) -> {
+				g.fill(leftMask, LColor.black);
+				g.fill(rightMask, LColor.black);
+			});
+
+			// 单独灯光效果
 			// ELF().createGlobalLight(LightType.Singleton);
 			// 点击处波纹效果
 			RippleEffect ripple = RippleEffect.at(Model.OVAL);
@@ -41,13 +52,16 @@ public class MapTest extends Stage {
 			final TileMap map = new TileMap("assets/rpg/map.txt", 32, 32);
 			// 设置切图方式
 			/*
-			 * TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10); //
-			 * 索引,名称,开始切图的x,y位置,以及切下来多少 clips.add(new LTexturePackClip(0, "1", 0, 0, 32,
-			 * 32)); clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32)); clips.add(new
-			 * LTexturePackClip(2, "3", 64, 0, 32, 32)); clips.add(new LTexturePackClip(3,
-			 * "4", 96, 0, 32, 32)); clips.add(new LTexturePackClip(4, "5", 128, 0, 32,
-			 * 32)); clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32)); //
-			 * 注入切图用地图，以及切图方式(也可以直接注入xml配置文件) map.setImagePack("assets/rpg/map.png", clips);
+			 * TArray<LTexturePackClip> clips = new TArray<LTexturePackClip>(10); 
+			 * //索引,名称,开始切图的x,y位置,以及切下来多少 
+			 * clips.add(new LTexturePackClip(0, "1", 0, 0, 32,32)); 
+			 * clips.add(new LTexturePackClip(1, "2", 32, 0, 32, 32)); 
+			 * clips.add(new LTexturePackClip(2, "3", 64, 0, 32, 32)); 
+			 * clips.add(new LTexturePackClip(3,  "4", 96, 0, 32, 32)); 
+			 * clips.add(new LTexturePackClip(4, "5", 128, 0, 32, 32)); 
+			 * clips.add(new LTexturePackClip(5, "6", 160, 0, 32, 32)); 
+			 * //注入切图用地图，以及切图方式(也可以直接注入xml配置文件) 
+			 * map.setImagePack("assets/rpg/map.png", clips);
 			 */
 			// 按照瓦片规格自动获取地图切片(切出来大小都是一样的,只对规则图片有效)
 			map.setImagePackAuto("assets/rpg/map.png", 32, 32);
@@ -72,7 +86,7 @@ public class MapTest extends Stage {
 					map.tilesToPixelsY(y), 32, 32);
 			// 播放动画,速度每帧220
 			final long[] frames = { 220, 220, 220 };
-			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧)
+			// 左右下上四方向的帧播放顺序(也可以理解为具体播放的帧id)
 			final int[] leftIds = { 3, 4, 5 };
 			final int[] rightIds = { 6, 7, 8 };
 			final int[] downIds = { 0, 1, 2 };
@@ -118,9 +132,7 @@ public class MapTest extends Stage {
 			// 构建角色移动位置标志器
 			final LSelectorIcon selector = new LSelectorIcon(0, 0, 32);
 			// 标记布局如下
-			selector.setGridLayout("  0  ", 
-					               " 010 ", 
-					               "  0  ");
+			selector.setGridLayout("  0  ", " 010 ", "  0  ");
 			// 绑定索引与颜色
 			selector.bindColor(0, LColor.red);
 			selector.bindColor(1, LColor.yellow);
@@ -132,8 +144,8 @@ public class MapTest extends Stage {
 			selector.setOffset(hero.getOffset());
 			// 移动到hero位置
 			selector.moveTo(hero);
-			// 添加一个角色位置标志器
-			add(selector);
+			// 添加一个角色位置标志器,并转化为精灵组件
+			convertUIToSprite(selector);
 			// 添加一个循环，用于监听
 			loop(() -> {
 				// 如果角色位置发生变动
@@ -145,7 +157,6 @@ public class MapTest extends Stage {
 			// 角色追随和地图滚动只能开一个(否则地图移动视角会乱跳),默认如果followAction注入则scroll无效化
 			/*
 			 * drag(new Touched() {
-			 *
 			 * @Override public void on(float x, float y) { map.scroll(x, y); } });
 			 */
 			// 构建一个箭头精灵,使用图片arrow.png,箭头原图每格占16像素
@@ -160,10 +171,13 @@ public class MapTest extends Stage {
 			add(arrow);
 
 			/**
-			 * final Arrow arrow = new Arrow(TextureUtils.filterColor("assets/icon.png", new
-			 * LColor(255, 0, 255)), 32); // 使用默认的模式2拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
-			 * arrow.getArrowSet().defaultSet2(); // 坐标跟随地图偏移
-			 * arrow.setOffset(map.getOffset()); // 注入箭头精灵 add(arrow);
+			 * final Arrow arrow = new Arrow(TextureUtils.filterColor("assets/icon.png", new LColor(255, 0, 255)), 32); 
+			 * // 使用默认的模式2拆分箭头(如果使用其他图片,请自行设置14个移动元素对应的具体位图)
+			 * arrow.getArrowSet().defaultSet2(); 
+			 * // 坐标跟随地图偏移
+			 * arrow.setOffset(map.getOffset()); 
+			 * // 注入箭头精灵 
+			 * add(arrow);
 			 */
 
 			// ----触屏移动---
@@ -198,6 +212,7 @@ public class MapTest extends Stage {
 									bundle.set("dir", move.getDirection());
 									// 随机使用一种Screen转场效果，进入战斗画面
 									gotoScreenEffectExitRand(new RpgBattleTest());
+									// gotoScreenEffectExit(ScreenExitEffect.BOARD_LEFT_FADE, new RpgBattleTest());
 								} else {
 									// 移动箭头隐藏
 									arrow.setVisible(false);
@@ -246,10 +261,10 @@ public class MapTest extends Stage {
 			// 注销窗体时关闭移动控制器
 			putRelease(mc);
 			// ----按键移动---
-			/*
+
 			// 构建针对控制器的键盘监听
 			mc.setActionAnyEvent(() -> {
-				//仅在改变按键方向时改编动画播放
+				// 仅在改变按键方向时改编动画播放
 				if (mc.isDirChangeUpPressed()) {
 					hero.animate(frames, upIds);
 				}
@@ -262,35 +277,6 @@ public class MapTest extends Stage {
 				if (mc.isDirChangeRightPressed()) {
 					hero.animate(frames, rightIds);
 				}
-			});*/
-			// 构建Screen中的键盘监听
-
-			keyPress(SysKey.LEFT, () -> {
-				if (!mc.isTLeft()) {
-					hero.animate(frames, leftIds);
-				}
-				mc.setDirection(Config.TLEFT);
-			});
-
-			keyPress(SysKey.RIGHT, () -> {
-				if (!mc.isTRight()) {
-					hero.animate(frames, rightIds);
-				}
-				mc.setDirection(Config.TRIGHT);
-			});
-
-			keyPress(SysKey.UP, () -> {
-				if (!mc.isTUp()) {
-					hero.animate(frames, upIds);
-				}
-				mc.setDirection(Config.TUP);
-			});
-
-			keyPress(SysKey.DOWN, () -> {
-				if (!mc.isTDown()) {
-					hero.animate(frames, downIds);
-				}
-				mc.setDirection(Config.TDOWN);
 			});
 
 			// ----虚拟按键移动---
