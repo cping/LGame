@@ -982,6 +982,32 @@ public final class LSystem {
 		}
 	}
 
+	public static void mainTargetFrameBufferStart() {
+		if (base() == null) {
+			return;
+		}
+		Display game = base().display();
+		if (game != null) {
+			GLEx gl = game.GL();
+			if (gl.running()) {
+				gl.setBindFrameBufferTarget(true);
+			}
+		}
+	}
+
+	public static void mainTargetFrameBufferStop() {
+		if (base() == null) {
+			return;
+		}
+		Display game = base().display();
+		if (game != null) {
+			GLEx gl = game.GL();
+			if (gl.running()) {
+				gl.setBindFrameBufferTarget(false);
+			}
+		}
+	}
+
 	public static boolean mainDrawRunning() {
 		if (base() == null) {
 			return false;

@@ -587,6 +587,45 @@ public abstract class GLFrameBuffer implements LRelease {
 		return this;
 	}
 
+	/**
+	 * 如果需要在GLEx循环中使用FrameBuffer时使用此函数构建,会停止GLEx中的FBO然后开启当前缓冲
+	 * 
+	 * @param g
+	 */
+	public void begin(GLEx g) {
+		if (bufferLocked) {
+			return;
+		}
+		if (currentBoundFramebuffer == this) {
+			throw new LSysException("Do not run begin !");
+		}
+		g.setBindFrameBufferTarget(false);
+		g.flush();
+		lastBoundFramebuffer = currentBoundFramebuffer;
+		currentBoundFramebuffer = this;
+		bind();
+		setFrameBufferViewport();
+	}
+
+	public void end(GLEx g) {
+		if (bufferLocked) {
+			return;
+		}
+		g.flush();
+		if (lastBoundFramebuffer != null) {
+			lastBoundFramebuffer.bind();
+			lastBoundFramebuffer.setFrameBufferViewport();
+		} else {
+			unbind();
+			LSystem.base().graphics().gl.glViewport(0, 0,
+					MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
+					MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
+		}
+		g.setBindFrameBufferTarget(true);
+		currentBoundFramebuffer = lastBoundFramebuffer;
+		lastBoundFramebuffer = null;
+	}
+
 	public void begin() {
 		if (bufferLocked) {
 			return;

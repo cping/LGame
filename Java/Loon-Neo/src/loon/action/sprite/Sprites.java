@@ -1837,59 +1837,62 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		float spriteHeight;
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		afterSaveToBuffer(g);
-		if (_useLight && !_light.isClosed()) {
-			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			final ShaderMask lightMask = _light.getMask();
-			lightMask.pushBatch(g);
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_limitViewWindows) {
-						spriteX = minX + spr.getX();
-						spriteY = minY + spr.getY();
-						spriteWidth = spr.getWidth();
-						spriteHeight = spr.getHeight();
-						if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
-								|| spriteY > maxY) {
-							continue;
+		try {
+			afterSaveToBuffer(g);
+			if (_useLight && !_light.isClosed()) {
+				_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
+				final ShaderMask lightMask = _light.getMask();
+				lightMask.pushBatch(g);
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_limitViewWindows) {
+							spriteX = minX + spr.getX();
+							spriteY = minY + spr.getY();
+							spriteWidth = spr.getWidth();
+							spriteHeight = spr.getHeight();
+							if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+									|| spriteY > maxY) {
+								continue;
+							}
 						}
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+						}
+						spr.createUI(g);
 					}
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+				}
+				lightMask.popBatch(g);
+			} else {
+				if (_useShaderMask) {
+					_shaderMask.pushBatch(g);
+				}
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_limitViewWindows) {
+							spriteX = minX + spr.getX();
+							spriteY = minY + spr.getY();
+							spriteWidth = spr.getWidth();
+							spriteHeight = spr.getHeight();
+							if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
+									|| spriteY > maxY) {
+								continue;
+							}
+						}
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+						}
+						spr.createUI(g);
 					}
-					spr.createUI(g);
+				}
+				if (_useShaderMask) {
+					_shaderMask.popBatch(g);
 				}
 			}
-			lightMask.popBatch(g);
-		} else {
-			if (_useShaderMask) {
-				_shaderMask.pushBatch(g);
-			}
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_limitViewWindows) {
-						spriteX = minX + spr.getX();
-						spriteY = minY + spr.getY();
-						spriteWidth = spr.getWidth();
-						spriteHeight = spr.getHeight();
-						if (spriteX + spriteWidth < minX || spriteX > maxX || spriteY + spriteHeight < minY
-								|| spriteY > maxY) {
-							continue;
-						}
-					}
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, 0f, 0f);
-					}
-					spr.createUI(g);
-				}
-			}
-			if (_useShaderMask) {
-				_shaderMask.popBatch(g);
-			}
+		} finally {
+			beforeSaveToBuffer(g);
 		}
-		beforeSaveToBuffer(g);
 	}
 
 	public void paintPos(final GLEx g, final float offsetX, final float offsetY) {
@@ -1899,39 +1902,42 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this.sortSprites();
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
-		afterSaveToBuffer(g);
-		if (_useLight && !_light.isClosed()) {
-			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			final ShaderMask lightMask = _light.getMask();
-			lightMask.pushBatch(g);
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+		try {
+			afterSaveToBuffer(g);
+			if (_useLight && !_light.isClosed()) {
+				_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
+				final ShaderMask lightMask = _light.getMask();
+				lightMask.pushBatch(g);
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+						}
+						spr.createUI(g, offsetX, offsetY);
 					}
-					spr.createUI(g, offsetX, offsetY);
+				}
+				lightMask.popBatch(g);
+			} else {
+				if (_useShaderMask) {
+					_shaderMask.pushBatch(g);
+				}
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
+						}
+						spr.createUI(g, offsetX, offsetY);
+					}
+				}
+				if (_useShaderMask) {
+					_shaderMask.popBatch(g);
 				}
 			}
-			lightMask.popBatch(g);
-		} else {
-			if (_useShaderMask) {
-				_shaderMask.pushBatch(g);
-			}
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
-					}
-					spr.createUI(g, offsetX, offsetY);
-				}
-			}
-			if (_useShaderMask) {
-				_shaderMask.popBatch(g);
-			}
+		} finally {
+			beforeSaveToBuffer(g);
 		}
-		beforeSaveToBuffer(g);
 	}
 
 	/**
@@ -1952,6 +1958,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (!_visible || _closed) {
 			return;
 		}
+
 		this.sortSprites();
 
 		final float newScrollX = _scrollX;
@@ -1968,7 +1975,9 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		if (update) {
 			g.translate(startX, startY);
 		}
+
 		float minX, minY, maxX, maxY;
+
 		if (this._isViewWindowSet) {
 			minX = x + this._viewX;
 			maxX = minX + this._viewWidth;
@@ -1982,6 +1991,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		}
 
 		final boolean offset = (minX != 0 || minY != 0);
+
 		if (offset) {
 			g.translate(minX, minY);
 		}
@@ -1989,65 +1999,68 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		final ISprite[] childs = _sprites;
 		final int size = this._size;
 
-		afterSaveToBuffer(g);
-		if (_useLight && !_light.isClosed()) {
-			_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
-			final ShaderMask lightMask = _light.getMask();
-			lightMask.pushBatch(g);
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_limitViewWindows) {
-						int layerX = spr.x();
-						int layerY = spr.y();
-						float layerWidth = spr.getWidth() + 1;
-						float layerHeight = spr.getHeight() + 1;
-						if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
-								|| layerY > maxY) {
-							continue;
+		try {
+			afterSaveToBuffer(g);
+			if (_useLight && !_light.isClosed()) {
+				_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
+				final ShaderMask lightMask = _light.getMask();
+				lightMask.pushBatch(g);
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_limitViewWindows) {
+							int layerX = spr.x();
+							int layerY = spr.y();
+							float layerWidth = spr.getWidth() + 1;
+							float layerHeight = spr.getHeight() + 1;
+							if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
+									|| layerY > maxY) {
+								continue;
+							}
 						}
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+						}
+						spr.createUI(g);
 					}
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, 0f, 0f);
+				}
+				lightMask.popBatch(g);
+			} else {
+				if (_useShaderMask) {
+					_shaderMask.pushBatch(g);
+				}
+				for (int i = 0; i < size; i++) {
+					final ISprite spr = childs[i];
+					if (spr != null && spr.isVisible()) {
+						if (_limitViewWindows) {
+							int layerX = spr.x();
+							int layerY = spr.y();
+							float layerWidth = spr.getWidth() + 1;
+							float layerHeight = spr.getHeight() + 1;
+							if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
+									|| layerY > maxY) {
+								continue;
+							}
+						}
+						if (_createShadow && spr.showShadow()) {
+							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+						}
+						spr.createUI(g);
 					}
-					spr.createUI(g);
+				}
+				if (_useShaderMask) {
+					_shaderMask.popBatch(g);
 				}
 			}
-			lightMask.popBatch(g);
-		} else {
-			if (_useShaderMask) {
-				_shaderMask.pushBatch(g);
+		} finally {
+			beforeSaveToBuffer(g);
+			if (offset) {
+				g.translate(-minX, -minY);
 			}
-			for (int i = 0; i < size; i++) {
-				final ISprite spr = childs[i];
-				if (spr != null && spr.isVisible()) {
-					if (_limitViewWindows) {
-						int layerX = spr.x();
-						int layerY = spr.y();
-						float layerWidth = spr.getWidth() + 1;
-						float layerHeight = spr.getHeight() + 1;
-						if (layerX + layerWidth < minX || layerX > maxX || layerY + layerHeight < minY
-								|| layerY > maxY) {
-							continue;
-						}
-					}
-					if (_createShadow && spr.showShadow()) {
-						_spriteShadow.drawShadow(g, spr, 0f, 0f);
-					}
-					spr.createUI(g);
-				}
-			}
-			if (_useShaderMask) {
-				_shaderMask.popBatch(g);
+			if (update) {
+				g.translate(-startX, -startY);
 			}
 		}
-		if (offset) {
-			g.translate(-minX, -minY);
-		}
-		if (update) {
-			g.translate(-startX, -startY);
-		}
-		beforeSaveToBuffer(g);
 	}
 
 	public Sprites addEntityGroup(int count) {
@@ -3336,6 +3349,15 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		return this;
 	}
 
+	public Sprites saveToFrameBuffer(boolean s) {
+		this._spriteSavetoFrameBuffer = s;
+		return this;
+	}
+
+	public boolean isSaveFrameBuffer() {
+		return this._spriteSavetoFrameBuffer;
+	}
+
 	private void afterSaveToBuffer(GLEx g) {
 		if (_spriteSavetoFrameBuffer) {
 			if (_spriteFrameBuffer == null
@@ -3346,14 +3368,23 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				}
 				_spriteFrameBuffer = new FrameBuffer(getWidth(), getHeight());
 			}
-			_spriteFrameBuffer.begin();
+			_spriteFrameBuffer.begin(g);
 		}
 	}
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_spriteSavetoFrameBuffer && _spriteFrameBuffer != null) {
-			_spriteFrameBuffer.end();
+			_spriteFrameBuffer.end(g);
 		}
+	}
+
+	public Sprites freeFrameBuffer() {
+		if (_spriteFrameBuffer != null) {
+			_spriteFrameBuffer.close();
+			_spriteFrameBuffer = null;
+		}
+		_spriteSavetoFrameBuffer = false;
+		return this;
 	}
 
 	public FrameBuffer getFrameBuffer() {
@@ -3403,11 +3434,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		this._sprites = null;
 		this._collViewSize = null;
 		this._collisionObjects = null;
-		if (_spriteFrameBuffer != null) {
-			_spriteFrameBuffer.close();
-			_spriteFrameBuffer = null;
-		}
-		this._spriteSavetoFrameBuffer = false;
+		this.freeFrameBuffer();
 		this.clearListerner();
 		LSystem.popSpritesPool(this);
 	}

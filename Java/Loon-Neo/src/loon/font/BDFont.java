@@ -57,7 +57,9 @@ import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
 
 /**
- * Adobe的DBF格式字体文件支持(主要是给C#版monogame环境用的,本地字库默认没法调用,除非调用本地api,问题是不想自己写环境适配才用的monogame……)
+ * BDF格式字体文件支持，有很多开源的像素风bdf字库，可以做到小体积全字符支持。而且也有很多第三方工具
+ * 能将ttf转bdf，就算不用像素风，bdf也可以显示正常文字。方便全环境语言显示效果一致，不过汉字全部预
+ * 加载纹理会比较大，所以默认只会预加载英文，其它字符可以在构建BDFont时设置字符集要求加载。
  */
 public final class BDFont extends FontTrans implements IFont, LRelease {
 
@@ -2402,7 +2404,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				pix = null;
 			}
 		}
-		bdPixmapList.clear();
+		bdPixmapList.close();
 		displays.clear();
 		if (fontBatch != null) {
 			fontBatch.close();
@@ -2415,6 +2417,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (customChars != null) {
 			customChars.clear();
 			customChars = null;
+		}
+		if (_characters != null) {
+			_characters.close();
+			_characters = null;
 		}
 		isDrawing = false;
 		_displayLazy = false;

@@ -4862,14 +4862,14 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				}
 				_screenFrameBuffer = new FrameBuffer(getWidth(), getHeight());
 			}
-			_screenFrameBuffer.begin();
+			_screenFrameBuffer.begin(g);
 		}
 		afterUI(g);
 	}
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_screenSavetoFrameBuffer && _screenFrameBuffer != null) {
-			_screenFrameBuffer.end();
+			_screenFrameBuffer.end(g);
 		}
 		beforeUI(g);
 	}
@@ -4993,9 +4993,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_curLastPaintFlag) {
 					_curLastOrder.paint(g);
 				}
+			} finally {
 				// 最前一层渲染,可重载,如果保存画面为FrameBuffer时调用此函数
 				beforeSaveToBuffer(g);
-			} finally {
+				// 如果存在viewport操作
 				if (_isExistViewport) {
 					_baseViewport.unapply(g);
 				}
@@ -8194,11 +8195,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return StringUtils.format(msg, args);
 	}
 
-	public boolean isScreenSavetoFrameBuffer() {
+	public Screen freeFrameBuffer() {
+		if (_screenFrameBuffer != null) {
+			_screenFrameBuffer.close();
+			_screenFrameBuffer = null;
+		}
+		_screenSavetoFrameBuffer = false;
+		return this;
+	}
+
+	public boolean isSaveFrameBuffer() {
 		return _screenSavetoFrameBuffer;
 	}
 
-	public Screen setScreenSavetoFrameBuffer(boolean s) {
+	/**
+	 * 是否将Screen内画面保存去一个FrameBuffer对象而非渲染到游戏中
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public Screen saveToFrameBuffer(boolean s) {
 		_screenSavetoFrameBuffer = s;
 		return this;
 	}
@@ -8301,10 +8317,6 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (_loopEvents != null) {
 					_loopEvents.clear();
 				}
-				if (_screenFrameBuffer != null) {
-					_screenFrameBuffer.close();
-					_screenFrameBuffer = null;
-				}
 				this._frameLooptoDeadEvents = null;
 				this._frameLooptoUpdated = null;
 				this._closeUpdate = null;
@@ -8312,7 +8324,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				this._screenSwitch = null;
 				this._curStageRun = false;
 				this._curLockedCallEvent = false;
-				this._screenSavetoFrameBuffer = false;
+				this.freeFrameBuffer();
 				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);

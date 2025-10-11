@@ -549,8 +549,8 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			return;
 		}
 		try {
-			afterSaveToBuffer(g);
 			g.saveTx();
+			afterSaveToBuffer(g);
 			if (_useLight && !_light.isClosed()) {
 				_light.setAutoTouchTimer(_sysInput.getTouchX(), _sysInput.getTouchY(), _sysInput.getCurrentTimer());
 				final ShaderMask lightMask = _light.getMask();
@@ -566,8 +566,8 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 					_shaderMask.popBatch(g);
 				}
 			}
-			beforeSaveToBuffer(g);
 		} finally {
+			beforeSaveToBuffer(g);
 			g.restoreTx();
 		}
 	}
@@ -1585,6 +1585,24 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 		return _desktopFrameBuffer;
 	}
 
+	public Desktop freeFrameBuffer() {
+		if (_desktopFrameBuffer != null) {
+			_desktopFrameBuffer.close();
+			_desktopFrameBuffer = null;
+		}
+		_desktopSavetoFrameBuffer = false;
+		return this;
+	}
+
+	public Desktop saveToFrameBuffer(boolean s) {
+		this._desktopSavetoFrameBuffer = s;
+		return this;
+	}
+
+	public boolean isSaveFrameBuffer() {
+		return this._desktopSavetoFrameBuffer;
+	}
+
 	private void afterSaveToBuffer(GLEx g) {
 		if (_desktopSavetoFrameBuffer) {
 			if (_desktopFrameBuffer == null || (_desktopFrameBuffer.getWidth() != getWidth()
@@ -1595,13 +1613,13 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				}
 				_desktopFrameBuffer = new FrameBuffer((int) getWidth(), (int) getHeight());
 			}
-			_desktopFrameBuffer.begin();
+			_desktopFrameBuffer.begin(g);
 		}
 	}
 
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_desktopSavetoFrameBuffer && _desktopFrameBuffer != null) {
-			_desktopFrameBuffer.end();
+			_desktopFrameBuffer.end(g);
 		}
 	}
 
@@ -1633,11 +1651,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			_shaderMask.close();
 			_shaderMask = null;
 		}
-		if (_desktopFrameBuffer != null) {
-			_desktopFrameBuffer.close();
-			_desktopFrameBuffer = null;
-		}
-		this._desktopSavetoFrameBuffer = false;
+		this.freeFrameBuffer();
 		LSystem.popDesktopPool(this);
 	}
 

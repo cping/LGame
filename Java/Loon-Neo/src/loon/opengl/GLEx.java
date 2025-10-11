@@ -124,6 +124,8 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 
 	private GLRenderer glRenderer;
 
+	private boolean bindFrameBufferTarget = true;
+
 	private boolean rendererDrawLocked = false;
 
 	private int scissorDepth;
@@ -198,6 +200,7 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		this.lastBrush.blend = BlendMethod.MODE_NORMAL;
 		this.brushStack.add(lastBrush);
 		this.saveToFrameBufferTexture = saveFrameBuffer;
+		this.bindFrameBufferTarget = true;
 		this.triangleValue = 0.5235988f;
 		this.scaleX = 1f;
 		this.scaleY = 1f;
@@ -270,12 +273,22 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this.gfx;
 	}
 
+	public boolean isBindFrameBufferTarget() {
+		return bindFrameBufferTarget;
+	}
+
+	public GLEx setBindFrameBufferTarget(boolean b) {
+		bindFrameBufferTarget = b;
+		return this;
+	}
+
 	/**
 	 * 启动一系列渲染命令
 	 * 
+	 * @param bindTarget
 	 * @return
 	 */
-	public GLEx begin() {
+	public GLEx begin(boolean bindTarget) {
 		if (isClosed) {
 			return this;
 		}
@@ -283,10 +296,16 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 			return this;
 		}
 		drawCallCount = 0;
-		target.bind();
+		if (bindTarget) {
+			target.bind();
+		}
 		beginBatch(batch);
 		startFrameBuffer();
 		return this;
+	}
+
+	public GLEx begin() {
+		return begin(bindFrameBufferTarget);
 	}
 
 	/**
