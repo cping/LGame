@@ -18,48 +18,41 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.res.loaders;
+package loon.utils.res;
 
 import loon.BaseIO;
+import loon.LRelease;
 import loon.utils.StringUtils;
 
-public class TextAssetLoader extends AssetAbstractLoader<String> {
+public final class TextData implements LRelease {
 
-	private String _context;
+	private String _path;
 
-	public TextAssetLoader(String path, String nickname) {
-		this.set(path, nickname);
+	private String _text;
+
+	public TextData(String t) {
+		this(null, t);
 	}
 
-	@Override
-	public String get() {
-		if (StringUtils.isNullOrEmpty(_context) && !StringUtils.isEmpty(_path)) {
-			this._context = BaseIO.loadText(_path);
+	public TextData(String p, String t) {
+		_path = p;
+		_text = t;
+	}
+
+	public String getPath() {
+		return _path;
+	}
+
+	public String getText() {
+		if (!StringUtils.isNullOrEmpty(_path) && StringUtils.isNullOrEmpty(_text)) {
+			_text = BaseIO.loadText(_path);
 		}
-		return this._context;
-	}
-
-	@Override
-	public boolean isLoaded() {
-		return _context != null;
-	}
-
-	@Override
-	public boolean completed() {
-		if (!StringUtils.isEmpty(_path)) {
-			this._context = BaseIO.loadText(_path);
-		}
-		return _context != null;
-	}
-
-	@Override
-	public PreloadItem item() {
-		return PreloadItem.Text;
+		return _text;
 	}
 
 	@Override
 	public void close() {
-		_context = null;
+		_text = null;
 	}
 
 }

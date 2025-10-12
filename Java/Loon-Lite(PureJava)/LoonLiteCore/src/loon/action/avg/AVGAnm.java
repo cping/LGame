@@ -20,7 +20,6 @@
  */
 package loon.action.avg;
 
-import loon.BaseIO;
 import loon.LRelease;
 import loon.LSystem;
 import loon.LTexture;
@@ -31,6 +30,7 @@ import loon.utils.IntArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 //0.3.3新增类,用以按指定的格式循环播放动画图像
 public final class AVGAnm implements Expression, LRelease {
@@ -72,7 +72,7 @@ public final class AVGAnm implements Expression, LRelease {
 	private String _texturePath;
 
 	public AVGAnm(String resName) {
-		open(BaseIO.loadText(this._anmPath = resName));
+		open(TextResource.get().loadText(this._anmPath = resName));
 	}
 
 	public void open(String text) {

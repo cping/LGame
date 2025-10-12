@@ -41,6 +41,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 //AngelCode图像字体专用类(因为仅处理限定范围内的字体，此类速度会比较早前版本中提供的文字渲染类更快，而且各平台显示效果能保持效果，
 //但缺点在于，没有提供图像的文字不能被渲染).
@@ -373,7 +374,7 @@ public final class BMFont extends FontTrans implements IFont {
 	private void make() {
 		if (!_initParse) {
 			try {
-				this.parse(BaseIO.loadText(_texPath));
+				this.parse(TextResource.get().loadText(_texPath));
 			} catch (Throwable e) {
 				LSystem.error("BMFont error !", e);
 			}
@@ -758,6 +759,7 @@ public final class BMFont extends FontTrans implements IFont {
 		return this;
 	}
 
+	@Override
 	public boolean isClosed() {
 		return _isClose;
 	}

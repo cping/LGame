@@ -22,12 +22,12 @@ package loon.utils.html.css;
 
 import java.util.Comparator;
 
-import loon.BaseIO;
 import loon.canvas.LColor;
 import loon.utils.CharParser;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 
 /**
  * 工具类,用于解析css文件
@@ -35,7 +35,7 @@ import loon.utils.TArray;
 public class CssParser extends CharParser {
 
 	public final static CssStyleSheet parse(String path) {
-		return new CssParser().parseText(BaseIO.loadText(path));
+		return new CssParser().parseText(TextResource.get().loadText(path));
 	}
 
 	public final static CssStyleSheet loadText(String context) {

@@ -20,11 +20,11 @@
  */
 package loon.utils.html;
 
-import loon.BaseIO;
 import loon.LSysException;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 import loon.utils.xml.XMLTokenizer;
 
 /**
@@ -33,7 +33,7 @@ import loon.utils.xml.XMLTokenizer;
 public final class HtmlParser {
 
 	public static HtmlElement parse(String path) {
-		return new HtmlParser().parseText(BaseIO.loadText(path));
+		return new HtmlParser().parseText(TextResource.get().loadText(path));
 	}
 
 	public static HtmlElement loadText(String text) {

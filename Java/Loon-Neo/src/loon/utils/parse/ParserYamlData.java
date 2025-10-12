@@ -20,12 +20,12 @@
  */
 package loon.utils.parse;
 
-import loon.BaseIO;
 import loon.LSysException;
 import loon.LSystem;
 import loon.utils.ObjectMap;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
+import loon.utils.res.TextResource;
 
 /**
  * 工具类，用于解析yaml文件的配置数据
@@ -37,7 +37,7 @@ public final class ParserYamlData {
 	}
 
 	public static ParserYamlData parseFile(String path, YamlEvent eve) {
-		return new ParserYamlData(BaseIO.loadText(path), eve).parse();
+		return new ParserYamlData(TextResource.get().loadText(path), eve).parse();
 	}
 
 	public final static int LIST_OPEN = '[';

@@ -20,7 +20,6 @@
  */
 package loon.action.avg.drama;
 
-import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -35,6 +34,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 /**
  * 一个非常简单的脚本解释器,用来跨平台实现avg游戏脚本解析,以统一Loon内部的简单脚本格式,
@@ -1105,7 +1105,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final static String[] includeFile(String fileName) {
-		final String context = BaseIO.loadText(fileName);
+		final String context = TextResource.get().loadText(fileName);
 		if (StringUtils.isEmpty(context)) {
 			throw new LSysException("The script file [" + fileName + "] not found !");
 		}

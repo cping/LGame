@@ -20,7 +20,6 @@
  */
 package loon.action.avg.drama;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LSystem;
 import loon.utils.Array;
@@ -30,6 +29,7 @@ import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 
 /**
  * Loon默认提供的脚本解释器，无平台依赖，用来实现一种近似于Processing的线型渲染与操作，
@@ -379,7 +379,7 @@ public class RocScript {
 		// 文件名导入
 		if (useFile) {
 			try {
-				String text = BaseIO.loadText(script);
+				String text = TextResource.get().loadText(script);
 				charlist = filtrScript(text).toCharArray();
 				size = charlist.length;
 			} catch (Throwable exc) {

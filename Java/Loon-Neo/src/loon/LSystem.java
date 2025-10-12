@@ -65,6 +65,7 @@ import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
 import loon.utils.reply.FutureResult;
 import loon.utils.reply.GoFuture;
+import loon.utils.res.TextResource;
 import loon.utils.timer.Duration;
 import loon.utils.timer.GameTime;
 import loon.utils.timer.LTimer;
@@ -377,6 +378,7 @@ public final class LSystem {
 		LColorList.freeStatic();
 		CollisionFilter.freeStatic();
 		LightningEffect.freeStatic();
+		TextResource.freeStatic();
 		Command.freeStatic();
 		LTimer.freeStatic();
 		GameTime.freeStatic();

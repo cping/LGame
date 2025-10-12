@@ -20,13 +20,13 @@
  */
 package loon.action.map.tmx;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LSystem;
 import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -64,7 +64,7 @@ public class TMXTileSet {
 		final String path = tilesLocation + LSystem.FS + source;
 		if (!LSystem.EMPTY.equals(source)) {
 			try {
-				element = (Json.Object) BaseIO.loadJsonObject(path);
+				element = (Json.Object) TextResource.get().loadJsonObject(path);
 			} catch (Throwable e) {
 				LSystem.error(path);
 			}

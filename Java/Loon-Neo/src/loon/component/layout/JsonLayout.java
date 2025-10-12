@@ -20,7 +20,6 @@
  */
 package loon.component.layout;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LRelease;
 import loon.LSysException;
@@ -69,6 +68,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 
 /**
  * Json布局器,用于解析组件和精灵配置到窗口显示
@@ -404,7 +404,7 @@ public class JsonLayout implements LRelease {
 
 	public void parse() {
 		try {
-			String text = BaseIO.loadText(jsonPath);
+			String text = TextResource.get().loadText(jsonPath);
 			if (StringUtils.isEmpty(text)) {
 				throw new LSysException("File Context is null");
 			}

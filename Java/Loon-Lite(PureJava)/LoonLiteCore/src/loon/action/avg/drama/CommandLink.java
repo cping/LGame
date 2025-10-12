@@ -1,9 +1,9 @@
 package loon.action.avg.drama;
 
-import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
+import loon.utils.res.TextResource;
 
 public class CommandLink {
 
@@ -21,7 +21,7 @@ public class CommandLink {
 
 	public CommandLink(String path, String name) {
 		if (!StringUtils.isNullOrEmpty(path)) {
-			final String context = BaseIO.loadText(path);
+			final String context = TextResource.get().loadText(path);
 			_commands = new StringKeyValue(context.length(), name);
 			_commands.addValue(context.toString());
 		} else {

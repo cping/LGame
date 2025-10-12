@@ -118,6 +118,10 @@ public class LLayer extends ActorLayer {
 		}
 	}
 
+	public Sprites getSprites() {
+		return _layerSprites;
+	}
+
 	public LLayer addSprite(ISprite s) {
 		allocateSprites();
 		_layerSprites.add(s);

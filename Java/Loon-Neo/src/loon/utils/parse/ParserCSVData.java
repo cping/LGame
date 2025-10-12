@@ -20,13 +20,13 @@
  */
 package loon.utils.parse;
 
-import loon.BaseIO;
 import loon.LSystem;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.ObjectMap.Entry;
+import loon.utils.res.TextResource;
 import loon.utils.StrBuilder;
 
 /**
@@ -170,7 +170,7 @@ public final class ParserCSVData {
 	}
 
 	public static ParserCSVData parseFile(String path) {
-		ParserCSVData data = new ParserCSVData(BaseIO.loadText(path));
+		ParserCSVData data = new ParserCSVData(TextResource.get().loadText(path));
 		data.readCSVList();
 		return data;
 	}

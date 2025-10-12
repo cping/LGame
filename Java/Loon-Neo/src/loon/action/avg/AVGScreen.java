@@ -2155,10 +2155,6 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 			scrCG.close();
 			scrCG = null;
 		}
-		if (_font != null) {
-			_font.close();
-			_font = null;
-		}
 		if (_dialogTexture != null && !_dialogTexture.isImageCanvas()) {
 			_dialogTexture.close();
 			_dialogTexture = null;

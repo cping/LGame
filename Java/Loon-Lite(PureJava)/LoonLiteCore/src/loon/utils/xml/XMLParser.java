@@ -29,6 +29,7 @@ import loon.LSystem;
 import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 
 /**
  * 自带的XML解析用类
@@ -377,11 +378,11 @@ public final class XMLParser {
 	}
 
 	public static XMLDocument parse(String file, XMLListener l) {
-		String context = BaseIO.loadText(file);
+		String context = TextResource.get().loadText(file);
 		if (StringUtils.isEmpty(context)) {
 			throw new LSysException("The file [" + file + "] is null !");
 		}
-		return new XMLParser().parseText(BaseIO.loadText(file), l);
+		return new XMLParser().parseText(TextResource.get().loadText(file), l);
 	}
 
 	public static XMLDocument loadText(String context) {

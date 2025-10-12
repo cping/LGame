@@ -92,6 +92,41 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return MathUtils.isNan(v.getX()) || MathUtils.isNan(v.getY());
 	}
 
+	public final static Vector2f invBilinear(final Vector2f p, final Vector2f a, final Vector2f b, final Vector2f c,
+			final Vector2f d) {
+		
+		final Vector2f res = new Vector2f(-1f);
+		final Vector2f e = b.sub(a);
+		final Vector2f f = d.sub(a);
+		final Vector2f g = a.sub(b).addSelf(c).subSelf(d);
+		final Vector2f h = p.sub(a);
+
+		final float k2 = cross(g, f);
+		final float k1 = cross(e, f) + cross(h, g);
+		final float k0 = cross(h, e);
+
+		if (MathUtils.abs(k2) < 0.001f) {
+			res.set((h.x * k1 + f.x * k0) / (e.x * k1 - g.x * k0), -k0 / k1);
+		} else {
+			float w = k1 * k1 - 4f * k0 * k2;
+			if (w < 0f) {
+				return new Vector2f(-1f);
+			}
+			w = MathUtils.sqrt(w);
+
+			final float ik2 = 0.5f / k2;
+			float v = (-k1 - w) * ik2;
+			float u = (h.x - f.x * v) / (e.x + g.x * v);
+
+			if (u < 0f || u > 1f || v < 0f || v > 1f) {
+				v = (-k1 + w) * ik2;
+				u = (h.x - f.x * v) / (e.x + g.x * v);
+			}
+			res.set(u, 1f - v);
+		}
+		return res;
+	}
+
 	public final static boolean greaterThan(XY a, XY b) {
 		float a1 = MathUtils.mag(a.getX(), a.getY());
 		float b1 = MathUtils.mag(b.getX(), b.getY());

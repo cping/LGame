@@ -471,6 +471,11 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	@Override
+	public boolean isClosed() {
+		return false;
+	}
+
+	@Override
 	public synchronized void close() {
 
 	}

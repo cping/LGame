@@ -20,7 +20,6 @@
  */
 package loon.action.sprite;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
@@ -35,6 +34,7 @@ import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 import loon.utils.timer.Duration;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
@@ -205,7 +205,7 @@ public class AnimatedEntity extends Entity {
 			path = path + ".json";
 		}
 		AnimatedEntity entity = null;
-		Object jsonObject = BaseIO.loadJsonObject(path);
+		Object jsonObject = TextResource.get().loadJsonObject(path);
 		String resource = null;
 		String play = null;
 		PointI clip = null;

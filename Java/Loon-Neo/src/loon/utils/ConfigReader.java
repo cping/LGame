@@ -12,6 +12,7 @@ import loon.canvas.LColor;
 import loon.utils.ObjectMap.Keys;
 import loon.utils.ObjectMap.Values;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 /**
  * 一个简单的多文本数据存储及读取用类,作用类似于ini文件
@@ -192,7 +193,7 @@ public final class ConfigReader implements Expression, Bundle<String>, LRelease 
 	}
 
 	public void parseMap(final String path) {
-		final String context = BaseIO.loadText(path);
+		final String context = TextResource.get().loadText(path);
 		if (StringUtils.isEmpty(context)) {
 			throw new LSysException("The loaded data does not exist !");
 		}

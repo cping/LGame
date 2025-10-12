@@ -23,6 +23,7 @@ package loon.opengl;
 import loon.LSystem;
 import loon.events.EventActionN;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 
 /**
  * 画面映射扭曲用遮罩，可以将纹理8方向UV参数扭曲为理想角度，从而实现2D图片的伪3D变形。
@@ -30,9 +31,9 @@ import loon.geom.Vector2f;
  * (loon中显示类提供有saveToFrameBuffer函数，激活则显示对象画面会自动保存到FrameBuffer纹理，
  * 然后直接getFrameBuffer再获得texture就行了)。
  */
-public class BilinearMask implements EventActionN {
+public final class BilinearMask implements EventActionN {
 
-	public static class BilinearShader extends ShaderSource {
+	public final static class BilinearShader extends ShaderSource {
 
 		private final Vector2f _topleft = new Vector2f();
 
@@ -160,6 +161,19 @@ public class BilinearMask implements EventActionN {
 			}
 		}
 
+		public Vector2f convertToUV(Vector2f v) {
+			final Vector2f topleftUV = _topleft.div(_viewSize);
+			final Vector2f toprightUV = Vector2f.at(1f, 0f).addSelf(_topright).div(_viewSize);
+			final Vector2f bottomrightUV = Vector2f.at(1f, 1f).addSelf(_bottomright).div(_viewSize);
+			final Vector2f bottomleftUV = Vector2f.at(0f, 1f).addSelf(_bottomleft).div(_viewSize);
+			final Vector2f newUV = Vector2f.invBilinear(v, topleftUV, toprightUV, bottomrightUV, bottomleftUV);
+			float vx = MathUtils.convertDecimalPlaces(newUV.x, 5);
+			float vy = MathUtils.convertDecimalPlaces(newUV.y, 5);
+			vx = MathUtils.clamp(vx, -MathUtils.abs(_topleft.x / 2f), _viewSize.x);
+			vy = MathUtils.clamp(vy, -MathUtils.abs(_topleft.y / 2f), _viewSize.y);
+			return newUV.set(vx, vy);
+		}
+
 		@Override
 		public void setupShader(ShaderProgram program) {
 			float scaleX = LSystem.getScaleHeight();
@@ -233,6 +247,11 @@ public class BilinearMask implements EventActionN {
 
 	public void setViewSize(float w, float h) {
 		_bilinearShader.setViewSize(w, h);
+	}
+
+	public Vector2f convertTouchToUV(Vector2f v) {
+		final Vector2f result = _bilinearShader.convertToUV(v);
+		return result.set(v.x - result.x, v.y - result.y);
 	}
 
 	@Override

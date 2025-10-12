@@ -20,7 +20,6 @@
  */
 package loon.action.map.ldtk;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
@@ -36,6 +35,7 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
+import loon.utils.res.TextResource;
 
 /**
  * LDTK2D地图的解释与渲染器（编辑器官网：https://github.com/deepnight/ldtk）
@@ -145,7 +145,7 @@ public class LDTKMap extends Entity implements Config {
 	public void parse() {
 		if (_dirty) {
 			if (!StringUtils.isEmpty(_path)) {
-				load((Json.Object) BaseIO.loadJsonObject(_path));
+				load((Json.Object) TextResource.get().loadJsonObject(_path));
 			}
 			_dirty = false;
 		}

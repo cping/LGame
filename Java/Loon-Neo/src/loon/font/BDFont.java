@@ -20,7 +20,6 @@
  */
 package loon.font;
 
-import loon.BaseIO;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
@@ -55,6 +54,7 @@ import loon.utils.StrBuilder;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 /**
  * BDF格式字体文件支持，有很多开源的像素风bdf字库，可以做到小体积全字符支持。而且也有很多第三方工具
@@ -850,7 +850,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	protected void loadFont(String path, int idx) {
-		final StrTokenizer tokenizer = BaseIO.loadStrTokenizer(path, "\t\n\r\f");
+		final StrTokenizer tokenizer = TextResource.get().loadStrTokenizer(path, "\t\n\r\f");
 		int count = 0;
 		while (tokenizer.hasMoreTokens()) {
 			String[] kv = nextSplitChars(tokenizer);

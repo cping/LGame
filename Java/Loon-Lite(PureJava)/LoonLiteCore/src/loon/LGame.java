@@ -329,14 +329,14 @@ public abstract class LGame implements LRelease {
 	}
 
 	public IFont setDefaultGameFont() {
-		if (setting.defaultGameFont == null) {
+		if (setting.defaultGameFont == null || setting.defaultGameFont.isClosed()) {
 			setting.defaultGameFont = convertExtensionToFontModel(setting.fontName, setting.fontSize);
 		}
 		return setting.defaultGameFont;
 	}
 
 	public IFont setDefaultLogFont() {
-		if (setting.defaultLogFont == null) {
+		if (setting.defaultLogFont == null || setting.defaultLogFont.isClosed()) {
 			final String fileName = setting.fontName.toLowerCase().trim();
 			final String ext = PathUtils.getExtension(fileName);
 			if (StringUtils.isEmpty(ext)) {

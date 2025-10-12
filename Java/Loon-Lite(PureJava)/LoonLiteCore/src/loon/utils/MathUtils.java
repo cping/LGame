@@ -390,37 +390,29 @@ public final class MathUtils {
 	 * @param num
 	 * @return
 	 */
-	public static int getFloatDotBackSize(float num) {
-		if (num < 0f) {
-			num = -num;
+	public static int getFloatDotBackSize(float fv) {
+		final String v = String.valueOf(fv);
+		int idx = v.indexOf(LSystem.DOT);
+		if (idx == -1) {
+			return 0;
 		}
-		if (num < 1f) {
-			int numBits = 1;
-			if (num >= 1f - 0.01f) {
-				numBits = 1;
-			} else if (num >= 1f - 0.001f) {
-				numBits = 2;
-			} else if (num >= 1f - 0.0001f) {
-				numBits = 3;
-			} else if (num >= 1f - 0.00001f) {
-				numBits = 4;
-			} else if (num >= 1f - 0.000001f) {
-				numBits = 5;
-			} else if (num >= 1f - 0.0000001f) {
-				numBits = 6;
-			} else if (num >= 1f - 0.00000001f) {
-				numBits = 7;
-			} else if (num >= 1f - 0.000000001f) {
-				numBits = 8;
-			} else if (num >= 1f - 0.0000000001f) {
-				numBits = 9;
-			} else {
-				String v = String.valueOf(num);
-				numBits = v.substring(v.indexOf('.'), v.length()).length() - 1;
-			}
-			return numBits;
+		final String result = v.substring(idx + 1, v.length());
+		return result.length();
+	}
+
+	public static float convertDecimalPlaces(float fv, int max) {
+		final String v = String.valueOf(fv);
+		int idx = v.indexOf(LSystem.DOT);
+		if (idx == -1) {
+			return fv;
 		}
-		return 0;
+		final String numberv = v.substring(0, idx);
+		String result = v.substring(idx + 1, v.length());
+		if (result.length() > max) {
+			result = result.substring(0, max);
+		}
+		final String numv = (numberv + LSystem.DOT + result).toLowerCase();
+		return Float.parseFloat(StringUtils.replace(numv, "e", ""));
 	}
 
 	public static int getCircleSideCount(float radius, float maxLength) {

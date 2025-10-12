@@ -24,7 +24,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-import loon.BaseIO;
 import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
@@ -38,6 +37,7 @@ import loon.opengl.BlendMethod;
 import loon.opengl.GL20;
 import loon.opengl.GlobalSource;
 import loon.opengl.ShaderProgram;
+import loon.utils.res.TextResource;
 
 public final class GLUtils {
 
@@ -588,8 +588,8 @@ public final class GLUtils {
 		sbr.append("......");
 		final String prependVert = vertDefines;
 		final String prependFrag = pixelDefines;
-		final String srcVert = BaseIO.loadText(vertexPath);
-		final String srcFrag = BaseIO.loadText(fragmentPath);
+		final String srcVert = TextResource.get().loadText(vertexPath);
+		final String srcFrag = TextResource.get().loadText(fragmentPath);
 		final ShaderProgram shader = new ShaderProgram(prependVert + "\n" + srcVert, prependFrag + "\n" + srcFrag);
 		if (!shader.isCompiled()) {
 			throw new LSysException(
@@ -622,8 +622,8 @@ public final class GLUtils {
 		sbr.append("......");
 		final String prependVert = vertDefines;
 		final String prependFrag = pixelDefines;
-		final String srcVert = BaseIO.loadText(vertexPath);
-		final String srcFrag = BaseIO.loadText(fragmentPath);
+		final String srcVert = TextResource.get().loadText(vertexPath);
+		final String srcFrag = TextResource.get().loadText(fragmentPath);
 		return new GlobalSource(prependVert + "\n" + srcVert, prependFrag + "\n" + srcFrag);
 	}
 

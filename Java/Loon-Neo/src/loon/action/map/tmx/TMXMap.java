@@ -20,7 +20,6 @@
  */
 package loon.action.map.tmx;
 
-import loon.BaseIO;
 import loon.Json;
 import loon.LSysException;
 import loon.LSystem;
@@ -37,6 +36,7 @@ import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.res.TextResource;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLElement;
 import loon.utils.xml.XMLParser;
@@ -174,7 +174,7 @@ public class TMXMap implements Sized {
 	 * @param local
 	 */
 	protected void parserJson(String path, String local) {
-		Object jsonObj = BaseIO.loadJsonObject(path);
+		Object jsonObj = TextResource.get().loadJsonObject(path);
 		if (jsonObj != null) {
 			if (jsonObj instanceof Json.Object) {
 				Json.Object json = (Json.Object) jsonObj;

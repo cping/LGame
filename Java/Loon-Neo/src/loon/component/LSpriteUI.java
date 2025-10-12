@@ -86,9 +86,20 @@ public class LSpriteUI extends LContainer {
 	}
 
 	@Override
-	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
+	public void createUI(GLEx g, int x, int y) {
+	}
+
+	@Override
+	public void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (_sprite != null) {
 			_sprite.createUI(g, x, y);
+		}
+	}
+
+	@Override
+	public void process(long elapsedTime) {
+		if (_sprite != null) {
+			_sprite.update(elapsedTime);
 		}
 	}
 
@@ -121,11 +132,6 @@ public class LSpriteUI extends LContainer {
 		if (!_input.isMoving()) {
 			super.processTouchReleased();
 		}
-	}
-
-	@Override
-	public void createUI(GLEx g, int x, int y) {
-
 	}
 
 	@Override

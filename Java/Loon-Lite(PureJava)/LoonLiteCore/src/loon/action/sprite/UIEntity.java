@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.component.LComponent;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -53,4 +54,15 @@ public class UIEntity extends Draw {
 		}
 	}
 
+	public String getUIName() {
+		return "UIEntity:" + _uicomponet == null ? LSystem.UNKNOWN : _uicomponet.getName();
+	}
+
+	@Override
+	public void _onDestroy() {
+		super._onDestroy();
+		if (_uicomponet != null) {
+			_uicomponet.close();
+		}
+	}
 }
