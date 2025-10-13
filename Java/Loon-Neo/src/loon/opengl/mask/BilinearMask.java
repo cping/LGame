@@ -18,11 +18,15 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.opengl;
+package loon.opengl.mask;
 
 import loon.LSystem;
 import loon.events.EventActionN;
 import loon.geom.Vector2f;
+import loon.opengl.BlendMethod;
+import loon.opengl.ShaderMask;
+import loon.opengl.ShaderProgram;
+import loon.opengl.ShaderSource;
 import loon.utils.MathUtils;
 
 /**

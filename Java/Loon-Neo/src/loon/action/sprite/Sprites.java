@@ -38,6 +38,7 @@ import loon.action.PlaceActions;
 import loon.action.collision.CollisionAction;
 import loon.action.map.Side;
 import loon.component.layout.Margin;
+import loon.events.Created;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysInput;
@@ -49,13 +50,13 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Triangle2f;
 import loon.geom.XY;
-import loon.opengl.BilinearMask;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
 import loon.opengl.ShaderMask;
 import loon.opengl.ShaderSource;
 import loon.opengl.light.Light2D;
 import loon.opengl.light.Light2D.LightType;
+import loon.opengl.mask.BilinearMask;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.IntArray;
@@ -72,10 +73,6 @@ import loon.utils.reply.Callback;
  * 
  */
 public final class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LRelease {
-
-	public static interface Created<T> {
-		T make();
-	}
 
 	public static interface SpriteListener {
 

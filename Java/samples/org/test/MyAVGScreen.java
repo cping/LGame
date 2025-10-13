@@ -29,7 +29,11 @@ public class MyAVGScreen extends AVGScreen {
 	/*
 	 * 使用bmfont字体用此设置
 		try {
-			setFont(new BMFont("test.fnt", "test.png"));
+		  // 以缓存方式加载BMFont文件	
+		  // setFont(BMFontCache.shared().get("bmf1",()->{ return BMFont.create("test.fnt", 20);}));
+		  // 以缓存方式加载BDFont文件
+		  // setFont(BDFontCache.shared().get("bdf1",()->{ return BDFont.create("pixfont.bdf", 20, TextResource.get().loadText("assets/avg/script/s1.txt"));}));
+			 setFont(new BMFont("test.fnt", "test.png"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

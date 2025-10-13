@@ -38,6 +38,7 @@ import loon.action.PlaceActions;
 import loon.action.collision.CollisionAction;
 import loon.action.map.Side;
 import loon.component.layout.Margin;
+import loon.events.Created;
 import loon.events.QueryEvent;
 import loon.events.ResizeListener;
 import loon.events.SysInput;
@@ -66,10 +67,6 @@ import loon.utils.reply.Callback;
  * 
  */
 public final class Sprites extends PlaceActions implements Visible, ZIndex, IArray, LRelease {
-
-	public static interface Created<T> {
-		T make();
-	}
 
 	public static interface SpriteListener {
 

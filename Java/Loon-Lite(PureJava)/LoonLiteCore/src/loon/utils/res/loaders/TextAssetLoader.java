@@ -33,7 +33,7 @@ public class TextAssetLoader extends AssetAbstractLoader<String> {
 
 	@Override
 	public String get() {
-		if (StringUtils.isNullOrEmpty(_context) && !StringUtils.isEmpty(_path)) {
+		if (!StringUtils.isEmpty(_path) && StringUtils.isNullOrEmpty(_context)) {
 			this._context = BaseIO.loadText(_path);
 		}
 		return this._context;
@@ -46,10 +46,7 @@ public class TextAssetLoader extends AssetAbstractLoader<String> {
 
 	@Override
 	public boolean completed() {
-		if (!StringUtils.isEmpty(_path)) {
-			this._context = BaseIO.loadText(_path);
-		}
-		return _context != null;
+		return this._context != null;
 	}
 
 	@Override

@@ -18,45 +18,30 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils.res.loaders;
+package loon.utils.cache;
 
-import loon.BaseIO;
-import loon.utils.StringUtils;
+/**
+ * 具体的缓存类型,标识用,用户可以自行扩展
+ */
+public class CacheType {
 
-public class TextAssetLoader extends AssetAbstractLoader<String> {
+	public final static CacheType TYPE_POOL = new CacheType("POOL", 0);
 
-	private String _context;
+	private final String _name;
 
-	public TextAssetLoader(String path, String nickname) {
-		this.set(path, nickname);
+	private final int _code;
+
+	public CacheType(String name, int code) {
+		this._name = name;
+		this._code = code;
 	}
 
-	@Override
-	public String get() {
-		if (!StringUtils.isEmpty(_path) && StringUtils.isNullOrEmpty(_context)) {
-			this._context = BaseIO.loadText(_path);
-		}
-		return this._context;
+	public String getName() {
+		return _name;
 	}
 
-	@Override
-	public boolean isLoaded() {
-		return _context != null;
-	}
-
-	@Override
-	public boolean completed() {
-		return this._context != null;
-	}
-
-	@Override
-	public PreloadItem item() {
-		return PreloadItem.Text;
-	}
-
-	@Override
-	public void close() {
-		_context = null;
+	public int getTypeCode() {
+		return _code;
 	}
 
 }
