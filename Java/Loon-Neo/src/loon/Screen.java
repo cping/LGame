@@ -108,9 +108,11 @@ import loon.geom.Vector2f;
 import loon.geom.XY;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
+import loon.opengl.GLEx.Direction;
 import loon.opengl.LTextureImage;
 import loon.opengl.ShaderSource;
 import loon.opengl.mask.BilinearMask;
+import loon.opengl.mask.FBOMask;
 import loon.utils.ArrayByte;
 import loon.utils.Calculator;
 import loon.utils.ConfigReader;
@@ -251,6 +253,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	public final static byte DRAW_DESKTOP = 2;
 
 	private int _skipFrame;
+
+	private boolean _useFrameBufferShaderMask;
+
+	private FBOMask _frameBufferShaderMask;
 
 	// 改变画面UV斜率
 	private boolean _changeUVTilt = false;
@@ -4901,7 +4907,21 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_screenSavetoFrameBuffer && _screenFrameBuffer != null) {
 			_screenFrameBuffer.end(g);
-			if (_changeUVTilt && _uvMask != null) {
+			final boolean changUV = (_changeUVTilt && _uvMask != null);
+			if (_useFrameBufferShaderMask && _frameBufferShaderMask != null) {
+				_frameBufferShaderMask.setViewSize(getWidth(), getHeight());
+				_frameBufferShaderMask.update();
+				final ShaderSource oldShader = g.updateShaderSource(_frameBufferShaderMask.getShader());
+				if (changUV) {
+					_screenFrameBuffer.begin(g);
+				}
+				g.draw(_screenFrameBuffer.texture(), _offsetUVx, _offsetUVy, Direction.TRANS_FLIP);
+				if (changUV) {
+					_screenFrameBuffer.end(g);
+				}
+				g.updateShaderSource(oldShader);
+			}
+			if (_changeUVTilt) {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
@@ -4975,7 +4995,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 重载此函数,可以自定义渲染Screen的最下层图像
+	 * 重载此函数,可以自定义渲染Screen的最下层图像(位于画面最后)
 	 * 
 	 * @param g
 	 */
@@ -4993,7 +5013,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 重载此函数,可以自定义渲染Screen的最上层图像
+	 * 重载此函数,可以自定义渲染Screen的最上层图像(位于画面最后)
 	 * 
 	 * @param g
 	 */
@@ -8315,6 +8335,26 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return this;
 	}
 
+	public Screen setFBOShaderMask(FBOMask mask) {
+		this._frameBufferShaderMask = mask;
+		this._useFrameBufferShaderMask = (this._frameBufferShaderMask != null);
+		this.saveToFrameBuffer(this._useFrameBufferShaderMask);
+		return this;
+	}
+
+	public FBOMask getFBOShaderMask() {
+		return this._frameBufferShaderMask;
+	}
+
+	public Screen freeFBOShaderMask() {
+		if (_frameBufferShaderMask != null) {
+			_frameBufferShaderMask.close();
+			_frameBufferShaderMask = null;
+		}
+		_useFrameBufferShaderMask = false;
+		return this;
+	}
+
 	/**
 	 * 释放函数内资源
 	 * 
@@ -8422,6 +8462,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				this._curLockedCallEvent = false;
 				this.freeUVMask();
 				this.freeFrameBuffer();
+				this.freeFBOShaderMask();
 				LSystem.closeTemp();
 			} catch (Throwable cause) {
 				LSystem.error("Screen destroy() dispatch exception", cause);

@@ -21,7 +21,6 @@
 package loon.opengl.mask;
 
 import loon.LSystem;
-import loon.events.EventActionN;
 import loon.geom.Vector2f;
 import loon.opengl.BlendMethod;
 import loon.opengl.ShaderMask;
@@ -31,7 +30,7 @@ import loon.opengl.ShaderSource;
 /**
  * 需要配合FBO类使用，可以实现整个画面的干扰波风格显示
  */
-public class NoiseMask implements EventActionN {
+public class NoiseMask implements FBOMask {
 
 	public final static class NoiseShader extends ShaderSource {
 
@@ -70,8 +69,8 @@ public class NoiseMask implements EventActionN {
 			super(LSystem.getGLExVertexShader(), _fragmentShaderSource);
 			_autoViewResize = autoResize;
 			_viewSize = new Vector2f(w, h);
-			_mouse = new Vector2f(32);
-			_time = 30;
+			_mouse = new Vector2f(64);
+			_time = 64;
 		}
 
 		public void setMouse(float x, float y) {
@@ -137,6 +136,11 @@ public class NoiseMask implements EventActionN {
 		return _noiseShader;
 	}
 
+	@Override
+	public ShaderSource getShader() {
+		return getNoiawShader();
+	}
+
 	public ShaderMask getMask() {
 		return _shaderMask;
 	}
@@ -161,6 +165,7 @@ public class NoiseMask implements EventActionN {
 		return _noiseShader.getTime();
 	}
 
+	@Override
 	public void setViewSize(float w, float h) {
 		_noiseShader.setViewSize(w, h);
 	}
@@ -174,4 +179,10 @@ public class NoiseMask implements EventActionN {
 		}
 		_noiseShader.updateToScreen();
 	}
+
+	@Override
+	public void close() {
+
+	}
+
 }

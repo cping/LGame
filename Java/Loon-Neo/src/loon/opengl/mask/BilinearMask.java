@@ -21,7 +21,6 @@
 package loon.opengl.mask;
 
 import loon.LSystem;
-import loon.events.EventActionN;
 import loon.geom.Vector2f;
 import loon.opengl.BlendMethod;
 import loon.opengl.ShaderMask;
@@ -35,7 +34,7 @@ import loon.utils.MathUtils;
  * (loon中显示类提供有saveToFrameBuffer函数，激活则显示对象画面会自动保存到FrameBuffer纹理，
  * 然后直接getFrameBuffer再获得texture就行了)。
  */
-public final class BilinearMask implements EventActionN {
+public final class BilinearMask implements FBOMask {
 
 	public final static class BilinearShader extends ShaderSource {
 
@@ -209,6 +208,11 @@ public final class BilinearMask implements EventActionN {
 		this.update();
 	}
 
+	@Override
+	public ShaderSource getShader() {
+		return getBilinearShader();
+	}
+
 	public BilinearShader getBilinearShader() {
 		return _bilinearShader;
 	}
@@ -267,4 +271,10 @@ public final class BilinearMask implements EventActionN {
 		}
 		_bilinearShader.updateToScreen();
 	}
+
+	@Override
+	public void close() {
+
+	}
+
 }

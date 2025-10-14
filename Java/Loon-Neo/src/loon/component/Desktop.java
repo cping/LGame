@@ -42,11 +42,13 @@ import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.FrameBuffer;
 import loon.opengl.GLEx;
+import loon.opengl.GLEx.Direction;
 import loon.opengl.ShaderMask;
 import loon.opengl.ShaderSource;
 import loon.opengl.light.Light2D;
 import loon.opengl.light.Light2D.LightType;
 import loon.opengl.mask.BilinearMask;
+import loon.opengl.mask.FBOMask;
 import loon.utils.IArray;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
@@ -59,6 +61,9 @@ import loon.utils.reply.Callback;
  */
 public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 
+	private boolean _useFrameBufferShaderMask;
+
+	private FBOMask _frameBufferShaderMask;
 	// 改变画面UV斜率
 	private boolean _changeUVTilt = false;
 
@@ -1629,7 +1634,21 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 	private void beforeSaveToBuffer(GLEx g) {
 		if (_desktopSavetoFrameBuffer && _desktopFrameBuffer != null) {
 			_desktopFrameBuffer.end(g);
-			if (_changeUVTilt && _uvMask != null) {
+			final boolean changUV = (_changeUVTilt && _uvMask != null);
+			if (_useFrameBufferShaderMask && _frameBufferShaderMask != null) {
+				_frameBufferShaderMask.setViewSize(getWidth(), getHeight());
+				_frameBufferShaderMask.update();
+				final ShaderSource oldShader = g.updateShaderSource(_frameBufferShaderMask.getShader());
+				if (changUV) {
+					_desktopFrameBuffer.begin(g);
+				}
+				g.draw(_desktopFrameBuffer.texture(), _offsetUVx, _offsetUVy, Direction.TRANS_FLIP);
+				if (changUV) {
+					_desktopFrameBuffer.end(g);
+				}
+				g.updateShaderSource(oldShader);
+			}
+			if (_changeUVTilt) {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
@@ -1637,6 +1656,26 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				g.updateShaderSource(oldShader);
 			}
 		}
+	}
+
+	public Desktop setFBOShaderMask(FBOMask mask) {
+		this._frameBufferShaderMask = mask;
+		this._useFrameBufferShaderMask = (this._frameBufferShaderMask != null);
+		this.saveToFrameBuffer(this._useFrameBufferShaderMask);
+		return this;
+	}
+
+	public FBOMask getFBOShaderMask() {
+		return this._frameBufferShaderMask;
+	}
+
+	public Desktop freeFBOShaderMask() {
+		if (_frameBufferShaderMask != null) {
+			_frameBufferShaderMask.close();
+			_frameBufferShaderMask = null;
+		}
+		_useFrameBufferShaderMask = false;
+		return this;
 	}
 
 	public float getOffsetUVx() {
@@ -1697,6 +1736,15 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 		return this;
 	}
 
+	public Desktop freeMask() {
+		if (_shaderMask != null) {
+			_useShaderMask = false;
+			_shaderMask.close();
+			_shaderMask = null;
+		}
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return super.toString() + " " + "[name=" + _desktop_name + ", total=" + size() + ", content=" + _contentPane
@@ -1720,12 +1768,10 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			this._light = null;
 		}
 		this._useLight = false;
-		if (_shaderMask != null) {
-			_useShaderMask = false;
-			_shaderMask.close();
-			_shaderMask = null;
-		}
+		this.freeMask();
+		this.freeUVMask();
 		this.freeFrameBuffer();
+		this.freeFBOShaderMask();
 		LSystem.popDesktopPool(this);
 	}
 

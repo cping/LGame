@@ -21,7 +21,6 @@
 package loon.opengl.mask;
 
 import loon.LSystem;
-import loon.events.EventActionN;
 import loon.geom.Vector2f;
 import loon.opengl.BlendMethod;
 import loon.opengl.ShaderMask;
@@ -31,7 +30,7 @@ import loon.opengl.ShaderSource;
 /**
  * 需要配合FBO类使用，可以实现整个画面的像素风格显示
  */
-public class PixelMask implements EventActionN {
+public class PixelMask implements FBOMask {
 
 	public final static class PixelShader extends ShaderSource {
 
@@ -132,6 +131,11 @@ public class PixelMask implements EventActionN {
 		return _pixelShader;
 	}
 
+	@Override
+	public ShaderSource getShader() {
+		return getPixelShader();
+	}
+
 	public ShaderMask getMask() {
 		return _shaderMask;
 	}
@@ -156,6 +160,7 @@ public class PixelMask implements EventActionN {
 		return _pixelShader.getFrame();
 	}
 
+	@Override
 	public void setViewSize(float w, float h) {
 		_pixelShader.setViewSize(w, h);
 	}
@@ -169,4 +174,10 @@ public class PixelMask implements EventActionN {
 		}
 		_pixelShader.updateToScreen();
 	}
+
+	@Override
+	public void close() {
+
+	}
+
 }
