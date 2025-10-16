@@ -27,7 +27,7 @@ import loon.geom.Affine2f;
 import loon.opengl.VertexAttributes.Usage;
 import loon.utils.TArray;
 
-public class GLBatch implements LRelease {
+public final class GLBatch implements LRelease {
 
 	private int primitiveType;
 	private int vertexIdx;

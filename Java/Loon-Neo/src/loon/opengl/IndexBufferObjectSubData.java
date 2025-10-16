@@ -27,9 +27,9 @@ import java.nio.ShortBuffer;
 import loon.LSysException;
 import loon.LSystem;
 
-public class IndexBufferObjectSubData implements IndexData {
+public final class IndexBufferObjectSubData extends BaseBufferSupport implements IndexData {
 
-	protected ShortBuffer buffer;
+	protected ShortBuffer shortBuffer;
 	protected ByteBuffer byteBuffer;
 
 	protected int bufferHandle;
@@ -41,21 +41,21 @@ public class IndexBufferObjectSubData implements IndexData {
 	protected final int usage;
 
 	public IndexBufferObjectSubData(boolean isStatic, int maxIndices) {
-		byteBuffer = LSystem.base().support().newByteBuffer(maxIndices * 2);
+		byteBuffer = getSupport().newByteBuffer(maxIndices * 2);
 		isDirect = true;
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
-		buffer = byteBuffer.asShortBuffer();
-		((Buffer) buffer).flip();
+		shortBuffer = byteBuffer.asShortBuffer();
+		((Buffer) shortBuffer).flip();
 		((Buffer) byteBuffer).flip();
 		bufferHandle = createBufferObject();
 	}
 
 	public IndexBufferObjectSubData(int maxIndices) {
-		byteBuffer = LSystem.base().support().newByteBuffer(maxIndices * 2);
+		byteBuffer = getSupport().newByteBuffer(maxIndices * 2);
 		this.isDirect = true;
 		usage = GL20.GL_STATIC_DRAW;
-		buffer = byteBuffer.asShortBuffer();
-		((Buffer) buffer).flip();
+		shortBuffer = byteBuffer.asShortBuffer();
+		((Buffer) shortBuffer).flip();
 		((Buffer) byteBuffer).flip();
 		bufferHandle = createBufferObject();
 	}
@@ -71,20 +71,20 @@ public class IndexBufferObjectSubData implements IndexData {
 
 	@Override
 	public int getNumIndices() {
-		return buffer.limit();
+		return shortBuffer.limit();
 	}
 
 	@Override
 	public int getNumMaxIndices() {
-		return buffer.capacity();
+		return shortBuffer.capacity();
 	}
 
 	@Override
 	public void setIndices(short[] indices, int offset, int count) {
 		isDirty = true;
-		((Buffer) buffer).clear();
-		buffer.put(indices, offset, count);
-		((Buffer) buffer).flip();
+		((Buffer) shortBuffer).clear();
+		shortBuffer.put(indices, offset, count);
+		((Buffer) shortBuffer).flip();
 		((Buffer) byteBuffer).position(0);
 		((Buffer) byteBuffer).limit(count << 1);
 		if (isBound) {
@@ -98,12 +98,12 @@ public class IndexBufferObjectSubData implements IndexData {
 	public void setIndices(ShortBuffer indices) {
 		int pos = indices.position();
 		isDirty = true;
-		((Buffer) buffer).clear();
-		buffer.put(indices);
-		((Buffer) buffer).flip();
+		((Buffer) shortBuffer).clear();
+		shortBuffer.put(indices);
+		((Buffer) shortBuffer).flip();
 		((Buffer) indices).position(pos);
 		((Buffer) byteBuffer).position(0);
-		((Buffer) byteBuffer).limit(buffer.limit() << 1);
+		((Buffer) byteBuffer).limit(shortBuffer.limit() << 1);
 		if (isBound) {
 			LSystem.base().graphics().gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0, byteBuffer.limit(),
 					byteBuffer);
@@ -116,9 +116,9 @@ public class IndexBufferObjectSubData implements IndexData {
 		isDirty = true;
 		final int pos = byteBuffer.position();
 		((Buffer) byteBuffer).position(targetOffset * 2);
-		LSystem.base().support().copy(indices, offset, byteBuffer, count);
+		getSupport().copy(indices, offset, byteBuffer, count);
 		((Buffer) byteBuffer).position(pos);
-		((Buffer) buffer).position(0);
+		((Buffer) shortBuffer).position(0);
 		if (isBound) {
 			LSystem.base().graphics().gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0, byteBuffer.limit(),
 					byteBuffer);
@@ -129,7 +129,7 @@ public class IndexBufferObjectSubData implements IndexData {
 	@Override
 	public ShortBuffer getBuffer(boolean dirty) {
 		isDirty |= dirty;
-		return buffer;
+		return shortBuffer;
 	}
 
 	@Override
@@ -139,7 +139,7 @@ public class IndexBufferObjectSubData implements IndexData {
 		}
 		LSystem.base().graphics().gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
-			((Buffer) byteBuffer).limit(buffer.limit() * 2);
+			((Buffer) byteBuffer).limit(shortBuffer.limit() * 2);
 			LSystem.base().graphics().gl.glBufferSubData(GL20.GL_ELEMENT_ARRAY_BUFFER, 0, byteBuffer.limit(),
 					byteBuffer);
 			isDirty = false;
@@ -165,6 +165,8 @@ public class IndexBufferObjectSubData implements IndexData {
 		gl.glBindBuffer(GL20.GL_ELEMENT_ARRAY_BUFFER, 0);
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
+		shortBuffer = null;
+		byteBuffer = null;
 	}
 
 }

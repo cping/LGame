@@ -26,12 +26,13 @@ import java.nio.FloatBuffer;
 import loon.LSysException;
 import loon.LSystem;
 import loon.Support;
+import loon.opengl.BaseBufferSupport;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
-public class Matrix4 implements Serializable, XY {
+public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 
 	/**
 	 * 
@@ -126,7 +127,7 @@ public class Matrix4 implements Serializable, XY {
 
 	private void init() {
 		if (LSystem.base() != null && support == null) {
-			support = LSystem.base().support();
+			support = getSupport();
 		}
 	}
 
@@ -1209,7 +1210,7 @@ public class Matrix4 implements Serializable, XY {
 	}
 
 	public FloatBuffer getAsFloatBuffer() {
-		return LSystem.base().support().newFloatBuffer(val, 0, val.length);
+		return getSupport().newFloatBuffer(val, 0, val.length);
 	}
 
 	@Override

@@ -3338,6 +3338,9 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			_paintCanvas.close();
 			_paintCanvas = null;
 		}
+		temp_rect = null;
+		srcColor = null;
+		dstColor = null;
 	}
 
 }

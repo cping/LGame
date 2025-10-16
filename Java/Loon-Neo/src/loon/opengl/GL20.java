@@ -26,7 +26,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import loon.LSystem;
 import loon.Support;
 
 /**
@@ -346,7 +345,7 @@ public abstract class GL20 {
 	public static final int GL_MAX_RENDERBUFFER_SIZE = 0x84E8;
 	public static final int GL_INVALID_FRAMEBUFFER_OPERATION = 0x0506;
 
-	public static abstract class Buffers {
+	public static abstract class Buffers extends BaseBufferSupport{
 
 		public ByteBuffer byteBuffer = createByteBuffer(256);
 		public ShortBuffer shortBuffer = createShortBuffer(32);
@@ -357,7 +356,7 @@ public abstract class GL20 {
 		public void setByteBuffer(byte[] source, int offset, int length) {
 			int size = length - offset;
 			resizeByteBuffer(size);
-			Support support = LSystem.base().support();
+			Support support = getSupport();
 			if (support.isNative() && size > limit) {
 				support.copy(source, offset, byteBuffer, length);
 			} else {
@@ -369,7 +368,7 @@ public abstract class GL20 {
 		public void setShortBuffer(short[] source, int offset, int length) {
 			int size = length - offset;
 			resizeShortBuffer(size);
-			Support support = LSystem.base().support();
+			Support support = getSupport();
 			if (support.isNative() && size > limit) {
 				support.copy(source, offset, shortBuffer, length);
 			} else {
@@ -381,7 +380,7 @@ public abstract class GL20 {
 		public void setIntBuffer(int[] source, int offset, int length) {
 			int size = length - offset;
 			resizeIntBuffer(size);
-			Support support = LSystem.base().support();
+			Support support = getSupport();
 			if (support.isNative() && size > limit) {
 				support.copy(source, offset, intBuffer, length);
 			} else {
@@ -393,7 +392,7 @@ public abstract class GL20 {
 		public void setFloatBuffer(float[] source, int offset, int length) {
 			int size = length - offset;
 			resizeFloatBuffer(size);
-			Support support = LSystem.base().support();
+			Support support = getSupport();
 			if (support.isNative() && size > limit) {
 				support.copy(source, offset, floatBuffer, length);
 			} else {

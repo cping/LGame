@@ -22,10 +22,12 @@ package loon.opengl;
 
 import java.util.Iterator;
 
+import loon.LRelease;
 import loon.LSysException;
+import loon.utils.CollectionUtils;
 import loon.utils.StrBuilder;
 
-public final class VertexAttributes implements Iterable<VertexAttribute> {
+public final class VertexAttributes implements Iterable<VertexAttribute>, LRelease {
 
 	public static final class Usage {
 		public static final int Position = 1;
@@ -41,7 +43,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static private class ReadonlyIterable<T> implements Iterable<T> {
+	private static final class ReadonlyIterable<T> implements Iterable<T> {
 
 		private final T[] array;
 
@@ -70,7 +72,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		}
 	}
 
-	static private class ReadonlyIterator<T> implements Iterator<T>, Iterable<T> {
+	private static final class ReadonlyIterator<T> implements Iterator<T>, Iterable<T> {
 		private final T[] array;
 		int index;
 		boolean valid = true;
@@ -117,20 +119,16 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 	private ReadonlyIterable<VertexAttribute> iterable;
 
-	public VertexAttributes(VertexAttribute... attributes) {
-		if (attributes.length == 0) {
+	public VertexAttributes(final VertexAttribute... atts) {
+		if (atts.length == 0) {
 			throw new LSysException("attributes must be >= 1 !");
 		}
-		final VertexAttribute[] list = new VertexAttribute[attributes.length];
-		for (int i = 0; i < attributes.length; i++) {
-			list[i] = attributes[i];
-		}
-		this.attributes = list;
-		vertexSize = calculateOffsets();
+		this.attributes = CollectionUtils.copy(atts, atts.length);
+		this.vertexSize = calculateOffsets();
 	}
 
 	public int getOffset(int usage) {
-		VertexAttribute vertexAttribute = findByUsage(usage);
+		final VertexAttribute vertexAttribute = findByUsage(usage);
 		if (vertexAttribute == null) {
 			return 0;
 		}
@@ -150,7 +148,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 	private int calculateOffsets() {
 		int count = 0;
 		for (int i = 0; i < attributes.length; i++) {
-			VertexAttribute attribute = attributes[i];
+			final VertexAttribute attribute = attributes[i];
 			attribute.offset = count;
 			if (attribute.usage == VertexAttributes.Usage.ColorPacked) {
 				count += 4;
@@ -205,7 +203,7 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 
 	@Override
 	public String toString() {
-		StrBuilder builder = new StrBuilder();
+		final StrBuilder builder = new StrBuilder();
 		builder.append("[");
 		for (int i = 0; i < attributes.length; i++) {
 			builder.append("(");
@@ -221,6 +219,10 @@ public final class VertexAttributes implements Iterable<VertexAttribute> {
 		}
 		builder.append("]");
 		return builder.toString();
+	}
+
+	@Override
+	public void close() {
 	}
 
 }

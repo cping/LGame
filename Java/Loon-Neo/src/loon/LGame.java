@@ -139,6 +139,8 @@ public abstract class LGame implements LRelease {
 
 	private boolean _stopGame = false;
 
+	private boolean _closed = false;
+
 	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
 
 	private final static int DEF_OTHER_CACHE_SIZE = 8;
@@ -1402,6 +1404,11 @@ public abstract class LGame implements LRelease {
 		if (displayImpl != null) {
 			displayImpl.close();
 		}
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 
 	public void shutdown() {

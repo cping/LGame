@@ -73,19 +73,19 @@ public final class Submit implements LRelease {
 	}
 
 	public void setVertices(String name, int size, float[] vertices) {
-		Mesh mesh = getMesh(name, size);
+		final Mesh mesh = getMesh(name, size);
 		mesh.setVertices(vertices);
 		resetRunningState();
 	}
 
 	public void setIndices(String name, int size, short[] indices) {
-		Mesh mesh = getMesh(name, size);
+		final Mesh mesh = getMesh(name, size);
 		mesh.setIndices(indices);
 		resetRunningState();
 	}
 
 	public void resetIndices(String name, int size) {
-		Mesh mesh = getMesh(name, size);
+		final Mesh mesh = getMesh(name, size);
 		LSystem.resetIndices(size, mesh);
 		resetRunningState();
 	}
@@ -110,8 +110,8 @@ public final class Submit implements LRelease {
 		return this.need_stop_main_readering;
 	}
 
-	public void post(final String name, final int size, ShaderProgram shader, float[] vertices, int vertexIdx,
-			int count) {
+	public void post(final String name, final int size, final ShaderProgram shader, final float[] vertices,
+			final int vertexIdx, int count) {
 		// 防止与主画面渲染器GLEx冲突
 		this.main_draw_running = LSystem.mainDrawRunning();
 		if (!main_draw_running) {
@@ -119,7 +119,7 @@ public final class Submit implements LRelease {
 		} else {
 			need_stop_main_readering = true;
 		}
-		Mesh mesh = getMesh(name, size);
+		final Mesh mesh = getMesh(name, size);
 		if (mesh == null) {
 			if (!main_draw_running) {
 				shader.glUseProgramUnBind();
@@ -141,8 +141,9 @@ public final class Submit implements LRelease {
 		}
 	}
 
-	public void post(final String name, final int size, final int trisize, ShaderProgram shader, short[] indices,
-			int indicesIdx, float[] vertices, int vertexIdx, int countInBatch) {
+	public void post(final String name, final int size, final int trisize, final ShaderProgram shader,
+			final short[] indices, final int indicesIdx, final float[] vertices, final int vertexIdx,
+			final int countInBatch) {
 		// 防止与主画面渲染器GLEx冲突
 		this.main_draw_running = LSystem.mainDrawRunning();
 		if (!main_draw_running) {
@@ -150,7 +151,7 @@ public final class Submit implements LRelease {
 		} else {
 			need_stop_main_readering = true;
 		}
-		Mesh mesh = getMesh(name, size, trisize);
+		final Mesh mesh = getMesh(name, size, trisize);
 		if (mesh == null) {
 			if (!main_draw_running) {
 				shader.glUseProgramUnBind();

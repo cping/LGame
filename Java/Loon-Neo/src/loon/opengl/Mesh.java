@@ -45,7 +45,7 @@ public final class Mesh implements LRelease {
 		if (game.graphics().gl == null) {
 			return;
 		}
-		TArray<Mesh> meshesArray = game.getMeshAll();
+		final TArray<Mesh> meshesArray = game.getMeshAll();
 		if (meshesArray == null) {
 			return;
 		}
@@ -112,38 +112,38 @@ public final class Mesh implements LRelease {
 		addManagedMesh(this);
 	}
 
-	public Mesh setVertices(float[] vertices) {
+	public Mesh setVertices(final float[] vertices) {
 		this.vertices.setVertices(vertices, 0, vertices.length);
 		return this;
 	}
 
-	public Mesh setVertices(float[] vertices, int offset, int count) {
+	public Mesh setVertices(final float[] vertices, int offset, int count) {
 		this.vertices.setVertices(vertices, offset, count);
 		return this;
 	}
 
-	public Mesh updateVertices(int targetOffset, float[] source) {
+	public Mesh updateVertices(int targetOffset, final float[] source) {
 		return updateVertices(targetOffset, source, 0, source.length);
 	}
 
-	public Mesh updateVertices(int targetOffset, float[] source, int sourceOffset, int count) {
+	public Mesh updateVertices(int targetOffset, final float[] source, int sourceOffset, int count) {
 		this.vertices.updateVertices(targetOffset, source, sourceOffset, count);
 		return this;
 	}
 
-	public float[] getVertices(float[] vertices) {
+	public float[] getVertices(final float[] vertices) {
 		return getVertices(0, -1, vertices);
 	}
 
-	public float[] getVertices(int srcOffset, float[] vertices) {
+	public float[] getVertices(int srcOffset, final float[] vertices) {
 		return getVertices(srcOffset, -1, vertices);
 	}
 
-	public float[] getVertices(int srcOffset, int count, float[] vertices) {
+	public float[] getVertices(int srcOffset, int count, final float[] vertices) {
 		return getVertices(srcOffset, count, vertices, 0);
 	}
 
-	public float[] getVertices(int srcOffset, int count, float[] vertices, int destOffset) {
+	public float[] getVertices(int srcOffset, int count, final float[] vertices, int destOffset) {
 		final int max = getNumVertices() * getVertexSize() / 4;
 		if (count == -1) {
 			count = max - srcOffset;
@@ -158,38 +158,38 @@ public final class Mesh implements LRelease {
 			throw new LSysException(
 					"not enough room in vertices array, has " + vertices.length + " floats, needs " + count);
 		}
-		FloatBuffer verticesBuffer = getVerticesBuffer(false);
-		int pos = verticesBuffer.position();
+		final FloatBuffer verticesBuffer = getVerticesBuffer(false);
+		final int pos = verticesBuffer.position();
 		((Buffer) verticesBuffer).position(srcOffset);
 		verticesBuffer.get(vertices, destOffset, count);
 		((Buffer) verticesBuffer).position(pos);
 		return vertices;
 	}
 
-	public Mesh setIndices(short[] indices) {
+	public Mesh setIndices(final short[] indices) {
 		this.indices.setIndices(indices, 0, indices.length);
 		return this;
 	}
 
-	public Mesh setIndices(short[] indices, int offset, int count) {
+	public Mesh setIndices(final short[] indices, int offset, int count) {
 		this.indices.setIndices(indices, offset, count);
 		return this;
 	}
 
-	public void getIndices(short[] indices) {
+	public void getIndices(final short[] indices) {
 		getIndices(indices, 0);
 	}
 
-	public void getIndices(short[] indices, int destOffset) {
+	public void getIndices(final short[] indices, int destOffset) {
 		getIndices(0, indices, destOffset);
 	}
 
-	public void getIndices(int srcOffset, short[] indices, int destOffset) {
+	public void getIndices(int srcOffset, final short[] indices, int destOffset) {
 		getIndices(srcOffset, -1, indices, destOffset);
 	}
 
-	public void getIndices(int srcOffset, int count, short[] indices, int destOffset) {
-		int max = getNumIndices();
+	public void getIndices(int srcOffset, int count, final short[] indices, int destOffset) {
+		final int max = getNumIndices();
 		if (count < 0)
 			count = max - srcOffset;
 		if (srcOffset < 0 || srcOffset >= max || srcOffset + count > max)
@@ -198,7 +198,7 @@ public final class Mesh implements LRelease {
 		if ((indices.length - destOffset) < count)
 			throw new LSysException(
 					"not enough room in indices array, has " + indices.length + " shorts, needs " + count);
-		ShortBuffer indicesBuffer = getIndicesBuffer(false);
+		final ShortBuffer indicesBuffer = getIndicesBuffer(false);
 		int pos = indicesBuffer.position();
 		((Buffer) indicesBuffer).position(srcOffset);
 		indicesBuffer.get(indices, destOffset, count);
@@ -361,7 +361,7 @@ public final class Mesh implements LRelease {
 			indices = new short[numIndices];
 			getIndices(indices);
 			if (removeDuplicates || newVertexSize != vertexSize) {
-				float[] tmp = new float[vertices.length];
+				final float[] tmp = new float[vertices.length];
 				int size = 0;
 				for (int i = 0; i < numIndices; i++) {
 					final int idx1 = indices[i] * vertexSize;
@@ -526,6 +526,7 @@ public final class Mesh implements LRelease {
 		getVertices(0, size, vertices);
 		transformUV(matrix, vertices, vertexSize, offset, start, count);
 		setVertices(vertices, 0, vertices.length);
+		
 	}
 
 	public static void transformUV(final Affine2f matrix, final float[] vertices, int vertexSize, int offset, int start,

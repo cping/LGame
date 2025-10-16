@@ -140,6 +140,7 @@ public abstract class LGame implements LRelease {
 
 	private boolean _stopGame = false;
 
+	private boolean _closed = false;
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 
@@ -1165,6 +1166,11 @@ public abstract class LGame implements LRelease {
 		if (displayImpl != null) {
 			displayImpl.close();
 		}
+		_closed = true;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 
 	public void shutdown() {

@@ -40,7 +40,7 @@ import loon.geom.Vector4f;
 import loon.utils.IntMap;
 import loon.utils.TArray;
 
-public final class ShaderProgram implements LRelease {
+public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 
 	public static final String POSITION_ATTRIBUTE = "a_position";
 
@@ -102,7 +102,7 @@ public final class ShaderProgram implements LRelease {
 
 	final IntBuffer intbuf;
 
-	public ShaderProgram(String vertexShader, String fragmentShader) {
+	public ShaderProgram(final String vertexShader,final String fragmentShader) {
 		if (vertexShader == null) {
 			throw new LSysException("vertex shader must not be null");
 		}
@@ -113,7 +113,7 @@ public final class ShaderProgram implements LRelease {
 		if (LSystem.base() != null && LSystem.base().graphics() != null) {
 			glslVersion = "#version " + LSystem.base().graphics().gl.getGlslVersion() + "\n";
 		}
-		this.intbuf = LSystem.base().support().newIntBuffer(1);
+		this.intbuf = getSupport().newIntBuffer(1);
 		this.vertexShaderSource = vertexShader;
 		this.fragmentShaderSource = fragmentShader;
 		this.programId = -1;
@@ -126,7 +126,7 @@ public final class ShaderProgram implements LRelease {
 		}
 	}
 
-	private void compileShaders(String vertexShader, String fragmentShader) {
+	private void compileShaders(final String vertexShader,final String fragmentShader) {
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
 		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
@@ -142,9 +142,9 @@ public final class ShaderProgram implements LRelease {
 		_compiled = true;
 	}
 
-	private int loadShader(int type, String source) {
+	private int loadShader(final int type,final String source) {
 		GL20 gl = LSystem.base().graphics().gl;
-		IntBuffer intbuf = LSystem.base().support().newIntBuffer(1);
+		IntBuffer intbuf = getSupport().newIntBuffer(1);
 
 		int shader = gl.glCreateShader(type);
 		if (shader == 0) {
@@ -180,7 +180,7 @@ public final class ShaderProgram implements LRelease {
 		gl.glAttachShader(programId, fragmentShaderHandle);
 		gl.glLinkProgram(programId);
 
-		ByteBuffer tmp = ByteBuffer.allocateDirect(4);
+		final ByteBuffer tmp = ByteBuffer.allocateDirect(4);
 		tmp.order(ByteOrder.nativeOrder());
 		IntBuffer intbuf = tmp.asIntBuffer();
 
@@ -719,8 +719,8 @@ public final class ShaderProgram implements LRelease {
 
 		if (gl instanceof GLExt) {
 
-			final IntBuffer params = LSystem.base().support().newIntBuffer(1);
-			final IntBuffer type = LSystem.base().support().newIntBuffer(1);
+			final IntBuffer params = getSupport().newIntBuffer(1);
+			final IntBuffer type = getSupport().newIntBuffer(1);
 
 			((Buffer) params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_ATTRIBUTES, params);
@@ -746,7 +746,7 @@ public final class ShaderProgram implements LRelease {
 
 			((Buffer) params).clear();
 			gl.glGetProgramiv(programId, GL20.GL_ACTIVE_UNIFORMS, params);
-			int numUniforms = params.get(0);
+			final int numUniforms = params.get(0);
 
 			if (uniformNames == null || uniformNames.length != numUniforms) {
 				uniformNames = new String[numUniforms];

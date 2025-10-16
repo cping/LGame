@@ -81,9 +81,9 @@ public final class ExpandVertices {
 	}
 
 	public boolean expand(int vertPos, int vertexCount) {
-		int vertIdx = vertPos / vertexSize();
-		int verts = vertIdx + vertexCount;
-		int availVerts = vertices.length / vertexSize();
+		final int vertIdx = vertPos / vertexSize();
+		final int verts = vertIdx + vertexCount;
+		final int availVerts = vertices.length / vertexSize();
 		if (verts <= availVerts) {
 			return false;
 		}

@@ -27,13 +27,13 @@ import java.nio.FloatBuffer;
 import loon.LSysException;
 import loon.LSystem;
 
-public class VertexBufferObjectSubData implements VertexData {
+public class VertexBufferObjectSubData extends BaseBufferSupport implements VertexData {
 
 	protected final VertexAttributes attributes;
 
-	protected final FloatBuffer buffer;
+	protected FloatBuffer floatBuffer;
 
-	protected final ByteBuffer byteBuffer;
+	protected ByteBuffer byteBuffer;
 
 	protected int bufferHandle;
 
@@ -48,12 +48,12 @@ public class VertexBufferObjectSubData implements VertexData {
 	public VertexBufferObjectSubData(boolean isStatic, int numVertices, VertexAttribute... attributes) {
 		this.isStatic = isStatic;
 		this.attributes = new VertexAttributes(attributes);
-		byteBuffer = LSystem.base().support().newByteBuffer(this.attributes.vertexSize * numVertices);
+		byteBuffer = getSupport().newByteBuffer(this.attributes.vertexSize * numVertices);
 		isDirect = true;
 		usage = isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW;
-		buffer = byteBuffer.asFloatBuffer();
+		floatBuffer = byteBuffer.asFloatBuffer();
 		bufferHandle = createBufferObject();
-		((Buffer) buffer).flip();
+		((Buffer) floatBuffer).flip();
 		((Buffer) byteBuffer).flip();
 	}
 
@@ -73,7 +73,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 	@Override
 	public int getNumVertices() {
-		return buffer.limit() * 4 / attributes.vertexSize;
+		return floatBuffer.limit() * 4 / attributes.vertexSize;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class VertexBufferObjectSubData implements VertexData {
 	@Override
 	public FloatBuffer getBuffer(boolean dirty) {
 		isDirty |= dirty;
-		return buffer;
+		return floatBuffer;
 	}
 
 	private void bufferChanged() {
@@ -98,15 +98,15 @@ public class VertexBufferObjectSubData implements VertexData {
 	public void setVertices(float[] vertices, int offset, int count) {
 		isDirty = true;
 		if (isDirect) {
-			LSystem.base().support().copy(vertices, byteBuffer, offset, count);
-			((Buffer) buffer).position(0);
-			((Buffer) buffer).limit(count);
+			getSupport().copy(vertices, byteBuffer, offset, count);
+			((Buffer) floatBuffer).position(0);
+			((Buffer) floatBuffer).limit(count);
 		} else {
-			((Buffer) buffer).clear();
-			buffer.put(vertices, offset, count);
-			((Buffer) buffer).flip();
+			((Buffer) floatBuffer).clear();
+			floatBuffer.put(vertices, offset, count);
+			((Buffer) floatBuffer).flip();
 			((Buffer) byteBuffer).position(0);
-			((Buffer) byteBuffer).limit(buffer.limit() << 2);
+			((Buffer) byteBuffer).limit(floatBuffer.limit() << 2);
 		}
 		bufferChanged();
 	}
@@ -117,7 +117,7 @@ public class VertexBufferObjectSubData implements VertexData {
 		if (isDirect) {
 			final int pos = byteBuffer.position();
 			((Buffer) byteBuffer).position(targetOffset * 4);
-			LSystem.base().support().copy(vertices, sourceOffset, byteBuffer, count);
+			getSupport().copy(vertices, sourceOffset, byteBuffer, count);
 			((Buffer) byteBuffer).position(pos);
 		} else {
 			throw new LSysException("Buffer must be allocated direct.");
@@ -136,7 +136,7 @@ public class VertexBufferObjectSubData implements VertexData {
 
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
-			((Buffer) byteBuffer).limit(buffer.limit() * 4);
+			((Buffer) byteBuffer).limit(floatBuffer.limit() * 4);
 			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
@@ -207,5 +207,7 @@ public class VertexBufferObjectSubData implements VertexData {
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, 0);
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
+		floatBuffer = null;
+		byteBuffer = null;
 	}
 }

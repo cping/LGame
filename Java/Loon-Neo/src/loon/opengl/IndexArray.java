@@ -22,76 +22,68 @@ package loon.opengl;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-import loon.LSystem;
+public final class IndexArray extends BaseBufferSupport implements IndexData {
 
-public class IndexArray implements IndexData {
-
-	private static IntBuffer tmpHandle;
-
-	private ShortBuffer buffer;
+	private ShortBuffer shortBuffer;
 	private ByteBuffer byteBuffer;
 
 	private final boolean empty;
 
 	public IndexArray(int maxIndices) {
-		if (tmpHandle == null) {
-			tmpHandle = LSystem.base().support().newIntBuffer(1);
-		}
 		empty = maxIndices == 0;
 		if (empty) {
 			maxIndices = 1;
 		}
-		byteBuffer = LSystem.base().support().newUnsafeByteBuffer(maxIndices * 2);
-		buffer = byteBuffer.asShortBuffer();
-		((Buffer) buffer).flip();
+		byteBuffer = getSupport().newUnsafeByteBuffer(maxIndices * 2);
+		shortBuffer = byteBuffer.asShortBuffer();
+		((Buffer) shortBuffer).flip();
 		((Buffer) byteBuffer).flip();
 	}
 
 	@Override
 	public int getNumIndices() {
-		return empty ? 0 : buffer.limit();
+		return empty ? 0 : shortBuffer.limit();
 	}
 
 	@Override
 	public int getNumMaxIndices() {
-		return empty ? 0 : buffer.capacity();
+		return empty ? 0 : shortBuffer.capacity();
 	}
 
 	@Override
-	public void setIndices(short[] indices, int offset, int count) {
-		buffer.clear();
-		buffer.put(indices, offset, count);
-		buffer.flip();
+	public void setIndices(final short[] indices, int offset, int count) {
+		shortBuffer.clear();
+		shortBuffer.put(indices, offset, count);
+		shortBuffer.flip();
 		byteBuffer.position(0);
 		byteBuffer.limit(count << 1);
 	}
 
 	@Override
-	public void setIndices(ShortBuffer indices) {
-		int pos = indices.position();
-		((Buffer) buffer).clear();
-		((Buffer) buffer).limit(indices.remaining());
-		buffer.put(indices);
-		((Buffer) buffer).flip();
+	public void setIndices(final ShortBuffer indices) {
+		final int pos = indices.position();
+		((Buffer) shortBuffer).clear();
+		((Buffer) shortBuffer).limit(indices.remaining());
+		shortBuffer.put(indices);
+		((Buffer) shortBuffer).flip();
 		((Buffer) indices).position(pos);
 		((Buffer) byteBuffer).position(0);
-		((Buffer) byteBuffer).limit(buffer.limit() << 1);
+		((Buffer) byteBuffer).limit(shortBuffer.limit() << 1);
 	}
 
 	@Override
-	public void updateIndices(int targetOffset, short[] indices, int offset, int count) {
+	public void updateIndices(int targetOffset, final short[] indices, int offset, int count) {
 		final int pos = byteBuffer.position();
 		((Buffer) byteBuffer).position(targetOffset * 2);
-		LSystem.base().support().copy(indices, offset, byteBuffer, count);
+		getSupport().copy(indices, offset, byteBuffer, count);
 		((Buffer) byteBuffer).position(pos);
 	}
 
 	@Override
 	public ShortBuffer getBuffer(boolean dirty) {
-		return buffer;
+		return shortBuffer;
 	}
 
 	@Override
@@ -108,6 +100,8 @@ public class IndexArray implements IndexData {
 
 	@Override
 	public void close() {
-		LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
+		getSupport().disposeUnsafeByteBuffer(byteBuffer);
+		shortBuffer = null;
+		byteBuffer = null;
 	}
 }

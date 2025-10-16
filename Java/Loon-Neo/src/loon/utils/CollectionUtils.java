@@ -28,6 +28,7 @@ import loon.canvas.LColor;
 import loon.component.Actor;
 import loon.component.LComponent;
 import loon.geom.Vector2f;
+import loon.opengl.VertexAttribute;
 
 final public class CollectionUtils {
 
@@ -220,6 +221,19 @@ final public class CollectionUtils {
 	 */
 	public static Vector2f[] copy(Vector2f[] data, int newSize) {
 		final Vector2f[] tempArr = new Vector2f[newSize];
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
+	 * @param newSize
+	 * @return
+	 */
+	public static VertexAttribute[] copy(VertexAttribute[] data, int newSize) {
+		final VertexAttribute[] tempArr = new VertexAttribute[newSize];
 		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
 		return tempArr;
 	}

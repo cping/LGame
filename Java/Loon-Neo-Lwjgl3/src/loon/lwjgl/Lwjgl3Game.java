@@ -535,7 +535,7 @@ public class Lwjgl3Game extends LGame {
 		try {
 			NativeSupport.loadJNI("lplus");
 		} catch (Throwable exc) {
-			exc.printStackTrace();
+			System.out.println(exc.getMessage());
 		}
 	}
 

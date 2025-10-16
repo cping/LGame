@@ -41,7 +41,7 @@ import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
 
-public abstract class GLFrameBuffer implements LRelease {
+public abstract class GLFrameBuffer extends BaseBufferSupport implements LRelease {
 
 	public enum FrameBufferDepthFormat {
 		DEPTHSTENCIL_NONE, DEPTH_16, STENCIL_8, DEPTHSTENCIL_24_8
@@ -459,7 +459,7 @@ public abstract class GLFrameBuffer implements LRelease {
 	}
 
 	public int[] readPixels(GL20 gl, int x, int y, int width, int height, boolean flipY, boolean alpha) {
-		final Support support = LSystem.base().support();
+		final Support support = getSupport();
 		final int oldReadBuffer = gl.glGetInteger(GL20.GL_READ_FRAMEBUFFER_BINDING);
 		gl.glBindFramebuffer(GL20.GL_READ_FRAMEBUFFER, framebufferHandle);
 		final int bits = alpha ? 4 : 3;

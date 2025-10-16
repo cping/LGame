@@ -27,10 +27,10 @@ import java.nio.FloatBuffer;
 import loon.LSysException;
 import loon.LSystem;
 
-public class VertexBufferObject implements VertexData {
+public final class VertexBufferObject extends BaseBufferSupport implements VertexData {
 
 	private VertexAttributes attributes;
-	private FloatBuffer buffer;
+	private FloatBuffer floatBuffer;
 	private ByteBuffer byteBuffer;
 	private boolean ownsBuffer;
 	private int bufferHandle;
@@ -44,7 +44,7 @@ public class VertexBufferObject implements VertexData {
 
 	public VertexBufferObject(boolean isStatic, int numVertices, VertexAttributes attributes) {
 		bufferHandle = LSystem.base().graphics().gl.glGenBuffer();
-		ByteBuffer data = LSystem.base().support().newUnsafeByteBuffer(attributes.vertexSize * numVertices);
+		ByteBuffer data = getSupport().newUnsafeByteBuffer(attributes.vertexSize * numVertices);
 		((Buffer) data).limit(0);
 		setBuffer(data, true, attributes);
 		setUsage(isStatic ? GL20.GL_STATIC_DRAW : GL20.GL_DYNAMIC_DRAW);
@@ -63,7 +63,7 @@ public class VertexBufferObject implements VertexData {
 
 	@Override
 	public int getNumVertices() {
-		return buffer.limit() * 4 / attributes.vertexSize;
+		return floatBuffer.limit() * 4 / attributes.vertexSize;
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class VertexBufferObject implements VertexData {
 	@Override
 	public FloatBuffer getBuffer(boolean dirty) {
 		isDirty |= dirty;
-		return buffer;
+		return floatBuffer;
 	}
 
 	protected void setBuffer(Buffer data, boolean ownsBuffer, VertexAttributes value) {
@@ -82,7 +82,7 @@ public class VertexBufferObject implements VertexData {
 			throw new LSysException("Cannot change attributes while VBO is bound");
 		}
 		if (this.ownsBuffer && byteBuffer != null) {
-			LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
+			getSupport().disposeUnsafeByteBuffer(byteBuffer);
 		}
 		attributes = value;
 		if (data instanceof ByteBuffer) {
@@ -93,9 +93,9 @@ public class VertexBufferObject implements VertexData {
 		this.ownsBuffer = ownsBuffer;
 		final int l = byteBuffer.limit();
 		byteBuffer.limit(byteBuffer.capacity());
-		buffer = byteBuffer.asFloatBuffer();
+		floatBuffer = byteBuffer.asFloatBuffer();
 		byteBuffer.limit(l);
-		buffer.limit(l / 4);
+		floatBuffer.limit(l / 4);
 	}
 
 	private void bufferChanged() {
@@ -108,16 +108,16 @@ public class VertexBufferObject implements VertexData {
 	@Override
 	public void setVertices(float[] vertices, int offset, int count) {
 		isDirty = true;
-		if (LSystem.base().support().isNative()) {
-			LSystem.base().support().copy(vertices, byteBuffer, offset, count);
-			((Buffer) buffer).position(0);
-			((Buffer) buffer).limit(count);
+		if (getSupport().isNative()) {
+			getSupport().copy(vertices, byteBuffer, offset, count);
+			((Buffer) floatBuffer).position(0);
+			((Buffer) floatBuffer).limit(count);
 		} else {
-			((Buffer) buffer).clear();
-			buffer.put(vertices, offset, count);
-			((Buffer) buffer).flip();
+			((Buffer) floatBuffer).clear();
+			floatBuffer.put(vertices, offset, count);
+			((Buffer) floatBuffer).flip();
 			((Buffer) byteBuffer).position(0);
-			((Buffer) byteBuffer).limit(buffer.limit() << 2);
+			((Buffer) byteBuffer).limit(floatBuffer.limit() << 2);
 		}
 		bufferChanged();
 	}
@@ -127,9 +127,9 @@ public class VertexBufferObject implements VertexData {
 		isDirty = true;
 		final int pos = byteBuffer.position();
 		((Buffer) byteBuffer).position(targetOffset * 4);
-		LSystem.base().support().copy(vertices, byteBuffer, sourceOffset, count);
+		getSupport().copy(vertices, byteBuffer, sourceOffset, count);
 		((Buffer) byteBuffer).position(pos);
-		((Buffer) buffer).position(0);
+		((Buffer) floatBuffer).position(0);
 		bufferChanged();
 	}
 
@@ -155,7 +155,7 @@ public class VertexBufferObject implements VertexData {
 
 		gl.glBindBuffer(GL20.GL_ARRAY_BUFFER, bufferHandle);
 		if (isDirty) {
-			byteBuffer.limit(buffer.limit() * 4);
+			byteBuffer.limit(floatBuffer.limit() * 4);
 			gl.glBufferData(GL20.GL_ARRAY_BUFFER, byteBuffer.limit(), byteBuffer, usage);
 			isDirty = false;
 		}
@@ -225,9 +225,9 @@ public class VertexBufferObject implements VertexData {
 		gl.glDeleteBuffer(bufferHandle);
 		bufferHandle = 0;
 		if (ownsBuffer) {
-			LSystem.base().support().disposeUnsafeByteBuffer(byteBuffer);
+			getSupport().disposeUnsafeByteBuffer(byteBuffer);
 		}
-		buffer = null;
+		floatBuffer = null;
 		byteBuffer = null;
 	}
 }
