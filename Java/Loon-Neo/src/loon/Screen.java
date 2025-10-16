@@ -4995,7 +4995,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 重载此函数,可以自定义渲染Screen的最下层图像(位于画面最后)
+	 * 重载此函数,可以自定义渲染Screen的最下层图像(api调用上位于位于画面渲染顺序最前)
 	 * 
 	 * @param g
 	 */
@@ -5013,7 +5013,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	/**
-	 * 重载此函数,可以自定义渲染Screen的最上层图像(位于画面最后)
+	 * 重载此函数,可以自定义渲染Screen的最上层图像(api调用上位于位于画面渲染顺序最后)
 	 * 
 	 * @param g
 	 */

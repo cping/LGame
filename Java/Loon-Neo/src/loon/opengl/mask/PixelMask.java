@@ -100,7 +100,7 @@ public class PixelMask implements FBOMask {
 
 		@Override
 		public void setupShader(ShaderProgram program) {
-			float scaleX = LSystem.getScaleHeight();
+			float scaleX = LSystem.getScaleWidth();
 			float scaleY = LSystem.getScaleHeight();
 			program.setUniformf("resolution", _viewSize.x * scaleX, _viewSize.y * scaleY);
 			program.setUniformf("mouse", _mouse);
