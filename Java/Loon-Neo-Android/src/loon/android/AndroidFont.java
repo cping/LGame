@@ -24,6 +24,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import loon.font.Font;
+import loon.utils.PathUtils;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
@@ -44,24 +45,34 @@ class AndroidFont {
 		this.resources = (res != null) ? res : NO_HACKS;
 	}
 
-	public static Typeface create(Font font) {
-		String name = font.name;
-		if (name != null) {
-			String familyName = name.toLowerCase();
+	public static Typeface create(AndroidAssets assets, Font font) {
+		String fontName = font.name;
+		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+		if (assets != null && "ttf".equals(ext)) {
+			Typeface newTypeface = assets.getTypeface(ext);
+			if (newTypeface != null) {
+				if (font.style != Font.Style.PLAIN) {
+					newTypeface = Typeface.create(newTypeface, TO_ANDROID_STYLE.get(font.style));
+				}
+				return newTypeface;
+			}
+		}
+		if (fontName != null) {
+			String familyName = fontName.trim().toLowerCase();
 			if (familyName.equals("serif") || familyName.equals("timesroman")) {
-				name = "serif";
+				fontName = "serif";
 			} else if (familyName.equals("sansserif") || familyName.equals("helvetica")) {
-				name = "sans-serif";
+				fontName = "sans-serif";
 			} else if (familyName.equals("monospaced") || familyName.equals("courier") || familyName.equals("dialog")
 					|| familyName.equals("黑体")) {
-				name = "monospace";
+				fontName = "monospace";
 			} else {
-				name = "monospace";
+				fontName = "monospace";
 			}
 		} else {
-			name = "monospace";
+			fontName = "monospace";
 		}
-		return Typeface.create(name, TO_ANDROID_STYLE.get(font.style));
+		return Typeface.create(fontName, TO_ANDROID_STYLE.get(font.style));
 	}
 
 	protected static final Map<Font.Style, Integer> TO_ANDROID_STYLE = new EnumMap<Font.Style, Integer>(

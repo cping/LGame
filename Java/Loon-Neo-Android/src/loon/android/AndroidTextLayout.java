@@ -138,7 +138,7 @@ class AndroidTextLayout extends TextLayout {
 	}
 
 	void draw(Canvas canvas, float x, float y, Paint paint) {
-		boolean oldAA = paint.isAntiAlias();
+		final boolean oldAA = paint.isAntiAlias();
 		paint.setAntiAlias(format.antialias);
 		try {
 			paint.setTypeface(font.typeface);
@@ -187,8 +187,8 @@ class AndroidTextLayout extends TextLayout {
 
 	@Override
 	public int charWidth(char ch) {
-		char[] chars = Character.toChars(ch);
-		int w = (int) this.font.paint.measureText(chars, 0, 1);
+		final char[] chars = Character.toChars(ch);
+		final int w = (int) this.font.paint.measureText(chars, 0, 1);
 		return w;
 	}
 }

@@ -149,7 +149,7 @@ public class AndroidGraphics extends Graphics {
 		Pair<String, Font.Style> key = Pair.create(font.name, font.style);
 		Typeface face = fonts.get(key);
 		if (face == null) {
-			fonts.put(key, face = AndroidFont.create(font));
+			fonts.put(key, face = AndroidFont.create(game.assets, font));
 		}
 		return new AndroidFont(face, font.size, ligatureHacks.get(key));
 	}

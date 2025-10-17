@@ -331,44 +331,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	private final static class UpdateFont implements Updateable {
 
-		private final IntMap<Canvas> _fontCanvasList = new IntMap<Canvas>();
-
 		private BDFont strfont;
 
 		public UpdateFont(BDFont strf) {
 			this.strfont = strf;
-		}
-
-		public final void clearFontCanvasLazy() {
-			if (_fontCanvasList.size == 0) {
-				return;
-			}
-			for (Canvas canvas : _fontCanvasList.values()) {
-				if (canvas != null) {
-					if (canvas.getImage() != null) {
-						canvas.getImage().close();
-					}
-					canvas.close();
-					canvas = null;
-				}
-			}
-			_fontCanvasList.clear();
-		}
-
-		public final Canvas createFontCanvas(float w, float h) {
-			final int cacheSize = _fontCanvasList.size;
-			if (cacheSize > LSystem.DEFAULT_MAX_CACHE_SIZE) {
-				clearFontCanvasLazy();
-			}
-			int keyFlag = 1;
-			keyFlag = LSystem.unite(keyFlag, w);
-			keyFlag = LSystem.unite(keyFlag, h);
-			Canvas canvas = _fontCanvasList.get(keyFlag);
-			if (canvas == null || canvas.getImage() == null || canvas.getImage().isClosed()) {
-				canvas = LSystem.base().graphics().createCanvas(w, h);
-				_fontCanvasList.put(keyFlag, canvas);
-			}
-			return canvas;
 		}
 
 		@Override
@@ -382,7 +348,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
-			Canvas canvas = createFontCanvas(strfont.textureWidth, strfont.textureHeight);
+			final Canvas canvas = strfont.createFontCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setFillColor(strfont._pixelColor);
 			canvas.clear();
 
@@ -474,8 +440,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					}
 					strfont._outBounds = true;
 				}
+				sbr.clear();
 				sbr = null;
-
 			}
 
 			strfont.displayList = canvas.toTexture();
@@ -612,6 +578,8 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 
 	private TArray<CharRect> _childChars;
 
+	private final IntMap<Canvas> _fontCanvasList = new IntMap<Canvas>();
+
 	public BDFont(String path) {
 		this(path, defaultPixelMinFontSize);
 	}
@@ -668,6 +636,38 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
+	}
+
+	public final void clearFontCanvasLazy() {
+		if (_fontCanvasList.size == 0) {
+			return;
+		}
+		for (Canvas canvas : _fontCanvasList.values()) {
+			if (canvas != null) {
+				if (canvas.getImage() != null) {
+					canvas.getImage().close();
+				}
+				canvas.close();
+				canvas = null;
+			}
+		}
+		_fontCanvasList.clear();
+	}
+
+	public final Canvas createFontCanvas(float w, float h) {
+		final int cacheSize = _fontCanvasList.size;
+		if (cacheSize > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			clearFontCanvasLazy();
+		}
+		int keyFlag = 1;
+		keyFlag = LSystem.unite(keyFlag, w);
+		keyFlag = LSystem.unite(keyFlag, h);
+		Canvas canvas = _fontCanvasList.get(keyFlag);
+		if (canvas == null || canvas.getImage() == null || canvas.getImage().isClosed()) {
+			canvas = LSystem.base().graphics().createCanvas(w, h);
+			_fontCanvasList.put(keyFlag, canvas);
+		}
+		return canvas;
 	}
 
 	public boolean containsTexture(String mes) {
@@ -2020,6 +2020,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			_childFont.close();
 			_childFont = null;
 		}
+		clearFontCanvasLazy();
 	}
 
 }

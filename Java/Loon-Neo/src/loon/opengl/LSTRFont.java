@@ -1720,6 +1720,10 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 			customChars.clear();
 			customChars = null;
 		}
+		if (display != null) {
+			display.close();
+			display = null;
+		}
 		isDrawing = false;
 		_displayLazy = false;
 		_initChars = false;

@@ -355,7 +355,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			if (strfont.textureWidth > strfont._maxTextureWidth || strfont.textureHeight > strfont._maxTextureHeight) {
 				strfont._outBounds = true;
 			}
-			Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
+			final Canvas canvas = LSTRDictionary.get().createFontCanvas(strfont.textureWidth, strfont.textureHeight);
 			canvas.setFillColor(strfont._pixelColor);
 			canvas.clearRect(0f, 0f, strfont.textureWidth, strfont.textureHeight);
 
@@ -447,6 +447,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 					}
 					strfont._outBounds = true;
 				}
+				sbr.clear();
 				sbr = null;
 
 			}
@@ -2421,6 +2422,10 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		if (_characters != null) {
 			_characters.close();
 			_characters = null;
+		}
+		if (display != null) {
+			display.close();
+			display = null;
 		}
 		isDrawing = false;
 		_displayLazy = false;

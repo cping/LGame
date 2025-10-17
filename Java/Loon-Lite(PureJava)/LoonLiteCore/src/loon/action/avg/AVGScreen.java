@@ -304,7 +304,7 @@ public abstract class AVGScreen extends Screen implements FontSet<AVGScreen> {
 
 		@Override
 		public boolean completed() {
-			boolean stop = toast.isStop() && (toast.getOpacity() <= 0.1f || !toast.isVisible());
+			final boolean stop = toast.isStop() && (toast.getOpacity() <= 0.1f || !toast.isVisible());
 			if (stop) {
 				_screen.getDesktop().remove(toast);
 			}
