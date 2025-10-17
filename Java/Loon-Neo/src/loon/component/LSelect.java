@@ -32,6 +32,7 @@ import loon.font.IFont;
 import loon.font.LFont;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRDictionary;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -248,7 +249,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft, nTop - (int) (buoyage.getHeight() / 1.5), _component_baseColor);
+					g.draw(buoyage, nLeft, nTop - MathUtils.iceil(buoyage.getHeight() / 1.5f), _component_baseColor);
 					g.setAlpha(1F);
 				}
 				_messageFont.drawString(g, selects[i], messageLeft, nTop - _messageFont.getAscent(), _fontColor);

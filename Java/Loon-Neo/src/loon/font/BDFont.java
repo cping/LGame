@@ -1846,7 +1846,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				}
 			}
 			for (int i = startIndex; i < endIndex; i++) {
-				char ch = newMessage.charAt(i);
+				final char ch = newMessage.charAt(i);
 				charCurrent = ch;
 
 				intObject = customChars.get(charCurrent);
@@ -2171,14 +2171,15 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	@Override
 	public int charWidth(char c) {
 		loadFont();
-		BDFGlyph g = _characters.get(c);
+		final BDFGlyph g = _characters.get(c);
 		if (g != null) {
-			return MathUtils
-					.iceil(MathUtils
-							.max(_fontSize / 2f,
-									(g.bbx.x != 0 ? (g.bbx.x + g.bbx.width) * _scalePixelFont
-											: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize())))
-							+ 1);
+			int result = MathUtils.iceil(g.bbx.x != 0 ? (g.bbx.x + g.bbx.width) * _scalePixelFont
+					: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize()));
+			if (CharUtils.isHalfChar(c) || CharUtils.isFullChar(c)) {
+				return result;
+			}
+			result = MathUtils.iceil(MathUtils.max(_fontSize / 2f, result));
+			return CharUtils.isAlphaOrDigit(c) ? (result + 1) : result;
 		}
 		return MathUtils.iceil(_fontSize / 2f);
 	}
