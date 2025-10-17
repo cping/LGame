@@ -46,7 +46,7 @@ import loon.geom.RectBox;
 import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 
-class Lwjgl3TextLayout extends loon.font.TextLayout {
+final class Lwjgl3TextLayout extends loon.font.TextLayout {
 
 	private final static HashMap<String, java.awt.Font> _fontPools = new HashMap<String, java.awt.Font>();
 
@@ -91,27 +91,34 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 		}
 	}
 
+	private static BufferedImage _tempBufferedImage;
+
+	private final static BufferedImage getFontImage() {
+		if (_tempBufferedImage == null) {
+			_tempBufferedImage = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		}
+		return _tempBufferedImage;
+	}
+
 	public static Lwjgl3TextLayout layoutText(Lwjgl3ImplGraphics gfx, String text, TextFormat format) {
-		AttributedString astring = new AttributedString(text.length() == 0 ? " " : text);
+		final AttributedString astring = new AttributedString(text.length() == 0 ? " " : text);
 		if (format.font != null) {
 			astring.addAttribute(TextAttribute.FONT, gfx.resolveFont(format.font));
 		}
-		FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
+		final FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
 		return new Lwjgl3TextLayout(text, format, new TextLayout(astring.getIterator(), frc));
 	}
 
 	public static Lwjgl3TextLayout[] layoutText(Lwjgl3ImplGraphics gfx, String text, TextFormat format, TextWrap wrap) {
 		text = normalizeEOL(text);
-		String ltext = text.length() == 0 ? " " : text;
-
-		AttributedString astring = new AttributedString(ltext);
+		final String ltext = text.length() == 0 ? " " : text;
+		final AttributedString astring = new AttributedString(ltext);
 		if (format.font != null) {
 			astring.addAttribute(TextAttribute.FONT, gfx.resolveFont(format.font));
 		}
-
-		List<Lwjgl3TextLayout> layouts = new ArrayList<Lwjgl3TextLayout>();
-		FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
-		LineBreakMeasurer measurer = new LineBreakMeasurer(astring.getIterator(), frc);
+		final List<Lwjgl3TextLayout> layouts = new ArrayList<Lwjgl3TextLayout>();
+		final FontRenderContext frc = format.antialias ? gfx.aaFontContext : gfx.aFontContext;
+		final LineBreakMeasurer measurer = new LineBreakMeasurer(astring.getIterator(), frc);
 		int lastPos = ltext.length(), curPos = 0;
 		char eol = '\n';
 		while (curPos < lastPos) {
@@ -119,8 +126,8 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 			if (nextRet == -1) {
 				nextRet = lastPos;
 			}
-			TextLayout layout = measurer.nextLayout(wrap.width, nextRet, false);
-			int endPos = measurer.getPosition();
+			final TextLayout layout = measurer.nextLayout(wrap.width, nextRet, false);
+			final int endPos = measurer.getPosition();
 			while (curPos < endPos && ltext.charAt(curPos) == eol) {
 				curPos += 1;
 			}
@@ -134,14 +141,11 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 
 	private final Graphics2D g2d;
 
-	private final BufferedImage img;
-
 	private FontMetrics fontMetrics;
 
 	Lwjgl3TextLayout(String text, TextFormat format, TextLayout layout) {
 		super(text, format, computeBounds(layout), layout.getAscent() + layout.getDescent());
-		this.img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
-		this.g2d = (Graphics2D) img.getGraphics();
+		this.g2d = (Graphics2D) getFontImage().getGraphics();
 		this.fontMetrics = g2d.getFontMetrics(convertLoonFontToAWTFont(format.font));
 		this.layout = layout;
 	}
@@ -170,7 +174,7 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 	}
 
 	void paint(Graphics2D gfx, float x, float y, boolean stroke) {
-		Object ohint = gfx.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+		final Object ohint = gfx.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
 		try {
 			gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 					format.antialias ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
@@ -187,8 +191,8 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 		}
 	}
 
-	private final static RectBox computeBounds(TextLayout layout) {
-		Rectangle2D bounds = layout.getBounds();
+	private final static RectBox computeBounds(final TextLayout layout) {
+		final Rectangle2D bounds = layout.getBounds();
 		return new RectBox(MathUtils.floor(bounds.getX()), MathUtils.floor(bounds.getY()) + layout.getAscent(),
 				MathUtils.floor(bounds.getWidth()), MathUtils.floor(bounds.getHeight() + layout.getDescent()));
 	}
