@@ -29,10 +29,8 @@ import loon.events.InputMake;
 import loon.events.RunnableUpdate;
 import loon.events.Updateable;
 import loon.events.UpdateableRun;
-import loon.font.BDFont;
-import loon.font.BMFont;
+import loon.font.Font;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.TextureSource;
@@ -314,26 +312,10 @@ public abstract class LGame implements LRelease {
 		return this;
 	}
 
-	private final IFont convertExtensionToFontModel(String fontName, int fontSize) {
-		if (fontName != null) {
-			final String fileName = fontName.toLowerCase().trim();
-			final String ext = PathUtils.getExtension(fontName);
-			if (StringUtils.isEmpty(ext) || "ttf".equals(ext)) {
-				return LFont.getFont(fontName, fontSize);
-			} else if ("fnt".equals(ext)) {
-				return BMFont.create(fileName, fontSize);
-			} else if ("bdf".equals(ext)) {
-				return new BDFont(fontName, fontSize);
-			} else {
-				throw new LSysException("The Font file type is unknown , so loading failed.");
-			}
-		}
-		return setting.defaultGameFont;
-	}
-
 	public IFont setDefaultGameFont() {
 		if (setting.defaultGameFont == null || setting.defaultGameFont.isClosed()) {
-			setting.defaultGameFont = convertExtensionToFontModel(setting.fontName, setting.fontSize);
+			setting.defaultGameFont = Font.convertExtensionToFontModel(setting.fontName, setting.fontSize,
+					setting.defaultGameFont);
 		}
 		return setting.defaultGameFont;
 	}
@@ -351,10 +333,12 @@ public abstract class LGame implements LRelease {
 				}
 			} else {
 				if (setting.fontSize <= LSystem.DEFAULT_SYS_FONT_SIZE) {
-					setting.defaultLogFont = convertExtensionToFontModel(setting.fontName,
-							LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE);
+					setting.defaultLogFont = Font.convertExtensionToFontModel(setting.fontName,
+							LSystem.isDesktop() ? LSystem.DEFAULT_SYS_FONT_SIZE - 4 : LSystem.DEFAULT_SYS_FONT_SIZE,
+							setting.defaultLogFont);
 				} else {
-					setting.defaultLogFont = convertExtensionToFontModel(setting.fontName, setting.fontSize);
+					setting.defaultLogFont = Font.convertExtensionToFontModel(setting.fontName, setting.fontSize,
+							setting.defaultLogFont);
 				}
 			}
 		}

@@ -20,11 +20,30 @@
  */
 package loon.font;
 
+import loon.LSysException;
 import loon.LSystem;
+import loon.utils.PathUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
 public final class Font {
+
+	public final static IFont convertExtensionToFontModel(String fontName, int fontSize, IFont result) {
+		if (fontName != null) {
+			final String fileName = fontName.toLowerCase().trim();
+			final String ext = PathUtils.getExtension(fontName);
+			if (StringUtils.isEmpty(ext) || "ttf".equals(ext)) {
+				return LFont.getFont(fontName, fontSize);
+			} else if ("fnt".equals(ext)) {
+				return BMFont.create(fileName, fontSize);
+			} else if ("bdf".equals(ext)) {
+				return BDFont.create(fontName, fontSize);
+			} else {
+				throw new LSysException("The Font file type is unknown , so loading failed.");
+			}
+		}
+		return result;
+	}
 
 	public final static Style toFontStyle(String name) {
 		if (StringUtils.isEmpty(name)) {

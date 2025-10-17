@@ -1266,10 +1266,11 @@ public final class LSystem {
 	public static boolean isText(String extension) {
 		return extension.equals("json") || extension.equals("xml") || extension.equals("txt")
 				|| extension.equals("glsl") || extension.equals("fnt") || extension.equals("bdf")
-				|| extension.equals("pack") || extension.equals("obj") || extension.equals("atlas")
-				|| extension.equals("g3dj") || extension.equals("tmx") || extension.equals("tmj")
-				|| extension.equals("an") || extension.equals("text") || extension.equals("yaml")
-				|| extension.equals("lml") || extension.equals("cfg") || extension.equals("cvs");
+				|| extension.equals("ttf") || extension.equals("pack") || extension.equals("obj")
+				|| extension.equals("atlas") || extension.equals("g3dj") || extension.equals("tmx")
+				|| extension.equals("tmj") || extension.equals("an") || extension.equals("text")
+				|| extension.equals("yaml") || extension.equals("lml") || extension.equals("cfg")
+				|| extension.equals("cvs");
 	}
 
 	public static final boolean isAudio(String extension) {

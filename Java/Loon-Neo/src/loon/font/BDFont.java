@@ -2173,10 +2173,14 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		loadFont();
 		BDFGlyph g = _characters.get(c);
 		if (g != null) {
-			return MathUtils.iceil(g.bbx.x != 0 ? (g.bbx.x + g.bbx.width) * _scalePixelFont
-					: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize()));
+			return MathUtils
+					.iceil(MathUtils
+							.max(_fontSize / 2f,
+									(g.bbx.x != 0 ? (g.bbx.x + g.bbx.width) * _scalePixelFont
+											: (g.advance != 0 ? g.advance * _scalePixelFont : getPixelFontSize())))
+							+ 1);
 		}
-		return 0;
+		return MathUtils.iceil(_fontSize / 2f);
 	}
 
 	public int getLineWidth(String msg) {
