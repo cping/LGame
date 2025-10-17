@@ -42,7 +42,7 @@ public class JavaANFont {
 		String fontName = font.name;
 		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 		if (assets != null && "ttf".equals(ext)) {
-			Typeface newTypeface = assets.getTypeface(ext);
+			Typeface newTypeface = assets.getTypeface(fontName);
 			if (newTypeface != null) {
 				if (font.style != Font.Style.PLAIN) {
 					newTypeface = Typeface.create(newTypeface, TO_ANDROID_STYLE.get(font.style));
