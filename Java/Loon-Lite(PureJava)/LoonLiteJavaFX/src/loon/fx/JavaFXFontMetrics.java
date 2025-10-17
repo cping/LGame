@@ -20,15 +20,19 @@
  */
 package loon.fx;
 
+import java.io.ByteArrayInputStream;
+
 import javafx.geometry.Bounds;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import loon.BaseIO;
 import loon.font.Font;
 import loon.font.Font.Style;
 import loon.geom.RectBox;
 import loon.utils.CharUtils;
 import loon.utils.MathUtils;
+import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 
 public class JavaFXFontMetrics {
@@ -67,7 +71,18 @@ public class JavaFXFontMetrics {
 			weight = FontWeight.NORMAL;
 			posture = FontPosture.REGULAR;
 		}
-		this.fxfont = javafx.scene.text.Font.font(font.name, weight, posture, font.size);
+		final String fontName = font.name;
+		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+		if ("ttf".equals(ext)) {
+			final byte[] buffer = BaseIO.loadBytes(fontName);
+			if (buffer != null) {
+				this.fxfont = javafx.scene.text.Font.loadFont(new ByteArrayInputStream(buffer), font.size);
+			} else {
+				this.fxfont = javafx.scene.text.Font.font(fontName, weight, posture, font.size);
+			}
+		} else {
+			this.fxfont = javafx.scene.text.Font.font(fontName, weight, posture, font.size);
+		}
 		this.fxtext = new Text();
 		this.fxtext.setFont(fxfont);
 		this.fxtext.setText(" ");

@@ -68,7 +68,6 @@ public class JavaSETextLayout extends loon.font.TextLayout {
 			if (fontCache == null) {
 				final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 				if ("ttf".equals(ext)) {
-					System.out.println(fontName);
 					java.awt.Font font = null;
 					final byte[] buffer = BaseIO.loadBytes(fontName);
 					if (buffer == null) {
