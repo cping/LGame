@@ -318,12 +318,14 @@ public abstract class LGame implements LRelease {
 		if (fontName != null) {
 			final String fileName = fontName.toLowerCase().trim();
 			final String ext = PathUtils.getExtension(fontName);
-			if (StringUtils.isEmpty(ext)) {
+			if (StringUtils.isEmpty(ext) || "ttf".equals(ext)) {
 				return LFont.getFont(fontName, fontSize);
 			} else if ("fnt".equals(ext)) {
 				return BMFont.create(fileName, fontSize);
 			} else if ("bdf".equals(ext)) {
 				return new BDFont(fontName, fontSize);
+			} else {
+				throw new LSysException("The Font file type is unknown , so loading failed.");
 			}
 		}
 		return setting.defaultGameFont;

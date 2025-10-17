@@ -29,16 +29,67 @@ import java.awt.font.TextAttribute;
 import java.awt.font.TextLayout;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import loon.BaseIO;
+import loon.LSystem;
+import loon.font.Font;
 import loon.font.TextFormat;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
+import loon.utils.PathUtils;
 
 class Lwjgl3TextLayout extends loon.font.TextLayout {
+
+	private final static HashMap<String, java.awt.Font> _fontPools = new HashMap<String, java.awt.Font>();
+
+	protected static void putAWTFont(String name, java.awt.Font font) {
+		if (_fontPools.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+			_fontPools.clear();
+		}
+		_fontPools.put(name, font);
+	}
+
+	protected static java.awt.Font convertLoonFontToAWTFont(Font loonFont) {
+		try {
+			if (_fontPools.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
+				_fontPools.clear();
+			}
+			final String fontName = loonFont.name;
+			final String keyName = fontName + loonFont.style.ordinal() + loonFont.size;
+			java.awt.Font fontCache = _fontPools.get(keyName);
+			if (fontCache == null) {
+				final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+				if ("ttf".equals(ext)) {
+					java.awt.Font font = null;
+					final byte[] buffer = BaseIO.loadBytes(fontName);
+					if (buffer == null) {
+						font = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT,
+								new FileInputStream(new File(fontName)));
+					} else {
+						font = java.awt.Font.createFont(java.awt.Font.TRUETYPE_FONT, new ByteArrayInputStream(buffer));
+					}
+					fontCache = font.deriveFont(Lwjgl3ImplGraphics.STYLE_TO_JAVA[loonFont.style.ordinal()],
+							(int) loonFont.size);
+				} else {
+					fontCache = new java.awt.Font(loonFont.name,
+							Lwjgl3ImplGraphics.STYLE_TO_JAVA[loonFont.style.ordinal()], (int) loonFont.size);
+				}
+				_fontPools.put(keyName, fontCache);
+			}
+			return fontCache;
+		} catch (Exception e) {
+			return new java.awt.Font(loonFont.name, Lwjgl3ImplGraphics.STYLE_TO_JAVA[loonFont.style.ordinal()],
+					(int) loonFont.size);
+		}
+	}
 
 	public static Lwjgl3TextLayout layoutText(Lwjgl3ImplGraphics gfx, String text, TextFormat format) {
 		AttributedString astring = new AttributedString(text.length() == 0 ? " " : text);
@@ -83,13 +134,15 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 
 	private final Graphics2D g2d;
 
+	private final BufferedImage img;
+
 	private FontMetrics fontMetrics;
 
 	Lwjgl3TextLayout(String text, TextFormat format, TextLayout layout) {
 		super(text, format, computeBounds(layout), layout.getAscent() + layout.getDescent());
-		this.g2d = (Graphics2D) new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).getGraphics();
-		this.fontMetrics = g2d.getFontMetrics(new java.awt.Font(format.font.name,
-				Lwjgl3ImplGraphics.STYLE_TO_JAVA[format.font.style.ordinal()], (int) format.font.size));
+		this.img = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+		this.g2d = (Graphics2D) img.getGraphics();
+		this.fontMetrics = g2d.getFontMetrics(convertLoonFontToAWTFont(format.font));
 		this.layout = layout;
 	}
 
@@ -129,7 +182,6 @@ class Lwjgl3TextLayout extends loon.font.TextLayout {
 			} else {
 				layout.draw(gfx, x, yoff);
 			}
-
 		} finally {
 			gfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, ohint);
 		}

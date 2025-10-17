@@ -26,8 +26,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 import loon.*;
 import loon.canvas.Canvas;
@@ -41,12 +39,10 @@ import loon.utils.Scale;
 
 public abstract class JavaSEGraphics extends Graphics {
 
-	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN,
-			java.awt.Font.BOLD, java.awt.Font.ITALIC,
+	protected static final int[] STYLE_TO_JAVA = { java.awt.Font.PLAIN, java.awt.Font.BOLD, java.awt.Font.ITALIC,
 			java.awt.Font.BOLD | java.awt.Font.ITALIC };
-	
+
 	private ByteBuffer imgBuf = createImageBuffer(1024);
-	private Map<String, java.awt.Font> fonts = new HashMap<String, java.awt.Font>();
 
 	protected final JavaSEGame game;
 
@@ -56,24 +52,19 @@ public abstract class JavaSEGraphics extends Graphics {
 		super(game, gl20, scale);
 		this.game = game;
 
-		Graphics2D aaGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-				.createGraphics();
-		aaGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
+		Graphics2D aaGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		aaGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		aaFontContext = aaGfx.getFontRenderContext();
-		Graphics2D aGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
-				.createGraphics();
-		aGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_OFF);
+		Graphics2D aGfx = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).createGraphics();
+		aGfx.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
 		aFontContext = aGfx.getFontRenderContext();
 	}
 
 	public void registerFont(String name, String path) {
 		try {
-			fonts.put(name, game.assets().requireResource(path).createFont());
+			JavaSETextLayout.putAWTFont(name, game.assets().requireResource(path).createFont());
 		} catch (Exception e) {
-			game.reportError("Failed to load font [name=" + name + ", path="
-					+ path + "]", e);
+			game.reportError("Failed to load font [name=" + name + ", path=" + path + "]", e);
 		}
 	}
 
@@ -90,35 +81,26 @@ public abstract class JavaSEGraphics extends Graphics {
 	}
 
 	@Override
-	protected Canvas createCanvasImpl(Scale scale, int pixelWidth,
-			int pixelHeight) {
-		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight,
-				BufferedImage.TYPE_INT_ARGB_PRE);
-		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap,
-				TextureSource.RenderCanvas));
+	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
+		BufferedImage bitmap = new BufferedImage(pixelWidth, pixelHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+		return new JavaSECanvas(this, new JavaSEImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
 	protected abstract void init();
 
 	protected abstract void upload(BufferedImage img, LTexture tex);
 
-	protected void updateViewport(Scale scale, float displayWidth,
-			float displayHeight) {
+	protected void updateViewport(Scale scale, float displayWidth, float displayHeight) {
 		int viewWidth = scale.scaledCeil(displayWidth);
 		int viewHeight = scale.scaledCeil(displayHeight);
-		if(!isAllowResize(viewWidth, viewHeight)){
+		if (!isAllowResize(viewWidth, viewHeight)) {
 			return;
 		}
-		viewportChanged(scale, viewWidth,viewHeight);
+		viewportChanged(scale, viewWidth, viewHeight);
 	}
 
 	java.awt.Font resolveFont(Font font) {
-		java.awt.Font jfont = fonts.get(font.name);
-		if (jfont == null) {
-			fonts.put(font.name, jfont = new java.awt.Font(font.name,
-					java.awt.Font.PLAIN, 12));
-		}
-		return jfont.deriveFont(STYLE_TO_JAVA[font.style.ordinal()], font.size);
+		return JavaSETextLayout.convertLoonFontToAWTFont(font);
 	}
 
 	static BufferedImage convertImage(BufferedImage image) {
@@ -129,8 +111,8 @@ public abstract class JavaSEGraphics extends Graphics {
 			image.coerceData(true);
 			return image;
 		}
-		BufferedImage convertedImage = new BufferedImage(image.getWidth(),
-				image.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage convertedImage = new BufferedImage(image.getWidth(), image.getHeight(),
+				BufferedImage.TYPE_INT_ARGB_PRE);
 		Graphics2D g = convertedImage.createGraphics();
 		g.setColor(new java.awt.Color(0f, 0f, 0f, 0f));
 		g.fillRect(0, 0, image.getWidth(), image.getHeight());
@@ -150,8 +132,7 @@ public abstract class JavaSEGraphics extends Graphics {
 	}
 
 	private static ByteBuffer createImageBuffer(int byteSize) {
-		return ByteBuffer.allocateDirect(byteSize).order(
-				ByteOrder.nativeOrder());
+		return ByteBuffer.allocateDirect(byteSize).order(ByteOrder.nativeOrder());
 	}
 
 }

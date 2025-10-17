@@ -26,8 +26,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
-import java.util.Map;
 
 import loon.Graphics;
 import loon.LTexture;
@@ -46,7 +44,6 @@ public abstract class Lwjgl3ImplGraphics extends Graphics {
 			java.awt.Font.BOLD | java.awt.Font.ITALIC };
 
 	private ByteBuffer imgBuf = createImageBuffer(1024);
-	private Map<String, java.awt.Font> fonts = new HashMap<String, java.awt.Font>();
 
 	protected final Lwjgl3Game game;
 
@@ -66,7 +63,7 @@ public abstract class Lwjgl3ImplGraphics extends Graphics {
 
 	public void registerFont(String name, String path) {
 		try {
-			fonts.put(name, game.assets().requireResource(path).createFont());
+			Lwjgl3TextLayout.putAWTFont(name, game.assets().requireResource(path).createFont());
 		} catch (Exception e) {
 			game.reportError("Failed to load font [name=" + name + ", path=" + path + "]", e);
 		}
@@ -104,11 +101,7 @@ public abstract class Lwjgl3ImplGraphics extends Graphics {
 	}
 
 	java.awt.Font resolveFont(Font font) {
-		java.awt.Font jfont = fonts.get(font.name);
-		if (jfont == null) {
-			fonts.put(font.name, jfont = new java.awt.Font(font.name, java.awt.Font.PLAIN, 12));
-		}
-		return jfont.deriveFont(STYLE_TO_JAVA[font.style.ordinal()], font.size);
+		return Lwjgl3TextLayout.convertLoonFontToAWTFont(font);
 	}
 
 	static BufferedImage convertImage(BufferedImage image) {
