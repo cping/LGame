@@ -49,6 +49,8 @@ public class ShockwaveMask implements FBOMask {
 
 		private final Vector2f _viewCenter;
 
+		private final Vector2f _viewSize;
+
 		private float _time;
 
 		private float _thickness;
@@ -62,16 +64,25 @@ public class ShockwaveMask implements FBOMask {
 		public ShockwaveShader(boolean autoResize, float w, float h) {
 			super(LSystem.getGLExVertexShader(), _fragmentShaderSource);
 			_autoViewResize = autoResize;
+			_viewSize = new Vector2f(w, h);
 			_viewCenter = new Vector2f(w / 2f, h / 2f);
 			_diffusiond = 10f;
 			_diffusionp = 0.7f;
 			_thickness = 1f;
 		}
 
-		public void setViewCenter(float x, float y) {
+		public void setViewSize(float w, float h) {
+			_viewSize.set(w, h);
+		}
+
+		public void updateToScreen() {
 			if (_autoViewResize) {
-				_viewCenter.set(x, y);
+				_viewSize.set(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 			}
+		}
+
+		public void setViewCenter(float x, float y) {
+			_viewCenter.set(x, y);
 		}
 
 		public void setTime(float t) {
@@ -108,10 +119,10 @@ public class ShockwaveMask implements FBOMask {
 
 		@Override
 		public void setupShader(ShaderProgram program) {
-			float scaleX = LSystem.getScaleWidth();
-			float scaleY = LSystem.getScaleHeight();
-			float viewWidth = LSystem.viewSize.getWidth() * scaleX;
-			float viewHeight = LSystem.viewSize.getHeight() * scaleY;
+			final float scaleX = LSystem.getScaleWidth();
+			final float scaleY = LSystem.getScaleHeight();
+			final float viewWidth = LSystem.viewSize.getWidth() * scaleX;
+			final float viewHeight = LSystem.viewSize.getHeight() * scaleY;
 			program.setUniformf("u_time", _time);
 			program.setUniformf("u_center", ((_viewCenter.x * scaleX) / viewWidth),
 					((_viewCenter.y * scaleY) / viewHeight));
@@ -122,7 +133,9 @@ public class ShockwaveMask implements FBOMask {
 	}
 
 	private boolean _shaderInited, _shaderDirty;
+
 	private final ShaderMask _shaderMask;
+
 	private final ShockwaveShader _shockwaveShader;
 
 	public ShockwaveMask() {
@@ -153,8 +166,45 @@ public class ShockwaveMask implements FBOMask {
 		return _shaderMask;
 	}
 
+	public void setViewCenter(float x, float y) {
+		_shockwaveShader.setViewCenter(x, y);
+	}
+
+	public void setTime(float t) {
+		_shockwaveShader.setTime(t);
+	}
+
+	public float getTime() {
+		return _shockwaveShader.getTime();
+	}
+
+	public void setThickness(float t) {
+		_shockwaveShader.setThickness(t);
+	}
+
+	public float getThickness() {
+		return _shockwaveShader.getThickness();
+	}
+
+	public float getDiffusion() {
+		return _shockwaveShader.getDiffusion();
+	}
+
+	public void setDiffusion(float d) {
+		_shockwaveShader.setDiffusion(d);
+	}
+
+	public float getDiffusionPower() {
+		return _shockwaveShader.getDiffusionPower();
+	}
+
+	public void setDiffusionPower(float d) {
+		_shockwaveShader.setDiffusionPower(d);
+	}
+
 	@Override
 	public void setViewSize(float w, float h) {
+		_shockwaveShader.setViewSize(w, h);
 		_shockwaveShader.setViewCenter(w / 2f, h / 2f);
 	}
 

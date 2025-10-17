@@ -66,7 +66,9 @@ public class GreyscaleMask implements FBOMask {
 	}
 
 	private boolean _shaderInited, _shaderDirty;
+	
 	private final ShaderMask _shaderMask;
+	
 	private final GreyscaleShader _greyscaleShader;
 
 	public GreyscaleMask() {

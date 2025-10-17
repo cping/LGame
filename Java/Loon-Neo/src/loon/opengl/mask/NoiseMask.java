@@ -105,8 +105,8 @@ public class NoiseMask implements FBOMask {
 
 		@Override
 		public void setupShader(ShaderProgram program) {
-			float scaleX = LSystem.getScaleWidth();
-			float scaleY = LSystem.getScaleHeight();
+			final float scaleX = LSystem.getScaleWidth();
+			final float scaleY = LSystem.getScaleHeight();
 			program.setUniformf("resolution", _viewSize.x * scaleX, _viewSize.y * scaleY);
 			program.setUniformf("time", _time);
 			program.setUniformf("mouse", _mouse);
@@ -114,7 +114,9 @@ public class NoiseMask implements FBOMask {
 	}
 
 	private boolean _shaderInited, _shaderDirty;
+	
 	private final ShaderMask _shaderMask;
+	
 	private final NoiseShader _noiseShader;
 
 	public NoiseMask() {

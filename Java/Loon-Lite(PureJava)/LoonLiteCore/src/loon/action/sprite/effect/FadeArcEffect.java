@@ -107,7 +107,7 @@ public class FadeArcEffect extends BaseAbstractEffect {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
 		} else {
 			final float deg = MathUtils.DEG_FULL / this.arcDiv * this.step;
-			if (deg <= MathUtils.DEG_FULL) {
+			if (deg != 0 && deg <= MathUtils.DEG_FULL) {
 				final float length = MathUtils.sqrt(MathUtils.pow(_width / 2f, 2f) + MathUtils.pow(_height / 2f, 2f));
 				final float x = drawX(_width / 2f - length + offsetX) - LSystem.LAYER_TILE_SIZE / 2f;
 				final float y = drawY(_height / 2f - length + offsetY) - LSystem.LAYER_TILE_SIZE / 2f;
