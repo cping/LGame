@@ -1978,10 +1978,9 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		for (Pixmap pix : bdPixmapList) {
 			if (pix != null) {
 				pix.close();
-				pix = null;
 			}
 		}
-		bdPixmapList.close();
+		bdPixmapList.clear();
 	}
 
 	@Override

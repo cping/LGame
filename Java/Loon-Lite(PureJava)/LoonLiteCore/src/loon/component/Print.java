@@ -30,6 +30,7 @@ import loon.font.FontUtils;
 import loon.font.IFont;
 import loon.geom.PointF;
 import loon.geom.Vector2f;
+import loon.geom.Vector3f;
 import loon.opengl.GLEx;
 import loon.opengl.LSTRFont;
 import loon.utils.CharUtils;
@@ -99,6 +100,8 @@ public final class Print implements FontSet<Print>, LRelease {
 		}
 		return StringUtils.containCJKLanguage(mes);
 	}
+
+	private final Vector3f _tempTextSize = new Vector3f();
 
 	private int _index, _offsettext, _curfontSize, _perfontSize;
 
@@ -232,6 +235,13 @@ public final class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
+	public Vector3f getFontTextLimitSize() {
+		_tempTextSize.x = _isEnglish ? _fontSize * 0.25f : _fontSize * 0.45f;
+		_tempTextSize.y = _isEnglish ? _fontSize * 0.75f : _fontSize * 0.9f;
+		_tempTextSize.z = _fontSize / 2f;
+		return _tempTextSize;
+	}
+
 	public boolean isGradientFontColor() {
 		return _gradientFontColor;
 	}
@@ -336,17 +346,19 @@ public final class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + MathUtils.ifloor(_fontSize * 4f);
 				break;
 			}
+			final Vector3f result = getFontTextLimitSize();
+
+			final int minTextSize = MathUtils.ifloor(result.x);
+			final int maxTextSize = MathUtils.ifloor(result.y);
+			final int midTextSize = MathUtils.ifloor(result.z);
 
 			this._leftsize = _textoffsetSize;
+
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 
 			if (_defaultFont == null) {
 				return;
 			}
-
-			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
-			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
-			final int midTextSize = MathUtils.ifloor(_fontSize / 2f);
 
 			_fontColor = old;
 
@@ -499,11 +511,14 @@ public final class Print implements FontSet<Print>, LRelease {
 				break;
 			}
 
-			final int minTextSize = MathUtils.ifloor(_fontSize * 0.45f);
-			final int maxTextSize = MathUtils.ifloor(_fontSize * 0.9f);
-			final int midTextSize = MathUtils.ifloor(_fontSize / 2f);
+			final Vector3f result = getFontTextLimitSize();
+
+			final int minTextSize = MathUtils.ifloor(result.x);
+			final int maxTextSize = MathUtils.ifloor(result.y);
+			final int midTextSize = MathUtils.ifloor(result.z);
 
 			this._leftsize = _textoffsetSize;
+
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
 			_fontColor = old;
 			for (int i = 0; i < _textsize; i++) {
