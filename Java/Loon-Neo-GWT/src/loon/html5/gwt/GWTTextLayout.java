@@ -33,7 +33,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
 
-class GWTTextLayout extends TextLayout {
+final class GWTTextLayout extends TextLayout {
 
 	private final GWTFontMetrics _metrics;
 

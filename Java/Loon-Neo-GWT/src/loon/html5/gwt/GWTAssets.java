@@ -36,6 +36,7 @@ import loon.jni.XDomainRequest.Handler;
 import loon.opengl.TextureSource;
 import loon.utils.ObjectMap;
 import loon.utils.Scale;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
@@ -84,6 +85,10 @@ public class GWTAssets extends Assets {
 
 	public void setAssetScale(float scaleFactor) {
 		this.assetScale = new Scale(scaleFactor);
+	}
+
+	protected String getURLPath(String fileName) {
+		return "url('" + StringUtils.replace(getPathPrefix(), "\\", "/") + fileName + "')";
 	}
 
 	@Override

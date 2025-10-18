@@ -41,15 +41,15 @@ import loon.utils.StringUtils;
  */
 public final class LFont extends FontTrans implements IFont {
 
-	public static LFont getDefaultFont() {
+	public static final LFont getDefaultFont() {
 		return newFont();
 	}
 
-	public static LFont newFont() {
+	public static final LFont newFont() {
 		return newFont(20);
 	}
 
-	public static LFont newFont(int size) {
+	public static final LFont newFont(final int size) {
 		return LFont.getFont(LSystem.getSystemGameFontName(), Font.toFontStyle(LSystem.getSystemGameFontStyle()), size);
 	}
 
@@ -139,24 +139,25 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public void drawString(final GLEx g, final String msg, float tx, float ty) {
+	public void drawString(final GLEx g, final String msg, final float tx, final float ty) {
 		drawString(g, msg, tx, ty, LColor.white);
 	}
 
 	@Override
-	public void drawString(final GLEx g, final String msg, float tx, float ty, LColor c) {
+	public void drawString(final GLEx g, final String msg, final float tx, final float ty, final LColor c) {
 		drawString(g, msg, tx, ty, 0, c);
 	}
 
 	@Override
-	public void drawString(final GLEx g, final String msg, float tx, float ty, float angle, LColor c) {
+	public void drawString(final GLEx g, final String msg, final float tx, final float ty, final float angle,
+			final LColor c) {
 		if (_closed) {
 			return;
 		}
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		final String newMessage = toMessage(msg);
@@ -184,7 +185,7 @@ public final class LFont extends FontTrans implements IFont {
 		if (c == null || c.a <= 0.01) {
 			return;
 		}
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		final String newMessage = toMessage(msg);
@@ -247,7 +248,7 @@ public final class LFont extends FontTrans implements IFont {
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return textLayout.stringWidth(newMessage);
 		} else {
-			StrBuilder sbr = new StrBuilder();
+			final StrBuilder sbr = new StrBuilder();
 			int width = 0;
 			for (int i = 0, size = newMessage.length(); i < size; i++) {
 				char ch = newMessage.charAt(i);
@@ -258,7 +259,6 @@ public final class LFont extends FontTrans implements IFont {
 					sbr.append(ch);
 				}
 			}
-
 			return width;
 		}
 	}
@@ -281,7 +281,7 @@ public final class LFont extends FontTrans implements IFont {
 		if (newMessage.indexOf(LSystem.LF) == -1) {
 			return getHeight();
 		} else {
-			String[] list = StringUtils.split(newMessage, LSystem.LF);
+			final String[] list = StringUtils.split(newMessage, LSystem.LF);
 			return list.length * getHeight();
 		}
 	}
@@ -348,14 +348,14 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public boolean equals(Object o) {
+	public boolean equals(final Object o) {
 		if (o == null) {
 			return false;
 		}
 		if (!(o instanceof LFont)) {
 			return false;
 		}
-		LFont font = (LFont) o;
+		final LFont font = (LFont) o;
 		if (this == font) {
 			return true;
 		}
@@ -372,11 +372,11 @@ public final class LFont extends FontTrans implements IFont {
 		return false;
 	}
 
-	public Vector2f getOrigin(String msg) {
+	public Vector2f getOrigin(final String msg) {
 		return getOrigin(msg, true);
 	}
 
-	public Vector2f getOrigin(String msg, boolean filter) {
+	public Vector2f getOrigin(final String msg, final boolean filter) {
 		String newMessage = msg;
 		if (filter) {
 			newMessage = toMessage(msg);
@@ -392,11 +392,11 @@ public final class LFont extends FontTrans implements IFont {
 		return result;
 	}
 
-	public TextLayout getLayoutText(String msg) {
+	public TextLayout getLayoutText(final String msg) {
 		return getLayoutText(msg, true);
 	}
 
-	public TextLayout getLayoutText(String msg, boolean filter) {
+	public TextLayout getLayoutText(final String msg, final boolean filter) {
 		String newMessage = msg;
 		if (filter) {
 			newMessage = toMessage(msg);
@@ -405,7 +405,7 @@ public final class LFont extends FontTrans implements IFont {
 	}
 
 	@Override
-	public String confineLength(String msg, int width) {
+	public String confineLength(final String msg, final int width) {
 		String newMessage = toMessage(msg);
 		int length = 0;
 		for (int i = 0; i < newMessage.length(); i++) {

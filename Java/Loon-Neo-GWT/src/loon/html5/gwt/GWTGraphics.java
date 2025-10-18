@@ -38,6 +38,7 @@ import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
 import loon.opengl.TextureSource;
 import loon.utils.GLUtils;
+import loon.utils.PathUtils;
 import loon.utils.Scale;
 
 import com.google.gwt.canvas.dom.client.Context2d;
@@ -162,22 +163,22 @@ public class GWTGraphics extends Graphics {
 	}
 
 	private native int getScreenWidthJSNI() /*-{
-											return $wnd.screen.width;
-											}-*/;
+		return $wnd.screen.width;
+	}-*/;
 
 	private native int getScreenHeightJSNI() /*-{
-												return $wnd.screen.height;
-												}-*/;
+		return $wnd.screen.height;
+	}-*/;
 
 	private native boolean isFullscreenJSNI() /*-{
-												if ("webkitIsFullScreen" in $doc) {
-												return $doc.webkitIsFullScreen;
-												}
-												if ("mozFullScreen" in $doc) {
-												return $doc.mozFullScreen;
-												}
-												return false
-												}-*/;
+		if ("webkitIsFullScreen" in $doc) {
+			return $doc.webkitIsFullScreen;
+		}
+		if ("mozFullScreen" in $doc) {
+			return $doc.mozFullScreen;
+		}
+		return false
+	}-*/;
 
 	public void setSize(int width, int height) {
 		rootElement.getStyle().setWidth(width, Unit.PX);
@@ -232,10 +233,17 @@ public class GWTGraphics extends Graphics {
 	GWTFontMetrics getFontMetrics(Font font) {
 		GWTFontMetrics metrics = fontMetrics.get(font);
 		if (metrics == null) {
+			final String fontName = font.name;
 			measureElement.getStyle().setFontSize(font.size, Unit.PX);
 			measureElement.getStyle().setFontWeight(Style.FontWeight.NORMAL);
 			measureElement.getStyle().setFontStyle(Style.FontStyle.NORMAL);
-			measureElement.getStyle().setProperty("fontFamily", font.name);
+			final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+			if ((game instanceof GWTGame) && ("ttf".equals(ext) || "otf".equals(ext))) {
+				measureElement.getStyle().setProperty("src", ((GWTAssets) game.assets()).getURLPath(fontName));
+				measureElement.getStyle().setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
+			} else {
+				measureElement.getStyle().setProperty("fontFamily", fontName);
+			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {
 			case BOLD:

@@ -571,7 +571,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public Hexagon coordinate(int[] position) {
-		int m0 = position[0] + (position[1] >> 1);
+		final int m0 = position[0] + (position[1] >> 1);
 		Hexagon hexagon = hexagons[m0][position[1]];
 		if (hexagon == null) {
 			hexagon = new Hexagon(
@@ -585,11 +585,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public Vector2f decoordinate(int x, int y) {
 		int m0, n;
-		int xBlock = (x - origin.getX()) / (origin.getStartWidth() + origin.getStartWidth());
-		int xOdd = (x - origin.getX()) % (origin.getStartWidth() + origin.getStartWidth());
-		int yBlock = (y - origin.getY()) / (origin.getEndHeight() + origin.getMidHeight());
-		int yOdd = (y - origin.getY()) % (origin.getEndHeight() + origin.getMidHeight());
-		int yOdd0 = MathUtils.round(origin.getEndHeight() / origin.getStartWidth() * xOdd);
+		final int xBlock = (x - origin.getX()) / (origin.getStartWidth() + origin.getStartWidth());
+		final int xOdd = (x - origin.getX()) % (origin.getStartWidth() + origin.getStartWidth());
+		final int yBlock = (y - origin.getY()) / (origin.getEndHeight() + origin.getMidHeight());
+		final int yOdd = (y - origin.getY()) % (origin.getEndHeight() + origin.getMidHeight());
+		final int yOdd0 = MathUtils.round(origin.getEndHeight() / origin.getStartWidth() * xOdd);
 		if ((yBlock & 1) == 0) {
 			if (yOdd < origin.getEndHeight() - yOdd0) {
 				m0 = xBlock - 1;
@@ -692,10 +692,10 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 	}
 
 	public SortedList<int[]> lineRegion(int[] start, int[] end) {
-		int dx = end[0] - start[0];
-		int dy = end[1] - start[1];
+		final int dx = end[0] - start[0];
+		final int dy = end[1] - start[1];
 		if (dx == 0 || dy == 0 || dx == -dy) {
-			SortedList<int[]> positions = new SortedList<int[]>();
+			final SortedList<int[]> positions = new SortedList<int[]>();
 			int ax = dx < 0 ? -dx : dx;
 			int ay = dy < 0 ? -dy : dy;
 			int len = ax < ay ? ay : ax;
@@ -805,7 +805,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		x += offsetXPixel(getViewRect().x);
 		y += offsetYPixel(getViewRect().y);
 		focuses = null;
-		Vector2f pos = decoordinate((int) x, (int) y);
+		final Vector2f pos = decoordinate((int) x, (int) y);
 		if (pos == null) {
 			return null;
 		}
@@ -828,7 +828,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (pos == null) {
 			return null;
 		}
-		int[] position = pos.toInt();
+		final int[] position = pos.toInt();
 		if (position != null) {
 			Path path = findPath(this, Vector2f.at(startX, startY).toInt(), position);
 			if (path != null) {
@@ -857,11 +857,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (positionFlag == null) {
 			return null;
 		}
-		int[] pFs = positionFlag.toInt();
+		final int[] pFs = positionFlag.toInt();
 		xEnd += offsetXPixel(getViewRect().x);
 		yEnd += offsetYPixel(getViewRect().y);
 		focuses = null;
-		Vector2f position = decoordinate(xEnd, yEnd);
+		final Vector2f position = decoordinate(xEnd, yEnd);
 		if (position != null && allowDisplayFindPath) {
 			focuses = lineRegion(pFs, position.toInt());
 			return new SortedList<int[]>(focuses);
@@ -1716,7 +1716,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public int putAnimationTile(int id, Animation animation, Attribute attribute) {
 		if (active) {
-			TileImpl tile = new TileImpl(id);
+			final TileImpl tile = new TileImpl(id);
 			tile.setImgId(-1);
 			tile.setAttribute(attribute);
 			if (animation != null && animation.getTotalFrames() > 0) {
@@ -1767,7 +1767,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public int putTile(int id, LTexture img, Attribute attribute) {
 		if (active) {
-			TileImpl tile = new TileImpl(id);
+			final TileImpl tile = new TileImpl(id);
 			tile.setImgId(texturePack.putImage(img));
 			tile.setAttribute(attribute);
 			tileBinds.add(tile);
@@ -1784,7 +1784,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public int putTile(int id, String res, Attribute attribute) {
 		if (active) {
-			TileImpl tile = new TileImpl(id);
+			final TileImpl tile = new TileImpl(id);
 			tile.setImgId(texturePack.putImage(res));
 			tile.setAttribute(attribute);
 			tileBinds.add(tile);
@@ -1801,7 +1801,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 
 	public HexagonMap putTile(int id, int imgId, Attribute attribute) {
 		if (active) {
-			TileImpl tile = new TileImpl(id);
+			final TileImpl tile = new TileImpl(id);
 			tile.setImgId(imgId);
 			tile.setAttribute(attribute);
 			tileBinds.add(tile);
@@ -1858,7 +1858,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 			completed();
 			return;
 		}
-		IFont tmpFont = g.getFont();
+		final IFont tmpFont = g.getFont();
 		try {
 			if (allowDisplayFindPath || allowDisplayClicked || allowDisplayPosition) {
 				int step = 0;
@@ -1938,7 +1938,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 						}
 					}
 					if (allowDisplayClicked && positionFlag != null) {
-						int[] position = positionFlag.toInt();
+						final int[] position = positionFlag.toInt();
 						hexagon = coordinate(position);
 						if (getViewRect().intersects(hexagon.getFrameRect())) {
 							g.draw(getTempHexagon(hexagon), hexagon.getX() + offsetX, hexagon.getY() + offsetY,
@@ -2036,11 +2036,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (o == null) {
 			return false;
 		}
-		float x = offsetXPixel(o.getX()) + newX;
-		float y = offsetYPixel(o.getY()) + newY;
+		final float x = offsetXPixel(o.getX()) + newX;
+		final float y = offsetYPixel(o.getY()) + newY;
 		if (!field2d.checkTileCollision(o, x, y)) {
 			if (toMoved) {
-				Vector2f pos = decoordinate((int) x, (int) y);
+				final Vector2f pos = decoordinate((int) x, (int) y);
 				if (pos != null) {
 					position = pos.toInt();
 					int tx = position[0] + (position[1] >> 1);
@@ -2061,11 +2061,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (o == null) {
 			return false;
 		}
-		float x = offsetXPixel(o.getX()) + newX;
-		float y = offsetYPixel(o.getY());
+		final float x = offsetXPixel(o.getX()) + newX;
+		final float y = offsetYPixel(o.getY());
 		if (!field2d.checkTileCollision(o, x, y)) {
 			if (toMoved) {
-				Vector2f pos = decoordinate((int) x, (int) y);
+				final Vector2f pos = decoordinate((int) x, (int) y);
 				if (pos != null) {
 					position = pos.toInt();
 					int tx = position[0] + (position[1] >> 1);
@@ -2086,11 +2086,11 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (o == null) {
 			return false;
 		}
-		float x = offsetXPixel(o.getX());
-		float y = offsetYPixel(o.getY()) + newY;
+		final float x = offsetXPixel(o.getX());
+		final float y = offsetYPixel(o.getY()) + newY;
 		if (!field2d.checkTileCollision(o, x, y)) {
 			if (toMoved) {
-				Vector2f pos = decoordinate((int) x, (int) y);
+				final Vector2f pos = decoordinate((int) x, (int) y);
 				if (pos != null) {
 					position = pos.toInt();
 					int tx = position[0] + (position[1] >> 1);

@@ -460,7 +460,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			}
 			// 若字符串超过当前纹理大小,则创建新纹理保存
 			if (strfont._outBounds) {
-				StrBuilder temp = new StrBuilder(outchached.size());
+				final StrBuilder temp = new StrBuilder(outchached.size());
 				for (LIterator<Character> it = outchached.iterator(); it.hasNext();) {
 					temp.append(it.next());
 				}

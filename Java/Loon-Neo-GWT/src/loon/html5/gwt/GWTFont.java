@@ -21,33 +21,39 @@
 package loon.html5.gwt;
 
 import loon.font.Font;
+import loon.utils.PathUtils;
 
-class GWTFont {
+final class GWTFont {
 
 	public static final Font DEFAULT = new Font("sans-serif", Font.Style.PLAIN, 12);
 
 	public static String toCSS(Font font) {
-		String name = font.name;
-		if (name == null) {
-			name = "monospace";
+		String fontName = font.name;
+		if (fontName == null) {
+			fontName = "monospace";
 		}
-		String familyName = name.toLowerCase();
-		float size = font.size;
-		// 针对不同浏览器（主要是手机），有可能字体不支持，请自行引入font的css解决……
-		if (Loon.self != null && (!Loon.self.isDesktop())) {
-			if (name != null) {
-				if (familyName.equals("serif") || familyName.equals("timesroman")) {
-					name = "serif";
-				} else if (familyName.equals("sansserif") || familyName.equals("helvetica")) {
-					name = "sans-serif";
-				} else if (familyName.equals("monospaced") || familyName.equals("courier")
-						|| familyName.equals("dialog") || familyName.equals("黑体")) {
-					name = "monospace";
+		final String familyName = fontName.trim().toLowerCase();
+		final float size = font.size;
+		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+		if (("ttf".equals(ext) || "otf".equals(ext))) {
+			fontName = PathUtils.getBaseFileName(fontName);
+		} else {
+			// 针对不同浏览器（主要是手机），有可能字体不支持，请自行引入font的css解决……
+			if (Loon.self != null && (!Loon.self.isDesktop())) {
+				if (fontName != null) {
+					if (familyName.equals("serif") || familyName.equals("timesroman")) {
+						fontName = "serif";
+					} else if (familyName.equals("sansserif") || familyName.equals("helvetica")) {
+						fontName = "sans-serif";
+					} else if (familyName.equals("monospaced") || familyName.equals("courier")
+							|| familyName.equals("dialog") || familyName.equals("黑体")) {
+						fontName = "monospace";
+					}
 				}
 			}
 		}
-		if (!name.startsWith("\"") && name.contains(" ")) {
-			name = '"' + name + '"';
+		if (!fontName.startsWith("\"") && fontName.contains(" ")) {
+			fontName = '"' + fontName + '"';
 		}
 		String style = "";
 		switch (font.style) {
@@ -63,6 +69,6 @@ class GWTFont {
 		default:
 			break;
 		}
-		return style + " " + size + "px " + name;
+		return style + " " + size + "px " + fontName;
 	}
 }

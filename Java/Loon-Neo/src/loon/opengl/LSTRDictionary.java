@@ -122,7 +122,7 @@ public final class LSTRDictionary implements LRelease {
 
 	private Dict _lastDict;
 
-	public final static boolean isAllInBaseCharsPool(String c) {
+	public final static boolean isAllInBaseCharsPool(final String c) {
 		if (StringUtils.isEmpty(c)) {
 			return false;
 		}
@@ -140,11 +140,11 @@ public final class LSTRDictionary implements LRelease {
 		return idx == charsCount;
 	}
 
-	public static class Dict implements LRelease {
+	public static final class Dict implements LRelease {
 
 		protected LSTRFont font;
 
-		public static Dict newDict(LSTRFont font) {
+		public static Dict newDict(final LSTRFont font) {
 			return new Dict(font);
 		}
 
@@ -152,7 +152,7 @@ public final class LSTRDictionary implements LRelease {
 			return newDict(null);
 		}
 
-		private Dict(LSTRFont font) {
+		private Dict(final LSTRFont font) {
 			this.font = font;
 		}
 
@@ -221,7 +221,7 @@ public final class LSTRDictionary implements LRelease {
 
 	}
 
-	private void closeDict(IntMap<Dict> list) {
+	private void closeDict(final IntMap<Dict> list) {
 		synchronized (list) {
 			for (Iterator<Dict> it = list.iterator(); it.hasNext();) {
 				Dict dict = it.next();
@@ -234,7 +234,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	private void closeDict(ArrayMap list) {
+	private void closeDict(final ArrayMap list) {
 		synchronized (list) {
 			for (int i = list.size() - 1; i > -1; i--) {
 				final Entry entry = list.getEntry(i);
@@ -250,7 +250,7 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	private static final int toFontStringHash(LFont font) {
+	private static final int toFontStringHash(final LFont font) {
 		int hashCode = 132;
 		hashCode = LSystem.unite(hashCode, font.getFontName());
 		hashCode = LSystem.unite(hashCode, LSystem.UNDERLINE);
@@ -260,7 +260,7 @@ public final class LSTRDictionary implements LRelease {
 		return hashCode;
 	}
 
-	public LFont searchCacheFont(String mes) {
+	public LFont searchCacheFont(final String mes) {
 		LFont cFont = (LFont) _cacheList.get(mes);
 		if (cFont == null) {
 			for (int i = _cacheList.size() - 1; i > -1; i--) {
@@ -277,7 +277,7 @@ public final class LSTRDictionary implements LRelease {
 		return cFont;
 	}
 
-	public Dict searchCacheDict(LFont font) {
+	public Dict searchCacheDict(final LFont font) {
 		if (font != null) {
 			final int fontFlag = toFontStringHash(font);
 			final Dict pDict = _fontList.get(fontFlag);
@@ -288,7 +288,7 @@ public final class LSTRDictionary implements LRelease {
 		return null;
 	}
 
-	public Dict searchCacheDict(LFont font, String mes) {
+	public Dict searchCacheDict(final LFont font, final String mes) {
 		if (font != null) {
 			final int fontFlag = toFontStringHash(font);
 			final Dict pDict = _fontList.get(fontFlag);
@@ -299,7 +299,7 @@ public final class LSTRDictionary implements LRelease {
 		return null;
 	}
 
-	public Dict searchCacheDict(String mes) {
+	public Dict searchCacheDict(final String mes) {
 		final LFont cFont = searchCacheFont(mes);
 		if (cFont != null) {
 			return searchCacheDict(cFont, mes);
@@ -345,7 +345,7 @@ public final class LSTRDictionary implements LRelease {
 		_fontCanvasList.clear();
 	}
 
-	public final boolean checkMessage(String key, String message) {
+	public final boolean checkMessage(final String key, final String message) {
 		final int size = message.length();
 		final int limit = key.length();
 		int idx = 0;
@@ -367,7 +367,7 @@ public final class LSTRDictionary implements LRelease {
 		return false;
 	}
 
-	private boolean checkEnglishString(String mes) {
+	private boolean checkEnglishString(final String mes) {
 		final int len = mes.length();
 		final int tempLength = _checkMessage.length;
 		int count = 0;
@@ -534,7 +534,8 @@ public final class LSTRDictionary implements LRelease {
 		return this;
 	}
 
-	public final void drawString(LFont font, String message, float x, float y, float angle, LColor c) {
+	public final void drawString(final LFont font, final String message, final float x, final float y,
+			final float angle, final LColor c) {
 		final Dict pDict = bind(font, message);
 		if (pDict == null) {
 			return;
@@ -546,8 +547,8 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	public final void drawString(LFont font, String message, float x, float y, float sx, float sy, float ax, float ay,
-			float angle, LColor c) {
+	public final void drawString(final LFont font, final String message, final float x, final float y, final float sx,
+			final float sy, final float ax, final float ay, final float angle, final LColor c) {
 		final Dict pDict = bind(font, message);
 		if (pDict == null) {
 			return;
@@ -559,7 +560,8 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float angle, LColor c) {
+	public final void drawString(final GLEx gl, final LFont font, final String message, final float x, final float y,
+			final float angle, final LColor c) {
 		final Dict pDict = bind(font, message);
 		if (pDict == null) {
 			return;
@@ -584,8 +586,8 @@ public final class LSTRDictionary implements LRelease {
 		}
 	}
 
-	public final void drawString(GLEx gl, LFont font, String message, float x, float y, float sx, float sy, float ax,
-			float ay, float angle, LColor c) {
+	public final void drawString(final GLEx gl, final LFont font, final String message, final float x, final float y,
+			final float sx, final float sy, final float ax, final float ay, final float angle, final LColor c) {
 		final Dict pDict = bind(font, message);
 		if (pDict == null) {
 			return;
@@ -621,7 +623,7 @@ public final class LSTRDictionary implements LRelease {
 		return _lazyKey.toString();
 	}
 
-	public final LSTRFont STRFont(LFont font) {
+	public final LSTRFont STRFont(final LFont font) {
 		if (_fontList != null) {
 			for (Iterator<Dict> it = _fontList.iterator(); it.hasNext();) {
 				Dict dict = it.next();

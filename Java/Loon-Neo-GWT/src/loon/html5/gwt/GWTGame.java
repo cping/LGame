@@ -40,7 +40,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Panel;
 
-public class GWTGame extends LGame {
+public final class GWTGame extends LGame {
 
 	private static final int MIN_DELAY = 5;
 
