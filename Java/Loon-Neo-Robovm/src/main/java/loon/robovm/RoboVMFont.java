@@ -20,79 +20,27 @@
  */
 package loon.robovm;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
 import loon.font.Font;
 import loon.font.Font.Style;
+import loon.utils.PathUtils;
 
 import org.robovm.apple.coregraphics.CGAffineTransform;
+import org.robovm.apple.coregraphics.CGDataProvider;
+import org.robovm.apple.coregraphics.CGFont;
 import org.robovm.apple.coretext.CTFont;
 
 public class RoboVMFont {
 
-	private static final Font DEFAULT_FONT = new Font("Helvetica",
-			Font.Style.PLAIN, 12);
+	private final static Map<Font, CTFont> fonts = new HashMap<Font, CTFont>();
 
-	public static void registerVariant(String name, Style style,
-			String variantName) {
-		Map<String, String> styleVariants = _variants.get(style);
-		if (styleVariants == null) {
-			_variants.put(style, styleVariants = new HashMap<String, String>());
-		}
-		styleVariants.put(name, variantName);
-	}
-
-	final static String filterFontName(String name) {
-		String familyName = name;
-		if (familyName != null) {
-			if (familyName.equalsIgnoreCase("Serif")
-					|| familyName.equalsIgnoreCase("TimesRoman")) {
-				familyName = "Times New Roman";
-			} else if (familyName.equalsIgnoreCase("SansSerif")
-					|| familyName.equalsIgnoreCase("Helvetica")) {
-				familyName = "Helvetica";
-			} else if (familyName.equalsIgnoreCase("Monospaced")
-					|| familyName.equalsIgnoreCase("Courier")
-					|| familyName.equalsIgnoreCase("Dialog")) {
-				familyName = "Arial";
-			}
-		}
-		return familyName;
-	}
-
-	static CTFont resolveFont(Font font) {
-		CTFont ctFont = fonts.get(font == null ? DEFAULT_FONT : font);
-		if (ctFont == null) {
-			String iosName = getVariant(filterFontName(font.name), font.style);
-			fonts.put(
-					font,
-					ctFont = CTFont.create(iosName, font.size,
-							CGAffineTransform.Identity()));
-		}
-		return ctFont;
-	}
-
-	private static String getVariant(String name, Style style) {
-		Map<String, String> styleVariants = _variants.get(style);
-		String variant = (styleVariants == null) ? null : styleVariants
-				.get(name);
-		if (variant != null)
-			return variant;
-		else if (style == Style.BOLD_ITALIC) {
-			return getVariant(name, Style.BOLD);
-		} else
-			return name;
-	}
-
-	private static Map<Font, CTFont> fonts = new HashMap<>();
-
-	private static Map<Style, Map<String, String>> _variants = new HashMap<>();
+	private final static Map<Style, Map<String, String>> _variants = new HashMap<Style, Map<String, String>>();
 	static {
-		registerVariant("American Typewriter", Style.PLAIN,
-				"AmericanTypewriter");
-		registerVariant("American Typewriter", Style.BOLD,
-				"AmericanTypewriter-Bold");
+		registerVariant("American Typewriter", Style.PLAIN, "AmericanTypewriter");
+		registerVariant("American Typewriter", Style.BOLD, "AmericanTypewriter-Bold");
 		registerVariant("Arial", Style.PLAIN, "ArialMT");
 		registerVariant("Arial", Style.ITALIC, "Arial-ItalicMT");
 		registerVariant("Arial", Style.BOLD, "Arial-BoldMT");
@@ -101,8 +49,7 @@ public class RoboVMFont {
 		registerVariant("Arial Hebrew", Style.BOLD, "ArialHebrew-Bold");
 		registerVariant("Baskerville", Style.BOLD, "Baskerville-Bold");
 		registerVariant("Baskerville", Style.ITALIC, "Baskerville-Italic");
-		registerVariant("Baskerville", Style.BOLD_ITALIC,
-				"Baskerville-BoldItalic");
+		registerVariant("Baskerville", Style.BOLD_ITALIC, "Baskerville-BoldItalic");
 		registerVariant("Chalkboard SE", Style.PLAIN, "ChalkboardSE-Regular");
 		registerVariant("Chalkboard SE", Style.BOLD, "ChalkboardSE-Bold");
 		registerVariant("Cochin", Style.BOLD, "Cochin-Bold");
@@ -114,43 +61,99 @@ public class RoboVMFont {
 		registerVariant("Courier New", Style.PLAIN, "CourierNewPSMT");
 		registerVariant("Courier New", Style.BOLD, "CourierNewPS-BoldMT");
 		registerVariant("Courier New", Style.ITALIC, "CourierNewPS-ItalicMT");
-		registerVariant("Courier New", Style.BOLD_ITALIC,
-				"CourierNewPS-BoldItalicMT");
+		registerVariant("Courier New", Style.BOLD_ITALIC, "CourierNewPS-BoldItalicMT");
 		registerVariant("Georgia", Style.ITALIC, "Georgia-Italic");
 		registerVariant("Georgia", Style.BOLD, "Georgia-Bold");
 		registerVariant("Georgia", Style.BOLD_ITALIC, "Georgia-BoldItalic");
 		registerVariant("Helvetica", Style.BOLD, "Helvetica-Bold");
 		registerVariant("Helvetica", Style.ITALIC, "Helvetica-Oblique");
-		registerVariant("Helvetica", Style.BOLD_ITALIC,
-				"Helvetica-Bold-Oblique");
+		registerVariant("Helvetica", Style.BOLD_ITALIC, "Helvetica-Bold-Oblique");
 		registerVariant("Helvetica Neue", Style.PLAIN, "HelveticaNeue");
 		registerVariant("Helvetica Neue", Style.BOLD, "HelveticaNeue-Bold");
 		registerVariant("Helvetica Neue", Style.ITALIC, "HelveticaNeue-Italic");
-		registerVariant("Helvetica Neue", Style.BOLD_ITALIC,
-				"HelveticaNeue-BoldItalic");
+		registerVariant("Helvetica Neue", Style.BOLD_ITALIC, "HelveticaNeue-BoldItalic");
 		registerVariant("Palatino", Style.PLAIN, "Palatino-Romain");
 		registerVariant("Palatino", Style.ITALIC, "Palatino-Italic");
 		registerVariant("Palatino", Style.BOLD, "Palatino-Bold");
 		registerVariant("Palatino", Style.BOLD_ITALIC, "Palatino-BoldItalic");
 		registerVariant("Times New Roman", Style.PLAIN, "TimesNewRomanPSMT");
-		registerVariant("Times New Roman", Style.ITALIC,
-				"TimesNewRomanPS-ItalicMT");
+		registerVariant("Times New Roman", Style.ITALIC, "TimesNewRomanPS-ItalicMT");
 		registerVariant("Times New Roman", Style.BOLD, "TimesNewRomanPS-BoldMT");
-		registerVariant("Times New Roman", Style.BOLD_ITALIC,
-				"TimesNewRomanPS-BoldItalicMT");
+		registerVariant("Times New Roman", Style.BOLD_ITALIC, "TimesNewRomanPS-BoldItalicMT");
 		registerVariant("Trebuchet MS", Style.PLAIN, "TrebuchetMS");
 		registerVariant("Trebuchet MS", Style.ITALIC, "TrebuchetMS-Italic");
 		registerVariant("Trebuchet MS", Style.BOLD, "TrebuchetMS-Bold");
-		registerVariant("Trebuchet MS", Style.BOLD_ITALIC,
-				"Trebuchet-BoldItalic");
+		registerVariant("Trebuchet MS", Style.BOLD_ITALIC, "Trebuchet-BoldItalic");
 		registerVariant("Verdana", Style.ITALIC, "Verdana-Italic");
 		registerVariant("Verdana", Style.BOLD, "Verdana-Bold");
 		registerVariant("Verdana", Style.BOLD_ITALIC, "Verdana-BoldItalic");
 		registerVariant("Times", Style.PLAIN, "TimesNewRomanPSMT");
 		registerVariant("Times", Style.ITALIC, "TimesNewRomanPS-ItalicMT");
 		registerVariant("Times", Style.BOLD, "TimesNewRomanPS-BoldMT");
-		registerVariant("Times", Style.BOLD_ITALIC,
-				"TimesNewRomanPS-BoldItalicMT");
+		registerVariant("Times", Style.BOLD_ITALIC, "TimesNewRomanPS-BoldItalicMT");
+	}
+
+	private static final Font DEFAULT_FONT = new Font("Helvetica", Font.Style.PLAIN, 12);
+
+	public static void registerVariant(String name, Style style, String variantName) {
+		Map<String, String> styleVariants = _variants.get(style);
+		if (styleVariants == null) {
+			_variants.put(style, styleVariants = new HashMap<String, String>());
+		}
+		styleVariants.put(name, variantName);
+	}
+
+	final static String filterFontName(String name) {
+		String familyName = name;
+		if (familyName != null) {
+			if (familyName.equalsIgnoreCase("Serif") || familyName.equalsIgnoreCase("TimesRoman")) {
+				familyName = "Times New Roman";
+			} else if (familyName.equalsIgnoreCase("SansSerif") || familyName.equalsIgnoreCase("Helvetica")) {
+				familyName = "Helvetica";
+			} else if (familyName.equalsIgnoreCase("Monospaced") || familyName.equalsIgnoreCase("Courier")
+					|| familyName.equalsIgnoreCase("Dialog") || familyName.equalsIgnoreCase("黑体")) {
+				familyName = "Arial";
+			}
+		}
+		return familyName;
+	}
+
+	static CTFont resolveFont(Font font) {
+		return resolveFont(null, font);
+	}
+
+	static CTFont resolveFont(RoboVMAssets assets, Font font) {
+		final Font newFont = (font == null ? DEFAULT_FONT : font);
+		final String fontName = newFont.name;
+		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+		CTFont ctFont = null;
+		if (assets != null && "ttf".equals(ext)) {
+			ctFont = fonts.get(newFont);
+			if (ctFont == null) {
+				CGDataProvider cgdata = CGDataProvider.create(new File(assets.getAssetRoot(), fontName));
+				ctFont = CTFont.create(CGFont.create(cgdata), newFont.size, CGAffineTransform.Identity(), null);
+				fonts.put(newFont, ctFont);
+			}
+			return ctFont;
+		} else {
+			ctFont = fonts.get(newFont);
+			if (ctFont == null) {
+				String iosName = getVariant(filterFontName(newFont.name), newFont.style);
+				fonts.put(newFont, ctFont = CTFont.create(iosName, newFont.size, CGAffineTransform.Identity()));
+			}
+		}
+		return ctFont;
+	}
+
+	private static String getVariant(String name, Style style) {
+		final Map<String, String> styleVariants = _variants.get(style);
+		String variant = (styleVariants == null) ? null : styleVariants.get(name);
+		if (variant != null)
+			return variant;
+		else if (style == Style.BOLD_ITALIC) {
+			return getVariant(name, Style.BOLD);
+		} else
+			return name;
 	}
 
 }

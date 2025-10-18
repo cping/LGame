@@ -417,6 +417,12 @@ public final class LSTRDictionary implements LRelease {
 		if (StringUtils.isEmpty(mes)) {
 			return null;
 		}
+
+		_lastEnglishDict = getCacheEnglishString(font, mes);
+		if (_lastEnglishDict != null && !_lastEnglishDict.isClosed()) {
+			return _lastEnglishDict;
+		}
+
 		if (_lastDict != null && !_lastDict.isUpdateing() && _lastDict.equals(font) && _lastDict.include(mes)) {
 			return _lastDict;
 		}
@@ -483,13 +489,7 @@ public final class LSTRDictionary implements LRelease {
 		return (_lastDict = pDict);
 	}
 
-	public final Dict bindEnglish(final LFont font, final String mes) {
-		if (!_allowCacheBind) {
-			return null;
-		}
-		if (StringUtils.isEmpty(mes)) {
-			return null;
-		}
+	private final Dict getCacheEnglishString(final LFont font, final String mes) {
 		if (checkEnglishString(mes)) {
 			if (_lastEnglishDict != null && !_lastEnglishDict.isUpdateing() && _lastEnglishDict.equals(font)
 					&& _lastEnglishDict.include(mes)) {
@@ -507,6 +507,16 @@ public final class LSTRDictionary implements LRelease {
 			return (_lastEnglishDict = pDict);
 		}
 		return null;
+	}
+
+	public final Dict bindEnglish(final LFont font, final String mes) {
+		if (!_allowCacheBind) {
+			return null;
+		}
+		if (StringUtils.isEmpty(mes)) {
+			return null;
+		}
+		return getCacheEnglishString(font, mes);
 	}
 
 	public final LSTRDictionary unbind(final LFont font) {

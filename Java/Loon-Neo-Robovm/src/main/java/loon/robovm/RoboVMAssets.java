@@ -53,6 +53,10 @@ public class RoboVMAssets extends Assets {
 		this.assetRoot = new File(bundleRoot, LSystem.getPathPrefix());
 	}
 
+	protected File getAssetRoot() {
+		return assetRoot;
+	}
+
 	@Override
 	public void setPathPrefix(String pathPrefix) {
 		super.setPathPrefix(pathPrefix);

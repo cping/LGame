@@ -129,6 +129,10 @@ public abstract class LGame implements LRelease {
 		}
 	}
 
+	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
+
+	private final static int DEF_OTHER_CACHE_SIZE = 8;
+	
 	protected static LGame _base = null;
 
 	protected static Platform _platform = null;
@@ -139,9 +143,6 @@ public abstract class LGame implements LRelease {
 
 	private boolean _closed = false;
 
-	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
-
-	private final static int DEF_OTHER_CACHE_SIZE = 8;
 	// 全部mesh
 	private final TArray<Mesh> _mesh_all_pools;
 

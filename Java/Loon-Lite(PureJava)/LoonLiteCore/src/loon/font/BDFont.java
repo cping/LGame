@@ -461,6 +461,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 			}
 			strfont._initChars = true;
 			strfont.isDrawing = false;
+			strfont.freePixmaps();
 		}
 
 	}
@@ -601,11 +602,13 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public BDFont(String path, int idx, float fontSize, String message) {
-		this(path, idx, fontSize, message == null ? null : message.toCharArray(), true, 512, 512, 1024, 1024);
+		this(path, idx, fontSize, message == null ? null : message.toCharArray(), true, LSystem.getTextureBuildSize(),
+				LSystem.getTextureBuildSize(), LSystem.getTextureMaxSize(), LSystem.getTextureMaxSize());
 	}
 
 	public BDFont(String path, int idx, float fontSize, char[] charMessage) {
-		this(path, idx, fontSize, charMessage, true, 512, 512, 1024, 1024);
+		this(path, idx, fontSize, charMessage, true, LSystem.getTextureBuildSize(), LSystem.getTextureBuildSize(),
+				LSystem.getTextureMaxSize(), LSystem.getTextureMaxSize());
 	}
 
 	public BDFont(String path, int idx, float fontSize, char[] charMessage, boolean asyn, int tw, int th, int maxWidth,
@@ -795,7 +798,9 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		}
 		cancelSubmit();
 		isDrawing = true;
-		_submitUpdate = new UpdateFont(this);
+		if (_submitUpdate == null) {
+			_submitUpdate = new UpdateFont(this);
+		}
 		if (asyn) {
 			LSystem.unload(_submitUpdate);
 		} else {
@@ -1969,6 +1974,16 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 		return MathUtils.iceil(lines * getLineAscent() + height);
 	}
 
+	protected void freePixmaps() {
+		for (Pixmap pix : bdPixmapList) {
+			if (pix != null) {
+				pix.close();
+				pix = null;
+			}
+		}
+		bdPixmapList.close();
+	}
+
 	@Override
 	public ITranslator getTranslator() {
 		return this._translator;
@@ -1996,13 +2011,7 @@ public final class BDFont extends FontTrans implements IFont, LRelease {
 				c.close();
 			}
 		}
-		for (Pixmap pix : bdPixmapList) {
-			if (pix != null) {
-				pix.close();
-				pix = null;
-			}
-		}
-		bdPixmapList.close();
+		freePixmaps();
 		displays.clear();
 		if (displayList != null) {
 			displayList.close(true);

@@ -118,6 +118,12 @@ public final class LSystem {
 	/** 默认帧率 **/
 	protected static final int DEFAULT_MAX_FPS = 60;
 
+	/** 默认纹理大小 **/
+	protected static final int DEFAULT_BUILD_TEXTURE_SIZE = 512;
+
+	/** 默认纹理最大 **/
+	protected static final int DEFAULT_MAX_TEXTURE_SIZE = 2048;
+
 	/** 常见字符串操作用符号 **/
 	public static final char DOT = '.';
 
@@ -1441,6 +1447,20 @@ public final class LSystem {
 			return base().getTextureMemSize();
 		}
 		return 0;
+	}
+
+	public static final int getTextureBuildSize() {
+		if (base() != null) {
+			return base().setting.defaultBuildTextureSize;
+		}
+		return DEFAULT_BUILD_TEXTURE_SIZE;
+	}
+
+	public static final int getTextureMaxSize() {
+		if (base() != null) {
+			return base().setting.defaultMaxTextureSize;
+		}
+		return DEFAULT_MAX_TEXTURE_SIZE;
 	}
 
 	public static final void closeAllTexture() {

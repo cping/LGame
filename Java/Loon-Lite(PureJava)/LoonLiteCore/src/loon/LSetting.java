@@ -202,6 +202,16 @@ public class LSetting {
 	private float aspect;
 
 	/**
+	 * 默认初始纹理大小
+	 */
+	public int defaultBuildTextureSize = LSystem.DEFAULT_BUILD_TEXTURE_SIZE;
+
+	/**
+	 * 默认纹理最大限制
+	 */
+	public int defaultMaxTextureSize = LSystem.DEFAULT_MAX_TEXTURE_SIZE;
+
+	/**
 	 * 游戏画面实际宽度
 	 */
 	public int width = 480;
@@ -317,6 +327,8 @@ public class LSetting {
 		this.height = setting.height;
 		this.width_zoom = setting.width_zoom;
 		this.height_zoom = setting.height_zoom;
+		this.defaultBuildTextureSize = setting.defaultBuildTextureSize;
+		this.defaultMaxTextureSize = setting.defaultMaxTextureSize;
 		this.fullscreen = setting.fullscreen;
 		this.emulateTouch = setting.emulateTouch;
 		this.activationKey = setting.activationKey;

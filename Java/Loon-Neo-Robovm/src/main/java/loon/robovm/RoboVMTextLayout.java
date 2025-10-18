@@ -42,28 +42,23 @@ import org.robovm.apple.uikit.UIFont;
 
 class RoboVMTextLayout extends TextLayout {
 
-	public static RoboVMTextLayout layoutText(RoboVMGraphics gfx,
-			final String text, TextFormat format) {
-		final CTFont font = RoboVMFont.resolveFont(format.font);
+	public static RoboVMTextLayout layoutText(RoboVMGraphics gfx, final String text, TextFormat format) {
+		final CTFont font = RoboVMFont.resolveFont(gfx.game.assets(), format.font);
 		NSAttributedStringAttributes attribs = createAttribs(font);
 		CTLine line = CTLine.create(new NSAttributedString(text, attribs));
 		return new RoboVMTextLayout(gfx, text, format, font, line);
 	}
 
-	public static RoboVMTextLayout[] layoutText(RoboVMGraphics gfx, String text,
-			TextFormat format, TextWrap wrap) {
+	public static RoboVMTextLayout[] layoutText(RoboVMGraphics gfx, String text, TextFormat format, TextWrap wrap) {
 		text = normalizeEOL(text);
-
-		final CTFont font = RoboVMFont.resolveFont(format.font);
+		final CTFont font = RoboVMFont.resolveFont(gfx.game.assets(), format.font);
 		NSAttributedStringAttributes attribs = createAttribs(font);
-		CFArray lines = wrapLines(new NSAttributedString(text, attribs),
-				wrap.width);
+		CFArray lines = wrapLines(new NSAttributedString(text, attribs), wrap.width);
 		RoboVMTextLayout[] layouts = new RoboVMTextLayout[(int) lines.size()];
 		for (int ii = 0; ii < layouts.length; ii++) {
 			CTLine line = lines.get(ii, CTLine.class);
 			CFRange range = line.getStringRange();
-			String ltext = text.substring((int) range.getLocation(),
-					(int) (range.getLocation() + range.getLength()));
+			String ltext = text.substring((int) range.getLocation(), (int) (range.getLocation() + range.getLength()));
 			layouts[ii] = new RoboVMTextLayout(gfx, ltext, format, font, line);
 		}
 		return layouts;
@@ -75,8 +70,8 @@ class RoboVMTextLayout extends TextLayout {
 		return attribs;
 	}
 
-	private static void addStroke(NSAttributedStringAttributes attribs,
-			CTFont font, float strokeWidth, int strokeColor) {
+	private static void addStroke(NSAttributedStringAttributes attribs, CTFont font, float strokeWidth,
+			int strokeColor) {
 		double strokePct = 100 * strokeWidth / font.getSize();
 		attribs.setStrokeWidth(strokePct);
 		attribs.setStrokeColor(toUIColor(strokeColor));
@@ -85,8 +80,8 @@ class RoboVMTextLayout extends TextLayout {
 	private static CFArray wrapLines(NSAttributedString astring, float wrapWidth) {
 		CTFramesetter fs = CTFramesetter.create(astring);
 		try {
-			CGPath path = CGPath.createWithRect(new CGRect(0, 0, wrapWidth,
-					Float.MAX_VALUE / 2), CGAffineTransform.Identity());
+			CGPath path = CGPath.createWithRect(new CGRect(0, 0, wrapWidth, Float.MAX_VALUE / 2),
+					CGAffineTransform.Identity());
 			CTFrame frame = fs.createFrame(new CFRange(0, 0), path, null);
 			return frame.getLines();
 		} finally {
@@ -101,11 +96,9 @@ class RoboVMTextLayout extends TextLayout {
 	private float strokeWidth;
 	private int strokeColor;
 
-	private RoboVMTextLayout(RoboVMGraphics gfx, String text, TextFormat format,
-			CTFont font, CTLine fillLine) {
-		super(text, format, computeBounds(font,
-				fillLine.getImageBounds(gfx.scratchCtx)), (float) (font
-				.getAscent() + font.getDescent()));
+	private RoboVMTextLayout(RoboVMGraphics gfx, String text, TextFormat format, CTFont font, CTLine fillLine) {
+		super(text, format, computeBounds(font, fillLine.getImageBounds(gfx.scratchCtx)),
+				(float) (font.getAscent() + font.getDescent()));
 		this.font = font;
 		this.fillLine = fillLine;
 	}
@@ -125,10 +118,8 @@ class RoboVMTextLayout extends TextLayout {
 		return (float) font.getLeading();
 	}
 
-	void stroke(CGBitmapContext bctx, float x, float y, float strokeWidth,
-			int strokeColor) {
-		if (strokeLine == null || strokeWidth != this.strokeWidth
-				|| strokeColor != this.strokeColor) {
+	void stroke(CGBitmapContext bctx, float x, float y, float strokeWidth, int strokeColor) {
+		if (strokeLine == null || strokeWidth != this.strokeWidth || strokeColor != this.strokeColor) {
 			this.strokeWidth = strokeWidth;
 			this.strokeColor = strokeColor;
 			NSAttributedStringAttributes attribs = createAttribs(font);
@@ -172,8 +163,7 @@ class RoboVMTextLayout extends TextLayout {
 
 	private static RectBox computeBounds(CTFont font, CGRect bounds) {
 		float ascent = (float) font.getAscent();
-		return new RectBox((float) bounds.getMinX(), ascent
-				- (float) (bounds.getHeight() + bounds.getMinY()),
+		return new RectBox((float) bounds.getMinX(), ascent - (float) (bounds.getHeight() + bounds.getMinY()),
 				(float) bounds.getWidth(), (float) bounds.getHeight());
 	}
 
@@ -192,8 +182,7 @@ class RoboVMTextLayout extends TextLayout {
 	@Override
 	public int charWidth(char ch) {
 		NSAttributedStringAttributes attribs = createAttribs(font);
-		CTLine line = CTLine.create(new NSAttributedString(String.valueOf(ch),
-				attribs));
+		CTLine line = CTLine.create(new NSAttributedString(String.valueOf(ch), attribs));
 		return (int) line.getWidth();
 	}
 }

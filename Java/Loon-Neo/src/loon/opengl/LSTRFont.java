@@ -435,7 +435,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn) {
-		this(font, charMessage, asyn, 512, 512, 1024, 1024);
+		this(font, charMessage, asyn, LSystem.getTextureBuildSize(), LSystem.getTextureBuildSize(),
+				LSystem.getTextureMaxSize(), LSystem.getTextureMaxSize());
 	}
 
 	public LSTRFont(LFont font, char[] charMessage, boolean asyn, int tw, int th, int maxWidth, int maxHeight) {
@@ -598,7 +599,9 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		}
 		cancelSubmit();
 		isDrawing = true;
-		_submitUpdate = new UpdateFont(this);
+		if (_submitUpdate == null) {
+			_submitUpdate = new UpdateFont(this);
+		}
 		if (asyn) {
 			LSystem.unload(_submitUpdate);
 		} else {
