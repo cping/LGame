@@ -756,7 +756,7 @@ public final class BMFont extends FontTrans implements IFont {
 				continue;
 			}
 			if (lastCharDef != null) {
-				width += lastCharDef.getKerning(id);
+				width += lastCharDef.getKerning(id) - 1;
 			}
 			lastCharDef = charDef;
 			if (i < n - 1) {
@@ -766,7 +766,6 @@ public final class BMFont extends FontTrans implements IFont {
 			}
 			display.width = MathUtils.max(display.width, width);
 		}
-
 		return MathUtils.iceil(display.width * fontScaleX);
 	}
 
