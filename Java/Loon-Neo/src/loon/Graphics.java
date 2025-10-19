@@ -55,14 +55,14 @@ public abstract class Graphics {
 	private Display display = null;
 	private Affine2f affine = null, lastAffine = null;
 	private Matrix4 viewMatrix = null;
-	private Array<Matrix4> matrixsStack = new Array<Matrix4>();
+	private final Array<Matrix4> matrixsStack = new Array<Matrix4>();
 	// 创建一个半永久的纹理，用以批量进行颜色渲染
 	private LTexture colorTex;
 
 	// 用以提供GL渲染服务
 	public final GL20 gl;
 
-	private static class DefaultRender extends RenderTarget {
+	private static final class DefaultRender extends RenderTarget {
 
 		private final Graphics _graphics;
 
@@ -140,9 +140,9 @@ public abstract class Graphics {
 		return width() < 2 || height() < 2;
 	}
 
-	public Matrix4 getViewMatrix() {
+	public final Matrix4 getViewMatrix() {
 		display = game.display();
-		Dimension view = LSystem.viewSize;
+		final Dimension view = LSystem.viewSize;
 		if (viewMatrix == null) {
 			viewMatrix = new Matrix4();
 			viewMatrix.setToOrtho2D(0, 0, view.getWidth(), view.getHeight());
@@ -153,29 +153,29 @@ public abstract class Graphics {
 		return viewMatrix;
 	}
 
-	public Graphics save() {
+	public final Graphics save() {
 		if (viewMatrix != null) {
 			matrixsStack.add(viewMatrix = viewMatrix.cpy());
 		}
 		return this;
 	}
 
-	public Graphics restore() {
+	public final Graphics restore() {
 		viewMatrix = matrixsStack.pop();
 		return this;
 	}
 
 	public abstract Dimension screenSize();
 
-	public Canvas createCanvas(float width, float height) {
+	public final Canvas createCanvas(final float width, final float height) {
 		return createCanvasImpl(scale, scale.scaledCeil(width), scale.scaledCeil(height));
 	}
 
-	public Canvas createCanvas(Dimension size) {
+	public final Canvas createCanvas(final Dimension size) {
 		return createCanvas(size.width, size.height);
 	}
 
-	public LTexture createTexture(float width, float height, LTexture.Format config) {
+	public final LTexture createTexture(final float width, final float height, final LTexture.Format config) {
 		int texWidth = config.toTexWidth(scale.scaledCeil(width));
 		int texHeight = config.toTexHeight(scale.scaledCeil(height));
 		if (texWidth <= 0 || texHeight <= 0) {
@@ -186,7 +186,7 @@ public abstract class Graphics {
 		return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
 	}
 
-	public LTexture createTexture(Dimension size, LTexture.Format config) {
+	public final LTexture createTexture(final Dimension size, final LTexture.Format config) {
 		return createTexture(size.width, size.height, config);
 	}
 
@@ -194,11 +194,11 @@ public abstract class Graphics {
 
 	public abstract TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap);
 
-	private static class DisposePort extends UnitPort {
+	private final static class DisposePort extends UnitPort {
 
 		private final LRelease _release;
 
-		DisposePort(LRelease r) {
+		DisposePort(final LRelease r) {
 			this._release = r;
 		}
 
@@ -209,13 +209,13 @@ public abstract class Graphics {
 
 	}
 
-	public void queueForDispose(final LRelease resource) {
+	public final void queueForDispose(final LRelease resource) {
 		game.frame.connect(new DisposePort(resource)).once();
 	}
 
-	public LTexture finalColorTex() {
+	public final LTexture finalColorTex() {
 		if (colorTex == null || colorTex.isClosed()) {
-			Canvas canvas = createCanvas(1, 1);
+			final Canvas canvas = createCanvas(1, 1);
 			canvas.setFillColor(0xFFFFFFFF).fillRect(0, 0, canvas.width, canvas.height);
 			colorTex = canvas.toTexture(LTexture.Format.NEAREST);
 			colorTex.setDisabledTexture(true);
@@ -223,7 +223,7 @@ public abstract class Graphics {
 		return colorTex;
 	}
 
-	protected Graphics(LGame game, GL20 gl, Scale scale) {
+	protected Graphics(final LGame game, final GL20 gl, final Scale scale) {
 		this.game = game;
 		this.gl = gl;
 		this.scale = scale;
@@ -234,9 +234,9 @@ public abstract class Graphics {
 		return GLFrameBuffer.getSystemDefaultFramebufferHandle();
 	}
 
-	protected abstract Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight);
+	protected abstract Canvas createCanvasImpl(final Scale scale, final int pixelWidth, final int pixelHeight);
 
-	protected void viewportChanged(Scale scale, int viewWidth, int viewHeight) {
+	protected void viewportChanged(final Scale scale, final int viewWidth, final int viewHeight) {
 		if (lastViewWidth == viewWidth && lastViewHeight == viewHeight) {
 			return;
 		}
@@ -302,7 +302,7 @@ public abstract class Graphics {
 		}
 	}
 
-	protected boolean isAllowResize(int viewWidth, int viewHeight) {
+	protected boolean isAllowResize(final int viewWidth, final int viewHeight) {
 		if (game.setting.isCheckResize) {
 			Dimension size = this.screenSize();
 			if (size == null || size.width <= 0 || size.height <= 0) {
@@ -319,11 +319,11 @@ public abstract class Graphics {
 		}
 	}
 
-	public int createTexture(LTexture.Format config) {
+	public int createTexture(final LTexture.Format config) {
 		return createTexture(config, 0);
 	}
 
-	public int createTexture(LTexture.Format config, int count) {
+	public int createTexture(final LTexture.Format config, final int count) {
 		int id = gl.glGenTexture() + count;
 		if (LSystem.containsTexture(id)) {
 			return createTexture(config, 1);
@@ -340,7 +340,7 @@ public abstract class Graphics {
 		return id;
 	}
 
-	protected static int mipmapify(int filter, boolean mipmaps) {
+	protected static int mipmapify(final int filter, final boolean mipmaps) {
 		if (!mipmaps) {
 			return filter;
 		}

@@ -103,6 +103,8 @@ public final class Print implements FontSet<Print>, LRelease {
 
 	private final Vector3f _tempTextSize = new Vector3f();
 
+	private float _singleWordMinSize, _singleWordMaxSize, _singleWordMidSize;
+
 	private int _index, _offsettext, _curfontSize, _perfontSize;
 
 	private char _textChar;
@@ -111,9 +113,7 @@ public final class Print implements FontSet<Print>, LRelease {
 
 	private LColor _fontColor = new LColor(LColor.white);
 
-	private int _interceptMaxString;
-
-	private int _interceptCount;
+	private int _interceptString;
 
 	private int _messageLength = 10;
 
@@ -183,15 +183,15 @@ public final class Print implements FontSet<Print>, LRelease {
 		_iconLocation = new PointF();
 	}
 
-	private static class PrintUpdate implements Updateable {
+	private final static class PrintUpdate implements Updateable {
 
-		Print _print;
+		final Print _print;
 
-		boolean _isComplete = false;
+		final boolean _isComplete;
 
-		private IFont _font = null;
+		private final IFont _font;
 
-		private String _context = null;
+		private final String _context;
 
 		private PrintUpdate(Print print, String context, IFont font, boolean complete, boolean drawFont) {
 			_print = print;
@@ -213,10 +213,9 @@ public final class Print implements FontSet<Print>, LRelease {
 			_print._waitdelay = 0;
 			_print._visible = false;
 			_print._showMessages = new char[] { '\0' };
-			_print._interceptMaxString = 0;
+			_print._interceptString = 0;
 			_print._nextflag = 0;
 			_print._messageCount = 0;
-			_print._interceptCount = 0;
 			_print._textsize = 0;
 			_print._textoffsetSize = 0;
 			_print._leftsize = 0;
@@ -236,10 +235,46 @@ public final class Print implements FontSet<Print>, LRelease {
 	}
 
 	public Vector3f getFontTextLimitSize() {
-		_tempTextSize.x = _isEnglish ? _fontSize * 0.25f : _fontSize * 0.45f;
-		_tempTextSize.y = _isEnglish ? _fontSize * 0.75f : _fontSize * 0.9f;
-		_tempTextSize.z = _fontSize / 2f;
+		if (_singleWordMinSize != 0) {
+			_tempTextSize.x = _singleWordMinSize;
+		} else {
+			_tempTextSize.x = _isEnglish ? _fontSize * 0.25f : _fontSize * 0.45f;
+		}
+		if (_singleWordMaxSize != 0) {
+			_tempTextSize.y = _singleWordMaxSize;
+		} else {
+			_tempTextSize.y = _isEnglish ? _fontSize * 0.75f : _fontSize * 0.9f;
+		}
+		if (_singleWordMidSize != 0) {
+			_tempTextSize.z = _singleWordMidSize;
+		} else {
+			_tempTextSize.z = _fontSize / 2f;
+		}
 		return _tempTextSize;
+	}
+
+	public void setSingleWordMinSize(float min) {
+		this._singleWordMinSize = min;
+	}
+
+	public float getSingleWordMinSize() {
+		return this._singleWordMinSize;
+	}
+
+	public void setSingleWordMaxSize(float max) {
+		this._singleWordMaxSize = max;
+	}
+
+	public float getSingleWordMaxSize() {
+		return this._singleWordMaxSize;
+	}
+
+	public void setSingleWordMidSize(float mid) {
+		this._singleWordMidSize = mid;
+	}
+
+	public float getSingleWordMidSize() {
+		return this._singleWordMidSize;
 	}
 
 	public boolean isGradientFontColor() {
@@ -268,9 +303,13 @@ public final class Print implements FontSet<Print>, LRelease {
 		return _messages;
 	}
 
-	private LColor getColor(char flagName) {
+	private LColor getColor(final char flagName) {
 		if ('r' == flagName || 'R' == flagName) {
 			return LColor.red;
+		} else if ('w' == flagName || 'W' == flagName) {
+			return LColor.white;
+		} else if ('a' == flagName || 'A' == flagName) {
+			return LColor.mediumAquamarine;
 		} else if ('b' == flagName || 'B' == flagName) {
 			return LColor.black;
 		} else if ('l' == flagName || 'L' == flagName) {
@@ -289,6 +328,14 @@ public final class Print implements FontSet<Print>, LRelease {
 			return LColor.green;
 		} else if ('p' == flagName || 'P' == flagName) {
 			return LColor.pink;
+		} else if ('c' == flagName || 'C' == flagName) {
+			return LColor.cyan;
+		} else if ('s' == flagName || 'S' == flagName) {
+			return LColor.silver;
+		} else if ('k' == flagName || 'K' == flagName) {
+			return LColor.lightSkyBlue;
+		} else if ('t' == flagName || 'T' == flagName) {
+			return LColor.transparent;
 		}
 		return null;
 	}
@@ -326,8 +373,10 @@ public final class Print implements FontSet<Print>, LRelease {
 		}
 	}
 
-	public void drawDefFont(GLEx g, LColor old) {
+	public void drawDefFont(final GLEx g, final LColor old) {
+
 		synchronized (_showMessages) {
+
 			this._textsize = _showMessages.length;
 			this._fontSize = _defaultFont.getSize();
 			this._fontHeight = maxFontHeignt(_defaultFont, _showMessages, _textsize);
@@ -346,6 +395,7 @@ public final class Print implements FontSet<Print>, LRelease {
 				this._textoffsetSize = _width / 2 - (_fontSize * _messageLength) / 2 + MathUtils.ifloor(_fontSize * 4f);
 				break;
 			}
+
 			final Vector3f result = getFontTextLimitSize();
 
 			final int minTextSize = MathUtils.ifloor(result.x);
@@ -363,16 +413,16 @@ public final class Print implements FontSet<Print>, LRelease {
 			_fontColor = old;
 
 			for (int i = 0; i < _textsize; i++) {
+
+				if (_interceptString != 0) {
+					i += _interceptString;
+					i = MathUtils.clamp(i, 0, _textsize - 1);
+					_interceptString = 0;
+				}
+
 				_textChar = _showMessages[i];
 				if (_textChar == '\0') {
 					continue;
-				}
-				if (_interceptCount < _interceptMaxString) {
-					_interceptCount++;
-					continue;
-				} else {
-					_interceptMaxString = 0;
-					_interceptCount = 0;
 				}
 				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == LSystem.BACKSLASH) {
 					_index = 0;
@@ -382,16 +432,17 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else if (_textChar == '<') {
 					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
-						_interceptMaxString = 1;
 						_fontColor = color;
+						_interceptString = 1;
 					}
 					continue;
 				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
+					_interceptString = 1;
 					continue;
 				} else if (_textChar == LSystem.SLASH) {
 					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
-						_interceptMaxString = 1;
 						_fontColor = old;
+						_interceptString = 1;
 					}
 					continue;
 				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_leftsize
@@ -485,9 +536,12 @@ public final class Print implements FontSet<Print>, LRelease {
 		return this;
 	}
 
-	public void drawBMFont(GLEx g, LColor old) {
+	public void drawBMFont(final GLEx g, final LColor old) {
+
 		synchronized (_showMessages) {
+
 			this._textsize = _showMessages.length;
+
 			if (_nativeFont && _defaultFont != null) {
 				this._fontSize = _defaultFont.getSize();
 				this._fontHeight = maxFontHeignt(_defaultFont, _showMessages, _textsize);
@@ -495,6 +549,7 @@ public final class Print implements FontSet<Print>, LRelease {
 				this._fontSize = _curFont.getSize();
 				this._fontHeight = maxFontHeignt(_curFont, _showMessages, _textsize);
 			}
+
 			switch (dirmode) {
 			default:
 			case NONE:
@@ -518,21 +573,23 @@ public final class Print implements FontSet<Print>, LRelease {
 			final int midTextSize = MathUtils.ifloor(result.z);
 
 			this._leftsize = _textoffsetSize;
-
 			this._index = _offsettext = _curfontSize = _perfontSize = 0;
+
 			_fontColor = old;
+
 			for (int i = 0; i < _textsize; i++) {
+
+				if (_interceptString != 0) {
+					i += _interceptString;
+					i = MathUtils.clamp(i, 0, _textsize - 1);
+					_interceptString = 0;
+				}
+
 				_textChar = _showMessages[i];
 				if (_textChar == '\0') {
 					continue;
 				}
-				if (_interceptCount < _interceptMaxString) {
-					_interceptCount++;
-					continue;
-				} else {
-					_interceptMaxString = 0;
-					_interceptCount = 0;
-				}
+
 				if (_showMessages[i] == 'n' && _showMessages[i > 0 ? i - 1 : 0] == LSystem.BACKSLASH) {
 					_index = 0;
 					_leftsize = _textoffsetSize;
@@ -541,16 +598,17 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else if (_textChar == '<') {
 					LColor color = getColor(_showMessages[i < _textsize - 1 ? i + 1 : i]);
 					if (color != null) {
-						_interceptMaxString = 1;
 						_fontColor = color;
+						_interceptString = 1;
 					}
 					continue;
 				} else if (_showMessages[i > 0 ? i - 1 : i] == '<' && getColor(_textChar) != null) {
+					_interceptString = 1;
 					continue;
 				} else if (_textChar == LSystem.SLASH) {
 					if (_showMessages[i < _textsize - 1 ? i + 1 : i] == '>') {
-						_interceptMaxString = 1;
 						_fontColor = old;
+						_interceptString = 1;
 					}
 					continue;
 				} else if ((_index > _messageLength) || (_textChar == LSystem.LF) || (_leftsize
@@ -562,7 +620,7 @@ public final class Print implements FontSet<Print>, LRelease {
 				} else if (_textChar == LSystem.BACKSLASH) {
 					continue;
 				}
-				String tmpText = String.valueOf(_textChar);
+
 				_perfontSize = _curFont.charWidth(_textChar);
 				if (!_isEnglish) {
 					if (CharUtils.isAlphaOrDigit(_textChar)) {
@@ -591,6 +649,7 @@ public final class Print implements FontSet<Print>, LRelease {
 
 				final int _centerFont = _isEnglish ? (_curfontSize + _perfontSize) / 2 : midTextSize + minTextSize / 2;
 				if (i != _textsize - 1) {
+					final String tmpText = String.valueOf(_textChar);
 					_curFont.drawString(g, tmpText,
 							midTextSize + (_printLocation.x + _leftsize + _leftoffset - _centerFont) + _spaceTextX,
 							((_offsettext * _fontHeight) + _printLocation.y + _fontSize + _topoffset) + _spaceTextY,

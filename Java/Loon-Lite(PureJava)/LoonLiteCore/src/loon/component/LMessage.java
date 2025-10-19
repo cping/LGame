@@ -373,6 +373,30 @@ public class LMessage extends LContainer implements FontSet<LMessage> {
 		return _print;
 	}
 
+	public void setSingleWordMinSize(float min) {
+		_print.setSingleWordMinSize(min);
+	}
+
+	public float getSingleWordMinSize() {
+		return _print.getSingleWordMinSize();
+	}
+
+	public void setSingleWordMaxSize(float max) {
+		_print.setSingleWordMaxSize(max);
+	}
+
+	public float getSingleWordMaxSize() {
+		return _print.getSingleWordMaxSize();
+	}
+
+	public void setSingleWordMidSize(float mid) {
+		_print.setSingleWordMinSize(mid);
+	}
+
+	public float getSingleWordMidSize() {
+		return _print.getSingleWordMidSize();
+	}
+
 	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
