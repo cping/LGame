@@ -5,6 +5,7 @@ import java.util.Iterator;
 import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.canvas.LColor;
+import loon.canvas.LColorPool;
 import loon.events.LTouchCollection;
 import loon.events.LTouchLocation;
 import loon.events.LTouchLocationState;
@@ -49,7 +50,7 @@ public abstract class MenuScreen extends GameScreen {
 		Vector2f position = new Vector2f();
 		Vector2f origin = new Vector2f(batch.getFont().stringWidth(
 				this.menuTitle) / 2f);
-		LColor color = PoolColor.getColor(0xc0 * super.getTransitionAlpha(),
+		LColor color = LColorPool.get().getColor(0xc0 * super.getTransitionAlpha(),
 				0xc0 * super.getTransitionAlpha(),
 				0xc0 * super.getTransitionAlpha(),
 				0xc0 * super.getTransitionAlpha());

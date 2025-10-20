@@ -45,11 +45,11 @@ public final class GLRenderer implements LRelease {
 	private int _drawCallCount;
 
 	public GLRenderer() {
-		this(null, 4096);
+		this(null, 16384);
 	}
 
 	public GLRenderer(GLEx gl) {
-		this(gl, 4096);
+		this(gl, 16384);
 	}
 
 	public GLRenderer(GLEx gl, int maxVertices) {

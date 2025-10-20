@@ -1886,7 +1886,7 @@ public class Affine2f implements LTrans, XY {
 	}
 
 	public Matrix4 toViewMatrix4() {
-		Dimension dim = LSystem.viewSize;
+		final Dimension dim = LSystem.viewSize;
 		if (projectionMatrix == null) {
 			projectionMatrix = new Matrix4();
 		}

@@ -3,6 +3,7 @@
 import loon.LTexture;
 import loon.LTextures;
 import loon.action.sprite.SpriteBatch;
+import loon.canvas.LColorPool;
 import loon.utils.timer.GameTime;
 
 public class BackgroundScreen extends GameScreen {
@@ -20,7 +21,7 @@ public class BackgroundScreen extends GameScreen {
 	@Override
 	public void draw(SpriteBatch batch, GameTime gameTime) {
 		batch.draw(this.background, 0f, 0f,
-				PoolColor.getColor(1f, 1f, 1f, getTransitionAlpha()));
+				LColorPool.get().getColor(1f, 1f, 1f, getTransitionAlpha()));
 	}
 
 	@Override

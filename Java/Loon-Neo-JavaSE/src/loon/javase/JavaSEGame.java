@@ -377,7 +377,7 @@ public class JavaSEGame extends LGame {
 			NativeSupport.loadJNI("lwjgl");
 			NativeSupport.loadJNI("lplus");
 		} catch (Throwable exc) {
-			exc.printStackTrace();
+			System.out.println(exc.getMessage());
 		}
 	}
 

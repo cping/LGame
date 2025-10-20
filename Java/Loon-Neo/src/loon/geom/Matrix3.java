@@ -31,7 +31,7 @@ import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
 
-public class Matrix3 extends BaseBufferSupport implements Serializable, XY {
+public final class Matrix3 extends BaseBufferSupport implements Serializable, XY {
 
 	/**
 	 * 

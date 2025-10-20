@@ -32,7 +32,7 @@ import loon.utils.NumberUtils;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
-public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
+public final class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 
 	/**
 	 * 
@@ -1067,7 +1067,7 @@ public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 		return m;
 	}
 
-	public boolean equalsAffine(Affine2f affine) {
+	public boolean equalsAffine(final Affine2f affine) {
 		int count = 0;
 		if (affine.m00 == val[M00]) {
 			count++;
@@ -1090,41 +1090,33 @@ public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 		return count == 6;
 	}
 
-	public Matrix4 thisCombine(Affine2f affine) {
+	public final Matrix4 thisCombine(final Affine2f affine) {
 
 		final float m00 = affine.m00;
 		final float m10 = affine.m10;
-		final float m20 = 0;
-		final float m30 = 0;
+
 		final float m01 = affine.m01;
 		final float m11 = affine.m11;
-		final float m21 = 0;
-		final float m31 = 0;
-		final float m02 = 0;
-		final float m12 = 0;
-		final float m22 = 1;
-		final float m32 = 0;
+
 		final float m03 = affine.tx;
 		final float m13 = affine.ty;
-		final float m23 = 0;
-		final float m33 = 1;
 
-		final float nm00 = val[M00] * m00 + val[M01] * m10 + val[M02] * m20 + val[M03] * m30;
-		final float nm01 = val[M00] * m01 + val[M01] * m11 + val[M02] * m21 + val[M03] * m31;
-		final float nm02 = val[M00] * m02 + val[M01] * m12 + val[M02] * m22 + val[M03] * m32;
-		final float nm03 = val[M00] * m03 + val[M01] * m13 + val[M02] * m23 + val[M03] * m33;
-		final float nm10 = val[M10] * m00 + val[M11] * m10 + val[M12] * m20 + val[M13] * m30;
-		final float nm11 = val[M10] * m01 + val[M11] * m11 + val[M12] * m21 + val[M13] * m31;
-		final float nm12 = val[M10] * m02 + val[M11] * m12 + val[M12] * m22 + val[M13] * m32;
-		final float nm13 = val[M10] * m03 + val[M11] * m13 + val[M12] * m23 + val[M13] * m33;
-		final float nm20 = val[M20] * m00 + val[M21] * m10 + val[M22] * m20 + val[M23] * m30;
-		final float nm21 = val[M20] * m01 + val[M21] * m11 + val[M22] * m21 + val[M23] * m31;
-		final float nm22 = val[M20] * m02 + val[M21] * m12 + val[M22] * m22 + val[M23] * m32;
-		final float nm23 = val[M20] * m03 + val[M21] * m13 + val[M22] * m23 + val[M23] * m33;
-		final float nm30 = val[M30] * m00 + val[M31] * m10 + val[M32] * m20 + val[M33] * m30;
-		final float nm31 = val[M30] * m01 + val[M31] * m11 + val[M32] * m21 + val[M33] * m31;
-		final float nm32 = val[M30] * m02 + val[M31] * m12 + val[M32] * m22 + val[M33] * m32;
-		final float nm33 = val[M30] * m03 + val[M31] * m13 + val[M32] * m23 + val[M33] * m33;
+		final float nm00 = val[M00] * m00 + val[M01] * m10;
+		final float nm01 = val[M00] * m01 + val[M01] * m11;
+		final float nm02 = val[M02];
+		final float nm03 = val[M00] * m03 + val[M01] * m13 + val[M03];
+		final float nm10 = val[M10] * m00 + val[M11] * m10;
+		final float nm11 = val[M10] * m01 + val[M11] * m11;
+		final float nm12 = val[M12];
+		final float nm13 = val[M10] * m03 + val[M11] * m13 + val[M13];
+		final float nm20 = val[M20] * m00 + val[M21] * m10;
+		final float nm21 = val[M20] * m01 + val[M21] * m11;
+		final float nm22 = val[M22];
+		final float nm23 = val[M20] * m03 + val[M21] * m13 + val[M23];
+		final float nm30 = val[M30] * m00 + val[M31] * m10;
+		final float nm31 = val[M30] * m01 + val[M31] * m11;
+		final float nm32 = val[M32];
+		final float nm33 = val[M30] * m03 + val[M31] * m13 + val[M33];
 
 		this.val[M00] = nm00;
 		this.val[M10] = nm10;
@@ -1146,7 +1138,7 @@ public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 		return this;
 	}
 
-	public static Matrix4 newCombine(Matrix4 m1, Matrix4 m2) {
+	public final static Matrix4 newCombine(final Matrix4 m1, final Matrix4 m2) {
 		float m00 = m1.val[M00] * m2.val[M00] + m1.val[M01] * m2.val[M10] + m1.val[M02] * m2.val[M20]
 				+ m1.val[M03] * m2.val[M30];
 		float m01 = m1.val[M00] * m2.val[M01] + m1.val[M01] * m2.val[M11] + m1.val[M02] * m2.val[M21]
@@ -1180,7 +1172,7 @@ public class Matrix4 extends BaseBufferSupport implements Serializable, XY {
 		float m33 = m1.val[M30] * m2.val[M03] + m1.val[M31] * m2.val[M13] + m1.val[M32] * m2.val[M23]
 				+ m1.val[M33] * m2.val[M33];
 
-		Matrix4 m = new Matrix4();
+		final Matrix4 m = new Matrix4();
 
 		m.val[M00] = m00;
 		m.val[M10] = m10;

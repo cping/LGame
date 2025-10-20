@@ -29,6 +29,7 @@ import loon.geom.Dimension;
 import loon.geom.FloatValue;
 import loon.geom.Matrix4;
 import loon.opengl.GL20;
+import loon.opengl.GLEx;
 import loon.opengl.GLFrameBuffer;
 import loon.opengl.RenderTarget;
 import loon.utils.Array;
@@ -146,9 +147,12 @@ public abstract class Graphics {
 		if (viewMatrix == null) {
 			viewMatrix = new Matrix4();
 			viewMatrix.setToOrtho2D(0, 0, view.getWidth(), view.getHeight());
-		} else if (display != null && display.GL() != null && !(affine = display.GL().tx()).equals(lastAffine)) {
-			viewMatrix = affine.toViewMatrix4();
-			lastAffine = affine;
+		} else if (display != null) {
+			final GLEx gl = display.GL();
+			if (gl != null && !(affine = gl.tx()).equals(lastAffine)) {
+				viewMatrix = affine.toViewMatrix4();
+				lastAffine = affine;
+			}
 		}
 		return viewMatrix;
 	}

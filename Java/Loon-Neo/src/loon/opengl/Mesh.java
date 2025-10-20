@@ -355,7 +355,7 @@ public final class Mesh implements LRelease {
 			}
 			newVertexSize = vertexSize;
 		}
-		int numIndices = getNumIndices();
+		final int numIndices = getNumIndices();
 		short[] indices = null;
 		if (numIndices > 0) {
 			indices = new short[numIndices];
@@ -526,7 +526,7 @@ public final class Mesh implements LRelease {
 		getVertices(0, size, vertices);
 		transformUV(matrix, vertices, vertexSize, offset, start, count);
 		setVertices(vertices, 0, vertices.length);
-		
+
 	}
 
 	public static void transformUV(final Affine2f matrix, final float[] vertices, int vertexSize, int offset, int start,

@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>Loon-Neo-Robovm</groupId>
+    <artifactId>Loon-Neo-Robovm</artifactId>
+    <version>0.5.0-RCT</version>
+    <name>Loon-Neo-Robovm</name>
+    <description>Loon-Neo-Robovm</description>
+    <build>
+      <sourceDirectory>src</sourceDirectory>
+	    <resources>
+	      <resource>
+	        <directory>src</directory>
+	        <excludes>
+	          <exclude>**/*.java</exclude>
+	        </excludes>
+	      </resource>
+	    </resources>
+        <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <release>19</release>
+        </configuration>
+      </plugin>
+    </plugins>
+    </build>
+</project>

@@ -603,6 +603,108 @@ public class Field2D implements IArray, Config, LRelease {
 		return EMPTY;
 	}
 
+	public final static boolean[] generate(int w, int h, float f, int cluster, boolean forceFillRate) {
+		final int length = w * h;
+		boolean[] cur = new boolean[length];
+		boolean[] off = new boolean[length];
+		int fillDiff = -MathUtils.round(length * f);
+		if (forceFillRate && cluster > 0) {
+			f += (0.5f - f) * 0.5f;
+		}
+		int i;
+		for (i = 0; i < length; i++) {
+			off[i] = (MathUtils.random() < f);
+			if (off[i]) {
+				fillDiff++;
+			}
+		}
+		for (i = 0; i < cluster; i++) {
+			for (int y = 0; y < h; y++) {
+				for (int x = 0; x < w; x++) {
+					int pos = x + y * w;
+					int count = 0;
+					int neighbours = 0;
+					if (y > 0) {
+						if (x > 0) {
+							if (off[pos - w - 1]) {
+								count++;
+							}
+							neighbours++;
+						}
+						if (off[pos - w]) {
+							count++;
+						}
+						neighbours++;
+						if (x < w - 1) {
+							if (off[pos - w + 1]) {
+								count++;
+							}
+							neighbours++;
+						}
+					}
+					if (x > 0) {
+						if (off[pos - 1]) {
+							count++;
+						}
+						neighbours++;
+					}
+					if (off[pos]) {
+						count++;
+					}
+					neighbours++;
+					if (x < w - 1) {
+						if (off[pos + 1]) {
+							count++;
+						}
+						neighbours++;
+					}
+					if (y < h - 1) {
+						if (x > 0) {
+							if (off[pos + w - 1]) {
+								count++;
+							}
+							neighbours++;
+						}
+						if (off[pos + w]) {
+							count++;
+						}
+						neighbours++;
+						if (x < w - 1) {
+							if (off[pos + w + 1]) {
+								count++;
+							}
+							neighbours++;
+						}
+					}
+					cur[pos] = (2 * count >= neighbours);
+					if (cur[pos] != off[pos])
+						fillDiff += cur[pos] ? 1 : -1;
+				}
+			}
+			final boolean[] tmp = cur;
+			cur = off;
+			off = tmp;
+		}
+		if (forceFillRate && MathUtils.min(w, h) > 2) {
+			final int[] neighbours = { -w - 1, -w, -w + 1, -1, 0, 1, w - 1, w, w + 1 };
+			boolean growing = (fillDiff < 0);
+			while (fillDiff != 0) {
+				int cell, tries = 0;
+				do {
+					cell = MathUtils.random(1, w - 1) + MathUtils.random(1, h - 1) * w;
+					tries++;
+				} while (off[cell] != growing && tries * 10 < length);
+				for (int j = 0; j < neighbours.length; j++) {
+					if (fillDiff != 0 && off[cell + j] != growing) {
+						off[cell + j] = growing;
+						fillDiff += growing ? 1 : -1;
+					}
+				}
+			}
+		}
+		return off;
+	}
+
 	public final static Field2D of(int w, int h, int tw, int th, int fill) {
 		return new Field2D(w, h, tw, th, fill);
 	}

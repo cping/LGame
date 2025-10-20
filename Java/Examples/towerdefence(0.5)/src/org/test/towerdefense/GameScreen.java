@@ -8,7 +8,6 @@ import loon.utils.timer.GameTime;
 
 public abstract class GameScreen {
 
-	public LColorPool PoolColor = new LColorPool();
 
 	private boolean isExiting;
 	private boolean isPopup;

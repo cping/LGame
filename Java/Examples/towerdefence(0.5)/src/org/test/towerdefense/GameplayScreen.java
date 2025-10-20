@@ -16,8 +16,8 @@ import loon.font.LFont;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.utils.LIterator;
-import loon.utils.RefObject;
 import loon.utils.TArray;
+import loon.utils.reply.ObjRef;
 import loon.utils.timer.GameTime;
 
 public class GameplayScreen extends GameScreen {
@@ -74,8 +74,7 @@ public class GameplayScreen extends GameScreen {
 		this.MikkelsPathFinding(false);
 		if (this.getLevelSettings().getInfoSpriteWithText() != null) {
 			this.getLevelSettings().getInfoSpriteWithText().setDrawOrder(60);
-			game.Components().add(
-					this.getLevelSettings().getInfoSpriteWithText());
+			game.Components().add(this.getLevelSettings().getInfoSpriteWithText());
 		}
 	}
 
@@ -88,18 +87,17 @@ public class GameplayScreen extends GameScreen {
 		for (int i = 0; i < this.getOccupiedGrid().length; i++) {
 			for (int j = 0; j < this.getOccupiedGrid()[0].length; j++) {
 				if (i <= 1) {
-					if (((j == (this.getLevelSettings().getStartPoint().y() - 1)) || (j == this
-							.getLevelSettings().getStartPoint().y()))
-							|| (j == (this.getLevelSettings().getStartPoint()
-									.y() + 1))) {
+					if (((j == (this.getLevelSettings().getStartPoint().y() - 1))
+							|| (j == this.getLevelSettings().getStartPoint().y()))
+							|| (j == (this.getLevelSettings().getStartPoint().y() + 1))) {
 						this.getOccupiedGrid()[i][j] = false;
 					} else {
 						this.getOccupiedGrid()[i][j] = true;
 					}
 				} else if ((i == this.getLevelSettings().getEndPoint().x())
 						|| (i == (this.getLevelSettings().getEndPoint().x() - 1))) {
-					if (((j == (this.getLevelSettings().getEndPoint().y() - 1)) || (j == this
-							.getLevelSettings().getEndPoint().y()))
+					if (((j == (this.getLevelSettings().getEndPoint().y() - 1))
+							|| (j == this.getLevelSettings().getEndPoint().y()))
 							|| (j == (this.getLevelSettings().getEndPoint().y() + 1))) {
 						this.getOccupiedGrid()[i][j] = false;
 					} else {
@@ -110,8 +108,7 @@ public class GameplayScreen extends GameScreen {
 				}
 			}
 		}
-		for (Vector2f point : this.getLevelSettings()
-				.getLevelSpecificOccupiedGridCells()) {
+		for (Vector2f point : this.getLevelSettings().getLevelSpecificOccupiedGridCells()) {
 			this.getOccupiedGrid()[point.x()][point.y()] = true;
 		}
 	}
@@ -137,8 +134,7 @@ public class GameplayScreen extends GameScreen {
 		this.ResetSelectedMonsterOrTower();
 		this.setGameOpacity(this.getGameOpacityWhenPaused());
 		if (addGamePausedScreen && (this.gamePausedScreen == null)) {
-			this.gamePausedScreen = new GamePausedScreen(this.game,
-					ScreenType.GameplayScreen);
+			this.gamePausedScreen = new GamePausedScreen(this.game, ScreenType.GameplayScreen);
 			super.getScreenManager().AddScreen(this.gamePausedScreen);
 		}
 		this.HideButtons();
@@ -158,8 +154,10 @@ public class GameplayScreen extends GameScreen {
 
 	public final Vector2f GetNextGridPoint(Vector2f sourceGridPoint) {
 		PathNode node = this.getDirs()[sourceGridPoint.x()][sourceGridPoint.y()];
-		return new Vector2f(sourceGridPoint.x() + node.x(), sourceGridPoint.y()
-				+ node.y());
+		if (node == null) {
+			return new Vector2f();
+		}
+		return new Vector2f(sourceGridPoint.x() + node.x(), sourceGridPoint.y() + node.y());
 	}
 
 	private Tower GetSelectedTower(RectBox touchRect) {
@@ -170,7 +168,6 @@ public class GameplayScreen extends GameScreen {
 		}
 		return null;
 	}
-
 
 	private void HideButtons() {
 		this.showMenuButton.Hide();
@@ -196,10 +193,8 @@ public class GameplayScreen extends GameScreen {
 	@Override
 	public void LoadContent() {
 		super.LoadContent();
-		this.gameBackground = LTextures.loadTexture(this.getLevelSettings()
-				.getBackgroundTextureFile());
-		this.gameBackgroundWithGrid = LTextures.loadTexture(this
-				.getLevelSettings().getBackgroundWithGridTextureFile());
+		this.gameBackground = LTextures.loadTexture(this.getLevelSettings().getBackgroundTextureFile());
+		this.gameBackgroundWithGrid = LTextures.loadTexture(this.getLevelSettings().getBackgroundWithGridTextureFile());
 		this.fontSize26Extra = LFont.getFont(26);
 		this.currentBackground = this.gameBackground;
 		super.LoadContent();
@@ -213,29 +208,27 @@ public class GameplayScreen extends GameScreen {
 
 	public final boolean MikkelsPathFinding(boolean checkIfMonsterIsBlocking) {
 		boolean flag = false;
-		RefObject<Boolean> tempRef_flag = new RefObject<Boolean>(flag);
-		boolean tempVar = this.MikkelsPathFinding(checkIfMonsterIsBlocking,
-				tempRef_flag);
-		flag = tempRef_flag.argvalue;
+		ObjRef<Boolean> tempRef_flag = new ObjRef<Boolean>(flag);
+		boolean tempVar = this.MikkelsPathFinding(checkIfMonsterIsBlocking, tempRef_flag);
+		flag = tempRef_flag.get();
 		return tempVar;
 	}
 
 	public final boolean MikkelsPathFinding(boolean checkIfMonsterIsBlocking,
-			RefObject<Boolean> failedBecauseMonsterIsBlocking) {
+			ObjRef<Boolean> failedBecauseMonsterIsBlocking) {
 		boolean flag = false;
-		failedBecauseMonsterIsBlocking.argvalue = false;
+		failedBecauseMonsterIsBlocking.set(false);
 		java.util.ArrayList<PathNode> list = new java.util.ArrayList<PathNode>();
 		for (int i = 0; i < 0x12; i++) {
 			for (int k = 0; k < 0x13; k++) {
 				this.tempDirs[i][k] = null;
 			}
 		}
-		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this
-				.getLevelSettings().getEndPoint().y(), 0));
-		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this
-				.getLevelSettings().getEndPoint().y() + 1, 0));
-		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this
-				.getLevelSettings().getEndPoint().y() - 1, 0));
+		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this.getLevelSettings().getEndPoint().y(), 0));
+		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this.getLevelSettings().getEndPoint().y() + 1,
+				0));
+		list.add(new PathNode(this.getLevelSettings().getEndPoint().x(), this.getLevelSettings().getEndPoint().y() - 1,
+				0));
 		while (list.size() > 0) {
 			PathNode item = list.get(0);
 			if ((item.x() == this.getLevelSettings().getStartPoint().x())
@@ -267,15 +260,13 @@ public class GameplayScreen extends GameScreen {
 		if (checkIfMonsterIsBlocking) {
 			for (Monster monster : this.getWaveManager().GetAllActiveMonsters()) {
 				if (monster.getMonsterType() != MonsterType.Chicken) {
-					if (this.tempDirs[monster.getGridPosition().x()][monster
-							.getGridPosition().y()] == null) {
-						failedBecauseMonsterIsBlocking.argvalue = true;
+					if (this.tempDirs[monster.getGridPosition().x()][monster.getGridPosition().y()] == null) {
+						failedBecauseMonsterIsBlocking.set(true);
 						return false;
 					}
-					Vector2f nextGridPoint = this.GetNextGridPoint(monster
-							.getGridPosition());
+					Vector2f nextGridPoint = this.GetNextGridPoint(monster.getGridPosition());
 					if (this.tempDirs[nextGridPoint.x()][nextGridPoint.y()] == null) {
-						failedBecauseMonsterIsBlocking.argvalue = true;
+						failedBecauseMonsterIsBlocking.set(true);
 						return false;
 					}
 				}
@@ -366,8 +357,7 @@ public class GameplayScreen extends GameScreen {
 
 	private void SellTower(Tower tower) {
 		tower.Sell();
-		this.SetOccupiedGridValuesForTower(tower.getGridX(), tower.getGridY(),
-				false);
+		this.SetOccupiedGridValuesForTower(tower.getGridX(), tower.getGridY(), false);
 		this.placedTowers.remove(tower);
 		this.towers.remove(tower);
 		this.MikkelsPathFinding(false);
@@ -428,32 +418,24 @@ public class GameplayScreen extends GameScreen {
 		if (this.tower != null) {
 			if (this.tower.CanPlace()) {
 				boolean flag2 = false;
-				this.SetOccupiedGridValuesForTower(this.tower.getGridX(),
-						this.tower.getGridY(), true);
+				this.SetOccupiedGridValuesForTower(this.tower.getGridX(), this.tower.getGridY(), true);
 				boolean checkIfMonsterIsBlocking = getGameState() != GameState.PlacingInitialTowers;
-				RefObject<Boolean> tempRef_flag2 = new RefObject<Boolean>(flag2);
-				boolean tempVar = !this.MikkelsPathFinding(
-						checkIfMonsterIsBlocking, tempRef_flag2);
-				flag2 = tempRef_flag2.argvalue;
+				ObjRef<Boolean> tempRef_flag2 = new ObjRef<Boolean>(flag2);
+				boolean tempVar = !this.MikkelsPathFinding(checkIfMonsterIsBlocking, tempRef_flag2);
+				flag2 = tempRef_flag2.get();
 				if (tempVar) {
 					if (!flag2) {
 						HashMap<Vector2f, String> textAndRelativePosition = new HashMap<Vector2f, String>();
 						textAndRelativePosition.put(new Vector2f(0f, 0f),
 								LanguageResources.getBlocking().toUpperCase());
-						SpriteWithText item = new SpriteWithText(this.game,
-								"assets/blocking.png", 0x7d0,
-								new Vector2f(
-										164f - (this.fontSize26Extra
-												.stringWidth(LanguageResources
-														.getBlocking()
-														.toUpperCase()) / 2f),
-										80f), textAndRelativePosition,
-								this.fontSize26Extra);
+						SpriteWithText item = new SpriteWithText(this.game, "assets/blocking.png", 0x7d0,
+								new Vector2f(164f - (this.fontSize26Extra
+										.stringWidth(LanguageResources.getBlocking().toUpperCase()) / 2f), 80f),
+								textAndRelativePosition, this.fontSize26Extra);
 						item.setDrawOrder(100);
 						this.game.Components().add(item);
 					}
-					this.SetOccupiedGridValuesForTower(this.tower.getGridX(),
-							this.tower.getGridY(), false);
+					this.SetOccupiedGridValuesForTower(this.tower.getGridX(), this.tower.getGridY(), false);
 					this.RemoveTower(this.tower);
 				} else {
 					this.tower.Place();
@@ -467,11 +449,9 @@ public class GameplayScreen extends GameScreen {
 
 	@Override
 	public void UnloadContent() {
-		GameComponentCollection components = super.getScreenManager().getGame()
-				.Components();
+		GameComponentCollection components = super.getScreenManager().getGame().Components();
 		for (int i = 0; i < components.size(); i++) {
-			if ((components.get(i) != this)
-					&& (components.get(i) != super.getScreenManager())) {
+			if ((components.get(i) != this) && (components.get(i) != super.getScreenManager())) {
 				components.removeAt(i);
 				i--;
 			}
@@ -480,71 +460,53 @@ public class GameplayScreen extends GameScreen {
 	}
 
 	@Override
-	public void Update(GameTime gameTime, boolean otherScreenHasFocus,
-			boolean coveredByOtherScreen) {
+	public void Update(GameTime gameTime, boolean otherScreenHasFocus, boolean coveredByOtherScreen) {
 		LTouchCollection state = SysTouch.getTouchState();
-	
+
 		if (state.size() > 0) {
-			for (LIterator<LTouchLocation> it=state.listIterator();it.hasNext();) {
+			for (LIterator<LTouchLocation> it = state.listIterator(); it.hasNext();) {
 				LTouchLocation location = it.next();
 				LTouchLocation location3 = state.get(0);
 				if (location.getId() == location3.getId()) {
 					LTouchLocation location2 = null;
 					boolean flag = true;
-					RefObject<LTouchLocation> tempRef_location2 = new RefObject<LTouchLocation>(
-							location2);
+					ObjRef<LTouchLocation> tempRef_location2 = new ObjRef<LTouchLocation>(location2);
 					location.tryGetPreviousLocation(tempRef_location2);
-					location2 = tempRef_location2.argvalue;
+					location2 = tempRef_location2.get();
 					flag = location2.getState() == LTouchLocationState.Pressed;
-					this.setLastTouchPosition(new Vector2f(
-							(location.getPosition().x),
-							(location.getPosition().y)));
-					RectBox rectangle = new RectBox(
-							this.getLastTouchPosition().x,
-							this.getLastTouchPosition().y, 1, 1);
-					if (((getGameState() == GameState.PlacingInitialTowers) && this.startGameButton
-							.CentralCollisionArea().intersects(rectangle))
-							&& flag) {
+					this.setLastTouchPosition(new Vector2f((location.getPosition().x), (location.getPosition().y)));
+					RectBox rectangle = new RectBox(this.getLastTouchPosition().x, this.getLastTouchPosition().y, 1, 1);
+					if (((getGameState() == GameState.PlacingInitialTowers)
+							&& this.startGameButton.CentralCollisionArea().intersects(rectangle)) && flag) {
 						this.game.Components().remove(this.startGameButton);
 						this.startGameButton = null;
 						this.StartGame();
 						break;
 					}
 					if (((getGameState() == GameState.Started) || (getGameState() == GameState.PlacingInitialTowers))
-							&& ((this.showMenuButton.getIsVisible() && this.showMenuButton
-									.CentralCollisionArea().intersects(
-											rectangle)) && flag)) {
+							&& ((this.showMenuButton.getIsVisible()
+									&& this.showMenuButton.CentralCollisionArea().intersects(rectangle)) && flag)) {
 						if (this.startGameButton != null) {
 							this.startGameButton.Hide();
 						}
 						this.GamePaused(true);
 						break;
 					}
-					if ((getGameState() == GameState.Started)
-							|| (getGameState() == GameState.PlacingInitialTowers)) {
-						if ((this.towerToolbar != null)
-								&& (this.selectedTower != null)) {
-							if (this.towerToolbar
-									.CentralCollisionAreaSellButton()
-									.intersects(rectangle)
-									&& flag) {
+					if ((getGameState() == GameState.Started) || (getGameState() == GameState.PlacingInitialTowers)) {
+						if ((this.towerToolbar != null) && (this.selectedTower != null)) {
+							if (this.towerToolbar.CentralCollisionAreaSellButton().intersects(rectangle) && flag) {
 								this.SellTower(this.selectedTower);
 								this.ResetSelectedMonsterOrTower();
 								break;
 							}
-							if (this.towerToolbar
-									.CentralCollisionAreaUpgradeButton()
-									.intersects(rectangle)
-									&& flag) {
+							if (this.towerToolbar.CentralCollisionAreaUpgradeButton().intersects(rectangle) && flag) {
 								this.selectedTower.Upgrade();
 								this.ResetSelectedMonsterOrTower();
 								break;
 							}
 						}
 						for (TowerButton button : this.towerButtons) {
-							if (!button.CentralCollisionArea().intersects(
-									rectangle)
-									|| !flag) {
+							if (!button.CentralCollisionArea().intersects(rectangle) || !flag) {
 								continue;
 							}
 
@@ -553,8 +515,7 @@ public class GameplayScreen extends GameScreen {
 							break;
 						}
 						if ((this.getWaveManager() != null) && !this.isPlacing) {
-							Monster selectedMonster = this.getWaveManager()
-									.GetSelectedMonster(rectangle);
+							Monster selectedMonster = this.getWaveManager().GetSelectedMonster(rectangle);
 							if (selectedMonster != null) {
 								this.ResetSelectedMonsterOrTower();
 								this.setGameOpacity(LColor.gray);
@@ -564,8 +525,7 @@ public class GameplayScreen extends GameScreen {
 									this.monsterToolbar.Remove();
 								}
 								this.RemoveTowerToolbarIfNotNull();
-								this.monsterToolbar = new MonsterToolbar(
-										this.game, this.selectedMonster);
+								this.monsterToolbar = new MonsterToolbar(this.game, this.selectedMonster);
 								this.game.Components().add(this.monsterToolbar);
 								this.HideButtons();
 								break;
@@ -586,8 +546,7 @@ public class GameplayScreen extends GameScreen {
 								this.monsterToolbar = null;
 							}
 							this.HideButtons();
-							this.towerToolbar = new TowerToolbar(this.game,
-									this.selectedTower);
+							this.towerToolbar = new TowerToolbar(this.game, this.selectedTower);
 							this.game.Components().add(this.towerToolbar);
 							break;
 						}
@@ -606,15 +565,9 @@ public class GameplayScreen extends GameScreen {
 				this.RemoveAllGameComponents();
 				super.getScreenManager().ExitAllScreens();
 				if (this.gameEndedState == GameEndedState.Lose) {
-					super.getScreenManager()
-							.AddScreen(
-									new LoseScreen(this.game,
-											ScreenType.GameplayScreen));
+					super.getScreenManager().AddScreen(new LoseScreen(this.game, ScreenType.GameplayScreen));
 				} else if (this.gameEndedState == GameEndedState.Win) {
-					super.getScreenManager()
-							.AddScreen(
-									new WinScreen(this.game,
-											ScreenType.GameplayScreen));
+					super.getScreenManager().AddScreen(new WinScreen(this.game, ScreenType.GameplayScreen));
 				}
 			}
 		}
@@ -633,19 +586,17 @@ public class GameplayScreen extends GameScreen {
 		}
 	}
 
-	private boolean VisitNode(PathNode parent, int dx, int dy,
-			java.util.ArrayList<PathNode> unvisited_nodes, int cost) {
+	private boolean VisitNode(PathNode parent, int dx, int dy, java.util.ArrayList<PathNode> unvisited_nodes,
+			int cost) {
 		int gridX = parent.x() + dx;
 		int gridY = parent.y() + dy;
-		if (((gridX < 0) || (gridX >= 0x12))
-				|| ((gridY < 0) || (gridY >= 0x13))) {
+		if (((gridX < 0) || (gridX >= 0x12)) || ((gridY < 0) || (gridY >= 0x13))) {
 			return false;
 		}
 		if (this.IsOccupied(gridX, gridY, 1)) {
 			return false;
 		}
-		if ((this.tempDirs[gridX][gridY] == null)
-				|| (cost < this.tempDirs[gridX][gridY].getCost())) {
+		if ((this.tempDirs[gridX][gridY] == null) || (cost < this.tempDirs[gridX][gridY].getCost())) {
 			this.tempDirs[gridX][gridY] = new PathNode(-dx, -dy, cost);
 			unvisited_nodes.add(new PathNode(gridX, gridY, cost));
 		}
@@ -653,9 +604,8 @@ public class GameplayScreen extends GameScreen {
 	}
 
 	public final void Win() {
-		CompletedLevel.PersistLevelCompleted(this.game, this.game
-				.getGameplayScreen().getDifficulty(), this.game
-				.getGameplayScreen().getLevel());
+		CompletedLevel.PersistLevelCompleted(this.game, this.game.getGameplayScreen().getDifficulty(),
+				this.game.getGameplayScreen().getLevel());
 		this.gameEndedState = GameEndedState.Win;
 		this.GamePaused(false);
 		setGameState(GameState.Ended);

@@ -48,7 +48,7 @@ public final class GLBatch implements LRelease {
 	private String[] shaderUniformNames;
 
 	public GLBatch(boolean hasNormals, boolean hasColors, int numTexCoords) {
-		this(4096, hasNormals, hasColors, numTexCoords, null);
+		this(8192, hasNormals, hasColors, numTexCoords, null);
 		ownsShader = true;
 	}
 
@@ -104,7 +104,7 @@ public final class GLBatch implements LRelease {
 
 	public void begin(int maxSize, Affine2f projModelView, int primitiveType) {
 		if (customShader == null) {
-			VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
+			final VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
 			mesh = new Mesh(false, maxSize, 0, attribs);
 			expandVertices = ExpandVertices.getVerticeCache(maxSize * (mesh.getVertexAttributes().vertexSize / 4));
 			vertexSize = mesh.getVertexAttributes().vertexSize / 4;
@@ -140,7 +140,7 @@ public final class GLBatch implements LRelease {
 			mesh.close();
 			mesh = null;
 		}
-		VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
+		final VertexAttribute[] attribs = buildVertexAttributes(hasNormals, hasColors, numTexCoords);
 		mesh = new Mesh(false, verticesSize, 0, attribs);
 		vertexSize = mesh.getVertexAttributes().vertexSize / 4;
 		normalOffset = mesh.getVertexAttribute(Usage.Normal) != null ? mesh.getVertexAttribute(Usage.Normal).offset / 4
