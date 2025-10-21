@@ -682,4 +682,276 @@ public class ShapeUtils {
 		}
 		return new Vector2f(x, y);
 	}
+
+	public static final float distanceSegmentrect(Segment segment, RectBox rect) {
+		float dist = distancerectPoint(rect, segment._start);
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distancerectPoint(rect, segment._end));
+		if (dist == 0f) {
+			return 0f;
+		}
+		Vector3f a = segment._start;
+		Vector3f b = segment._end;
+		float dirX = b.x - a.x;
+		float dirY = b.y - a.y;
+		float dirZ = b.z - a.z;
+		float originToCenterX = rect.getCenterX() - a.x;
+		float originToCenterY = rect.getCenterY() - a.y;
+		float originToCenterZ = a.z;
+		float ab_x = b.x - a.x;
+		float ab_y = b.y - a.y;
+		float ab_z = b.z - a.z;
+		float ab_dot_ab = (MathUtils.pow(ab_x, 2f) + MathUtils.pow(ab_y, 2f) + MathUtils.pow(ab_z, 2f));
+		float projectionScalar = Vector3f.dot(originToCenterX, originToCenterY, originToCenterZ, ab_x, ab_y, ab_z)
+				/ ab_dot_ab;
+		projectionScalar = MathUtils.clamp(projectionScalar, 0f, 1f);
+		float projectedCenterX = a.x + projectionScalar * dirX;
+		float projectedCenterY = a.y + projectionScalar * dirY;
+		float projectedCenterZ = a.z + projectionScalar * dirZ;
+		dist = MathUtils.min(dist, distancerectPoint(rect, projectedCenterX, projectedCenterY, projectedCenterZ));
+		if (dist == 0f) {
+			return 0f;
+		}
+		Vector2f min = rect.getStart();
+		Vector2f max = rect.getEnd();
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, min.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, min.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, min.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, min.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, max.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, max.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, max.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceSegmentPoint(segment, max.x, max.y, 0));
+		return dist;
+	}
+
+	public static final float distanceRayrect(Ray ray, RectBox rect) {
+		Vector3f rayOrigin = ray.getOrigin();
+		Vector3f rayDir = ray.getDirection();
+		float dist = distancerectPoint(rect, rayOrigin);
+		if (dist == 0f) {
+			return 0f;
+		}
+		float originToCenterX = rect.getCenterX() - rayOrigin.x;
+		float originToCenterY = rect.getCenterY() - rayOrigin.y;
+		float originToCenterZ = rayOrigin.z;
+		float projectionScalar = rayDir.dot(originToCenterX, originToCenterY, originToCenterZ);
+		projectionScalar = MathUtils.max(0.0F, projectionScalar);
+		float projectedCenterX = rayOrigin.x + projectionScalar * rayDir.x;
+		float projectedCenterY = rayOrigin.y + projectionScalar * rayDir.y;
+		float projectedCenterZ = rayOrigin.z + projectionScalar * rayDir.z;
+		dist = MathUtils.min(dist, distancerectPoint(rect, projectedCenterX, projectedCenterY, projectedCenterZ));
+		if (dist == 0f) {
+			return 0f;
+		}
+		Vector2f min = rect.getStart();
+		Vector2f max = rect.getEnd();
+		dist = MathUtils.min(dist, distanceRayPoint(ray, min.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, min.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, min.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, min.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, max.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, max.x, min.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, max.x, max.y, 0));
+		if (dist == 0f) {
+			return 0f;
+		}
+		dist = MathUtils.min(dist, distanceRayPoint(ray, max.x, max.y, 0));
+		return dist;
+	}
+
+	public static final float distancerectPoint(RectBox rect, Vector3f point) {
+		Vector2f min = rect.getStart();
+		Vector2f max = rect.getEnd();
+		float clampedX = MathUtils.clamp(point.x, min.x, max.x);
+		float clampedY = MathUtils.clamp(point.y, min.y, max.y);
+		float clampedZ = MathUtils.clamp(point.z, 0, 0);
+		return point.dst(clampedX, clampedY, clampedZ);
+	}
+
+	public static final float distancerectPoint(RectBox rect, float pointX, float pointY, float pointZ) {
+		Vector2f min = rect.getStart();
+		Vector2f max = rect.getEnd();
+		float clampedX = MathUtils.clamp(pointX, min.x, max.x);
+		float clampedY = MathUtils.clamp(pointY, min.y, max.y);
+		float clampedZ = MathUtils.clamp(pointZ, 0, 0);
+		return Vector3f.dst(pointX, pointY, pointZ, clampedX, clampedY, clampedZ);
+	}
+
+	public static final float distanceRayPoint(Ray ray, XYZ point) {
+		return distanceRayPoint(ray, point.getX(), point.getY(), point.getZ());
+	}
+
+	public static final float distanceRayPoint(Ray ray, float pointX, float pointY, float pointZ) {
+		Vector3f rayOrigin = ray.getOrigin();
+		Vector3f rayDir = ray.getDirection();
+		float originToPointX = pointX - rayOrigin.x;
+		float originToPointY = pointY - rayOrigin.y;
+		float originToPointZ = pointZ - rayOrigin.z;
+		float projectionScalar = rayDir.dot(originToPointX, originToPointY, originToPointZ);
+		projectionScalar = MathUtils.max(0.0F, projectionScalar);
+		float projectedX = rayOrigin.x + projectionScalar * rayDir.x;
+		float projectedY = rayOrigin.y + projectionScalar * rayDir.y;
+		float projectedZ = rayOrigin.z + projectionScalar * rayDir.z;
+		return Vector3f.dst(pointX, pointY, pointZ, projectedX, projectedY, projectedZ);
+	}
+
+	public static final float distanceSegmentPoint(Segment segment, XYZ point) {
+		return distanceSegmentPoint(segment, point.getX(), point.getY(), point.getZ());
+	}
+
+	public static final Vector3f alignAngleVectorTowardTarget(Vector3f source, Vector3f target, float maxAngleDeg) {
+		float angleAx = (source.x % 360f + 360f) % 360f;
+		float angleAy = (source.y % 360f + 360f) % 360f;
+		float angleAz = (source.z % 360f + 360f) % 360f;
+		float angleTx = (target.x % 360f + 360f) % 360f;
+		float angleTy = (target.y % 360f + 360f) % 360f;
+		float angleTz = (target.z % 360f + 360f) % 360f;
+		float dx = MathUtils.abs(angleAx - angleTx);
+		float dy = MathUtils.abs(angleAy - angleTy);
+		float dz = MathUtils.abs(angleAz - angleTz);
+		if (dx > 180f)
+			dx = 360f - dx;
+		if (dy > 180f)
+			dy = 360f - dy;
+		if (dz > 180f)
+			dz = 360f - dz;
+		if (dx > maxAngleDeg)
+			if (angleAx < angleTx) {
+				angleAx = angleTx - maxAngleDeg;
+			} else {
+				angleAx = angleTx + maxAngleDeg;
+			}
+		if (dy > maxAngleDeg)
+			if (angleAy < angleTy) {
+				angleAy = angleTy - maxAngleDeg;
+			} else {
+				angleAy = angleTy + maxAngleDeg;
+			}
+		if (dz > maxAngleDeg)
+			if (angleAz < angleTz) {
+				angleAz = angleTz - maxAngleDeg;
+			} else {
+				angleAz = angleTz + maxAngleDeg;
+			}
+		source.x = angleAx;
+		source.y = angleAy;
+		source.z = angleAz;
+		return source;
+	}
+
+	public static final float distanceSegmentPoint(Segment segment, float pointX, float pointY, float pointZ) {
+		Vector3f a = segment._start;
+		Vector3f b = segment._end;
+		float originToPointX = pointX - a.x;
+		float originToPointY = pointY - a.y;
+		float originToPointZ = pointZ - a.z;
+		float dirX = b.x - a.x;
+		float dirY = b.y - a.y;
+		float dirZ = b.z - a.z;
+		float ab_x = b.x - a.x;
+		float ab_y = b.y - a.y;
+		float ab_z = b.z - a.z;
+		float ab_dot_ab = (MathUtils.pow(ab_x, 2f) + MathUtils.pow(ab_y, 2f) + MathUtils.pow(ab_z, 2f));
+		float projectionScalar = Vector3f.dot(originToPointX, originToPointY, originToPointZ, ab_x, ab_y, ab_z)
+				/ ab_dot_ab;
+		projectionScalar = MathUtils.clamp(projectionScalar, 0f, 1f);
+		float projectedX = a.x + projectionScalar * dirX;
+		float projectedY = a.y + projectionScalar * dirY;
+		float projectedZ = a.z + projectionScalar * dirZ;
+		return Vector3f.dst(pointX, pointY, pointZ, projectedX, projectedY, projectedZ);
+	}
+
+	public static final float norDot(Vector3f a, Vector3f b) {
+		return a.dot(b) / a.len() * b.len();
+	}
+
+	public static final void alignVectorTowardTarget(Vector3f source, Vector3f target, float dotThreshold) {
+		if (source.isZero()) {
+			source.set(target);
+			return;
+		}
+		if (target.isZero()) {
+			return;
+		}
+		float al = source.len();
+		float tl = target.len();
+		float dot = source.dot(target) / al * tl;
+		if (dot < dotThreshold) {
+			float epsilon = dotThreshold - dot;
+			source.nor().addSelf(target.x * epsilon / tl, target.y * epsilon / tl, target.z * epsilon / tl).norSelf()
+					.scaleSelf(al);
+		}
+	}
+
+	public static final float bilinear(float x1y1, float x2y1, float x1y2, float x2y2, float x1, float x2, float y1,
+			float y2, float x, float y) {
+		float interpY1 = (x2 - x) / (x2 - x1) * x1y1 + (x - x1) / (x2 - x1) * x2y1;
+		float interpY2 = (x2 - x) / (x2 - x1) * x1y2 + (x - x1) / (x2 - x1) * x2y2;
+		return (y2 - y) / (y2 - y1) * interpY1 + (y - y1) / (y2 - y1) * interpY2;
+	}
+
+	public static final float bilinearNormalized(float x1y1, float x2y1, float x1y2, float x2y2, float u, float v) {
+		return bilinear(x1y1, x2y1, x1y2, x2y2, 0f, 1f, 0f, 1f, u, v);
+	}
+
+	public static final float cosineLerp(float a, float b, float t) {
+		float t2 = (1f - MathUtils.cos(t * MathUtils.PI)) * 0.5f;
+		return a * (1f - t2) + b * t2;
+	}
+
+	public static final float cosineBilinear(float x1y1, float x2y1, float x1y2, float x2y2, float x1, float x2,
+			float y1, float y2, float x, float y) {
+		float tx = (x - x1) / (x2 - x1);
+		float ty = (y - y1) / (y2 - y1);
+		float interpY1 = cosineLerp(x1y1, x2y1, tx);
+		float interpY2 = cosineLerp(x1y2, x2y2, tx);
+		return cosineLerp(interpY1, interpY2, ty);
+	}
+
+	public static final float cosineBilinearNormalized(float x1y1, float x2y1, float x1y2, float x2y2, float u,
+			float v) {
+		return cosineBilinear(x1y1, x2y1, x1y2, x2y2, 0f, 1f, 0f, 1f, u, v);
+	}
 }

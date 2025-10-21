@@ -479,19 +479,15 @@ public class JavaSEAssets extends Assets {
 		return requireResource(path).readBytes();
 	}
 
-	private static JavaSEAudio _audio;
-
 	protected Sound getSound(String path, boolean music) {
-		if (_audio == null) {
-			_audio = new JavaSEAudio();
-		}
 		Exception err = null;
 		String ext = LSystem.getExtension(path);
 		if (ext == null || ext.length() == 0) {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(soundPath)), music);
+					return JavaSEAudio.createSound(game, path, new ByteArrayInputStream(getBytesSync(soundPath)),
+							music);
 				} catch (Exception e) {
 					e.printStackTrace();
 					err = e;
@@ -499,7 +495,7 @@ public class JavaSEAssets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(path)), music);
+				return JavaSEAudio.createSound(game, path, new ByteArrayInputStream(getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
 				err = e;

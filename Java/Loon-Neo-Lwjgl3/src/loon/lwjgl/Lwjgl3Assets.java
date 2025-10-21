@@ -468,19 +468,15 @@ public class Lwjgl3Assets extends Assets {
 		return requireResource(path).readBytes();
 	}
 
-	private static Lwjgl3Audio _audio;
-
 	protected Sound getSound(String path, boolean music) {
-		if (_audio == null) {
-			_audio = new Lwjgl3Audio();
-		}
 		Exception err = null;
 		String ext = LSystem.getExtension(path);
 		if (ext == null || ext.length() == 0) {
 			for (String suff : SUFFIXES) {
 				final String soundPath = path + suff;
 				try {
-					return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(soundPath)), music);
+					return Lwjgl3Audio.createSound(game, path, new ByteArrayInputStream(getBytesSync(soundPath)),
+							music);
 				} catch (Exception e) {
 					e.printStackTrace();
 					err = e;
@@ -488,7 +484,7 @@ public class Lwjgl3Assets extends Assets {
 			}
 		} else {
 			try {
-				return _audio.createSound(path, new ByteArrayInputStream(getBytesSync(path)), music);
+				return Lwjgl3Audio.createSound(game, path, new ByteArrayInputStream(getBytesSync(path)), music);
 			} catch (Exception e) {
 				e.printStackTrace();
 				err = e;

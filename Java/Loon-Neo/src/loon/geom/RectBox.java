@@ -649,6 +649,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return setBounds(newX, newY, newWidth, newHeight);
 	}
 
+	public Vector2f getStart() {
+		return new Vector2f(this.getMinX(), this.getMinY());
+	}
+
+	public Vector2f getEnd() {
+		return new Vector2f(this.getMaxX(), this.getMaxY());
+	}
+
 	@Override
 	public float getMinX() {
 		return getX();

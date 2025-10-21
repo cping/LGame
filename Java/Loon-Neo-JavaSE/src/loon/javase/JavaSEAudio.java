@@ -28,14 +28,14 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import loon.LGame;
 import loon.LSystem;
 import loon.SoundImpl;
 import loon.events.Updateable;
 
-public class JavaSEAudio {
+public final class JavaSEAudio {
 
-	protected static <I> void dispatchLoaded(final SoundImpl<I> sound,
-			final I impl) {
+	protected static <I> void dispatchLoaded(final SoundImpl<I> sound, final I impl) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -45,8 +45,7 @@ public class JavaSEAudio {
 		LSystem.unload(update);
 	}
 
-	protected static <I> void dispatchLoadError(final SoundImpl<I> sound,
-			final Throwable error) {
+	protected static <I> void dispatchLoadError(final SoundImpl<I> sound, final Throwable error) {
 		Updateable update = new Updateable() {
 			@Override
 			public void action(Object a) {
@@ -56,12 +55,52 @@ public class JavaSEAudio {
 		LSystem.unload(update);
 	}
 
-	public JavaSESound createSound(final String path, final InputStream in,
+	private final static class AudioUpdateable implements Updateable {
+
+		final SoundImpl<Object> _sound;
+
+		final InputStream _input;
+
+		final boolean _music;
+
+		AudioUpdateable(SoundImpl<Object> s, InputStream in, boolean m) {
+			this._sound = s;
+			this._input = in;
+			this._music = m;
+		}
+
+		public void action(Object o) {
+			try {
+				AudioInputStream ais = AudioSystem.getAudioInputStream(_input);
+				Clip clip = AudioSystem.getClip();
+				if (_music) {
+					clip = new JavaSEBigClip(clip);
+				}
+				AudioFormat baseFormat = ais.getFormat();
+				if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
+					AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+							baseFormat.getSampleRate(), 16, baseFormat.getChannels(), baseFormat.getChannels() * 2,
+							baseFormat.getSampleRate(), false);
+					ais = AudioSystem.getAudioInputStream(decodedFormat, ais);
+				}
+				clip.open(ais);
+				dispatchLoaded(_sound, clip);
+			} catch (Exception e) {
+				dispatchLoadError(_sound, e);
+			}
+
+		}
+
+	}
+
+	public static SoundImpl<Object> createSound(final LGame game, final String path, final InputStream in,
 			final boolean music) {
-		final JavaSESound sound = new JavaSESound();
-		String ext = LSystem.getExtension(path);
-		if ("ogg".equalsIgnoreCase(ext)) {
+		SoundImpl<Object> anySound = null;
+		final String ext = LSystem.getExtension(path).trim().toLowerCase();
+		if ("ogg".equals(ext)) {
+			final JavaSEOggSound sound = new JavaSEOggSound(game);
 			LSystem.load(new Updateable() {
+				@Override
 				public void action(Object o) {
 					try {
 						sound.loadOgg(in);
@@ -71,36 +110,28 @@ public class JavaSEAudio {
 					}
 				}
 			});
-		} else {
+			anySound = sound;
+		} else if ("mp3".equals(ext)) {
+			final JavaSEMP3Sound sound = new JavaSEMP3Sound(game);
 			LSystem.load(new Updateable() {
+				@Override
 				public void action(Object o) {
 					try {
-						AudioInputStream ais = AudioSystem
-								.getAudioInputStream(in);
-						Clip clip = AudioSystem.getClip();
-						if (music) {
-							clip = new JavaSEBigClip(clip);
-						}
-						AudioFormat baseFormat = ais.getFormat();
-						if (baseFormat.getEncoding() != AudioFormat.Encoding.PCM_SIGNED) {
-							AudioFormat decodedFormat = new AudioFormat(
-									AudioFormat.Encoding.PCM_SIGNED, baseFormat
-											.getSampleRate(), 16, baseFormat
-											.getChannels(), baseFormat
-											.getChannels() * 2, baseFormat
-											.getSampleRate(), false);
-							ais = AudioSystem.getAudioInputStream(
-									decodedFormat, ais);
-						}
-						clip.open(ais);
-						dispatchLoaded(sound, clip);
-					} catch (Exception e) {
+						sound.loadMP3(in);
+						dispatchLoaded(sound, new Object());
+					} catch (IOException e) {
 						dispatchLoadError(sound, e);
 					}
 				}
 			});
+			anySound = sound;
+		} else {
+			if (anySound == null) {
+				anySound = new JavaSEOggSound(game);
+			}
+			LSystem.load(new AudioUpdateable(anySound, in, music));
 		}
-		return sound;
+		return anySound;
 	}
 
 	public void onPause() {
