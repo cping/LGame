@@ -26,9 +26,10 @@ import java.io.InputStream;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
+import com.jcraft.jogg.OggClip;
+
 import loon.LGame;
 import loon.SoundImpl;
-import loon.jni.OggClip;
 import loon.utils.MathUtils;
 
 class JavaSEOggSound extends SoundImpl<Object> {

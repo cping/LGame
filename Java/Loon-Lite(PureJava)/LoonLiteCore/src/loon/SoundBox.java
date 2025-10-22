@@ -25,41 +25,70 @@ import loon.utils.ObjectMap;
 
 public abstract class SoundBox extends BaseIO {
 
-	private ObjectMap<String, Sound> SOUND_CACHE = new ObjectMap<>(
-			CollectionUtils.INITIAL_CAPACITY);
+	private ObjectMap<String, Sound> _soundCache = new ObjectMap<String, Sound>(CollectionUtils.INITIAL_CAPACITY);
+
+	public Sound getSound(String path) {
+		return _soundCache.get(path);
+	}
+
+	public Sound createSound(String path) {
+		return createSound(path, 1f);
+	}
+
+	public Sound createSound(String path, float volume) {
+		return createSound(path, false, volume);
+	}
+
+	public Sound createSound(String path, boolean loop, float volume) {
+		Sound sound = _soundCache.get(path);
+		if (sound == null) {
+			sound = LSystem.base().assets().getSound(path);
+			_soundCache.put(path, sound);
+		} else {
+			sound.stop();
+		}
+		sound.setVolume(volume);
+		if (loop) {
+			sound.setLooping(loop);
+		}
+		sound.play();
+		return sound;
+	}
 
 	public void playSound(String path) {
 		playSound(path, false);
 	}
 
 	public void playSound(String path, boolean loop) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound == null) {
 			sound = LSystem.base().assets().getSound(path);
-			SOUND_CACHE.put(path, sound);
+			_soundCache.put(path, sound);
 		} else {
 			sound.stop();
 		}
-		sound.setLooping(loop);
+		if (loop) {
+			sound.setLooping(loop);
+		}
 		sound.play();
 	}
 
 	public void volume(String path, float volume) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound != null) {
 			sound.setVolume(volume);
 		}
 	}
 
 	public void stopSound(String path) {
-		Sound sound = SOUND_CACHE.get(path);
+		Sound sound = _soundCache.get(path);
 		if (sound != null) {
 			sound.stop();
 		}
 	}
 
 	public void stopSound() {
-		for (Sound s : SOUND_CACHE.values()) {
+		for (Sound s : _soundCache.values()) {
 			if (s != null) {
 				s.stop();
 			}
@@ -67,11 +96,14 @@ public abstract class SoundBox extends BaseIO {
 	}
 
 	public void release() {
-		for (Sound s : SOUND_CACHE.values()) {
+		for (Sound s : _soundCache.values()) {
 			if (s != null) {
 				s.release();
 			}
 		}
-		SOUND_CACHE.clear();
+		_soundCache.clear();
 	}
+	/*
+	 * @Override protected void finalize() { release(); }
+	 */
 }

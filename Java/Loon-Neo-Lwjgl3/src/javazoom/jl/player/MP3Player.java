@@ -50,6 +50,8 @@ public class MP3Player {
 	/** Listener for the playback process */
 	private PlaybackListener listener;
 
+	private float _lastGain = -1;
+
 	private byte[] _byteArrays;
 
 	/**
@@ -113,6 +115,19 @@ public class MP3Player {
 		}
 	}
 
+	public void setGain(float g) {
+		if (audio != null) {
+			audio.setGain(g);
+		}
+	}
+
+	public float getGain() {
+		if (audio != null) {
+			return audio.getGain();
+		}
+		return 0f;
+	}
+
 	public void play() throws JavaLayerException {
 		if (isComplete()) {
 			play(0);
@@ -128,9 +143,18 @@ public class MP3Player {
 	 * @return true if the last frame was played, or false if there are more frames.
 	 */
 	public boolean play(int frames) throws JavaLayerException {
+
+		if (audio != null) {
+			_lastGain = audio.getGain();
+		}
+
 		if (!isComplete()) {
 			stop();
 			resetStream();
+		}
+
+		if (audio != null) {
+			audio.setGain(_lastGain);
 		}
 		boolean ret = true;
 
@@ -182,6 +206,9 @@ public class MP3Player {
 		AudioDevice out = audio;
 		if (out != null) {
 			closed = true;
+			if (audio != null) {
+				_lastGain = audio.getGain();
+			}
 			audio = null;
 			// this may fail, so ensure object state is set up before
 			// calling this method.

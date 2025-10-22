@@ -27,6 +27,7 @@ package javazoom.jl.player;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
@@ -42,11 +43,14 @@ import javazoom.jl.decoder.JavaLayerException;
  * @author Mat McGowan
  */
 public class JavaSoundAudioDevice extends AudioDeviceBase {
+
 	private SourceDataLine source = null;
 
 	private AudioFormat fmt = null;
 
 	private byte[] byteBuf = new byte[4096];
+
+	private float gain = -1;
 
 	protected void setAudioFormat(AudioFormat fmt0) {
 		fmt = fmt0;
@@ -78,22 +82,19 @@ public class JavaSoundAudioDevice extends AudioDeviceBase {
 	protected void openImpl() throws JavaLayerException {
 	}
 
-	// createSource fix.
 	protected void createSource() throws JavaLayerException {
 		Throwable t = null;
 		try {
 			Line line = AudioSystem.getLine(getSourceLineInfo());
 			if (line instanceof SourceDataLine) {
 				source = (SourceDataLine) line;
-				// source.open(fmt, millisecondsToBytes(fmt, 2000));
-				source.open(fmt);
-				/*
-				 * if (source.isControlSupported(FloatControl.Type.MASTER_GAIN)) { FloatControl
-				 * c = (FloatControl)source.getControl(FloatControl.Type.MASTER_GAIN);
-				 * c.setValue(c.getMaximum()); }
-				 */
+				if (this.gain != -1) {
+					source.open(fmt, millisecondsToBytes(fmt, 2000));
+					setGain(gain);
+				} else {
+					source.open(fmt);
+				}
 				source.start();
-
 			}
 		} catch (RuntimeException ex) {
 			t = ex;
@@ -104,6 +105,38 @@ public class JavaSoundAudioDevice extends AudioDeviceBase {
 		}
 		if (source == null)
 			throw new JavaLayerException("cannot obtain source audio line", t);
+	}
+
+	public float getGain() {
+		return gain;
+	}
+
+	public void setGain(float gain) {
+		if (gain != -1) {
+			if ((gain < 0) || (gain > 1)) {
+				throw new IllegalArgumentException("Volume must be between 0.0 and 1.0");
+			}
+		}
+
+		this.gain = gain;
+
+		if (source == null) {
+			return;
+		}
+
+		try {
+			FloatControl control = (FloatControl) source.getControl(FloatControl.Type.MASTER_GAIN);
+			if (gain == -1) {
+				control.setValue(0);
+			} else {
+				float max = control.getMaximum();
+				float min = control.getMinimum();
+				float range = max - min;
+				control.setValue(min + (range * gain));
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public int millisecondsToBytes(AudioFormat fmt, int time) {

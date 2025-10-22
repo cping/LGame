@@ -27,6 +27,34 @@ public abstract class SoundBox extends BaseIO {
 
 	private ObjectMap<String, Sound> _soundCache = new ObjectMap<String, Sound>(CollectionUtils.INITIAL_CAPACITY);
 
+	public Sound getSound(String path) {
+		return _soundCache.get(path);
+	}
+
+	public Sound createSound(String path) {
+		return createSound(path, 1f);
+	}
+
+	public Sound createSound(String path, float volume) {
+		return createSound(path, false, volume);
+	}
+
+	public Sound createSound(String path, boolean loop, float volume) {
+		Sound sound = _soundCache.get(path);
+		if (sound == null) {
+			sound = LSystem.base().assets().getSound(path);
+			_soundCache.put(path, sound);
+		} else {
+			sound.stop();
+		}
+		sound.setVolume(volume);
+		if (loop) {
+			sound.setLooping(loop);
+		}
+		sound.play();
+		return sound;
+	}
+
 	public void playSound(String path) {
 		playSound(path, false);
 	}
@@ -39,7 +67,9 @@ public abstract class SoundBox extends BaseIO {
 		} else {
 			sound.stop();
 		}
-		sound.setLooping(loop);
+		if (loop) {
+			sound.setLooping(loop);
+		}
 		sound.play();
 	}
 
@@ -73,9 +103,7 @@ public abstract class SoundBox extends BaseIO {
 		}
 		_soundCache.clear();
 	}
-    /*
-	@Override
-	protected void finalize() {
-		release();
-	}*/
+	/*
+	 * @Override protected void finalize() { release(); }
+	 */
 }

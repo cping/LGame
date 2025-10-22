@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 - 2015 The Loon Game Engine Authors
+ * Copyright 2008 - 2019 The Loon Game Engine Authors
  * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,23 +26,34 @@ import java.io.InputStream;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
 
-import com.jcraft.jogg.OggClip;
-
+import javazoom.jl.decoder.JavaLayerException;
+import javazoom.jl.player.MP3Player;
+import loon.LGame;
 import loon.SoundImpl;
 import loon.utils.MathUtils;
 
-public class JavaSESound extends SoundImpl<Object> {
+public class JavaSEMP3Sound extends SoundImpl<Object> {
+
+	private LGame _game;
 
 	private int mode = 0;
 
-	OggClip ogg_clip;
+	MP3Player mp3Player;
 
-	public JavaSESound() {
-
+	public JavaSEMP3Sound(LGame g) {
+		_game = g;
 	}
 
-	synchronized void loadOgg(InputStream ins) throws IOException {
-		ogg_clip = new OggClip(ins);
+	public LGame getGame() {
+		return _game;
+	}
+
+	synchronized void loadMP3(InputStream ins) throws IOException {
+		try {
+			mp3Player = new MP3Player(ins);
+		} catch (JavaLayerException e) {
+			throw new IOException(e.getMessage());
+		}
 		mode = 1;
 	}
 
@@ -52,7 +63,7 @@ public class JavaSESound extends SoundImpl<Object> {
 		case 0:
 			return (((Clip) impl)).isActive();
 		case 1:
-			return !ogg_clip.stopped();
+			return !mp3Player.isComplete();
 		}
 		return false;
 	}
@@ -69,22 +80,9 @@ public class JavaSESound extends SoundImpl<Object> {
 			}
 			break;
 		case 1:
-			if (ogg_clip.stopped()) {
-				ogg_clip.setGain(volume);
-				if (looping) {
-					ogg_clip.loop();
-				} else {
-					ogg_clip.play();
-				}
-			}
+			_game.invokeAsync(new AsyncSound(this));
 			break;
 		}
-		return true;
-	}
-
-	@Override
-	public boolean pause() {
-		stopImpl();
 		return true;
 	}
 
@@ -96,7 +94,7 @@ public class JavaSESound extends SoundImpl<Object> {
 			((Clip) impl).flush();
 			break;
 		case 1:
-
+			mp3Player.stop();
 			break;
 		}
 	}
@@ -116,8 +114,8 @@ public class JavaSESound extends SoundImpl<Object> {
 			}
 			break;
 		case 1:
+			mp3Player.setGain(volume);
 			this.volume = volume;
-			ogg_clip.setGain(volume);
 			break;
 		}
 	}
@@ -129,13 +127,42 @@ public class JavaSESound extends SoundImpl<Object> {
 			((Clip) impl).close();
 			break;
 		case 1:
-			ogg_clip.close();
+			mp3Player.free();
 			break;
 		}
 	}
 
+	@Override
+	public boolean pause() {
+		stopImpl();
+		return true;
+	}
+
 	protected static float toGain(float volume, float min, float max) {
 		return MathUtils.clamp((float) (20 * Math.log10(volume)), min, max);
+	}
+
+	private static final class AsyncSound implements Runnable {
+
+		final JavaSEMP3Sound _sound;
+
+		AsyncSound(final JavaSEMP3Sound sound) {
+			_sound = sound;
+		}
+
+		@Override
+		public void run() {
+			try {
+				if (_sound.looping) {
+					for (; !_sound.mp3Player.isClosed();) {
+						_sound.mp3Player.play();
+					}
+				} else {
+					_sound.mp3Player.play();
+				}
+			} catch (Exception e) {
+			}
+		}
 	}
 
 }

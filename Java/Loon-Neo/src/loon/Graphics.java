@@ -141,7 +141,7 @@ public abstract class Graphics {
 		return width() < 2 || height() < 2;
 	}
 
-	public final Matrix4 getViewMatrix() {
+	public Matrix4 getViewMatrix() {
 		display = game.display();
 		final Dimension view = LSystem.viewSize;
 		if (viewMatrix == null) {
@@ -157,29 +157,29 @@ public abstract class Graphics {
 		return viewMatrix;
 	}
 
-	public final Graphics save() {
+	public Graphics save() {
 		if (viewMatrix != null) {
 			matrixsStack.add(viewMatrix = viewMatrix.cpy());
 		}
 		return this;
 	}
 
-	public final Graphics restore() {
+	public Graphics restore() {
 		viewMatrix = matrixsStack.pop();
 		return this;
 	}
 
 	public abstract Dimension screenSize();
 
-	public final Canvas createCanvas(final float width, final float height) {
+	public Canvas createCanvas(final float width, final float height) {
 		return createCanvasImpl(scale, scale.scaledCeil(width), scale.scaledCeil(height));
 	}
 
-	public final Canvas createCanvas(final Dimension size) {
+	public Canvas createCanvas(final Dimension size) {
 		return createCanvas(size.width, size.height);
 	}
 
-	public final LTexture createTexture(final float width, final float height, final LTexture.Format config) {
+	public LTexture createTexture(final float width, final float height, final LTexture.Format config) {
 		int texWidth = config.toTexWidth(scale.scaledCeil(width));
 		int texHeight = config.toTexHeight(scale.scaledCeil(height));
 		if (texWidth <= 0 || texHeight <= 0) {
@@ -190,7 +190,7 @@ public abstract class Graphics {
 		return new LTexture(this, id, config, texWidth, texHeight, scale, width, height);
 	}
 
-	public final LTexture createTexture(final Dimension size, final LTexture.Format config) {
+	public LTexture createTexture(final Dimension size, final LTexture.Format config) {
 		return createTexture(size.width, size.height, config);
 	}
 

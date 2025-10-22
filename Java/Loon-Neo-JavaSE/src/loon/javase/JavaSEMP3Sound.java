@@ -114,6 +114,7 @@ public class JavaSEMP3Sound extends SoundImpl<Object> {
 			}
 			break;
 		case 1:
+			mp3Player.setGain(volume);
 			this.volume = volume;
 			break;
 		}
@@ -146,10 +147,8 @@ public class JavaSEMP3Sound extends SoundImpl<Object> {
 		@Override
 		public void run() {
 			try {
-				if (_sound.mp3Player.isComplete()) {
-					if (_sound.looping) {
-						_sound.mp3Player.play(0);
-					} else {
+				if (_sound.looping) {
+					for (; !_sound.mp3Player.isClosed();) {
 						_sound.mp3Player.play();
 					}
 				} else {
