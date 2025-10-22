@@ -20,6 +20,12 @@
 
 package javazoom.jl.decoder;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InvalidClassException;
@@ -28,6 +34,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
+import java.util.HashMap;
+
+import loon.BaseIO;
 
 /**
  * The JavaLayerUtils class is not strictly part of the JavaLayer API. It serves
@@ -156,6 +165,8 @@ public class JavaLayerUtils {
 		return hook;
 	}
 
+	private final static HashMap<String, byte[]> resourceCache = new HashMap<String, byte[]>();
+
 	/**
 	 * Retrieves an InputStream for a named resource.
 	 * 
@@ -167,14 +178,63 @@ public class JavaLayerUtils {
 	 *         getResourceAsStream() method is called to retrieve the resource.
 	 */
 	static synchronized public InputStream getResourceAsStream(String name) {
+		byte[] bytes = resourceCache.get(name);
+		if (bytes != null) {
+			return new ByteArrayInputStream(bytes);
+		}
 		InputStream is = null;
-
 		if (hook != null) {
-			is = hook.getResourceAsStream(name);
+			try {
+				is = hook.getResourceAsStream(name);
+				int nRead;
+				final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+				final byte[] dataBuffer = new byte[8192];
+				while ((nRead = is.read(dataBuffer, 0, dataBuffer.length)) != -1) {
+					buffer.write(dataBuffer, 0, nRead);
+				}
+				buffer.flush();
+				is = new ByteArrayInputStream(dataBuffer);
+				resourceCache.put(name, dataBuffer);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		} else {
 			is = JavaLayerUtils.class.getResourceAsStream(name);
+			if (is == null) {
+				is = JavaLayerUtils.class.getClassLoader().getResourceAsStream(name);
+				if (is == null) {
+					File file = new File(name);
+					if (file.exists()) {
+						try {
+							is = new BufferedInputStream(new FileInputStream(file));
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+					if (is == null) {
+						byte[] tempBytes = BaseIO.loadBytes(name);
+						if (tempBytes != null) {
+							is = new ByteArrayInputStream(BaseIO.loadBytes(name));
+						}
+					}
+				}
+			}
+			if (is != null) {
+				try {
+					int nRead;
+					final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+					final byte[] dataBuffer = new byte[8192];
+					while ((nRead = is.read(dataBuffer, 0, dataBuffer.length)) != -1) {
+						buffer.write(dataBuffer, 0, nRead);
+					}
+					buffer.flush();
+					is = new ByteArrayInputStream(dataBuffer);
+					resourceCache.put(name, dataBuffer);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
-
 		return is;
 	}
 }

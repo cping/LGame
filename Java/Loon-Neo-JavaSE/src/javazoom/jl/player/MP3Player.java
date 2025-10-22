@@ -112,7 +112,12 @@ public class MP3Player {
 				audio = FactoryRegistry.systemRegistry().createAudioDevice();
 			}
 			audio.open(decoder = new Decoder());
+			reset();
 		}
+	}
+
+	public void reset() {
+		closed = complete = false;
 	}
 
 	public void setGain(float g) {

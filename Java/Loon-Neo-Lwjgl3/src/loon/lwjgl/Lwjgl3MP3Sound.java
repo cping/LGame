@@ -80,6 +80,7 @@ public class Lwjgl3MP3Sound extends SoundImpl<Object> {
 			}
 			break;
 		case 1:
+			mp3Player.reset();
 			_game.invokeAsync(new AsyncSound(this));
 			break;
 		}
