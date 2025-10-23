@@ -37,6 +37,7 @@ import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import loon.BaseIO;
+import loon.LSysException;
 
 /**
  * The JavaLayerUtils class is not strictly part of the JavaLayer API. It serves
@@ -178,7 +179,7 @@ public class JavaLayerUtils {
 	 *         getResourceAsStream() method is called to retrieve the resource.
 	 */
 	static synchronized public InputStream getResourceAsStream(String name) {
-		byte[] bytes = resourceCache.get(name);
+		final byte[] bytes = resourceCache.get(name);
 		if (bytes != null) {
 			return new ByteArrayInputStream(bytes);
 		}
@@ -196,43 +197,55 @@ public class JavaLayerUtils {
 				is = new ByteArrayInputStream(dataBuffer);
 				resourceCache.put(name, dataBuffer);
 			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		} else {
-			is = JavaLayerUtils.class.getResourceAsStream(name);
-			if (is == null) {
-				is = JavaLayerUtils.class.getClassLoader().getResourceAsStream(name);
+			final String mesError = "The Resource name [" + name + "] not found!";
+			try {
+				is = JavaLayerUtils.class.getResourceAsStream(name);
 				if (is == null) {
-					File file = new File(name);
-					if (file.exists()) {
-						try {
-							is = new BufferedInputStream(new FileInputStream(file));
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
+					final String path = "/javazoom/jl/decoder/";
+					final ClassLoader loader = JavaLayerUtils.class.getClassLoader();
+					is = loader.getResourceAsStream(path + name);
 					if (is == null) {
-						byte[] tempBytes = BaseIO.loadBytes(name);
-						if (tempBytes != null) {
-							is = new ByteArrayInputStream(BaseIO.loadBytes(name));
+						is = loader.getResourceAsStream("/" + name);
+						if (is == null) {
+							File file = new File(path + name);
+							if (!file.exists()) {
+								file = new File("/" + name);
+							}
+							if (file.exists()) {
+								try {
+									is = new BufferedInputStream(new FileInputStream(file));
+								} catch (FileNotFoundException e) {
+								}
+							}
+							if (is == null) {
+								final byte[] tempBytes = BaseIO.loadBytes(name);
+								if (tempBytes != null) {
+									is = new ByteArrayInputStream(tempBytes);
+								}
+							}
 						}
 					}
 				}
-			}
-			if (is != null) {
-				try {
-					int nRead;
-					final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-					final byte[] dataBuffer = new byte[8192];
-					while ((nRead = is.read(dataBuffer, 0, dataBuffer.length)) != -1) {
-						buffer.write(dataBuffer, 0, nRead);
+				if (is != null) {
+					try {
+						int nRead;
+						final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+						final byte[] dataBuffer = new byte[8192];
+						while ((nRead = is.read(dataBuffer, 0, dataBuffer.length)) != -1) {
+							buffer.write(dataBuffer, 0, nRead);
+						}
+						buffer.flush();
+						is = new ByteArrayInputStream(dataBuffer);
+						resourceCache.put(name, dataBuffer);
+					} catch (Exception e) {
 					}
-					buffer.flush();
-					is = new ByteArrayInputStream(dataBuffer);
-					resourceCache.put(name, dataBuffer);
-				} catch (Exception e) {
-					e.printStackTrace();
+				} else {
+					throw new LSysException(mesError);
 				}
+			} catch (Exception e) {
+				throw new LSysException(mesError);
 			}
 		}
 		return is;
