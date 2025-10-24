@@ -58,6 +58,17 @@ public final class Random {
 
 	private int _index;
 
+	private static long scrambleSeed(long seed) {
+		seed ^= seed >>> 32L;
+		seed *= -4710160504952957587L;
+		seed ^= seed >>> 29L;
+		seed *= -4710160504952957587L;
+		seed ^= seed >>> 32L;
+		seed *= -4710160504952957587L;
+		seed ^= seed >>> 29L;
+		return seed;
+	}
+
 	public Random() {
 		this(0);
 	}
@@ -65,9 +76,9 @@ public final class Random {
 	public Random(long seed) {
 		_mt = new LongArray(N);
 		if (seed != 0) {
-			_mt.set(0, seed);
+			_mt.set(0, scrambleSeed(seed));
 		} else {
-			_mt.set(0, (TimeUtils.nanoTime()) >>> 0);
+			_mt.set(0, scrambleSeed(TimeUtils.millis() >>> 0));
 		}
 		for (int i = 1; i < N; i++) {
 			long s = _mt.get(i - 1) ^ (_mt.get(i - 1) >>> (W - 2));

@@ -860,6 +860,13 @@ public abstract class LComponent extends LObject<LContainer>
 		return this;
 	}
 
+	public LComponent fill(LComponent c) {
+		if (c == null) {
+			return this;
+		}
+		return setBounds(c.getX(), c.getY(), c.getWidth(), c.getHeight());
+	}
+
 	public boolean isResizabled() {
 		return this._component_resizabled;
 	}

@@ -20,6 +20,7 @@
  */
 package loon.geom;
 
+import loon.LSysException;
 import loon.utils.MathUtils;
 
 public final class Transforms {
@@ -109,7 +110,9 @@ public final class Transforms {
 
 	public static Matrix4 createFrustum(float left, float right, float bottom, float top, float zNear, float zFar,
 			Matrix4 dest) {
-		assert zFar > zNear;
+		if (zFar > zNear) {
+			throw new LSysException(zFar + " > " + zNear);
+		}
 
 		if (dest == null) {
 			dest = new Matrix4();

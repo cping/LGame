@@ -31,6 +31,13 @@ public class CRC64 implements IV<Long> {
 		return CollectionUtils.copyOf(CRC_TABLE);
 	}
 
+	public static long updateCRC(int crc, byte[] raw) {
+		for (int i = 0; i < raw.length; i++) {
+			crc = (int) (CRC_TABLE[(crc ^ raw[i]) & 0xFF] ^ crc >>> 8);
+		}
+		return crc;
+	}
+
 	public static long toHexLong(byte[] bytes) {
 		CRC64 crc = new CRC64();
 		crc.reset();

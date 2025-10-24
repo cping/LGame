@@ -37,6 +37,7 @@ import loon.geom.Triangle2f;
 import loon.geom.Vector2f;
 import loon.utils.ArrayByte;
 import loon.utils.BufferUtils;
+import loon.utils.CRC32;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
@@ -49,6 +50,77 @@ import loon.utils.TArray;
  */
 public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, LRelease {
 
+	public final static byte[] toPNG(Pixmap pixmap) {
+		final byte[] signature = { -119, 80, 78, 71, 13, 10, 26, 10 };
+		final byte[] header = createHeaderChunk(pixmap.getWidth(), pixmap.getHeight());
+		final byte[] data = createDataChunk(pixmap);
+		final byte[] trailer = createTrailerChunk();
+		final ArrayByte png = new ArrayByte(signature.length + header.length + data.length + trailer.length);
+		png.write(signature);
+		png.write(header);
+		png.write(data);
+		png.write(trailer);
+		return png.getBytes();
+	}
+
+	public final static byte[] createHeaderChunk(int width, int height) {
+		final ArrayByte bytes = new ArrayByte(13);
+		bytes.writeInt(width);
+		bytes.writeInt(height);
+		bytes.writeByte(8);
+		bytes.writeByte(6);
+		bytes.writeByte(0);
+		bytes.writeByte(0);
+		bytes.writeByte(0);
+		return toChunk("IHDR", bytes.getBytes());
+	}
+
+	public final static byte[] createDataChunk(Pixmap pixmap) {
+		final int width = pixmap.getWidth();
+		final int height = pixmap.getHeight();
+		int dest = 0;
+		final byte[] raw = new byte[4 * width * height + height];
+		for (int y = 0; y < height; y++) {
+			raw[dest++] = 0;
+			for (int x = 0; x < width; x++) {
+				int pixel = pixmap.getPixel(x, y);
+				int mask = pixel & 0xFFFFFFFF;
+				int rr = mask >> 24 & 0xFF;
+				int gg = mask >> 16 & 0xFF;
+				int bb = mask >> 8 & 0xFF;
+				int aa = mask & 0xFF;
+				if ((rr < 0 || rr > 255 || gg < 0 || gg > 255 || bb < 0 || bb > 255)) {
+					throw new LSysException(String.valueOf(rr) + "," + gg + "," + bb);
+				}
+				raw[dest++] = (byte) rr;
+				raw[dest++] = (byte) gg;
+				raw[dest++] = (byte) bb;
+				raw[dest++] = (byte) aa;
+			}
+		}
+		return toChunk("IDAT", ArrayByte.toZLIB(raw));
+	}
+
+	public final static byte[] createTrailerChunk() {
+		return toChunk("IEND", new byte[0]);
+	}
+
+	public final static byte[] toChunk(String id, byte[] raw) {
+		final ArrayByte bytes = new ArrayByte(raw.length + 12);
+		bytes.writeInt(raw.length);
+		final byte[] bid = new byte[4];
+		for (int i = 0; i < 4; i++) {
+			bid[i] = (byte) id.charAt(i);
+		}
+		bytes.write(bid);
+		bytes.write(raw);
+		int crc = -1;
+		crc = CRC32.updateCRC(crc, bid);
+		crc = CRC32.updateCRC(crc, raw);
+		bytes.writeInt(crc ^ 0xFFFFFFFF);
+		return bytes.getBytes();
+	}
+
 	private Canvas _paintCanvas = null;
 
 	private Vector2f _pointLocation = new Vector2f();
@@ -60,6 +132,10 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			return LSystem.base().graphics();
 		}
 		return null;
+	}
+
+	public byte[] getPNG() {
+		return toPNG(this);
 	}
 
 	public Image getImage() {

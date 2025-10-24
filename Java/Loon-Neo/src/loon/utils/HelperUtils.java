@@ -1374,4 +1374,5 @@ public class HelperUtils {
 	public final static BoolArray emptyBoolArray() {
 		return new BoolArray();
 	}
+
 }

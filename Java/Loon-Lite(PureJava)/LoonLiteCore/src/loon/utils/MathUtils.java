@@ -1870,6 +1870,20 @@ public final class MathUtils {
 		return lon;
 	}
 
+	public static float sortBigFirst(float a, float b) {
+		if (a == b) {
+			return 0;
+		}
+		return b > a ? 1 : -1;
+	}
+
+	public static float sortSmallFirst(float a, float b) {
+		if (a == b) {
+			return 0;
+		}
+		return b > a ? -1 : 1;
+	}
+
 	public static int sum(final int[] values) {
 		int sum = 0;
 		for (int i = values.length - 1; i >= 0; i--) {

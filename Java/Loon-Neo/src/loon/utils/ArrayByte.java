@@ -149,6 +149,46 @@ public class ArrayByte implements IArray, LRelease {
 		return bytes == null || bytes.length == 0;
 	}
 
+	public static byte[] toZLIB(byte[] raw) {
+		return toZLIB(BIG_ENDIAN, raw);
+	}
+
+	public static byte[] toZLIB(int order, byte[] raw) {
+		ArrayByte zlib = new ArrayByte(raw.length + 6 + raw.length / 32000 * 5);
+		zlib.setOrder(order);
+		byte tmp = 8;
+		zlib.writeByte(tmp);
+		zlib.writeByte((31 - (tmp << 8) % 31) % 31);
+		int pos = 0;
+		while (raw.length - pos > 32000) {
+			writeUncompressedDeflateBlock(zlib, false, raw, pos, 32000);
+			pos += 32000;
+		}
+		writeUncompressedDeflateBlock(zlib, true, raw, pos, (char) (raw.length - pos));
+		zlib.writeInt(calcADLER32(raw));
+		return zlib.getBytes();
+	}
+
+	private static void writeUncompressedDeflateBlock(ArrayByte zlib, boolean last, byte[] raw, int off, int len) {
+		zlib.writeByte((byte) (last ? 1 : 0));
+		zlib.writeByte((byte) (len & 0xFF));
+		zlib.writeByte((byte) ((len & 0xFF00) >> 8));
+		zlib.writeByte((byte) ((len ^ 0xFFFFFFFF) & 0xFF));
+		zlib.writeByte((byte) (((len ^ 0xFFFFFFFF) & 0xFF00) >> 8));
+		zlib.write(raw, off, len);
+	}
+
+	private static int calcADLER32(byte[] raw) {
+		int s1 = 1;
+		int s2 = 0;
+		for (int i = 0; i < raw.length; i++) {
+			int abs = (raw[i] >= 0) ? raw[i] : (raw[i] + 256);
+			s1 = (s1 + abs) % 65521;
+			s2 = (s2 + s1) % 65521;
+		}
+		return (s2 << 16) + s1;
+	}
+
 	/**
 	 * 返回指定字符串符合UTF8编码的子符长度
 	 * 
