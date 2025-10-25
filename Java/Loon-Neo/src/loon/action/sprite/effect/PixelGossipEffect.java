@@ -431,7 +431,7 @@ public class PixelGossipEffect extends BaseAbstractEffect {
 
 	@Override
 	public PixelGossipEffect setAutoRemoved(boolean autoRemoved) {
-		super.setAutoRemoved(true);
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

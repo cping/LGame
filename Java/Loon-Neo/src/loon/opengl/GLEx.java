@@ -882,6 +882,14 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLEx viewport(float x, float y, float width, float height) {
+		if (isClosed) {
+			return this;
+		}
+		batch.gl.glViewport(MathUtils.iceil(x), MathUtils.iceil(y), MathUtils.iceil(width), MathUtils.iceil(height));
+		return this;
+	}
+
 	public GLEx viewport(int x, int y, int width, int height) {
 		if (isClosed) {
 			return this;

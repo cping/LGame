@@ -219,7 +219,7 @@ public class PixelFireEffect extends BaseAbstractEffect {
 
 	@Override
 	public PixelFireEffect setAutoRemoved(boolean autoRemoved) {
-		super.setAutoRemoved(true);
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

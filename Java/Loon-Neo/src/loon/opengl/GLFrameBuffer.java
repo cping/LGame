@@ -617,8 +617,7 @@ public abstract class GLFrameBuffer extends BaseBufferSupport implements LReleas
 			lastBoundFramebuffer.setFrameBufferViewport();
 		} else {
 			unbind();
-			LSystem.base().graphics().gl.glViewport(0, 0,
-					MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
+			g.viewport(0, 0, MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
 					MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
 		}
 		g.setBindFrameBufferTarget(true);

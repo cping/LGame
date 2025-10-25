@@ -267,7 +267,7 @@ public class TextEffect extends BaseAbstractEffect {
 
 	@Override
 	public TextEffect setAutoRemoved(boolean autoRemoved) {
-		super.setAutoRemoved(true);
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 

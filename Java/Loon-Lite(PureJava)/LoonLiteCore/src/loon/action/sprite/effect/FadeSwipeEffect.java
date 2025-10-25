@@ -126,7 +126,7 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 
 	@Override
 	public FadeSwipeEffect setAutoRemoved(boolean autoRemoved) {
-		super.setAutoRemoved(true);
+		super.setAutoRemoved(autoRemoved);
 		return this;
 	}
 }
