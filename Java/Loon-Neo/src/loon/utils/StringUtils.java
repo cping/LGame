@@ -1187,7 +1187,8 @@ final public class StringUtils extends CharUtils {
 		int size = cs.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
-			if (isChinese(cs.charAt(i))) {
+			final char c = cs.charAt(i);
+			if (isWhitespace(c) || isChinese(c)) {
 				count++;
 			}
 		}
@@ -1207,7 +1208,8 @@ final public class StringUtils extends CharUtils {
 		int size = cs.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
-			if (isJapanese(cs.charAt(i))) {
+			final char c = cs.charAt(i);
+			if (isWhitespace(c) || isJapanese(c)) {
 				count++;
 			}
 		}
@@ -1227,7 +1229,8 @@ final public class StringUtils extends CharUtils {
 		int size = cs.length();
 		int count = 0;
 		for (int i = 0; i < size; i++) {
-			if (isKorean(cs.charAt(i))) {
+			final char c = cs.charAt(i);
+			if (isWhitespace(c) || isKorean(c)) {
 				count++;
 			}
 		}
@@ -1840,6 +1843,49 @@ final public class StringUtils extends CharUtils {
 		return sbr;
 	}
 
+	public static boolean isAllFullAlphaChar(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		final int length = cs.length();
+		for (int i = 0; i < length; i++) {
+			final char letter = cs.charAt(i);
+			if (!isWhitespace(letter) && !isFullChar(letter))
+				return false;
+		}
+		return true;
+	}
+
+	public static boolean isAllHalfAlphaChar(CharSequence cs) {
+		if (isNullOrEmpty(cs)) {
+			return false;
+		}
+		final int length = cs.length();
+		for (int i = 0; i < length; i++) {
+			final char letter = cs.charAt(i);
+			if (!isWhitespace(letter) && !isHalfChar(letter))
+				return false;
+		}
+		return true;
+	}
+
+	public static String updateWhitespaceChar(CharSequence cs, char dst) {
+		if (isNullOrEmpty(cs)) {
+			return LSystem.EMPTY;
+		}
+		final int length = cs.length();
+		final StrBuilder sbr = new StrBuilder(length);
+		for (int i = 0; i < length; i++) {
+			final char letter = cs.charAt(i);
+			if (isWhitespace(letter)) {
+				sbr.append(dst);
+			} else {
+				sbr.append(letter);
+			}
+		}
+		return sbr.toString();
+	}
+
 	/**
 	 * 检查是否为字母与数字混合
 	 * 
@@ -1851,7 +1897,7 @@ final public class StringUtils extends CharUtils {
 			return true;
 		for (int i = 0; i < v.length(); i++) {
 			char letter = v.charAt(i);
-			if (!isAlphaOrDigit(letter))
+			if (!isWhitespace(letter) && !isAlphaOrDigit(letter))
 				return false;
 		}
 		return true;
@@ -1869,7 +1915,8 @@ final public class StringUtils extends CharUtils {
 		}
 		int length = cs.length();
 		for (int i = 0; i < length; i++) {
-			if (!(isUppercaseAlpha(cs.charAt(i))))
+			char letter = cs.charAt(i);
+			if (!isWhitespace(letter) && !(isUppercaseAlpha(letter)))
 				return false;
 		}
 		return true;
@@ -1887,7 +1934,8 @@ final public class StringUtils extends CharUtils {
 		}
 		int length = cs.length();
 		for (int i = 0; i < length; i++) {
-			if (!(isLowercaseAlpha(cs.charAt(i))))
+			char letter = cs.charAt(i);
+			if (!isWhitespace(letter) && !(isLowercaseAlpha(letter)))
 				return false;
 		}
 		return true;

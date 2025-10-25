@@ -472,20 +472,21 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			pack();
 		}
 		for (int i = 0; i < _treeNodes.size && i < _selectRects.length; i++) {
-			TreeNode node = _treeNodes.get(i);
+			final TreeNode node = _treeNodes.get(i);
 			if (node == null) {
 				continue;
 			}
-			TreeElement ele = node.getElement();
+			final TreeElement ele = node.getElement();
 			if (ele != null) {
-				RectF rect = _selectRects[i];
+				final RectF rect = _selectRects[i];
 				float newX = rect.x + x + offX;
 				float newY = rect.y + y + offY;
 				g.drawString(node._treeFlag, newX, newY, _treeColor);
 				String text = _show_fold_flag
 						? ele.isHideChild() ? ele.getText() + " " + _expandFlag : ele.getText() + " " + _shrinkFlag
 						: ele.getText();
-				final float width = _font.stringWidth(node._treeFlag) + _fontSpace;
+				final float width = MathUtils.max(node._treeFlag.length() * (_font.getSize() * 0.55f),
+						_font.stringWidth(node._treeFlag)) + _fontSpace;
 				final float offsetX = width + newX;
 				if (ele._icon == null) {
 					g.drawString(text, offsetX, newY, ele._fontColor == null ? _fontColor : ele._fontColor);

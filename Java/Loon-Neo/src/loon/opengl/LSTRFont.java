@@ -463,7 +463,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		} else {
 			this._chars = new CharArray();
 		}
-		if (StringUtils.isEmpty(text)) {
+		if (StringUtils.isNullOrEmpty(text)) {
 			_isClose = true;
 		}
 		this._drawLimit = 0;
@@ -489,7 +489,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		if (StringUtils.isNullOrEmpty(text)) {
 			return false;
 		}
-		if (StringUtils.isEmpty(mes)) {
+		if (StringUtils.isNullOrEmpty(mes)) {
 			return true;
 		}
 		String find = StringUtils.unificationStrings(mes);
@@ -575,7 +575,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 				this.text = StringUtils.getString(chs);
 				this.expandTexture();
 			}
-			if (StringUtils.isEmpty(text)) {
+			if (StringUtils.isNullOrEmpty(text)) {
 				_isClose = true;
 			}
 		}

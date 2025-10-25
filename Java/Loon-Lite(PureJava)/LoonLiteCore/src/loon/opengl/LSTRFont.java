@@ -37,10 +37,10 @@ import loon.utils.StringUtils;
 public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	// 每次渲染图像到纹理时，同时追加一些常用非中文标记上去，以避免LSTRFont反复重构纹理(有字符重复检测,用户使用中已有下列字符时则不会重复添加)
-	private final static String ADDED = "0123456789iagbfhkdnocpqrstumwvlxyzjeJBIAFGHKCDOMSNPQTUVWXYZLRE=:.,!?@#$&%^*+(-){~}[│]<>\"'\\/～▼▲◆【】↓→：，。…？！＃＄％＆＇（～）＊＋．＠［＼└／］＾＿｛｜｝｀＜＞├─";
+	private final static String ADDED = "0123456789iagbfhkdnocpqrstumwvlxyzjeJBIAFGHKCDOMSNPQTUVWXYZLRE=:.,!?@#$&%^*+(-~){}[_]<>\"'\\/～▼▲◆【】↓→：，。…？！＃＄％＆＇（～）＊＋．＠［＼└／］＾＿｛｜｝｀＜│＞├─";
 
 	public final static boolean isAllInBaseCharsPool(String c) {
-		if (StringUtils.isEmpty(c)) {
+		if (StringUtils.isNullOrEmpty(c)) {
 			return false;
 		}
 		final int charsCount = c.length();
@@ -168,7 +168,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private void drawString(GLEx gl, float mx, float my, float sx, float sy, float ax, float ay, float rotation,
 			String msg, LColor c, int startIndex, int endIndex) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return;
 		}
 		String newMessage = toMessage(msg);
@@ -211,7 +211,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 			gl.synchTransform();
 			Canvas canvas = gl.getCanvas();
 			canvas.setFont(font);
-			canvas.drawText(newMessage, x, y, c);
+			canvas.drawText(newMessage,
+					x, y, c);
 		} finally {
 			gl.setBlendMode(blend);
 			gl.setTint(old);
@@ -442,7 +443,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 	}
 
 	public boolean containsChars(String msg, boolean filter) {
-		if (StringUtils.isEmpty(msg)) {
+		if (StringUtils.isNullOrEmpty(msg)) {
 			return true;
 		}
 		String newMessage = msg;

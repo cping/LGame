@@ -31,6 +31,7 @@ import javafx.scene.shape.StrokeLineCap;
 import javafx.scene.shape.StrokeLineJoin;
 
 import loon.Graphics;
+import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.canvas.Gradient;
 import loon.canvas.Gradient.Config;
@@ -44,6 +45,7 @@ import loon.opengl.BlendMethod;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
+import loon.utils.StringUtils;
 
 public class JavaFXCanvas extends Canvas {
 
@@ -318,7 +320,11 @@ public class JavaFXCanvas extends Canvas {
 		}
 		Paint tmp = context.getFill();
 		context.setFill(getLColorToFX(color));
-		fillText(_font.getLayoutText(text), x, y);
+		// Fix JavaFX automatic removal of space characters
+		fillText(
+				_font.getLayoutText(
+						text.charAt(0) == LSystem.SPACE ? StringUtils.updateWhitespaceChar(text, '\u00A0') : text),
+				x, y);
 		context.setFill(tmp);
 		return this;
 	}
@@ -345,10 +351,11 @@ public class JavaFXCanvas extends Canvas {
 	@Override
 	public Canvas fillArc(float x1, float y1, float width, float height, float start, float end) {
 		if (end - start == 360) {
-			context.fillOval(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width), MathUtils.ifloor(height));
+			context.fillOval(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width),
+					MathUtils.ifloor(height));
 		} else {
-			context.fillArc(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width), MathUtils.ifloor(height),
-					MathUtils.ifloor(start), MathUtils.ifloor(end), ArcType.ROUND);
+			context.fillArc(MathUtils.ifloor(x1), MathUtils.ifloor(y1), MathUtils.ifloor(width),
+					MathUtils.ifloor(height), MathUtils.ifloor(start), MathUtils.ifloor(end), ArcType.ROUND);
 		}
 		isDirty = true;
 		return null;

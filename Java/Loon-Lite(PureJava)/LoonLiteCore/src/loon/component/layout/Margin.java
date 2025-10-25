@@ -20,6 +20,7 @@
  */
 package loon.component.layout;
 
+import loon.LRelease;
 import loon.action.ActionBind;
 import loon.component.LToolTip;
 import loon.geom.PointF;
@@ -30,15 +31,22 @@ import loon.utils.TArray;
 /**
  * 动作对象布局用类,可以根据左右高低参数布置一组ActionBind的显示位置
  */
-public class Margin {
+public class Margin implements LRelease {
+
+	private final TArray<ActionBind> _tempBinds = new TArray<ActionBind>();
 
 	private TArray<ActionBind> _childrens;
+
 	private Vector2f _offset;
+
 	private float _marginTop;
 	private float _marginRight;
 	private float _marginBottom;
 	private float _marginLeft;
+	private float _marginCenterX;
+	private float _marginCenterY;
 	private float _size;
+
 	private boolean _isSnap;
 	private boolean _isVertical;
 
@@ -52,10 +60,11 @@ public class Margin {
 		this._offset = new Vector2f();
 		this._childrens = new TArray<ActionBind>();
 		this._isSnap = snap;
-		this._marginTop = 0;
-		this._marginRight = 0;
-		this._marginBottom = 0;
-		this._marginLeft = 0;
+		this.reset();
+	}
+
+	public void reset() {
+		this._marginTop = this._marginBottom = this._marginLeft = this._marginRight = this._marginCenterX = this._marginCenterY = 0f;
 	}
 
 	public Margin addChild(ActionBind bind) {
@@ -99,15 +108,28 @@ public class Margin {
 		float w;
 		float h;
 
-		TArray<ActionBind> temp = new TArray<ActionBind>(_childrens);
+		_tempBinds.clear();
+		_tempBinds.addAll(_childrens);
 
-		for (int i = 0; i < temp.size; i++) {
+		for (int i = 0; i < _tempBinds.size; i++) {
+
 			bind = _childrens.get(i);
 			if (bind == null || bind instanceof LToolTip) {
 				continue;
 			}
+
+			float bindX = bind.getX();
+			float bindY = bind.getY();
+
+			if (_marginCenterX != 0f) {
+				bindX = MathUtils.round(this._marginCenterX + bindX);
+			}
+			if (_marginCenterY != 0f) {
+				bindY = MathUtils.round(this._marginCenterY + bindX);
+			}
+
 			size = (bind.getWidth() > 1 && bind.getHeight() > 1) ? new PointF(bind.getWidth(), bind.getHeight())
-					: new PointF(bind.getX(), bind.getY());
+					: new PointF(bindX, bindY);
 
 			w = size.x + this._marginLeft + this._marginRight;
 			h = size.y + this._marginTop + this._marginBottom;
@@ -147,8 +169,6 @@ public class Margin {
 			this.pos(bind, dx, dy);
 		}
 
-		temp.clear();
-
 		return this;
 	}
 
@@ -176,10 +196,34 @@ public class Margin {
 	}
 
 	public Margin setMargin(float left, float top, float right, float bottom) {
+		return setMargin(0f, 0f, left, top, right, bottom);
+	}
+
+	public Margin setMargin(float centerX, float centerY, float left, float top, float right, float bottom) {
+		setMarginCenterX(centerX);
+		setMarginCenterY(centerY);
 		setMarginLeft(left);
 		setMarginTop(top);
 		setMarginRight(right);
 		setMarginBottom(bottom);
+		return this;
+	}
+
+	public float getMarginCenterX() {
+		return _marginCenterX;
+	}
+
+	public Margin setMarginCenterX(float x) {
+		this._marginCenterX = x;
+		return this;
+	}
+
+	public float getMarginCenterY() {
+		return _marginCenterY;
+	}
+
+	public Margin setMarginCenterY(float y) {
+		this._marginCenterY = y;
 		return this;
 	}
 
@@ -231,6 +275,11 @@ public class Margin {
 	public Margin setOffset(Vector2f offset) {
 		this._offset.set(offset);
 		return this;
+	}
+
+	@Override
+	public void close() {
+		_tempBinds.clear();
 	}
 
 }

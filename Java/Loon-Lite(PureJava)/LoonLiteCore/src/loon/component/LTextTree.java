@@ -31,7 +31,6 @@ import loon.canvas.LColor;
 import loon.font.FontSet;
 import loon.font.FontUtils;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.geom.RectF;
 import loon.opengl.GLEx;
 import loon.utils.CollectionUtils;
@@ -286,7 +285,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			}
 		}
 
-		public TArray<TreeElement> setSublevel(TreeElement[] array) {
+		public TArray<LTextTree.TreeElement> setSublevel(TreeElement[] array) {
 			if (array == null) {
 				return new TArray<LTextTree.TreeElement>();
 			}
@@ -370,7 +369,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 		}
 
 		public TArray<TreeElement> getChilds() {
-			return new TArray<TreeElement>(_childs);
+			return new TArray<LTextTree.TreeElement>(_childs);
 		}
 
 		public TreeElement getParent() {
@@ -471,20 +470,21 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			pack();
 		}
 		for (int i = 0; i < _treeNodes.size && i < _selectRects.length; i++) {
-			TreeNode node = _treeNodes.get(i);
+			final TreeNode node = _treeNodes.get(i);
 			if (node == null) {
 				continue;
 			}
-			TreeElement ele = node.getElement();
+			final TreeElement ele = node.getElement();
 			if (ele != null) {
-				RectF rect = _selectRects[i];
+				final RectF rect = _selectRects[i];
 				float newX = rect.x + x + offX;
 				float newY = rect.y + y + offY;
 				g.drawString(node._treeFlag, newX, newY, _treeColor);
 				String text = _show_fold_flag
 						? ele.isHideChild() ? ele.getText() + " " + _expandFlag : ele.getText() + " " + _shrinkFlag
 						: ele.getText();
-				final float width = _font.stringWidth(node._treeFlag) + _fontSpace;
+				final float width = MathUtils.max(node._treeFlag.length() * (_font.getSize() * 0.55f),
+						_font.stringWidth(node._treeFlag)) + _fontSpace;
 				final float offsetX = width + newX;
 				if (ele._icon == null) {
 					g.drawString(text, offsetX, newY, ele._fontColor == null ? _fontColor : ele._fontColor);
@@ -527,7 +527,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			this._lines.clear();
 		}
 		if (this._treeNodes == null) {
-			this._treeNodes = new TArray<TreeNode>(count);
+			this._treeNodes = new TArray<LTextTree.TreeNode>(count);
 		} else {
 			this._treeNodes.clear();
 		}
@@ -583,7 +583,7 @@ public class LTextTree extends LComponent implements FontSet<LTextTree> {
 			maxHeight += height;
 		}
 		setSize(maxWidth + _windowSpace * 2 - _font.getSize(), maxHeight + _windowSpace * 2);
-		if (_font instanceof LFont && !_updateTree) {
+		if (!_updateTree) {
 			_updateTree = false;
 		}
 		_dirty = false;
