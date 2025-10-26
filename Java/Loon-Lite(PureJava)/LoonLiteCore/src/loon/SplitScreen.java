@@ -84,38 +84,40 @@ public class SplitScreen extends Screen {
 		if (_screenPool != null && _screenPool.size > 0) {
 			synchronized (this._screenPool) {
 				for (int i = 0; i < _screenPool.size; i++) {
-					ScreenLayoutInvoke layout = _screenPool.get(i);
+					final ScreenLayoutInvoke layout = _screenPool.get(i);
 					if (layout != null) {
-						RectBox view = layout.getView();
-						Screen s = layout.get();
-						g.saveTx();
-						float scaleX = view.getWidth() / s.getWidth();
-						float scaleY = view.getHeight() / s.getHeight();
-						final float tx = view.getX();
-						final float ty = view.getY();
-						if (tx != 0f || ty != 0f) {
-							g.translate(tx, ty);
-						}
-						if ((scaleX != 1f) || (scaleY != 1f)) {
-							final float scaleCenterX = tx + (view.getWidth() / 2f);
-							final float scaleCenterY = ty + (view.getHeight() / 2f);
-							g.scale(scaleX, scaleY, scaleCenterX, scaleCenterY);
-							switch (this._layout) {
-							case Vertical:
-								g.translate(0, -scaleCenterY);
-								break;
-							case Horizontal:
-								g.translate(-scaleCenterX, 0);
-								break;
-							default:
-								g.translate(-scaleCenterX, -scaleCenterY);
-								break;
+						final RectBox view = layout.getView();
+						final Screen s = layout.get();
+						try {
+							g.saveTx();
+							float scaleX = view.getWidth() / s.getWidth();
+							float scaleY = view.getHeight() / s.getHeight();
+							final float tx = view.getX();
+							final float ty = view.getY();
+							if (tx != 0f || ty != 0f) {
+								g.translate(tx, ty);
 							}
+							if ((scaleX != 1f) || (scaleY != 1f)) {
+								final float scaleCenterX = tx + (view.getWidth() / 2f);
+								final float scaleCenterY = ty + (view.getHeight() / 2f);
+								g.scale(scaleX, scaleY, scaleCenterX, scaleCenterY);
+								switch (this._layout) {
+								case Vertical:
+									g.translate(0, -scaleCenterY);
+									break;
+								case Horizontal:
+									g.translate(-scaleCenterX, 0);
+									break;
+								default:
+									g.translate(-scaleCenterX, -scaleCenterY);
+									break;
+								}
+							}
+							g.clearRect(tx, ty, view.getWidth(), view.getHeight());
+							s.createUI(g);
+						} finally {
+							g.restoreTx();
 						}
-						g.setClip(tx, ty, view.getWidth(), view.getHeight());
-						s.createUI(g);
-						g.resetClip();
-						g.restoreTx();
 					}
 				}
 			}

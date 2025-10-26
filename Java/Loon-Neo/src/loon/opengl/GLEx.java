@@ -3092,11 +3092,11 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return r;
 	}
 
-	public GLEx clearRect(int x, int y, int width, int height) {
+	public GLEx clearRect(float x, float y, float width, float height) {
 		return clearRect(x, y, width, height, null);
 	}
 
-	public GLEx clearRect(int x1, int y1, int w1, int h1, LColor rgba) {
+	public GLEx clearRect(float x1, float y1, float w1, float h1, LColor rgba) {
 		LColor clear = LColor.black;
 		if (rgba != null) {
 			clear = rgba;
