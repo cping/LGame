@@ -37,6 +37,7 @@ import loon.LTexture;
 import loon.Support;
 import loon.canvas.Image;
 import loon.canvas.LColor;
+import loon.geom.RectI;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -179,6 +180,8 @@ public abstract class GLFrameBuffer extends BaseBufferSupport implements LReleas
 	protected final static int GL_DEPTH_COMPONENT32_OES = 0x81A7;
 
 	protected final static int GL_DEPTH24_STENCIL8_OES = 0x88F0;
+
+	protected final RectI viewOffset = new RectI();
 
 	protected boolean bufferLocked = false;
 
@@ -591,8 +594,12 @@ public abstract class GLFrameBuffer extends BaseBufferSupport implements LReleas
 	 * 如果需要在GLEx循环中使用FrameBuffer时使用此函数构建,会停止GLEx中的FBO然后开启当前缓冲
 	 * 
 	 * @param g
+	 * @param x
+	 * @param y
+	 * @param w
+	 * @param h
 	 */
-	public void begin(GLEx g) {
+	public void begin(GLEx g, float x, float y, float w, float h) {
 		if (bufferLocked) {
 			return;
 		}
@@ -604,21 +611,38 @@ public abstract class GLFrameBuffer extends BaseBufferSupport implements LReleas
 		lastBoundFramebuffer = currentBoundFramebuffer;
 		currentBoundFramebuffer = this;
 		bind();
-		setFrameBufferViewport();
+		if (x != 0 || y != 0 || w != 0 || h != 0) {
+			g.viewport(x, y, w, h);
+		} else {
+			setFrameBufferViewport(g.batch().gl);
+		}
+	}
+
+	/**
+	 * 如果需要在GLEx循环中使用FrameBuffer时使用此函数构建,会停止GLEx中的FBO然后开启当前缓冲
+	 * 
+	 * @param g
+	 */
+	public void begin(GLEx g) {
+		begin(g, viewOffset.x, viewOffset.y, viewOffset.width, viewOffset.height);
 	}
 
 	public void end(GLEx g) {
+		end(g, 0, 0, MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
+				MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
+	}
+
+	public void end(GLEx g, float x, float y, float w, float h) {
 		if (bufferLocked) {
 			return;
 		}
 		g.flush();
 		if (lastBoundFramebuffer != null) {
 			lastBoundFramebuffer.bind();
-			lastBoundFramebuffer.setFrameBufferViewport();
+			lastBoundFramebuffer.setFrameBufferViewport(g.batch().gl);
 		} else {
 			unbind();
-			g.viewport(0, 0, MathUtils.iceil(LSystem.viewSize.getWidth() * LSystem.getScaleWidth()),
-					MathUtils.iceil(LSystem.viewSize.getHeight() * LSystem.getScaleHeight()));
+			g.viewport(x, y, w, h);
 		}
 		g.setBindFrameBufferTarget(true);
 		currentBoundFramebuffer = lastBoundFramebuffer;
@@ -658,12 +682,32 @@ public abstract class GLFrameBuffer extends BaseBufferSupport implements LReleas
 	}
 
 	protected void setFrameBufferViewport() {
-		LSystem.base().graphics().gl.glViewport(0, 0, bufferBuilder.width, bufferBuilder.height);
+		setFrameBufferViewport(LSystem.base().graphics().gl);
+	}
+
+	protected void setFrameBufferViewport(GL20 g) {
+		if (viewOffset.isNull()) {
+			g.glViewport(0, 0, bufferBuilder.width, bufferBuilder.height);
+		} else {
+			g.glViewport(viewOffset.x, viewOffset.y, viewOffset.width, viewOffset.height);
+		}
+	}
+
+	public void setViewOffset(int x, int y, int w, int h) {
+		viewOffset.set(x, y, w, h);
+	}
+
+	public RectI getViewOffset() {
+		return viewOffset;
 	}
 
 	public void end(int x, int y, int width, int height) {
+		end(LSystem.base().graphics().gl, x, y, width, height);
+	}
+
+	public void end(GL20 g, int x, int y, int width, int height) {
 		unbind();
-		LSystem.base().graphics().gl.glViewport(x, y, width, height);
+		g.glViewport(x, y, width, height);
 	}
 
 	public int getFramebufferID() {

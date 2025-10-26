@@ -4889,17 +4889,28 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return new LTextureImage(LSystem.base().graphics(), LSystem.base().display().GL().batch(), w, h, true);
 	}
 
-	private void afterSaveToBuffer(GLEx g) {
+	private void afterSaveToBuffer(GLEx g, int x, int y, int w, int h) {
 		if (_screenSavetoFrameBuffer) {
-			if (_screenFrameBuffer == null
-					|| (_screenFrameBuffer.getWidth() != getWidth() || _screenFrameBuffer.getHeight() != getHeight())) {
-				if (_screenFrameBuffer != null) {
-					_screenFrameBuffer.close();
-					_screenFrameBuffer = null;
+			if (w == 0 && h == 0) {
+				if (_screenFrameBuffer == null || (_screenFrameBuffer.getWidth() != getWidth()
+						|| _screenFrameBuffer.getHeight() != getHeight())) {
+					if (_screenFrameBuffer != null) {
+						_screenFrameBuffer.close();
+						_screenFrameBuffer = null;
+					}
+					_screenFrameBuffer = new FrameBuffer(getWidth(), getHeight());
 				}
-				_screenFrameBuffer = new FrameBuffer(getWidth(), getHeight());
+			} else {
+				if (_screenFrameBuffer == null
+						|| (_screenFrameBuffer.getWidth() != w || _screenFrameBuffer.getHeight() != h)) {
+					if (_screenFrameBuffer != null) {
+						_screenFrameBuffer.close();
+						_screenFrameBuffer = null;
+					}
+					_screenFrameBuffer = new FrameBuffer(w, h);
+				}
 			}
-			_screenFrameBuffer.begin(g);
+			_screenFrameBuffer.begin(g, x, y, w, h);
 		}
 		afterUI(g);
 	}
@@ -5030,7 +5041,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return addUnLoad(update);
 	}
 
-	private final void repaint(final GLEx g) {
+	private final void repaint(final GLEx g, final int x, final int y, final int w, final int h) {
 		if (!_visible) {
 			return;
 		}
@@ -5068,7 +5079,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_baseViewport.apply(g);
 				}
 				// 最下一层渲染,可重载,如果保存画面为FrameBuffer时也会调用此函数
-				afterSaveToBuffer(g);
+				afterSaveToBuffer(g, x, y, w, h);
 				final int repaintMode = getRepaintMode();
 				switch (repaintMode) {
 				case Screen.SCREEN_NOT_REPAINT:
@@ -5135,34 +5146,38 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	}
 
 	public synchronized void createUI(final GLEx g) {
+		createUI(g, 0, 0, 0, 0);
+	}
+
+	public synchronized void createUI(final GLEx g, int x, int y, int w, int h) {
 		if (_isClose) {
 			return;
 		}
 		if (_replaceLoading) {
 			if (_replaceDstScreen == null || !_replaceDstScreen.isOnLoadComplete()) {
-				repaint(g);
+				repaint(g, x, y, w, h);
 			} else if (_screenSwitch != null) {
-				_replaceDstScreen.createUI(g);
-				repaint(g);
+				_replaceDstScreen.createUI(g, x, y, w, h);
+				repaint(g, x, y, w, h);
 			} else if (_replaceDstScreen.isOnLoadComplete()) {
 				if (_isScreenFrom) {
-					repaint(g);
+					repaint(g, x, y, w, h);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
 						g.setClip(_curDstPos.x(), _curDstPos.y(), getRenderWidth(), getRenderHeight());
 						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
-					_replaceDstScreen.createUI(g);
+					_replaceDstScreen.createUI(g, x, y, w, h);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
 						g.translate(-_curDstPos.x(), -_curDstPos.y());
 						g.clearClip();
 					}
 				} else {
-					_replaceDstScreen.createUI(g);
+					_replaceDstScreen.createUI(g, x, y, w, h);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
 						g.setClip(_curDstPos.x(), _curDstPos.y(), getRenderWidth(), getRenderHeight());
 						g.translate(_curDstPos.x(), _curDstPos.y());
 					}
-					repaint(g);
+					repaint(g, x, y, w, h);
 					if (_curDstPos.x() != 0 || _curDstPos.y() != 0) {
 						g.translate(-_curDstPos.x(), -_curDstPos.y());
 						g.clearClip();
@@ -5170,7 +5185,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				}
 			}
 		} else {
-			repaint(g);
+			repaint(g, x, y, w, h);
 		}
 	}
 

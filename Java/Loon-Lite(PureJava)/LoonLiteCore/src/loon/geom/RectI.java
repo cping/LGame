@@ -503,6 +503,10 @@ public class RectI implements XYZW, SetXY {
 		return getHeight();
 	}
 
+	public boolean isNull() {
+		return x == 0 && y == 0 && width == 0 && height == 0;
+	}
+
 	public boolean isEmpty() {
 		return width <= 0 && height <= 0;
 	}

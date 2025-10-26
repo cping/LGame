@@ -502,6 +502,11 @@ public class RectF implements XYZW, SetXY {
 		return getHeight();
 	}
 
+	public boolean isNull() {
+		return MathUtils.equal(x, 0) && MathUtils.equal(y, 0) && MathUtils.equal(width, 0)
+				&& MathUtils.equal(height, 0);
+	}
+
 	public boolean isEmpty() {
 		return width <= 0 && height <= 0;
 	}

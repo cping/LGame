@@ -1499,9 +1499,14 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return rect;
 	}
 
+	public boolean isNull() {
+		return MathUtils.equal(getX(), 0) && MathUtils.equal(getY(), 0) && MathUtils.equal(getWidth(), 0)
+				&& MathUtils.equal(getHeight(), 0);
+	}
+
 	@Override
 	public boolean isEmpty() {
-		return getWidth() <= 0 || height() <= 0;
+		return getWidth() <= 0 || getHeight() <= 0;
 	}
 
 	public RectBox setEmpty() {

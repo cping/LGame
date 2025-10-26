@@ -644,6 +644,12 @@ public class GLEx extends BatchEx<GLEx> implements LRelease {
 		return this;
 	}
 
+	public GLEx restoreFrameBuffer() {
+		disableFrameBuffer();
+		stopFrameBuffer();
+		return this;
+	}
+
 	public LTextureImage getFrameBuffers(int idx) {
 		if (idx > -1 && idx < frameBuffers.size()) {
 			return frameBuffers.get(idx);

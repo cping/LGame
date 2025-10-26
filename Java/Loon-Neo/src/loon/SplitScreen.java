@@ -113,7 +113,17 @@ public class SplitScreen extends Screen {
 							}
 						}
 						g.setClip(tx, ty, view.getWidth(), view.getHeight());
-						s.createUI(g);
+						switch (this._layout) {
+						case Vertical:
+							s.createUI(g, 0, getHeight(), getWidth(), getHeight() * (i + 1));
+							break;
+						case Horizontal:
+							s.createUI(g, -getWidth(), 0, getWidth() * (i + 1), getHeight());
+							break;
+						default:
+							s.createUI(g);
+							break;
+						}
 						g.resetClip();
 						g.restoreTx();
 					}
