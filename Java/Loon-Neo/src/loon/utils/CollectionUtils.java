@@ -293,6 +293,29 @@ final public class CollectionUtils {
 	 * @param data
 	 * @return
 	 */
+	public static short[] copyOf(short[] data) {
+		return copyOf(data, data.length);
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
+	 * @param newSize
+	 * @return
+	 */
+	public static short[] copyOf(short[] data, int newSize) {
+		final short tempArr[] = new short[newSize];
+		System.arraycopy(data, 0, tempArr, 0, MathUtils.min(data.length, newSize));
+		return tempArr;
+	}
+
+	/**
+	 * copy指定长度的数组数据
+	 * 
+	 * @param data
+	 * @return
+	 */
 	public static double[] copyOf(double[] data) {
 		return copyOf(data, data.length);
 	}

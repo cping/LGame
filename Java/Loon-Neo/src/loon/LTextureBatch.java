@@ -125,7 +125,7 @@ public final class LTextureBatch implements LRelease {
 
 	private LColor tempColor = new LColor(1, 1, 1, 1);
 
-	public int maxSpritesInBatch = 0;
+	public int maxVertsInBatch = 0;
 
 	protected boolean isLoaded;
 
@@ -440,11 +440,11 @@ public final class LTextureBatch implements LRelease {
 			return this;
 		}
 		if (!isCacheLocked) {
-			int spritesInBatch = vertexIdx / 20;
-			if (spritesInBatch > maxSpritesInBatch) {
-				maxSpritesInBatch = spritesInBatch;
+			int vertCount = vertexIdx / expandVertices.vertexSize();
+			if (vertCount > maxVertsInBatch) {
+				maxVertsInBatch = vertCount;
 			}
-			this.count = spritesInBatch * 6;
+			this.count = vertCount * 6;
 		}
 		GL20 gl = LSystem.base().graphics().gl;
 		GLUtils.bindTexture(gl, texture.getID());

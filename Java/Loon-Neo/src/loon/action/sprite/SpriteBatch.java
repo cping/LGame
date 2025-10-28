@@ -468,7 +468,7 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		int old = GLUtils.getBlendMode();
 		try {
 			LSystem.mainEndDraw();
-			int spritesInBatch = idx / 20;
+			int spritesInBatch = idx / expandVertices.vertexSize();
 			int count = spritesInBatch * 6;
 			GLUtils.bindTexture(gl, lastTexture);
 			switch (lastBlendState) {

@@ -84,6 +84,18 @@ public class ArrayByte implements IArray, LRelease {
 		return BYTES_COMPARATOR;
 	}
 
+	public static ArrayByte at() {
+		return new ArrayByte();
+	}
+
+	public static ArrayByte of(int length) {
+		return new ArrayByte(length);
+	}
+
+	public static ArrayByte of(int length, int offset) {
+		return new ArrayByte(length).setPosition(offset);
+	}
+
 	public static ArrayByte of(String base64) {
 		return new ArrayByte(base64);
 	}

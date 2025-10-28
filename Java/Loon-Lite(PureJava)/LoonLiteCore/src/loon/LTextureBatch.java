@@ -108,8 +108,6 @@ public final class LTextureBatch implements LRelease {
 
 	protected boolean drawing = false;
 
-	public int maxSpritesInBatch = 0;
-
 	protected boolean isLoaded;
 
 	private int vertexIdx;

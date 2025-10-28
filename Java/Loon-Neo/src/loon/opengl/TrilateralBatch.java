@@ -48,7 +48,7 @@ public final class TrilateralBatch extends BaseBatch {
 
 	private int _currentIndexCount = 0;
 
-	private int _maxSpritesInBatch = 0;
+	private int _maxVertsInBatch = 0;
 
 	private int _currentIntColor = -1;
 
@@ -326,11 +326,11 @@ public final class TrilateralBatch extends BaseBatch {
 			return;
 		}
 		try {
-			final int spritesInBatch = _currentIndexCount / 20;
-			if (spritesInBatch > _maxSpritesInBatch) {
-				_maxSpritesInBatch = spritesInBatch;
+			final int vertCount = _currentIndexCount / _expandVertices.vertexSize();
+			if (vertCount > _maxVertsInBatch) {
+				_maxVertsInBatch = vertCount;
 			}
-			final int count = spritesInBatch * 6;
+			final int count = vertCount * 6;
 			bindTexture();
 			final GL20 gl = LSystem.base().graphics().gl;
 			final int blend = GLUtils.getBlendMode();

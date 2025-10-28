@@ -44,6 +44,10 @@ public final class SortUtils<T> {
 		Arrays.sort(srcArray, start, end);
 	}
 
+	public final static <T> void defaultSort(final short[] srcArray, final int start, final int end) {
+		Arrays.sort(srcArray, start, end);
+	}
+
 	public final static <T> void defaultSort(final byte[] srcArray, final int start, final int end) {
 		Arrays.sort(srcArray, start, end);
 	}

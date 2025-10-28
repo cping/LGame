@@ -20,12 +20,13 @@
  */
 package loon.opengl;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.utils.CollectionUtils;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 
-public final class ExpandVertices {
+public final class ExpandVertices implements LRelease {
 
 	private final static IntMap<ExpandVertices> _verticeCaches = new IntMap<ExpandVertices>();
 
@@ -81,9 +82,9 @@ public final class ExpandVertices {
 	}
 
 	public boolean expand(int vertPos, int vertexCount) {
-		final int vertIdx = vertPos / vertexSize();
+		final int vertIdx = vertPos / START_VERTS;
 		final int verts = vertIdx + vertexCount;
-		final int availVerts = vertices.length / vertexSize();
+		final int availVerts = vertices.length / START_VERTS;
 		if (verts <= availVerts) {
 			return false;
 		}
@@ -95,11 +96,11 @@ public final class ExpandVertices {
 	}
 
 	private final void expandVert(int vertCount) {
-		int newVerts = vertices.length / vertexSize();
+		int newVerts = vertices.length / START_VERTS;
 		while (newVerts < vertCount) {
 			newVerts += EXPAND_VERTS;
 		}
-		final int size = MathUtils.iceil(newVerts * vertexSize() * 0.75f);
+		final int size = MathUtils.iceil(newVerts * START_VERTS * 0.75f);
 		this.vertices = CollectionUtils.expand(this.vertices, size);
 	}
 
@@ -108,6 +109,13 @@ public final class ExpandVertices {
 			maxSize = getSize();
 		}
 		this.vertices[index] = v;
+	}
+
+	public float getVertices(int idx) {
+		if (idx >= length()) {
+			return -1f;
+		}
+		return vertices[idx];
 	}
 
 	public final float[] getVertices() {
@@ -120,5 +128,11 @@ public final class ExpandVertices {
 
 	public final float[] cpy(int size) {
 		return CollectionUtils.copyOf(this.vertices, size);
+	}
+
+	@Override
+	public void close() {
+		this.maxSize = 0;
+		this.vertices = null;
 	}
 }
