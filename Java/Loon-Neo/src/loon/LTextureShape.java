@@ -218,6 +218,7 @@ public class LTextureShape implements LRelease {
 				_vertexStream.triangulateQuad(qi);
 			}
 		}
+		_dirty = true;
 	}
 
 	public void addTile(float x, float y, float w, float h, boolean repeatX, boolean repeatY) {
@@ -323,6 +324,11 @@ public class LTextureShape implements LRelease {
 
 	public boolean isDirty() {
 		return _dirty;
+	}
+
+	public void clearVertexStream() {
+		_vertexStream.clear();
+		_dirty = true;
 	}
 
 	public LTextureShape begin() {

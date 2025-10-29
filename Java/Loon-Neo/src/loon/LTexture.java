@@ -334,8 +334,10 @@ public final class LTexture extends Painter implements LRelease {
 	}
 
 	private Image _getFramebufferData() {
-		GLEx glex = _gfx.game.displayImpl.GL();
-		boolean saved = glex.isSaveFrameBuffer() && glex.running();
+		final GLEx glex = _gfx.game.displayImpl.GL();
+		final boolean bindFrameBuffer = glex.isBindFrameBufferTarget();
+		final boolean saved = glex.isSaveFrameBuffer() && glex.running();
+		glex.setBindFrameBufferTarget(false);
 		if (saved) {
 			glex.end();
 			glex.disableFrameBuffer();
@@ -358,6 +360,7 @@ public final class LTexture extends Painter implements LRelease {
 		gl.glDeleteFramebuffer(fb);
 		if (saved) {
 			glex.enableFrameBuffer();
+			glex.setBindFrameBufferTarget(bindFrameBuffer);
 			glex.begin();
 		}
 		return image;
@@ -815,6 +818,14 @@ public final class LTexture extends Painter implements LRelease {
 			_childs.put(hashCode, copy);
 			return copy;
 		}
+	}
+
+	public int getImageWidth() {
+		return _imageWidth;
+	}
+
+	public int getImageHeight() {
+		return _imageHeight;
 	}
 
 	public boolean isCopy() {

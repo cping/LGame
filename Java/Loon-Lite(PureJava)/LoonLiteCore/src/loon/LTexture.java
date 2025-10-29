@@ -577,6 +577,14 @@ public final class LTexture extends Painter implements LRelease {
 		}
 	}
 
+	public int getImageWidth() {
+		return _imageWidth;
+	}
+
+	public int getImageHeight() {
+		return _imageHeight;
+	}
+
 	public boolean isCopy() {
 		return _copySize;
 	}

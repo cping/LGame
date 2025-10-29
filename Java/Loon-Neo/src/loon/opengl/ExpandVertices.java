@@ -130,6 +130,10 @@ public final class ExpandVertices implements LRelease {
 		return CollectionUtils.copyOf(this.vertices, size);
 	}
 
+	public void clear() {
+		CollectionUtils.fill(this.vertices, 0);
+	}
+
 	@Override
 	public void close() {
 		this.maxSize = 0;

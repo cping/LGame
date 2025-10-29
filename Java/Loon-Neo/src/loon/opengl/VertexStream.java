@@ -383,6 +383,14 @@ public class VertexStream implements LRelease {
 		this._iindex += icnt;
 	}
 
+	public VertexStream clear() {
+		_vertices.clear();
+		_indices.clear();
+		_vindex = 0;
+		_iindex = 0;
+		return this;
+	}
+
 	public LColor getColor() {
 		return _color;
 	}

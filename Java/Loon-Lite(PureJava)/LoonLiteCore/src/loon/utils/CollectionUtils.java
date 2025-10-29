@@ -1787,6 +1787,18 @@ final public class CollectionUtils {
 	}
 
 	/**
+	 * 填充指定整型数组
+	 * 
+	 * @param arrays
+	 * @param val
+	 */
+	public static void fill(float[] arrays, int val) {
+		for (int i = 0, len = arrays.length; i < len; i++) {
+			arrays[i] = val;
+		}
+	}
+
+	/**
 	 * 填充指定对象数组
 	 * 
 	 * @param arrays
