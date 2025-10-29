@@ -30,6 +30,13 @@ import loon.utils.TArray;
 /*最简化的整型体积处理类,以减少对象大小*/
 public class RectI implements XYZW, SetXY {
 
+	public final static RectI minMaxRect(int minX, int minY, int maxX, int maxY, RectI o) {
+		if (o == null) {
+			o = new RectI();
+		}
+		return o.set(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	public static class Range implements XY, SetXY {
 
 		public static Range fromLTRB(int left, int top, int right, int bottom) {

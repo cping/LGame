@@ -31,6 +31,13 @@ import loon.utils.TArray;
 /*最简化的浮点体积处理类,以减少对象大小*/
 public class RectF implements XYZW, SetXY {
 
+	public final static RectF minMaxRect(float minX, float minY, float maxX, float maxY, RectF o) {
+		if (o == null) {
+			o = new RectF();
+		}
+		return o.set(minX, minY, maxX - minX, maxY - minY);
+	}
+
 	public static class Range implements XY, SetXY {
 
 		public static Range fromLTRB(float left, float top, float right, float bottom) {

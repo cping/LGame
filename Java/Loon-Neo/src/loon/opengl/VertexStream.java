@@ -35,6 +35,39 @@ import loon.utils.ShortArray;
  */
 public class VertexStream implements LRelease {
 
+	public final static void addTile(VertexStream vs, boolean repeatX, boolean repeatY) {
+		LTexture tex = vs._curTex;
+		createTile(vs, vs._contentRect, vs._uvRect, tex.getWidth(), tex.getHeight(), repeatX, repeatY);
+	}
+
+	public final static void createTile(VertexStream vs, RectF drawRect, RectF uvRect, float sourceW, float sourceH,
+			boolean repeatX, boolean repeatY) {
+
+		final float hc = repeatX ? (MathUtils.ceil(drawRect.width / sourceW) - 1) : 0;
+		final float vc = repeatY ? (MathUtils.ceil(drawRect.height / sourceH) - 1) : 0;
+		final float tailWidth = drawRect.width - hc * sourceW;
+		final float tailHeight = drawRect.height - vc * sourceH;
+
+		final RectF tmpRect = new RectF();
+		final RectF tmpUV = new RectF();
+
+		final int qi = vs.getVertCount();
+
+		for (int i = 0; i <= hc; i++) {
+			for (int j = 0; j <= vc; j++) {
+				tmpRect.set(drawRect.x + i * sourceW, drawRect.y + j * sourceH, (i < hc) ? sourceW : tailWidth,
+						(j < vc) ? sourceH : tailHeight);
+
+				tmpUV.set(uvRect.x, uvRect.y, (i < hc || !repeatX) ? uvRect.width : uvRect.width * tailWidth / sourceW,
+						(j < vc || !repeatY) ? uvRect.height : uvRect.height * tailHeight / sourceH);
+
+				vs.addQuad(tmpRect, null, tmpUV);
+			}
+		}
+		vs.triangulateQuad(qi);
+
+	}
+
 	public final static void addRoundedRect(VertexStream vs) {
 		addRoundedRect(vs, 6, 6, 6, 6);
 	}
@@ -109,7 +142,7 @@ public class VertexStream implements LRelease {
 		}
 	}
 
-	public final static void addCircel(VertexStream vs) {
+	public final static void addCircle(VertexStream vs) {
 		RectF rect = vs._contentRect;
 		float radiusX = rect.width / 2;
 		float radiusY = rect.height / 2;
@@ -125,7 +158,8 @@ public class VertexStream implements LRelease {
 			vs.addVert(vx, vy);
 			angle += angleDelta;
 		}
-		for (float i = 0; i < sides; i++) {
+
+		for (int i = 0; i < sides; i++) {
 			if (i != sides - 1) {
 				vs.addTriangle((short) 0, (short) (i + 1), (short) (i + 2));
 			} else {
@@ -211,13 +245,17 @@ public class VertexStream implements LRelease {
 		this._tempPos = new Vector2f();
 	}
 
+	public void setContextRect(float x, float y, float w, float h) {
+		_contentRect.set(x, y, w, h);
+	}
+
 	public void setTexture(LTexture m) {
 		_curTex = m;
 		if (_curTex != null) {
 			final Clip clip = _curTex.getClip();
-			if (clip.getDisplayWidth() == clip.getRegionWidth() && clip.getDisplayHeight() == clip.getRegionHeight())
+			if (clip.getDisplayWidth() == clip.getRegionWidth() && clip.getDisplayHeight() == clip.getRegionHeight()) {
 				this._uvRect.set(clip.xOff(), clip.yOff(), clip.widthRatio(), clip.heightRatio());
-			else {
+			} else {
 				float sx = clip.widthRatio() / _curTex.getWidth();
 				float sy = clip.heightRatio() / _curTex.getHeight();
 				this._uvRect.set(clip.xOff() - _curTex.xOff() * sx, clip.yOff() - _curTex.yOff() * sy,
@@ -226,17 +264,20 @@ public class VertexStream implements LRelease {
 		} else {
 			this._uvRect.set(0f, 0f, 1f, 1f);
 		}
-		this._color.setColor(1f, 1f, 1f, 1f);
 		this._vindex = 0;
 		this._iindex = 0;
 	}
 
 	public void addVert(float x, float y) {
-		addVert(x, y, null);
+		addVert(x, y, _color);
 	}
 
 	public void addVert(float x, float y, LColor color) {
 		addVert(x, y, color, -1f, -1f);
+	}
+
+	public void addVert(float x, float y, float u, float v) {
+		addVert(x, y, _color, -1f, -1f);
 	}
 
 	public void addVert(float x, float y, LColor color, float u, float v) {
@@ -301,6 +342,17 @@ public class VertexStream implements LRelease {
 		this._indices.set(idx + 2, idx2);
 	}
 
+	public void addTriangles(short[] indices) {
+		this.updateIndice(indices.length);
+		ShortArray arr = this._indices;
+		int idx = this._iindex;
+		int n = indices.length;
+		this._iindex += n;
+		for (int i = 0; i < n; i++) {
+			arr.set(idx + i, indices[i]);
+		}
+	}
+
 	public void addTriangles(ShortArray indices) {
 		this.updateIndice(indices.length);
 		ShortArray arr = this._indices;
@@ -359,12 +411,28 @@ public class VertexStream implements LRelease {
 		return _vindex / ADDED_VERTEX_COUNT;
 	}
 
+	public int getVertSize() {
+		return _vindex;
+	}
+
+	public int getIndiSize() {
+		return _iindex;
+	}
+
 	public RectF getContentRect() {
 		return _contentRect;
 	}
 
 	public RectF getUVRect() {
 		return _uvRect;
+	}
+
+	public short[] getIndicesData() {
+		return _indices.items;
+	}
+
+	public float[] getVerticesData() {
+		return _vertices.getVertices();
 	}
 
 	public float[] getVertices() {
@@ -383,6 +451,9 @@ public class VertexStream implements LRelease {
 	public void close() {
 		_vertices.close();
 		_indices.close();
+		if (_curTex != null) {
+			_curTex.close();
+		}
 	}
 
 }
