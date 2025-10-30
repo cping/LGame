@@ -133,29 +133,31 @@ public final class TrilateralBatch extends BaseBatch {
 
 		int index = this._currentIndexCount;
 
-		_expandVertices.setVertice(index++, nx1);
-		_expandVertices.setVertice(index++, ny1);
-		_expandVertices.setVertice(index++, colorFloat);
-		_expandVertices.setVertice(index++, sx1);
-		_expandVertices.setVertice(index++, sy1);
+		_expandVertices.expand(index);
+		
+		_expandVertices.set(index++, nx1);
+		_expandVertices.set(index++, ny1);
+		_expandVertices.set(index++, colorFloat);
+		_expandVertices.set(index++, sx1);
+		_expandVertices.set(index++, sy1);
 
-		_expandVertices.setVertice(index++, nx2);
-		_expandVertices.setVertice(index++, ny2);
-		_expandVertices.setVertice(index++, colorFloat);
-		_expandVertices.setVertice(index++, sx2);
-		_expandVertices.setVertice(index++, sy2);
+		_expandVertices.set(index++, nx2);
+		_expandVertices.set(index++, ny2);
+		_expandVertices.set(index++, colorFloat);
+		_expandVertices.set(index++, sx2);
+		_expandVertices.set(index++, sy2);
 
-		_expandVertices.setVertice(index++, nx4);
-		_expandVertices.setVertice(index++, ny4);
-		_expandVertices.setVertice(index++, colorFloat);
-		_expandVertices.setVertice(index++, sx4);
-		_expandVertices.setVertice(index++, sy4);
+		_expandVertices.set(index++, nx4);
+		_expandVertices.set(index++, ny4);
+		_expandVertices.set(index++, colorFloat);
+		_expandVertices.set(index++, sx4);
+		_expandVertices.set(index++, sy4);
 
-		_expandVertices.setVertice(index++, nx3);
-		_expandVertices.setVertice(index++, ny3);
-		_expandVertices.setVertice(index++, colorFloat);
-		_expandVertices.setVertice(index++, sx3);
-		_expandVertices.setVertice(index++, sy3);
+		_expandVertices.set(index++, nx3);
+		_expandVertices.set(index++, ny3);
+		_expandVertices.set(index++, colorFloat);
+		_expandVertices.set(index++, sx3);
+		_expandVertices.set(index++, sy3);
 
 		this._currentIndexCount = index;
 	}
@@ -192,29 +194,31 @@ public final class TrilateralBatch extends BaseBatch {
 
 		int index = this._currentIndexCount;
 
-		_expandVertices.setVertice(index++, nx1);
-		_expandVertices.setVertice(index++, ny1);
-		_expandVertices.setVertice(index++, c1);
-		_expandVertices.setVertice(index++, u);
-		_expandVertices.setVertice(index++, v);
+		_expandVertices.expand(index);
+		
+		_expandVertices.set(index++, nx1);
+		_expandVertices.set(index++, ny1);
+		_expandVertices.set(index++, c1);
+		_expandVertices.set(index++, u);
+		_expandVertices.set(index++, v);
 
-		_expandVertices.setVertice(index++, nx2);
-		_expandVertices.setVertice(index++, ny2);
-		_expandVertices.setVertice(index++, c2);
-		_expandVertices.setVertice(index++, u);
-		_expandVertices.setVertice(index++, v2);
+		_expandVertices.set(index++, nx2);
+		_expandVertices.set(index++, ny2);
+		_expandVertices.set(index++, c2);
+		_expandVertices.set(index++, u);
+		_expandVertices.set(index++, v2);
 
-		_expandVertices.setVertice(index++, nx3);
-		_expandVertices.setVertice(index++, ny3);
-		_expandVertices.setVertice(index++, c3);
-		_expandVertices.setVertice(index++, u2);
-		_expandVertices.setVertice(index++, v2);
+		_expandVertices.set(index++, nx3);
+		_expandVertices.set(index++, ny3);
+		_expandVertices.set(index++, c3);
+		_expandVertices.set(index++, u2);
+		_expandVertices.set(index++, v2);
 
-		_expandVertices.setVertice(index++, nx4);
-		_expandVertices.setVertice(index++, ny4);
-		_expandVertices.setVertice(index++, c4);
-		_expandVertices.setVertice(index++, u2);
-		_expandVertices.setVertice(index++, v);
+		_expandVertices.set(index++, nx4);
+		_expandVertices.set(index++, ny4);
+		_expandVertices.set(index++, c4);
+		_expandVertices.set(index++, u2);
+		_expandVertices.set(index++, v);
 
 		this._currentIndexCount = index;
 	}

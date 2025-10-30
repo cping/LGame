@@ -104,6 +104,14 @@ public final class ExpandVertices implements LRelease {
 		this.vertices = CollectionUtils.expand(this.vertices, size);
 	}
 
+	public final void set(int index, float v) {
+		this.vertices[index] = v;
+	}
+
+	public final float get(int idx) {
+		return vertices[idx];
+	}
+
 	public final void setVertice(int index, float v) {
 		if (expand(index)) {
 			maxSize = getSize();
@@ -111,7 +119,7 @@ public final class ExpandVertices implements LRelease {
 		this.vertices[index] = v;
 	}
 
-	public float getVertices(int idx) {
+	public final float getVertices(int idx) {
 		if (idx >= length()) {
 			return -1f;
 		}

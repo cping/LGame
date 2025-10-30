@@ -284,25 +284,27 @@ public class VertexStream implements LRelease {
 
 		int idx = this._vindex;
 
-		this._vertices.setVertice(idx, x);
-		this._vertices.setVertice(idx + 1, y);
+		_vertices.expand(idx);
+
+		_vertices.set(idx, x);
+		_vertices.set(idx + 1, y);
 
 		if (color != null) {
-			this._vertices.setVertice(idx + 2, color.toFloatBits());
+			_vertices.set(idx + 2, color.toFloatBits());
 		} else {
-			this._vertices.setVertice(idx + 2, LColor.white.toFloatBits());
+			_vertices.set(idx + 2, LColor.white.toFloatBits());
 		}
 
 		if (u != -1) {
-			this._vertices.setVertice(idx + 3, u);
+			_vertices.set(idx + 3, u);
 		} else {
-			this._vertices.setVertice(idx + 3, MathUtils.lerp(this._uvRect.x, this._uvRect.getRight(),
+			_vertices.set(idx + 3, MathUtils.lerp(this._uvRect.x, this._uvRect.getRight(),
 					(x - this._contentRect.x) / (this._contentRect.width)));
 		}
 		if (v != -1) {
-			this._vertices.setVertice(idx + 4, v);
+			_vertices.set(idx + 4, v);
 		} else {
-			this._vertices.setVertice(idx + 4, MathUtils.lerp(this._uvRect.y, this._uvRect.getBottom(),
+			_vertices.set(idx + 4, MathUtils.lerp(this._uvRect.y, this._uvRect.getBottom(),
 					(y - this._contentRect.y) / (this._contentRect.height)));
 		}
 
