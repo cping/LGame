@@ -27,6 +27,7 @@ import loon.LazyLoading;
 import loon.Platform;
 import loon.events.KeyMake;
 import loon.events.SysInput;
+import loon.utils.PathUtils;
 
 public class Loon implements Platform {
 
@@ -39,12 +40,13 @@ public class Loon implements Platform {
 		if (!osName.contains("mac")) {
 			if (osName.contains("windows")) {
 				String fixProgramData = System.getenv("ProgramData");
-				if (fixProgramData == null) {
+				if (fixProgramData == null || fixProgramData.length() == 0) {
 					fixProgramData = "C:\\Temp\\";
 				}
 				_prevTmpDir = System.getProperty("java.io.tmpdir", fixProgramData);
 				_prevUser = System.getProperty("user.name", "loon_temp_user");
-				System.setProperty("java.io.tmpdir", fixProgramData + "/loon-temp");
+				final String tempDir = PathUtils.normalize(PathUtils.getCombinePaths(fixProgramData, "loon-temp"));
+				System.setProperty("java.io.tmpdir", tempDir);
 				System.setProperty("user.name",
 						("User_" + _prevUser.hashCode() + "_Loon" + LSystem.getVersion()).replace('.', '_'));
 			}
