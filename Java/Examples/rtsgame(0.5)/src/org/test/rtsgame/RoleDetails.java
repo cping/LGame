@@ -10,8 +10,7 @@ public class RoleDetails {
 	public float ReloadTime;
 	public String Summary;
 
-	private static HashMap<RoleRank, RoleDetails> armys = new HashMap<RoleRank, RoleDetails>(
-			10);
+	private static HashMap<RoleRank, RoleDetails> armys = new HashMap<RoleRank, RoleDetails>(10);
 
 	static {
 

@@ -29,16 +29,14 @@ public class RoleMoveControl implements LRelease {
 		Vector2f item = (new Vector2f(1.5f, 6.5f).mul(Tile.size));
 		this.armyPosition.add(item);
 		this.castles[0] = new Castle(gameContent, Shape.square, item);
-		this.castles[1] = new Castle(gameContent, Shape.triangle, new Vector2f(
-				LSystem.viewSize.width, LSystem.viewSize.height).sub(item));
+		this.castles[1] = new Castle(gameContent, Shape.triangle,
+				new Vector2f(LSystem.viewSize.width, LSystem.viewSize.height).sub(item));
 		for (int i = 0; i < details.ArmyNumber.size(); i++) {
 			for (int j = 0; j < details.ArmyNumber.get(i); j++) {
 				Vector2f position = this.GetPosition().cpy();
-				this.armies.add(new RoleControl(this.gameContent, Shape.square,
-						RoleRank.forValue(i), position));
-				this.armies.add(new RoleControl(this.gameContent,
-						Shape.triangle, RoleRank.forValue(i), new Vector2f(
-								LSystem.viewSize.width, LSystem.viewSize.height).sub(position)));
+				this.armies.add(new RoleControl(this.gameContent, Shape.square, RoleRank.forValue(i), position));
+				this.armies.add(new RoleControl(this.gameContent, Shape.triangle, RoleRank.forValue(i),
+						new Vector2f(LSystem.viewSize.width, LSystem.viewSize.height).sub(position)));
 			}
 		}
 		this.enemyWaitTime = 0f;
@@ -87,10 +85,9 @@ public class RoleMoveControl implements LRelease {
 		this.mouseOverArmy = null;
 		for (int i = 0; i < this.armies.size(); i++) {
 
-			if (((this.armies.get(i).getMouseBounds()
-					.contains(nextDestPosition.x(), nextDestPosition.y()) && this.armies
-					.get(i).isAlive()) && ((this.selectedArmy == null) && (this.armies
-					.get(i).shape == Shape.square)))
+			if (((this.armies.get(i).getMouseBounds().contains(nextDestPosition.x(), nextDestPosition.y())
+					&& this.armies.get(i).isAlive())
+					&& ((this.selectedArmy == null) && (this.armies.get(i).shape == Shape.square)))
 					&& (collection.size() > 0)) {
 
 				LTouchLocation location = collection.get(0);
@@ -113,8 +110,7 @@ public class RoleMoveControl implements LRelease {
 							this.selectedArmy = null;
 						}
 					}
-					if ((this.selectedArmy == null)
-							|| this.selectedArmy.isAlive()) {
+					if ((this.selectedArmy == null) || this.selectedArmy.isAlive()) {
 						return;
 					}
 
@@ -150,17 +146,14 @@ public class RoleMoveControl implements LRelease {
 				}
 			}
 			if ((this.armies.get(i).shape.equals(Shape.square))
-					&& (this.castles[1].position
-							.equals(this.armies.get(i).position))) {
+					&& (this.castles[1].position.equals(this.armies.get(i).position))) {
 				this.setIsLevelUp(true);
 			}
 			if ((this.armies.get(i).shape == Shape.triangle)
-					&& (this.castles[0].position
-							.equals(this.armies.get(i).position))) {
+					&& (this.castles[0].position.equals(this.armies.get(i).position))) {
 				this.setReloadLevel(true);
 			}
-			if (this.armies.get(i).isAlive()
-					&& (this.armies.get(i).shape.equals(Shape.square))) {
+			if (this.armies.get(i).isAlive() && (this.armies.get(i).shape.equals(Shape.square))) {
 				flag = false;
 			}
 		}

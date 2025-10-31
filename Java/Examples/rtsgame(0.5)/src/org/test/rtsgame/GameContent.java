@@ -6,8 +6,9 @@ import loon.action.sprite.painting.GameComponent;
 import loon.canvas.LColor;
 import loon.font.LFont;
 import loon.geom.Vector2f;
+import loon.opengl.LTextureFree;
 import loon.opengl.TextureUtils;
-import loon.utils.RefManager;
+import loon.utils.reply.ObjRef;
 
 public class GameContent {
 	public LTexture[] armyOverlay = new LTexture[3];
@@ -41,7 +42,7 @@ public class GameContent {
 	public LTexture[] walk = new LTexture[2];
 	public LTexture[] weapon = new LTexture[3];
 
-	public RefManager refs = new RefManager();
+	public LTextureFree refs = new LTextureFree();
 
 	public LTexture load(String name) {
 		LTexture texture = LTextures.loadTexture("assets/" + name + ".png");
@@ -61,14 +62,11 @@ public class GameContent {
 			this.die[i] = load("" + (Shape.forValue(i)) + "Die");
 		}
 		this.mouseOver = load("mouseOver");
-		this.mouseOverOrigin = (new Vector2f(this.mouseOver.getWidth(),
-				this.mouseOver.getHeight()).div());
+		this.mouseOverOrigin = (new Vector2f(this.mouseOver.getWidth(), this.mouseOver.getHeight()).div());
 		for (int j = 0; j < this.castle.length; j++) {
 			this.castle[j] = load("" + (Shape.forValue(j)) + "Castle");
 		}
-		this.castleOrigin = new Vector2f(
-				(float) (this.castle[0].getWidth() / 2),
-				(float) this.castle[0].getHeight());
+		this.castleOrigin = new Vector2f((float) (this.castle[0].getWidth() / 2), (float) this.castle[0].getHeight());
 		this.pathArrow = load("pathArrow");
 		this.pathCross = load("pathCross");
 		this.healthBar = load("healthBar").scale(20, 4);

@@ -35,19 +35,15 @@ public class MessageBoxEntity extends GameEntity {
 
 	@Override
 	public void Draw(SpriteBatch batch, GameTime gameTime) {
-		super.getScreenManager().FadeBackBufferToBlack(batch,
-				(super.getTransitionAlpha() * 1f) / 3f);
-		Vector2f vector = new Vector2f(LSystem.viewSize.width / 2,
-				LSystem.viewSize.height / 2);
-		LColor color = LColorPool.get().getColor(1f, 1f, 1f,
-				super.getTransitionAlpha());
+		super.getScreenManager().FadeBackBufferToBlack(batch, (super.getTransitionAlpha() * 1f) / 3f);
+		Vector2f vector = new Vector2f(LSystem.viewSize.width / 2, LSystem.viewSize.height / 2);
+		LColor color = LColorPool.get().getColor(1f, 1f, 1f, super.getTransitionAlpha());
 
 		if (this.texture != null) {
 			batch.draw(this.texture, vector.sub(this.textureOrigin), color);
 		}
 		if (this.text != null) {
-			batch.drawString(this.font, this.text, vector.sub(this.textOrigin),
-					color);
+			batch.drawString(this.font, this.text, vector.sub(this.textOrigin), color);
 		}
 	}
 
@@ -65,8 +61,7 @@ public class MessageBoxEntity extends GameEntity {
 	public void LoadContent() {
 		this.font = super.getScreenManager().getGameContent().gameFont;
 		if (this.texture != null) {
-			this.textureOrigin = new Vector2f(this.texture.getWidth(),
-					this.texture.getHeight()).div();
+			this.textureOrigin = new Vector2f(this.texture.getWidth(), this.texture.getHeight()).div();
 		}
 		if (this.text != null) {
 			this.textOrigin = font.getOrigin(this.text);

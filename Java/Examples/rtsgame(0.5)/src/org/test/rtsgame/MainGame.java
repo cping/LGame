@@ -51,8 +51,7 @@ public class MainGame extends DrawableScreen {
 		this.manager = new EntityManager(this);
 		Components().add(manager);
 
-		LoadingEntity.Load(this.manager, true, new GameEntity[] {
-				new BackgroundEntity(), new MainMenuEntity() });
+		LoadingEntity.Load(this.manager, true, new GameEntity[] { new BackgroundEntity(), new MainMenuEntity() });
 	}
 
 	@Override
@@ -98,19 +97,19 @@ public class MainGame extends DrawableScreen {
 	@Override
 	public void resize(int width, int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void resume() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void pause() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

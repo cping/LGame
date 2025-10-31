@@ -22,7 +22,6 @@ public class JavaSEMain {
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "即时战略游戏";
-		LSystem.NOT_MOVE = true;
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override

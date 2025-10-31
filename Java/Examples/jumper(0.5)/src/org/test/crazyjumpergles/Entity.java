@@ -8,7 +8,7 @@ import loon.LSystem;
 import loon.action.sprite.SpriteBatch;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class Entity {
 
@@ -179,8 +179,8 @@ public class Entity {
 		return this.m_Position;
 	}
 
-	public final void GetPosition(RefObject<Vector2f> rPos) {
-		rPos.argvalue = this.m_Position;
+	public final void GetPosition(ObjRef<Vector2f> rPos) {
+		rPos.set( this.m_Position);
 	}
 
 	public final float GetPositionX() {
@@ -203,9 +203,9 @@ public class Entity {
 		return this.m_fRotation;
 	}
 
-	public final void GetSize(RefObject<Float> rX, RefObject<Float> rY) {
-		rX.argvalue = this.m_Size.x;
-		rY.argvalue = this.m_Size.y;
+	public final void GetSize(ObjRef<Float> rX, ObjRef<Float> rY) {
+		rX.set(this.m_Size.x);
+		rY.set(this.m_Size.y);
 	}
 
 	public final float GetSizeX() {
@@ -609,9 +609,9 @@ public class Entity {
 			} else if (this.m_fRotationSpeed != 0f) {
 				float angle = this.m_fRotation
 						+ (this.m_fRotationSpeed * this.m_fDeltaTime);
-				RefObject<Float> tempRef_angle = new RefObject<Float>(angle);
+				ObjRef<Float> tempRef_angle = new ObjRef<Float>(angle);
 				Tools.ClampAngle(tempRef_angle);
-				angle = tempRef_angle.argvalue;
+				angle = tempRef_angle.get();
 				this.SetRotation(angle);
 			}
 		}

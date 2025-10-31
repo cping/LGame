@@ -45,8 +45,7 @@ public class EntityManager extends DrawableGameComponent {
 	}
 
 	public final void FadeBackBufferToBlack(SpriteBatch batch, float alpha) {
-		batch.draw(this.getGameContent().blank, LSystem.viewSize.getRect(), new LColor(
-		1f, 1f, 1f, alpha));
+		batch.draw(this.getGameContent().blank, LSystem.viewSize.getRect(), new LColor(1f, 1f, 1f, alpha));
 	}
 
 	public final GameEntity[] GetScreens() {
@@ -104,11 +103,10 @@ public class EntityManager extends DrawableGameComponent {
 		for (GameEntity screen : this.screens) {
 			this.screensToUpdate.add(screen);
 		}
-	
+
 		boolean coveredByOtherScreen = false;
 		while (this.screensToUpdate.size() > 0) {
-			GameEntity screen2 = this.screensToUpdate.get(this.screensToUpdate
-					.size() - 1);
+			GameEntity screen2 = this.screensToUpdate.get(this.screensToUpdate.size() - 1);
 			this.screensToUpdate.remove(this.screensToUpdate.size() - 1);
 			screen2.Update(gameTime, coveredByOtherScreen);
 			if ((screen2.getScreenState() == DrawableState.TransitionOn)

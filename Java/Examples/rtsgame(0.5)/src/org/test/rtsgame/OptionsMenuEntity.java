@@ -57,10 +57,8 @@ public class OptionsMenuEntity extends MenuEntity {
 	}
 
 	private void SetMenuEntryText() {
-		this.soundMenuEntry.Text = "Sound: "
-				+ (MainGame.Settings.SoundEnabled ? "on" : "off");
-		this.musicMenuEntry.Text = "Music: "
-				+ (MainGame.Settings.MusicEnabled ? "on" : "off");
+		this.soundMenuEntry.Text = "Sound: " + (MainGame.Settings.SoundEnabled ? "on" : "off");
+		this.musicMenuEntry.Text = "Music: " + (MainGame.Settings.MusicEnabled ? "on" : "off");
 	}
 
 	private void SoundEntrySelected() {

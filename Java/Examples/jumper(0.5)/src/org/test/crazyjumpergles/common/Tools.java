@@ -2,28 +2,22 @@
 
 import loon.geom.RectBox;
 import loon.utils.MathUtils;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public final class Tools {
-	
+
 	public static float MAX_FLOAT = 3.4E+28f;
 
-	public static void ClampAngle(RefObject<Float> angle)
-	{
-		if (angle.argvalue < 0f)
-		{
-			angle.argvalue += 360f;
-		}
-		else if (angle.argvalue > 360f)
-		{
-			angle.argvalue -= 360f;
-		}
-		else if (angle.argvalue == 360f)
-		{
-			angle.argvalue = 0f;
+	public static void ClampAngle(ObjRef<Float> angle) {
+		if (angle.get() < 0f) {
+			angle.add(360f);
+		} else if (angle.get() > 360f) {
+			angle.sub(360f);
+		} else if (angle.get() == 360f) {
+			angle.set(0f);
 		}
 	}
-	
+
 	public static int getRand(int min, int max) {
 		return MathUtils.random(min, max);
 	}
@@ -32,9 +26,8 @@ public final class Tools {
 		return MathUtils.random(min, max);
 	}
 
-	public static boolean isCircleIntersectingRect(float cX, float cY,
-			float cRadius, float rcLeft, float rcRight, float rcTop,
-			float rcBottom) {
+	public static boolean isCircleIntersectingRect(float cX, float cY, float cRadius, float rcLeft, float rcRight,
+			float rcTop, float rcBottom) {
 		float num = MathUtils.clamp(cX, rcLeft, rcRight);
 		float num2 = MathUtils.clamp(cY, rcTop, rcBottom);
 		float num3 = cX - num;
@@ -43,14 +36,13 @@ public final class Tools {
 		return (num5 < (cRadius * cRadius));
 	}
 
-	public static boolean isIntersectingRect(float ax, float ay, float aw,
-			float ah, float bx, float by, float bw, float bh) {
+	public static boolean isIntersectingRect(float ax, float ay, float aw, float ah, float bx, float by, float bw,
+			float bh) {
 		return (((by <= (ay + ah)) && ((by + bh) >= ay)) && (((bx + bw) >= ax) && (bx <= (ax + aw))));
 	}
 
 	public static boolean IsInvalidRect(RectBox rc) {
-		return (rc == null)
-				|| (((rc.x == 0) && (rc.y == 0)) && ((rc.width == 0) && (rc.height == 0)));
+		return (rc == null) || (((rc.x == 0) && (rc.y == 0)) && ((rc.width == 0) && (rc.height == 0)));
 	}
 
 	public static RectBox MakeInvalidRect() {

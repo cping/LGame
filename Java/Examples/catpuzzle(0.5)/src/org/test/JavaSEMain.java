@@ -3,7 +3,6 @@ package org.test;
 import org.test.cat.puzzle.game.Puzzle;
 
 import loon.LSetting;
-import loon.LSystem;
 import loon.LazyLoading;
 import loon.Screen;
 import loon.javase.Loon;
@@ -22,7 +21,6 @@ public class JavaSEMain {
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "拼图游戏";
-		LSystem.NOT_MOVE = true;
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override

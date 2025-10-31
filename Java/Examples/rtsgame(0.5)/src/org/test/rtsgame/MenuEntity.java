@@ -27,16 +27,15 @@ public abstract class MenuEntity extends GameEntity {
 	public void Draw(SpriteBatch batch, GameTime gameTime) {
 		if (this.titleTexture == null) {
 
-			//无图不显示
-			
+			// 无图不显示
+
 		} else {
-			batch.draw(this.titleTexture, this.titlePosition, LColorPool.get().getColor(1f,
-					1f, 1f, super.getTransitionAlpha()));
+			batch.draw(this.titleTexture, this.titlePosition,
+					LColorPool.get().getColor(1f, 1f, 1f, super.getTransitionAlpha()));
 		}
 		for (int i = 0; i < this.menuEntries.size(); i++) {
 			MenuEntry entry = this.menuEntries.get(i);
-			boolean isSelected = super.getIsActive()
-					&& (i == this.selectedEntry);
+			boolean isSelected = super.getIsActive() && (i == this.selectedEntry);
 			entry.Draw(isSelected, batch, gameTime);
 		}
 
@@ -44,14 +43,12 @@ public abstract class MenuEntity extends GameEntity {
 
 	@Override
 	public void HandleInput() {
-		if (SysTouch.getOnlyKey().isPressed()
-				&& SysKey.isKeyPressed(SysKey.BACK)) {
+		if (SysTouch.getOnlyKey().isPressed() && SysKey.isKeyPressed(SysKey.BACK)) {
 			this.OnCancel();
 		} else {
 			if (SysTouch.isDown() || SysTouch.isDrag()) {
 				for (int i = 0; i < this.menuEntries.size(); i++) {
-					if (this.menuEntries.get(i).getGetMenuEntryHitBounds()
-							.contains(SysTouch.x(), SysTouch.y())) {
+					if (this.menuEntries.get(i).getGetMenuEntryHitBounds().contains(SysTouch.x(), SysTouch.y())) {
 						this.selectedEntry = i;
 						if (SysTouch.isDown() || SysTouch.isDrag()) {
 							this.OnSelectEntry();
@@ -75,8 +72,7 @@ public abstract class MenuEntity extends GameEntity {
 	public void Update(GameTime gameTime, boolean coveredByOtherScreen) {
 		super.Update(gameTime, coveredByOtherScreen);
 		for (int i = 0; i < this.menuEntries.size(); i++) {
-			boolean isSelected = super.getIsActive()
-					&& (i == this.selectedEntry);
+			boolean isSelected = super.getIsActive() && (i == this.selectedEntry);
 			this.menuEntries.get(i).Update(isSelected, gameTime);
 		}
 	}

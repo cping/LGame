@@ -8,32 +8,32 @@ import loon.canvas.LColor;
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
 import loon.opengl.BlendState;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class Sprite {
 
 	protected boolean m_bColorBlend;
-	
+
 	protected boolean m_bEnableAlphaTest;
-	
+
 	protected boolean m_bEnableBlending = true;
-	
+
 	protected LColor m_Color = new LColor(0xff, 0xff, 0xff, 0xff);
-	
+
 	protected float m_fAlphaTestValue = 0.1f;
-	
+
 	protected float m_fRotationAngle;
-	
+
 	protected int m_iFlip;
-	
+
 	protected Vector2f m_Position = new Vector2f(0f, 0f);
-	
+
 	protected LTexture m_pTexture;
-	
+
 	protected RectBox m_rcTexSrcRegion = Tools.MakeInvalidRect();
-	
+
 	protected Vector2f m_Size = new Vector2f(100f, 100f);
-	
+
 	protected String textureName = "";
 
 	public Sprite() {
@@ -51,14 +51,12 @@ public class Sprite {
 		}
 	}
 
-	public final void AddTextureByNamePostfix2Platform(String name, String ext,
-			boolean bAutoLoad) {
+	public final void AddTextureByNamePostfix2Platform(String name, String ext, boolean bAutoLoad) {
 		String texname = name + "." + ext;
 		this.AddTextureByName(texname, bAutoLoad);
 	}
 
-	public final void AddTextureByNamePostfix3Platform(String name, String ext,
-			boolean bAutoLoad) {
+	public final void AddTextureByNamePostfix3Platform(String name, String ext, boolean bAutoLoad) {
 		String texname = name + "." + ext;
 		this.AddTextureByName(texname, bAutoLoad);
 	}
@@ -95,8 +93,8 @@ public class Sprite {
 		return (this.m_Size.y * 0.5f);
 	}
 
-	public final void GetPosition(RefObject<Vector2f> rPos) {
-		rPos.argvalue = this.m_Position;
+	public final void GetPosition(ObjRef<Vector2f> rPos) {
+		rPos.set(this.m_Position);
 	}
 
 	public final float GetPositionX() {
@@ -111,9 +109,9 @@ public class Sprite {
 		return this.m_fRotationAngle;
 	}
 
-	public final void GetSize(RefObject<Float> rX, RefObject<Float> rY) {
-		rX.argvalue = this.m_Size.x;
-		rY.argvalue = this.m_Size.y;
+	public final void GetSize(ObjRef<Float> rX, ObjRef<Float> rY) {
+		rX.set(this.m_Size.x);
+		rY.set(this.m_Size.y);
 	}
 
 	public final float GetSizeX() {
@@ -138,8 +136,7 @@ public class Sprite {
 
 	public void Reload() {
 		if (this.textureName.length() > 0) {
-			this.m_pTexture = LTextures.loadTexture("assets/" + this.textureName
-					+ ".png");
+			this.m_pTexture = LTextures.loadTexture("assets/" + this.textureName + ".png");
 		}
 	}
 
@@ -157,42 +154,35 @@ public class Sprite {
 			this.Reload();
 		}
 		if (Tools.IsInvalidRect(this.m_rcTexSrcRegion)) {
-			RenderQuad(batch, this.m_Position.x, this.m_Position.y,
-					this.m_Size.x, this.m_Size.y, this.m_fRotationAngle,
+			RenderQuad(batch, this.m_Position.x, this.m_Position.y, this.m_Size.x, this.m_Size.y, this.m_fRotationAngle,
 					this.m_pTexture, null, this.m_iFlip, this.m_Color);
 		} else {
-			RenderQuad(batch, this.m_Position.x, this.m_Position.y,
-					this.m_Size.x, this.m_Size.y, this.m_fRotationAngle,
-					this.m_pTexture, this.m_rcTexSrcRegion, this.m_iFlip,
-					this.m_Color);
+			RenderQuad(batch, this.m_Position.x, this.m_Position.y, this.m_Size.x, this.m_Size.y, this.m_fRotationAngle,
+					this.m_pTexture, this.m_rcTexSrcRegion, this.m_iFlip, this.m_Color);
 		}
 	}
 
-	public void RenderQuad(SpriteBatch batch, RectBox rcScrDstRect,
-			LTexture pTexture, RectBox pTexSrcRect, int iFlip, LColor color) {
+	public void RenderQuad(SpriteBatch batch, RectBox rcScrDstRect, LTexture pTexture, RectBox pTexSrcRect, int iFlip,
+			LColor color) {
 		float width = rcScrDstRect.width;
 		float height = rcScrDstRect.height;
 		float x = rcScrDstRect.x + (width * 0.5f);
 		float y = rcScrDstRect.y + (height * 0.5f);
-		this.RenderQuad(batch, x, y, width, height, 0f, pTexture, pTexSrcRect,
-				iFlip, color);
+		this.RenderQuad(batch, x, y, width, height, 0f, pTexture, pTexSrcRect, iFlip, color);
 	}
 
-	public void RenderQuad(SpriteBatch batch, float startX, float startY,
-			float width, float height, LTexture pTexture, RectBox pTexSrcRect,
-			int iFlip, LColor color) {
-		this.RenderQuad(batch, startX + (width * 0.5f), startY
-				+ (height * 0.5f), width, height, 0f, pTexture, pTexSrcRect,
-				iFlip, color);
+	public void RenderQuad(SpriteBatch batch, float startX, float startY, float width, float height, LTexture pTexture,
+			RectBox pTexSrcRect, int iFlip, LColor color) {
+		this.RenderQuad(batch, startX + (width * 0.5f), startY + (height * 0.5f), width, height, 0f, pTexture,
+				pTexSrcRect, iFlip, color);
 	}
 
 	private RectBox rectangle = new RectBox();
 
 	private Vector2f origin = new Vector2f();
 
-	public void RenderQuad(SpriteBatch batch, float x, float y, float width,
-			float height, float rotation, LTexture pTexture,
-			RectBox pTexSrcRect, int iFlip, LColor color) {
+	public void RenderQuad(SpriteBatch batch, float x, float y, float width, float height, float rotation,
+			LTexture pTexture, RectBox pTexSrcRect, int iFlip, LColor color) {
 		SpriteEffects none = SpriteEffects.None;
 		if (iFlip == 1) {
 			none = SpriteEffects.FlipVertically;
@@ -201,20 +191,16 @@ public class Sprite {
 		}
 		if (pTexture != null) {
 			if (rotation == 0f) {
-				rectangle.setBounds((x - (width * 0.5f)),
-						(y - (height * 0.5f)), width, height);
-				batch.draw(pTexture, rectangle, pTexSrcRect, color, 0,
-						Vector2f.STATIC_ZERO, none);
+				rectangle.setBounds((x - (width * 0.5f)), (y - (height * 0.5f)), width, height);
+				batch.draw(pTexture, rectangle, pTexSrcRect, color, 0, Vector2f.STATIC_ZERO, none);
 			} else {
 				origin.set((width / 2), (height / 2));
 				rectangle.setBounds(x, y, width, height);
-				batch.draw(pTexture, rectangle, pTexSrcRect, color, rotation,
-						origin, none);
+				batch.draw(pTexture, rectangle, pTexSrcRect, color, rotation, origin, none);
 
 			}
 		} else if (rotation == 0f) {
-			batch.fillRect((x - (width * 0.5f)), (y - (height * 0.5f)), width,
-					height);
+			batch.fillRect((x - (width * 0.5f)), (y - (height * 0.5f)), width, height);
 		} else {
 			batch.fillRect(x, y, width, height);
 		}
@@ -268,13 +254,12 @@ public class Sprite {
 		this.m_rcTexSrcRegion.height = bottom - top;
 	}
 
-	public final void SetTexSrcRegionF(float left, float right, float top,
-			float bottom) {
+	public final void SetTexSrcRegionF(float left, float right, float top, float bottom) {
 		if (this.m_pTexture != null) {
 			float width = this.m_pTexture.getWidth();
 			float height = this.m_pTexture.getHeight();
-			this.SetTexSrcRegion((int) (width * left), (int) (width * right),
-					(int) (height * top), (int) (height * bottom));
+			this.SetTexSrcRegion((int) (width * left), (int) (width * right), (int) (height * top),
+					(int) (height * bottom));
 		}
 	}
 

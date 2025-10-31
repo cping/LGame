@@ -20,7 +20,6 @@ public class JavaSEMain {
 		setting.fps = 60;
 		setting.fontName = "黑体";
 		setting.appName = "射击(弹幕)游戏";
-		LSystem.NOT_MOVE = true;
 		Loon.register(setting, new LazyLoading.Data() {
 
 			@Override

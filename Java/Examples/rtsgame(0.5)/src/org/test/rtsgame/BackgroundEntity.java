@@ -7,7 +7,7 @@ import loon.geom.Vector2f;
 import loon.utils.timer.GameTime;
 
 public class BackgroundEntity extends GameEntity {
-	
+
 	private LTexture backgroundTexture;
 
 	public BackgroundEntity() {
@@ -17,8 +17,8 @@ public class BackgroundEntity extends GameEntity {
 
 	@Override
 	public void Draw(SpriteBatch batch, GameTime gameTime) {
-		batch.draw(this.backgroundTexture, Vector2f.STATIC_ZERO, LColorPool.get()
-				.getColor(1f, 1f, 1f, super.getTransitionAlpha()));
+		batch.draw(this.backgroundTexture, Vector2f.STATIC_ZERO,
+				LColorPool.get().getColor(1f, 1f, 1f, super.getTransitionAlpha()));
 	}
 
 	@Override

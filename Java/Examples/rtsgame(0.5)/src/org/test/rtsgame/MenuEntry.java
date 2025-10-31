@@ -14,7 +14,7 @@ import loon.utils.timer.GameTime;
 
 //单独的菜单元素
 public class MenuEntry {
-	
+
 	private LFont font;
 	public float fontSize;
 	private Vector2f position;
@@ -42,14 +42,12 @@ public class MenuEntry {
 
 	public void Draw(boolean isSelected, SpriteBatch batch, GameTime gameTime) {
 		isSelected = false;
-		LColor color = LColorPool.get().getColor(1f, 1f, 1f,
-				this.screen.getTransitionAlpha());
+		LColor color = LColorPool.get().getColor(1f, 1f, 1f, this.screen.getTransitionAlpha());
 		if (this.texture == null) {
-			batch.drawString(this.font, this.Text, this.position, color, 0f,
-					Vector2f.STATIC_ZERO, (this.TextSize / this.fontSize));
+			batch.drawString(this.font, this.Text, this.position, color, 0f, Vector2f.STATIC_ZERO,
+					(this.TextSize / this.fontSize));
 		} else {
-			batch.draw(this.texture, this.position, null, color, 0f,
-					Vector2f.STATIC_ZERO, 1f, SpriteEffects.None);
+			batch.draw(this.texture, this.position, null, color, 0f, Vector2f.STATIC_ZERO, 1f, SpriteEffects.None);
 		}
 	}
 
@@ -77,15 +75,12 @@ public class MenuEntry {
 
 	public final RectBox getGetMenuEntryHitBounds() {
 		if (this.texture == null) {
-			Vector2f vector = new Vector2f(
-					(this.font.stringWidth(this.Text) * this.TextSize)
-							/ this.fontSize, (font.getSize() * this.TextSize)
-							/ this.fontSize);
+			Vector2f vector = new Vector2f((this.font.stringWidth(this.Text) * this.TextSize) / this.fontSize,
+					(font.getSize() * this.TextSize) / this.fontSize);
 			rect.setBounds(this.position.x, this.position.y, vector.x, vector.y);
 			return rect;
 		}
-		rect.setBounds(this.position.x,this.position.y,
-				this.texture.getWidth(), this.texture.getHeight());
+		rect.setBounds(this.position.x, this.position.y, this.texture.getWidth(), this.texture.getHeight());
 		return rect;
 	}
 }

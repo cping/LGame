@@ -5,7 +5,7 @@ import loon.geom.Vector2f;
 
 //动画用类
 public class Animation {
-	
+
 	private int frameCount;
 	private float frameTime;
 	private boolean isLooping;
@@ -20,8 +20,7 @@ public class Animation {
 		this.originFactor = new Vector2f(0.5f);
 	}
 
-	public Animation(LTexture texture, int frameCount, float frameTime,
-			boolean isLooping, Vector2f originFactor) {
+	public Animation(LTexture texture, int frameCount, float frameTime, boolean isLooping, Vector2f originFactor) {
 		this(texture, frameTime, isLooping);
 		this.frameCount = frameCount;
 		this.originFactor = originFactor;

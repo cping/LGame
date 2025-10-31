@@ -13,8 +13,7 @@ public class PauseMenuEntity extends MenuEntity {
 
 	@Override
 	public void Draw(SpriteBatch batch, GameTime gameTime) {
-		super.getScreenManager().FadeBackBufferToBlack(batch,
-				(super.getTransitionAlpha() * 2f) / 3f);
+		super.getScreenManager().FadeBackBufferToBlack(batch, (super.getTransitionAlpha() * 2f) / 3f);
 		super.Draw(batch, gameTime);
 	}
 
@@ -29,10 +28,8 @@ public class PauseMenuEntity extends MenuEntity {
 			num = 2;
 		}
 		super.titleTexture = super.getScreenManager().getGameContent().tutorial[num];
-		MenuEntry item = new MenuEntry(this, "Resume Game", new Vector2f(252f,
-				240f));
-		MenuEntry entry2 = new MenuEntry(this, "Main Menu", new Vector2f(276f,
-				282f));
+		MenuEntry item = new MenuEntry(this, "Resume Game", new Vector2f(252f, 240f));
+		MenuEntry entry2 = new MenuEntry(this, "Main Menu", new Vector2f(276f, 282f));
 
 		item.Selected = new DrawableEvent() {
 
@@ -55,7 +52,7 @@ public class PauseMenuEntity extends MenuEntity {
 	}
 
 	private void QuitGameMenuEntrySelected() {
-		LoadingEntity.Load(super.getScreenManager(), false, new GameEntity[] {
-				new BackgroundEntity(), new MainMenuEntity() });
+		LoadingEntity.Load(super.getScreenManager(), false,
+				new GameEntity[] { new BackgroundEntity(), new MainMenuEntity() });
 	}
 }

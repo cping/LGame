@@ -1089,30 +1089,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		}
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x1);
-		expandVertices.setVertice(idx++, y1);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x1);
+		expandVertices.set(idx++, y1);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x2);
-		expandVertices.setVertice(idx++, y2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x2);
+		expandVertices.set(idx++, y2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x3);
-		expandVertices.setVertice(idx++, y3);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x3);
+		expandVertices.set(idx++, y3);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x4);
-		expandVertices.setVertice(idx++, y4);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x4);
+		expandVertices.set(idx++, y4);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1231,30 +1233,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		}
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1296,30 +1300,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		final float fy2 = y + srcHeight;
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1369,30 +1375,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		final float v2 = texture.heightRatio();
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1448,30 +1456,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		final float v2 = region.heightRatio;
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, fy2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, fy2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, fx2);
-		expandVertices.setVertice(idx++, y);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, fx2);
+		expandVertices.set(idx++, y);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1559,30 +1569,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		final float v2 = region.heightRatio;
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x1);
-		expandVertices.setVertice(idx++, y1);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x1);
+		expandVertices.set(idx++, y1);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x2);
-		expandVertices.setVertice(idx++, y2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x2);
+		expandVertices.set(idx++, y2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x3);
-		expandVertices.setVertice(idx++, y3);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x3);
+		expandVertices.set(idx++, y3);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x4);
-		expandVertices.setVertice(idx++, y4);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x4);
+		expandVertices.set(idx++, y4);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1612,30 +1624,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		final float v2 = texture.heightRatio();
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x1);
-		expandVertices.setVertice(idx++, y1);
-		expandVertices.setVertice(idx++, c1);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x1);
+		expandVertices.set(idx++, y1);
+		expandVertices.set(idx++, c1);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v);
 
-		expandVertices.setVertice(idx++, x2);
-		expandVertices.setVertice(idx++, y2);
-		expandVertices.setVertice(idx++, c2);
-		expandVertices.setVertice(idx++, u);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x2);
+		expandVertices.set(idx++, y2);
+		expandVertices.set(idx++, c2);
+		expandVertices.set(idx++, u);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x3);
-		expandVertices.setVertice(idx++, y3);
-		expandVertices.setVertice(idx++, c3);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x3);
+		expandVertices.set(idx++, y3);
+		expandVertices.set(idx++, c3);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x4);
-		expandVertices.setVertice(idx++, y4);
-		expandVertices.setVertice(idx++, c4);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v);
+		expandVertices.set(idx++, x4);
+		expandVertices.set(idx++, y4);
+		expandVertices.set(idx++, c4);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v);
 
 		this.idx = idx;
 	}
@@ -1739,30 +1753,32 @@ public class SpriteBatch extends BatchEx<SpriteBatch> {
 		}
 
 		int idx = this.idx;
+		
+		expandVertices.expand(idx);
 
-		expandVertices.setVertice(idx++, x1);
-		expandVertices.setVertice(idx++, y1);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u1);
-		expandVertices.setVertice(idx++, v1);
+		expandVertices.set(idx++, x1);
+		expandVertices.set(idx++, y1);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u1);
+		expandVertices.set(idx++, v1);
 
-		expandVertices.setVertice(idx++, x2);
-		expandVertices.setVertice(idx++, y2);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u2);
-		expandVertices.setVertice(idx++, v2);
+		expandVertices.set(idx++, x2);
+		expandVertices.set(idx++, y2);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u2);
+		expandVertices.set(idx++, v2);
 
-		expandVertices.setVertice(idx++, x3);
-		expandVertices.setVertice(idx++, y3);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u3);
-		expandVertices.setVertice(idx++, v3);
+		expandVertices.set(idx++, x3);
+		expandVertices.set(idx++, y3);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u3);
+		expandVertices.set(idx++, v3);
 
-		expandVertices.setVertice(idx++, x4);
-		expandVertices.setVertice(idx++, y4);
-		expandVertices.setVertice(idx++, color);
-		expandVertices.setVertice(idx++, u4);
-		expandVertices.setVertice(idx++, v4);
+		expandVertices.set(idx++, x4);
+		expandVertices.set(idx++, y4);
+		expandVertices.set(idx++, color);
+		expandVertices.set(idx++, u4);
+		expandVertices.set(idx++, v4);
 
 		this.idx = idx;
 	}

@@ -27,25 +27,20 @@ public class GameplayEntity extends GameEntity {
 		this.level.Draw(batch, gameTime);
 		this.DrawScore(batch, gameTime);
 		if (super.getTransitionPosition() > 0f) {
-			super.getScreenManager().FadeBackBufferToBlack(batch,
-					1f - super.getTransitionAlpha());
+			super.getScreenManager().FadeBackBufferToBlack(batch, 1f - super.getTransitionAlpha());
 		}
 	}
 
 	private void DrawScore(SpriteBatch spriteBatch, GameTime gameTime) {
 		float num = gameTime.getElapsedGameTime() * 50f;
 		if (this.tempScore < this.getScore()) {
-			this.tempScore = MathUtils.min(this.getScore(), this.tempScore
-					+ num);
+			this.tempScore = MathUtils.min(this.getScore(), this.tempScore + num);
 		} else if (this.tempScore > this.getScore()) {
-			this.tempScore = MathUtils.max(this.getScore(), this.tempScore
-					- num);
+			this.tempScore = MathUtils.max(this.getScore(), this.tempScore - num);
 		}
-		spriteBatch.drawString(
-				this.gameContent.gameFont,
-				StringUtils.concat(new Object[] { "level: ", levelIndex, " / ",
-						15 }), new Vector2f(192f, 0f), LColor.white, 0f,
-				Vector2f.STATIC_ZERO, (float) 0.75f);
+		spriteBatch.drawString(this.gameContent.gameFont,
+				StringUtils.concat(new Object[] { "level: ", levelIndex, " / ", 15 }), new Vector2f(192f, 0f),
+				LColor.white, 0f, Vector2f.STATIC_ZERO, (float) 0.75f);
 	}
 
 	@Override
@@ -78,8 +73,7 @@ public class GameplayEntity extends GameEntity {
 		if (this.level.getIsLevelUp()) {
 			if (levelIndex == 15) {
 				LoadingEntity.Load(super.getScreenManager(), false,
-						new GameEntity[] { new BackgroundEntity(),
-								new MainMenuEntity() });
+						new GameEntity[] { new BackgroundEntity(), new MainMenuEntity() });
 			} else {
 				this.LoadNextLevel();
 				super.getScreenManager().AddScreen(new PauseMenuEntity());
@@ -102,8 +96,7 @@ public class GameplayEntity extends GameEntity {
 				this.m = new MessageBoxEntity(this.gameContent.levelUp, null);
 				MainGame.ScoreData.Level = levelIndex;
 				if (levelIndex == 15) {
-					this.m = new MessageBoxEntity(this.gameContent.gameOver,
-							null);
+					this.m = new MessageBoxEntity(this.gameContent.gameOver, null);
 					MainGame.ScoreData.Level = 0;
 				}
 

@@ -32,39 +32,31 @@ public final class AnimationPlayer {
 		}
 	}
 
-
-	public void Draw(GameTime gameTime, SpriteBatch spriteBatch,
-			Vector2f position, LColor colour, float rotation,
+	public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2f position, LColor colour, float rotation,
 			SpriteEffects spriteEffects) {
 		if (this.getAnimation() == null) {
-			throw new UnsupportedOperationException(
-					"No animation is currently playing.");
+			throw new UnsupportedOperationException("No animation is currently playing.");
 		}
 		this.time += gameTime.getElapsedGameTime();
 		while (this.time > this.getAnimation().getFrameTime()) {
 			this.time -= this.getAnimation().getFrameTime();
 			if (this.getAnimation().getIsLooping()) {
-				this.frameIndex = (this.frameIndex + 1)
-						% this.getAnimation().getFrameCount();
+				this.frameIndex = (this.frameIndex + 1) % this.getAnimation().getFrameCount();
 			} else {
 				this.frameIndex = MathUtils.min((int) (this.frameIndex + 1),
 						(int) (this.getAnimation().getFrameCount() - 1));
 			}
 		}
-		rectangle.setBounds(this.getFrameIndex()
-				* this.getAnimation().getFrameWidth(), 0, this.getAnimation()
-				.getFrameWidth(), this.getAnimation().getFrameHeight());
-		spriteBatch.draw(this.getAnimation().getTexture(), position, rectangle,
-				colour, rotation, new Vector2f(this.getAnimation()
-						.getFrameWidth(), this.getAnimation().getFrameHeight())
-						.mul(this.getAnimation().getOriginFactor()), 1f,
-				spriteEffects);
+		rectangle.setBounds(this.getFrameIndex() * this.getAnimation().getFrameWidth(), 0,
+				this.getAnimation().getFrameWidth(), this.getAnimation().getFrameHeight());
+		spriteBatch.draw(this.getAnimation().getTexture(), position, rectangle, colour, rotation,
+				new Vector2f(this.getAnimation().getFrameWidth(), this.getAnimation().getFrameHeight())
+						.mul(this.getAnimation().getOriginFactor()),
+				1f, spriteEffects);
 	}
 
-	public void Draw(GameTime gameTime, SpriteBatch spriteBatch,
-			Vector2f position) {
-		this.Draw(gameTime, spriteBatch, position, LColor.white, 0f,
-				SpriteEffects.None);
+	public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Vector2f position) {
+		this.Draw(gameTime, spriteBatch, position, LColor.white, 0f, SpriteEffects.None);
 	}
 
 	public AnimationPlayer cpy() {

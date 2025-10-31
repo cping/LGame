@@ -3,13 +3,13 @@ package org.test.rtsgame;
 import java.util.ArrayList;
 
 public class Levels {
-	
+
 	public static class LevelDetails {
 		public ArrayList<Integer> ArmyNumber;
 		public int GameMode;
 
 	}
-	
+
 	public static LevelDetails Load(int index) {
 		LevelDetails lev = new LevelDetails();
 		lev.ArmyNumber = new ArrayList<Integer>();

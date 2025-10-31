@@ -25,8 +25,7 @@ public class Bullet {
 
 	public float totalDistance;
 
-	public Bullet(LTexture texture, RoleRank rank, Vector2f position,
-			float direction) {
+	public Bullet(LTexture texture, RoleRank rank, Vector2f position, float direction) {
 		this.position = position.cpy();
 		this.direction = direction;
 		this.texture = texture;
@@ -34,23 +33,15 @@ public class Bullet {
 	}
 
 	public final void Draw(SpriteBatch spriteBatch) {
-		spriteBatch
-				.draw(this.texture,
-						this.position,
-						null,
-						LColor.white,
-						MathUtils.toDegrees(this.direction + this.rotation),
-						15f,
-						15f,
-						1f,
-						(Math.abs(this.direction) > 1.570796f) ? SpriteEffects.FlipVertically
-								: SpriteEffects.None);
+		spriteBatch.draw(this.texture, this.position, null, LColor.white,
+				MathUtils.toDegrees(this.direction + this.rotation), 15f, 15f, 1f,
+				(Math.abs(this.direction) > 1.570796f) ? SpriteEffects.FlipVertically : SpriteEffects.None);
 	}
 
 	public final void Update(GameTime gameTime) {
-		this.position.addSelf(((new Vector2f(MathUtils.cos(this.direction),
-				MathUtils.sin(this.direction)).mul(this.speed)).mul(gameTime
-				.getElapsedGameTime())).mul(50f));
+		this.position
+				.addSelf(((new Vector2f(MathUtils.cos(this.direction), MathUtils.sin(this.direction)).mul(this.speed))
+						.mul(gameTime.getElapsedGameTime())).mul(50f));
 		this.totalDistance += this.speed;
 		if (this.rank.equals(RoleRank.ninja)) {
 			this.rotation += 0.1745329f;
@@ -61,8 +52,7 @@ public class Bullet {
 
 	public final RectBox getBoundingRectangle() {
 		int num = 3;
-		rect.setBounds((this.position.x) - num, (this.position.y) - num,
-				2 * num, 2 * num);
+		rect.setBounds((this.position.x) - num, (this.position.y) - num, 2 * num, 2 * num);
 		return rect;
 	}
 }

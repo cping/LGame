@@ -1,7 +1,7 @@
 ﻿package org.test.crazyjumpergles.common;
 
 import loon.geom.Vector3f;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 
 public class Plane3 {
 
@@ -52,11 +52,11 @@ public class Plane3 {
 
 	private Vector3f vector1 = new Vector3f(this.a, this.b, this.c);
 
-	public final boolean intersect(Line3 l, RefObject<Float> t) {
+	public final boolean intersect(Line3 l, ObjRef<Float> t) {
 		vector1.set(a, b, c);
 		float num = Vector3f.dot(vector1, l.m);
 		if (num > 0f) {
-			t.argvalue = (Vector3f.dot(vector1, l.b) + this.d) / num;
+			t.set((Vector3f.dot(vector1, l.b) + this.d) / num);
 			return true;
 		}
 		return false;
@@ -82,15 +82,14 @@ public class Plane3 {
 
 	private Vector3f vector2 = new Vector3f(this.a, this.b, this.c);
 
-	public final boolean intersect_ray(Vector3f rorigin, Vector3f rdir,
-			RefObject<Float> t) {
+	public final boolean intersect_ray(Vector3f rorigin, Vector3f rdir, ObjRef<Float> t) {
 		vector2.set(this.a, this.b, this.c);
 		float num = Vector3f.dot(vector2, rorigin) + this.d;
 		float num2 = Vector3f.dot(vector2, rdir);
 		if (num2 == 0f) {
 			return false;
 		}
-		t.argvalue = -(num / num2);
+		t.set(-(num / num2));
 		return true;
 	}
 
@@ -111,12 +110,10 @@ public class Plane3 {
 	}
 
 	private Vector3f vector4 = new Vector3f(this.a, this.b, this.c);
-	
+
 	public final Vector3f project_point(Vector3f p) {
-		float num2 = (((this.a * p.x) + (this.b * p.y)) + (this.c * p.z))
-				+ this.d;
-		float num3 = ((this.a * this.a) + (this.b * this.b))
-				+ (this.c * this.c);
+		float num2 = (((this.a * p.x) + (this.b * p.y)) + (this.c * p.z)) + this.d;
+		float num3 = ((this.a * this.a) + (this.b * this.b)) + (this.c * this.c);
 		float num = -(num2 / num3);
 		vector4.x = p.x + (num * this.a);
 		vector4.y = p.y + (num * this.b);

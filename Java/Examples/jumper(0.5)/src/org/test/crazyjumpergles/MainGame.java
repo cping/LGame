@@ -16,7 +16,7 @@ import loon.events.GameKey;
 import loon.events.GameTouch;
 import loon.events.SysKey;
 import loon.geom.RectBox;
-import loon.utils.RefObject;
+import loon.utils.reply.ObjRef;
 import loon.utils.timer.GameTime;
 
 public class MainGame extends DrawableScreen {
@@ -433,15 +433,15 @@ public class MainGame extends DrawableScreen {
 		return LSystem.viewSize.width;
 	}
 
-	private void GetSelectLevelButtonPosition(int iLevel, RefObject<Float> rX,
-			RefObject<Float> rY) {
+	private void GetSelectLevelButtonPosition(int iLevel, ObjRef<Float> rX,
+			ObjRef<Float> rY) {
 		int num = (iLevel - 1) / 7;
 		int num2 = (iLevel - (num * 7)) - 1;
-		rX.argvalue = 48f * this.GetDeviceUnitScale();
-		rX.argvalue += ((this.GetScreenWidth() - (rX.argvalue * 2f)) / 6f)
-				* num2;
-		rY.argvalue = this.m_fMenuButtonsFirstPosY
-				+ (num * this.m_fMenuButtonsBetweenDist);
+		rX.set( 48f * this.GetDeviceUnitScale());
+		rX.add( ((this.GetScreenWidth() - (rX.get() * 2f)) / 6f)
+				* num2);
+		rY.set( this.m_fMenuButtonsFirstPosY
+				+ (num * this.m_fMenuButtonsBetweenDist));
 	}
 
 	public String GetSettingsDataFilePath() {
@@ -1019,12 +1019,12 @@ public class MainGame extends DrawableScreen {
 	public void OnLanded() {
 	}
 
-	public final void ExtractVarAndVal(String str, RefObject<String> sVar,
-			RefObject<String> sVal) {
+	public final void ExtractVarAndVal(String str, ObjRef<String> sVar,
+			ObjRef<String> sVal) {
 		int index = str.indexOf('=');
 		if (index != -1) {
-			sVar.argvalue = str.substring(0, index);
-			sVal.argvalue = str.substring(index + 1);
+			sVar.set( str.substring(0, index));
+			sVal.set( str.substring(index + 1));
 		}
 	}
 
@@ -1511,18 +1511,18 @@ public class MainGame extends DrawableScreen {
 			for (int i = 0; i < 0x15; i++) {
 				float num2 = 0F;
 				float num3 = 0F;
-				RefObject<Float> tempRef_num2 = new RefObject<Float>(num2);
-				RefObject<Float> tempRef_num3 = new RefObject<Float>(num3);
+				ObjRef<Float> tempRef_num2 = new ObjRef<Float>(num2);
+				ObjRef<Float> tempRef_num3 = new ObjRef<Float>(num3);
 				this.GetSelectLevelButtonPosition(i + 1, tempRef_num2,
 						tempRef_num3);
-				num2 = tempRef_num2.argvalue;
-				num3 = tempRef_num3.argvalue;
+				num2 = tempRef_num2.get();
+				num3 = tempRef_num3.get();
 				this.m_SelLevelItemSprite.SetPosition(num2, num3);
 				this.m_SelLevelItemSprite.SetCurrentFrame(
 						this.m_iLevelState[this.m_iCurrentWorld][i], false);
 				this.m_SelLevelItemSprite.Render(batch);
 				if (this.m_iLevelState[this.m_iCurrentWorld][i] != 5) {
-					String text = (new Integer(i + 1)).toString();
+					String text = ( String.valueOf (i + 1));
 					float textWidth = this.m_pDefaultFont.GetTextWidth(text,
 							2f * this.GetDeviceUnitScale());
 					float textHeight = this.m_pDefaultFont
@@ -2366,14 +2366,14 @@ public class MainGame extends DrawableScreen {
 					for (int i = 0; i < 0x15; i++) {
 						float num6 = 0F;
 						float num7 = 0F;
-						RefObject<Float> tempRef_num6 = new RefObject<Float>(
+						ObjRef<Float> tempRef_num6 = new ObjRef<Float>(
 								num6);
-						RefObject<Float> tempRef_num7 = new RefObject<Float>(
+						ObjRef<Float> tempRef_num7 = new ObjRef<Float>(
 								num7);
 						this.GetSelectLevelButtonPosition(i + 1, tempRef_num6,
 								tempRef_num7);
-						num6 = tempRef_num6.argvalue;
-						num7 = tempRef_num7.argvalue;
+						num6 = tempRef_num6.get();
+						num7 = tempRef_num7.get();
 						if (((num > (num6 - num3)) && (num < (num6 + num3)))
 								&& ((num2 > (num7 - num4)) && (num2 < (num7 + num4)))) {
 							if (this.m_iLevelState[this.m_iCurrentWorld][i] != 5) {

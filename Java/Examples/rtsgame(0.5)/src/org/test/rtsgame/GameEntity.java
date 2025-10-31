@@ -70,8 +70,7 @@ public abstract class GameEntity {
 		}
 	}
 
-	private boolean updateTransition(GameTime gameTime, float time,
-			int direction) {
+	private boolean updateTransition(GameTime gameTime, float time, int direction) {
 		float num;
 		if (time == 0f) {
 			num = 1f;
@@ -84,8 +83,7 @@ public abstract class GameEntity {
 				&& ((direction <= 0) || (this.transitionPosition < 1f))) {
 			return true;
 		}
-		this.transitionPosition = MathUtils.clamp(this.transitionPosition, 0f,
-				1f);
+		this.transitionPosition = MathUtils.clamp(this.transitionPosition, 0f, 1f);
 		return false;
 	}
 
