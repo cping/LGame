@@ -34,8 +34,11 @@ import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.ArrayMap;
 import loon.utils.ArrayMap.Entry;
+import loon.utils.parse.StrTokenizer;
 import loon.utils.IntArray;
+import loon.utils.PathUtils;
 import loon.utils.StrBuilder;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.TimeUtils;
 import loon.utils.xml.XMLDocument;
@@ -64,41 +67,59 @@ public final class LTexturePack implements LRelease {
 	private String fileName, name;
 
 	public LTexture getTexture(String name) {
+		return getTexture(name, 0f, 0f, 0f, 0f);
+	}
+
+	public LTexture getTexture(String name, float x, float y, float w, float h) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		return texture.copy(entry.bounds.left + x, entry.bounds.top + y, entry.bounds.right - entry.bounds.left + w,
+				entry.bounds.bottom - entry.bounds.top + h);
 	}
 
 	public LTexture getTextureAll(String name) {
+		return getTextureAll(name, 0f, 0f, 0f, 0f);
+	}
+
+	public LTexture getTextureAll(String name, float x, float y, float w, float h) {
 		this.pack();
 		PackEntry entry = getEntry(name);
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		return texture.copy(entry.bounds.left + x, entry.bounds.top + y, entry.bounds.right + w,
+				entry.bounds.bottom + h);
 	}
 
 	public LTexture getTexture(int id) {
+		return getTexture(id, 0f, 0f, 0f, 0f);
+	}
+
+	public LTexture getTexture(int id, float x, float y, float w, float h) {
 		this.pack();
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right - entry.bounds.left,
-				entry.bounds.bottom - entry.bounds.top);
+		return texture.copy(entry.bounds.left + x, entry.bounds.top + y, entry.bounds.right - entry.bounds.left + w,
+				entry.bounds.bottom - entry.bounds.top + h);
 	}
 
 	public LTexture getTextureAll(int id) {
+		return getTextureAll(id, 0f, 0f, 0f, 0f);
+	}
+
+	public LTexture getTextureAll(int id, float x, float y, float w, float h) {
 		this.pack();
 		PackEntry entry = getEntry(id);
 		if (entry == null) {
 			return null;
 		}
-		return texture.copy(entry.bounds.left, entry.bounds.top, entry.bounds.right, entry.bounds.bottom);
+		return texture.copy(entry.bounds.left + x, entry.bounds.top + y, entry.bounds.right + w,
+				entry.bounds.bottom + h);
 	}
 
 	public LTexturePack() {
@@ -110,13 +131,83 @@ public final class LTexturePack implements LRelease {
 	}
 
 	public LTexturePack(String path) {
-		if (path == null || LSystem.EMPTY.equals(path)) {
+		if (StringUtils.isEmpty(path)) {
 			throw new LSysException(path + " not found !");
 		}
-		set(path);
+		final String ext = PathUtils.getExtension(path).trim().toLowerCase();
+		if ("atlas".equals(ext)) {
+			setAtlas(path);
+		} else if ("xml".equals(ext) || "pack".equals(ext)) {
+			setXML(path);
+		} else {
+			throw new LSysException("The path with the [" + ext + "] extension cannot be resolved.");
+		}
 	}
 
 	public LTexturePack(String fileName, TArray<LTexturePackClip> clips) {
+		setXML(fileName, clips);
+	}
+
+	private void setAtlas(String path) {
+		if (path == null) {
+			return;
+		}
+		final String context = BaseIO.loadText(path);
+		final StrTokenizer reader = new StrTokenizer(context, LSystem.NL + LSystem.BRANCH);
+		String result = null;
+		int count = 0;
+		int id = 0;
+		String itemName = LSystem.EMPTY;
+		String itemIndex = LSystem.EMPTY;
+		String itemFile = LSystem.EMPTY;
+		for (; reader.hasMoreTokens();) {
+			result = reader.nextToken();
+			if (!StringUtils.isEmpty(result)) {
+				if (count == 0) {
+					this.fileName = result;
+				} else {
+					final String contextValue = result.trim().toLowerCase();
+					final String[] keyValue = StringUtils.split(contextValue, LSystem.COLON);
+					if ("bounds".equals(keyValue[0])) {
+						final String[] list = StringUtils.split(keyValue[1], LSystem.COMMA);
+						final int len = list.length;
+						if (len > 3) {
+							int x = Integer.parseInt(list[0].trim());
+							int y = Integer.parseInt(list[1].trim());
+							int w = Integer.parseInt(list[2].trim());
+							int h = Integer.parseInt(list[3].trim());
+							PackEntry entry = new PackEntry(null);
+							entry.fileName = StringUtils.isEmpty(itemFile) ? fileName : itemFile;
+							entry.bounds.set(x, y, x + w, y + h);
+							entry.id = id++;
+							if (!StringUtils.isEmpty(itemName)) {
+								temps.put(itemName + itemIndex, entry);
+							} else if (!StringUtils.isEmpty(itemIndex)) {
+								temps.put(fileName + itemIndex + entry.id, entry);
+							} else {
+								temps.put(fileName + entry.id, entry);
+							}
+							itemName = itemIndex = itemFile = LSystem.EMPTY;
+						}
+					} else if ("colormask".equals(keyValue[0])) {
+						colorMask = new LColor(keyValue[1]);
+					} else if ("index".equals(keyValue[0])) {
+						itemIndex = keyValue[1];
+					} else if ("file".equals(keyValue[0])) {
+						itemFile = keyValue[1];
+					} else if (keyValue.length == 1) {
+						itemName = keyValue[0];
+					}
+				}
+				count++;
+			}
+		}
+		this.packing = false;
+		this.packed = true;
+		this.useAlpha = true;
+	}
+
+	public void setXML(String fileName, TArray<LTexturePackClip> clips) {
 		XMLElement doc = new XMLElement("pack");
 		doc.addAttribute("file", fileName);
 		for (int i = 0; i < clips.size; i++) {
@@ -132,20 +223,20 @@ public final class LTexturePack implements LRelease {
 				doc.addContents(block);
 			}
 		}
-		set(doc);
+		setXML(doc);
 	}
 
 	public LTexturePack(XMLElement pack) {
-		set(pack);
+		setXML(pack);
 	}
 
-	private void set(String path) {
+	private void setXML(String path) {
 		XMLDocument doc = XMLParser.parse(path);
 		XMLElement pack = doc.getRoot();
-		set(pack);
+		setXML(pack);
 	}
 
-	private void set(XMLElement pack) {
+	private void setXML(XMLElement pack) {
 		this.fileName = pack.getAttribute("file", null);
 		this.name = pack.getAttribute("name", fileName);
 		int r = pack.getIntAttribute("r", -1);

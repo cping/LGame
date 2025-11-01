@@ -115,7 +115,7 @@ public class PreloadAssets implements LRelease {
 	}
 
 	public PreloadAssets load(String path, String nickname) {
-		String ext = PathUtils.getExtension(path).trim().toLowerCase();
+		final String ext = PathUtils.getExtension(path).trim().toLowerCase();
 		if ("xml".equals(ext) || "tmx".equals(ext)) {
 			return xml(path, nickname, null);
 		} else if ("json".equals(ext) || "tmj".equals(ext)) {
@@ -124,7 +124,7 @@ public class PreloadAssets implements LRelease {
 			return text(path, nickname);
 		} else if ("i18n".equals(ext)) {
 			return I18N(path, nickname);
-		} else if ("pack".equals(ext)) {
+		} else if ("pack".equals(ext) || "xml".equals(ext) || "atlas".equals(ext)) {
 			return texturePack(path, nickname);
 		} else if ("fnt".equals(ext)) {
 			return bitmapFont(path, nickname);
