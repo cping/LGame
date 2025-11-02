@@ -35,6 +35,377 @@ import loon.utils.ShortArray;
  */
 public class VertexStream implements LRelease {
 
+	public enum FillStyle {
+		None, Horizontal, Vertical, R90, R180, R360,
+	}
+
+	public enum FillOrigin {
+		Top, Bottom, Left, Right, TopLeft, TopRight, BottomLeft, BottomRight
+	}
+
+	private final static RectF _TEMP = new RectF();
+
+	public static void addProgress(VertexStream vs, FillStyle style, FillOrigin origin, float angle,
+			boolean clockwise) {
+		float a = MathUtils.clamp(angle);
+		switch (style) {
+		case Horizontal:
+			fillHorizontal(vs, vs._contentRect, origin, a);
+			break;
+
+		case Vertical:
+			fillVertical(vs, vs._contentRect, origin, a);
+			break;
+
+		case R90:
+			fillRadial90(vs, vs._contentRect, origin, a, clockwise);
+			break;
+
+		case R180:
+			fillRadial180(vs, vs._contentRect, origin, a, clockwise);
+			break;
+
+		case R360:
+			fillRadial360(vs, vs._contentRect, origin, a, clockwise);
+			break;
+
+		default:
+			vs.addQuad(vs._contentRect);
+			vs.triangulateQuad(0);
+			break;
+		}
+
+	}
+
+	public static void fillRadial360(VertexStream vs, RectF vertRect, FillOrigin origin, float angle,
+			boolean clockwise) {
+		RectF rect = vertRect.cpy();
+		switch (origin) {
+		case Top:
+			if (angle < 0.5f) {
+				rect.width /= 2;
+				if (clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Left : FillOrigin.Right, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-8);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.width /= 2;
+				if (!clockwise)
+					rect.x += rect.width;
+
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Right : FillOrigin.Left, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise)
+					rect.x += rect.width;
+				else
+					rect.x -= rect.width;
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+
+		case Bottom:
+			if (angle < 0.5f) {
+				rect.width /= 2;
+				if (!clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Right : FillOrigin.Left, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-8);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.width /= 2;
+				if (clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Left : FillOrigin.Right, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise) {
+					rect.x -= rect.width;
+				} else {
+					rect.x += rect.width;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+
+		case Left:
+			if (angle < 0.5f) {
+				rect.height /= 2;
+				if (!clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Bottom : FillOrigin.Top, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-8);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.height /= 2;
+				if (clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Top : FillOrigin.Bottom, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise) {
+					rect.y -= rect.height;
+				} else {
+					rect.y += rect.height;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+
+		case Right:
+			if (angle < 0.5f) {
+				rect.height /= 2;
+				if (clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Top : FillOrigin.Bottom, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-8);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.height /= 2;
+				if (!clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial180(vs, rect, clockwise ? FillOrigin.Bottom : FillOrigin.Top, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise) {
+					rect.y += rect.height;
+				} else {
+					rect.y -= rect.height;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public static void fillRadial180(VertexStream vs, RectF vertRect, FillOrigin origin, float angle,
+			boolean clockwise) {
+		RectF rect = vertRect.cpy();
+		switch (origin) {
+		case Top:
+			if (angle <= 0.5) {
+				rect.width /= 2;
+				if (clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.TopLeft : FillOrigin.TopRight, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-4);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.width /= 2;
+				if (!clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.TopRight : FillOrigin.TopLeft, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise) {
+					rect.x += rect.width;
+				} else {
+					rect.x -= rect.width;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+		case Bottom:
+			if (angle <= 0.5f) {
+				rect.width /= 2;
+				if (!clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.BottomRight : FillOrigin.BottomLeft, angle / 0.5f,
+						clockwise);
+				Vector2f vec = vs.getPos(-4);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.width /= 2;
+				if (clockwise) {
+					rect.x += rect.width;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.BottomLeft : FillOrigin.BottomRight,
+						(angle - 0.5f) / 0.5f, clockwise);
+
+				if (clockwise) {
+					rect.x -= rect.width;
+				} else {
+					rect.x += rect.width;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+		case Left:
+			if (angle <= 0.5f) {
+				rect.height /= 2;
+				if (!clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.BottomLeft : FillOrigin.TopLeft, angle / 0.5f, clockwise);
+				Vector2f vec = vs.getPos(-4);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.height /= 2;
+				if (clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.TopLeft : FillOrigin.BottomLeft, (angle - 0.5f) / 0.5f,
+						clockwise);
+
+				if (clockwise) {
+					rect.y -= rect.height;
+				} else {
+					rect.y += rect.height;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+		case Right:
+			if (angle <= 0.5) {
+				rect.height /= 2;
+				if (clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.TopRight : FillOrigin.BottomRight, angle / 0.5f,
+						clockwise);
+				Vector2f vec = vs.getPos(-4);
+				vs.addQuad(_TEMP.set(vec.x, vec.y, 0, 0));
+				vs.triangulateQuad(-4);
+			} else {
+				rect.height /= 2;
+				if (!clockwise) {
+					rect.y += rect.height;
+				}
+				fillRadial90(vs, rect, clockwise ? FillOrigin.BottomRight : FillOrigin.TopRight, (angle - 0.5f) / 0.5f,
+						clockwise);
+				if (clockwise) {
+					rect.y += rect.height;
+				} else {
+					rect.y -= rect.height;
+				}
+				vs.addQuad(rect);
+				vs.triangulateQuad(-4);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	public static void fillRadial90(VertexStream vs, RectF vertRect, FillOrigin origin, float angle,
+			boolean clockwise) {
+		boolean flipX = origin == FillOrigin.TopRight || origin == FillOrigin.BottomRight;
+		boolean flipY = origin == FillOrigin.BottomLeft || origin == FillOrigin.BottomRight;
+		if (flipX != flipY) {
+			clockwise = !clockwise;
+		}
+		float ratio = clockwise ? angle : (1f - angle);
+		float tan = MathUtils.tan(MathUtils.PI * 0.5f * ratio);
+		boolean thresold = false;
+		if (ratio != 1f) {
+			thresold = (vertRect.height / vertRect.width - tan) > 0;
+		}
+		if (!clockwise) {
+			thresold = !thresold;
+		}
+		float x = vertRect.x + (ratio == 0f ? Float.MAX_VALUE : (vertRect.height / tan));
+		float y = vertRect.y + (ratio == 1f ? Float.MAX_VALUE : (vertRect.width * tan));
+		float x2 = x;
+		float y2 = y;
+		if (flipX) {
+			x2 = vertRect.width - x;
+		}
+		if (flipY) {
+			y2 = vertRect.height - y;
+		}
+		float xMin = flipX ? (vertRect.width - vertRect.x) : vertRect.x;
+		float yMin = flipY ? (vertRect.height - vertRect.y) : vertRect.y;
+		float xMax = flipX ? -vertRect.x : vertRect.getRight();
+		float yMax = flipY ? -vertRect.y : vertRect.getBottom();
+
+		float offsetX = flipX ? vertRect.x * 2f : 0f;
+		float offsetY = flipY ? vertRect.y * 2f : 0f;
+
+		vs.addVert(xMin + offsetX, yMin + offsetY);
+
+		if (clockwise)
+			vs.addVert(xMax + offsetX, yMin + offsetY);
+
+		if (y > vertRect.getBottom()) {
+			if (thresold) {
+				vs.addVert(x2 + offsetX, yMax + offsetY);
+			} else {
+				vs.addVert(xMax + offsetX, yMax + offsetY);
+			}
+		} else {
+			vs.addVert(xMax + offsetX, y2 + offsetY);
+		}
+
+		if (x > vertRect.getRight()) {
+			if (thresold) {
+				vs.addVert(xMax + offsetX, y2 + offsetY);
+			} else {
+				vs.addVert(xMax + offsetX, yMax + offsetY);
+			}
+		} else {
+			vs.addVert(x2 + offsetX, yMax + offsetY);
+		}
+		if (!clockwise) {
+			vs.addVert(xMin + offsetX, yMax + offsetY);
+		}
+		if (flipX == flipY) {
+			vs.addTriangle((short) 0, (short) 1, (short) 2);
+			vs.addTriangle((short) 0, (short) 2, (short) 3);
+		} else {
+			vs.addTriangle((short) 2, (short) 1, (short) 0);
+			vs.addTriangle((short) 3, (short) 2, (short) 0);
+		}
+	}
+
+	public static void fillVertical(VertexStream vs, RectF vertRect, FillOrigin origin, float angle) {
+		RectF rect = vertRect.cpy();
+		float a = rect.height * angle;
+		if (origin == FillOrigin.Right || origin == FillOrigin.Bottom) {
+			rect.y += (rect.height - a);
+		}
+		rect.height = a;
+		vs.addQuad(rect);
+		vs.triangulateQuad(0);
+	}
+
+	public static void fillHorizontal(VertexStream vs, RectF vertRect, FillOrigin origin, float angle) {
+		RectF rect = vertRect.cpy();
+		float a = rect.width * angle;
+		if (origin == FillOrigin.Right || origin == FillOrigin.Bottom) {
+			rect.x += (rect.width - a);
+		}
+		rect.width = a;
+		vs.addQuad(rect);
+		vs.triangulateQuad(0);
+	}
+
 	public final static void addTile(VertexStream vs, boolean repeatX, boolean repeatY) {
 		LTexture tex = vs._curTex;
 		createTile(vs, vs._contentRect, vs._uvRect, tex.getWidth(), tex.getHeight(), repeatX, repeatY);
@@ -319,6 +690,10 @@ public class VertexStream implements LRelease {
 		this._indices.ensureCapacity(ip);
 	}
 
+	public void addQuad(RectF rect) {
+		addQuad(rect, _color, null);
+	}
+
 	public void addQuad(RectF rect, LColor color, RectF uvRect) {
 		if (uvRect != null) {
 			this.addVert(rect.x, rect.y, color, uvRect.x, uvRect.y);
@@ -410,7 +785,7 @@ public class VertexStream implements LRelease {
 			index = this._vindex / ADDED_VERTEX_COUNT + index;
 		}
 		index *= ADDED_VERTEX_COUNT;
-		return _tempPos.set(this._vertices.getVertices(index), this._vertices.getVertices(index + 1));
+		return _tempPos.set(this._vertices.get(index), this._vertices.get(index + 1));
 	}
 
 	public int getVertIndexCount() {

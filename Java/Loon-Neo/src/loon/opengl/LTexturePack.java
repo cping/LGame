@@ -292,7 +292,8 @@ public final class LTexturePack implements LRelease {
 				} else {
 					final String contextValue = result.trim().toLowerCase();
 					final String[] keyValue = StringUtils.split(contextValue, LSystem.COLON);
-					if ("bounds".equals(keyValue[0])) {
+					final int size = keyValue.length;
+					if (size > 1 && "bounds".equals(keyValue[0])) {
 						final String[] list = StringUtils.split(keyValue[1], LSystem.COMMA);
 						final int len = list.length;
 						if (len > 3) {
@@ -313,13 +314,13 @@ public final class LTexturePack implements LRelease {
 							}
 							itemName = itemIndex = itemFile = LSystem.EMPTY;
 						}
-					} else if ("colormask".equals(keyValue[0])) {
+					} else if (size > 1 && "colormask".equals(keyValue[0])) {
 						_colorMask = new LColor(keyValue[1]);
-					} else if ("index".equals(keyValue[0])) {
+					} else if (size > 1 && "index".equals(keyValue[0])) {
 						itemIndex = keyValue[1];
-					} else if ("file".equals(keyValue[0])) {
+					} else if (size > 1 && "file".equals(keyValue[0])) {
 						itemFile = keyValue[1];
-					} else if (keyValue.length == 1) {
+					} else if (size == 1) {
 						itemName = keyValue[0];
 					}
 				}

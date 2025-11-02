@@ -31,7 +31,11 @@ public class TextureShapeTest extends Stage {
 
 		LTextureShape s = new LTextureShape();
 		s.setTexture(LTextures.loadTexture("back1.png"));
-		s.addRoundedRect(45, 45, 300, 300, 32);
+		// 清空已经注入的纹理顶点构建数据
+		// s.clearVertexStream();
+		// s.addRoundedRect(45, 45, 300, 300, 32);
+		//将纹理视为圆形展示，显示位置60,20,大小200x200,显示范围为圆形时的260度
+		s.addCircleProgress(60, 20, 200, 200, 260);
 		drawable((g, x, y) -> {
 			s.begin();
 			s.end();

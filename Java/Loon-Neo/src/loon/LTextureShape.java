@@ -35,6 +35,8 @@ import loon.opengl.ShaderSource;
 import loon.opengl.VertexAttribute;
 import loon.opengl.Mesh.VertexDataType;
 import loon.opengl.VertexAttributes.Usage;
+import loon.opengl.VertexStream.FillOrigin;
+import loon.opengl.VertexStream.FillStyle;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.opengl.VertexStream;
@@ -230,6 +232,22 @@ public class LTextureShape implements LRelease {
 	public void addCircle(float x, float y, float w, float h) {
 		_vertexStream.setContextRect(x, y, w, h);
 		VertexStream.addCircle(_vertexStream);
+		_dirty = true;
+	}
+
+	public void addCircleProgress(float x, float y, float w, float h, float angle) {
+		addCircleProgress(x, y, w, h, FillStyle.R360, angle);
+	}
+
+	public void addCircleProgress(float x, float y, float w, float h, FillStyle style, float angle) {
+		addCircleProgress(x, y, w, h, style, FillOrigin.Top, angle, true);
+	}
+
+	public void addCircleProgress(float x, float y, float w, float h, FillStyle style, FillOrigin origin, float angle,
+			boolean clockwise) {
+		final float rand = angle / 360;
+		_vertexStream.setContextRect(x, y, w, h);
+		VertexStream.addProgress(_vertexStream, style, origin, rand, clockwise);
 		_dirty = true;
 	}
 
