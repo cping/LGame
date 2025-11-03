@@ -37,6 +37,20 @@ import loon.utils.TArray;
 
 public final class Mesh implements LRelease {
 
+	public final static Mesh create(boolean isStatic, int size) {
+		return new Mesh(VertexDataType.VertexArray, isStatic, size * 4, size * 6,
+				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+	}
+
+	public final static Mesh createTriangle(boolean isStatic, final int size, final int trisize) {
+		return new Mesh(VertexDataType.VertexArray, false, size, trisize * 3,
+				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
+				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
+				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+	}
+
 	private static void addManagedMesh(Mesh mesh) {
 		LSystem.addMesh(mesh);
 	}

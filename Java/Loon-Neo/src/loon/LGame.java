@@ -37,9 +37,6 @@ import loon.opengl.LSTRFont;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderProgram;
 import loon.opengl.TextureSource;
-import loon.opengl.VertexAttribute;
-import loon.opengl.Mesh.VertexDataType;
-import loon.opengl.VertexAttributes.Usage;
 import loon.utils.IntMap;
 import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
@@ -132,7 +129,7 @@ public abstract class LGame implements LRelease {
 	private final static int DEF_TEXTURE_CACHE_SIZE = 16;
 
 	private final static int DEF_OTHER_CACHE_SIZE = 8;
-	
+
 	protected static LGame _base = null;
 
 	protected static Platform _platform = null;
@@ -695,10 +692,7 @@ public abstract class LGame implements LRelease {
 			}
 			_texture_mesh_pools.remove(name);
 			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				mesh = Mesh.create(false, size);
 				LSystem.resetIndices(size, mesh);
 				_texture_mesh_pools.put(name, mesh);
 			}
@@ -717,10 +711,7 @@ public abstract class LGame implements LRelease {
 		synchronized (_texture_mesh_pools) {
 			Mesh mesh = _texture_mesh_pools.get(name);
 			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				mesh = Mesh.create(false, size);
 				LSystem.resetIndices(size, mesh);
 				_texture_mesh_pools.put(name, mesh);
 			}
@@ -743,10 +734,7 @@ public abstract class LGame implements LRelease {
 		synchronized (_texture_mesh_pools) {
 			Mesh mesh = _texture_mesh_pools.get(name);
 			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size, trisize * 3,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				mesh = Mesh.createTriangle(false, size, trisize);
 				_texture_mesh_pools.put(name, mesh);
 			}
 			return mesh;
@@ -772,10 +760,7 @@ public abstract class LGame implements LRelease {
 			}
 			_texture_mesh_pools.remove(name);
 			if (mesh == null || mesh.isClosed()) {
-				mesh = new Mesh(VertexDataType.VertexArray, false, size, trisize * 3,
-						new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-						new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-						new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+				mesh = Mesh.createTriangle(false, size, trisize);
 				_texture_mesh_pools.put(name, mesh);
 			}
 		}

@@ -79,6 +79,27 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 
 	public static final int M33 = 15;
 
+	public static boolean checkEqual(Matrix4 a, Matrix4 b) {
+		if (a == b) {
+			return true;
+		}
+		return (a.val[Matrix4.M00] == b.val[Matrix4.M00] && a.val[Matrix4.M10] == b.val[Matrix4.M10]
+				&& a.val[Matrix4.M01] == b.val[Matrix4.M01] && a.val[Matrix4.M11] == b.val[Matrix4.M11]
+				&& a.val[Matrix4.M03] == b.val[Matrix4.M03] && a.val[Matrix4.M13] == b.val[Matrix4.M13]);
+	}
+
+	public static boolean checkEqual(Matrix4 matrix, Affine2f affine) {
+		final float[] val = matrix.getValues();
+		return (val[Matrix4.M00] == affine.m00 && val[Matrix4.M10] == affine.m10 && val[Matrix4.M01] == affine.m01
+				&& val[Matrix4.M11] == affine.m11 && val[Matrix4.M03] == affine.tx && val[Matrix4.M13] == affine.ty);
+	}
+
+	public static boolean checkIdt(Matrix4 matrix) {
+		final float[] val = matrix.getValues();
+		return (val[Matrix4.M00] == 1 && val[Matrix4.M10] == 0 && val[Matrix4.M01] == 0 && val[Matrix4.M11] == 1
+				&& val[Matrix4.M03] == 0 && val[Matrix4.M13] == 0);
+	}
+
 	public final static Matrix4 createPerspectiveProjection(float x, float y, float width, float height,
 			float stageWidth, float stageHeight, Vector3f cameraPos) {
 		return createPerspectiveProjection(x, y, width, height, stageWidth, stageHeight, cameraPos, new Matrix4());

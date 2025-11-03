@@ -26,15 +26,13 @@ import java.nio.ShortBuffer;
 import loon.canvas.LColor;
 import loon.geom.Matrix4;
 import loon.geom.RectF;
+import loon.geom.Shape;
 import loon.opengl.BlendMethod;
 import loon.opengl.BlendState;
 import loon.opengl.GL20;
 import loon.opengl.Mesh;
 import loon.opengl.ShaderProgram;
 import loon.opengl.ShaderSource;
-import loon.opengl.VertexAttribute;
-import loon.opengl.Mesh.VertexDataType;
-import loon.opengl.VertexAttributes.Usage;
 import loon.opengl.VertexStream.FillOrigin;
 import loon.opengl.VertexStream.FillStyle;
 import loon.utils.GLUtils;
@@ -97,10 +95,7 @@ public class LTextureShape implements LRelease {
 		this._source = src;
 		this._shader = defaultShader;
 		this._vertexStream = new VertexStream(size, size / 2);
-		this._mesh = new Mesh(VertexDataType.VertexArray, false, size * 4, size * 6,
-				new VertexAttribute(Usage.Position, 2, ShaderProgram.POSITION_ATTRIBUTE),
-				new VertexAttribute(Usage.ColorPacked, 4, ShaderProgram.COLOR_ATTRIBUTE),
-				new VertexAttribute(Usage.TextureCoordinates, 2, ShaderProgram.TEXCOORD_ATTRIBUTE + "0"));
+		this._mesh = Mesh.create(false, size);
 		this._dirty = true;
 	}
 
@@ -255,6 +250,71 @@ public class LTextureShape implements LRelease {
 			float rotation, float lineWidth, int sides) {
 		_vertexStream.setContextRect(x, y, w, h);
 		VertexStream.addPolygon(_vertexStream, fillColor, lineColor, centerColor, rotation, lineWidth, sides);
+		_dirty = true;
+	}
+
+	public void addPolygon(Shape shape) {
+		final LTexture tex = _vertexStream.getTexture();
+		if (tex != null) {
+			addPolygon(shape, shape.getX(), shape.getY(), tex.getWidth(), tex.getHeight(), false, false);
+		} else {
+			addPolygon(shape, shape.getX(), shape.getY(), shape.getWidth(), shape.getHeight(), false, false);
+		}
+	}
+
+	public void addPolygon(Shape shape, float x, float y, float w, float h) {
+		addPolygon(shape, x, y, w, h, false, false);
+	}
+
+	public void addPolygon(Shape shape, float x, float y, float w, float h, boolean flipX, boolean flipY) {
+		final float[] vertices = shape.getPoints();
+		addPolygon(vertices, x, y, w, h, flipX, flipY);
+	}
+
+	public void addPolygon(float[] vertices, float x, float y, float w, float h, boolean flipX, boolean flipY) {
+		final int length = vertices.length;
+		if (length == 0) {
+			return;
+		}
+		if (length % 2 != 0) {
+			throw new LSysException("Polygons must have a pair number of vertices.");
+		}
+		_vertexStream.setContextRect(x, y, w, h);
+		if (length == 2) {
+			addVert(vertices[0], vertices[1]);
+			addVert(vertices[0] + 1, vertices[1] + 1);
+		} else if (length == 6) {
+			float firstX = vertices[0];
+			float firstY = vertices[1];
+			for (int i = 0; i < length; i += 2) {
+				float x1 = vertices[i];
+				float y1 = vertices[i + 1];
+				float x2;
+				float y2;
+				if (i + 2 >= length) {
+					x2 = firstX;
+					y2 = firstY;
+				} else {
+					x2 = vertices[i + 2];
+					y2 = vertices[i + 3];
+				}
+				addVert(x1, y1);
+				addVert(x2, y2);
+			}
+		} else {
+			for (int i = 0; i < length; i += 2) {
+				float x1 = vertices[i];
+				float y1 = vertices[i + 1];
+				addVert(x1, y1);
+			}
+		}
+		if (flipX == flipY) {
+			_vertexStream.addTriangle((short) 0, (short) 1, (short) 2);
+			_vertexStream.addTriangle((short) 0, (short) 2, (short) 3);
+		} else {
+			_vertexStream.addTriangle((short) 2, (short) 1, (short) 0);
+			_vertexStream.addTriangle((short) 3, (short) 2, (short) 0);
+		}
 		_dirty = true;
 	}
 
