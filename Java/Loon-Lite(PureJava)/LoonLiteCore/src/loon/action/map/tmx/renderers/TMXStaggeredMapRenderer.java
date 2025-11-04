@@ -141,7 +141,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 						TMXMapTile mapTile = tileLayer.getTile(x, y);
 
-						if (mapTile.getTileSetID() == -1) {
+						if (mapTile == null || mapTile.getTileSetID() == -1) {
 							continue;
 						}
 
