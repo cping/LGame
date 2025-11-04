@@ -30,6 +30,7 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.canvas.LColor;
+import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 
@@ -42,15 +43,14 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		super(map);
 	}
 
-	@Override
 	protected void renderImageLayer(GLEx g, TMXImageLayer imageLayer) {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
 		LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
-		g.draw(originalTexture, imageLayer.getRenderOffsetX(), imageLayer.getRenderOffsetY(),
-				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
-				imageLayer.getTileLayerColor(baseColor));
+		g.draw(originalTexture, imageLayer.getRenderOffsetX() + _objectLocation.x,
+				imageLayer.getRenderOffsetY() + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
+				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
 	@Override
@@ -60,12 +60,14 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 				return;
 			}
 
-			final int screenWidth = LSystem.viewSize.getWidth();
-			final int screenHeight = LSystem.viewSize.getHeight();
-			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
-			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
-			final int windowWidth = MathUtils.ifloor(screenWidth / map.getTileWidth() / scaleX);
-			final int windowHeight = MathUtils.ifloor(screenHeight / map.getTileHeight() / scaleY);
+			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
+			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
+			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
+			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());
+			final int ty = MathUtils.iceil((getRenderY() + _objectLocation.y) / map.getTileHeight());
+			final int windowWidth = MathUtils.iceil(screenWidth / map.getTileWidth() / scaleX) + 1;
+			final int windowHeight = MathUtils.iceil(screenHeight / map.getTileHeight() / scaleY) + 1;
 
 			final int layerWidth = tileLayer.getWidth();
 			final int layerHeight = tileLayer.getHeight();
@@ -82,7 +84,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			LTextureBatch texBatch = current.getTextureBatch();
 
 			boolean isCached = false;
-			
+
 			final LColor drawColor = tileLayer.getTileLayerColor(baseColor);
 
 			try {
@@ -111,15 +113,15 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 				} else {
 					texBatch.begin();
 				}
-				
+
 				texBatch.setColor(drawColor);
 
 				for (int x = 0; x < layerWidth; x++) {
 					for (int y = 0; y < layerHeight; y++) {
-						if ((tx + x < 0) || (ty + y < 0) || (tx + x >= layerWidth) || (ty + y >= layerHeight)) {
+						if ((tx + x < 0) || (ty + y < 0)) {
 							continue;
 						}
-						if ((x >= windowWidth) || (y >= windowHeight)) {
+						if ((x - tx >= windowWidth) || (y - ty >= windowHeight)) {
 							continue;
 						}
 						TMXMapTile mapTile = tileLayer.getTile(x, y);
@@ -155,8 +157,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						float tileWidth = map.getTileWidth();
 						float tileHeight = map.getTileHeight();
 
-						float posX = (x * tileWidth + getRenderX()) * scaleX;
-						float posY = (y * tileHeight + getRenderY()) * scaleY;
+						float posX = (x * tileWidth + getRenderX() + _objectLocation.x) * scaleX;
+						float posY = (y * tileHeight + getRenderY() + _objectLocation.y) * scaleY;
 
 						float srcX = (tileSet.getMargin()
 								+ (tileSet.getTileWidth() + tileSet.getSpacing()) * tileSetCol);
@@ -187,6 +189,44 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			}
 		}
 
+	}
+
+	@Override
+	public Vector2f pixelToTileCoords(float x, float y) {
+		return pixelToTileCoords(x, y, tempLocation);
+	}
+
+	public Vector2f pixelToTileCoords(float x, float y, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		x -= _objectLocation.x;
+		y -= _objectLocation.y;
+		out.x = this.pixelToTileX(x);
+		out.y = this.pixelToTileY(y);
+		return out;
+	}
+
+	public int pixelToTileX(float pixelx) {
+		return MathUtils.floor(pixelx / map.getTileWidth());
+	}
+
+	public int pixelToTileY(float pixelY) {
+		return MathUtils.floor(pixelY / map.getTileWidth());
+	}
+
+	@Override
+	public Vector2f tileToPixelCoords(float tileX, float tileY) {
+		return tileToPixelCoords(tileX, tileY, tempLocation);
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		out.x = tileX * map.getTileWidth();
+		out.y = tileY * map.getTileHeight();
+		return out;
 	}
 
 }

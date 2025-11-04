@@ -46,7 +46,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 	private Vector2f orthoToIso(float x, float y) {
 		_mapLocation.x = (x - y) * map.getTileWidth() / 2f + _objectLocation.x;
 		_mapLocation.y = (x + y) * map.getTileHeight() / 2f + _objectLocation.y;
-		return _mapLocation.addSelf(map.getWidth() * map.getTileWidth() / 2f, 0);
+		return _mapLocation.addSelf(map.getWidth() * (map.getTileWidth() / 2f), 0);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+		g.draw(current, posX + _objectLocation.x, posY + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
@@ -72,15 +72,14 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 				return;
 			}
 
-			final int screenWidth = LSystem.viewSize.getWidth();
-			final int screenHeight = LSystem.viewSize.getHeight();
-
-			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
-			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
-			final float windowWidth = screenWidth / map.getTileWidth() * 2f;
-			final float windowHeight = screenHeight / map.getTileHeight() * 2f;
-			final float doubleWidth = tileLayer.getWidth() * 2f;
-			final float doubleHeight = tileLayer.getHeight() * 2f;
+			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
+			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
+			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
+			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());
+			final int ty = MathUtils.iceil((getRenderY() + _objectLocation.y) / map.getTileHeight());
+			final int windowWidth = MathUtils.iceil(screenWidth / map.getTileWidth() / scaleX * 2f) + 1;
+			final int windowHeight = MathUtils.iceil(screenHeight / map.getTileHeight() / scaleY * 2f) + 1;
 
 			final int layerWidth = tileLayer.getWidth();
 			final int layerHeight = tileLayer.getHeight();
@@ -131,10 +130,10 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
-						if ((tx + x < 0) || (ty + y < 0) || (tx + x >= doubleWidth) || (ty + y >= doubleHeight)) {
+						if ((tx + x < 0) || (ty + y < 0)) {
 							continue;
 						}
-						if ((tx + x >= windowWidth) || (ty + y >= windowHeight)) {
+						if ((x - tx >= windowWidth) || (y - ty >= windowHeight)) {
 							continue;
 						}
 						drawTile(tileLayer, x, y);
@@ -205,4 +204,116 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
 	}
 
+	public Vector2f pixelToGrid(float pixelX, float pixelY) {
+		return pixelToGrid(pixelX, pixelY, -1, tempLocation);
+	}
+
+	public Vector2f pixelToGrid(float pixelX, float pixelY, float offset, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		int row = MathUtils.round(out.x);
+		int col = MathUtils.round(out.y);
+		int offx = 0, offy = 0;
+		if ((MathUtils.abs(out.x - row) + MathUtils.abs(out.y - col)) > 0.5f) {
+			if (out.x < row) {
+				offx = -1;
+			} else {
+				offx = 0;
+			}
+			if (out.y < col) {
+				offy = -1;
+			} else {
+				offy = 1;
+			}
+			if (offset != -1) {
+				offx += 1;
+			}
+		}
+		out.x = row + offx;
+		out.y = col * 2 + offy;
+		return out;
+	}
+
+	public Vector2f gridToPixel(int row, int col, float offset) {
+		return gridToPixel(row, col, offset, tempLocation);
+	}
+
+	public Vector2f gridToPixel(int row, int col, float offset, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		row = MathUtils.floor(row);
+		col = MathUtils.floor(col);
+		if ((col & 1) != 0) {
+			row = (int) (row + 0.5 * offset);
+		}
+		col = (int) (col * 0.5);
+		out.x = row;
+		out.y = col;
+		return out;
+	}
+
+	@Override
+	public Vector2f pixelToTileCoords(float x, float y) {
+		return pixelToTileCoords(x, y, map.getWidth() * (map.getTileWidth() / 2f));
+	}
+
+	public Vector2f pixelToTileCoords(float x, float y, float offset) {
+		return pixelToTileCoords(x, y, offset, tempLocation);
+	}
+
+	public Vector2f pixelToTileCoords(float x, float y, Vector2f out) {
+		return pixelToTileCoords(x, y, map.getWidth() * (map.getTileWidth() / 2f), out);
+	}
+
+	public Vector2f pixelToTileCoords(float x, float y, float offset, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		x -= _objectLocation.x;
+		y -= _objectLocation.y;
+		out.x = this.pixelToTileX(x, y, offset);
+		out.y = this.pixelToTileY(y, x, offset);
+		return out;
+	}
+
+	public int pixelToTileX(float x, float y, float offset) {
+		return (int) ((y / map.getTileHeight()) + ((x - offset) / map.getTileWidth()));
+	}
+
+	public int pixelToTileY(float y, float x, float offset) {
+		return (int) ((y / map.getTileHeight()) - ((x - offset) / map.getTileWidth()));
+	}
+
+	@Override
+	public Vector2f tileToPixelCoords(float tileX, float tileY) {
+		return tileToPixelCoords(tileX, tileY, map.getWidth() * (map.getTileWidth() / 2f));
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, float offset) {
+		return tileToPixelCoords(tileX, tileY, map.getTileWidth() / 2f, map.getTileHeight() / 2f, offset, tempLocation);
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, float hitWidth, float hitHeight, float offset) {
+		return tileToPixelCoords(tileX, tileY, hitWidth, hitHeight, offset, tempLocation);
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, Vector2f out) {
+		return tileToPixelCoords(tileX, tileY, map.getWidth() * (map.getTileWidth() / 2f), out);
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, float offset, Vector2f out) {
+		return tileToPixelCoords(tileX, tileY, map.getTileWidth() / 2f, map.getTileHeight() / 2f, offset, out);
+	}
+
+	public Vector2f tileToPixelCoords(float tileX, float tileY, float hitWidth, float hitHeight, float offset,
+			Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		out.x = (tileX - tileY) * hitWidth + offset;
+		out.y = (tileX + tileY) * hitHeight;
+		return out;
+	}
 }

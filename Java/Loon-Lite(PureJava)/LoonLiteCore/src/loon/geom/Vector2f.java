@@ -1628,6 +1628,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return this;
 	}
 
+	public final boolean isEmpty() {
+		return MathUtils.equal(0f, x) && MathUtils.equal(0f, y);
+	}
+
 	public final Vector2f setEmpty() {
 		return set(0f);
 	}

@@ -124,6 +124,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	protected LColor baseColor = new LColor(LColor.white);
 
 	protected boolean allowCache;
+	
+	protected Vector2f tempLocation = new Vector2f();
 
 	public TMXMapRenderer(TMXMap map) {
 		this.textureCaches = new IntMap<LTextureBatch.Cache>();
@@ -545,6 +547,10 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		}
 		return newPos;
 	}
+
+	public abstract Vector2f pixelToTileCoords(float x, float y);
+
+	public abstract Vector2f tileToPixelCoords(float x, float y);
 
 	@Override
 	public boolean collides(ISprite e) {

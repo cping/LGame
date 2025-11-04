@@ -88,7 +88,7 @@ public class TMXTileLayer extends TMXMapLayer {
 		}
 
 		tileMap = new TMXMapTile[width * height];
-	
+
 		if (element.containsKey("encoding")) {
 			switch (element.getString("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
@@ -341,31 +341,80 @@ public class TMXTileLayer extends TMXMapLayer {
 	}
 
 	public int getTileID(int x, int y) {
+		if (x < 0 || y < 0) {
+			return -1;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return -1;
+		}
 		return tileMap[y * width + x].getID();
 	}
 
 	public int getTileGID(int x, int y) {
+		if (x < 0 || y < 0) {
+			return -1;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return -1;
+		}
 		return tileMap[y * width + x].getGID();
 	}
 
 	public int getTileTileSetIndex(int x, int y) {
+		if (x < 0 || y < 0) {
+			return -1;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return -1;
+		}
 		return tileMap[y * width + x].getTileSetID();
 	}
 
 	public boolean isTileFlippedHorizontally(int x, int y) {
+		if (x < 0 || y < 0) {
+			return false;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return false;
+		}
 		return tileMap[y * width + x].isFlippedHorizontally();
 	}
 
 	public boolean isTileFlippedVertically(int x, int y) {
+		if (x < 0 || y < 0) {
+			return false;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return false;
+		}
 		return tileMap[y * width + x].isFlippedVertically();
 	}
 
 	public boolean isTileFlippedDiagonally(int x, int y) {
+		if (x < 0 || y < 0) {
+			return false;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return false;
+		}
 		return tileMap[y * width + x].isFlippedDiagonally();
 	}
 
 	public TMXMapTile getTile(int x, int y) {
-		return tileMap[y * width + x];
+		if (x < 0 || y < 0) {
+			return null;
+		}
+		final int len = y * width + x;
+		if (len >= tileMap.length) {
+			return null;
+		}
+		return tileMap[len];
 	}
 
 	public Encoding getEncoding() {

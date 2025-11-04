@@ -94,7 +94,7 @@ public class Vector2f implements Serializable, SetXY, XY {
 
 	public final static Vector2f invBilinear(final Vector2f p, final Vector2f a, final Vector2f b, final Vector2f c,
 			final Vector2f d) {
-		
+
 		final Vector2f res = new Vector2f(-1f);
 		final Vector2f e = b.sub(a);
 		final Vector2f f = d.sub(a);
@@ -1626,6 +1626,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		x *= a;
 		y *= a;
 		return this;
+	}
+
+	public final boolean isEmpty() {
+		return MathUtils.equal(0f, x) && MathUtils.equal(0f, y);
 	}
 
 	public final Vector2f setEmpty() {

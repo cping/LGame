@@ -31,6 +31,7 @@ import loon.action.map.tmx.TMXTileSet;
 import loon.action.map.tmx.tiles.TMXMapTile;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.canvas.LColor;
+import loon.geom.Vector2f;
 import loon.opengl.BlendState;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
@@ -40,17 +41,38 @@ import loon.utils.MathUtils;
  */
 public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
+	private final static float[][] offsetsStaggerX = new float[][] { { 0, 0 }, { 1, -1 }, { 1, 0 }, { 2, 0 } };
+
+	private final static float[][] offsetsStaggerY = new float[][] { { 0, 0 }, { -1, 1 }, { 0, 1 }, { 0, 2 } };
+
+	private final Vector2f[] centers = new Vector2f[4];
+
 	private boolean staggerAxisX;
+
+	private boolean staggerAxisY;
 
 	private boolean staggerIndexEven;
 
 	private float hexSideLength;
+
+	private float sideLengthX;
+
+	private float sideLengthY;
+
+	private float sideOffsetX;
+
+	private float sideOffsetY;
+
+	private float columnWidth;
+
+	private float rowHeight;
 
 	public TMXHexagonalMapRenderer(TMXMap map) {
 		super(map);
 
 		StaggerAxis axis = map.getStaggerAxis();
 		staggerAxisX = axis.equals(StaggerAxis.AXIS_X);
+		staggerAxisY = axis.equals(StaggerAxis.AXIS_Y);
 		StaggerIndex index = map.getStaggerIndex();
 		staggerIndexEven = index.equals(StaggerIndex.EVEN);
 		if (!staggerAxisX && map.getHeight() % 2 == 0) {
@@ -58,6 +80,22 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		}
 
 		int hexlength = map.getHexSideLength();
+
+		this.sideLengthX = 0;
+		this.sideLengthY = 0;
+
+		if (staggerAxisX) {
+			this.sideLengthX = hexlength;
+		} else {
+			this.sideLengthY = hexlength;
+		}
+
+		this.sideOffsetX = (map.getTileWidth() - this.sideLengthX) / 2;
+		this.sideOffsetY = (map.getTileHeight() - this.sideLengthY) / 2;
+
+		this.columnWidth = this.sideOffsetX + this.sideLengthX;
+		this.rowHeight = this.sideOffsetY + this.sideLengthY;
+
 		if (staggerAxisX) {
 			hexlength = map.getTileWidth();
 			if (hexlength != 0) {
@@ -74,6 +112,18 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			}
 		}
 
+		for (int i = 0; i < centers.length; i++) {
+			centers[i] = new Vector2f();
+		}
+
+	}
+
+	public boolean isStaggerAxisX() {
+		return staggerAxisX;
+	}
+
+	public boolean isStaggerAxisY() {
+		return staggerAxisY;
 	}
 
 	@Override
@@ -88,7 +138,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+		g.draw(current, posX + _objectLocation.x, posY + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 
@@ -99,14 +149,14 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			if (!tileLayer.isVisible()) {
 				return;
 			}
-
-			final int screenWidth = LSystem.viewSize.getWidth();
-			final int screenHeight = LSystem.viewSize.getHeight();
-
-			final int tx = MathUtils.ifloor(getRenderX() / map.getTileWidth());
-			final int ty = MathUtils.ifloor(getRenderY() / map.getTileHeight());
-			final float windowWidth = screenWidth / map.getTileWidth();
-			final float windowHeight = screenHeight / map.getTileHeight();
+			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
+			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
+			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
+			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());
+			final int ty = MathUtils.iceil((getRenderY() + _objectLocation.y) / map.getTileHeight());
+			final int windowWidth = MathUtils.iceil(screenWidth / map.getTileWidth() / scaleX) + 2;
+			final int windowHeight = MathUtils.iceil(screenHeight / map.getTileHeight() / scaleY) + 2;
 
 			final int layerWidth = tileLayer.getWidth();
 			final int layerHeight = tileLayer.getHeight();
@@ -125,7 +175,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			_texBatch = _texCurrent.getTextureBatch();
 
 			boolean isCached = false;
-			
+
 			final LColor drawColor = tileLayer.getTileLayerColor(baseColor);
 
 			try {
@@ -237,7 +287,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			TMXMapTile mapTile = tileLayer.getTile(x, y);
 
-			if (mapTile.getTileSetID() == -1) {
+			if (mapTile == null || mapTile.getTileSetID() == -1) {
 				return;
 			}
 
@@ -282,9 +332,164 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				flipY = !flipY;
 			}
 
-			_texBatch.draw(x + offsetX, y + offsetY, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX,
-					srcY, srcWidth, srcHeight, flipX, flipY);
+			_texBatch.draw(x + offsetX + _objectLocation.x, y + offsetY + _objectLocation.y, tileWidth, tileHeight,
+					scaleX, scaleY, this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 
 		}
+	}
+
+	public Vector2f pixelToGrid(float offset) {
+		return pixelToGrid(offset, tempLocation);
+	}
+
+	public Vector2f pixelToGrid(float offset, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		float q = out.x;
+		float r = out.y;
+		float s = -q - r;
+		float qi = MathUtils.round(q);
+		float ri = MathUtils.round(r);
+		float si = MathUtils.round(s);
+
+		float qdiff = MathUtils.abs(qi - q);
+		float rdiff = MathUtils.abs(ri - r);
+		float sdiff = MathUtils.abs(si - s);
+		if (qdiff > rdiff && qdiff > sdiff) {
+			qi = -ri - si;
+		} else if (rdiff > sdiff) {
+			ri = -qi - si;
+		}
+		out.x = qi + (ri + offset * ri) / 2f;
+		out.y = ri;
+		return out;
+	}
+
+	public Vector2f gridToPixel(int row, int col, float offset) {
+		return gridToPixel(row, col, offset, tempLocation);
+	}
+
+	public Vector2f gridToPixel(int row, int col, float offset, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		row = (int) (row - (col + offset * col) / 2);
+		out.x = row;
+		out.y = col;
+		return out;
+	}
+
+	@Override
+	public Vector2f pixelToTileCoords(float x, float y) {
+		return pixelToTileCoords(x, y, tempLocation);
+	}
+
+	public Vector2f pixelToTileCoords(float x, float y, Vector2f out) {
+
+		if (out == null) {
+			out = new Vector2f();
+		}
+		x -= _objectLocation.x;
+		y -= _objectLocation.y;
+
+		final StaggerIndex index = map.getStaggerIndex();
+
+		if (staggerAxisX) {
+			x = x - ((index == StaggerIndex.ODD) ? this.sideLengthX : map.getTileWidth());
+		} else {
+			y = y - ((index == StaggerIndex.ODD) ? this.sideOffsetY : map.getTileHeight());
+		}
+
+		final Vector2f referencePoint = new Vector2f(MathUtils.floor(x / (map.getTileWidth() + this.sideLengthX)),
+				MathUtils.floor(y / (map.getTileHeight() + this.sideLengthY)));
+
+		final Vector2f rel = new Vector2f(x - referencePoint.x * (map.getTileWidth() + this.sideLengthX),
+				y - referencePoint.y * (map.getTileHeight() + this.sideLengthY));
+
+		if (staggerAxisX) {
+			referencePoint.x = referencePoint.x * 2;
+			if (index == StaggerIndex.EVEN) {
+				++referencePoint.x;
+			}
+		} else {
+			referencePoint.y = referencePoint.y * 2;
+			if (index == StaggerIndex.EVEN) {
+				++referencePoint.y;
+			}
+		}
+
+		float left, top, centerX, centerY;
+
+		if (staggerAxisX) {
+			left = this.sideLengthX / 2;
+			centerX = left + this.columnWidth;
+			centerY = map.getTileHeight() / 2;
+
+			this.centers[0].set(left, centerY);
+			this.centers[1].set(centerX, centerY - this.rowHeight);
+			this.centers[2].set(centerX, centerY + this.rowHeight);
+			this.centers[3].set(centerX + this.columnWidth, centerY);
+		} else {
+			top = this.sideLengthY / 2;
+			centerX = map.getTileWidth() / 2;
+			centerY = top + this.rowHeight;
+			this.centers[0].set(centerX, top);
+			this.centers[1].set(centerX - this.columnWidth, centerY);
+			this.centers[2].set(centerX + this.columnWidth, centerY);
+			this.centers[3].set(centerX, centerY + this.rowHeight);
+		}
+
+		int nearest = 0;
+		float minDist = Float.MAX_VALUE;
+		float dc;
+		for (int i = 0; i < centers.length; ++i) {
+			dc = MathUtils.pow(this.centers[i].x - rel.x, 2) + MathUtils.pow(this.centers[i].y - rel.y, 2);
+			if (dc < minDist) {
+				minDist = dc;
+				nearest = i;
+			}
+		}
+		float[][] offsets = (staggerAxisX) ? offsetsStaggerX : offsetsStaggerY;
+
+		out.x = referencePoint.x + offsets[nearest][0];
+		out.y = referencePoint.y + offsets[nearest][1];
+
+		return out;
+	}
+
+	@Override
+	public Vector2f tileToPixelCoords(float q, float r) {
+		return tileToPixelCoords(q, r, tempLocation);
+	}
+
+	public Vector2f tileToPixelCoords(float q, float r, Vector2f out) {
+		if (out == null) {
+			out = new Vector2f();
+		}
+		final StaggerIndex index = map.getStaggerIndex();
+		float x, y;
+		if (staggerAxisX) {
+			x = q * this.columnWidth;
+			if (index == StaggerIndex.ODD) {
+				y = r * (map.getTileHeight() + this.sideLengthY);
+				y = y + (this.rowHeight * q);
+			} else {
+				y = r * (map.getTileHeight() + this.sideLengthY);
+				y = y + (this.rowHeight * (1f - q));
+			}
+		} else {
+			y = r * this.rowHeight;
+			if (index == StaggerIndex.ODD) {
+				x = q * (map.getTileWidth() + this.sideLengthX);
+				x = x + (this.columnWidth * r);
+			} else {
+				x = q * (map.getTileWidth() + this.sideLengthX);
+				x = x + (this.columnWidth * (1f - r));
+			}
+		}
+		out.x = x;
+		out.y = y;
+		return out;
 	}
 }

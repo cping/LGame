@@ -96,6 +96,19 @@ public class Affine2f implements LTrans, XY {
 		return xform;
 	}
 
+	public final static Affine2f transfromPoint(Affine2f a, float x, float y) {
+		return transfromPoint(a, x, y, null);
+	}
+
+	public final static Affine2f transfromPoint(Affine2f a, float x, float y, Vector2f point) {
+		if (point == null) {
+			point = new Vector2f();
+		}
+		point.x = a.m00 * x + a.m11 * y;
+		point.y = a.m01 * x + a.m10 * y;
+		return a;
+	}
+
 	public final static void snapToPixels(Affine2f aff, float pixelSize) {
 		float E = MathUtils.EPSILON;
 		boolean doSnap = false;
@@ -1032,6 +1045,30 @@ public class Affine2f implements LTrans, XY {
 
 	public Affine2f setTy(float ty) {
 		this.ty = ty;
+		return this;
+	}
+
+	public Affine2f set(float x, float y, float sx, float sy, float rotation, float skewX, float skewY, float pivotx,
+			float pivoty) {
+
+		rotation = MathUtils.toRadians(rotation);
+		skewX = MathUtils.toRadians(skewX);
+		skewY = MathUtils.toRadians(skewY);
+		float cosr = MathUtils.cos(rotation);
+		float sinr = MathUtils.sin(rotation);
+		float coskx = MathUtils.cos(skewX);
+		float sinkx = MathUtils.sin(skewX);
+		float cosky = MathUtils.cos(skewY);
+		float sinky = MathUtils.sin(skewY);
+
+		this.m00 = (cosr * cosky - sinr * sinky) * sx;
+		this.m01 = (sinr * cosky + cosr * sinky) * sx;
+		this.m10 = (cosr * sinkx - sinr * coskx) * sy;
+		this.m11 = (sinr * sinkx + cosr * coskx) * sy;
+
+		this.tx = x - this.m00 * pivotx - this.m10 * pivoty;
+		this.ty = y - this.m01 * pivotx - this.m11 * pivoty;
+
 		return this;
 	}
 
