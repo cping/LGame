@@ -136,7 +136,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+		g.draw(current, posX + _objectLocation.x, posY + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
 				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
 	}
 

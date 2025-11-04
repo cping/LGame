@@ -38,19 +38,21 @@ import loon.utils.URecognizerResult;
  */
 public class LGesture extends LComponent {
 
-	private float mX;
-	private float mY;
+	private float _startX, _startY;
 
-	private float curveEndX;
-	private float curveEndY;
+	private float _moveX;
+	private float _moveY;
 
-	private boolean resetGesture;
+	private float _curveEndX;
+	private float _curveEndY;
 
-	private boolean autoClear;
+	private boolean _resetGesture;
 
-	private Path goalPath;
+	private boolean _autoClear;
 
-	private int lineWidth;
+	private Path _goalPath;
+
+	private int _lineWidth;
 
 	public LGesture(int x, int y, int w, int h, boolean c) {
 		this(x, y, w, h, c, LColor.orange);
@@ -60,8 +62,8 @@ public class LGesture extends LComponent {
 		super(x, y, w, h);
 		this._drawBackground = false;
 		this._component_baseColor = col;
-		this.autoClear = c;
-		this.lineWidth = 5;
+		this._autoClear = c;
+		this._lineWidth = 5;
 	}
 
 	public LGesture(int x, int y, int w, int h) {
@@ -79,7 +81,7 @@ public class LGesture extends LComponent {
 	@Override
 	public void update(long elapsedTime) {
 		if (SysTouch.isUp()) {
-			if (autoClear) {
+			if (_autoClear) {
 				clear();
 			}
 		}
@@ -87,12 +89,12 @@ public class LGesture extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if (isVisible() && goalPath != null) {
+		if (isVisible() && _goalPath != null) {
 			g.saveBrush();
 			int tint = g.color();
-			g.setLineWidth(lineWidth);
+			g.setLineWidth(_lineWidth);
 			g.setColor(_component_baseColor);
-			g.drawPolyline(goalPath);
+			g.drawPolyline(_goalPath);
 			g.resetLineWidth();
 			g.setTint(tint);
 			g.restoreBrush();
@@ -104,21 +106,27 @@ public class LGesture extends LComponent {
 		final float x = getUITouchX();
 		final float y = getUITouchY();
 		if (isPointInUI(x, y)) {
-			mX = x;
-			mY = y;
-			if (resetGesture) {
-				resetGesture = false;
-				if (goalPath != null) {
-					goalPath.clear();
+			if (_startX == 0 && _startY == 0) {
+				_startX = x;
+				_startY = y;
+			}
+			if (!MathUtils.equal(x, _moveX) || !MathUtils.equal(y, _moveY)) {
+				_moveX = x;
+				_moveY = y;
+				if (_resetGesture) {
+					_resetGesture = false;
+					if (_goalPath != null) {
+						_goalPath.clear();
+					}
 				}
+				if (_goalPath == null) {
+					_goalPath = new Path(x, y);
+				} else {
+					_goalPath.set(x, y);
+				}
+				_curveEndX = x;
+				_curveEndY = y;
 			}
-			if (goalPath == null) {
-				goalPath = new Path(x, y);
-			} else {
-				goalPath.set(x, y);
-			}
-			curveEndX = x;
-			curveEndY = y;
 		}
 		super.processTouchPressed();
 	}
@@ -126,7 +134,7 @@ public class LGesture extends LComponent {
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		if (autoClear) {
+		if (_autoClear) {
 			clear();
 		}
 	}
@@ -137,20 +145,22 @@ public class LGesture extends LComponent {
 			final float x = getUITouchX();
 			final float y = getUITouchY();
 			if (isPointInUI(x, y)) {
-				final float previousX = mX;
-				final float previousY = mY;
+				if (!MathUtils.equal(x, _moveX) || !MathUtils.equal(y, _moveY)) {
+					final float previousX = _moveX;
+					final float previousY = _moveY;
 
-				final float dx = MathUtils.abs(x - previousX);
-				final float dy = MathUtils.abs(y - previousY);
+					final float dx = MathUtils.abs(x - previousX);
+					final float dy = MathUtils.abs(y - previousY);
 
-				if (dx >= 3 || dy >= 3) {
-					float cX = curveEndX = (x + previousX) / 2;
-					float cY = curveEndY = (y + previousY) / 2;
-					if (goalPath != null) {
-						goalPath.quadTo(previousX, previousY, cX, cY);
+					if (dx >= 3 || dy >= 3) {
+						float cX = _curveEndX = (x + previousX) / 2;
+						float cY = _curveEndY = (y + previousY) / 2;
+						if (_goalPath != null) {
+							_goalPath.lineTo(previousX, previousY, cX, cY);
+						}
+						_moveX = x;
+						_moveY = y;
 					}
-					mX = x;
-					mY = y;
 				}
 			}
 		}
@@ -158,17 +168,17 @@ public class LGesture extends LComponent {
 	}
 
 	public float[] getPoints() {
-		if (goalPath != null) {
-			return goalPath.getPoints();
+		if (_goalPath != null) {
+			return _goalPath.getPoints();
 		}
 		return null;
 	}
 
 	public TArray<PointF> getListPoint() {
-		if (goalPath != null) {
-			float[] points = goalPath.getPoints();
-			int size = points.length;
-			TArray<PointF> result = new TArray<PointF>(size);
+		if (_goalPath != null) {
+			final float[] points = _goalPath.getPoints();
+			final int size = points.length;
+			final TArray<PointF> result = new TArray<PointF>(size);
 			for (int i = 0; i < size; i += 2) {
 				result.add(new PointF(points[i], points[i + 1]));
 			}
@@ -178,10 +188,10 @@ public class LGesture extends LComponent {
 	}
 
 	public TArray<Vector2f> getList() {
-		if (goalPath != null) {
-			float[] points = goalPath.getPoints();
-			int size = points.length;
-			TArray<Vector2f> result = new TArray<Vector2f>(size);
+		if (_goalPath != null) {
+			final float[] points = _goalPath.getPoints();
+			final int size = points.length;
+			final TArray<Vector2f> result = new TArray<Vector2f>(size);
 			for (int i = 0; i < size; i += 2) {
 				result.add(new Vector2f(points[i], points[i + 1]));
 			}
@@ -197,10 +207,10 @@ public class LGesture extends LComponent {
 	}
 
 	public float getLength() {
-		if (goalPath != null) {
+		if (_goalPath != null) {
 			float length = 0;
-			float[] points = goalPath.getPoints();
-			int size = points.length;
+			final float[] points = _goalPath.getPoints();
+			final int size = points.length;
 			for (int i = 0; i < size;) {
 				if (i < size - 3) {
 					length += distance(points[0 + i], points[1 + i], points[2 + i], points[3 + i]);
@@ -213,48 +223,48 @@ public class LGesture extends LComponent {
 	}
 
 	public float[] getCenter() {
-		if (goalPath != null) {
-			return goalPath.getCenter();
+		if (_goalPath != null) {
+			return _goalPath.getCenter();
 		}
 		return new float[] { 0, 0 };
 	}
 
 	public void clear() {
-		if (goalPath != null) {
-			goalPath.clear();
+		if (_goalPath != null) {
+			_goalPath.clear();
 		}
 	}
 
 	public float getCurveEndX() {
-		return curveEndX;
+		return _curveEndX;
 	}
 
 	public void setCurveEndX(float curveEndX) {
-		this.curveEndX = curveEndX;
+		this._curveEndX = curveEndX;
 	}
 
 	public float getCurveEndY() {
-		return curveEndY;
+		return _curveEndY;
 	}
 
 	public void setCurveEndY(float curveEndY) {
-		this.curveEndY = curveEndY;
+		this._curveEndY = curveEndY;
 	}
 
 	public Path getPath() {
-		return goalPath;
+		return _goalPath;
 	}
 
 	public int getLineWidth() {
-		return lineWidth;
+		return _lineWidth;
 	}
 
 	public void setLineWidth(int lineWidth) {
-		this.lineWidth = lineWidth;
+		this._lineWidth = lineWidth;
 	}
 
 	public boolean isAutoClear() {
-		return autoClear;
+		return _autoClear;
 	}
 
 	/**
@@ -263,7 +273,7 @@ public class LGesture extends LComponent {
 	 * @param autoClear
 	 */
 	public void setAutoClear(boolean autoClear) {
-		this.autoClear = autoClear;
+		this._autoClear = autoClear;
 	}
 
 	/**
@@ -273,11 +283,11 @@ public class LGesture extends LComponent {
 	 * @return
 	 */
 	public URecognizerResult getRecognizer(GestureData data, int type) {
-		URecognizer analyze = new URecognizer(data, type);
-		if (goalPath != null) {
-			float[] points = goalPath.getPoints();
-			int size = points.length;
-			TArray<PointF> v = new TArray<PointF>();
+		final URecognizer analyze = new URecognizer(data, type);
+		if (_goalPath != null) {
+			final float[] points = _goalPath.getPoints();
+			final int size = points.length;
+			final TArray<PointF> v = new TArray<PointF>();
 			for (int i = 0; i < size; i += 2) {
 				v.add(new PointF(points[i], points[i + 1]));
 			}
@@ -314,6 +324,14 @@ public class LGesture extends LComponent {
 	 */
 	public URecognizerResult getRecognizer() {
 		return getRecognizer(new GestureData(), URecognizer.GESTURES_DEFAULT);
+	}
+
+	public float getStartX() {
+		return _startX;
+	}
+
+	public float getStartY() {
+		return _startY;
 	}
 
 	@Override

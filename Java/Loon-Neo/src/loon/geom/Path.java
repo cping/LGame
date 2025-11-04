@@ -80,6 +80,14 @@ public class Path extends Shape {
 		return this;
 	}
 
+	public float getLastX() {
+		return _path2d.getLastX();
+	}
+
+	public float getLastY() {
+		return _path2d.getLastY();
+	}
+
 	@Override
 	public void clear() {
 		_path2d.reset();
