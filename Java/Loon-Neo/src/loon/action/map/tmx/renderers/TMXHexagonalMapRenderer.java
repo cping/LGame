@@ -67,6 +67,10 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 	private float rowHeight;
 
+	public TMXHexagonalMapRenderer(TMXMap map, float w, float h) {
+		super(map, w, h);
+	}
+
 	public TMXHexagonalMapRenderer(TMXMap map) {
 		super(map);
 
@@ -138,8 +142,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(current, posX + _objectLocation.x, posY + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
+		g.draw(current, (posX + _objectLocation.x) * scaleX, (posY + _objectLocation.y) * scaleY,
+				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
+				imageLayer.getTileLayerColor(baseColor), scaleX, scaleY, false, false);
 	}
 
 	@Override
@@ -332,8 +337,9 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 				flipY = !flipY;
 			}
 
-			_texBatch.draw(x + offsetX + _objectLocation.x, y + offsetY + _objectLocation.y, tileWidth, tileHeight,
-					scaleX, scaleY, this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
+			_texBatch.draw((x + offsetX + _objectLocation.x) * scaleX, (y + offsetY + _objectLocation.y) * scaleY,
+					tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX,
+					flipY);
 
 		}
 	}
@@ -390,8 +396,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		if (out == null) {
 			out = new Vector2f();
 		}
-		x -= _objectLocation.x;
-		y -= _objectLocation.y;
+		x = offsetXPixel(x);
+		y = offsetYPixel(y);
 
 		final StaggerIndex index = map.getStaggerIndex();
 
@@ -490,6 +496,6 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		}
 		out.x = x;
 		out.y = y;
-		return out;
+		return out.mulSelf(scaleX, scaleY);
 	}
 }

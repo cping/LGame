@@ -589,8 +589,10 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	@Override
 	public TMXMapRenderer setSize(float w, float h) {
-		if (!MathUtils.equal(_viewWidth, w) || !MathUtils.equal(_viewHeight, h)) {
+		if ((MathUtils.equal(scaleX, 1f) && MathUtils.equal(scaleY, 1f)) || !MathUtils.equal(_viewWidth, w)
+				|| !MathUtils.equal(_viewHeight, h)) {
 			setViewSize(w, h);
+			setViewScale(w, h);
 		}
 		return this;
 	}
@@ -917,6 +919,26 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	public TMXMapRenderer triggerCollision(SpriteCollisionListener sc) {
 		this._collSpriteListener = sc;
 		return this;
+	}
+
+	public Vector2f offsetPixels(float x, float y) {
+		return new Vector2f(offsetXPixel(x), offsetYPixel(y));
+	}
+
+	public int getPixelX(float x) {
+		return MathUtils.iceil((x - _objectLocation.x) / scaleX);
+	}
+
+	public int getPixelY(float y) {
+		return MathUtils.iceil((y - _objectLocation.y) / scaleY);
+	}
+
+	public int offsetXPixel(float x) {
+		return MathUtils.iceil((x - _offset.x - _objectLocation.x) / scaleX);
+	}
+
+	public int offsetYPixel(float y) {
+		return MathUtils.iceil((y - _offset.y - _objectLocation.y) / scaleY);
 	}
 
 	@Override

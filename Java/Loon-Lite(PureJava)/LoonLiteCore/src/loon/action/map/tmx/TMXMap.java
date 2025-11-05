@@ -211,6 +211,19 @@ public class TMXMap implements Sized {
 		}
 	}
 
+	public TMXMapRenderer getMapRenderer(float w, float h) {
+		switch (this.orientation) {
+		case ISOMETRIC:
+			return new TMXIsometricMapRenderer(this, w, h);
+		case HEXAGONAL:
+			return new TMXHexagonalMapRenderer(this, w, h);
+		case STAGGERED:
+			return new TMXStaggeredMapRenderer(this, w, h);
+		default:
+			return new TMXOrthogonalMapRenderer(this, w, h);
+		}
+	}
+
 	public Orientation getOrientation() {
 		return orientation;
 	}

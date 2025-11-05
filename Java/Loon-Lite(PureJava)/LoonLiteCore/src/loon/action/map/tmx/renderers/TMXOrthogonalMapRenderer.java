@@ -39,18 +39,21 @@ import loon.utils.MathUtils;
  */
 public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 
+	public TMXOrthogonalMapRenderer(TMXMap map, float w, float h) {
+		super(map, w, h);
+	}
+
 	public TMXOrthogonalMapRenderer(TMXMap map) {
 		super(map);
 	}
 
+	@Override
 	protected void renderImageLayer(GLEx g, TMXImageLayer imageLayer) {
-		if (!imageLayer.isVisible()) {
-			return;
-		}
-		LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
-		g.draw(originalTexture, imageLayer.getRenderOffsetX() + _objectLocation.x,
-				imageLayer.getRenderOffsetY() + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
+		final LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
+		g.draw(originalTexture, (imageLayer.getRenderOffsetX() + _objectLocation.x) * scaleX,
+				(imageLayer.getRenderOffsetY() + _objectLocation.y) * scaleY,
+				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
+				imageLayer.getTileLayerColor(baseColor), scaleX, scaleY, false, false);
 	}
 
 	@Override
@@ -199,8 +202,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (out == null) {
 			out = new Vector2f();
 		}
-		x -= _objectLocation.x;
-		y -= _objectLocation.y;
+		x = offsetXPixel(x);
+		y = offsetYPixel(y);
 		out.x = this.pixelToTileX(x);
 		out.y = this.pixelToTileY(y);
 		return out;
@@ -225,7 +228,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		}
 		out.x = tileX * map.getTileWidth();
 		out.y = tileY * map.getTileHeight();
-		return out;
+		return out.mulSelf(scaleX, scaleY);
 	}
 
 }

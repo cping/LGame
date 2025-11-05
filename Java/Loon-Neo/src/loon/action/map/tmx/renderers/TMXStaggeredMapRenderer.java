@@ -41,6 +41,10 @@ import loon.utils.MathUtils;
  */
 public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
+	public TMXStaggeredMapRenderer(TMXMap map, float w, float h) {
+		super(map, w, h);
+	}
+
 	public TMXStaggeredMapRenderer(TMXMap map) {
 		super(map);
 	}
@@ -63,8 +67,9 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 				+ getRenderX();
 		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
 				+ getRenderY();
-		g.draw(current, posX + _objectLocation.x, posY + _objectLocation.y, imageLayer.getWidth() * map.getTileWidth(),
-				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor));
+		g.draw(current, (posX + _objectLocation.x) * scaleX, (posY + _objectLocation.y) * scaleY,
+				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
+				imageLayer.getTileLayerColor(baseColor), scaleX, scaleY, false, false);
 	}
 
 	@Override
@@ -90,6 +95,9 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 			final float layerOffsetX = tileLayer.getRenderOffsetX() - (tileLayer.getParallaxX() - 1f);
 			final float layerOffsetY = tileLayer.getRenderOffsetY() - (tileLayer.getParallaxY() - 1f);
+
+			final float scaleWidth = windowWidth * scaleX;
+			final float scaleHeight = windowHeight * scaleY;
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
@@ -130,10 +138,10 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 				texBatch.setColor(drawColor);
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
-						if ((tx + x < -windowWidth) || (ty + y < -windowHeight)) {
+						if ((tx + x < -scaleWidth) || (ty + y < -scaleHeight)) {
 							continue;
 						}
-						if ((x - tx > windowWidth) || (y - ty > windowHeight)) {
+						if ((x - tx > scaleWidth) || (y - ty > scaleHeight)) {
 							continue;
 						}
 						TMXMapTile mapTile = tileLayer.getTile(x, y);
@@ -187,8 +195,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 						Vector2f pos = orthoToIso(x, y);
 
-						texBatch.draw(pos.x, pos.y, tileWidth, tileHeight, scaleX, scaleY, this._objectRotation, srcX,
-								srcY, srcWidth, srcHeight, flipX, flipY);
+						texBatch.draw(pos.x * scaleX, pos.y * scaleY, tileWidth, tileHeight, scaleX, scaleY,
+								this._objectRotation, srcX, srcY, srcWidth, srcHeight, flipX, flipY);
 
 					}
 				}
@@ -220,8 +228,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 		if (out == null) {
 			out = new Vector2f();
 		}
-		x -= _objectLocation.x;
-		y -= _objectLocation.y;
+		x = offsetXPixel(x);
+		y = offsetYPixel(y);
 		out.x = this.pixelToTileX(x, y, offset);
 		out.y = this.pixelToTileY(y, x, offset);
 		return out;
@@ -263,7 +271,7 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 		}
 		out.x = (tileX - tileY) * hitWidth + offset;
 		out.y = (tileX + tileY) * hitHeight;
-		return out;
+		return out.mulSelf(scaleX, scaleY);
 	}
 
 }
