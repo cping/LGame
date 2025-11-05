@@ -133,16 +133,25 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		LTexture current = textureMap.get(imageLayer.getImage().getSource());
-		float tileWidth = map.getTileWidth();
-		float tileHeight = map.getTileHeight();
-		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2) + (imageLayer.getRenderOffsetX() * tileWidth / 2)
-				+ getRenderX();
-		float posY = (imageLayer.getRenderOffsetX() * tileHeight / 2) - (imageLayer.getRenderOffsetY() * tileHeight / 2)
-				+ getRenderY();
-		g.draw(current, (posX + _objectLocation.x) * scaleX, (posY + _objectLocation.y) * scaleY,
-				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
-				imageLayer.getTileLayerColor(baseColor), scaleX, scaleY, false, false);
+		final float layerHexLength = hexSideLength;
+		final int mapHeight = map.getHeight();
+		final int tileHeight = map.getTileHeight();
+		final int layerTileHeight = tileHeight;
+		final float heightPixels = (mapHeight * tileHeight);
+		final float hexMapHeightPixels = ((heightPixels * (3f / 4f)) + (layerHexLength * 0.5f));
+		final float halfTileHeight = layerTileHeight * 0.5f;
+		float imageLayerYOffset = 0;
+		if (staggerAxisX) {
+			imageLayerYOffset = halfTileHeight;
+		} else {
+			imageLayerYOffset = -(heightPixels - hexMapHeightPixels);
+		}
+		final LTexture current = textureMap.get(imageLayer.getImage().getSource());
+		final float posX = (imageLayer.getRenderOffsetX() + _objectLocation.x) * scaleX;
+		final float posY = (imageLayer.getRenderOffsetY() + imageLayerYOffset + _objectLocation.y) * scaleY;
+		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
+				imageLayer.getHeight() * map.getTileHeight(), imageLayer.getTileLayerColor(baseColor), scaleX, scaleY,
+				false, false);
 	}
 
 	@Override

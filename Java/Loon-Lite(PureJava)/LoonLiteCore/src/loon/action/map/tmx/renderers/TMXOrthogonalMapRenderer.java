@@ -49,6 +49,9 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 
 	@Override
 	protected void renderImageLayer(GLEx g, TMXImageLayer imageLayer) {
+		if (!imageLayer.isVisible()) {
+			return;
+		}
 		final LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
 		g.draw(originalTexture, (imageLayer.getRenderOffsetX() + _objectLocation.x) * scaleX,
 				(imageLayer.getRenderOffsetY() + _objectLocation.y) * scaleY,
