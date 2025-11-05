@@ -216,6 +216,10 @@ public final class MathUtils {
 		return (i % 2 != 0);
 	}
 
+	public static int isAnd(float v, int result) {
+		return (v % 2 != 0) ? result : 0;
+	}
+
 	public static boolean isPowerOfTwo(int w, int h) {
 		return (w > 0 && (w & (w - 1)) == 0 && h > 0 && (h & (h - 1)) == 0);
 	}

@@ -149,8 +149,8 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			if (!tileLayer.isVisible()) {
 				return;
 			}
-			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
-			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final float viewWidth = MathUtils.min(getViewWidth(), getWidth());
+			final float viewHeight = MathUtils.min(getViewHeight(), getHeight());
 			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
 			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
 			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());
@@ -473,19 +473,19 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			x = q * this.columnWidth;
 			if (index == StaggerIndex.ODD) {
 				y = r * (map.getTileHeight() + this.sideLengthY);
-				y = y + (this.rowHeight * q);
+				y = y + (this.rowHeight * MathUtils.isAnd(q, 1));
 			} else {
 				y = r * (map.getTileHeight() + this.sideLengthY);
-				y = y + (this.rowHeight * (1f - q));
+				y = y + (this.rowHeight * (1f - MathUtils.isAnd(q, 1)));
 			}
 		} else {
 			y = r * this.rowHeight;
 			if (index == StaggerIndex.ODD) {
 				x = q * (map.getTileWidth() + this.sideLengthX);
-				x = x + (this.columnWidth * r);
+				x = x + (this.columnWidth * MathUtils.isAnd(r, 1));
 			} else {
 				x = q * (map.getTileWidth() + this.sideLengthX);
-				x = x + (this.columnWidth * (1f - r));
+				x = x + (this.columnWidth * (1f - MathUtils.isAnd(r, 1)));
 			}
 		}
 		out.x = x;

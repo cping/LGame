@@ -28,6 +28,7 @@ import loon.LTextureBatch;
 import loon.LTextureBatch.Cache;
 import loon.PlayerUtils;
 import loon.Screen;
+import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
 import loon.action.map.tmx.TMXImageLayer;
@@ -42,6 +43,7 @@ import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
 import loon.events.ResizeListener;
+import loon.geom.PointF;
 import loon.geom.RectBox;
 import loon.geom.Sized;
 import loon.geom.Vector2f;
@@ -57,6 +59,12 @@ import loon.utils.TimeUtils;
  */
 public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, ISprite {
 
+	private final PointF _scrollDrag = new PointF();
+
+	private Vector2f _followOffset = new Vector2f();
+
+	private ActionBind _follow;
+
 	protected LTexture _texCurrent;
 
 	protected LTextureBatch _texBatch;
@@ -64,6 +72,10 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	private ResizeListener<TMXMapRenderer> _resizeListener;
 
 	private SpriteCollisionListener _collSpriteListener;
+
+	private float _viewWidth;
+
+	private float _viewHeight;
 
 	private Vector2f _tempScreenPos = new Vector2f();
 
@@ -125,11 +137,16 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	protected boolean allowCache;
 
 	protected Vector2f tempLocation = new Vector2f();
-	
+
 	public TMXMapRenderer(TMXMap map) {
-		this.textureCaches = new IntMap<>();
-		this.textureMap = new ObjectMap<>();
-		this.tileAnimators = new ObjectMap<>();
+		this(map, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
+	}
+
+	public TMXMapRenderer(TMXMap map, float viewW, float viewH) {
+		this.setViewSize(viewW, viewH);
+		this.textureCaches = new IntMap<LTextureBatch.Cache>();
+		this.textureMap = new ObjectMap<String, LTexture>();
+		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
 		this.visible = allowCache = true;
 		this.map = map;
 
@@ -204,6 +221,209 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		}
 	}
 
+	public float centerX() {
+		return ((getX() + getViewWidth()) - (getX() + getWidth())) / 2f;
+	}
+
+	public float centerY() {
+		return ((getY() + getViewHeight()) - (getY() + getHeight())) / 2f;
+	}
+
+	public boolean inBounds(float x, float y) {
+		float offX = MathUtils.min(this._offset.x);
+		float offY = MathUtils.min(this._offset.y);
+		if (x < offX) {
+			return false;
+		}
+		if (x >= offX + (getViewWidth() - getWidth())) {
+			return false;
+		}
+		if (y < offY) {
+			return false;
+		}
+		if (y >= offY + (getViewHeight() - getHeight())) {
+			return false;
+		}
+		return true;
+	}
+
+	public TMXMapRenderer scrollDown(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min((this._offset.y + distance),
+				(MathUtils.max(0, this.getViewHeight() - this.getHeight())));
+		if (this._offset.y >= 0) {
+			this._offset.y = 0;
+		}
+		return this;
+	}
+
+	public TMXMapRenderer scrollLeft(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min(this._offset.x - distance, this.getX());
+		float limitX = (getViewWidth() - getWidth());
+		if (this._offset.x <= limitX) {
+			this._offset.x = limitX;
+		}
+		return this;
+	}
+
+	public TMXMapRenderer scrollRight(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.x = MathUtils.min((this._offset.x + distance),
+				(MathUtils.max(0, this.getWidth() - getViewWidth())));
+		if (this._offset.x >= 0) {
+			this._offset.x = 0;
+		}
+		return this;
+	}
+
+	public TMXMapRenderer scrollUp(float distance) {
+		if (distance == 0) {
+			return this;
+		}
+		this._offset.y = MathUtils.min(this._offset.y - distance, 0);
+		float limitY = (getViewHeight() - getHeight());
+		if (this._offset.y <= limitY) {
+			this._offset.y = limitY;
+		}
+		return this;
+	}
+
+	public TMXMapRenderer scrollLeftUp(float distance) {
+		this.scrollUp(distance);
+		this.scrollLeft(distance);
+		return this;
+	}
+
+	public TMXMapRenderer scrollRightDown(float distance) {
+		this.scrollDown(distance);
+		this.scrollRight(distance);
+		return this;
+	}
+
+	public TMXMapRenderer scrollClear() {
+		if (!this._offset.equals(0f, 0f)) {
+			this._offset.set(0, 0);
+		}
+		return this;
+	}
+
+	public TMXMapRenderer scroll(float x, float y) {
+		return scroll(x, y, 4f);
+	}
+
+	public ActionBind getFollow() {
+		return _follow;
+	}
+
+	public TMXMapRenderer setFollow(ActionBind follow) {
+		this._follow = follow;
+		return this;
+	}
+
+	public TMXMapRenderer setFollowOffset(float x, float y) {
+		this._followOffset.set(x, y);
+		return this;
+	}
+
+	public TMXMapRenderer setFollowOffset(Vector2f offset) {
+		this._followOffset.set(offset);
+		return this;
+	}
+
+	protected float limitOffsetX(float newOffsetX) {
+		float offsetX = getContainerWidth() / 2 - newOffsetX;
+		offsetX = MathUtils.min(offsetX, 0);
+		offsetX = MathUtils.max(offsetX, getContainerWidth() - getWidth());
+		return offsetX + _followOffset.x;
+	}
+
+	protected float limitOffsetY(float newOffsetY) {
+		float offsetY = getContainerHeight() / 2 - newOffsetY;
+		offsetY = MathUtils.min(offsetY, 0);
+		offsetY = MathUtils.max(offsetY, getContainerHeight() - getHeight());
+		return offsetY + _followOffset.y;
+	}
+
+	public TMXMapRenderer setOffsetX(float sx) {
+		this._offset.setX(sx);
+		return this;
+	}
+
+	public TMXMapRenderer setOffsetY(float sy) {
+		this._offset.setY(sy);
+		return this;
+	}
+
+	public TMXMapRenderer setOffset(float x, float y) {
+		this._offset.set(x, y);
+		return this;
+	}
+
+	public Vector2f getOffset() {
+		return _offset;
+	}
+
+	public TMXMapRenderer followActionObject() {
+		if (_follow != null) {
+			float offsetX = limitOffsetX(_follow.getX());
+			float offsetY = limitOffsetY(_follow.getY());
+			if (offsetX != 0 || offsetY != 0) {
+				setOffset(offsetX, offsetY);
+				setOffset(_offset);
+			}
+		}
+		return this;
+	}
+
+	public Vector2f getFollowOffset() {
+		return this._followOffset;
+	}
+
+	public TMXMapRenderer followDonot() {
+		return setFollow(null);
+	}
+
+	public TMXMapRenderer followAction(ActionBind follow) {
+		return setFollow(follow);
+	}
+
+	public TMXMapRenderer scroll(float x, float y, float distance) {
+		if (_scrollDrag.x == 0f && _scrollDrag.y == 0f) {
+			_scrollDrag.set(x, y);
+			return this;
+		}
+		return scroll(_scrollDrag.x, _scrollDrag.y, x, y, distance);
+	}
+
+	public TMXMapRenderer scroll(float x1, float y1, float x2, float y2) {
+		return scroll(x1, y1, x2, y2, 4f);
+	}
+
+	public TMXMapRenderer scroll(float x1, float y1, float x2, float y2, float distance) {
+		if (this._follow != null) {
+			return this;
+		}
+		if (x1 < x2 && x1 > centerX()) {
+			scrollRight(distance);
+		} else if (x1 > x2) {
+			scrollLeft(distance);
+		}
+		if (y1 < y2 && y1 > centerY()) {
+			scrollDown(distance);
+		} else if (y1 > y2) {
+			scrollUp(distance);
+		}
+		_scrollDrag.set(x2, y2);
+		return this;
+	}
+
 	protected void renderBackgroundColor(GLEx gl) {
 		gl.fillRect(_objectLocation.x, _objectLocation.y, map.getWidth() * map.getTileWidth(),
 				map.getHeight() * map.getTileHeight(), map.getBackgroundColor());
@@ -229,14 +449,22 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return baseColor;
 	}
 
+	public float getMapWidth() {
+		return map.getWidth() * map.getTileWidth();
+	}
+
+	public float getMapHeight() {
+		return map.getHeight() * map.getTileHeight();
+	}
+
 	@Override
 	public float getWidth() {
-		return (map.getWidth() * map.getTileWidth() * scaleX) - _fixedWidthOffset;
+		return MathUtils.iceil((getMapWidth() * scaleX) - _fixedWidthOffset);
 	}
 
 	@Override
 	public float getHeight() {
-		return (map.getHeight() * map.getTileHeight() * scaleY) - _fixedHeightOffset;
+		return MathUtils.iceil((getMapHeight() * scaleY) - _fixedHeightOffset);
 	}
 
 	public void renderImageLayers(GLEx gl, int... layerIDs) {
@@ -294,16 +522,17 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 	}
 
 	@Override
-	public void createUI(GLEx g, float offsetX, float offsetY) {
-		float tmp = g.alpha();
-		float tmpAlpha = baseColor.a;
-		int color = g.color();
+	public void createUI(final GLEx g, final float offsetX, final float offsetY) {
+		followActionObject();
+		final float tmp = g.alpha();
+		final float tmpAlpha = baseColor.a;
+		final int color = g.color();
 		g.setAlpha(_objectAlpha);
 		baseColor.a = _objectAlpha;
 		g.setColor(baseColor);
 		renderBackgroundColor(g);
-		float ox = getX();
-		float oy = getY();
+		final float ox = getX();
+		final float oy = getY();
 		setLocation(ox + offsetX + _offset.x, oy + offsetY + _offset.y);
 		for (TMXMapLayer mapLayer : map.getLayers()) {
 			if (mapLayer instanceof TMXTileLayer) {
@@ -359,8 +588,27 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	@Override
 	public TMXMapRenderer setSize(float w, float h) {
-		setScale(w / getWidth(), h / getHeight());
+		if (!MathUtils.equal(_viewWidth, w) || !MathUtils.equal(_viewHeight, h)) {
+			setViewSize(w, h);
+		}
 		return this;
+	}
+
+	public void setViewScale(float w, float h) {
+		setScale(w / getMapWidth(), h / getMapHeight());
+	}
+
+	public void setViewSize(float w, float h) {
+		_viewWidth = w;
+		_viewHeight = h;
+	}
+
+	public float getViewWidth() {
+		return _viewWidth;
+	}
+
+	public float getViewHeight() {
+		return _viewHeight;
 	}
 
 	@Override

@@ -72,9 +72,8 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 			if (!tileLayer.isVisible()) {
 				return;
 			}
-
-			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
-			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final float viewWidth = MathUtils.min(getViewWidth(), getWidth());
+			final float viewHeight = MathUtils.min(getViewHeight(), getHeight());
 			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
 			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
 			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());
@@ -131,11 +130,10 @@ public class TMXStaggeredMapRenderer extends TMXMapRenderer {
 
 				for (int x = 0; x < tileLayer.getWidth(); x++) {
 					for (int y = 0; y < tileLayer.getHeight(); y++) {
-
-						if ((tx + x < 0) || (ty + y < 0)) {
+						if ((tx + x < -windowWidth) || (ty + y < -windowHeight)) {
 							continue;
 						}
-						if ((x - tx >= windowWidth) || (y - ty >= windowHeight)) {
+						if ((x - tx > windowWidth) || (y - ty > windowHeight)) {
 							continue;
 						}
 

@@ -59,9 +59,8 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 			if (!tileLayer.isVisible()) {
 				return;
 			}
-
-			final float viewWidth = MathUtils.min(LSystem.viewSize.getWidth(), getWidth());
-			final float viewHeight = MathUtils.min(LSystem.viewSize.getHeight(), getHeight());
+			final float viewWidth = MathUtils.min(getViewWidth(), getWidth());
+			final float viewHeight = MathUtils.min(getViewHeight(), getHeight());
 			final int screenWidth = MathUtils.iceil(viewWidth - _objectLocation.x);
 			final int screenHeight = MathUtils.iceil(viewHeight - _objectLocation.y);
 			final int tx = MathUtils.iceil((getRenderX() + _objectLocation.x) / map.getTileWidth());

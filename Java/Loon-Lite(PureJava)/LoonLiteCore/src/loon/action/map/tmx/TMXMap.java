@@ -119,6 +119,10 @@ public class TMXMap implements Sized {
 
 	private TMXProperties properties;
 
+	public TMXMap(final String path) {
+		this(path, LSystem.EMPTY);
+	}
+
 	public TMXMap(final String path, final String location) {
 		version = 1.0f;
 
