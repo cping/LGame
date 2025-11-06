@@ -36,12 +36,14 @@ import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.TMXMapLayer;
 import loon.action.map.tmx.TMXTileLayer;
 import loon.action.map.tmx.TMXTileSet;
-import loon.action.map.tmx.tiles.TMXAnimationFrame;
+import loon.action.map.tmx.tiles.TMXAnimation;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
 import loon.canvas.LColor;
+import loon.events.DrawListener;
+import loon.events.DrawLoop;
 import loon.events.ResizeListener;
 import loon.geom.PointF;
 import loon.geom.RectBox;
@@ -53,7 +55,6 @@ import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.TArray;
-import loon.utils.TimeUtils;
 
 /**
  * TMX地图渲染用基本抽象类,所有TMX地图文件的渲染皆由此类的子类负责具体实现
@@ -61,6 +62,8 @@ import loon.utils.TimeUtils;
 public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, ISprite {
 
 	private final PointF _scrollDrag = new PointF();
+
+	private DrawListener<TMXMapRenderer> _drawListener;
 
 	private Vector2f _followOffset = new Vector2f();
 
@@ -92,33 +95,6 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	protected int lastHashCode = 1;
 
-	protected static class TileAnimator {
-
-		private TMXTile tile;
-
-		private int currentFrameIndex;
-		private float elapsedDuration;
-
-		public TileAnimator(TMXTile tile) {
-			this.tile = tile;
-			elapsedDuration = 0;
-			currentFrameIndex = 0;
-		}
-
-		public void update(long delta) {
-			elapsedDuration += TimeUtils.convert(delta, TimeUtils.getDefaultTimeUnit(), TimeUtils.Unit.MILLIS);
-
-			if (elapsedDuration >= tile.getFrames().get(currentFrameIndex).getDuration()) {
-				currentFrameIndex = (currentFrameIndex + 1) % tile.getFrames().size;
-				elapsedDuration = 0;
-			}
-		}
-
-		public TMXAnimationFrame getCurrentFrame() {
-			return tile.getFrames().get(currentFrameIndex);
-		}
-	}
-
 	protected abstract void renderTileLayer(GLEx gl, TMXTileLayer tileLayer);
 
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);
@@ -127,7 +103,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	protected IntMap<LTextureBatch.Cache> textureCaches;
 	protected ObjectMap<String, LTexture> textureMap;
-	protected ObjectMap<TMXTile, TileAnimator> tileAnimators;
+	protected ObjectMap<TMXTile, TMXAnimation> tileAnimators;
 
 	protected boolean visible;
 	protected float scaleX = 1f;
@@ -147,7 +123,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		this.setViewSize(viewW, viewH);
 		this.textureCaches = new IntMap<LTextureBatch.Cache>();
 		this.textureMap = new ObjectMap<String, LTexture>();
-		this.tileAnimators = new ObjectMap<TMXTile, TileAnimator>();
+		this.tileAnimators = new ObjectMap<TMXTile, TMXAnimation>();
 		this.visible = allowCache = true;
 		this.map = map;
 
@@ -158,7 +134,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 			}
 			for (TMXTile tile : tileSet.getTiles()) {
 				if (tile.isAnimated()) {
-					TileAnimator animator = new TileAnimator(tile);
+					TMXAnimation animator = new TMXAnimation(tile);
 					tileAnimators.put(tile, animator);
 				}
 			}
@@ -218,7 +194,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	@Override
 	public void update(long delta) {
-		for (TileAnimator animator : tileAnimators.values()) {
+		for (TMXAnimation animator : tileAnimators.values()) {
 			animator.update(delta);
 		}
 	}
@@ -542,6 +518,9 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 			if (mapLayer instanceof TMXImageLayer) {
 				renderImageLayer(g, (TMXImageLayer) mapLayer);
 			}
+		}
+		if (_drawListener != null) {
+			_drawListener.draw(g, _objectLocation.x, _objectLocation.y);
 		}
 		setLocation(ox, oy);
 		baseColor.a = tmpAlpha;
@@ -956,6 +935,32 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return this;
 	}
 
+	public DrawListener<TMXMapRenderer> getDrawListener() {
+		return _drawListener;
+	}
+
+	public TMXMapRenderer setDrawListener(DrawListener<TMXMapRenderer> drawListener) {
+		this._drawListener = drawListener;
+		return this;
+	}
+
+	public DrawLoop<TMXMapRenderer> getDrawable() {
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			return ((DrawLoop<TMXMapRenderer>) _drawListener);
+		}
+		return null;
+	}
+
+	public DrawLoop<TMXMapRenderer> drawable(DrawLoop.Drawable draw) {
+		DrawLoop<TMXMapRenderer> loop = null;
+		if (_drawListener != null && _drawListener instanceof DrawLoop) {
+			loop = getDrawable().onDrawable(draw);
+		} else {
+			setDrawListener(loop = new DrawLoop<TMXMapRenderer>(this, draw));
+		}
+		return loop;
+	}
+
 	@Override
 	public ISprite buildToScreen() {
 		if (sprites != null) {
@@ -997,6 +1002,7 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 			textureCaches.clear();
 		}
 		lastHashCode = 1;
+		_drawListener = null;
 		_resizeListener = null;
 		_collSpriteListener = null;
 	}

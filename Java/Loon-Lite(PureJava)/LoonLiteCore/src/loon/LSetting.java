@@ -34,7 +34,7 @@ public class LSetting {
 
 	private final static int MIN_RUN_FPS = 1;
 
-	private final static int MAX_RUN_FPS = 120;
+	private final static int MAX_RUN_FPS = 300;
 
 	public final static LSetting create(String appName, String fontName, int w, int h) {
 		return create(appName, fontName, LSystem.DEFAULT_SYS_FONT_SIZE, w, h, w, h);

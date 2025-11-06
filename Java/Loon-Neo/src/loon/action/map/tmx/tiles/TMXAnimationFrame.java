@@ -21,19 +21,21 @@
 package loon.action.map.tmx.tiles;
 
 public class TMXAnimationFrame {
-	private int tileID;
-	private int duration;
+
+	private int _tileID;
+
+	private int _duration;
 
 	public TMXAnimationFrame(int tileID, int duration) {
-		this.tileID = tileID;
-		this.duration = duration;
+		this._tileID = tileID;
+		this._duration = duration;
 	}
 
 	public int getTileID() {
-		return tileID;
+		return _tileID;
 	}
 
 	public int getDuration() {
-		return duration;
+		return _duration;
 	}
 }
