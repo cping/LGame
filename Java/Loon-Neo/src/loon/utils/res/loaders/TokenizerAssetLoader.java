@@ -49,17 +49,24 @@ public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 	}
 
 	@Override
+	public void loadData() {
+		close();
+		_tokenizer = BaseIO.loadStrTokenizer(_path);
+	}
+
+	@Override
 	public boolean completed() {
-		return (_tokenizer = BaseIO.loadStrTokenizer(_path)) != null;
+		return _tokenizer != null;
 	}
 
 	@Override
 	public PreloadItem item() {
-		return null;
+		return PreloadItem.Tokenizer;
 	}
 
 	@Override
 	public void close() {
+		_tokenizer = null;
 	}
 
 }

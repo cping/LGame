@@ -42,8 +42,14 @@ public class BytesAssetLoader extends AssetAbstractLoader<ArrayByte> {
 	}
 
 	@Override
+	public void loadData() {
+		close();
+		_bytes = BaseIO.loadArrayByte(_path);
+	}
+
+	@Override
 	public boolean completed() {
-		return (_bytes = BaseIO.loadArrayByte(_path)) != null;
+		return _bytes != null;
 	}
 
 	@Override

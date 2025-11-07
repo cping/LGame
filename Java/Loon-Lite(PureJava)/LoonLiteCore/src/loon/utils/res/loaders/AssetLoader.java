@@ -24,6 +24,8 @@ import loon.LRelease;
 
 public interface AssetLoader extends LRelease {
 
+	boolean load();
+
 	boolean completed();
 
 	String getPath();
@@ -31,5 +33,7 @@ public interface AssetLoader extends LRelease {
 	String getNickName();
 
 	PreloadItem item();
+
+	void loadData();
 
 }

@@ -40,15 +40,24 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 	}
 
 	@Override
-	public boolean completed() {
+	public void loadData() {
+		close();
 		_context = BaseIO.loadText(_path);
 		if (_context == null && _path.indexOf('.') == -1) {
 			_context = BaseIO.loadText(_path + ".json");
 		}
 		if (_context == null) {
+			return;
+		}
+		_json = LSystem.base().json().parse(_context);
+	}
+
+	@Override
+	public boolean completed() {
+		if (_context == null) {
 			return false;
 		}
-		return (_json = LSystem.base().json().parse(_context)) != null;
+		return _json != null;
 	}
 
 	@Override
@@ -63,6 +72,8 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 
 	@Override
 	public void close() {
+		_context = null;
+		_json = null;
 	}
 
 }

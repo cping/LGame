@@ -36,8 +36,14 @@ public class ConfigAssetLoader extends AssetAbstractLoader<ConfigReader> {
 	}
 
 	@Override
+	public void loadData() {
+		close();
+		_config = new ConfigReader(_path);
+	}
+
+	@Override
 	public boolean completed() {
-		return (_config = new ConfigReader(_path)) != null;
+		return _config != null;
 	}
 
 	@Override

@@ -32,12 +32,18 @@ public class TexturePackAssetLoader extends AssetAbstractLoader<LTexturePack> {
 
 	@Override
 	public boolean isLoaded() {
-		return _pack != null;
+		return _pack != null && !_pack.closed();
+	}
+
+	@Override
+	public void loadData() {
+		close();
+		_pack = new LTexturePack(_path);
 	}
 
 	@Override
 	public boolean completed() {
-		return (_pack = new LTexturePack(_path)) != null;
+		return _pack != null;
 	}
 
 	@Override

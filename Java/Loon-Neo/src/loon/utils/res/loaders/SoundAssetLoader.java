@@ -42,8 +42,14 @@ public class SoundAssetLoader extends AssetAbstractLoader<Sound> {
 	}
 
 	@Override
+	public void loadData() {
+		close();
+		_sound = BaseIO.loadSound(_path);
+	}
+
+	@Override
 	public boolean completed() {
-		return (_sound = BaseIO.loadSound(_path)) != null;
+		return _sound != null;
 	}
 
 	@Override

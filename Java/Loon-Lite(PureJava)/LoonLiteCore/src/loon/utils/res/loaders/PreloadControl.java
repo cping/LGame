@@ -81,6 +81,8 @@ public class PreloadControl implements LRelease {
 
 	private boolean _assetsLoading;
 
+	private int _loadedCount;
+
 	private float _preMaxFileCount;
 
 	private float _percent;
@@ -212,6 +214,15 @@ public class PreloadControl implements LRelease {
 		return 0f;
 	}
 
+	public float getRate() {
+		final int total = this._preAssets.waiting();
+		return total > 0 ? MathUtils.clamp(this._loadedCount, 0, total) / total : 1;
+	}
+
+	public int getLoadedCount() {
+		return this._loadedCount;
+	}
+
 	public boolean isLoaded() {
 		return MathUtils.equal(this._percent, this._maxPercent);
 	}
@@ -277,10 +288,12 @@ public class PreloadControl implements LRelease {
 	}
 
 	public PreloadControl addPercent() {
+		_loadedCount++;
 		return updatePercent(_percent++);
 	}
 
 	public PreloadControl removePercent() {
+		_loadedCount--;
 		return updatePercent(_percent--);
 	}
 
@@ -331,6 +344,7 @@ public class PreloadControl implements LRelease {
 		_assetsLoading = _assetsFailure = false;
 		_preMaxFileCount = _percent = _maxPercent = 0;
 		_preloadInterval = 0;
+		_loadedCount = 0;
 	}
 
 	public boolean isFinished() {

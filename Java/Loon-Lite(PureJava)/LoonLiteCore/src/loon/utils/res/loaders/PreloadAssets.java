@@ -483,16 +483,12 @@ public class PreloadAssets implements LRelease {
 	}
 
 	public boolean detection() {
-
 		if (_loads.size == 0) {
 			return false;
 		}
-
-		boolean result = false;
-		AssetLoader loader = this._loads.first();
-
-		if (loader != null && (result = loader.completed())) {
-			PreloadItem item = loader.item();
+		final AssetLoader loader = this._loads.first();
+		if (loader != null && loader.load()) {
+			final PreloadItem item = loader.item();
 			TArray<AssetLoader> list = _preloadMap.get(item);
 			if (list == null) {
 				list = new TArray<AssetLoader>();
@@ -502,10 +498,8 @@ public class PreloadAssets implements LRelease {
 			}
 			_preloadMap.put(item, list);
 			_loads.removeFirst();
-
-			return result;
+			return true;
 		}
-
 		return false;
 	}
 

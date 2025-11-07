@@ -39,12 +39,17 @@ public class BMFontAssetLoader extends AssetAbstractLoader<BMFont> {
 	}
 
 	@Override
-	public boolean completed() {
+	public void loadData() {
+		close();
 		if (_imgPath == null) {
 			_font = new BMFont(_path);
 		} else {
 			_font = new BMFont(_path, _imgPath);
 		}
+	}
+
+	@Override
+	public boolean completed() {
 		return _font != null;
 	}
 

@@ -39,7 +39,7 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 
 	public T sync() {
 		if (!isLoaded()) {
-			completed();
+			loadData();
 		}
 		return get();
 	}
@@ -48,7 +48,12 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 
 	public abstract T get();
 
+	@Override
 	public boolean load() {
+		boolean result = completed();
+		if (!result) {
+			loadData();
+		}
 		return completed();
 	}
 

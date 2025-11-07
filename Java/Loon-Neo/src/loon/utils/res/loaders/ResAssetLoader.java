@@ -41,8 +41,14 @@ public class ResAssetLoader extends AssetAbstractLoader<ResourceLocal> {
 	}
 
 	@Override
+	public void loadData() {
+		close();
+		_resource = new ResourceLocal(_path);
+	}
+
+	@Override
 	public boolean completed() {
-		return (_resource = new ResourceLocal(_path)) != null;
+		return _resource != null;
 	}
 
 	@Override
