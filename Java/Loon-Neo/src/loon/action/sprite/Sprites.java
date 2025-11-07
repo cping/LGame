@@ -1981,12 +1981,6 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		final float startX = MathUtils.scroll(newScrollX, drawWidth);
 		final float startY = MathUtils.scroll(newScrollY, drawHeight);
 
-		final boolean update = (startX != 0f || startY != 0f);
-
-		if (update) {
-			g.translate(startX, startY);
-		}
-
 		float minX, minY, maxX, maxY;
 
 		if (this._isViewWindowSet) {
@@ -2002,16 +1996,18 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		}
 
 		final boolean offset = (minX != 0 || minY != 0);
-
-		if (offset) {
-			g.translate(minX, minY);
-		}
-
-		final ISprite[] childs = _sprites;
-		final int size = this._size;
+		final boolean update = (startX != 0f || startY != 0f);
 
 		try {
 			afterSaveToBuffer(g);
+			if (update) {
+				g.translate(startX, startY);
+			}
+			if (offset) {
+				g.translate(minX, minY);
+			}
+			final ISprite[] childs = _sprites;
+			final int size = this._size;
 			if (_useLight && !_light.isClosed()) {
 				_light.setAutoTouchTimer(_screen.getTouchX(), _screen.getTouchY(), _screen.getCurrentTimer());
 				final ShaderMask lightMask = _light.getMask();
@@ -3379,7 +3375,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				}
 				_spriteFrameBuffer = new FrameBuffer(getWidth(), getHeight());
 			}
-			_spriteFrameBuffer.begin(g);
+			_spriteFrameBuffer.begin(g, -getX(), getY(), getWidth(), getHeight());
 		}
 	}
 
@@ -3400,7 +3396,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				}
 				g.updateShaderSource(oldShader);
 			}
-			if (_changeUVTilt) {
+			if (changUV) {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());

@@ -563,8 +563,8 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 			return;
 		}
 		try {
-			g.saveTx();
 			afterSaveToBuffer(g);
+			g.saveTx();
 			if (_useLight && !_light.isClosed()) {
 				_light.setAutoTouchTimer(_sysInput.getTouchX(), _sysInput.getTouchY(), _sysInput.getCurrentTimer());
 				final ShaderMask lightMask = _light.getMask();
@@ -1627,7 +1627,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				}
 				_desktopFrameBuffer = new FrameBuffer((int) getWidth(), (int) getHeight());
 			}
-			_desktopFrameBuffer.begin(g);
+			_desktopFrameBuffer.begin(g, -getX(), getY(), getWidth(), getHeight());
 		}
 	}
 
@@ -1648,7 +1648,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				}
 				g.updateShaderSource(oldShader);
 			}
-			if (_changeUVTilt) {
+			if (changUV) {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());

@@ -4910,7 +4910,8 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 					_screenFrameBuffer = new FrameBuffer(w, h);
 				}
 			}
-			_screenFrameBuffer.begin(g, x, y, w, h);
+			_screenFrameBuffer.begin(g, -getX() + x, getY() + y, MathUtils.max(getWidth(), w),
+					MathUtils.max(getHeight(), h));
 		}
 		afterUI(g);
 	}
@@ -4926,17 +4927,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				if (changUV) {
 					_screenFrameBuffer.begin(g);
 				}
-				g.draw(_screenFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY(), Direction.TRANS_FLIP);
+				g.draw(_screenFrameBuffer.texture(), _offsetUVx, _offsetUVy, Direction.TRANS_FLIP);
 				if (changUV) {
 					_screenFrameBuffer.end(g);
 				}
 				g.updateShaderSource(oldShader);
 			}
-			if (_changeUVTilt) {
+			if (changUV) {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
-				g.draw(_screenFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY());
+				g.draw(_screenFrameBuffer.texture(), _offsetUVx, _offsetUVy);
 				g.updateShaderSource(oldShader);
 			}
 		}
