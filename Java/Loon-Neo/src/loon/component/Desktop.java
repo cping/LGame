@@ -581,8 +581,8 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				}
 			}
 		} finally {
-			beforeSaveToBuffer(g);
 			g.restoreTx();
+			beforeSaveToBuffer(g);
 		}
 	}
 

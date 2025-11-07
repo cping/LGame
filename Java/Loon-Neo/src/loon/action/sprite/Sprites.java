@@ -2064,13 +2064,13 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				}
 			}
 		} finally {
-			beforeSaveToBuffer(g);
 			if (offset) {
 				g.translate(-minX, -minY);
 			}
 			if (update) {
 				g.translate(-startX, -startY);
 			}
+			beforeSaveToBuffer(g);
 		}
 	}
 
