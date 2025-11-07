@@ -261,7 +261,7 @@ public final class LTexturePack implements LRelease {
 		final String ext = PathUtils.getExtension(path).trim().toLowerCase();
 		if ("atlas".equals(ext)) {
 			setAtlas(path);
-		} else if ("xml".equals(ext) || "pack".equals(ext)) {
+		} else if (ext.length() == 0 || "xml".equals(ext) || "pack".equals(ext) || "txt".equals(ext)) {
 			setXML(path);
 		} else {
 			throw new LSysException("The path with the [" + ext + "] extension cannot be resolved.");

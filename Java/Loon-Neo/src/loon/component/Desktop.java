@@ -1642,7 +1642,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				if (changUV) {
 					_desktopFrameBuffer.begin(g);
 				}
-				g.draw(_desktopFrameBuffer.texture(), _offsetUVx, _offsetUVy, Direction.TRANS_FLIP);
+				g.draw(_desktopFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY(), Direction.TRANS_FLIP);
 				if (changUV) {
 					_desktopFrameBuffer.end(g);
 				}
@@ -1652,7 +1652,7 @@ public final class Desktop implements Visible, ZIndex, IArray, LRelease {
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
-				g.draw(_desktopFrameBuffer.texture(), _offsetUVx, _offsetUVy);
+				g.draw(_desktopFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY());
 				g.updateShaderSource(oldShader);
 			}
 		}

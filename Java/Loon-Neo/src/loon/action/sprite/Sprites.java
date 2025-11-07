@@ -3394,7 +3394,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				if (changUV) {
 					_spriteFrameBuffer.begin(g);
 				}
-				g.draw(_spriteFrameBuffer.texture(), _offsetUVx, _offsetUVy, Direction.TRANS_FLIP);
+				g.draw(_spriteFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY(), Direction.TRANS_FLIP);
 				if (changUV) {
 					_spriteFrameBuffer.end(g);
 				}
@@ -3404,7 +3404,7 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 				_uvMask.setViewSize(getWidth(), getHeight());
 				_uvMask.update();
 				final ShaderSource oldShader = g.updateShaderSource(_uvMask.getBilinearShader());
-				g.draw(_spriteFrameBuffer.texture(), _offsetUVx, _offsetUVy);
+				g.draw(_spriteFrameBuffer.texture(), _offsetUVx + getX(), _offsetUVy + getY());
 				g.updateShaderSource(oldShader);
 			}
 		}
