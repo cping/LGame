@@ -51,6 +51,7 @@ import loon.utils.processes.GameProcessType;
 import loon.utils.processes.RealtimeProcess;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Port;
+import loon.utils.res.loaders.PreloadAssets;
 import loon.utils.timer.LTimerContext;
 
 /**
@@ -119,6 +120,8 @@ public final class LProcess implements LRelease {
 	private final ObjectBundle _bundle;
 
 	private final LGame _game;
+	
+	private PreloadAssets _globalAssets;
 
 	private TArray<Updateable> _loadcaches;
 
@@ -227,6 +230,15 @@ public final class LProcess implements LRelease {
 
 	public SysInputFactory getSysInputFactory() {
 		return this._currentInput;
+	}
+	
+	public LProcess setGlobalAssets(PreloadAssets assets) {
+		_globalAssets = assets;
+		return this;
+	}
+
+	public PreloadAssets getGlobalAssets() {
+		return _globalAssets;
 	}
 
 	public LProcess setShaderSource(final ShaderSource src) {

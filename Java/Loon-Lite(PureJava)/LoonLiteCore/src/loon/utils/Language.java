@@ -20,59 +20,9 @@
  */
 package loon.utils;
 
-import java.util.Locale;
-
-import loon.LSysException;
-import loon.LSystem;
-
 public class Language {
 
 	private static Language ROOT_LANG;
-
-	public static Locale newLocaleFromCode(String vl) {
-		if (StringUtils.isEmpty(vl)) {
-			throw new LSysException("'value' must be present");
-		}
-		String[] parameters = StringUtils.split(vl, '_');
-		if (parameters.length == 0) {
-			parameters = StringUtils.split(vl, LSystem.COMMA);
-		}
-		if (parameters.length == 0) {
-			parameters = StringUtils.split(vl, '-');
-		}
-		if (parameters.length == 0) {
-			throw new LSysException("'value' must not be empty");
-		}
-		final Locale newLocale;
-		switch (parameters.length) {
-		case 1:
-			newLocale = new Locale(parameters[0]);
-			break;
-		case 2:
-			newLocale = new Locale(parameters[0], parameters[1]);
-			break;
-		case 3:
-			newLocale = new Locale(parameters[0], parameters[1], parameters[2]);
-			break;
-		default:
-			throw new LSysException("Unknown locale descriptor: " + vl);
-		}
-		return newLocale;
-	}
-
-	private static boolean checkLocale(Language localeSrc, Locale localeDst) {
-		return localeSrc.getLanguage().equals(localeDst.toString()) || localeSrc.getCountry().equals(localeDst.toString());
-	}
-
-	public static boolean isEastLanguage() {
-		return isEastLocale(Locale.getDefault());
-	}
-
-	public static boolean isEastLocale(Locale locale) {
-		return checkLocale(Language.getJP(), locale) || checkLocale(Language.getKR(), locale)
-				|| checkLocale(Language.getZHCN(), locale) || checkLocale(Language.getZHTW(), locale)
-				|| checkLocale(Language.getZHHK(), locale);
-	}
 
 	private String _language;
 
@@ -94,17 +44,9 @@ public class Language {
 		this(language, "", "");
 	}
 
-	public Language(Locale locale) {
-		this(locale.getLanguage(), locale.getCountry(), locale.getVariant());
-	}
-
-	public Language() {
-		this(Locale.getDefault());
-	}
-
 	public static final Language getDefault() {
 		if (ROOT_LANG == null) {
-			ROOT_LANG = new Language();
+			ROOT_LANG = getEN();
 		}
 		return ROOT_LANG;
 	}

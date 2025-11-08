@@ -116,6 +116,10 @@ public abstract class Stage extends Screen implements PreloadLoader {
 			this._preload = new PreloadControl(this);
 			this.init();
 			this._preload.prestart();
+			final LProcess process = getProcess();
+			if (process != null) {
+				process.setGlobalAssets(_preload.getPreloadAssets());
+			}
 		} catch (Throwable cause) {
 			LSystem.error("Screen create failure", cause);
 		}

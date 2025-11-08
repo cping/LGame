@@ -136,6 +136,7 @@ import loon.utils.reply.GoFuture;
 import loon.utils.reply.ObjLazy;
 import loon.utils.reply.Port;
 import loon.utils.res.ResourceLocal;
+import loon.utils.res.loaders.PreloadAssets;
 import loon.utils.timer.Duration;
 import loon.utils.timer.LTimer;
 import loon.utils.timer.LTimerContext;
@@ -2935,6 +2936,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 */
 	public LProcess getProcess() {
 		return this._processHandler;
+	}
+
+	/**
+	 * 获得全局预加载资源
+	 * 
+	 * @return
+	 */
+	public PreloadAssets getGlobalPreloadAssets() {
+		if (_processHandler != null) {
+			return _processHandler.getGlobalAssets();
+		}
+		return null;
 	}
 
 	/**
