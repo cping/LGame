@@ -20,8 +20,8 @@
  */
 package loon.utils.res.loaders;
 
-import loon.BaseIO;
 import loon.utils.parse.StrTokenizer;
+import loon.utils.res.TextResource;
 
 public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 
@@ -51,7 +51,7 @@ public class TokenizerAssetLoader extends AssetAbstractLoader<StrTokenizer> {
 	@Override
 	public void loadData() {
 		close();
-		_tokenizer = BaseIO.loadStrTokenizer(_path);
+		_tokenizer = TextResource.get().loadStrTokenizer(_path, _delimiters);
 	}
 
 	@Override

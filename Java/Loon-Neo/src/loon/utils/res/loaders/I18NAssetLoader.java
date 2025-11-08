@@ -37,13 +37,14 @@ public class I18NAssetLoader extends AssetAbstractLoader<I18N> {
 
 	@Override
 	public boolean isLoaded() {
-		return _i18n != null;
+		return _i18n != null && _i18n.isClosed();
 	}
 
 	@Override
 	public void loadData() {
 		close();
 		_i18n = new I18N(_path);
+		_i18n.loadConfig();
 	}
 
 	@Override

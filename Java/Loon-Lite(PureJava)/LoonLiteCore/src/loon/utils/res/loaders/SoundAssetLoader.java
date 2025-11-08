@@ -61,6 +61,7 @@ public class SoundAssetLoader extends AssetAbstractLoader<Sound> {
 	public void close() {
 		if (_sound != null) {
 			_sound.release();
+			_sound = null;
 		}
 	}
 

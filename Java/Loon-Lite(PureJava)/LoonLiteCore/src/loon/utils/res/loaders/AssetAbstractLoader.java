@@ -21,6 +21,7 @@
 package loon.utils.res.loaders;
 
 import loon.LSysException;
+import loon.LSystem;
 import loon.utils.StringUtils;
 
 public abstract class AssetAbstractLoader<T> implements AssetLoader {
@@ -28,6 +29,8 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 	protected String _path;
 
 	protected String _nickname;
+
+	protected boolean _runThrowException;
 
 	protected void set(String path, String nickname) {
 		if (StringUtils.isEmpty(path)) {
@@ -54,11 +57,25 @@ public abstract class AssetAbstractLoader<T> implements AssetLoader {
 		if (!result) {
 			loadData();
 		}
-		return completed();
+		result = completed();
+		if (!result) {
+			final String path = "Failed to load file location [" + _path + "]. The specified path was not found.";
+			if (_runThrowException) {
+				throw new LSysException(path);
+			} else {
+				LSystem.error(path);
+			}
+		}
+		return result;
 	}
 
 	public void unload() {
 		close();
+	}
+
+	@Override
+	public void setRunThrowException(boolean r) {
+		_runThrowException = r;
 	}
 
 	@Override

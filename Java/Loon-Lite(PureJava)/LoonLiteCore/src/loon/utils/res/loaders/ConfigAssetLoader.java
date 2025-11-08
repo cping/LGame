@@ -38,7 +38,7 @@ public class ConfigAssetLoader extends AssetAbstractLoader<ConfigReader> {
 	@Override
 	public void loadData() {
 		close();
-		_config = new ConfigReader(_path);
+		_config = ConfigReader.shared(_path);
 	}
 
 	@Override

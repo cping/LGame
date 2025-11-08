@@ -39,7 +39,7 @@ public class PreloadControl implements LRelease {
 	/**
 	 * 预加载进度管理器
 	 */
-	protected class PreloadProcess extends RealtimeProcess {
+	protected final class PreloadProcess extends RealtimeProcess {
 
 		private PreloadControl _control;
 
@@ -55,19 +55,16 @@ public class PreloadControl implements LRelease {
 
 		@Override
 		public void run(LTimerContext time) {
-
+			_control.setCurrentAsset(_assets.getFirstAsset());
 			if (!_assets.completed()) {
 				_assets.detection();
 			}
-
 			_control.updatePercent((_maxValue - _assets.waiting()), _maxValue);
 			_control.preloadProgress(_control._percent);
-
 			if (_assets.completed()) {
 				_control.prefinish();
 				kill();
 			}
-
 		}
 	}
 
@@ -75,11 +72,15 @@ public class PreloadControl implements LRelease {
 
 	private TArray<String> _otherAssets;
 
+	private AssetLoader _curAssetLoader;
+
 	private boolean _closedFreeResource;
 
 	private boolean _assetsFailure;
 
 	private boolean _assetsLoading;
+
+	private boolean _runThrowException;
 
 	private int _loadedCount;
 
@@ -115,9 +116,18 @@ public class PreloadControl implements LRelease {
 			this._preAssets.close();
 			this._preAssets = null;
 		}
-		this._preAssets = new PreloadAssets();
+		this._preAssets = new PreloadAssets(_runThrowException);
 		this._assetsLoading = true;
 		this._assetsFailure = false;
+	}
+
+	public PreloadControl runThrowException(boolean r) {
+		_runThrowException = r;
+		return this;
+	}
+
+	public boolean isRunThrowException() {
+		return _runThrowException;
 	}
 
 	public PreloadControl loadAssets(String... others) {
@@ -257,6 +267,14 @@ public class PreloadControl implements LRelease {
 		clear();
 		prestart();
 		return this;
+	}
+
+	protected void setCurrentAsset(AssetLoader asset) {
+		_curAssetLoader = asset;
+	}
+
+	public AssetLoader getCurrentAsset() {
+		return _curAssetLoader;
 	}
 
 	public PreloadAssets getPreloadAssets() {

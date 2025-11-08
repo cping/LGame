@@ -20,6 +20,7 @@
  */
 package loon.utils.res.loaders;
 
+import loon.utils.res.TextResource;
 import loon.utils.xml.XMLDocument;
 import loon.utils.xml.XMLListener;
 import loon.utils.xml.XMLParser;
@@ -42,13 +43,13 @@ public class XmlAssetLoader extends AssetAbstractLoader<XMLDocument> {
 
 	@Override
 	public boolean isLoaded() {
-		close();
 		return _xmlDoc != null && !_xmlDoc.isClosed();
 	}
 
 	@Override
 	public void loadData() {
-		_xmlDoc = XMLParser.parse(_path, _listener);
+		close();
+		_xmlDoc = XMLParser.loadText(TextResource.get().loadText(_path), _listener);
 	}
 
 	@Override

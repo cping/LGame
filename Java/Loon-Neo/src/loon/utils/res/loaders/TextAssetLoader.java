@@ -20,8 +20,8 @@
  */
 package loon.utils.res.loaders;
 
-import loon.BaseIO;
 import loon.utils.StringUtils;
+import loon.utils.res.TextResource;
 
 public class TextAssetLoader extends AssetAbstractLoader<String> {
 
@@ -45,7 +45,7 @@ public class TextAssetLoader extends AssetAbstractLoader<String> {
 	public void loadData() {
 		close();
 		if (!StringUtils.isEmpty(_path) && StringUtils.isNullOrEmpty(_context)) {
-			this._context = BaseIO.loadText(_path);
+			this._context = TextResource.get().loadText(_path);
 		}
 	}
 

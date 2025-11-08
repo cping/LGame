@@ -158,6 +158,10 @@ public class I18N implements LRelease {
 		return result;
 	}
 
+	public boolean isClosed() {
+		return _langConfig.isClosed();
+	}
+
 	@Override
 	public void close() {
 		if (_langConfig != null) {

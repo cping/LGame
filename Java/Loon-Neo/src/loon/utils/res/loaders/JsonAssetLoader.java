@@ -22,11 +22,13 @@ package loon.utils.res.loaders;
 
 import loon.BaseIO;
 import loon.Json;
-import loon.LSystem;
+import loon.utils.res.TextResource;
 
 public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 
-	private Json.Object _json;
+	private Json.Object _jsonObj;
+
+	private Json.Array _jsonArray;
 
 	private String _context;
 
@@ -36,20 +38,26 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 
 	@Override
 	public boolean isLoaded() {
-		return _json != null;
+		return _jsonObj != null || _jsonArray != null;
 	}
 
 	@Override
 	public void loadData() {
 		close();
-		_context = BaseIO.loadText(_path);
+		_context = TextResource.get().loadText(_path);
 		if (_context == null && _path.indexOf('.') == -1) {
-			_context = BaseIO.loadText(_path + ".json");
+			_context = (_path + ".json");
 		}
+		_context = TextResource.get().loadText(_context);
 		if (_context == null) {
 			return;
 		}
-		_json = LSystem.base().json().parse(_context);
+		Object obj = BaseIO.loadJsonObjectContext(_context);
+		if (obj instanceof Json.Object) {
+			_jsonObj = (Json.Object) obj;
+		} else {
+			_jsonArray = (Json.Array) obj;
+		}
 	}
 
 	@Override
@@ -57,12 +65,16 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 		if (_context == null) {
 			return false;
 		}
-		return _json != null;
+		return _jsonObj != null || _jsonArray != null;
+	}
+
+	public Json.Array getArray() {
+		return _jsonArray;
 	}
 
 	@Override
 	public Json.Object get() {
-		return _json;
+		return _jsonObj;
 	}
 
 	@Override
@@ -73,7 +85,8 @@ public class JsonAssetLoader extends AssetAbstractLoader<Json.Object> {
 	@Override
 	public void close() {
 		_context = null;
-		_json = null;
+		_jsonObj = null;
+		_jsonArray = null;
 	}
 
 }

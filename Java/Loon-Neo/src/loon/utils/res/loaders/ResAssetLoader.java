@@ -58,5 +58,9 @@ public class ResAssetLoader extends AssetAbstractLoader<ResourceLocal> {
 
 	@Override
 	public void close() {
+		if (_resource != null) {
+			_resource.close();
+			_resource = null;
+		}
 	}
 }

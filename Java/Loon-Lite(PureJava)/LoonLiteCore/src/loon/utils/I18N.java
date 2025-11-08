@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,7 +32,7 @@ public class I18N implements LRelease {
 
 	public final static I18N bindLanguage(Language language, I18N i18n, String mapKey) {
 		if (_I18N_CACHE == null) {
-			_I18N_CACHE = new ObjectMap<>(LSystem.DEFAULT_MAX_CACHE_SIZE);
+			_I18N_CACHE = new ObjectMap<String, I18N>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 		}
 		I18N i18nOld = _I18N_CACHE.get(language.toString());
 		if (i18nOld != null && i18nOld != i18n) {
@@ -71,7 +71,7 @@ public class I18N implements LRelease {
 
 	public final static I18N getLanguage(Language language, String mapKey) {
 		if (_I18N_CACHE == null) {
-			_I18N_CACHE = new ObjectMap<>(LSystem.DEFAULT_MAX_CACHE_SIZE);
+			_I18N_CACHE = new ObjectMap<String, I18N>(LSystem.DEFAULT_MAX_CACHE_SIZE);
 		}
 		I18N i18n = _I18N_CACHE.get(language.toString());
 		if (i18n != null && !StringUtils.isEmpty(mapKey)) {
@@ -122,7 +122,7 @@ public class I18N implements LRelease {
 	}
 
 	public String getText(String res) {
-		return getText(res, "");
+		return getText(res, LSystem.EMPTY);
 	}
 
 	public String getText(String res, String vl) {
@@ -156,6 +156,10 @@ public class I18N implements LRelease {
 			result = StringUtils.replace(result, "\\r", "\r");
 		}
 		return result;
+	}
+
+	public boolean isClosed() {
+		return _langConfig.isClosed();
 	}
 
 	@Override

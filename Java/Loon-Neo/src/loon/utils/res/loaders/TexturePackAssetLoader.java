@@ -20,14 +20,18 @@
  */
 package loon.utils.res.loaders;
 
+import loon.LTexture;
 import loon.opengl.LTexturePack;
 
 public class TexturePackAssetLoader extends AssetAbstractLoader<LTexturePack> {
 
 	private LTexturePack _pack;
 
-	public TexturePackAssetLoader(String path, String nickname) {
+	private LTexture.Format _textureFormat;
+
+	public TexturePackAssetLoader(String path, String nickname, LTexture.Format f) {
 		set(path, nickname);
+		_textureFormat = f;
 	}
 
 	@Override
@@ -39,11 +43,17 @@ public class TexturePackAssetLoader extends AssetAbstractLoader<LTexturePack> {
 	public void loadData() {
 		close();
 		_pack = new LTexturePack(_path);
+		_pack.setFormat(_textureFormat);
+		_pack.pack();
 	}
 
 	@Override
 	public boolean completed() {
 		return _pack != null;
+	}
+
+	public LTexture.Format getFormat() {
+		return _textureFormat;
 	}
 
 	@Override

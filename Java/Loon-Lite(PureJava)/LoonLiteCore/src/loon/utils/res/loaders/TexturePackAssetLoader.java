@@ -39,6 +39,7 @@ public class TexturePackAssetLoader extends AssetAbstractLoader<LTexturePack> {
 	public void loadData() {
 		close();
 		_pack = new LTexturePack(_path);
+		_pack.pack();
 	}
 
 	@Override

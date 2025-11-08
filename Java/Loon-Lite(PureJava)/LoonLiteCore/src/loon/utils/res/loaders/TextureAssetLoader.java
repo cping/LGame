@@ -20,8 +20,8 @@
  */
 package loon.utils.res.loaders;
 
-import loon.BaseIO;
 import loon.LTexture;
+import loon.LTextures;
 
 public class TextureAssetLoader extends AssetAbstractLoader<LTexture> {
 
@@ -39,7 +39,8 @@ public class TextureAssetLoader extends AssetAbstractLoader<LTexture> {
 	@Override
 	public void loadData() {
 		close();
-		_texture = BaseIO.loadTexture(_path);
+		_texture = LTextures.loadTexture(_path);
+		_texture.loadTexture();
 	}
 
 	@Override

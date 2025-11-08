@@ -23,6 +23,7 @@ package loon.utils.res.loaders;
 import loon.LRelease;
 import loon.LSysException;
 import loon.LSystem;
+import loon.LTexture;
 import loon.utils.LIterator;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Values;
@@ -37,7 +38,14 @@ public class PreloadAssets implements LRelease {
 
 	private ObjectMap<PreloadItem, TArray<AssetLoader>> _preloadMap;
 
+	private boolean _runThrowException;
+
 	public PreloadAssets() {
+		this(false);
+	}
+
+	public PreloadAssets(boolean runException) {
+		this._runThrowException = runException;
 		this._loads = new TArray<AssetLoader>();
 		this._preloadMap = new ObjectMap<PreloadItem, TArray<AssetLoader>>();
 	}
@@ -47,9 +55,19 @@ public class PreloadAssets implements LRelease {
 			throw new LSysException("AssetLoader cannot be null");
 		}
 		if (!_loads.contains(loader)) {
+			loader.setRunThrowException(_runThrowException);
 			this._loads.add(loader);
 		}
 		return this;
+	}
+
+	public PreloadAssets runThrowException(boolean r) {
+		_runThrowException = r;
+		return this;
+	}
+
+	public boolean isRunThrowException() {
+		return _runThrowException;
 	}
 
 	private boolean checkPathRedundancy(PreloadItem item, String path) {
@@ -153,12 +171,20 @@ public class PreloadAssets implements LRelease {
 	}
 
 	public PreloadAssets texturePack(String path) {
-		return texturePack(path, null);
+		return texturePack(path, LTexture.Format.LINEAR);
+	}
+
+	public PreloadAssets texturePack(String path, LTexture.Format f) {
+		return texturePack(path, null, f);
 	}
 
 	public PreloadAssets texturePack(String path, String nickname) {
+		return texturePack(path, nickname, LTexture.Format.LINEAR);
+	}
+
+	public PreloadAssets texturePack(String path, String nickname, LTexture.Format f) {
 		checkAssets(PreloadItem.TexturePack, path, nickname);
-		return load(new TextureAssetLoader(path, nickname));
+		return load(new TexturePackAssetLoader(path, nickname, f));
 	}
 
 	public PreloadAssets res(String path) {
@@ -228,12 +254,20 @@ public class PreloadAssets implements LRelease {
 	}
 
 	public PreloadAssets texture(String path) {
-		return texture(path, null);
+		return texture(path, LTexture.Format.LINEAR);
+	}
+
+	public PreloadAssets texture(String path, LTexture.Format f) {
+		return texture(path, null, f);
 	}
 
 	public PreloadAssets texture(String path, String nickname) {
+		return texture(path, nickname, LTexture.Format.LINEAR);
+	}
+
+	public PreloadAssets texture(String path, String nickname, LTexture.Format f) {
 		checkAssets(PreloadItem.Texture, path, nickname);
-		return load(new TextureAssetLoader(path, nickname));
+		return load(new TextureAssetLoader(path, nickname, f));
 	}
 
 	public PreloadAssets json(String path) {
@@ -480,6 +514,14 @@ public class PreloadAssets implements LRelease {
 		}
 
 		return null;
+	}
+
+	public AssetLoader getLastAsset() {
+		return _loads.last();
+	}
+
+	public AssetLoader getFirstAsset() {
+		return _loads.first();
 	}
 
 	public boolean detection() {

@@ -35,5 +35,7 @@ public interface AssetLoader extends LRelease {
 	PreloadItem item();
 
 	void loadData();
+	
+	void setRunThrowException(boolean r);
 
 }

@@ -46,6 +46,7 @@ public class BDFontAssetLoader extends AssetAbstractLoader<BDFont> {
 		} else {
 			_font = new BDFont(_path, _fontSize);
 		}
+		_font.loadFont();
 	}
 
 	@Override

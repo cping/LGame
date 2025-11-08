@@ -59,6 +59,7 @@ public class ContextAssetLoader extends AssetAbstractLoader<String> {
 
 	@Override
 	public void close() {
+		_context = null;
 	}
 
 }
