@@ -31,11 +31,11 @@ import loon.opengl.GLEx;
  */
 public class ScrollEffect extends BaseAbstractEffect {
 
-	private int backgroundLoop;
+	private int _backgroundLoop;
 
-	private int count;
+	private int _count;
 
-	private int model;
+	private int _model;
 
 	public ScrollEffect(String fileName) {
 		this(LSystem.loadTexture(fileName));
@@ -74,8 +74,8 @@ public class ScrollEffect extends BaseAbstractEffect {
 		this.setTexture(tex2d);
 		this.setRepaint(true);
 		this.setDelay(10);
-		this.count = LSystem.toIScaleFPS(1);
-		this.model = d;
+		this._count = LSystem.toIScaleFPS(1);
+		this._model = d;
 	}
 
 	@Override
@@ -84,18 +84,18 @@ public class ScrollEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			switch (model) {
+			switch (_model) {
 			case Config.DOWN:
 			case Config.TDOWN:
 			case Config.UP:
 			case Config.TUP:
-				this.backgroundLoop = (int) ((backgroundLoop + count) % _height);
+				this._backgroundLoop = (int) ((_backgroundLoop + _count) % _height);
 				break;
 			case Config.LEFT:
 			case Config.RIGHT:
 			case Config.TLEFT:
 			case Config.TRIGHT:
-				this.backgroundLoop = (int) ((backgroundLoop + count) % _width);
+				this._backgroundLoop = (int) ((_backgroundLoop + _count) % _width);
 				break;
 			}
 		}
@@ -109,13 +109,13 @@ public class ScrollEffect extends BaseAbstractEffect {
 		if (_image == null) {
 			return;
 		}
-		switch (model) {
+		switch (_model) {
 		case Config.DOWN:
 		case Config.TDOWN:
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
 					final float offX = (j * _width) + offsetX;
-					final float offY = (i * _height + backgroundLoop) + offsetY;
+					final float offY = (i * _height + _backgroundLoop) + offsetY;
 					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
 			}
@@ -124,7 +124,7 @@ public class ScrollEffect extends BaseAbstractEffect {
 		case Config.TRIGHT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					final float offX = (j * _width - backgroundLoop + _width) + offsetX;
+					final float offX = (j * _width - _backgroundLoop + _width) + offsetX;
 					final float offY = (i * _height) + offsetY;
 					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
@@ -135,7 +135,7 @@ public class ScrollEffect extends BaseAbstractEffect {
 			for (int i = -1; i < 1; i++) {
 				for (int j = 0; j < 1; j++) {
 					final float offX = (j * _width) + offsetX;
-					final float offY = (i * _height - backgroundLoop + _height) + offsetY;
+					final float offY = (i * _height - _backgroundLoop + _height) + offsetY;
 					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
 			}
@@ -144,7 +144,7 @@ public class ScrollEffect extends BaseAbstractEffect {
 		case Config.TLEFT:
 			for (int j = -1; j < 1; j++) {
 				for (int i = 0; i < 1; i++) {
-					final float offX = (j * _width + backgroundLoop) + offsetX;
+					final float offX = (j * _width + _backgroundLoop) + offsetX;
 					final float offY = (i * _height) + offsetY;
 					g.draw(_image, drawX(offX), drawX(offY), _width, _height, 0, 0, _width, _height);
 				}
@@ -154,11 +154,11 @@ public class ScrollEffect extends BaseAbstractEffect {
 	}
 
 	public int getCount() {
-		return count;
+		return _count;
 	}
 
 	public ScrollEffect setCount(int count) {
-		this.count = count;
+		this._count = count;
 		return this;
 	}
 

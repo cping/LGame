@@ -31,95 +31,95 @@ import loon.utils.MathUtils;
  */
 public class RainKernel implements IKernel {
 
-	private boolean exist;
+	private boolean _exist;
 
-	private LTexture rain;
+	private LTexture _rain;
 
-	private int id;
+	private int _id;
 
-	private float offsetX, offsetY;
+	private float _offsetX, _offsetY;
 
-	private float x, y, width, height;
+	private float _x, _y, _width, _height;
 
-	private float rainWidth, rainHeight;
+	private float _rainWidth, _rainHeight;
 
 	public RainKernel(LTexturePack pack, int n, int w, int h) {
 		this(pack.getTexture(LSystem.getSystemImagePath() + "rain_" + n), n, w, h, -1f);
 	}
 
 	public RainKernel(LTexture texture, int n, int w, int h, float r) {
-		this.rain = texture;
-		this.rainWidth = rain.width();
-		this.rainHeight = rain.height();
-		this.width = w;
-		this.height = h;
-		this.offsetX = 0;
+		this._rain = texture;
+		this._rainWidth = _rain.width();
+		this._rainHeight = _rain.height();
+		this._width = w;
+		this._height = h;
+		this._offsetX = 0;
 		if (r == -1f) {
-			offsetY = (5 - n) * 30 + 75 + MathUtils.random() * 15;
+			_offsetY = (5 - n) * 30 + 75 + MathUtils.random() * 15;
 		} else {
-			offsetY = r;
+			_offsetY = r;
 		}
 	}
 
 	@Override
 	public int id() {
-		return id;
+		return _id;
 	}
 
 	public RainKernel make() {
-		exist = true;
-		x = MathUtils.random() * width;
-		y = -rainHeight;
+		_exist = true;
+		_x = MathUtils.random() * _width;
+		_y = -_rainHeight;
 		return this;
 	}
 
 	@Override
 	public void update() {
-		if (!exist) {
-			if (MathUtils.random() < 0.002) {
+		if (!_exist) {
+			if (MathUtils.random() < 0.002f) {
 				make();
 			}
 		} else {
-			x += offsetX;
-			y += offsetY;
-			if (y >= height) {
-				x = MathUtils.random() * width;
-				y = -rainHeight * MathUtils.random();
+			_x += _offsetX;
+			_y += _offsetY;
+			if (_y >= _height) {
+				_x = MathUtils.random() * _width;
+				_y = -_rainHeight * MathUtils.random();
 			}
 		}
 	}
 
 	@Override
 	public void draw(GLEx g, float mx, float my) {
-		if (exist) {
-			rain.draw(mx + x, my + y);
+		if (_exist) {
+			_rain.draw(mx + _x, my + _y);
 		}
 	}
 
 	@Override
 	public LTexture get() {
-		return rain;
+		return _rain;
 	}
 
 	@Override
 	public float getHeight() {
-		return rainHeight;
+		return _rainHeight;
 	}
 
 	@Override
 	public float getWidth() {
-		return rainWidth;
+		return _rainWidth;
 	}
 
 	public boolean isClosed() {
-		return rain == null || rain.isClosed();
+		return _rain == null || _rain.isClosed();
 	}
 
 	@Override
 	public void close() {
-		if (rain != null) {
-			rain.close();
-			rain = null;
+		if (_rain != null) {
+			_rain.close();
+			_rain = null;
 		}
 	}
 

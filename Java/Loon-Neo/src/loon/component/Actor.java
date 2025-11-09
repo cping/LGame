@@ -831,7 +831,11 @@ public class Actor extends LObject<Actor>
 			if (this.image == null) {
 				width = _objectLocation.x() * cellSize + cellSize;
 				height = _objectLocation.y() * cellSize + cellSize;
-				this._boundingRect = new RectBox(width, height, 0, 0);
+				if (this._boundingRect == null) {
+					this._boundingRect = new RectBox(width, height, 0, 0);
+				} else {
+					this._boundingRect.setBounds(width, height, 0, 0);
+				}
 				for (minY = 0; minY < 4; ++minY) {
 					this._positionXs[minY] = width;
 					this._positionYs[minY] = height;

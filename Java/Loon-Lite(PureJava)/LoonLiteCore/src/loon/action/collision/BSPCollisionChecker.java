@@ -86,7 +86,7 @@ public final class BSPCollisionChecker implements CollisionChecker {
 	}
 
 	protected final RectBox createRect() {
-		return new RectBox();
+		return createRect(0f, 0f, 0f, 0f);
 	}
 
 	protected final RectBox createRect(float x, float y, float w, float h) {

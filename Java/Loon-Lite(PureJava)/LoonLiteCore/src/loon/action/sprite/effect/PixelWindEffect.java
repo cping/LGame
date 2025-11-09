@@ -30,11 +30,11 @@ import loon.utils.MathUtils;
  */
 public class PixelWindEffect extends PixelBaseEffect {
 
-	private int randSeed;
+	private int _randSeed;
 
-	private TriangleEffect[] sd;
+	private TriangleEffect[] _sd;
 
-	private LColor[] colors;
+	private LColor[] _colors;
 
 	public PixelWindEffect(LColor color) {
 		this(color, LSystem.LAYER_TILE_SIZE, LSystem.LAYER_TILE_SIZE, 64);
@@ -46,11 +46,11 @@ public class PixelWindEffect extends PixelBaseEffect {
 
 	public PixelWindEffect(LColor color, int s, int r, int time, int limit) {
 		super(color, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
-		this.randSeed = r;
+		this._randSeed = r;
 		this.limit = limit;
-		this.sd = new TriangleEffect[s];
-		this.colors = new LColor[s];
-		this.triangleEffects.add(sd);
+		this._sd = new TriangleEffect[s];
+		this._colors = new LColor[s];
+		this.triangleEffects.add(_sd);
 		this.setDelay(0);
 		setEffectDelay(0);
 	}
@@ -65,11 +65,11 @@ public class PixelWindEffect extends PixelBaseEffect {
 		}
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		for (int i = 0; i < sd.length; i++) {
-			if (sd[i] != null) {
+		for (int i = 0; i < _sd.length; i++) {
+			if (_sd[i] != null) {
 				continue;
 			}
-			if (MathUtils.random(100) >= randSeed) {
+			if (MathUtils.random(100) >= _randSeed) {
 				break;
 			}
 			float[][] res = { { 0.0f, 10f }, { 8f, -5f }, { -8f, -5f } };
@@ -81,24 +81,24 @@ public class PixelWindEffect extends PixelBaseEffect {
 			}
 			int x = MathUtils.random(32) + 16;
 			float y = x / 10;
-			sd[i] = new TriangleEffect(res, x, y, MathUtils.random(24) + 24);
-			sd[i].setPosY(MathUtils.random(_height));
-			sd[i].setPosX(0f);
-			colors[i] = new LColor(_baseColor.getRed(), (int) (_baseColor.g * (128 + MathUtils.random(128))),
+			_sd[i] = new TriangleEffect(res, x, y, MathUtils.random(24) + 24);
+			_sd[i].setPosY(MathUtils.random(_height));
+			_sd[i].setPosX(0f);
+			_colors[i] = new LColor(_baseColor.getRed(), (int) (_baseColor.g * (128 + MathUtils.random(128))),
 					(int) (_baseColor.b * MathUtils.random(128)));
 		}
 
-		for (int j = 0; j < sd.length; j++) {
-			if (colors[j] == null) {
+		for (int j = 0; j < _sd.length; j++) {
+			if (_colors[j] == null) {
 				continue;
 			}
-			g.setColor(colors[j]);
-			if (sd[j] == null) {
+			g.setColor(_colors[j]);
+			if (_sd[j] == null) {
 				continue;
 			}
-			sd[j].drawPaint(g, 0, 0);
-			if (sd[j].getPosX() > _width || sd[j].getPosY() > _height) {
-				sd[j] = null;
+			_sd[j].drawPaint(g, 0, 0);
+			if (_sd[j].getPosX() > _width || _sd[j].getPosY() > _height) {
+				_sd[j] = null;
 			}
 		}
 

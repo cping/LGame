@@ -28,110 +28,110 @@ import loon.utils.MathUtils;
 
 public class PetalKernel implements IKernel {
 
-	private boolean exist;
+	private boolean _exist;
 
-	private LTexture sakura;
+	private LTexture _sakura;
 
-	private float offsetX, offsetY, speed;
+	private float _offsetX, _offsetY, _speed;
 
-	private float x, y, width, height;
+	private float _x, _y, _width, _height;
 
-	private float sakuraWidth, sakuraHeight;
+	private float _sakuraWidth, _sakuraHeight;
 
-	private int id;
+	private int _id;
 
 	public PetalKernel(LTexturePack pack, int n, int w, int h) {
 		this(pack.getTexture(LSystem.getSystemImagePath() + "sakura_" + n), n, w, h, -1f);
 	}
 
 	public PetalKernel(LTexture texture, int n, int w, int h, float r) {
-		this.id = n;
-		this.sakura = texture;
-		this.sakuraWidth = sakura.width();
-		this.sakuraHeight = sakura.height();
-		this.width = w;
-		this.height = h;
-		this.offsetX = 0;
+		this._id = n;
+		this._sakura = texture;
+		this._sakuraWidth = _sakura.width();
+		this._sakuraHeight = _sakura.height();
+		this._width = w;
+		this._height = h;
+		this._offsetX = 0;
 		if (r == -1f) {
-			this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+			this._offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
 		} else {
-			this.offsetY = r;
+			this._offsetY = r;
 		}
-		speed = MathUtils.random();
+		_speed = MathUtils.random();
 	}
 
 	@Override
 	public int id() {
-		return id;
+		return _id;
 	}
 
 	public void make() {
-		this.exist = true;
-		this.x = MathUtils.random() * width;
-		this.y = -sakuraHeight;
+		this._exist = true;
+		this._x = MathUtils.random() * _width;
+		this._y = -_sakuraHeight;
 	}
 
 	@Override
 	public void update() {
-		if (!exist) {
-			if (MathUtils.random() < 0.002) {
+		if (!_exist) {
+			if (MathUtils.random() < 0.002f) {
 				make();
 			}
 		} else {
-			x += offsetX;
-			y += offsetY;
-			offsetX += speed;
-			speed += (MathUtils.random() - 0.5) * 0.3;
-			if (offsetX >= 1.5) {
-				offsetX = 1.5f;
+			_x += _offsetX;
+			_y += _offsetY;
+			_offsetX += _speed;
+			_speed += (MathUtils.random() - 0.5f) * 0.3f;
+			if (_offsetX >= 1.5f) {
+				_offsetX = 1.5f;
 			}
-			if (offsetX <= -1.5) {
-				offsetX = -1.5f;
+			if (_offsetX <= -1.5) {
+				_offsetX = -1.5f;
 			}
-			if (speed >= 0.2) {
-				speed = 0.2f;
+			if (_speed >= 0.2f) {
+				_speed = 0.2f;
 			}
-			if (speed <= -0.2) {
-				speed = -0.2f;
+			if (_speed <= -0.2f) {
+				_speed = -0.2f;
 			}
-			if (y >= height) {
-				y = -(MathUtils.random() * 1) - sakuraHeight;
-				x = (MathUtils.random() * (width - 1));
+			if (_y >= _height) {
+				_y = -(MathUtils.random() * 1) - _sakuraHeight;
+				_x = (MathUtils.random() * (_width - 1));
 			}
 		}
 	}
 
 	@Override
 	public void draw(GLEx g, float mx, float my) {
-		if (exist) {
-			sakura.draw(mx + x, my + y);
+		if (_exist) {
+			_sakura.draw(mx + _x, my + _y);
 		}
 	}
 
 	@Override
 	public LTexture get() {
-		return sakura;
+		return _sakura;
 	}
 
 	@Override
 	public float getHeight() {
-		return sakuraHeight;
+		return _sakuraHeight;
 	}
 
 	@Override
 	public float getWidth() {
-		return sakuraWidth;
+		return _sakuraWidth;
 	}
 
 	public boolean isClosed() {
-		return sakura == null || sakura.isClosed();
+		return _sakura == null || _sakura.isClosed();
 	}
 
 	@Override
 	public void close() {
-		if (sakura != null) {
-			sakura.close();
-			sakura = null;
+		if (_sakura != null) {
+			_sakura.close();
+			_sakura = null;
 		}
 	}
 

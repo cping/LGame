@@ -31,106 +31,106 @@ import loon.utils.MathUtils;
  */
 public class SnowKernel implements IKernel {
 
-	private boolean exist;
+	private boolean _exist;
 
-	private LTexture snow;
+	private LTexture _snow;
 
-	private int id;
+	private int _id;
 
-	private float offsetX, offsetY, speed;
+	private float _offsetX, _offsetY, _speed;
 
-	private float x, y, width, height;
+	private float _x, _y, _width, _height;
 
-	private float snowWidth, snowHeight;
+	private float _snowWidth, _snowHeight;
 
 	public SnowKernel(LTexturePack pack, int n, int w, int h) {
 		this(pack.getTexture(LSystem.getSystemImagePath() + "snow_" + n), n, w, h);
 	}
 
 	public SnowKernel(LTexture texture, int n, int w, int h) {
-		this.snow = texture;
-		this.snowWidth = snow.width();
-		this.snowHeight = snow.height();
-		this.width = w;
-		this.height = h;
-		this.offsetX = 0;
-		this.offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
-		speed = MathUtils.random();
+		this._snow = texture;
+		this._snowWidth = _snow.width();
+		this._snowHeight = _snow.height();
+		this._width = w;
+		this._height = h;
+		this._offsetX = 0;
+		this._offsetY = n * 0.6f + 1.9f + MathUtils.random() * 0.2f;
+		_speed = MathUtils.random();
 	}
 
 	@Override
 	public int id() {
-		return id;
+		return _id;
 	}
 
 	public SnowKernel make() {
-		exist = true;
-		x = MathUtils.random() * width;
-		y = -snowHeight;
+		_exist = true;
+		_x = MathUtils.random() * _width;
+		_y = -_snowHeight;
 		return this;
 	}
 
 	@Override
 	public void update() {
-		if (!exist) {
-			if (MathUtils.random() < 0.002) {
+		if (!_exist) {
+			if (MathUtils.random() < 0.002f) {
 				make();
 			}
 		} else {
-			x += offsetX;
-			y += offsetY;
-			offsetX += speed;
-			speed += (MathUtils.random() - 0.5) * 0.3;
-			if (offsetX >= 1.5) {
-				offsetX = 1.5f;
+			_x += _offsetX;
+			_y += _offsetY;
+			_offsetX += _speed;
+			_speed += (MathUtils.random() - 0.5f) * 0.3f;
+			if (_offsetX >= 1.5f) {
+				_offsetX = 1.5f;
 			}
-			if (offsetX <= -1.5) {
-				offsetX = -1.5f;
+			if (_offsetX <= -1.5f) {
+				_offsetX = -1.5f;
 			}
-			if (speed >= 0.2) {
-				speed = 0.2f;
+			if (_speed >= 0.2f) {
+				_speed = 0.2f;
 			}
-			if (speed <= -0.2) {
-				speed = -0.2f;
+			if (_speed <= -0.2f) {
+				_speed = -0.2f;
 			}
-			if (y >= height) {
-				y = -snowHeight;
-				x = MathUtils.random() * width;
+			if (_y >= _height) {
+				_y = -_snowHeight;
+				_x = MathUtils.random() * _width;
 			}
 		}
 	}
 
 	@Override
 	public void draw(GLEx g, float mx, float my) {
-		if (exist) {
-			snow.draw(mx + x, my + y);
+		if (_exist) {
+			_snow.draw(mx + _x, my + _y);
 		}
 	}
 
 	@Override
 	public LTexture get() {
-		return snow;
+		return _snow;
 	}
 
 	@Override
 	public float getHeight() {
-		return snowHeight;
+		return _snowHeight;
 	}
 
 	@Override
 	public float getWidth() {
-		return snowWidth;
+		return _snowWidth;
 	}
 
 	public boolean isClosed() {
-		return snow == null || snow.isClosed();
+		return _snow == null || _snow.isClosed();
 	}
 
 	@Override
 	public void close() {
-		if (snow != null) {
-			snow.close();
-			snow = null;
+		if (_snow != null) {
+			_snow.close();
+			_snow = null;
 		}
 	}
 

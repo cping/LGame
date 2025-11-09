@@ -63,9 +63,9 @@ public final class CollisionHelper extends ShapeUtils {
 		}
 	}
 
-	private static final RectBox rectTemp1 = new RectBox();
+	private final static RectBox rectTemp1 = new RectBox();
 
-	private static final RectBox rectTemp2 = new RectBox();
+	private final static RectBox rectTemp2 = new RectBox();
 
 	private final static PointI tmp_point = new PointI(0, 0);
 

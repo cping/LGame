@@ -20,6 +20,8 @@
  */
 package loon.utils.cache;
 
+import loon.events.Created;
+import loon.events.DefaultCreated;
 import loon.utils.ObjectMap;
 
 /**
@@ -29,10 +31,70 @@ import loon.utils.ObjectMap;
  */
 public final class Pools<T> {
 
+	private static Pools<Object> _instance;
+
+	public static void freeStatic() {
+		_instance = null;
+	}
+
+	public static final Pools<Object> get() {
+		synchronized (Pools.class) {
+			if (_instance == null) {
+				_instance = new Pools<Object>();
+			}
+			return _instance;
+		}
+	}
+	
+	public static final <T> Pools<T> create() {
+		return new Pools<T>();
+	}
+
 	private final ObjectMap<String, Pool<T>> _inPoolDic;
 
 	public Pools() {
 		_inPoolDic = new ObjectMap<String, Pool<T>>();
+	}
+
+	public T create(String sign, T item) {
+		return create(sign, new DefaultCreated<T>(item));
+	}
+
+	public T create(String sign, Created<T> c) {
+		Pool<T> p = getBySign(sign);
+		if (p != null) {
+			T v = p.pop();
+			if (v == null) {
+				v = c.make();
+				p.push(v);
+			}
+			return v;
+		} else {
+			p = new DefaultPool<T>(c);
+			_inPoolDic.put(sign, p);
+			return c.make();
+		}
+	}
+
+	public void recover(String sign, Created<T> c) {
+		Pool<T> p = getBySign(sign);
+		if (p != null) {
+			p.push(c.make());
+		} else {
+			p = new DefaultPool<T>(c);
+			_inPoolDic.put(sign, p);
+		}
+	}
+
+	public void recover(String sign, T item) {
+		Pool<T> p = getBySign(sign);
+		if (p != null) {
+			p.push(item);
+		} else {
+			p = new DefaultPool<T>();
+			p.push(item);
+			_inPoolDic.put(sign, p);
+		}
 	}
 
 	public Pools<T> recover(String sign, Pool<T> item) {

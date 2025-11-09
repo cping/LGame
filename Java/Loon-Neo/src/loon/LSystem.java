@@ -60,6 +60,7 @@ import loon.utils.NumberUtils;
 import loon.utils.Scale;
 import loon.utils.TArray;
 import loon.utils.TempVars;
+import loon.utils.cache.Pools;
 import loon.utils.json.JsonImpl;
 import loon.utils.processes.RealtimeProcessManager;
 import loon.utils.reply.Act;
@@ -390,6 +391,7 @@ public final class LSystem {
 		GameTime.freeStatic();
 		Duration.freeStatic();
 		TempVars.freeStatic();
+		Pools.freeStatic();
 		DefUI.freeUI();
 		PAUSED = false;
 		_scaleWidth = 1f;
