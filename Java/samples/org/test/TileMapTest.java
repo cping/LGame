@@ -22,12 +22,14 @@ public class TileMapTest extends Screen{
 
 	@Override
 	public void onLoad() {
-
-		TMXMap tmx = new TMXMap("isometric_grass_and_water.tmx", "");
+		TMXMap tmx = new TMXMap("isometric_grass_and_water.tmx");
 		TMXMapRenderer sprite = tmx.getMapRenderer();
-	    sprite.setLocation(-200, -150);
+		// sprite.setLocation(-200, -150);
 		add(sprite);
-		add(MultiScreenTest.getBackButton(this,0));
+		drag((x, y) -> {
+			sprite.scroll(x, y);
+		});
+		add(MultiScreenTest.getBackButton(this, 0));
 	}
 
 	@Override

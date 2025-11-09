@@ -25,6 +25,7 @@ import loon.LSystem;
 import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 import loon.utils.res.TextResource;
 import loon.utils.xml.XMLDocument;
@@ -34,6 +35,10 @@ import loon.utils.xml.XMLParser;
 public class TMXTileSet {
 
 	private int firstGID;
+	private int lastGID;
+
+	private int hTileCount;
+	private int vTileCount;
 
 	private String name;
 
@@ -99,7 +104,13 @@ public class TMXTileSet {
 			image.parse(element, tilesLocation);
 		}
 
-		int tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
+		int tileCount = 0;
+		if (image != null) {
+			tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
+			this.hTileCount = MathUtils.abs(this.image.getWidth() / (this.tileWidth + this.spacing));
+			this.vTileCount = MathUtils.abs(this.image.getHeight() / (this.tileHeight + this.margin));
+			this.lastGID = MathUtils.max(this.firstGID + (((this.hTileCount * this.vTileCount) - 1)), 0);
+		}
 
 		for (int tID = 0; tID < tileCount; tID++) {
 			TMXTile tile = new TMXTile(tID + firstGID);
@@ -169,9 +180,13 @@ public class TMXTileSet {
 			image = new TMXImage();
 			image.parse(nodes, tilesLocation);
 		}
-
-		int tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
-
+		int tileCount = 0;
+		if (image != null) {
+			tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
+			this.hTileCount = MathUtils.abs(this.image.getWidth() / (this.tileWidth + this.spacing));
+			this.vTileCount = MathUtils.abs(this.image.getHeight() / (this.tileHeight + this.margin));
+			this.lastGID = MathUtils.max(this.firstGID + (((this.hTileCount * this.vTileCount) - 1)), 0);
+		}
 		for (int tID = 0; tID < tileCount; tID++) {
 			TMXTile tile = new TMXTile(tID + firstGID);
 			tiles.add(tile);
@@ -196,12 +211,28 @@ public class TMXTileSet {
 		}
 	}
 
+	public boolean contains(int gid) {
+		return gid >= this.firstGID && gid <= this.lastGID;
+	}
+
 	public int getFirstGID() {
 		return firstGID;
 	}
 
+	public int getLastGID() {
+		return lastGID;
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	public int getHorizontalTileCount() {
+		return this.hTileCount;
+	}
+
+	public int getVerticalTileCount() {
+		return this.vTileCount;
 	}
 
 	public int getTileWidth() {

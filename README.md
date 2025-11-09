@@ -1,8 +1,9 @@
 ![LGame Logo](https://raw.github.com/cping/LGame/master/loon_logo.svg)
 ## Loon Game Engine (Java Game Framework)
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
-
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+
+**LGame** is a cross-platform java game framework (engine), offering comprehensive foundational modules for 2D games (with 3D support planned for future releases). It supports platforms including Windows, Linux, macOS, Android, web browsers, and iOS. Additionally, it provides native implementations in C# and C++ alongside syntax conversion to accommodate as many systems as possible.
 
 [EN](README.md) / [KR](README.kr.md)
 
@@ -99,24 +100,13 @@ public class Main  {
 
 LGame comes with a file called LGameProjectMake.jar which is an executable UI and command line tool. You can simply execute the JAR file which will open the setup UI.
 
-
 ![LGame](https://raw.github.com/cping/LGame/master/install.png "install")
-
-Built-in over 30 game example(Part screenshots):
 
 ![LGame](https://raw.github.com/cping/LGame/master/e0x.png "0")
 
 ![LGame](https://raw.github.com/cping/LGame/master/e1x.png "1")
 
-![LGame](https://raw.github.com/cping/LGame/master/e2x.png "2")
-
-![LGame](https://raw.github.com/cping/LGame/master/e3x.png "3")
-
-![LGame](https://raw.github.com/cping/LGame/master/e4x.png "4")
-
 ![LGame](https://raw.github.com/cping/LGame/master/sample.jpg "samplelist")
-
-![LGame](https://raw.github.com/cping/LGame/master/live2dsupport.png "live2d_support")
 _________
 
 #### 关于LGame
@@ -126,8 +116,3 @@ _________
 主版本3個，Java版(0.5版)基本构建完毕，C#版构建中，C++版构建中，理论上Java版是核心，以后会提供工具相互转化语法为其它版本，因为Java跨平台是天坑，多个语言多条路……
 
 此外还有一个和标准版同API(略有精简)的纯Java环境lite版(Loon-Lite)，不使用任何第三方库，仅使用Java运行环境提供的图形接口（也就是只用Graphics和Canvas的API封装），目前只能跑在JavaFX、JavaSE(标准JDK)以及Android、GWT、TeaVM这些环境，主要是当作2D图形特效库以及UI库使用，不过基本游戏功能都有，纯血javaer专用，万一以后有人把GraalVM扩展出多平台的渲染库，也可能在更多平台运行。以后还可能有一个基于精简版的TypeScript版本。
-_________
-
-License : http://www.apache.org/licenses/LICENSE-2.0
-
-This Java implemented game framework(but will provide a cross-compiler contain C#,C/C++,Go,JavaScript or other programming language implemented),Support IOS\Android\WP7\PSM\Mac\Windows\Linux.
