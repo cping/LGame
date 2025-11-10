@@ -30,40 +30,40 @@ import loon.utils.xml.XMLElement;
 
 public class TMXPolygon {
 
-	private TArray<TMXPoint> points;
+	private TArray<TMXPoint> _points;
 
-	private FloatArray arrays;
+	private FloatArray _arrays;
 
-	private Polygon polygon;
+	private Polygon _polygon;
 
 	public TMXPolygon() {
-		points = new TArray<TMXPoint>();
-		arrays = new FloatArray();
+		_points = new TArray<TMXPoint>();
+		_arrays = new FloatArray();
 	}
 
 	public Polygon getPolygon() {
-		if (polygon == null) {
-			polygon = new Polygon(arrays.toArray());
+		if (_polygon == null) {
+			_polygon = new Polygon(_arrays.toArray());
 		} else {
-			polygon.setPolygon(arrays.toArray(), arrays.length);
+			_polygon.setPolygon(_arrays.toArray(), _arrays.length);
 		}
-		return polygon;
+		return _polygon;
 	}
 
 	public FloatArray getFloatPoints() {
-		return arrays;
+		return _arrays;
 	}
 
 	public TMXPoint getPoint(int index) {
-		return points.get(index);
+		return _points.get(index);
 	}
 
 	public TArray<TMXPoint> getPoints() {
-		return points;
+		return _points;
 	}
 
 	public int getNumPoints() {
-		return points.size;
+		return _points.size;
 	}
 
 	public void parse(Json.Object element) {
@@ -77,9 +77,9 @@ public class TMXPolygon {
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
-			arrays.add(point.x, point.y);
+			_arrays.add(point.x, point.y);
 
-			points.add(point);
+			_points.add(point);
 		}
 	}
 
@@ -94,14 +94,14 @@ public class TMXPolygon {
 			TMXPoint point = new TMXPoint();
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
-			arrays.add(point.x, point.y);
+			_arrays.add(point.x, point.y);
 
-			points.add(point);
+			_points.add(point);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return StringUtils.format("TMXPolygon [" + points.toString() + "]");
+		return StringUtils.format("TMXPolygon [" + _points.toString() + "]");
 	}
 }

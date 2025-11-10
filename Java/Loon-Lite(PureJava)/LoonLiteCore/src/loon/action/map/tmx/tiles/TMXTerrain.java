@@ -27,43 +27,43 @@ import loon.utils.xml.XMLElement;
 
 public class TMXTerrain {
 
-	private String name;
+	private String _name;
 
-	private int tileID;
+	private int _tileID;
 
-	private TMXProperties properties;
+	private TMXProperties _properties;
 
 	public TMXTerrain() {
-		properties = new TMXProperties();
+		_properties = new TMXProperties();
 	}
 
 	public void parse(Json.Object element) {
-		name = element.getString("name", LSystem.EMPTY);
-		tileID = element.getInt("tile", 0);
+		_name = element.getString("name", LSystem.EMPTY);
+		_tileID = element.getInt("tile", 0);
 		Json.Array nodes = element.getArray("properties");
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public void parse(XMLElement element) {
-		name = element.getAttribute("name", LSystem.EMPTY);
-		tileID = element.getIntAttribute("tile", 0);
+		_name = element.getAttribute("name", LSystem.EMPTY);
+		_tileID = element.getIntAttribute("tile", 0);
 		XMLElement nodes = element.getChildrenByName("properties");
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public int getTileID() {
-		return tileID;
+		return _tileID;
 	}
 
 	public TMXProperties getProperties() {
-		return properties;
+		return _properties;
 	}
 }

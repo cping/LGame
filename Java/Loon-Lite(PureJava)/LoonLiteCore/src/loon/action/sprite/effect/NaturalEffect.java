@@ -36,15 +36,15 @@ public class NaturalEffect extends BaseAbstractEffect {
 		Rain, Snow, Petal, Thunder;
 	}
 
-	private NaturalType naturalType;
+	private NaturalType _naturalType;
 
-	private LightningEffect lightningEffect;
+	private LightningEffect _lightningEffect;
 
-	private LTexturePack pack;
+	private LTexturePack _pack;
 
-	private int count;
+	private int _count;
 
-	private IKernel[] kernels;
+	private IKernel[] _kernels;
 
 	/**
 	 * 返回默认数量的雷电
@@ -235,42 +235,42 @@ public class NaturalEffect extends BaseAbstractEffect {
 	}
 
 	public NaturalEffect(NaturalType ntype, int count, int limit, int x, int y, int w, int h) {
-		this.naturalType = ntype;
+		this._naturalType = ntype;
 		this.setLocation(x, y);
 		this.setSize(w, h);
 		this.setRepaint(true);
-		this.count = count;
+		this._count = count;
 		if (ntype == NaturalType.Thunder) {
 			this.setDelay(10);
 		} else {
 			this.setDelay(80);
 		}
-		this.pack = new LTexturePack(LSystem.getSystemImagePath() + "natural.txt");
+		this._pack = new LTexturePack(LSystem.getSystemImagePath() + "natural.txt");
 		switch (ntype) {
 		case Petal:
-			this.kernels = new PetalKernel[count];
+			this._kernels = new PetalKernel[count];
 			for (int i = 0; i < count; i++) {
 				int no = MathUtils.random(0, limit);
-				kernels[i] = new PetalKernel(pack, no, w, h);
+				_kernels[i] = new PetalKernel(_pack, no, w, h);
 			}
 			break;
 		case Snow:
-			this.kernels = new SnowKernel[count];
+			this._kernels = new SnowKernel[count];
 			for (int i = 0; i < count; i++) {
 				int no = MathUtils.random(0, limit);
-				kernels[i] = new SnowKernel(pack, no, w, h);
+				_kernels[i] = new SnowKernel(_pack, no, w, h);
 			}
 			break;
 		case Rain:
-			this.kernels = new RainKernel[count];
+			this._kernels = new RainKernel[count];
 			for (int i = 0; i < count; i++) {
 				int no = MathUtils.random(0, limit);
-				kernels[i] = new RainKernel(pack, no, w, h);
+				_kernels[i] = new RainKernel(_pack, no, w, h);
 			}
 			break;
 		case Thunder:
-			LightningEffect.get().loadLightning(pack);
-			lightningEffect = LightningEffect.addRandom(count, new Vector2f(0, 0), new Vector2f(w, h), LColor.white);
+			LightningEffect.get().loadLightning(_pack);
+			_lightningEffect = LightningEffect.addRandom(count, new Vector2f(0, 0), new Vector2f(w, h), LColor.white);
 		}
 	}
 
@@ -280,11 +280,11 @@ public class NaturalEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			if (naturalType == NaturalType.Thunder && lightningEffect != null) {
-				lightningEffect.onUpdate(elapsedTime);
+			if (_naturalType == NaturalType.Thunder && _lightningEffect != null) {
+				_lightningEffect.onUpdate(elapsedTime);
 			} else {
-				for (int i = 0; i < count; i++) {
-					kernels[i].update();
+				for (int i = 0; i < _count; i++) {
+					_kernels[i].update();
 				}
 			}
 		}
@@ -295,25 +295,25 @@ public class NaturalEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
-		if (naturalType == NaturalType.Thunder && lightningEffect != null) {
-			lightningEffect.repaint(g, drawX(offsetX), drawY(offsetY));
+		if (_naturalType == NaturalType.Thunder && _lightningEffect != null) {
+			_lightningEffect.repaint(g, drawX(offsetX), drawY(offsetY));
 		} else {
-			for (int i = 0; i < count; i++) {
-				kernels[i].draw(g, drawX(offsetX), drawY(offsetY));
+			for (int i = 0; i < _count; i++) {
+				_kernels[i].draw(g, drawX(offsetX), drawY(offsetY));
 			}
 		}
 	}
 
 	public NaturalType getNaturalType() {
-		return naturalType;
+		return _naturalType;
 	}
 
 	public IKernel[] getKernels() {
-		return kernels;
+		return _kernels;
 	}
 
 	public NaturalEffect setKernels(IKernel[] kernels) {
-		this.kernels = kernels;
+		this._kernels = kernels;
 		return this;
 	}
 
@@ -326,20 +326,20 @@ public class NaturalEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (kernels != null) {
-			int size = kernels.length;
+		if (_kernels != null) {
+			int size = _kernels.length;
 			for (int i = 0; i < size; i++) {
-				kernels[i].close();
-				kernels[i] = null;
+				_kernels[i].close();
+				_kernels[i] = null;
 			}
 		}
-		if (pack != null) {
-			pack.close();
-			pack = null;
+		if (_pack != null) {
+			_pack.close();
+			_pack = null;
 		}
-		if (lightningEffect != null) {
-			lightningEffect.close();
-			lightningEffect = null;
+		if (_lightningEffect != null) {
+			_lightningEffect.close();
+			_lightningEffect = null;
 		}
 	}
 

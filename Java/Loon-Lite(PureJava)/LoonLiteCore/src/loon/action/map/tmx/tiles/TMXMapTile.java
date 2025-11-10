@@ -36,49 +36,49 @@ public class TMXMapTile {
 
 	}
 
-	private int tileSetID;
-	private int id;
-	private int gid;
+	private int _tileSetID;
+	private int _id;
+	private int _gid;
 
-	private boolean flippedHorizontally;
-	private boolean flippedVertically;
-	private boolean flippedDiagonally;
+	private boolean _flippedHorizontally;
+	private boolean _flippedVertically;
+	private boolean _flippedDiagonally;
 
 	public TMXMapTile(int gid, int tileSetFirstID, int tileSetID) {
 
-		this.tileSetID = tileSetID;
+		this._tileSetID = tileSetID;
 
-		flippedHorizontally = (gid & TMXMap.FLIPPED_HORIZONTALLY_FLAG) != 0;
-		flippedVertically = (gid & TMXMap.FLIPPED_VERTICALLY_FLAG) != 0;
-		flippedDiagonally = (gid & TMXMap.FLIPPED_DIAGONALLY_FLAG) != 0;
+		_flippedHorizontally = (gid & TMXMap.FLIPPED_HORIZONTALLY_FLAG) != 0;
+		_flippedVertically = (gid & TMXMap.FLIPPED_VERTICALLY_FLAG) != 0;
+		_flippedDiagonally = (gid & TMXMap.FLIPPED_DIAGONALLY_FLAG) != 0;
 
-		this.gid = (int) (gid & ~(TMXMap.FLIPPED_HORIZONTALLY_FLAG | TMXMap.FLIPPED_VERTICALLY_FLAG
+		this._gid = (int) (gid & ~(TMXMap.FLIPPED_HORIZONTALLY_FLAG | TMXMap.FLIPPED_VERTICALLY_FLAG
 				| TMXMap.FLIPPED_DIAGONALLY_FLAG));
-		this.id = gid - tileSetFirstID;
+		this._id = gid - tileSetFirstID;
 	}
 
 	public int getTileSetID() {
-		return tileSetID;
+		return _tileSetID;
 	}
 
 	public int getID() {
-		return id;
+		return _id;
 	}
 
 	public int getGID() {
-		return gid;
+		return _gid;
 	}
 
 	public boolean isFlippedHorizontally() {
-		return flippedHorizontally;
+		return _flippedHorizontally;
 	}
 
 	public boolean isFlippedVertically() {
-		return flippedVertically;
+		return _flippedVertically;
 	}
 
 	public boolean isFlippedDiagonally() {
-		return flippedDiagonally;
+		return _flippedDiagonally;
 	}
 
 	public Flips getFlips() {
@@ -87,42 +87,42 @@ public class TMXMapTile {
 
 	public Flips getFlips(float x, float y, float cx, float cy) {
 		Flips flips = new Flips();
-		if (!flippedDiagonally && !flippedVertically && !flippedHorizontally) {
+		if (!_flippedDiagonally && !_flippedVertically && !_flippedHorizontally) {
 			flips.angle = 0f;
 			flips.cos = 1f;
 			flips.sin = 0f;
 			flips.flip = false;
-		} else if (!flippedDiagonally && !flippedVertically && flippedHorizontally) {
+		} else if (!_flippedDiagonally && !_flippedVertically && _flippedHorizontally) {
 			flips.angle = 0f;
 			flips.cos = 1f;
 			flips.sin = 0f;
 			flips.flip = true;
-		} else if (flippedDiagonally && !flippedVertically && flippedHorizontally) {
+		} else if (_flippedDiagonally && !_flippedVertically && _flippedHorizontally) {
 			flips.angle = 1f;
 			flips.cos = 0f;
 			flips.sin = 1f;
 			flips.flip = false;
-		} else if (flippedDiagonally && flippedVertically && flippedHorizontally) {
+		} else if (_flippedDiagonally && _flippedVertically && _flippedHorizontally) {
 			flips.angle = 1f;
 			flips.cos = 0f;
 			flips.sin = 1f;
 			flips.flip = true;
-		} else if (!flippedDiagonally && flippedVertically && flippedHorizontally) {
+		} else if (!_flippedDiagonally && _flippedVertically && _flippedHorizontally) {
 			flips.angle = 2f;
 			flips.cos = -1f;
 			flips.sin = 0f;
 			flips.flip = false;
-		} else if (!flippedDiagonally && flippedVertically && !flippedHorizontally) {
+		} else if (!_flippedDiagonally && _flippedVertically && !_flippedHorizontally) {
 			flips.angle = 2f;
 			flips.cos = -1f;
 			flips.sin = 0f;
 			flips.flip = true;
-		} else if (flippedDiagonally && flippedVertically && !flippedHorizontally) {
+		} else if (_flippedDiagonally && _flippedVertically && !_flippedHorizontally) {
 			flips.angle = 3f;
 			flips.cos = 0f;
 			flips.sin = -1f;
 			flips.flip = false;
-		} else if (flippedDiagonally && !flippedVertically && !flippedHorizontally) {
+		} else if (_flippedDiagonally && !_flippedVertically && !_flippedHorizontally) {
 			flips.angle = 3f;
 			flips.cos = 0f;
 			flips.sin = -1f;
@@ -135,12 +135,12 @@ public class TMXMapTile {
 
 	@Override
 	public int hashCode() {
-		int result = id;
-		result = LSystem.unite(result, gid);
-		result = LSystem.unite(result, tileSetID);
-		result = LSystem.unite(result, flippedHorizontally);
-		result = LSystem.unite(result, flippedVertically);
-		result = LSystem.unite(result, flippedDiagonally);
+		int result = _id;
+		result = LSystem.unite(result, _gid);
+		result = LSystem.unite(result, _tileSetID);
+		result = LSystem.unite(result, _flippedHorizontally);
+		result = LSystem.unite(result, _flippedVertically);
+		result = LSystem.unite(result, _flippedDiagonally);
 		return result;
 	}
 }

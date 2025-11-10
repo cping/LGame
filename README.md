@@ -106,6 +106,8 @@ LGame comes with a file called LGameProjectMake.jar which is an executable UI an
 
 ![LGame](https://raw.github.com/cping/LGame/master/e1x.png "1")
 
+![LGame](https://raw.github.com/cping/LGame/master/e2x.jpg "2")
+
 ![LGame](https://raw.github.com/cping/LGame/master/sample.jpg "samplelist")
 _________
 

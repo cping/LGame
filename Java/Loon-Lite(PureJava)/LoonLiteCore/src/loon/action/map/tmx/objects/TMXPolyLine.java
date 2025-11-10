@@ -28,22 +28,22 @@ import loon.utils.xml.XMLElement;
 
 public class TMXPolyLine {
 
-	private TArray<TMXPoint> points;
+	private TArray<TMXPoint> _points;
 
 	public TMXPolyLine() {
-		points = new TArray<TMXPoint>();
+		_points = new TArray<TMXPoint>();
 	}
 
 	public TMXPoint getPoint(int index) {
-		return points.get(index);
+		return _points.get(index);
 	}
 
 	public TArray<TMXPoint> getPoints() {
-		return points;
+		return _points;
 	}
 
 	public int getNumPoints() {
-		return points.size;
+		return _points.size;
 	}
 
 	public void parse(Json.Object element) {
@@ -56,7 +56,7 @@ public class TMXPolyLine {
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
 
-			points.add(point);
+			_points.add(point);
 		}
 	}
 
@@ -71,12 +71,12 @@ public class TMXPolyLine {
 			point.x = Integer.parseInt(subTokens[0].trim());
 			point.y = Integer.parseInt(subTokens[1].trim());
 
-			points.add(point);
+			_points.add(point);
 		}
 	}
 
 	@Override
 	public String toString() {
-		return StringUtils.format("TMXPolyLine [" + points.toString() + "]");
+		return StringUtils.format("TMXPolyLine [" + _points.toString() + "]");
 	}
 }

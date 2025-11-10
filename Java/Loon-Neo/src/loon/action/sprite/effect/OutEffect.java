@@ -31,9 +31,9 @@ import loon.opengl.GLEx;
  */
 public class OutEffect extends BaseAbstractEffect {
 
-	private int model, multiples;
+	private int _model, _multiples;
 
-	private RectBox limit;
+	private RectBox _limit;
 
 	public OutEffect(String fileName, int code) {
 		this(LSystem.loadTexture(fileName), code);
@@ -47,9 +47,9 @@ public class OutEffect extends BaseAbstractEffect {
 		this.setTexture(t);
 		this.setSize(t.width(), t.height());
 		this.setRepaint(true);
-		this.model = code;
-		this.multiples = 1;
-		this.limit = limit;
+		this._model = code;
+		this._multiples = 1;
+		this._limit = limit;
 	}
 
 	@Override
@@ -58,33 +58,33 @@ public class OutEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (!_completed) {
-			switch (model) {
+			switch (_model) {
 			case Config.DOWN:
-				move_45D_down(multiples);
+				move_45D_down(_multiples);
 				break;
 			case Config.UP:
-				move_45D_up(multiples);
+				move_45D_up(_multiples);
 				break;
 			case Config.LEFT:
-				move_45D_left(multiples);
+				move_45D_left(_multiples);
 				break;
 			case Config.RIGHT:
-				move_45D_right(multiples);
+				move_45D_right(_multiples);
 				break;
 			case Config.TDOWN:
-				move_down(multiples);
+				move_down(_multiples);
 				break;
 			case Config.TUP:
-				move_up(multiples);
+				move_up(_multiples);
 				break;
 			case Config.TLEFT:
-				move_left(multiples);
+				move_left(_multiples);
 				break;
 			case Config.TRIGHT:
-				move_right(multiples);
+				move_right(_multiples);
 				break;
 			}
-			if (!limit.intersects(x(), y(), _width, _height)) {
+			if (!_limit.intersects(x(), y(), _width, _height)) {
 				_completed = true;
 			}
 		}
@@ -101,11 +101,11 @@ public class OutEffect extends BaseAbstractEffect {
 	}
 
 	public int getMultiples() {
-		return multiples;
+		return _multiples;
 	}
 
 	public void setMultiples(int multiples) {
-		this.multiples = multiples;
+		this._multiples = multiples;
 	}
 
 	@Override

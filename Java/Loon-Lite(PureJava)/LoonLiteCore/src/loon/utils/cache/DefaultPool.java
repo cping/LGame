@@ -24,14 +24,23 @@ import loon.events.Created;
 
 public class DefaultPool<T> extends Pool<T> {
 
-	Created<T> _created;
+	private Created<T> _created;
 
 	public DefaultPool() {
 		this(null);
 	}
 
 	public DefaultPool(Created<T> c) {
+		setCreateMethod(c);
+	}
+
+	public DefaultPool<T> setCreateMethod(final Created<T> c) {
 		_created = c;
+		return this;
+	}
+
+	public Created<T> getCreateMethod() {
+		return _created;
 	}
 
 	@Override

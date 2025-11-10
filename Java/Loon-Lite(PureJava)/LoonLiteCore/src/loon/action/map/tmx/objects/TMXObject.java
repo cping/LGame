@@ -26,157 +26,198 @@ import loon.action.map.tmx.TMXProperties;
 import loon.utils.xml.XMLElement;
 
 public class TMXObject {
-	private String name;
-	private String type;
+	private String _name;
+	private String _type;
 
-	private int x;
-	private int y;
-	private int width;
-	private int height;
-	private int id;
-	private int gid;
+	private int _x;
+	private int _y;
+	private int _width;
+	private int _height;
+	private int _id;
+	private int _gid;
 
-	private double rotation;
-	private boolean visible;
+	private float _rotation;
 
-	private TMXEllipse ellipse;
-	private TMXPolygon polygon;
-	private TMXPolyLine polyLine;
+	private boolean _visible;
+	private boolean _isEllipse;
+	private boolean _isPolygon;
+	private boolean _isPolyLine;
+	private boolean _isImage;
 
-	private TMXProperties properties;
+	private TMXEllipse _ellipse;
+	private TMXPolygon _polygon;
+	private TMXPolyLine _polyLine;
+
+	private TMXProperties _properties;
 
 	public TMXObject() {
-		properties = new TMXProperties();
+		_properties = new TMXProperties();
 	}
 
 	public void parse(Json.Object element) {
 
-		name = element.containsKey("name") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
-		type = element.containsKey("type") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+		_name = element.containsKey("name") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
+		_type = element.containsKey("type") ? element.getString("name", LSystem.EMPTY) : "TmxObject";
 
-		id = element.getInt("id", 0);
-		x = element.getInt("x", 0);
-		y = element.getInt("y", 0);
-		width = element.getInt("width", 0);
-		height = element.getInt("height", 0);
-		gid = element.getInt("gid", -1);
-		rotation = element.getInt("rotation", 0);
-		visible = element.getBoolean("visible", false);
+		_id = element.getInt("id", 0);
+		_x = element.getInt("x", 0);
+		_y = element.getInt("y", 0);
+		_width = element.getInt("width", 0);
+		_height = element.getInt("height", 0);
+		_gid = element.getInt("gid", -1);
+		_rotation = element.getNumber("rotation", 0);
+		_visible = element.getBoolean("visible", false);
+
+		if (_gid != -1) {
+			_isImage = true;
+		}
 
 		if (element.containsKey("ellipse")) {
-			ellipse = new TMXEllipse();
-			ellipse.set(x, y, width, height);
+			_ellipse = new TMXEllipse();
+			_ellipse.set(_x, _y, _width, _height);
+			_isEllipse = true;
+			_isImage = false;
 		}
 
 		Json.Object node = element.getObject("polygon", null);
 		if (node != null) {
-			polygon = new TMXPolygon();
-			polygon.parse(node);
+			_polygon = new TMXPolygon();
+			_polygon.parse(node);
+			_isPolygon = true;
+			_isImage = false;
 		}
 
 		node = element.getObject("polyline", null);
 		if (node != null) {
-			polyLine = new TMXPolyLine();
-			polyLine.parse(node);
+			_polyLine = new TMXPolyLine();
+			_polyLine.parse(node);
+			_isPolyLine = true;
+			_isImage = false;
 		}
 
 		Json.Array nodes = element.getArray("properties", null);
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public void parse(XMLElement element) {
 
-		name = element.hasAttribute("name") ? element.getAttribute("name", LSystem.EMPTY) : "TmxObject";
-		type = element.hasAttribute("type") ? element.getAttribute("name", LSystem.EMPTY) : "TmxObject";
+		_name = element.hasAttribute("name") ? element.getAttribute("name", LSystem.EMPTY) : "TmxObject";
+		_type = element.hasAttribute("type") ? element.getAttribute("name", LSystem.EMPTY) : "TmxObject";
 
-		id = element.getIntAttribute("id", 0);
-		x = element.getIntAttribute("x", 0);
-		y = element.getIntAttribute("y", 0);
-		width = element.getIntAttribute("width", 0);
-		height = element.getIntAttribute("height", 0);
-		gid = element.getIntAttribute("gid", -1);
-		rotation = element.getIntAttribute("rotation", 0);
-		visible = element.getBoolAttribute("visible", false);
+		_id = element.getIntAttribute("id", 0);
+		_x = element.getIntAttribute("x", 0);
+		_y = element.getIntAttribute("y", 0);
+		_width = element.getIntAttribute("width", 0);
+		_height = element.getIntAttribute("height", 0);
+		_gid = element.getIntAttribute("gid", -1);
+		_rotation = element.getFloatAttribute("rotation", 0);
+		_visible = element.getBoolAttribute("visible", false);
+
+		if (_gid != -1) {
+			_isImage = true;
+		}
 
 		XMLElement nodes = element.getChildrenByName("ellipse");
 		if (nodes != null) {
-			ellipse = new TMXEllipse();
-			ellipse.set(x, y, width, height);
+			_ellipse = new TMXEllipse();
+			_ellipse.set(_x, _y, _width, _height);
+			_isEllipse = true;
+			_isImage = false;
 		}
 
 		nodes = element.getChildrenByName("polygon");
 		if (nodes != null) {
-			polygon = new TMXPolygon();
-			polygon.parse(nodes);
+			_polygon = new TMXPolygon();
+			_polygon.parse(nodes);
+			_isPolygon = true;
+			_isImage = false;
 		}
 
 		nodes = element.getChildrenByName("polyline");
 		if (nodes != null) {
-			polyLine = new TMXPolyLine();
-			polyLine.parse(nodes);
+			_polyLine = new TMXPolyLine();
+			_polyLine.parse(nodes);
+			_isPolyLine = true;
+			_isImage = false;
 		}
 
 		nodes = element.getChildrenByName("properties");
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public String getTypeCode() {
-		return type;
+		return _type;
 	}
 
 	public int getX() {
-		return x;
+		return _x;
 	}
 
 	public int getY() {
-		return y;
+		return _y;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public int getID() {
-		return id;
+		return _id;
 	}
 
 	public int getGID() {
-		return gid;
+		return _gid;
 	}
 
-	public double getRotation() {
-		return rotation;
+	public float getRotation() {
+		return _rotation;
 	}
 
 	public boolean isVisible() {
-		return visible;
+		return _visible;
+	}
+
+	public boolean isEllipse() {
+		return _isEllipse;
+	}
+
+	public boolean isPolygon() {
+		return _isPolygon;
+	}
+
+	public boolean isPolyLine() {
+		return _isPolyLine;
+	}
+
+	public boolean isImage() {
+		return _isImage;
 	}
 
 	public TMXEllipse getEllipse() {
-		return ellipse;
+		return _ellipse;
 	}
 
 	public TMXPolygon getPolygon() {
-		return polygon;
+		return _polygon;
 	}
 
 	public TMXPolyLine getPolyLine() {
-		return polyLine;
+		return _polyLine;
 	}
 
 	public TMXProperties getProperties() {
-		return properties;
+		return _properties;
 	}
 }

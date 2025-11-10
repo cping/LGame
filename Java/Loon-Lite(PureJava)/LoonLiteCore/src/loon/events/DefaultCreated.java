@@ -25,7 +25,15 @@ public class DefaultCreated<T> implements Created<T> {
 	private T _object;
 
 	public DefaultCreated(T v) {
-		this._object = v;
+		setValue(v);
+	}
+
+	public void setValue(T c) {
+		_object = c;
+	}
+
+	public T getValue() {
+		return _object;
 	}
 
 	@Override
