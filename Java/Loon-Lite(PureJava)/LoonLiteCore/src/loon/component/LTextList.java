@@ -44,7 +44,7 @@ import loon.utils.MathUtils;
  */
 public class LTextList extends LComponent implements FontSet<LTextList> {
 
-	private LTexture choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture;
+	private LTexture _choiceTexture, _scrollTexture, _scrollFlagATexture, _scrollFlagBTexture;
 
 	private int _max;
 	private String[] _names;
@@ -52,55 +52,61 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	private LColor[] _colors;
 
 	private boolean[] _lengthChecks;
-	private int curIndex;
-	private LColor defaultStringColor = LColor.white.cpy();
-	private LColor nextStringColor = this.defaultStringColor;
+	private int _curIndex;
 
-	private LColor arrowColor = LColor.white.cpy();
-
-	private LColor choiceStringColor = LColor.black.cpy();
-	private LColor choiceStringBoxColor = LColor.cyan.cpy();
+	private LColor _defaultStringColor = LColor.white;
+	private LColor _nextStringColor = _defaultStringColor;
+	private LColor _arrowColor = LColor.white;
+	private LColor _choiceStringColor = _defaultStringColor;
+	private LColor _choiceStringBoxColor = LColor.gray;
+	private LColor _scrollBarSelectColor = _choiceStringBoxColor;
+	private LColor _scrollBarButtonColor = LColor.black;
+	private LColor _listColor = _scrollBarButtonColor;
+	private LColor _listBorderColor = LColor.white;
+	private LColor _listHoldColor = LColor.yellow;
 
 	private IFont _font;
-	private int selectList;
+	private int _selectList;
 
-	public static final int defaultWidth = 150;
-	public static final int defaultHeight = 300;
+	private boolean _drawListBorder;
 
-	private LColor listColor = LColor.black;
-	private int drawNum;
-	private int loop;
-	private int drawX;
-	private int drawY;
-	private int scrollList;
+	private int _drawNum;
+	private int _loop;
+	private int _drawX;
+	private int _drawY;
+	private int _scrollList;
 
-	private int scrollBarX;
-	private int scrollBarY;
-	private int scrollBarHeight;
+	private int _scrollBarX;
+	private int _scrollBarY;
+	private int _scrollBarHeight;
 
-	private int scrollBarHeight_max;
+	private int _scrollBarHeight_max;
 	private boolean scrollBarDrag;
 
-	private int scrollButtonWidth = 15;
-	private int scrollButtonHeight = 15;
-	private int scrollButtonX;
-	private int scrollButtonY;
-	private boolean scrollUpButtonON;
-	private boolean scrollDownButtonON;
-	private float[] px = new float[3];
-	private float[] py = new float[3];
-	private boolean useHold;
-	private int hold;
+	private int _scrollButtonWidth = 15;
+	private int _scrollButtonHeight = 15;
+	private int _scrollButtonX;
+	private int _scrollButtonY;
+	private boolean _scrollUpButtonON;
+	private boolean _scrollDownButtonON;
+	private float[] _px = new float[3];
+	private float[] _py = new float[3];
+	private boolean _useHold;
+	private int _hold;
 	private int _maxX = 0;
 	private int _maxY = 0;
 	private float _sizeFillOffset = 0f;
 
 	public LTextList(int x, int y) {
-		this(128, x, y, defaultWidth, defaultHeight, 30);
+		this(128, x, y, 150, 300, 30);
 	}
 
 	public LTextList(int x, int y, int w, int h) {
 		this(128, x, y, w, h, 30);
+	}
+
+	public LTextList(int x, int y, int w, int h, int scrollButtonWidth) {
+		this(128, x, y, w, h, scrollButtonWidth);
 	}
 
 	public LTextList(int max, int x, int y, int width, int height, int scrollButtonWidth) {
@@ -144,13 +150,13 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		super(x, y, (width - scrollButtonWidth), height);
 		this.reset(max);
 		this._font = font;
-		this.choiceTexture = choice;
-		this.scrollTexture = scroll;
-		this.scrollFlagATexture = scrollFlagA;
-		this.scrollFlagBTexture = scrollFlagB;
+		this._choiceTexture = choice;
+		this._scrollTexture = scroll;
+		this._scrollFlagATexture = scrollFlagA;
+		this._scrollFlagBTexture = scrollFlagB;
 		this.onlyBackground(bg);
 		this.setFocusable(true);
-		freeRes().add(choiceTexture, scrollTexture, scrollFlagATexture, scrollFlagBTexture);
+		freeRes().add(_choiceTexture, _scrollTexture, _scrollFlagATexture, _scrollFlagBTexture);
 	}
 
 	public LTextList reset(int max) {
@@ -161,14 +167,14 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 		this._lengthChecks = new boolean[this._max];
 
 		for (int i = 0; i < this._max; i++) {
-			this._colors[i] = this.defaultStringColor;
+			this._colors[i] = this._defaultStringColor;
 		}
 
-		this.selectList = 0;
-		this.curIndex = 0;
-		this.scrollList = 0;
+		this._selectList = 0;
+		this._curIndex = 0;
+		this._scrollList = 0;
 
-		this.nextStringColor = this.defaultStringColor;
+		this._nextStringColor = this._defaultStringColor;
 		return this;
 	}
 
@@ -177,7 +183,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	public LTextList delete() {
-		this.curIndex = 0;
+		this._curIndex = 0;
 		return this;
 	}
 
@@ -204,8 +210,49 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	public LTextList setNextStringColor(LColor nextStringColor) {
-		this.nextStringColor = nextStringColor;
+		this._nextStringColor = nextStringColor;
 		return this;
+	}
+
+	public LTextList setScrollButtonWidth(int w) {
+		_scrollButtonWidth = w;
+		return this;
+	}
+
+	public int getScrollButtonWidth() {
+		return _scrollButtonWidth;
+	}
+
+	public LTextList setScrollButtonHeight(int h) {
+		_scrollButtonHeight = h;
+		return this;
+	}
+
+	public int getScrollButtonHeight() {
+		return _scrollButtonHeight;
+	}
+
+	/**
+	 * 设定滚动按钮大小
+	 * 
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	public LTextList setScrollButtonSize(int w, int h) {
+		setScrollButtonWidth(w);
+		setScrollButtonHeight(h);
+		return this;
+	}
+
+	/**
+	 * 设定滚动按钮大小
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public LTextList setScrollButtonSize(int s) {
+		return setScrollButtonSize(s, s);
 	}
 
 	private void removeNames(int idx, int flag) {
@@ -255,64 +302,104 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 
 	public LTextList remove(int idx) {
 		if (idx > -1 && idx < _names.length) {
-			this.removeNames(idx, this.curIndex);
-			this.removeInteger(idx, this.curIndex);
-			this.removeColor(idx, this.curIndex);
-			this.curIndex -= 1;
+			this.removeNames(idx, this._curIndex);
+			this.removeInteger(idx, this._curIndex);
+			this.removeColor(idx, this._curIndex);
+			this._curIndex -= 1;
 		}
 		return this;
 	}
 
 	public LTextList add(String nameString) {
-		add(nameString, curIndex);
+		add(nameString, _curIndex);
 		return this;
 	}
 
 	public LTextList add(String nameString, int numberInt) {
-		this._names[this.curIndex] = nameString;
-		this._numbers[this.curIndex] = numberInt;
-		this._colors[this.curIndex] = this.nextStringColor;
-		this.nextStringColor = this.defaultStringColor;
-		this.curIndex += 1;
+		this._names[this._curIndex] = nameString;
+		this._numbers[this._curIndex] = numberInt;
+		this._colors[this._curIndex] = this._nextStringColor;
+		this._nextStringColor = this._defaultStringColor;
+		this._curIndex += 1;
 		return this;
 	}
 
 	public LTextList setDefaultStringColor(LColor stringNewColor) {
-		this.defaultStringColor = stringNewColor;
+		this._defaultStringColor = stringNewColor;
 		return this;
 	}
 
 	public LTextList setDefaultStringColor(LColor newStringColor, LColor newChoiceStringColor,
 			LColor newChoiceStringBoxColor) {
-		this.defaultStringColor = newStringColor;
-		this.choiceStringColor = newChoiceStringColor;
-		this.choiceStringBoxColor = newChoiceStringBoxColor;
+		this._defaultStringColor = newStringColor;
+		this._choiceStringColor = newChoiceStringColor;
+		this._choiceStringBoxColor = newChoiceStringBoxColor;
 		return this;
 	}
 
-	public LTextList setListColor(LColor newColor) {
-		this.listColor = newColor;
+	public LTextList setListColor(LColor c) {
+		_listColor = c;
 		return this;
+	}
+
+	public LColor getListColor() {
+		return _listColor;
+	}
+
+	public LTextList setListBorderColor(LColor c) {
+		_listBorderColor = c;
+		return this;
+	}
+
+	public LColor getListBorderColor() {
+		return _listBorderColor;
+	}
+
+	public LTextList setScrollBarButtonColor(LColor c) {
+		_scrollBarButtonColor = c;
+		return this;
+	}
+
+	public LColor getScrollBarButtonColor() {
+		return _scrollBarButtonColor;
+	}
+
+	public LColor getScrollBarSelectColor() {
+		return _scrollBarSelectColor;
+	}
+
+	public LTextList setScrollBarSelectColor(LColor s) {
+		_scrollBarSelectColor = s;
+		return this;
+	}
+
+	public LTextList setDrawListBorder(boolean d) {
+		_drawListBorder = d;
+		return this;
+	}
+
+	public boolean getDrawListBorder() {
+		return _drawListBorder;
 	}
 
 	public LTextList setUseHold(boolean bool) {
-		this.useHold = bool;
+		this._useHold = bool;
 		return this;
 	}
 
 	public LTextList setHold(int curIndex) {
-		this.hold = curIndex;
+		this._hold = curIndex;
 		return this;
 	}
 
 	public LTextList setBoundsScrollButton(int width, int height) {
-		this.scrollButtonWidth = width;
-		this.scrollButtonHeight = height;
+		this._scrollButtonWidth = width;
+		this._scrollButtonHeight = height;
 		return this;
 	}
 
 	public int getSelectList() {
-		return this.selectList;
+		return this._selectList;
 	}
 
 	public int getNumber(int curIndex) {
@@ -333,8 +420,8 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	 * @return
 	 */
 	public int getIndex() {
-		if (this.selectList >= 0) {
-			return this._numbers[this.selectList];
+		if (this._selectList >= 0) {
+			return this._numbers[this._selectList];
 		}
 		return -1;
 	}
@@ -344,47 +431,48 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	public void setScrollList(int scroll) {
-		this.scrollList = (scroll - this.drawNum);
-		if (this.scrollList < 0) {
-			this.scrollList = 0;
+		this._scrollList = (scroll - this._drawNum);
+		if (this._scrollList < 0) {
+			this._scrollList = 0;
 		}
 	}
 
-	private void drawString(GLEx g, String str, int x, int y) {
+	private void drawText(GLEx g, String str, int x, int y, LColor c) {
 		if (_font != null) {
-			_font.drawString(g, str, x, y);
+			if (c == null) {
+				_font.drawString(g, str, x, y);
+			} else {
+				_font.drawString(g, str, x, y, c);
+			}
 		}
 	}
 
 	public void draw(GLEx g, int x, int y, float mouseX, float mouseY) {
+		final int oldColor = g.color();
 		try {
-			g.saveBrush();
 			if (this._max > 0) {
 				final float backgroundWidth = getWidth() + _sizeFillOffset;
 				final float backgroundHeight = getHeight() + _sizeFillOffset;
 				final int fontSize = _font.getSize();
 				// 如果没有设置背景，则绘制
 				if (_background == null) {
-					g.setTint(this.listColor);
-					g.fillRect(x, y, backgroundWidth, backgroundHeight);
-					g.setTint(255, 255, 255);
-					g.drawRect(x, y, backgroundWidth, backgroundHeight);
+					g.fillRect(x, y, backgroundWidth, backgroundHeight, _listColor);
 				} else {
 					g.draw(_background, x, y, backgroundWidth, backgroundHeight, _component_baseColor);
 				}
-				this.drawNum = MathUtils.ifloor((backgroundHeight - 10) / fontSize);
-				this.loop = 0;
-				this.selectList = -1;
-				for (int i = this.scrollList; i < this.drawNum + this.scrollList; i++) {
-					if (i >= this.curIndex) {
+				this._drawNum = MathUtils.floor((backgroundHeight - 10) / fontSize);
+				this._loop = 0;
+				this._selectList = -1;
+				for (int i = this._scrollList; i < this._drawNum + this._scrollList; i++) {
+					if (i >= this._curIndex) {
 						break;
 					}
-					this.drawX = (x + 5);
-					this.drawY = (y + 5 + this.loop * fontSize);
+					this._drawX = (x + 5);
+					this._drawY = (y + 5 + this._loop * fontSize);
 					if (!this.scrollBarDrag) {
-						if ((mouseY > this.drawY + _maxY) && (mouseY <= this.drawY + _maxY + fontSize)
-								&& (mouseX > this.drawX + _maxX) && (mouseX < this.drawX + _maxX + backgroundWidth)) {
-							this.selectList = i;
+						if ((mouseY > this._drawY + _maxY) && (mouseY <= this._drawY + _maxY + fontSize)
+								&& (mouseX > this._drawX + _maxX) && (mouseX < this._drawX + _maxX + backgroundWidth)) {
+							this._selectList = i;
 						}
 					}
 
@@ -398,168 +486,161 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 						}
 					}
 
-					if ((this.selectList == i) || ((this.useHold) && (this.hold == i))) {
-						if ((this.useHold) && (this.hold == i)) {
-							g.setTint(255, 255, 0);
-							g.fillRect(x + _sizeFillOffset, this.drawY, backgroundWidth - _sizeFillOffset, fontSize);
-							g.setTint(LColor.black);
-							drawString(g, this._names[i], this.drawX, this.drawY);
-							this.hold = -1;
+					if ((this._selectList == i) || ((this._useHold) && (this._hold == i))) {
+						if ((this._useHold) && (this._hold == i)) {
+							g.fillRect(x + _sizeFillOffset, this._drawY, backgroundWidth - _sizeFillOffset, fontSize,
+									_listHoldColor);
+							drawText(g, this._names[i], this._drawX, this._drawY, this._choiceStringColor);
+							this._hold = -1;
 						}
 						// 选中指定列时
-						if (this.selectList == i) {
-							if (choiceTexture == null) {
-								g.setTint(this.choiceStringBoxColor);
-								g.fillRect(x + _sizeFillOffset, this.drawY, backgroundWidth - _sizeFillOffset,
-										fontSize + _sizeFillOffset);
+						if (this._selectList == i) {
+							if (_choiceTexture == null) {
+								g.fillRect(x + _sizeFillOffset, this._drawY, backgroundWidth - _sizeFillOffset,
+										fontSize + _sizeFillOffset, this._choiceStringBoxColor);
 							} else {
-								g.draw(this.choiceTexture, x + _sizeFillOffset, this.drawY,
+								g.draw(this._choiceTexture, x + _sizeFillOffset, this._drawY,
 										backgroundWidth - _sizeFillOffset, fontSize + _sizeFillOffset,
 										_component_baseColor);
 							}
-							g.setTint(this.choiceStringColor);
-							drawString(g, this._names[i], this.drawX, this.drawY);
+							drawText(g, this._names[i], this._drawX, this._drawY, this._choiceStringColor);
 						}
 					} else {
-						g.setTint(this._colors[i]);
-						drawString(g, this._names[i], this.drawX, this.drawY);
+						drawText(g, this._names[i], this._drawX, this._drawY, this._colors[i]);
 					}
-
-					this.loop += 1;
+					this._loop += 1;
 				}
 
-				this.scrollBarX = (int) (x + backgroundWidth + _sizeFillOffset);
+				this._scrollBarX = MathUtils.floor(x + backgroundWidth + _sizeFillOffset);
 
-				this.scrollBarHeight_max = (int) (getHeight() - this.scrollButtonHeight * 2f);
+				this._scrollBarHeight_max = MathUtils.floor(getHeight() - this._scrollButtonHeight * 2f);
 
-				if ((this.drawNum < this.curIndex) && (this.drawNum > 0)) {
-					this.scrollBarHeight = (this.scrollBarHeight_max / this.curIndex / this.drawNum);
-					this.scrollBarHeight = (this.scrollBarHeight_max * this.drawNum / this.curIndex);
-					if (this.scrollBarHeight < 8)
-						this.scrollBarHeight = 8;
+				if ((this._drawNum < this._curIndex) && (this._drawNum > 0)) {
+					this._scrollBarHeight = (this._scrollBarHeight_max / this._curIndex / this._drawNum);
+					this._scrollBarHeight = (this._scrollBarHeight_max * this._drawNum / this._curIndex);
+					if (this._scrollBarHeight < 8)
+						this._scrollBarHeight = 8;
 
-					this.scrollBarY = (int) (y + this.scrollButtonHeight + _sizeFillOffset);
-					this.scrollBarY += (this.scrollBarHeight_max - this.scrollBarHeight) * this.scrollList
-							/ (this.curIndex - this.drawNum);
+					this._scrollBarY = (int) (y + this._scrollButtonHeight + _sizeFillOffset);
+					this._scrollBarY += (this._scrollBarHeight_max - this._scrollBarHeight) * this._scrollList
+							/ (this._curIndex - this._drawNum);
 				} else {
-					this.scrollBarHeight = this.scrollBarHeight_max;
-					this.scrollBarY = (int) (y + this.scrollButtonHeight + _sizeFillOffset);
+					this._scrollBarHeight = this._scrollBarHeight_max;
+					this._scrollBarY = (int) (y + this._scrollButtonHeight + _sizeFillOffset);
 				}
 
 				if (this.scrollBarDrag) {
-					if (mouseY < _maxY + this.scrollBarY + this.scrollBarHeight / 3) {
+					if (mouseY < _maxY + this._scrollBarY + this._scrollBarHeight / 3) {
 						for (int i = 0; i < 5; i++) {
-							if (this.scrollList <= 0)
+							if (this._scrollList <= 0)
 								break;
-							this.scrollList -= 1;
+							this._scrollList -= 1;
 						}
 					}
 
-					if (mouseY > _maxY + this.scrollBarY + this.scrollBarHeight * 2 / 3) {
+					if (mouseY > _maxY + this._scrollBarY + this._scrollBarHeight * 2 / 3) {
 						for (int i = 0; i < 5; i++) {
-							if (this.scrollList >= this.curIndex - this.drawNum)
+							if (this._scrollList >= this._curIndex - this._drawNum)
 								break;
-							this.scrollList += 1;
+							this._scrollList += 1;
 						}
 					}
 				}
 
-				if (SysTouch.isDrag()) {
-					if ((mouseX > _maxX + this.scrollBarX)
-							&& (mouseX <= _maxX + this.scrollBarX + this.scrollButtonWidth)
-							&& (mouseY > _maxY + y + this.scrollButtonHeight)
-							&& (mouseY < _maxY + y + getHeight() - this.scrollButtonHeight)) {
+				if (SysTouch.isDrag() && _input.isMoving()) {
+					if ((mouseX > _maxX + this._scrollBarX)
+							&& (mouseX <= _maxX + this._scrollBarX + this._scrollButtonWidth)
+							&& (mouseY > _maxY + y + this._scrollButtonHeight)
+							&& (mouseY < _maxY + y + getHeight() - this._scrollButtonHeight)) {
 						this.scrollBarDrag = true;
 					}
 				} else {
 					this.scrollBarDrag = false;
 				}
+				this._scrollButtonX = MathUtils.ceil(x + backgroundWidth);
+				this._scrollButtonY = y;
 
-				this.scrollButtonX = (int) (x + backgroundWidth);
-				this.scrollButtonY = y;
+				LColor newColor = null;
+				if (_component_baseColor == null) {
+					newColor = (this.scrollBarDrag ? _scrollBarSelectColor : _listColor);
+				} else {
+					newColor = (this.scrollBarDrag ? _component_baseColor.mul(_scrollBarSelectColor)
+							: _component_baseColor.mul(_listColor));
+				}
 
-				if (scrollFlagATexture == null) {
-					if (this.scrollUpButtonON) {
-						g.setTint(LColor.gray);
-					} else {
-						g.setTint(LColor.black);
+				if (_scrollTexture == null) {
+					g.fillRect(this._scrollBarX, this._scrollBarY - _sizeFillOffset, this._scrollButtonWidth,
+							this._scrollBarHeight + _sizeFillOffset, newColor);
+				} else {
+					g.draw(this._scrollTexture, this._scrollBarX, this._scrollBarY - _sizeFillOffset,
+							this._scrollButtonWidth, this._scrollBarHeight + _sizeFillOffset, newColor);
+				}
+
+				if (_scrollFlagATexture == null) {
+					g.fillRect(this._scrollButtonX + _sizeFillOffset, this._scrollButtonY, this._scrollButtonWidth,
+							this._scrollButtonHeight, (this._scrollUpButtonON ? _scrollBarSelectColor : _listColor));
+					g.setTint(_arrowColor);
+					this._px[0] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth / 6);
+					this._px[1] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth / 2);
+					this._px[2] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth * 5 / 6);
+					this._py[0] = (this._scrollButtonY + this._scrollButtonHeight * 5 / 6);
+					this._py[1] = (this._scrollButtonY + this._scrollButtonHeight / 6);
+					this._py[2] = (this._scrollButtonY + this._scrollButtonHeight * 5 / 6);
+					g.fillPolygon(this._px, this._py, 3);
+				} else {
+					g.draw(this._scrollFlagATexture, this._scrollButtonX + _sizeFillOffset,
+							this._scrollButtonY + _sizeFillOffset, this._scrollButtonWidth - _sizeFillOffset,
+							this._scrollButtonHeight - _sizeFillOffset, _component_baseColor);
+				}
+
+				this._scrollUpButtonON = false;
+				if ((!this.scrollBarDrag) && true && (mouseX > this._scrollButtonX + _maxX)
+						&& (mouseX <= this._scrollButtonX + _maxX + this._scrollButtonWidth)
+						&& (mouseY > _maxY + this._scrollButtonY)
+						&& (mouseY < _maxY + this._scrollButtonY + this._scrollButtonHeight)) {
+					if (this._scrollList > 0) {
+						this._scrollList -= 1;
 					}
-					g.fillRect(this.scrollButtonX + _sizeFillOffset, this.scrollButtonY, this.scrollButtonWidth,
-							this.scrollButtonHeight);
-					g.setTint(arrowColor);
-					this.px[0] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth / 6);
-					this.px[1] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth / 2);
-					this.px[2] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth * 5 / 6);
-					this.py[0] = (this.scrollButtonY + this.scrollButtonHeight * 5 / 6);
-					this.py[1] = (this.scrollButtonY + this.scrollButtonHeight / 6);
-					this.py[2] = (this.scrollButtonY + this.scrollButtonHeight * 5 / 6);
-					g.fillPolygon(this.px, this.py, 3);
-				} else {
-					g.draw(this.scrollFlagATexture, this.scrollButtonX + _sizeFillOffset,
-							this.scrollButtonY + _sizeFillOffset, this.scrollButtonWidth - _sizeFillOffset,
-							this.scrollButtonHeight - _sizeFillOffset, _component_baseColor);
+					this._scrollUpButtonON = true;
 				}
+				this._scrollButtonX = MathUtils.floor(x + backgroundWidth);
+				this._scrollButtonY = MathUtils.floor(y + getHeight() - this._scrollButtonHeight);
+				this._scrollDownButtonON = false;
 
-				this.scrollUpButtonON = false;
-				if ((!this.scrollBarDrag) && true && (mouseX > this.scrollButtonX + _maxX)
-						&& (mouseX <= this.scrollButtonX + _maxX + this.scrollButtonWidth)
-						&& (mouseY > _maxY + this.scrollButtonY)
-						&& (mouseY < _maxY + this.scrollButtonY + this.scrollButtonHeight)) {
-					if (this.scrollList > 0) {
-						this.scrollList -= 1;
+				if ((!this.scrollBarDrag) && (mouseX > _maxX + this._scrollButtonX)
+						&& (mouseX <= _maxX + this._scrollButtonX + this._scrollButtonWidth)
+						&& (mouseY > _maxY + this._scrollButtonY)
+						&& (mouseY < _maxY + this._scrollButtonY + this._scrollButtonHeight)) {
+					if (this._scrollList < this._curIndex - this._drawNum) {
+						this._scrollList += 1;
 					}
-					this.scrollUpButtonON = true;
+					this._scrollDownButtonON = true;
 				}
-				this.scrollButtonX = (int) (x + backgroundWidth);
-				this.scrollButtonY = (int) (y + getHeight() - this.scrollButtonHeight);
-				this.scrollDownButtonON = false;
-
-			}
-			if (scrollTexture == null) {
-				if (this.scrollBarDrag) {
-					g.setTint(0, 255, 255);
+				if (_scrollFlagBTexture == null) {
+					g.fillRect(this._scrollButtonX + _sizeFillOffset, this._scrollButtonY + _sizeFillOffset,
+							this._scrollButtonWidth, this._scrollButtonHeight,
+							(this._scrollDownButtonON ? _scrollBarSelectColor : _listColor));
+					g.setTint(_arrowColor);
+					this._px[0] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth / 6);
+					this._px[1] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth / 2);
+					this._px[2] = (this._scrollButtonX + _sizeFillOffset + this._scrollButtonWidth * 5 / 6);
+					this._py[0] = (this._scrollButtonY + _sizeFillOffset + this._scrollButtonHeight / 6);
+					this._py[1] = (this._scrollButtonY + _sizeFillOffset + this._scrollButtonHeight * 5 / 6);
+					this._py[2] = (this._scrollButtonY + _sizeFillOffset + this._scrollButtonHeight / 6);
+					g.fillPolygon(this._px, this._py, 3);
 				} else {
-					g.setTint(255, 255, 255);
+					g.draw(this._scrollFlagBTexture, this._scrollButtonX + _sizeFillOffset,
+							this._scrollButtonY + _sizeFillOffset, this._scrollButtonWidth, this._scrollButtonHeight,
+							_component_baseColor);
 				}
-				g.fillRect(this.scrollBarX, this.scrollBarY - _sizeFillOffset, this.scrollButtonWidth,
-						this.scrollBarHeight + _sizeFillOffset);
-			} else {
-				g.draw(this.scrollTexture, this.scrollBarX, this.scrollBarY - _sizeFillOffset, this.scrollButtonWidth,
-						this.scrollBarHeight + _sizeFillOffset, _component_baseColor);
 
-			}
-			if ((!this.scrollBarDrag) && true && (mouseX > _maxX + this.scrollButtonX)
-					&& (mouseX <= _maxX + this.scrollButtonX + this.scrollButtonWidth)
-					&& (mouseY > _maxY + this.scrollButtonY)
-					&& (mouseY < _maxY + this.scrollButtonY + this.scrollButtonHeight)) {
-				if (this.scrollList < this.curIndex - this.drawNum) {
-					this.scrollList += 1;
+				if (_drawListBorder) {
+					g.drawRect(x, y, backgroundWidth, backgroundHeight, _listBorderColor);
 				}
-				this.scrollDownButtonON = true;
 			}
-			if (scrollFlagBTexture == null) {
-				if (this.scrollDownButtonON) {
-					g.setTint(LColor.gray);
-				} else {
-					g.setTint(LColor.black);
-				}
-				g.fillRect(this.scrollButtonX + _sizeFillOffset, this.scrollButtonY + _sizeFillOffset,
-						this.scrollButtonWidth, this.scrollButtonHeight);
-				g.setTint(arrowColor);
-				this.px[0] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth / 6);
-				this.px[1] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth / 2);
-				this.px[2] = (this.scrollButtonX + _sizeFillOffset + this.scrollButtonWidth * 5 / 6);
-				this.py[0] = (this.scrollButtonY + _sizeFillOffset + this.scrollButtonHeight / 6);
-				this.py[1] = (this.scrollButtonY + _sizeFillOffset + this.scrollButtonHeight * 5 / 6);
-				this.py[2] = (this.scrollButtonY + _sizeFillOffset + this.scrollButtonHeight / 6);
-				g.fillPolygon(this.px, this.py, 3);
-			} else {
-				g.draw(this.scrollFlagBTexture, this.scrollButtonX + _sizeFillOffset,
-						this.scrollButtonY + _sizeFillOffset, this.scrollButtonWidth, this.scrollButtonHeight,
-						_component_baseColor);
-			}
+
 		} finally {
-			g.restoreBrush();
+			g.setColor(oldColor);
 		}
 	}
 
@@ -582,33 +663,33 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	}
 
 	public LColor getArrowColor() {
-		return arrowColor;
+		return _arrowColor;
 	}
 
 	public LTextList setArrowColor(LColor c) {
-		this.arrowColor = new LColor(c);
+		this._arrowColor = new LColor(c);
 		return this;
 	}
 
 	public LTextList setChoiceStringColor(LColor c) {
-		this.choiceStringColor = new LColor(c);
+		this._choiceStringColor = new LColor(c);
 		return this;
 	}
 
 	public LTextList setChoiceStringBoxColor(LColor c) {
-		this.choiceStringBoxColor = new LColor(c);
+		this._choiceStringBoxColor = new LColor(c);
 		return this;
 	}
 
 	@Override
 	public LTextList setFontColor(LColor c) {
-		this.defaultStringColor = new LColor(c);
+		this._defaultStringColor = new LColor(c);
 		return null;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return defaultStringColor.cpy();
+		return _defaultStringColor.cpy();
 	}
 
 	public float getSizeFillOffset() {

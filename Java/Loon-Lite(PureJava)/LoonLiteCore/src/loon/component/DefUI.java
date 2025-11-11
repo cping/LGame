@@ -644,7 +644,7 @@ public class DefUI extends HelperUtils {
 		LSubTexture windowbar = new LSubTexture(lastTexture, 0, 0, 512, 32);
 		LSubTexture panelbody = new LSubTexture(lastTexture, 1, 41 - 8, 17, 57 - 8);
 		LSubTexture panelborder = new LSubTexture(lastTexture, 0, 41 - 8, 1, 512 - 8);
-		LSubTexture buttonleft = new LSubTexture(lastTexture, 17, 41 - 8, 33, 72 - 8);
+		LSubTexture buttonleft = new LSubTexture(lastTexture, 18, 41 - 8, 33, 72 - 8);
 		LSubTexture buttonbody = new LSubTexture(lastTexture, 34, 41 - 8, 48, 72 - 8);
 		LSubTexture checkboxunchecked = new LSubTexture(lastTexture, 49, 41 - 8, 72, 63 - 8);
 		LSubTexture checkboxchecked = new LSubTexture(lastTexture, 73, 41 - 8, 96, 63 - 8);

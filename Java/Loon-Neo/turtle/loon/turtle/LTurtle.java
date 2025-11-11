@@ -18,14 +18,11 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.component;
+package loon.turtle;
 
 import loon.LSystem;
 import loon.canvas.LColor;
-import loon.component.turtle.GotoCommand;
-import loon.component.turtle.ImageCommand;
-import loon.component.turtle.TextCommand;
-import loon.component.turtle.TurtleCommand;
+import loon.component.LComponent;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
 import loon.utils.TArray;

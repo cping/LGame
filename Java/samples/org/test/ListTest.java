@@ -12,6 +12,14 @@ public class ListTest extends Stage {
 	public void create() {
 
 		final LTextList list = new LTextList(125, 125, 150, 100);
+		//设定滚动按钮大小
+		//list.setScrollButtonSize(50);
+		//设定滚动按钮颜色
+		//list.setArrowColor(LColor.red);
+		//显示边框
+		//list.setDrawListBorder(true);
+		//边框颜色
+		//list.setListBorderColor(LColor.red);
 		list.add("图灵测试");
 		list.add("人月神话");
 		list.add("费雪效应");

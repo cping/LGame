@@ -18,35 +18,30 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.component.turtle;
+package loon.turtle;
 
 import loon.canvas.LColor;
 import loon.opengl.GLEx;
 
-public abstract class MoveCommand extends TurtleCommand {
-	
-	protected boolean _fixDrawline;
+public class TextCommand extends TurtleCommand {
 
-	protected float _currentX, _currentY;
+	private String _context;
 
-	protected float _currentEndX, _currentEndY;
+	private float _currentX;
 
-	protected float _currentAngle;
+	private float _currentY;
 
-	protected float _currentLineWidth;
+	private float _currentAngle;
 
-	protected LColor _currentColor;
+	private LColor _fontColor;
 
-	public MoveCommand(String name, float x, float y, float endX, float endY, float angle, LColor color, float width,
-			float time) {
+	public TextCommand(String name, String text, float x, float y, float angle, LColor fontColor, float time) {
 		super(name, time);
+		this._context = text;
 		this._currentX = x;
 		this._currentY = y;
-		this._currentEndX = endX;
-		this._currentEndY = endY;
 		this._currentAngle = angle;
-		this._currentColor = color;
-		this._currentLineWidth = width;
+		this._fontColor = fontColor;
 	}
 
 	@Override
@@ -56,13 +51,7 @@ public abstract class MoveCommand extends TurtleCommand {
 
 	@Override
 	public void render(GLEx g, float progress) {
-		float xStart = _currentX;
-		float yStart = _currentY;
-		float xSpeed = _currentEndX;
-		float ySpeed = _currentEndY;
-		drawLine(g, xStart, yStart, xSpeed, ySpeed, progress);
+		g.drawString(_context, _currentX, _currentY, _currentAngle, _fontColor);
 	}
-
-	public abstract void drawLine(GLEx g, float sx, float sy, float ex, float ey, float progress);
 
 }

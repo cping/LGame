@@ -32,31 +32,29 @@ public class Alpha {
 	private static final float MAX_INT_VALUE = 255.0f;
 	private static final int HEX_BASE = 16;
 
-	private float alpha = 0.0f;
+	private float _alpha = 0.0f;
 
 	public Alpha(final String color) {
-		this.alpha = getString(color);
+		this._alpha = getString(color);
 	}
 
 	public Alpha(final float a) {
-		this.alpha = a;
+		this._alpha = a;
 	}
 
 	public Alpha linear(final Alpha end, final float t) {
-		return new Alpha(this.alpha + t * (end.alpha - this.alpha));
+		return new Alpha(this._alpha + t * (end._alpha - this._alpha));
 	}
 
 	public final float getAlpha() {
-		return alpha;
+		return _alpha;
 	}
 
 	private float getString(final String color) {
 		if (isShortMode(color)) {
-			return (Integer.parseInt(color.substring(1, 2), HEX_BASE) * SCALE_SHORT_MODE)
-					/ MAX_INT_VALUE;
+			return (Integer.parseInt(color.substring(1, 2), HEX_BASE) * SCALE_SHORT_MODE) / MAX_INT_VALUE;
 		} else {
-			return Integer.parseInt(color.substring(1, 3), HEX_BASE)
-					/ MAX_INT_VALUE;
+			return Integer.parseInt(color.substring(1, 3), HEX_BASE) / MAX_INT_VALUE;
 		}
 	}
 
@@ -65,15 +63,15 @@ public class Alpha {
 	}
 
 	public Alpha mutiply(final float factor) {
-		return new Alpha(alpha * factor);
+		return new Alpha(_alpha * factor);
 	}
 
 	@Override
 	public String toString() {
-		return "(" + alpha + ")";
+		return "(" + _alpha + ")";
 	}
 
 	public void setAlpha(final float newColorAlpha) {
-		alpha = newColorAlpha;
+		_alpha = newColorAlpha;
 	}
 }

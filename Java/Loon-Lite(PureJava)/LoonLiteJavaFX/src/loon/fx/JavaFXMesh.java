@@ -230,7 +230,7 @@ public class JavaFXMesh implements Mesh {
 
 		context.drawImage(((JavaFXImage) source).buffer, texture.widthRatio() * sourceWidth,
 				texture.heightRatio() * sourceHeight, textureWidth, textureHeight, texture.widthRatio() * sourceWidth,
-				texture.heightRatio() * sourceHeight, textureWidth, textureHeight);
+				texture.heightRatio() * sourceHeight, textureWidth + 1, textureHeight + 1);
 
 		context.restore();
 
@@ -352,7 +352,7 @@ public class JavaFXMesh implements Mesh {
 				}
 				if (tint == -1 && alpha == 1f) {
 					context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
-							top, (right - left), (bottom - top));
+							top, (right - left) + 1, (bottom - top) + 1);
 				} else {
 					context.save();
 					if (tint != lastTint || light == null) {
@@ -362,7 +362,7 @@ public class JavaFXMesh implements Mesh {
 					lighting.setLight(light);
 					context.setEffect(lighting);
 					context.drawImage(((JavaFXImage) img).buffer, dstX, dstY, dstWidth - dstX, dstHeight - dstY, left,
-							top, (right - left), (bottom - top));
+							top, (right - left) + 1, (bottom - top) + 1);
 					context.restore();
 				}
 			}

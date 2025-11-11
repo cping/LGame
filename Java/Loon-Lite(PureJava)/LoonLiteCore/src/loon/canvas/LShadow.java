@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -28,13 +28,13 @@ import loon.LTexture;
  */
 public final class LShadow {
 
-	private int shadowSize;
+	private int _shadowSize;
 
-	private float shadowAlpha;
+	private float _shadowAlpha;
 
-	private LColor shadowColor;
+	private LColor _shadowColor;
 
-	private LTexture texture;
+	private LTexture _texture;
 
 	public LShadow(String file, LColor c) {
 		this(Image.createImage(file), 5, 0.5f, c);
@@ -58,22 +58,18 @@ public final class LShadow {
 
 	/**
 	 * 引入指定图像，并以此生成阴影.
-	 *
-	 * @param image
-	 *            图像
-	 * @param shadowSize
-	 *            模糊程度(越高则图像越模糊)
-	 * @param a
-	 *            透明度
-	 * @param c
-	 *            希望阴影化区域显示的颜色
+	 * 
+	 * @param image      图像
+	 * @param shadowSize 模糊程度(越高则图像越模糊)
+	 * @param a          透明度
+	 * @param c          希望阴影化区域显示的颜色
 	 */
 	public LShadow(Image image, int shadowSize, float a, LColor c) {
-		this.shadowSize = shadowSize;
-		this.shadowAlpha = 0.5f;
-		this.shadowColor = c;
+		this._shadowSize = shadowSize;
+		this._shadowAlpha = 0.5f;
+		this._shadowColor = c;
 		Image tmp = this.makeShadow(image);
-		this.texture = tmp.texture();
+		this._texture = tmp.texture();
 		if (tmp != null) {
 			tmp.close();
 			tmp = null;
@@ -81,32 +77,31 @@ public final class LShadow {
 	}
 
 	private Image makeShadow(final Image image) {
-		int dstWidth = image.getWidth();
-		int dstHeight = image.getHeight();
+		final int dstWidth = image.getWidth();
+		final int dstHeight = image.getHeight();
 
-		int left = (shadowSize - 1) >> 1;
-		int right = shadowSize - left;
-		int xStart = left;
-		int xStop = dstWidth - right;
-		int yStart = left;
-		int yStop = dstHeight - right;
+		final int left = (_shadowSize - 1) >> 1;
+		final int right = _shadowSize - left;
+		final int xStart = left;
+		final int xStop = dstWidth - right;
+		final int yStart = left;
+		final int yStop = dstHeight - right;
 
-		int shadowRgb = shadowColor.getRGB() & 0x00FFFFFF;
+		final int shadowRgb = _shadowColor.getRGB() & 0x00FFFFFF;
 
-		int[] aHistory = new int[shadowSize];
+		final int[] aHistory = new int[_shadowSize];
 		int historyIdx = 0;
 
 		int aSum;
 
 		int[] dataBuffer = image.getPixels();
-		int lastPixelOffset = right * dstWidth;
-		float sumDivider = shadowAlpha / shadowSize;
+		final int lastPixelOffset = right * dstWidth;
+		final float sumDivider = _shadowAlpha / _shadowSize;
 
-		for (int y = 0, bufferOffset = 0; y < dstHeight; y++, bufferOffset = y
-				* dstWidth) {
+		for (int y = 0, bufferOffset = 0; y < dstHeight; y++, bufferOffset = y * dstWidth) {
 			aSum = 0;
 			historyIdx = 0;
-			for (int x = 0; x < shadowSize; x++, bufferOffset++) {
+			for (int x = 0; x < _shadowSize; x++, bufferOffset++) {
 				int a = dataBuffer[bufferOffset] >>> 24;
 				aHistory[x] = a;
 				aSum += a;
@@ -124,8 +119,8 @@ public final class LShadow {
 				aHistory[historyIdx] = a;
 				aSum += a;
 
-				if (++historyIdx >= shadowSize) {
-					historyIdx -= shadowSize;
+				if (++historyIdx >= _shadowSize) {
+					historyIdx -= _shadowSize;
 				}
 			}
 		}
@@ -133,7 +128,7 @@ public final class LShadow {
 		for (int x = 0, bufferOffset = 0; x < dstWidth; x++, bufferOffset = x) {
 			aSum = 0;
 			historyIdx = 0;
-			for (int y = 0; y < shadowSize; y++, bufferOffset += dstWidth) {
+			for (int y = 0; y < _shadowSize; y++, bufferOffset += dstWidth) {
 				int a = dataBuffer[bufferOffset] >>> 24;
 				aHistory[y] = a;
 				aSum += a;
@@ -151,31 +146,32 @@ public final class LShadow {
 				aHistory[historyIdx] = a;
 				aSum += a;
 
-				if (++historyIdx >= shadowSize) {
-					historyIdx -= shadowSize;
+				if (++historyIdx >= _shadowSize) {
+					historyIdx -= _shadowSize;
 				}
 			}
 		}
-		Image dst = Image.createImage(image.getWidth(), image.getHeight());
+		final Image dst = Image.createImage(image.getWidth(), image.getHeight());
 		dst.setPixels(dataBuffer, image.getWidth(), image.getHeight());
+		dst.setDirty(true);
 		dataBuffer = null;
 		return dst;
 	}
 
 	public int getSize() {
-		return shadowSize;
+		return _shadowSize;
 	}
 
 	public float getAlpha() {
-		return shadowAlpha;
+		return _shadowAlpha;
 	}
 
 	public LColor getColor() {
-		return shadowColor;
+		return _shadowColor;
 	}
 
 	public LTexture getTexture() {
-		return texture;
+		return _texture;
 	}
 
 }

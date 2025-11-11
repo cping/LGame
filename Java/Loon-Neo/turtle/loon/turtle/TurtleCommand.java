@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.component.turtle;
+package loon.turtle;
 
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
