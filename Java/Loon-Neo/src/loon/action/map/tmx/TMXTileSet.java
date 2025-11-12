@@ -26,6 +26,8 @@ import loon.action.map.tmx.tiles.TMXTerrain;
 import loon.action.map.tmx.tiles.TMXTile;
 import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.res.TextResource;
 import loon.utils.xml.XMLDocument;
@@ -66,8 +68,10 @@ public class TMXTileSet {
 
 		this.firstGID = element.getInt("firstgid", 1);
 		final String source = element.getString("source", LSystem.EMPTY);
-		final String path = tilesLocation + LSystem.FS + source;
-		if (!LSystem.EMPTY.equals(source)) {
+		final String path = StringUtils.isEmpty(tilesLocation) ? source
+				: PathUtils.normalizeCombinePaths(tilesLocation, source);
+
+		if (!LSystem.EMPTY.equals(path)) {
 			try {
 				element = (Json.Object) TextResource.get().loadJsonObject(path);
 			} catch (Throwable e) {
@@ -137,8 +141,10 @@ public class TMXTileSet {
 
 		this.firstGID = element.getIntAttribute("firstgid", 1);
 		final String source = element.getAttribute("source", LSystem.EMPTY);
-		final String path = tilesLocation + LSystem.FS + source;
-		if (!LSystem.EMPTY.equals(source)) {
+		final String path = StringUtils.isEmpty(tilesLocation) ? source
+				: PathUtils.normalizeCombinePaths(tilesLocation, source);
+
+		if (!LSystem.EMPTY.equals(path)) {
 			try {
 				XMLDocument doc = XMLParser.parse(path);
 				XMLElement docElement = doc.getRoot();
@@ -257,6 +263,13 @@ public class TMXTileSet {
 
 	public TMXImage getImage() {
 		return image;
+	}
+
+	public String getSource() {
+		if (image != null) {
+			return image.getSource();
+		}
+		return null;
 	}
 
 	public TArray<TMXTerrain> getTerrainTypes() {

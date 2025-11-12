@@ -100,4 +100,11 @@ public class TMXImageLayer extends TMXMapLayer {
 	public TMXImage getImage() {
 		return image;
 	}
+
+	public String getSource() {
+		if (image != null) {
+			return image.getSource();
+		}
+		return null;
+	}
 }

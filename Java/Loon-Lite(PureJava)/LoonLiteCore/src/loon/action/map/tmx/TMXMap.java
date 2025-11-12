@@ -142,7 +142,13 @@ public class TMXMap implements Sized {
 		backgroundColor = new LColor(LColor.TRANSPARENT);
 
 		this.filePath = path;
-		this.tilesLocation = location;
+		final String newLocation = PathUtils.getDirName(filePath);
+		if (StringUtils.isEmpty(newLocation)) {
+			this.tilesLocation = location;
+		} else if (StringUtils.isEmpty(location)) {
+			this.tilesLocation = newLocation;
+		}
+
 		this.updateRenderOffset();
 		final String ext = PathUtils.getExtension(filePath).trim().toLowerCase();
 		if ("xml".equals(ext) || "tmx".equals(ext) || StringUtils.isNullOrEmpty(ext)) {

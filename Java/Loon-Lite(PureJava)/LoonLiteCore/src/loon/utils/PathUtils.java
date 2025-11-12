@@ -71,6 +71,32 @@ public final class PathUtils {
 	}
 
 	/**
+	 * 格式化文件路径去除重复项后合并两个地址
+	 * 
+	 * @param left
+	 * @param right
+	 * @return
+	 */
+	public static String normalizeCombinePaths(String left, String right) {
+		if (left == null && right == null) {
+			return LSystem.EMPTY;
+		}
+		if (left == null && right != null) {
+			return right;
+		}
+		if (left != null && right == null) {
+			return left;
+		}
+		String path = null;
+		if (right.indexOf(left) != -1) {
+			path = right;
+		} else {
+			path = PathUtils.getCombinePaths(left, right);
+		}
+		return PathUtils.normalize(path);
+	}
+
+	/**
 	 * 返回指定文件的基础文件名(不带.)
 	 *
 	 * @param filename

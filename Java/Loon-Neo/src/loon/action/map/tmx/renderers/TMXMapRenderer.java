@@ -31,6 +31,7 @@ import loon.LTextureBatch.Cache;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
 import loon.action.map.Field2D;
+import loon.action.map.tmx.TMXImage;
 import loon.action.map.tmx.TMXImageLayer;
 import loon.action.map.tmx.TMXMap;
 import loon.action.map.tmx.TMXMapLayer;
@@ -95,6 +96,8 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 
 	protected int lastHashCode = 1;
 
+	protected int tileIndex = 0;
+
 	protected abstract void renderTileLayer(GLEx gl, TMXTileLayer tileLayer);
 
 	protected abstract void renderImageLayer(GLEx gl, TMXImageLayer imageLayer);
@@ -128,9 +131,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		this.map = map;
 
 		for (TMXTileSet tileSet : map.getTileSets()) {
-			String path = tileSet.getImage().getSource();
-			if (!textureMap.containsKey(path)) {
-				textureMap.put(path, LSystem.loadTexture(path));
+			TMXImage image = tileSet.getImage();
+			if (image != null) {
+				String path = image.getSource();
+				if (!textureMap.containsKey(path)) {
+					textureMap.put(path, image.getImage());
+				}
 			}
 			for (TMXTile tile : tileSet.getTiles()) {
 				if (tile.isAnimated()) {
@@ -141,9 +147,12 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		}
 
 		for (TMXImageLayer imageLayer : map.getImageLayers()) {
-			String path = imageLayer.getImage().getSource();
-			if (!textureMap.containsKey(path)) {
-				textureMap.put(path, LSystem.loadTexture(path));
+			TMXImage image = imageLayer.getImage();
+			if (image != null) {
+				String path = image.getSource();
+				if (!textureMap.containsKey(path)) {
+					textureMap.put(path, LSystem.loadTexture(path));
+				}
 			}
 		}
 	}
@@ -197,6 +206,15 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		for (TMXAnimation animator : tileAnimators.values()) {
 			animator.update(delta);
 		}
+	}
+
+	public int getTileIndex() {
+		return tileIndex;
+	}
+
+	public TMXMapRenderer setTileIndex(int idx) {
+		tileIndex = idx;
+		return this;
 	}
 
 	public float centerX() {

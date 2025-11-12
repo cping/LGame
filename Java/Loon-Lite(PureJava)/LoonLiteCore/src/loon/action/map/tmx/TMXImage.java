@@ -24,6 +24,7 @@ import loon.Json;
 import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.LColor;
+import loon.utils.PathUtils;
 import loon.utils.xml.XMLElement;
 
 public class TMXImage {
@@ -33,85 +34,96 @@ public class TMXImage {
 	}
 
 	// 瓦片色彩格式
-	private Format format;
+	private Format _format;
 
 	// 瓦片图像源
-	private String source;
+	private String _source;
 
 	// 过滤色
-	private LColor trans;
+	private LColor _trans;
 
-	private int width;
-	private int height;
+	private int _width;
+	private int _height;
+
+	private String _location;
+
+	private LTexture _image = null;
 
 	public void parse(Json.Object element, String tmxPath) {
-		source = element.getString("image", LSystem.EMPTY).trim();
-		width = element.getInt("imagewidth", 0);
-		height = element.getInt("imageheight", 0);
+		_location = tmxPath;
+		_source = element.getString("image", LSystem.EMPTY).trim();
+		_width = element.getInt("imagewidth", 0);
+		_height = element.getInt("imageheight", 0);
 		if (element.containsKey("trans")) {
-			trans = new LColor(element.getString("trans", LSystem.EMPTY).trim());
+			_trans = new LColor(element.getString("trans", LSystem.EMPTY).trim());
 		} else if (element.containsKey("transparentcolor")) {
-			trans = new LColor(element.getString("transparentcolor", LSystem.EMPTY).trim());
+			_trans = new LColor(element.getString("transparentcolor", LSystem.EMPTY).trim());
 		} else {
-			trans = new LColor(LColor.TRANSPARENT);
+			_trans = new LColor(LColor.TRANSPARENT);
 		}
-		if (width == 0 || height == 0) {
-			LTexture image = LSystem.loadTexture(source);
-			if (width == 0) {
-				width = image.getWidth();
-			}
-			if (height == 0) {
-				height = image.getWidth();
-			}
-		}
+		loadImage();
 	}
 
 	public void parse(XMLElement element, String tmxPath) {
+		_location = tmxPath;
 		String sourcePath = element.getAttribute("source", LSystem.EMPTY);
-		source = sourcePath.trim();
-		width = element.getIntAttribute("width", 0);
-		height = element.getIntAttribute("height", 0);
+		_source = sourcePath.trim();
+		_width = element.getIntAttribute("width", 0);
+		_height = element.getIntAttribute("height", 0);
 		if (element.hasAttribute("trans")) {
-			trans = new LColor(element.getAttribute("trans", LSystem.EMPTY).trim());
+			_trans = new LColor(element.getAttribute("trans", LSystem.EMPTY).trim());
 		} else if (element.hasAttribute("transparentcolor")) {
-			trans = new LColor(element.getAttribute("transparentcolor", LSystem.EMPTY).trim());
+			_trans = new LColor(element.getAttribute("transparentcolor", LSystem.EMPTY).trim());
 		} else {
-			trans = new LColor(LColor.TRANSPARENT);
+			_trans = new LColor(LColor.TRANSPARENT);
 		}
-		if (width == 0 || height == 0) {
-			LTexture image = LSystem.loadTexture(source);
-			if (width == 0) {
-				width = image.getWidth();
+		loadImage();
+	}
+
+	protected void loadImage() {
+		if (_image == null || _image.isClosed() || _width == 0 || _height == 0) {
+			_image = LSystem.loadTexture(PathUtils.normalizeCombinePaths(_location, _source));
+			if (_width == 0) {
+				_width = _image.getWidth();
 			}
-			if (height == 0) {
-				height = image.getWidth();
+			if (_height == 0) {
+				_height = _image.getWidth();
 			}
 		}
 	}
 
 	public TMXImage setFormat(Format f) {
-		this.format = f;
+		this._format = f;
 		return this;
 	}
 
 	public Format getFormat() {
-		return format;
+		return _format;
+	}
+
+	public String getLocation() {
+		return _location;
 	}
 
 	public String getSource() {
-		return source;
+		return _source;
+	}
+
+	public LTexture getImage() {
+		loadImage();
+		return _image;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public LColor getTrans() {
-		return trans;
+		return _trans;
 	}
 
 }

@@ -53,7 +53,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		final LTexture originalTexture = textureMap.get(imageLayer.getImage().getSource());
+		final LTexture originalTexture = textureMap.get(imageLayer.getSource());
 		g.draw(originalTexture, (imageLayer.getRenderOffsetX() + _objectLocation.x) * scaleX,
 				(imageLayer.getRenderOffsetY() + _objectLocation.y) * scaleY,
 				imageLayer.getWidth() * map.getTileWidth(), imageLayer.getHeight() * map.getTileHeight(),
@@ -87,7 +87,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			LTexture current = textureMap.get(map.getTileset(0).getImage().getSource());
+			LTexture current = textureMap.get(map.getTileset(tileIndex).getSource());
 			LTextureBatch texBatch = current.getTextureBatch();
 
 			boolean isCached = false;
@@ -140,7 +140,7 @@ public class TMXOrthogonalMapRenderer extends TMXMapRenderer {
 						TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
 						TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
 
-						LTexture texture = textureMap.get(tileSet.getImage().getSource());
+						LTexture texture = textureMap.get(tileSet.getSource());
 
 						if (texture.getID() != current.getID()) {
 							texBatch.end();

@@ -146,7 +146,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 		} else {
 			imageLayerYOffset = -(heightPixels - hexMapHeightPixels);
 		}
-		final LTexture current = textureMap.get(imageLayer.getImage().getSource());
+		final LTexture current = textureMap.get(imageLayer.getSource());
 		final float posX = (imageLayer.getRenderOffsetX() + _objectLocation.x) * scaleX;
 		final float posY = (imageLayer.getRenderOffsetY() + imageLayerYOffset + _objectLocation.y) * scaleY;
 		g.draw(current, posX, posY, imageLayer.getWidth() * map.getTileWidth(),
@@ -183,7 +183,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			_texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
+			_texCurrent = textureMap.get(map.getTileset(tileIndex).getSource());
 			_texBatch = _texCurrent.getTextureBatch();
 
 			boolean isCached = false;
@@ -305,7 +305,7 @@ public class TMXHexagonalMapRenderer extends TMXMapRenderer {
 			TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
 			TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
 
-			LTexture texture = textureMap.get(tileSet.getImage().getSource());
+			LTexture texture = textureMap.get(tileSet.getSource());
 
 			if (texture.getID() != _texCurrent.getID()) {
 				_texBatch.end();

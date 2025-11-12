@@ -58,7 +58,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		if (!imageLayer.isVisible()) {
 			return;
 		}
-		LTexture current = textureMap.get(imageLayer.getImage().getSource());
+		LTexture current = textureMap.get(imageLayer.getSource());
 		float tileWidth = map.getTileWidth();
 		float tileHeight = map.getTileHeight();
 		float posX = (imageLayer.getRenderOffsetY() * tileWidth / 2) + (imageLayer.getRenderOffsetX() * tileWidth / 2)
@@ -99,7 +99,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 
 			final boolean saveCache = textureMap.size == 1 && allowCache;
 
-			_texCurrent = textureMap.get(map.getTileset(0).getImage().getSource());
+			_texCurrent = textureMap.get(map.getTileset(tileIndex).getSource());
 			_texBatch = _texCurrent.getTextureBatch();
 
 			boolean isCached = false;
@@ -169,7 +169,7 @@ public class TMXIsometricMapRenderer extends TMXMapRenderer {
 		TMXTileSet tileSet = map.getTileset(mapTile.getTileSetID());
 		TMXTile tile = tileSet.getTile(mapTile.getGID() - tileSet.getFirstGID());
 
-		LTexture texture = textureMap.get(tileSet.getImage().getSource());
+		LTexture texture = textureMap.get(tileSet.getSource());
 
 		if (texture.getID() != _texCurrent.getID()) {
 			_texBatch.end();
