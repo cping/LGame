@@ -33,11 +33,11 @@ import loon.utils.MathUtils;
  */
 public class LPad extends LComponent {
 
-	private ActionKey lockedKey;
+	private ActionKey _lockedKey;
 
-	private boolean limitClick = false;
+	private boolean _limitClick = false;
 
-	private boolean isLeft, isRight, isUp, isDown, isClick;
+	private boolean _isLeft, _isRight, _isUp, _isDown, _isClick;
 
 	public static interface ClickListener {
 
@@ -53,25 +53,25 @@ public class LPad extends LComponent {
 
 	}
 
-	public ClickListener listener;
+	public ClickListener _listener;
 
-	private int lastDir = -1;
+	private int _lastDir = -1;
 
-	private float centerX, centerY;
+	private float _centerX, _centerY;
 
-	private float offsetX, offsetY;
+	private float _offsetX, _offsetY;
 
-	private int dotWidth, dotHeight;
+	private int _dotWidth, _dotHeight;
 
-	private int angle;
+	private int _angle;
 
-	private int baseWidth, baseHeight;
+	private int _baseWidth, _baseHeight;
 
-	private int backWidth, backHeight;
+	private int _backWidth, _backHeight;
 
-	private LTexturePack pack;
+	private LTexturePack _pack;
 
-	private float scale_pad;
+	private float _scale_pad;
 
 	public LPad(int x, int y) {
 		this(x, y, 1.2f);
@@ -87,24 +87,24 @@ public class LPad extends LComponent {
 
 	public LPad(int x, int y, LTexturePack p, float scale) {
 		super(x, y, (int) (p.getEntry("fore").width() * scale), (int) (p.getEntry("fore").height() * scale));
-		this.offsetX = 6 * scale;
-		this.offsetY = 6 * scale;
-		this.pack = p;
-		this.dotWidth = (int) (p.getEntry("dot").width() * scale);
-		this.dotHeight = (int) (p.getEntry("dot").height() * scale);
-		this.baseWidth = (int) (p.getEntry("fore").width() * scale);
-		this.baseHeight = (int) (p.getEntry("fore").height() * scale);
-		this.backWidth = (int) (p.getEntry("back").width() * scale);
-		this.backHeight = (int) (p.getEntry("back").height() * scale);
-		this.centerX = (baseWidth - dotWidth) / 2f + offsetX;
-		this.centerY = (baseHeight - dotHeight) / 2f + offsetY;
-		this.scale_pad = scale;
-		this.lockedKey = new ActionKey();
+		this._offsetX = 6 * scale;
+		this._offsetY = 6 * scale;
+		this._pack = p;
+		this._dotWidth = (int) (p.getEntry("dot").width() * scale);
+		this._dotHeight = (int) (p.getEntry("dot").height() * scale);
+		this._baseWidth = (int) (p.getEntry("fore").width() * scale);
+		this._baseHeight = (int) (p.getEntry("fore").height() * scale);
+		this._backWidth = (int) (p.getEntry("back").width() * scale);
+		this._backHeight = (int) (p.getEntry("back").height() * scale);
+		this._centerX = (_baseWidth - _dotWidth) / 2f + _offsetX;
+		this._centerY = (_baseHeight - _dotHeight) / 2f + _offsetY;
+		this._scale_pad = scale;
+		this._lockedKey = new ActionKey();
 		p.setFormat(Format.LINEAR);
 	}
 
 	public float getScale() {
-		return scale_pad;
+		return _scale_pad;
 	}
 
 	@Override
@@ -129,14 +129,14 @@ public class LPad extends LComponent {
 		if (_input == null) {
 			return;
 		}
-		if (limitClick) {
-			if (lockedKey.isPressed()) {
+		if (_limitClick) {
+			if (_lockedKey.isPressed()) {
 				return;
 			}
-			lockedKey.press();
+			_lockedKey.press();
 		}
-		final float x = MathUtils.bringToBounds(0, baseWidth, getTouchX() - getScreenX()) / baseWidth - 0.5f;
-		final float y = MathUtils.bringToBounds(0, baseHeight, getTouchY() - getScreenY()) / baseHeight - 0.5f;
+		final float x = MathUtils.bringToBounds(0, _baseWidth, getTouchX() - getScreenX()) / _baseWidth - 0.5f;
+		final float y = MathUtils.bringToBounds(0, _baseHeight, getTouchY() - getScreenY()) / _baseHeight - 0.5f;
 		if (x == 0 && y == 0) {
 			return;
 		}
@@ -144,45 +144,45 @@ public class LPad extends LComponent {
 			cancel();
 			if (MathUtils.abs(x) > MathUtils.abs(y)) {
 				if (x > 0) {
-					this.isRight = true;
-					this.isClick = true;
-					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 + dotWidth * 0.75f;
-					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
-					if (listener != null) {
-						listener.right();
+					this._isRight = true;
+					this._isClick = true;
+					this._centerX = _offsetX + x + (_baseWidth - _dotWidth) / 2 + _dotWidth * 0.75f;
+					this._centerY = _offsetY + y + (_baseHeight - _dotHeight) / 2;
+					if (_listener != null) {
+						_listener.right();
 					}
-					this.lastDir = Config.TRIGHT;
+					this._lastDir = Config.TRIGHT;
 				} else if (x < 0) {
-					this.isLeft = true;
-					this.isClick = true;
-					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - dotWidth * 0.75f;
-					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2;
-					if (listener != null) {
-						listener.left();
+					this._isLeft = true;
+					this._isClick = true;
+					this._centerX = _offsetX + x + (_baseWidth - _dotWidth) / 2 - _dotWidth * 0.75f;
+					this._centerY = _offsetY + y + (_baseHeight - _dotHeight) / 2;
+					if (_listener != null) {
+						_listener.left();
 					}
-					this.lastDir = Config.TLEFT;
+					this._lastDir = Config.TLEFT;
 				} else if (x == 0) {
 					freeClick();
 				}
 			} else {
 				if (y > 0) {
-					this.isDown = true;
-					this.isClick = true;
-					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
-					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2 + dotHeight * 0.75f;
-					if (listener != null) {
-						listener.down();
+					this._isDown = true;
+					this._isClick = true;
+					this._centerX = _offsetX + x + (_baseWidth - _dotWidth) / 2 - 1;
+					this._centerY = _offsetY + y + (_baseHeight - _dotHeight) / 2 + _dotHeight * 0.75f;
+					if (_listener != null) {
+						_listener.down();
 					}
-					this.lastDir = Config.TDOWN;
+					this._lastDir = Config.TDOWN;
 				} else if (y < 0) {
-					this.isUp = true;
-					this.isClick = true;
-					this.centerX = offsetX + x + (baseWidth - dotWidth) / 2 - 1;
-					this.centerY = offsetY + y + (baseHeight - dotHeight) / 2 - dotHeight * 0.75f;
-					if (listener != null) {
-						listener.up();
+					this._isUp = true;
+					this._isClick = true;
+					this._centerX = _offsetX + x + (_baseWidth - _dotWidth) / 2 - 1;
+					this._centerY = _offsetY + y + (_baseHeight - _dotHeight) / 2 - _dotHeight * 0.75f;
+					if (_listener != null) {
+						_listener.up();
 					}
-					this.lastDir = Config.TUP;
+					this._lastDir = Config.TUP;
 				} else if (y == 0) {
 					freeClick();
 				}
@@ -193,23 +193,23 @@ public class LPad extends LComponent {
 	}
 
 	public LPad cancel() {
-		if (listener != null) {
-			listener.other();
+		if (_listener != null) {
+			_listener.other();
 		}
-		this.isLeft = false;
-		this.isRight = false;
-		this.isDown = false;
-		this.isUp = false;
-		this.isClick = false;
+		this._isLeft = false;
+		this._isRight = false;
+		this._isDown = false;
+		this._isUp = false;
+		this._isClick = false;
 		return this;
 	}
 
 	private void freeClick() {
-		if (limitClick) {
-			lockedKey.release();
+		if (_limitClick) {
+			_lockedKey.release();
 		}
 		this.cancel();
-		this.lastDir = -1;
+		this._lastDir = -1;
 	}
 
 	@Override
@@ -221,99 +221,98 @@ public class LPad extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		pack.glBegin();
-		pack.draw(0, x, y, backWidth, backHeight, _component_baseColor);
+		_pack.initGL(g);
+		_pack.draw(0, x, y, _backWidth, _backHeight, _component_baseColor);
 		if (isPadDown()) {
-			if (angle < 360) {
-				angle += 1;
+			if (_angle < 360) {
+				_angle += 1;
 			} else {
-				angle = 0;
+				_angle = 0;
 			}
-			pack.draw(2, x + centerX, y + centerY, dotWidth, dotHeight, angle, _component_baseColor);
+			_pack.draw(2, x + _centerX, y + _centerY, _dotWidth, _dotHeight, _angle, _component_baseColor);
 		}
-		pack.draw(1, x + (backWidth - baseWidth) * 0.5f, y + (backHeight - baseHeight) * 0.5f, baseWidth, baseHeight,
-				_component_baseColor);
-		pack.glEnd();
+		_pack.draw(1, x + (_backWidth - _baseWidth) * 0.5f, y + (_backHeight - _baseHeight) * 0.5f, _baseWidth,
+				_baseHeight, _component_baseColor);
 	}
 
 	public boolean isLastLeft() {
-		return lastDir == Config.TLEFT;
+		return _lastDir == Config.TLEFT;
 	}
 
 	public boolean isLastRight() {
-		return lastDir == Config.TRIGHT;
+		return _lastDir == Config.TRIGHT;
 	}
 
 	public boolean isLastUp() {
-		return lastDir == Config.TUP;
+		return _lastDir == Config.TUP;
 	}
 
 	public boolean isLastDown() {
-		return lastDir == Config.TDOWN;
+		return _lastDir == Config.TDOWN;
 	}
 
 	public int getDirection() {
-		return lastDir;
+		return _lastDir;
 	}
 
 	public boolean isLeft() {
-		return isLeft;
+		return _isLeft;
 	}
 
 	public boolean isRight() {
-		return isRight;
+		return _isRight;
 	}
 
 	public boolean isUp() {
-		return isUp;
+		return _isUp;
 	}
 
 	public boolean isDown() {
-		return isDown;
+		return _isDown;
 	}
 
 	public boolean isPadDown() {
-		return isClick && isTouchDownClick() && isPointInUI();
+		return _isClick && isTouchDownClick() && isPointInUI();
 	}
 
 	public boolean isPadUp() {
-		return (isClick && isClickUp());
+		return (_isClick && isClickUp());
 	}
 
 	public ClickListener getListener() {
-		return listener;
+		return _listener;
 	}
 
 	public LPad setListener(ClickListener l) {
-		this.listener = l;
+		this._listener = l;
 		return this;
 	}
 
 	public float getBoxOffsetX() {
-		return offsetX;
+		return _offsetX;
 	}
 
 	public LPad setBoxOffsetX(float offsetX) {
-		this.offsetX = offsetX;
+		this._offsetX = offsetX;
 		return this;
 	}
 
 	public float getBoxOffsetY() {
-		return offsetY;
+		return _offsetY;
 	}
 
 	public LPad setBoxOffsetY(float offsetY) {
-		this.offsetY = offsetY;
+		this._offsetY = offsetY;
 		return this;
 	}
 
 	public boolean isLimitClick() {
-		return limitClick;
+		return _limitClick;
 	}
 
 	public LPad setLimitClick(boolean l) {
-		this.limitClick = l;
-		this.lockedKey.reset();
+		this._limitClick = l;
+		this._lockedKey.reset();
 		return this;
 	}
 
@@ -324,8 +323,8 @@ public class LPad extends LComponent {
 
 	@Override
 	public void destory() {
-		if (pack != null) {
-			pack.close();
+		if (_pack != null) {
+			_pack.close();
 		}
 	}
 

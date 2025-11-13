@@ -35,30 +35,30 @@ import loon.utils.MathUtils;
  */
 public class LProgress extends LComponent {
 
-	private float minValue = 0f;
-
-	private float maxValue = 0f;
-
-	private boolean vertical = false;
-
 	// 默认提供了四种进度条模式，分别是游戏类血槽，普通的UI形式，圆形UI模式，以及用户自制图像.(默认为游戏模式)
 	public enum ProgressType {
 		GAME, UI, CircleUI, Custom
 	}
 
-	private LTexture defaultColorTexture;
-	private LTexture bgTexture;
-	private LTexture bgTextureEnd;
-	private LTexture bgProgressTexture;
-	private LTexture bgProgressStart;
+	private LTexture _defaultColorTexture;
+	private LTexture _bgTexture;
+	private LTexture _bgTextureEnd;
+	private LTexture _bgProgressTexture;
+	private LTexture _bgProgressStart;
 
-	private ValueListener listener;
+	private ValueListener _listener;
 
-	private float percentage = 1f;
+	private float _percentage = 1f;
 
-	private LTexture texture;
+	private float _minValue = 0f;
 
-	private ProgressType progressType;
+	private float _maxValue = 0f;
+
+	private boolean _vertical = false;
+
+	private LTexture _texture;
+
+	private ProgressType _progressType;
 
 	public LProgress(int x, int y, int width, int height) {
 		this(ProgressType.GAME, LColor.red, x, y, width, height, null, null);
@@ -84,27 +84,27 @@ public class LProgress extends LComponent {
 	public LProgress(ProgressType type, LColor color, int x, int y, int width, int height, LTexture bg,
 			LTexture bgProgress) {
 		super(x, y, width, height);
-		this.progressType = type;
+		this._progressType = type;
 		this._component_baseColor = color == null ? LColor.red : color;
-		switch (progressType) {
+		switch (_progressType) {
 		case GAME:
-			this.texture = LTextures.loadTexture(LSystem.getSystemImagePath() + "bar.png");
-			this.bgTexture = texture.cpy(3, 0, 1, texture.height() - 2);
-			this.bgProgressTexture = texture.cpy(1, 0, 1, texture.height() - 2);
-			this.bgProgressStart = texture.cpy(0, 0, 1, texture.height() - 2);
-			this.bgTextureEnd = texture.cpy(4, 0, 1, texture.height() - 2);
+			this._texture = LTextures.loadTexture(LSystem.getSystemImagePath() + "bar.png");
+			this._bgTexture = _texture.cpy(3, 0, 1, _texture.height() - 2);
+			this._bgProgressTexture = _texture.cpy(1, 0, 1, _texture.height() - 2);
+			this._bgProgressStart = _texture.cpy(0, 0, 1, _texture.height() - 2);
+			this._bgTextureEnd = _texture.cpy(4, 0, 1, _texture.height() - 2);
 			break;
 		case UI:
 		case CircleUI:
-			if (defaultColorTexture == null || defaultColorTexture.isClosed()) {
-				defaultColorTexture = LSystem.base().graphics().finalColorTex();
+			if (_defaultColorTexture == null || _defaultColorTexture.isClosed()) {
+				_defaultColorTexture = LSystem.base().graphics().finalColorTex();
 			}
-			this.bgTexture = SkinManager.get().getProgressSkin().getBackgroundTexture();
-			this.bgProgressTexture = defaultColorTexture;
+			this._bgTexture = SkinManager.get().getProgressSkin().getBackgroundTexture();
+			this._bgProgressTexture = _defaultColorTexture;
 			break;
 		default:
-			this.bgTexture = bg;
-			this.bgProgressTexture = bgProgress;
+			this._bgTexture = bg;
+			this._bgProgressTexture = bgProgress;
 			break;
 		}
 		this.reset();
@@ -112,13 +112,13 @@ public class LProgress extends LComponent {
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		if (progressType != ProgressType.CircleUI) {
+		if (_progressType != ProgressType.CircleUI) {
 			draw(g, x, y);
 		} else {
 			float radius = MathUtils.min(getWidth(), getHeight());
 			float size = radius / 6f;
 			g.drawStrokeGradientCircle(x, y, 0, 360f, getWidth(), getHeight(), size, LColor.gray, LColor.darkGray);
-			g.drawStrokeGradientCircle(x, y, 0, 360f * percentage, getWidth(), getHeight(), size,
+			g.drawStrokeGradientCircle(x, y, 0, 360f * _percentage, getWidth(), getHeight(), size,
 					_component_baseColor.darker(), _component_baseColor);
 
 		}
@@ -127,60 +127,61 @@ public class LProgress extends LComponent {
 	@Override
 	public void update(final long elapsedTime) {
 		super.update(elapsedTime);
-		if (listener != null) {
-			listener.onChange(this, percentage);
+		if (_listener != null) {
+			_listener.onChange(this, _percentage);
 		}
 	}
 
 	public void draw(GLEx batch, int x, int y) {
-		if (vertical) {
+		if (_vertical) {
 			float size = 0;
-			switch (progressType) {
+			switch (_progressType) {
 			case GAME:
-				size = getWidth() * (1f - percentage);
+				size = getWidth() * (1f - _percentage);
 				float posY = getHeight() / 2;
-				batch.draw(bgTexture, x + getHeight() / 2 + getWidth() / 2, y - posY, size, getHeight(), 0f, 0f, 90);
+				batch.draw(_bgTexture, x + getHeight() / 2 + getWidth() / 2, y - posY, size, getHeight(), 0f, 0f, 90);
 				batch.setColor(_component_baseColor);
-				size = getWidth() * percentage;
-				batch.draw(bgProgressTexture, x + getHeight() / 2 + getWidth() / 2, y + getWidth() - size - posY,
-						getWidth() * percentage, getHeight(), 0f, 0f, 90);
+				size = getWidth() * _percentage;
+				batch.draw(_bgProgressTexture, x + getHeight() / 2 + getWidth() / 2, y + getWidth() - size - posY,
+						getWidth() * _percentage, getHeight(), 0f, 0f, 90);
 				batch.resetColor();
 				break;
 			case UI:
-				batch.draw(bgTexture, x, y, getHeight(), getWidth());
+				batch.draw(_bgTexture, x, y, getHeight(), getWidth());
 				batch.setColor(_component_baseColor);
-				size = (getWidth() * percentage - 2);
-				batch.draw(bgProgressTexture, x + 1, y + getWidth() - size - 1, getHeight() - 2, size);
+				size = (getWidth() * _percentage - 2);
+				batch.draw(_bgProgressTexture, x + 1, y + getWidth() - size - 1, getHeight() - 2, size);
 				batch.resetColor();
 				break;
 			default:
-				batch.draw(bgTexture, x, y, getHeight(), getWidth());
+				batch.draw(_bgTexture, x, y, getHeight(), getWidth());
 				batch.setColor(_component_baseColor);
-				size = (getWidth() * percentage);
-				batch.draw(bgProgressTexture, x, y + getWidth() - size, getHeight(), size);
+				size = (getWidth() * _percentage);
+				batch.draw(_bgProgressTexture, x, y + getWidth() - size, getHeight(), size);
 				batch.resetColor();
 				break;
 			}
 		} else {
-			switch (progressType) {
+			switch (_progressType) {
 			case GAME:
-				batch.draw(bgTexture, x + getWidth() * percentage + 1, y, getWidth() * (1 - percentage), getHeight());
-				batch.draw(bgTextureEnd, x + getWidth() + 1, y, bgTextureEnd.width(), getHeight());
+				batch.draw(_bgTexture, x + getWidth() * _percentage + 1, y, getWidth() * (1 - _percentage),
+						getHeight());
+				batch.draw(_bgTextureEnd, x + getWidth() + 1, y, _bgTextureEnd.width(), getHeight());
 				batch.setColor(_component_baseColor);
-				batch.draw(bgProgressTexture, x + 1, y, getWidth() * percentage, getHeight());
-				batch.draw(bgProgressStart, x, y, bgProgressStart.width(), getHeight());
+				batch.draw(_bgProgressTexture, x + 1, y, getWidth() * _percentage, getHeight());
+				batch.draw(_bgProgressStart, x, y, _bgProgressStart.width(), getHeight());
 				batch.resetColor();
 				break;
 			case UI:
-				batch.draw(bgTexture, x, y, getWidth(), getHeight());
+				batch.draw(_bgTexture, x, y, getWidth(), getHeight());
 				batch.setColor(_component_baseColor);
-				batch.draw(bgProgressTexture, x + 1, y + 1, getWidth() * percentage - 2, getHeight() - 2);
+				batch.draw(_bgProgressTexture, x + 1, y + 1, getWidth() * _percentage - 2, getHeight() - 2);
 				batch.resetColor();
 				break;
 			default:
-				batch.draw(bgTexture, x, y, getWidth(), getHeight());
+				batch.draw(_bgTexture, x, y, getWidth(), getHeight());
 				batch.setColor(_component_baseColor);
-				batch.draw(bgProgressTexture, x, y, getWidth() * percentage, getHeight());
+				batch.draw(_bgProgressTexture, x, y, getWidth() * _percentage, getHeight());
 				batch.resetColor();
 				break;
 			}
@@ -190,9 +191,9 @@ public class LProgress extends LComponent {
 	@Override
 	public LProgress reset() {
 		super.reset();
-		this.percentage = 1f;
-		this.minValue = 0f;
-		this.maxValue = 100f;
+		this._percentage = 1f;
+		this._minValue = 0f;
+		this._maxValue = 100f;
 		return this;
 	}
 
@@ -201,60 +202,60 @@ public class LProgress extends LComponent {
 	}
 
 	public boolean isMin() {
-		return MathUtils.equal(this.getValue(), this.minValue);
+		return MathUtils.equal(this.getValue(), this._minValue);
 	}
 
 	public boolean isMax() {
-		return MathUtils.equal(this.getValue(), this.maxValue);
+		return MathUtils.equal(this.getValue(), this._maxValue);
 	}
 
 	public float getValue() {
-		return this.percentage * this.maxValue;
+		return this._percentage * this._maxValue;
 	}
 
 	public LProgress setValue(float v) {
 		float process = 0f;
-		if (v < minValue) {
-			process = minValue / maxValue;
-		} else if (v > maxValue) {
+		if (v < _minValue) {
+			process = _minValue / _maxValue;
+		} else if (v > _maxValue) {
 			process = 1f;
 		} else {
-			process = v / maxValue;
+			process = v / _maxValue;
 		}
-		this.percentage = process;
+		this._percentage = process;
 		return this;
 	}
 
 	public float getMinValue() {
-		return minValue;
+		return _minValue;
 	}
 
 	public LProgress setMinValue(float v) {
-		if (v > this.maxValue) {
-			this.maxValue = v;
+		if (v > this._maxValue) {
+			this._maxValue = v;
 			return this;
 		}
-		this.minValue = v;
+		this._minValue = v;
 		setValue(getValue());
 		return this;
 	}
 
 	public float getMaxValue() {
-		return maxValue;
+		return _maxValue;
 	}
 
 	public LProgress setMaxValue(float v) {
-		if (v < this.minValue) {
-			this.minValue = v;
+		if (v < this._minValue) {
+			this._minValue = v;
 			return this;
 		}
-		this.maxValue = v;
+		this._maxValue = v;
 		setValue(getValue());
 		return this;
 	}
 
 	public LProgress setPercentage(float p) {
-		setValue(p * maxValue);
+		setValue(p * _maxValue);
 		return this;
 	}
 
@@ -266,23 +267,23 @@ public class LProgress extends LComponent {
 	}
 
 	public boolean isVertical() {
-		return vertical;
+		return _vertical;
 	}
 
 	public void setVertical(boolean vertical) {
-		this.vertical = vertical;
+		this._vertical = vertical;
 	}
 
 	public float getPercentage() {
-		return this.percentage;
+		return this._percentage;
 	}
 
 	public ValueListener getListener() {
-		return listener;
+		return _listener;
 	}
 
 	public void setListener(ValueListener listener) {
-		this.listener = listener;
+		this._listener = listener;
 	}
 
 	@Override
@@ -292,20 +293,20 @@ public class LProgress extends LComponent {
 
 	@Override
 	public void destory() {
-		if (texture != null) {
-			if (bgTexture != null) {
-				bgTexture.close();
+		if (_texture != null) {
+			if (_bgTexture != null) {
+				_bgTexture.close();
 			}
-			if (bgTextureEnd != null) {
-				bgTextureEnd.close();
+			if (_bgTextureEnd != null) {
+				_bgTextureEnd.close();
 			}
-			if (bgProgressTexture != null) {
-				bgProgressTexture.close();
+			if (_bgProgressTexture != null) {
+				_bgProgressTexture.close();
 			}
-			if (bgProgressStart != null) {
-				bgProgressStart.close();
+			if (_bgProgressStart != null) {
+				_bgProgressStart.close();
 			}
-			texture.close();
+			_texture.close();
 		}
 	}
 

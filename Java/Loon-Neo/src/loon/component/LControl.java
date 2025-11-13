@@ -33,6 +33,10 @@ import loon.utils.MathUtils;
  */
 public class LControl extends LComponent {
 
+	private static final float SIDE = 0.5f;
+
+	private static final float DIAGONAL = 0.354f;
+
 	public static interface DigitalListener {
 
 		public void up();
@@ -53,25 +57,21 @@ public class LControl extends LComponent {
 
 	}
 
-	public DigitalListener control;
+	public DigitalListener _control;
 
-	private static final float SIDE = 0.5f;
+	private LTexture _controlBase;
 
-	private static final float DIAGONAL = 0.354f;
+	private LTexture _controlDot;
 
-	private LTexture controlBase;
+	private int _baseWidth, _baseHeight;
 
-	private LTexture controlDot;
+	private int _dotWidth, _dotHeight;
 
-	private int baseWidth, baseHeight;
+	private float _centerX, _centerY;
 
-	private int dotWidth, dotHeight;
+	private boolean _allowDiagonal;
 
-	private float centerX, centerY;
-
-	private boolean allowDiagonal;
-
-	private int lastDir = -1;
+	private int _lastDir = -1;
 
 	public LControl(int x, int y) {
 		this(x, y, 128, 128, 64, 64);
@@ -92,35 +92,34 @@ public class LControl extends LComponent {
 
 	public LControl(int x, int y, LTexture basefile, LTexture dot, int bw, int bh, int dw, int dh) {
 		super(x, y, bw, bh);
-		this.controlBase = basefile;
-		this.controlDot = dot;
-		this.baseWidth = bw;
-		this.baseHeight = bh;
-		this.dotWidth = dw;
-		this.dotHeight = dh;
-		this.allowDiagonal = true;
+		this._controlBase = basefile;
+		this._controlDot = dot;
+		this._baseWidth = bw;
+		this._baseHeight = bh;
+		this._dotWidth = dw;
+		this._dotHeight = dh;
+		this._allowDiagonal = true;
 		this.centerOffset();
 		freeRes().add(basefile, dot);
 	}
 
 	public boolean isAllowDiagonal() {
-		return this.allowDiagonal;
+		return this._allowDiagonal;
 	}
 
 	public void setAllowDiagonal(final boolean a) {
-		this.allowDiagonal = a;
+		this._allowDiagonal = a;
 	}
 
 	private void centerOffset() {
-		this.centerX = (baseWidth - dotWidth) / 2f;
-		this.centerY = (baseHeight - dotHeight) / 2f;
+		this._centerX = (_baseWidth - _dotWidth) / 2f;
+		this._centerY = (_baseHeight - _dotHeight) / 2f;
 	}
 
 	@Override
 	public void processTouchPressed() {
-		final float relativeX = MathUtils.bringToBounds(0, baseWidth, getTouchX() - getScreenX()) / baseWidth
-				- 0.5f;
-		final float relativeY = MathUtils.bringToBounds(0, baseHeight, getTouchY() - getScreenY()) / baseHeight
+		final float relativeX = MathUtils.bringToBounds(0, _baseWidth, getTouchX() - getScreenX()) / _baseWidth - 0.5f;
+		final float relativeY = MathUtils.bringToBounds(0, _baseHeight, getTouchY() - getScreenY()) / _baseHeight
 				- 0.5f;
 		onUpdateControlDot(relativeX, relativeY);
 		super.processTouchPressed();
@@ -133,39 +132,39 @@ public class LControl extends LComponent {
 	}
 
 	private void position(final float x, final float y, final int direction) {
-		this.centerX = dotWidth * 0.5f + x * baseWidth;
-		this.centerY = dotHeight * 0.5f + y * baseHeight;
+		this._centerX = _dotWidth * 0.5f + x * _baseWidth;
+		this._centerY = _dotHeight * 0.5f + y * _baseHeight;
 		try {
-			if (control != null) {
+			if (_control != null) {
 				switch (direction) {
 				case Config.TUP:
-					control.up();
+					_control.up();
 					break;
 				case Config.UP:
-					control.up45();
+					_control.up45();
 					break;
 				case Config.TRIGHT:
-					control.right();
+					_control.right();
 					break;
 				case Config.RIGHT:
-					control.right45();
+					_control.right45();
 					break;
 				case Config.TDOWN:
-					control.down();
+					_control.down();
 					break;
 				case Config.DOWN:
-					control.down45();
+					_control.down45();
 					break;
 				case Config.TLEFT:
-					control.left();
+					_control.left();
 					break;
 				case Config.LEFT:
-					control.left45();
+					_control.left45();
 					break;
 				default:
 					break;
 				}
-				lastDir = direction;
+				_lastDir = direction;
 			}
 		} catch (Throwable t) {
 			LSystem.error("LControl click exception", t);
@@ -177,7 +176,7 @@ public class LControl extends LComponent {
 			position(0, 0, Config.EMPTY);
 			return;
 		}
-		if (this.allowDiagonal) {
+		if (this._allowDiagonal) {
 			final float angle = MathUtils.toDegrees(MathUtils.atan2(x, y)) + 180;
 			if (CollisionHelper.checkAngle(0, angle) || CollisionHelper.checkAngle(360, angle)) {
 				position(0, -SIDE, Config.TUP);
@@ -225,62 +224,62 @@ public class LControl extends LComponent {
 		if (!isVisible()) {
 			return;
 		}
-		float alpha = g.alpha();
+		final float alpha = g.alpha();
 		g.setAlpha(0.5f);
-		g.draw(controlBase, x, y, baseWidth, baseHeight);
-		g.draw(controlDot, x + centerX, y + centerY, dotWidth, dotHeight);
+		g.draw(_controlBase, x, y, _baseWidth, _baseHeight);
+		g.draw(_controlDot, x + _centerX, y + _centerY, _dotWidth, _dotHeight);
 		g.setAlpha(alpha);
 
 	}
 
 	public boolean isLastTLeft() {
-		return lastDir == Config.TLEFT;
+		return _lastDir == Config.TLEFT;
 	}
 
 	public boolean isLastTRight() {
-		return lastDir == Config.TRIGHT;
+		return _lastDir == Config.TRIGHT;
 	}
 
 	public boolean isLastTUp() {
-		return lastDir == Config.TUP;
+		return _lastDir == Config.TUP;
 	}
 
 	public boolean isLastTDown() {
-		return lastDir == Config.TDOWN;
+		return _lastDir == Config.TDOWN;
 	}
 
 	public boolean isLastLeft() {
-		return lastDir == Config.LEFT;
+		return _lastDir == Config.LEFT;
 	}
 
 	public boolean isLastRight() {
-		return lastDir == Config.RIGHT;
+		return _lastDir == Config.RIGHT;
 	}
 
 	public boolean isLastUp() {
-		return lastDir == Config.UP;
+		return _lastDir == Config.UP;
 	}
 
 	public boolean isLastDown() {
-		return lastDir == Config.DOWN;
+		return _lastDir == Config.DOWN;
 	}
 
 	public int getDirection() {
-		return lastDir;
+		return _lastDir;
+	}
+
+	public DigitalListener getDigitalListener() {
+		return _control;
+	}
+
+	public LControl setControl(DigitalListener c) {
+		this._control = c;
+		return this;
 	}
 
 	@Override
 	public String getUIName() {
 		return "Control";
-	}
-
-	public DigitalListener getDigitalListener() {
-		return control;
-	}
-
-	public LControl setControl(DigitalListener c) {
-		this.control = c;
-		return this;
 	}
 
 	@Override

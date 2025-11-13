@@ -75,86 +75,86 @@ public class TMXMap implements Sized {
 	public static final long FLIPPED_VERTICALLY_FLAG = 0x40000000;
 	public static final long FLIPPED_DIAGONALLY_FLAG = 0x20000000;
 
-	private String filePath;
-	private String tilesLocation;
-	private String tmxType;
-	private LColor backgroundColor;
+	private String _filePath;
+	private String _tilesLocation;
+	private String _tmxType;
+	private LColor _backgroundColor;
 
-	private double version;
-	private double tiledversion;
+	private double _version;
+	private double _tiledversion;
 
-	private boolean renderOffsetDirty;
+	private boolean _renderOffsetDirty;
 
-	private Orientation orientation;
-	private RenderOrder renderOrder;
-	private StaggerAxis staggerAxis;
-	private StaggerIndex staggerIndex;
+	private Orientation _orientation;
+	private RenderOrder _renderOrder;
+	private StaggerAxis _staggerAxis;
+	private StaggerIndex _staggerIndex;
 
-	private int width;
-	private int height;
+	private int _width;
+	private int _height;
 
-	private int tileWidth;
-	private int tileHeight;
+	private int _tileWidth;
+	private int _tileHeight;
 
-	private int tileWidthHalf;
-	private int tileHeightHalf;
+	private int _tileWidthHalf;
+	private int _tileHeightHalf;
 
-	private int widthInPixels;
-	private int heightInPixels;
-	private int infinite;
-	private int nextObjectID;
-	private int nextlayerid;
-	private int hexSideLength;
+	private int _widthInPixels;
+	private int _heightInPixels;
+	private int _infinite;
+	private int _nextObjectID;
+	private int _nextlayerid;
+	private int _hexSideLength;
 
-	private float offsetX;
-	private float offsetY;
-	private float renderOffsetX;
-	private float renderOffsetY;
+	private float _offsetX;
+	private float _offsetY;
+	private float _renderOffsetX;
+	private float _renderOffsetY;
 
-	private TArray<TMXMapLayer> layers;
-	private TArray<TMXTileLayer> tileLayers;
-	private TArray<TMXImageLayer> imageLayers;
-	private TArray<TMXObjectLayer> objectLayers;
-	private TArray<TMXTileSet> tileSets;
+	private TArray<TMXMapLayer> _layers;
+	private TArray<TMXTileLayer> _tileLayers;
+	private TArray<TMXImageLayer> _imageLayers;
+	private TArray<TMXObjectLayer> _objectLayers;
+	private TArray<TMXTileSet> _tileSets;
 
-	private TMXProperties properties;
+	private TMXProperties _properties;
 
 	public TMXMap(final String path) {
 		this(path, LSystem.EMPTY);
 	}
 
 	public TMXMap(final String path, final String location) {
-		version = 1.0f;
+		_version = 1.0f;
 
-		layers = new TArray<TMXMapLayer>();
-		tileLayers = new TArray<TMXTileLayer>();
-		imageLayers = new TArray<TMXImageLayer>();
-		objectLayers = new TArray<TMXObjectLayer>();
-		tileSets = new TArray<TMXTileSet>();
+		_layers = new TArray<TMXMapLayer>();
+		_tileLayers = new TArray<TMXTileLayer>();
+		_imageLayers = new TArray<TMXImageLayer>();
+		_objectLayers = new TArray<TMXObjectLayer>();
+		_tileSets = new TArray<TMXTileSet>();
 
-		properties = new TMXProperties();
+		_properties = new TMXProperties();
 
-		orientation = Orientation.ORTHOGONAL;
-		renderOrder = RenderOrder.LEFT_UP;
-		staggerAxis = StaggerAxis.NONE;
-		staggerIndex = StaggerIndex.NONE;
+		_orientation = Orientation.ORTHOGONAL;
+		_renderOrder = RenderOrder.LEFT_UP;
+		_staggerAxis = StaggerAxis.NONE;
+		_staggerIndex = StaggerIndex.NONE;
 
-		backgroundColor = new LColor(LColor.TRANSPARENT);
+		_backgroundColor = new LColor(LColor.TRANSPARENT);
 
-		this.filePath = path;
-		final String newLocation = PathUtils.getDirName(filePath);
+		this._filePath = path;
+		final String newLocation = PathUtils.getDirName(_filePath);
 		if (StringUtils.isEmpty(newLocation)) {
-			this.tilesLocation = location;
+			this._tilesLocation = location;
 		} else if (StringUtils.isEmpty(location)) {
-			this.tilesLocation = newLocation;
+			this._tilesLocation = newLocation;
 		}
 
 		this.updateRenderOffset();
-		final String ext = PathUtils.getExtension(filePath).trim().toLowerCase();
+		final String ext = PathUtils.getExtension(_filePath).trim().toLowerCase();
 		if ("xml".equals(ext) || "tmx".equals(ext) || StringUtils.isNullOrEmpty(ext)) {
-			parserXml(this.filePath, this.tilesLocation);
+			parserXml(this._filePath, this._tilesLocation);
 		} else if ("json".equals(ext) || "tmj".equals(ext)) {
-			parserJson(this.filePath, this.tilesLocation);
+			parserJson(this._filePath, this._tilesLocation);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class TMXMap implements Sized {
 	 * @return
 	 */
 	public TMXMapRenderer getMapRenderer() {
-		switch (this.orientation) {
+		switch (this._orientation) {
 		case ISOMETRIC:
 			return new TMXIsometricMapRenderer(this);
 		case HEXAGONAL:
@@ -218,7 +218,7 @@ public class TMXMap implements Sized {
 	}
 
 	public TMXMapRenderer getMapRenderer(float w, float h) {
-		switch (this.orientation) {
+		switch (this._orientation) {
 		case ISOMETRIC:
 			return new TMXIsometricMapRenderer(this, w, h);
 		case HEXAGONAL:
@@ -231,35 +231,35 @@ public class TMXMap implements Sized {
 	}
 
 	public Orientation getOrientation() {
-		return orientation;
+		return _orientation;
 	}
 
 	public RenderOrder getRenderOrder() {
-		return renderOrder;
+		return _renderOrder;
 	}
 
 	public StaggerAxis getStaggerAxis() {
-		return staggerAxis;
+		return _staggerAxis;
 	}
 
 	public StaggerIndex getStaggerIndex() {
-		return staggerIndex;
+		return _staggerIndex;
 	}
 
 	public String getFilePath() {
-		return filePath;
+		return _filePath;
 	}
 
 	public LColor getBackgroundColor() {
-		return backgroundColor;
+		return _backgroundColor;
 	}
 
 	public double getVersion() {
-		return version;
+		return _version;
 	}
 
 	public double getTiledversion() {
-		return tiledversion;
+		return _tiledversion;
 	}
 
 	@Override
@@ -273,75 +273,75 @@ public class TMXMap implements Sized {
 	}
 
 	public float getOffsetX() {
-		return offsetX;
+		return _offsetX;
 	}
 
 	public float getOffsetY() {
-		return offsetY;
+		return _offsetY;
 	}
 
 	public TMXMap setOffsetX(float offsetX) {
-		this.offsetX = offsetX;
+		this._offsetX = offsetX;
 		updateRenderOffset();
 		return this;
 	}
 
 	public TMXMap setOffsetY(float offsetY) {
-		this.offsetY = offsetY;
+		this._offsetY = offsetY;
 		updateRenderOffset();
 		return this;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public int getTileWidth() {
-		return tileWidth;
+		return _tileWidth;
 	}
 
 	public int getTileHeight() {
-		return tileHeight;
+		return _tileHeight;
 	}
 
 	public int getTileWidthHalf() {
-		return tileWidthHalf;
+		return _tileWidthHalf;
 	}
 
 	public int getTileHeightHalf() {
-		return tileHeightHalf;
+		return _tileHeightHalf;
 	}
 
 	public int getNextObjectID() {
-		return nextObjectID;
+		return _nextObjectID;
 	}
 
 	public int getNextlayerid() {
-		return nextlayerid;
+		return _nextlayerid;
 	}
 
 	public int getInfinite() {
-		return infinite;
+		return _infinite;
 	}
 
 	public int getHexSideLength() {
-		return hexSideLength;
+		return _hexSideLength;
 	}
 
 	public TMXMapLayer getLayer(int index) {
-		return layers.get(index);
+		return _layers.get(index);
 	}
 
 	public TMXTileLayer getTileLayer(int index) {
-		return tileLayers.get(index);
+		return _tileLayers.get(index);
 	}
 
 	public boolean getLayerVisibility(int index) {
-		TMXMapLayer layer = layers.get(index);
+		TMXMapLayer layer = _layers.get(index);
 		if (layer != null) {
 			return layer.visible;
 		}
@@ -349,7 +349,7 @@ public class TMXMap implements Sized {
 	}
 
 	public boolean getTileLayerVisibility(int index) {
-		TMXTileLayer layer = tileLayers.get(index);
+		TMXTileLayer layer = _tileLayers.get(index);
 		if (layer != null) {
 			return layer.visible;
 		}
@@ -357,67 +357,67 @@ public class TMXMap implements Sized {
 	}
 
 	public int getNumLayers() {
-		return layers.size;
+		return _layers.size;
 	}
 
 	public TArray<TMXMapLayer> getLayers() {
-		return layers;
+		return _layers;
 	}
 
 	public int getNumTileLayers() {
-		return tileLayers.size;
+		return _tileLayers.size;
 	}
 
 	public float getRenderOffsetX() {
-		if (renderOffsetDirty) {
+		if (_renderOffsetDirty) {
 			calcRenderOffsets();
 		}
-		return renderOffsetX;
+		return _renderOffsetX;
 	}
 
 	public float getRenderOffsetY() {
-		if (renderOffsetDirty) {
+		if (_renderOffsetDirty) {
 			calcRenderOffsets();
 		}
-		return renderOffsetY;
+		return _renderOffsetY;
 	}
 
 	protected void calcRenderOffsets() {
-		renderOffsetX = offsetX;
-		renderOffsetY = offsetY;
-		renderOffsetDirty = false;
+		_renderOffsetX = _offsetX;
+		_renderOffsetY = _offsetY;
+		_renderOffsetDirty = false;
 	}
 
 	public TArray<TMXTileLayer> getTileLayers() {
-		return tileLayers;
+		return _tileLayers;
 	}
 
 	public TMXObjectLayer getObjectLayer(int index) {
-		return objectLayers.get(index);
+		return _objectLayers.get(index);
 	}
 
 	public int getNumObjectLayers() {
-		return objectLayers.size;
+		return _objectLayers.size;
 	}
 
 	public TArray<TMXObjectLayer> getObjectLayers() {
-		return objectLayers;
+		return _objectLayers;
 	}
 
 	public TMXImageLayer getImageLayer(int index) {
-		return imageLayers.get(index);
+		return _imageLayers.get(index);
 	}
 
 	public int getNumImageLayers() {
-		return imageLayers.size;
+		return _imageLayers.size;
 	}
 
 	public TArray<TMXImageLayer> getImageLayers() {
-		return imageLayers;
+		return _imageLayers;
 	}
 
 	public void updateRenderOffset() {
-		renderOffsetDirty = true;
+		_renderOffsetDirty = true;
 	}
 
 	public int findTileSetIndex(int gid) {
@@ -442,19 +442,19 @@ public class TMXMap implements Sized {
 	}
 
 	public TMXTileSet getTileset(int index) {
-		return tileSets.get(index);
+		return _tileSets.get(index);
 	}
 
 	public int getNumTileSets() {
-		return tileSets.size;
+		return _tileSets.size;
 	}
 
 	public TArray<TMXTileSet> getTileSets() {
-		return tileSets;
+		return _tileSets;
 	}
 
 	public TMXProperties getProperties() {
-		return properties;
+		return _properties;
 	}
 
 	@Override
@@ -484,56 +484,56 @@ public class TMXMap implements Sized {
 
 	private void parseTMJ(Json.Object json, String tilesLocation) {
 
-		version = json.getDouble("version", 0);
-		tiledversion = json.getDouble("tiledversion", 0);
+		_version = json.getDouble("version", 0);
+		_tiledversion = json.getDouble("tiledversion", 0);
 
-		offsetX = json.getNumber("x", 0);
-		offsetY = json.getNumber("y", 0);
-		offsetX = json.getNumber("offsetx", offsetX);
-		offsetY = json.getNumber("offsety", offsetY);
+		_offsetX = json.getNumber("x", 0);
+		_offsetY = json.getNumber("y", 0);
+		_offsetX = json.getNumber("offsetx", _offsetX);
+		_offsetY = json.getNumber("offsety", _offsetY);
 
-		tmxType = json.getString("type", null);
-		width = json.getInt("width", 0);
-		height = json.getInt("height", 0);
-		tileWidth = json.getInt("tilewidth", 0);
-		tileHeight = json.getInt("tileheight", 0);
+		_tmxType = json.getString("type", null);
+		_width = json.getInt("width", 0);
+		_height = json.getInt("height", 0);
+		_tileWidth = json.getInt("tilewidth", 0);
+		_tileHeight = json.getInt("tileheight", 0);
 
-		tileWidthHalf = tileWidth / 2;
-		tileHeightHalf = tileHeight / 2;
+		_tileWidthHalf = _tileWidth / 2;
+		_tileHeightHalf = _tileHeight / 2;
 
-		widthInPixels = width * tileWidth;
-		heightInPixels = height * tileHeight;
+		_widthInPixels = _width * _tileWidth;
+		_heightInPixels = _height * _tileHeight;
 
-		infinite = json.getInt("infinite", 0);
+		_infinite = json.getInt("infinite", 0);
 
-		nextlayerid = json.getInt("nextlayerid", 0);
-		nextObjectID = json.getInt("nextobjectid", 0);
+		_nextlayerid = json.getInt("nextlayerid", 0);
+		_nextObjectID = json.getInt("nextobjectid", 0);
 
 		if (json.containsKey("background")) {
-			backgroundColor = new LColor(json.getString("background", LColor.white.toString()).trim());
+			_backgroundColor = new LColor(json.getString("background", LColor.white.toString()).trim());
 		}
 
-		orientation = Orientation.valueOf(json.getString("orientation", "ORTHOGONAL").trim().toUpperCase());
-		if (orientation != null && orientation == Orientation.STAGGERED) {
-			if (height > 1) {
-				this.widthInPixels += tileWidth / 2;
-				this.heightInPixels = heightInPixels / 2 + tileHeight / 2;
+		_orientation = Orientation.valueOf(json.getString("orientation", "ORTHOGONAL").trim().toUpperCase());
+		if (_orientation != null && _orientation == Orientation.STAGGERED) {
+			if (_height > 1) {
+				this._widthInPixels += _tileWidth / 2;
+				this._heightInPixels = _heightInPixels / 2 + _tileHeight / 2;
 			}
 		}
 
 		if (json.containsKey("renderorder")) {
 			switch (json.getString("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
 			case "right-down":
-				renderOrder = RenderOrder.RIGHT_DOWN;
+				_renderOrder = RenderOrder.RIGHT_DOWN;
 				break;
 			case "right-up":
-				renderOrder = RenderOrder.RIGHT_UP;
+				_renderOrder = RenderOrder.RIGHT_UP;
 				break;
 			case "left-down":
-				renderOrder = RenderOrder.LEFT_DOWN;
+				_renderOrder = RenderOrder.LEFT_DOWN;
 				break;
 			case "left-up":
-				renderOrder = RenderOrder.LEFT_UP;
+				_renderOrder = RenderOrder.LEFT_UP;
 				break;
 			}
 		}
@@ -541,10 +541,10 @@ public class TMXMap implements Sized {
 		if (json.containsKey("staggeraxis")) {
 			switch (json.getString("staggeraxis", LSystem.EMPTY).trim().toLowerCase()) {
 			case "x":
-				staggerAxis = StaggerAxis.AXIS_X;
+				_staggerAxis = StaggerAxis.AXIS_X;
 				break;
 			case "y":
-				staggerAxis = StaggerAxis.AXIS_Y;
+				_staggerAxis = StaggerAxis.AXIS_Y;
 				break;
 			}
 		}
@@ -552,20 +552,20 @@ public class TMXMap implements Sized {
 		if (json.containsKey("staggerindex")) {
 			switch (json.getString("staggerindex", LSystem.EMPTY).trim().toLowerCase()) {
 			case "even":
-				staggerIndex = StaggerIndex.EVEN;
+				_staggerIndex = StaggerIndex.EVEN;
 				break;
 			case "odd":
-				staggerIndex = StaggerIndex.ODD;
+				_staggerIndex = StaggerIndex.ODD;
 				break;
 			}
 		}
 
-		hexSideLength = json.getInt("hexsidelength", 0);
+		_hexSideLength = json.getInt("hexsidelength", 0);
 
 		if (json.containsKey("properties")) {
 			Json.Array propertiesArray = json.getArray("properties", null);
 			if (propertiesArray != null) {
-				properties.parse(propertiesArray);
+				_properties.parse(propertiesArray);
 			}
 		}
 
@@ -574,9 +574,9 @@ public class TMXMap implements Sized {
 		parseObjects(json);
 		parseImages(json);
 
-		layers.addAll(tileLayers);
-		layers.addAll(imageLayers);
-		layers.addAll(objectLayers);
+		_layers.addAll(_tileLayers);
+		_layers.addAll(_imageLayers);
+		_layers.addAll(_objectLayers);
 	}
 
 	private void parseLayers(Json.Object layer) {
@@ -587,7 +587,7 @@ public class TMXMap implements Sized {
 					final Json.Object obj = layersArray.getObject(i);
 					TMXTileLayer tileLayer = new TMXTileLayer(this);
 					tileLayer.parse(obj);
-					tileLayers.add(tileLayer);
+					_tileLayers.add(tileLayer);
 
 					parseTiles(obj);
 					parseObjects(obj);
@@ -607,8 +607,8 @@ public class TMXMap implements Sized {
 		if (tilesetsArray != null) {
 			for (int i = 0; i < tilesetsArray.length(); i++) {
 				TMXTileSet tileSet = new TMXTileSet();
-				tileSet.parse(tilesetsArray.getObject(i), tilesLocation);
-				tileSets.add(tileSet);
+				tileSet.parse(tilesetsArray.getObject(i), _tilesLocation);
+				_tileSets.add(tileSet);
 			}
 		}
 	}
@@ -624,7 +624,7 @@ public class TMXMap implements Sized {
 			for (int i = 0; i < objectgroupsArray.length(); i++) {
 				TMXObjectLayer objectLayer = new TMXObjectLayer(this);
 				objectLayer.parse(objectgroupsArray.getObject(i));
-				objectLayers.add(objectLayer);
+				_objectLayers.add(objectLayer);
 			}
 		}
 	}
@@ -640,62 +640,62 @@ public class TMXMap implements Sized {
 			for (int i = 0; i < imagelayersArray.length(); i++) {
 				TMXImageLayer imageLayer = new TMXImageLayer(this);
 				imageLayer.parse(imagelayersArray.getObject(i));
-				imageLayers.add(imageLayer);
+				_imageLayers.add(imageLayer);
 			}
 		}
 	}
 
 	private void parseTMX(XMLElement element, String tilesLocation) {
 
-		version = element.getDoubleAttribute("version", 0);
-		tiledversion = element.getDoubleAttribute("tiledversion", 0);
+		_version = element.getDoubleAttribute("version", 0);
+		_tiledversion = element.getDoubleAttribute("tiledversion", 0);
 
-		offsetX = element.getFloatAttribute("x", 0);
-		offsetY = element.getFloatAttribute("y", 0);
-		offsetX = element.getFloatAttribute("offsetx", offsetX);
-		offsetY = element.getFloatAttribute("offsety", offsetY);
+		_offsetX = element.getFloatAttribute("x", 0);
+		_offsetY = element.getFloatAttribute("y", 0);
+		_offsetX = element.getFloatAttribute("offsetx", _offsetX);
+		_offsetY = element.getFloatAttribute("offsety", _offsetY);
 
-		tmxType = element.getAttribute("type", null);
+		_tmxType = element.getAttribute("type", null);
 
-		width = element.getIntAttribute("width", 0);
-		height = element.getIntAttribute("height", 0);
-		tileWidth = element.getIntAttribute("tilewidth", 0);
-		tileHeight = element.getIntAttribute("tileheight", 0);
-		infinite = element.getIntAttribute("infinite", 0);
+		_width = element.getIntAttribute("width", 0);
+		_height = element.getIntAttribute("height", 0);
+		_tileWidth = element.getIntAttribute("tilewidth", 0);
+		_tileHeight = element.getIntAttribute("tileheight", 0);
+		_infinite = element.getIntAttribute("infinite", 0);
 
-		tileWidthHalf = tileWidth / 2;
-		tileHeightHalf = tileHeight / 2;
+		_tileWidthHalf = _tileWidth / 2;
+		_tileHeightHalf = _tileHeight / 2;
 
-		widthInPixels = width * tileWidth;
-		heightInPixels = height * tileHeight;
+		_widthInPixels = _width * _tileWidth;
+		_heightInPixels = _height * _tileHeight;
 
-		nextlayerid = element.getIntAttribute("nextlayerid", 0);
-		nextObjectID = element.getIntAttribute("nextobjectid", 0);
+		_nextlayerid = element.getIntAttribute("nextlayerid", 0);
+		_nextObjectID = element.getIntAttribute("nextobjectid", 0);
 
 		if (element.hasAttribute("background")) {
-			backgroundColor = new LColor(element.getAttribute("background", LColor.white.toString()).trim());
+			_backgroundColor = new LColor(element.getAttribute("background", LColor.white.toString()).trim());
 		}
 
-		orientation = Orientation.valueOf(element.getAttribute("orientation", "ORTHOGONAL").trim().toUpperCase());
-		if (orientation != null && orientation == Orientation.STAGGERED) {
-			if (height > 1) {
-				this.widthInPixels += tileWidth / 2;
-				this.heightInPixels = heightInPixels / 2 + tileHeight / 2;
+		_orientation = Orientation.valueOf(element.getAttribute("orientation", "ORTHOGONAL").trim().toUpperCase());
+		if (_orientation != null && _orientation == Orientation.STAGGERED) {
+			if (_height > 1) {
+				this._widthInPixels += _tileWidth / 2;
+				this._heightInPixels = _heightInPixels / 2 + _tileHeight / 2;
 			}
 		}
 		if (element.hasAttribute("renderorder")) {
 			switch (element.getAttribute("renderorder", LSystem.EMPTY).trim().toLowerCase()) {
 			case "right-down":
-				renderOrder = RenderOrder.RIGHT_DOWN;
+				_renderOrder = RenderOrder.RIGHT_DOWN;
 				break;
 			case "right-up":
-				renderOrder = RenderOrder.RIGHT_UP;
+				_renderOrder = RenderOrder.RIGHT_UP;
 				break;
 			case "left-down":
-				renderOrder = RenderOrder.LEFT_DOWN;
+				_renderOrder = RenderOrder.LEFT_DOWN;
 				break;
 			case "left-up":
-				renderOrder = RenderOrder.LEFT_UP;
+				_renderOrder = RenderOrder.LEFT_UP;
 				break;
 			}
 		}
@@ -703,10 +703,10 @@ public class TMXMap implements Sized {
 		if (element.hasAttribute("staggeraxis")) {
 			switch (element.getAttribute("staggeraxis", LSystem.EMPTY).trim().toLowerCase()) {
 			case "x":
-				staggerAxis = StaggerAxis.AXIS_X;
+				_staggerAxis = StaggerAxis.AXIS_X;
 				break;
 			case "y":
-				staggerAxis = StaggerAxis.AXIS_Y;
+				_staggerAxis = StaggerAxis.AXIS_Y;
 				break;
 			}
 		}
@@ -714,15 +714,15 @@ public class TMXMap implements Sized {
 		if (element.hasAttribute("staggerindex")) {
 			switch (element.getAttribute("staggerindex", LSystem.EMPTY).trim().toLowerCase()) {
 			case "even":
-				staggerIndex = StaggerIndex.EVEN;
+				_staggerIndex = StaggerIndex.EVEN;
 				break;
 			case "odd":
-				staggerIndex = StaggerIndex.ODD;
+				_staggerIndex = StaggerIndex.ODD;
 				break;
 			}
 		}
 
-		hexSideLength = element.getIntAttribute("hexsidelength", 0);
+		_hexSideLength = element.getIntAttribute("hexsidelength", 0);
 
 		TArray<XMLElement> list = element.list();
 
@@ -732,51 +732,51 @@ public class TMXMap implements Sized {
 
 			switch (name) {
 			case "properties":
-				properties.parse(node);
+				_properties.parse(node);
 				break;
 
 			case "tileset":
 				TMXTileSet tileSet = new TMXTileSet();
 				tileSet.parse(node, tilesLocation);
-				tileSets.add(tileSet);
+				_tileSets.add(tileSet);
 				break;
 
 			case "layer":
 				TMXTileLayer tileLayer = new TMXTileLayer(this);
 				tileLayer.parse(node);
-				tileLayers.add(tileLayer);
+				_tileLayers.add(tileLayer);
 				break;
 
 			case "imagelayer":
 				TMXImageLayer imageLayer = new TMXImageLayer(this);
 				imageLayer.parse(node);
-				imageLayers.add(imageLayer);
+				_imageLayers.add(imageLayer);
 				break;
 
 			case "objectgroup":
 				TMXObjectLayer objectLayer = new TMXObjectLayer(this);
 				objectLayer.parse(node);
-				objectLayers.add(objectLayer);
+				_objectLayers.add(objectLayer);
 				break;
 			}
 
 		}
 
-		layers.addAll(tileLayers);
-		layers.addAll(imageLayers);
-		layers.addAll(objectLayers);
+		_layers.addAll(_tileLayers);
+		_layers.addAll(_imageLayers);
+		_layers.addAll(_objectLayers);
 	}
 
 	public String getTmxType() {
-		return tmxType;
+		return _tmxType;
 	}
 
 	public String getTilesLocation() {
-		return tilesLocation;
+		return _tilesLocation;
 	}
 
 	public void setTilesLocation(String tilesLocation) {
-		this.tilesLocation = tilesLocation;
+		this._tilesLocation = tilesLocation;
 	}
 
 	public TArray<Field2D> newGIDField2Ds() {
@@ -792,8 +792,8 @@ public class TMXMap implements Sized {
 	}
 
 	public TArray<Field2D> newField2Ds(int mode) {
-		TArray<Field2D> list = new TArray<Field2D>(tileLayers.size);
-		for (TMXTileLayer layer : tileLayers) {
+		final TArray<Field2D> list = new TArray<Field2D>(_tileLayers.size);
+		for (TMXTileLayer layer : _tileLayers) {
 			switch (mode) {
 			case 0:
 				list.add(layer.newGIDField2D());
@@ -810,15 +810,15 @@ public class TMXMap implements Sized {
 	}
 
 	public int getWidthInPixels() {
-		return widthInPixels;
+		return _widthInPixels;
 	}
 
 	public int getHeightInPixels() {
-		return heightInPixels;
+		return _heightInPixels;
 	}
 
 	public PointI pixelsStaggeredToMap(float x, float y, boolean even) {
-		return pixelsStaggeredToMap(x, y, tileWidth, tileHeight, even);
+		return pixelsStaggeredToMap(x, y, _tileWidth, _tileHeight, even);
 	}
 
 	public PointI pixelsStaggeredToMap(float x, float y, float tileWidth, float tileHeight, boolean even) {
@@ -835,7 +835,7 @@ public class TMXMap implements Sized {
 	}
 
 	public PointI pixelsIsometricToMap(float x, float y) {
-		return pixelsIsometricToMap(x, y, tileWidth, tileHeight);
+		return pixelsIsometricToMap(x, y, _tileWidth, _tileHeight);
 	}
 
 	public PointI pixelsIsometricToMap(float x, float y, float tileWidth, float tileHeight) {
@@ -846,17 +846,17 @@ public class TMXMap implements Sized {
 	}
 
 	public PointI tilesIsometricToPixels(float x, float y) {
-		return tilesIsometricToPixels(x, y, tileWidth, tileHeight);
+		return tilesIsometricToPixels(x, y, _tileWidth, _tileHeight);
 	}
 
 	public PointI tilesIsometricToPixels(float x, float y, float tileWidth, float tileHeight) {
-		float newX = tileWidth * x / 2f + height * tileWidth / 2f - y * tileWidth / 2f;
-		float newY = tileHeight * y / 2f + width * tileHeight / 2f - x * tileHeight / 2f;
+		float newX = tileWidth * x / 2f + _height * tileWidth / 2f - y * tileWidth / 2f;
+		float newY = tileHeight * y / 2f + _width * tileHeight / 2f - x * tileHeight / 2f;
 		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
 	}
 
 	public PointI pixelsHexagonToMap(float x, float y) {
-		return pixelsHexagonToMap(x, y, tileWidth, tileHeight);
+		return pixelsHexagonToMap(x, y, _tileWidth, _tileHeight);
 	}
 
 	public PointI pixelsHexagonToMap(float x, float y, float tileWidth, float tileHeight) {
@@ -866,20 +866,20 @@ public class TMXMap implements Sized {
 		if (rowEven) {
 			column = (x / tileWidth);
 		} else {
-			column = ((x - widthInPixels / 2f) / tileWidth);
+			column = ((x - _widthInPixels / 2f) / tileWidth);
 		}
 		float newX = 0f;
 		float newY = y - (row * tileHeight);
 		if (rowEven) {
 			newX = x - (column * tileWidth);
 		} else {
-			newX = (x - (column * tileWidth)) - widthInPixels / 2f;
+			newX = (x - (column * tileWidth)) - _widthInPixels / 2f;
 		}
 		return new PointI(MathUtils.ifloor(newX), MathUtils.ifloor(newY));
 	}
 
 	public PointI pixelsOrthogonalToMap(float x, float y) {
-		return pixelsOrthogonalToMap(x, y, tileWidth, tileHeight);
+		return pixelsOrthogonalToMap(x, y, _tileWidth, _tileHeight);
 	}
 
 	public PointI pixelsOrthogonalToMap(float x, float y, float tileWidth, float tileHeight) {

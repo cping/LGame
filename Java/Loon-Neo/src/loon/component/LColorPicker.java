@@ -32,7 +32,7 @@ import loon.utils.TArray;
 
 public class LColorPicker extends LComponent {
 
-	private final static int[] DefaultColors = new int[] { 0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF,
+	private final static int[] defaultColors = new int[] { 0x000000, 0x333333, 0x666666, 0x999999, 0xCCCCCC, 0xFFFFFF,
 			0xFF0000, 0x00FF00, 0x0000FF, 0xFFFF00, 0x00FFFF, 0xFF00FF };
 
 	private final TArray<LColor> _colors = new TArray<LColor>();
@@ -78,7 +78,7 @@ public class LColorPicker extends LComponent {
 			for (int j = 0; j < _colorRow; j++) {
 				int color = 0;
 				if (j == 0) {
-					color = DefaultColors[i];
+					color = defaultColors[i];
 				} else if (j == 1) {
 					color = 0;
 				} else {

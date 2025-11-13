@@ -56,7 +56,9 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private LColor _fontColor = LColor.white;
 
-	private int left, top, type, nTop;
+	private LColor _cursorColor = LColor.white;
+
+	private int _left, _top, _type, _nTop;
 
 	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft, messageTop, selectSize, selectFlag;
 
@@ -159,21 +161,21 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect setLeftOffset(int left) {
-		this.left = left;
+		this._left = left;
 		return this;
 	}
 
 	public LSelect setTopOffset(int top) {
-		this.top = top;
+		this._top = top;
 		return this;
 	}
 
 	public int getLeftOffset() {
-		return left;
+		return _left;
 	}
 
 	public int getTopOffset() {
-		return top;
+		return _top;
 	}
 
 	public int getResultIndex() {
@@ -211,7 +213,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (!isClickUp()) {
 			if (selects != null) {
 				final int touchY = _input.getTouchIntY();
-				selectFlag = selectSize - (((nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
+				selectFlag = selectSize - (((_nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
 				if (selectFlag < 1) {
 					selectFlag = 0;
 				}
@@ -227,39 +229,48 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		if (!isVisible()) {
 			return;
 		}
-		int oldColor = g.color();
+		final int oldColor = g.color();
 		sizeFont = _messageFont.getSize();
 		doubleSizeFont = sizeFont * 2;
 		if (doubleSizeFont == 0) {
 			doubleSizeFont = 20;
 		}
-		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + left + doubleSizeFont;
+		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + _left + doubleSizeFont;
 		if (message != null) {
-			messageTop = y + doubleSizeFont + top - 10;
+			messageTop = y + doubleSizeFont + _top - 10;
 			_messageFont.drawString(g, message, messageLeft, messageTop - _messageFont.getAscent(), _fontColor);
 		} else {
-			messageTop = y + top;
+			messageTop = y + _top;
 		}
-		nTop = messageTop;
+		_nTop = messageTop;
 		if (selects != null) {
 			nLeft = messageLeft - sizeFont / 4;
 			for (int i = 0; i < selects.length; i++) {
-				nTop += space;
-				type = i + 1;
-				isSelect = (type == (selectFlag > 0 ? selectFlag : 1));
+				_nTop += space;
+				_type = i + 1;
+				isSelect = (_type == (selectFlag > 0 ? selectFlag : 1));
 				if ((buoyage != null) && isSelect) {
 					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft, nTop - MathUtils.iceil(buoyage.getHeight() / 1.5f), _component_baseColor);
+					g.draw(buoyage, nLeft, _nTop - MathUtils.iceil(buoyage.getHeight() / 1.5f), _component_baseColor);
 					g.setAlpha(1F);
 				}
-				_messageFont.drawString(g, selects[i], messageLeft, nTop - _messageFont.getAscent(), _fontColor);
+				_messageFont.drawString(g, selects[i], messageLeft, _nTop - _messageFont.getAscent(), _fontColor);
 				if ((cursor != null) && isSelect) {
-					g.draw(cursor, nLeft, nTop - cursor.getHeight() / 2, LColor.white);
+					g.draw(cursor, nLeft, _nTop - cursor.getHeight() / 2, _cursorColor);
 				}
 
 			}
 		}
 		g.setColor(oldColor);
+	}
+
+	public LSelect setCursorColor(LColor c) {
+		_cursorColor = c;
+		return this;
+	}
+
+	public LColor getCursorColor() {
+		return _cursorColor;
 	}
 
 	public boolean isClick() {

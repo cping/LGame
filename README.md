@@ -3,7 +3,7 @@
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
-**LGame** is a cross-platform java game framework (engine), offering comprehensive foundational modules for 2D games (with 3D support planned for future releases). It supports platforms including Windows, Linux, macOS, Android, web browsers, and iOS. Additionally, it provides native implementations in C# and C++ alongside syntax conversion to accommodate as many systems as possible.
+**LGame** is a cross-platform java game engine(framework), offering comprehensive foundational modules for 2D games (with 3D support planned for future releases). It supports platforms including Windows, Linux, macOS, Android, web browsers, and iOS. Additionally, it provides native implementations in C# and C++ alongside syntax conversion to accommodate as many systems as possible.
 
 [EN](README.md) / [KR](README.kr.md)
 

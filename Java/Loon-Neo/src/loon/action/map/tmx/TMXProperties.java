@@ -33,29 +33,29 @@ import loon.utils.xml.XMLElement;
 
 public class TMXProperties {
 
-	private ObjectMap<String, Object> properties;
+	private ObjectMap<String, Object> _properties;
 
 	public TMXProperties() {
-		properties = new ObjectMap<String, Object>();
+		_properties = new ObjectMap<String, Object>();
 	}
 
 	public TMXProperties put(String key, Object vl) {
-		properties.put(key, vl);
+		_properties.put(key, vl);
 		return this;
 	}
 
 	public TMXProperties putAll(TMXProperties tmx) {
-		ObjectMap<String, Object> data = tmx.properties;
+		ObjectMap<String, Object> data = tmx._properties;
 		for (Entries<String, Object> key = data.iterator(); key.hasNext();) {
 			Entry<String, Object> entry = key.next();
-			properties.put(entry.key, entry.value);
+			_properties.put(entry.key, entry.value);
 		}
 		return this;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T> T get(String key) {
-		return (T) properties.get(key);
+		return (T) _properties.get(key);
 	}
 
 	public <T> T get(String key, T defaultValue) {
@@ -64,21 +64,21 @@ public class TMXProperties {
 	}
 
 	public boolean contains(String key) {
-		return properties.containsKey(key);
+		return _properties.containsKey(key);
 	}
 
 	public TMXProperties clear() {
-		properties.clear();
+		_properties.clear();
 		return this;
 	}
 
 	public TMXProperties remove(String key) {
-		this.properties.remove(key);
+		this._properties.remove(key);
 		return this;
 	}
 
 	public ObjectMap<String, Object> getPropertiesMap() {
-		return properties;
+		return _properties;
 	}
 
 	public Keys<String> getKeySet() {

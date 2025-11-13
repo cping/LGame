@@ -1,19 +1,19 @@
 /**
- *
+ * 
  * Copyright 2014
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -21,8 +21,8 @@
  */
 package loon.component;
 
-import loon.LSystem;
 import loon.LTexture;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.component.skin.CheckBoxSkin;
 import loon.component.skin.SkinManager;
@@ -55,25 +55,25 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		return new LCheckBox(txt, x, y, LColor.white, font);
 	}
 
-	private LTexture unchecked, checked;
+	private LTexture _unchecked, _checked;
 
-	private float boxsize;
+	private float _boxsize;
 
-	private boolean boxtoleftoftext = false, showtext = true;
+	private boolean _boxtoleftoftext = false, _showtext = true;
 
-	private int fontSpace = 0;
+	private int _fontSpace = 0;
 
-	private LColor fontColor;
+	private LColor _fontColor;
 
-	private IFont font;
+	private IFont _font;
 
-	private boolean pressed = false, over = false, ticked = false;
+	private boolean _pressed = false, _over = false, _ticked = false;
 
-	private long pressedTime = 0;
+	private long _pressedTime = 0;
 
-	private String text;
+	private String _text;
 
-	private Vector2f offset = new Vector2f();
+	private Vector2f _offset = new Vector2f();
 
 	private CallFunction _function;
 
@@ -131,42 +131,44 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 
 	public LCheckBox(String txt, int x, int y, LTexture unchecked, LTexture checked, int boxsize,
 			boolean boxtoleftoftext, LColor textcolor, IFont font) {
-		super(x, y, font.stringWidth(txt) + boxsize, MathUtils.max(font.getHeight(), boxsize));
-		this.text = txt;
-		this.unchecked = unchecked;
-		this.checked = checked;
-		this.boxsize = boxsize;
-		this.boxtoleftoftext = boxtoleftoftext;
-		this.fontColor = textcolor;
-		this.font = font;
+		super(x, y, font.stringWidth(txt) + boxsize, (int) MathUtils.max(font.getHeight(), boxsize));
+		this._text = txt;
+		this._unchecked = unchecked;
+		this._checked = checked;
+		this._boxsize = boxsize;
+		this._boxtoleftoftext = boxtoleftoftext;
+		this._fontColor = textcolor;
+		this._font = font;
 		freeRes().add(unchecked, checked);
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		IFont tmp = g.getFont();
-		g.setFont(font);
-		if (boxtoleftoftext) {
-			if (showtext && text != null) {
-				g.drawString(text, 2 + offset.x + x + boxsize,
-						offset.y + y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
+		g.setFont(_font);
+		if (_boxtoleftoftext) {
+			if (_showtext && _text != null) {
+				g.drawString(_text, 2 + _offset.x + x + _boxsize,
+						_offset.y + y + (_font.getHeight() - _boxsize) / 2 + _fontSpace, _fontColor);
 			}
-			if (!ticked) {
-				g.draw(unchecked, x, y, boxsize, boxsize, _component_baseColor);
+			if (!_ticked) {
+				g.draw(_unchecked, x, y, _boxsize, _boxsize, _component_baseColor);
 			} else {
-				g.draw(checked, x, y, boxsize, boxsize, _component_baseColor);
+				g.draw(_checked, x, y, _boxsize, _boxsize, _component_baseColor);
 			}
 		} else {
-			if (showtext && text != null) {
-				g.drawString(text, 2 + offset.x + x + boxsize + fontSpace,
-						offset.y + y + (font.getHeight() - boxsize) / 2 + fontSpace, fontColor);
+			if (_showtext && _text != null) {
+				g.drawString(_text, 2 + _offset.x + x + _boxsize + _fontSpace,
+						_offset.y + y + (_font.getHeight() - _boxsize) / 2 + _fontSpace, _fontColor);
 			}
-			if (!ticked) {
-				g.draw(unchecked, x + font.stringWidth(text) + boxsize + fontSpace,
-						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, _component_baseColor);
+			if (!_ticked) {
+				g.draw(_unchecked, x + _font.stringWidth(_text) + _boxsize + _fontSpace,
+						y + (_font.getHeight() / 2 - _boxsize / 2) + _fontSpace, _boxsize, _boxsize,
+						_component_baseColor);
 			} else {
-				g.draw(checked, x + font.stringWidth(text) + boxsize + fontSpace,
-						y + (font.getHeight() / 2 - boxsize / 2) + fontSpace, boxsize, boxsize, _component_baseColor);
+				g.draw(_checked, x + _font.stringWidth(_text) + _boxsize + _fontSpace,
+						y + (_font.getHeight() / 2 - _boxsize / 2) + _fontSpace, _boxsize, _boxsize,
+						_component_baseColor);
 			}
 		}
 		g.setFont(tmp);
@@ -183,42 +185,42 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
-			this.pressed = false;
+		if (this._pressedTime > 0 && --this._pressedTime <= 0) {
+			this._pressed = false;
 		}
 	}
 
 	public boolean isTouchOver() {
-		return this.over;
+		return this._over;
 	}
 
 	public boolean isTouchPressed() {
-		return this.pressed;
+		return this._pressed;
 	}
 
 	@Override
 	protected void processTouchDragged() {
-		if (this._input != null) {
-			this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());
+		if (_input != null) {
+			this._over = this._pressed = this.intersects(getUITouchX(), getUITouchY());
 		}
 		super.processTouchDragged();
 	}
 
 	@Override
 	protected void processTouchEntered() {
-		this.over = true;
+		this._over = true;
 	}
 
 	@Override
 	protected void processTouchExited() {
-		this.over = this.pressed = false;
+		this._over = this._pressed = false;
 	}
 
 	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected() && isKeyDown(SysKey.ENTER)) {
-			this.pressedTime = 5;
-			this.pressed = true;
+			this._pressedTime = 5;
+			this._pressed = true;
 			this.doClick();
 		}
 	}
@@ -226,14 +228,14 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected() && isKeyUp(SysKey.ENTER)) {
-			this.pressed = false;
+			this._pressed = false;
 		}
 	}
 
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		this.pressed = true;
+		this._pressed = true;
 	}
 
 	@Override
@@ -242,8 +244,8 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 		if (_function != null) {
 			_function.call(this);
 		}
-		this.pressed = false;
-		this.ticked = !ticked;
+		this._pressed = false;
+		this._ticked = !_ticked;
 	}
 
 	public CallFunction getFunction() {
@@ -256,75 +258,75 @@ public class LCheckBox extends LComponent implements FontSet<LCheckBox> {
 	}
 
 	public boolean isTicked() {
-		return ticked;
+		return _ticked;
 	}
 
 	public LCheckBox setTicked(boolean ticked) {
-		this.ticked = ticked;
+		this._ticked = ticked;
 		return this;
 	}
 
 	public boolean isShowText() {
-		return showtext;
+		return _showtext;
 	}
 
 	public LCheckBox setShowText(boolean show) {
-		this.showtext = show;
+		this._showtext = show;
 		return this;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
 	public LCheckBox setFontColor(LColor fontColor) {
-		this.fontColor = fontColor;
+		this._fontColor = fontColor;
 		return this;
 	}
 
 	public LTexture getChecked() {
-		return checked;
+		return _checked;
 	}
 
 	public int getFontSpace() {
-		return fontSpace;
+		return _fontSpace;
 	}
 
 	public LCheckBox setFontSpace(int fontSpace) {
-		this.fontSpace = fontSpace;
+		this._fontSpace = fontSpace;
 		return this;
 	}
 
 	public boolean isBoxtoleftofText() {
-		return boxtoleftoftext;
+		return _boxtoleftoftext;
 	}
 
 	public LCheckBox setBoxtoleftofText(boolean b) {
-		this.boxtoleftoftext = b;
+		this._boxtoleftoftext = b;
 		return this;
 	}
 
 	public Vector2f getBoxOffset() {
-		return offset;
+		return _offset;
 	}
 
 	public LCheckBox setBoxOffset(Vector2f offset) {
-		this.offset = offset;
+		this._offset = offset;
 		return this;
 	}
 
 	@Override
 	public LCheckBox setFont(IFont font) {
-		this.font = font;
-		this.setSize((int) (this.font.stringWidth(text) + boxsize), (int) MathUtils.max(font.getHeight(), boxsize));
+		this._font = font;
+		this.setSize((int) (this._font.stringWidth(_text) + _boxsize), MathUtils.max(font.getHeight(), _boxsize));
 		return this;
 	}
 
 	@Override
 	public IFont getFont() {
-		return font;
+		return _font;
 	}
 
 	@Override

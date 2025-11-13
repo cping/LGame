@@ -26,7 +26,7 @@ import loon.utils.xml.XMLElement;
 
 public class TMXImageLayer extends TMXMapLayer {
 
-	private TMXImage image;
+	private TMXImage _image;
 
 	public TMXImageLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.IMAGE);
@@ -53,8 +53,8 @@ public class TMXImageLayer extends TMXMapLayer {
 		repeatY = element.getNumber("repeaty", 0f);
 
 		if (element.containsKey("image")) {
-			image = new TMXImage();
-			image.parse(element, getMap().getFilePath());
+			_image = new TMXImage();
+			_image.parse(element, getMap().getFilePath());
 		}
 
 		Json.Array nodes = element.getArray("properties", null);
@@ -86,8 +86,8 @@ public class TMXImageLayer extends TMXMapLayer {
 
 		XMLElement nodes = element.getChildrenByName("image");
 		if (nodes != null) {
-			image = new TMXImage();
-			image.parse(nodes, getMap().getFilePath());
+			_image = new TMXImage();
+			_image.parse(nodes, getMap().getFilePath());
 		}
 
 		nodes = element.getChildrenByName("properties");
@@ -98,12 +98,12 @@ public class TMXImageLayer extends TMXMapLayer {
 	}
 
 	public TMXImage getImage() {
-		return image;
+		return _image;
 	}
 
 	public String getSource() {
-		if (image != null) {
-			return image.getSource();
+		if (_image != null) {
+			return _image.getSource();
 		}
 		return null;
 	}

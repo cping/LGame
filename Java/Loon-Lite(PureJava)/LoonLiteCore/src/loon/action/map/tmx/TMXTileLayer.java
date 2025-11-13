@@ -49,16 +49,16 @@ public class TMXTileLayer extends TMXMapLayer {
 		NONE, GZIP, ZLIB
 	}
 
-	private TMXMapTile[] tileMap;
+	private TMXMapTile[] _tileMap;
 
-	private Encoding encoding;
-	private Compression compression;
+	private Encoding _encoding;
+	private Compression _compression;
 
 	public TMXTileLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.TILE);
 
-		encoding = Encoding.XML;
-		compression = Compression.NONE;
+		_encoding = Encoding.XML;
+		_compression = Compression.NONE;
 	}
 
 	public void parse(Json.Object element) {
@@ -87,42 +87,42 @@ public class TMXTileLayer extends TMXMapLayer {
 			properties.parse(nodes);
 		}
 
-		tileMap = new TMXMapTile[width * height];
+		_tileMap = new TMXMapTile[width * height];
 
 		if (element.containsKey("encoding")) {
 			switch (element.getString("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
-				encoding = Encoding.BASE64;
+				_encoding = Encoding.BASE64;
 				break;
 			case "csv":
-				encoding = Encoding.CSV;
+				_encoding = Encoding.CSV;
 				break;
 			case "xml":
 			case "json":
 			default:
-				encoding = Encoding.XML;
+				_encoding = Encoding.XML;
 			}
 		}
 
 		if (element.containsKey("compression")) {
 			switch (element.getString("compression", LSystem.EMPTY).trim().toLowerCase()) {
 			case "gzip":
-				compression = Compression.GZIP;
+				_compression = Compression.GZIP;
 				break;
 			case "zlib":
-				compression = Compression.ZLIB;
+				_compression = Compression.ZLIB;
 				break;
 			default:
-				compression = Compression.NONE;
+				_compression = Compression.NONE;
 			}
 		}
 
 		if (element.isArray("data")) {
-			encoding = Encoding.CSV;
+			_encoding = Encoding.CSV;
 			parseArray2D(element.getArray("data", null));
 		} else {
 			final String dataContext = element.getString("data", null);
-			switch (encoding) {
+			switch (_encoding) {
 			case XML:
 				parseJSON(element);
 				break;
@@ -166,37 +166,37 @@ public class TMXTileLayer extends TMXMapLayer {
 			properties.parse(nodes);
 		}
 
-		tileMap = new TMXMapTile[width * height];
+		_tileMap = new TMXMapTile[width * height];
 
 		XMLElement dataElement = element.getChildrenByName("data");
 
 		if (dataElement.hasAttribute("encoding")) {
 			switch (dataElement.getAttribute("encoding", LSystem.EMPTY).trim().toLowerCase()) {
 			case "base64":
-				encoding = Encoding.BASE64;
+				_encoding = Encoding.BASE64;
 				break;
 			case "csv":
-				encoding = Encoding.CSV;
+				_encoding = Encoding.CSV;
 				break;
 			default:
-				encoding = Encoding.XML;
+				_encoding = Encoding.XML;
 			}
 		}
 
 		if (dataElement.hasAttribute("compression")) {
 			switch (dataElement.getAttribute("compression", LSystem.EMPTY).trim().toLowerCase()) {
 			case "gzip":
-				compression = Compression.GZIP;
+				_compression = Compression.GZIP;
 				break;
 			case "zlib":
-				compression = Compression.ZLIB;
+				_compression = Compression.ZLIB;
 				break;
 			default:
-				compression = Compression.NONE;
+				_compression = Compression.NONE;
 			}
 		}
 
-		switch (encoding) {
+		switch (_encoding) {
 		case XML:
 			parseXML(dataElement);
 			break;
@@ -223,9 +223,9 @@ public class TMXTileLayer extends TMXMapLayer {
 			int tileSetIndex = parent.findTileSetIndex(gid);
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+				_tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else
-				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
+				_tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 
@@ -241,9 +241,9 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+				_tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else
-				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
+				_tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 
@@ -254,11 +254,11 @@ public class TMXTileLayer extends TMXMapLayer {
 	private void parseBase64(String base64) throws Exception {
 		byte[] bytes = Base64Coder.decodeBase64(base64.toCharArray());
 		InputStream is = null;
-		if (compression == null || compression == Compression.NONE) {
+		if (_compression == null || _compression == Compression.NONE) {
 			is = new ByteArrayInputStream(bytes);
-		} else if (compression == Compression.GZIP) {
+		} else if (_compression == Compression.GZIP) {
 			is = new BufferedInputStream(new GZIPInputStream(new ByteArrayInputStream(bytes), bytes.length));
-		} else if (compression == Compression.ZLIB) {
+		} else if (_compression == Compression.ZLIB) {
 			is = new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(bytes)));
 		}
 		byte[] temp = new byte[4];
@@ -282,9 +282,9 @@ public class TMXTileLayer extends TMXMapLayer {
 
 				if (tileSetIndex != -1) {
 					TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-					tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+					_tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 				} else {
-					tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
+					_tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 				}
 			}
 		}
@@ -302,9 +302,9 @@ public class TMXTileLayer extends TMXMapLayer {
 			final int tileSetIndex = parent.findTileSetIndex(gid);
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+				_tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else {
-				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
+				_tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 			}
 			tileCount++;
 		}
@@ -321,9 +321,9 @@ public class TMXTileLayer extends TMXMapLayer {
 
 			if (tileSetIndex != -1) {
 				TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-				tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+				_tileMap[tileCount] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 			} else {
-				tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
+				_tileMap[tileCount] = new TMXMapTile(gid, 0, -1);
 			}
 
 			tileCount++;
@@ -334,9 +334,9 @@ public class TMXTileLayer extends TMXMapLayer {
 		int tileSetIndex = parent.findTileSetIndex(gid);
 		if (tileSetIndex != -1) {
 			TMXTileSet tileSet = parent.getTileset(tileSetIndex);
-			tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
+			_tileMap[y * width + x] = new TMXMapTile(gid, tileSet.getFirstGID(), tileSetIndex);
 		} else {
-			tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
+			_tileMap[y * width + x] = new TMXMapTile(gid, 0, -1);
 		}
 	}
 
@@ -345,10 +345,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return -1;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return -1;
 		}
-		return tileMap[y * width + x].getID();
+		return _tileMap[y * width + x].getID();
 	}
 
 	public int getTileGID(int x, int y) {
@@ -356,10 +356,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return -1;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return -1;
 		}
-		return tileMap[y * width + x].getGID();
+		return _tileMap[y * width + x].getGID();
 	}
 
 	public int getTileTileSetIndex(int x, int y) {
@@ -367,10 +367,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return -1;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return -1;
 		}
-		return tileMap[y * width + x].getTileSetID();
+		return _tileMap[y * width + x].getTileSetID();
 	}
 
 	public boolean isTileFlippedHorizontally(int x, int y) {
@@ -378,10 +378,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return false;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return false;
 		}
-		return tileMap[y * width + x].isFlippedHorizontally();
+		return _tileMap[y * width + x].isFlippedHorizontally();
 	}
 
 	public boolean isTileFlippedVertically(int x, int y) {
@@ -389,10 +389,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return false;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return false;
 		}
-		return tileMap[y * width + x].isFlippedVertically();
+		return _tileMap[y * width + x].isFlippedVertically();
 	}
 
 	public boolean isTileFlippedDiagonally(int x, int y) {
@@ -400,10 +400,10 @@ public class TMXTileLayer extends TMXMapLayer {
 			return false;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return false;
 		}
-		return tileMap[y * width + x].isFlippedDiagonally();
+		return _tileMap[y * width + x].isFlippedDiagonally();
 	}
 
 	public TMXMapTile getTile(int x, int y) {
@@ -411,18 +411,18 @@ public class TMXTileLayer extends TMXMapLayer {
 			return null;
 		}
 		final int len = y * width + x;
-		if (len >= tileMap.length) {
+		if (len >= _tileMap.length) {
 			return null;
 		}
-		return tileMap[len];
+		return _tileMap[len];
 	}
 
 	public Encoding getEncoding() {
-		return encoding;
+		return _encoding;
 	}
 
 	public Compression getCompression() {
-		return compression;
+		return _compression;
 	}
 
 	public Field2D newGIDField2D() {
@@ -438,23 +438,23 @@ public class TMXTileLayer extends TMXMapLayer {
 	}
 
 	private Field2D newField2D(int mode) {
-		int[][] tmp = new int[width][height];
+		final int[][] tmp = new int[width][height];
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				switch (mode) {
 				case 0:
-					tmp[x][y] = tileMap[y * width + x].getGID();
+					tmp[x][y] = _tileMap[y * width + x].getGID();
 					break;
 				case 1:
-					tmp[x][y] = tileMap[y * width + x].getTileSetID();
+					tmp[x][y] = _tileMap[y * width + x].getTileSetID();
 					break;
 				default:
-					tmp[x][y] = tileMap[y * width + x].getID();
+					tmp[x][y] = _tileMap[y * width + x].getID();
 					break;
 				}
 			}
 		}
-		Field2D field2d = new Field2D(TileMapConfig.reversalXandY(tmp), getMap().getTileWidth(),
+		final Field2D field2d = new Field2D(TileMapConfig.reversalXandY(tmp), getMap().getTileWidth(),
 				getMap().getTileHeight());
 		field2d.setName(name);
 		field2d.Tag = this;

@@ -44,11 +44,11 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	private boolean _clickOver, _clickException;
 
-	private int pressedTime, offsetLeft, offsetTop, type;
+	private int _pressedTime, _offsetLeft, _offsetTop, _type;
 
-	private IFont font;
+	private IFont _font;
 
-	private LColor fontColor = LColor.white;
+	private LColor _fontColor = LColor.white;
 
 	private CallFunction _function;
 
@@ -87,7 +87,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	public LButton(IFont font, LTexture[] img, String text, LColor color, int row, int col, int x, int y) {
 		super(x, y, row, col);
 		this.setFontColor(color);
-		this.font = font;
+		this._font = font;
 		this._currentText = text;
 		if (img != null) {
 			this.setImages(img);
@@ -110,7 +110,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	public LButton(IFont font, String text, LColor color, int x, int y, int w, int h) {
 		super(x, y, w, h);
 		this.setFontColor(color);
-		this.font = font;
+		this._font = font;
 		this._currentText = text;
 	}
 
@@ -122,7 +122,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		LTexture[] buttons = null;
 		if (images != null) {
 			int size = images.length;
-			this.type = size;
+			this._type = size;
 			if (size < 4) {
 				buttons = new LTexture[4];
 				switch (size) {
@@ -154,7 +154,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 		if (!_clickException) {
 			this.setImageUI(buttons, true);
 		} else {
-			throw new LSysException("LButton setImages exception, buttons size =" + this.type);
+			throw new LSysException("LButton setImages exception, buttons size =" + this._type);
 		}
 		return this;
 	}
@@ -169,7 +169,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			} else if (isTouchOver()) {
 				g.draw(_imageUI[1], x, y, _component_baseColor);
 			} else {
-				if (type == 1) {
+				if (_type == 1) {
 					g.draw(_imageUI[0], x, y, _colorTemp.setColor(_component_baseColor == null ? LColor.gray.getARGB()
 							: LColor.combine(_component_baseColor, LColor.gray)));
 				} else {
@@ -178,11 +178,8 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			}
 		}
 		if (_currentText != null) {
-			int tmp = g.color();
-			g.setColor(fontColor);
-			font.drawString(g, _currentText, x + getOffsetLeft() + (getWidth() - font.stringWidth(_currentText)) / 2,
-					y + getOffsetTop() + (getHeight() - font.getHeight() - font.getAscent()) / 2);
-			g.setColor(tmp);
+			_font.drawString(g, _currentText, x + getOffsetLeft() + (getWidth() - _font.stringWidth(_currentText)) / 2,
+					y + getOffsetTop() + (getHeight() - _font.getHeight() - _font.getAscent()) / 2, _fontColor);
 		}
 	}
 
@@ -192,7 +189,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
+		if (this._pressedTime > 0 && --this._pressedTime <= 0) {
 			_onTouch.release();
 		}
 	}
@@ -273,7 +270,7 @@ public class LButton extends LComponent implements FontSet<LButton> {
 	protected void processKeyPressed() {
 		if (this.isSelected() && isKeyDown(SysKey.ENTER)) {
 			if (!_onTouch.isPressed()) {
-				this.pressedTime = 5;
+				this._pressedTime = 5;
 				this._onTouch.press();
 				this.doClick();
 			}
@@ -295,12 +292,12 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	public IFont getFont() {
-		return font;
+		return _font;
 	}
 
 	@Override
 	public LButton setFont(IFont font) {
-		this.font = font;
+		this._font = font;
 		return this;
 	}
 
@@ -315,30 +312,30 @@ public class LButton extends LComponent implements FontSet<LButton> {
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
 	public LButton setFontColor(LColor c) {
-		this.fontColor = new LColor(c);
+		this._fontColor = new LColor(c);
 		return this;
 	}
 
 	public int getOffsetLeft() {
-		return offsetLeft;
+		return _offsetLeft;
 	}
 
 	public LButton setOffsetLeft(int l) {
-		this.offsetLeft = l;
+		this._offsetLeft = l;
 		return this;
 	}
 
 	public int getOffsetTop() {
-		return offsetTop;
+		return _offsetTop;
 	}
 
 	public LButton setOffsetTop(int t) {
-		this.offsetTop = t;
+		this._offsetTop = t;
 		return this;
 	}
 

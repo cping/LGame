@@ -38,12 +38,9 @@ import loon.component.skin.MessageSkin;
 import loon.component.skin.SkinManager;
 import loon.font.FontSet;
 import loon.font.IFont;
-import loon.font.LFont;
 import loon.opengl.GLEx;
-import loon.opengl.LSTRDictionary;
 import loon.utils.TArray;
 import loon.utils.MathUtils;
-import loon.utils.StrBuilder;
 
 /**
  * 在一些不方便输入字符串的设备上,输入角色名称时可用此UI,字数不够上下分页,多来几个就成了……
@@ -85,7 +82,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private TArray<String> _keyArrays;
 
-	private boolean _bind = false, _showGrid = false;;
+	private boolean _showGrid = false;;
 
 	private float _dx = 0.1f;
 
@@ -94,8 +91,6 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	private float _labelOffsetX, _labelOffsetY;
 
 	private int _maxNameString = 5;
-
-	private int _initDraw = -1;
 
 	private char enterFlagString = '>', clearFlagString = '<';
 
@@ -141,25 +136,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		this.topOffset = _font.getHeight() + 20;
 	}
 
-	private void bindString() {
-		if (!_bind) {
-			if (_font instanceof LFont) {
-				final StrBuilder sbr = new StrBuilder();
-				for (int i = 0; i < _keyArrays.size; i++) {
-					sbr.append(_keyArrays.get(i));
-				}
-				LSTRDictionary.get().bind((LFont) _font, sbr.toString());
-			}
-			_bind = true;
-		}
-	}
-
 	public void draw(GLEx g, int x, int y) {
-		bindString();
-		if (_initDraw < 1) {
-			_initDraw++;
-			return;
-		}
 		final IFont oldFont = g.getFont();
 		final int oldColor = g.color();
 		if (_background != null) {

@@ -134,10 +134,21 @@ public class JavaSEApplication implements Platform {
 
 	private JavaSEAppCanvas _appCanvas;
 
-	public static JavaSEAppFrame launch(Loon app, JavaSESetting setting, LazyLoading.Data lazy, String[] args) {
-		System.setProperty("sun.java2d.opengl", "true");
+	private static void configDrawMethod() {
+		System.clearProperty("sun.java2d.d3d");
+		System.clearProperty("sun.java2d.opengl");
+		System.clearProperty("sun.java2d.metal");
+		if (JavaSEGame.isMacOS()) {
+			System.setProperty("sun.java2d.metal", "true");
+		} else {
+			System.setProperty("sun.java2d.opengl", "true");
+		}
 		System.setProperty("sun.java2d.translaccel", "true");
 		System.setProperty("sun.java2d.ddforcevram", "true");
+	}
+
+	public static JavaSEAppFrame launch(Loon app, JavaSESetting setting, LazyLoading.Data lazy, String[] args) {
+		configDrawMethod();
 		return new JavaSEApplication(app, setting, lazy, args).runFrame();
 	}
 

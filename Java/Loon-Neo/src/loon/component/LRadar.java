@@ -76,19 +76,19 @@ public class LRadar extends LComponent {
 
 	private final int _raindropCount;
 
-	private boolean showCross;
+	private boolean _showCross;
 
-	private boolean showDrop;
+	private boolean _showDrop;
 
-	private boolean showScanning;
+	private boolean _showScanning;
 
-	private boolean showBoard;
+	private boolean _showBoard;
 
-	private boolean showRandDrop;
+	private boolean _showRandDrop;
 
-	private boolean showDash;
+	private boolean _showDash;
 
-	private boolean showGround;
+	private boolean _showGround;
 
 	private boolean _initial;
 
@@ -160,12 +160,12 @@ public class LRadar extends LComponent {
 		if (width <= 120 && height <= 120) {
 			this._lineWidth = 1f;
 		}
-		this.showScanning = scan;
-		this.showCross = cross;
-		this.showDrop = drop;
-		this.showBoard = board;
-		this.showRandDrop = rand;
-		this.showGround = ground;
+		this._showScanning = scan;
+		this._showCross = cross;
+		this._showDrop = drop;
+		this._showBoard = board;
+		this._showRandDrop = rand;
+		this._showGround = ground;
 		this._initial = true;
 	}
 
@@ -327,7 +327,7 @@ public class LRadar extends LComponent {
 		checkRadius();
 		createGround();
 
-		if (showGround && _groundTexture != null) {
+		if (_showGround && _groundTexture != null) {
 			g.draw(_groundTexture, x, y, getWidth(), getHeight());
 		}
 
@@ -336,17 +336,17 @@ public class LRadar extends LComponent {
 
 		float lineWidth = g.getLineWidth();
 		g.setLineWidth(_lineWidth);
-		if (showBoard) {
+		if (_showBoard) {
 			g.drawRect(x, y, getWidth(), getHeight(), _circleColor);
 		}
 		drawCircle(g, cx, cy, _radius);
 
-		if (showCross) {
+		if (_showCross) {
 			drawCross(g, cx, cy, _radius / 2);
 		}
 
-		if (showScanning) {
-			if (showDrop) {
+		if (_showScanning) {
+			if (_showDrop) {
 				drawDrop(g, cx, cy, _radius);
 			}
 			drawSweep(g, cx, cy, _radius);
@@ -368,13 +368,13 @@ public class LRadar extends LComponent {
 	}
 
 	private void createGround() {
-		if (showGround && _groundTexture == null) {
+		if (_showGround && _groundTexture == null) {
 			int rw = width();
 			int rh = height();
 			Image img = Image.createImage(rw, rh);
 			Canvas canvas = img.getCanvas();
 			canvas.setColor(LColor.green.darker().setAlpha(0.8f));
-			if (showBoard) {
+			if (_showBoard) {
 				canvas.fillRect(0, 0, rw, rh);
 				canvas.setColor(LColor.darkGray);
 				int line = _circleCount * 2;
@@ -446,13 +446,13 @@ public class LRadar extends LComponent {
 				break;
 			}
 			if (amount != -1) {
-				if (showDash) {
+				if (_showDash) {
 					g.drawDashRhombus(amount, cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
 				} else {
 					g.drawRhombus(amount, cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
 				}
 			} else {
-				if (showDash) {
+				if (_showDash) {
 					g.drawDashCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleCount, _circleColor);
 				} else {
 					g.drawCircle(cx - newRadius / 2, cy - newRadius / 2, newRadius, _circleColor);
@@ -468,7 +468,7 @@ public class LRadar extends LComponent {
 
 	private void drawDrop(GLEx g, float cx, float cy, float radius) {
 		int color = g.color();
-		if (showRandDrop) {
+		if (_showRandDrop) {
 			createRandDot(cx, cy, radius);
 			for (Drop d : _randomDrops) {
 				_dropColor.setColor(d.newAlpha());
@@ -502,65 +502,65 @@ public class LRadar extends LComponent {
 	}
 
 	public boolean isShowCross() {
-		return showCross;
+		return _showCross;
 	}
 
 	public LRadar setShowCross(boolean showCross) {
-		this.showCross = showCross;
+		this._showCross = showCross;
 		return this;
 	}
 
 	public boolean isShowDrop() {
-		return showDrop;
+		return _showDrop;
 	}
 
 	public LRadar setShowDrop(boolean showDrop) {
-		this.showDrop = showDrop;
+		this._showDrop = showDrop;
 		return this;
 	}
 
 	public boolean isShowDash() {
-		return showDash;
+		return _showDash;
 	}
 
 	public LRadar setShowDash(boolean showDash) {
-		this.showDash = showDash;
+		this._showDash = showDash;
 		return this;
 	}
 
 	public boolean isShowBoard() {
-		return showBoard;
+		return _showBoard;
 	}
 
 	public LRadar setShowBoard(boolean showBoard) {
-		this.showBoard = showBoard;
+		this._showBoard = showBoard;
 		return this;
 	}
 
 	public boolean isShowScanning() {
-		return showScanning;
+		return _showScanning;
 	}
 
 	public LRadar setShowScanning(boolean showScanning) {
-		this.showScanning = showScanning;
+		this._showScanning = showScanning;
 		return this;
 	}
 
 	public boolean isShowRandDrop() {
-		return showRandDrop;
+		return _showRandDrop;
 	}
 
 	public LRadar setShowRandDrop(boolean showRandDrop) {
-		this.showRandDrop = showRandDrop;
+		this._showRandDrop = showRandDrop;
 		return this;
 	}
 
 	public boolean isShowGround() {
-		return showGround;
+		return _showGround;
 	}
 
 	public LRadar setShowGround(boolean showGround) {
-		this.showGround = showGround;
+		this._showGround = showGround;
 		return this;
 	}
 

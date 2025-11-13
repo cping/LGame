@@ -36,37 +36,37 @@ import loon.utils.xml.XMLParser;
 
 public class TMXTileSet {
 
-	private int firstGID;
-	private int lastGID;
+	private int _firstGID;
+	private int _lastGID;
 
-	private int hTileCount;
-	private int vTileCount;
+	private int _hTileCount;
+	private int _vTileCount;
 
-	private String name;
+	private String _name;
 
-	private int tileWidth;
-	private int tileHeight;
-	private int spacing;
-	private int margin;
+	private int _tileWidth;
+	private int _tileHeight;
+	private int _spacing;
+	private int _margin;
 
-	private Vector2f tileOffset;
-	private TMXImage image;
+	private Vector2f _tileOffset;
+	private TMXImage _image;
 
-	private TArray<TMXTerrain> terrainTypes;
-	private TArray<TMXTile> tiles;
+	private TArray<TMXTerrain> _terrainTypes;
+	private TArray<TMXTile> _tiles;
 
-	private TMXProperties properties;
+	private TMXProperties _properties;
 
 	public TMXTileSet() {
-		this.tileOffset = new Vector2f();
-		this.terrainTypes = new TArray<TMXTerrain>();
-		this.tiles = new TArray<TMXTile>();
-		this.properties = new TMXProperties();
+		this._tileOffset = new Vector2f();
+		this._terrainTypes = new TArray<TMXTerrain>();
+		this._tiles = new TArray<TMXTile>();
+		this._properties = new TMXProperties();
 	}
 
 	public void parse(Json.Object element, String tilesLocation) {
 
-		this.firstGID = element.getInt("firstgid", 1);
+		this._firstGID = element.getInt("firstgid", 1);
 		final String source = element.getString("source", LSystem.EMPTY);
 		final String path = StringUtils.isEmpty(tilesLocation) ? source
 				: PathUtils.normalizeCombinePaths(tilesLocation, source);
@@ -79,18 +79,18 @@ public class TMXTileSet {
 			}
 		}
 
-		tileWidth = element.getInt("tilewidth", 0);
-		tileHeight = element.getInt("tileheight", 0);
-		margin = element.getInt("margin", 0);
-		spacing = element.getInt("spacing", 0);
+		_tileWidth = element.getInt("tilewidth", 0);
+		_tileHeight = element.getInt("tileheight", 0);
+		_margin = element.getInt("margin", 0);
+		_spacing = element.getInt("spacing", 0);
 
-		name = element.getString("name", LSystem.EMPTY);
+		_name = element.getString("name", LSystem.EMPTY);
 
 		Json.Object node = element.getObject("tileoffset", null);
 
 		if (node != null) {
-			tileOffset.x = node.getNumber("x", 0);
-			tileOffset.y = node.getNumber("y", 0);
+			_tileOffset.x = node.getNumber("x", 0);
+			_tileOffset.y = node.getNumber("y", 0);
 		}
 
 		Json.Array nodes = element.getArray("terraintypes", null);
@@ -99,26 +99,26 @@ public class TMXTileSet {
 			for (int i = 0; i < nodes.length(); i++) {
 				TMXTerrain terrainType = new TMXTerrain();
 				terrainType.parse(nodes.getObject(i));
-				terrainTypes.add(terrainType);
+				_terrainTypes.add(terrainType);
 			}
 		}
 
 		if (element.containsKey("image")) {
-			image = new TMXImage();
-			image.parse(element, tilesLocation);
+			_image = new TMXImage();
+			_image.parse(element, tilesLocation);
 		}
 
 		int tileCount = 0;
-		if (image != null) {
-			tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
-			this.hTileCount = MathUtils.abs(this.image.getWidth() / (this.tileWidth + this.spacing));
-			this.vTileCount = MathUtils.abs(this.image.getHeight() / (this.tileHeight + this.margin));
-			this.lastGID = MathUtils.max(this.firstGID + (((this.hTileCount * this.vTileCount) - 1)), 0);
+		if (_image != null) {
+			tileCount = (_image.getWidth() / _tileWidth) * (_image.getHeight() / _tileHeight);
+			this._hTileCount = MathUtils.abs(this._image.getWidth() / (this._tileWidth + this._spacing));
+			this._vTileCount = MathUtils.abs(this._image.getHeight() / (this._tileHeight + this._margin));
+			this._lastGID = MathUtils.max(this._firstGID + (((this._hTileCount * this._vTileCount) - 1)), 0);
 		}
 
 		for (int tID = 0; tID < tileCount; tID++) {
-			TMXTile tile = new TMXTile(tID + firstGID);
-			tiles.add(tile);
+			TMXTile tile = new TMXTile(tID + _firstGID);
+			_tiles.add(tile);
 		}
 
 		nodes = element.getArray("tiles", null);
@@ -127,19 +127,19 @@ public class TMXTileSet {
 				Json.Object tileNode = nodes.getObject(i);
 				TMXTile tile = new TMXTile(i);
 				tile.parse(tileNode);
-				tiles.get(tile.getID()).parse(tileNode);
+				_tiles.get(tile.getID()).parse(tileNode);
 			}
 		}
 
 		nodes = element.getArray("properties", null);
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public void parse(XMLElement element, String tilesLocation) {
 
-		this.firstGID = element.getIntAttribute("firstgid", 1);
+		this._firstGID = element.getIntAttribute("firstgid", 1);
 		final String source = element.getAttribute("source", LSystem.EMPTY);
 		final String path = StringUtils.isEmpty(tilesLocation) ? source
 				: PathUtils.normalizeCombinePaths(tilesLocation, source);
@@ -154,19 +154,19 @@ public class TMXTileSet {
 			}
 		}
 
-		tileWidth = element.getIntAttribute("tilewidth", 0);
-		tileHeight = element.getIntAttribute("tileheight", 0);
-		margin = element.getIntAttribute("margin", 0);
-		spacing = element.getIntAttribute("spacing", 0);
+		_tileWidth = element.getIntAttribute("tilewidth", 0);
+		_tileHeight = element.getIntAttribute("tileheight", 0);
+		_margin = element.getIntAttribute("margin", 0);
+		_spacing = element.getIntAttribute("spacing", 0);
 
-		name = element.getAttribute("name", LSystem.EMPTY);
+		_name = element.getAttribute("name", LSystem.EMPTY);
 
 		XMLElement nodes = element.getChildrenByName("tileoffset");
 
 		if (nodes != null) {
 			XMLElement childElement = nodes;
-			tileOffset.x = childElement.getFloatAttribute("x", 0);
-			tileOffset.y = childElement.getFloatAttribute("y", 0);
+			_tileOffset.x = childElement.getFloatAttribute("x", 0);
+			_tileOffset.y = childElement.getFloatAttribute("y", 0);
 		}
 
 		nodes = element.getChildrenByName("terraintypes");
@@ -176,26 +176,26 @@ public class TMXTileSet {
 			for (XMLElement terrain : list) {
 				TMXTerrain terrainType = new TMXTerrain();
 				terrainType.parse(terrain);
-				terrainTypes.add(terrainType);
+				_terrainTypes.add(terrainType);
 			}
 		}
 
 		nodes = element.getChildrenByName("image");
 
 		if (nodes != null) {
-			image = new TMXImage();
-			image.parse(nodes, tilesLocation);
+			_image = new TMXImage();
+			_image.parse(nodes, tilesLocation);
 		}
 		int tileCount = 0;
-		if (image != null) {
-			tileCount = (image.getWidth() / tileWidth) * (image.getHeight() / tileHeight);
-			this.hTileCount = MathUtils.abs(this.image.getWidth() / (this.tileWidth + this.spacing));
-			this.vTileCount = MathUtils.abs(this.image.getHeight() / (this.tileHeight + this.margin));
-			this.lastGID = MathUtils.max(this.firstGID + (((this.hTileCount * this.vTileCount) - 1)), 0);
+		if (_image != null) {
+			tileCount = (_image.getWidth() / _tileWidth) * (_image.getHeight() / _tileHeight);
+			this._hTileCount = MathUtils.abs(this._image.getWidth() / (this._tileWidth + this._spacing));
+			this._vTileCount = MathUtils.abs(this._image.getHeight() / (this._tileHeight + this._margin));
+			this._lastGID = MathUtils.max(this._firstGID + (((this._hTileCount * this._vTileCount) - 1)), 0);
 		}
 		for (int tID = 0; tID < tileCount; tID++) {
-			TMXTile tile = new TMXTile(tID + firstGID);
-			tiles.add(tile);
+			TMXTile tile = new TMXTile(tID + _firstGID);
+			_tiles.add(tile);
 		}
 
 		nodes = element.getChildrenByName("tile");
@@ -207,77 +207,77 @@ public class TMXTileSet {
 				XMLElement tileNode = list.get(i);
 				TMXTile tile = new TMXTile(i);
 				tile.parse(tileNode);
-				tiles.get(tile.getID()).parse(tileNode);
+				_tiles.get(tile.getID()).parse(tileNode);
 			}
 		}
 
 		nodes = element.getChildrenByName("properties");
 		if (nodes != null) {
-			properties.parse(nodes);
+			_properties.parse(nodes);
 		}
 	}
 
 	public boolean contains(int gid) {
-		return gid >= this.firstGID && gid <= this.lastGID;
+		return gid >= this._firstGID && gid <= this._lastGID;
 	}
 
 	public int getFirstGID() {
-		return firstGID;
+		return _firstGID;
 	}
 
 	public int getLastGID() {
-		return lastGID;
+		return _lastGID;
 	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public int getHorizontalTileCount() {
-		return this.hTileCount;
+		return this._hTileCount;
 	}
 
 	public int getVerticalTileCount() {
-		return this.vTileCount;
+		return this._vTileCount;
 	}
 
 	public int getTileWidth() {
-		return tileWidth;
+		return _tileWidth;
 	}
 
 	public int getTileHeight() {
-		return tileHeight;
+		return _tileHeight;
 	}
 
 	public int getSpacing() {
-		return spacing;
+		return _spacing;
 	}
 
 	public int getMargin() {
-		return margin;
+		return _margin;
 	}
 
 	public Vector2f getTileOffset() {
-		return tileOffset;
+		return _tileOffset;
 	}
 
 	public TMXImage getImage() {
-		return image;
+		return _image;
 	}
 
 	public String getSource() {
-		if (image != null) {
-			return image.getSource();
+		if (_image != null) {
+			return _image.getSource();
 		}
 		return null;
 	}
 
 	public TArray<TMXTerrain> getTerrainTypes() {
-		return terrainTypes;
+		return _terrainTypes;
 	}
 
 	public TMXTile getTile(int id) {
-		for (TMXTile tile : tiles) {
+		for (TMXTile tile : _tiles) {
 			if (tile.getID() == id) {
 				return tile;
 			}
@@ -286,10 +286,10 @@ public class TMXTileSet {
 	}
 
 	public TArray<TMXTile> getTiles() {
-		return tiles;
+		return _tiles;
 	}
 
 	public TMXProperties getProperties() {
-		return properties;
+		return _properties;
 	}
 }

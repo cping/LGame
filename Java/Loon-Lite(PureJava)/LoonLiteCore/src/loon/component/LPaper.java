@@ -29,7 +29,7 @@ import loon.utils.MathUtils;
 
 public class LPaper extends LContainer {
 
-	private Animation animation;
+	private Animation _animation;
 
 	public LPaper(LTexture background, float x, float y) {
 		this(background, x, y, background == null ? 0 : background.getWidth(),
@@ -43,7 +43,7 @@ public class LPaper extends LContainer {
 	public LPaper(LTexture background, LColor color, float x, float y, float w, float h) {
 		super(MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 		this.customRendering = true;
-		this.animation = new Animation();
+		this._animation = new Animation();
 		if (background != null && (color == null || LColor.white.equals(color))) {
 			this.setBackground(background, (w != 0 && h != 0) ? false : true);
 		} else if (background == null && color != null) {
@@ -80,21 +80,21 @@ public class LPaper extends LContainer {
 	}
 
 	public Animation getAnimation() {
-		return this.animation;
+		return this._animation;
 	}
 
 	public LPaper setAnimation(Animation animation) {
-		this.animation = animation;
+		this._animation = animation;
 		return this;
 	}
 
 	public LPaper addAnimationFrame(String fileName, long timer) {
-		animation.addFrame(fileName, timer);
+		_animation.addFrame(fileName, timer);
 		return this;
 	}
 
 	public LPaper addAnimationFrame(LTexture image, long timer) {
-		animation.addFrame(image, timer);
+		_animation.addFrame(image, timer);
 		return this;
 	}
 
@@ -129,8 +129,8 @@ public class LPaper extends LContainer {
 	@Override
 	protected void createCustomUI(GLEx g, int x, int y, int w, int h) {
 		if (isVisible()) {
-			if (animation.getSpriteImage() != null) {
-				g.draw(animation.getSpriteImage(), x, y, w, h, _component_baseColor);
+			if (_animation.getSpriteImage() != null) {
+				g.draw(_animation.getSpriteImage(), x, y, w, h, _component_baseColor);
 			}
 			if (x != 0 && y != 0) {
 				g.translate(x, y);
@@ -150,7 +150,7 @@ public class LPaper extends LContainer {
 	public void update(long elapsedTime) {
 		if (isVisible()) {
 			super.update(elapsedTime);
-			animation.update(elapsedTime);
+			_animation.update(elapsedTime);
 		}
 	}
 
@@ -166,9 +166,9 @@ public class LPaper extends LContainer {
 
 	@Override
 	public void destory() {
-		if (animation != null) {
-			animation.close();
-			animation = null;
+		if (_animation != null) {
+			_animation.close();
+			_animation = null;
 		}
 	}
 

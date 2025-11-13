@@ -29,30 +29,30 @@ import loon.utils.xml.XMLElement;
 
 public class TMXObjectLayer extends TMXMapLayer {
 
-	private LColor color;
+	private LColor _color;
 
-	private TArray<TMXObject> objects;
+	private TArray<TMXObject> _objects;
 
 	public TMXObjectLayer(TMXMap map) {
 		super(map, LSystem.EMPTY, 0, 0, map.getWidth(), map.getHeight(), 1.0f, true, TmxLayerType.OBJECT);
-		this.objects = new TArray<TMXObject>();
-		this.color = new LColor(LColor.TRANSPARENT);
+		this._objects = new TArray<TMXObject>();
+		this._color = new LColor(LColor.TRANSPARENT);
 	}
 
 	public TMXObject getObject(int index) {
-		return objects.get(index);
+		return _objects.get(index);
 	}
 
 	public int getNumObjects() {
-		return objects.size;
+		return _objects.size;
 	}
 
 	public LColor getColor() {
-		return color;
+		return _color;
 	}
 
 	public TArray<TMXObject> getObjects() {
-		return objects;
+		return _objects;
 	}
 
 	public void parse(Json.Object element) {
@@ -61,7 +61,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 		name = element.getString("name", LSystem.EMPTY);
 
 		if (element.containsKey("color")) {
-			color = new LColor(element.getString("color", LColor.white.toString()).trim());
+			_color = new LColor(element.getString("color", LColor.white.toString()).trim());
 		}
 
 		opacity = element.getNumber("opacity", 1f);
@@ -79,13 +79,13 @@ public class TMXObjectLayer extends TMXMapLayer {
 					Json.Object objectNode = nodes.getObject(i);
 					TMXObject o = new TMXObject();
 					o.parse(objectNode);
-					objects.add(o);
+					_objects.add(o);
 				}
 			}
 		} else if (element.containsKey("width")) {
 			TMXObject o = new TMXObject();
 			o.parse(element);
-			objects.add(o);
+			_objects.add(o);
 		}
 	}
 
@@ -95,7 +95,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 		name = element.getAttribute("name", LSystem.EMPTY);
 
 		if (element.hasAttribute("color")) {
-			color = new LColor(element.getAttribute("color", LColor.white.toString()).trim());
+			_color = new LColor(element.getAttribute("color", LColor.white.toString()).trim());
 		}
 
 		opacity = element.getFloatAttribute("opacity", 1f);
@@ -115,7 +115,7 @@ public class TMXObjectLayer extends TMXMapLayer {
 				TMXObject o = new TMXObject();
 				o.parse(objectNode);
 
-				objects.add(o);
+				_objects.add(o);
 			}
 		}
 	}

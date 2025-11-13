@@ -50,13 +50,13 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 		public float speed;
 	}
 
-	private IFont font;
+	public final TArray<Info> _labels = new TArray<>();
 
-	private LColor fontColor;
+	private IFont _font;
 
-	public final TArray<Info> labels = new TArray<>();
+	private LColor _fontColor;
 
-	private float speed = 0f;
+	private float _speed = 0f;
 
 	public LLabels(int x, int y, int width, int height) {
 		this(LSystem.getSystemGameFont(), x, y, width, height);
@@ -64,8 +64,8 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	public LLabels(IFont font, int x, int y, int width, int height) {
 		super(x, y, width, height);
-		this.font = font;
-		this.fontColor = LColor.white.cpy();
+		this._font = font;
+		this._fontColor = LColor.white.cpy();
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 			return;
 		}
 		super.update(elapsedTime);
-		this.speed = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+		this._speed = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 
 	}
 
@@ -82,20 +82,20 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 		if (!isVisible()) {
 			return;
 		}
-		for (int i = 0; i < labels.size; i++) {
-			Info label = labels.get(i);
+		for (int i = 0; i < _labels.size; i++) {
+			Info label = _labels.get(i);
 			if (label.length == -1) {
-				font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
-						_colorTemp.setColor(fontColor == null ? LColor.getColorARGBInt(label.color)
-								: LColor.combine(fontColor, label.color)));
+				_font.drawString(g, label.message, x + label.x, y + label.y - _font.getHeight() / 2 + 5,
+						_colorTemp.setColor(_fontColor == null ? LColor.getColorARGBInt(label.color)
+								: LColor.combine(_fontColor, label.color)));
 			} else {
-				label.stateTime += speed;
+				label.stateTime += _speed;
 				if (label.stateTime > label.length) {
-					labels.remove(label);
+					_labels.remove(label);
 				} else {
-					font.drawString(g, label.message, x + label.x, y + label.y - font.getHeight() / 2 + 5,
-							_colorTemp.setColor(fontColor == null ? LColor.getColorARGBInt(label.color)
-									: LColor.combine(fontColor, label.color)));
+					_font.drawString(g, label.message, x + label.x, y + label.y - _font.getHeight() / 2 + 5,
+							_colorTemp.setColor(_fontColor == null ? LColor.getColorARGBInt(label.color)
+									: LColor.combine(_fontColor, label.color)));
 				}
 			}
 		}
@@ -121,13 +121,13 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 	}
 
 	public LLabels addLabel(Info info) {
-		labels.add(info);
+		_labels.add(info);
 		return this;
 	}
 
 	public LLabels clear() {
-		synchronized (labels) {
-			labels.clear();
+		synchronized (_labels) {
+			_labels.clear();
 		}
 		return this;
 	}
@@ -139,23 +139,23 @@ public class LLabels extends LComponent implements FontSet<LLabels> {
 
 	@Override
 	public LLabels setFont(IFont font) {
-		this.font = font;
+		this._font = font;
 		return this;
 	}
 
 	@Override
 	public IFont getFont() {
-		return this.font;
+		return this._font;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
 	public LLabels setFontColor(LColor color) {
-		this.fontColor = color;
+		this._fontColor = color;
 		return this;
 	}
 
