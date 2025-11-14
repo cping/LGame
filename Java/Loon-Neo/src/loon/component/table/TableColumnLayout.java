@@ -35,136 +35,136 @@ public class TableColumnLayout {
 	public static final int VERTICAL_ALIGN_CENTER = 5;
 	public static final int VERTICAL_ALIGN_BOTTOM = 6;
 
-	private int verticalAlignment = VERTICAL_ALIGN_CENTER;
+	private LColor _drawColumnGridColor = LColor.white;
 
-	private int horizontalAlignment = HORIZONTAL_ALIGN_CENTER;
+	private LColor _drawColumnTableLayoutGridColor = LColor.red;
 
-	private int leftMargin = 0;
+	private int _verticalAlignment = VERTICAL_ALIGN_CENTER;
 
-	private int rightMargin = 0;
+	private int _horizontalAlignment = HORIZONTAL_ALIGN_CENTER;
 
-	private int topMargin = 0;
+	private int _leftMargin = 0;
 
-	private int bottomMargin = 0;
+	private int _rightMargin = 0;
 
-	private int x;
+	private int _topMargin = 0;
 
-	private int y;
+	private int _bottomMargin = 0;
 
-	private double width;
+	private int _x;
 
-	private int height;
+	private int _y;
 
-	private LComponent component;
+	private int _width;
+
+	private int _height;
+
+	private LComponent _component;
 
 	public TableColumnLayout(LComponent component, int x, int y, int width, int height) {
-		this.component = component;
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		this._component = component;
+		this._x = x;
+		this._y = y;
+		this._width = width;
+		this._height = height;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public TableColumnLayout setHeight(int height) {
-		this.height = height;
+		this._height = height;
 		adjustComponent();
 		return this;
 	}
 
 	public int getWidth() {
-		return MathUtils.floorInt(width);
+		return _width;
 	}
 
-	public double getWidthf() {
-		return width;
-	}
-
-	public TableColumnLayout setWidth(double width) {
-		this.width = width;
+	public TableColumnLayout setWidth(int width) {
+		this._width = width;
 		adjustComponent();
 		return this;
 	}
 
 	public int getX() {
-		return x;
+		return _x;
 	}
 
 	public TableColumnLayout setX(int x) {
-		this.x = x;
+		this._x = x;
 		adjustComponent();
 		return this;
 	}
 
 	public int getY() {
-		return y;
+		return _y;
 	}
 
 	public TableColumnLayout setY(int y) {
-		this.y = y;
+		this._y = y;
 		adjustComponent();
 		return this;
 	}
 
 	public int getVerticalAlignment() {
-		return verticalAlignment;
+		return _verticalAlignment;
 	}
 
 	public TableColumnLayout setVerticalAlignment(int verticalAlignment) {
-		this.verticalAlignment = verticalAlignment;
+		this._verticalAlignment = verticalAlignment;
 		adjustComponent();
 		return this;
 	}
 
 	public int getHorizontalAlignment() {
-		return horizontalAlignment;
+		return _horizontalAlignment;
 	}
 
 	public TableColumnLayout setHorizontalAlignment(int horizontalAlignment) {
-		this.horizontalAlignment = horizontalAlignment;
+		this._horizontalAlignment = horizontalAlignment;
 		adjustComponent();
 		return this;
 	}
 
 	public int getLeftMargin() {
-		return leftMargin;
+		return _leftMargin;
 	}
 
 	public TableColumnLayout setLeftMargin(int leftMargin) {
-		this.leftMargin = leftMargin;
+		this._leftMargin = leftMargin;
 		adjustComponent();
 		return this;
 	}
 
 	public int getRightMargin() {
-		return rightMargin;
+		return _rightMargin;
 	}
 
 	public TableColumnLayout setRightMargin(int rightMargin) {
-		this.rightMargin = rightMargin;
+		this._rightMargin = rightMargin;
 		adjustComponent();
 		return this;
 	}
 
 	public int getTopMargin() {
-		return topMargin;
+		return _topMargin;
 	}
 
 	public TableColumnLayout setTopMargin(int topMargin) {
-		this.topMargin = topMargin;
+		this._topMargin = topMargin;
 		adjustComponent();
 		return this;
 	}
 
 	public int getBottomMargin() {
-		return bottomMargin;
+		return _bottomMargin;
 	}
 
 	public TableColumnLayout setBottomMargin(int bottomMargin) {
-		this.bottomMargin = bottomMargin;
+		this._bottomMargin = bottomMargin;
 		adjustComponent();
 		return this;
 	}
@@ -178,13 +178,13 @@ public class TableColumnLayout {
 	}
 
 	public TableColumnLayout setComponent(LComponent component) {
-		this.component = component;
+		this._component = component;
 		adjustComponent();
 		return this;
 	}
 
 	public LComponent getComponent() {
-		return component;
+		return _component;
 	}
 
 	public boolean canWidthShrink(int newWidth) {
@@ -192,8 +192,8 @@ public class TableColumnLayout {
 	}
 
 	public int getMinWidth() {
-		if (component != null) {
-			return (int) (leftMargin + rightMargin + component.getWidth());
+		if (_component != null) {
+			return MathUtils.ceil(_leftMargin + _rightMargin + _component.getWidth());
 		}
 		return 1;
 	}
@@ -203,48 +203,66 @@ public class TableColumnLayout {
 	}
 
 	public int getMinHeight() {
-		if (component != null) {
-			return (int) (topMargin + bottomMargin + component.getHeight());
+		if (_component != null) {
+			return MathUtils.ceil(_topMargin + _bottomMargin + _component.getHeight());
 		}
 		return 1;
 	}
 
 	public TableColumnLayout adjustComponent() {
-		if (component != null) {
-			switch (horizontalAlignment) {
+		if (_component != null) {
+			switch (_horizontalAlignment) {
 			case HORIZONTAL_ALIGN_LEFT:
-				component.setX(getX() + leftMargin);
+				_component.setX(getX() + _leftMargin);
 				break;
 			case HORIZONTAL_ALIGN_CENTER:
-				component.setX(getX() + (getWidth() / 2 - component.getWidth() / 2));
+				_component.setX(getX() + (getWidth() / 2 - _component.getWidth() / 2));
 				break;
 			case HORIZONTAL_ALIGN_RIGHT:
-				component.setX((getX() + getWidth()) - (component.getWidth() + rightMargin));
+				_component.setX((getX() + getWidth()) - (_component.getWidth() + _rightMargin));
 				break;
 			}
-			switch (verticalAlignment) {
+			switch (_verticalAlignment) {
 			case VERTICAL_ALIGN_TOP:
-				component.setY(getY() + topMargin);
+				_component.setY(getY() + _topMargin);
 				break;
 			case VERTICAL_ALIGN_CENTER:
-				component.setY(getY() + (getHeight() / 2 - component.getHeight() / 2));
+				_component.setY(getY() + (getHeight() / 2 - _component.getHeight() / 2));
 				break;
 			case VERTICAL_ALIGN_BOTTOM:
-				component.setY((getY() + getHeight()) - (component.getHeight() + bottomMargin));
+				_component.setY((getY() + getHeight()) - (_component.getHeight() + _bottomMargin));
 			}
 		}
 		return this;
 	}
 
 	public void paint(GLEx g) {
-		g.drawRect(getX(), getY(), getWidth(), getHeight(), LColor.white);
-		if (component != null && component.getContainer() != null && component.getContainer() instanceof TableLayout) {
-			if (((TableLayout) component.getContainer()).isGrid()) {
-				g.drawRect(component.getContainer().getX() + component.getX() - leftMargin,
-						component.getContainer().getY() + component.getY() - topMargin,
-						component.getWidth() + rightMargin, component.getHeight() + bottomMargin, LColor.red);
+		g.drawRect(getX(), getY(), getWidth(), getHeight(), _drawColumnGridColor);
+		if (_component != null && _component.getContainer() != null
+				&& _component.getContainer() instanceof TableLayout) {
+			if (((TableLayout) _component.getContainer()).isGrid()) {
+				g.drawRect(_component.getContainer().getX() + _component.getX() - _leftMargin,
+						_component.getContainer().getY() + _component.getY() - _topMargin,
+						_component.getWidth() + _rightMargin, _component.getHeight() + _bottomMargin,
+						_drawColumnTableLayoutGridColor);
 			}
 		}
+	}
+
+	public void setDrawColumnGridColor(LColor c) {
+		_drawColumnGridColor = c;
+	}
+
+	public void setDrawColumnTableLayoutGridColor(LColor c) {
+		_drawColumnTableLayoutGridColor = c;
+	}
+
+	public LColor getDrawColumnGridColor() {
+		return _drawColumnGridColor;
+	}
+
+	public LColor getDrawColumnTableLayoutGridColor() {
+		return _drawColumnTableLayoutGridColor;
 	}
 
 }

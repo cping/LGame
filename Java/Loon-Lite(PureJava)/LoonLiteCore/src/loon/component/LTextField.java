@@ -68,7 +68,7 @@ public class LTextField extends LTextBar {
 
 	public static final int INPUT_FLOATING_POINT_NUM = INPUT_SIGNED_INTEGER_NUM;
 
-	private ActionKey keyLock = new ActionKey();
+	private ActionKey _keyLock = new ActionKey();
 
 	public static LTextField at(int x, int y) {
 		return new LTextField(x, y);
@@ -82,8 +82,8 @@ public class LTextField extends LTextBar {
 		SysInputFactory.setKeyBoard(keyboard);
 	}
 
-	protected int inputType = INPUT_STRING;
-	protected int startidx, limit;
+	protected int _inputType = INPUT_STRING;
+	protected int _startidx, _limit;
 
 	public LTextField(String txt, LTexture left, LTexture right, LTexture body, int x, int y, LColor textcolor,
 			int type, int limit) {
@@ -130,28 +130,28 @@ public class LTextField extends LTextBar {
 			LColor textcolor, int type, int limit) {
 		super(txt, left, right, body, x, y, textcolor, font);
 		this._font = font;
-		this.inputType = type;
+		this._inputType = type;
 		if (txt != null) {
-			this.startidx = txt.length();
+			this._startidx = txt.length();
 		}
-		this.limit = limit + startidx;
+		this._limit = limit + _startidx;
 		this.setFocusable(true);
 		this.setFlashCursor(true);
 		freeRes().add(left, right, body);
 	}
 
 	public int getInputType() {
-		return inputType;
+		return _inputType;
 	}
 
 	public LTextField setInputType(int type) {
-		inputType = type;
+		_inputType = type;
 		return this;
 	}
 
 	public String getInput() {
-		String result = _text.substring(startidx);
-		if ((result.charAt(result.length() - 1) == cursor || result.length() == 0) && inputType != INPUT_STRING) {
+		String result = _text.substring(_startidx);
+		if ((result.charAt(result.length() - 1) == _cursor || result.length() == 0) && _inputType != INPUT_STRING) {
 			return "0";
 		}
 		return result;
@@ -164,7 +164,7 @@ public class LTextField extends LTextBar {
 	@Override
 	protected void keyReleased(GameKey key) {
 		super.keyReleased(key);
-		keyLock.release();
+		_keyLock.release();
 	}
 
 	@Override
@@ -174,7 +174,7 @@ public class LTextField extends LTextBar {
 		if (!isDesktopFocusable()) {
 			return;
 		}
-		if (keyLock.isPressed()) {
+		if (_keyLock.isPressed()) {
 			return;
 		}
 
@@ -196,19 +196,19 @@ public class LTextField extends LTextBar {
 				return;
 			}
 		}
-		boolean isatstart = _text.length() == startidx;
+		boolean isatstart = _text.length() == _startidx;
 		if (((key.getKeyCode() == SysKey.BACK) || (key.getKeyCode() == SysKey.BACKSPACE)) && _text.length() != 0
 				&& !isatstart) {
 			_text = _text.substring(0, _text.length() - 1);
 			return;
 		}
 		// input data max length
-		if (_text.length() == limit) {
+		if (_text.length() == _limit) {
 			return;
 		}
 		boolean valid = true;
-		if (inputType != INPUT_STRING) {
-			switch (inputType) {
+		if (_inputType != INPUT_STRING) {
+			switch (_inputType) {
 			case INPUT_UNSIGNED_INTEGER_NUM:
 				valid = CharUtils.isDigitCharacter(nextchar);
 				break;
@@ -236,7 +236,7 @@ public class LTextField extends LTextBar {
 				_text = "";
 			}
 		}
-		keyLock.release();
+		_keyLock.release();
 	}
 
 	@Override
@@ -256,7 +256,7 @@ public class LTextField extends LTextBar {
 		if (!isFocusable()) {
 			return;
 		}
-		_text += cursor;
+		_text += _cursor;
 		setText(_text);
 	}
 
@@ -264,18 +264,18 @@ public class LTextField extends LTextBar {
 		if (!isFocusable()) {
 			return;
 		}
-		if (_text.charAt(_text.length() - 1) == cursor) {
-			_text = _text.substring(0, MathUtils.max(startidx, _text.length() - 1));
+		if (_text.charAt(_text.length() - 1) == _cursor) {
+			_text = _text.substring(0, MathUtils.max(_startidx, _text.length() - 1));
 		}
 	}
 
 	public LTextField setLimit(int l) {
-		this.limit = l;
+		this._limit = l;
 		return this;
 	}
 
 	public int getLimit() {
-		return this.limit;
+		return this._limit;
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import loon.utils.html.HtmlParser;
  */
 public class LHtmlView extends LContainer {
 
-	private HtmlDisplay display;
+	private HtmlDisplay _display;
 
 	public LHtmlView(int x, int y) {
 		this(x, y, LColor.black, LColor.white);
@@ -43,24 +43,24 @@ public class LHtmlView extends LContainer {
 
 	public LHtmlView(int x, int y, int w, int h, LColor f, LColor b) {
 		super(x, y, w, h);
-		this.display = new HtmlDisplay(w, h, f, b);
+		this._display = new HtmlDisplay(w, h, f, b);
 	}
 
 	public void loadText(String text) {
-		display.parse(HtmlParser.loadText(text));
+		_display.parse(HtmlParser.loadText(text));
 	}
 
 	public void loadPath(String path) {
-		display.parse(HtmlParser.parse(path));
+		_display.parse(HtmlParser.parse(path));
 	}
 
 	@Override
 	public void createUI(GLEx g, int x, int y) {
-		display.paint(g, x, y);
+		_display.paint(g, x, y);
 	}
 
 	public HtmlDisplay getHtmlDisplay() {
-		return display;
+		return _display;
 	}
 
 	@Override

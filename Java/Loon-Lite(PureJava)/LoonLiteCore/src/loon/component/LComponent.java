@@ -1329,6 +1329,8 @@ public abstract class LComponent extends LObject<LContainer>
 	}
 
 	protected void processTouchExited() {
+		_downClick = false;
+		_downUpTimer.reset();
 	}
 
 	// 键盘操作

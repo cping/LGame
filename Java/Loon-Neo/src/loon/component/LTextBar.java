@@ -62,19 +62,19 @@ public class LTextBar extends LComponent {
 
 	private boolean _displayFlag;
 
-	private boolean masked = false;
+	private boolean _masked = false;
 
-	private boolean over, pressed;
+	private boolean _over, _pressed;
 
-	protected boolean hideBackground = false;
+	protected boolean _hideBackground = false;
 
-	protected boolean flashCursor = false;
+	protected boolean _flashCursor = false;
 
-	protected char maskCharacter = '*';
+	protected char _maskCharacter = '*';
 
-	protected char cursor = '_';
+	protected char _cursor = '_';
 
-	private float pressedTime;
+	private float _pressedTime;
 
 	public LTextBar(String txt, float x, float y, LColor c) {
 		this(txt, SkinManager.get().getTextBarSkin().getLeftTexture(),
@@ -197,7 +197,7 @@ public class LTextBar extends LComponent {
 			g.drawRect(x, y, width, height, LColor.black);
 			return;
 		} else {
-			if (hideBackground) {
+			if (_hideBackground) {
 				if (_messages != null) {
 					for (int i = 0, size = _messages.size; i < size; i++) {
 						String text = _messages.get(i);
@@ -261,29 +261,29 @@ public class LTextBar extends LComponent {
 			return;
 		}
 		final float size = font.getSize() / 6f;
-		if (flashCursor) {
+		if (_flashCursor) {
 			final int len = mes.length() - 1;
 			final char end = mes.charAt(len);
 			if (_displayFlag) {
-				if (masked) {
-					if (end == cursor) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, len) + cursor, x, y + size, fontColor);
+				if (_masked) {
+					if (end == _cursor) {
+						font.drawString(g, StringUtils.cpy(_maskCharacter, len) + _cursor, x, y + size, fontColor);
 					} else {
-						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y + size, fontColor);
+						font.drawString(g, StringUtils.cpy(_maskCharacter, mes.length()), x, y + size, fontColor);
 					}
 				} else {
 					font.drawString(g, mes, x, y + size, fontColor);
 				}
 			} else {
-				if (end == cursor) {
-					if (masked) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, len), x, y + size, fontColor);
+				if (end == _cursor) {
+					if (_masked) {
+						font.drawString(g, StringUtils.cpy(_maskCharacter, len), x, y + size, fontColor);
 					} else {
 						font.drawString(g, mes.substring(0, len), x, y + size, fontColor);
 					}
 				} else {
-					if (masked) {
-						font.drawString(g, StringUtils.cpy(maskCharacter, mes.length()), x, y + size, fontColor);
+					if (_masked) {
+						font.drawString(g, StringUtils.cpy(_maskCharacter, mes.length()), x, y + size, fontColor);
 					} else {
 						font.drawString(g, mes, x, y + size, fontColor);
 					}
@@ -295,12 +295,12 @@ public class LTextBar extends LComponent {
 	}
 
 	public LTextBar setCursor(char c) {
-		this.cursor = c;
+		this._cursor = c;
 		return this;
 	}
 
 	public char getCursor() {
-		return this.cursor;
+		return this._cursor;
 	}
 
 	public float textWidth() {
@@ -392,37 +392,37 @@ public class LTextBar extends LComponent {
 
 	@Override
 	protected void processTouchDragged() {
-		this.over = this.pressed = this.intersects(getUITouchX(), getUITouchY());
+		this._over = this._pressed = this.intersects(getUITouchX(), getUITouchY());
 		super.processTouchDragged();
 	}
 
 	@Override
 	protected void processTouchPressed() {
 		super.processTouchPressed();
-		this.pressed = true;
+		this._pressed = true;
 	}
 
 	@Override
 	protected void processTouchReleased() {
 		super.processTouchReleased();
-		this.pressed = false;
+		this._pressed = false;
 	}
 
 	@Override
 	protected void processTouchEntered() {
-		this.over = true;
+		this._over = true;
 	}
 
 	@Override
 	protected void processTouchExited() {
-		this.over = this.pressed = false;
+		this._over = this._pressed = false;
 	}
 
 	@Override
 	protected void processKeyPressed() {
 		if (this.isSelected()) {
-			this.pressedTime = 5;
-			this.pressed = true;
+			this._pressedTime = 5;
+			this._pressed = true;
 			this.doClick();
 		}
 	}
@@ -430,16 +430,16 @@ public class LTextBar extends LComponent {
 	@Override
 	protected void processKeyReleased() {
 		if (this.isSelected()) {
-			this.pressed = false;
+			this._pressed = false;
 		}
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (this.pressedTime > 0 && --this.pressedTime <= 0) {
-			this.pressed = false;
+		if (this._pressedTime > 0 && --this._pressedTime <= 0) {
+			this._pressed = false;
 		}
-		if (flashCursor && _waitTimer.action(elapsedTime)) {
+		if (_flashCursor && _waitTimer.action(elapsedTime)) {
 			_displayFlag = !_displayFlag;
 		}
 	}
@@ -454,37 +454,37 @@ public class LTextBar extends LComponent {
 	}
 
 	public boolean isTouchOver() {
-		return this.over;
+		return this._over;
 	}
 
 	public boolean isTouchPressed() {
-		return this.pressed;
+		return this._pressed;
 	}
 
 	public boolean isHideBackground() {
-		return hideBackground;
+		return _hideBackground;
 	}
 
 	public LTextBar setHideBackground(boolean hideBackground) {
-		this.hideBackground = hideBackground;
+		this._hideBackground = hideBackground;
 		return this;
 	}
 
 	public char getMaskCharacter() {
-		return maskCharacter;
+		return _maskCharacter;
 	}
 
 	public LTextBar setMaskCharacter(char m) {
-		this.maskCharacter = m;
+		this._maskCharacter = m;
 		return this;
 	}
 
 	public boolean isMasked() {
-		return masked;
+		return _masked;
 	}
 
 	public LTextBar setMasked(boolean m) {
-		this.masked = m;
+		this._masked = m;
 		return this;
 	}
 
@@ -507,11 +507,11 @@ public class LTextBar extends LComponent {
 	}
 
 	public boolean isFlashCursor() {
-		return flashCursor;
+		return _flashCursor;
 	}
 
 	public LTextBar setFlashCursor(boolean c) {
-		this.flashCursor = c;
+		this._flashCursor = c;
 		return this;
 	}
 

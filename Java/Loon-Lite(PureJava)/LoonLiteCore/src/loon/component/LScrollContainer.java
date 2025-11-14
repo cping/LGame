@@ -36,8 +36,8 @@ import loon.utils.MathUtils;
 public class LScrollContainer extends LContainer {
 
 	public static LScrollContainer createVerticalScrollContainer(LComponent comp, float x, float y, float h) {
-		int newX = MathUtils.ifloor(x);
-		int newY = MathUtils.ifloor(y);
+		final int newX = MathUtils.ifloor(x);
+		final int newY = MathUtils.ifloor(y);
 		int newW = comp == null ? 18 : comp.width();
 		int newH = MathUtils.ifloor(h);
 		LScrollContainer container = null;
@@ -58,8 +58,8 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public static LScrollContainer createHorizontalScrollContainer(LComponent comp, float x, float y, float w) {
-		int newX = MathUtils.ifloor(x);
-		int newY = MathUtils.ifloor(y);
+		final int newX = MathUtils.ifloor(x);
+		final int newY = MathUtils.ifloor(y);
 		int newW = MathUtils.ifloor(w);
 		int newH = comp == null ? 18 : comp.height();
 		LScrollContainer container = null;

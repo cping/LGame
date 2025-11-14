@@ -52,17 +52,17 @@ public class LSelectorIcon extends LComponent {
 
 	private CallFunction _function;
 
-	private int tileWidth;
-	private int tileHeight;
-	private int minX;
-	private int minY;
-	private int maxX;
-	private int maxY;
-	private int step;
+	private int _tileWidth;
+	private int _tileHeight;
+	private int _minX;
+	private int _minY;
+	private int _maxX;
+	private int _maxY;
+	private int _step;
 
-	private int minAlpha;
+	private int _minAlpha;
 
-	private int maxAlpha;
+	private int _maxAlpha;
 
 	private float _iconAlpha;
 	private float _iconAlphaRate;
@@ -114,15 +114,15 @@ public class LSelectorIcon extends LComponent {
 		this._imageCaches = new IntMap<LTexture>();
 		this._objectLocation.x = x / tw;
 		this._objectLocation.y = y / tw;
-		this.minX = 0;
-		this.minY = 0;
-		this.maxX = getScreenWidth() / tw;
-		this.maxY = getScreenHeight() / th;
-		this.step = 1;
-		this.minAlpha = 35;
-		this.maxAlpha = 235;
-		this.tileWidth = tw;
-		this.tileHeight = th;
+		this._minX = 0;
+		this._minY = 0;
+		this._maxX = getScreenWidth() / tw;
+		this._maxY = getScreenHeight() / th;
+		this._step = 1;
+		this._minAlpha = 35;
+		this._maxAlpha = 235;
+		this._tileWidth = tw;
+		this._tileHeight = th;
 		this.setAlphaRate(1f);
 		this._gridCenterX = -1f;
 		this._gridCenterY = -1f;
@@ -140,69 +140,71 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	private void checkLocal(float x, float y) {
-		if (_objectLocation != null && tileWidth != 0 && tileHeight != 0) {
-			this._objectLocation.x = x / tileWidth;
-			this._objectLocation.y = y / tileHeight;
+		if (_objectLocation != null && _tileWidth != 0 && _tileHeight != 0) {
+			this._objectLocation.x = x / _tileWidth;
+			this._objectLocation.y = y / _tileHeight;
 			this.moveSide();
 		}
 	}
 
 	public void draw(Canvas g, float tx, float ty, int offsetX, int offsetY) {
-		final float newX = offsetX + (tx * tileWidth);
-		final float newY = offsetY + (ty * tileHeight);
+		final float newX = offsetX + (tx * _tileWidth);
+		final float newY = offsetY + (ty * _tileHeight);
 		final int fill = g.getFillColor();
 		final int stroke = g.getStrokeColor();
 		g.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(),
-				MathUtils.ifloor(MathUtils.limit((maxAlpha - _iconAlpha), minAlpha, maxAlpha)));
-		g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight));
+				MathUtils.ifloor(MathUtils.limit((_maxAlpha - _iconAlpha), _minAlpha, _maxAlpha)));
+		g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth), fixGridSize(_tileHeight));
 		if (_drawBorder) {
 			g.setColor(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(),
 					MathUtils.ifloor(_iconAlpha));
-			g.strokeRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth) - 1, fixGridSize(tileHeight) - 1);
-			g.strokeRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(tileWidth) + 1,
-					fixGridSize(tileHeight) + 1);
+			g.strokeRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth) - 1, fixGridSize(_tileHeight) - 1);
+			g.strokeRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(_tileWidth) + 1,
+					fixGridSize(_tileHeight) + 1);
 			g.setFillColor(fill);
 		}
 		g.setStrokeColor(stroke);
 	}
 
 	public void draw(SpriteBatch batch, float tx, float ty, int offsetX, int offsetY) {
-		final float newX = offsetX + (tx * tileWidth);
-		final float newY = offsetY + (ty * tileHeight);
+		final float newX = offsetX + (tx * _tileWidth);
+		final float newY = offsetY + (ty * _tileHeight);
 		final float color = batch.getFloatColor();
 		batch.setColor(_component_baseColor.getRed(), _component_baseColor.getGreen(), _component_baseColor.getBlue(),
-				MathUtils.ifloor(MathUtils.limit((maxAlpha - _iconAlpha), minAlpha, maxAlpha)));
-		batch.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight));
+				MathUtils.ifloor(MathUtils.limit((_maxAlpha - _iconAlpha), _minAlpha, _maxAlpha)));
+		batch.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth), fixGridSize(_tileHeight));
 		if (_drawBorder) {
 			batch.setColor(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(),
 					MathUtils.ifloor(_iconAlpha));
-			batch.drawRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth) - 1, fixGridSize(tileHeight) - 1);
-			batch.drawRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(tileWidth) + 1,
-					fixGridSize(tileHeight) + 1);
+			batch.drawRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth) - 1,
+					fixGridSize(_tileHeight) - 1);
+			batch.drawRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(_tileWidth) + 1,
+					fixGridSize(_tileHeight) + 1);
 		}
 		batch.setColor(color);
 	}
 
 	public void draw(GLEx g, LTexture tex, float tx, float ty, float offsetX, float offsetY, int baseColor,
 			int borderColor) {
-		final float newX = MathUtils.ifloor(offsetX + (tx * tileWidth));
-		final float newY = MathUtils.ifloor(offsetY + (ty * tileHeight));
+		final float newX = MathUtils.ifloor(offsetX + (tx * _tileWidth));
+		final float newY = MathUtils.ifloor(offsetY + (ty * _tileHeight));
 		final int color = g.color();
 		final boolean drawImage = (tex != null);
 		if (_drawImageNotColored && drawImage) {
-			g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight));
+			g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth), fixGridSize(_tileHeight));
 		} else {
-			g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight), baseColor);
+			g.fillRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth), fixGridSize(_tileHeight),
+					baseColor);
 			if (drawImage) {
-				g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth), fixGridSize(tileHeight),
+				g.draw(tex, fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth), fixGridSize(_tileHeight),
 						_tempColor.setColor(baseColor));
 			}
 		}
 		if (_drawBorder) {
-			g.drawRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(tileWidth) - 1, fixGridSize(tileHeight) - 1,
+			g.drawRect(fixGridPos(newX), fixGridPos(newY), fixGridSize(_tileWidth) - 1, fixGridSize(_tileHeight) - 1,
 					borderColor);
-			g.drawRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(tileWidth) + 1,
-					fixGridSize(tileHeight) + 1, borderColor);
+			g.drawRect(fixGridPos(newX) - 1, fixGridPos(newY) - 1, fixGridSize(_tileWidth) + 1,
+					fixGridSize(_tileHeight) + 1, borderColor);
 		}
 		g.setColor(color);
 	}
@@ -223,23 +225,23 @@ public class LSelectorIcon extends LComponent {
 
 	private void moveSide() {
 		if (_gridLayout == null) {
-			if (_objectLocation.x < minX) {
-				_objectLocation.x = minX;
+			if (_objectLocation.x < _minX) {
+				_objectLocation.x = _minX;
 			}
-			if (_objectLocation.x > maxX - 1) {
-				_objectLocation.x = maxX - 1;
+			if (_objectLocation.x > _maxX - 1) {
+				_objectLocation.x = _maxX - 1;
 			}
-			if (_objectLocation.y < minY) {
-				_objectLocation.y = minY;
+			if (_objectLocation.y < _minY) {
+				_objectLocation.y = _minY;
 			}
-			if (_objectLocation.y > maxY - 1) {
-				_objectLocation.y = maxY - 1;
+			if (_objectLocation.y > _maxY - 1) {
+				_objectLocation.y = _maxY - 1;
 			}
 		}
 	}
 
 	public LSelectorIcon move(int direction) {
-		_objectLocation.move_multiples(direction, step);
+		_objectLocation.move_multiples(direction, _step);
 		moveSide();
 		return this;
 	}
@@ -260,10 +262,10 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LSelectorIcon setMoveLimit(int minX, int minY, int maxX, int maxY) {
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
+		this._minX = minX;
+		this._minY = minY;
+		this._maxX = maxX;
+		this._maxY = maxY;
 		this.moveSide();
 		return this;
 	}
@@ -297,54 +299,54 @@ public class LSelectorIcon extends LComponent {
 		super.update(elapsedTime);
 		if (_flashAlpha) {
 			if (_increaseAlpha) {
-				if (_iconAlpha + _iconAlphaRate <= maxAlpha)
+				if (_iconAlpha + _iconAlphaRate <= _maxAlpha)
 					_iconAlpha += _iconAlphaRate;
 				else {
-					_iconAlpha = maxAlpha;
+					_iconAlpha = _maxAlpha;
 					_increaseAlpha = false;
 				}
 			} else {
-				if (_iconAlpha - _iconAlphaRate >= minAlpha)
+				if (_iconAlpha - _iconAlphaRate >= _minAlpha)
 					_iconAlpha -= _iconAlphaRate;
 				else {
-					_iconAlpha = minAlpha;
+					_iconAlpha = _minAlpha;
 					_increaseAlpha = true;
 				}
 			}
 		} else {
-			_iconAlpha = (maxAlpha - minAlpha) / 2f;
+			_iconAlpha = (_maxAlpha - _minAlpha) / 2f;
 		}
 	}
 
 	public int getMinX() {
-		return minX;
+		return _minX;
 	}
 
 	public LSelectorIcon setMinX(int minX) {
-		this.minX = minX;
+		this._minX = minX;
 		return this;
 	}
 
 	public int getMinY() {
-		return minY;
+		return _minY;
 	}
 
 	public LSelectorIcon setMinY(int minY) {
-		this.minY = minY;
+		this._minY = minY;
 		return this;
 	}
 
 	public int getMaxX() {
-		return maxX;
+		return _maxX;
 	}
 
 	public LSelectorIcon setMaxX(int maxX) {
-		this.maxX = maxX;
+		this._maxX = maxX;
 		return this;
 	}
 
 	public int getMaxY() {
-		return maxY;
+		return _maxY;
 	}
 
 	public LSelectorIcon setGridLayout(String chars) {
@@ -391,7 +393,7 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LSelectorIcon setMaxY(int maxY) {
-		this.maxY = maxY;
+		this._maxY = maxY;
 		return this;
 	}
 
@@ -490,22 +492,22 @@ public class LSelectorIcon extends LComponent {
 		if (_gridLayout == null) {
 			return super.contains(x, y, w, h);
 		}
-		final float drawCenterX = _gridCenterX == -1 ? ((_gridWidth / 2 + 0.5f) * tileWidth) : _gridCenterX;
-		final float drawCenterY = _gridCenterY == -1 ? ((_gridHeight / 2 + 0.5f) * tileHeight) : _gridCenterY;
+		final float drawCenterX = _gridCenterX == -1 ? ((_gridWidth / 2 + 0.5f) * _tileWidth) : _gridCenterX;
+		final float drawCenterY = _gridCenterY == -1 ? ((_gridHeight / 2 + 0.5f) * _tileHeight) : _gridCenterY;
 		float newX = 0f;
 		float newY = 0f;
 		if (_objectSuper != null) {
 			newX += this._objectSuper.getScreenX();
 			newY += this._objectSuper.getScreenY();
 		}
-		newX += _objectLocation.x * tileWidth - drawCenterX;
-		newY += _objectLocation.y * tileHeight - drawCenterY;
+		newX += _objectLocation.x * _tileWidth - drawCenterX;
+		newY += _objectLocation.y * _tileHeight - drawCenterY;
 		for (int i = 0; i < _gridWidth; i++) {
 			for (int j = 0; j < _gridHeight; j++) {
 				int flag = _gridLayout[j][i];
 				if (flag != LSystem.SPACE) {
-					boolean result = CollisionHelper.intersects(newX + i * tileWidth, newY + j * tileHeight, tileWidth,
-							tileHeight, x, y, w, h);
+					boolean result = CollisionHelper.intersects(newX + i * _tileWidth, newY + j * _tileHeight,
+							_tileWidth, _tileHeight, x, y, w, h);
 					if (result) {
 						return true;
 					}
@@ -551,7 +553,7 @@ public class LSelectorIcon extends LComponent {
 			for (int j = 0; j < _gridHeight; j++) {
 				int flag = _gridLayout[j][i];
 				if (flag != LSystem.SPACE) {
-					RectBox rect = RectBox.at(i * tileWidth, j * tileHeight, tileWidth, tileHeight);
+					RectBox rect = RectBox.at(i * _tileWidth, j * _tileHeight, _tileWidth, _tileHeight);
 					rects.add(rect);
 				}
 			}
@@ -578,15 +580,15 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public LSelectorIcon moveTo(float x, float y) {
-		return moveTo(x, y, tileWidth, tileHeight);
+		return moveTo(x, y, _tileWidth, _tileHeight);
 	}
 
 	public LSelectorIcon moveTo(float x, float y, float w, float h) {
 		float newX = 0f;
 		float newY = 0f;
 		if (_gridLayout == null) {
-			newX = MathUtils.ifloor(x - (w - tileWidth) / 2f);
-			newY = MathUtils.ifloor(y - (h - tileHeight) / 2f);
+			newX = MathUtils.ifloor(x - (w - _tileWidth) / 2f);
+			newY = MathUtils.ifloor(y - (h - _tileHeight) / 2f);
 		} else {
 			newX = MathUtils.ifloor(x + w / 2f);
 			newY = MathUtils.ifloor(y + h / 2f);
@@ -623,15 +625,15 @@ public class LSelectorIcon extends LComponent {
 				? LColor.getARGB(_borderColor.getRed(), _borderColor.getGreen(), _borderColor.getBlue(), newAlpha)
 				: LColor.TRANSPARENT;
 		if (_flashAlpha) {
-			newAlpha = MathUtils.ifloor(MathUtils.limit((maxAlpha - _iconAlpha), minAlpha, maxAlpha));
+			newAlpha = MathUtils.ifloor(MathUtils.limit((_maxAlpha - _iconAlpha), _minAlpha, _maxAlpha));
 		}
 		final int baseColor = LColor.getARGB(_component_baseColor.getRed(), _component_baseColor.getGreen(),
 				_component_baseColor.getBlue(), newAlpha);
 		if (_gridLayout != null) {
 			final float offsetX = x + getOffsetX();
 			final float offsetY = y + getOffsetY();
-			final float drawCenterX = _gridCenterX == -1 ? ((_gridWidth / 2 + 0.5f) * tileWidth) : _gridCenterX;
-			final float drawCenterY = _gridCenterY == -1 ? ((_gridHeight / 2 + 0.5f) * tileHeight) : _gridCenterY;
+			final float drawCenterX = _gridCenterX == -1 ? ((_gridWidth / 2 + 0.5f) * _tileWidth) : _gridCenterX;
+			final float drawCenterY = _gridCenterY == -1 ? ((_gridHeight / 2 + 0.5f) * _tileHeight) : _gridCenterY;
 			final int drawPosX = MathUtils.ifloor(offsetX - drawCenterX);
 			final int drawPosY = MathUtils.ifloor(offsetY - drawCenterY);
 			final IntMap<LTexture> listImages = this._imageCaches;
@@ -681,37 +683,37 @@ public class LSelectorIcon extends LComponent {
 	}
 
 	public int getTileWidth() {
-		return tileWidth;
+		return _tileWidth;
 	}
 
 	public int getTileHeight() {
-		return tileHeight;
+		return _tileHeight;
 	}
 
 	public int getStep() {
-		return step;
+		return _step;
 	}
 
 	public LSelectorIcon setStep(int s) {
-		this.step = s;
+		this._step = s;
 		return this;
 	}
 
 	public int getMinAlpha() {
-		return minAlpha;
+		return _minAlpha;
 	}
 
 	public LSelectorIcon setMinAlpha(int minAlpha) {
-		this.minAlpha = minAlpha;
+		this._minAlpha = minAlpha;
 		return this;
 	}
 
 	public int getMaxAlpha() {
-		return maxAlpha;
+		return _maxAlpha;
 	}
 
 	public LSelectorIcon setMaxAlpha(int maxAlpha) {
-		this.maxAlpha = maxAlpha;
+		this._maxAlpha = maxAlpha;
 		return this;
 	}
 

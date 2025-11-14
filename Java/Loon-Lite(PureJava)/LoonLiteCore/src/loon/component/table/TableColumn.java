@@ -27,95 +27,95 @@ import loon.utils.MathUtils;
 
 public class TableColumn {
 
-	private ICellRenderer cellRenderer;
+	private ICellRenderer _cellRenderer;
 
-	private String name = "---";
+	private String _name = "---";
 
-	private int width = -1;
+	private int _width = -1;
 
-	private float relativeWidth = -1;
+	private float _relativeWidth = -1;
 
-	private Alignment headingAlignment = Alignment.MIDDLE;
+	private Alignment _headingAlignment = Alignment.MIDDLE;
 
-	private Alignment entryAlignment = Alignment.LEFT;
+	private Alignment _entryAlignment = Alignment.LEFT;
 
 	protected TableColumn(String name, IFont font) {
-		this.name = name;
-		this.cellRenderer = new TextCellRenderer(font);
+		this._name = name;
+		this._cellRenderer = new TextCellRenderer(font);
 		setWidth(font.stringWidth(name));
 	}
 
 	protected TableColumn(String name, int width, IFont font) {
-		this.name = name;
-		this.cellRenderer = new TextCellRenderer(font);
+		this._name = name;
+		this._cellRenderer = new TextCellRenderer(font);
 		setWidth(width);
 	}
 
 	protected TableColumn(String name, float relativeWidth, IFont font) {
-		this.name = name;
-		this.cellRenderer = new TextCellRenderer(font);
+		this._name = name;
+		this._cellRenderer = new TextCellRenderer(font);
 		setRelativeWidth(relativeWidth);
 	}
 
 	public String getName() {
-		return name;
+		return _name;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public void setWidth(int width) {
-		this.width = width;
-		this.relativeWidth = -1;
+		this._width = width;
+		this._relativeWidth = -1;
 	}
 
 	public float getRelativeWidth() {
-		return relativeWidth;
+		return _relativeWidth;
 	}
 
 	public void setRelativeWidth(float relativeWidth) {
 		relativeWidth = MathUtils.max(0, MathUtils.min(1, relativeWidth));
-		this.relativeWidth = relativeWidth;
-		this.width = 0;
+		this._relativeWidth = relativeWidth;
+		this._width = 0;
 	}
 
 	public boolean isRelative() {
-		return relativeWidth != -1;
+		return _relativeWidth != -1;
 	}
 
 	public Alignment getHeaderAlignment() {
-		return headingAlignment;
+		return _headingAlignment;
 	}
 
 	public void setHeaderAlignment(Alignment headingAlignment) {
 		if (headingAlignment == null) {
 			return;
 		}
-		this.headingAlignment = headingAlignment;
+		this._headingAlignment = headingAlignment;
 	}
 
 	public Alignment getEntryAlignment() {
-		return entryAlignment;
+		return _entryAlignment;
 	}
 
 	public TableColumn setEntryAlignment(Alignment valueAlignment) {
 		if (valueAlignment == null) {
 			return this;
 		}
-		this.entryAlignment = valueAlignment;
+		this._entryAlignment = valueAlignment;
 		return this;
 	}
 
 	public ICellRenderer getCellRenderer() {
-		return cellRenderer;
+		return _cellRenderer;
 	}
 
 	public TableColumn setCellRenderer(ICellRenderer cellRenderer) {
 		if (cellRenderer == null) {
 			throw new LSysException("cellRenderer == null");
 		}
-		this.cellRenderer = cellRenderer;
+		this._cellRenderer = cellRenderer;
 		return this;
 	}
 

@@ -81,7 +81,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 	private int _scrollBarHeight;
 
 	private int _scrollBarHeight_max;
-	private boolean scrollBarDrag;
+	private boolean _scrollBarDrag;
 
 	private int _scrollButtonWidth = 15;
 	private int _scrollButtonHeight = 15;
@@ -469,7 +469,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 					}
 					this._drawX = (x + 5);
 					this._drawY = (y + 5 + this._loop * fontSize);
-					if (!this.scrollBarDrag) {
+					if (!this._scrollBarDrag) {
 						if ((mouseY > this._drawY + _maxY) && (mouseY <= this._drawY + _maxY + fontSize)
 								&& (mouseX > this._drawX + _maxX) && (mouseX < this._drawX + _maxX + backgroundWidth)) {
 							this._selectList = i;
@@ -529,7 +529,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 					this._scrollBarY = (int) (y + this._scrollButtonHeight + _sizeFillOffset);
 				}
 
-				if (this.scrollBarDrag) {
+				if (this._scrollBarDrag) {
 					if (mouseY < _maxY + this._scrollBarY + this._scrollBarHeight / 3) {
 						for (int i = 0; i < 5; i++) {
 							if (this._scrollList <= 0)
@@ -552,19 +552,19 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 							&& (mouseX <= _maxX + this._scrollBarX + this._scrollButtonWidth)
 							&& (mouseY > _maxY + y + this._scrollButtonHeight)
 							&& (mouseY < _maxY + y + getHeight() - this._scrollButtonHeight)) {
-						this.scrollBarDrag = true;
+						this._scrollBarDrag = true;
 					}
 				} else {
-					this.scrollBarDrag = false;
+					this._scrollBarDrag = false;
 				}
 				this._scrollButtonX = MathUtils.ceil(x + backgroundWidth);
 				this._scrollButtonY = y;
 
 				LColor newColor = null;
 				if (_component_baseColor == null) {
-					newColor = (this.scrollBarDrag ? _scrollBarSelectColor : _listColor);
+					newColor = (this._scrollBarDrag ? _scrollBarSelectColor : _listColor);
 				} else {
-					newColor = (this.scrollBarDrag ? _component_baseColor.mul(_scrollBarSelectColor)
+					newColor = (this._scrollBarDrag ? _component_baseColor.mul(_scrollBarSelectColor)
 							: _component_baseColor.mul(_listColor));
 				}
 
@@ -594,7 +594,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				}
 
 				this._scrollUpButtonON = false;
-				if ((!this.scrollBarDrag) && true && (mouseX > this._scrollButtonX + _maxX)
+				if ((!this._scrollBarDrag) && true && (mouseX > this._scrollButtonX + _maxX)
 						&& (mouseX <= this._scrollButtonX + _maxX + this._scrollButtonWidth)
 						&& (mouseY > _maxY + this._scrollButtonY)
 						&& (mouseY < _maxY + this._scrollButtonY + this._scrollButtonHeight)) {
@@ -607,7 +607,7 @@ public class LTextList extends LComponent implements FontSet<LTextList> {
 				this._scrollButtonY = MathUtils.floor(y + getHeight() - this._scrollButtonHeight);
 				this._scrollDownButtonON = false;
 
-				if ((!this.scrollBarDrag) && (mouseX > _maxX + this._scrollButtonX)
+				if ((!this._scrollBarDrag) && (mouseX > _maxX + this._scrollButtonX)
 						&& (mouseX <= _maxX + this._scrollButtonX + this._scrollButtonWidth)
 						&& (mouseY > _maxY + this._scrollButtonY)
 						&& (mouseY < _maxY + this._scrollButtonY + this._scrollButtonHeight)) {

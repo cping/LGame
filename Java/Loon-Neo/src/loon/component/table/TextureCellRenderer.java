@@ -28,7 +28,18 @@ import loon.opengl.GLEx;
 
 public class TextureCellRenderer implements ICellRenderer {
 
-	private boolean scaleTexture = true;
+	private boolean _scaleTexture = true;
+
+	private LColor _drawColor = LColor.white;
+
+	public TextureCellRenderer setDrawColor(LColor c) {
+		_drawColor = c;
+		return this;
+	}
+
+	public LColor getDrawColor() {
+		return _drawColor;
+	}
 
 	@Override
 	public void paint(GLEx g, Object vl, int x, int y, int width, int height) {
@@ -36,10 +47,10 @@ public class TextureCellRenderer implements ICellRenderer {
 			return;
 		}
 		LTexture textire = (LTexture) vl;
-		if (scaleTexture) {
-			g.draw(textire, x, y, width, height, LColor.white);
+		if (_scaleTexture) {
+			g.draw(textire, x, y, width, height, _drawColor);
 		} else {
-			g.draw(textire, x, y, LColor.white);
+			g.draw(textire, x, y, _drawColor);
 		}
 	}
 
@@ -50,7 +61,7 @@ public class TextureCellRenderer implements ICellRenderer {
 		}
 		LTexture textire = (LTexture) vl;
 		int old = g.getFillColor();
-		if (scaleTexture) {
+		if (_scaleTexture) {
 			g.draw(textire.getImage(), x, y, width, height);
 		} else {
 			g.draw(textire.getImage(), x, y);
@@ -59,7 +70,7 @@ public class TextureCellRenderer implements ICellRenderer {
 	}
 
 	public void setScaleTexture(boolean s) {
-		this.scaleTexture = s;
+		this._scaleTexture = s;
 	}
 
 	@Override

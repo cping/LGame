@@ -60,25 +60,27 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private int _left, _top, _type, _nTop;
 
-	private int sizeFont, doubleSizeFont, tmpOffset, messageLeft, nLeft, messageTop, selectSize, selectFlag;
+	private int _sizeFont, _doubleSizeFont, _tmpOffset;
 
-	private int space;
+	private int _messageLeft, _nLeft, _messageTop, _selectSize, _selectFlag;
 
-	private float autoAlpha;
+	private int _space;
 
-	private LTimer delay;
+	private float _autoAlpha;
 
-	private String[] selects;
+	private LTimer _delay;
 
-	private String message, result;
+	private String[] _selects;
 
-	private LTexture cursor, buoyage;
+	private String _message, _result;
 
-	private boolean isAutoAlpha, isSelect;
+	private LTexture _cursor, _buoyage;
 
-	private boolean clicked;
+	private boolean _isAutoAlpha, _isSelect;
 
-	private ActionKey eventClick = new ActionKey();
+	private boolean _clicked;
+
+	private ActionKey _eventClick = new ActionKey();
 
 	public LSelect(IFont font, int x, int y, int width, int height) {
 		this(font, (LTexture) null, x, y, width, height);
@@ -124,12 +126,12 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this._fontColor = fontColor;
 		this._messageFont = (font == null ? LSystem.getSystemGameFont() : font);
 		this.customRendering = true;
-		this.selectFlag = -1;
-		this.space = 30;
-		this.tmpOffset = -(width / 10);
-		this.delay = new LTimer(150);
-		this.autoAlpha = 0.25F;
-		this.isAutoAlpha = true;
+		this._selectFlag = -1;
+		this._space = 30;
+		this._tmpOffset = -(width / 10);
+		this._delay = new LTimer(150);
+		this._autoAlpha = 0.25F;
+		this._isAutoAlpha = true;
 		this.setCursor(LSystem.getSystemImagePath() + "creese.png");
 		this.setElastic(true);
 		this.setLocked(true);
@@ -148,11 +150,11 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect setMessage(String message, String[] selects) {
-		this.message = message;
-		this.selects = selects;
-		this.selectSize = selects.length;
-		if (doubleSizeFont == 0) {
-			doubleSizeFont = 20;
+		this._message = message;
+		this._selects = selects;
+		this._selectSize = selects.length;
+		if (_doubleSizeFont == 0) {
+			_doubleSizeFont = 20;
 		}
 		if (_messageFont instanceof LFont) {
 			LSTRDictionary.get().bind((LFont) _messageFont, selects);
@@ -179,20 +181,20 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public int getResultIndex() {
-		return selectFlag - 1;
+		return _selectFlag - 1;
 	}
 
 	public LSelect setDelay(long timer) {
-		delay.setDelay(timer);
+		_delay.setDelay(timer);
 		return this;
 	}
 
 	public long getDelay() {
-		return delay.getDelay();
+		return _delay.getDelay();
 	}
 
 	public String getResult() {
-		return result;
+		return _result;
 	}
 
 	@Override
@@ -201,24 +203,24 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (isAutoAlpha && buoyage != null) {
-			if (delay.action(elapsedTime)) {
-				if (autoAlpha < 0.95F) {
-					autoAlpha += 0.05F;
+		if (_isAutoAlpha && _buoyage != null) {
+			if (_delay.action(elapsedTime)) {
+				if (_autoAlpha < 0.95F) {
+					_autoAlpha += 0.05F;
 				} else {
-					autoAlpha = 0.25F;
+					_autoAlpha = 0.25F;
 				}
 			}
 		}
 		if (!isClickUp()) {
-			if (selects != null) {
+			if (_selects != null) {
 				final int touchY = _input.getTouchIntY();
-				selectFlag = selectSize - (((_nTop + space) - (touchY == 0 ? 1 : touchY)) / doubleSizeFont);
-				if (selectFlag < 1) {
-					selectFlag = 0;
+				_selectFlag = _selectSize - (((_nTop + _space) - (touchY == 0 ? 1 : touchY)) / _doubleSizeFont);
+				if (_selectFlag < 1) {
+					_selectFlag = 0;
 				}
-				if (selectFlag > selectSize) {
-					selectFlag = selectSize;
+				if (_selectFlag > _selectSize) {
+					_selectFlag = _selectSize;
 				}
 			}
 		}
@@ -230,33 +232,34 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 			return;
 		}
 		final int oldColor = g.color();
-		sizeFont = _messageFont.getSize();
-		doubleSizeFont = sizeFont * 2;
-		if (doubleSizeFont == 0) {
-			doubleSizeFont = 20;
+		_sizeFont = _messageFont.getSize();
+		_doubleSizeFont = _sizeFont * 2;
+		if (_doubleSizeFont == 0) {
+			_doubleSizeFont = 20;
 		}
-		messageLeft = (x + doubleSizeFont + sizeFont / 2) + tmpOffset + _left + doubleSizeFont;
-		if (message != null) {
-			messageTop = y + doubleSizeFont + _top - 10;
-			_messageFont.drawString(g, message, messageLeft, messageTop - _messageFont.getAscent(), _fontColor);
+		_messageLeft = (x + _doubleSizeFont + _sizeFont / 2) + _tmpOffset + _left + _doubleSizeFont;
+		if (_message != null) {
+			_messageTop = y + _doubleSizeFont + _top - 10;
+			_messageFont.drawString(g, _message, _messageLeft, _messageTop - _messageFont.getAscent(), _fontColor);
 		} else {
-			messageTop = y + _top;
+			_messageTop = y + _top;
 		}
-		_nTop = messageTop;
-		if (selects != null) {
-			nLeft = messageLeft - sizeFont / 4;
-			for (int i = 0; i < selects.length; i++) {
-				_nTop += space;
+		_nTop = _messageTop;
+		if (_selects != null) {
+			_nLeft = _messageLeft - _sizeFont / 4;
+			for (int i = 0; i < _selects.length; i++) {
+				_nTop += _space;
 				_type = i + 1;
-				isSelect = (_type == (selectFlag > 0 ? selectFlag : 1));
-				if ((buoyage != null) && isSelect) {
-					g.setAlpha(autoAlpha);
-					g.draw(buoyage, nLeft, _nTop - MathUtils.iceil(buoyage.getHeight() / 1.5f), _component_baseColor);
+				_isSelect = (_type == (_selectFlag > 0 ? _selectFlag : 1));
+				if ((_buoyage != null) && _isSelect) {
+					g.setAlpha(_autoAlpha);
+					g.draw(_buoyage, _nLeft, _nTop - MathUtils.iceil(_buoyage.getHeight() / 1.5f),
+							_component_baseColor);
 					g.setAlpha(1F);
 				}
-				_messageFont.drawString(g, selects[i], messageLeft, _nTop - _messageFont.getAscent(), _fontColor);
-				if ((cursor != null) && isSelect) {
-					g.draw(cursor, nLeft, _nTop - cursor.getHeight() / 2, _cursorColor);
+				_messageFont.drawString(g, _selects[i], _messageLeft, _nTop - _messageFont.getAscent(), _fontColor);
+				if ((_cursor != null) && _isSelect) {
+					g.draw(_cursor, _nLeft, _nTop - _cursor.getHeight() / 2, _cursorColor);
 				}
 
 			}
@@ -274,27 +277,27 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public boolean isClick() {
-		return clicked;
+		return _clicked;
 	}
 
 	@Override
 	protected void processTouchPressed() {
-		if (!eventClick.isPressed()) {
-			this.clicked = false;
+		if (!_eventClick.isPressed()) {
+			this._clicked = false;
 			super.processTouchPressed();
-			eventClick.press();
+			_eventClick.press();
 		}
 	}
 
 	@Override
 	protected void processTouchReleased() {
-		if (eventClick.isPressed()) {
-			this.clicked = true;
-			if ((this.selects != null) && (this.selectFlag > 0)) {
-				this.result = this.selects[selectFlag - 1];
+		if (_eventClick.isPressed()) {
+			this._clicked = true;
+			if ((this._selects != null) && (this._selectFlag > 0)) {
+				this._result = this._selects[_selectFlag - 1];
 			}
 			super.processTouchReleased();
-			eventClick.release();
+			_eventClick.release();
 		}
 	}
 
@@ -302,7 +305,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	protected void processKeyPressed() {
 		super.processKeyPressed();
 		if (this.isSelected() && this.isKeyDown(SysKey.ENTER)) {
-			this.clicked = true;
+			this._clicked = true;
 		}
 	}
 
@@ -336,16 +339,16 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LTexture getCursor() {
-		return cursor;
+		return _cursor;
 	}
 
 	public LSelect setNotCursor() {
-		this.cursor = null;
+		this._cursor = null;
 		return this;
 	}
 
 	public LSelect setCursor(LTexture cursor) {
-		this.cursor = cursor;
+		this._cursor = cursor;
 		return this;
 	}
 
@@ -355,16 +358,16 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LTexture getBuoyage() {
-		return buoyage;
+		return _buoyage;
 	}
 
 	public LSelect setNotBuoyage() {
-		this.cursor = null;
+		this._cursor = null;
 		return this;
 	}
 
 	public LSelect setBuoyage(LTexture buoyage) {
-		this.buoyage = buoyage;
+		this._buoyage = buoyage;
 		return this;
 	}
 
@@ -374,20 +377,20 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public boolean isFlashBuoyage() {
-		return isAutoAlpha;
+		return _isAutoAlpha;
 	}
 
 	public LSelect setFlashBuoyage(boolean flashBuoyage) {
-		this.isAutoAlpha = flashBuoyage;
+		this._isAutoAlpha = flashBuoyage;
 		return this;
 	}
 
 	public int getSpace() {
-		return space;
+		return _space;
 	}
 
 	public LSelect setSpace(int space) {
-		this.space = space;
+		this._space = space;
 		return this;
 	}
 

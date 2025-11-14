@@ -36,8 +36,8 @@ import loon.utils.MathUtils;
 public class LScrollContainer extends LContainer {
 
 	public static LScrollContainer createVerticalScrollContainer(LComponent comp, float x, float y, float h) {
-		int newX = MathUtils.ifloor(x);
-		int newY = MathUtils.ifloor(y);
+		final int newX = MathUtils.ifloor(x);
+		final int newY = MathUtils.ifloor(y);
 		int newW = comp == null ? 18 : comp.width();
 		int newH = MathUtils.ifloor(h);
 		LScrollContainer container = null;
@@ -58,8 +58,8 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public static LScrollContainer createHorizontalScrollContainer(LComponent comp, float x, float y, float w) {
-		int newX = MathUtils.ifloor(x);
-		int newY = MathUtils.ifloor(y);
+		final int newX = MathUtils.ifloor(x);
+		final int newY = MathUtils.ifloor(y);
 		int newW = MathUtils.ifloor(w);
 		int newH = comp == null ? 18 : comp.height();
 		LScrollContainer container = null;
@@ -109,13 +109,13 @@ public class LScrollContainer extends LContainer {
 
 	private LScrollBar _horizontalScrollbar;
 
-	private boolean allowHorizontalScroll = true;
+	private boolean _allowHorizontalScroll = true;
 
-	private boolean allowVerticalScrollbar = true;
+	private boolean _allowVerticalScrollbar = true;
 
-	private boolean accumulate = false;
+	private boolean _accumulate = false;
 
-	public boolean showScroll = true;
+	public boolean _showScroll = true;
 
 	public LScrollContainer(int x, int y, int w, int h) {
 		this(SkinManager.get().getMessageSkin().getBackgroundTexture(), x, y, w, h);
@@ -165,7 +165,7 @@ public class LScrollContainer extends LContainer {
 				g.translate(-_boxScrollX, -_boxScrollY);
 				super.createUI(g);
 				g.translate(_boxScrollX, _boxScrollY);
-				if (showScroll) {
+				if (_showScroll) {
 					if (_verticalScrollbar != null) {
 						_verticalScrollbar.paint(g);
 					}
@@ -244,7 +244,7 @@ public class LScrollContainer extends LContainer {
 			return this;
 		}
 		validatePosition();
-		if (accumulate) {
+		if (_accumulate) {
 			_boxScrollX += MathUtils.max(0f, newScrollX);
 		} else {
 			_boxScrollX = MathUtils.max(0f, newScrollX);
@@ -262,7 +262,7 @@ public class LScrollContainer extends LContainer {
 			return this;
 		}
 		validatePosition();
-		if (accumulate) {
+		if (_accumulate) {
 			_boxScrollY += MathUtils.max(0f, newScrollY);
 		} else {
 			_boxScrollY = MathUtils.max(0f, newScrollY);
@@ -418,7 +418,7 @@ public class LScrollContainer extends LContainer {
 	}
 
 	private void checkIfScrollbarIsNecessary() {
-		if (allowHorizontalScroll) {
+		if (_allowHorizontalScroll) {
 			int maxX = getInnerWidth();
 			if (maxX > getWidth()) {
 				if (_horizontalScrollbar != null) {
@@ -437,7 +437,7 @@ public class LScrollContainer extends LContainer {
 		} else {
 			_horizontalScrollbar = null;
 		}
-		if (allowVerticalScrollbar) {
+		if (_allowVerticalScrollbar) {
 			int maxY = getInnerHeight();
 			if (maxY > getHeight()) {
 				if (_verticalScrollbar != null) {
@@ -604,38 +604,38 @@ public class LScrollContainer extends LContainer {
 	}
 
 	public boolean isAccumulate() {
-		return accumulate;
+		return _accumulate;
 	}
 
 	public LScrollContainer setAccumulate(boolean accumulate) {
-		this.accumulate = accumulate;
+		this._accumulate = accumulate;
 		return this;
 	}
 
 	public boolean isShowScroll() {
-		return showScroll;
+		return _showScroll;
 	}
 
 	public LScrollContainer setShowScroll(boolean showScroll) {
-		this.showScroll = showScroll;
+		this._showScroll = showScroll;
 		return this;
 	}
 
 	public boolean isAllowHorizontalScroll() {
-		return allowHorizontalScroll;
+		return _allowHorizontalScroll;
 	}
 
 	public LScrollContainer setAllowHorizontalScroll(boolean a) {
-		this.allowHorizontalScroll = a;
+		this._allowHorizontalScroll = a;
 		return this;
 	}
 
 	public boolean isAllowVerticalScrollbar() {
-		return allowVerticalScrollbar;
+		return _allowVerticalScrollbar;
 	}
 
 	public LScrollContainer setAllowVerticalScrollbar(boolean a) {
-		this.allowVerticalScrollbar = a;
+		this._allowVerticalScrollbar = a;
 		return this;
 	}
 

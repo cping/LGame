@@ -58,25 +58,25 @@ public class LScrollBar extends LComponent {
 
 	protected float _maxAutoScrollX, _maxAutoScrollY;
 
-	protected int orientation;
+	protected int _orientation;
 
-	protected int sliderX, sliderY;
+	protected int _sliderX, _sliderY;
 
-	protected int sliderWidth, sliderHeight;
+	protected int _sliderWidth, _sliderHeight;
 
-	protected int relativeClickX, relativeClickY;
+	protected int _relativeClickX, _relativeClickY;
 
-	private LTexture scrollBar;
+	private LTexture _scrollBar;
 
-	private LTexture slider;
+	private LTexture _slider;
 
-	protected LColor scrollBarColor = LColor.white.darker();
+	protected LColor _scrollBarColor = LColor.white.darker();
 
-	protected LColor sliderColor = LColor.black.darker();
+	protected LColor _sliderColor = LColor.black.darker();
 
-	protected int sliderMargin = 3;
+	protected int _sliderMargin = 3;
 
-	protected float offsetX, offsetY;
+	protected float _offsetX, _offsetY;
 
 	public LScrollBar(int orientation) {
 		this(orientation, 0, 0, 150, 30);
@@ -101,9 +101,9 @@ public class LScrollBar extends LComponent {
 		this._scrollAmountTimer = 0f;
 		this._minAutoScrollX = _minAutoScrollY = -1f;
 		this._maxAutoScrollX = _maxAutoScrollY = -1f;
-		this.orientation = orientation;
-		this.scrollBar = a;
-		this.slider = b;
+		this._orientation = orientation;
+		this._scrollBar = a;
+		this._slider = b;
 		freeRes().add(a, b);
 	}
 
@@ -270,66 +270,66 @@ public class LScrollBar extends LComponent {
 	}
 
 	public int getOrientation() {
-		return orientation;
+		return _orientation;
 	}
 
 	public int getSliderWidth() {
-		return sliderWidth;
+		return _sliderWidth;
 	}
 
 	protected void setSliderWidth(int sliderWidth) {
-		this.sliderWidth = sliderWidth;
+		this._sliderWidth = sliderWidth;
 	}
 
 	public int getSliderHeight() {
-		return sliderHeight;
+		return _sliderHeight;
 	}
 
 	public LScrollBar setSliderHeight(int sliderHeight) {
-		this.sliderHeight = sliderHeight;
+		this._sliderHeight = sliderHeight;
 		return this;
 	}
 
 	public int getSliderX() {
-		return sliderX;
+		return _sliderX;
 	}
 
 	protected void setSliderX(int sliderX) {
-		this.sliderX = sliderX;
+		this._sliderX = sliderX;
 	}
 
 	public int getSliderY() {
-		return sliderY;
+		return _sliderY;
 	}
 
 	protected void setSliderY(int sliderY) {
-		this.sliderY = sliderY;
+		this._sliderY = sliderY;
 	}
 
 	public LColor getScrollBarColor() {
-		return scrollBarColor.cpy();
+		return _scrollBarColor.cpy();
 	}
 
 	public LScrollBar setScrollBarColor(LColor scrollBarColor) {
-		this.scrollBarColor = scrollBarColor;
+		this._scrollBarColor = scrollBarColor;
 		return this;
 	}
 
 	public LColor getSliderColor() {
-		return sliderColor.cpy();
+		return _sliderColor.cpy();
 	}
 
 	public LScrollBar setSliderColor(LColor sliderColor) {
-		this.sliderColor = sliderColor;
+		this._sliderColor = sliderColor;
 		return this;
 	}
 
 	public int getSliderMargin() {
-		return sliderMargin;
+		return _sliderMargin;
 	}
 
 	public LScrollBar setSliderMargin(int sliderMargin) {
-		this.sliderMargin = sliderMargin;
+		this._sliderMargin = sliderMargin;
 		return this;
 	}
 
@@ -367,8 +367,8 @@ public class LScrollBar extends LComponent {
 
 	public boolean touchDown(float screenX, float screenY) {
 		if (_scrollContainer != null && !_scrolling) {
-			relativeClickX = MathUtils.floor(screenX - (getX() + getSliderX() + _scrollContainer.getX()));
-			relativeClickY = MathUtils.floor(screenY - (getY() + getSliderY() + _scrollContainer.getY()));
+			_relativeClickX = MathUtils.floor(screenX - (getX() + getSliderX() + _scrollContainer.getX()));
+			_relativeClickY = MathUtils.floor(screenY - (getY() + getSliderY() + _scrollContainer.getY()));
 			setScroll(true);
 			return true;
 		}
@@ -377,8 +377,8 @@ public class LScrollBar extends LComponent {
 
 	public boolean touchUp(float screenX, float screenY) {
 		if (_scrollContainer != null && _scrolling) {
-			relativeClickX = MathUtils.floor(screenX);
-			relativeClickY = MathUtils.floor(screenY);
+			_relativeClickX = MathUtils.floor(screenX);
+			_relativeClickY = MathUtils.floor(screenY);
 			setScroll(false);
 			return true;
 		}
@@ -389,8 +389,8 @@ public class LScrollBar extends LComponent {
 		if (_scrollContainer != null && _scrolling) {
 			int rClickX = MathUtils.floor(screenX - (getX() + _scrollContainer.getX()));
 			int rClickY = MathUtils.floor(screenY - (getY() + _scrollContainer.getY()));
-			rClickX -= relativeClickX;
-			rClickY -= relativeClickY;
+			rClickX -= _relativeClickX;
+			rClickY -= _relativeClickY;
 			moveSlider(rClickX, rClickY);
 			setScroll(true);
 			return true;
@@ -399,7 +399,7 @@ public class LScrollBar extends LComponent {
 	}
 
 	protected void moveSlider(int dX, int dY) {
-		if (orientation == LEFT || orientation == RIGHT) {
+		if (_orientation == LEFT || _orientation == RIGHT) {
 			moveVerticalSlider(dY);
 		} else {
 			moveHorizontalSlider(dX);
@@ -516,7 +516,7 @@ public class LScrollBar extends LComponent {
 			_autoScrollX += _velocityX * alpha * delta;
 			_autoScrollY += _velocityY * alpha * delta;
 			moveSlider(MathUtils.floor(_autoScrollX), MathUtils.floor(_autoScrollY));
-			switch (orientation) {
+			switch (_orientation) {
 			case TOP:
 			case BOTTOM:
 				if (_autoScrollX <= _minAutoScrollX) {
@@ -589,12 +589,13 @@ public class LScrollBar extends LComponent {
 		if (!_component_visible) {
 			return;
 		}
-		if (scrollBar == null || slider == null) {
-			g.fillRect(x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, scrollBarColor);
-			g.fillRect(sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight, sliderColor);
+		if (_scrollBar == null || _slider == null) {
+			g.fillRect(x - 1 + _offsetX, y - 1 + _offsetY, getWidth() + 2, getHeight() + 2, _scrollBarColor);
+			g.fillRect(_sliderX - 1 + _offsetX, _sliderY - 1 + _offsetY, _sliderWidth, _sliderHeight, _sliderColor);
 		} else {
-			g.draw(scrollBar, x - 1 + offsetX, y - 1 + offsetY, getWidth() + 2, getHeight() + 2, _component_baseColor);
-			g.draw(slider, sliderX - 1 + offsetX, sliderY - 1 + offsetY, sliderWidth, sliderHeight,
+			g.draw(_scrollBar, x - 1 + _offsetX, y - 1 + _offsetY, getWidth() + 2, getHeight() + 2,
+					_component_baseColor);
+			g.draw(_slider, _sliderX - 1 + _offsetX, _sliderY - 1 + _offsetY, _sliderWidth, _sliderHeight,
 					_component_baseColor);
 		}
 	}
@@ -604,20 +605,20 @@ public class LScrollBar extends LComponent {
 	}
 
 	public float getBoxOffsetX() {
-		return offsetX;
+		return _offsetX;
 	}
 
 	public LScrollBar setBoxOffsetX(float offsetX) {
-		this.offsetX = offsetX;
+		this._offsetX = offsetX;
 		return this;
 	}
 
 	public float getBoxOffsetY() {
-		return offsetY;
+		return _offsetY;
 	}
 
 	public LScrollBar setBoxOffsetY(float offsetY) {
-		this.offsetY = offsetY;
+		this._offsetY = offsetY;
 		return this;
 	}
 

@@ -31,6 +31,7 @@ import loon.font.IFont;
 import loon.geom.RectBox;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.timer.LTimer;
 
 /**
@@ -88,6 +89,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	}
 
 	public static LToast makeText(IFont f, LComponent owner, String text, int d, Style style) {
+		if (StringUtils.isEmpty(text)) {
+			text = LSystem.UNKNOWN;
+		}
 		LToast toast = null;
 		if (owner != null) {
 			if (owner instanceof LToast) {
@@ -160,6 +164,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 	public LToast(IFont font, LTexture bg, LColor fontColor, String text, int d, int x, int y, int width, int height) {
 		super(x, y, width, height);
 		this.onlyBackground(bg);
+		if (StringUtils.isEmpty(text)) {
+			text = LSystem.UNKNOWN;
+		}
 		this._component_baseColor = fontColor;
 		this._displayType = ISprite.TYPE_FADE_IN;
 		this._objectAlpha = 0f;

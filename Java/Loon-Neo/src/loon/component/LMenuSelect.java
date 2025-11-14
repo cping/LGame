@@ -119,17 +119,17 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	private String _result = null;
 
-	private LColor selectRectColor;
+	private LColor _selectRectColor;
 
-	private LColor fontColor;
+	private LColor _fontColor;
 
-	private LColor selectedFillColor;
+	private LColor _selectedFillColor;
 
-	private LColor selectBackgroundColor;
+	private LColor _selectBackgroundColor;
 
-	private LColor selectFlagColor;
+	private LColor _selectFlagColor;
 
-	private LTimer colorUpdate;
+	private LTimer _colorUpdate;
 
 	public static LMenuSelect make(String labels) {
 		return new LMenuSelect(labels, 0, 0);
@@ -185,12 +185,12 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	public LMenuSelect(IFont font, LColor fontColor, String[] labels, LTexture bg, float x, float y) {
 		this(MathUtils.ifloor(x), MathUtils.ifloor(y), 1, 1);
-		this.selectRectColor = LColor.white;
-		this.selectedFillColor = LColor.blue;
-		this.selectBackgroundColor = LColor.blue.darker();
-		this.selectFlagColor = LColor.orange;
-		this.fontColor = fontColor;
-		this.colorUpdate = new LTimer(LSystem.SECOND * 2);
+		this._selectRectColor = LColor.white;
+		this._selectedFillColor = LColor.blue;
+		this._selectBackgroundColor = LColor.blue.darker();
+		this._selectFlagColor = LColor.orange;
+		this._fontColor = fontColor;
+		this._colorUpdate = new LTimer(LSystem.SECOND * 2);
 		this._flag_text_space = 10;
 		this._showRect = false;
 		this._showBackground = true;
@@ -323,7 +323,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 		if (!isVisible()) {
 			return;
 		}
-		IFont tmp = g.getFont();
+		final IFont tmp = g.getFont();
 		g.setFont(_font);
 		if (_showBackground && _background != null) {
 			if (_selectRects != null && _selectRects.length > 0) {
@@ -335,7 +335,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			if (_selectRects != null && _selectRects.length > 0) {
 				RectF rect = _selectRects[0];
 				g.fillRect(x + rect.x - _flag_text_space, y + rect.y - _flag_text_space, getWidth(), getHeight(),
-						selectBackgroundColor.setAlpha(0.5f));
+						_selectBackgroundColor.setAlpha(0.5f));
 			}
 		}
 		if (_labels != null) {
@@ -350,17 +350,17 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 						g.drawString(_labels[i],
 								_offsetFont.x + x + rect.x + (rect.width - _font.stringWidth(_labels[i])) / 2,
 								_offsetFont.y + y + rect.y + (rect.height - _font.stringHeight(_labels[i])) / 4,
-								fontColor);
+								_fontColor);
 					} else {
 						g.drawString(_labels[i],
 								_offsetFont.x + x + rect.x + (rect.width - _font.stringWidth(_labels[i])) / 2
 										+ _flagWidth,
 								_offsetFont.y + y + rect.y + (rect.height - _font.stringHeight(_labels[i])) / 4,
-								fontColor);
+								_fontColor);
 						if (_selected == i) {
 							if (_flag_image == null) {
 								g.drawString(_flag, _offsetFont.x + x + rect.x + _flagWidth / 2,
-										_offsetFont.y + y + rect.y + _flagHeight / 8, selectFlagColor);
+										_offsetFont.y + y + rect.y + _flagHeight / 8, _selectFlagColor);
 							} else {
 								g.draw(_flag_image, _offsetFont.x + x + rect.x + _flagWidth / 2,
 										_offsetFont.y + y + rect.y + _flagHeight / 8);
@@ -368,7 +368,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 						}
 					}
 					if (_showRect) {
-						g.drawRect(x + rect.x, y + rect.y, rect.width, rect.height, selectRectColor);
+						g.drawRect(x + rect.x, y + rect.y, rect.width, rect.height, _selectRectColor);
 					}
 				}
 			}
@@ -377,9 +377,9 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	protected void drawSelectedFill(GLEx g, float x, float y, float width, float height) {
-		int color = g.color();
-		g.setColor(selectedFillColor.getRed(), selectedFillColor.getGreen(), selectedFillColor.getBlue(),
-				(int) (155 * MathUtils.max(0.5f, colorUpdate.getPercentage())));
+		final int color = g.color();
+		g.setColor(_selectedFillColor.getRed(), _selectedFillColor.getGreen(), _selectedFillColor.getBlue(),
+				MathUtils.iceil(155 * MathUtils.max(0.5f, _colorUpdate.getPercentage())));
 		g.fillRect(x, y - 2, width, height);
 		g.drawRect(x, y - 2, width - 2, height - 2);
 		g.setColor(color);
@@ -392,7 +392,7 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			return;
 		}
 		super.update(elapsedTime);
-		if (SysTouch.isDown() || SysTouch.isDrag() || SysTouch.isMove()) {
+		if ((SysTouch.isDown() || SysTouch.isDrag() || SysTouch.isMove()) || _input.isMoving()) {
 			if (_selectRects != null) {
 				for (int i = 0; i < _selectRects.length; i++) {
 					RectF touched = _selectRects[i];
@@ -403,8 +403,8 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 			}
 		}
 
-		if (colorUpdate.action(elapsedTime)) {
-			colorUpdate.refresh();
+		if (_colorUpdate.action(elapsedTime)) {
+			_colorUpdate.refresh();
 		}
 		if (_focused) {
 			_pressed = true;
@@ -579,12 +579,12 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LColor getSelectRectColor() {
-		return selectRectColor.cpy();
+		return _selectRectColor.cpy();
 	}
 
 	public LMenuSelect setSelectRectColor(LColor c) {
 		this.setShowRect(true);
-		this.selectRectColor = c;
+		this._selectRectColor = c;
 		return this;
 	}
 
@@ -598,16 +598,16 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LColor getSelectedFillColor() {
-		return selectedFillColor.cpy();
+		return _selectedFillColor.cpy();
 	}
 
 	public LMenuSelect setSelectedFillColor(LColor s) {
-		this.selectedFillColor = s;
+		this._selectedFillColor = s;
 		return this;
 	}
 
 	public LTimer getColorUpdateTimer() {
-		return colorUpdate;
+		return _colorUpdate;
 	}
 
 	public CallFunction getFunction() {
@@ -625,12 +625,12 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 
 	@Override
 	public LColor getFontColor() {
-		return fontColor.cpy();
+		return _fontColor.cpy();
 	}
 
 	@Override
 	public LMenuSelect setFontColor(LColor fc) {
-		this.fontColor = fc;
+		this._fontColor = fc;
 		return this;
 	}
 
@@ -664,19 +664,19 @@ public class LMenuSelect extends LComponent implements FontSet<LMenuSelect> {
 	}
 
 	public LColor getSelectBackgroundColor() {
-		return selectBackgroundColor.cpy();
+		return _selectBackgroundColor.cpy();
 	}
 
 	public void setSelectBackgroundColor(LColor s) {
-		this.selectBackgroundColor = new LColor(s);
+		this._selectBackgroundColor = new LColor(s);
 	}
 
 	public LColor getSelectFlagColor() {
-		return selectFlagColor.cpy();
+		return _selectFlagColor.cpy();
 	}
 
 	public LMenuSelect setSelectFlagColor(LColor s) {
-		this.selectFlagColor = new LColor(s);
+		this._selectFlagColor = new LColor(s);
 		return this;
 	}
 

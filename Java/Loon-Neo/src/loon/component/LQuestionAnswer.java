@@ -229,11 +229,11 @@ public class LQuestionAnswer extends LContainer {
 
 	private boolean _dirty = false;
 
-	private boolean questionAdded;
+	private boolean _questionAdded;
 
-	private boolean questionSubed;
+	private boolean _questionSubed;
 
-	private boolean autoNext;
+	private boolean _autoNext;
 
 	public LQuestionAnswer(int x, int y, int w, int h) {
 		this(LColor.orange, x, y, w, h);
@@ -478,16 +478,16 @@ public class LQuestionAnswer extends LContainer {
 		super.update(elapsedTime);
 
 		final boolean freeTouched = SysTouch.isUp();
-		if (questionAdded && questionSubed) {
-			questionAdded = questionSubed = false;
+		if (_questionAdded && _questionSubed) {
+			_questionAdded = _questionSubed = false;
 		}
-		if (questionAdded && freeTouched) {
+		if (_questionAdded && freeTouched) {
 			_questionIndex++;
-			questionAdded = false;
+			_questionAdded = false;
 		}
-		if (questionSubed && freeTouched) {
+		if (_questionSubed && freeTouched) {
 			_questionIndex--;
-			questionSubed = false;
+			_questionSubed = false;
 		}
 		if (_focused) {
 			_pressed = true;
@@ -506,14 +506,14 @@ public class LQuestionAnswer extends LContainer {
 
 	public LQuestionAnswer nextQuestion() {
 		if (_questionIndex < _objects.size - 1) {
-			questionAdded = true;
+			_questionAdded = true;
 		}
 		return this;
 	}
 
 	public LQuestionAnswer backQuestion() {
 		if (_questionIndex > 0) {
-			questionSubed = true;
+			_questionSubed = true;
 		}
 		return this;
 	}
@@ -566,7 +566,7 @@ public class LQuestionAnswer extends LContainer {
 				if (_clickEvent != null) {
 					_clickEvent.onSelected(this._questionIndex, idx);
 				}
-				if (this.autoNext && !this._allowMultiChoice) {
+				if (this._autoNext && !this._allowMultiChoice) {
 					nextQuestion();
 				}
 			} else if (_clickEvent != null) {
@@ -786,11 +786,11 @@ public class LQuestionAnswer extends LContainer {
 	}
 
 	public boolean isAutoNext() {
-		return autoNext;
+		return _autoNext;
 	}
 
 	public LQuestionAnswer setAutoNext(boolean a) {
-		this.autoNext = a;
+		this._autoNext = a;
 		return this;
 	}
 

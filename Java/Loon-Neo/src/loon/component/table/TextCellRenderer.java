@@ -31,56 +31,56 @@ import loon.opengl.GLEx;
 
 public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer> {
 
-	private IFont font;
-	private LColor textColor = LColor.white;
-	private Alignment alignment = Alignment.LEFT;
+	private IFont _font;
+	private LColor _textColor = LColor.white;
+	private Alignment _alignment = Alignment.LEFT;
 
 	public TextCellRenderer(IFont font) {
-		this.font = font;
+		this._font = font;
 	}
 
 	@Override
 	public void paint(GLEx g, Object vl, int x, int y, int width, int height) {
 		if (vl instanceof BindIcon) {
-			int size = font.getHeight() - 4;
+			int size = _font.getHeight() - 4;
 			BindIcon icon = (BindIcon) vl;
 			String s = icon.name;
-			s = font.confineLength(s, width - size - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
+			s = _font.confineLength(s, width - size - 4);
+			int entryOffset = 4 + _alignment.alignX(width - 4, _font.stringWidth(s));
 			if (icon.texture != null) {
-				g.draw(icon.texture, x + 4, y + (font.getHeight() - size) / 2, size, size);
-				font.drawString(g, s, x + size + entryOffset + 4, y - 4, textColor);
+				g.draw(icon.texture, x + 4, y + (_font.getHeight() - size) / 2, size, size);
+				_font.drawString(g, s, x + size + entryOffset + 4, y - 4, _textColor);
 			} else {
-				font.drawString(g, s, x + entryOffset, y - 4, textColor);
+				_font.drawString(g, s, x + entryOffset, y - 4, _textColor);
 			}
 		} else {
 			String s = vl.toString();
-			s = font.confineLength(s, width - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
-			font.drawString(g, s, x + entryOffset, y - 4, textColor);
+			s = _font.confineLength(s, width - 4);
+			int entryOffset = 4 + _alignment.alignX(width - 4, _font.stringWidth(s));
+			_font.drawString(g, s, x + entryOffset, y - 4, _textColor);
 		}
 	}
 
 	public void paint(Canvas g, Object vl, int x, int y, int width, int height) {
 		int old = g.getFillColor();
 		if (vl instanceof BindIcon) {
-			int size = font.getHeight() - 4;
+			int size = _font.getHeight() - 4;
 			BindIcon icon = (BindIcon) vl;
 			String s = icon.name;
-			s = font.confineLength(s, width - size - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
-			g.setColor(textColor);
+			s = _font.confineLength(s, width - size - 4);
+			int entryOffset = 4 + _alignment.alignX(width - 4, _font.stringWidth(s));
+			g.setColor(_textColor);
 			if (icon.texture != null) {
-				g.draw(icon.texture.getImage(), x + 4, y + (font.getHeight() - size) / 2, size, size);
+				g.draw(icon.texture.getImage(), x + 4, y + (_font.getHeight() - size) / 2, size, size);
 				g.drawText(s, x + size + entryOffset + 4, y - 4);
 			} else {
 				g.drawText(s, x + entryOffset, y - 4);
 			}
 		} else {
 			String s = vl.toString();
-			s = font.confineLength(s, width - 4);
-			int entryOffset = 4 + alignment.alignX(width - 4, font.stringWidth(s));
-			g.setColor(textColor);
+			s = _font.confineLength(s, width - 4);
+			int entryOffset = 4 + _alignment.alignX(width - 4, _font.stringWidth(s));
+			g.setColor(_textColor);
 			g.drawText(s, x + entryOffset, y - 4);
 		}
 		g.setFillColor(old);
@@ -88,13 +88,13 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 
 	@Override
 	public TextCellRenderer setFont(IFont font) {
-		this.font = font;
+		this._font = font;
 		return this;
 	}
 
 	@Override
 	public IFont getFont() {
-		return this.font;
+		return this._font;
 	}
 
 	public TextCellRenderer setTextColor(LColor textColor) {
@@ -106,18 +106,18 @@ public class TextCellRenderer implements ICellRenderer, FontSet<TextCellRenderer
 			return null;
 		}
 		String s = vl.toString();
-		return new Dimension(font.stringWidth(s), font.getHeight());
+		return new Dimension(_font.stringWidth(s), _font.getHeight());
 	}
 
 	@Override
 	public TextCellRenderer setFontColor(LColor color) {
-		this.textColor = color;
+		this._textColor = color;
 		return this;
 	}
 
 	@Override
 	public LColor getFontColor() {
-		return textColor.cpy();
+		return _textColor.cpy();
 	}
 
 }

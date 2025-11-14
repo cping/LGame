@@ -22,11 +22,12 @@ package loon.component.table;
 
 import loon.component.LComponent;
 import loon.opengl.GLEx;
+import loon.utils.MathUtils;
 import loon.utils.TArray;
 
 public class TableLayoutRow {
 
-	private TArray<TableColumnLayout> _tempColumns;
+	private TArray<TableColumnLayout> _temp_columns;
 
 	private int _x;
 
@@ -36,7 +37,7 @@ public class TableLayoutRow {
 
 	private int _height;
 
-	private TableColumnLayout[] columns;
+	private TableColumnLayout[] _columns;
 
 	public TableLayoutRow(int x, int y, int width, int height) {
 		this._x = x;
@@ -47,8 +48,8 @@ public class TableLayoutRow {
 
 	public TableLayoutRow(int x, int y, int width, int height, int columns) {
 		this(x, y, width, height);
-		this.columns = new TableColumnLayout[columns];
-		initColumns();
+		this._columns = new TableColumnLayout[columns];
+		init_columns();
 	}
 
 	public int getX() {
@@ -73,11 +74,11 @@ public class TableLayoutRow {
 
 	public boolean setWidth(int width) {
 		if (width > getWidth()) {
-			float newWidthDif = (float) (width - getWidth()) / columns.length;
-			for (int i = 0; i < columns.length; i++) {
-				columns[i].setWidth(columns[i].getWidthf() + newWidthDif);
+			final int newWidthDif = MathUtils.ceil(width - getWidth()) / _columns.length;
+			for (int i = 0; i < _columns.length; i++) {
+				_columns[i].setWidth(_columns[i].getWidth() + newWidthDif);
 			}
-			adjustColumns();
+			adjust_columns();
 			this._width = width;
 			return true;
 		}
@@ -85,16 +86,16 @@ public class TableLayoutRow {
 		if (getMaxDifferenceX() < difX) {
 			return false;
 		}
-		for (int i = columns.length - 1; i >= 0; i++) {
-			if (columns[i].getWidth() > columns[i].getMinWidth()) {
-				int maxDif = columns[i].getWidth() - columns[i].getMinWidth();
+		for (int i = _columns.length - 1; i >= 0; i++) {
+			if (_columns[i].getWidth() > _columns[i].getMinWidth()) {
+				final int maxDif = _columns[i].getWidth() - _columns[i].getMinWidth();
 				if (maxDif >= difX) {
-					columns[i].setWidth(columns[i].getWidth() - difX);
+					_columns[i].setWidth(_columns[i].getWidth() - difX);
 					this._width = width;
-					adjustColumns();
+					adjust_columns();
 					return true;
 				} else {
-					columns[i].setWidth(columns[i].getWidth() - maxDif);
+					_columns[i].setWidth(_columns[i].getWidth() - maxDif);
 					difX -= maxDif;
 				}
 			}
@@ -104,8 +105,8 @@ public class TableLayoutRow {
 
 	private int getMaxDifferenceX() {
 		int dif = 0;
-		for (int i = 0; i < columns.length; i++) {
-			dif += columns[i].getWidth() - columns[i].getMinWidth();
+		for (int i = 0; i < _columns.length; i++) {
+			dif += _columns[i].getWidth() - _columns[i].getMinWidth();
 		}
 		return dif;
 	}
@@ -116,20 +117,20 @@ public class TableLayoutRow {
 
 	public void setHeight(int height) {
 		this._height = height;
-		adjustColumns();
+		adjust_columns();
 	}
 
 	public boolean canSetHeight(int height) {
-		return (height > getHeight() || height > columns[0].getMinWidth());
+		return (height > getHeight() || height > _columns[0].getMinWidth());
 	}
 
-	public void setColumns(int columns) {
-		this.columns = new TableColumnLayout[columns];
-		initColumns();
+	public void set_columns(int columns) {
+		this._columns = new TableColumnLayout[columns];
+		init_columns();
 	}
 
 	public int getCoulumnSize() {
-		return columns.length;
+		return _columns.length;
 	}
 
 	public TableLayoutRow setSize(int x, int y, int w, int h) {
@@ -140,99 +141,98 @@ public class TableLayoutRow {
 		return this;
 	}
 
-	private void initColumns() {
-		int xStep = getWidth() / columns.length;
-		for (int i = 0; i < columns.length; i++) {
-			columns[i] = new TableColumnLayout(null, getX() + (i * xStep), _y, xStep, _height);
+	private void init_columns() {
+		int xStep = getWidth() / _columns.length;
+		for (int i = 0; i < _columns.length; i++) {
+			_columns[i] = new TableColumnLayout(null, getX() + (i * xStep), _y, xStep, _height);
 		}
 	}
 
-	private void adjustColumns() {
+	private void adjust_columns() {
 		int startX = this._x;
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].setX(startX);
-			startX += columns[i].getWidth();
-			columns[i].setY(getY());
-			columns[i].setHeight(getHeight());
-			columns[i].adjustComponent();
+		for (int i = 0; i < _columns.length; i++) {
+			_columns[i].setX(startX);
+			startX += _columns[i].getWidth();
+			_columns[i].setY(getY());
+			_columns[i].setHeight(getHeight());
+			_columns[i].adjustComponent();
 		}
 	}
 
 	public void setComponent(LComponent component, int column) {
-		columns[column < columns.length - 1 ? column : columns.length - 1].setComponent(component);
+		_columns[column < _columns.length - 1 ? column : _columns.length - 1].setComponent(component);
 	}
 
 	public LComponent getComponent(int column) {
-		return columns[column < columns.length - 1 ? column : columns.length - 1].getComponent();
+		return _columns[column < _columns.length - 1 ? column : _columns.length - 1].getComponent();
 	}
 
 	public TableColumnLayout getColumn(int column) {
-		return columns[column < columns.length - 1 ? column : columns.length - 1];
+		return _columns[column < _columns.length - 1 ? column : _columns.length - 1];
 	}
 
 	public boolean setColumnWidth(int width, int column) {
-		if (width > columns[column].getWidth()) {
-			int difX = width - columns[column].getWidth();
-			int maxDif = getMaxDifferenceX() - (columns[column].getWidth() - columns[column].getMinWidth());
+		if (width > _columns[column].getWidth()) {
+			int difX = width - _columns[column].getWidth();
+			int maxDif = getMaxDifferenceX() - (_columns[column].getWidth() - _columns[column].getMinWidth());
 			if (maxDif >= difX) {
-				for (int i = 0; i < columns.length; i++) {
+				for (int i = 0; i < _columns.length; i++) {
 					if (i != column) {
-						int maxColumnDif = columns[i].getWidth() - columns[i].getMinWidth();
+						int maxColumnDif = _columns[i].getWidth() - _columns[i].getMinWidth();
 						if (maxColumnDif >= difX) {
-							columns[i].setWidth(columns[i].getWidth() - difX);
+							_columns[i].setWidth(_columns[i].getWidth() - difX);
 							break;
 						} else {
-							columns[i].setWidth(columns[i].getWidth() - maxColumnDif);
+							_columns[i].setWidth(_columns[i].getWidth() - maxColumnDif);
 							difX -= maxColumnDif;
 						}
 					}
 				}
-				columns[column].setWidth(width);
-				adjustColumns();
+				_columns[column].setWidth(width);
+				adjust_columns();
 				return true;
 			}
 			return false;
 		}
-		if (width < columns[column].getMinWidth()) {
-			width = columns[column].getMinWidth();
+		if (width < _columns[column].getMinWidth()) {
+			width = _columns[column].getMinWidth();
 		}
-		int difXColumns = (columns[column].getWidth() - width) / (columns.length - 1);
-		for (int i = 0; i < columns.length; i++) {
+		int difX_columns = (_columns[column].getWidth() - width) / (_columns.length - 1);
+		for (int i = 0; i < _columns.length; i++) {
 			if (i != column) {
-				columns[i].setWidth(columns[i].getWidth() + difXColumns);
+				_columns[i].setWidth(_columns[i].getWidth() + difX_columns);
 			}
 		}
-		columns[column].setWidth(width);
-		adjustColumns();
+		_columns[column].setWidth(width);
+		adjust_columns();
 		return true;
 	}
 
 	public void removeColumn(int column) {
-		int columnAdd = columns[column].getWidth() / (columns.length - 1);
-		if (_tempColumns == null) {
-			_tempColumns = new TArray<TableColumnLayout>();
+		int columnAdd = _columns[column].getWidth() / (_columns.length - 1);
+		if (_temp_columns == null) {
+			_temp_columns = new TArray<TableColumnLayout>();
 		} else {
-			_tempColumns.clear();
+			_temp_columns.clear();
 		}
-		for (int i = 0; i < columns.length; i++) {
+		for (int i = 0; i < _columns.length; i++) {
 			if (i != column) {
-				columns[i].setWidth(columns[i].getWidth() + columnAdd);
-				_tempColumns.add(columns[i]);
+				_columns[i].setWidth(_columns[i].getWidth() + columnAdd);
+				_temp_columns.add(_columns[i]);
 			}
 		}
-		if (columns.length != _tempColumns.size) {
-			columns = (TableColumnLayout[]) _tempColumns.toArray();
-		} else {
-			for (int i = 0; i < _tempColumns.size; i++) {
-				columns[i] = _tempColumns.get(i);
-			}
+		if (_columns.length != _temp_columns.size) {
+			_columns = new TableColumnLayout[_temp_columns.size];
 		}
-		adjustColumns();
+		for (int i = 0; i < _temp_columns.size; i++) {
+			_columns[i] = _temp_columns.get(i);
+		}
+		adjust_columns();
 	}
 
 	public void paint(GLEx g) {
-		for (int i = 0; i < columns.length; i++) {
-			columns[i].paint(g);
+		for (int i = 0; i < _columns.length; i++) {
+			_columns[i].paint(g);
 		}
 	}
 
