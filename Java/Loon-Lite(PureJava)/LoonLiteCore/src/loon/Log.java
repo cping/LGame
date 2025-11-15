@@ -60,20 +60,40 @@ public abstract class Log {
 		}
 	}
 
-	private Collector collector;
-	private Level minLevel = Level.DEBUG;
-
 	public static interface Collector {
-
 		void logged(Level level, String msg, Throwable e);
 	}
 
+	private Collector _collector;
+
+	private Level _minLevel = Level.DEBUG;
+
+	private LColor _defaultColor = LColor.white;
+
+	private LColor _otherColor = LColor.red;
+
+	public void setDefaultColor(LColor c) {
+		_defaultColor = c;
+	}
+
+	public void setOtherColor(LColor c) {
+		_otherColor = c;
+	}
+
+	public LColor getDefaultColor() {
+		return _defaultColor;
+	}
+
+	public LColor getOtherColor() {
+		return _otherColor;
+	}
+
 	public void setCollector(Collector collector) {
-		this.collector = collector;
+		this._collector = collector;
 	}
 
 	public void setMinLevel(Level level) {
-		minLevel = level;
+		_minLevel = level;
 	}
 
 	public void debug(String msg) {
@@ -133,19 +153,19 @@ public abstract class Log {
 
 	protected void call(Level level, String msg, Throwable e) {
 		if (LSystem.isConsoleLog()) {
-			if (collector != null) {
-				collector.logged(level, msg, e);
+			if (_collector != null) {
+				_collector.logged(level, msg, e);
 			}
-			if (level.id >= minLevel.id) {
+			if (level.id >= _minLevel.id) {
 				callNativeLog(level, msg, e);
 				LGame game = LSystem.base();
 				if (game != null) {
 					LSetting setting = game.setting;
 					Display display = game.displayImpl;
 					if (display != null && (setting.isDebug || setting.isDisplayLog)) {
-						LColor color = LColor.white;
+						LColor color = _defaultColor;
 						if (level.id > Level.INFO.id) {
-							color = LColor.red;
+							color = _otherColor;
 						}
 						if (display != null) {
 							if (e == null) {

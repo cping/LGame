@@ -44,22 +44,6 @@ public final class LTextureBatch implements LRelease {
 
 	private final static String _batch_name = "texbatch";
 
-	private final ShaderSource source;
-
-	private String name = _batch_name;
-
-	private IntMap<LTextureBatch.Cache> _caches;
-
-	private float baseColor = LColor.white.toFloatBits();
-
-	private boolean isClosed;
-
-	protected boolean isCacheLocked;
-
-	private Cache lastCache;
-
-	private LColor[] colors;
-
 	public static class Cache implements LRelease {
 
 		public float x = 0;
@@ -73,9 +57,9 @@ public final class LTextureBatch implements LRelease {
 		int count;
 
 		public Cache(LTextureBatch batch) {
-			count = batch.count;
-			vertexIdx = batch.vertexIdx;
-			vertices = batch.expandVertices.cpy(vertexIdx);
+			count = batch._count;
+			vertexIdx = batch._vertexIdx;
+			vertices = batch._expandVertices.cpy(vertexIdx);
 		}
 
 		public boolean isClosed() {
@@ -91,53 +75,71 @@ public final class LTextureBatch implements LRelease {
 
 	}
 
-	private float xOff, yOff, widthRatio, heightRatio;
+	private static boolean _runningCache = false;
 
-	private float drawWidth, drawHeight;
+	private final ShaderSource _source;
 
-	private float textureSrcX, textureSrcY;
+	private final ExpandVertices _expandVertices;
 
-	private float srcWidth, srcHeight;
+	protected boolean _isCacheLocked;
 
-	private float renderWidth, renderHeight;
+	protected float _invTexWidth = 0, _invTexHeight = 0;
 
-	private Submit mesh;
+	protected boolean _drawing = false;
 
-	private BlendState lastBlendState = BlendState.NonPremultiplied;
+	protected boolean _isLoaded;
 
-	protected int count = 0;
+	protected LTexture _texture;
 
-	private int drawCallCount;
-
-	private final ExpandVertices expandVertices;
-
-	protected float invTexWidth = 0, invTexHeight = 0;
-
-	protected boolean drawing = false;
-
-	private LTexture lastTexture = null;
-
-	private final Matrix4 combinedMatrix = new Matrix4();
-
-	private ShaderProgram shader = null;
-	private ShaderProgram customShader = null;
-	private ShaderProgram globalShader = null;
-
-	private LColor tempColor = new LColor(1, 1, 1, 1);
+	protected int _count = 0;
 
 	public int maxVertsInBatch = 0;
 
-	protected boolean isLoaded;
+	private String _name = _batch_name;
 
-	protected LTexture texture;
+	private IntMap<LTextureBatch.Cache> _caches;
 
-	private Matrix4 batchMatrix;
+	private float _baseColor = LColor.white.toFloatBits();
 
-	private int vertexIdx;
+	private final Matrix4 _combinedMatrix = new Matrix4();
 
-	private int texWidth, texHeight;
+	private boolean _isClosed;
 
-	private float tx, ty;
+	private Cache _lastCache;
+
+	private LColor[] _colors;
+
+	private float _xOff, _yOff, _widthRatio, _heightRatio;
+
+	private float _drawWidth, _drawHeight;
+
+	private float _textureSrcX, _textureSrcY;
+
+	private float _srcWidth, _srcHeight;
+
+	private float _renderWidth, _renderHeight;
+
+	private Submit _mesh;
+
+	private BlendState _lastBlendState = BlendState.NonPremultiplied;
+
+	private int _drawCallCount;
+
+	private LTexture _lastTexture = null;
+
+	private ShaderProgram _shader = null;
+	private ShaderProgram _customShader = null;
+	private ShaderProgram _globalShader = null;
+
+	private LColor _tempColor = new LColor(1, 1, 1, 1);
+
+	private Matrix4 _batchMatrix;
+
+	private int _vertexIdx;
+
+	private int _texWidth, _texHeight;
+
+	private float _tx, _ty;
 
 	public LTextureBatch(LTexture tex) {
 		this(tex, 256, LSystem.getShaderSource(), null);
@@ -156,10 +158,10 @@ public final class LTextureBatch implements LRelease {
 			throw new LSysException("Can't have more than 5460 sprites per batch: " + size);
 		}
 		this.setTexture(tex);
-		this.source = src;
-		this.shader = defaultShader;
-		this.expandVertices = ExpandVertices.getVerticeCache(size);
-		this.mesh = Submit.create();
+		this._source = src;
+		this._shader = defaultShader;
+		this._expandVertices = ExpandVertices.getVerticeCache(size);
+		this._mesh = Submit.create();
 	}
 
 	/**
@@ -169,215 +171,213 @@ public final class LTextureBatch implements LRelease {
 	 * @param val
 	 */
 	public LTextureBatch setBatchMatrix(float[] val) {
-		if (batchMatrix == null) {
-			batchMatrix = new Matrix4(val);
+		if (_batchMatrix == null) {
+			_batchMatrix = new Matrix4(val);
 		} else {
-			batchMatrix.set(val);
+			_batchMatrix.set(val);
 		}
 		return this;
 	}
 
 	public LTextureBatch setBatchMatrix(Matrix4 m) {
-		if (batchMatrix == null) {
-			batchMatrix = new Matrix4(m);
+		if (_batchMatrix == null) {
+			_batchMatrix = new Matrix4(m);
 		} else {
-			batchMatrix.set(m);
+			_batchMatrix.set(m);
 		}
 		return this;
 	}
 
 	public LTextureBatch setTexture(LTexture tex2d) {
-		this.texture = tex2d;
-		this.texWidth = texture.getWidth();
-		this.texHeight = texture.getHeight();
-		if (texture.isCopy()) {
-			invTexWidth = (1f / texture.width());
-			invTexHeight = (1f / texture.height());
+		this._texture = tex2d;
+		this._texWidth = _texture.getWidth();
+		this._texHeight = _texture.getHeight();
+		if (_texture.isCopy()) {
+			_invTexWidth = (1f / _texture.width());
+			_invTexHeight = (1f / _texture.height());
 		} else {
-			invTexWidth = (1f / texture.width()) * texture.widthRatio();
-			invTexHeight = (1f / texture.height()) * texture.heightRatio();
+			_invTexWidth = (1f / _texture.width()) * _texture.widthRatio();
+			_invTexHeight = (1f / _texture.height()) * _texture.heightRatio();
 		}
 		return this;
 	}
 
 	public LTextureBatch setLocation(float tx, float ty) {
-		this.tx = tx;
-		this.ty = ty;
+		this._tx = tx;
+		this._ty = ty;
 		return this;
 	}
 
 	public float getInvTexWidth() {
-		return this.invTexWidth;
+		return this._invTexWidth;
 	}
 
 	public float getInvTexHeight() {
-		return this.invTexHeight;
+		return this._invTexHeight;
 	}
 
 	public LTexture toTexture() {
-		return texture;
+		return _texture;
 	}
 
 	public LTextureBatch glColor4f() {
-		expandVertices.setVertice(vertexIdx++, baseColor);
+		_expandVertices.setVertice(_vertexIdx++, _baseColor);
 		return this;
 	}
 
 	public LTextureBatch glColor4f(LColor baseColor) {
-		expandVertices.setVertice(vertexIdx++, baseColor.toFloatBits());
+		_expandVertices.setVertice(_vertexIdx++, baseColor.toFloatBits());
 		return this;
 	}
 
 	public LTextureBatch glColor4f(float r, float g, float b, float a) {
-		expandVertices.setVertice(vertexIdx++, LColor.toFloatBits(r, g, b, a));
+		_expandVertices.setVertice(_vertexIdx++, LColor.toFloatBits(r, g, b, a));
 		return this;
 	}
 
 	public LTextureBatch glColor4f(float baseColor) {
-		expandVertices.setVertice(vertexIdx++, baseColor);
+		_expandVertices.setVertice(_vertexIdx++, baseColor);
 		return this;
 	}
 
 	public LTextureBatch glTexCoord2f(float u, float v) {
-		expandVertices.setVertice(vertexIdx++, u);
-		expandVertices.setVertice(vertexIdx++, v);
+		_expandVertices.setVertice(_vertexIdx++, u);
+		_expandVertices.setVertice(_vertexIdx++, v);
 		return this;
 	}
 
 	public LTextureBatch glVertex2f(Vector2f v) {
-		expandVertices.setVertice(vertexIdx++, v.x);
-		expandVertices.setVertice(vertexIdx++, v.y);
+		_expandVertices.setVertice(_vertexIdx++, v.x);
+		_expandVertices.setVertice(_vertexIdx++, v.y);
 		return this;
 	}
 
 	public LTextureBatch glVertex2f(float x, float y) {
-		expandVertices.setVertice(vertexIdx++, x);
-		expandVertices.setVertice(vertexIdx++, y);
+		_expandVertices.setVertice(_vertexIdx++, x);
+		_expandVertices.setVertice(_vertexIdx++, y);
 		return this;
 	}
 
 	public BlendState getBlendState() {
-		return lastBlendState;
+		return _lastBlendState;
 	}
 
 	public LTextureBatch setBlendState(BlendState state) {
-		this.lastBlendState = state;
+		this._lastBlendState = state;
 		return this;
 	}
 
-	private static boolean runningCache = false;
-
 	public final static boolean isRunningCache() {
-		return runningCache;
+		return _runningCache;
 	}
 
 	protected ShaderProgram createShaderProgram() {
-		return GLUtils.createShaderProgram(source.vertexShader(), source.fragmentShader());
+		return GLUtils.createShaderProgram(_source.vertexShader(), _source.fragmentShader());
 	}
 
 	protected ShaderProgram getShaderProgram() {
-		return shader;
+		return _shader;
 	}
 
 	public LTextureBatch begin() {
-		if (!isLoaded) {
-			if (shader == null) {
-				shader = createShaderProgram();
+		if (!_isLoaded) {
+			if (_shader == null) {
+				_shader = createShaderProgram();
 			}
-			isLoaded = true;
+			_isLoaded = true;
 		}
-		if (drawing) {
+		if (_drawing) {
 			throw new LSysException("TextureBatch.end must be called before begin.");
 		}
 		LSystem.mainEndDraw();
-		if (!isCacheLocked) {
-			vertexIdx = 0;
-			lastTexture = null;
+		if (!_isCacheLocked) {
+			_vertexIdx = 0;
+			_lastTexture = null;
 		}
 		LSystem.base().graphics().gl.glDepthMask(false);
-		if (customShader != null) {
-			customShader.begin();
+		if (_customShader != null) {
+			_customShader.begin();
 		} else {
-			shader.begin();
+			_shader.begin();
 		}
 		setupMatrices(LSystem.base().graphics().getViewMatrix());
-		drawing = true;
-		runningCache = true;
-		drawCallCount = 0;
+		_drawing = true;
+		_runningCache = true;
+		_drawCallCount = 0;
 		return this;
 	}
 
 	public LTextureBatch end() {
-		if (!isLoaded) {
+		if (!_isLoaded) {
 			return this;
 		}
-		if (!drawing) {
+		if (!_drawing) {
 			throw new LSysException("TextureBatch.begin must be called before end.");
 		}
-		if (vertexIdx > 0) {
-			if (tx != 0 || ty != 0) {
+		if (_vertexIdx > 0) {
+			if (_tx != 0 || _ty != 0) {
 				Matrix4 project = LSystem.base().graphics().getViewMatrix().cpy();
-				project.translate(tx, ty, 0);
-				if (drawing) {
+				project.translate(_tx, _ty, 0);
+				if (_drawing) {
 					setupMatrices(project);
 				}
 			}
 			submit();
 		}
-		drawing = false;
+		_drawing = false;
 		LSystem.base().graphics().gl.glDepthMask(true);
-		if (customShader != null) {
-			customShader.end();
+		if (_customShader != null) {
+			_customShader.end();
 		} else {
-			shader.end();
+			_shader.end();
 		}
 		LSystem.mainBeginDraw();
-		drawCallCount = 0;
+		_drawCallCount = 0;
 		return this;
 	}
 
 	public LTextureBatch draw(float[] vertices, int offset, int length) {
-		if (checkTexture(texture)) {
+		if (checkTexture(_texture)) {
 			return this;
 		}
-		int remainingVertices = expandVertices.length() - vertexIdx;
+		int remainingVertices = _expandVertices.length() - _vertexIdx;
 		if (remainingVertices == 0) {
 			submit();
-			remainingVertices = expandVertices.length();
+			remainingVertices = _expandVertices.length();
 		}
 		int vertexCount = MathUtils.min(remainingVertices, length - offset);
-		System.arraycopy(vertices, offset, expandVertices.getVertices(), vertexIdx, vertexCount);
+		System.arraycopy(vertices, offset, _expandVertices.getVertices(), _vertexIdx, vertexCount);
 		offset += vertexCount;
-		vertexIdx += vertexCount;
+		_vertexIdx += vertexCount;
 		while (offset < length) {
 			submit();
-			vertexCount = MathUtils.min(expandVertices.length(), length - offset);
-			System.arraycopy(vertices, offset, expandVertices.getVertices(), 0, vertexCount);
+			vertexCount = MathUtils.min(_expandVertices.length(), length - offset);
+			System.arraycopy(vertices, offset, _expandVertices.getVertices(), 0, vertexCount);
 			offset += vertexCount;
-			vertexIdx += vertexCount;
+			_vertexIdx += vertexCount;
 		}
 		return this;
 	}
 
 	public LTextureBatch setColor(LColor tint) {
-		baseColor = tint.toFloatBits();
+		_baseColor = tint.toFloatBits();
 		return this;
 	}
 
 	public LTextureBatch setColor(float r, float g, float b, float a) {
 		int intBits = (int) (255 * a) << 24 | (int) (255 * b) << 16 | (int) (255 * g) << 8 | (int) (255 * r);
-		baseColor = NumberUtils.intToFloatColor(intBits);
+		_baseColor = NumberUtils.intToFloatColor(intBits);
 		return this;
 	}
 
 	public LTextureBatch setColor(float baseColor) {
-		this.baseColor = baseColor;
+		this._baseColor = baseColor;
 		return this;
 	}
 
 	public LColor getColor() {
-		int intBits = NumberUtils.floatToIntColor(baseColor);
-		LColor baseColor = tempColor;
+		int intBits = NumberUtils.floatToIntColor(_baseColor);
+		LColor baseColor = _tempColor;
 		baseColor.r = (intBits & 0xff) / 255f;
 		baseColor.g = ((intBits >>> 8) & 0xff) / 255f;
 		baseColor.b = ((intBits >>> 16) & 0xff) / 255f;
@@ -386,20 +386,20 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public float getFloatColor() {
-		return baseColor;
+		return _baseColor;
 	}
 
 	private void checkDrawing() {
-		if (!drawing) {
+		if (!_drawing) {
 			throw new LSysException("Not implemented begin !");
 		}
 	}
 
 	public boolean checkTexture(final LTexture texture) {
-		if (!isLoaded || isCacheLocked) {
+		if (!_isLoaded || _isCacheLocked) {
 			return false;
 		}
-		if (isClosed) {
+		if (_isClosed) {
 			return false;
 		}
 		if (texture == null) {
@@ -411,20 +411,20 @@ public final class LTextureBatch implements LRelease {
 		}
 		LTexture tex2d = LTexture.firstFather(texture);
 		if (tex2d != null) {
-			if (tex2d != lastTexture) {
+			if (tex2d != _lastTexture) {
 				submit();
-				lastTexture = tex2d;
-			} else if (vertexIdx == expandVertices.length()) {
+				_lastTexture = tex2d;
+			} else if (_vertexIdx == _expandVertices.length()) {
 				submit();
 			}
-			invTexWidth = (1f / texWidth) * texture.widthRatio();
-			invTexHeight = (1f / texHeight) * texture.heightRatio();
-		} else if (texture != lastTexture) {
+			_invTexWidth = (1f / _texWidth) * texture.widthRatio();
+			_invTexHeight = (1f / _texHeight) * texture.heightRatio();
+		} else if (texture != _lastTexture) {
 			submit();
-			lastTexture = texture;
-			invTexWidth = (1f / texWidth) * texture.widthRatio();
-			invTexHeight = (1f / texHeight) * texture.heightRatio();
-		} else if (vertexIdx == expandVertices.length()) {
+			_lastTexture = texture;
+			_invTexWidth = (1f / _texWidth) * texture.widthRatio();
+			_invTexHeight = (1f / _texHeight) * texture.heightRatio();
+		} else if (_vertexIdx == _expandVertices.length()) {
 			submit();
 		}
 
@@ -432,25 +432,25 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch submit() {
-		return submit(lastBlendState);
+		return submit(_lastBlendState);
 	}
 
 	public LTextureBatch submit(BlendState state) {
-		if (vertexIdx == 0) {
+		if (_vertexIdx == 0) {
 			return this;
 		}
-		if (!isCacheLocked) {
-			int vertCount = vertexIdx / expandVertices.vertexSize();
+		if (!_isCacheLocked) {
+			int vertCount = _vertexIdx / _expandVertices.vertexSize();
 			if (vertCount > maxVertsInBatch) {
 				maxVertsInBatch = vertCount;
 			}
-			this.count = vertCount * 6;
+			this._count = vertCount * 6;
 		}
 		GL20 gl = LSystem.base().graphics().gl;
-		GLUtils.bindTexture(gl, texture.getID());
+		GLUtils.bindTexture(gl, _texture.getID());
 		int old = GLUtils.getBlendMode();
 		try {
-			switch (lastBlendState) {
+			switch (_lastBlendState) {
 			case Additive:
 				GLUtils.setBlendMode(gl, BlendMethod.MODE_ALPHA_ONE);
 				break;
@@ -466,63 +466,63 @@ public final class LTextureBatch implements LRelease {
 			case Null:
 				break;
 			}
-			mesh.post(name, expandVertices.getSize(), customShader != null ? customShader : shader,
-					expandVertices.getVertices(), vertexIdx, count);
+			_mesh.post(_name, _expandVertices.getSize(), _customShader != null ? _customShader : _shader,
+					_expandVertices.getVertices(), _vertexIdx, _count);
 		} catch (Throwable e) {
 			LSystem.error("TextureBatch submit() exception", e);
 		} finally {
-			if (expandVertices.expand(this.vertexIdx)) {
-				mesh.reset(name, expandVertices.length());
+			if (_expandVertices.expand(this._vertexIdx)) {
+				_mesh.reset(_name, _expandVertices.length());
 			}
 			GLUtils.setBlendMode(gl, old);
-			drawCallCount++;
-			GraphicsDrawCall.add(drawCallCount);
+			_drawCallCount++;
+			GraphicsDrawCall.add(_drawCallCount);
 		}
 		return this;
 	}
 
 	public LTextureBatch setTextureBatchName(String n) {
-		this.name = n;
+		this._name = n;
 		return this;
 	}
 
 	public String getTextureBatchName() {
-		return this.name;
+		return this._name;
 	}
 
 	private LTextureBatch setupMatrices(Matrix4 view) {
-		if (batchMatrix != null) {
-			combinedMatrix.set(batchMatrix);
+		if (_batchMatrix != null) {
+			_combinedMatrix.set(_batchMatrix);
 		} else {
-			combinedMatrix.set(view);
+			_combinedMatrix.set(view);
 		}
-		if (customShader != null) {
-			customShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			customShader.setUniformi("u_texture", 0);
-			source.setupShader(customShader);
+		if (_customShader != null) {
+			_customShader.setUniformMatrix("u_projTrans", _combinedMatrix);
+			_customShader.setUniformi("u_texture", 0);
+			_source.setupShader(_customShader);
 		} else {
-			shader.setUniformMatrix("u_projTrans", combinedMatrix);
-			shader.setUniformi("u_texture", 0);
-			source.setupShader(shader);
+			_shader.setUniformMatrix("u_projTrans", _combinedMatrix);
+			_shader.setUniformi("u_texture", 0);
+			_source.setupShader(_shader);
 		}
 		return this;
 	}
 
 	protected LTextureBatch setShader(Matrix4 view, ShaderProgram shader) {
-		if (drawing) {
+		if (_drawing) {
 			submit();
-			if (customShader != null) {
-				customShader.end();
+			if (_customShader != null) {
+				_customShader.end();
 			} else {
-				this.shader.end();
+				this._shader.end();
 			}
 		}
-		customShader = shader;
-		if (drawing) {
-			if (customShader != null) {
-				customShader.begin();
+		_customShader = shader;
+		if (_drawing) {
+			if (_customShader != null) {
+				_customShader.begin();
 			} else {
-				this.shader.begin();
+				this._shader.begin();
 			}
 			setupMatrices(view);
 		}
@@ -530,62 +530,63 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public void clearDrawCallCount() {
-		this.drawCallCount = 0;
+		this._drawCallCount = 0;
 	}
 
 	public int getDrawCallCount() {
-		return drawCallCount;
+		return _drawCallCount;
 	}
 
 	public boolean isDrawing() {
-		return drawing;
+		return _drawing;
 	}
 
 	public LTextureBatch lock() {
-		this.isCacheLocked = true;
+		this._isCacheLocked = true;
 		return this;
 	}
 
 	public LTextureBatch unLock() {
-		this.isCacheLocked = false;
+		this._isCacheLocked = false;
 		return this;
 	}
 
 	private LTextureBatch commit(Matrix4 view, Cache cache, LColor baseColor, BlendState state) {
-		if (!isLoaded) {
+		if (!_isLoaded) {
 			return this;
 		}
-		if (drawing) {
+		if (_drawing) {
 			end();
 		}
 		LSystem.mainEndDraw();
 		if (baseColor == null) {
-			if (shader == null) {
-				shader = createShaderProgram();
+			if (_shader == null) {
+				_shader = createShaderProgram();
 			}
-			globalShader = shader;
-		} else if (globalShader == null) {
-			globalShader = GLUtils.createShaderProgram(LSystem.getGLExVertexShader(), LSystem.getColorFragmentShader());
+			_globalShader = _shader;
+		} else if (_globalShader == null) {
+			_globalShader = GLUtils.createShaderProgram(LSystem.getGLExVertexShader(),
+					LSystem.getColorFragmentShader());
 		}
-		globalShader.begin();
+		_globalShader.begin();
 		float oldColor = getFloatColor();
 		if (baseColor != null) {
-			globalShader.setUniformf("v_color", baseColor.r, baseColor.g, baseColor.b, baseColor.a);
+			_globalShader.setUniformf("v_color", baseColor.r, baseColor.g, baseColor.b, baseColor.a);
 		}
-		if (batchMatrix != null) {
-			combinedMatrix.set(batchMatrix);
+		if (_batchMatrix != null) {
+			_combinedMatrix.set(_batchMatrix);
 		} else {
-			combinedMatrix.set(view);
+			_combinedMatrix.set(view);
 		}
-		if (globalShader != null) {
-			globalShader.setUniformMatrix("u_projTrans", combinedMatrix);
-			globalShader.setUniformi("u_texture", 0);
+		if (_globalShader != null) {
+			_globalShader.setUniformMatrix("u_projTrans", _combinedMatrix);
+			_globalShader.setUniformi("u_texture", 0);
 		}
 		if (cache.vertexIdx > 0) {
 			GL20 gl = LSystem.base().graphics().gl;
-			GLUtils.bindTexture(gl, texture.getID());
+			GLUtils.bindTexture(gl, _texture.getID());
 			int old = GLUtils.getBlendMode();
-			switch (lastBlendState) {
+			switch (_lastBlendState) {
 			case Additive:
 				GLUtils.setBlendMode(gl, BlendMethod.MODE_ALPHA_ONE);
 				break;
@@ -601,81 +602,81 @@ public final class LTextureBatch implements LRelease {
 			case Null:
 				break;
 			}
-			mesh.post(name, expandVertices.getSize(), globalShader, cache.vertices, cache.vertexIdx, cache.count);
+			_mesh.post(_name, _expandVertices.getSize(), _globalShader, cache.vertices, cache.vertexIdx, cache.count);
 			GLUtils.setBlendMode(gl, old);
 		} else if (baseColor != null) {
-			globalShader.setUniformf("v_color", oldColor);
+			_globalShader.setUniformf("v_color", oldColor);
 		}
-		globalShader.end();
+		_globalShader.end();
 		LSystem.mainBeginDraw();
-		runningCache = true;
+		_runningCache = true;
 		GraphicsDrawCall.add(1);
 		return this;
 	}
 
 	public LTextureBatch setIndices(short[] indices) {
-		mesh.getMesh(name, expandVertices.getSize()).setIndices(indices);
+		_mesh.getMesh(_name, _expandVertices.getSize()).setIndices(indices);
 		return this;
 	}
 
 	public LTextureBatch resetIndices() {
-		mesh.resetIndices(name, expandVertices.getSize());
+		_mesh.resetIndices(_name, _expandVertices.getSize());
 		return this;
 	}
 
 	public LTextureBatch setGLType(int type) {
-		mesh.setGLType(type);
+		_mesh.setGLType(type);
 		return this;
 	}
 
 	public boolean postLastCache() {
-		if (lastCache != null) {
-			commit(LSystem.base().graphics().getViewMatrix(), lastCache, null, lastBlendState);
+		if (_lastCache != null) {
+			commit(LSystem.base().graphics().getViewMatrix(), _lastCache, null, _lastBlendState);
 			return true;
 		}
 		return false;
 	}
 
 	public Cache getLastCache() {
-		return lastCache;
+		return _lastCache;
 	}
 
 	public boolean existCache() {
-		return lastCache != null && lastCache.count > 0;
+		return _lastCache != null && _lastCache.count > 0;
 	}
 
 	public Cache newCache() {
-		if (isLoaded) {
-			return (lastCache = new Cache(this));
+		if (_isLoaded) {
+			return (_lastCache = new Cache(this));
 		} else {
 			return null;
 		}
 	}
 
 	public boolean disposeLastCache() {
-		if (lastCache != null) {
-			lastCache.close();
-			lastCache = null;
+		if (_lastCache != null) {
+			_lastCache.close();
+			_lastCache = null;
 			return true;
 		}
 		return false;
 	}
 
 	public LTextureBatch draw(float x, float y) {
-		return draw(colors, x, y, texture.width(), texture.height(), 0, 0, texture.width(), texture.height());
+		return draw(_colors, x, y, _texture.width(), _texture.height(), 0, 0, _texture.width(), _texture.height());
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height) {
-		return draw(colors, x, y, width, height, 0, 0, texture.width(), texture.height());
+		return draw(_colors, x, y, width, height, 0, 0, _texture.width(), _texture.height());
 	}
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight) {
-		return draw(colors, x, y, width, height, srcX, srcY, srcWidth, srcHeight);
+		return draw(_colors, x, y, width, height, srcX, srcY, srcWidth, srcHeight);
 	}
 
 	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height) {
-		return draw(colors, x, y, width, height, 0, 0, texture.width(), texture.height());
+		return draw(colors, x, y, width, height, 0, 0, _texture.width(), _texture.height());
 	}
 
 	/**
@@ -694,14 +695,14 @@ public final class LTextureBatch implements LRelease {
 	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height, float srcX, float srcY,
 			float srcWidth, float srcHeight) {
 
-		if (!checkTexture(texture)) {
+		if (!checkTexture(_texture)) {
 			return this;
 		}
 
-		xOff = srcX * invTexWidth + texture.xOff();
-		yOff = srcY * invTexHeight + texture.yOff();
-		widthRatio = srcWidth * invTexWidth;
-		heightRatio = srcHeight * invTexHeight;
+		_xOff = srcX * _invTexWidth + _texture.xOff();
+		_yOff = srcY * _invTexHeight + _texture.yOff();
+		_widthRatio = srcWidth * _invTexWidth;
+		_heightRatio = srcHeight * _invTexHeight;
 
 		final float fx2 = x + width;
 		final float fy2 = y + height;
@@ -709,36 +710,36 @@ public final class LTextureBatch implements LRelease {
 		if (colors == null) {
 			glVertex2f(x, y);
 			glColor4f();
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x, fy2);
 			glColor4f();
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(fx2, fy2);
 			glColor4f();
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(fx2, y);
 			glColor4f();
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 
 		} else {
 			glVertex2f(x, y);
 			glColor4f(colors[LTexture.TOP_LEFT]);
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x, fy2);
 			glColor4f(colors[LTexture.BOTTOM_LEFT]);
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(fx2, fy2);
 			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(fx2, y);
 			glColor4f(colors[LTexture.TOP_RIGHT]);
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 
 		}
 		return this;
@@ -747,43 +748,43 @@ public final class LTextureBatch implements LRelease {
 	public LTextureBatch drawQuad(float drawX, float drawY, float c1, float drawX2, float drawY2, float c2, float srcX,
 			float srcY, float c3, float srcX2, float srcY2, float c4) {
 
-		if (!checkTexture(texture)) {
+		if (!checkTexture(_texture)) {
 			return this;
 		}
 
-		drawWidth = drawX2 - drawX;
-		drawHeight = drawY2 - drawY;
-		textureSrcX = ((srcX / texWidth) * texture.widthRatio()) + texture.xOff();
-		textureSrcY = ((srcY / texHeight) * texture.heightRatio()) + texture.yOff();
-		srcWidth = srcX2 - srcX;
-		srcHeight = srcY2 - srcY;
-		renderWidth = ((srcWidth / texWidth) * texture.widthRatio());
-		renderHeight = ((srcHeight / texHeight) * texture.heightRatio());
+		_drawWidth = drawX2 - drawX;
+		_drawHeight = drawY2 - drawY;
+		_textureSrcX = ((srcX / _texWidth) * _texture.widthRatio()) + _texture.xOff();
+		_textureSrcY = ((srcY / _texHeight) * _texture.heightRatio()) + _texture.yOff();
+		_srcWidth = srcX2 - srcX;
+		_srcHeight = srcY2 - srcY;
+		_renderWidth = ((_srcWidth / _texWidth) * _texture.widthRatio());
+		_renderHeight = ((_srcHeight / _texHeight) * _texture.heightRatio());
 
 		glVertex2f(drawX, drawY);
 		glColor4f(c1);
-		glTexCoord2f(textureSrcX, textureSrcY);
+		glTexCoord2f(_textureSrcX, _textureSrcY);
 
-		glVertex2f(drawX, drawY + drawHeight);
+		glVertex2f(drawX, drawY + _drawHeight);
 		glColor4f(c2);
-		glTexCoord2f(textureSrcX, textureSrcY + renderHeight);
+		glTexCoord2f(_textureSrcX, _textureSrcY + _renderHeight);
 
-		glVertex2f(drawX + drawWidth, drawY + drawHeight);
+		glVertex2f(drawX + _drawWidth, drawY + _drawHeight);
 		glColor4f(c3);
-		glTexCoord2f(textureSrcX + renderWidth, textureSrcY + renderHeight);
+		glTexCoord2f(_textureSrcX + _renderWidth, _textureSrcY + _renderHeight);
 
-		glVertex2f(drawX + drawWidth, drawY);
+		glVertex2f(drawX + _drawWidth, drawY);
 		glColor4f(c4);
-		glTexCoord2f(textureSrcX + renderWidth, textureSrcY);
+		glTexCoord2f(_textureSrcX + _renderWidth, _textureSrcY);
 		return this;
 	}
 
 	public LTextureBatch drawQuad(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4) {
-		return drawQuad(x1, y1, baseColor, x2, y2, baseColor, x3, y3, baseColor, x4, y4, baseColor);
+		return drawQuad(x1, y1, _baseColor, x2, y2, _baseColor, x3, y3, _baseColor, x4, y4, _baseColor);
 	}
 
 	public LTextureBatch draw(float x, float y, LColor[] c) {
-		draw(c, x, y, texture.width(), texture.height());
+		draw(c, x, y, _texture.width(), _texture.height());
 		return this;
 	}
 
@@ -792,7 +793,7 @@ public final class LTextureBatch implements LRelease {
 		if (update) {
 			setImageColor(c);
 		}
-		draw(colors, x, y, texture.width(), texture.height());
+		draw(_colors, x, y, _texture.width(), _texture.height());
 		if (update) {
 			setImageColor(LColor.white);
 		}
@@ -804,7 +805,7 @@ public final class LTextureBatch implements LRelease {
 		if (update) {
 			setImageColor(c);
 		}
-		draw(colors, x, y, width, height);
+		draw(_colors, x, y, width, height);
 		if (update) {
 			setImageColor(LColor.white);
 		}
@@ -823,7 +824,7 @@ public final class LTextureBatch implements LRelease {
 		if (update) {
 			setImageColor(c);
 		}
-		draw(colors, x, y, width, height, x1, y1, x2, y2);
+		draw(_colors, x, y, width, height, x1, y1, x2, y2);
 		if (update) {
 			setImageColor(LColor.white);
 		}
@@ -835,7 +836,7 @@ public final class LTextureBatch implements LRelease {
 		if (update) {
 			setImageColor(c);
 		}
-		draw(colors, x, y, w, h, rotation);
+		draw(_colors, x, y, w, h, rotation);
 		if (update) {
 			setImageColor(LColor.white);
 		}
@@ -843,19 +844,19 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch draw(LColor[] colors, float x, float y, float rotation) {
-		return draw(colors, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
-				rotation, 0, 0, texture.width(), texture.height(), false, false);
+		return draw(colors, x, y, _texture.width() / 2, _texture.height() / 2, _texture.width(), _texture.height(), 1f,
+				1f, rotation, 0, 0, _texture.width(), _texture.height(), false, false);
 	}
 
 	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height, float rotation) {
-		return draw(colors, x, y, texture.width() / 2, texture.height() / 2, width, height, 1f, 1f, rotation, 0, 0,
-				texture.width(), texture.height(), false, false);
+		return draw(colors, x, y, _texture.width() / 2, _texture.height() / 2, width, height, 1f, 1f, rotation, 0, 0,
+				_texture.width(), _texture.height(), false, false);
 	}
 
 	public LTextureBatch draw(LColor[] colors, float x, float y, float srcX, float srcY, float srcWidth,
 			float srcHeight, float rotation) {
-		return draw(colors, x, y, texture.width() / 2, texture.height() / 2, texture.width(), texture.height(), 1f, 1f,
-				rotation, srcX, srcY, srcWidth, srcHeight, false, false);
+		return draw(colors, x, y, _texture.width() / 2, _texture.height() / 2, _texture.width(), _texture.height(), 1f,
+				1f, rotation, srcX, srcY, srcWidth, srcHeight, false, false);
 	}
 
 	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height, float srcX, float srcY,
@@ -866,7 +867,7 @@ public final class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float width, float height, float srcX, float srcY, float srcWidth,
 			float srcHeight, float rotation, boolean flipX, boolean flipY) {
-		return draw(colors, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
+		return draw(_colors, x, y, width / 2, height / 2, width, height, 1f, 1f, rotation, srcX, srcY, srcWidth,
 				srcHeight, flipX, flipY);
 	}
 
@@ -878,14 +879,14 @@ public final class LTextureBatch implements LRelease {
 
 	public LTextureBatch draw(float x, float y, float width, float height, float scaleX, float scaleY, float rotation,
 			float srcX, float srcY, float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
-		return draw(colors, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
+		return draw(_colors, x, y, width / 2, height / 2, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
 				srcHeight, flipX, flipY);
 	}
 
 	public LTextureBatch draw(float x, float y, float originX, float originY, float width, float height, float scaleX,
 			float scaleY, float rotation, float srcX, float srcY, float srcWidth, float srcHeight, boolean flipX,
 			boolean flipY) {
-		return draw(colors, x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
+		return draw(_colors, x, y, originX, originY, width, height, scaleX, scaleY, rotation, srcX, srcY, srcWidth,
 				srcHeight, flipX, flipY);
 	}
 
@@ -893,7 +894,7 @@ public final class LTextureBatch implements LRelease {
 			float height, float scaleX, float scaleY, float rotation, float srcX, float srcY, float srcWidth,
 			float srcHeight, boolean flipX, boolean flipY) {
 
-		if (!checkTexture(texture)) {
+		if (!checkTexture(_texture)) {
 			return this;
 		}
 		final float worldOriginX = x + originX;
@@ -966,56 +967,56 @@ public final class LTextureBatch implements LRelease {
 		x4 += worldOriginX;
 		y4 += worldOriginY;
 
-		xOff = srcX * invTexWidth + texture.xOff();
-		yOff = srcY * invTexHeight + texture.yOff();
-		widthRatio = srcWidth * invTexWidth;
-		heightRatio = srcHeight * invTexHeight;
+		_xOff = srcX * _invTexWidth + _texture.xOff();
+		_yOff = srcY * _invTexHeight + _texture.yOff();
+		_widthRatio = srcWidth * _invTexWidth;
+		_heightRatio = srcHeight * _invTexHeight;
 
 		if (flipX) {
-			float tmp = xOff;
-			xOff = widthRatio;
-			widthRatio = tmp;
+			float tmp = _xOff;
+			_xOff = _widthRatio;
+			_widthRatio = tmp;
 		}
 
 		if (flipY) {
-			float tmp = yOff;
-			yOff = heightRatio;
-			heightRatio = tmp;
+			float tmp = _yOff;
+			_yOff = _heightRatio;
+			_heightRatio = tmp;
 		}
 
 		if (colors == null) {
 			glVertex2f(x1, y1);
 			glColor4f();
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x2, y2);
 			glColor4f();
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(x3, y3);
 			glColor4f();
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(x4, y4);
 			glColor4f();
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 
 		} else {
 			glVertex2f(x1, y1);
 			glColor4f(colors[LTexture.TOP_LEFT]);
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x2, y2);
 			glColor4f(colors[LTexture.BOTTOM_LEFT]);
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(x3, y3);
 			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(x4, y4);
 			glColor4f(colors[LTexture.TOP_RIGHT]);
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 		}
 		return this;
 	}
@@ -1023,61 +1024,61 @@ public final class LTextureBatch implements LRelease {
 	public LTextureBatch draw(LColor[] colors, float x, float y, float width, float height, float srcX, float srcY,
 			float srcWidth, float srcHeight, boolean flipX, boolean flipY) {
 
-		if (!checkTexture(texture)) {
+		if (!checkTexture(_texture)) {
 			return this;
 		}
-		xOff = srcX * invTexWidth + texture.xOff();
-		yOff = srcY * invTexHeight + texture.yOff();
-		widthRatio = srcWidth * invTexWidth;
-		heightRatio = srcHeight * invTexHeight;
+		_xOff = srcX * _invTexWidth + _texture.xOff();
+		_yOff = srcY * _invTexHeight + _texture.yOff();
+		_widthRatio = srcWidth * _invTexWidth;
+		_heightRatio = srcHeight * _invTexHeight;
 
 		final float fx2 = x + width;
 		final float fy2 = y + height;
 
 		if (flipX) {
-			float tmp = xOff;
-			xOff = widthRatio;
-			widthRatio = tmp;
+			float tmp = _xOff;
+			_xOff = _widthRatio;
+			_widthRatio = tmp;
 		}
 
 		if (flipY) {
-			float tmp = yOff;
-			yOff = heightRatio;
-			heightRatio = tmp;
+			float tmp = _yOff;
+			_yOff = _heightRatio;
+			_heightRatio = tmp;
 		}
 
 		if (colors == null) {
 			glVertex2f(x, y);
 			glColor4f();
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x, fy2);
 			glColor4f();
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(fx2, fy2);
 			glColor4f();
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(fx2, y);
 			glColor4f();
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 		} else {
 			glVertex2f(x, y);
 			glColor4f(colors[LTexture.TOP_LEFT]);
-			glTexCoord2f(xOff, yOff);
+			glTexCoord2f(_xOff, _yOff);
 
 			glVertex2f(x, fy2);
 			glColor4f(colors[LTexture.BOTTOM_LEFT]);
-			glTexCoord2f(xOff, heightRatio);
+			glTexCoord2f(_xOff, _heightRatio);
 
 			glVertex2f(fx2, fy2);
 			glColor4f(colors[LTexture.BOTTOM_RIGHT]);
-			glTexCoord2f(widthRatio, heightRatio);
+			glTexCoord2f(_widthRatio, _heightRatio);
 
 			glVertex2f(fx2, y);
 			glColor4f(colors[LTexture.TOP_RIGHT]);
-			glTexCoord2f(widthRatio, yOff);
+			glTexCoord2f(_widthRatio, _yOff);
 		}
 		return this;
 	}
@@ -1148,25 +1149,25 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch setColor(int corner, float r, float g, float b, float a) {
-		if (colors == null) {
-			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+		if (_colors == null) {
+			_colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
 		}
-		colors[corner].r = r;
-		colors[corner].g = g;
-		colors[corner].b = b;
-		colors[corner].a = a;
+		_colors[corner].r = r;
+		_colors[corner].g = g;
+		_colors[corner].b = b;
+		_colors[corner].a = a;
 		return this;
 	}
 
 	public LTextureBatch setColor(int corner, float r, float g, float b) {
-		if (colors == null) {
-			colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
+		if (_colors == null) {
+			_colors = new LColor[] { new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f), new LColor(1f, 1f, 1f, 1f),
 					new LColor(1f, 1f, 1f, 1f) };
 		}
-		colors[corner].r = r;
-		colors[corner].g = g;
-		colors[corner].b = b;
+		_colors[corner].r = r;
+		_colors[corner].g = g;
+		_colors[corner].b = b;
 		return this;
 	}
 
@@ -1175,7 +1176,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch commit(float x, float y, float sx, float sy, float ax, float ay, float rotaion) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		Matrix4 project = LSystem.base().graphics().getViewMatrix();
@@ -1195,21 +1196,21 @@ public final class LTextureBatch implements LRelease {
 				project.rotate(0f, 0f, 1f, rotaion);
 				project.translate(-ax, -ay, 0.0f);
 			} else {
-				project.translate(texture.width() / 2, texture.height() / 2, 0.0f);
+				project.translate(_texture.width() / 2, _texture.height() / 2, 0.0f);
 				project.rotate(0f, 0f, 0f, rotaion);
-				project.translate(-texture.width() / 2, -texture.height() / 2, 0.0f);
+				project.translate(-_texture.width() / 2, -_texture.height() / 2, 0.0f);
 			}
 		}
-		if (drawing) {
+		if (_drawing) {
 			setupMatrices(project);
 		}
 		end();
-		runningCache = true;
+		_runningCache = true;
 		return this;
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor baseColor, float x, float y) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		x += cache.x;
@@ -1219,13 +1220,13 @@ public final class LTextureBatch implements LRelease {
 			project = project.cpy();
 			project.translate(x, y, 0);
 		}
-		commit(project, cache, baseColor, lastBlendState);
+		commit(project, cache, baseColor, _lastBlendState);
 		return this;
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor baseColor, float x, float y, float sx, float sy, float ax,
 			float ay, float rotaion) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		x += cache.x;
@@ -1247,17 +1248,17 @@ public final class LTextureBatch implements LRelease {
 				project.rotate(0f, 0f, 1f, rotaion);
 				project.translate(-ax, -ay, 0.0f);
 			} else {
-				project.translate(texture.width() / 2, texture.height() / 2, 0.0f);
+				project.translate(_texture.width() / 2, _texture.height() / 2, 0.0f);
 				project.rotate(0f, 0f, 0f, rotaion);
-				project.translate(-texture.width() / 2, -texture.height() / 2, 0.0f);
+				project.translate(-_texture.width() / 2, -_texture.height() / 2, 0.0f);
 			}
 		}
-		commit(project, cache, baseColor, lastBlendState);
+		commit(project, cache, baseColor, _lastBlendState);
 		return this;
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor baseColor, float rotaion) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		float x = cache.x;
@@ -1265,17 +1266,17 @@ public final class LTextureBatch implements LRelease {
 		Matrix4 project = LSystem.base().graphics().getViewMatrix();
 		if (rotaion != 0) {
 			project = project.cpy();
-			project.translate((texture.width() / 2) + x, (y + texture.height() / 2) + y, 0.0f);
+			project.translate((_texture.width() / 2) + x, (y + _texture.height() / 2) + y, 0.0f);
 			project.rotate(0f, 0f, 1f, rotaion);
-			project.translate((-texture.width() / 2) + y, (-texture.height() / 2) + y, 0.0f);
+			project.translate((-_texture.width() / 2) + y, (-_texture.height() / 2) + y, 0.0f);
 		}
-		commit(project, cache, baseColor, lastBlendState);
+		commit(project, cache, baseColor, _lastBlendState);
 		return this;
 	}
 
 	public LTextureBatch postCache(LColor baseColor, float rotaion) {
-		if (lastCache != null) {
-			postCache(lastCache, baseColor, rotaion);
+		if (_lastCache != null) {
+			postCache(_lastCache, baseColor, rotaion);
 		}
 		return this;
 	}
@@ -1296,7 +1297,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch.Cache restoreCachePost(int hashCodeValue) {
-		return restoreCachePost(hashCodeValue, colors == null ? LColor.white : colors[0], 0f, 0f);
+		return restoreCachePost(hashCodeValue, _colors == null ? LColor.white : _colors[0], 0f, 0f);
 	}
 
 	public LTextureBatch.Cache restoreCachePost(int hashCodeValue, LColor baseColor, float x, float y) {
@@ -1315,21 +1316,21 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public int getTextureID() {
-		if (texture != null) {
-			return texture.getID();
+		if (_texture != null) {
+			return _texture.getID();
 		}
 		return -1;
 	}
 
 	public int getTextureHashCode() {
-		if (texture != null) {
-			return texture.hashCode();
+		if (_texture != null) {
+			return _texture.hashCode();
 		}
 		return -1;
 	}
 
 	public boolean closed() {
-		return isClosed;
+		return _isClosed;
 	}
 
 	public boolean isClosed() {
@@ -1338,17 +1339,17 @@ public final class LTextureBatch implements LRelease {
 
 	@Override
 	public void close() {
-		isClosed = true;
-		isLoaded = false;
-		isCacheLocked = false;
-		if (shader != null) {
-			shader.close();
+		_isClosed = true;
+		_isLoaded = false;
+		_isCacheLocked = false;
+		if (_shader != null) {
+			_shader.close();
 		}
-		if (globalShader != null) {
-			globalShader.close();
+		if (_globalShader != null) {
+			_globalShader.close();
 		}
-		if (customShader != null) {
-			customShader.close();
+		if (_customShader != null) {
+			_customShader.close();
 		}
 		if (_caches != null) {
 			for (LTextureBatch.Cache cache : _caches) {
@@ -1358,19 +1359,19 @@ public final class LTextureBatch implements LRelease {
 			}
 			_caches.clear();
 		}
-		if (lastCache != null) {
-			lastCache.close();
+		if (_lastCache != null) {
+			_lastCache.close();
 		}
-		if (!_batch_name.equals(name)) {
-			mesh.dispose(name, expandVertices.getSize());
+		if (!_batch_name.equals(_name)) {
+			_mesh.dispose(_name, _expandVertices.getSize());
 		}
 		LSystem.disposeBatchCache(this, false);
-		runningCache = false;
+		_runningCache = false;
 	}
 
 	public LTextureBatch destroy() {
-		if (texture != null) {
-			texture.close(true);
+		if (_texture != null) {
+			_texture.close(true);
 		}
 		return this;
 	}

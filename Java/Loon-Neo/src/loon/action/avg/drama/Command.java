@@ -43,79 +43,79 @@ import loon.utils.res.TextResource;
 public class Command extends Conversion implements LRelease {
 
 	// 脚本缓存
-	private static ArrayMap scriptLazy;
+	private static ArrayMap _scriptLazy;
 
 	// 脚本数据缓存
-	private static ArrayMap scriptContext;
+	private static ArrayMap _scriptContext;
 
 	// 函数列表
-	private static ArrayMap functions;
+	private static ArrayMap _functions;
 
 	// 变量列表
-	private static ArrayMap setEnvironmentList;
+	private static ArrayMap _setEnvironmentList;
 
 	// 条件分支列表
-	private static ArrayMap conditionEnvironmentList;
+	private static ArrayMap _conditionEnvironmentList;
 
 	// 读入连续数据
-	private StrBuilder readBuffer;
+	private StrBuilder _readBuffer;
 
 	// 缓存脚本名
-	private String cacheCommandName;
+	private String _cacheCommandName;
 
 	// 注释标记中
-	private boolean flaging = false;
+	private boolean _flaging = false;
 
 	// 判断标记中
-	private boolean ifing = false;
+	private boolean _ifing = false;
 
 	// 函数标记中
-	private boolean functioning = false;
+	private boolean _functioning = false;
 
 	// 分支标记
-	private boolean elseflag = false;
+	private boolean _elseflag = false;
 
-	private boolean esleover = false;
+	private boolean _esleover = false;
 
-	private boolean backIfBool = false;
+	private boolean _backIfBool = false;
 
-	private boolean isClose;
+	private boolean _isClose;
 
-	private String executeCommand = null;
+	private String _executeCommand = null;
 
-	private String nowPosFlagName = null;
+	private String _nowPosFlagName = null;
 
-	private boolean addCommand;
+	private boolean _addCommand;
 
-	private boolean isInnerCommand;
+	private boolean _isInnerCommand;
 
-	private boolean isRead;
+	private boolean _isRead;
 
-	private boolean isCall;
+	private boolean _isCall;
 
-	private boolean isCache;
+	private boolean _isCache;
 
-	private boolean if_bool;
+	private boolean _if_bool;
 
-	private boolean elseif_bool;
+	private boolean _elseif_bool;
 
-	private Command innerCommand;
+	private Command _innerCommand;
 
-	private TArray<String> temps;
+	private TArray<String> _temps;
 
-	private TArray<String> printTags;
+	private TArray<String> _printTags;
 
-	private TArray<String> randTags;
+	private TArray<String> _randTags;
 
-	private int scriptSize;
+	private int _scriptSize;
 
-	private int offsetPos;
+	private int _offsetPos;
 
 	// 脚本数据列表
-	private String[] scriptList;
+	private String[] _scriptList;
 
 	// 脚本名
-	private String scriptName;
+	private String _scriptName;
 
 	/**
 	 * 构造函数，载入指定脚本文件
@@ -135,43 +135,43 @@ public class Command extends Conversion implements LRelease {
 	public Command(final String fileName, final String[] res) {
 		createCache(false);
 		formatCommand("function", res);
-		scriptName = fileName;
+		_scriptName = fileName;
 	}
 
 	public static void createCache(final boolean free) {
 		if (free) {
-			if (scriptContext == null) {
-				scriptContext = new ArrayMap(1000);
+			if (_scriptContext == null) {
+				_scriptContext = new ArrayMap(1000);
 			} else {
-				scriptContext.clear();
+				_scriptContext.clear();
 			}
-			if (functions == null) {
-				functions = new ArrayMap(20);
+			if (_functions == null) {
+				_functions = new ArrayMap(20);
 			} else {
-				functions.clear();
+				_functions.clear();
 			}
-			if (setEnvironmentList == null) {
-				setEnvironmentList = new ArrayMap(20);
+			if (_setEnvironmentList == null) {
+				_setEnvironmentList = new ArrayMap(20);
 			} else {
-				setEnvironmentList.clear();
+				_setEnvironmentList.clear();
 			}
-			if (conditionEnvironmentList == null) {
-				conditionEnvironmentList = new ArrayMap(30);
+			if (_conditionEnvironmentList == null) {
+				_conditionEnvironmentList = new ArrayMap(30);
 			} else {
-				conditionEnvironmentList.clear();
+				_conditionEnvironmentList.clear();
 			}
 		} else {
-			if (scriptContext == null) {
-				scriptContext = new ArrayMap(1000);
+			if (_scriptContext == null) {
+				_scriptContext = new ArrayMap(1000);
 			}
-			if (functions == null) {
-				functions = new ArrayMap(20);
+			if (_functions == null) {
+				_functions = new ArrayMap(20);
 			}
-			if (setEnvironmentList == null) {
-				setEnvironmentList = new ArrayMap(20);
+			if (_setEnvironmentList == null) {
+				_setEnvironmentList = new ArrayMap(20);
 			}
-			if (conditionEnvironmentList == null) {
-				conditionEnvironmentList = new ArrayMap(30);
+			if (_conditionEnvironmentList == null) {
+				_conditionEnvironmentList = new ArrayMap(30);
 			}
 		}
 	}
@@ -191,47 +191,47 @@ public class Command extends Conversion implements LRelease {
 			return this;
 		}
 		if (!"function".equalsIgnoreCase(name)) {
-			if (functions != null) {
-				functions.clear();
+			if (_functions != null) {
+				_functions.clear();
 			}
 		}
-		if (conditionEnvironmentList != null) {
-			conditionEnvironmentList.clear();
+		if (_conditionEnvironmentList != null) {
+			_conditionEnvironmentList.clear();
 		}
-		if (setEnvironmentList != null) {
-			setEnvironmentList.put(V_SELECT_KEY, "-1");
+		if (_setEnvironmentList != null) {
+			_setEnvironmentList.put(V_SELECT_KEY, "-1");
 		}
-		if (readBuffer == null) {
-			readBuffer = new StrBuilder(256);
+		if (_readBuffer == null) {
+			_readBuffer = new StrBuilder(256);
 		} else {
-			readBuffer.setLength(0);
+			_readBuffer.setLength(0);
 		}
-		this.scriptName = name;
-		this.scriptList = res;
-		this.scriptSize = res.length;
-		this.offsetPos = 0;
-		this.flaging = false;
-		this.ifing = false;
-		this.isCache = true;
-		this.elseflag = false;
-		this.backIfBool = false;
-		this.functioning = false;
-		this.esleover = false;
-		this.backIfBool = false;
-		this.addCommand = false;
-		this.isInnerCommand = false;
-		this.isRead = false;
-		this.isCall = false;
-		this.isCache = false;
-		this.if_bool = false;
-		this.elseif_bool = false;
+		this._scriptName = name;
+		this._scriptList = res;
+		this._scriptSize = res.length;
+		this._offsetPos = 0;
+		this._flaging = false;
+		this._ifing = false;
+		this._isCache = true;
+		this._elseflag = false;
+		this._backIfBool = false;
+		this._functioning = false;
+		this._esleover = false;
+		this._backIfBool = false;
+		this._addCommand = false;
+		this._isInnerCommand = false;
+		this._isRead = false;
+		this._isCall = false;
+		this._isCache = false;
+		this._if_bool = false;
+		this._elseif_bool = false;
 		return this;
 	}
 
 	private void setDefaultIF(final boolean flag) {
-		conditionEnvironmentList.put(nowPosFlagName, flag);
-		esleover = elseflag = flag;
-		addCommand = false;
+		_conditionEnvironmentList.put(_nowPosFlagName, flag);
+		_esleover = _elseflag = flag;
+		_addCommand = false;
 	}
 
 	private boolean setupIF(final String commandString, final String nowPosFlagName, final ArrayMap setEnvironmentList,
@@ -297,8 +297,8 @@ public class Command extends Conversion implements LRelease {
 		} catch (Throwable ex) {
 			LSystem.error("Command parse exception", ex);
 		}
-		esleover = elseflag = result;
-		addCommand = false;
+		_esleover = _elseflag = result;
+		_addCommand = false;
 		return result;
 	}
 
@@ -307,7 +307,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 */
 	public void openCache() {
-		isCache = true;
+		_isCache = true;
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 */
 	public void closeCache() {
-		isCache = false;
+		_isCache = false;
 	}
 
 	/**
@@ -324,7 +324,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String nowCacheOffsetName(final String cmd) {
-		return (scriptName + FLAG + offsetPos + FLAG + cmd).toLowerCase();
+		return (_scriptName + FLAG + _offsetPos + FLAG + cmd).toLowerCase();
 	}
 
 	/**
@@ -332,17 +332,17 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 */
 	public static void resetCache() {
-		if (scriptContext != null) {
-			scriptContext.clear();
+		if (_scriptContext != null) {
+			_scriptContext.clear();
 		}
 	}
 
 	public boolean isRead() {
-		return isRead;
+		return _isRead;
 	}
 
 	public Command setRead(boolean r) {
-		this.isRead = r;
+		this._isRead = r;
 		return this;
 	}
 
@@ -352,7 +352,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String[] getReads() {
-		final String result = StringUtils.replace(readBuffer.toString(), SELECTS_TAG, LSystem.EMPTY);
+		final String result = StringUtils.replace(_readBuffer.toString(), SELECTS_TAG, LSystem.EMPTY);
 		return StringUtils.split(result, FLAG_CHAR);
 	}
 
@@ -447,8 +447,8 @@ public class Command extends Conversion implements LRelease {
 	 * @param type
 	 */
 	public Command select(int type) {
-		if (innerCommand != null) {
-			innerCommand.setVariable(V_SELECT_KEY, String.valueOf(type));
+		if (_innerCommand != null) {
+			_innerCommand.setVariable(V_SELECT_KEY, String.valueOf(type));
 		}
 		return setVariable(V_SELECT_KEY, String.valueOf(type));
 	}
@@ -464,7 +464,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param v
 	 */
 	public Command setVariable(final String key, final Object vl) {
-		setEnvironmentList.put(key, vl);
+		_setEnvironmentList.put(key, vl);
 		return this;
 	}
 
@@ -474,7 +474,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param vars
 	 */
 	public Command setVariables(final ArrayMap vars) {
-		setEnvironmentList.putAll(vars);
+		_setEnvironmentList.putAll(vars);
 		return this;
 	}
 
@@ -484,11 +484,11 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public ArrayMap getVariables() {
-		return setEnvironmentList;
+		return _setEnvironmentList;
 	}
 
 	public Object getVariable(final String key) {
-		return setEnvironmentList.get(key);
+		return _setEnvironmentList.get(key);
 	}
 
 	/**
@@ -497,7 +497,7 @@ public class Command extends Conversion implements LRelease {
 	 * @param key
 	 */
 	public void removeVariable(final String key) {
-		setEnvironmentList.remove(key);
+		_setEnvironmentList.remove(key);
 	}
 
 	/**
@@ -506,7 +506,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public boolean next() {
-		return (offsetPos < scriptSize);
+		return (_offsetPos < _scriptSize);
 	}
 
 	/**
@@ -516,9 +516,9 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public boolean gotoIndex(final int offset) {
-		boolean result = offset < scriptSize && offset > -1;
+		boolean result = offset < _scriptSize && offset > -1;
 		if (result) {
-			offsetPos = offset;
+			_offsetPos = offset;
 		}
 		return result;
 	}
@@ -531,9 +531,9 @@ public class Command extends Conversion implements LRelease {
 	 */
 	public boolean gotoIndex(final String gotoFlag) {
 		int idx = -1;
-		for (int i = 0; i < scriptSize; i++) {
-			final String line = scriptList[i];
-			final Object varName = setEnvironmentList.get(line);
+		for (int i = 0; i < _scriptSize; i++) {
+			final String line = _scriptList[i];
+			final Object varName = _setEnvironmentList.get(line);
 			if (line.equals(gotoFlag)) {
 				idx = i;
 				break;
@@ -543,14 +543,14 @@ public class Command extends Conversion implements LRelease {
 			}
 		}
 		if (idx != -1) {
-			offsetPos = idx;
+			_offsetPos = idx;
 		}
 		return idx == -1;
 
 	}
 
 	public int getIndex() {
-		return offsetPos;
+		return _offsetPos;
 	}
 
 	/**
@@ -559,7 +559,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public TArray<String> batchToList() {
-		final TArray<String> reslist = new TArray<String>(scriptSize);
+		final TArray<String> reslist = new TArray<String>(_scriptSize);
 		for (; next();) {
 			final String execute = doExecute();
 			if (execute != null) {
@@ -575,7 +575,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String batchToString() {
-		final StrBuilder resString = new StrBuilder(scriptSize * 10);
+		final StrBuilder resString = new StrBuilder(_scriptSize * 10);
 		for (; next();) {
 			final String execute = doExecute();
 			if (execute != null) {
@@ -602,8 +602,8 @@ public class Command extends Conversion implements LRelease {
 			}
 			if (result != null) {
 				// 替换已有变量字符
-				for (int i = 0; i < setEnvironmentList.size(); i++) {
-					Entry entry = setEnvironmentList.getEntry(i);
+				for (int i = 0; i < _setEnvironmentList.size(); i++) {
+					Entry entry = _setEnvironmentList.getEntry(i);
 					if (!(StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
 							&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES))) {
 						result = StringUtils.replaceMatch(result, (String) entry.getKey(), (String) entry.getValue());
@@ -612,15 +612,15 @@ public class Command extends Conversion implements LRelease {
 				// 当为普通字符串时
 				if (StringUtils.startsWith(result, LSystem.DOUBLE_QUOTES)
 						&& StringUtils.endsWith(result, LSystem.DOUBLE_QUOTES)) {
-					setEnvironmentList.put(temps.get(1), result.substring(1, result.length() - 1));
+					_setEnvironmentList.put(temps.get(1), result.substring(1, result.length() - 1));
 				} else if (StringUtils.isChinaLanguage(result) || StringUtils.isEnglishAndNumeric(result)) {
-					setEnvironmentList.put(temps.get(1), result);
+					_setEnvironmentList.put(temps.get(1), result);
 				} else {
 					// 当为数学表达式时
-					setEnvironmentList.put(temps.get(1), exp.parse(result));
+					_setEnvironmentList.put(temps.get(1), exp.parse(result));
 				}
 			}
-			addCommand = false;
+			_addCommand = false;
 		}
 	}
 
@@ -632,11 +632,11 @@ public class Command extends Conversion implements LRelease {
 		String text = cmd.trim();
 		// 随机数判定
 		if (text.indexOf(RAND_TAG) != -1) {
-			randTags = Command.getNameTags(text, RAND_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
-			if (randTags != null) {
-				for (int i = 0; i < randTags.size; i++) {
-					String key = randTags.get(i);
-					Object vl = setEnvironmentList.get(key);
+			_randTags = Command.getNameTags(text, RAND_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
+			if (_randTags != null) {
+				for (int i = 0; i < _randTags.size; i++) {
+					String key = _randTags.get(i);
+					Object vl = _setEnvironmentList.get(key);
 					// 已存在变量
 					if (vl != null) {
 						text = StringUtils.replaceMatch(text,
@@ -658,14 +658,14 @@ public class Command extends Conversion implements LRelease {
 	}
 
 	private void innerCallTrue() {
-		isCall = true;
-		isInnerCommand = true;
+		_isCall = true;
+		_isInnerCommand = true;
 	}
 
 	private void innerCallFalse() {
-		isCall = false;
-		isInnerCommand = false;
-		innerCommand = null;
+		_isCall = false;
+		_isInnerCommand = false;
+		_innerCommand = null;
 	}
 
 	/**
@@ -674,86 +674,86 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public String doExecute() {
-		if (isClose) {
+		if (_isClose) {
 			return null;
 		}
-		this.executeCommand = null;
-		this.addCommand = true;
-		this.isInnerCommand = (innerCommand != null);
-		this.if_bool = false;
-		this.elseif_bool = false;
+		this._executeCommand = null;
+		this._addCommand = true;
+		this._isInnerCommand = (_innerCommand != null);
+		this._if_bool = false;
+		this._elseif_bool = false;
 		try {
 			// 执行call命令
-			if (isInnerCommand && isCall) {
-				setVariables(innerCommand.getVariables());
-				if (innerCommand.next()) {
-					return innerCommand.doExecute();
+			if (_isInnerCommand && _isCall) {
+				setVariables(_innerCommand.getVariables());
+				if (_innerCommand.next()) {
+					return _innerCommand.doExecute();
 				} else {
 					innerCallFalse();
-					return executeCommand;
+					return _executeCommand;
 				}
 				// 执行内部脚本
-			} else if (isInnerCommand && !isCall) {
-				setVariables(innerCommand.getVariables());
-				if (innerCommand.next()) {
-					return innerCommand.doExecute();
+			} else if (_isInnerCommand && !_isCall) {
+				setVariables(_innerCommand.getVariables());
+				if (_innerCommand.next()) {
+					return _innerCommand.doExecute();
 				} else {
-					innerCommand = null;
-					isInnerCommand = false;
-					return executeCommand;
+					_innerCommand = null;
+					_isInnerCommand = false;
+					return _executeCommand;
 				}
 			}
 
-			nowPosFlagName = String.valueOf(offsetPos);
-			final int length = conditionEnvironmentList.size();
+			_nowPosFlagName = String.valueOf(_offsetPos);
+			final int length = _conditionEnvironmentList.size();
 			if (length > 0) {
-				Object ifResult = conditionEnvironmentList.get(length - 1);
+				Object ifResult = _conditionEnvironmentList.get(length - 1);
 				if (ifResult != null) {
-					backIfBool = ((Boolean) ifResult).booleanValue();
+					_backIfBool = ((Boolean) ifResult).booleanValue();
 				}
 			}
 
 			// 空指向判定
-			if (scriptList == null) {
+			if (_scriptList == null) {
 				resetCache();
-				return executeCommand;
-			} else if (scriptList.length - 1 < offsetPos) {
+				return _executeCommand;
+			} else if (_scriptList.length - 1 < _offsetPos) {
 				resetCache();
-				return executeCommand;
+				return _executeCommand;
 			}
 
 			// 获得全行命令
-			final String cmd = scriptList[offsetPos].trim();
+			final String cmd = _scriptList[_offsetPos].trim();
 
 			// 清空脚本缓存
 			if (cmd.startsWith(RESET_CACHE_TAG)) {
 				resetCache();
-				return executeCommand;
+				return _executeCommand;
 			}
 
-			if (isCache) {
+			if (_isCache) {
 				// 获得缓存命令行名
-				cacheCommandName = nowCacheOffsetName(cmd);
+				_cacheCommandName = nowCacheOffsetName(cmd);
 				// 读取缓存的脚本
-				Object cache = scriptContext.get(cacheCommandName);
+				Object cache = _scriptContext.get(_cacheCommandName);
 				if (cache != null) {
 					return (String) cache;
 				}
 			}
 
 			// 注释中
-			if (flaging) {
-				flaging = !(cmd.startsWith(FLAG_LS_E_TAG) || cmd.endsWith(FLAG_LS_E_TAG));
-				return executeCommand;
+			if (_flaging) {
+				_flaging = !(cmd.startsWith(FLAG_LS_E_TAG) || cmd.endsWith(FLAG_LS_E_TAG));
+				return _executeCommand;
 			}
 
-			if (!flaging) {
+			if (!_flaging) {
 				// 全局注释
 				if (cmd.startsWith(FLAG_LS_B_TAG) && !cmd.endsWith(FLAG_LS_E_TAG)) {
-					flaging = true;
-					return executeCommand;
+					_flaging = true;
+					return _executeCommand;
 				} else if (cmd.startsWith(FLAG_LS_B_TAG) && cmd.endsWith(FLAG_LS_E_TAG)) {
-					return executeCommand;
+					return _executeCommand;
 				}
 			}
 
@@ -765,159 +765,159 @@ public class Command extends Conversion implements LRelease {
 
 			// 结束脚本中代码段标记
 			if (cmd.endsWith(END_TAG)) {
-				functioning = false;
-				return executeCommand;
+				_functioning = false;
+				return _executeCommand;
 			}
 
 			// 标注脚本中代码段标记
 			if (cmd.startsWith(BEGIN_TAG)) {
-				temps = commandSplit(cmd);
-				if (temps.size == 2) {
-					functioning = true;
-					functions.put(temps.get(1), new String[0]);
-					return executeCommand;
+				_temps = commandSplit(cmd);
+				if (_temps.size == 2) {
+					_functioning = true;
+					_functions.put(_temps.get(1), new String[0]);
+					return _executeCommand;
 				}
 			}
 
 			// 开始记录代码段
-			if (functioning) {
-				final int size = functions.size() - 1;
-				String[] function = (String[]) functions.get(size);
+			if (_functioning) {
+				final int size = _functions.size() - 1;
+				String[] function = (String[]) _functions.get(size);
 				final int index = function.length;
 				function = CollectionUtils.expand(function, 1);
 				function[index] = cmd;
-				functions.set(size, function);
-				return executeCommand;
+				_functions.set(size, function);
+				return _executeCommand;
 			}
 
 			// 执行代码段调用标记
-			if (((!elseflag && !ifing) || (elseflag && ifing)) && cmd.startsWith(CALL_TAG) && !isCall) {
-				temps = commandSplit(cmd);
-				if (temps.size == 2) {
-					final String functionName = temps.get(1);
-					final String[] funs = (String[]) functions.get(functionName);
+			if (((!_elseflag && !_ifing) || (_elseflag && _ifing)) && cmd.startsWith(CALL_TAG) && !_isCall) {
+				_temps = commandSplit(cmd);
+				if (_temps.size == 2) {
+					final String functionName = _temps.get(1);
+					final String[] funs = (String[]) _functions.get(functionName);
 					if (funs != null) {
-						innerCommand = new Command(scriptName + FLAG + functionName, funs);
-						innerCommand.closeCache();
-						innerCommand.setVariables(getVariables());
+						_innerCommand = new Command(_scriptName + FLAG + functionName, funs);
+						_innerCommand.closeCache();
+						_innerCommand.setVariables(getVariables());
 						innerCallTrue();
 						return null;
 					}
 				}
 			}
 
-			if (!if_bool && !elseif_bool) {
+			if (!_if_bool && !_elseif_bool) {
 				// 获得循序结构条件
-				if_bool = cmd.startsWith(IF_TAG);
-				elseif_bool = cmd.startsWith(ELSE_TAG);
+				_if_bool = cmd.startsWith(IF_TAG);
+				_elseif_bool = cmd.startsWith(ELSE_TAG);
 
 			}
 
 			// 条件判断a
-			if (if_bool) {
-				setupIF(cmd, nowPosFlagName, setEnvironmentList, conditionEnvironmentList);
-				ifing = true;
+			if (_if_bool) {
+				setupIF(cmd, _nowPosFlagName, _setEnvironmentList, _conditionEnvironmentList);
+				_ifing = true;
 				// 条件判断b
-			} else if (elseif_bool) {
+			} else if (_elseif_bool) {
 				final String[] value = StringUtils.split(cmd, LSystem.SPACE);
-				if (!backIfBool && !elseflag) {
+				if (!_backIfBool && !_elseflag) {
 					// 存在if判断
 					if (value.length > 1 && IF_TAG.equals(value[1])) {
-						setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(), nowPosFlagName,
-								setEnvironmentList, conditionEnvironmentList);
+						setupIF(StringUtils.replace(cmd, ELSE_TAG, LSystem.EMPTY).trim(), _nowPosFlagName,
+								_setEnvironmentList, _conditionEnvironmentList);
 						// 单纯的else
 					} else if (value.length == 1 && ELSE_TAG.equals(value[0])) {
-						if (!esleover) {
+						if (!_esleover) {
 							setDefaultIF(true);
 						}
 					}
 				} else {
-					elseflag = false;
-					addCommand = false;
-					conditionEnvironmentList.put(nowPosFlagName, Boolean.valueOf(false));
+					_elseflag = false;
+					_addCommand = false;
+					_conditionEnvironmentList.put(_nowPosFlagName, Boolean.valueOf(false));
 
 				}
 			}
 
 			// 分支结束
 			if (cmd.startsWith(IF_END_TAG)) {
-				conditionEnvironmentList.clear();
-				backIfBool = false;
-				addCommand = false;
-				ifing = false;
-				if_bool = false;
-				elseif_bool = false;
-				esleover = false;
+				_conditionEnvironmentList.clear();
+				_backIfBool = false;
+				_addCommand = false;
+				_ifing = false;
+				_if_bool = false;
+				_elseif_bool = false;
+				_esleover = false;
 				return null;
 			}
-			if (backIfBool) {
+			if (_backIfBool) {
 				// 加载内部脚本
 				if (cmd.startsWith(INCLUDE_TAG)) {
 					if (includeCommand(cmd)) {
 						return null;
 					}
 				}
-			} else if (cmd.startsWith(INCLUDE_TAG) && !ifing && !backIfBool && !elseflag) {
+			} else if (cmd.startsWith(INCLUDE_TAG) && !_ifing && !_backIfBool && !_elseflag) {
 				if (includeCommand(cmd)) {
 					return null;
 				}
 			}
 			// 选择项列表结束
 			if (cmd.startsWith(OUT_TAG)) {
-				isRead = false;
-				addCommand = false;
-				executeCommand = (SELECTS_TAG + " " + readBuffer.toString());
+				_isRead = false;
+				_addCommand = false;
+				_executeCommand = (SELECTS_TAG + " " + _readBuffer.toString());
 			}
 			// 累计选择项
-			if (isRead) {
-				readBuffer.append(cmd);
-				readBuffer.append(FLAG);
-				addCommand = false;
+			if (_isRead) {
+				_readBuffer.append(cmd);
+				_readBuffer.append(FLAG);
+				_addCommand = false;
 			}
 			// 选择项列表
 			if (cmd.startsWith(IN_TAG)) {
-				readBuffer.setLength(0);
-				isRead = true;
-				return executeCommand;
+				_readBuffer.setLength(0);
+				_isRead = true;
+				return _executeCommand;
 			}
 
 			// 输出脚本判断
-			if (addCommand && ifing) {
-				if (backIfBool && elseflag) {
-					executeCommand = cmd;
+			if (_addCommand && _ifing) {
+				if (_backIfBool && _elseflag) {
+					_executeCommand = cmd;
 				}
-			} else if (addCommand) {
-				executeCommand = cmd;
+			} else if (_addCommand) {
+				_executeCommand = cmd;
 			}
 
 			if (cmd.startsWith(FLAG_SAVE_TAG)) {
-				temps = commandSplit(cmd);
-				if (temps != null && temps.size == 2) {
-					executeCommand = cmd;
+				_temps = commandSplit(cmd);
+				if (_temps != null && _temps.size == 2) {
+					_executeCommand = cmd;
 					saveCommand(null, null);
-					return executeCommand;
+					return _executeCommand;
 				}
 			} else if (cmd.startsWith(FLAG_LOAD_TAG)) {
-				temps = commandSplit(cmd);
-				if (temps != null && temps.size == 2) {
-					executeCommand = cmd;
+				_temps = commandSplit(cmd);
+				if (_temps != null && _temps.size == 2) {
+					_executeCommand = cmd;
 					loadCommand(null, -1);
-					return executeCommand;
+					return _executeCommand;
 				}
 			}
 
 			// 替换脚本字符串内容
-			if (executeCommand != null) {
-				printTags = Command.getNameTags(executeCommand, PRINT_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
-				if (printTags != null) {
-					for (int i = 0; i < printTags.size; i++) {
-						String key = printTags.get(i);
-						Object vl = setEnvironmentList.get(key);
+			if (_executeCommand != null) {
+				_printTags = Command.getNameTags(_executeCommand, PRINT_TAG + BRACKET_LEFT_TAG, BRACKET_RIGHT_TAG);
+				if (_printTags != null) {
+					for (int i = 0; i < _printTags.size; i++) {
+						String key = _printTags.get(i);
+						Object vl = _setEnvironmentList.get(key);
 						if (vl != null) {
-							executeCommand = StringUtils.replaceMatch(executeCommand,
+							_executeCommand = StringUtils.replaceMatch(_executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
 						} else {
-							executeCommand = StringUtils.replaceMatch(executeCommand,
+							_executeCommand = StringUtils.replaceMatch(_executeCommand,
 									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), key);
 						}
 
@@ -925,16 +925,16 @@ public class Command extends Conversion implements LRelease {
 
 				}
 
-				if (isCache) {
+				if (_isCache) {
 					// 注入脚本缓存
-					scriptContext.put(cacheCommandName, executeCommand);
+					_scriptContext.put(_cacheCommandName, _executeCommand);
 				}
 			}
 			// 跳转到指定脚本位置
 			if (cmd.startsWith(GOTO_TAG)) {
-				temps = commandSplit(cmd);
-				if (temps != null && temps.size == 2) {
-					final String gotoFlag = temps.get(1);
+				_temps = commandSplit(cmd);
+				if (_temps != null && _temps.size == 2) {
+					final String gotoFlag = _temps.get(1);
 					// 如果是数字，跳转到指定行数
 					if (MathUtils.isNan(gotoFlag)) {
 						gotoIndex(MathUtils.ifloor(Float.parseFloat(gotoFlag)));
@@ -944,14 +944,14 @@ public class Command extends Conversion implements LRelease {
 				}
 			}
 		} catch (Throwable ex) {
-			throw new LSysException("Command index " + offsetPos + " read error !", ex);
+			throw new LSysException("Command index " + _offsetPos + " read error !", ex);
 		} finally {
-			if (!isInnerCommand) {
-				offsetPos++;
+			if (!_isInnerCommand) {
+				_offsetPos++;
 			}
 		}
 
-		return executeCommand;
+		return _executeCommand;
 	}
 
 	/**
@@ -961,7 +961,7 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final String getSaveName(final String name) {
-		String newName = scriptName + "_" + name;
+		String newName = _scriptName + "_" + name;
 		newName = StringUtils.replaceIgnoreCase(newName, "/", "$");
 		newName = StringUtils.replaceIgnoreCase(newName, "\\", "$");
 		return newName;
@@ -974,30 +974,30 @@ public class Command extends Conversion implements LRelease {
 	 * @param other
 	 */
 	public final void saveCommand(String name, ArrayMap other) {
-		isRead = false;
-		addCommand = false;
-		if (name == null && temps != null && temps.size > 0) {
-			name = temps.get(1);
+		_isRead = false;
+		_addCommand = false;
+		if (name == null && _temps != null && _temps.size > 0) {
+			name = _temps.get(1);
 		}
 		Session session = new Session(getSaveName(name), false);
-		for (int i = 0; i < setEnvironmentList.size(); i++) {
-			Entry entry = setEnvironmentList.getEntry(i);
+		for (int i = 0; i < _setEnvironmentList.size(); i++) {
+			Entry entry = _setEnvironmentList.getEntry(i);
 			session.add((String) entry.getKey(), (String) entry.getValue());
 		}
-		session.add("cmd_offsetPos", MathUtils.min(offsetPos + 1, scriptSize));
-		session.add("cmd_cacheName", cacheCommandName);
-		session.add("cmd_nowPosFlagName", nowPosFlagName);
-		session.add("cmd_flaging", flaging);
-		session.add("cmd_ifing", ifing);
-		session.add("cmd_functioning", functioning);
-		session.add("cmd_elseflag", elseflag);
-		session.add("cmd_elseover", esleover);
-		session.add("cmd_backIfBool", backIfBool);
-		session.add("cmd_isInnerCommand", isInnerCommand);
-		session.add("cmd_isRead", isRead);
-		session.add("cmd_isCall", isCall);
-		session.add("cmd_if_bool", if_bool);
-		session.add("cmd_elseif_bool", elseif_bool);
+		session.add("cmd_offsetPos", MathUtils.min(_offsetPos + 1, _scriptSize));
+		session.add("cmd_cacheName", _cacheCommandName);
+		session.add("cmd_nowPosFlagName", _nowPosFlagName);
+		session.add("cmd_flaging", _flaging);
+		session.add("cmd_ifing", _ifing);
+		session.add("cmd_functioning", _functioning);
+		session.add("cmd_elseflag", _elseflag);
+		session.add("cmd_elseover", _esleover);
+		session.add("cmd_backIfBool", _backIfBool);
+		session.add("cmd_isInnerCommand", _isInnerCommand);
+		session.add("cmd_isRead", _isRead);
+		session.add("cmd_isCall", _isCall);
+		session.add("cmd_if_bool", _if_bool);
+		session.add("cmd_elseif_bool", _elseif_bool);
 		if (other != null) {
 			for (int i = 0; i < other.size(); i++) {
 				Entry entry = other.getEntry(i);
@@ -1031,33 +1031,33 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	public final ArrayMap loadCommand(String name, int line, TArray<String> other) {
-		isRead = false;
-		addCommand = false;
-		if (name == null && temps != null && temps.size > 0) {
-			name = temps.get(1);
+		_isRead = false;
+		_addCommand = false;
+		if (name == null && _temps != null && _temps.size > 0) {
+			name = _temps.get(1);
 		}
 		final Session session = Session.load(getSaveName(name));
 		if (session.getSize() > 0) {
-			setEnvironmentList.putAll(session.getRecords(0));
-			int offsetLine = session.getInt("cmd_offsetPos", offsetPos);
-			if (offsetLine == offsetPos) {
-				gotoIndex(offsetPos + 1);
+			_setEnvironmentList.putAll(session.getRecords(0));
+			int offsetLine = session.getInt("cmd_offsetPos", _offsetPos);
+			if (offsetLine == _offsetPos) {
+				gotoIndex(_offsetPos + 1);
 			} else {
 				gotoIndex(offsetLine);
 			}
-			cacheCommandName = session.get("cmd_cacheName");
-			nowPosFlagName = session.get("cmd_nowPosFlagName");
-			flaging = session.getBoolean("cmd_flaging");
-			ifing = session.getBoolean("cmd_ifing");
-			functioning = session.getBoolean("cmd_functioning");
-			elseflag = session.getBoolean("cmd_elseflag");
-			esleover = session.getBoolean("cmd_elseover");
-			backIfBool = session.getBoolean("cmd_backIfBool");
-			isInnerCommand = session.getBoolean("cmd_isInnerCommand");
-			isRead = session.getBoolean("cmd_isRead");
-			isCall = session.getBoolean("cmd_isCall");
-			if_bool = session.getBoolean("cmd_if_bool");
-			elseif_bool = session.getBoolean("cmd_elseif_bool");
+			_cacheCommandName = session.get("cmd_cacheName");
+			_nowPosFlagName = session.get("cmd_nowPosFlagName");
+			_flaging = session.getBoolean("cmd_flaging");
+			_ifing = session.getBoolean("cmd_ifing");
+			_functioning = session.getBoolean("cmd_functioning");
+			_elseflag = session.getBoolean("cmd_elseflag");
+			_esleover = session.getBoolean("cmd_elseover");
+			_backIfBool = session.getBoolean("cmd_backIfBool");
+			_isInnerCommand = session.getBoolean("cmd_isInnerCommand");
+			_isRead = session.getBoolean("cmd_isRead");
+			_isCall = session.getBoolean("cmd_isCall");
+			_if_bool = session.getBoolean("cmd_if_bool");
+			_elseif_bool = session.getBoolean("cmd_elseif_bool");
 			if (other == null) {
 				return null;
 			} else {
@@ -1074,7 +1074,7 @@ public class Command extends Conversion implements LRelease {
 	}
 
 	public String[] getCommands() {
-		return CollectionUtils.copyOf(scriptList);
+		return CollectionUtils.copyOf(_scriptList);
 	}
 
 	/**
@@ -1084,15 +1084,15 @@ public class Command extends Conversion implements LRelease {
 	 * @return
 	 */
 	private final boolean includeCommand(String cmd) {
-		temps = commandSplit(cmd);
+		_temps = commandSplit(cmd);
 		final StrBuilder sbr = new StrBuilder();
-		for (int i = 1; i < temps.size; i++) {
-			sbr.append(temps.get(i));
+		for (int i = 1; i < _temps.size; i++) {
+			sbr.append(_temps.get(i));
 		}
 		final String fileName = sbr.toString();
 		if (fileName.length() > 0) {
-			innerCommand = new Command(fileName);
-			isInnerCommand = true;
+			_innerCommand = new Command(fileName);
+			_isInnerCommand = true;
 			return true;
 		}
 		return false;
@@ -1122,13 +1122,13 @@ public class Command extends Conversion implements LRelease {
 		if (StringUtils.isEmpty(context)) {
 			throw new LSysException("The key [" + key + "] of data is empty !");
 		}
-		if (scriptLazy == null) {
-			scriptLazy = new ArrayMap(100);
-		} else if (scriptLazy.size() > 10000) {
-			scriptLazy.clear();
+		if (_scriptLazy == null) {
+			_scriptLazy = new ArrayMap(100);
+		} else if (_scriptLazy.size() > 10000) {
+			_scriptLazy.clear();
 		}
 		final int capacity = 2000;
-		String[] result = (String[]) scriptLazy.get(key);
+		String[] result = (String[]) _scriptLazy.get(key);
 		if (result == null) {
 			result = new String[capacity];
 			int length = capacity;
@@ -1152,7 +1152,7 @@ public class Command extends Conversion implements LRelease {
 			} catch (Throwable ex) {
 				throw new LSysException("Command load error !", ex);
 			}
-			scriptLazy.put(key, result);
+			_scriptLazy.put(key, result);
 			return result;
 		} else {
 			return CollectionUtils.copyOf(result);
@@ -1177,68 +1177,68 @@ public class Command extends Conversion implements LRelease {
 	 * 
 	 */
 	public final static void releaseCache() {
-		if (setEnvironmentList != null) {
-			setEnvironmentList.clear();
-			setEnvironmentList = null;
+		if (_setEnvironmentList != null) {
+			_setEnvironmentList.clear();
+			_setEnvironmentList = null;
 		}
-		if (conditionEnvironmentList != null) {
-			conditionEnvironmentList.clear();
-			conditionEnvironmentList = null;
+		if (_conditionEnvironmentList != null) {
+			_conditionEnvironmentList.clear();
+			_conditionEnvironmentList = null;
 		}
-		if (functions != null) {
-			functions.clear();
-			functions = null;
+		if (_functions != null) {
+			_functions.clear();
+			_functions = null;
 		}
-		if (scriptContext != null) {
-			scriptContext.clear();
-			scriptContext = null;
+		if (_scriptContext != null) {
+			_scriptContext.clear();
+			_scriptContext = null;
 		}
-		if (scriptLazy != null) {
-			scriptLazy.clear();
-			scriptLazy = null;
+		if (_scriptLazy != null) {
+			_scriptLazy.clear();
+			_scriptLazy = null;
 		}
 
 	}
 
 	public static void freeStatic() {
-		scriptLazy = null;
-		scriptContext = null;
-		functions = null;
-		setEnvironmentList = null;
-		conditionEnvironmentList = null;
+		_scriptLazy = null;
+		_scriptContext = null;
+		_functions = null;
+		_setEnvironmentList = null;
+		_conditionEnvironmentList = null;
 	}
 
 	public boolean isClosed() {
-		return isClose;
+		return _isClose;
 	}
 
 	@Override
 	public String toString() {
 		final StringKeyValue builder = new StringKeyValue("command");
-		builder.kv("script", scriptList);
+		builder.kv("script", _scriptList);
 		return builder.toString();
 	}
 
 	@Override
 	public void close() {
-		this.isClose = true;
-		if (readBuffer != null) {
-			readBuffer = null;
+		this._isClose = true;
+		if (_readBuffer != null) {
+			_readBuffer = null;
 		}
-		if (temps != null) {
+		if (_temps != null) {
 			try {
-				temps.clear();
-				temps = null;
+				_temps.clear();
+				_temps = null;
 			} catch (Throwable e) {
 			}
 		}
-		if (printTags != null) {
-			printTags.clear();
-			printTags = null;
+		if (_printTags != null) {
+			_printTags.clear();
+			_printTags = null;
 		}
-		if (randTags != null) {
-			randTags.clear();
-			randTags = null;
+		if (_randTags != null) {
+			_randTags.clear();
+			_randTags = null;
 		}
 		if (exp != null) {
 			exp.close();

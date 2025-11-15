@@ -213,13 +213,21 @@ public class PreloadAssets implements LRelease {
 		return glyphFont(path, null, size);
 	}
 
+	public PreloadAssets glyphFont(String path, int size, String context) {
+		return glyphFont(path, null, size, context);
+	}
+
 	public PreloadAssets glyphFont(String path, String nickname) {
 		return glyphFont(path, nickname, -1);
 	}
 
 	public PreloadAssets glyphFont(String path, String nickname, int size) {
+		return glyphFont(path, nickname, size, null);
+	}
+
+	public PreloadAssets glyphFont(String path, String nickname, int size, String context) {
 		checkAssets(PreloadItem.BitmapDistributionFont, path, nickname);
-		return load(new BDFontAssetLoader(path, nickname, size));
+		return load(new BDFontAssetLoader(path, nickname, size, context));
 	}
 
 	public PreloadAssets bitmapFont(String path) {

@@ -163,24 +163,6 @@ public final class Display extends BaseIO implements LRelease {
 		}
 	}
 
-	public final Act<LTimerContext> update = Act.create();
-
-	public final Act<LTimerContext> paint = Act.create();
-
-	private final LTimerContext updateClock = new LTimerContext();
-
-	private final LTimerContext paintClock = new LTimerContext();
-
-	private final LGame _game;
-
-	private LColor _debugFontColor = LColor.white;
-
-	private boolean _closed, _autoUpdate, _autoRepaint;
-
-	private final long _updateRate;
-
-	private long _nextUpdate;
-
 	private final static String FPS_STR = "FPS:";
 
 	private final static String MEMORY_STR = "MEMORY:";
@@ -191,23 +173,47 @@ public final class Display extends BaseIO implements LRelease {
 
 	private final static String DRAWCALL_STR = "DRAWCALL:";
 
-	private String displayMemony = MEMORY_STR;
+	public final Act<LTimerContext> update = Act.create();
 
-	private String displaySprites = SPRITE_STR;
+	public final Act<LTimerContext> paint = Act.create();
 
-	private String displayDrawCall = DRAWCALL_STR;
+	private final LTimerContext _updateClock = new LTimerContext();
 
-	private StrBuilder displayMessage = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+	private final LTimerContext _paintClock = new LTimerContext();
 
-	private GifEncoder gifEncoder;
+	private final LTimer _videoDelay = new LTimer();
+
+	private final LGame _game;
+
+	private final GLEx _glEx;
+
+	private final LProcess _process;
+
+	private final long _updateRate;
+
+	protected boolean _showLogo = false, _initDrawConfig = false;
+
+	private LColor _debugFontColor = LColor.white;
+
+	private boolean _closed, _autoUpdate, _autoRepaint;
+
+	private long _nextUpdate;
+
+	private String _displayMemony = MEMORY_STR;
+
+	private String _displaySprites = SPRITE_STR;
+
+	private String _displayDrawCall = DRAWCALL_STR;
+
+	private StrBuilder _displayMessage = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+
+	private GifEncoder _gifEncoder;
 
 	private boolean _videoScreenToGif;
 
 	private boolean _memorySelf;
 
-	private ArrayByteOutput videoCache;
-
-	private final LTimer videoDelay = new LTimer();
+	private ArrayByteOutput _videoCache;
 
 	private Runtime _runtime;
 
@@ -223,29 +229,23 @@ public final class Display extends BaseIO implements LRelease {
 
 	private IFont _displayFont;
 
-	private float cred, cgreen, cblue, calpha;
+	private float _cred, _cgreen, _cblue, _calpha;
 
 	private LogDisplay _logDisplay;
-
-	private final GLEx _glEx;
-
-	private final LProcess _process;
 
 	private LSetting _setting;
 
 	private int _displayTop;
 
-	protected boolean showLogo = false, initDrawConfig = false;
+	private boolean _logDisplayCreated = false;
 
-	private boolean logDisplayCreated = false;
+	private Logo _logoTex;
 
-	private Logo logoTex;
+	private PaintAllPort _paintAllPort;
 
-	private PaintAllPort paintAllPort;
+	private PaintPort _paintPort;
 
-	private PaintPort paintPort;
-
-	private UpdatePort updatePort;
+	private UpdatePort _updatePort;
 
 	public Display(final LGame g, final long updateRate) {
 		this._updateRate = updateRate;
@@ -269,9 +269,9 @@ public final class Display extends BaseIO implements LRelease {
 	}
 
 	protected void initDebugString() {
-		this.displayMemony = MEMORY_STR + "0";
-		this.displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
-		this.displayDrawCall = DRAWCALL_STR + "0";
+		this._displayMemony = MEMORY_STR + "0";
+		this._displaySprites = SPRITE_STR + "0 " + DESKTOP_STR + "0";
+		this._displayDrawCall = DRAWCALL_STR + "0";
 	}
 
 	public Display autoDisplay() {
@@ -321,33 +321,33 @@ public final class Display extends BaseIO implements LRelease {
 			} else {
 				_logDisplay = new LogDisplay();
 			}
-			logDisplayCreated = true;
+			_logDisplayCreated = true;
 		}
-		showLogo = _setting.isLogo;
-		if (showLogo && !StringUtils.isEmpty(_setting.logoPath)) {
-			logoTex = new Logo(newTexture(_setting.logoPath));
+		_showLogo = _setting.isLogo;
+		if (_showLogo && !StringUtils.isEmpty(_setting.logoPath)) {
+			_logoTex = new Logo(newTexture(_setting.logoPath));
 		}
 	}
 
 	public boolean isLogDisplay() {
-		return logDisplayCreated;
+		return _logDisplayCreated;
 	}
 
 	public void clearLog() {
-		if (logDisplayCreated) {
+		if (_logDisplayCreated) {
 			_logDisplay.clear();
 		}
 	}
 
 	public void addLog(final String mes, final LColor col) {
-		if (!logDisplayCreated) {
+		if (!_logDisplayCreated) {
 			return;
 		}
 		_logDisplay.addText(mes, col);
 	}
 
 	public void addLog(final String mes) {
-		if (!logDisplayCreated) {
+		if (!_logDisplayCreated) {
 			return;
 		}
 		_logDisplay.addText(mes);
@@ -358,27 +358,27 @@ public final class Display extends BaseIO implements LRelease {
 	}
 
 	protected void paintLog(final GLEx g, final int x, final int y) {
-		if (!logDisplayCreated) {
+		if (!_logDisplayCreated) {
 			return;
 		}
 		_logDisplay.paint(g, x, y);
 	}
 
 	public void updateSyncTween(final boolean sync) {
-		if (paintAllPort != null) {
-			paint.disconnect(paintAllPort);
+		if (_paintAllPort != null) {
+			paint.disconnect(_paintAllPort);
 		}
-		if (paintPort != null) {
-			paint.disconnect(paintPort);
+		if (_paintPort != null) {
+			paint.disconnect(_paintPort);
 		}
 		if (update != null) {
-			update.disconnect(updatePort);
+			update.disconnect(_updatePort);
 		}
 		if (sync) {
-			paint.connect(paintAllPort = new PaintAllPort(this));
+			paint.connect(_paintAllPort = new PaintAllPort(this));
 		} else {
-			paint.connect(paintPort = new PaintPort(this));
-			update.connect(updatePort = new UpdatePort());
+			paint.connect(_paintPort = new PaintPort(this));
+			update.connect(_updatePort = new UpdatePort());
 		}
 	}
 
@@ -391,10 +391,10 @@ public final class Display extends BaseIO implements LRelease {
 	 * @param alpha
 	 */
 	public void clearColor(final float red, final float green, final float blue, final float alpha) {
-		cred = red;
-		cgreen = green;
-		cblue = blue;
-		calpha = alpha;
+		_cred = red;
+		_cgreen = green;
+		_cblue = blue;
+		_calpha = alpha;
 	}
 
 	/**
@@ -426,31 +426,31 @@ public final class Display extends BaseIO implements LRelease {
 			return;
 		}
 		// fix渲染时机，避免调用渲染在纹理构造前
-		if (!initDrawConfig) {
+		if (!_initDrawConfig) {
 			newDefView(
 					_setting.isFPS || _setting.isLogo || _setting.isMemory || _setting.isSprites || _setting.isDebug);
-			initDrawConfig = true;
+			_initDrawConfig = true;
 		}
 
-		if (showLogo) {
+		if (_showLogo) {
 			try {
 				_glEx.save();
 				_glEx.begin();
-				_glEx.clear(cred, cgreen, cblue, calpha);
-				if (logoTex == null || logoTex.finish || logoTex.logo.disposed()) {
-					showLogo = false;
+				_glEx.clear(_cred, _cgreen, _cblue, _calpha);
+				if (_logoTex == null || _logoTex.finish || _logoTex.logo.disposed()) {
+					_showLogo = false;
 					return;
 				}
-				logoTex.draw(_glEx);
-				if (logoTex.finish) {
-					showLogo = false;
-					logoTex.close();
-					logoTex = null;
+				_logoTex.draw(_glEx);
+				if (_logoTex.finish) {
+					_showLogo = false;
+					_logoTex.close();
+					_logoTex = null;
 				}
 			} finally {
 				_glEx.end();
 				_glEx.restore();
-				if (!showLogo) {
+				if (!_showLogo) {
 					_process.start();
 				}
 			}
@@ -465,7 +465,7 @@ public final class Display extends BaseIO implements LRelease {
 
 			// 在某些情况下,比如存在全局背景时，因为旧有画面已被遮挡，不必全局刷新Screen画面,应禁止全局刷新画布内容
 			if (_setting.allScreenRefresh) {
-				_glEx.reset(cred, cgreen, cblue, calpha);
+				_glEx.reset(_cred, _cgreen, _cblue, _calpha);
 			} else {
 				_glEx.resetConfig();
 			}
@@ -489,8 +489,8 @@ public final class Display extends BaseIO implements LRelease {
 			_process.unload();
 
 			// 如果存在屏幕录像设置
-			if (_videoScreenToGif && !LSystem.PAUSED && gifEncoder != null) {
-				if (videoDelay.action(clock)) {
+			if (_videoScreenToGif && !LSystem.PAUSED && _gifEncoder != null) {
+				if (_videoDelay.action(clock)) {
 					Image tmp = GLUtils.getScreenshot();
 					Image image = null;
 					if (LSystem.isDesktop()) {
@@ -500,7 +500,7 @@ public final class Display extends BaseIO implements LRelease {
 						image = Image.getResize(tmp, MathUtils.iceil(_process.getWidth() * 0.5f),
 								MathUtils.iceil(_process.getHeight() * 0.5f));
 					}
-					gifEncoder.addFrame(image);
+					_gifEncoder.addFrame(image);
 					if (tmp != null) {
 						tmp.close();
 						tmp = null;
@@ -540,38 +540,38 @@ public final class Display extends BaseIO implements LRelease {
 				this._nextUpdate = nextUpdate;
 				final long updateDt = updates * updateRate;
 				if (updateLoop == -1) {
-					updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
-					updateClock.unscaledTimeSinceLastUpdate = updateDt;
+					_updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
+					_updateClock.unscaledTimeSinceLastUpdate = updateDt;
 				} else {
-					updateClock.timeSinceLastUpdate = updateLoop;
-					updateClock.unscaledTimeSinceLastUpdate = updateLoop;
+					_updateClock.timeSinceLastUpdate = updateLoop;
+					_updateClock.unscaledTimeSinceLastUpdate = updateLoop;
 				}
-				if (updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
-					updateClock.timeSinceLastUpdate = 0;
-					updateClock.unscaledTimeSinceLastUpdate = 0;
+				if (_updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+					_updateClock.timeSinceLastUpdate = 0;
+					_updateClock.unscaledTimeSinceLastUpdate = 0;
 				}
-				updateClock.tick += updateClock.timeSinceLastUpdate;
-				update(updateClock);
+				_updateClock.tick += _updateClock.timeSinceLastUpdate;
+				update(_updateClock);
 			}
 		}
 		if (_autoRepaint) {
 			final long paintLoop = setting.fixedPaintLoopTime;
 			final long paintTick = _game.tick();
 			if (paintLoop == -1) {
-				final long clock = paintTick - paintClock.tick;
-				paintClock.timeSinceLastUpdate = (long) (clock * fpsScale);
-				paintClock.unscaledTimeSinceLastUpdate = clock;
+				final long clock = paintTick - _paintClock.tick;
+				_paintClock.timeSinceLastUpdate = (long) (clock * fpsScale);
+				_paintClock.unscaledTimeSinceLastUpdate = clock;
 			} else {
-				paintClock.timeSinceLastUpdate = paintLoop;
-				paintClock.unscaledTimeSinceLastUpdate = paintLoop;
+				_paintClock.timeSinceLastUpdate = paintLoop;
+				_paintClock.unscaledTimeSinceLastUpdate = paintLoop;
 			}
-			if (paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
-				paintClock.timeSinceLastUpdate = 0;
-				paintClock.unscaledTimeSinceLastUpdate = 0;
+			if (_paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+				_paintClock.timeSinceLastUpdate = 0;
+				_paintClock.unscaledTimeSinceLastUpdate = 0;
 			}
-			paintClock.tick = paintTick;
-			paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;
-			paint(paintClock);
+			_paintClock.tick = paintTick;
+			_paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;
+			paint(_paintClock);
 		}
 	}
 
@@ -604,43 +604,43 @@ public final class Display extends BaseIO implements LRelease {
 				this._frameDelta = this._frameCount = 0;
 
 				if (this._memorySelf) {
-					displayMessage.setLength(0);
-					displayMessage.append(MEMORY_STR);
-					displayMessage.append(MathUtils.abs(((LTextures.getMemSize() * 100) >> 20) / 10f));
-					displayMessage.append(" of ");
-					displayMessage.append('?');
-					displayMessage.append(" MB");
+					_displayMessage.setLength(0);
+					_displayMessage.append(MEMORY_STR);
+					_displayMessage.append(MathUtils.abs(((LTextures.getMemSize() * 100) >> 20) / 10f));
+					_displayMessage.append(" of ");
+					_displayMessage.append('?');
+					_displayMessage.append(" MB");
 				} else {
 					if (_runtime == null) {
 						_runtime = Runtime.getRuntime();
 					}
 					final long totalMemory = _runtime.totalMemory();
 					final long currentMemory = totalMemory - _runtime.freeMemory();
-					displayMessage.setLength(0);
-					displayMessage.append(MEMORY_STR);
-					displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
-					displayMessage.append(" of ");
-					displayMessage.append(MathUtils.abs((_runtime.maxMemory() * 10) >> 20) / 10f);
-					displayMessage.append(" MB");
+					_displayMessage.setLength(0);
+					_displayMessage.append(MEMORY_STR);
+					_displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
+					_displayMessage.append(" of ");
+					_displayMessage.append(MathUtils.abs((_runtime.maxMemory() * 10) >> 20) / 10f);
+					_displayMessage.append(" MB");
 				}
-				displayMemony = displayMessage.toString();
+				_displayMemony = _displayMessage.toString();
 
 				final LGame game = getGame();
 
-				displayMessage.setLength(0);
-				displayMessage.append(SPRITE_STR);
-				displayMessage.append(game.allSpritesCount());
-				displayMessage.append(" ");
-				displayMessage.append(DESKTOP_STR);
-				displayMessage.append(game.allDesktopCount());
+				_displayMessage.setLength(0);
+				_displayMessage.append(SPRITE_STR);
+				_displayMessage.append(game.allSpritesCount());
+				_displayMessage.append(" ");
+				_displayMessage.append(DESKTOP_STR);
+				_displayMessage.append(game.allDesktopCount());
 
-				displaySprites = displayMessage.toString();
+				_displaySprites = _displayMessage.toString();
 
-				displayMessage.setLength(0);
-				displayMessage.append(DRAWCALL_STR);
-				displayMessage.append(GraphicsDrawCall.getCount() + gl.getDrawCallCount());
+				_displayMessage.setLength(0);
+				_displayMessage.append(DRAWCALL_STR);
+				_displayMessage.append(GraphicsDrawCall.getCount() + gl.getDrawCallCount());
 
-				displayDrawCall = displayMessage.toString();
+				_displayDrawCall = _displayMessage.toString();
 
 			}
 			if (_displayFont != null) {
@@ -654,17 +654,17 @@ public final class Display extends BaseIO implements LRelease {
 				}
 				// 显示内存占用
 				if (debug || setting.isMemory) {
-					_displayFont.drawString(gl, displayMemony, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, _displayMemony, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 显示精灵与组件数量
 				if (debug || setting.isSprites) {
-					_displayFont.drawString(gl, displaySprites, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, _displaySprites, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 显示渲染次数
 				if (debug || setting.isDrawCall) {
-					_displayFont.drawString(gl, displayDrawCall, _debugTextSpace, _displayTop += maxHeight, 0,
+					_displayFont.drawString(gl, _displayDrawCall, _debugTextSpace, _displayTop += maxHeight, 0,
 							_debugFontColor);
 				}
 				// 若打印日志到界面,很可能挡住游戏界面内容,所以isDisplayLog为true并且debug才显示
@@ -678,7 +678,7 @@ public final class Display extends BaseIO implements LRelease {
 	}
 
 	public boolean isRunning() {
-		return initDrawConfig;
+		return _initDrawConfig;
 	}
 
 	public boolean isAutoRepaint() {
@@ -724,19 +724,19 @@ public final class Display extends BaseIO implements LRelease {
 	}
 
 	public float getAlpha() {
-		return calpha;
+		return _calpha;
 	}
 
 	public float getRed() {
-		return cred;
+		return _cred;
 	}
 
 	public float getGreen() {
-		return cgreen;
+		return _cgreen;
 	}
 
 	public float getBlue() {
-		return cblue;
+		return _cblue;
 	}
 
 	public GLEx GL() {
@@ -757,7 +757,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * @return
 	 */
 	public ArrayByte getVideoCache() {
-		return videoCache.getArrayByte();
+		return _videoCache.getArrayByte();
 	}
 
 	/**
@@ -766,7 +766,7 @@ public final class Display extends BaseIO implements LRelease {
 	 * @return
 	 */
 	public GifEncoder startVideo() {
-		return startVideo(videoCache = new ArrayByteOutput());
+		return startVideo(_videoCache = new ArrayByteOutput());
 	}
 
 	/**
@@ -789,12 +789,12 @@ public final class Display extends BaseIO implements LRelease {
 	 */
 	public GifEncoder startVideo(final OutputStream output, final long delay) {
 		stopVideo();
-		videoDelay.setDelay(delay);
-		gifEncoder = new GifEncoder();
-		gifEncoder.start(output);
-		gifEncoder.setDelay((int) delay);
+		_videoDelay.setDelay(delay);
+		_gifEncoder = new GifEncoder();
+		_gifEncoder.start(output);
+		_gifEncoder.setDelay((int) delay);
 		_videoScreenToGif = true;
-		return gifEncoder;
+		return _gifEncoder;
 	}
 
 	/**
@@ -803,19 +803,19 @@ public final class Display extends BaseIO implements LRelease {
 	 * @return
 	 */
 	public GifEncoder stopVideo() {
-		if (gifEncoder != null) {
-			gifEncoder.finish();
+		if (_gifEncoder != null) {
+			_gifEncoder.finish();
 		}
 		_videoScreenToGif = false;
-		return gifEncoder;
+		return _gifEncoder;
 	}
 
 	public final LTimerContext getUpdate() {
-		return updateClock;
+		return _updateClock;
 	}
 
 	public final LTimerContext getPaint() {
-		return paintClock;
+		return _paintClock;
 	}
 
 	public Display resize(final int viewWidth, final int viewHeight) {
@@ -885,14 +885,14 @@ public final class Display extends BaseIO implements LRelease {
 			this._displayFont.close();
 			this._displayFont = null;
 		}
-		if (this.logoTex != null) {
-			this.logoTex.close();
-			this.logoTex = null;
+		if (this._logoTex != null) {
+			this._logoTex.close();
+			this._logoTex = null;
 		}
 		if (this._process != null) {
 			_process.close();
 		}
-		this.initDrawConfig = logDisplayCreated = false;
+		this._initDrawConfig = _logDisplayCreated = false;
 	}
 
 }

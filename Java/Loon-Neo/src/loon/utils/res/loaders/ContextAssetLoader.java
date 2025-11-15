@@ -20,6 +20,11 @@
  */
 package loon.utils.res.loaders;
 
+import loon.LSystem;
+import loon.font.IFont;
+import loon.font.LFont;
+import loon.opengl.LSTRDictionary;
+
 public class ContextAssetLoader extends AssetAbstractLoader<String> {
 
 	private String _context;
@@ -45,6 +50,13 @@ public class ContextAssetLoader extends AssetAbstractLoader<String> {
 
 	@Override
 	public void loadData() {
+		final boolean result = _context != null;
+		if (result) {
+			IFont font = LSystem.getSystemGameFont();
+			if (font != null && !font.isClosed() && font instanceof LFont) {
+				LSTRDictionary.get().bind((LFont) font, _context);
+			}
+		}
 	}
 
 	@Override

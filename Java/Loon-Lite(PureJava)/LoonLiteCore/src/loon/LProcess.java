@@ -79,7 +79,7 @@ public final class LProcess implements LRelease {
 
 		@Override
 		public void run(final LTimerContext time) {
-			if (_game != null && !_game.displayImpl.showLogo) {
+			if (_game != null && !_game.displayImpl._showLogo) {
 				try {
 					if (_newScreen != null) {
 						_process.updateScreen(_newScreen);
@@ -399,7 +399,7 @@ public final class LProcess implements LRelease {
 					this._isInstance = false;
 					throw new LSysException("Cannot create a [Screen] instance !");
 				}
-				if (!_game.displayImpl.showLogo) {
+				if (!_game.displayImpl._showLogo) {
 					if (_currentScreen != null) {
 						setTransition(newScreen.onTransition());
 					} else {
@@ -1215,7 +1215,7 @@ public final class LProcess implements LRelease {
 			screen.resetOrder();
 			screen.resetSize();
 		}
-		if (_game.setting.isLogo && _game.displayImpl.showLogo) {
+		if (_game.setting.isLogo && _game.displayImpl._showLogo) {
 			_loadingScreen = screen;
 		} else {
 			setScreen(screen, true);

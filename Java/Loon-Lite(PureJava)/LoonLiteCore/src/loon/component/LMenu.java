@@ -411,7 +411,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	public float maxscroll;
 	public float scrollspeed = 25f;
 
-	private LMenu selected;
+	private LMenu _selected;
 
 	private float _cellWidth = LSystem.LAYER_TILE_SIZE;
 	private float _cellHeight = LSystem.LAYER_TILE_SIZE;
@@ -646,7 +646,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			final boolean checked = (down || drag);
 			switch (_moveType) {
 			case MOVE_LEFT:
-				if ((selected == this) || (selected == null)) {
+				if ((_selected == this) || (_selected == null)) {
 					g.draw(this._tab, this._width, getTaby(), _tabWidth, _tabHeight,
 							_component_baseColor.setAlpha(_alphaMenu));
 					if (_tablabel != null) {
@@ -672,7 +672,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 				}
 				break;
 			case MOVE_RIGHT:
-				if ((selected == this) || (selected == null)) {
+				if ((_selected == this) || (_selected == null)) {
 					float posX = this.getScreenRight() - this._width - this._tabWidth;
 					g.draw(this._tab, posX, getTaby() + getScreenY(), _tabWidth, _tabHeight,
 							_component_baseColor.setAlpha(_alphaMenu));
@@ -713,11 +713,11 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 		super.update(elapsedTime);
 		final float delta = (Duration.toS(elapsedTime)) * (LSystem.getFPS() / _menuSpeed);
 		if (!this._active) {
-			if (_tabOpening && (selected == null)) {
+			if (_tabOpening && (_selected == null)) {
 				this._active = true;
 				this._mouseSelect = true;
-				if (selected == null) {
-					selected = this;
+				if (_selected == null) {
+					_selected = this;
 				}
 			}
 			if (this._width > 0) {
@@ -728,7 +728,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 			}
 		} else {
 			this._mouseSelect = true;
-			if (selected == this) {
+			if (_selected == this) {
 				final float menuCellHeight = this._paddingy + this._cellHeight;
 				this.maxscroll = (menuCellHeight * this._rows);
 				if (this.scroll > this.maxscroll) {
@@ -764,8 +764,8 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 						}
 					}
 				} else {
-					if (selected == this) {
-						selected = null;
+					if (_selected == this) {
+						_selected = null;
 					}
 					this._active = false;
 					this._mouseSelect = false;
@@ -908,7 +908,7 @@ public class LMenu extends LComponent implements FontSet<LMenu> {
 	}
 
 	public LMenu getSelected() {
-		return selected;
+		return _selected;
 	}
 
 	public float getCellWidth() {

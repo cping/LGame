@@ -80,7 +80,7 @@ public final class LProcess implements LRelease {
 
 		@Override
 		public void run(final LTimerContext time) {
-			if (_game != null && !_game.displayImpl.showLogo) {
+			if (_game != null && !_game.displayImpl._showLogo) {
 				try {
 					if (_newScreen != null) {
 						_process.updateScreen(_newScreen);
@@ -120,7 +120,7 @@ public final class LProcess implements LRelease {
 	private final ObjectBundle _bundle;
 
 	private final LGame _game;
-	
+
 	private PreloadAssets _globalAssets;
 
 	private TArray<Updateable> _loadcaches;
@@ -231,7 +231,7 @@ public final class LProcess implements LRelease {
 	public SysInputFactory getSysInputFactory() {
 		return this._currentInput;
 	}
-	
+
 	public LProcess setGlobalAssets(PreloadAssets assets) {
 		_globalAssets = assets;
 		return this;
@@ -410,7 +410,7 @@ public final class LProcess implements LRelease {
 					this._isInstance = false;
 					throw new LSysException("Cannot create a [Screen] instance !");
 				}
-				if (!_game.displayImpl.showLogo) {
+				if (!_game.displayImpl._showLogo) {
 					if (_currentScreen != null) {
 						setTransition(newScreen.onTransition());
 					} else {
@@ -996,7 +996,7 @@ public final class LProcess implements LRelease {
 		return _pointLocaltion;
 	}
 
-	public Vector2f convertXY(final float x,final float y) {
+	public Vector2f convertXY(final float x, final float y) {
 		if (_screenAllowSyncTouch) {
 			return convertXY(getX(), getY(), x, y);
 		}
@@ -1030,7 +1030,7 @@ public final class LProcess implements LRelease {
 		return this;
 	}
 
-	public LProcess addScreen(final CharSequence name,final Screen screen) {
+	public LProcess addScreen(final CharSequence name, final Screen screen) {
 		if (screen == null) {
 			throw new LSysException("Cannot create a Screen instance !");
 		}
@@ -1226,7 +1226,7 @@ public final class LProcess implements LRelease {
 			screen.resetOrder();
 			screen.resetSize();
 		}
-		if (_game.setting.isLogo && _game.displayImpl.showLogo) {
+		if (_game.setting.isLogo && _game.displayImpl._showLogo) {
 			_loadingScreen = screen;
 		} else {
 			setScreen(screen, true);

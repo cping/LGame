@@ -97,7 +97,9 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private int _initDraw = -1;
 
-	private char enterFlagString = '>', clearFlagString = '<';
+	private int _leftOffset, _topOffset;
+
+	private char _enterFlagString = '>', _clearFlagString = '<';
 
 	public LDecideName(TArray<String> mes, int x, int y) {
 		this(mes, x, y, 400, 250);
@@ -137,8 +139,8 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		this._labelName = label;
 		this._name = name;
 		this._keyArrays = mes;
-		this.leftOffset = _font.getHeight() + 15;
-		this.topOffset = _font.getHeight() + 20;
+		this._leftOffset = _font.getHeight() + 15;
+		this._topOffset = _font.getHeight() + 20;
 	}
 
 	private void bindString() {
@@ -166,12 +168,12 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 			g.draw(_background, x, y, getWidth(), getHeight());
 		}
 		g.setFont(_font);
-		float posX = x + leftOffset;
+		float posX = x + _leftOffset;
 		if (_labelName != null) {
 			g.drawString(_labelName + this._name, posX + _labelOffsetX + _text_width_space,
 					y + _labelOffsetY - _text_width_space / 2, _labelNameColor);
 		}
-		float posY = y + topOffset;
+		float posY = y + _topOffset;
 		for (int j = 0; j < this._keyArrays.size; j++) {
 			for (int i = 0; i < this._keyArrays.get(j).length(); i++)
 				if (this._keyArrays.get(j).charAt(i) != '　') {
@@ -221,14 +223,14 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public int pushEnter() {
-		if (getArrays(this._cursorY, this._cursorX) == enterFlagString) {
+		if (getArrays(this._cursorY, this._cursorX) == _enterFlagString) {
 			if (this._name.equals(LSystem.EMPTY)) {
 				return -2;
 			}
 			_enterFlag = "Enter";
 			return -1;
 		}
-		if (getArrays(this._cursorY, this._cursorX) == clearFlagString) {
+		if (getArrays(this._cursorY, this._cursorX) == _clearFlagString) {
 			if (!this._name.equals(LSystem.EMPTY)) {
 				this._name = this._name.substring(0, this._name.length() - 1);
 			}
@@ -304,11 +306,9 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 		}
 	}
 
-	private int leftOffset, topOffset;
-
 	public void moveCursor(float x, float y) {
-		final int indexX = MathUtils.ceil((x - leftOffset)) / MathUtils.round(_dx * getWidth());
-		final int indexY = MathUtils.ceil((y - topOffset)) / MathUtils.round(_dy * getHeight());
+		final int indexX = MathUtils.ceil((x - _leftOffset)) / MathUtils.round(_dx * getWidth());
+		final int indexY = MathUtils.ceil((y - _topOffset)) / MathUtils.round(_dy * getHeight());
 		if ((indexX < 0) || (indexY < 0) || (indexY >= this._keyArrays.size)
 				|| (indexX >= this._keyArrays.get(0).length()))
 			return;
@@ -408,35 +408,35 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 	}
 
 	public char getEnterFlagString() {
-		return enterFlagString;
+		return _enterFlagString;
 	}
 
 	public void setEnterFlagString(char enterFlagString) {
-		this.enterFlagString = enterFlagString;
+		this._enterFlagString = enterFlagString;
 	}
 
 	public char getClearFlagString() {
-		return clearFlagString;
+		return _clearFlagString;
 	}
 
 	public void setClearFlagString(char clearFlagString) {
-		this.clearFlagString = clearFlagString;
+		this._clearFlagString = clearFlagString;
 	}
 
 	public int getLeftOffset() {
-		return leftOffset;
+		return _leftOffset;
 	}
 
 	public void setLeftOffset(int leftOffset) {
-		this.leftOffset = leftOffset;
+		this._leftOffset = leftOffset;
 	}
 
 	public int getTopOffset() {
-		return topOffset;
+		return _topOffset;
 	}
 
 	public void setTopOffset(int topOffset) {
-		this.topOffset = topOffset;
+		this._topOffset = topOffset;
 	}
 
 	@Override

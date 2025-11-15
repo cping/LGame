@@ -28,9 +28,12 @@ public class BDFontAssetLoader extends AssetAbstractLoader<BDFont> {
 
 	private int _fontSize;
 
-	public BDFontAssetLoader(String path, String nickname, int fontSize) {
+	private String _context;
+
+	public BDFontAssetLoader(String path, String nickname, int fontSize, String defaultText) {
 		set(path, nickname);
 		_fontSize = fontSize;
+		_context = defaultText;
 	}
 
 	@Override
@@ -42,11 +45,15 @@ public class BDFontAssetLoader extends AssetAbstractLoader<BDFont> {
 	public void loadData() {
 		close();
 		if (_fontSize <= 0) {
-			_font = new BDFont(_path);
+			_font = new BDFont(_path, _context);
 		} else {
-			_font = new BDFont(_path, _fontSize);
+			_font = new BDFont(_path, _fontSize, _context);
 		}
 		_font.loadFont();
+	}
+
+	public String getContext() {
+		return _context;
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public abstract class LContainer extends LComponent implements IArray {
 
 	private Margin _margin = null;
 
-	private LComponent latestInserted = null;
+	private LComponent _latestInserted = null;
 
 	public LContainer(int x, int y, int w, int h) {
 		super(x, y, w, h);
@@ -234,7 +234,7 @@ public abstract class LContainer extends LComponent implements IArray {
 				comp._input = _desktop._sysInput;
 			}
 		}
-		this.latestInserted = comp;
+		this._latestInserted = comp;
 		this.setDesktops(this._desktop);
 		return this;
 	}
@@ -266,7 +266,7 @@ public abstract class LContainer extends LComponent implements IArray {
 		this._childs[index] = comp;
 		this._desktop.setDesktop(comp);
 		this._dirtyChildren = true;
-		this.latestInserted = comp;
+		this._latestInserted = comp;
 		return this;
 	}
 
@@ -1655,7 +1655,7 @@ public abstract class LContainer extends LComponent implements IArray {
 	}
 
 	public LComponent get() {
-		return this.latestInserted;
+		return this._latestInserted;
 	}
 
 	private RectBox getBox() {

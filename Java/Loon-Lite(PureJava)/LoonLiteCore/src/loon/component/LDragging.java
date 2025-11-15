@@ -62,7 +62,7 @@ public class LDragging extends LComponent {
 
 	private float _lastY;
 
-	private ActionKey locked;
+	private ActionKey _locked;
 
 	private float _lineWidth;
 
@@ -138,16 +138,16 @@ public class LDragging extends LComponent {
 		this._dragDrawAlpha = 0.5f;
 		this._area = new RectBox();
 		this._display_area = new RectBox();
-		this.locked = new ActionKey();
+		this._locked = new ActionKey();
 	}
 
 	@Override
 	public void processTouchPressed() {
 		super.processTouchPressed();
 		if (!(SysTouch.isDrag() && _input.isMoving())) {
-			if (!locked.isPressed()) {
+			if (!_locked.isPressed()) {
 				start();
-				locked.press();
+				_locked.press();
 			}
 		}
 	}
@@ -155,9 +155,9 @@ public class LDragging extends LComponent {
 	@Override
 	public void processTouchDragged() {
 		super.processTouchDragged();
-		if (!locked.isPressed()) {
+		if (!_locked.isPressed()) {
 			start();
-			locked.press();
+			_locked.press();
 		} else {
 			drag();
 		}
@@ -166,7 +166,7 @@ public class LDragging extends LComponent {
 	@Override
 	public void processTouchReleased() {
 		super.processTouchReleased();
-		if (locked.isPressed() && _dragging) {
+		if (_locked.isPressed() && _dragging) {
 			if (_selectArea != null) {
 				_selectArea.onArea(this._display_area.x, this._display_area.y,
 						this._display_area.width - ((this._display_area.width / 6) - _lineWidth - 1),
@@ -174,7 +174,7 @@ public class LDragging extends LComponent {
 			}
 			stop();
 		}
-		locked.release();
+		_locked.release();
 	}
 
 	@Override

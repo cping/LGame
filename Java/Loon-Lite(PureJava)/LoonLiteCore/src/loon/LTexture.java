@@ -706,7 +706,7 @@ public final class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isBatch() {
-		return (checkExistBatch() && _textureBatch.isLoaded);
+		return (checkExistBatch() && _textureBatch._isLoaded);
 	}
 
 	public LTexture begin() {
@@ -738,7 +738,7 @@ public final class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean isBatchLocked() {
-		return checkExistBatch() && _textureBatch.isCacheLocked;
+		return checkExistBatch() && _textureBatch._isCacheLocked;
 	}
 
 	public boolean existCache() {

@@ -39,18 +39,6 @@ import loon.utils.TimeUtils;
  */
 public final class LTextureBatch implements LRelease {
 
-	private TArray<Cache> _tempCaches = new TArray<Cache>();
-
-	private IntMap<Cache> _caches;
-
-	private boolean _updateBlend = false;
-
-	private boolean isClosed;
-
-	public boolean isCacheLocked;
-
-	private Cache lastCache;
-
 	/**
 	 * 纯Java环境版本使用的是Image存储缓存图像,创建太多Cache可能会耗尽内存
 	 */
@@ -94,27 +82,39 @@ public final class LTextureBatch implements LRelease {
 		}
 	}
 
+	private TArray<Cache> _tempCaches = new TArray<Cache>();
+
+	private IntMap<Cache> _caches;
+
+	private boolean _updateBlend = false;
+
+	private boolean _isClosed;
+
+	protected boolean _drawing = false;
+
+	protected boolean _isLoaded;
+
+	protected int _count = 0;
+
+	public boolean _isCacheLocked;
+
+	private boolean _isInitMesh;
+
+	private Cache _lastCache;
+
 	private Affine2f _display = new Affine2f();
 
 	private Mesh _mesh;
-
-	private boolean isInitMesh;
 
 	private Canvas _buffer;
 
 	private LColor _color = new LColor();
 
-	protected int count = 0;
+	private int _vertexIdx;
 
-	protected boolean drawing = false;
+	private int _texWidth, _texHeight;
 
-	protected boolean isLoaded;
-
-	private int vertexIdx;
-
-	private int texWidth, texHeight;
-
-	private float tx, ty;
+	private float _tx, _ty;
 
 	private int _blendMode;
 
@@ -131,16 +131,16 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch begin() {
-		if (!isLoaded) {
-			isLoaded = true;
+		if (!_isLoaded) {
+			_isLoaded = true;
 		}
 		if (!_meshdata.texture.isLoaded()) {
 			_meshdata.texture.loadTexture();
 		}
-		if (drawing) {
+		if (_drawing) {
 			throw new LSysException("TextureBatch.end must be called before begin.");
 		}
-		if (!isInitMesh) {
+		if (!_isInitMesh) {
 			if (_buffer == null) {
 				_buffer = LSystem.base().graphics().createCanvas(LSystem.viewSize.getWidth(),
 						LSystem.viewSize.getHeight());
@@ -149,12 +149,12 @@ public final class LTextureBatch implements LRelease {
 				_mesh = LSystem.base().makeMesh(_buffer);
 			}
 			this._mesh.setMesh(_meshdata);
-			this.isInitMesh = true;
+			this._isInitMesh = true;
 		}
-		if (!isCacheLocked) {
-			vertexIdx = 0;
+		if (!_isCacheLocked) {
+			_vertexIdx = 0;
 		}
-		this.drawing = true;
+		this._drawing = true;
 		this._drawCallCount = 0;
 		return this;
 	}
@@ -164,16 +164,16 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch end(int blend) {
-		if (!isLoaded) {
+		if (!_isLoaded) {
 			return this;
 		}
-		if (!drawing) {
+		if (!_drawing) {
 			throw new LSysException("TextureBatch.begin must be called before end.");
 		}
-		if (vertexIdx > 0) {
-			submit(blend, tx, ty);
+		if (_vertexIdx > 0) {
+			submit(blend, _tx, _ty);
 		}
-		this.drawing = false;
+		this._drawing = false;
 		this._drawCallCount = 0;
 		return this;
 	}
@@ -192,24 +192,24 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch setLocation(float tx, float ty) {
-		this.tx = tx;
-		this.ty = ty;
+		this._tx = tx;
+		this._ty = ty;
 		return this;
 	}
 
 	public LTextureBatch setTexture(LTexture tex2d) {
 		this._meshdata.texture = tex2d;
-		this.texWidth = _meshdata.texture.getWidth();
-		this.texHeight = _meshdata.texture.getHeight();
+		this._texWidth = _meshdata.texture.getWidth();
+		this._texHeight = _meshdata.texture.getHeight();
 		return this;
 	}
 
 	public int getTextureWidth() {
-		return texWidth;
+		return _texWidth;
 	}
 
 	public int getTextureHeight() {
-		return texHeight;
+		return _texHeight;
 	}
 
 	public LTexture toTexture() {
@@ -231,14 +231,14 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	private LTextureBatch checkDrawing() {
-		if (!drawing) {
+		if (!_drawing) {
 			throw new LSysException("Not implemented begin !");
 		}
 		return this;
 	}
 
 	public boolean checkTexture(final LTexture texture) {
-		if (!isLoaded || isCacheLocked || isClosed || (texture == null)) {
+		if (!_isLoaded || _isCacheLocked || _isClosed || (texture == null)) {
 			return false;
 		}
 		checkDrawing();
@@ -258,7 +258,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch submit(int blend, float x, float y) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		GLEx gl = LSystem.base().display().GL();
@@ -298,7 +298,7 @@ public final class LTextureBatch implements LRelease {
 
 	public LTextureBatch commit(float x, float y, float sx, float sy, float ax, float ay, float rotation, boolean flipX,
 			boolean flipY, boolean flipZ) {
-		if (isClosed) {
+		if (_isClosed) {
 			return this;
 		}
 		GLEx gl = LSystem.base().display().GL();
@@ -337,33 +337,33 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public boolean isDrawing() {
-		return drawing;
+		return _drawing;
 	}
 
 	public LTextureBatch lock() {
-		this.isCacheLocked = true;
+		this._isCacheLocked = true;
 		return this;
 	}
 
 	public LTextureBatch unLock() {
-		this.isCacheLocked = false;
+		this._isCacheLocked = false;
 		return this;
 	}
 
 	public boolean postLastCache() {
-		if (lastCache != null) {
-			postCache(lastCache, _color, 0f);
+		if (_lastCache != null) {
+			postCache(_lastCache, _color, 0f);
 			return true;
 		}
 		return false;
 	}
 
 	public Cache getLastCache() {
-		return lastCache;
+		return _lastCache;
 	}
 
 	public boolean existCache() {
-		return lastCache != null && !lastCache.isClosed();
+		return _lastCache != null && !_lastCache.isClosed();
 	}
 
 	public Cache newCache() {
@@ -371,21 +371,21 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public Cache newCache(boolean cached) {
-		if (isLoaded) {
-			lastCache = new Cache(this);
+		if (_isLoaded) {
+			_lastCache = new Cache(this);
 			if (cached) {
-				_tempCaches.add(lastCache);
+				_tempCaches.add(_lastCache);
 			}
-			return lastCache;
+			return _lastCache;
 		} else {
 			return null;
 		}
 	}
 
 	public boolean disposeLastCache() {
-		if (lastCache != null) {
-			lastCache.close();
-			lastCache = null;
+		if (_lastCache != null) {
+			_lastCache.close();
+			_lastCache = null;
 			return true;
 		}
 		return false;
@@ -544,7 +544,7 @@ public final class LTextureBatch implements LRelease {
 			_mesh.paint(argb, _display, x, y, x + width, y + height, xOff, yOff, widthRatio, heightRatio);
 		}
 
-		vertexIdx += 9;
+		_vertexIdx += 9;
 		return this;
 	}
 
@@ -561,22 +561,22 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch postCache(LColor color, float rotation) {
-		if (lastCache != null) {
-			postCache(lastCache, color, rotation);
+		if (_lastCache != null) {
+			postCache(_lastCache, color, rotation);
 		}
 		return this;
 	}
 
 	public LTextureBatch postCache(float x, float y) {
-		if (lastCache != null) {
-			return postCache(lastCache, _color, x, y, 1f, 1f, 0f, 0f, 0f, false, false, false);
+		if (_lastCache != null) {
+			return postCache(_lastCache, _color, x, y, 1f, 1f, 0f, 0f, 0f, false, false, false);
 		}
 		return this;
 	}
 
 	public LTextureBatch postCache(LColor color, float x, float y, float rotation) {
-		if (lastCache != null) {
-			return postCache(lastCache, color, x, y, 1f, 1f, 0f, 0f, rotation, false, false, false);
+		if (_lastCache != null) {
+			return postCache(_lastCache, color, x, y, 1f, 1f, 0f, 0f, rotation, false, false, false);
 		}
 		return this;
 	}
@@ -586,7 +586,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor color, float rotation) {
-		return postCache(cache, color, tx, ty, 1f, 1f, 0f, 0f, 0f, false, false, false);
+		return postCache(cache, color, _tx, _ty, 1f, 1f, 0f, 0f, 0f, false, false, false);
 	}
 
 	public LTextureBatch postCache(Cache cache, LColor color, float x, float y, float sx, float sy, float ax, float ay,
@@ -714,7 +714,7 @@ public final class LTextureBatch implements LRelease {
 	}
 
 	public boolean closed() {
-		return isClosed;
+		return _isClosed;
 	}
 
 	public boolean isClosed() {
@@ -723,12 +723,12 @@ public final class LTextureBatch implements LRelease {
 
 	@Override
 	public void close() {
-		isClosed = true;
-		isLoaded = false;
-		isCacheLocked = false;
-		isInitMesh = false;
-		if (lastCache != null) {
-			lastCache.close();
+		_isClosed = true;
+		_isLoaded = false;
+		_isCacheLocked = false;
+		_isInitMesh = false;
+		if (_lastCache != null) {
+			_lastCache.close();
 		}
 		if (_caches != null) {
 			for (Cache cache : _caches) {
