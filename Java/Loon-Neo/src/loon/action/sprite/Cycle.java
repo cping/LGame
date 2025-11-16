@@ -137,31 +137,31 @@ public class Cycle extends Entity {
 
 	public static final int BEZIER = 0, ARC = 1, LINE = 2;
 
-	protected float pointDistance;
+	protected float _pointDistance;
 
-	protected float multiplier;
+	protected float _multiplier;
 
-	protected int frame, padding;
+	protected int _frame, _padding;
 
-	protected int stepType, lineWidth;
+	protected int _stepType, _lineWidth;
 
-	protected float trailLength, stepsPerFrame;
+	protected float _trailLength, _stepsPerFrame;
 
-	protected boolean isUpdate, stopped;
+	protected boolean _isUpdate, _stopped;
 
-	protected final IntMap<float[]> signatures;
+	protected final IntMap<float[]> _signatures;
 
-	protected TArray<Object[]> data;
+	protected TArray<Object[]> _data;
 
-	protected TArray<Progress> points;
+	protected TArray<Progress> _points;
 
-	private LTimer timer;
+	private LTimer _timer;
 
-	private Progress last;
+	private Progress _last;
 
-	protected float blockWidth, blockHeight, blockHalfWidth, blockHalfHeight;
+	protected float _blockWidth, _blockHeight, _blockHalfWidth, _blockHalfHeight;
 
-	protected float displayWidth, displayHeight;
+	protected float _displayWidth, _displayHeight;
 
 	static class Progress {
 
@@ -193,92 +193,92 @@ public class Cycle extends Entity {
 	}
 
 	public Cycle(TArray<Object[]> path, int x, int y, int w, int h) {
-		this.data = new TArray<Object[]>(10);
+		this._data = new TArray<Object[]>(10);
 		if (path != null) {
-			data.add(path.toArray());
-			isUpdate = true;
+			_data.add(path.toArray());
+			_isUpdate = true;
 		}
 		this.setRepaint(true);
 		this.setSize(w, h);
 		this.setLocation(x, y);
-		this.timer = new LTimer(25);
+		this._timer = new LTimer(25);
 		this.setColor(LColor.white);
-		this.points = new TArray<Progress>();
-		this.displayWidth = w;
-		this.displayHeight = h;
-		this.multiplier = 1;
-		this.pointDistance = 0.05f;
-		this.padding = 0;
-		this.stepType = 0;
-		this.stepsPerFrame = 1;
-		this.trailLength = 1;
-		this.blockWidth = w;
-		this.blockHeight = h;
-		this.blockHalfWidth = w / 2;
-		this.blockHalfHeight = h / 2;
-		signatures = new IntMap<float[]>(3);
-		signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
-		signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
-		signatures.put(LINE, new float[] { 1, 1, 1, 1 });
+		this._points = new TArray<Progress>();
+		this._displayWidth = w;
+		this._displayHeight = h;
+		this._multiplier = 1;
+		this._pointDistance = 0.05f;
+		this._padding = 0;
+		this._stepType = 0;
+		this._stepsPerFrame = 1;
+		this._trailLength = 1;
+		this._blockWidth = w;
+		this._blockHeight = h;
+		this._blockHalfWidth = w / 2;
+		this._blockHalfHeight = h / 2;
+		_signatures = new IntMap<float[]>(3);
+		_signatures.put(ARC, new float[] { 1, 1, 3, 2, 2, 0 });
+		_signatures.put(BEZIER, new float[] { 1, 1, 1, 1, 1, 1, 1, 1 });
+		_signatures.put(LINE, new float[] { 1, 1, 1, 1 });
 		this.setup();
 
 	}
 
 	public void play() {
-		this.stopped = false;
+		this._stopped = false;
 	}
 
 	public void iterateFrame() {
-		this.frame += this.stepsPerFrame;
+		this._frame += this._stepsPerFrame;
 
-		if (this.frame >= this.points.size) {
-			this.frame = 0;
+		if (this._frame >= this._points.size) {
+			this._frame = 0;
 		}
 	}
 
 	public void stop() {
-		this.stopped = true;
+		this._stopped = true;
 	}
 
 	public Cycle setDelay(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	public void addPath(int type, float... f) {
 		Object[] o = new Object[2];
 		o[0] = type;
 		o[1] = f;
-		data.add(o);
-		isUpdate = true;
+		_data.add(o);
+		_isUpdate = true;
 	}
 
 	private void setup() {
-		if (!isUpdate) {
+		if (!_isUpdate) {
 			return;
 		}
 		float[] args;
 		float value;
 		int index;
-		for (Object[] o : data) {
+		for (Object[] o : _data) {
 			Integer type = (Integer) o[0];
 			args = (float[]) o[1];
 
 			for (int a = -1, al = args.length; ++a < al;) {
 
-				index = (int) signatures.get(type)[a];
+				index = (int) _signatures.get(type)[a];
 				value = args[a];
 				switch (index) {
 				case RADIUS:
-					value *= this.multiplier;
+					value *= this._multiplier;
 					break;
 				case DIM:
-					value *= this.multiplier;
-					value += this.padding;
+					value *= this._multiplier;
+					value += this._padding;
 					break;
 				case DEGREE:
 					value *= MathUtils.PI / 180;
@@ -290,33 +290,33 @@ public class Cycle extends Entity {
 			callMethod(type, args);
 
 		}
-		this.isUpdate = false;
+		this._isUpdate = false;
 	}
 
 	private final void step(GLEx g, Progress e, int index, int frame, LColor color, float alpha, float offsetX,
 			float offsetY) {
-		switch (stepType) {
+		switch (_stepType) {
 		case 0:
-			g.fillOval(x() + e.x - blockHalfWidth + offsetX, y() + e.y - blockHalfHeight + offsetY, blockWidth,
-					blockHeight);
+			g.fillOval(x() + e.x - _blockHalfWidth + offsetX, y() + e.y - _blockHalfHeight + offsetY, _blockWidth,
+					_blockHeight);
 			break;
 		case 1:
-			g.fillRect(x() + e.x - blockHalfWidth + offsetX, y() + e.y - blockHalfHeight + offsetY, blockWidth,
-					blockHeight);
+			g.fillRect(x() + e.x - _blockHalfWidth + offsetX, y() + e.y - _blockHalfHeight + offsetY, _blockWidth,
+					_blockHeight);
 			break;
 		case 2:
-			if (last != null) {
-				float[] xs = { x() + last.x + offsetX, x() + e.x + offsetX };
-				float[] ys = { y() + last.y + offsetY, y() + e.y + offsetY };
+			if (_last != null) {
+				float[] xs = { x() + _last.x + offsetX, x() + e.x + offsetX };
+				float[] ys = { y() + _last.y + offsetY, y() + e.y + offsetY };
 				g.drawPolygon(xs, ys, 2);
 			}
-			last = e;
+			_last = e;
 			break;
 		case 3:
-			if (last != null) {
-				g.drawLine(x() + last.x + offsetX, y() + last.y + offsetY, x() + e.x + offsetX, y() + e.y + offsetY);
+			if (_last != null) {
+				g.drawLine(x() + _last.x + offsetX, y() + _last.y + offsetY, x() + e.x + offsetX, y() + e.y + offsetY);
 			}
-			last = e;
+			_last = e;
 			break;
 		case 4:
 			step(g, e.x + offsetX, e.y + offsetY, e.progress, index, frame, color, alpha);
@@ -330,7 +330,7 @@ public class Cycle extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
+		if (_timer.action(elapsedTime)) {
 			this.iterateFrame();
 		}
 	}
@@ -339,7 +339,7 @@ public class Cycle extends Entity {
 
 		float[] result;
 
-		for (float pd = this.pointDistance, t = pd; t <= 1; t += pd) {
+		for (float pd = this._pointDistance, t = pd; t <= 1; t += pd) {
 
 			t = MathUtils.round(t * 1f / pd) / (1f / pd);
 			switch (index) {
@@ -356,7 +356,7 @@ public class Cycle extends Entity {
 				result = new float[] { 0f, 0f };
 			}
 
-			points.add(new Progress(result[0], result[1], t));
+			_points.add(new Progress(result[0], result[1], t));
 
 		}
 
@@ -390,28 +390,28 @@ public class Cycle extends Entity {
 
 		this.setup();
 
-		int pointsLength = points.size;
+		int pointsLength = _points.size;
 
 		Progress point;
 		int index;
 		int frameD;
 		int indexD;
 
-		float size = (pointsLength * this.trailLength);
+		float size = (pointsLength * this._trailLength);
 
-		for (float i = -1, l = size; ++i < l && !this.stopped;) {
+		for (float i = -1, l = size; ++i < l && !this._stopped;) {
 
-			index = (int) (frame + i);
+			index = (int) (_frame + i);
 			if (index < pointsLength) {
-				point = points.get(index);
+				point = _points.get(index);
 			} else {
-				point = points.get(index - pointsLength);
+				point = _points.get(index - pointsLength);
 			}
 			this._objectAlpha = (i / (l - 1));
-			frameD = frame / (pointsLength - 1);
+			frameD = _frame / (pointsLength - 1);
 			indexD = (int) _objectAlpha;
-			if (lineWidth > 0) {
-				g.setLineWidth(lineWidth);
+			if (_lineWidth > 0) {
+				g.setLineWidth(_lineWidth);
 			}
 			if (_scaleX != 1 || _scaleY != 1) {
 				g.saveTx();
@@ -427,7 +427,7 @@ public class Cycle extends Entity {
 				g.setAlpha(1f);
 			}
 			g.setTint(tmpColor);
-			if (lineWidth > 0) {
+			if (_lineWidth > 0) {
 				g.resetLineWidth();
 			}
 			if (_scaleX != 1 || _scaleY != 1) {
@@ -438,143 +438,143 @@ public class Cycle extends Entity {
 	}
 
 	public TArray<Object[]> getData() {
-		return data;
+		return _data;
 	}
 
 	public Cycle setData(TArray<Object[]> data) {
-		this.data = data;
+		this._data = data;
 		return this;
 	}
 
 	public int getFrame() {
-		return frame;
+		return _frame;
 	}
 
 	public Cycle setFrame(int frame) {
-		this.frame = frame;
+		this._frame = frame;
 		return this;
 	}
 
 	public boolean isUpdate() {
-		return isUpdate;
+		return _isUpdate;
 	}
 
 	public Cycle setUpdate(boolean isUpdate) {
-		this.isUpdate = isUpdate;
+		this._isUpdate = isUpdate;
 		return this;
 	}
 
 	public Progress getLast() {
-		return last;
+		return _last;
 	}
 
 	public Cycle setLast(Progress last) {
-		this.last = last;
+		this._last = last;
 		return this;
 	}
 
 	public int getLineWidth() {
-		return lineWidth;
+		return _lineWidth;
 	}
 
 	public Cycle setLineWidth(int lineWidth) {
-		this.lineWidth = lineWidth;
+		this._lineWidth = lineWidth;
 		return this;
 	}
 
 	public float getMultiplier() {
-		return multiplier;
+		return _multiplier;
 	}
 
 	public Cycle setMultiplier(float multiplier) {
-		this.multiplier = multiplier;
+		this._multiplier = multiplier;
 		return this;
 	}
 
 	public int getPadding() {
-		return padding;
+		return _padding;
 	}
 
 	public Cycle setPadding(int padding) {
-		this.padding = padding;
+		this._padding = padding;
 		return this;
 	}
 
 	public float getPointDistance() {
-		return pointDistance;
+		return _pointDistance;
 	}
 
 	public Cycle setPointDistance(float pointDistance) {
-		this.pointDistance = pointDistance;
+		this._pointDistance = pointDistance;
 		return this;
 	}
 
 	public TArray<Progress> getPoints() {
-		return points;
+		return _points;
 	}
 
 	public Cycle setPoints(TArray<Progress> points) {
-		this.points = points;
+		this._points = points;
 		return this;
 	}
 
 	public float getStepsPerFrame() {
-		return stepsPerFrame;
+		return _stepsPerFrame;
 	}
 
 	public Cycle setStepsPerFrame(float stepsPerFrame) {
-		this.stepsPerFrame = stepsPerFrame;
+		this._stepsPerFrame = stepsPerFrame;
 		return this;
 	}
 
 	public int getStepType() {
-		return stepType;
+		return _stepType;
 	}
 
 	public Cycle setStepType(int stepType) {
-		this.stepType = stepType;
+		this._stepType = stepType;
 		return this;
 	}
 
 	public boolean isStopped() {
-		return stopped;
+		return _stopped;
 	}
 
 	public float getTrailLength() {
-		return trailLength;
+		return _trailLength;
 	}
 
 	public Cycle setTrailLength(float trailLength) {
-		this.trailLength = trailLength;
+		this._trailLength = trailLength;
 		return this;
 	}
 
 	public int getBlockHeight() {
-		return (int) blockHeight;
+		return (int) _blockHeight;
 	}
 
 	public Cycle setBlockHeight(float blockHeight) {
-		this.blockHeight = blockHeight;
-		this.blockHalfHeight = blockHeight / 2;
+		this._blockHeight = blockHeight;
+		this._blockHalfHeight = blockHeight / 2;
 		return this;
 	}
 
 	public int getBlockWidth() {
-		return (int) blockWidth;
+		return (int) _blockWidth;
 	}
 
 	public Cycle setBlockWidth(float blockWidth) {
-		this.blockWidth = blockWidth;
-		this.blockHalfWidth = blockWidth / 2;
+		this._blockWidth = blockWidth;
+		this._blockHalfWidth = blockWidth / 2;
 		return this;
 	}
 
 	public RectBox getShape() {
 		float maxX = 0, maxY = 0;
 		float minX = 0, minY = 0;
-		if (isUpdate) {
+		if (_isUpdate) {
 			setup();
-			for (Progress point : points) {
+			for (Progress point : _points) {
 				maxX = MathUtils.max(maxX, point.x);
 				maxY = MathUtils.max(maxY, point.y);
 				minX = MathUtils.min(minX, point.x);
@@ -586,20 +586,20 @@ public class Cycle extends Entity {
 	}
 
 	public float getDisplayWidth() {
-		return displayWidth;
+		return _displayWidth;
 	}
 
 	public Cycle setDisplayWidth(float displayWidth) {
-		this.displayWidth = displayWidth;
+		this._displayWidth = displayWidth;
 		return this;
 	}
 
 	public float getDisplayHeight() {
-		return displayHeight;
+		return _displayHeight;
 	}
 
 	public Cycle setDisplayHeight(float displayHeight) {
-		this.displayHeight = displayHeight;
+		this._displayHeight = displayHeight;
 		return this;
 	}
 

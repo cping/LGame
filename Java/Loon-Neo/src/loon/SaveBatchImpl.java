@@ -24,28 +24,28 @@ import loon.utils.ObjectMap;
 
 public class SaveBatchImpl implements Save.Batch {
 
-	protected final Save storage;
-	private ObjectMap<String, String> updates = new ObjectMap<String, String>();
+	protected final Save _storage;
+	private ObjectMap<String, String> _updates = new ObjectMap<String, String>();
 
 	public SaveBatchImpl(Save storage) {
-		this.storage = storage;
+		this._storage = storage;
 	}
 
 	@Override
 	public void setItem(String key, String data) {
-		updates.put(key, data);
+		_updates.put(key, data);
 	}
 
 	@Override
 	public void removeItem(String key) {
-		updates.put(key, null);
+		_updates.put(key, null);
 	}
 
 	@Override
 	public void commit() {
 		try {
 			onBeforeCommit();
-			for (ObjectMap.Entry<String, String> entry : updates.entries()) {
+			for (ObjectMap.Entry<String, String> entry : _updates.entries()) {
 				String key = entry.key, data = entry.value;
 				if (data == null)
 					removeImpl(key);
@@ -53,9 +53,8 @@ public class SaveBatchImpl implements Save.Batch {
 					setImpl(key, data);
 			}
 			onAfterCommit();
-
 		} finally {
-			updates = null;
+			_updates = null;
 		}
 	}
 
@@ -63,11 +62,11 @@ public class SaveBatchImpl implements Save.Batch {
 	}
 
 	protected void setImpl(String key, String data) {
-		storage.setItem(key, data);
+		_storage.setItem(key, data);
 	}
 
 	protected void removeImpl(String key) {
-		storage.removeItem(key);
+		_storage.removeItem(key);
 	}
 
 	protected void onAfterCommit() {

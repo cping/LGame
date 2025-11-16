@@ -490,6 +490,17 @@ public class LLayer extends ActorLayer {
 		return _dragActor;
 	}
 
+	public void freeDragActor() {
+		_dragActor = null;
+	}
+
+	public Actor findDragActor() {
+		final Vector2f pos = getUITouchXY();
+		int dx = MathUtils.floor(pos.x);
+		int dy = MathUtils.floor(pos.y);
+		return (_dragActor = getSynchronizedObject(dx, dy));
+	}
+
 	@Override
 	protected void processTouchPressed() {
 		if (!_input.isMoving()) {

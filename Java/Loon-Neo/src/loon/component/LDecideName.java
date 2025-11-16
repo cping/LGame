@@ -85,7 +85,7 @@ public class LDecideName extends LComponent implements FontSet<LDecideName> {
 
 	private TArray<String> _keyArrays;
 
-	private boolean _bind = false, _showGrid = false;;
+	private boolean _bind = false, _showGrid = false;
 
 	private float _dx = 0.1f;
 

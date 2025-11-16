@@ -1021,6 +1021,7 @@ public class LInventory extends LLayer {
 	public void dragClick(int dx, int dy) {
 		super.dragClick(dx, dy);
 		if (!_useKeyboard) {
+			findDragActor();
 			final boolean draged = _input == null ? false : (_input.getTouchDX() == 0 && _input.getTouchDY() == 0);
 			if (_isMobile && !_tipSelected && draged) {
 				checkTouchTip();
@@ -1053,6 +1054,7 @@ public class LInventory extends LLayer {
 				}
 			}
 			freeTipSelected();
+			freeDragActor();
 		}
 	}
 

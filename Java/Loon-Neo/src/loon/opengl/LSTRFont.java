@@ -251,7 +251,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 
 				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height;
+					rowHeight = newIntObject.height + 1;
 				}
 
 				positionX += newIntObject.width;

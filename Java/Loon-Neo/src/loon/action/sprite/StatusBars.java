@@ -26,17 +26,17 @@ import loon.utils.TArray;
 
 public final class StatusBars extends Entity {
 
-	private TArray<StatusBar> barCaches;
+	private TArray<StatusBar> _barCaches;
 
 	public StatusBars() {
-		this.barCaches = new TArray<StatusBar>(CollectionUtils.INITIAL_CAPACITY);
+		this._barCaches = new TArray<StatusBar>(CollectionUtils.INITIAL_CAPACITY);
 		this.setRepaint(true);
 	}
 
 	public StatusBar addBar(int value, int maxValue, int x, int y, int w, int h) {
-		synchronized (barCaches) {
+		synchronized (_barCaches) {
 			StatusBar bar = new StatusBar(value, maxValue, x, y, w, h);
-			barCaches.add(bar);
+			_barCaches.add(bar);
 			return bar;
 		}
 	}
@@ -50,8 +50,8 @@ public final class StatusBars extends Entity {
 	}
 
 	public void addBar(StatusBar bar) {
-		synchronized (barCaches) {
-			barCaches.add(bar);
+		synchronized (_barCaches) {
+			_barCaches.add(bar);
 		}
 	}
 
@@ -59,21 +59,21 @@ public final class StatusBars extends Entity {
 		if (bar == null) {
 			return false;
 		}
-		synchronized (barCaches) {
-			return barCaches.remove(bar);
+		synchronized (_barCaches) {
+			return _barCaches.remove(bar);
 		}
 	}
 
 	@Override
 	public void clear() {
-		synchronized (barCaches) {
-			barCaches.clear();
+		synchronized (_barCaches) {
+			_barCaches.clear();
 		}
 	}
 
 	@Override
 	public int size() {
-		return barCaches.size;
+		return _barCaches.size;
 	}
 
 	public void hide(StatusBar bar) {
@@ -90,11 +90,11 @@ public final class StatusBars extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		int size = barCaches.size;
+		int size = _barCaches.size;
 		if (size > 0) {
-			synchronized (barCaches) {
+			synchronized (_barCaches) {
 				for (int i = 0; i < size; i++) {
-					StatusBar bar = barCaches.get(i);
+					StatusBar bar = _barCaches.get(i);
 					if (bar != null && bar.isVisible()) {
 						bar.createUI(g, offsetX, offsetY);
 					}
@@ -105,11 +105,11 @@ public final class StatusBars extends Entity {
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		int size = barCaches.size;
+		int size = _barCaches.size;
 		if (size > 0) {
-			synchronized (barCaches) {
+			synchronized (_barCaches) {
 				for (int i = 0; i < size; i++) {
-					StatusBar bar = barCaches.get(i);
+					StatusBar bar = _barCaches.get(i);
 					if (bar != null) {
 						bar.update(elapsedTime);
 					}
@@ -121,15 +121,15 @@ public final class StatusBars extends Entity {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		int size = barCaches.size;
+		int size = _barCaches.size;
 		for (int i = 0; i < size; i++) {
-			StatusBar bar = barCaches.get(i);
+			StatusBar bar = _barCaches.get(i);
 			if (bar != null) {
 				bar.close();
 				bar = null;
 			}
 		}
-		barCaches.clear();
-		barCaches = null;
+		_barCaches.clear();
+		_barCaches = null;
 	}
 }

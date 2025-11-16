@@ -27,20 +27,19 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.LTextureBatch.Cache;
 import loon.canvas.LColor;
-import loon.events.Updateable;
 import loon.opengl.GLEx;
 
 public class SpriteSheet implements LRelease {
 
-	private int margin, spacing;
+	private int _margin, _spacing;
 
-	private int tw, th;
+	private int _tw, _th;
 
-	private int width, height;
+	private int _width, _height;
 
-	private LTexture[][] subImages;
+	private LTexture[][] _subImages;
 
-	private LTexture target;
+	private LTexture _target;
 
 	public SpriteSheet(String fileName, int tw, int th, int s, int m) {
 		this(LSystem.loadTexture(fileName), tw, th, s, m);
@@ -55,51 +54,44 @@ public class SpriteSheet implements LRelease {
 	}
 
 	public SpriteSheet(LTexture img, int tw, int th, int s, int m) {
-		this.width = (int) img.width();
-		this.height = (int) img.height();
-		this.target = img;
-		this.tw = tw;
-		this.th = th;
-		this.margin = m;
-		this.spacing = s;
+		this._width = (int) img.width();
+		this._height = (int) img.height();
+		this._target = img;
+		this._tw = tw;
+		this._th = th;
+		this._margin = m;
+		this._spacing = s;
 	}
 
 	private void update() {
-		if (subImages != null) {
+		if (_subImages != null) {
 			return;
 		}
-		if (!target.isLoaded()) {
-			Updateable update = new Updateable() {
-
-				@Override
-				public void action(Object a) {
-					target.loadTexture();
-				}
-			};
-			LSystem.load(update);
+		if (!_target.isLoaded()) {
+			_target.loadTexture();
 		}
-		int tilesAcross = ((width - (margin * 2) - tw) / (tw + spacing)) + 1;
-		int tilesDown = ((height - (margin * 2) - th) / (th + spacing)) + 1;
-		if ((height - th) % (th + spacing) != 0) {
+		int tilesAcross = ((_width - (_margin * 2) - _tw) / (_tw + _spacing)) + 1;
+		int tilesDown = ((_height - (_margin * 2) - _th) / (_th + _spacing)) + 1;
+		if ((_height - _th) % (_th + _spacing) != 0) {
 			tilesDown++;
 		}
-		subImages = new LTexture[tilesAcross][tilesDown];
+		_subImages = new LTexture[tilesAcross][tilesDown];
 		for (int x = 0; x < tilesAcross; x++) {
 			for (int y = 0; y < tilesDown; y++) {
-				subImages[x][y] = getImage(x, y);
+				_subImages[x][y] = getImage(x, y);
 			}
 		}
 	}
 
 	public LTexture[][] getTextures() {
-		return subImages;
+		return _subImages;
 	}
 
 	public boolean contains(int x, int y) {
-		if ((x < 0) || (x >= subImages.length)) {
+		if ((x < 0) || (x >= _subImages.length)) {
 			return false;
 		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((y < 0) || (y >= _subImages[0].length)) {
 			return false;
 		}
 		return true;
@@ -107,38 +99,38 @@ public class SpriteSheet implements LRelease {
 
 	private void checkImage(int x, int y) {
 		update();
-		if ((x < 0) || (x >= subImages.length)) {
+		if ((x < 0) || (x >= _subImages.length)) {
 			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
 		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((y < 0) || (y >= _subImages[0].length)) {
 			throw new LSysException("SubImage out of sheet bounds " + x + "," + y);
 		}
 	}
 
 	public LTexture getImage(int x, int y) {
 		checkImage(x, y);
-		if ((x < 0) || (x >= subImages.length)) {
+		if ((x < 0) || (x >= _subImages.length)) {
 			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
-		if ((y < 0) || (y >= subImages[0].length)) {
+		if ((y < 0) || (y >= _subImages[0].length)) {
 			throw new LSysException("SubTexture2D out of sheet bounds: " + x + "," + y);
 		}
-		return target.copy(x * (tw + spacing) + margin, y * (th + spacing) + margin, tw, th);
+		return _target.copy(x * (_tw + _spacing) + _margin, y * (_th + _spacing) + _margin, _tw, _th);
 	}
 
 	public int getHorizontalCount() {
 		update();
-		return subImages.length;
+		return _subImages.length;
 	}
 
 	public int getVerticalCount() {
 		update();
-		return subImages[0].length;
+		return _subImages[0].length;
 	}
 
 	public LTexture getSubImage(int x, int y) {
 		checkImage(x, y);
-		return subImages[x][y];
+		return _subImages[x][y];
 	}
 
 	public void draw(GLEx g, int x, int y, int sx, int sy) {
@@ -146,116 +138,116 @@ public class SpriteSheet implements LRelease {
 	}
 
 	public void draw(GLEx g, int x, int y, int sx, int sy, LColor color) {
-		if (target.isBatch()) {
-			final float nx = sx * tw;
-			final float ny = sy * th;
-			target.draw(x, y, tw, th, nx, ny, nx + tw, ny + th, color);
+		if (_target.isBatch()) {
+			final float nx = sx * _tw;
+			final float ny = sy * _th;
+			_target.draw(x, y, _tw, _th, nx, ny, nx + _tw, ny + _th, color);
 		} else {
 			checkImage(sx, sy);
-			g.draw(subImages[sx][sy], x, y);
+			g.draw(_subImages[sx][sy], x, y);
 		}
 	}
 
 	public SpriteSheet glBegin() {
-		target.glBegin();
+		_target.glBegin();
 		return this;
 	}
 
 	public SpriteSheet glEnd() {
-		target.glEnd();
+		_target.glEnd();
 		return this;
 	}
 
 	public int getMargin() {
-		return margin;
+		return _margin;
 	}
 
 	public SpriteSheet setMargin(int margin) {
-		this.margin = margin;
+		this._margin = margin;
 		return this;
 	}
 
 	public int getSpacing() {
-		return spacing;
+		return _spacing;
 	}
 
 	public SpriteSheet setSpacing(int spacing) {
-		this.spacing = spacing;
+		this._spacing = spacing;
 		return this;
 	}
 
 	public Cache newCache() {
-		return target.newBatchCache();
+		return _target.newBatchCache();
 	}
 
 	public LTexture getTarget() {
-		return target;
+		return _target;
 	}
 
 	public SpriteSheet setTarget(LTexture target) {
-		if (this.target != null) {
-			this.target.close();
-			this.target = null;
+		if (this._target != null) {
+			this._target.close();
+			this._target = null;
 		}
-		this.target = target;
+		this._target = target;
 		return this;
 	}
 
 	public int getTileWidth() {
-		return tw;
+		return _tw;
 	}
 
 	public SpriteSheet setTileWidth(int tw) {
-		this.tw = tw;
+		this._tw = tw;
 		return this;
 	}
 
 	public int getTileHeight() {
-		return th;
+		return _th;
 	}
 
 	public SpriteSheet setTileHeight(int th) {
-		this.th = th;
+		this._th = th;
 		return this;
 	}
 
 	public int getWidth() {
-		return width;
+		return _width;
 	}
 
 	public SpriteSheet setWidth(int width) {
-		this.width = width;
+		this._width = width;
 		return this;
 	}
 
 	public int getHeight() {
-		return height;
+		return _height;
 	}
 
 	public SpriteSheet setHeight(int height) {
-		this.height = height;
+		this._height = height;
 		return this;
 	}
 
 	public boolean isClosed() {
-		return target == null || target.isClosed();
+		return _target == null || _target.isClosed();
 	}
 
 	@Override
 	public void close() {
-		if (subImages != null) {
-			synchronized (subImages) {
-				for (int i = 0; i < subImages.length; i++) {
-					for (int j = 0; j < subImages[i].length; j++) {
-						subImages[i][j].close();
+		if (_subImages != null) {
+			synchronized (_subImages) {
+				for (int i = 0; i < _subImages.length; i++) {
+					for (int j = 0; j < _subImages[i].length; j++) {
+						_subImages[i][j].close();
 					}
 				}
-				this.subImages = null;
+				this._subImages = null;
 			}
 		}
-		if (target != null) {
-			target.close();
-			target = null;
+		if (_target != null) {
+			_target.close();
+			_target = null;
 		}
 	}
 

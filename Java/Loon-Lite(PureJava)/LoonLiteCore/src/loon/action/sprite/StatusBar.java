@@ -34,23 +34,23 @@ public class StatusBar extends Entity {
 
 	private float _offsetTextX, _offsetTextY;
 
-	private LColor colorback, colorbefore, colorafter;
+	private LColor _colorback, _colorbefore, _colorafter;
 
-	protected boolean showValue, hitObject, deadObject;
+	protected boolean _showValue, _hitObject, _deadObject;
 
-	protected boolean updated = false;
+	protected boolean _updated = false;
 
-	private int initValue, maxValue, minValue;
+	private int _initValue, _maxValue, _minValue;
 
-	private int currentWidth, goalWidth;
+	private int _currentWidth, _goalWidth;
 
-	private int speed;
+	private int _speed;
 
-	private LColor fontColor = new LColor(LColor.white);
+	private LColor _fontColor = new LColor(LColor.white);
 
-	private String numberString;
+	private String _numberString;
 
-	private IFont numberFont;
+	private IFont _numberFont;
 
 	public StatusBar(int width, int height) {
 		this(0, 0, width, height);
@@ -78,50 +78,50 @@ public class StatusBar extends Entity {
 
 	public StatusBar(IFont font, int v, int max, int x, int y, int width, int height, LColor back, LColor before,
 			LColor after) {
-		this.initValue = this.minValue = v;
-		this.maxValue = max;
-		this.currentWidth = (width * v) / maxValue;
-		this.goalWidth = (width * minValue) / maxValue;
+		this._initValue = this._minValue = v;
+		this._maxValue = max;
+		this._currentWidth = (width * v) / _maxValue;
+		this._goalWidth = (width * _minValue) / _maxValue;
 		this.setWidth(width);
 		this.setHeight(height);
 		this.setFont(font);
-		this.hitObject = true;
+		this._hitObject = true;
 		if (back == null) {
-			this.colorback = LColor.gray;
+			this._colorback = LColor.gray;
 		} else {
-			this.colorback = back;
+			this._colorback = back;
 		}
 		if (before == null) {
-			this.colorbefore = LColor.red;
+			this._colorbefore = LColor.red;
 		} else {
-			this.colorbefore = before;
+			this._colorbefore = before;
 		}
 		if (after == null) {
-			this.colorafter = LColor.orange;
+			this._colorafter = LColor.orange;
 		} else {
-			this.colorafter = after;
+			this._colorafter = after;
 		}
-		this.speed = 1;
-		this.updated = false;
+		this._speed = 1;
+		this._updated = false;
 		this.setLocation(x, y);
 		this.setRepaint(true);
 	}
 
 	public void matchProgressToWidth() {
-		this.matchProgressToWidth(minValue, maxValue);
+		this.matchProgressToWidth(_minValue, _maxValue);
 	}
 
 	public void matchProgressToWidthMin(int min) {
-		this.matchProgressToWidth(min, maxValue);
+		this.matchProgressToWidth(min, _maxValue);
 	}
 
 	public void matchProgressToWidthMax(int max) {
-		this.matchProgressToWidth(minValue, max);
+		this.matchProgressToWidth(_minValue, max);
 	}
 
 	public void matchProgressToWidth(int min, int max) {
-		this.currentWidth = MathUtils.iceil(MathUtils.clamp(((_width * initValue) / max), 0, _width));
-		this.goalWidth = MathUtils.iceil(MathUtils.clamp(((_width * min) / max), 0, _width));
+		this._currentWidth = MathUtils.iceil(MathUtils.clamp(((_width * _initValue) / max), 0, _width));
+		this._goalWidth = MathUtils.iceil(MathUtils.clamp(((_width * min) / max), 0, _width));
 	}
 
 	public StatusBar set(int v) {
@@ -133,21 +133,21 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar set(int v, int min, int max) {
-		if (this.initValue == v && this.minValue == min && this.maxValue == max) {
+		if (this._initValue == v && this._minValue == min && this._maxValue == max) {
 			return this;
 		}
-		this.initValue = v;
-		this.minValue = min;
-		this.maxValue = max;
-		this.updated = true;
+		this._initValue = v;
+		this._minValue = min;
+		this._maxValue = max;
+		this._updated = true;
 		this.matchProgressToWidth();
 		return this;
 	}
 
 	public StatusBar empty() {
-		this.initValue = 0;
-		this.minValue = 0;
-		this.updated = true;
+		this._initValue = 0;
+		this._minValue = 0;
+		this._updated = true;
 		this.matchProgressToWidth();
 		return this;
 	}
@@ -163,24 +163,24 @@ public class StatusBar extends Entity {
 		}
 		g.setAlpha(_objectAlpha);
 		if (cv1 <= _width || cv2 <= _height) {
-			g.fillRect(x, y, _width, _height, LColor.combine(colorback, _baseColor));
+			g.fillRect(x, y, _width, _height, LColor.combine(_colorback, _baseColor));
 		} else {
-			g.fillRect(x, y, cv1, _height, LColor.combine(colorback, _baseColor));
+			g.fillRect(x, y, cv1, _height, LColor.combine(_colorback, _baseColor));
 		}
-		if (minValue <= initValue) {
+		if (_minValue <= _initValue) {
 			if (MathUtils.equal(cv1, _width)) {
-				g.fillRect(x, y, cv1, _height, LColor.combine(colorbefore, _baseColor));
+				g.fillRect(x, y, cv1, _height, LColor.combine(_colorbefore, _baseColor));
 			} else {
-				if (!deadObject) {
-					g.fillRect(x, y, cv2, _height, LColor.combine(colorafter, _baseColor));
+				if (!_deadObject) {
+					g.fillRect(x, y, cv2, _height, LColor.combine(_colorafter, _baseColor));
 				}
-				g.fillRect(x, y, cv1, _height, LColor.combine(colorbefore, _baseColor));
+				g.fillRect(x, y, cv1, _height, LColor.combine(_colorbefore, _baseColor));
 			}
 		} else if (MathUtils.equal(cv2, _width)) {
-			g.fillRect(x, y, cv2, _height, LColor.combine(colorbefore, _baseColor));
+			g.fillRect(x, y, cv2, _height, LColor.combine(_colorbefore, _baseColor));
 		} else {
-			g.fillRect(x, y, cv1, _height, LColor.combine(colorafter, _baseColor));
-			g.fillRect(x, y, cv2, _height, LColor.combine(colorbefore, _baseColor));
+			g.fillRect(x, y, cv1, _height, LColor.combine(_colorafter, _baseColor));
+			g.fillRect(x, y, cv2, _height, LColor.combine(_colorbefore, _baseColor));
 		}
 		g.setAlpha(alpha);
 	}
@@ -205,48 +205,48 @@ public class StatusBar extends Entity {
 	 * @return
 	 */
 	public StatusBar setUpdate(int v) {
-		if (v != this.minValue) {
-			this.minValue = MathUtils.mid(v, 0, maxValue);
-			this.updated = true;
+		if (v != this._minValue) {
+			this._minValue = MathUtils.mid(v, 0, _maxValue);
+			this._updated = true;
 			this.matchProgressToWidth();
 		}
 		return this;
 	}
 
 	public StatusBar setDead(boolean d) {
-		this.deadObject = d;
+		this._deadObject = d;
 		return this;
 	}
 
 	public StatusBar setSpeed(int v) {
-		this.speed = v;
+		this._speed = v;
 		return this;
 	}
 
 	public int getSpeed() {
-		return this.speed;
+		return this._speed;
 	}
 
 	public boolean state() {
-		if (updated) {
-			if (currentWidth == goalWidth) {
-				updated = false;
+		if (_updated) {
+			if (_currentWidth == _goalWidth) {
+				_updated = false;
 				return false;
 			}
-			if (currentWidth > goalWidth) {
-				currentWidth -= LSystem.toIScaleFPS(speed);
-				initValue = MathUtils.mid(minValue, (int) ((currentWidth * maxValue) / _width), initValue);
-				if (currentWidth < goalWidth) {
-					currentWidth = goalWidth;
-					updated = false;
+			if (_currentWidth > _goalWidth) {
+				_currentWidth -= LSystem.toIScaleFPS(_speed);
+				_initValue = MathUtils.mid(_minValue, (int) ((_currentWidth * _maxValue) / _width), _initValue);
+				if (_currentWidth < _goalWidth) {
+					_currentWidth = _goalWidth;
+					_updated = false;
 					return false;
 				}
-			} else if (currentWidth < goalWidth) {
-				currentWidth += LSystem.toIScaleFPS(speed);
-				initValue = MathUtils.mid(initValue, (int) ((currentWidth * maxValue) / _width), minValue);
-				if (currentWidth > goalWidth) {
-					currentWidth = goalWidth;
-					updated = false;
+			} else if (_currentWidth < _goalWidth) {
+				_currentWidth += LSystem.toIScaleFPS(_speed);
+				_initValue = MathUtils.mid(_initValue, (int) ((_currentWidth * _maxValue) / _width), _minValue);
+				if (_currentWidth > _goalWidth) {
+					_currentWidth = _goalWidth;
+					_updated = false;
 					return false;
 				}
 			}
@@ -255,15 +255,15 @@ public class StatusBar extends Entity {
 	}
 
 	public boolean isUpdated() {
-		return this.updated;
+		return this._updated;
 	}
 
 	public float getPercentage() {
-		return (float) this.initValue / maxValue;
+		return (float) this._initValue / _maxValue;
 	}
 
 	public StatusBar setPercentage(float p) {
-		setUpdate(MathUtils.iceil(MathUtils.clamp((p * maxValue), 0, maxValue)));
+		setUpdate(MathUtils.iceil(MathUtils.clamp((p * _maxValue), 0, _maxValue)));
 		return this;
 	}
 
@@ -271,72 +271,72 @@ public class StatusBar extends Entity {
 	public void repaint(GLEx g, float offsetX, float offsetY) {
 		final float offX = drawX(offsetX);
 		final float offY = drawY(offsetY);
-		drawBar(g, goalWidth, currentWidth, _width, offX, offY);
-		if (this.showValue) {
+		drawBar(g, _goalWidth, _currentWidth, _width, offX, offY);
+		if (this._showValue) {
 			String displayValue = null;
-			if (StringUtils.isEmpty(numberString)) {
-				displayValue = String.valueOf(initValue);
+			if (StringUtils.isEmpty(_numberString)) {
+				displayValue = String.valueOf(_initValue);
 			} else {
-				displayValue = StringUtils.format(numberString, String.valueOf(initValue));
+				displayValue = StringUtils.format(_numberString, String.valueOf(_initValue));
 			}
 			IFont font = g.getFont();
-			if (numberFont == null) {
-				numberFont = font;
+			if (_numberFont == null) {
+				_numberFont = font;
 			}
-			g.setFont(numberFont);
-			int width = numberFont.stringWidth(displayValue);
-			int height = MathUtils.min(numberFont.getSize(), numberFont.getHeight());
+			g.setFont(_numberFont);
+			int width = _numberFont.stringWidth(displayValue);
+			int height = MathUtils.min(_numberFont.getSize(), _numberFont.getHeight());
 			g.drawString(displayValue, offX + ((_width - width) / 2) + _offsetTextX,
-					offY + ((_height - height) / 2) - 1 + _offsetTextY, fontColor);
+					offY + ((_height - height) / 2) - 1 + _offsetTextY, _fontColor);
 			g.setFont(font);
 		}
 	}
 
 	public IFont getFont() {
-		return this.numberFont;
+		return this._numberFont;
 	}
 
 	public StatusBar setFont(IFont font) {
 		if (font == null) {
 			return this;
 		}
-		this.numberFont = font;
+		this._numberFont = font;
 		return this;
 	}
 
 	public StatusBar setFontColor(LColor c) {
-		this.fontColor = c;
+		this._fontColor = c;
 		return this;
 	}
 
 	public LColor getFontColor() {
-		return this.fontColor;
+		return this._fontColor;
 	}
 
 	public boolean isShowNumber() {
-		return showValue;
+		return _showValue;
 	}
 
 	public StatusBar setShowNumber(boolean shown) {
-		this.showValue = shown;
+		this._showValue = shown;
 		return this;
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (_visible && hitObject) {
+		if (_visible && _hitObject) {
 			state();
 		}
 	}
 
 	public int getMaxValue() {
-		return maxValue;
+		return _maxValue;
 	}
 
 	public StatusBar setMaxValue(int m) {
-		if (m != this.maxValue) {
-			this.maxValue = MathUtils.max(m, this.minValue);
-			this.updated = true;
+		if (m != this._maxValue) {
+			this._maxValue = MathUtils.max(m, this._minValue);
+			this._updated = true;
 			this.matchProgressToWidthMax(m);
 			this.state();
 		}
@@ -344,13 +344,13 @@ public class StatusBar extends Entity {
 	}
 
 	public int getMinValue() {
-		return minValue;
+		return _minValue;
 	}
 
 	public StatusBar setMinValue(int m) {
-		if (m != this.minValue) {
-			this.minValue = MathUtils.min(m, this.maxValue);
-			this.updated = true;
+		if (m != this._minValue) {
+			this._minValue = MathUtils.min(m, this._maxValue);
+			this._updated = true;
 			this.matchProgressToWidthMin(m);
 			this.state();
 		}
@@ -358,13 +358,13 @@ public class StatusBar extends Entity {
 	}
 
 	public int getValue() {
-		return initValue;
+		return _initValue;
 	}
 
 	public StatusBar setValue(int v) {
-		if (initValue != v) {
-			this.initValue = v;
-			this.updated = true;
+		if (_initValue != v) {
+			this._initValue = v;
+			this._updated = true;
 		}
 		return this;
 	}
@@ -374,15 +374,15 @@ public class StatusBar extends Entity {
 	}
 
 	public boolean isZero() {
-		return MathUtils.equal(this.initValue, 0);
+		return MathUtils.equal(this._initValue, 0);
 	}
 
 	public boolean isMin() {
-		return MathUtils.equal(this.initValue, this.minValue);
+		return MathUtils.equal(this._initValue, this._minValue);
 	}
 
 	public boolean isMax() {
-		return MathUtils.equal(this.initValue, this.maxValue);
+		return MathUtils.equal(this._initValue, this._maxValue);
 	}
 
 	public StatusBar addSelf(float v) {
@@ -402,38 +402,38 @@ public class StatusBar extends Entity {
 	}
 
 	public boolean isHit() {
-		return hitObject;
+		return _hitObject;
 	}
 
 	public StatusBar setHit(boolean hit) {
-		this.hitObject = hit;
+		this._hitObject = hit;
 		return this;
 	}
 
 	public LColor getColorback() {
-		return colorback;
+		return _colorback;
 	}
 
 	public StatusBar setColorback(LColor c) {
-		this.colorback = new LColor(c);
+		this._colorback = new LColor(c);
 		return this;
 	}
 
 	public LColor getColorbefore() {
-		return colorbefore;
+		return _colorbefore;
 	}
 
 	public StatusBar setColorbefore(LColor c) {
-		this.colorbefore = new LColor(c);
+		this._colorbefore = new LColor(c);
 		return this;
 	}
 
 	public LColor getColorafter() {
-		return colorafter;
+		return _colorafter;
 	}
 
 	public StatusBar setColorafter(LColor c) {
-		this.colorafter = new LColor(c);
+		this._colorafter = new LColor(c);
 		return this;
 	}
 
@@ -456,7 +456,7 @@ public class StatusBar extends Entity {
 	}
 
 	public String getText() {
-		return numberString;
+		return _numberString;
 	}
 
 	public StatusBar setText(String text) {
@@ -464,11 +464,11 @@ public class StatusBar extends Entity {
 	}
 
 	public StatusBar setText(String text, float x, float y) {
-		this.numberString = text;
+		this._numberString = text;
 		if (StringUtils.isNullOrEmpty(text)) {
-			showValue = false;
+			_showValue = false;
 		} else {
-			showValue = true;
+			_showValue = true;
 		}
 		this._offsetTextX = x;
 		this._offsetTextY = y;
@@ -491,11 +491,11 @@ public class StatusBar extends Entity {
 	}
 
 	public String getFormatNumber() {
-		return numberString;
+		return _numberString;
 	}
 
 	public StatusBar setFormatNumber(String num) {
-		this.numberString = num;
+		this._numberString = num;
 		return this;
 	}
 

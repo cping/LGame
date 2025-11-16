@@ -36,29 +36,27 @@ import loon.utils.StringUtils;
  */
 public class SpriteSheetFont extends FontTrans implements IFont {
 
-	private final char newLineFlag = LSystem.LF;
-
 	private SpriteSheet _font;
 
 	private int _size = -1;
 
 	private float _assent = -1;
 
-	private char startingCharacter;
+	private char _startingCharacter;
 
-	private int charWidth;
+	private int _charWidth;
 
-	private int charHeight;
+	private int _charHeight;
 
-	private int horizontalCount;
+	private int _horizontalCount;
 
-	private int verticalCount;
+	private int _verticalCount;
 
-	private int numChars;
+	private int _numChars;
 
-	private float fontSpace = 0f;
+	private float _fontSpace = 0f;
 
-	private float fontScaleX = 1f, fontScaleY = 1f;
+	private float _fontScaleX = 1f, _fontScaleY = 1f;
 
 	private PointI _offset = new PointI();
 
@@ -74,12 +72,12 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 
 	public SpriteSheetFont(SpriteSheet font, char startingCharacter) {
 		this._font = font;
-		this.startingCharacter = startingCharacter;
-		this.horizontalCount = font.getHorizontalCount();
-		this.verticalCount = font.getVerticalCount();
-		this.charWidth = font.getTileWidth();
-		this.charHeight = font.getTileHeight();
-		this.numChars = horizontalCount * verticalCount;
+		this._startingCharacter = startingCharacter;
+		this._horizontalCount = font.getHorizontalCount();
+		this._verticalCount = font.getVerticalCount();
+		this._charWidth = font.getTileWidth();
+		this._charHeight = font.getTileHeight();
+		this._numChars = _horizontalCount * _verticalCount;
 		LSystem.pushFontPool(this);
 	}
 
@@ -102,24 +100,24 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 		int lines = 0;
 		float sx = x + _offset.x;
 		float sy = y + _offset.y;
-		float widthSize = charWidth * fontScaleX;
-		float heightSize = charHeight * fontScaleY;
+		float widthSize = _charWidth * _fontScaleX;
+		float heightSize = _charHeight * _fontScaleY;
 		for (int i = 0, size = newMessage.length(); i < size; i++) {
 			char flag = newMessage.charAt(i);
-			int index = flag - startingCharacter;
-			if (index < numChars) {
-				int xPos = (index % horizontalCount);
-				int yPos = (index / horizontalCount);
-				if (newLineFlag == flag) {
-					lines += heightSize + fontSpace;
+			int index = flag - _startingCharacter;
+			if (index < _numChars) {
+				int xPos = (index % _horizontalCount);
+				int yPos = (index / _horizontalCount);
+				if (LSystem.LF == flag) {
+					lines += heightSize + _fontSpace;
 					sx = x;
 					continue;
 				} else {
-					sx += widthSize + fontSpace;
+					sx += widthSize + _fontSpace;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (_font.contains(xPos, yPos)) {
-						if (fontScaleX == 1f && fontScaleY == 1f) {
+						if (_fontScaleX == 1f && _fontScaleY == 1f) {
 							_font.getSubImage(xPos, yPos).draw(sx, sy + lines, col);
 						} else {
 							_font.getSubImage(xPos, yPos).draw(sx, sy + lines, widthSize, heightSize, col);
@@ -152,24 +150,24 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 		int lines = 0;
 		float sx = x + _offset.x;
 		float sy = y + _offset.y;
-		float widthSize = charWidth * fontScaleX;
-		float heightSize = charHeight * fontScaleY;
+		float widthSize = _charWidth * _fontScaleX;
+		float heightSize = _charHeight * _fontScaleY;
 		for (int i = 0, size = newMessage.length(); i < size; i++) {
 			char flag = newMessage.charAt(i);
-			int index = flag - startingCharacter;
-			if (index < numChars) {
-				int xPos = (index % horizontalCount);
-				int yPos = (index / horizontalCount);
-				if (newLineFlag == flag) {
-					lines += heightSize + fontSpace;
+			int index = flag - _startingCharacter;
+			if (index < _numChars) {
+				int xPos = (index % _horizontalCount);
+				int yPos = (index / _horizontalCount);
+				if (LSystem.LF == flag) {
+					lines += heightSize + _fontSpace;
 					sx = x;
 					continue;
 				} else {
-					sx += widthSize + fontSpace;
+					sx += widthSize + _fontSpace;
 				}
 				if ((i >= startIndex) || (i <= endIndex)) {
 					if (_font.contains(xPos, yPos)) {
-						if (fontScaleX == 1f && fontScaleY == 1f) {
+						if (_fontScaleX == 1f && _fontScaleY == 1f) {
 							gl.draw(_font.getSubImage(xPos, yPos), sx, sy + lines, col);
 						} else {
 							gl.draw(_font.getSubImage(xPos, yPos), sx, sy + lines, widthSize, heightSize, col);
@@ -242,11 +240,11 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	}
 
 	public float getFontScaleX() {
-		return this.fontScaleX;
+		return this._fontScaleX;
 	}
 
 	public float getFontScaleY() {
-		return this.fontScaleX;
+		return this._fontScaleX;
 	}
 
 	public void setFontScale(float s) {
@@ -254,39 +252,39 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	}
 
 	public void setFontScale(float sx, float sy) {
-		this.fontScaleX = sx;
-		this.fontScaleY = sy;
+		this._fontScaleX = sx;
+		this._fontScaleY = sy;
 	}
 
 	public void setFontScaleX(float x) {
-		this.fontScaleX = x;
+		this._fontScaleX = x;
 	}
 
 	public void setFontScaleY(float y) {
-		this.fontScaleY = y;
+		this._fontScaleY = y;
 	}
 
 	@Override
 	public int stringHeight(String msg) {
 		String newMessage = toMessage(msg);
-		int count = StringUtils.charCount(newMessage, newLineFlag) + 1;
-		return (int) (charHeight * fontScaleY * count);
+		int count = StringUtils.charCount(newMessage, LSystem.LF) + 1;
+		return (int) (_charHeight * _fontScaleY * count);
 	}
 
 	@Override
 	public int stringWidth(String msg) {
 		String newMessage = toMessage(msg);
-		return (int) (charWidth * fontScaleX * newMessage.length());
+		return (int) (_charWidth * _fontScaleX * newMessage.length());
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) (charHeight * fontScaleY);
+		return (int) (_charHeight * _fontScaleY);
 	}
 
 	@Override
 	public float getAscent() {
-		return _assent == -1 ? (charWidth + charHeight / 2) * this.fontScaleY : _assent;
+		return _assent == -1 ? (_charWidth + _charHeight / 2) * this._fontScaleY : _assent;
 	}
 
 	@Override
@@ -309,25 +307,25 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	}
 
 	public float getFontSpace() {
-		return fontSpace;
+		return _fontSpace;
 	}
 
 	public SpriteSheetFont setFontSpace(float f) {
-		this.fontSpace = f;
+		this._fontSpace = f;
 		return this;
 	}
 
 	public int getHorizontalCount() {
-		return horizontalCount;
+		return _horizontalCount;
 	}
 
 	public int getVerticalCount() {
-		return verticalCount;
+		return _verticalCount;
 	}
 
 	@Override
 	public int getSize() {
-		return _size == -1 ? (int) ((charWidth + charHeight / 2) * this.fontScaleY) : _size;
+		return _size == -1 ? (int) ((_charWidth + _charHeight / 2) * this._fontScaleY) : _size;
 	}
 
 	@Override
@@ -362,7 +360,7 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 
 	@Override
 	public int charWidth(char c) {
-		return charWidth;
+		return _charWidth;
 	}
 
 	public boolean isClosed() {
@@ -390,7 +388,6 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 		LSystem.popFontPool(this);
 	}
 
-
 	@Override
 	public String getFontName() {
 		return "SpriteSheetFont";
@@ -399,17 +396,9 @@ public class SpriteSheetFont extends FontTrans implements IFont {
 	@Override
 	public String toString() {
 		final StringKeyValue builder = new StringKeyValue("SpriteSheetFont");
-		builder.kv("startingCharacter", startingCharacter)
-		.comma()
-		.kv("horizontalCount", horizontalCount)
-		.comma()
-		.kv("verticalCount", verticalCount)
-		.comma()
-		.kv("charWidth", charWidth)
-		.comma()
-		.kv("charHeight", charHeight)
-		.comma()
-		.kv("numChars", numChars);
+		builder.kv("startingCharacter", _startingCharacter).comma().kv("horizontalCount", _horizontalCount).comma()
+				.kv("verticalCount", _verticalCount).comma().kv("charWidth", _charWidth).comma()
+				.kv("charHeight", _charHeight).comma().kv("numChars", _numChars);
 		return builder.toString();
 	}
 

@@ -106,60 +106,60 @@ public final class Display extends BaseIO implements LRelease {
 
 	private final class Logo implements LRelease {
 
-		private int centerX = 0, centerY = 0;
+		private int _centerX = 0, _centerY = 0;
 
-		private float alpha = 0f;
+		private float _alpha = 0f;
 
-		private float curFrame, curTime;
+		private float _curFrame, _curTime;
 
-		boolean finish, inToOut;
+		boolean _finish, _inToOut;
 
-		LTexture logo;
+		LTexture _logo;
 
 		public Logo(final LTexture texture) {
-			this.logo = texture;
-			this.curTime = 60;
-			this.curFrame = 0;
-			this.inToOut = true;
+			this._logo = texture;
+			this._curTime = 60;
+			this._curFrame = 0;
+			this._inToOut = true;
 		}
 
 		public void draw(final GLEx gl) {
-			if (logo == null || finish) {
+			if (_logo == null || _finish) {
 				return;
 			}
-			if (!logo.isLoaded()) {
-				this.logo.loadTexture();
+			if (!_logo.isLoaded()) {
+				this._logo.loadTexture();
 			}
-			if (centerX == 0 || centerY == 0) {
-				this.centerX = (LSystem.viewSize.getWidth()) / 2 - logo.getWidth() / 2;
-				this.centerY = (LSystem.viewSize.getHeight()) / 2 - logo.getHeight() / 2;
+			if (_centerX == 0 || _centerY == 0) {
+				this._centerX = (LSystem.viewSize.getWidth()) / 2 - _logo.getWidth() / 2;
+				this._centerY = (LSystem.viewSize.getHeight()) / 2 - _logo.getHeight() / 2;
 			}
-			if (logo == null || !logo.isLoaded()) {
+			if (_logo == null || !_logo.isLoaded()) {
 				return;
 			}
-			alpha = (curFrame / curTime);
-			if (inToOut) {
-				curFrame++;
-				if (curFrame == curTime) {
-					alpha = 1f;
-					inToOut = false;
+			_alpha = (_curFrame / _curTime);
+			if (_inToOut) {
+				_curFrame++;
+				if (_curFrame == _curTime) {
+					_alpha = 1f;
+					_inToOut = false;
 				}
-			} else if (!inToOut) {
-				curFrame--;
-				if (curFrame == 0) {
-					alpha = 0f;
-					finish = true;
+			} else if (!_inToOut) {
+				_curFrame--;
+				if (_curFrame == 0) {
+					_alpha = 0f;
+					_finish = true;
 				}
 			}
-			gl.setAlpha(MathUtils.clamp(alpha, 0f, 0.98f));
-			gl.draw(logo, centerX, centerY);
+			gl.setAlpha(MathUtils.clamp(_alpha, 0f, 0.98f));
+			gl.draw(_logo, _centerX, _centerY);
 		}
 
 		@Override
 		public void close() {
-			if (logo != null) {
-				logo.close();
-				logo = null;
+			if (_logo != null) {
+				_logo.close();
+				_logo = null;
 			}
 		}
 	}
@@ -178,9 +178,9 @@ public final class Display extends BaseIO implements LRelease {
 
 	public final Act<LTimerContext> paint = Act.create();
 
-	private final LTimerContext updateClock = new LTimerContext();
+	private final LTimerContext _updateClock = new LTimerContext();
 
-	private final LTimerContext paintClock = new LTimerContext();
+	private final LTimerContext _paintClock = new LTimerContext();
 
 	private final LTimer _videoDelay = new LTimer();
 
@@ -461,12 +461,12 @@ public final class Display extends BaseIO implements LRelease {
 				_glEx.save();
 				_glEx.begin();
 				_glEx.clear(_cred, _cgreen, _cblue, _calpha);
-				if (_logoTex == null || _logoTex.finish || _logoTex.logo.disposed()) {
+				if (_logoTex == null || _logoTex._finish || _logoTex._logo.disposed()) {
 					_showLogo = false;
 					return;
 				}
 				_logoTex.draw(_glEx);
-				if (_logoTex.finish) {
+				if (_logoTex._finish) {
 					_showLogo = false;
 					_logoTex.close();
 					_logoTex = null;
@@ -568,38 +568,38 @@ public final class Display extends BaseIO implements LRelease {
 				this._nextUpdate = nextUpdate;
 				final long updateDt = updates * updateRate;
 				if (updateLoop == -1) {
-					updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
-					updateClock.unscaledTimeSinceLastUpdate = updateDt;
+					_updateClock.timeSinceLastUpdate = (long) (updateDt * fpsScale);
+					_updateClock.unscaledTimeSinceLastUpdate = updateDt;
 				} else {
-					updateClock.timeSinceLastUpdate = updateLoop;
-					updateClock.unscaledTimeSinceLastUpdate = updateLoop;
+					_updateClock.timeSinceLastUpdate = updateLoop;
+					_updateClock.unscaledTimeSinceLastUpdate = updateLoop;
 				}
-				if (updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
-					updateClock.timeSinceLastUpdate = 0;
-					updateClock.unscaledTimeSinceLastUpdate = 0;
+				if (_updateClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+					_updateClock.timeSinceLastUpdate = 0;
+					_updateClock.unscaledTimeSinceLastUpdate = 0;
 				}
-				updateClock.tick += updateClock.timeSinceLastUpdate;
-				update(updateClock);
+				_updateClock.tick += _updateClock.timeSinceLastUpdate;
+				update(_updateClock);
 			}
 		}
 		if (_autoRepaint) {
 			final long paintLoop = setting.fixedPaintLoopTime;
 			final long paintTick = _game.tick();
 			if (paintLoop == -1) {
-				final long clock = paintTick - paintClock.tick;
-				paintClock.timeSinceLastUpdate = (long) (clock * fpsScale);
-				paintClock.unscaledTimeSinceLastUpdate = clock;
+				final long clock = paintTick - _paintClock.tick;
+				_paintClock.timeSinceLastUpdate = (long) (clock * fpsScale);
+				_paintClock.unscaledTimeSinceLastUpdate = clock;
 			} else {
-				paintClock.timeSinceLastUpdate = paintLoop;
-				paintClock.unscaledTimeSinceLastUpdate = paintLoop;
+				_paintClock.timeSinceLastUpdate = paintLoop;
+				_paintClock.unscaledTimeSinceLastUpdate = paintLoop;
 			}
-			if (paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
-				paintClock.timeSinceLastUpdate = 0;
-				paintClock.unscaledTimeSinceLastUpdate = 0;
+			if (_paintClock.timeSinceLastUpdate > _sinceRefreshMaxInterval) {
+				_paintClock.timeSinceLastUpdate = 0;
+				_paintClock.unscaledTimeSinceLastUpdate = 0;
 			}
-			paintClock.tick = paintTick;
-			paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;
-			paint(paintClock);
+			_paintClock.tick = paintTick;
+			_paintClock.alpha = 1f - (_nextUpdate - paintTick) / (float) _updateRate;
+			paint(_paintClock);
 		}
 	}
 
@@ -839,11 +839,11 @@ public final class Display extends BaseIO implements LRelease {
 	}
 
 	public final LTimerContext getUpdate() {
-		return updateClock;
+		return _updateClock;
 	}
 
 	public final LTimerContext getPaint() {
-		return paintClock;
+		return _paintClock;
 	}
 
 	public void setShaderSource(final ShaderSource src) {

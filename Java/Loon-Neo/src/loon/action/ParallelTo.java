@@ -30,20 +30,20 @@ public class ParallelTo extends ActionEvent {
 
 	private boolean _objectFlashDisplay;
 
-	private final TArray<ActionEvent> events;
+	private final TArray<ActionEvent> _events;
 
 	public ParallelTo(ActionEvent... eves) {
-		events = new TArray<ActionEvent>(eves);
+		_events = new TArray<ActionEvent>(eves);
 	}
 
 	public ParallelTo(TArray<ActionEvent> list) {
-		events = new TArray<ActionEvent>(list);
+		_events = new TArray<ActionEvent>(list);
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		int over = 0;
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -74,7 +74,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent start(ActionBind o) {
 		super.start(o);
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -87,7 +87,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent stop() {
 		super.stop();
-		TArray<ActionEvent> actions = this.events;
+		TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -99,7 +99,7 @@ public class ParallelTo extends ActionEvent {
 
 	@Override
 	public void onLoad() {
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -110,9 +110,9 @@ public class ParallelTo extends ActionEvent {
 
 	@Override
 	public ActionEvent cpy() {
-		final TArray<ActionEvent> tmp = new TArray<ActionEvent>(events.size);
-		for (int i = 0, size = events.size; i < size; i++) {
-			tmp.add(events.get(i).cpy());
+		final TArray<ActionEvent> tmp = new TArray<ActionEvent>(_events.size);
+		for (int i = 0, size = _events.size; i < size; i++) {
+			tmp.add(_events.get(i).cpy());
 		}
 		ParallelTo p = new ParallelTo(tmp);
 		p.set(this);
@@ -121,9 +121,9 @@ public class ParallelTo extends ActionEvent {
 
 	@Override
 	public ActionEvent reverse() {
-		final TArray<ActionEvent> tmp = new TArray<ActionEvent>(events.size);
-		for (int i = 0, size = events.size; i < size; i++) {
-			tmp.add(events.get(i).reverse());
+		final TArray<ActionEvent> tmp = new TArray<ActionEvent>(_events.size);
+		for (int i = 0, size = _events.size; i < size; i++) {
+			tmp.add(_events.get(i).reverse());
 		}
 		ParallelTo p = new ParallelTo(tmp);
 		p.set(this);
@@ -133,7 +133,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent pause() {
 		super.pause();
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -146,7 +146,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent resume() {
 		super.resume();
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -159,7 +159,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent loop(int count) {
 		super.loop(count);
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -172,7 +172,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent loop(boolean l) {
 		super.loop(l);
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -185,7 +185,7 @@ public class ParallelTo extends ActionEvent {
 	@Override
 	public ActionEvent reset() {
 		super.reset();
-		final TArray<ActionEvent> actions = this.events;
+		final TArray<ActionEvent> actions = this._events;
 		for (int i = 0; i < actions.size; i++) {
 			ActionEvent currentAction = actions.get(i);
 			if (currentAction != null) {
@@ -203,14 +203,14 @@ public class ParallelTo extends ActionEvent {
 
 	@Override
 	public String toString() {
-		if (events == null) {
+		if (_events == null) {
 			return getName();
 		}
 		final StringKeyValue builder = new StringKeyValue(getName());
-		int size = events.size;
+		int size = _events.size;
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
-				ActionEvent event = events.get(i);
+				ActionEvent event = _events.get(i);
 				if (event != null) {
 					builder.addValue(event.toString());
 					builder.comma();

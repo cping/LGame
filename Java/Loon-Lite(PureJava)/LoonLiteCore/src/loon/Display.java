@@ -105,60 +105,60 @@ public final class Display extends BaseIO implements LRelease {
 
 	private final class Logo implements LRelease {
 
-		private int centerX = 0, centerY = 0;
+		private int _centerX = 0, _centerY = 0;
 
-		private float alpha = 0f;
+		private float _alpha = 0f;
 
-		private float curFrame, curTime;
+		private float _curFrame, _curTime;
 
-		boolean finish, inToOut;
+		boolean _finish, _inToOut;
 
-		LTexture logo;
+		LTexture _logo;
 
 		public Logo(final LTexture texture) {
-			this.logo = texture;
-			this.curTime = 60;
-			this.curFrame = 0;
-			this.inToOut = true;
+			this._logo = texture;
+			this._curTime = 60;
+			this._curFrame = 0;
+			this._inToOut = true;
 		}
 
 		public void draw(final GLEx gl) {
-			if (logo == null || finish) {
+			if (_logo == null || _finish) {
 				return;
 			}
-			if (!logo.isLoaded()) {
-				this.logo.loadTexture();
+			if (!_logo.isLoaded()) {
+				this._logo.loadTexture();
 			}
-			if (centerX == 0 || centerY == 0) {
-				this.centerX = (LSystem.viewSize.getWidth()) / 2 - logo.getWidth() / 2;
-				this.centerY = (LSystem.viewSize.getHeight()) / 2 - logo.getHeight() / 2;
+			if (_centerX == 0 || _centerY == 0) {
+				this._centerX = (LSystem.viewSize.getWidth()) / 2 - _logo.getWidth() / 2;
+				this._centerY = (LSystem.viewSize.getHeight()) / 2 - _logo.getHeight() / 2;
 			}
-			if (logo == null || !logo.isLoaded()) {
+			if (_logo == null || !_logo.isLoaded()) {
 				return;
 			}
-			alpha = (curFrame / curTime);
-			if (inToOut) {
-				curFrame++;
-				if (curFrame == curTime) {
-					alpha = 1f;
-					inToOut = false;
+			_alpha = (_curFrame / _curTime);
+			if (_inToOut) {
+				_curFrame++;
+				if (_curFrame == _curTime) {
+					_alpha = 1f;
+					_inToOut = false;
 				}
-			} else if (!inToOut) {
-				curFrame--;
-				if (curFrame == 0) {
-					alpha = 0f;
-					finish = true;
+			} else if (!_inToOut) {
+				_curFrame--;
+				if (_curFrame == 0) {
+					_alpha = 0f;
+					_finish = true;
 				}
 			}
-			gl.setAlpha(MathUtils.clamp(alpha, 0f, 0.98f));
-			gl.draw(logo, centerX, centerY);
+			gl.setAlpha(MathUtils.clamp(_alpha, 0f, 0.98f));
+			gl.draw(_logo, _centerX, _centerY);
 		}
 
 		@Override
 		public void close() {
-			if (logo != null) {
-				logo.close();
-				logo = null;
+			if (_logo != null) {
+				_logo.close();
+				_logo = null;
 			}
 		}
 	}
@@ -437,12 +437,12 @@ public final class Display extends BaseIO implements LRelease {
 				_glEx.save();
 				_glEx.begin();
 				_glEx.clear(_cred, _cgreen, _cblue, _calpha);
-				if (_logoTex == null || _logoTex.finish || _logoTex.logo.disposed()) {
+				if (_logoTex == null || _logoTex._finish || _logoTex._logo.disposed()) {
 					_showLogo = false;
 					return;
 				}
 				_logoTex.draw(_glEx);
-				if (_logoTex.finish) {
+				if (_logoTex._finish) {
 					_showLogo = false;
 					_logoTex.close();
 					_logoTex = null;
