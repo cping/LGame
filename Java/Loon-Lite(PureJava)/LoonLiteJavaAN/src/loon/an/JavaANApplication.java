@@ -1,5 +1,6 @@
 package loon.an;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -12,6 +13,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -160,13 +162,14 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
 		if (hideButtons && JavaANGame.getSDKVersion() >= 19) {
 			try {
 				Class<?> vlistener = Class.forName("loon.an.JavaANVisibilityListener");
-				Object o = vlistener.newInstance();
+				Object o = vlistener.getDeclaredConstructor().newInstance();
 				java.lang.reflect.Method method = vlistener.getDeclaredMethod("createListener", JavaANPlatform.class);
 				method.invoke(o, this);
 			} catch (Throwable ex) {
 				Log.d(setting.appName, ex.getMessage());
 			}
 		}
+		setLayoutInDisplayCutoutMode(setting.renderUnderCutout);
 		if (setting.checkConfig) {
 			try {
 				final int REQUIRED_CONFIG_CHANGES = ActivityInfo.CONFIG_ORIENTATION
@@ -191,6 +194,14 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
 	protected void createWakeLock(boolean use) {
 		if (use) {
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.P)
+	private void setLayoutInDisplayCutoutMode(boolean render) {
+		if (render && JavaANGame.getSDKVersion() >= Build.VERSION_CODES.P) {
+			WindowManager.LayoutParams lp = getWindow().getAttributes();
+			lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
 		}
 	}
 
@@ -806,7 +817,7 @@ public abstract class JavaANApplication extends Activity implements JavaANPlatfo
 		} catch (Exception e) {
 			try {
 				Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-				Object object = clazz.newInstance();
+				Object object = clazz.getDeclaredConstructor().newInstance();
 				int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
 				statusHeight = this.getResources().getDimensionPixelSize(height);
 			} catch (Exception ex) {

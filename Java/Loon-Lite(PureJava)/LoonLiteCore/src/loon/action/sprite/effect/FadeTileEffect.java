@@ -32,24 +32,24 @@ import loon.utils.MathUtils;
  */
 public class FadeTileEffect extends BaseAbstractEffect {
 
-	private float sizeWidth;
+	private float _sizeWidth;
 
-	private float sizeHeight;
+	private float _sizeHeight;
 
-	private int tileWidth, tileHeight;
+	private int _tileWidth, _tileHeight;
 
-	private int count;
+	private int _count;
 
-	private int speed = 1;
+	private int _speed = 1;
 
-	private int tmpflag = 0;
+	private int _tmpflag = 0;
 
-	private boolean[][] conversions;
-	private boolean[][] boolTemps;
+	private boolean[][] _conversions;
+	private boolean[][] _boolTemps;
 
-	private boolean usefore = false;
+	private boolean _usefore = false;
 
-	private LColor fore = LColor.white;
+	private LColor _fore = LColor.white;
 
 	private int _type;
 
@@ -81,33 +81,33 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		this.setDelay(delay);
 		this.setColor(back);
 		this._type = type;
-		this.count = count;
-		this.speed = speed;
-		this.sizeWidth = w;
-		this.sizeHeight = h;
-		this.tileWidth = MathUtils.ifloor(((maxWidth / w)) + 1);
-		this.tileHeight = MathUtils.ifloor(((maxHeight / h)) + 1);
-		this.conversions = new boolean[tileWidth][tileHeight];
-		this.boolTemps = new boolean[tileWidth][tileHeight];
-		this.fore = fore;
+		this._count = count;
+		this._speed = speed;
+		this._sizeWidth = w;
+		this._sizeHeight = h;
+		this._tileWidth = MathUtils.ifloor(((maxWidth / w)) + 1);
+		this._tileHeight = MathUtils.ifloor(((maxHeight / h)) + 1);
+		this._conversions = new boolean[_tileWidth][_tileHeight];
+		this._boolTemps = new boolean[_tileWidth][_tileHeight];
+		this._fore = fore;
 		this.pack();
 	}
 
 	private boolean filledObject(int x, int y) {
 		if (x > 0) {
-			if (conversions[x - 1][y]) {
+			if (_conversions[x - 1][y]) {
 				return true;
 			}
-		} else if (x < tileWidth - 1) {
-			if (conversions[x + 1][y]) {
+		} else if (x < _tileWidth - 1) {
+			if (_conversions[x + 1][y]) {
 				return true;
 			}
 		} else if (y > 0) {
-			if (conversions[x][y - 1]) {
+			if (_conversions[x][y - 1]) {
 				return true;
 			}
-		} else if (y < tileHeight - 1) {
-			if (conversions[x][y + 1]) {
+		} else if (y < _tileHeight - 1) {
+			if (_conversions[x][y + 1]) {
 				return true;
 			}
 		}
@@ -122,38 +122,38 @@ public class FadeTileEffect extends BaseAbstractEffect {
 		if (_timer.action(elapsedTime)) {
 			int count = 0;
 			if (ISprite.TYPE_FADE_OUT == _type) {
-				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < tileWidth; x++) {
-						for (int y = 0; y < tileHeight; y++) {
-							boolTemps[x][y] = false;
+				for (int i = 0; i < _speed; i++) {
+					for (int x = 0; x < _tileWidth; x++) {
+						for (int y = 0; y < _tileHeight; y++) {
+							_boolTemps[x][y] = false;
 						}
 					}
-					for (int x = 0; x < tileWidth; x++) {
-						for (int y = 0; y < tileHeight; y++) {
-							if (!boolTemps[x][y] && conversions[x][y]) {
-								boolTemps[x][y] = true;
+					for (int x = 0; x < _tileWidth; x++) {
+						for (int y = 0; y < _tileHeight; y++) {
+							if (!_boolTemps[x][y] && _conversions[x][y]) {
+								_boolTemps[x][y] = true;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
-									if (!conversions[x - 1][y]) {
-										conversions[x - 1][y] = true;
-										boolTemps[x - 1][y] = true;
+									if (!_conversions[x - 1][y]) {
+										_conversions[x - 1][y] = true;
+										_boolTemps[x - 1][y] = true;
 									}
 								}
-								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
-									if (!conversions[x + 1][y]) {
-										conversions[x + 1][y] = true;
-										boolTemps[x + 1][y] = true;
+								if (x < _tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
+									if (!_conversions[x + 1][y]) {
+										_conversions[x + 1][y] = true;
+										_boolTemps[x + 1][y] = true;
 									}
 								}
 								if (y > 0 && !(MathUtils.random(1, 2) == 1)) {
-									if (!conversions[x][y - 1]) {
-										conversions[x][y - 1] = true;
-										boolTemps[x][y - 1] = true;
+									if (!_conversions[x][y - 1]) {
+										_conversions[x][y - 1] = true;
+										_boolTemps[x][y - 1] = true;
 									}
 								}
-								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
-									if (!conversions[x][y + 1]) {
-										conversions[x][y + 1] = true;
-										boolTemps[x][y + 1] = true;
+								if (y < _tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
+									if (!_conversions[x][y + 1]) {
+										_conversions[x][y + 1] = true;
+										_boolTemps[x][y + 1] = true;
 									}
 								}
 
@@ -162,9 +162,9 @@ public class FadeTileEffect extends BaseAbstractEffect {
 					}
 				}
 
-				for (int x = 0; x < tileWidth; x++) {
-					for (int y = 0; y < tileHeight; y++) {
-						if (!conversions[x][y]) {
+				for (int x = 0; x < _tileWidth; x++) {
+					for (int y = 0; y < _tileHeight; y++) {
+						if (!_conversions[x][y]) {
 							count++;
 							break;
 						}
@@ -174,38 +174,38 @@ public class FadeTileEffect extends BaseAbstractEffect {
 					_completed = true;
 				}
 			} else {
-				for (int i = 0; i < speed; i++) {
-					for (int x = 0; x < tileWidth; x++) {
-						for (int y = 0; y < tileHeight; y++) {
-							boolTemps[x][y] = true;
+				for (int i = 0; i < _speed; i++) {
+					for (int x = 0; x < _tileWidth; x++) {
+						for (int y = 0; y < _tileHeight; y++) {
+							_boolTemps[x][y] = true;
 						}
 					}
-					for (int x = 0; x < tileWidth; x++) {
-						for (int y = 0; y < tileHeight; y++) {
-							if (boolTemps[x][y] && !conversions[x][y]) {
-								boolTemps[x][y] = false;
+					for (int x = 0; x < _tileWidth; x++) {
+						for (int y = 0; y < _tileHeight; y++) {
+							if (_boolTemps[x][y] && !_conversions[x][y]) {
+								_boolTemps[x][y] = false;
 								if (x > 0 && !(MathUtils.random(1, 2) == 1)) {
-									if (conversions[x - 1][y]) {
-										conversions[x - 1][y] = false;
-										boolTemps[x - 1][y] = false;
+									if (_conversions[x - 1][y]) {
+										_conversions[x - 1][y] = false;
+										_boolTemps[x - 1][y] = false;
 									}
 								}
-								if (x < tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
-									if (conversions[x + 1][y]) {
-										conversions[x + 1][y] = false;
-										boolTemps[x + 1][y] = false;
+								if (x < _tileWidth - 1 && !(MathUtils.random(1, 2) == 1)) {
+									if (_conversions[x + 1][y]) {
+										_conversions[x + 1][y] = false;
+										_boolTemps[x + 1][y] = false;
 									}
 								}
 								if (y > 0 && !(MathUtils.random(1, 2) == 1)) {
-									if (conversions[x][y - 1]) {
-										conversions[x][y - 1] = false;
-										boolTemps[x][y - 1] = false;
+									if (_conversions[x][y - 1]) {
+										_conversions[x][y - 1] = false;
+										_boolTemps[x][y - 1] = false;
 									}
 								}
-								if (y < tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
-									if (conversions[x][y + 1]) {
-										conversions[x][y + 1] = false;
-										boolTemps[x][y + 1] = false;
+								if (y < _tileHeight - 1 && !(MathUtils.random(1, 2) == 1)) {
+									if (_conversions[x][y + 1]) {
+										_conversions[x][y + 1] = false;
+										_boolTemps[x][y + 1] = false;
 									}
 								}
 
@@ -213,19 +213,19 @@ public class FadeTileEffect extends BaseAbstractEffect {
 						}
 					}
 				}
-				for (int x = 0; x < tileWidth; x++) {
-					for (int y = 0; y < tileHeight; y++) {
-						if (!conversions[x][y]) {
+				for (int x = 0; x < _tileWidth; x++) {
+					for (int y = 0; y < _tileHeight; y++) {
+						if (!_conversions[x][y]) {
 							count++;
 							break;
 						}
 					}
 				}
-				if (tmpflag >= tileHeight) {
+				if (_tmpflag >= _tileHeight) {
 					_completed = true;
 				}
-				if (count >= tileWidth) {
-					tmpflag++;
+				if (count >= _tileWidth) {
+					_tmpflag++;
 				}
 
 			}
@@ -245,19 +245,19 @@ public class FadeTileEffect extends BaseAbstractEffect {
 			return;
 		}
 		final int old = g.color();
-		for (int x = 0; x < tileWidth; x++) {
-			for (int y = 0; y < tileHeight; y++) {
-				final float offX = x * sizeWidth + offsetX;
-				final float offY = y * sizeHeight + offsetY;
-				if (usefore) {
-					if (conversions[x][y]) {
-						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, _baseColor);
-					} else if (!conversions[x][y] && filledObject(x, y)) {
-						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, fore);
+		for (int x = 0; x < _tileWidth; x++) {
+			for (int y = 0; y < _tileHeight; y++) {
+				final float offX = x * _sizeWidth + offsetX;
+				final float offY = y * _sizeHeight + offsetY;
+				if (_usefore) {
+					if (_conversions[x][y]) {
+						g.fillRect(drawX(offX), drawY(offY), _sizeWidth, _sizeHeight, _baseColor);
+					} else if (!_conversions[x][y] && filledObject(x, y)) {
+						g.fillRect(drawX(offX), drawY(offY), _sizeWidth, _sizeHeight, _fore);
 					}
 				} else {
-					if (conversions[x][y]) {
-						g.fillRect(drawX(offX), drawY(offY), sizeWidth, sizeHeight, _baseColor);
+					if (_conversions[x][y]) {
+						g.fillRect(drawX(offX), drawY(offY), _sizeWidth, _sizeHeight, _baseColor);
 					}
 				}
 			}
@@ -266,26 +266,26 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	}
 
 	public FadeTileEffect pack() {
-		this.tmpflag = 0;
+		this._tmpflag = 0;
 		if (ISprite.TYPE_FADE_OUT == _type) {
-			for (int x = 0; x < tileWidth; x++) {
-				for (int y = 0; y < tileHeight; y++) {
-					conversions[x][y] = false;
-					boolTemps[x][y] = false;
+			for (int x = 0; x < _tileWidth; x++) {
+				for (int y = 0; y < _tileHeight; y++) {
+					_conversions[x][y] = false;
+					_boolTemps[x][y] = false;
 				}
 			}
-			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils.random(1, tileHeight) - 1] = true;
+			for (int i = 0; i < _count; i++) {
+				_conversions[MathUtils.random(1, _tileWidth) - 1][MathUtils.random(1, _tileHeight) - 1] = true;
 			}
 		} else {
-			for (int x = 0; x < tileWidth; x++) {
-				for (int y = 0; y < tileHeight; y++) {
-					conversions[x][y] = true;
-					boolTemps[x][y] = true;
+			for (int x = 0; x < _tileWidth; x++) {
+				for (int y = 0; y < _tileHeight; y++) {
+					_conversions[x][y] = true;
+					_boolTemps[x][y] = true;
 				}
 			}
-			for (int i = 0; i < count; i++) {
-				conversions[MathUtils.random(1, tileWidth) - 1][MathUtils.random(1, tileHeight) - 1] = false;
+			for (int i = 0; i < _count; i++) {
+				_conversions[MathUtils.random(1, _tileWidth) - 1][MathUtils.random(1, _tileHeight) - 1] = false;
 			}
 		}
 		return this;
@@ -303,7 +303,7 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	}
 
 	public int getCount() {
-		return count;
+		return _count;
 	}
 
 	@Override
@@ -315,8 +315,8 @@ public class FadeTileEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		conversions = null;
-		boolTemps = null;
+		_conversions = null;
+		_boolTemps = null;
 	}
 
 }

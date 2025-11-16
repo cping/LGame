@@ -91,61 +91,61 @@ public class SpriteSorter<T> extends InsertionSorter<T> {
 
 	}
 
-	private boolean positive = false;
+	private boolean _positive = false;
 
-	private boolean sortY = true;
+	private boolean _sortY = true;
 
-	private final SpriteComparator spriteComparator;
+	private final SpriteComparator _spriteComparator;
 
 	public SpriteSorter() {
 		this(true, false);
 	}
 
 	public SpriteSorter(boolean y, boolean p) {
-		this.sortY = y;
-		this.positive = p;
-		this.spriteComparator = new SpriteComparator(this);
+		this._sortY = y;
+		this._positive = p;
+		this._spriteComparator = new SpriteComparator(this);
 	}
 
 	public int calc(ISprite p1, ISprite p2) {
 		if (p1.autoXYSort() && p2.autoXYSort()) {
-			return positive ? calcLowToHigh(p1, p2, sortY) : calcHighToLow(p1, p2, sortY);
+			return _positive ? calcLowToHigh(p1, p2, _sortY) : calcHighToLow(p1, p2, _sortY);
 		} else {
-			return positive ? LayerSorter.calcLowToHigh((ZIndex) p1, (ZIndex) p2)
+			return _positive ? LayerSorter.calcLowToHigh((ZIndex) p1, (ZIndex) p2)
 					: LayerSorter.calcHighToLow((ZIndex) p1, (ZIndex) p2);
 		}
 	}
 
 	public void sort(final T[] es) {
-		this.sort(es, this.spriteComparator);
+		this.sort(es, this._spriteComparator);
 	}
 
 	public void sort(final T[] es, final int s, final int e) {
-		this.sort(es, s, e, this.spriteComparator);
+		this.sort(es, s, e, this._spriteComparator);
 	}
 
 	public void sort(final List<T> es) {
-		this.sort(es, this.spriteComparator);
+		this.sort(es, this._spriteComparator);
 	}
 
 	public void sort(final List<T> es, final int s, final int e) {
-		this.sort(es, s, e, this.spriteComparator);
+		this.sort(es, s, e, this._spriteComparator);
 	}
 
 	public void sort(final TArray<T> es) {
-		this.sort(es, this.spriteComparator);
+		this.sort(es, this._spriteComparator);
 	}
 
 	public void sort(final TArray<T> es, final int s, final int e) {
-		this.sort(es, s, e, this.spriteComparator);
+		this.sort(es, s, e, this._spriteComparator);
 	}
 
 	public boolean isSortY() {
-		return sortY;
+		return _sortY;
 	}
 
 	public SpriteSorter<T> setSortY(boolean sortY) {
-		this.sortY = sortY;
+		this._sortY = sortY;
 		return this;
 	}
 }

@@ -30,13 +30,13 @@ import loon.utils.MathUtils;
  */
 public class FadeOvalEffect extends BaseAbstractEffect {
 
-	private final LColor[] oval_colors;
+	private final LColor[] _oval_colors;
 
-	private float max_time;
-	private float elapsed;
+	private float _max_time;
+	private float _elapsed;
 
-	private int type = TYPE_FADE_IN;
-	private int maxColorSize;
+	private int _type = TYPE_FADE_IN;
+	private int _maxColorSize;
 	private float _initWidth;
 	private float _initHeight;
 
@@ -60,16 +60,16 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 		this.setSize(w, h);
 		this.setColor(oc);
 		this.setRepaint(true);
-		this.type = type;
-		this.elapsed = 0;
+		this._type = type;
+		this._elapsed = 0;
 		this._initWidth = w;
 		this._initHeight = h;
-		this.maxColorSize = maxSize;
-		this.oval_colors = new LColor[maxColorSize];
-		for (int i = 0; i < maxColorSize; i++) {
-			oval_colors[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
+		this._maxColorSize = maxSize;
+		this._oval_colors = new LColor[_maxColorSize];
+		for (int i = 0; i < _maxColorSize; i++) {
+			_oval_colors[i] = new LColor(oc.r, oc.g, oc.b, 1F - 0.15f * i);
 		}
-		this.max_time = time;
+		this._max_time = time;
 	}
 
 	@Override
@@ -78,23 +78,23 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			if (type == TYPE_FADE_IN) {
-				this.elapsed += (elapsedTime * 3) / LSystem.getScaleFPS();
-				float progress = this.elapsed / this.max_time;
+			if (_type == TYPE_FADE_IN) {
+				this._elapsed += (elapsedTime * 3) / LSystem.getScaleFPS();
+				float progress = this._elapsed / this._max_time;
 				this._width = (_width * MathUtils.pow(1f - progress, 2f));
 				this._height = (_height * MathUtils.pow(1f - progress, 2f));
-				if (this.elapsed >= this.max_time) {
-					this.elapsed = -1;
+				if (this._elapsed >= this._max_time) {
+					this._elapsed = -1;
 					this._width = (this._height = 0f);
 					this._completed = true;
 				}
 			} else {
-				this.elapsed += (elapsedTime * 3) / LSystem.getScaleFPS();
-				float progress = this.elapsed / this.max_time;
+				this._elapsed += (elapsedTime * 3) / LSystem.getScaleFPS();
+				float progress = this._elapsed / this._max_time;
 				this._width = (_initWidth * MathUtils.pow(progress, 2f));
 				this._height = (_initHeight * MathUtils.pow(progress, 2f));
-				if (this.elapsed >= this.max_time) {
-					this.elapsed = -1;
+				if (this._elapsed >= this._max_time) {
+					this._elapsed = -1;
 					this._width = (this._height = MathUtils.max(_initWidth, _initHeight));
 					this._completed = true;
 				}
@@ -107,16 +107,16 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
-		if (this.elapsed > -1) {
+		if (this._elapsed > -1) {
 			int tmp = g.getPixSkip();
 			boolean usetex = LSystem.isHTML5();
 			if (usetex) {
 				g.setPixSkip(10);
 			}
 			int old = g.color();
-			int size = maxColorSize;
+			int size = _maxColorSize;
 			for (int i = size - 1; i >= 0; i--) {
-				g.setColor(oval_colors[i]);
+				g.setColor(_oval_colors[i]);
 				float w = this._width + i * this._width * 0.1f;
 				float h = this._height + i * this._height * 0.1f;
 				g.fillOval(drawX((g.getWidth() / 2 - w / 2f) + sx), drawY((g.getHeight() / 2 - h / 2f) + sy), w, h);
@@ -129,7 +129,7 @@ public class FadeOvalEffect extends BaseAbstractEffect {
 	}
 
 	public int getFadeType() {
-		return type;
+		return _type;
 	}
 
 	@Override

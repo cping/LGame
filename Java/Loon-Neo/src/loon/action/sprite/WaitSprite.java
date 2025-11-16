@@ -159,26 +159,26 @@ public class WaitSprite extends Entity {
 
 	}
 
-	private LTimer delay;
+	private LTimer _delay;
 
-	private DrawWait wait;
+	private DrawWait _wait;
 
-	private int style;
+	private int _style;
 
-	private Cycle cycle;
+	private Cycle _cycle;
 
 	public WaitSprite(int s) {
 		this(s, LSystem.landscape() ? 360 : 300, 300);
 	}
 
 	public WaitSprite(int s, int w, int h) {
-		this.style = s;
-		this.wait = new DrawWait(s, w, h);
-		this.delay = new LTimer(120);
+		this._style = s;
+		this._wait = new DrawWait(s, w, h);
+		this._delay = new LTimer(120);
 		if (s == 2) {
-			delay.setDelay(30);
+			_delay.setDelay(30);
 		} else if (s == 3) {
-			delay.setDelay(60);
+			_delay.setDelay(60);
 		}
 		this.setRepaint(true);
 		this.setSize(w, h);
@@ -186,10 +186,13 @@ public class WaitSprite extends Entity {
 			int idx = s - DrawWait.MAX;
 			int width = w / 2;
 			int height = h / 2;
-			cycle = newSample(idx, width, height);
-			cycle.setLocation((w - cycle.getWidth()) / 2, (h - cycle.getHeight()) / 2);
+			_cycle = newSample(idx, width, height);
+			_cycle.setLocation((w - _cycle.getWidth()) / 2, (h - _cycle.getHeight()) / 2);
 		}
-		setLocation((LSystem.viewSize.getWidth() - w) / 2, (LSystem.viewSize.getHeight() - h) / 2);
+		final Sprites sprs = getSprites();
+		final int screenWidth = sprs != null ? sprs.getWidth() : LSystem.viewSize.getWidth();
+		final int screenHeight = sprs != null ? sprs.getHeight() : LSystem.viewSize.getHeight();
+		setLocation((screenWidth - w) / 2, (screenHeight - h) / 2);
 		update(0);
 	}
 
@@ -269,47 +272,47 @@ public class WaitSprite extends Entity {
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		if (style < DrawWait.MAX) {
-			wait.draw(g, drawX(offsetX), drawY(offsetY));
-		} else if (cycle != null) {
-			cycle.createUI(g, drawX(offsetX), drawY(offsetY));
+		if (_style < DrawWait.MAX) {
+			_wait.draw(g, drawX(offsetX), drawY(offsetY));
+		} else if (_cycle != null) {
+			_cycle.createUI(g, drawX(offsetX), drawY(offsetY));
 		}
 
 	}
 
 	@Override
 	public float getHeight() {
-		if (cycle != null) {
-			return cycle.getCollisionBox().height;
+		if (_cycle != null) {
+			return _cycle.getCollisionBox().height;
 		} else {
-			return wait.height;
+			return _wait.height;
 		}
 	}
 
 	@Override
 	public float getWidth() {
-		if (cycle != null) {
-			return cycle.getCollisionBox().width;
+		if (_cycle != null) {
+			return _cycle.getCollisionBox().width;
 		} else {
-			return wait.width;
+			return _wait.width;
 		}
 	}
 
 	@Override
 	public void onUpdate(long elapsedTime) {
-		if (cycle != null) {
-			cycle.update(elapsedTime);
+		if (_cycle != null) {
+			_cycle.update(elapsedTime);
 		} else {
-			if (delay.action(elapsedTime)) {
-				wait.next();
+			if (_delay.action(elapsedTime)) {
+				_wait.next();
 			}
 		}
 	}
 
 	@Override
 	public void setAlpha(float a) {
-		if (cycle != null) {
-			cycle.setAlpha(a);
+		if (_cycle != null) {
+			_cycle.setAlpha(a);
 		} else {
 			super.setAlpha(a);
 		}
@@ -317,8 +320,8 @@ public class WaitSprite extends Entity {
 
 	@Override
 	public float getAlpha() {
-		if (cycle != null) {
-			return cycle.getAlpha();
+		if (_cycle != null) {
+			return _cycle.getAlpha();
 		} else {
 			return super.getAlpha();
 		}
@@ -326,8 +329,8 @@ public class WaitSprite extends Entity {
 
 	@Override
 	public RectBox getCollisionBox() {
-		if (cycle != null) {
-			return cycle.getCollisionBox();
+		if (_cycle != null) {
+			return _cycle.getCollisionBox();
 		} else {
 			return super.getCollisionBox();
 		}
@@ -335,14 +338,14 @@ public class WaitSprite extends Entity {
 
 	@Override
 	public boolean isVisible() {
-		return cycle != null ? cycle.isVisible() : super.isVisible();
+		return _cycle != null ? _cycle.isVisible() : super.isVisible();
 	}
 
 	@Override
 	public void setVisible(boolean pVisible) {
 		super.setVisible(pVisible);
-		if (cycle != null) {
-			cycle.setVisible(pVisible);
+		if (_cycle != null) {
+			_cycle.setVisible(pVisible);
 		}
 	}
 

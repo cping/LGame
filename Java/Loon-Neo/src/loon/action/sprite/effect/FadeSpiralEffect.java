@@ -31,18 +31,18 @@ import loon.utils.MathUtils;
  */
 public class FadeSpiralEffect extends BaseAbstractEffect {
 
-	private float tileSizeWidth, tileSizeHeight;
+	private float _tileSizeWidth, _tileSizeHeight;
 
-	private int tilewidth;
-	private int tileheight;
-	private int speed;
-	private int tilescovered = 0;
+	private int _tilewidth;
+	private int _tileheight;
+	private int _speed;
+	private int _tilescovered = 0;
 
-	private boolean[][] conversions;
-	private int cx = 0;
-	private int cy = 0;
+	private boolean[][] _conversions;
+	private int _cx = 0;
+	private int _cy = 0;
 
-	private int state = 1;
+	private int _state = 1;
 
 	private int _type;
 
@@ -64,12 +64,12 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 
 	public FadeSpiralEffect(int type, int speed, LColor c, float width, float height, float tw, float th) {
 		this._type = type;
-		this.speed = speed;
-		this.tileSizeWidth = tw;
-		this.tileSizeHeight = th;
-		this.tilewidth = MathUtils.ifloor(width / tw) + 1;
-		this.tileheight = MathUtils.ifloor(height / th) + 1;
-		this.conversions = new boolean[tilewidth][tileheight];
+		this._speed = speed;
+		this._tileSizeWidth = tw;
+		this._tileSizeHeight = th;
+		this._tilewidth = MathUtils.ifloor(width / tw) + 1;
+		this._tileheight = MathUtils.ifloor(height / th) + 1;
+		this._conversions = new boolean[_tilewidth][_tileheight];
 		this.reset();
 		this.setDelay(30);
 		this.setRepaint(true);
@@ -82,28 +82,28 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 		super.reset();
 		int tmp = _baseColor.getARGB();
 		if (_type == ISprite.TYPE_FADE_IN) {
-			for (int x = 0; x < tilewidth; x++) {
-				for (int y = 0; y < tileheight; y++) {
-					conversions[x][y] = true;
+			for (int x = 0; x < _tilewidth; x++) {
+				for (int y = 0; y < _tileheight; y++) {
+					_conversions[x][y] = true;
 				}
 			}
 		} else {
-			for (int x = 0; x < tilewidth; x++) {
-				for (int y = 0; y < tileheight; y++) {
-					conversions[x][y] = false;
+			for (int x = 0; x < _tilewidth; x++) {
+				for (int y = 0; y < _tileheight; y++) {
+					_conversions[x][y] = false;
 				}
 			}
 		}
-		this.state = 1;
-		this.cx = 0;
-		this.cy = 0;
-		this.tilescovered = 0;
+		this._state = 1;
+		this._cx = 0;
+		this._cy = 0;
+		this._tilescovered = 0;
 		_baseColor.setColor(tmp);
 		return this;
 	}
 
 	public boolean finished() {
-		return tilescovered >= (tilewidth * tileheight);
+		return _tilescovered >= (_tilewidth * _tileheight);
 	}
 
 	@Override
@@ -118,11 +118,11 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 		if (_type == TYPE_FADE_IN && _completed) {
 			return;
 		}
-		for (int x = 0; x < tilewidth; x++) {
-			for (int y = 0; y < tileheight; y++) {
-				if (conversions[x][y]) {
-					g.fillRect(drawX(x * tileSizeWidth + offsetX), drawY(y * tileSizeHeight + offsetY), tileSizeWidth,
-							tileSizeHeight, _baseColor);
+		for (int x = 0; x < _tilewidth; x++) {
+			for (int y = 0; y < _tileheight; y++) {
+				if (_conversions[x][y]) {
+					g.fillRect(drawX(x * _tileSizeWidth + offsetX), drawY(y * _tileSizeHeight + offsetY),
+							_tileSizeWidth, _tileSizeHeight, _baseColor);
 				}
 			}
 		}
@@ -135,75 +135,75 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 		}
 		if (_timer.action(elapsedTime)) {
 			if (_type == ISprite.TYPE_FADE_IN) {
-				for (int i = 0; i < speed; i++) {
-					if (conversions[cx][cy]) {
-						conversions[cx][cy] = false;
-						tilescovered++;
+				for (int i = 0; i < _speed; i++) {
+					if (_conversions[_cx][_cy]) {
+						_conversions[_cx][_cy] = false;
+						_tilescovered++;
 					}
-					switch (state) {
+					switch (_state) {
 					case 0:
-						cy--;
-						if (cy <= -1 || (!conversions[cx][cy])) {
-							cy++;
-							state = 2;
+						_cy--;
+						if (_cy <= -1 || (!_conversions[_cx][_cy])) {
+							_cy++;
+							_state = 2;
 						}
 						break;
 					case 1:
-						cy++;
-						if (cy >= tileheight || (!conversions[cx][cy])) {
-							cy--;
-							state = 3;
+						_cy++;
+						if (_cy >= _tileheight || (!_conversions[_cx][_cy])) {
+							_cy--;
+							_state = 3;
 						}
 						break;
 					case 2:
-						cx--;
-						if (cx <= -1 || (!conversions[cx][cy])) {
-							cx++;
-							state = 1;
+						_cx--;
+						if (_cx <= -1 || (!_conversions[_cx][_cy])) {
+							_cx++;
+							_state = 1;
 						}
 						break;
 					case 3:
-						cx++;
-						if (cx >= tilewidth || (!conversions[cx][cy])) {
-							cx--;
-							state = 0;
+						_cx++;
+						if (_cx >= _tilewidth || (!_conversions[_cx][_cy])) {
+							_cx--;
+							_state = 0;
 						}
 						break;
 					}
 				}
 			} else {
-				for (int i = 0; i < speed; i++) {
-					if (!conversions[cx][cy]) {
-						conversions[cx][cy] = true;
-						tilescovered++;
+				for (int i = 0; i < _speed; i++) {
+					if (!_conversions[_cx][_cy]) {
+						_conversions[_cx][_cy] = true;
+						_tilescovered++;
 					}
-					switch (state) {
+					switch (_state) {
 					case 0:
-						cy--;
-						if (cy <= -1 || (conversions[cx][cy])) {
-							cy++;
-							state = 2;
+						_cy--;
+						if (_cy <= -1 || (_conversions[_cx][_cy])) {
+							_cy++;
+							_state = 2;
 						}
 						break;
 					case 1:
-						cy++;
-						if (cy >= tileheight || (conversions[cx][cy])) {
-							cy--;
-							state = 3;
+						_cy++;
+						if (_cy >= _tileheight || (_conversions[_cx][_cy])) {
+							_cy--;
+							_state = 3;
 						}
 						break;
 					case 2:
-						cx--;
-						if (cx <= -1 || (conversions[cx][cy])) {
-							cx++;
-							state = 1;
+						_cx--;
+						if (_cx <= -1 || (_conversions[_cx][_cy])) {
+							_cx++;
+							_state = 1;
 						}
 						break;
 					case 3:
-						cx++;
-						if (cx >= tilewidth || (conversions[cx][cy])) {
-							cx--;
-							state = 0;
+						_cx++;
+						if (_cx >= _tilewidth || (_conversions[_cx][_cy])) {
+							_cx--;
+							_state = 0;
 						}
 						break;
 					}
@@ -224,7 +224,7 @@ public class FadeSpiralEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		conversions = null;
+		_conversions = null;
 	}
 
 }

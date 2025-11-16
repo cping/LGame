@@ -58,7 +58,7 @@ public class AndroidSave implements Save {
 		}
 	}
 
-	private SharedPreferences settings;
+	private final SharedPreferences settings;
 
 	public AndroidSave(AndroidGame game) {
 		this.settings = game.activity.getSharedPreferences(game.setting.appName, 0);

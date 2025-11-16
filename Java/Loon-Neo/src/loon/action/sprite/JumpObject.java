@@ -46,15 +46,15 @@ public class JumpObject extends ActionObject {
 
 	public float GRAVITY;
 
-	private float speed;
+	private float _speed;
 
-	private float jumpSpeed;
+	private float _jumpSpeed;
 
-	private boolean forceJump;
+	private boolean _forceJump;
 
-	private boolean jumperTwo;
+	private boolean _jumperTwo;
 
-	private boolean canJumperTwo;
+	private boolean _canJumperTwo;
 
 	public JumpObject(float x, float y, String path) {
 		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
@@ -78,9 +78,9 @@ public class JumpObject extends ActionObject {
 		this.setG(0.6f);
 		this.velocityX = 0f;
 		this.velocityY = 0f;
-		this.forceJump = false;
-		this.jumperTwo = false;
-		this.canJumperTwo = true;
+		this._forceJump = false;
+		this._jumperTwo = false;
+		this._canJumperTwo = true;
 		return this;
 	}
 
@@ -97,73 +97,73 @@ public class JumpObject extends ActionObject {
 	}
 
 	public JumpObject accelerateLeft() {
-		velocityX = -speed;
+		velocityX = -_speed;
 		return this;
 	}
 
 	public JumpObject accelerateRight() {
-		velocityX = speed;
+		velocityX = _speed;
 		return this;
 	}
 
 	public JumpObject accelerateUp() {
-		velocityY = speed;
+		velocityY = _speed;
 		return this;
 	}
 
 	public JumpObject accelerateDown() {
-		velocityY = -speed;
+		velocityY = -_speed;
 		return this;
 	}
 
 	public JumpObject jump() {
-		return jump(jumpSpeed);
+		return jump(_jumpSpeed);
 	}
 
 	public JumpObject jump(float force) {
-		if (isGround() || forceJump) {
+		if (isGround() || _forceJump) {
 			velocityY = -force;
 			freeGround();
-			forceJump = false;
-		} else if (jumperTwo && canJumperTwo) {
+			_forceJump = false;
+		} else if (_jumperTwo && _canJumperTwo) {
 			velocityY = -force;
-			canJumperTwo = false;
+			_canJumperTwo = false;
 		}
 		return this;
 	}
 
 	public JumpObject setForceJump(boolean forceJump) {
-		this.forceJump = forceJump;
+		this._forceJump = forceJump;
 		return this;
 	}
 
 	public float getSpeed() {
-		return speed;
+		return _speed;
 	}
 
 	public JumpObject setSpeed(float speed) {
-		this.speed = speed;
+		this._speed = speed;
 		return this;
 	}
 
 	public float getJumpSpeed() {
-		return this.jumpSpeed;
+		return this._jumpSpeed;
 	}
 
 	public JumpObject setJumpSpeed(float js) {
-		this.jumpSpeed = js;
+		this._jumpSpeed = js;
 		return this;
 	}
 
 	public JumpObject setJumperTwo(boolean jumperTwo) {
-		this.jumperTwo = jumperTwo;
+		this._jumperTwo = jumperTwo;
 		return this;
 	}
 
 	public JumpObject setG(float g) {
 		this.GRAVITY = LSystem.isScaleFPS() ? MathUtils.iceil(LSystem.toScaleFPS(g)) : g;
-		this.speed = LSystem.toScaleFPS(g * 10f);
-		this.jumpSpeed = speed * 2;
+		this._speed = LSystem.toScaleFPS(g * 10f);
+		this._jumpSpeed = _speed * 2;
 		return this;
 	}
 
@@ -205,7 +205,7 @@ public class JumpObject extends ActionObject {
 			if (velocityY > 0) {
 				y = tiles.tilesToPixelsY(tile.y) - getHeight();
 				velocityY = 0;
-				canJumperTwo = true;
+				_canJumperTwo = true;
 				_groundedTopBottom = true;
 			} else if (velocityY < 0) {
 				y = tiles.tilesToPixelsY(tile.y + 1);
@@ -248,8 +248,8 @@ public class JumpObject extends ActionObject {
 	public int hashCode() {
 		int hashCode = 1;
 		hashCode = LSystem.unite(hashCode, super.hashCode());
-		hashCode = LSystem.unite(hashCode, speed);
-		hashCode = LSystem.unite(hashCode, jumpSpeed);
+		hashCode = LSystem.unite(hashCode, _speed);
+		hashCode = LSystem.unite(hashCode, _jumpSpeed);
 		hashCode = LSystem.unite(hashCode, GRAVITY);
 		return hashCode;
 	}

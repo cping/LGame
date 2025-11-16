@@ -106,18 +106,18 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		}
 	}
 
-	private int countCompleted = 0;
+	private int _countCompleted = 0;
 
-	private TArray<Dot> dots;
+	private TArray<Dot> _dots;
 
-	private int count = 4;
+	private int _count = 4;
 
 	private int _type = ISprite.TYPE_FADE_IN;
 
-	private int dot_time = 0;
-	private int dot_rad = 0;
-	private int dot_width = 0;
-	private int dot_height = 0;
+	private int _dot_time = 0;
+	private int _dot_rad = 0;
+	private int _dot_width = 0;
+	private int _dot_height = 0;
 
 	private float _sleep = 0;
 
@@ -147,11 +147,11 @@ public class FadeDotEffect extends BaseAbstractEffect {
 
 	public FadeDotEffect(int type, int time, int rad, int count, LColor c, int w, int h, float sleep) {
 		this._type = type;
-		this.count = count;
-		this.dot_time = time;
-		this.dot_rad = rad;
-		this.dot_width = w;
-		this.dot_height = h;
+		this._count = count;
+		this._dot_time = time;
+		this._dot_rad = rad;
+		this._dot_width = w;
+		this._dot_height = h;
 		this.setColor(c);
 		this.setSize(w, h);
 		this.setRepaint(true);
@@ -169,13 +169,13 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	protected void updateDots() {
-		if (dots != null) {
-			dots.clear();
-			dots = null;
+		if (_dots != null) {
+			_dots.clear();
+			_dots = null;
 		}
-		dots = new TArray<Dot>();
-		for (int i = 0; i < count; i++) {
-			dots.add(new Dot(_type, dot_time, dot_rad, dot_width, dot_height, 1f));
+		_dots = new TArray<Dot>();
+		for (int i = 0; i < _count; i++) {
+			_dots.add(new Dot(_type, _dot_time, _dot_rad, _dot_width, _dot_height, 1f));
 		}
 		_completed = false;
 	}
@@ -193,16 +193,16 @@ public class FadeDotEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			for (int i = 0; i < dots.size; i++) {
-				Dot dot = dots.get(i);
+			for (int i = 0; i < _dots.size; i++) {
+				final Dot dot = _dots.get(i);
 				if (dot != null) {
 					dot.update(elapsedTime);
 					if (dot.finished) {
-						countCompleted++;
+						_countCompleted++;
 					}
 				}
 			}
-			if (countCompleted >= dots.size) {
+			if (_countCompleted >= _dots.size) {
 				_completed = true;
 			}
 		}
@@ -220,15 +220,15 @@ public class FadeDotEffect extends BaseAbstractEffect {
 		if (_type == TYPE_FADE_IN && _completed) {
 			return;
 		}
-		boolean useText = g.isAlltextures() && LSystem.isHTML5();
+		final boolean useText = g.isAlltextures() && LSystem.isHTML5();
 		int skip = g.getPixSkip();
 		if (useText) {
 			g.setPixSkip(10);
 		}
-		int tmp = g.color();
+		final int tmp = g.color();
 		g.setColor(_baseColor);
-		for (int i = 0; i < dots.size; i++) {
-			dots.get(i).paint(g, drawX(offsetX), drawY(offsetY));
+		for (int i = 0; i < _dots.size; i++) {
+			_dots.get(i).paint(g, drawX(offsetX), drawY(offsetY));
 		}
 		if (useText) {
 			g.setPixSkip(skip);
@@ -237,7 +237,7 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	}
 
 	public int getCount() {
-		return count;
+		return _count;
 	}
 
 	public int getFadeType() {
@@ -253,9 +253,9 @@ public class FadeDotEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (dots != null) {
-			dots.clear();
-			dots = null;
+		if (_dots != null) {
+			_dots.clear();
+			_dots = null;
 		}
 	}
 

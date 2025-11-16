@@ -52,37 +52,37 @@ public class MoveObject extends ActionObject {
 
 	private boolean _collisionIgnore;
 
-	private CollisionListener collisionListener;
+	private CollisionListener _collisionListener;
 
-	private DirectionListener directionListener;
+	private DirectionListener _directionListener;
 
-	private TArray<Vector2f> findPath = new TArray<Vector2f>();
+	private TArray<Vector2f> _findPath = new TArray<Vector2f>();
 
-	private boolean moving;
+	private boolean _moving;
 
-	private boolean allDirection;
+	private boolean _allDirection;
 
-	private boolean bevelDirection;
+	private boolean _bevelDirection;
 
-	private float startX, startY, endX, endY;
+	private float _startX, _startY, _endX, _endY;
 
-	private float speed;
+	private float _speed;
 
-	private float touchX, touchY;
+	private float _touchX, _touchY;
 
-	private int movingLength;
+	private int _movingLength;
 
-	private int lastDirection = EMPTY;
+	private int _lastDirection = EMPTY;
 
-	private boolean isClicked;
+	private boolean _isClicked;
 
-	private boolean isCompleted;
+	private boolean _isCompleted;
 
-	private boolean isCheckCollision;
+	private boolean _isCheckCollision;
 
-	private EaseTimer timer;
+	private EaseTimer _timer;
 
-	private AStarFindHeuristic heuristic;
+	private AStarFindHeuristic _heuristic;
 
 	public MoveObject(float x, float y, String path) {
 		this(x, y, 0, 0, Animation.getDefaultAnimation(path), null);
@@ -101,24 +101,24 @@ public class MoveObject extends ActionObject {
 		if (map == null) {
 			this.tiles = new TileMap(LSystem.viewSize.newField2D());
 		}
-		this.timer = EaseTimer.at(1f, EasingMode.Linear);
-		this.isCheckCollision = true;
-		this.isCompleted = false;
-		this.allDirection = false;
-		this.speed = 4f;
+		this._timer = EaseTimer.at(1f, EasingMode.Linear);
+		this._isCheckCollision = true;
+		this._isCompleted = false;
+		this._allDirection = false;
+		this._speed = 4f;
 	}
 
 	public MoveObject updateMove() {
 		synchronized (MoveObject.class) {
-			if (!getCollisionArea().contains(touchX, touchY)) {
-				if (findPath != null) {
-					findPath.clear();
+			if (!getCollisionArea().contains(_touchX, _touchY)) {
+				if (_findPath != null) {
+					_findPath.clear();
 				}
-				findPath = AStarFinder.find(heuristic, tiles.getField2D(), tiles.pixelsToTilesWidth(x()),
-						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x),
-						tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y), bevelDirection, allDirection);
-			} else if (findPath != null) {
-				findPath.clear();
+				_findPath = AStarFinder.find(_heuristic, tiles.getField2D(), tiles.pixelsToTilesWidth(x()),
+						tiles.pixelsToTilesHeight(y()), tiles.pixelsToTilesWidth(_touchX - tiles.getOffset().x),
+						tiles.pixelsToTilesHeight(_touchY - tiles.getOffset().y), _bevelDirection, _allDirection);
+			} else if (_findPath != null) {
+				_findPath.clear();
 			}
 		}
 		return this;
@@ -174,21 +174,21 @@ public class MoveObject extends ActionObject {
 	}
 
 	private boolean moveState() {
-		this.movingLength = 0;
+		this._movingLength = 0;
 		return moveTo(getDirection());
 	}
 
 	private void updateDirection(final int dir) {
-		if (lastDirection != dir) {
-			if (directionListener != null) {
-				directionListener.onDirection(dir);
+		if (_lastDirection != dir) {
+			if (_directionListener != null) {
+				_directionListener.onDirection(dir);
 			}
-			lastDirection = dir;
+			_lastDirection = dir;
 		}
 	}
 
 	private boolean moveTo(int dir) {
-		if (isClicked) {
+		if (_isClicked) {
 			return false;
 		}
 		final float moveSpeed = getMoveSpeed();
@@ -197,7 +197,7 @@ public class MoveObject extends ActionObject {
 		float py = getY();
 
 		boolean rMoved = false;
-		if (isCheckCollision) {
+		if (_isCheckCollision) {
 			int x = tiles.pixelsToTilesWidth(px);
 			int y = tiles.pixelsToTilesHeight(py);
 			if (dir == TLEFT) {
@@ -212,9 +212,9 @@ public class MoveObject extends ActionObject {
 						px = 0;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileWidth()) {
+					if (_movingLength >= tiles.getTileWidth()) {
 						x--;
 						px = x * tiles.getTileWidth();
 						moveObject(px, py);
@@ -237,9 +237,9 @@ public class MoveObject extends ActionObject {
 						px = width;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileWidth()) {
+					if (_movingLength >= tiles.getTileWidth()) {
 						x++;
 						px = x * tiles.getTileWidth();
 						moveObject(px, py);
@@ -261,9 +261,9 @@ public class MoveObject extends ActionObject {
 						py = 0;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileHeight()) {
+					if (_movingLength >= tiles.getTileHeight()) {
 						y--;
 						py = y * tiles.getTileHeight();
 						moveObject(px, py);
@@ -286,9 +286,9 @@ public class MoveObject extends ActionObject {
 						py = width;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileHeight()) {
+					if (_movingLength >= tiles.getTileHeight()) {
 						y++;
 						py = y * tiles.getTileHeight();
 						moveObject(px, py);
@@ -318,9 +318,9 @@ public class MoveObject extends ActionObject {
 						py = 0;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileWidth()) {
+					if (_movingLength >= tiles.getTileWidth()) {
 						x--;
 						y--;
 						px = x * tiles.getTileWidth();
@@ -354,9 +354,9 @@ public class MoveObject extends ActionObject {
 						py = height;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileWidth()) {
+					if (_movingLength >= tiles.getTileWidth()) {
 						x++;
 						y++;
 						px = x * tiles.getTileWidth();
@@ -389,9 +389,9 @@ public class MoveObject extends ActionObject {
 						py = 0;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileHeight()) {
+					if (_movingLength >= tiles.getTileHeight()) {
 						x++;
 						y--;
 						px = x * tiles.getTileWidth();
@@ -424,9 +424,9 @@ public class MoveObject extends ActionObject {
 						py = height;
 						rMoved = true;
 					}
-					movingLength += moveSpeed;
+					_movingLength += moveSpeed;
 					moveObject(px, py);
-					if (movingLength >= tiles.getTileHeight()) {
+					if (_movingLength >= tiles.getTileHeight()) {
 						x++;
 						y++;
 						px = x * tiles.getTileWidth();
@@ -457,8 +457,8 @@ public class MoveObject extends ActionObject {
 			} else if (dir == DOWN) {
 				move_45D_down(moveSpeed);
 			}
-			if (!_collisionIgnore && collisionListener != null) {
-				collisionListener.onCollision(px, py, getX(), getY());
+			if (!_collisionIgnore && _collisionListener != null) {
+				_collisionListener.onCollision(px, py, getX(), getY());
 			}
 		}
 		updateDirection(dir);
@@ -487,11 +487,11 @@ public class MoveObject extends ActionObject {
 	}
 
 	public MoveObject onTouch(float x, float y) {
-		if (!isClicked) {
-			this.touchX = x;
-			this.touchY = y;
-			this.isClicked = true;
-			this.timer.reset();
+		if (!_isClicked) {
+			this._touchX = x;
+			this._touchY = y;
+			this._isClicked = true;
+			this._timer.reset();
 			this.updateMove();
 		}
 		return this;
@@ -499,12 +499,12 @@ public class MoveObject extends ActionObject {
 
 	@Override
 	public float getTouchX() {
-		return touchX;
+		return _touchX;
 	}
 
 	@Override
 	public float getTouchY() {
-		return touchY;
+		return _touchY;
 	}
 
 	public MoveObject onPosition(GameTouch e) {
@@ -512,22 +512,22 @@ public class MoveObject extends ActionObject {
 	}
 
 	public MoveObject onPosition(float x, float y) {
-		if (findPath == null) {
+		if (_findPath == null) {
 			return this;
 		}
-		synchronized (findPath) {
-			if (findPath != null) {
-				findPath.clear();
+		synchronized (_findPath) {
+			if (_findPath != null) {
+				_findPath.clear();
 			}
 		}
 		this.moveObject(x, y);
-		this.isClicked = false;
+		this._isClicked = false;
 		return this;
 	}
 
 	private void moveObject(float x, float y) {
-		if (collisionListener != null) {
-			collisionListener.onCollision(getX(), getY(), x, y);
+		if (_collisionListener != null) {
+			_collisionListener.onCollision(getX(), getY(), x, y);
 		}
 		this.setLocation(x, y);
 	}
@@ -536,106 +536,105 @@ public class MoveObject extends ActionObject {
 	public void onProcess(long elapsedTime) {
 		super.onProcess(elapsedTime);
 
-		timer.update(elapsedTime);
+		_timer.update(elapsedTime);
 
 		if (!isStaticObject()) {
-
-			if (!isClicked) {
-				this.moving = moveState();
+			if (!_isClicked) {
+				this._moving = moveState();
 			}
-			if (tiles == null || findPath == null || isComplete()) {
-				if (isClicked) {
+			if (tiles == null || _findPath == null || isComplete()) {
+				if (_isClicked) {
 					setDirection(EMPTY);
 				}
-				isClicked = false;
+				_isClicked = false;
 				return;
 			}
 
-			synchronized (findPath) {
-				if (endX == startX && endY == startY) {
-					if (findPath != null) {
-						if (findPath.size > 1) {
-							Vector2f moveStart = findPath.get(0);
-							Vector2f moveEnd = findPath.get(1);
-							startX = tiles.tilesToPixelsX(moveStart.x());
-							startY = tiles.tilesToPixelsY(moveStart.y());
-							endX = moveEnd.x() * tiles.getTileWidth();
-							endY = moveEnd.y() * tiles.getTileHeight();
-							setDirection(Field2D.getDirection(startX, startY, endX, endY));
-							findPath.removeIndex(0);
+			synchronized (_findPath) {
+				if (_endX == _startX && _endY == _startY) {
+					if (_findPath != null) {
+						if (_findPath.size > 1) {
+							Vector2f moveStart = _findPath.get(0);
+							Vector2f moveEnd = _findPath.get(1);
+							_startX = tiles.tilesToPixelsX(moveStart.x());
+							_startY = tiles.tilesToPixelsY(moveStart.y());
+							_endX = moveEnd.x() * tiles.getTileWidth();
+							_endY = moveEnd.y() * tiles.getTileHeight();
+							setDirection(Field2D.getDirection(_startX, _startY, _endX, _endY));
+							_findPath.removeIndex(0);
 						} else {
-							findPath.clear();
+							_findPath.clear();
 						}
 					}
 				}
 				switch (getDirection()) {
 				case Config.TUP:
-					startY -= getMoveSpeed();
-					if (startY < endY) {
-						startY = endY;
+					_startY -= getMoveSpeed();
+					if (_startY < _endY) {
+						_startY = _endY;
 					}
 					break;
 				case Config.TDOWN:
-					startY += getMoveSpeed();
-					if (startY > endY) {
-						startY = endY;
+					_startY += getMoveSpeed();
+					if (_startY > _endY) {
+						_startY = _endY;
 					}
 					break;
 				case Config.TLEFT:
-					startX -= getMoveSpeed();
-					if (startX < endX) {
-						startX = endX;
+					_startX -= getMoveSpeed();
+					if (_startX < _endX) {
+						_startX = _endX;
 					}
 					break;
 				case Config.TRIGHT:
-					startX += getMoveSpeed();
-					if (startX > endX) {
-						startX = endX;
+					_startX += getMoveSpeed();
+					if (_startX > _endX) {
+						_startX = _endX;
 					}
 					break;
 				case Config.UP:
-					startX += getMoveSpeed();
-					startY -= getMoveSpeed();
-					if (startX > endX) {
-						startX = endX;
+					_startX += getMoveSpeed();
+					_startY -= getMoveSpeed();
+					if (_startX > _endX) {
+						_startX = _endX;
 					}
-					if (startY < endY) {
-						startY = endY;
+					if (_startY < _endY) {
+						_startY = _endY;
 					}
 					break;
 				case Config.DOWN:
-					startX -= getMoveSpeed();
-					startY += getMoveSpeed();
-					if (startX < endX) {
-						startX = endX;
+					_startX -= getMoveSpeed();
+					_startY += getMoveSpeed();
+					if (_startX < _endX) {
+						_startX = _endX;
 					}
-					if (startY > endY) {
-						startY = endY;
+					if (_startY > _endY) {
+						_startY = _endY;
 					}
 					break;
 				case Config.LEFT:
-					startX -= getMoveSpeed();
-					startY -= getMoveSpeed();
-					if (startX < endX) {
-						startX = endX;
+					_startX -= getMoveSpeed();
+					_startY -= getMoveSpeed();
+					if (_startX < _endX) {
+						_startX = _endX;
 					}
-					if (startY < endY) {
-						startY = endY;
+					if (_startY < _endY) {
+						_startY = _endY;
 					}
 					break;
 				case Config.RIGHT:
-					startX += getMoveSpeed();
-					startY += getMoveSpeed();
-					if (startX > endX) {
-						startX = endX;
+					_startX += getMoveSpeed();
+					_startY += getMoveSpeed();
+					if (_startX > _endX) {
+						_startX = _endX;
 					}
-					if (startY > endY) {
-						startY = endY;
+					if (_startY > _endY) {
+						_startY = _endY;
 					}
 					break;
 				}
 
-				final Vector2f tile = isCheckCollision ? tiles.getTileCollision(this, startX, startY) : null;
+				final Vector2f tile = _isCheckCollision ? tiles.getTileCollision(this, _startX, _startY) : null;
 
 				if (tile != null) {
 					int sx = tiles.tilesToPixelsX(tile.x);
@@ -656,7 +655,7 @@ public class MoveObject extends ActionObject {
 					}
 				} else {
 					freeGround();
-					moveObject(startX, startY);
+					moveObject(_startX, _startY);
 				}
 
 			}
@@ -665,33 +664,33 @@ public class MoveObject extends ActionObject {
 	}
 
 	protected float getMoveSpeed() {
-		return speed * timer.getProgress();
+		return _speed * _timer.getProgress();
 	}
 
 	public EaseTimer getTimer() {
-		return timer;
+		return _timer;
 	}
 
 	public MoveObject setEasingMode(EasingMode ease) {
-		timer.setEasingMode(ease);
+		_timer.setEasingMode(ease);
 		return this;
 	}
 
 	public float getSpeed() {
-		return speed;
+		return _speed;
 	}
 
 	public MoveObject setSpeed(int speed) {
-		this.speed = speed;
+		this._speed = speed;
 		return this;
 	}
 
 	public boolean isComplete() {
-		return findPath == null || findPath.size == 0 || isCompleted;
+		return _findPath == null || _findPath.size == 0 || _isCompleted;
 	}
 
 	public MoveObject setComplete(boolean c) {
-		this.isCompleted = true;
+		this._isCompleted = true;
 		return this;
 	}
 
@@ -701,60 +700,60 @@ public class MoveObject extends ActionObject {
 	}
 
 	public AStarFindHeuristic getHeuristic() {
-		return heuristic;
+		return _heuristic;
 	}
 
 	public MoveObject setHeuristic(AStarFindHeuristic heuristic) {
-		this.heuristic = heuristic;
+		this._heuristic = heuristic;
 		return this;
 	}
 
 	public boolean isAllDirection() {
-		return allDirection;
+		return _allDirection;
 	}
 
 	public MoveObject setAllDirection(boolean allDirection) {
-		this.allDirection = allDirection;
+		this._allDirection = allDirection;
 		return this;
 	}
 
 	public boolean isBevelDirection() {
-		return bevelDirection;
+		return _bevelDirection;
 	}
 
 	public MoveObject setBevelDirection(boolean bevelDirection) {
-		this.bevelDirection = bevelDirection;
+		this._bevelDirection = bevelDirection;
 		return this;
 	}
 
 	public boolean isAllowCheckCollision() {
-		return isCheckCollision;
+		return _isCheckCollision;
 	}
 
 	public MoveObject setAllowCheckCollision(boolean c) {
-		this.isCheckCollision = c;
+		this._isCheckCollision = c;
 		return this;
 	}
 
 	public boolean isMoving() {
-		return moving;
+		return _moving;
 	}
 
 	public CollisionListener getCollisionListener() {
-		return collisionListener;
+		return _collisionListener;
 	}
 
 	public MoveObject setCollisionListener(CollisionListener c) {
-		this.collisionListener = c;
+		this._collisionListener = c;
 		return this;
 	}
 
 	public DirectionListener getDirectionListener() {
-		return directionListener;
+		return _directionListener;
 	}
 
 	public MoveObject setDirectionListener(DirectionListener d) {
-		this.directionListener = d;
+		this._directionListener = d;
 		return this;
 	}
 
@@ -773,12 +772,12 @@ public class MoveObject extends ActionObject {
 			return super.hashCode();
 		}
 		int hashCode = 1;
-		hashCode = LSystem.unite(hashCode, allDirection);
-		hashCode = LSystem.unite(hashCode, bevelDirection);
+		hashCode = LSystem.unite(hashCode, _allDirection);
+		hashCode = LSystem.unite(hashCode, _bevelDirection);
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(x()));
 		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(y()));
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(touchX - tiles.getOffset().x));
-		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(touchY - tiles.getOffset().y));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesWidth(_touchX - tiles.getOffset().x));
+		hashCode = LSystem.unite(hashCode, tiles.pixelsToTilesHeight(_touchY - tiles.getOffset().y));
 		hashCode = LSystem.unite(hashCode, tiles.getWidth());
 		hashCode = LSystem.unite(hashCode, tiles.getHeight());
 		hashCode = LSystem.unite(hashCode, tiles.getTileWidth());
@@ -790,9 +789,9 @@ public class MoveObject extends ActionObject {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (findPath != null) {
-			findPath.clear();
-			findPath = null;
+		if (_findPath != null) {
+			_findPath.clear();
+			_findPath = null;
 		}
 	}
 

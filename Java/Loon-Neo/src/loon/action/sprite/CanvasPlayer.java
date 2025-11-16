@@ -29,8 +29,8 @@ import loon.geom.Dimension;
 
 public class CanvasPlayer extends Entity {
 
-	private final Graphics gfx;
-	private Canvas canvas;
+	private final Graphics _gfx;
+	private Canvas _canvas;
 
 	public CanvasPlayer() {
 		this(LSystem.base().graphics(), LSystem.viewSize);
@@ -45,22 +45,22 @@ public class CanvasPlayer extends Entity {
 	}
 
 	public CanvasPlayer(Graphics gfx, float width, float height) {
-		this.gfx = gfx;
+		this._gfx = gfx;
 		this.setRepaint(true);
 		resize(width, height);
 	}
 
 	public CanvasPlayer(Graphics gfx, Canvas canvas) {
-		this.gfx = gfx;
-		this.canvas = canvas;
+		this._gfx = gfx;
+		this._canvas = canvas;
 		setTexture(canvas.image.createTexture(LTexture.Format.DEFAULT));
 	}
 
 	public CanvasPlayer resize(float width, float height) {
-		if (canvas != null) {
-			canvas.close();
+		if (_canvas != null) {
+			_canvas.close();
 		}
-		canvas = gfx.createCanvas(width, height);
+		_canvas = _gfx.createCanvas(width, height);
 		setSize(width, height);
 		return this;
 	}
@@ -83,16 +83,16 @@ public class CanvasPlayer extends Entity {
 	}
 
 	public Canvas begin() {
-		return canvas;
+		return _canvas;
 	}
 
 	public CanvasPlayer end() {
 		LTexture tex = super.getBitmap();
-		Image image = canvas.image;
+		Image image = _canvas.image;
 		if (tex != null && tex.pixelWidth() == image.pixelWidth() && tex.pixelHeight() == image.pixelHeight()) {
 			tex.update(image, false);
 		} else {
-			setTexture(canvas.image.texture());
+			setTexture(_canvas.image.texture());
 		}
 		return this;
 	}
@@ -100,12 +100,12 @@ public class CanvasPlayer extends Entity {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (canvas != null) {
-			canvas.close();
-			if (canvas.image != null) {
-				canvas.image.close();
+		if (_canvas != null) {
+			_canvas.close();
+			if (_canvas.image != null) {
+				_canvas.image.close();
 			}
-			canvas = null;
+			_canvas = null;
 		}
 	}
 }

@@ -78,6 +78,9 @@ public class AndroidGame extends LGame {
 		// 是否启动back注销功能(若为true，则默认back按键即注销游戏)
 		public boolean isBackDestroy = false;
 
+		// 是否渲染刘海屏
+		public boolean renderUnderCutout = false;
+
 	}
 
 	final private static String BULID_BRAND, BULID_MODEL, BULIDM_PRODUCT, BULIDM_RELEASE, BULIDM_DEVICE;

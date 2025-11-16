@@ -44,6 +44,7 @@ import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.MathUtils;
 import loon.utils.StringUtils;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -54,6 +55,7 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
@@ -512,12 +514,13 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		if (hideButtons && AndroidGame.getSDKVersion() >= 19) {
 			try {
 				Class<?> vlistener = Class.forName("loon.android.AndroidVisibilityListener");
-				Object o = vlistener.newInstance();
+				Object o = vlistener.getDeclaredConstructor().newInstance();
 				java.lang.reflect.Method method = vlistener.getDeclaredMethod("createListener", AndroidBase.class);
 				method.invoke(o, this);
 			} catch (Exception e) {
 			}
 		}
+		setLayoutInDisplayCutoutMode(setting.renderUnderCutout);
 		if (setting.checkConfig) {
 			try {
 				final int REQUIRED_CONFIG_CHANGES = android.content.pm.ActivityInfo.CONFIG_ORIENTATION
@@ -603,11 +606,6 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 			win.setFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN,
 					WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		moveTaskToBack(false);
 	}
 
 	@Override
@@ -823,6 +821,14 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 	@Override
 	public Window getApplicationWindow() {
 		return this.getWindow();
+	}
+
+	@TargetApi(Build.VERSION_CODES.P)
+	private void setLayoutInDisplayCutoutMode(boolean render) {
+		if (render && AndroidGame.getSDKVersion() >= Build.VERSION_CODES.P) {
+			WindowManager.LayoutParams lp = getWindow().getAttributes();
+			lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+		}
 	}
 
 	protected void createWakeLock(boolean use) {
@@ -1191,7 +1197,7 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		} catch (Exception e) {
 			try {
 				Class<?> clazz = Class.forName("com.android.internal.R$dimen");
-				Object object = clazz.newInstance();
+				Object object = clazz.getDeclaredConstructor().newInstance();
 				int height = Integer.parseInt(clazz.getField("status_bar_height").get(object).toString());
 				statusHeight = this.getResources().getDimensionPixelSize(height);
 			} catch (Exception ex) {

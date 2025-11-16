@@ -30,11 +30,11 @@ import loon.utils.timer.Duration;
  */
 public class FadeEffect extends BaseAbstractEffect {
 
-	private long time;
+	private long _time;
 
-	private float currentFrame;
+	private float _currentFrame;
 
-	private int type;
+	private int _type;
 
 	private int _step;
 
@@ -67,7 +67,7 @@ public class FadeEffect extends BaseAbstractEffect {
 	}
 
 	public FadeEffect(int type, long delay, LColor c, int w, int h, int step) {
-		this.type = type;
+		this._type = type;
 		this.setDelay(delay);
 		this.setColor(c);
 		this.setSize(w, h);
@@ -77,21 +77,21 @@ public class FadeEffect extends BaseAbstractEffect {
 
 	@Override
 	public long getDelay() {
-		return time;
+		return _time;
 	}
 
 	@Override
 	public float getDelayS() {
-		return Duration.ofS(time);
+		return Duration.ofS(_time);
 	}
 
 	@Override
 	public FadeEffect setDelay(long delay) {
-		this.time = delay;
-		if (type == TYPE_FADE_IN) {
-			this.currentFrame = this.time;
+		this._time = delay;
+		if (_type == TYPE_FADE_IN) {
+			this._currentFrame = this._time;
 		} else {
-			this.currentFrame = 0;
+			this._currentFrame = 0;
 		}
 		return this;
 	}
@@ -102,20 +102,20 @@ public class FadeEffect extends BaseAbstractEffect {
 	}
 
 	public float getCurrentFrame() {
-		return currentFrame;
+		return _currentFrame;
 	}
 
 	public FadeEffect setCurrentFrame(float currentFrame) {
-		this.currentFrame = currentFrame;
+		this._currentFrame = currentFrame;
 		return this;
 	}
 
 	public int getEffectType() {
-		return type;
+		return _type;
 	}
 
 	public FadeEffect setEffectType(int type) {
-		this.type = type;
+		this._type = type;
 		return this;
 	}
 
@@ -124,17 +124,17 @@ public class FadeEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, sx, sy)) {
 			return;
 		}
-		if (type == TYPE_FADE_OUT && _completed) {
+		if (_type == TYPE_FADE_OUT && _completed) {
 			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
 			return;
 		}
-		if (type == TYPE_FADE_IN && _completed) {
+		if (_type == TYPE_FADE_IN && _completed) {
 			return;
 		}
-		if (currentFrame >= time) {
+		if (_currentFrame >= _time) {
 			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor);
 		} else {
-			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(currentFrame / time));
+			g.fillRect(drawX(sx), drawY(sy), _width, _height, _baseColor.setAlpha(_currentFrame / _time));
 		}
 	}
 
@@ -143,15 +143,15 @@ public class FadeEffect extends BaseAbstractEffect {
 		if (checkAutoRemove()) {
 			return;
 		}
-		if (type == TYPE_FADE_IN) {
-			currentFrame -= _step;
-			if (currentFrame <= _step) {
+		if (_type == TYPE_FADE_IN) {
+			_currentFrame -= _step;
+			if (_currentFrame <= _step) {
 				setAlpha(0f);
 				_completed = true;
 			}
 		} else {
-			currentFrame += _step;
-			if (currentFrame >= time - _step) {
+			_currentFrame += _step;
+			if (_currentFrame >= _time - _step) {
 				setAlpha(1f);
 				_completed = true;
 			}
@@ -168,7 +168,7 @@ public class FadeEffect extends BaseAbstractEffect {
 	}
 
 	public int getFadeType() {
-		return type;
+		return _type;
 	}
 
 	@Override

@@ -40,7 +40,11 @@ public class JavaANSetting extends LSetting {
 	// 是否启动back注销功能(若为true，则默认back按键即注销游戏)
 	public boolean isBackDestroy = false;
 
+	// 是否双重缓存画面
 	public boolean doubleBuffer = false;
+
+	// 是否渲染刘海屏
+	public boolean renderUnderCutout = false;
 
 	// 图像渲染质量 (默认速度优先)
 	public int graphicsMode = JavaANApplication.SPEED;

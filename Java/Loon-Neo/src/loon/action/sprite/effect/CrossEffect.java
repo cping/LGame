@@ -35,19 +35,19 @@ public class CrossEffect extends BaseAbstractEffect {
 
 	private LColor _crossColor;
 
-	private LTexture otexture, ntexture;
+	private LTexture _otexture, _ntexture;
 
-	private int count, code;
+	private int _count, _code;
 
-	private int maxcount = 16;
+	private int _maxcount = 16;
 
-	private int part;
+	private int _part;
 
-	private int left;
+	private int _left;
 
-	private int right;
+	private int _right;
 
-	private LTexture tmp;
+	private LTexture _tmp;
 
 	public CrossEffect(int c, String fileName) {
 		this(c, LSystem.loadTexture(fileName));
@@ -62,15 +62,15 @@ public class CrossEffect extends BaseAbstractEffect {
 	}
 
 	public CrossEffect(int c, LTexture o, LTexture n) {
-		this.code = c;
-		this.otexture = o;
-		this.ntexture = n;
+		this._code = c;
+		this._otexture = o;
+		this._ntexture = n;
 		init(o.getWidth(), o.getHeight());
 	}
 
 	public CrossEffect(int c, LColor color, float w, float h) {
-		this.code = c;
-		this.otexture = this.ntexture = null;
+		this._code = c;
+		this._otexture = this._ntexture = null;
 		this._crossColor = color;
 		this._createTexture = true;
 		this.init(w, h);
@@ -80,9 +80,9 @@ public class CrossEffect extends BaseAbstractEffect {
 		this._width = w;
 		this._height = h;
 		if (_width > _height) {
-			maxcount = 16;
+			_maxcount = 16;
 		} else {
-			maxcount = 8;
+			_maxcount = 8;
 		}
 		this.setDelay(160);
 		this.setRepaint(true);
@@ -96,11 +96,11 @@ public class CrossEffect extends BaseAbstractEffect {
 		if (_createTexture) {
 			return;
 		}
-		if (this.count > this.maxcount) {
+		if (this._count > this._maxcount) {
 			this._completed = true;
 		}
 		if (_timer.action(elapsedTime)) {
-			count++;
+			_count++;
 		}
 	}
 
@@ -111,54 +111,55 @@ public class CrossEffect extends BaseAbstractEffect {
 		}
 		if (_createTexture) {
 			if (_crossColor != null) {
-				otexture = TextureUtils.createTexture(width(), height(), _crossColor);
+				_otexture = TextureUtils.createTexture(width(), height(), _crossColor);
 			}
 			_createTexture = false;
 			return;
 		}
 		if (_completed) {
-			if (ntexture != null) {
-				g.draw(ntexture, drawX(offsetX), drawY(offsetY));
+			if (_ntexture != null) {
+				g.draw(_ntexture, drawX(offsetX), drawY(offsetY));
 			}
 			return;
 		}
-		part = 0;
-		left = 0;
-		right = 0;
-		tmp = null;
-		switch (code) {
+		_part = 0;
+		_left = 0;
+		_right = 0;
+		_tmp = null;
+		switch (_code) {
 		default:
-			part = (int) (_width / this.maxcount / 2);
-			for (int i = 0; i <= this.maxcount; i++) {
-				if (i <= this.count) {
-					tmp = this.ntexture;
-					if (tmp == null) {
+			_part = (int) (_width / this._maxcount / 2);
+			for (int i = 0; i <= this._maxcount; i++) {
+				if (i <= this._count) {
+					_tmp = this._ntexture;
+					if (_tmp == null) {
 						continue;
 					}
 				} else {
-					tmp = this.otexture;
+					_tmp = this._otexture;
 				}
-				left = i * 2 * part;
-				right = (int) (_width - ((i + 1) * 2 - 1) * part);
-				g.draw(tmp, drawX(offsetX + left), drawY(offsetY), part, _height, left, 0, left + part, _height);
-				g.draw(tmp, drawX(offsetX + right), drawY(offsetY), part, _height, right, 0, right + part, _height);
+				_left = i * 2 * _part;
+				_right = (int) (_width - ((i + 1) * 2 - 1) * _part);
+				g.draw(_tmp, drawX(offsetX + _left), drawY(offsetY), _part, _height, _left, 0, _left + _part, _height);
+				g.draw(_tmp, drawX(offsetX + _right), drawY(offsetY), _part, _height, _right, 0, _right + _part,
+						_height);
 			}
 			break;
 		case 1:
-			part = (int) (_height / this.maxcount / 2);
-			for (int i = 0; i <= this.maxcount; i++) {
-				if (i <= this.count) {
-					tmp = this.ntexture;
-					if (tmp == null) {
+			_part = (int) (_height / this._maxcount / 2);
+			for (int i = 0; i <= this._maxcount; i++) {
+				if (i <= this._count) {
+					_tmp = this._ntexture;
+					if (_tmp == null) {
 						continue;
 					}
 				} else {
-					tmp = this.otexture;
+					_tmp = this._otexture;
 				}
-				int up = i * 2 * part;
-				int down = (int) (_height - ((i + 1) * 2 - 1) * part);
-				g.draw(tmp, drawX(offsetX), drawY(up), _width, part, 0, up, _width, up + part);
-				g.draw(tmp, drawX(offsetY), drawY(down), _width, part, 0, down, _width, down + part);
+				int up = i * 2 * _part;
+				int down = (int) (_height - ((i + 1) * 2 - 1) * _part);
+				g.draw(_tmp, drawX(offsetX), drawY(up), _width, _part, 0, up, _width, up + _part);
+				g.draw(_tmp, drawX(offsetY), drawY(down), _width, _part, 0, down, _width, down + _part);
 			}
 			break;
 		}
@@ -168,21 +169,21 @@ public class CrossEffect extends BaseAbstractEffect {
 	@Override
 	public CrossEffect reset() {
 		super.reset();
-		this.count = 0;
+		this._count = 0;
 		return this;
 	}
 
 	@Override
 	public LTexture getBitmap() {
-		return otexture;
+		return _otexture;
 	}
 
 	public int getMaxCount() {
-		return maxcount;
+		return _maxcount;
 	}
 
 	public CrossEffect setMaxCount(int maxcount) {
-		this.maxcount = maxcount;
+		this._maxcount = maxcount;
 		return this;
 	}
 
@@ -195,13 +196,13 @@ public class CrossEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (otexture != null) {
-			otexture.close();
-			otexture = null;
+		if (_otexture != null) {
+			_otexture.close();
+			_otexture = null;
 		}
-		if (ntexture != null) {
-			ntexture.close();
-			ntexture = null;
+		if (_ntexture != null) {
+			_ntexture.close();
+			_ntexture = null;
 		}
 	}
 

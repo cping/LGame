@@ -30,15 +30,15 @@ import loon.utils.MathUtils;
  */
 public class FadeArcEffect extends BaseAbstractEffect {
 
-	private final int arcDiv;
+	private final int _arcDiv;
 
-	private int step;
+	private int _step;
 
-	private int curTurn = 1;
+	private int _curTurn = 1;
 
-	private int tmpColor;
+	private int _tmpColor;
 
-	private int[] sign = { -1, 1 };
+	private int[] _sign = { -1, 1 };
 
 	private int _sleep;
 
@@ -62,7 +62,7 @@ public class FadeArcEffect extends BaseAbstractEffect {
 		this.setRepaint(true);
 		this.setTurn(type);
 		this.setSleep(sleep);
-		this.arcDiv = div;
+		this._arcDiv = div;
 	}
 
 	public FadeArcEffect setSleep(float s) {
@@ -80,9 +80,9 @@ public class FadeArcEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			step += _sleep;
-			if (step != 0) {
-				final float v = (MathUtils.DEG_FULL / this.arcDiv) * this.step;
+			_step += _sleep;
+			if (_step != 0) {
+				final float v = (MathUtils.DEG_FULL / this._arcDiv) * this._step;
 				if (v >= MathUtils.DEG_FULL) {
 					this._completed = true;
 				}
@@ -95,51 +95,51 @@ public class FadeArcEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
-		if (curTurn == TYPE_FADE_OUT && _completed) {
+		if (_curTurn == TYPE_FADE_OUT && _completed) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
 		}
-		if (curTurn == TYPE_FADE_IN && _completed) {
+		if (_curTurn == TYPE_FADE_IN && _completed) {
 			return;
 		}
-		tmpColor = g.color();
+		_tmpColor = g.color();
 		g.setColor(_baseColor);
-		if (curTurn == TYPE_FADE_IN && this.step - _sleep <= 0) {
+		if (_curTurn == TYPE_FADE_IN && this._step - _sleep <= 0) {
 			g.fillRect(drawX(offsetX), drawY(offsetY), _width, _height, _baseColor);
 		} else {
-			final float deg = MathUtils.DEG_FULL / this.arcDiv * this.step;
+			final float deg = MathUtils.DEG_FULL / this._arcDiv * this._step;
 			if (deg != 0 && deg <= MathUtils.DEG_FULL) {
 				final float length = MathUtils.sqrt(MathUtils.pow(_width / 2f, 2f) + MathUtils.pow(_height / 2f, 2f));
 				final float x = drawX(_width / 2f - length + offsetX) - LSystem.LAYER_TILE_SIZE / 2f;
 				final float y = drawY(_height / 2f - length + offsetY) - LSystem.LAYER_TILE_SIZE / 2f;
 				final float w = (_width / 2f + length - x) + LSystem.LAYER_TILE_SIZE;
 				final float h = (_height / 2f + length - y) + LSystem.LAYER_TILE_SIZE;
-				if (curTurn == TYPE_FADE_IN) {
-					final float v = this.sign[this.curTurn] * deg;
+				if (_curTurn == TYPE_FADE_IN) {
+					final float v = this._sign[this._curTurn] * deg;
 					g.fillArc(x, y, w, h, 0, MathUtils.DEG_FULL + v);
 				} else {
-					if (step < _sleep) {
+					if (_step < _sleep) {
 						return;
 					}
-					g.fillArc(x, y, w, h, 0, this.sign[this.curTurn] * deg);
+					g.fillArc(x, y, w, h, 0, this._sign[this._curTurn] * deg);
 				}
 			}
 		}
-		g.setColor(tmpColor);
+		g.setColor(_tmpColor);
 	}
 
 	@Override
 	public FadeArcEffect reset() {
 		super.reset();
-		this.step = 0;
+		this._step = 0;
 		return this;
 	}
 
 	public int getTurn() {
-		return curTurn;
+		return _curTurn;
 	}
 
 	public FadeArcEffect setTurn(int turn) {
-		this.curTurn = turn;
+		this._curTurn = turn;
 		return this;
 	}
 

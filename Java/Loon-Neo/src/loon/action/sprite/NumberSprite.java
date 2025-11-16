@@ -44,9 +44,9 @@ import loon.utils.timer.CountdownTimer;
  */
 public class NumberSprite extends Entity {
 
-	private CountdownTimer countdownTimer;
+	private CountdownTimer _countdownTimer;
 
-	private String label;
+	private String _label;
 	// 0
 	public static final int[][] ZERO = { { 1, 1, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 0, 1 }, { 1, 0, 1 },
 			{ 1, 1, 1 }, };
@@ -107,13 +107,13 @@ public class NumberSprite extends Entity {
 	}
 
 	public NumberSprite(CountdownTimer timer, String mes, LColor color, int unit) {
-		this.countdownTimer = timer;
-		this.label = timer == null ? mes : timer.getTime();
+		this._countdownTimer = timer;
+		this._label = timer == null ? mes : timer.getTime();
 		this.setColor(color);
 		this.unit = unit;
 		this.setRepaint(true);
-		if (label != null) {
-			int size = label.length() * unit;
+		if (_label != null) {
+			int size = _label.length() * unit;
 			super.setWidth(size * 3);
 			super.setHeight(2 * unit * 6);
 		}
@@ -262,23 +262,23 @@ public class NumberSprite extends Entity {
 
 	@Override
 	protected void onUpdate(long elapsedTime) {
-		if (countdownTimer != null) {
-			label = countdownTimer.getTime();
+		if (_countdownTimer != null) {
+			_label = _countdownTimer.getTime();
 		}
 	}
 
 	public NumberSprite setCountdownTimer(CountdownTimer timer) {
-		this.countdownTimer = timer;
+		this._countdownTimer = timer;
 		return this;
 	}
 
 	public CountdownTimer getCountdownTimer() {
-		return this.countdownTimer;
+		return this._countdownTimer;
 	}
 
 	@Override
 	public void repaint(GLEx g, float offsetX, float offsetY) {
-		drawNumber(g, (int) drawX(offsetX), (int) drawY(offsetY), label);
+		drawNumber(g, (int) drawX(offsetX), (int) drawY(offsetY), _label);
 	}
 
 }

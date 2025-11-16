@@ -31,7 +31,7 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 
 	protected int _type;
 
-	protected float triangle = 90;
+	protected float _triangle = 90;
 
 	public static FadeSwipeEffect create(int type, LColor c) {
 		return create(type, c, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
@@ -81,21 +81,21 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 		float percent = _timer.getPercentage();
 		final int tmp = g.color();
 		if (_type == TYPE_FADE_IN) {
-			float width = getWidth() + (2 * triangle);
+			float width = getWidth() + (2 * _triangle);
 			float height = getHeight();
-			float x = drawX(sx + (percent * width - triangle));
+			float x = drawX(sx + (percent * width - _triangle));
 			float y = drawY(sy + 0);
 			g.setColor(_baseColor);
-			g.fillRect(x + triangle, y, width, height);
-			g.fillTriangle(x, height, x + triangle, height, x + triangle, y);
+			g.fillRect(x + _triangle, y, width, height);
+			g.fillTriangle(x, height, x + _triangle, height, x + _triangle, y);
 		} else {
-			float x = drawX(sx + (percent * (triangle + getWidth()) - triangle));
+			float x = drawX(sx + (percent * (_triangle + getWidth()) - _triangle));
 			float y = drawY(sy + 0);
-			float width = percent * (getWidth() + triangle);
+			float width = percent * (getWidth() + _triangle);
 			float height = getHeight();
 			g.setColor(_baseColor);
-			g.fillRect(-triangle, y, width, height);
-			g.fillTriangle(x, y, x + triangle, y, x, height);
+			g.fillRect(-_triangle, y, width, height);
+			g.fillTriangle(x, y, x + _triangle, y, x, height);
 		}
 		g.setColor(tmp);
 		return;
@@ -116,11 +116,11 @@ public class FadeSwipeEffect extends BaseAbstractEffect {
 	}
 
 	public float getTriangle() {
-		return triangle;
+		return _triangle;
 	}
 
 	public FadeSwipeEffect setTriangle(float triangle) {
-		this.triangle = triangle;
+		this._triangle = triangle;
 		return this;
 	}
 
