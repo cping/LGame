@@ -31,9 +31,9 @@ import loon.utils.TArray;
 
 public class LightningEffect extends BaseAbstractEffect {
 
-	private LTexture lightningSegment, halfCircle, pixel;
+	private LTexture _lightningSegment, _halfCircle, _pixel;
 
-	private LTexturePack pack;
+	private LTexturePack _pack;
 
 	private int _countCompleted;
 
@@ -64,10 +64,10 @@ public class LightningEffect extends BaseAbstractEffect {
 	public void loadLightning(LTexturePack p) {
 		this._countCompleted = 0;
 		this._completed = false;
-		this.pack = p;
-		this.lightningSegment = pack.getTexture("loon_lightning");
-		this.halfCircle = pack.getTexture("loon_halfcircle");
-		this.pixel = pack.getTexture("loon_pixel");
+		this._pack = p;
+		this._lightningSegment = _pack.getTexture("loon_lightning");
+		this._halfCircle = _pack.getTexture("loon_halfcircle");
+		this._pixel = _pack.getTexture("loon_pixel");
 	}
 
 	public static LightningEffect addBolt(Vector2f s, Vector2f e, LColor c) {
@@ -155,24 +155,24 @@ public class LightningEffect extends BaseAbstractEffect {
 	}
 
 	public LTexture getLightningSegment() {
-		if (lightningSegment == null || lightningSegment.isClosed()) {
+		if (_lightningSegment == null || _lightningSegment.isClosed()) {
 			loadLightning();
 		}
-		return lightningSegment;
+		return _lightningSegment;
 	}
 
 	public LTexture getHalfCircle() {
-		if (halfCircle == null || halfCircle.isClosed()) {
+		if (_halfCircle == null || _halfCircle.isClosed()) {
 			loadLightning();
 		}
-		return halfCircle;
+		return _halfCircle;
 	}
 
 	public LTexture getPixel() {
-		if (pixel == null || pixel.isClosed()) {
+		if (_pixel == null || _pixel.isClosed()) {
 			loadLightning();
 		}
-		return pixel;
+		return _pixel;
 	}
 
 	public LightningEffect loadLightning() {
@@ -197,17 +197,17 @@ public class LightningEffect extends BaseAbstractEffect {
 			}
 			lists.clear();
 		}
-		if (this.lightningSegment != null) {
-			this.lightningSegment.close();
-			this.lightningSegment = null;
+		if (this._lightningSegment != null) {
+			this._lightningSegment.close();
+			this._lightningSegment = null;
 		}
-		if (this.halfCircle != null) {
-			this.halfCircle.close();
-			this.halfCircle = null;
+		if (this._halfCircle != null) {
+			this._halfCircle.close();
+			this._halfCircle = null;
 		}
-		if (this.pixel != null) {
-			this.pixel.close();
-			this.pixel = null;
+		if (this._pixel != null) {
+			this._pixel.close();
+			this._pixel = null;
 		}
 	}
 

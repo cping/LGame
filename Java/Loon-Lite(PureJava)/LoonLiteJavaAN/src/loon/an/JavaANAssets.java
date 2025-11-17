@@ -281,14 +281,14 @@ public class JavaANAssets extends Assets {
 
 		@SuppressWarnings("deprecation")
 		public SDRes(String path) {
-			if (isMoutedSD()) {
+			if (isMoutnedSD()) {
 				File file = null;
 				try {
 					file = android.os.Environment.getExternalStorageDirectory();
 				} catch (Exception e) {
-					file = (((JavaANGame) LSystem.base())).mainPlatform.getContext().getExternalFilesDir(null);
+					file = (((JavaANGame) LSystem.base())).mainPlatform.getContext().getExternalCacheDir();
 				}
-				if (file == null) {
+				if (file == null || !file.exists()) {
 					file = (((JavaANGame) LSystem.base())).mainPlatform.getContext().getExternalFilesDir(null);
 				}
 				String tmp = file.getPath();
@@ -311,7 +311,7 @@ public class JavaANAssets extends Assets {
 			this.name = "sdcard://" + path;
 		}
 
-		public final static boolean isMoutedSD() {
+		public final static boolean isMoutnedSD() {
 			String sdState = android.os.Environment.getExternalStorageState();
 			return sdState.equals(android.os.Environment.MEDIA_MOUNTED);
 		}

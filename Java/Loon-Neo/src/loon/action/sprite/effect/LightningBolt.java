@@ -33,66 +33,66 @@ import loon.utils.timer.LTimer;
  */
 public class LightningBolt implements ILightning {
 
-	public float alpha;
-	public float alphaMultiplier;
-	public float fadeOutRate;
-	public LColor tint;
+	public float _alpha;
+	public float _alphaMultiplier;
+	public float _fadeOutRate;
+	public LColor _tint;
 
-	private LTimer timer = new LTimer(0);
+	private LTimer _timer = new LTimer(0);
 
-	private TArray<LightningLine> segments = new TArray<LightningLine>();
+	private TArray<LightningLine> _segments = new TArray<LightningLine>();
 
-	private boolean closed;
+	private boolean _closed;
 
 	public LightningBolt(Vector2f source, Vector2f dest) {
 		this(source, dest, new LColor(0.9f, 0.8f, 1f));
 	}
 
 	public LightningBolt(Vector2f source, Vector2f dest, LColor color) {
-		this.segments = createBolt(source, dest, 2);
-		this.tint = color;
-		this.alpha = 1f;
-		this.alphaMultiplier = 0.6f;
-		this.fadeOutRate = 0.03f;
+		this._segments = createBolt(source, dest, 2);
+		this._tint = color;
+		this._alpha = 1f;
+		this._alphaMultiplier = 0.6f;
+		this._fadeOutRate = 0.03f;
 	}
 
 	@Override
 	public void draw(GLEx g, float x, float y) {
-		if (alpha <= 0) {
+		if (_alpha <= 0) {
 			return;
 		}
-		for (LightningLine segment : segments) {
-			segment.draw(g, x, y, tint.multiply(alpha * alphaMultiplier));
+		for (LightningLine segment : _segments) {
+			segment.draw(g, x, y, _tint.multiply(_alpha * _alphaMultiplier));
 		}
 	}
 
 	public LightningBolt setDelay(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
-			alpha -= fadeOutRate;
+		if (_timer.action(elapsedTime)) {
+			_alpha -= _fadeOutRate;
 		}
 	}
 
 	public Vector2f getStart() {
-		return segments.get(0).lineA;
+		return _segments.get(0)._lineA;
 	}
 
 	public Vector2f getEnd() {
-		return segments.last().lineB;
+		return _segments.last()._lineB;
 	}
 
 	@Override
 	public boolean isComplete() {
-		return alpha <= 0;
+		return _alpha <= 0;
 	}
 
 	protected static TArray<LightningLine> createBolt(Vector2f source, Vector2f dest, float thickness) {
@@ -144,8 +144,8 @@ public class LightningBolt implements ILightning {
 		position *= length;
 		LightningLine line = null;
 
-		for (LightningLine x : segments) {
-			if (Vector2f.dot(x.lineB.sub(start), dir) >= position) {
+		for (LightningLine x : _segments) {
+			if (Vector2f.dot(x._lineB.sub(start), dir) >= position) {
 				line = x;
 			}
 		}
@@ -153,11 +153,11 @@ public class LightningBolt implements ILightning {
 			return start;
 		}
 
-		float lineStartPos = Vector2f.dot(line.lineA.sub(start), dir);
-		float lineEndPos = Vector2f.dot(line.lineB.sub(start), dir);
+		float lineStartPos = Vector2f.dot(line._lineA.sub(start), dir);
+		float lineEndPos = Vector2f.dot(line._lineB.sub(start), dir);
 		float linePos = (position - lineStartPos) / (lineEndPos - lineStartPos);
 
-		return Vector2f.lerp(line.lineA, line.lineB, linePos);
+		return Vector2f.lerp(line._lineA, line._lineB, linePos);
 	}
 
 	private static float rand(float min, float max) {
@@ -165,15 +165,15 @@ public class LightningBolt implements ILightning {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		if (segments != null) {
-			segments.clear();
+		if (_segments != null) {
+			_segments.clear();
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

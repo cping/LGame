@@ -1354,6 +1354,10 @@ public abstract class Loon extends Activity implements AndroidBase, Platform, La
 		});
 	}
 
+	public Context getMainAppContext() {
+		return super.getApplicationContext();
+	}
+
 	public String getBtnOKText() {
 		return btnOKText;
 	}

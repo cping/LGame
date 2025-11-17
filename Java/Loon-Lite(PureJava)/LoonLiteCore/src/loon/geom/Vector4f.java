@@ -696,6 +696,10 @@ public class Vector4f implements Serializable, XYZW, SetXYZW {
 		return set(v.x, v.y, v.z, v.w);
 	}
 
+	public Vector4f exp() {
+		return new Vector4f(MathUtils.exp(this.x), MathUtils.exp(this.y), MathUtils.exp(this.z), MathUtils.exp(this.w));
+	}
+
 	@Override
 	public float getX() {
 		return x;

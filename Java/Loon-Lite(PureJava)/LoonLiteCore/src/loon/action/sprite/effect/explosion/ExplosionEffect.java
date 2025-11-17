@@ -1,18 +1,18 @@
 /**
  * Copyright 2008 - 2019 The Loon Game Engine Authors
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- *
+ * 
  * @project loon
  * @author cping
  * @email：javachenpeng@yahoo.com
@@ -32,8 +32,8 @@ import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.opengl.GLEx;
 import loon.utils.Easing.EasingMode;
-import loon.utils.MathUtils;
 import loon.utils.timer.EaseTimer;
+import loon.utils.MathUtils;
 
 /**
  * 像素风爆炸特效,让指定Image以指定的爆炸方式离开Screen画面
@@ -46,31 +46,31 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 
 	}
 
-	private boolean startExplision;
+	private boolean _startExplision;
 
-	private Mode lastMode;
+	private Mode _lastMode;
 
-	private LTexture ovalTexture;
+	private LTexture _ovalTexture;
 
-	private Fragment[][] fragments;
+	private Fragment[][] _fragments;
 
-	private boolean packed = false;
+	private boolean _packed = false;
 
-	private int blockWidth;
+	private int _blockWidth;
 
-	private int blockHeight;
+	private int _blockHeight;
 
-	private Mode mode;
+	private Mode _mode;
 
-	private Image pixmap;
+	private Image _pixmap;
 
-	private boolean autoRemoved;
+	private boolean _autoRemoved;
 
-	private EasingMode easingMode;
+	private EasingMode _easingMode;
 
-	private EaseTimer timer;
+	private EaseTimer _timer;
 
-	private RectBox imageRect;
+	private RectBox _imageRect;
 
 	public ExplosionEffect(Mode m, String path) {
 		this(m, BaseIO.loadImage(path));
@@ -109,37 +109,38 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	}
 
 	public ExplosionEffect(Mode m, Image pix, RectBox imageSize, int tw, int th, EasingMode ease, float duration) {
-		this.mode = m;
-		this.pixmap = pix;
+		this._mode = m;
+		this._pixmap = pix;
 		if (imageSize == null) {
-			this.imageRect = new RectBox(0, 0, pix.getWidth(), pix.getHeight());
+			this._imageRect = new RectBox(0, 0, pix.getWidth(), pix.getHeight());
 		} else {
-			this.imageRect = imageSize;
+			this._imageRect = imageSize;
 		}
-		this.setBounds(imageRect);
-		this.blockWidth = tw;
-		this.blockHeight = th;
-		this.easingMode = ease;
-		this.timer = new EaseTimer(duration, ease);
+		this.setBounds(_imageRect);
+		this._blockWidth = tw;
+		this._blockHeight = th;
+		this._easingMode = ease;
+		this._timer = new EaseTimer(duration, ease);
 		setRepaint(true);
 	}
 
 	public void pack() {
-		if (!packed || mode != lastMode) {
+		if (!_packed || _mode != _lastMode) {
 			createOvalImage();
-			if (fragments == null || mode != lastMode) {
-				fragments = createFrags(new RectI(imageRect.x(), imageRect.y(), imageRect.width, imageRect.height));
+			if (_fragments == null || _mode != _lastMode) {
+				_fragments = createFrags(
+						new RectI(_imageRect.x(), _imageRect.y(), _imageRect.width, _imageRect.height));
 			} else {
-				for (Fragment[] fragment : fragments) {
-					for (int j = 0; j < fragment.length; j++) {
-						fragment[j].reset();
+				for (int i = 0; i < _fragments.length; i++) {
+					for (int j = 0; j < _fragments[i].length; j++) {
+						_fragments[i][j].reset();
 					}
 				}
 			}
 			if (_image == null) {
-				_image = pixmap.texture();
+				_image = _pixmap.texture();
 			}
-			packed = true;
+			_packed = true;
 		}
 	}
 
@@ -147,38 +148,38 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	public ExplosionEffect reset() {
 		super.reset();
 		this.stop();
-		this.packed = false;
+		this._packed = false;
 		return this;
 	}
 
 	@Override
 	protected void onUpdate(final long elapsedTime) {
-		if (startExplision) {
-			timer.action(elapsedTime);
+		if (_startExplision) {
+			_timer.action(elapsedTime);
 		}
 		if (this.isCompleted()) {
-			if (autoRemoved && getSprites() != null) {
+			if (_autoRemoved && getSprites() != null) {
 				getSprites().remove(this);
 			}
 		}
 	}
 
 	public ExplosionEffect start() {
-		return start(this.mode);
+		return start(this._mode);
 	}
 
 	public ExplosionEffect start(Mode m) {
-		this.timer.reset();
-		this.startExplision = true;
-		this.mode = m;
-		this.lastMode = null;
+		this._timer.reset();
+		this._startExplision = true;
+		this._mode = m;
+		this._lastMode = null;
 		return this;
 	}
 
 	public ExplosionEffect stop() {
-		this.timer.reset();
-		this.startExplision = false;
-		this.lastMode = null;
+		this._timer.reset();
+		this._startExplision = false;
+		this._lastMode = null;
 		_baseColor.reset();
 		return this;
 	}
@@ -188,8 +189,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		pack();
 		float x = drawX(offsetX);
 		float y = drawY(offsetY);
-		if (startExplision) {
-			float process = timer.getProgress();
+		if (_startExplision) {
+			float process = _timer.getProgress();
 			float alpha = 1f - (process * 3f);
 			if (alpha < 0) {
 				alpha = 0;
@@ -199,7 +200,7 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			}
 			_baseColor.setAlpha(alpha);
 			g.draw(_image, x, y, _baseColor);
-			for (Fragment[] frag : fragments) {
+			for (Fragment[] frag : _fragments) {
 				for (Fragment p : frag) {
 					p.draw(g, x, y, process);
 				}
@@ -210,12 +211,12 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	}
 
 	public Fragment[][] createFrags(RectI bound) {
-		return createFrags(pixmap, bound);
+		return createFrags(_pixmap, bound);
 	}
 
 	public Fragment[][] createFrags(Image img, RectI bound) {
 		Fragment[][] fragments = null;
-		switch (mode) {
+		switch (_mode) {
 		case Tattered:
 			fragments = createTatteredFrags(img, bound);
 			break;
@@ -235,22 +236,22 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			fragments = createFlyLeftFrags(img, bound);
 			break;
 		}
-		this.lastMode = mode;
+		this._lastMode = _mode;
 		return fragments;
 	}
 
 	public Mode getLastMode() {
-		return this.lastMode;
+		return this._lastMode;
 	}
 
 	LTexture createOvalImage() {
-		if (ovalTexture == null) {
-			Pixmap pixmap = new Pixmap(blockWidth + 1, blockHeight + 1, true);
+		if (_ovalTexture == null) {
+			Pixmap pixmap = new Pixmap(_blockWidth + 1, _blockHeight + 1, true);
 			pixmap.setColor(LColor.white);
-			pixmap.fillOval(0, 0, blockWidth, blockHeight);
-			ovalTexture = pixmap.texture();
+			pixmap.fillOval(0, 0, _blockWidth, _blockHeight);
+			_ovalTexture = pixmap.texture();
 		}
-		return ovalTexture;
+		return _ovalTexture;
 	}
 
 	protected Fragment[][] createTatteredFrags(Image img, RectI bound) {
@@ -258,8 +259,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		int w = bound.width;
 		int h = bound.height;
 
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
@@ -270,11 +271,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			for (int col = 0; col < partWidthSize; col++) {
 
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
-				float x = bound.x + blockWidth * col;
-				float y = bound.y + blockHeight * row;
-				Fragment frag = new TatteredFragment(color, x, y, bound, ovalTexture);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				float x = bound.x + _blockWidth * col;
+				float y = bound.y + _blockHeight * row;
+				Fragment frag = new TatteredFragment(color, x, y, bound, _ovalTexture);
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -286,8 +287,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		RectI bounds = new RectI(bound);
 		int w = bound.width;
 		int h = bound.height;
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
@@ -297,8 +298,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			for (int col = 0; col < partWidthSize; col++) {
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
 				Fragment frag = createExplodeFrag(color, bounds);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -313,32 +314,32 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		final float end = 1.4f;
 		RectI bounds = new RectI(bound);
 
-		ExplodeFragment frag = new ExplodeFragment(color, 0, 0, bounds, nv, nv, end, ovalTexture);
-		frag.color = color;
-		frag.width = nv;
-		frag.height = nv;
+		ExplodeFragment frag = new ExplodeFragment(color, 0, 0, bounds, nv, nv, end, _ovalTexture);
+		frag._color = color;
+		frag._width = nv;
+		frag._height = nv;
 		if (MathUtils.random() < 0.2f) {
-			frag.baseRadius = nv + ((dotSize - nv) * MathUtils.random());
+			frag._baseRadius = nv + ((dotSize - nv) * MathUtils.random());
 		} else {
-			frag.baseRadius = nw + ((nv - nw) * MathUtils.random());
+			frag._baseRadius = nw + ((nv - nw) * MathUtils.random());
 		}
 		float nextFloat = MathUtils.random();
-		frag.top = bounds.height * ((0.18f * MathUtils.random()) + 0.2f);
-		frag.top = nextFloat < 0.2f ? frag.top : frag.top + ((frag.top * 0.2f) * MathUtils.random());
-		frag.bottom = (bounds.height * (MathUtils.random() - 0.5f)) * 1.8f;
-		float f = nextFloat < 0.2f ? frag.bottom : nextFloat < 0.8f ? frag.bottom * 0.6f : frag.bottom * 0.3f;
-		frag.bottom = f;
-		frag.mag = 4f * frag.top / frag.bottom;
-		frag.neg = (-frag.mag) / frag.bottom;
+		frag._top = bounds.height * ((0.18f * MathUtils.random()) + 0.2f);
+		frag._top = nextFloat < 0.2f ? frag._top : frag._top + ((frag._top * 0.2f) * MathUtils.random());
+		frag._bottom = (bounds.height * (MathUtils.random() - 0.5f)) * 1.8f;
+		float f = nextFloat < 0.2f ? frag._bottom : nextFloat < 0.8f ? frag._bottom * 0.6f : frag._bottom * 0.3f;
+		frag._bottom = f;
+		frag._mag = 4f * frag._top / frag._bottom;
+		frag._neg = (-frag._mag) / frag._bottom;
 		f = bounds.centerX() + (ny * (MathUtils.random() - 0.5f));
-		frag.baseCx = f;
-		frag.cx = f;
+		frag._baseCx = f;
+		frag._cx = f;
 		f = bounds.centerY() + (ny * (MathUtils.random() - 0.5f));
-		frag.baseCy = f;
-		frag.cy = f;
-		frag.life = end / 10f * MathUtils.random();
-		frag.overflow = 0.4f * MathUtils.random();
-		frag.alpha = 1f;
+		frag._baseCy = f;
+		frag._cy = f;
+		frag._life = end / 10f * MathUtils.random();
+		frag._overflow = 0.4f * MathUtils.random();
+		frag._alpha = 1f;
 		return frag;
 	}
 
@@ -346,8 +347,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		int w = bound.width;
 		int h = bound.height;
 
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
@@ -357,11 +358,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		for (int row = 0; row < partHeightSize; row++) {
 			for (int col = 0; col < partWidthSize; col++) {
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
-				float x = bound.x + blockWidth * col;
-				float y = bound.y + blockHeight * row;
-				Fragment frag = new FlyLeftDownFragment(color, x, y, bound, ovalTexture);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				float x = bound.x + _blockWidth * col;
+				float y = bound.y + _blockHeight * row;
+				Fragment frag = new FlyLeftDownFragment(color, x, y, bound, _ovalTexture);
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -373,8 +374,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		int w = bound.width;
 		int h = bound.height;
 
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
@@ -384,11 +385,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 			for (int col = 0; col < partWidthSize; col++) {
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
 
-				float x = bound.x + blockWidth * col;
-				float y = bound.y + blockHeight * row;
-				Fragment frag = new FlyRightFragment(color, x, y, bound, ovalTexture);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				float x = bound.x + _blockWidth * col;
+				float y = bound.y + _blockHeight * row;
+				Fragment frag = new FlyRightFragment(color, x, y, bound, _ovalTexture);
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -399,8 +400,8 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	protected Fragment[][] createFlyRightDownFrags(Image img, RectI bound) {
 		int w = bound.width;
 		int h = bound.height;
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
 		Fragment[][] fragments = new Fragment[partHeightSize][partWidthSize];
@@ -408,11 +409,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 		for (int row = 0; row < partHeightSize; row++) {
 			for (int col = 0; col < partWidthSize; col++) {
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
-				float x = bound.x + blockWidth * col;
-				float y = bound.y + blockHeight * row;
-				Fragment frag = new FlayRightDownFragment(color, x, y, bound, ovalTexture);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				float x = bound.x + _blockWidth * col;
+				float y = bound.y + _blockHeight * row;
+				Fragment frag = new FlayRightDownFragment(color, x, y, bound, _ovalTexture);
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -423,19 +424,19 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	protected Fragment[][] createFlyLeftFrags(Image img, RectI bound) {
 		int w = bound.width;
 		int h = bound.height;
-		int partWidthSize = w / blockWidth;
-		int partHeightSize = h / blockHeight;
+		int partWidthSize = w / _blockWidth;
+		int partHeightSize = h / _blockHeight;
 		int imgWidth = img.getWidth() / partWidthSize;
 		int imgHeight = img.getHeight() / partHeightSize;
 		Fragment[][] fragments = new Fragment[partHeightSize][partWidthSize];
 		for (int row = 0; row < partHeightSize; row++) {
 			for (int col = 0; col < partWidthSize; col++) {
 				int color = img.getPixel(col * imgWidth, row * imgHeight);
-				float x = bound.x + blockWidth * col;
-				float y = bound.y + blockHeight * row;
-				Fragment frag = new FlyLeftFragment(color, x, y, bound, ovalTexture);
-				frag.width = blockWidth;
-				frag.height = blockHeight;
+				float x = bound.x + _blockWidth * col;
+				float y = bound.y + _blockHeight * row;
+				Fragment frag = new FlyLeftFragment(color, x, y, bound, _ovalTexture);
+				frag._width = _blockWidth;
+				frag._height = _blockHeight;
 				fragments[row][col] = frag;
 			}
 		}
@@ -443,52 +444,52 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	}
 
 	public int getBlockWidth() {
-		return blockWidth;
+		return _blockWidth;
 	}
 
 	public int getBlockHeight() {
-		return blockHeight;
+		return _blockHeight;
 	}
 
 	@Override
 	public boolean isCompleted() {
-		return timer.getProgress() >= 0.99f;
+		return _timer.getProgress() >= 0.99f;
 	}
 
 	@Override
 	public ExplosionEffect setStop(boolean c) {
 		if (c) {
-			timer.add(LSystem.MINUTE);
+			_timer.add(LSystem.MINUTE);
 		} else {
-			timer.reset();
+			_timer.reset();
 		}
 		return this;
 	}
 
 	public Mode getMode() {
-		return mode;
+		return _mode;
 	}
 
 	public ExplosionEffect setMode(Mode m) {
-		this.mode = m;
+		this._mode = m;
 		return this;
 	}
 
 	public EasingMode getEasingMode() {
-		return easingMode;
+		return _easingMode;
 	}
 
 	public ExplosionEffect setEasingMode(EasingMode easingMode) {
-		this.easingMode = easingMode;
+		this._easingMode = easingMode;
 		return this;
 	}
 
 	public boolean isAutoRemoved() {
-		return autoRemoved;
+		return _autoRemoved;
 	}
 
 	public ExplosionEffect setAutoRemoved(boolean autoRemoved) {
-		this.autoRemoved = autoRemoved;
+		this._autoRemoved = autoRemoved;
 		return this;
 	}
 
@@ -496,11 +497,11 @@ public class ExplosionEffect extends Entity implements BaseEffect {
 	protected void _onDestroy() {
 		super._onDestroy();
 		this.stop();
-		this.fragments = null;
-		this.packed = false;
-		if (ovalTexture != null) {
-			ovalTexture.close();
-			ovalTexture = null;
+		this._fragments = null;
+		this._packed = false;
+		if (_ovalTexture != null) {
+			_ovalTexture.close();
+			_ovalTexture = null;
 		}
 	}
 }

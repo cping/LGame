@@ -64,7 +64,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 		@Override
 		public void run(LTimerContext time) {
 			rippleOther = new RippleKernel(lineWidth, dstX, dstY, existTime);
-			rippleEffect.ripples.add(rippleOther);
+			rippleEffect._ripples.add(rippleOther);
 			kill();
 		}
 	}
@@ -77,19 +77,19 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 		OVAL, RECT, TRIANGLE, RHOMBUS, DASHOVAL
 	}
 
-	private ActionKey touchLocked = new ActionKey();
+	private ActionKey _touchLocked = new ActionKey();
 
-	private RippleProcess lastProcess;
+	private RippleProcess _lastProcess;
 
-	private TArray<RippleKernel> ripples;
+	private TArray<RippleKernel> _ripples;
 
-	private TArray<RippleProcess> processArray;
+	private TArray<RippleProcess> _processArray;
 
-	private Model model;
+	private Model _model;
 
-	private int existTime;
+	private int _existTime;
 
-	private int lineWidth;
+	private int _lineWidth;
 
 	public RippleEffect() {
 		this(Model.OVAL, LColor.blue);
@@ -112,11 +112,11 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	}
 
 	public RippleEffect(Model m, LColor c, int width, int time) {
-		this.model = m;
-		this.ripples = new TArray<RippleKernel>();
-		this.processArray = new TArray<RippleProcess>();
-		this.existTime = time;
-		this.lineWidth = width;
+		this._model = m;
+		this._ripples = new TArray<RippleKernel>();
+		this._processArray = new TArray<RippleProcess>();
+		this._existTime = time;
+		this._lineWidth = width;
 		this.setDelay(60);
 		this.setColor(c);
 		setRepaint(true);
@@ -124,13 +124,13 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 
 	public boolean addRipplePoint(final float x, final float y) {
 
-		this.ripples.add(new RippleKernel(lineWidth, x, y, existTime));
+		this._ripples.add(new RippleKernel(_lineWidth, x, y, _existTime));
 
-		this.lastProcess = new RippleProcess(lineWidth, x, y, existTime, this);
-		this.lastProcess.setDelay(LSystem.SECOND / 5);
-		this.processArray.add(lastProcess);
+		this._lastProcess = new RippleProcess(_lineWidth, x, y, _existTime, this);
+		this._lastProcess.setDelay(LSystem.SECOND / 5);
+		this._processArray.add(_lastProcess);
 
-		RealtimeProcessManager.get().addProcess(lastProcess);
+		RealtimeProcessManager.get().addProcess(_lastProcess);
 
 		return true;
 	}
@@ -142,9 +142,9 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 		}
 		final int tmp = g.color();
 		g.setColor(_baseColor);
-		for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
+		for (Iterator<RippleKernel> it = _ripples.iterator(); it.hasNext();) {
 			RippleKernel ripple = it.next();
-			ripple.draw(g, model, drawX(sx), drawY(sy));
+			ripple.draw(g, _model, drawX(sx), drawY(sy));
 		}
 		g.setColor(tmp);
 	}
@@ -155,7 +155,7 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 			return;
 		}
 		if (_timer.action(elapsedTime)) {
-			for (Iterator<RippleKernel> it = ripples.iterator(); it.hasNext();) {
+			for (Iterator<RippleKernel> it = _ripples.iterator(); it.hasNext();) {
 				RippleKernel ripple = it.next();
 				if (ripple.isExpired()) {
 					it.remove();
@@ -165,24 +165,24 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	}
 
 	public RippleEffect setLineWidth(int w) {
-		this.lineWidth = w;
+		this._lineWidth = w;
 		return this;
 	}
 
 	public int getLineWidth() {
-		return lineWidth;
+		return _lineWidth;
 	}
 
 	public boolean checkCompleted() {
-		return _completed = (ripples.size == 0);
+		return _completed = (_ripples.size == 0);
 	}
 
 	public int getExistTime() {
-		return existTime;
+		return _existTime;
 	}
 
 	public RippleEffect setExistTime(int existTime) {
-		this.existTime = existTime;
+		this._existTime = existTime;
 		return this;
 	}
 
@@ -200,16 +200,16 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	@Override
 	public void onAreaTouched(Event e, float touchX, float touchY) {
 		if (e == Event.DOWN) {
-			if (!touchLocked.isPressed() || (lastProcess != null && lastProcess.isDead())) {
-				if (lastProcess != null) {
-					lastProcess.kill();
-					ripples.remove(lastProcess.rippleOther);
+			if (!_touchLocked.isPressed() || (_lastProcess != null && _lastProcess.isDead())) {
+				if (_lastProcess != null) {
+					_lastProcess.kill();
+					_ripples.remove(_lastProcess.rippleOther);
 				}
 				addRipplePoint(touchX, touchY);
-				touchLocked.press();
+				_touchLocked.press();
 			}
 		} else if (e == Event.UP) {
-			touchLocked.release();
+			_touchLocked.release();
 		}
 	}
 
@@ -222,17 +222,17 @@ public class RippleEffect extends BaseAbstractEffect implements LTouchArea {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		if (processArray != null) {
-			for (RippleProcess process : processArray) {
+		if (_processArray != null) {
+			for (RippleProcess process : _processArray) {
 				if (process != null) {
 					process.close();
 					process = null;
 				}
 			}
-			processArray.clear();
+			_processArray.clear();
 		}
-		touchLocked.release();
-		ripples.clear();
+		_touchLocked.release();
+		_ripples.clear();
 	}
 
 }

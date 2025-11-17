@@ -35,17 +35,17 @@ import loon.opengl.TextureUtils;
  */
 public class SplitEffect extends BaseAbstractEffect {
 
-	private Vector2f movePosOne, movePosTwo;
+	private Vector2f _movePosOne, _movePosTwo;
 
-	private int halfWidth, halfHeight, multiples, direction;
+	private int _halfWidth, _halfHeight, _multiples, _direction;
 
-	private boolean special;
+	private boolean _special;
 
 	private boolean _createTexture;
 
 	private LColor _splitColor;
 
-	private RectBox limit;
+	private RectBox _limit;
 
 	public SplitEffect(String fileName, int d) {
 		this(LSystem.loadTexture(fileName), d);
@@ -58,8 +58,8 @@ public class SplitEffect extends BaseAbstractEffect {
 	public SplitEffect(LTexture t, RectBox limit, int d) {
 		this.init(t.getWidth(), t.getHeight());
 		this._image = t;
-		this.direction = d;
-		this.limit = limit;
+		this._direction = d;
+		this._limit = limit;
 	}
 
 	public SplitEffect(LColor color, float w, float h, int d) {
@@ -70,8 +70,8 @@ public class SplitEffect extends BaseAbstractEffect {
 		this._image = null;
 		this._splitColor = color;
 		this._createTexture = true;
-		this.direction = d;
-		this.limit = limit;
+		this._direction = d;
+		this._limit = limit;
 		this.init(w, h);
 	}
 
@@ -79,27 +79,27 @@ public class SplitEffect extends BaseAbstractEffect {
 		this.setRepaint(true);
 		this.setSize(w, h);
 		this.setDelay(10);
-		this.halfWidth = (int) (_width / 2f);
-		this.halfHeight = (int) (_height / 2f);
-		this.multiples = LSystem.toIScaleFPS(2);
-		this.movePosOne = new Vector2f();
-		this.movePosTwo = new Vector2f();
-		switch (direction) {
+		this._halfWidth = (int) (_width / 2f);
+		this._halfHeight = (int) (_height / 2f);
+		this._multiples = LSystem.toIScaleFPS(2);
+		this._movePosOne = new Vector2f();
+		this._movePosTwo = new Vector2f();
+		switch (_direction) {
 		case Config.UP:
 		case Config.DOWN:
-			special = true;
+			_special = true;
 		case Config.TLEFT:
 		case Config.TRIGHT:
-			movePosOne.set(0, 0);
-			movePosTwo.set(halfWidth, 0);
+			_movePosOne.set(0, 0);
+			_movePosTwo.set(_halfWidth, 0);
 			break;
 		case Config.LEFT:
 		case Config.RIGHT:
-			special = true;
+			_special = true;
 		case Config.TUP:
 		case Config.TDOWN:
-			movePosOne.set(0, 0);
-			movePosTwo.set(0, halfHeight);
+			_movePosOne.set(0, 0);
+			_movePosTwo.set(0, _halfHeight);
 			break;
 		}
 	}
@@ -114,30 +114,30 @@ public class SplitEffect extends BaseAbstractEffect {
 		}
 		if (!_completed) {
 			if (_timer.action(elapsedTime)) {
-				switch (direction) {
+				switch (_direction) {
 				case Config.LEFT:
 				case Config.RIGHT:
 				case Config.TLEFT:
 				case Config.TRIGHT:
-					movePosOne.move_multiples(Field2D.TLEFT, multiples);
-					movePosTwo.move_multiples(Field2D.TRIGHT, multiples);
+					_movePosOne.move_multiples(Field2D.TLEFT, _multiples);
+					_movePosTwo.move_multiples(Field2D.TRIGHT, _multiples);
 					break;
 				case Config.UP:
 				case Config.DOWN:
 				case Config.TUP:
 				case Config.TDOWN:
-					movePosOne.move_multiples(Field2D.TUP, multiples);
-					movePosTwo.move_multiples(Field2D.TDOWN, multiples);
+					_movePosOne.move_multiples(Field2D.TUP, _multiples);
+					_movePosTwo.move_multiples(Field2D.TDOWN, _multiples);
 					break;
 				}
 
-				if (special) {
-					if (!limit.intersects(movePosOne.x, movePosOne.y, halfHeight, halfWidth)
-							&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfHeight, halfWidth)) {
+				if (_special) {
+					if (!_limit.intersects(_movePosOne.x, _movePosOne.y, _halfHeight, _halfWidth)
+							&& !_limit.intersects(_movePosTwo.x, _movePosTwo.y, _halfHeight, _halfWidth)) {
 						this._completed = true;
 					}
-				} else if (!limit.intersects(movePosOne.x, movePosOne.y, halfWidth, halfHeight)
-						&& !limit.intersects(movePosTwo.x, movePosTwo.y, halfWidth, halfHeight)) {
+				} else if (!_limit.intersects(_movePosOne.x, _movePosOne.y, _halfWidth, _halfHeight)
+						&& !_limit.intersects(_movePosTwo.x, _movePosTwo.y, _halfWidth, _halfHeight)) {
 					this._completed = true;
 				}
 			}
@@ -157,26 +157,26 @@ public class SplitEffect extends BaseAbstractEffect {
 			return;
 		}
 		if (!_completed) {
-			final float x1 = movePosOne.x + drawX(offsetX);
-			final float y1 = movePosOne.y + drawY(offsetY);
+			final float x1 = _movePosOne.x + drawX(offsetX);
+			final float y1 = _movePosOne.y + drawY(offsetY);
 
-			final float x2 = movePosTwo.x + drawX(offsetX);
-			final float y2 = movePosTwo.y + drawY(offsetY);
+			final float x2 = _movePosTwo.x + drawX(offsetX);
+			final float y2 = _movePosTwo.y + drawY(offsetY);
 
-			switch (direction) {
+			switch (_direction) {
 			case Config.LEFT:
 			case Config.RIGHT:
 			case Config.TUP:
 			case Config.TDOWN:
-				g.draw(_image, x1, y1, _width, halfHeight, 0, 0, _width, halfHeight);
-				g.draw(_image, x2, y2, _width, halfHeight, 0, halfHeight, _width, _height - halfHeight);
+				g.draw(_image, x1, y1, _width, _halfHeight, 0, 0, _width, _halfHeight);
+				g.draw(_image, x2, y2, _width, _halfHeight, 0, _halfHeight, _width, _height - _halfHeight);
 				break;
 			case Config.UP:
 			case Config.DOWN:
 			case Config.TLEFT:
 			case Config.TRIGHT:
-				g.draw(_image, x1, y1, halfWidth, _height, 0, 0, halfWidth, _height);
-				g.draw(_image, x2, y2, halfWidth, _height, halfWidth, 0, _width - halfWidth, _height);
+				g.draw(_image, x1, y1, _halfWidth, _height, 0, 0, _halfWidth, _height);
+				g.draw(_image, x2, y2, _halfWidth, _height, _halfWidth, 0, _width - _halfWidth, _height);
 				break;
 
 			}
@@ -184,11 +184,11 @@ public class SplitEffect extends BaseAbstractEffect {
 	}
 
 	public int getMultiples() {
-		return multiples;
+		return _multiples;
 	}
 
 	public SplitEffect setMultiples(int m) {
-		this.multiples = LSystem.toIScaleFPS(m);
+		this._multiples = LSystem.toIScaleFPS(m);
 		return this;
 	}
 

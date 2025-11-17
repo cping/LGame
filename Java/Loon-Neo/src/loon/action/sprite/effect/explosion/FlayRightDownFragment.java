@@ -33,20 +33,20 @@ public class FlayRightDownFragment extends Fragment {
 	@Override
 	protected void caculate(float factor) {
 		if (factor <= 0.5) {
-			if (oy < parBound.centerX()) {
-				cy = cy + factor * MathUtils.nextInt(parBound.height / 2);
-				if (ox > parBound.centerX()) {
-					cx = cx - factor * MathUtils.nextInt(parBound.width / 2) * (MathUtils.random());
+			if (_oy < _parBound.centerX()) {
+				_cy = _cy + factor * MathUtils.nextInt(_parBound.height / 2);
+				if (_ox > _parBound.centerX()) {
+					_cx = _cx - factor * MathUtils.nextInt(_parBound.width / 2) * (MathUtils.random());
 				} else {
-					cx = cx + factor * MathUtils.nextInt(parBound.width / 2) * (MathUtils.random());
+					_cx = _cx + factor * MathUtils.nextInt(_parBound.width / 2) * (MathUtils.random());
 				}
 			}
 		} else {
-			cy = cy + factor * MathUtils.nextInt(parBound.height / 2);
-			if (ox > parBound.centerX()) {
-				cx = cx - factor * MathUtils.nextInt(parBound.width / 2) * (MathUtils.random());
+			_cy = _cy + factor * MathUtils.nextInt(_parBound.height / 2);
+			if (_ox > _parBound.centerX()) {
+				_cx = _cx - factor * MathUtils.nextInt(_parBound.width / 2) * (MathUtils.random());
 			} else {
-				cx = cx + factor * MathUtils.nextInt(parBound.width / 2) * (MathUtils.random());
+				_cx = _cx + factor * MathUtils.nextInt(_parBound.width / 2) * (MathUtils.random());
 			}
 		}
 		update(factor);

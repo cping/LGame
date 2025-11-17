@@ -29,17 +29,17 @@ import loon.utils.MathUtils;
  */
 public class TriangleEffect extends BaseAbstractEffect {
 
-	private float[][] delta;
+	private float[][] _delta;
 
-	private float[] currentPos;
+	private float[] _currentPos;
 
-	private float[] movePos;
+	private float[] _movePos;
 
-	private float[] avg;
+	private float[] _avg;
 
-	private float vector;
+	private float _vector;
 
-	private float viewSpeed;
+	private float _viewSpeed;
 
 	public TriangleEffect(float[][] res, float x, float y, float speed) {
 		this(LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight(), res, null, x, y, speed);
@@ -51,11 +51,11 @@ public class TriangleEffect extends BaseAbstractEffect {
 
 	public TriangleEffect(float w, float h, float[][] res, float[] ads, float x, float y, float speed) {
 		this.setDelta(res);
-		this.viewSpeed = speed;
-		this.currentPos = new float[2];
-		this.movePos = new float[2];
-		this.movePos[0] = x;
-		this.movePos[1] = y;
+		this._viewSpeed = speed;
+		this._currentPos = new float[2];
+		this._movePos = new float[2];
+		this._movePos[0] = x;
+		this._movePos[1] = y;
 		if (ads == null) {
 			this.resetAverage();
 		} else {
@@ -67,35 +67,35 @@ public class TriangleEffect extends BaseAbstractEffect {
 	}
 
 	public void setDelta(float[][] res) {
-		this.delta = res;
+		this._delta = res;
 	}
 
 	public float[][] getDelta() {
-		return delta;
+		return _delta;
 	}
 
 	public void setAverage(float[] res) {
-		this.avg = res;
+		this._avg = res;
 	}
 
 	public void resetAverage() {
-		this.avg = new float[2];
-		for (int j = 0; j < delta.length; j++) {
-			for (int i = 0; i < avg.length; i++) {
-				avg[i] += delta[j][i];
+		this._avg = new float[2];
+		for (int j = 0; j < _delta.length; j++) {
+			for (int i = 0; i < _avg.length; i++) {
+				_avg[i] += _delta[j][i];
 			}
 		}
-		for (int i = 0; i < avg.length; i++) {
-			avg[i] /= 3f;
+		for (int i = 0; i < _avg.length; i++) {
+			_avg[i] /= 3f;
 		}
 	}
 
 	public void setPosX(float x) {
-		this.currentPos[0] = x;
+		this._currentPos[0] = x;
 	}
 
 	public void setPosY(float y) {
-		this.currentPos[1] = y;
+		this._currentPos[1] = y;
 	}
 
 	public void setPos(float x, float y) {
@@ -104,27 +104,27 @@ public class TriangleEffect extends BaseAbstractEffect {
 	}
 
 	public float getPosX() {
-		return currentPos[0];
+		return _currentPos[0];
 	}
 
 	public float getPosY() {
-		return currentPos[1];
+		return _currentPos[1];
 	}
 
 	public void setVector(float v) {
-		this.vector = v;
+		this._vector = v;
 	}
 
 	public void setVectorSpeed(float v) {
-		this.viewSpeed = v;
+		this._viewSpeed = v;
 	}
 
 	public void setMoveX(float x) {
-		this.movePos[0] = x;
+		this._movePos[0] = x;
 	}
 
 	public void setMoveY(float y) {
-		this.movePos[1] = y;
+		this._movePos[1] = y;
 	}
 
 	public void setMove(int x, int y) {
@@ -133,23 +133,23 @@ public class TriangleEffect extends BaseAbstractEffect {
 	}
 
 	public float next() {
-		currentPos[0] += movePos[0];
-		currentPos[1] += movePos[1];
-		vector += viewSpeed;
-		vector %= 360f;
-		if (vector < 0f) {
-			vector += 360f;
+		_currentPos[0] += _movePos[0];
+		_currentPos[1] += _movePos[1];
+		_vector += _viewSpeed;
+		_vector %= 360f;
+		if (_vector < 0f) {
+			_vector += 360f;
 		}
-		return vector;
+		return _vector;
 	}
 
 	public float[][] drawing(float x, float y) {
 		float[][] location = new float[3][2];
-		for (int i = 0; i < delta.length; i++) {
-			float d = getLine(delta[i][0] - avg[0], delta[i][1] - avg[1]);
-			float d1 = getDegrees(delta[i][0] - avg[0], delta[i][1] - avg[1]);
-			float d2 = MathUtils.cos(MathUtils.toRadians(vector + d1)) * d + avg[0] + currentPos[0] + x;
-			float d3 = MathUtils.sin(MathUtils.toRadians(vector + d1)) * d + avg[1] + currentPos[1] + y;
+		for (int i = 0; i < _delta.length; i++) {
+			float d = getLine(_delta[i][0] - _avg[0], _delta[i][1] - _avg[1]);
+			float d1 = getDegrees(_delta[i][0] - _avg[0], _delta[i][1] - _avg[1]);
+			float d2 = MathUtils.cos(MathUtils.toRadians(_vector + d1)) * d + _avg[0] + _currentPos[0] + x;
+			float d3 = MathUtils.sin(MathUtils.toRadians(_vector + d1)) * d + _avg[1] + _currentPos[1] + y;
 			location[i][0] = (d2 + 0.5f);
 			location[i][1] = (d3 + 0.5f);
 		}

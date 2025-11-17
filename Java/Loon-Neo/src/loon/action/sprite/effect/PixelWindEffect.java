@@ -47,10 +47,10 @@ public class PixelWindEffect extends PixelBaseEffect {
 	public PixelWindEffect(LColor color, int s, int r, int time, int limit) {
 		super(color, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		this._randSeed = r;
-		this.limit = limit;
+		this._limit = limit;
 		this._sd = new TriangleEffect[s];
 		this._colors = new LColor[s];
-		this.triangleEffects.add(_sd);
+		this._triangleEffects.add(_sd);
 		this.setDelay(0);
 		setEffectDelay(0);
 	}
@@ -60,7 +60,7 @@ public class PixelWindEffect extends PixelBaseEffect {
 		if (super._completed) {
 			return;
 		}
-		if (super.frame > limit) {
+		if (super._frame > _limit) {
 			super._completed = true;
 		}
 		int tmp = g.color();

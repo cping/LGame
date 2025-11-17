@@ -34,15 +34,15 @@ import loon.utils.TArray;
  */
 public abstract class PixelBaseEffect extends BaseAbstractEffect {
 
-	protected TArray<TriangleEffect[]> triangleEffects = new TArray<TriangleEffect[]>();
+	protected TArray<TriangleEffect[]> _triangleEffects = new TArray<TriangleEffect[]>();
 
-	protected float[] startLocation;
+	protected float[] _startLocation;
 
-	protected float[] targetLocation;
+	protected float[] _targetLocation;
 
-	protected int frame;
+	protected int _frame;
 
-	protected int limit;
+	protected int _limit;
 
 	private int _counter;
 
@@ -58,8 +58,8 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 		this.setSize(x2, y2);
 		this.setColor(c);
 		this.setDelay(delay);
-		this.limit = limit;
-		this.frame = 0;
+		this._limit = limit;
+		this._frame = 0;
 		this._completed = false;
 		this._counter = 1;
 		this.setRepaint(true);
@@ -67,7 +67,7 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	}
 
 	public PixelBaseEffect setEffectDelay(long timer) {
-		for (TriangleEffect[] ts : triangleEffects) {
+		for (TriangleEffect[] ts : _triangleEffects) {
 			if (ts != null) {
 				int size = ts.length;
 				for (int i = 0; i < size; i++) {
@@ -83,17 +83,17 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	@Override
 	public PixelBaseEffect reset() {
 		super.reset();
-		this.startLocation = new float[2];
-		this.targetLocation = new float[2];
-		this.frame = 0;
+		this._startLocation = new float[2];
+		this._targetLocation = new float[2];
+		this._frame = 0;
 		return this;
 	}
 
 	public PixelBaseEffect setEffectPosition(float x1, float y1, float x2, float y2) {
-		this.startLocation[0] = x1;
-		this.startLocation[1] = y1;
-		this.targetLocation[0] = x2;
-		this.targetLocation[1] = y2;
+		this._startLocation[0] = x1;
+		this._startLocation[1] = y1;
+		this._targetLocation[0] = x2;
+		this._targetLocation[1] = y2;
 		return this;
 	}
 
@@ -111,8 +111,8 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	}
 
 	public float next(int c) {
-		this.frame += c;
-		for (TriangleEffect[] ts : triangleEffects) {
+		this._frame += c;
+		for (TriangleEffect[] ts : _triangleEffects) {
 			if (ts != null) {
 				int size = ts.length;
 				for (int i = 0; i < size; i++) {
@@ -156,11 +156,11 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	}
 
 	public int getLimit() {
-		return limit;
+		return _limit;
 	}
 
 	public PixelBaseEffect setLimit(int limit) {
-		this.limit = limit;
+		this._limit = limit;
 		return this;
 	}
 
@@ -173,9 +173,9 @@ public abstract class PixelBaseEffect extends BaseAbstractEffect {
 	@Override
 	protected void _onDestroy() {
 		super._onDestroy();
-		triangleEffects.clear();
-		startLocation = null;
-		targetLocation = null;
+		_triangleEffects.clear();
+		_startLocation = null;
+		_targetLocation = null;
 	}
 
 }

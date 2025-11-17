@@ -29,11 +29,11 @@ import loon.opengl.GLEx;
  */
 public class PixelDarkOutEffect extends PixelBaseEffect {
 
-	private float viewX;
+	private float _viewX;
 
-	private float viewY;
+	private float _viewY;
 
-	private TriangleEffect[] de;
+	private TriangleEffect[] _de;
 
 	public PixelDarkOutEffect(LColor color) {
 		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize.getHeight() / 2);
@@ -41,17 +41,17 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 
 	public PixelDarkOutEffect(LColor color, float x, float y, float w, float h) {
 		super(color, x, y, w, h);
-		this.viewX = x;
-		this.viewY = y;
+		this._viewX = x;
+		this._viewY = y;
 		float[][] res1 = { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } };
 		float[][] res2 = { { 24f, 15f }, { -24f, 15f }, { 0.0f, -30f } };
-		this.de = new TriangleEffect[4];
-		this.de[0] = new TriangleEffect(w, h, res1, 0, 0, -9f);
-		this.de[1] = new TriangleEffect(w, h, res2, 0, 0, -9f);
-		this.de[2] = new TriangleEffect(w, h, res1, 0, 0, -9f);
-		this.de[3] = new TriangleEffect(w, h, res2, 0, 0, -9f);
-		this.limit = 90;
-		this.triangleEffects.add(de);
+		this._de = new TriangleEffect[4];
+		this._de[0] = new TriangleEffect(w, h, res1, 0, 0, -9f);
+		this._de[1] = new TriangleEffect(w, h, res2, 0, 0, -9f);
+		this._de[2] = new TriangleEffect(w, h, res1, 0, 0, -9f);
+		this._de[3] = new TriangleEffect(w, h, res2, 0, 0, -9f);
+		this._limit = 90;
+		this._triangleEffects.add(_de);
 		this.setDelay(0);
 		setEffectDelay(0);
 	}
@@ -61,20 +61,20 @@ public class PixelDarkOutEffect extends PixelBaseEffect {
 		if (super._completed) {
 			return;
 		}
-		float x = viewX - tx;
-		float y = viewY - ty;
+		float x = _viewX - tx;
+		float y = _viewY - ty;
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		if (super.frame == 40) {
-			de[0].setMoveX(5f);
-			de[1].setMoveX(-5f);
-			de[2].setMoveY(5f);
-			de[3].setMoveY(-5f);
+		if (super._frame == 40) {
+			_de[0].setMoveX(5f);
+			_de[1].setMoveX(-5f);
+			_de[2].setMoveY(5f);
+			_de[3].setMoveY(-5f);
 		}
-		for (TriangleEffect element : de) {
+		for (TriangleEffect element : _de) {
 			element.drawPaint(g, x, y);
 		}
-		if (super.frame >= limit) {
+		if (super._frame >= _limit) {
 			this._completed = true;
 		}
 		g.setColor(tmp);

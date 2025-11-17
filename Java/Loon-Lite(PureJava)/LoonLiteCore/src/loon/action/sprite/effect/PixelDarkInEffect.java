@@ -29,9 +29,9 @@ import loon.opengl.GLEx;
  */
 public class PixelDarkInEffect extends PixelBaseEffect {
 
-	private float viewX, viewY;
+	private float _viewX, _viewY;
 
-	private TriangleEffect[] ts;
+	private TriangleEffect[] _ts;
 
 	public PixelDarkInEffect(LColor color) {
 		this(color, 0, 0, LSystem.viewSize.getWidth() / 2, LSystem.viewSize.getHeight() / 2);
@@ -39,20 +39,20 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 
 	public PixelDarkInEffect(LColor color, float x, float y, float w, float h) {
 		super(color, x, y, w, h);
-		viewX = x;
-		viewY = y;
+		_viewX = x;
+		_viewY = y;
 		float[][][] res = { { { 0.0f, 30f }, { 24f, -15f }, { -24f, -15f } },
 				{ { -120f, 30f }, { -96f, -15f }, { -144f, -15f } }, { { 120f, 30f }, { 144f, -15f }, { 96f, -15f } },
 				{ { 0.0f, -90f }, { 24f, -135f }, { -24f, -135f } },
 				{ { 0.0f, 150f }, { 24f, 105f }, { -24f, 105f } } };
-		ts = new TriangleEffect[5];
-		ts[0] = new TriangleEffect(w, h, res[0], 0.0f, 0.0f, 3f);
-		ts[1] = new TriangleEffect(w, h, res[1], 3f, 0.0f, 9f);
-		ts[2] = new TriangleEffect(w, h, res[2], -3f, 0.0f, 9f);
-		ts[3] = new TriangleEffect(w, h, res[3], +0.0f, 3f, 9f);
-		ts[4] = new TriangleEffect(w, h, res[4], +0.0f, -3f, 9f);
-		this.limit = 160;
-		triangleEffects.add(ts);
+		_ts = new TriangleEffect[5];
+		_ts[0] = new TriangleEffect(w, h, res[0], 0.0f, 0.0f, 3f);
+		_ts[1] = new TriangleEffect(w, h, res[1], 3f, 0.0f, 9f);
+		_ts[2] = new TriangleEffect(w, h, res[2], -3f, 0.0f, 9f);
+		_ts[3] = new TriangleEffect(w, h, res[3], +0.0f, 3f, 9f);
+		_ts[4] = new TriangleEffect(w, h, res[4], +0.0f, -3f, 9f);
+		this._limit = 160;
+		_triangleEffects.add(_ts);
 		setDelay(0);
 		setEffectDelay(0);
 	}
@@ -62,20 +62,20 @@ public class PixelDarkInEffect extends PixelBaseEffect {
 		if (super._completed) {
 			return;
 		}
-		float x = viewX - tx;
-		float y = viewY - ty;
+		float x = _viewX - tx;
+		float y = _viewY - ty;
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		if (super.frame < 40) {
-			int size = ts.length;
+		if (super._frame < 40) {
+			int size = _ts.length;
 			for (int i = 0; i < size; i++) {
-				ts[i].drawPaint(g, x, y);
+				_ts[i].drawPaint(g, x, y);
 			}
 		} else {
-			ts[0].drawPaint(g, x, y);
+			_ts[0].drawPaint(g, x, y);
 		}
 		g.setColor(tmp);
-		if (frame >= limit) {
+		if (_frame >= _limit) {
 			super._completed = true;
 		}
 	}

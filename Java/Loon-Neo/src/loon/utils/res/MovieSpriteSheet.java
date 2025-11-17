@@ -45,7 +45,7 @@ public class MovieSpriteSheet implements LRelease {
 
 	protected MovieSpriteSheet(Json.Object jsonObj, LTexture sheet) {
 		TextureAtlas ta = new TextureAtlas(sheet, jsonObj);
-		init(ta, ta.names);
+		init(ta, ta._names);
 	}
 
 	public TextureAtlas textureAtlas() {
@@ -86,7 +86,7 @@ public class MovieSpriteSheet implements LRelease {
 		LTexture[] texList = new LTexture[size];
 		for (int i = 0; i < size; i++) {
 			TextureData data = _datas[i];
-			texList[i] = tex.copy(data.x, data.y, data.w, data.h);
+			texList[i] = tex.copy(data._x, data._y, data._w, data._h);
 		}
 		return texList;
 	}
@@ -99,7 +99,7 @@ public class MovieSpriteSheet implements LRelease {
 		TArray<TextureData> list = new TArray<TextureData>();
 		for (int i = 0; i < _datas.length; i++) {
 			TextureData td = _datas[i];
-			if (td.name.startsWith(prefix)) {
+			if (td._name.startsWith(prefix)) {
 				list.add(td);
 			}
 		}
@@ -107,8 +107,8 @@ public class MovieSpriteSheet implements LRelease {
 		String[] frameNames = new String[list.size];
 		for (int i = 0; i < frameNames.length; i++) {
 			TextureData td = list.get(i);
-			frameNames[i] = td.name;
-			frames.put(td.name, td);
+			frameNames[i] = td._name;
+			frames.put(td._name, td);
 		}
 		TextureAtlas ta = new TextureAtlas(_ta.img(), frames);
 		MovieSpriteSheet ss = new MovieSpriteSheet(ta, frameNames);

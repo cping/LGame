@@ -79,19 +79,19 @@ public class TextEffect extends BaseAbstractEffect {
 		}
 	}
 
-	private final TArray<MessageBlock> texts;
+	private final TArray<MessageBlock> _texts;
 
-	private TArray<MessageBlock> tempTexts;
+	private TArray<MessageBlock> _tempTexts;
 
-	private boolean packed;
+	private boolean _packed;
 
 	public TextEffect() {
 		this(0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 	}
 
 	public TextEffect(float x, float y, float width, float height) {
-		this.texts = new TArray<MessageBlock>();
-		this.tempTexts = new TArray<MessageBlock>();
+		this._texts = new TArray<MessageBlock>();
+		this._tempTexts = new TArray<MessageBlock>();
 		this.setLocation(x, y);
 		this.setSize(width, height);
 		this.setRepaint(true);
@@ -165,27 +165,27 @@ public class TextEffect extends BaseAbstractEffect {
 		text.scale = scale;
 		text.velocityX = vx;
 		text.velocityY = vy;
-		texts.add(text);
-		tempTexts.add(text.cpy());
-		packed = false;
+		_texts.add(text);
+		_tempTexts.add(text.cpy());
+		_packed = false;
 		return this;
 	}
 
 	@Override
 	public void clear() {
-		texts.clear();
-		tempTexts.clear();
+		_texts.clear();
+		_tempTexts.clear();
 		super.clear();
 	}
 
 	@Override
 	public TextEffect reset() {
 		super.reset();
-		texts.clear();
-		for (int i = 0; i < tempTexts.size; i++) {
-			MessageBlock block = tempTexts.get(i);
+		_texts.clear();
+		for (int i = 0; i < _tempTexts.size; i++) {
+			MessageBlock block = _tempTexts.get(i);
 			if (block != null) {
-				texts.add(block.cpy());
+				_texts.add(block.cpy());
 			}
 		}
 		return this;
@@ -196,12 +196,12 @@ public class TextEffect extends BaseAbstractEffect {
 		if (checkAutoRemove()) {
 			return;
 		}
-		final int length = texts.size;
-		if (!packed && length > 0) {
+		final int length = _texts.size;
+		if (!_packed && length > 0) {
 			LFont font = null;
 			TArray<CharSequence> messages = new TArray<CharSequence>();
 			for (int i = length - 1; i > -1; --i) {
-				MessageBlock text = texts.get(i);
+				MessageBlock text = _texts.get(i);
 				if (text != null) {
 					if (text.font != null && text.font instanceof LFont) {
 						LFont tmp = (LFont) text.font;
@@ -214,29 +214,29 @@ public class TextEffect extends BaseAbstractEffect {
 					}
 				}
 			}
-			packed = true;
+			_packed = true;
 		}
 		if (_timer.action(elapsedTime)) {
 			float delta = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
 			for (int i = length - 1; i > -1; --i) {
-				MessageBlock text = texts.get(i);
+				MessageBlock text = _texts.get(i);
 				if (text != null) {
 					text.stateTime += delta;
 					text.x += text.velocityX;
 					text.y += text.velocityY;
 					if (text.stateTime > text.lifeTime) {
-						texts.removeValue(text, true);
+						_texts.removeValue(text, true);
 					} else if (!getCollisionBox().intersects(text.x, text.y, text.width, text.height)) {
-						texts.removeValue(text, true);
+						_texts.removeValue(text, true);
 					}
 				}
 			}
 		}
-		_completed = texts.isEmpty();
+		_completed = _texts.isEmpty();
 	}
 
 	public int countText() {
-		return texts.size;
+		return _texts.size;
 	}
 
 	@Override
@@ -244,8 +244,8 @@ public class TextEffect extends BaseAbstractEffect {
 		if (completedAfterBlackScreen(g, offsetX, offsetY)) {
 			return;
 		}
-		for (int i = texts.size - 1; i > -1; --i) {
-			MessageBlock text = texts.get(i);
+		for (int i = _texts.size - 1; i > -1; --i) {
+			MessageBlock text = _texts.get(i);
 			if (text != null) {
 				IFont tmp = g.getFont();
 				g.setFont(text.font);
@@ -270,7 +270,7 @@ public class TextEffect extends BaseAbstractEffect {
 	protected void _onDestroy() {
 		super._onDestroy();
 		clear();
-		packed = false;
+		_packed = false;
 	}
 
 }

@@ -32,8 +32,8 @@ public class FlyRightFragment extends Fragment {
 
 	@Override
 	protected void caculate(float factor) {
-		cx = cx + factor * MathUtils.nextInt(parBound.width) * MathUtils.random();
-		cy = cy - factor * MathUtils.nextInt(parBound.width) * MathUtils.random();
+		_cx = _cx + factor * MathUtils.nextInt(_parBound.width) * MathUtils.random();
+		_cy = _cy - factor * MathUtils.nextInt(_parBound.width) * MathUtils.random();
 		update(factor);
 	}
 }

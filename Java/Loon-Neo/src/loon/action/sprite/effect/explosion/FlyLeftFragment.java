@@ -32,15 +32,15 @@ public class FlyLeftFragment extends Fragment {
 
 	@Override
 	protected void caculate(float factor) {
-		if (ox > parBound.centerX()) {
-			cx = cx + factor * MathUtils.nextInt(parBound.width) * (MathUtils.random());
+		if (_ox > _parBound.centerX()) {
+			_cx = _cx + factor * MathUtils.nextInt(_parBound.width) * (MathUtils.random());
 		} else {
-			cx = cx - factor * MathUtils.nextInt(parBound.width) * (MathUtils.random());
+			_cx = _cx - factor * MathUtils.nextInt(_parBound.width) * (MathUtils.random());
 		}
 		if (factor <= 0.5f) {
-			cy = cy - factor * MathUtils.nextInt(parBound.height / 2);
+			_cy = _cy - factor * MathUtils.nextInt(_parBound.height / 2);
 		} else {
-			cy = cy + factor * MathUtils.nextInt(parBound.height / 2);
+			_cy = _cy + factor * MathUtils.nextInt(_parBound.height / 2);
 		}
 		update(factor);
 	}

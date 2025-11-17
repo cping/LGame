@@ -32,8 +32,8 @@ public class TatteredFragment extends Fragment {
 
 	@Override
 	protected void caculate(float factor) {
-		cx = cx + factor * MathUtils.nextInt(parBound.width) * (MathUtils.random() - 0.5f);
-		cy = cy + factor * MathUtils.nextInt(parBound.height) * (MathUtils.random() - 0.5f);
+		_cx = _cx + factor * MathUtils.nextInt(_parBound.width) * (MathUtils.random() - 0.5f);
+		_cy = _cy + factor * MathUtils.nextInt(_parBound.height) * (MathUtils.random() - 0.5f);
 		update(factor);
 	}
 }

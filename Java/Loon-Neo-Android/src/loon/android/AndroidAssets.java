@@ -300,9 +300,17 @@ public class AndroidAssets extends Assets {
 	public static class SDRes extends DataRes implements Resource {
 
 		public SDRes(String path) {
-			if (isMoutedSD()) {
-				File f = android.os.Environment.getExternalStorageDirectory();
-				String tmp = f.getPath();
+			if (isMoutnedSD()) {
+				File file = null;
+				try {
+					file = android.os.Environment.getExternalStorageDirectory();
+				} catch (Exception e) {
+					file = Loon.self.getMainAppContext().getExternalCacheDir();
+				}
+				if (file == null || !file.exists()) {
+					file = Loon.self.getMainAppContext().getExternalFilesDir(null);
+				}
+				String tmp = file.getPath();
 				if (StringUtils.startsWith(path, '/')) {
 					path = path.substring(1);
 				}
@@ -322,7 +330,7 @@ public class AndroidAssets extends Assets {
 			this.name = "sdcard://" + path;
 		}
 
-		public final static boolean isMoutedSD() {
+		public final static boolean isMoutnedSD() {
 			String sdState = android.os.Environment.getExternalStorageState();
 			return sdState.equals(android.os.Environment.MEDIA_MOUNTED);
 		}

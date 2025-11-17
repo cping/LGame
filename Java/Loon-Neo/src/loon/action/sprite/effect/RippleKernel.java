@@ -31,19 +31,19 @@ import loon.utils.timer.LTimer;
  */
 public class RippleKernel {
 
-	protected int lineWidth;
+	protected int _lineWidth;
 
-	protected LColor color;
+	protected LColor _color;
 
-	protected float x, y;
+	protected float _x, _y;
 
-	protected int existTime;
+	protected int _existTime;
 
-	protected int limit;
+	protected int _limit;
 
-	protected LTimer timer = new LTimer(0);
+	protected LTimer _timer = new LTimer(0);
 
-	private Triangle2f tempTriangle;
+	private Triangle2f _tempTriangle;
 
 	public RippleKernel(float x, float y) {
 		this(2, x, y);
@@ -54,45 +54,45 @@ public class RippleKernel {
 	}
 
 	public RippleKernel(int width, float x, float y, int l) {
-		this.x = x;
-		this.y = y;
-		this.existTime = 0;
-		this.limit = l;
-		this.lineWidth = width;
+		this._x = x;
+		this._y = y;
+		this._existTime = 0;
+		this._limit = l;
+		this._lineWidth = width;
 	}
 
 	public void draw(final GLEx g, Model model, float mx, float my) {
-		final int span = existTime * 2;
+		final int span = _existTime * 2;
 		final float oldWidth = g.getLineWidth();
-		g.setLineWidth(lineWidth);
+		g.setLineWidth(_lineWidth);
 		switch (model) {
 		case OVAL:
-			g.drawOval(mx + x - span / 2, my + y - span / 2, span, span);
+			g.drawOval(mx + _x - span / 2, my + _y - span / 2, span, span);
 			break;
 		case RECT:
-			g.drawRect(mx + x - span / 2, my + y - span / 2, span, span);
+			g.drawRect(mx + _x - span / 2, my + _y - span / 2, span, span);
 			break;
 		case RHOMBUS:
-			g.drawRhombus(6, mx + x - span / 2, my + y - span / 2, span);
+			g.drawRhombus(6, mx + _x - span / 2, my + _y - span / 2, span);
 			break;
 		case DASHOVAL:
-			g.drawDashCircle(mx + x - span / 2, my + y - span / 2, span);
+			g.drawDashCircle(mx + _x - span / 2, my + _y - span / 2, span);
 			break;
 		case TRIANGLE:
-			if (tempTriangle == null) {
-				tempTriangle = new Triangle2f(span, span);
+			if (_tempTriangle == null) {
+				_tempTriangle = new Triangle2f(span, span);
 			} else {
-				tempTriangle.set(span, span);
+				_tempTriangle.set(span, span);
 			}
-			g.drawTriangle(tempTriangle, mx + x - span / 2, my + y - span / 2);
+			g.drawTriangle(_tempTriangle, mx + _x - span / 2, my + _y - span / 2);
 			break;
 		}
 		g.setLineWidth(oldWidth);
-		existTime++;
+		_existTime++;
 	}
 
 	public boolean isExpired() {
-		return existTime >= limit;
+		return _existTime >= _limit;
 	}
 
 }

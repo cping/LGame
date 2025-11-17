@@ -36,47 +36,47 @@ import loon.utils.timer.LTimer;
  */
 public class LightningBranch implements ILightning {
 
-	private LTimer timer = new LTimer(0);
-	private Vector2f end;
-	private Vector2f direction;
-	private TArray<LightningBolt> bolts = new TArray<LightningBolt>();
-	private boolean closed;
+	private LTimer _timer = new LTimer(0);
+	private Vector2f _end;
+	private Vector2f _direction;
+	private TArray<LightningBolt> _bolts = new TArray<LightningBolt>();
+	private boolean _closed;
 
 	public LightningBranch(Vector2f s, Vector2f e) {
 		this(s, e, LColor.white);
 	}
 
 	public LightningBranch(Vector2f s, Vector2f e, LColor c) {
-		this.end = e;
-		this.direction = e.sub(s).norSelf();
+		this._end = e;
+		this._direction = e.sub(s).norSelf();
 		this.create(s, e, c);
 	}
 
 	@Override
 	public boolean isComplete() {
-		return bolts.isEmpty();
+		return _bolts.isEmpty();
 	}
 
 	public LightningBranch setDelay(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 		return this;
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
-			bolts = bolts.where(new QueryEvent<LightningBolt>() {
+		if (_timer.action(elapsedTime)) {
+			_bolts = _bolts.where(new QueryEvent<LightningBolt>() {
 
 				@Override
 				public boolean hit(LightningBolt t) {
 					return !t.isComplete();
 				}
 			});
-			for (LightningBolt bolt : bolts) {
+			for (LightningBolt bolt : _bolts) {
 				bolt.update(elapsedTime);
 			}
 		}
@@ -84,14 +84,14 @@ public class LightningBranch implements ILightning {
 
 	@Override
 	public void draw(GLEx g, float x, float y) {
-		for (LightningBolt bolt : bolts) {
+		for (LightningBolt bolt : _bolts) {
 			bolt.draw(g, x, y);
 		}
 	}
 
 	private void create(Vector2f start, Vector2f end, LColor c) {
 		LightningBolt mainBolt = new LightningBolt(start, end, c);
-		bolts.add(mainBolt);
+		_bolts.add(mainBolt);
 		int numBranches = MathUtils.random(3, 6);
 		Vector2f diff = end.sub(start);
 		FloatArray branchPoints = FloatArray.range(1, numBranches + 1).where(new QueryEvent<Float>() {
@@ -106,28 +106,28 @@ public class LightningBranch implements ILightning {
 			Quaternion rot = Quaternion.createFromAxisAngle(Vector3f.AXIS_Z(),
 					MathUtils.toRadians(30 * ((i & 1) == 0 ? 1 : -1)));
 			Vector2f boltEnd = Vector2f.transform(diff.mul(1 - branchPoints.get(i)), rot).add(boltStart);
-			bolts.add(new LightningBolt(boltStart, boltEnd, c));
+			_bolts.add(new LightningBolt(boltStart, boltEnd, c));
 		}
 	}
 
 	public Vector2f getDirection() {
-		return direction;
+		return _direction;
 	}
 
 	public Vector2f getEnd() {
-		return end;
+		return _end;
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		if (bolts != null) {
-			bolts.clear();
+		if (_bolts != null) {
+			_bolts.clear();
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

@@ -2,7 +2,7 @@ package loon.android;
 
 import android.view.KeyEvent;
 
-public interface AdnroidListener {
+public interface AndroidListener {
 
 	void onPause();
 

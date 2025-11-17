@@ -34,45 +34,45 @@ public class LightningLine {
 
 	private final static float imageThickness = 8;
 
-	private Vector2f capOrigin = new Vector2f();
-	private Vector2f middleOrigin = new Vector2f();
-	private Vector2f middleScale = new Vector2f();
+	private Vector2f _capOrigin = new Vector2f();
+	private Vector2f _middleOrigin = new Vector2f();
+	private Vector2f _middleScale = new Vector2f();
 
-	public Vector2f lineA;
-	public Vector2f lineB;
-	public float thickness;
+	protected Vector2f _lineA;
+	protected Vector2f _lineB;
+	protected float _thickness;
 
 	public LightningLine(Vector2f a, Vector2f b) {
 		this(a, b, 1f);
 	}
 
 	public LightningLine(Vector2f a, Vector2f b, float t) {
-		this.lineA = a;
-		this.lineB = b;
-		this.thickness = t;
+		this._lineA = a;
+		this._lineB = b;
+		this._thickness = t;
 	}
 
 	public void draw(GLEx g, float offsetX, float offsetY, LColor tint) {
 
-		final Vector2f tangent = lineB.sub(lineA);
+		final Vector2f tangent = _lineB.sub(_lineA);
 		final float theta = MathUtils.atan2(tangent.y, tangent.x);
-		final float thicknessScale = thickness / imageThickness;
+		final float thicknessScale = _thickness / imageThickness;
 
 		final LTexture HalfCircle = LightningEffect.get().getHalfCircle();
 		final LTexture LightningSegment = LightningEffect.get().getLightningSegment();
 
 		final float rotate = theta * MathUtils.RAD_TO_DEG;
 
-		capOrigin.set(HalfCircle.getWidth(), HalfCircle.getHeight() / 2f);
-		middleOrigin.set(0, LightningSegment.getHeight() / 2f);
-		middleScale.set(tangent.length(), thicknessScale);
+		_capOrigin.set(HalfCircle.getWidth(), HalfCircle.getHeight() / 2f);
+		_middleOrigin.set(0, LightningSegment.getHeight() / 2f);
+		_middleScale.set(tangent.length(), thicknessScale);
 
-		Vector2f pos = lineA.add(offsetX, offsetY);
-		g.draw(LightningSegment, pos.x, pos.y, tint, rotate, middleOrigin, middleScale, Direction.TRANS_NONE, true);
-		g.draw(HalfCircle, pos.x, pos.y, tint, rotate, capOrigin, thicknessScale, Direction.TRANS_NONE, true);
-		pos = lineB.add(offsetX, offsetY);
-		g.draw(HalfCircle, pos.x, pos.y, tint, (theta + MathUtils.PI) * MathUtils.RAD_TO_DEG, capOrigin, thicknessScale,
-				Direction.TRANS_NONE, true);
+		Vector2f pos = _lineA.add(offsetX, offsetY);
+		g.draw(LightningSegment, pos.x, pos.y, tint, rotate, _middleOrigin, _middleScale, Direction.TRANS_NONE, true);
+		g.draw(HalfCircle, pos.x, pos.y, tint, rotate, _capOrigin, thicknessScale, Direction.TRANS_NONE, true);
+		pos = _lineB.add(offsetX, offsetY);
+		g.draw(HalfCircle, pos.x, pos.y, tint, (theta + MathUtils.PI) * MathUtils.RAD_TO_DEG, _capOrigin,
+				thicknessScale, Direction.TRANS_NONE, true);
 
 	}
 }

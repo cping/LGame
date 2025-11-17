@@ -34,13 +34,13 @@ import loon.utils.timer.LTimer;
  */
 public class LightningRandom implements ILightning {
 
-	private LTimer timer = new LTimer(0);
-	private TArray<Vector2f> particles = new TArray<Vector2f>();
-	private TArray<LightningBranch> bolts = new TArray<LightningBranch>();
-	private float hue = 4.5f;
-	private float[] noise = null;
-	private LColor color = null;
-	private boolean closed;
+	private LTimer _timer = new LTimer(0);
+	private TArray<Vector2f> _particles = new TArray<Vector2f>();
+	private TArray<LightningBranch> _bolts = new TArray<LightningBranch>();
+	private float _hue = 4.5f;
+	private float[] _noise = null;
+	private LColor _color = null;
+	private boolean _closed;
 
 	public LightningRandom(int count, Vector2f source, Vector2f dest) {
 		this(count, source.x, source.y, dest.x, dest.y, null);
@@ -55,14 +55,14 @@ public class LightningRandom implements ILightning {
 	}
 
 	public LightningRandom(int count, float x, float y, float w, float h, LColor c) {
-		this.color = c;
+		this._color = c;
 		for (int i = 0; i < count; i++) {
 			Vector2f v = new Vector2f(MathUtils.random(x, w), MathUtils.random(y, h));
-			particles.add(v);
+			_particles.add(v);
 		}
-		noise = new float[count];
+		_noise = new float[count];
 		for (int i = 0; i < count; i++) {
-			noise[i] = MathUtils.random();
+			_noise[i] = MathUtils.random();
 		}
 	}
 
@@ -79,58 +79,71 @@ public class LightningRandom implements ILightning {
 	}
 
 	public LightningRandom(TArray<Vector2f> pars, float x, float y, LColor c) {
-		int len = 35;
+		this(pars, x, y, 35, c);
+	}
+
+	public LightningRandom(TArray<Vector2f> pars, float x, float y, int len, LColor c) {
 		for (int i = 0; i < pars.size; i++) {
 			pars.get(i).addSelf(x, y);
 		}
-		this.particles.addAll(pars);
-		this.color = c;
-		this.noise = new float[len];
+		this._particles.addAll(pars);
+		this._color = c;
+		this._noise = new float[len];
 		for (int i = 0; i < len; i++) {
-			noise[i] = MathUtils.random();
+			_noise[i] = MathUtils.random();
 		}
 	}
 
+	public float getHue() {
+		return _hue;
+	}
+
+	public void setHue(float h) {
+		_hue = h;
+	}
+
 	final static TArray<Vector2f> createParticle(Image img) {
+		return createParticle(img, 2, 1.5f);
+	}
+
+	final static TArray<Vector2f> createParticle(Image img, int interval, float scale) {
 		Vector2f size = Vector2f.at(img.getWidth() / 2, img.getHeight() / 2);
-		final int interval = 2;
-		final float scale = 1.5f;
 		TArray<Vector2f> points = img.getPoints(size, interval, scale);
 		return points;
 	}
 
 	@Override
 	public void draw(GLEx g, float x, float y) {
-		for (LightningBranch bolt : bolts) {
+		for (LightningBranch bolt : _bolts) {
 			bolt.draw(g, x, y);
 		}
 	}
 
 	public void setDelay(long delay) {
-		timer.setDelay(delay);
+		_timer.setDelay(delay);
 	}
 
 	public long getDelay() {
-		return timer.getDelay();
+		return _timer.getDelay();
 	}
 
 	@Override
 	public void update(long elapsedTime) {
-		if (timer.action(elapsedTime)) {
-			bolts.clear();
-			hue += 0.01f;
-			if (hue >= 6) {
-				hue -= 6;
+		if (_timer.action(elapsedTime)) {
+			_bolts.clear();
+			_hue += 0.01f;
+			if (_hue >= 6) {
+				_hue -= 6;
 			}
 			int size = LSystem.viewSize.getWidth();
-			for (Vector2f particle : particles) {
+			for (Vector2f particle : _particles) {
 				float x = particle.x / size;
-				int boltChance = (int) (20 * MathUtils.sin(3 * hue * MathUtils.PI - x + 1 * getNoise(hue + x)) + 52);
+				int boltChance = (int) (20 * MathUtils.sin(3 * _hue * MathUtils.PI - x + 1 * getNoise(_hue + x)) + 52);
 				if (MathUtils.nextInt(boltChance) == 0) {
 					Vector2f nearestParticle = Vector2f.ZERO();
 					float nearestDist = Float.MAX_VALUE;
 					for (int i = 0; i < 50; i++) {
-						Vector2f other = particles.get(MathUtils.nextInt(particles.size - 1));
+						Vector2f other = _particles.get(MathUtils.nextInt(_particles.size - 1));
 						float dist = Vector2f.dst(particle, other);
 						if (dist < nearestDist && dist > 10 * 10) {
 							nearestDist = dist;
@@ -138,8 +151,8 @@ public class LightningRandom implements ILightning {
 						}
 					}
 					if (nearestDist < 200 * 200 && nearestDist > 10 * 10) {
-						bolts.add(new LightningBranch(particle, nearestParticle,
-								color == null ? LColor.hsvToColor(hue, 0.5f, 1f) : color));
+						_bolts.add(new LightningBranch(particle, nearestParticle,
+								_color == null ? LColor.hsvToColor(_hue, 0.5f, 1f) : _color));
 					}
 				}
 			}
@@ -149,10 +162,10 @@ public class LightningRandom implements ILightning {
 
 	private final float getNoise(float x) {
 		x = MathUtils.max(x, 0);
-		int length = noise.length;
+		int length = _noise.length;
 		int i = ((int) (length * x)) % length;
 		int j = (i + 1) % length;
-		return MathUtils.smoothStep(noise[i], noise[j], x - (int) x);
+		return MathUtils.smoothStep(_noise[i], _noise[j], x - (int) x);
 	}
 
 	@Override
@@ -161,18 +174,18 @@ public class LightningRandom implements ILightning {
 	}
 
 	public boolean isClosed() {
-		return closed;
+		return _closed;
 	}
 
 	@Override
 	public void close() {
-		if (particles != null) {
-			particles.clear();
+		if (_particles != null) {
+			_particles.clear();
 		}
-		if (bolts != null) {
-			bolts.clear();
+		if (_bolts != null) {
+			_bolts.clear();
 		}
-		closed = true;
+		_closed = true;
 	}
 
 }

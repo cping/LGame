@@ -33,7 +33,7 @@ public class TextureAtlas implements LRelease {
 
 	protected ListMap<String, TextureData> _frames = null;
 
-	protected TArray<String> names = new TArray<String>();
+	protected TArray<String> _names = new TArray<String>();
 
 	public LTexture img() {
 		return _img;
@@ -69,8 +69,8 @@ public class TextureAtlas implements LRelease {
 		ListMap<String, TextureData> frames = new ListMap<String, TextureData>();
 		for (int i = 0; i < _frames.size; i++) {
 			TextureData td = _frames.getValueAt(i);
-			if (null != td && td.name.startsWith(prefix)) {
-				frames.put(td.name, td);
+			if (null != td && td._name.startsWith(prefix)) {
+				frames.put(td._name, td);
 			}
 		}
 		return new TextureAtlas(_img, frames);
@@ -90,32 +90,32 @@ public class TextureAtlas implements LRelease {
 				String key = keys.get(i);
 				Json.Object jsonChar = jsonFrames.getObject(key);
 				TextureData data = new TextureData();
-				names.add(key);
-				data.name = key;
-				data.x = jsonChar.getInt("x");
-				data.y = jsonChar.getInt("y");
-				data.w = jsonChar.getInt("w");
-				data.h = jsonChar.getInt("h");
-				data.offX = jsonChar.getInt("offX");
-				data.offY = jsonChar.getInt("offY");
+				_names.add(key);
+				data._name = key;
+				data._x = jsonChar.getInt("x");
+				data._y = jsonChar.getInt("y");
+				data._w = jsonChar.getInt("w");
+				data._h = jsonChar.getInt("h");
+				data._offX = jsonChar.getInt("offX");
+				data._offY = jsonChar.getInt("offY");
 				if (jsonChar.containsKey("sourceW")) {
-					data.sourceW = jsonChar.getInt("sourceW");
+					data._sourceW = jsonChar.getInt("sourceW");
 				} else {
-					data.sourceW = data.w + data.offX;
+					data._sourceW = data._w + data._offX;
 				}
 				if (jsonChar.containsKey("sourceH")) {
-					data.sourceH = jsonChar.getInt("sourceH");
+					data._sourceH = jsonChar.getInt("sourceH");
 				} else {
-					data.sourceH = data.h + data.offY;
+					data._sourceH = data._h + data._offY;
 				}
-				data.x *= sx;
-				data.w *= sx;
-				data.offX *= sx;
-				data.sourceW *= sx;
-				data.y *= sy;
-				data.h *= sy;
-				data.offY *= sy;
-				data.sourceH *= sy;
+				data._x *= sx;
+				data._w *= sx;
+				data._offX *= sx;
+				data._sourceW *= sx;
+				data._y *= sy;
+				data._h *= sy;
+				data._offY *= sy;
+				data._sourceH *= sy;
 				frames.put(key, data);
 			}
 			return frames;
@@ -130,34 +130,34 @@ public class TextureAtlas implements LRelease {
 					ListMap<String, TextureData> frames = new ListMap<String, TextureData>(charAmount);
 					for (int j = 0; j < charAmount; j++) {
 						String name = resKeys.get(j);
-						names.add(name);
+						_names.add(name);
 						Json.Object jsonResult = jsonObject.getObject(name);
 						TextureData data = new TextureData();
-						data.name = name;
-						data.x = jsonResult.getInt("x");
-						data.y = jsonResult.getInt("y");
-						data.w = jsonResult.getInt("w");
-						data.h = jsonResult.getInt("h");
-						data.offX = jsonResult.getInt("offX");
-						data.offY = jsonResult.getInt("offY");
+						data._name = name;
+						data._x = jsonResult.getInt("x");
+						data._y = jsonResult.getInt("y");
+						data._w = jsonResult.getInt("w");
+						data._h = jsonResult.getInt("h");
+						data._offX = jsonResult.getInt("offX");
+						data._offY = jsonResult.getInt("offY");
 						if (jsonResult.containsKey("sourceW")) {
-							data.sourceW = jsonResult.getInt("sourceW");
+							data._sourceW = jsonResult.getInt("sourceW");
 						} else {
-							data.sourceW = data.w + data.offX;
+							data._sourceW = data._w + data._offX;
 						}
 						if (jsonResult.containsKey("sourceH")) {
-							data.sourceH = jsonResult.getInt("sourceH");
+							data._sourceH = jsonResult.getInt("sourceH");
 						} else {
-							data.sourceH = data.h + data.offY;
+							data._sourceH = data._h + data._offY;
 						}
-						data.x *= sx;
-						data.w *= sx;
-						data.offX *= sx;
-						data.sourceW *= sx;
-						data.y *= sy;
-						data.h *= sy;
-						data.offY *= sy;
-						data.sourceH *= sy;
+						data._x *= sx;
+						data._w *= sx;
+						data._offX *= sx;
+						data._sourceW *= sx;
+						data._y *= sy;
+						data._h *= sy;
+						data._offY *= sy;
+						data._sourceH *= sy;
 						frames.put(name, data);
 
 					}

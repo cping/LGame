@@ -29,9 +29,9 @@ import loon.opengl.GLEx;
  */
 public class PixelThunderEffect extends PixelBaseEffect {
 
-	private float viewX, viewY;
+	private float _viewX, _viewY;
 
-	private float width;
+	private float _width;
 
 	public PixelThunderEffect(LColor color) {
 		this(color, LSystem.viewSize.width / 2, LSystem.viewSize.height - 100);
@@ -43,10 +43,10 @@ public class PixelThunderEffect extends PixelBaseEffect {
 
 	public PixelThunderEffect(LColor color, float x, float y, float w, float h, float width) {
 		super(color, x, y, w, h);
-		this.width = width;
-		this.viewX = x;
-		this.viewY = y;
-		this.limit = 50;
+		this._width = width;
+		this._viewX = x;
+		this._viewY = y;
+		this._limit = 50;
 		this.setDelay(0);
 		setEffectDelay(0);
 	}
@@ -58,16 +58,16 @@ public class PixelThunderEffect extends PixelBaseEffect {
 		}
 		int tmp = g.color();
 		g.setColor(_baseColor);
-		float x = viewX - tx;
-		float y = viewY - ty;
-		int f = super.frame;
+		float x = _viewX - tx;
+		float y = _viewY - ty;
+		int f = super._frame;
 		g.setColor(_baseColor);
 		if (f <= 20) {
-			float size = y - (getWidth() * (20 - super.frame)) / 20;
+			float size = y - (getWidth() * (20 - super._frame)) / 20;
 			g.setAlpha(0.5f);
-			g.drawLine(x, size - 100, x, size, width);
-			g.drawLine(x + 1, (size - 100) + 1, x + 1, size - 1, width);
-			g.drawLine(x - 1, (size - 100) + 1, x - 1, size - 1, width);
+			g.drawLine(x, size - 100, x, size, _width);
+			g.drawLine(x + 1, (size - 100) + 1, x + 1, size - 1, _width);
+			g.drawLine(x - 1, (size - 100) + 1, x - 1, size - 1, _width);
 			g.setAlpha(1f);
 		} else {
 			f -= 20;
@@ -76,7 +76,7 @@ public class PixelThunderEffect extends PixelBaseEffect {
 			}
 		}
 		g.setColor(tmp);
-		if (super.frame >= limit) {
+		if (super._frame >= _limit) {
 			super._completed = true;
 		}
 	}

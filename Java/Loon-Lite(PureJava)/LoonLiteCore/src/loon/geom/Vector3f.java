@@ -1416,6 +1416,10 @@ public class Vector3f implements Serializable, XYZ, SetXYZ {
 		}
 	}
 
+	public Vector3f exp() {
+		return new Vector3f(MathUtils.exp(this.x), MathUtils.exp(this.y), MathUtils.exp(this.z));
+	}
+
 	public Vector3f div(float v) {
 		float d = 1 / v;
 		return this.set(this.x * d, this.y * d, this.z * d);

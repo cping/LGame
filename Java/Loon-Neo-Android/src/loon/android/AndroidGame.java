@@ -70,7 +70,7 @@ public class AndroidGame extends LGame {
 		public boolean useRatioScaleFactor = false;
 
 		// android事件专用监听器
-		public AdnroidListener listener = null;
+		public AndroidListener listener = null;
 
 		// 是否锁定注销功能(若为true，则默认back按键不许退出)
 		public boolean lockBackDestroy = false;

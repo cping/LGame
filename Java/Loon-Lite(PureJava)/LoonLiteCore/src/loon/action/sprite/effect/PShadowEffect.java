@@ -36,11 +36,11 @@ public class PShadowEffect extends BaseAbstractEffect {
 
 	private Pixmap _pixmap;
 
-	private int indexD, indexW, block;
+	private int _indexD, _indexW, _block;
 
-	private boolean flag = true;
+	private boolean _flag = true;
 
-	private int[] deasilTrans, widdershinTrans;
+	private int[] _deasilTrans, _widdershinTrans;
 
 	public PShadowEffect(String fileName) {
 		this(BaseIO.loadImage(fileName));
@@ -55,17 +55,17 @@ public class PShadowEffect extends BaseAbstractEffect {
 	}
 
 	public PShadowEffect(Image img, int x, int y, int w, int h) {
-		if (deasilTrans == null) {
-			deasilTrans = new int[256];
+		if (_deasilTrans == null) {
+			_deasilTrans = new int[256];
 			for (int i = 0; i < 256; i++) {
-				deasilTrans[i] = LColor.getRGB(i, i, i);
+				_deasilTrans[i] = LColor.getRGB(i, i, i);
 			}
 		}
-		if (widdershinTrans == null) {
-			widdershinTrans = new int[256];
+		if (_widdershinTrans == null) {
+			_widdershinTrans = new int[256];
 			int idx = 0;
 			for (int i = 0; i < 256; i++) {
-				widdershinTrans[idx++] = deasilTrans[i];
+				_widdershinTrans[idx++] = _deasilTrans[i];
 			}
 		}
 		this.setDelay(10);
@@ -91,9 +91,9 @@ public class PShadowEffect extends BaseAbstractEffect {
 			this._pixmap = img.getPixmap();
 		}
 		this.setTexture(_pixmap.getImage(false).texture());
-		this.indexD = 255;
-		this.indexW = 0;
-		this.block = 8;
+		this._indexD = 255;
+		this._indexW = 0;
+		this._block = 8;
 		this._completed = false;
 		img.close();
 		img = null;
@@ -101,9 +101,9 @@ public class PShadowEffect extends BaseAbstractEffect {
 	}
 
 	public PShadowEffect resetEffect() {
-		this.indexD = 255;
-		this.indexW = 0;
-		this.block = 8;
+		this._indexD = 255;
+		this._indexW = 0;
+		this._block = 8;
 		return this;
 	}
 
@@ -118,18 +118,18 @@ public class PShadowEffect extends BaseAbstractEffect {
 		_completed = isCompleted();
 		if (isVisible() && _timer.action(elapsedTime) && !_completed) {
 			int[] pixels = _pixmap.getData();
-			if (flag) {
-				int[] colors = new int[block];
-				for (int i = 0; i < block; i++) {
-					colors[i] = widdershinTrans[indexW++];
+			if (_flag) {
+				int[] colors = new int[_block];
+				for (int i = 0; i < _block; i++) {
+					colors[i] = _widdershinTrans[_indexW++];
 				}
 				BufferUtils.toColorKeys(pixels, colors, 0);
 			} else {
-				int[] colors = new int[block];
-				for (int i = 0; i < block; i++) {
-					colors[i] = deasilTrans[indexD--];
+				int[] colors = new int[_block];
+				for (int i = 0; i < _block; i++) {
+					colors[i] = _deasilTrans[_indexD--];
 				}
-				for (int i = 0; i < block; i++) {
+				for (int i = 0; i < _block; i++) {
 					BufferUtils.toColorKeys(pixels, colors, 0);
 				}
 			}
@@ -149,23 +149,23 @@ public class PShadowEffect extends BaseAbstractEffect {
 
 	@Override
 	public boolean isCompleted() {
-		return _completed || (flag ? (indexW >= 255) : (indexD <= 0));
+		return _completed || (_flag ? (_indexW >= 255) : (_indexD <= 0));
 	}
 
 	public boolean isBlackToWhite() {
-		return flag;
+		return _flag;
 	}
 
 	public void setBlackToWhite(boolean flag) {
-		this.flag = flag;
+		this._flag = flag;
 	}
 
 	public int getBlockSize() {
-		return block;
+		return _block;
 	}
 
 	public void setBlockSize(int block) {
-		this.block = block;
+		this._block = block;
 	}
 
 	@Override

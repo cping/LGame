@@ -1780,6 +1780,10 @@ public class Vector2f implements Serializable, SetXY, XY {
 		return lessThanOrEqual(this, o);
 	}
 
+	public Vector2f exp() {
+		return new Vector2f(MathUtils.exp(this.x), MathUtils.exp(this.y));
+	}
+
 	public Vector2f unit() {
 		final float len = this.length();
 		return len == 0 ? new Vector2f(0) : this.scale(1f / len);

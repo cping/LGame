@@ -25,72 +25,72 @@ import loon.geom.XY;
 
 public class TextureData implements XY {
 
-	protected int sourceW = 0;
+	protected int _sourceW = 0;
 
-	protected int sourceH = 0;
+	protected int _sourceH = 0;
 
-	protected int x = 0;
+	protected int _x = 0;
 
-	protected int y = 0;
+	protected int _y = 0;
 
-	protected int offX = 0;
+	protected int _offX = 0;
 
-	protected int offY = 0;
+	protected int _offY = 0;
 
-	protected String name = LSystem.UNKNOWN;
+	protected int _w = 0;
+
+	protected int _h = 0;
+
+	protected String _name = LSystem.UNKNOWN;
 
 	protected TextureData() {
 
 	}
 
 	public int x() {
-		return x;
+		return _x;
 	}
 
 	public int y() {
-		return y;
+		return _y;
 	}
-
-	protected int w = 0;
 
 	public int w() {
-		return w;
+		return _w;
 	}
 
-	protected int h = 0;
-
 	public int h() {
-		return h;
+		return _h;
 	}
 
 	public int offX() {
-		return offX;
+		return _offX;
 	}
 
 	public int offY() {
-		return offY;
+		return _offY;
 	}
 
 	public int sourceW() {
-		return sourceW;
+		return _sourceW;
 	}
 
 	public int sourceH() {
-		return sourceH;
+		return _sourceH;
 	}
 
 	@Override
 	public float getX() {
-		return x;
+		return _x;
 	}
 
 	@Override
 	public float getY() {
-		return y;
+		return _y;
 	}
 
 	public String name() {
-		return name;
+		return _name;
 	}
 
 }

@@ -45,10 +45,10 @@ public class Texture {
 	public TextureData getTextureData() {
 		if (isClosed()) {
 			_img = LSystem.loadTexture(_path);
-			_texData.w = _img.getWidth();
-			_texData.h = _img.getHeight();
-			_texData.sourceW = _texData.w;
-			_texData.sourceH = _texData.h;
+			_texData._w = _img.getWidth();
+			_texData._h = _img.getHeight();
+			_texData._sourceW = _texData._w;
+			_texData._sourceH = _texData._h;
 		}
 		return _texData;
 	}
@@ -56,10 +56,10 @@ public class Texture {
 	public LTexture img() {
 		if (isClosed()) {
 			_img = LSystem.loadTexture(_path);
-			_texData.w = _img.getWidth();
-			_texData.h = _img.getHeight();
-			_texData.sourceW = _texData.w;
-			_texData.sourceH = _texData.h;
+			_texData._w = _img.getWidth();
+			_texData._h = _img.getHeight();
+			_texData._sourceW = _texData._w;
+			_texData._sourceH = _texData._h;
 		}
 		return _img;
 	}
