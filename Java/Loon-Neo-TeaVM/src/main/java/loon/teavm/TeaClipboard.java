@@ -36,7 +36,7 @@ public class TeaClipboard extends Clipboard {
 	private String _content = "";
 
 	public TeaClipboard() {
-		TeaApp.get().getDocument().addEventListener("copy", evt -> {
+		TeaBase.get().getDocument().addEventListener("copy", evt -> {
 			TeaClipboardEvent event = (TeaClipboardEvent) evt;
 			TeaDataTransfer clipboardData = event.getClipboardData();
 			if (clipboardData != null) {
@@ -45,7 +45,7 @@ public class TeaClipboard extends Clipboard {
 			evt.preventDefault();
 		});
 
-		TeaApp.get().getDocument().addEventListener("cut", evt -> {
+		TeaBase.get().getDocument().addEventListener("cut", evt -> {
 			TeaClipboardEvent event = (TeaClipboardEvent) evt;
 			TeaDataTransfer clipboardData = event.getClipboardData();
 			if (clipboardData != null) {
@@ -54,7 +54,7 @@ public class TeaClipboard extends Clipboard {
 			evt.preventDefault();
 		});
 
-		TeaApp.get().getDocument().addEventListener("paste", evt -> {
+		TeaBase.get().getDocument().addEventListener("paste", evt -> {
 			TeaClipboardEvent event = (TeaClipboardEvent) evt;
 			TeaDataTransfer clipboardData = event.getClipboardData();
 			if (clipboardData != null) {
@@ -95,7 +95,7 @@ public class TeaClipboard extends Clipboard {
 	@Override
 	public void setContent(String content) {
 		this._content = content;
-		if (_writePermissions || TeaApp.get().getAgentInfo().isFirefox()) {
+		if (_writePermissions || TeaBase.get().getAgentInfo().isFirefox()) {
 			if (_hasWritePermissions)
 				setContentNATIVE(content);
 		} else {

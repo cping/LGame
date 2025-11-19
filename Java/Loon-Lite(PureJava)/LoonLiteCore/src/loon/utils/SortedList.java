@@ -28,6 +28,10 @@ import loon.LSystem;
 
 public class SortedList<E> implements Iterable<E>, IArray {
 
+	public static final <T> SortedList<T> create() {
+		return new SortedList<T>();
+	}
+
 	public final static class SortedIterable<T> implements Iterable<T> {
 
 		private final SortedList<T> array;

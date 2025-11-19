@@ -30,11 +30,9 @@ import org.teavm.jso.dom.html.HTMLElement;
 
 import loon.LazyLoading;
 import loon.Platform;
-import loon.Platform.Orientation;
-import loon.teavm.TeaWindow.RenderFrameHandler;
 
 public abstract class Loon implements Platform, LazyLoading {
-
+	 
 	private static String cur_language = null;
 
 	private static String cur_browserType = null;

@@ -27,6 +27,14 @@ import loon.LSystem;
 
 public class ArrayMap implements IArray, LRelease {
 
+	public final static ArrayMap create() {
+		return new ArrayMap();
+	}
+
+	public final static ArrayMap create(int size) {
+		return new ArrayMap(size);
+	}
+
 	public static class Entry {
 
 		protected int _index;

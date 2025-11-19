@@ -75,11 +75,11 @@ public class TeaGraphics extends Graphics {
 	static float experimentalScale = 1;
 
 	public TeaGraphics(final HTMLElement root, final LGame game, final TeaSetting cfg) {
-		super(game, new WebGL20(), game.setting.scaling() ? Scale.ONE : new Scale(TeaApp.get().getDevicePixelRatio()));
+		super(game, new WebGL20(), game.setting.scaling() ? Scale.ONE : new Scale(TeaBase.get().getDevicePixelRatio()));
 
-		final Window mainWindow = TeaApp.get().getWindow();
+		final Window mainWindow = TeaBase.get().getWindow();
 		this.config = cfg;
-		HTMLDocumentExt doc = TeaApp.get().getDocument();
+		HTMLDocumentExt doc = TeaBase.get().getDocument();
 		this.dummyCanvas = doc.createCanvasElement();
 		this.dummyCtx = (CanvasRenderingContext2D) dummyCanvas.getContext("2d");
 
@@ -93,7 +93,7 @@ public class TeaGraphics extends Graphics {
 		measureElement.getStyle().setProperty("whiteSpace", "nowrap");
 		root.appendChild(measureElement);
 
-		canvas = (HTMLCanvasElement) TeaApp.get().getDocument().createElement("canvas");
+		canvas = (HTMLCanvasElement) TeaBase.get().getDocument().createElement("canvas");
 		root.appendChild(canvas);
 		if (config.scaling()) {
 			setSize(config.width_zoom > 0 ? config.width_zoom : root.getOffsetWidth(),
@@ -186,7 +186,7 @@ public class TeaGraphics extends Graphics {
 
 	@Override
 	public Dimension screenSize() {
-		screenSize.setSize(TeaApp.get().getClientWidth(), TeaApp.get().getClientHeight());
+		screenSize.setSize(TeaBase.get().getClientWidth(), TeaBase.get().getClientHeight());
 		return screenSize;
 	}
 
@@ -202,7 +202,7 @@ public class TeaGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		HTMLCanvasElement elem = (HTMLCanvasElement) TeaApp.get().getDocument().createElement("canvas");
+		HTMLCanvasElement elem = (HTMLCanvasElement) TeaBase.get().getDocument().createElement("canvas");
 		elem.setWidth(pixelWidth);
 		elem.setHeight(pixelHeight);
 		return new TeaCanvas(this, new TeaImage(this, scale, elem, TextureSource.RenderCanvas));

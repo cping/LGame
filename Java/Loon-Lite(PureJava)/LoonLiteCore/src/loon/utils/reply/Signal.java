@@ -18,11 +18,17 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.utils.reply;
 
 import java.util.Iterator;
 
+import loon.utils.SortedList;
+
 public class Signal<T> {
+
+	public final static <T> Signal<T> create() {
+		return new Signal<T>();
+	}
 
 	public static interface Listener<T> {
 		boolean onSignal(T param1T);

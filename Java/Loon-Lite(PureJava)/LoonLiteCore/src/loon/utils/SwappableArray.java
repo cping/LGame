@@ -25,6 +25,10 @@ package loon.utils;
  */
 public class SwappableArray<T> {
 
+	public static final <T> SwappableArray<T> create() {
+		return new SwappableArray<T>();
+	}
+
 	private int currentIndex = 0;
 
 	private final TArray<T> data;

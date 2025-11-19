@@ -18,23 +18,16 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.teavm;
 
-public class IntPool {
+import org.teavm.jso.dom.html.HTMLDocument;
 
-	private IntStack _stack = new IntStack();
+public class LauncherMain {
 
-	private int _lastId = 0;
-
-	public int alloc() {
-		if (_stack.getLength() == 0) {
-			_stack.push(_lastId++);
-		}
-		return _stack.pop();
-	}
-
-	public IntPool free(int value) {
-		_stack.push(value);
-		return this;
+	public static void main(String[] args) {
+		var document = HTMLDocument.current();
+		var div = document.createElement("div");
+		div.appendChild(document.createTextNode("Loon-TeaVM"));
+		document.getBody().appendChild(div);
 	}
 }

@@ -27,6 +27,10 @@ import loon.LSysException;
 
 public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 
+	public final static <T> IntMap<T> create() {
+		return new IntMap<T>();
+	}
+
 	public static <T> IntMap<T> of(T[] list) {
 		if (list == null) {
 			return new IntMap<T>();

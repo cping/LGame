@@ -30,6 +30,10 @@ import loon.events.QueryEvent;
 
 public class Array<T> implements Iterable<T>, IArray, LRelease {
 
+	public final static <T> Array<T> create() {
+		return new Array<T>();
+	}
+
 	public static <T> Array<T> of(T[] list) {
 		final Array<T> result = new Array<T>();
 		if (list != null) {
@@ -656,7 +660,7 @@ public class Array<T> implements Iterable<T>, IArray, LRelease {
 	public boolean isNotEmpty() {
 		return !isEmpty();
 	}
-	
+
 	public boolean isClosed() {
 		return _close;
 	}

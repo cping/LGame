@@ -18,23 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.utils;
+package loon.teavm.builder;
 
-public class IntPool {
-
-	private IntStack _stack = new IntStack();
-
-	private int _lastId = 0;
-
-	public int alloc() {
-		if (_stack.getLength() == 0) {
-			_stack.push(_lastId++);
-		}
-		return _stack.pop();
-	}
-
-	public IntPool free(int value) {
-		_stack.push(value);
-		return this;
-	}
+public interface AssetFilter {
+	boolean accept(String file, boolean isDirectory, AssetFilterOption op);
 }

@@ -1,12 +1,23 @@
 package loon.teavm;
 
-import org.teavm.jso.dom.html.HTMLDocument;
+import java.io.IOException;
 
+import org.teavm.vm.TeaVMOptimizationLevel;
+
+import loon.teavm.builder.TargetType;
+import loon.teavm.builder.TeaInitialize;
+import loon.teavm.make.SkipClass;
+
+@SkipClass
 public class Main {
-    public static void main(String[] args) {
-        var document = HTMLDocument.current();
-        var div = document.createElement("div");
-        div.appendChild(document.createTextNode("Loon-Lite-TeaVM"));
-        document.getBody().appendChild(div);
-    }
+
+	public static void main(String[] args) {
+		try {
+			TeaInitialize.create("testing", LauncherMain.class, false, true, TeaVMOptimizationLevel.SIMPLE,
+					TargetType.JavaScript);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 }

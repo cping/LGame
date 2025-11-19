@@ -22,6 +22,10 @@ package loon.utils;
 
 public class QuadTree<T> {
 
+	public static final <T> QuadTree<T> create() {
+		return new QuadTree<T>();
+	}
+
 	private interface QuadTreeIFace<T> {
 
 		public void set(final int x, final int y, final T value);
