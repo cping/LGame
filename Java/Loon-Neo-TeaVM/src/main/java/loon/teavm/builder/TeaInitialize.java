@@ -33,21 +33,21 @@ import loon.teavm.assets.AssetFile;
 
 public class TeaInitialize {
 
-	public static void create(String webTitle, Class<?> clazz, boolean obfuscated, boolean debug,
+	public static void create(String webTitle, int width, int height, Class<?> clazz, boolean obfuscated, boolean debug,
 			TeaVMOptimizationLevel level, TargetType target) throws IOException {
-		create(webTitle, clazz, obfuscated, debug, level, target, null, null, null);
+		create(webTitle, width, height, clazz, obfuscated, debug, level, target, null, null, null);
 	}
 
-	public static void create(String webTitle, Class<?> clazz, boolean obfuscated, boolean debug,
+	public static void create(String webTitle, int width, int height, Class<?> clazz, boolean obfuscated, boolean debug,
 			TeaVMOptimizationLevel level, TargetType target, String[] assetPath, String[] sourcePath, String[] reflects)
 			throws IOException {
-		create(webTitle, clazz == null ? "none" : clazz.getName(), obfuscated, debug, level, target, assetPath,
-				sourcePath, reflects);
+		create(webTitle, width, height, clazz == null ? "none" : clazz.getName(), obfuscated, debug, level, target,
+				assetPath, sourcePath, reflects);
 	}
 
-	public static void create(String webTitle, String mainClassName, boolean obfuscated, boolean debug,
-			TeaVMOptimizationLevel level, TargetType target, String[] assetPath, String[] sourcePath, String[] reflects)
-			throws IOException {
+	public static void create(String webTitle, int width, int height, String mainClassName, boolean obfuscated,
+			boolean debug, TeaVMOptimizationLevel level, TargetType target, String[] assetPath, String[] sourcePath,
+			String[] reflects) throws IOException {
 		if (reflects != null) {
 			for (int i = 0; i < reflects.length; i++) {
 				final String refPackName = reflects[i];
@@ -55,6 +55,8 @@ public class TeaInitialize {
 			}
 		}
 		TeaBuildConfiguration teaBuildConfiguration = new TeaBuildConfiguration();
+		teaBuildConfiguration.gameWidth = width;
+		teaBuildConfiguration.gameHeight = height;
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/loon/assets"));

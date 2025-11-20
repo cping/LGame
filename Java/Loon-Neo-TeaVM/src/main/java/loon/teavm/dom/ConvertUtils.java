@@ -45,6 +45,46 @@ import org.teavm.jso.typedarrays.Uint8Array;
 
 public class ConvertUtils {
 
+	public static String decodeUtf8(ArrayBuffer arrayBufer) {
+		String result = "";
+		int i = 0;
+		int c1 = 0;
+
+		int c2 = 0;
+		int c3 = 0;
+
+		Uint8Array data = new Uint8Array(arrayBufer);
+
+		if (data.getLength() >= 3 && data.get(0) == 0xef && data.get(1) == 0xbb && data.get(2) == 0xbf) {
+			i = 3;
+		}
+
+		while (i < data.getLength()) {
+			c1 = data.get(i);
+
+			if (c1 < 128) {
+				result += JSString.fromCharCode(c1);
+				i++;
+			} else if (c1 > 191 && c1 < 224) {
+				if (i + 1 >= data.getLength()) {
+					throw new RuntimeException("UTF-8 Decode failed. Two byte character was truncated.");
+				}
+				c2 = data.get(i + 1);
+				result += JSString.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
+				i += 2;
+			} else {
+				if (i + 2 >= data.getLength()) {
+					throw new RuntimeException("UTF-8 Decode failed. Multi byte character was truncated.");
+				}
+				c2 = data.get(i + 1);
+				c3 = data.get(i + 2);
+				result += JSString.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+		}
+		return result;
+	}
+
 	public static int getElementSize(Buffer buffer) {
 		if (buffer instanceof ByteBuffer) {
 			return 1;

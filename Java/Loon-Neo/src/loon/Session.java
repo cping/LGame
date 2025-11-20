@@ -35,6 +35,8 @@ import loon.utils.TimeUtils;
  */
 public class Session implements Bundle<String> {
 
+	private final char _record_split_flag = '&';
+
 	private Save _save;
 
 	private boolean _isPersisted = false;
@@ -79,19 +81,22 @@ public class Session implements Bundle<String> {
 		return new Session(name);
 	}
 
-	private final char flag = '&';
+	public final class Record {
 
-	private final class Record {
+		protected boolean active;
 
 		private String name;
 
 		private String[] values;
 
-		private boolean active;
-
 		public Record(String name) {
+			this(name, true);
+		}
+
+		public Record(String name, boolean a) {
 			this.values = new String[0];
 			this.name = name;
+			this.active = a;
 		}
 
 		public boolean isSaved() {
@@ -105,11 +110,16 @@ public class Session implements Bundle<String> {
 			return 0;
 		}
 
+		public int decode(String[] parts) {
+			return decode(parts, 0);
+		}
+
 		public int decode(String[] parts, int n) {
 			if (n >= parts.length) {
 				return n;
 			}
-			active = "1".equals(parts[n++]);
+			String v = parts[n++];
+			active = "1".equals(v);
 			if (n >= parts.length) {
 				return n;
 			}
@@ -136,7 +146,7 @@ public class Session implements Bundle<String> {
 			if (StringUtils.isEmpty(v)) {
 				return;
 			}
-			final String vl = StringUtils.replace(v, String.valueOf(flag), "+");
+			final String vl = StringUtils.replace(v, String.valueOf(_record_split_flag), "+");
 			if (index >= values.length) {
 				int size = index + 1;
 				String[] res = new String[size];
@@ -146,17 +156,30 @@ public class Session implements Bundle<String> {
 			this.values[index] = vl;
 		}
 
-		public String encode() {
-			StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
-			sbr.append(this.name);
-			sbr.append(flag);
+		protected String encodeVale() {
+			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
 			sbr.append(this.active ? "1" : "0");
-			sbr.append(flag);
+			sbr.append(_record_split_flag);
 			sbr.append(this.values.length);
-			sbr.append(flag);
+			sbr.append(_record_split_flag);
 			for (int i = 0; i < this.values.length; i++) {
 				sbr.append(this.values[i]);
-				sbr.append(flag);
+				sbr.append(_record_split_flag);
+			}
+			return sbr.toString();
+		}
+
+		public String encode() {
+			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+			sbr.append(this.name);
+			sbr.append(_record_split_flag);
+			sbr.append(this.active ? "1" : "0");
+			sbr.append(_record_split_flag);
+			sbr.append(this.values.length);
+			sbr.append(_record_split_flag);
+			for (int i = 0; i < this.values.length; i++) {
+				sbr.append(this.values[i]);
+				sbr.append(_record_split_flag);
 			}
 			return sbr.toString();
 		}
@@ -197,7 +220,7 @@ public class Session implements Bundle<String> {
 
 	public int loadEncodeSession(String encode) {
 		if (!StringUtils.isEmpty(encode)) {
-			String[] parts = StringUtils.split(encode, flag);
+			String[] parts = StringUtils.split(encode, _record_split_flag);
 			return decode(parts, 0);
 		}
 		return -1;
@@ -430,14 +453,67 @@ public class Session implements Bundle<String> {
 		}
 	}
 
+	public void saveRecordsToStorage() {
+		synchronized (_recordsList) {
+			for (int i = 0; i < _recordsList.size; i++) {
+				final Record recordv = _recordsList.get(i);
+				if (recordv != null && recordv.isSaved()) {
+					String result = recordv.encodeVale();
+					if (!Base64Coder.isBase64(result)) {
+						try {
+							result = new String(Base64Coder.encode(result.getBytes()), LSystem.ENCODING);
+						} catch (Throwable e) {
+							result = new String(Base64Coder.encode(result.getBytes()));
+						}
+					}
+					_save.setItem(recordv.name, result);
+				}
+			}
+		}
+	}
+
+	public TArray<Record> loadStorageToRecords(String... names) {
+		final TArray<Record> records = new TArray<Session.Record>();
+		if (names == null) {
+			return records;
+		}
+		int len = names.length;
+		for (int i = 0; i < len; i++) {
+			final String n = names[i];
+			if (n != null) {
+				records.add(loadStorageToRecord(n));
+			}
+		}
+		return records;
+	}
+
+	public Record loadStorageToRecord(String name) {
+		String result = _save.getItem(name);
+		final Record recordv = new Record(name);
+		if (result != null) {
+			if (Base64Coder.isBase64(result)) {
+				try {
+					result = new String(Base64Coder.decode(result), LSystem.ENCODING);
+				} catch (Throwable e) {
+					result = new String(Base64Coder.decode(result));
+				}
+			}
+			if (!StringUtils.isEmpty(result)) {
+				final String[] list = StringUtils.split(result, _record_split_flag);
+				recordv.decode(list);
+			}
+		}
+		return recordv;
+	}
+
 	public String encode() {
 		synchronized (_recordsList) {
 			final StrBuilder sbr = new StrBuilder();
-			sbr.append(_recordsList.size).append(flag).toString();
+			sbr.append(_recordsList.size).append(_record_split_flag).toString();
 			for (int i = 0; i < _recordsList.size; i++) {
-				final Record record = _recordsList.get(i);
-				if (record != null && record.isSaved()) {
-					sbr.append(record.encode()).toString();
+				final Record recordv = _recordsList.get(i);
+				if (recordv != null && recordv.isSaved()) {
+					sbr.append(recordv.encode()).toString();
 				}
 			}
 			return sbr.toString();

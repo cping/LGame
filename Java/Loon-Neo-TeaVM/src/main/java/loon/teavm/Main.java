@@ -13,7 +13,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		try {
-			TeaInitialize.create("testing", LauncherMain.class, false, true, TeaVMOptimizationLevel.SIMPLE,
+			TeaInitialize.create("testing", 800, 600, LauncherMain.class, false, true, TeaVMOptimizationLevel.SIMPLE,
 					TargetType.JavaScript);
 		} catch (IOException e) {
 			e.printStackTrace();
