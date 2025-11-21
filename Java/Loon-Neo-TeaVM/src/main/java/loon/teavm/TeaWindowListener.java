@@ -18,11 +18,13 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm.assets;
+package loon.teavm;
 
-import loon.teavm.TeaBlob;
+import loon.teavm.assets.AssetData;
 
-public interface AssetDownloader {
-    void load(boolean async, final String url, AssetType type, AssetLoaderListener<TeaBlob> listener);
-    void loadScript(boolean async, final String url, final AssetLoaderListener<String> listener);
+public interface TeaWindowListener {
+
+    default void filesDropped(AssetData[] files) {}
+
+    default boolean acceptFileDropped(String file) { return true; }
 }

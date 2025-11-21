@@ -20,9 +20,9 @@
  */
 package loon.teavm.assets;
 
-import loon.teavm.TeaBlob;
+import loon.teavm.TeaResourceLoader;
 
-public interface AssetDownloader {
-    void load(boolean async, final String url, AssetType type, AssetLoaderListener<TeaBlob> listener);
-    void loadScript(boolean async, final String url, final AssetLoaderListener<String> listener);
+public class QueueAsset {
+    public String assetUrl;
+    TeaResourceLoader fileResource;
 }

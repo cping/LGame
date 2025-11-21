@@ -30,6 +30,7 @@ import org.teavm.jso.dom.html.HTMLElement;
 
 import loon.LazyLoading;
 import loon.Platform;
+import loon.teavm.assets.AssetPreloader;
 
 public abstract class Loon implements Platform, LazyLoading {
 	 
@@ -50,6 +51,10 @@ public abstract class Loon implements Platform, LazyLoading {
 	}
 
 	protected static Loon self;
+	
+	public AssetPreloader getPreloader() {
+		return null;
+	}
 
 	@Override
 	public int getContainerWidth() {

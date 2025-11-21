@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import loon.teavm.assets.AssetFile;
 import loon.teavm.assets.AssetType;
+import loon.teavm.assets.AssetPreloader.FileType;
 
 public class AssetsCopy {
 
@@ -76,18 +77,18 @@ public class AssetsCopy {
 		}
 		AssetFilter defaultAssetFilter = filter != null ? filter : new DefaultAssetFilter();
 		if (assetsPath != null && assetsPath.exists() && assetsPath.isDirectory()) {
-			TeaBuilder.log("Copying assets from:");
+			TeaBuilder.print("Copying assets from:");
 			AssetFile source = assetsPath;
 			String path = source.path();
-			TeaBuilder.log(path);
+			TeaBuilder.print(path);
 			copyDirectory(source, assetsPath.assetsChildDir, target, defaultAssetFilter, assets);
 
-			TeaBuilder.log("to:");
-			TeaBuilder.log(assetsOutputPath);
+			TeaBuilder.print("to:");
+			TeaBuilder.print(assetsOutputPath);
 		}
 
-		TeaBuilder.log("to:");
-		TeaBuilder.log(assetsOutputPath);
+		TeaBuilder.print("to:");
+		TeaBuilder.print(assetsOutputPath);
 
 		return assets;
 	}
@@ -100,8 +101,8 @@ public class AssetsCopy {
 
 		if (classloader != null && classPathAssetsFiles != null) {
 			addDirectoryClassPathFiles(classPathAssetsFiles);
-			TeaBuilder.log("");
-			TeaBuilder.log("Copying assets from:");
+			TeaBuilder.print("");
+			TeaBuilder.print("Copying assets from:");
 			for (String classpathFile : classPathAssetsFiles) {
 				String path = classpathFile;
 				if (path.startsWith("/") == false) {
@@ -112,7 +113,7 @@ public class AssetsCopy {
 				AssetFilterOption op = new AssetFilterOption();
 				if (defaultAssetFilter.accept(path, false, op)) {
 					try {
-						TeaBuilder.log(classpathFile);
+						TeaBuilder.print(classpathFile);
 						InputStream is = classloader.getResourceAsStream(classpathFile);
 						if (is != null) {
 							AssetFile dest = target.child(classpathFile);
@@ -131,8 +132,8 @@ public class AssetsCopy {
 			}
 		}
 
-		TeaBuilder.log("to:");
-		TeaBuilder.log(assetsOutputPath);
+		TeaBuilder.print("to:");
+		TeaBuilder.print(assetsOutputPath);
 
 		return assets;
 	}
@@ -148,11 +149,11 @@ public class AssetsCopy {
 	}
 
 	private static void setupPreloadAssetFileFormat(Asset asset, StringBuffer buffer, String assetsOutputPath) {
-		AssetFile AssetFile = asset.file;
+		AssetFile assetFile = asset.file;
 
-		String path = AssetFile.path();
+		String path = assetFile.path();
 		path = path.replace(assetsOutputPath, "");
-		String fileTypeStr = "f";
+		String fileTypeStr = "i";
 
 		buffer.append(fileTypeStr);
 		buffer.append(":");

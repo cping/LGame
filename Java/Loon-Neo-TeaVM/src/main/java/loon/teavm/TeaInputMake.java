@@ -606,6 +606,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		root.addEventListener("touchmove", this, true);
 		root.addEventListener("touchcancel", this, true);
 		root.addEventListener("touchend", this, true);
+		
 	}
 
 	public boolean isCatchKey(int keycode) {
@@ -993,6 +994,33 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		return touchDY;
 	}
 
+	@Override
+	public void setMouseLocked(boolean locked) {
+		if (locked) {
+			if (hasMouseLock()) {
+				isRequestingMouseLock = true;
+				game.log().debug("Requesting mouse lock (supported)");
+			} else {
+				game.log().debug("Requesting mouse lock -- but unsupported");
+			}
+		} else {
+			game.log().debug("Requesting mouse unlock");
+			if (hasMouseLock()) {
+				isRequestingMouseLock = false;
+				unlockImpl();
+			}
+		}
+	}
+
+	@Override
+	@JSBody(script = "!!(document.pointerLockElement || document.webkitPointerLockElement || document.mozPointerLockElement);")
+	public native boolean isMouseLocked();
+
+	@JSBody(script = "return \r\n" + "	document.exitPointerLock = document.exitPointerLock\r\n"
+			+ "	|| document.webkitExitPointerLock || document.mozExitPointerLock;\r\n"
+			+ "document.exitPointerLock && document.exitPointerLock();")
+	private native void unlockImpl();
+
 	@JSBody(params = "element", script = "if (!element.requestPointerLock) {\n"
 			+ "   element.requestPointerLock = (function() {\n"
 			+ "       return element.webkitRequestPointerLock || element.mozRequestPointerLock;" + "   })();\n" + "}\n"
@@ -1005,6 +1033,21 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	@JSBody(params = "canvas", script = "if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {\n"
 			+ "   return true;\n" + "}\n" + "return false;")
 	private static native boolean isCursorCatchedJSNI(HTMLElement canvas);
+
+	@Override
+	@JSBody(script = "return ('ontouchstart' in document.documentElement)\r\n"
+			+ "				|| (window.navigator.userAgent.match(/ipad|iphone|android/i) != null);")
+	public native boolean hasTouch();
+
+	@Override
+	@JSBody(script = "return ('onmousedown' in document.documentElement)\r\n"
+			+ "				&& (window.navigator.userAgent.match(/ipad|iphone|android/i) == null);")
+	public native boolean hasMouse();
+
+	@Override
+	@JSBody(script = "return !!(document.body.requestPointerLock\r\n"
+			+ "				|| document.body.webkitRequestPointerLock || document.body.mozRequestPointerLock);")
+	public native boolean hasMouseLock();;
 
 	@Override
 	public void callback(LObject<?> o) {

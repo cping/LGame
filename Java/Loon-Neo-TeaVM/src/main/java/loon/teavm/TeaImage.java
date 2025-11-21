@@ -20,12 +20,18 @@
  */
 package loon.teavm;
 
+import java.io.File;
+
 import org.teavm.jso.JSBody;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.dom.events.Event;
+import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
+import org.teavm.jso.typedarrays.ArrayBuffer;
+import org.teavm.jso.typedarrays.Int8Array;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
 
 import loon.Graphics;
@@ -35,6 +41,11 @@ import loon.canvas.ImageImpl;
 import loon.canvas.LColor;
 import loon.canvas.Pattern;
 import loon.geom.Affine2f;
+import loon.teavm.TeaGame.TeaSetting;
+import loon.teavm.assets.AssetData;
+import loon.teavm.dom.ConvertUtils;
+import loon.teavm.dom.FileReaderWrapper;
+import loon.teavm.dom.HTMLDocumentExt;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
@@ -48,19 +59,13 @@ public class TeaImage extends ImageImpl {
 	@JSBody(params = "img", script = "img.complete = true;")
 	private static native void setComplete(HTMLImageElement img);
 
-	private final static String imageName = "img";
-
-	private final static String canvasName = "canvas";
-
-	private final static String canvasMethod = "2d";
-
-	public static ImageData scaleImage(HTMLImageElement image, float scale) {
+	public ImageData scaleImage(HTMLImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
 
-	public static ImageData scaleImage(HTMLImageElement image, float scaleToRatioh, float scaleToRatiow) {
-		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(canvasName);
-		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp.getContext(canvasMethod);
+	public ImageData scaleImage(HTMLImageElement image, float scaleToRatioh, float scaleToRatiow) {
+		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(setting.canvasName);
+		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp.getContext(setting.canvasMethod);
 		float ch = (image.getHeight() * scaleToRatioh);
 		float cw = (image.getWidth() * scaleToRatiow);
 		canvasTmp.setHeight((int) ch);
@@ -86,11 +91,13 @@ public class TeaImage extends ImageImpl {
 		return imageData;
 	}
 
+	private TeaSetting setting;
 	private HTMLImageElement img;
 	HTMLCanvasElement canvas;
 
-	public TeaImage(Graphics gfx, Scale scale, HTMLCanvasElement elem, String source) {
+	public TeaImage(TeaGame game, Graphics gfx, Scale scale, HTMLCanvasElement elem, String source) {
 		super(gfx, scale, elem.getWidth(), elem.getHeight(), source, elem);
+		this.setting = game.getSetting();
 		this.canvas = elem;
 	}
 
@@ -100,12 +107,22 @@ public class TeaImage extends ImageImpl {
 		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
 		if (isComplete(img)) {
 			pstate.succeed(this);
-		} else if (img != null) {
-			pixelWidth = img.getWidth();
-			pixelHeight = img.getHeight();
-			pstate.succeed(this);
 		} else {
-			pstate.fail(new RuntimeException("Error loading image " + img.getSrc()));
+			TeaBase doc = TeaBase.get();
+			doc.addEventListener("load", new EventListener<Event>() {
+				@Override
+				public void handleEvent(Event evt) {
+					pixelWidth = img.getWidth();
+					pixelHeight = img.getHeight();
+					pstate.succeed(TeaImage.this);
+				}
+			});
+			doc.addEventListener("error", new EventListener<Event>() {
+				@Override
+				public void handleEvent(Event evt) {
+					pstate.fail(new RuntimeException("Error loading image " + img.getSrc()));
+				}
+			});
 		}
 	}
 
@@ -132,7 +149,7 @@ public class TeaImage extends ImageImpl {
 
 	private void createCanvas() {
 		if (canvas == null) {
-			canvas = (HTMLCanvasElement) img.getOwnerDocument().createElement(canvasName);
+			canvas = (HTMLCanvasElement) img.getOwnerDocument().createElement(setting.canvasName);
 			canvas.setHeight(img.getHeight());
 			canvas.setWidth(img.getWidth());
 			getContext2d().drawImage(img, 0, 0);
@@ -143,7 +160,7 @@ public class TeaImage extends ImageImpl {
 		if (canvas == null) {
 			return null;
 		}
-		return (CanvasRenderingContext2D) canvas.getContext(canvasMethod);
+		return (CanvasRenderingContext2D) canvas.getContext(setting.canvasMethod);
 	}
 
 	@Override
@@ -235,7 +252,7 @@ public class TeaImage extends ImageImpl {
 
 	@Override
 	protected Object createErrorBitmap(int pixelWidth, int pixelHeight) {
-		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(imageName);
+		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(setting.imageName);
 		img.setWidth(pixelWidth);
 		img.setHeight(pixelHeight);
 		return img;

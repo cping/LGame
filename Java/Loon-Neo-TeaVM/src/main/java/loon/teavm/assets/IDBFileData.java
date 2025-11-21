@@ -20,9 +20,25 @@
  */
 package loon.teavm.assets;
 
-import loon.teavm.TeaBlob;
+import org.teavm.jso.JSBody;
+import org.teavm.jso.JSObject;
+import org.teavm.jso.JSProperty;
+import org.teavm.jso.core.JSDate;
+import org.teavm.jso.typedarrays.Int8Array;
 
-public interface AssetDownloader {
-    void load(boolean async, final String url, AssetType type, AssetLoaderListener<TeaBlob> listener);
-    void loadScript(boolean async, final String url, final AssetLoaderListener<String> listener);
+public abstract class IDBFileData implements JSObject {
+    @JSProperty
+    public abstract void setContents(byte[] contents);
+
+    @JSProperty
+    public abstract Int8Array getContents();
+
+    @JSProperty
+    public abstract int getType();
+
+    @JSProperty
+    public abstract JSDate getTimestamp();
+
+    @JSBody(params = { "type", "timestamp" }, script = "return {type: type, date: timestamp};")
+    public static native IDBFileData create(int type, JSDate timestamp);
 }

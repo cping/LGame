@@ -39,6 +39,9 @@ public class TeaSave implements Save {
 	public TeaSave(TeaGame platform) {
 		this.platform = platform;
 		Storage storage = Storage.getLocalStorage();
+		if (storage == null) {
+			storage = Storage.getSessionStorage();
+		}
 		if (storage != null) {
 			storageMap = new StorageMap(storage);
 			isPersisted = true;

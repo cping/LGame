@@ -20,6 +20,9 @@
  */
 package loon.teavm.assets;
 
+import loon.teavm.TeaBlob;
+import loon.teavm.assets.AssetPreloader.FileType;
+
 public interface AssetLoader {
 
 	void preload(String assetFileUrl, AssetLoaderListener<Void> preloadListener);
@@ -30,13 +33,13 @@ public interface AssetLoader {
 
 	boolean isAssetInQueueOrDownloading(String path);
 
-	boolean isAssetLoaded(String path);
+	boolean isAssetLoaded(FileType fileType, String path);
 
-	void loadAsset(String path, AssetType assetType);
+	void loadAsset(String path, AssetType assetType, FileType fileType);
 
-	void loadAsset(String path, AssetType assetType, AssetLoaderListener<TeaBlob> listener);
+	void loadAsset(String path, AssetType assetType, FileType fileType, AssetLoaderListener<TeaBlob> listener);
 
-	void loadAsset(String path, AssetType assetType, AssetLoaderListener<TeaBlob> listener, boolean overwrite);
+	void loadAsset(String path, AssetType assetType, FileType fileType, AssetLoaderListener<TeaBlob> listener, boolean overwrite);
 
 	void loadScript(String path);
 

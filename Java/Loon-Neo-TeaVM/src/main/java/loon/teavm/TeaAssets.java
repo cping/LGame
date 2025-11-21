@@ -20,18 +20,39 @@
  */
 package loon.teavm;
 
+import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.dom.html.HTMLDocument;
+
 import loon.Assets;
 import loon.Asyn;
 import loon.Sound;
 import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
+import loon.html5.gwt.GWTAssets.ImageManifest;
+import loon.teavm.TeaGame.TeaSetting;
+import loon.utils.Scale;
 import loon.utils.StringUtils;
 
 public class TeaAssets extends Assets {
 
-	protected TeaAssets(Asyn s) {
+	public interface ImageManifest {
+		int[] imageSize(String path);
+	}
+
+	public void setImageManifest(ImageManifest manifest) {
+		_imageManifest = manifest;
+	}
+
+	private TeaSetting _setting;
+
+	private ImageManifest _imageManifest;
+
+	private Scale _assetScale = null;
+	
+	protected TeaAssets(TeaGame g, Asyn s) {
 		super(s);
-		// TODO Auto-generated constructor stub
+		_setting = g.getSetting();
 	}
 
 	protected String getURLPath(String fileName) {
@@ -68,4 +89,13 @@ public class TeaAssets extends Assets {
 		return null;
 	}
 
+	private HTMLCanvasElement createEmptyCanvas(int w, int h) {
+		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(_setting.canvasName);
+		canvasTmp.setWidth(w);
+		canvasTmp.setHeight(h);
+		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp.getContext(_setting.canvasMethod);
+		context.setFillStyle("rgba(255,255,255,255)");
+		context.fillRect(0, 0, w, h);
+		return canvasTmp;
+	}
 }

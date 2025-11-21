@@ -18,11 +18,21 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm.assets;
+package loon.teavm.dom;
 
-import loon.teavm.TeaBlob;
+import org.teavm.jso.JSMethod;
+import org.teavm.jso.JSObject;
+import org.teavm.jso.JSProperty;
+import org.teavm.jso.file.FileList;
 
-public interface AssetDownloader {
-    void load(boolean async, final String url, AssetType type, AssetLoaderListener<TeaBlob> listener);
-    void loadScript(boolean async, final String url, final AssetLoaderListener<String> listener);
+public interface DataTransferWrapper extends JSObject {
+
+    @JSProperty
+    FileList getFiles();
+
+    @JSMethod
+    String getData(String format);
+
+    @JSMethod
+    void setData(String format, String data);
 }

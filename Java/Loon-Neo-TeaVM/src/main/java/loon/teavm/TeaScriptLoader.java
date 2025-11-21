@@ -88,4 +88,10 @@ public class TeaScriptLoader {
 		request.send();
 	}
 
+	public static boolean isURL(String src) {
+		if (src == null || src.trim().length() == 0 || src.startsWith("/")) {
+			return false;
+		}
+		return src.startsWith("file") || src.startsWith("http");
+	}
 }
