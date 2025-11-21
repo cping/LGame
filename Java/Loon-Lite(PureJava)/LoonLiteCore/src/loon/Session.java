@@ -33,13 +33,162 @@ import loon.utils.TimeUtils;
 /**
  * 游戏记录器，用于记录当前游戏数据到本地保存
  */
-public class Session implements Bundle<String> {
+public final class Session implements Bundle<String> {
 
-	private final char _record_split_flag = '&';
+	public final static Session load(String name) {
+		return new Session(name);
+	}
+
+	public final static RecordData loadRecord(String sessionName, String recordName) {
+		return new Session(sessionName).loadStorageToRecord(recordName);
+	}
+
+	public class RecordData {
+
+		protected boolean active;
+
+		private String _name;
+
+		private String[] _values;
+
+		public RecordData(String name) {
+			this(name, true);
+		}
+
+		public RecordData(String name, boolean a) {
+			this._values = new String[0];
+			this._name = name;
+			this.active = a;
+		}
+
+		public boolean isSaved() {
+			return _name != null && size() != 0;
+		}
+
+		public int size() {
+			if (_values != null) {
+				return _values.length;
+			}
+			return 0;
+		}
+
+		public int decode(String[] parts) {
+			return decode(parts, 0);
+		}
+
+		public int decode(String[] parts, int n) {
+			if (n >= parts.length) {
+				return n;
+			}
+			String v = parts[n++];
+			active = "1".equals(v);
+			if (n >= parts.length) {
+				return n;
+			}
+			int count = Integer.parseInt(parts[n++]);
+			_values = new String[count];
+			for (int i = 0; i < count; i++) {
+				if (n >= parts.length) {
+					return n;
+				}
+				_values[i] = parts[n++];
+			}
+			return n;
+		}
+
+		public TArray<String> list() {
+			final TArray<String> result = new TArray<String>();
+			for (int i = 0; i < _values.length; i++) {
+				result.add(_values[i]);
+			}
+			return result;
+		}
+
+		public String get(int index) {
+			if (index < 0 || index >= _values.length) {
+				return null;
+			} else {
+				return _values[index];
+			}
+		}
+
+		public void set(int index, final String v) {
+			if (StringUtils.isEmpty(v)) {
+				return;
+			}
+			final String vl = StringUtils.replace(v, String.valueOf(_record_split_flag), "+");
+			if (index >= _values.length) {
+				int size = index + 1;
+				final String[] res = new String[size];
+				System.arraycopy(_values, 0, res, 0, _values.length);
+				this._values = res;
+			}
+			this._values[index] = vl;
+		}
+
+		protected String encodeVale() {
+			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+			sbr.append(this.active ? "1" : "0");
+			sbr.append(_record_split_flag);
+			sbr.append(this._values.length);
+			sbr.append(_record_split_flag);
+			for (int i = 0; i < this._values.length; i++) {
+				sbr.append(this._values[i]);
+				sbr.append(_record_split_flag);
+			}
+			return sbr.toString();
+		}
+
+		public String encode() {
+			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
+			sbr.append(this._name);
+			sbr.append(_record_split_flag);
+			sbr.append(this.active ? "1" : "0");
+			sbr.append(_record_split_flag);
+			sbr.append(this._values.length);
+			sbr.append(_record_split_flag);
+			for (int i = 0; i < this._values.length; i++) {
+				sbr.append(this._values[i]);
+				sbr.append(_record_split_flag);
+			}
+			return sbr.toString();
+		}
+
+	}
+
+	private final static char _record_split_flag = LSystem.AMP;
 
 	private Save _save;
 
 	private boolean _isPersisted = false;
+
+	private String _name;
+
+	private ArrayMap _records;
+
+	private TArray<RecordData> _recordsList;
+
+	public Session(String name) {
+		this(name, true);
+	}
+
+	public Session(String name, boolean gain) {
+		if (name == null) {
+			throw new LSysException("session name can not exist !");
+		}
+		try {
+			this._save = LSystem.base().save();
+			_isPersisted = true;
+		} catch (Throwable ex) {
+			_isPersisted = false;
+		}
+		this._name = name;
+		this._records = new ArrayMap();
+		this._recordsList = new TArray<RecordData>();
+		if (gain) {
+			load();
+		}
+	}
 
 	private String loadData() {
 		if (_save == null) {
@@ -77,150 +226,13 @@ public class Session implements Bundle<String> {
 		_save.removeItem(_name);
 	}
 
-	public static Session load(String name) {
-		return new Session(name);
-	}
-
-	public final class Record {
-
-		protected boolean active;
-
-		private String name;
-
-		private String[] values;
-
-		public Record(String name) {
-			this(name, true);
-		}
-
-		public Record(String name, boolean a) {
-			this.values = new String[0];
-			this.name = name;
-			this.active = a;
-		}
-
-		public boolean isSaved() {
-			return name != null && size() != 0;
-		}
-
-		public int size() {
-			if (values != null) {
-				return values.length;
-			}
-			return 0;
-		}
-
-		public int decode(String[] parts) {
-			return decode(parts, 0);
-		}
-
-		public int decode(String[] parts, int n) {
-			if (n >= parts.length) {
-				return n;
-			}
-			String v = parts[n++];
-			active = "1".equals(v);
-			if (n >= parts.length) {
-				return n;
-			}
-			int count = Integer.parseInt(parts[n++]);
-			values = new String[count];
-			for (int i = 0; i < count; i++) {
-				if (n >= parts.length) {
-					return n;
-				}
-				values[i] = parts[n++];
-			}
-			return n;
-		}
-
-		public String get(int index) {
-			if (index < 0 || index >= values.length) {
-				return null;
-			} else {
-				return values[index];
-			}
-		}
-
-		public void set(int index, final String v) {
-			if (StringUtils.isEmpty(v)) {
-				return;
-			}
-			final String vl = StringUtils.replace(v, String.valueOf(_record_split_flag), "+");
-			if (index >= values.length) {
-				int size = index + 1;
-				String[] res = new String[size];
-				System.arraycopy(values, 0, res, 0, values.length);
-				this.values = res;
-			}
-			this.values[index] = vl;
-		}
-
-		protected String encodeVale() {
-			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
-			sbr.append(this.active ? "1" : "0");
-			sbr.append(_record_split_flag);
-			sbr.append(this.values.length);
-			sbr.append(_record_split_flag);
-			for (int i = 0; i < this.values.length; i++) {
-				sbr.append(this.values[i]);
-				sbr.append(_record_split_flag);
-			}
-			return sbr.toString();
-		}
-
-		public String encode() {
-			final StrBuilder sbr = new StrBuilder(LSystem.DEFAULT_MAX_CACHE_SIZE);
-			sbr.append(this.name);
-			sbr.append(_record_split_flag);
-			sbr.append(this.active ? "1" : "0");
-			sbr.append(_record_split_flag);
-			sbr.append(this.values.length);
-			sbr.append(_record_split_flag);
-			for (int i = 0; i < this.values.length; i++) {
-				sbr.append(this.values[i]);
-				sbr.append(_record_split_flag);
-			}
-			return sbr.toString();
-		}
-
-	}
-
-	private String _name;
-
-	private ArrayMap _records;
-
-	private TArray<Record> _recordsList;
-
-	public Session(String name) {
-		this(name, true);
-	}
-
-	public Session(String name, boolean gain) {
-		if (name == null) {
-			throw new LSysException("session name can not exist !");
-		}
-		try {
-			this._save = LSystem.base().save();
-			_isPersisted = true;
-		} catch (Throwable ex) {
-			_isPersisted = false;
-		}
-		this._name = name;
-		this._records = new ArrayMap();
-		this._recordsList = new TArray<Record>();
-		if (gain) {
-			load();
-		}
-	}
-
 	public boolean isPersisted() {
 		return _isPersisted;
 	}
 
 	public int loadEncodeSession(String encode) {
 		if (!StringUtils.isEmpty(encode)) {
-			String[] parts = StringUtils.split(encode, _record_split_flag);
+			final String[] parts = StringUtils.split(encode, _record_split_flag);
 			return decode(parts, 0);
 		}
 		return -1;
@@ -229,9 +241,9 @@ public class Session implements Bundle<String> {
 	public String getActiveID() {
 		synchronized (_recordsList) {
 			for (int i = 0; i < _recordsList.size; i++) {
-				Record record = _recordsList.get(i);
+				final RecordData record = _recordsList.get(i);
 				if (record.active) {
-					return record.name;
+					return record._name;
 				}
 			}
 			return null;
@@ -239,7 +251,7 @@ public class Session implements Bundle<String> {
 	}
 
 	public String set(int index, String vl) {
-		String name = "session_name_" + TimeUtils.millis();
+		final String name = "session_name_" + TimeUtils.millis();
 		set(name, index, vl);
 		return name;
 	}
@@ -265,9 +277,9 @@ public class Session implements Bundle<String> {
 			return this;
 		}
 		synchronized (_recordsList) {
-			Record record = (Record) _records.get(name);
+			RecordData record = (RecordData) _records.get(name);
 			if (record == null) {
-				record = new Record(name);
+				record = new RecordData(name);
 				_records.put(name, record);
 				_recordsList.add(record);
 			}
@@ -305,9 +317,9 @@ public class Session implements Bundle<String> {
 			return this;
 		}
 		synchronized (_recordsList) {
-			Record record = (Record) _records.get(name);
+			RecordData record = (RecordData) _records.get(name);
 			if (record == null) {
-				record = new Record(name);
+				record = new RecordData(name);
 				_records.put(name, record);
 				_recordsList.add(record);
 			}
@@ -331,7 +343,7 @@ public class Session implements Bundle<String> {
 
 	public String get(String name, int index) {
 		synchronized (_recordsList) {
-			Record record = (Record) _records.get(name);
+			final RecordData record = (RecordData) _records.get(name);
 			if (record == null) {
 				return null;
 			} else {
@@ -341,17 +353,17 @@ public class Session implements Bundle<String> {
 	}
 
 	public int getInt(String name, int index) {
-		String res = get(name, index);
+		final String res = get(name, index);
 		return res != null ? Integer.parseInt(res) : -1;
 	}
 
 	public float getFloat(String name, int index) {
-		String res = get(name, index);
+		final String res = get(name, index);
 		return res != null ? Float.parseFloat(res) : -1;
 	}
 
 	public boolean getBoolean(String name, int index) {
-		String res = get(name, index);
+		final String res = get(name, index);
 		return res != null ? ("1".equals(res) ? true : false) : false;
 	}
 
@@ -376,8 +388,8 @@ public class Session implements Bundle<String> {
 		synchronized (_recordsList) {
 			_records.remove(name);
 			for (int i = 0; i < _recordsList.size; i++) {
-				Record record = _recordsList.get(i);
-				if (record.name.equals(name)) {
+				final RecordData record = _recordsList.get(i);
+				if (record._name.equals(name)) {
 					_recordsList.removeIndex(i);
 					i--;
 				}
@@ -393,13 +405,13 @@ public class Session implements Bundle<String> {
 
 	@Override
 	public String get(String key, String defaultValue) {
-		String result = get(key);
+		final String result = get(key);
 		return result == null ? defaultValue : result;
 	}
 
 	@Override
 	public String remove(String key) {
-		String result = get(key);
+		final String result = get(key);
 		delete(key);
 		return result;
 	}
@@ -413,11 +425,11 @@ public class Session implements Bundle<String> {
 
 	public int getCount(String name) {
 		synchronized (_recordsList) {
-			Record record = (Record) _records.get(name);
+			final RecordData record = (RecordData) _records.get(name);
 			if (record == null) {
 				return 0;
 			} else {
-				return record.values.length;
+				return record._values.length;
 			}
 		}
 	}
@@ -437,15 +449,15 @@ public class Session implements Bundle<String> {
 			if (n >= parts.length) {
 				return n;
 			}
-			int count = Integer.parseInt(parts[n++]);
+			final int count = Integer.parseInt(parts[n++]);
 			for (int i = 0; i < count; i++) {
 				if (n >= parts.length) {
 					return n;
 				}
-				Record record = new Record(parts[n++]);
+				final RecordData record = new RecordData(parts[n++]);
 				n = record.decode(parts, n);
-				if (record.name != null && record.isSaved()) {
-					_records.put(record.name, record);
+				if (record._name != null && record.isSaved()) {
+					_records.put(record._name, record);
 					_recordsList.add(record);
 				}
 			}
@@ -456,7 +468,7 @@ public class Session implements Bundle<String> {
 	public void saveRecordsToStorage() {
 		synchronized (_recordsList) {
 			for (int i = 0; i < _recordsList.size; i++) {
-				final Record recordv = _recordsList.get(i);
+				final RecordData recordv = _recordsList.get(i);
 				if (recordv != null && recordv.isSaved()) {
 					String result = recordv.encodeVale();
 					if (!Base64Coder.isBase64(result)) {
@@ -466,14 +478,14 @@ public class Session implements Bundle<String> {
 							result = new String(Base64Coder.encode(result.getBytes()));
 						}
 					}
-					_save.setItem(recordv.name, result);
+					_save.setItem(recordv._name, result);
 				}
 			}
 		}
 	}
 
-	public TArray<Record> loadStorageToRecords(String... names) {
-		final TArray<Record> records = new TArray<Session.Record>();
+	public TArray<RecordData> loadStorageToRecords(String... names) {
+		final TArray<Session.RecordData> records = new TArray<Session.RecordData>();
 		if (names == null) {
 			return records;
 		}
@@ -487,9 +499,9 @@ public class Session implements Bundle<String> {
 		return records;
 	}
 
-	public Record loadStorageToRecord(String name) {
+	public RecordData loadStorageToRecord(String name) {
 		String result = _save.getItem(name);
-		final Record recordv = new Record(name);
+		final RecordData recordv = new RecordData(name);
 		if (result != null) {
 			if (Base64Coder.isBase64(result)) {
 				try {
@@ -511,7 +523,7 @@ public class Session implements Bundle<String> {
 			final StrBuilder sbr = new StrBuilder();
 			sbr.append(_recordsList.size).append(_record_split_flag).toString();
 			for (int i = 0; i < _recordsList.size; i++) {
-				final Record recordv = _recordsList.get(i);
+				final RecordData recordv = _recordsList.get(i);
 				if (recordv != null && recordv.isSaved()) {
 					sbr.append(recordv.encode()).toString();
 				}
@@ -528,7 +540,7 @@ public class Session implements Bundle<String> {
 
 	public Session activate(String name) {
 		synchronized (_recordsList) {
-			Record record = new Record(name);
+			final RecordData record = new RecordData(name);
 			record.active = true;
 			_records.put(name, record);
 			_recordsList.add(record);
@@ -538,7 +550,7 @@ public class Session implements Bundle<String> {
 
 	public Session clear(String name) {
 		synchronized (_recordsList) {
-			Record record = (Record) _records.remove(name);
+			final RecordData record = (RecordData) _records.remove(name);
 			if (record != null) {
 				_recordsList.remove(record);
 			}
@@ -548,7 +560,7 @@ public class Session implements Bundle<String> {
 
 	public boolean isActive(String name) {
 		synchronized (_recordsList) {
-			Record record = (Record) _records.get(name);
+			final RecordData record = (RecordData) _records.get(name);
 			if (record != null) {
 				return record.active;
 			} else {
@@ -560,7 +572,7 @@ public class Session implements Bundle<String> {
 	public Session reject(String name) {
 		synchronized (_recordsList) {
 			clear(name);
-			Record record = new Record(name);
+			final RecordData record = new RecordData(name);
 			record.active = false;
 			record.set(0, "1");
 			_records.put(name, record);
@@ -598,7 +610,7 @@ public class Session implements Bundle<String> {
 	}
 
 	public Session save() {
-		String result = encode();
+		final String result = encode();
 		if (!StringUtils.isEmpty(result)) {
 			saveData(result);
 		}
@@ -606,10 +618,10 @@ public class Session implements Bundle<String> {
 	}
 
 	public ArrayMap getRecords(int index) {
-		ArrayMap result = new ArrayMap(_records.size());
+		final ArrayMap result = new ArrayMap(_records.size());
 		for (int i = 0; i < _records.size(); i++) {
 			Entry entry = _records.getEntry(i);
-			result.put(entry.getKey(), ((Record) entry.getValue()).get(index));
+			result.put(entry.getKey(), ((RecordData) entry.getValue()).get(index));
 		}
 		return result;
 	}
@@ -658,7 +670,7 @@ public class Session implements Bundle<String> {
 	public Session dispose(String name) {
 		synchronized (_recordsList) {
 			clear(name);
-			Record record = new Record(name);
+			final RecordData record = new RecordData(name);
 			record.active = false;
 			_records.put(name, record);
 			_recordsList.add(record);
