@@ -18,12 +18,8 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm.audio;
+package loon.teavm;
 
-import org.teavm.jso.JSFunctor;
-import org.teavm.jso.JSObject;
+public class TeaAudio {
 
-@JSFunctor
-public interface HowlEventFunction extends JSObject {
-    void onEvent();
 }

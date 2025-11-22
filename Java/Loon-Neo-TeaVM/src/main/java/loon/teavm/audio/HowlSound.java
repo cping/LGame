@@ -20,6 +20,104 @@
  */
 package loon.teavm.audio;
 
+import org.teavm.jso.typedarrays.ArrayBufferView;
+
+import loon.teavm.TeaResourceLoader;
+import loon.teavm.dom.ConvertUtils;
+
 public class HowlSound {
 
+	private Howl howl;
+
+	public HowlSound(TeaResourceLoader fileHandle) {
+		byte[] bytes = fileHandle.readBytes();
+		ArrayBufferView data = ConvertUtils.getInt8Array(bytes);
+		howl = Howl.create(data);
+	}
+
+	public long play() {
+		return howl.play();
+	}
+
+	public long play(float volume) {
+		int soundId = howl.play();
+		howl.setVolume(volume, soundId);
+		return soundId;
+	}
+
+	public long play(float volume, float pitch, float pan) {
+		int soundId = howl.play();
+		howl.setVolume(volume, soundId);
+		howl.setRate(pitch, soundId);
+		howl.setStereo(pan, soundId);
+		return soundId;
+	}
+
+	public long loop() {
+		int soundId = howl.play();
+		howl.setLoop(true, soundId);
+		return soundId;
+	}
+
+	public long loop(float volume) {
+		int soundId = howl.play();
+		howl.setLoop(true, soundId);
+		howl.setVolume(volume, soundId);
+		return soundId;
+	}
+
+	public long loop(float volume, float pitch, float pan) {
+		int soundId = howl.play();
+		howl.setLoop(true, soundId);
+		howl.setVolume(volume, soundId);
+		howl.setStereo(volume, soundId);
+		return soundId;
+	}
+
+	public void stop() {
+		howl.stop();
+	}
+
+	public void pause() {
+		howl.pause();
+	}
+
+	public void resume() {
+		howl.play();
+	}
+
+	public void dispose() {
+		howl.stop();
+		howl = null;
+	}
+
+	public void stop(long soundId) {
+		howl.stop((int) soundId);
+	}
+
+	public void pause(long soundId) {
+		howl.pause((int) soundId);
+	}
+
+	public void resume(long soundId) {
+		howl.play((int) soundId);
+	}
+
+	public void setLooping(long soundId, boolean looping) {
+		howl.setLoop(looping, (int) soundId);
+	}
+
+	public void setPitch(long soundId, float pitch) {
+		howl.setRate(pitch, (int) soundId);
+	}
+
+	public void setVolume(long soundId, float volume) {
+		howl.setVolume(volume, (int) soundId);
+	}
+
+	public void setPan(long soundId, float pan, float volume) {
+		int soundIdd = (int) soundId;
+		howl.setStereo(pan, soundIdd);
+		howl.setVolume(volume, soundIdd);
+	}
 }

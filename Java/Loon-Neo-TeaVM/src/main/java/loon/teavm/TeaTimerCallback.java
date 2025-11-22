@@ -18,12 +18,23 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm.audio;
+package loon.teavm;
 
-import org.teavm.jso.JSFunctor;
-import org.teavm.jso.JSObject;
+import org.teavm.jso.browser.AnimationFrameCallback;
 
-@JSFunctor
-public interface HowlEventFunction extends JSObject {
-    void onEvent();
+public class TeaTimerCallback implements AnimationFrameCallback {
+
+	private final Runnable _runnable;
+
+	public TeaTimerCallback(Runnable r) {
+		_runnable = r;
+	}
+
+	@Override
+	public void onAnimationFrame(double timestamp) {
+		if (_runnable != null) {
+			_runnable.run();
+		}
+	}
+
 }

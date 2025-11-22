@@ -25,15 +25,35 @@ import java.util.HashMap;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
+import org.teavm.jso.dom.events.Event;
+import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
 
+import loon.LGame;
+import loon.LSetting;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.events.KeyMake.TextType;
+import loon.events.SysInput.ClickEvent;
+import loon.events.SysInput.TextEvent;
+import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetPreloader;
 
-public abstract class Loon implements Platform, LazyLoading {
-	 
+public class Loon implements Platform {
+
+	public interface OrientationChangedHandler {
+
+		void onChanged(Orientation newOrientation);
+
+	}
+
+	public static Loon register(LSetting setting, LazyLoading.Data lazy) {
+		final Loon mainApp = new Loon(setting, lazy);
+		mainApp.onMainLoop();
+		return mainApp;
+	}
+
 	private static String cur_language = null;
 
 	private static String cur_browserType = null;
@@ -44,14 +64,51 @@ public abstract class Loon implements Platform, LazyLoading {
 
 	private int _currentHandlerId = 1;
 
-	public interface OrientationChangedHandler {
+	protected static Loon self;
 
-		void onChanged(Orientation newOrientation);
+	private LazyLoading.Data mainData = null;
 
+	private LSetting setting = null;
+
+	private TeaSetting config = null;
+
+	private Loon(LSetting setting, LazyLoading.Data lazy) {
+		this.setting = setting;
+		this.mainData = lazy;
 	}
 
-	protected static Loon self;
-	
+	protected void onMainLoop() {
+		initTime();
+		initRequestAnimFrame();
+		_orientation = calculateScreenOrientation();
+		try {
+			TeaBase.get().addEventListener("orientationchange", new EventListener<Event>() {
+				@Override
+				public void handleEvent(Event evt) {
+
+					_orientation = calculateScreenOrientation();
+					for (OrientationChangedHandler handler : _handlers.values()) {
+						handler.onChanged(getOrientation());
+					}
+
+				}
+			});
+		} catch (Exception e) {
+			consoleLog("Does not support gets screen orientation .");
+			_orientation = Orientation.Landscape;
+		}
+		if (this.setting instanceof TeaSetting) {
+			config = (TeaSetting) this.setting;
+		} else {
+			config = new TeaSetting();
+			config.copy(this.setting);
+		}
+		this.setting = config;
+		if (config.fps != 60 && config.repaint == TeaGame.Repaint.AnimationScheduler) {
+			config.repaint = TeaGame.Repaint.RequestAnimationFrame;
+		}
+	}
+
 	public AssetPreloader getPreloader() {
 		return null;
 	}
@@ -85,6 +142,27 @@ public abstract class Loon implements Platform, LazyLoading {
 		void renderFrame(int delta);
 	}
 
+	@JSBody(script = "window.requestAnimFrame = (function() {\r\n" + "return window.requestAnimationFrame\r\n"
+			+ "					|| window.webkitRequestAnimationFrame\r\n"
+			+ "					|| window.mozRequestAnimationFrame\r\n"
+			+ "					|| window.oRequestAnimationFrame\r\n"
+			+ "					|| window.msRequestAnimationFrame\r\n"
+			+ "					|| function stTime(callback, element) {\r\n"
+			+ "						window.setTimeout(callback, 16);\r\n" + "					};\r\n"
+			+ "		})();\r\n" + "	\r\n" + "		window.cancelAnimationFrame = (function() {\r\n"
+			+ "			return window.cancelAnimationFrame = window.cancelAnimationFrame\r\n"
+			+ "					|| window.cancelRequestAnimationFrame\r\n"
+			+ "					|| window.msCancelRequestAnimationFrame\r\n"
+			+ "					|| window.mozCancelRequestAnimationFrame\r\n"
+			+ "					|| window.oCancelRequestAnimationFrame\r\n"
+			+ "					|| window.webkitCancelRequestAnimationFrame\r\n"
+			+ "					|| window.msCancelAnimationFrame\r\n"
+			+ "					|| window.mozCancelAnimationFrame\r\n"
+			+ "					|| window.webkitCancelAnimationFrame\r\n"
+			+ "					|| window.oCancelAnimationFrame || function etime(id) {\r\n"
+			+ "						window.clearTimeout(id);\r\n" + "					};\r\n" + "})();")
+	private native void initRequestAnimFrame();
+
 	@JSBody(params = { "thandler" }, script = "window.requestAnimationFrame(thandler);")
 	public native static void requestAnimationFrame(RenderFrameHandler aHandler);
 
@@ -96,10 +174,15 @@ public abstract class Loon implements Platform, LazyLoading {
 		closeImpl();
 	}
 
+	@JSBody(params = "msg", script = "if (typeof (window.alert) === \"function\") {\r\n"
+			+ "        window.alert.call(null, msg); \r\n" + "    }\r\n" + "    else {\r\n"
+			+ "        console.warn(\"alert is not a function\");\r\n" + "    };")
+	private native void alert(String msg);
+
 	@JSBody(script = "window.close();")
 	private static native void closeImpl();
 
-	@JSBody(script = "console.log(\"GWT: \" + message);")
+	@JSBody(script = "console.log(\"TeaVM: \" + message);")
 	public native static void consoleLog(String message);
 
 	@JSBody(script = "Date.now = Date.now || function() {\r\n" + "			return new Date().getTime();\r\n"
@@ -235,4 +318,19 @@ public abstract class Loon implements Platform, LazyLoading {
 			+ "}\r\n" + "if (\"mozFullScreen\" in document) {\r\n" + "return document.mozFullScreen;\r\n" + "}\r\n"
 			+ "return false;}\r\n")
 	public static native boolean isFullscreenJSNI();
+
+	@Override
+	public LGame getGame() {
+		return null;
+	}
+
+	@Override
+	public void sysText(TextEvent event, TextType textType, String label, String initialValue) {
+
+	}
+
+	@Override
+	public void sysDialog(ClickEvent event, String title, String text, String ok, String cancel) {
+
+	}
 }

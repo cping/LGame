@@ -20,6 +20,13 @@
  */
 package loon.teavm;
 
+import java.util.ArrayList;
+
+import org.teavm.jso.JSBody;
+import org.teavm.jso.JSExceptions;
+import org.teavm.jso.JSObject;
+import org.teavm.jso.browser.Window;
+
 import loon.Accelerometer;
 import loon.Assets;
 import loon.Asyn;
@@ -41,14 +48,8 @@ public class TeaGame extends LGame {
 
 	private static final int MIN_DELAY = 5;
 
-	/**
-	 * 由于手机版的浏览器对webgl支持实在各种奇葩，不同手机环境差异实在惊人，干脆把常用的刷新方式都写出来，用户自己选……
-	 */
 	public static enum Repaint {
-		// RequestAnimationFrame效率最高
-		// Schedule在某些情况下更适用（有间断时）
-		// AnimationScheduler本质是前两者的api混合，会等待canvas渲染后刷新，虽然效率最低，但是最稳，不容易造成webgl卡死现象
-		// 为了稳定考虑，所以默认用这个.
+
 		RequestAnimationFrame, Schedule, AnimationScheduler;
 	}
 
@@ -105,6 +106,43 @@ public class TeaGame extends LGame {
 	public TeaSetting getSetting() {
 		return null;
 	}
+
+	private TeaBase teaWindow;
+
+	private void requestAnimationFrame(float frameRate, Runnable callback) {
+		if (frameRate < 60) {
+			teaWindow.setTimeout(callback, 1000 / frameRate);
+		} else {
+			teaWindow.requestAnimationFrame(callback);
+		}
+	}
+
+	protected void onError(Throwable error) {
+		ArrayList<JSObject> errors = new ArrayList<JSObject>();
+		ArrayList<String> throwables = new ArrayList<String>();
+		Throwable root = error;
+		while (root != null) {
+			JSObject jsException = JSExceptions.getJSException(root);
+			errors.add(jsException);
+			String msg = root.getMessage();
+			if (msg == null)
+				msg = "";
+			throwables.add(root.getClass().getSimpleName() + " " + msg);
+			root = root.getCause();
+		}
+		JSObject[] errorsJS = new JSObject[errors.size()];
+		String[] exceptions = new String[errors.size()];
+		errors.toArray(errorsJS);
+		throwables.toArray(exceptions);
+		printStack(errorsJS, exceptions);
+	}
+
+	@JSBody(params = { "errors", "exceptions" }, script = ""
+			+ "console.groupCollapsed('%cFatal Error', 'color: #FF0000');" + "errors.forEach((error, i) => {\n"
+			+ "   var count = i + 1;"
+			+ "   console.log('%cException ' + count + ': ' + exceptions[i], 'color: #FF0000');"
+			+ "   console.log(error);" + "});" + "console.groupEnd();")
+	private static native void printStack(JSObject[] errors, String[] exceptions);
 
 	@Override
 	public Type type() {

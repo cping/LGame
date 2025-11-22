@@ -942,6 +942,36 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return MathUtils.iceil((y - _offset.y - _objectLocation.y) / scaleY);
 	}
 
+	public Vector2f tiledToHexagonal(int tiledX, int tiledY) {
+		return tiledToHexagonal(tiledX, tiledY, tempLocation);
+	}
+
+	public Vector2f tiledToHexagonal(int tiledX, int tiledY, Vector2f o) {
+		int tileMapY = tiledX + tiledY;
+		int parity = tileMapY & 1;
+		int tileMapX = (tiledX - tiledY - parity) >> 1;
+		o.x = tileMapX;
+		o.y = tileMapY;
+		return o;
+	}
+
+	public Vector2f hexagonalToTiled(float pX, float pY) {
+		return hexagonalToTiled(pX, pY, tempLocation);
+	}
+
+	public Vector2f hexagonalToTiled(float pX, float pY, Vector2f o) {
+		int tileMapX = MathUtils.floor(pX);
+		int tileMapY = MathUtils.floor(pY);
+		tileMapX = MathUtils.floor(tileMapX);
+		tileMapY = MathUtils.floor(tileMapY);
+		int parity = tileMapY & 1;
+		int tiledX = tileMapX + ((tileMapY + parity) >> 1);
+		int tiledY = tileMapY - tiledX;
+		o.x = tiledX;
+		o.y = tiledY;
+		return o;
+	}
+
 	@Override
 	public boolean autoXYSort() {
 		return false;

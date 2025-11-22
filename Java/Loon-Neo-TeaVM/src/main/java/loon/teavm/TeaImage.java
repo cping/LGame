@@ -20,8 +20,6 @@
  */
 package loon.teavm;
 
-import java.io.File;
-
 import org.teavm.jso.JSBody;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
@@ -30,8 +28,6 @@ import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
-import org.teavm.jso.typedarrays.ArrayBuffer;
-import org.teavm.jso.typedarrays.Int8Array;
 import org.teavm.jso.typedarrays.Uint8ClampedArray;
 
 import loon.Graphics;
@@ -42,10 +38,6 @@ import loon.canvas.LColor;
 import loon.canvas.Pattern;
 import loon.geom.Affine2f;
 import loon.teavm.TeaGame.TeaSetting;
-import loon.teavm.assets.AssetData;
-import loon.teavm.dom.ConvertUtils;
-import loon.teavm.dom.FileReaderWrapper;
-import loon.teavm.dom.HTMLDocumentExt;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 import loon.utils.reply.GoFuture;
@@ -108,6 +100,10 @@ public class TeaImage extends ImageImpl {
 		if (isComplete(img)) {
 			pstate.succeed(this);
 		} else {
+			if (img != null) {
+				pixelWidth = img.getWidth();
+				pixelHeight = img.getHeight();
+			}
 			TeaBase doc = TeaBase.get();
 			doc.addEventListener("load", new EventListener<Event>() {
 				@Override
@@ -430,7 +426,13 @@ public class TeaImage extends ImageImpl {
 
 	@Override
 	protected void closeImpl() {
-		img = null;
-		canvas = null;
+		if (img != null) {
+			img.clear();
+			img = null;
+		}
+		if (canvas != null) {
+			canvas.clear();
+			canvas = null;
+		}
 	}
 }

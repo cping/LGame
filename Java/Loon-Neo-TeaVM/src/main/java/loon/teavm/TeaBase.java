@@ -22,13 +22,14 @@ package loon.teavm;
 
 import org.teavm.jso.browser.AnimationFrameCallback;
 import org.teavm.jso.browser.Location;
+import org.teavm.jso.browser.TimerHandler;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 
 import loon.teavm.dom.HTMLDocumentExt;
 
-public class TeaBase implements AnimationFrameCallback {
+public class TeaBase implements AnimationFrameCallback, TimerHandler {
 
 	private static final TeaBase _teaWinApp = new TeaBase();
 
@@ -66,9 +67,21 @@ public class TeaBase implements AnimationFrameCallback {
 		Window.requestAnimationFrame(this);
 	}
 
+	public void setTimeout(Runnable runnable, double delay) {
+		this._runnable = runnable;
+		Window.setTimeout(this, delay);
+	}
+
+	@Override
+	public void onTimer() {
+		final Runnable toRun = _runnable;
+		_runnable = null;
+		toRun.run();
+	}
+
 	@Override
 	public void onAnimationFrame(double f) {
-		Runnable toRun = _runnable;
+		final Runnable toRun = _runnable;
 		_runnable = null;
 		toRun.run();
 	}
@@ -89,4 +102,5 @@ public class TeaBase implements AnimationFrameCallback {
 	public void addEventListener(String type, EventListener<Event> listener) {
 		_window.addEventListener(type, listener);
 	}
+
 }

@@ -20,83 +20,75 @@
  */
 package loon.teavm.audio;
 
-public class HowlMusic {
+import org.teavm.jso.typedarrays.ArrayBufferView;
 
-    private Howl howl;
+import loon.SoundImpl;
+import loon.teavm.TeaResourceLoader;
+import loon.teavm.dom.ConvertUtils;
 
-    public HowlMusic(FileHandle fileHandle) {
-        byte[] bytes = fileHandle.readBytes();
-        ArrayBufferView data = TypedArrays.getInt8Array(bytes);
-        howl = Howl.create(data);
-    }
+public class HowlMusic extends SoundImpl<Object> {
 
-    @Override
-    public void play() {
-        if(!isPlaying()) {
-            howl.play();
-        }
-    }
+	private Howl howl;
 
-    @Override
-    public void pause() {
-        howl.pause();
-    }
+	public HowlMusic(TeaResourceLoader f) {
+		byte[] bytes = f.readBytes();
+		ArrayBufferView data = ConvertUtils.getInt8Array(bytes);
+		howl = Howl.create(data);
+	}
 
-    @Override
-    public void stop() {
-        howl.stop();
-    }
+	public void pause() {
+		howl.pause();
+	}
 
-    @Override
-    public boolean isPlaying() {
-        return howl.isPlaying();
-    }
+	public boolean isLooping() {
+		return howl.getLoop();
+	}
 
-    @Override
-    public void setLooping(boolean isLooping) {
-        howl.setLoop(isLooping);
-    }
+	public float getVolume() {
+		return howl.getVolume();
+	}
 
-    @Override
-    public boolean isLooping() {
-        return howl.getLoop();
-    }
+	public void setPan(float pan, float volume) {
+		howl.setStereo(pan);
+		howl.setVolume(volume);
+	}
 
-    @Override
-    public void setVolume(float volume) {
-        howl.setVolume(volume);
-    }
+	public void setPosition(float position) {
+		howl.setSeek(position);
+	}
 
-    @Override
-    public float getVolume() {
-        return howl.getVolume();
-    }
+	public float getPosition() {
+		return howl.getSeek();
+	}
 
-    @Override
-    public void setPan(float pan, float volume) {
-        howl.setStereo(pan);
-        howl.setVolume(volume);
-    }
+	@Override
+	protected boolean playImpl() {
+		if (!isPlaying()) {
+			howl.play();
+		}
+		return isPlaying();
+	}
 
-    @Override
-    public void setPosition(float position) {
-        howl.setSeek(position);
-    }
+	@Override
+	protected void stopImpl() {
+		howl.stop();
+	}
 
-    @Override
-    public float getPosition() {
-        return howl.getSeek();
-    }
+	@Override
+	protected void setLoopingImpl(boolean looping) {
+		howl.setLoop(looping);
+	}
 
-    @Override
-    public void dispose() {
-        howl.stop();
-        howl.unload();
-        howl = null;
-    }
+	@Override
+	protected void setVolumeImpl(float volume) {
+		howl.setVolume(volume);
+	}
 
-    @Override
-    public void setOnCompletionListener(OnCompletionListener listener) {
-        howl.on("end", () -> listener.onCompletion(HowlMusic.this));
-    }
+	@Override
+	protected void releaseImpl() {
+		howl.stop();
+		howl.unload();
+		howl = null;
+	}
+
 }
