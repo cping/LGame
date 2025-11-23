@@ -29,7 +29,6 @@ import loon.Asyn;
 import loon.Sound;
 import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
-import loon.html5.gwt.GWTAssets.ImageManifest;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.utils.Scale;
 import loon.utils.StringUtils;

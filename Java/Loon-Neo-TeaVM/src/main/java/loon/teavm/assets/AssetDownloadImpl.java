@@ -40,6 +40,7 @@ public class AssetDownloadImpl implements AssetDownloader {
 	private static final int MAX_DOWNLOAD_ATTEMPT = 3;
 
 	private final boolean showLogs;
+	
 	private boolean showDownloadProgress;
 
 	public AssetDownloadImpl(boolean showDownloadLogs) {
@@ -48,7 +49,7 @@ public class AssetDownloadImpl implements AssetDownloader {
 
 	@Override
 	public void load(boolean async, String url, AssetType type, AssetLoaderListener<TeaBlob> listener) {
-		AssetLoaderListener<TeaBlob> internalListener = new AssetLoaderListener<>() {
+		AssetLoaderListener<TeaBlob> internalListener = new AssetLoaderListener<TeaBlob>() {
 			@Override
 			public void onSuccess(String url, TeaBlob result) {
 				if (showLogs) {

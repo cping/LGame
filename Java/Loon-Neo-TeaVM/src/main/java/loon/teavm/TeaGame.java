@@ -61,10 +61,11 @@ public class TeaGame extends LGame {
 
 		public String canvasMethod = "2d";
 
+		public String canvasID = "maincanvas";
+
 		public Repaint repaint = Repaint.AnimationScheduler;
 
-		// 是否支持使用flash加载资源（如果要做成静态文件包，涉及跨域问题(也就是非服务器端运行时)，所以需要禁止此项）
-		public boolean preferFlash = false;
+		public boolean showDownloadLog = false;
 
 		// 当前浏览器的渲染模式
 		public Mode mode = Mode.AUTODETECT;

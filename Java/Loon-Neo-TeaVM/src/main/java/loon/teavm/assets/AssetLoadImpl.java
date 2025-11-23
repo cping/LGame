@@ -36,6 +36,7 @@ import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 
 import loon.LSystem;
+import loon.teavm.Loon;
 import loon.teavm.TeaBlob;
 import loon.teavm.TeaGame;
 import loon.teavm.TeaGame.TeaSetting;
@@ -49,6 +50,7 @@ import loon.teavm.utils.StreamUtils;
 import loon.utils.TArray;
 
 public class AssetLoadImpl implements AssetLoader {
+
 	public int assetTotal = -1;
 
 	private static final String ASSET_FOLDER = LSystem.getPathPrefix();
@@ -65,17 +67,23 @@ public class AssetLoadImpl implements AssetLoader {
 
 	private AssetPreloader preloader;
 
-	public AssetLoadImpl(AssetPreloader preloader, String newBaseURL, TeaGame teaApplication,
-			AssetDownloader assetDownloader) {
+	private Loon loonApp;
+
+	public AssetLoadImpl(AssetPreloader preloader, String newBaseURL, Loon loon, AssetDownloader assetDownloader) {
 		this.preloader = preloader;
 		this.assetDownloader = assetDownloader;
+		loonApp = loon;
 		baseUrl = newBaseURL;
 		assetInQueue = new TArray<QueueAsset>();
 		assetDownloading = new HashSet<String>();
 	}
 
-	public void setupFileDrop(HTMLCanvasElement canvas, TeaGame teaApplication) {
-		TeaSetting config = teaApplication.getSetting();
+	public Loon getLoonApp() {
+		return loonApp;
+	}
+
+	public void setupFileDrop(HTMLCanvasElement canvas, Loon loon) {
+		TeaSetting config = loon.getConfig();
 		if (config.windowListener != null) {
 			HTMLDocument document = canvas.getOwnerDocument();
 			document.addEventListener("dragenter", new EventListener<Event>() {
@@ -306,11 +314,7 @@ public class AssetLoadImpl implements AssetLoader {
 			}
 			return;
 		}
-
-		QueueAsset queueAsset = new QueueAsset();
-		queueAsset.assetUrl = newPath;
-		queueAsset.fileResource = res;
-		assetInQueue.add(queueAsset);
+		assetInQueue.add(new QueueAsset(newPath, assetType, res));
 	}
 
 	private void downloadMultiAssets(AssetLoaderListener<TeaBlob> listener) {

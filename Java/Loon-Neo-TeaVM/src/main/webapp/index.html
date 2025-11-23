@@ -1,11 +1,34 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Main page</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <script type="text/javascript" charset="utf-8" src="teavm/classes.js"></script>
-  </head>
-  <body onload="main()">
-    <!-- TODO: add HTML content -->
-  </body>
+    <head>
+        <title>%TITLE%</title>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: #000;
+                height: 100vh;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+            #canvas {
+                border: none;
+            }
+        </style>
+    </head>
+    <body oncontextmenu="return false">
+        <div>
+            <canvas id="maincanvas"></canvas>
+        </div>
+        <script>
+            async function start() {
+                %MODE%
+            }
+            window.addEventListener("load", start);
+        </script>
+        %JS_SCRIPT%
+    </body>
 </html>

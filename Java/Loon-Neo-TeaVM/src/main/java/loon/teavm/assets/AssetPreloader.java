@@ -238,7 +238,7 @@ public class AssetPreloader {
 
 		boolean isRoot = isRootFolder(file);
 		if (debug) {
-			System.out.println("########## START LIST ### isRoot: " + isRoot + " DIR: " + dir);
+			System.out.println("********** START LIST *** isRoot: " + isRoot + " DIR: " + dir);
 		}
 		ObjectMap.Entries<String, AssetData> it = fileMap.iterator();
 		while (it.hasNext()) {
@@ -277,7 +277,7 @@ public class AssetPreloader {
 			}
 		}
 		if (debug) {
-			System.out.println("########## END LIST ###");
+			System.out.println("********** END LIST ***");
 		}
 		String[] str = new String[tmpPaths.size];
 		for (int i = 0; i < tmpPaths.size; i++) {

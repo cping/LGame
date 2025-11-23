@@ -22,13 +22,16 @@ package loon.teavm;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.teavm.jso.file.Blob;
+import org.teavm.jso.file.BlobPropertyBag;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 
 public class TeaBlob {
 
 	private ArrayBuffer response;
-	
+
 	private final Int8Array data;
 
 	public TeaBlob(ArrayBuffer response, Int8Array data) {
@@ -69,5 +72,36 @@ public class TeaBlob {
 
 			int pos;
 		};
+	}
+
+	public String toBase64(String mimeType) {
+		return "data:" + mimeType + ";base64," + toBase64();
+	}
+
+	public String toBase64() {
+		final int length = data.getLength();
+		final String base64code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+		final StringBuilder encoded = new StringBuilder(length * 4 / 3 + 2);
+		for (int i = 0; i < length; i += 3) {
+			if (length - i >= 3) {
+				int j = ((data.get(i) & 0xff) << 16) + ((data.get(i + 1) & 0xff) << 8) + (data.get(i + 2) & 0xff);
+				encoded.append(base64code.charAt((j >> 18) & 0x3f));
+				encoded.append(base64code.charAt((j >> 12) & 0x3f));
+				encoded.append(base64code.charAt((j >> 6) & 0x3f));
+				encoded.append(base64code.charAt(j & 0x3f));
+			} else if (length - i >= 2) {
+				int j = ((data.get(i) & 0xff) << 16) + ((data.get(i + 1) & 0xff) << 8);
+				encoded.append(base64code.charAt((j >> 18) & 0x3f));
+				encoded.append(base64code.charAt((j >> 12) & 0x3f));
+				encoded.append(base64code.charAt((j >> 6) & 0x3f));
+				encoded.append("=");
+			} else {
+				int j = ((data.get(i) & 0xff) << 16);
+				encoded.append(base64code.charAt((j >> 18) & 0x3f));
+				encoded.append(base64code.charAt((j >> 12) & 0x3f));
+				encoded.append("==");
+			}
+		}
+		return encoded.toString();
 	}
 }

@@ -30,8 +30,6 @@ import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.canvas.Pattern;
-import loon.canvas.Canvas.LineCap;
-import loon.canvas.Canvas.LineJoin;
 import loon.font.TextLayout;
 
 public class TeaCanvas extends Canvas {

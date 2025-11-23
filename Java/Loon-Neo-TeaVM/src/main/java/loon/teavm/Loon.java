@@ -25,10 +25,12 @@ import java.util.HashMap;
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
+import org.teavm.jso.browser.Location;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
+import org.teavm.jso.dom.html.HTMLImageElement;
 
 import loon.LGame;
 import loon.LSetting;
@@ -37,8 +39,15 @@ import loon.Platform;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
+import loon.html5.gwt.GWTProgress;
 import loon.teavm.TeaGame.TeaSetting;
+import loon.teavm.assets.AssetDownloadImpl;
+import loon.teavm.assets.AssetDownloader;
+import loon.teavm.assets.AssetLoadImpl;
+import loon.teavm.assets.AssetLoader;
 import loon.teavm.assets.AssetPreloader;
+import loon.teavm.dom.HTMLDocumentExt;
+import loon.teavm.dom.TeaWindow;
 
 public class Loon implements Platform {
 
@@ -63,6 +72,14 @@ public class Loon implements Platform {
 	private Orientation _orientation;
 
 	private int _currentHandlerId = 1;
+
+	private HTMLCanvasElement _mainCanvasElement;
+
+	private AssetDownloadImpl _assetDownloader;
+	private AssetLoadImpl _assetLoader;
+	private AssetPreloader _preloader;
+
+	protected TeaProgress _progress;
 
 	protected static Loon self;
 
@@ -107,10 +124,62 @@ public class Loon implements Platform {
 		if (config.fps != 60 && config.repaint == TeaGame.Repaint.AnimationScheduler) {
 			config.repaint = TeaGame.Repaint.RequestAnimationFrame;
 		}
+		_preloader = new AssetPreloader();
+		_assetDownloader = new AssetDownloadImpl(config.showDownloadLog);
+		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
+		_progress = new TeaProgress(this, config, 100);
+		_assetLoader.setupFileDrop(_mainCanvasElement = createCanvas(), this);
+	}
+
+	public HTMLCanvasElement getMainCanvas() {
+		return _mainCanvasElement;
+	}
+
+	protected HTMLCanvasElement createCanvas() {
+		TeaWindow window = TeaWindow.get();
+		HTMLDocumentExt document = window.getDocument();
+		HTMLElement elementID = document.getElementById(config.canvasID);
+		return (HTMLCanvasElement) elementID;
+	}
+
+	public LSetting getSetting() {
+		return setting;
+	}
+
+	public TeaSetting getConfig() {
+		return config;
 	}
 
 	public AssetPreloader getPreloader() {
-		return null;
+		return _preloader;
+	}
+
+	public AssetDownloader getAssetDownloader() {
+		return _assetDownloader;
+	}
+
+	public AssetLoader getAssetLoader() {
+		return _assetLoader;
+	}
+
+	public String getBaseUrl() {
+		TeaWindow currentWindow = TeaWindow.get();
+		Location location = currentWindow.getLocation();
+		String hostPageBaseURL = location.getFullURL();
+		if (hostPageBaseURL.contains(".html")) {
+			hostPageBaseURL = hostPageBaseURL.replace("index.html", "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-wasm.html", "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-debug.html", "");
+		} else if (hostPageBaseURL.contains(".htm")) {
+			hostPageBaseURL = hostPageBaseURL.replace("index.htm", "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-wasm.htm", "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-debug.htm", "");
+		}
+		int indexQM = hostPageBaseURL.indexOf('?');
+		if (indexQM >= 0) {
+			hostPageBaseURL = hostPageBaseURL.substring(0, indexQM);
+		}
+		return hostPageBaseURL;
 	}
 
 	@Override
@@ -173,6 +242,19 @@ public class Loon implements Platform {
 	public void close() {
 		closeImpl();
 	}
+
+	@JSBody(script = "if (!Date.now) {\r\n" + "Date.now = function now() {\r\n" + "return +(new Date);\r\n" + "};\r\n"
+			+ "}\r\n" + "return Date.now();")
+	private static native double startNow();
+
+	@JSBody(script = "return Date.now();")
+	private static native double nowTime();
+
+	@JSBody(params = "img", script = "return img.complete;")
+	protected static native boolean isComplete(HTMLImageElement img);
+
+	@JSBody(params = "img", script = "img.complete = true;")
+	protected static native void setComplete(HTMLImageElement img);
 
 	@JSBody(params = "msg", script = "if (typeof (window.alert) === \"function\") {\r\n"
 			+ "        window.alert.call(null, msg); \r\n" + "    }\r\n" + "    else {\r\n"

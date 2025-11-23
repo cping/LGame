@@ -45,12 +45,6 @@ import loon.utils.reply.GoPromise;
 
 public class TeaImage extends ImageImpl {
 
-	@JSBody(params = "img", script = "return img.complete;")
-	private static native boolean isComplete(HTMLImageElement img);
-
-	@JSBody(params = "img", script = "img.complete = true;")
-	private static native void setComplete(HTMLImageElement img);
-
 	public ImageData scaleImage(HTMLImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
@@ -97,7 +91,7 @@ public class TeaImage extends ImageImpl {
 		super(gfx, GoPromise.<Image>create(), scale, elem.getWidth(), elem.getHeight(), source);
 		img = elem;
 		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
-		if (isComplete(img)) {
+		if (Loon.isComplete(img)) {
 			pstate.succeed(this);
 		} else {
 			if (img != null) {
@@ -256,8 +250,8 @@ public class TeaImage extends ImageImpl {
 
 	@Override
 	public void upload(Graphics gfx, LTexture tex) {
-		if (!isComplete(img)) {
-			setComplete(img);
+		if (!Loon.isComplete(img)) {
+			Loon.setComplete(img);
 		}
 		((TeaGraphics) gfx).updateTexture(tex.getID(), img);
 	}

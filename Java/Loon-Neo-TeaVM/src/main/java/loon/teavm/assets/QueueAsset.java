@@ -23,6 +23,19 @@ package loon.teavm.assets;
 import loon.teavm.TeaResourceLoader;
 
 public class QueueAsset {
-    public String assetUrl;
-    TeaResourceLoader fileResource;
+
+	public boolean succeed;
+	public boolean failed;
+	public long loaded;
+
+	public final AssetType type;
+	public String assetUrl;
+	TeaResourceLoader fileResource;
+
+	public QueueAsset(String url, AssetType type,TeaResourceLoader res) {
+		this.assetUrl = url;
+		this.type = type;
+		this.fileResource = res;
+	}
+
 }
