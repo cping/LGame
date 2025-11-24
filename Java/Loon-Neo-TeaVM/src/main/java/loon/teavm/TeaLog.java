@@ -20,8 +20,32 @@
  */
 package loon.teavm;
 
-import loon.AccelerometerDefault;
+import loon.Log;
+import loon.Log.Level;
 
-public class TeaAccelerometerDefault extends AccelerometerDefault{
+public class TeaLog  extends Log {
+
+	private TeaGame _game;
+	
+	public TeaLog(TeaGame g) {
+		_game = g;
+	}
+
+	@Override
+	protected void callNativeLog(Level level, String msg, Throwable e) {
+		String lmsg = level + ": " + msg;
+		if (e != null) {
+			lmsg += ": " + e.getMessage();
+		}
+		Loon.consoleLog(lmsg);
+		if (e != null) {
+			_game.onError(e);
+		}
+	}
+
+
+	@Override
+	public void onError(Throwable e) {
+	}
 
 }

@@ -1,34 +1,98 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>%TITLE%</title>
-        <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-        <style>
-            body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                background: #000;
-                height: 100vh;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
-            }
-            #canvas {
-                border: none;
-            }
-        </style>
-    </head>
-    <body oncontextmenu="return false">
-        <div>
-            <canvas id="maincanvas"></canvas>
-        </div>
-        <script>
-            async function start() {
-                %MODE%
-            }
-            window.addEventListener("load", start);
-        </script>
-        %JS_SCRIPT%
-    </body>
+<head>
+<title>%TITLE%</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<style>
+body {
+	justify-content: center;
+	align-items: center;
+	background: #000;
+	height: 100vh;
+	margin: 0;
+	padding: 0;
+	overflow: hidden
+}
+
+#progress {
+	position: fixed;
+	display: block;
+	box-sizing: border-box;
+	position: absolute;
+	z-index: 1;
+	top: 50%;
+	left: 50%;
+	width: 500px;
+	height: 80px;
+	margin-top: -40px;
+	margin-left: -250px;
+}
+
+#progress-img {
+	padding-bottom: 5px;
+}
+
+#progress-box {
+	background: rgba(255, 255, 255, 0.1);
+	justify-content: flex-start;
+	border: 2px solid #fff;
+	align-items: center;
+	position: relative;
+	padding: 0px 5px;
+	display: flex;
+	height: 30px;
+	width: 490px;
+	float: left;
+	clear: both;
+}
+
+#progress-bar {
+	display: block;
+	box-shadow: 0 10px 30px -10px #fff;
+	background: #fff;
+	height: 20px;
+	width: 0%;
+}
+
+#canvas {
+	border: none;
+}
+</style>
+</head>
+<div>
+	<div id="progress" style="display: none;">
+		<img id="progress-img" src="startup-logo.png">
+		<div id="progress-box">
+			<div id="progress-bar" style="width: 96%;"></div>
+		</div>
+	</div>
+	<canvas id="maincanvas" width="%WINDOW%" height="%HEIGHT%"></canvas>
+</div>
+<script>
+    %MODE%
+	async function start() {
+		main()
+	}
+	var maxPercentage = 25;
+	var delay = 500;
+	var bar = document.getElementById("progress-bar");
+	if (bar) {
+		var barStyle = bar.style;
+		barStyle.width = "0%";
+		function barUpdater() {
+			var percentage = parseInt(barStyle.width, 10);
+			if (percentage < maxPercentage) {
+				percentage++;
+				barStyle.width = percentage + "%";
+				delay += 25;
+				setTimeout(barUpdater, delay);
+			}
+		}
+	}
+	setTimeout(barUpdater, delay);
+</script>
+<script>
+%JS_SCRIPT%
+</script>
+</body>
 </html>

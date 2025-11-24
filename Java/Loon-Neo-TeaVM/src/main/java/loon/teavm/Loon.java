@@ -26,6 +26,7 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.browser.Location;
+import org.teavm.jso.dom.css.CSSStyleDeclaration;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
@@ -34,12 +35,13 @@ import org.teavm.jso.dom.html.HTMLImageElement;
 
 import loon.LGame;
 import loon.LSetting;
+import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
-import loon.html5.gwt.GWTProgress;
+import loon.html5.gwt.GWTResources;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetDownloadImpl;
 import loon.teavm.assets.AssetDownloader;
@@ -47,7 +49,8 @@ import loon.teavm.assets.AssetLoadImpl;
 import loon.teavm.assets.AssetLoader;
 import loon.teavm.assets.AssetPreloader;
 import loon.teavm.dom.HTMLDocumentExt;
-import loon.teavm.dom.TeaWindow;
+import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
 public class Loon implements Platform {
 
@@ -83,15 +86,19 @@ public class Loon implements Platform {
 
 	protected static Loon self;
 
-	private LazyLoading.Data mainData = null;
+	private TeaBase _baseWindow;
 
-	private LSetting setting = null;
+	private TeaGame _game;
 
-	private TeaSetting config = null;
+	private LazyLoading.Data _mainData = null;
+
+	protected LSetting _setting = null;
+
+	protected TeaSetting _config = null;
 
 	private Loon(LSetting setting, LazyLoading.Data lazy) {
-		this.setting = setting;
-		this.mainData = lazy;
+		this._setting = setting;
+		this._mainData = lazy;
 	}
 
 	protected void onMainLoop() {
@@ -114,20 +121,20 @@ public class Loon implements Platform {
 			consoleLog("Does not support gets screen orientation .");
 			_orientation = Orientation.Landscape;
 		}
-		if (this.setting instanceof TeaSetting) {
-			config = (TeaSetting) this.setting;
+		if (this._setting instanceof TeaSetting) {
+			_config = (TeaSetting) this._setting;
 		} else {
-			config = new TeaSetting();
-			config.copy(this.setting);
+			_config = new TeaSetting();
+			_config.copy(this._setting);
 		}
-		this.setting = config;
-		if (config.fps != 60 && config.repaint == TeaGame.Repaint.AnimationScheduler) {
-			config.repaint = TeaGame.Repaint.RequestAnimationFrame;
-		}
+		_setting = _config;
+		_baseWindow = TeaBase.get();
+		_baseWindow.setTitle(_config.appName);
+		setCanvasSize(_config.getShowHeight(), _config.getShowHeight(), _config.usePhysicalPixels);
 		_preloader = new AssetPreloader();
-		_assetDownloader = new AssetDownloadImpl(config.showDownloadLog);
+		_assetDownloader = new AssetDownloadImpl(_config.showDownloadLog);
 		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
-		_progress = new TeaProgress(this, config, 100);
+		_progress = new TeaProgress(this, _config, 100);
 		_assetLoader.setupFileDrop(_mainCanvasElement = createCanvas(), this);
 	}
 
@@ -136,18 +143,38 @@ public class Loon implements Platform {
 	}
 
 	protected HTMLCanvasElement createCanvas() {
-		TeaWindow window = TeaWindow.get();
-		HTMLDocumentExt document = window.getDocument();
-		HTMLElement elementID = document.getElementById(config.canvasID);
+		HTMLDocumentExt document = _baseWindow.getDocument();
+		HTMLElement elementID = document.getElementById(_config.canvasID);
 		return (HTMLCanvasElement) elementID;
 	}
 
+	protected void mainLoop() {
+		this.createGame().start();
+	}
+
+	protected TeaGame createGame() {
+		LSystem.freeStaticObject();
+		Loon.self = this;
+		return _game = new TeaGame(this, _config);
+	}
+
+	protected TeaProgress getProgress() {
+		return _progress;
+	}
+
+	protected TeaGame initialize() {
+		if (_game != null) {
+			_game.register(_mainData.onScreen());
+		}
+		return _game;
+	}
+
 	public LSetting getSetting() {
-		return setting;
+		return _setting;
 	}
 
 	public TeaSetting getConfig() {
-		return config;
+		return _config;
 	}
 
 	public AssetPreloader getPreloader() {
@@ -163,17 +190,19 @@ public class Loon implements Platform {
 	}
 
 	public String getBaseUrl() {
-		TeaWindow currentWindow = TeaWindow.get();
-		Location location = currentWindow.getLocation();
+		if (!StringUtils.isEmpty(_config.urlBase)) {
+			return _config.urlBase;
+		}
+		Location location = _baseWindow.getLocation();
 		String hostPageBaseURL = location.getFullURL();
-		if (hostPageBaseURL.contains(".html")) {
-			hostPageBaseURL = hostPageBaseURL.replace("index.html", "");
-			hostPageBaseURL = hostPageBaseURL.replace("index-wasm.html", "");
-			hostPageBaseURL = hostPageBaseURL.replace("index-debug.html", "");
-		} else if (hostPageBaseURL.contains(".htm")) {
-			hostPageBaseURL = hostPageBaseURL.replace("index.htm", "");
-			hostPageBaseURL = hostPageBaseURL.replace("index-wasm.htm", "");
-			hostPageBaseURL = hostPageBaseURL.replace("index-debug.htm", "");
+		String ext = PathUtils.getExtension(hostPageBaseURL);
+		if (StringUtils.isEmpty(ext)) {
+			ext = "html";
+		}
+		if (hostPageBaseURL.contains("." + ext)) {
+			hostPageBaseURL = hostPageBaseURL.replace("index." + ext, "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-wasm." + ext, "");
+			hostPageBaseURL = hostPageBaseURL.replace("index-debug." + ext, "");
 		}
 		int indexQM = hostPageBaseURL.indexOf('?');
 		if (indexQM >= 0) {
@@ -203,6 +232,22 @@ public class Loon implements Platform {
 			return Orientation.Portrait;
 		} else {
 			return Orientation.Landscape;
+		}
+	}
+
+	protected void setCanvasSize(int width, int height, boolean usePhysicalPixels) {
+		double density = 1;
+		if (usePhysicalPixels) {
+			density = getNativeScreenDensity();
+		}
+		int w = (int) (width * density);
+		int h = (int) (height * density);
+		_mainCanvasElement.setWidth(w);
+		_mainCanvasElement.setHeight(h);
+		if (usePhysicalPixels) {
+			CSSStyleDeclaration style = _mainCanvasElement.getStyle();
+			style.setProperty("width", width + "px");
+			style.setProperty("height", height + "px");
 		}
 	}
 
@@ -245,10 +290,10 @@ public class Loon implements Platform {
 
 	@JSBody(script = "if (!Date.now) {\r\n" + "Date.now = function now() {\r\n" + "return +(new Date);\r\n" + "};\r\n"
 			+ "}\r\n" + "return Date.now();")
-	private static native double startNow();
+	protected static native double startNow();
 
 	@JSBody(script = "return Date.now();")
-	private static native double nowTime();
+	protected static native double nowTime();
 
 	@JSBody(params = "img", script = "return img.complete;")
 	protected static native boolean isComplete(HTMLImageElement img);
@@ -264,8 +309,9 @@ public class Loon implements Platform {
 	@JSBody(script = "window.close();")
 	private static native void closeImpl();
 
-	@JSBody(script = "console.log(\"TeaVM: \" + message);")
-	public native static void consoleLog(String message);
+	@JSBody(params = "msg", script = "if (window.console) {\r\n" + "window.console.log(msg);\r\n" + "} else {\r\n"
+			+ "document.title = \"TeaVM Log:\" + msg;\r\n}")
+	public native static void consoleLog(String msg);
 
 	@JSBody(script = "Date.now = Date.now || function() {\r\n" + "			return new Date().getTime();\r\n"
 			+ "		};\r\n" + "		window.performance = window.performance || {};\r\n"

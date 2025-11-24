@@ -27,8 +27,11 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
+import com.google.gwt.canvas.client.Canvas;
+
 import loon.LSetting;
 import loon.canvas.LColor;
+import loon.html5.gwt.preloader.Preloader.PreloaderState;
 
 public class TeaProgress {
 
@@ -43,10 +46,11 @@ public class TeaProgress {
 	private int centerX = -1, centerY = -1;
 	private int logoX = -1, logoY = -1;
 	private float currentStep;
-
+	private float maxStep = 100;
+	private double startTime;
 	protected final int canvasWidth;
 	protected final int canvasHeight;
-	private float maxStep = 100;
+
 	private Loon loonApp;
 
 	public TeaProgress(Loon loon, LSetting config, int step) {
@@ -58,6 +62,26 @@ public class TeaProgress {
 		this.pWidth = canvasWidth - 80;
 		this.centerX = (canvasWidth - pWidth) / 2;
 		this.centerY = (canvasHeight - pHeight) / 2;
+	}
+
+	public void startTime() {
+		setStartTime(Loon.startNow());
+	}
+
+	public double getStartTime() {
+		return startTime;
+	}
+
+	public void setStartTime(double time) {
+		startTime = time;
+	}
+
+	public void update(HTMLCanvasElement g, float progress) {
+		progress(g, (int) (Loon.nowTime() - startTime), (currentStep = maxStep * progress));
+	}
+
+	public void progress(HTMLCanvasElement g, final int tick, final float currentStep) {
+		render(g, tick, currentStep, maxStep);
 	}
 
 	public void render(HTMLCanvasElement g, int tick, final float currentStep, float maxStep) {

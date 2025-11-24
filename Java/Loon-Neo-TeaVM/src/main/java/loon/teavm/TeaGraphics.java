@@ -23,8 +23,6 @@ package loon.teavm;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.teavm.jso.JSBody;
-import org.teavm.jso.JSFunctor;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.dom.events.Event;
@@ -33,12 +31,10 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
 import org.teavm.jso.webgl.WebGLContextAttributes;
-import org.teavm.jso.webgl.WebGLRenderingContext;
 
 import loon.Graphics;
 import loon.LGame;
 import loon.LSystem;
-import loon.Platform.Orientation;
 import loon.canvas.Canvas;
 import loon.font.Font;
 import loon.font.TextFormat;
@@ -49,6 +45,7 @@ import loon.opengl.GL20;
 import loon.opengl.TextureSource;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.dom.HTMLDocumentExt;
+import loon.teavm.dom.WebGLContextAttributesExt;
 import loon.teavm.gl.WebGL20;
 import loon.teavm.gl.WebGLContext;
 import loon.utils.GLUtils;
@@ -81,7 +78,7 @@ public class TeaGraphics extends Graphics {
 		this.config = cfg;
 		HTMLDocumentExt doc = TeaBase.get().getDocument();
 		this.dummyCanvas = doc.createCanvasElement();
-		this.dummyCtx = (CanvasRenderingContext2D) dummyCanvas.getContext("2d");
+		this.dummyCtx = (CanvasRenderingContext2D) dummyCanvas.getContext(config.canvasMethod);
 
 		this.rootElement = root;
 
@@ -93,7 +90,7 @@ public class TeaGraphics extends Graphics {
 		measureElement.getStyle().setProperty("whiteSpace", "nowrap");
 		root.appendChild(measureElement);
 
-		canvas = (HTMLCanvasElement) TeaBase.get().getDocument().createElement("canvas");
+		canvas = (HTMLCanvasElement) TeaBase.get().getDocument().createElement(config.canvasName);
 		root.appendChild(canvas);
 		if (config.scaling()) {
 			setSize(config.width_zoom > 0 ? config.width_zoom : root.getOffsetWidth(),
@@ -102,14 +99,16 @@ public class TeaGraphics extends Graphics {
 			setSize(config.width > 0 ? config.width : root.getOffsetWidth(),
 					config.height > 0 ? config.height : root.getOffsetHeight());
 		}
-		WebGLContextAttributes attrs = WebGLContextAttributes.create();
+		
+		WebGLContextAttributesExt attrs = (WebGLContextAttributesExt) WebGLContextAttributes.create();
 		attrs.setAntialias(config.antiAliasing);
 		attrs.setStencil(config.stencil);
 		attrs.setAlpha(config.transparentCanvas);
 		attrs.setPremultipliedAlpha(config.premultipliedAlpha);
 		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
-
-		WebGLContext glc = (WebGLContext) canvas.getContext("webgl", attrs);
+		attrs.setPowerPreference(config.powerPreference);
+		
+		WebGLContext glc = (WebGLContext) canvas.getContext(config.webglMethod, attrs);
 
 		if (glc == null) {
 			throw new RuntimeException("Unable to create GL context");
@@ -132,7 +131,8 @@ public class TeaGraphics extends Graphics {
 					final float clientHeight = mainWindow.getInnerHeight();
 					if (Loon.getScreenWidthJSNI() == clientWidth && Loon.getScreenHeightJSNI() == clientHeight) {
 						float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
-						experimentalScale = Math.min(Loon.getScreenWidthJSNI() / width, Loon.getScreenHeightJSNI() / height);
+						experimentalScale = Math.min(Loon.getScreenWidthJSNI() / width,
+								Loon.getScreenHeightJSNI() / height);
 
 						int yOfs = (int) ((Loon.getScreenHeightJSNI() - height * experimentalScale) / 3.f);
 						int xOfs = (int) ((Loon.getScreenWidthJSNI() - width * experimentalScale) / 2.f);

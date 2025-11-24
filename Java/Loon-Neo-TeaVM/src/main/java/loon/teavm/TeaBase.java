@@ -50,6 +50,10 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 		return _window;
 	}
 
+	public void setTitle(String title) {
+		_window.getDocument().setTitle(title);
+	}
+
 	public float getDevicePixelRatio() {
 		return (float) _window.getDevicePixelRatio();
 	}

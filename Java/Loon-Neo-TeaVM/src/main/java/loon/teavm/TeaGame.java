@@ -26,32 +26,18 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSExceptions;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.browser.Window;
+import org.teavm.jso.dom.html.HTMLCanvasElement;
 
-import loon.Accelerometer;
-import loon.Assets;
 import loon.Asyn;
-import loon.Clipboard;
-import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
-import loon.Log;
-import loon.Platform;
-import loon.Save;
+import loon.LSystem;
 import loon.Support;
-import loon.events.InputMake;
+import loon.jni.NativeSupport;
 
 public class TeaGame extends LGame {
-	public TeaGame(LSetting config, Platform plat) {
-		super(config, plat);
-		// TODO Auto-generated constructor stub
-	}
 
 	private static final int MIN_DELAY = 5;
-
-	public static enum Repaint {
-
-		RequestAnimationFrame, Schedule, AnimationScheduler;
-	}
 
 	public static class TeaSetting extends LSetting {
 
@@ -61,11 +47,17 @@ public class TeaGame extends LGame {
 
 		public String canvasMethod = "2d";
 
+		public String webglMethod = "webgl";
+
 		public String canvasID = "maincanvas";
 
-		public Repaint repaint = Repaint.AnimationScheduler;
+		public String powerPreference = "high-performance";
+
+		public String urlBase = null;
 
 		public boolean showDownloadLog = false;
+
+		public boolean usePhysicalPixels = false;
 
 		// 当前浏览器的渲染模式
 		public Mode mode = Mode.AUTODETECT;
@@ -91,10 +83,6 @@ public class TeaGame extends LGame {
 
 		// 需要绑定的层id
 		public String rootId = "loon-root";
-
-		// 初始化时的进度条样式（不实现则默认加载）
-		// public TeaProgress progress = null;
-
 		// 如果此项为true,则仅以异步加载资源
 		public boolean asynResource = false;
 		public TeaWindowListener windowListener;
@@ -104,11 +92,93 @@ public class TeaGame extends LGame {
 		WEBGL, CANVAS, AUTODETECT;
 	}
 
-	public TeaSetting getSetting() {
-		return null;
+	private final static Support support = new NativeSupport();
+
+	static final TeaAgentInfo agentInfo = TeaWebAgent.computeAgentInfo();
+
+	private final double start;
+
+	private final TeaSetting teaconfig;
+
+	private final TeaLog log;
+	private final Asyn syn;
+	private final TeaAccelerometer accelerometer;
+	private final TeaAssets assets;
+
+	private final TeaGraphics graphics;
+	private final TeaInputMake input;
+	private final TeaSave save;
+	private final TeaClipboard clipboard;
+
+	private final Loon loonApp;
+	private boolean initTea = false;
+	private TeaBase teaWindow;
+
+	public TeaGame(Loon loon, TeaSetting config) {
+		super(config, loon);
+		this.loonApp = loon;
+		this.teaconfig = config;
+		this.start = initNow();
+		this.log = new TeaLog(this);
+		this.syn = new Asyn.Default(log, frame);
+		this.accelerometer = new TeaAccelerometer();
+		log.info("Browser orientation: " + loonApp.getOrientation());
+		log.info("Browser screen width: " + loonApp.getContainerWidth() + ", screen height: "
+				+ loonApp.getContainerHeight());
+		log.info("devicePixelRatio: " + loonApp.getNativeScreenDensity() + " backingStorePixelRatio: "
+				+ Loon.backingStorePixelRatio());
+		if (config.useRatioScaleFactor) {
+			int width = setting.width;
+			int height = setting.height;
+			double scale = loonApp.getNativeScreenDensity();
+			width *= scale;
+			height *= scale;
+			setting.width_zoom = width;
+			setting.height_zoom = height;
+			setting.updateScale();
+		} else {
+			setting.updateScale();
+		}
+		try {
+			final HTMLCanvasElement rootCanvas = loonApp.getMainCanvas();
+			graphics = new TeaGraphics(rootCanvas, this, config);
+			assets = new TeaAssets(this, syn);
+			clipboard = new TeaClipboard();
+			input = new TeaInputMake(this, rootCanvas);
+			save = new TeaSave(this);
+		} catch (Throwable e) {
+			log.error("init()", e);
+			Window.alert("failed to init(): " + e.getMessage());
+			throw new RuntimeException(e);
+		}
+		this.initProcess();
 	}
 
-	private TeaBase teaWindow;
+	public TeaSetting getSetting() {
+		return teaconfig;
+	}
+
+	public void init() {
+		if (!initTea) {
+			if (loonApp != null) {
+				loonApp.initialize();
+				LSystem.PAUSED = false;
+				initTea = true;
+			}
+		}
+	}
+
+	public void start() {
+		init();
+		requestAnimationFrame(loonApp._setting.fps, new Runnable() {
+
+			@Override
+			public void run() {
+				requestAnimationFrame(loonApp._setting.fps, this);
+				emitFrame();
+			}
+		});
+	}
 
 	private void requestAnimationFrame(float frameRate, Runnable callback) {
 		if (frameRate < 60) {
@@ -138,6 +208,10 @@ public class TeaGame extends LGame {
 		printStack(errorsJS, exceptions);
 	}
 
+	@JSBody(script = "if (!Date.now)\r\n" + "Date.now = function now() {\r\n" + "return +(new Date);\r\n" + "};\r\n"
+			+ "return Date.now();")
+	private static native double initNow();
+
 	@JSBody(params = { "errors", "exceptions" }, script = ""
 			+ "console.groupCollapsed('%cFatal Error', 'color: #FF0000');" + "errors.forEach((error, i) => {\n"
 			+ "   var count = i + 1;"
@@ -147,80 +221,152 @@ public class TeaGame extends LGame {
 
 	@Override
 	public Type type() {
-		// TODO Auto-generated method stub
-		return null;
+		return Type.HTML5;
 	}
 
 	@Override
 	public double time() {
-		// TODO Auto-generated method stub
-		return 0;
+		return Loon.nowTime();
 	}
 
 	@Override
 	public int tick() {
-		// TODO Auto-generated method stub
-		return 0;
+		return (int) (Loon.nowTime() - start);
 	}
 
 	@Override
 	public void openURL(String url) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Assets assets() {
-		// TODO Auto-generated method stub
-		return null;
+		Window.current().open(url, "_blank", "");
 	}
 
 	@Override
 	public Asyn asyn() {
-		// TODO Auto-generated method stub
-		return null;
+		return syn;
 	}
 
 	@Override
-	public Graphics graphics() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaAccelerometer accel() {
+		return accelerometer;
 	}
 
 	@Override
-	public InputMake input() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaAssets assets() {
+		return assets;
 	}
 
 	@Override
-	public Clipboard clipboard() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaGraphics graphics() {
+		return graphics;
 	}
 
 	@Override
-	public Log log() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaInputMake input() {
+		return input;
 	}
 
 	@Override
-	public Save save() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaLog log() {
+		return log;
 	}
 
 	@Override
-	public Accelerometer accel() {
-		// TODO Auto-generated method stub
-		return null;
+	public TeaSave save() {
+		return save;
+	}
+
+	@Override
+	public TeaClipboard clipboard() {
+		return clipboard;
 	}
 
 	@Override
 	public Support support() {
-		// TODO Auto-generated method stub
-		return null;
+		return support;
+	}
+
+	@Override
+	public boolean isMobile() {
+		if (loonApp == null) {
+			return false;
+		}
+		return super.isMobile() || isAndroid() || isIOS() || isBlackBerry()
+				|| agentInfo.getUserAgent().contains("mobile");
+	}
+
+	public boolean isAndroid() {
+		return isAndroidPhone() || isAndroidTablet();
+	}
+
+	public boolean isIPhone() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("iphone") && loonApp.getNativeScreenDensity() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPad() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("ipad") && loonApp.getNativeScreenDensity() < 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIOS() {
+		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
+	}
+
+	public boolean isRetina() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("iphone") && loonApp.getNativeScreenDensity() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isIPadRetina() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("ipad") && loonApp.getNativeScreenDensity() >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isDesktop() {
+		return !isIOS() && !isAndroid() && !isBlackBerry() && !agentInfo.getUserAgent().contains("mobile");
+	}
+
+	public boolean isTablet() {
+		return isIPad() || isIPadRetina() || isAndroidTablet();
+	}
+
+	public boolean isAndroidTablet() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("android") && !userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isAndroidPhone() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("android") && userAgent.contains("mobile")) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isPhone() {
+		return isIPhone() || isRetina() || isAndroidPhone();
+	}
+
+	public boolean isBlackBerry() {
+		String userAgent = agentInfo.getUserAgent();
+		if (userAgent.contains("blackberry")) {
+			return true;
+		}
+		return false;
 	}
 
 }

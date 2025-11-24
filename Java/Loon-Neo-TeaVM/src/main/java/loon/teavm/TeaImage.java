@@ -20,7 +20,6 @@
  */
 package loon.teavm;
 
-import org.teavm.jso.JSBody;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.events.Event;
@@ -78,12 +77,13 @@ public class TeaImage extends ImageImpl {
 	}
 
 	private TeaSetting setting;
-	private HTMLImageElement img;
-	HTMLCanvasElement canvas;
 
-	public TeaImage(TeaGame game, Graphics gfx, Scale scale, HTMLCanvasElement elem, String source) {
+	private HTMLImageElement img;
+	private HTMLCanvasElement canvas;
+
+	public TeaImage(Graphics gfx, Scale scale, HTMLCanvasElement elem, String source) {
 		super(gfx, scale, elem.getWidth(), elem.getHeight(), source, elem);
-		this.setting = game.getSetting();
+		this.setting = (TeaSetting) gfx.setting();
 		this.canvas = elem;
 	}
 
