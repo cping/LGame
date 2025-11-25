@@ -109,6 +109,7 @@ public class GWTGraphics extends Graphics {
 		attrs.setAlpha(config.transparentCanvas);
 		attrs.setPremultipliedAlpha(config.premultipliedAlpha);
 		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
+		attrs.setPowerPreference(config.powerPreference);
 
 		WebGLRenderingContext glc = WebGLRenderingContext.getContext(canvas, attrs);
 

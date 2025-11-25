@@ -26,8 +26,10 @@ import com.google.gwt.core.client.JavaScriptObject;
 public class WebGLContextAttributes extends JavaScriptObject {
 
 	public static native WebGLContextAttributes create() /*-{
-															return { premultipliedAlpha:false };
-															}-*/;
+		return {
+			premultipliedAlpha : false
+		};
+	}-*/;
 
 	protected WebGLContextAttributes() {
 	}
@@ -39,36 +41,36 @@ public class WebGLContextAttributes extends JavaScriptObject {
 	 * available.
 	 */
 	public final native void setAlpha(boolean alpha) /*-{
-														this.alpha = alpha;
-														}-*/;
+		this.alpha = alpha;
+	}-*/;
 
 	public final native void clearAlpha() /*-{
-											delete this.alpha;
-											}-*/;
+		delete this.alpha;
+	}-*/;
 
 	/**
 	 * Default: true. If the value is true, the drawing buffer has a depth buffer of
 	 * at least 16 bits. If the value is false, no depth buffer is available.
 	 */
 	public final native void setDepth(boolean depth) /*-{
-														this.depth = depth;
-														}-*/;
+		this.depth = depth;
+	}-*/;
 
 	public final native void clearDepth() /*-{
-											delete this.depth;
-											}-*/;
+		delete this.depth;
+	}-*/;
 
 	/**
 	 * Default: false. If the value is true, the drawing buffer has a stencil buffer
 	 * of at least 8 bits. If the value is false, no stencil buffer is available.
 	 */
 	public final native void setStencil(boolean stencil) /*-{
-															this.stencil = stencil;
-															}-*/;
+		this.stencil = stencil;
+	}-*/;
 
 	public final native void clearStencil() /*-{
-											delete this.stencil;
-											}-*/;
+		delete this.stencil;
+	}-*/;
 
 	/**
 	 * Default: true. If the value is true and the implementation supports
@@ -77,12 +79,12 @@ public class WebGLContextAttributes extends JavaScriptObject {
 	 * implementation does not support antialiasing, no antialiasing is performed.
 	 */
 	public final native void setAntialias(boolean antialias) /*-{
-																this.antialias = antialias;
-																}-*/;
+		this.antialias = antialias;
+	}-*/;
 
 	public final native void clearAntialias() /*-{
-												delete this.antialias;
-												}-*/;
+		delete this.antialias;
+	}-*/;
 
 	/**
 	 * Default: true. If the value is true the page compositor will assume the
@@ -93,14 +95,18 @@ public class WebGLContextAttributes extends JavaScriptObject {
 	 * premultipliedAlpha flag.
 	 */
 	public final native void setPremultipliedAlpha(boolean premultipliedAlpha) /*-{
-																				this.premultipliedAlpha = premultipliedAlpha;
-																				}-*/;
+		this.premultipliedAlpha = premultipliedAlpha;
+	}-*/;
 
 	public final native void clearPremultipliedAlpha() /*-{
-														delete this.premultipliedAlpha;
-														}-*/;
+		delete this.premultipliedAlpha;
+	}-*/;
 
 	public final native void setPreserveDrawingBuffer(boolean preserveDrawingBuffer) /*-{
-											this.preserveDrawingBuffer = preserveDrawingBuffer;
-											}-*/;
+		this.preserveDrawingBuffer = preserveDrawingBuffer;
+	}-*/;
+
+	public final native void setPowerPreference(String powerPreference) /*-{
+		this.powerPreference = powerPreference;
+	}-*/;
 }

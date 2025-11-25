@@ -61,67 +61,76 @@ public class AssetDownloader extends IDownloader {
 	}
 
 	public void loadText(String url, final AssetLoaderListener<String> listener) {
-		XMLHttpRequest request = XMLHttpRequest.create();
-		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
-			@Override
-			public void onReadyStateChange(XMLHttpRequest xhr) {
-				if (xhr.getReadyState() == XMLHttpRequest.DONE) {
-					if (xhr.getStatus() != 200) {
-						listener.onFailure();
-					} else {
-						listener.onSuccess(xhr.getResponseText());
+		try {
+			XMLHttpRequest request = XMLHttpRequest.create();
+			request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+				@Override
+				public void onReadyStateChange(XMLHttpRequest xhr) {
+					if (xhr.getReadyState() == XMLHttpRequest.DONE) {
+						if (xhr.getStatus() != 200) {
+							listener.onFailure();
+						} else {
+							listener.onSuccess(xhr.getResponseText());
+						}
 					}
 				}
-			}
-		});
-		setOnProgress(request, listener);
-		request.open("GET", url);
-		request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
-		request.send();
+			});
+			setOnProgress(request, listener);
+			request.open("GET", url);
+			request.setRequestHeader("Content-Type", "text/plain; charset=utf-8");
+			request.send();
+		} catch (Exception e) {
+		}
 	}
 
 	public void loadBinary(final String url, final AssetLoaderListener<Blob> listener) {
-		XMLHttpRequest request = XMLHttpRequest.create();
-		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
-			@Override
-			public void onReadyStateChange(XMLHttpRequest xhr) {
-				if (xhr.getReadyState() == XMLHttpRequest.DONE) {
-					if (xhr.getStatus() != 200) {
-						listener.onFailure();
-					} else {
-						Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
-						listener.onSuccess(new Blob(data));
+		try {
+			XMLHttpRequest request = XMLHttpRequest.create();
+			request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+				@Override
+				public void onReadyStateChange(XMLHttpRequest xhr) {
+					if (xhr.getReadyState() == XMLHttpRequest.DONE) {
+						if (xhr.getStatus() != 200) {
+							listener.onFailure();
+						} else {
+							Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
+							listener.onSuccess(new Blob(data));
+						}
 					}
 				}
-			}
-		});
-		setOnProgress(request, listener);
-		request.open("GET", url);
-		request.setResponseType(ResponseType.ArrayBuffer);
-		request.send();
+			});
+			setOnProgress(request, listener);
+			request.open("GET", url);
+			request.setResponseType(ResponseType.ArrayBuffer);
+			request.send();
+		} catch (Exception e) {
+		}
 	}
 
 	public void loadAudio(String url, final AssetLoaderListener<Void> listener) {
-		if (useBrowserCache) {
-			loadBinary(url, new AssetLoaderListener<Blob>() {
-				@Override
-				public void onProgress(double amount) {
-					listener.onProgress(amount);
-				}
+		try {
+			if (useBrowserCache) {
+				loadBinary(url, new AssetLoaderListener<Blob>() {
+					@Override
+					public void onProgress(double amount) {
+						listener.onProgress(amount);
+					}
 
-				@Override
-				public void onFailure() {
-					listener.onFailure();
-				}
+					@Override
+					public void onFailure() {
+						listener.onFailure();
+					}
 
-				@Override
-				public void onSuccess(Blob result) {
-					listener.onSuccess(null);
-				}
+					@Override
+					public void onSuccess(Blob result) {
+						listener.onSuccess(null);
+					}
 
-			});
-		} else {
-			listener.onSuccess(null);
+				});
+			} else {
+				listener.onSuccess(null);
+			}
+		} catch (Exception e) {
 		}
 	}
 
@@ -131,58 +140,61 @@ public class AssetDownloader extends IDownloader {
 
 	public void loadImage(final String url, final String mimeType, final String crossOrigin,
 			final AssetLoaderListener<ImageElement> listener) {
-		if (useBrowserCache || useInlineBase64) {
-			loadBinary(url, new AssetLoaderListener<Blob>() {
-				@Override
-				public void onProgress(double amount) {
-					listener.onProgress(amount);
-				}
-
-				@Override
-				public void onFailure() {
-					listener.onFailure();
-				}
-
-				@Override
-				public void onSuccess(Blob result) {
-					final ImageElement image = createImage();
-					if (null != crossOrigin) {
-						GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+		try {
+			if (useBrowserCache || useInlineBase64) {
+				loadBinary(url, new AssetLoaderListener<Blob>() {
+					@Override
+					public void onProgress(double amount) {
+						listener.onProgress(amount);
 					}
-					hookImgListener(image, new ImgEventListener() {
-						@Override
-						public void onEvent(NativeEvent event) {
-							if (event.getType().equals("error")) {
-								listener.onFailure();
-							} else {
-								listener.onSuccess(image);
-							}
-						}
-					});
-					if (isUseInlineBase64()) {
-						image.setSrc("data:" + mimeType + ";base64," + result.toBase64());
-					} else {
-						image.setSrc(url);
-					}
-				}
 
-			});
-		} else {
-			final ImageElement image = createImage();
-			if (null != crossOrigin) {
-				GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
-			}
-			hookImgListener(image, new ImgEventListener() {
-				@Override
-				public void onEvent(NativeEvent event) {
-					if (event.getType().equals("error")) {
+					@Override
+					public void onFailure() {
 						listener.onFailure();
-					} else {
-						listener.onSuccess(image);
 					}
+
+					@Override
+					public void onSuccess(Blob result) {
+						final ImageElement image = createImage();
+						if (null != crossOrigin) {
+							GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+						}
+						hookImgListener(image, new ImgEventListener() {
+							@Override
+							public void onEvent(NativeEvent event) {
+								if (event.getType().equals("error")) {
+									listener.onFailure();
+								} else {
+									listener.onSuccess(image);
+								}
+							}
+						});
+						if (isUseInlineBase64()) {
+							image.setSrc("data:" + mimeType + ";base64," + result.toBase64());
+						} else {
+							image.setSrc(url);
+						}
+					}
+
+				});
+			} else {
+				final ImageElement image = createImage();
+				if (null != crossOrigin) {
+					GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
 				}
-			});
-			image.setSrc(url);
+				hookImgListener(image, new ImgEventListener() {
+					@Override
+					public void onEvent(NativeEvent event) {
+						if (event.getType().equals("error")) {
+							listener.onFailure();
+						} else {
+							listener.onSuccess(image);
+						}
+					}
+				});
+				image.setSrc(url);
+			}
+		} catch (Exception e) {
 		}
 	}
 

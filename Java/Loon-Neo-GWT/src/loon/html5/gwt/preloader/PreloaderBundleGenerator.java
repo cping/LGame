@@ -41,6 +41,7 @@ import java.util.Set;
 import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.utils.Base64Coder;
+import loon.utils.PathUtils;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.ext.BadPropertyValueException;
@@ -100,6 +101,7 @@ public class PreloaderBundleGenerator extends Generator {
 		if (assetOutputPath == null) {
 			assetOutputPath = "war/";
 		}
+		info(logger, "absolute assets path : " + new File(assetPath).getAbsolutePath());
 		AssetFilter assetFilter = getAssetFilter(context);
 		ResourcesWrapper source = new ResourcesWrapper(assetPath);
 		String[] source_list = source.file().list();
@@ -144,10 +146,11 @@ public class PreloaderBundleGenerator extends Generator {
 		}
 		info(logger, "Copying resources from " + assetPath + " to " + assetOutputPath);
 		info(logger, source.file.getAbsolutePath());
-		ResourcesWrapper target = new ResourcesWrapper("assets/");
+		ResourcesWrapper target = new ResourcesWrapper(LSystem.getPathPrefix());
 		info(logger, target.file.getAbsolutePath());
-		if (!target.file.getAbsolutePath().replace("\\", "/").endsWith(assetOutputPath + "assets")) {
-			target = new ResourcesWrapper(assetOutputPath + "assets/");
+		if (!target.file.getAbsolutePath().replace("\\", "/")
+				.endsWith(assetOutputPath + LSystem.getPathPrefix().replace("\\", "/"))) {
+			target = new ResourcesWrapper(PathUtils.getCombinePaths(assetOutputPath, LSystem.getPathPrefix()));
 		}
 		if (target.exists()) {
 			if (!target.deleteDirectory()) {
@@ -458,7 +461,7 @@ public class PreloaderBundleGenerator extends Generator {
 					+ "', make sure the class is public and has a public default constructor", e);
 		}
 	}
-	
+
 	private String getAssetPath(GeneratorContext context) {
 		ConfigurationProperty assetPathProperty = null;
 		try {
@@ -698,7 +701,7 @@ public class PreloaderBundleGenerator extends Generator {
 	}
 
 	private static String getResName(String fileName) {
-		int idx = fileName.indexOf("assets/");
+		int idx = fileName.indexOf(LSystem.getPathPrefix());
 		String path = fileName;
 		if (idx != -1) {
 			path = fileName.substring(idx + 7, fileName.length());

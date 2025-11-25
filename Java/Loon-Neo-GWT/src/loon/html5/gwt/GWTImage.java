@@ -94,7 +94,15 @@ public class GWTImage extends ImageImpl {
 
 	public GWTImage(Graphics gfx, Scale scale, ImageElement elem, String source) {
 		super(gfx, GoPromise.<Image>create(), scale, elem.getWidth(), elem.getHeight(), source);
-		img = elem;
+		setImageElement(img = elem);
+	}
+
+	public GWTImage(Graphics gfx, Throwable error) {
+		super(gfx, GoFuture.<Image>failure(error), Scale.ONE, 50, 50, "<error>");
+		setBitmap(createErrorBitmap(pixelWidth, pixelHeight));
+	}
+
+	protected void setImageElement(ImageElement m) {
 		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
 		if (isComplete(img)) {
 			pstate.succeed(this);
@@ -102,6 +110,7 @@ public class GWTImage extends ImageImpl {
 			GWTInputMake.addEventListener(img, "load", new EventHandler() {
 				@Override
 				public void handleEvent(NativeEvent evt) {
+					setComplete(img);
 					pixelWidth = img.getWidth();
 					pixelHeight = img.getHeight();
 					pstate.succeed(GWTImage.this);
@@ -114,11 +123,6 @@ public class GWTImage extends ImageImpl {
 				}
 			}, false);
 		}
-	}
-
-	public GWTImage(Graphics gfx, Throwable error) {
-		super(gfx, GoFuture.<Image>failure(error), Scale.ONE, 50, 50, "<error>");
-		setBitmap(createErrorBitmap(pixelWidth, pixelHeight));
 	}
 
 	public ImageElement imageElement() {

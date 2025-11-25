@@ -14,9 +14,10 @@ import com.google.gwt.core.linker.CrossSiteIframeLinker;
 
 public class AssetCacheLinker extends CrossSiteIframeLinker {
 
-	private static final HashSet<String> DEFAULT_EXTENSION_WHITELIST = new HashSet<String>(Arrays.asList(new String[] {
-			"js", "an", "cfg", "pack", "fnt", "txt", "text", "atlas", "html", "bmp", "jpg", "jpeg", "png", "gif", "mp3",
-			"ogg", "mov", "avi", "wmv", "wav", "webm", "css", "xml", "json", "flv", "swf" }));
+	private static final HashSet<String> DEFAULT_EXTENSION_WHITELIST = new HashSet<String>(
+			Arrays.asList(new String[] { "js", "an", "cfg", "pack", "fnt", "txt", "text", "atlas", "html", "bmp", "jpg",
+					"jpeg", "png", "gif", "mp3", "ogg", "mov", "avi", "wmv", "wav", "webm", "css", "xml", "tmj", "bdf",
+					"ttf", "atlas", "json", "flv", "swf" }));
 
 	private static final String MANIFEST = "assetcache.nocache.manifest";
 

@@ -20,6 +20,7 @@ public class LocalAssetResources {
 			this.obj = o;
 		}
 
+		@Override
 		public String toString() {
 			String ext = LSystem.getExtension(url).toLowerCase();
 			StringBuilder sbr = new StringBuilder();

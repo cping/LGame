@@ -38,6 +38,7 @@ import loon.html5.gwt.preloader.Preloader;
 import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
 import loon.utils.MathUtils;
+import loon.utils.PathUtils;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
@@ -71,12 +72,12 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}
 
 		public native String getKey() /*-{
-										return this["k"];
-										}-*/;
+			return this["k"];
+		}-*/;
 
 		public native String getValue() /*-{
-										return this["v"];
-										}-*/;
+			return this["v"];
+		}-*/;
 	}
 
 	public interface OrientationChangedEvent {
@@ -259,8 +260,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	private native JsArray<JavaScriptObject> loadJavaScriptResources(LocalAssetResources res) /*-{
-										return new $wnd.LocalResources().running(res);
-										}-*/;
+		return new $wnd.LocalResources().running(res);
+	}-*/;
 
 	Preloader loadResources(final PreloaderCallback callback, final LocalAssetResources localRes) {
 		this.preloader = createPreloader(localRes);
@@ -296,12 +297,16 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	public abstract void onMain();
 
 	public String getPreloaderBaseURL() {
-		return GWT.getHostPageBaseURL() + "assets/";
+		return GWT.getHostPageBaseURL();
 	}
 
 	public Preloader createPreloader(LocalAssetResources res) {
-		return new Preloader(getPreloaderBaseURL(), res);
+		return new Preloader(PathUtils.getCombinePaths(getPreloaderBaseURL(), LSystem.getPathPrefix()), res);
 	}
+
+	private static native String getFullURL()/*-{
+		return $wnd.location.href;
+	}-*/;
 
 	private static native void initTime()
 	/*-{
@@ -386,8 +391,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}-*/;
 
 	public native static void consoleLog(String message) /*-{
-															console.log("GWT: " + message);
-															}-*/;
+		console.log("GWT: " + message);
+	}-*/;
 
 	@Override
 	public void sysText(final SysInput.TextEvent event, final KeyMake.TextType textType, final String label,
@@ -446,11 +451,11 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	private native void registerOrientationChangedHandler(OrientationChangedEvent handler) /*-{
-												var callback = function() {
-												handler.@loon.html5.gwt.Loon.OrientationChangedEvent::onOrientationChanged()();
-												}
-												$wnd.addEventListener("orientationchange", callback, false);
-												}-*/;
+		var callback = function() {
+			handler.@loon.html5.gwt.Loon.OrientationChangedEvent::onOrientationChanged()();
+		}
+		$wnd.addEventListener("orientationchange", callback, false);
+	}-*/;
 
 	public boolean isMobile() {
 		return isAndroid() || isIOS() || isBlackBerry() || getUserAgent().contains("mobile");
@@ -462,12 +467,12 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native boolean isPortrait() /*-{
-											var result = false;
-											if ($wnd.orientation != null && $wnd.orientation == 0) {
-											result = true;
-											}
-											return result;
-											}-*/;
+		var result = false;
+		if ($wnd.orientation != null && $wnd.orientation == 0) {
+			result = true;
+		}
+		return result;
+	}-*/;
 
 	/**
 	 * 通过orientation属性取得屏幕是否横屏，若浏览器不支持orientation,有可能取不到
@@ -475,13 +480,13 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native boolean isLandscape() /*-{
-											var result = false;
-											if ($wnd.orientation != null
-											&& ($wnd.orientation == 90 || orientation == -90)) {
-											result = true;
-											}
-											return result;
-											}-*/;
+		var result = false;
+		if ($wnd.orientation != null
+				&& ($wnd.orientation == 90 || orientation == -90)) {
+			result = true;
+		}
+		return result;
+	}-*/;
 
 	/**
 	 * 若同时取不到横竖，则判定为不支持
@@ -491,8 +496,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public native float getOrientationValue() /*-{
-												return $wnd.orientation || 0;
-												}-*/;
+		return $wnd.orientation || 0;
+	}-*/;
 
 	private Orientation calculateScreenOrientation() {
 		return isPortrait() ? Orientation.Portrait : Orientation.Landscape;
@@ -511,8 +516,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native int getJSNIScreenWidth() /*-{
-												return $wnd.screen.width || 0;
-												}-*/;
+		return $wnd.screen.width || 0;
+	}-*/;
 
 	/**
 	 * 屏幕[完整高度]
@@ -520,8 +525,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native int getJSNIScreenHeight() /*-{
-												return $wnd.screen.height || 0;
-												}-*/;
+		return $wnd.screen.height || 0;
+	}-*/;
 
 	/**
 	 * 屏幕[可用宽度]
@@ -529,8 +534,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native int getJSNIAvailWidth() /*-{
-												return $wnd.screen.availWidth || 0;
-												}-*/;
+		return $wnd.screen.availWidth || 0;
+	}-*/;
 
 	/**
 	 * 屏幕[可用高度]
@@ -538,62 +543,62 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * @return
 	 */
 	protected native int getJSNIAvailHeight() /*-{
-												return $wnd.screen.availHeight || 0;
-												}-*/;
+		return $wnd.screen.availHeight || 0;
+	}-*/;
 
 	public native static float devicePixelRatio() /*-{
-													return $wnd.devicePixelRatio || 1;
-													}-*/;
+		return $wnd.devicePixelRatio || 1;
+	}-*/;
 
 	public native static float backingStorePixelRatio() /*-{
-														return $wnd.webkitBackingStorePixelRatio || 1;
-														}-*/;
+		return $wnd.webkitBackingStorePixelRatio || 1;
+	}-*/;
 
 	public boolean supportsDisplayModeChange() {
 		return supportsFullscreenJSNI();
 	}
 
 	private native boolean supportsFullscreenJSNI() /*-{
-													if ("fullscreenEnabled" in $doc) {
-													return $doc.fullscreenEnabled;
-													}
-													if ("webkitFullscreenEnabled" in $doc) {
-													return $doc.webkitFullscreenEnabled;
-													}
-													if ("mozFullScreenEnabled" in $doc) {
-													return $doc.mozFullScreenEnabled;
-													}
-													if ("msFullscreenEnabled" in $doc) {
-													return $doc.msFullscreenEnabled;
-													}
-													return false;
-													}-*/;
+		if ("fullscreenEnabled" in $doc) {
+			return $doc.fullscreenEnabled;
+		}
+		if ("webkitFullscreenEnabled" in $doc) {
+			return $doc.webkitFullscreenEnabled;
+		}
+		if ("mozFullScreenEnabled" in $doc) {
+			return $doc.mozFullScreenEnabled;
+		}
+		if ("msFullscreenEnabled" in $doc) {
+			return $doc.msFullscreenEnabled;
+		}
+		return false;
+	}-*/;
 
 	public boolean isFullscreen() {
 		return isFullscreenJSNI();
 	}
 
 	private native boolean isFullscreenJSNI() /*-{
-												if ("fullscreenElement" in $doc) {
-												return $doc.fullscreenElement != null;
-												}
-												if ("msFullscreenElement" in $doc) {
-												return $doc.msFullscreenElement != null;
-												}
-												if ("webkitFullscreenElement" in $doc) {
-												return $doc.webkitFullscreenElement != null;
-												}
-												if ("mozFullScreenElement" in $doc) {
-												return $doc.mozFullScreenElement != null;
-												}
-												if ("webkitIsFullScreen" in $doc) {
-												return $doc.webkitIsFullScreen;
-												}
-												if ("mozFullScreen" in $doc) {
-												return $doc.mozFullScreen;
-												}
-												return false
-												}-*/;
+		if ("fullscreenElement" in $doc) {
+			return $doc.fullscreenElement != null;
+		}
+		if ("msFullscreenElement" in $doc) {
+			return $doc.msFullscreenElement != null;
+		}
+		if ("webkitFullscreenElement" in $doc) {
+			return $doc.webkitFullscreenElement != null;
+		}
+		if ("mozFullScreenElement" in $doc) {
+			return $doc.mozFullScreenElement != null;
+		}
+		if ("webkitIsFullScreen" in $doc) {
+			return $doc.webkitIsFullScreen;
+		}
+		if ("mozFullScreen" in $doc) {
+			return $doc.mozFullScreen;
+		}
+		return false
+	}-*/;
 
 	public boolean isHdpi() {
 		return devicePixelRatio() == 1.5;
@@ -604,8 +609,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public native String getUserAgent() /*-{
-										return $wnd.navigator.userAgent.toLowerCase();
-										}-*/;
+		return $wnd.navigator.userAgent.toLowerCase();
+	}-*/;
 
 	public boolean isAndroid() {
 		return isAndroidPhone() || isAndroidTablet();
@@ -738,8 +743,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public native boolean isStandalone() /*-{
-											return $wnd.navigator.standalone;
-											}-*/;
+		return $wnd.navigator.standalone;
+	}-*/;
 
 	private static native void initRequestAnimFrame()
 	/*-{
@@ -753,7 +758,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 						$wnd.setTimeout(callback, 16);
 					};
 		})();
-	
+
 		$wnd.cancelAnimationFrame = (function() {
 			return $wnd.cancelAnimationFrame = $wnd.cancelAnimationFrame
 					|| $wnd.cancelRequestAnimationFrame

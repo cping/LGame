@@ -60,6 +60,10 @@ public final class Blob {
 		};
 	}
 
+	public String toBase64(String mimeType) {
+		return "data:" + mimeType + ";base64," + toBase64();
+	}
+
 	public String toBase64() {
 		int length = data.length();
 		String base64code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";

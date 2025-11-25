@@ -93,6 +93,9 @@ public final class GWTGame extends LGame {
 		// 需要绑定的层id
 		public String rootId = "loon-root";
 
+		// webgl模式
+		public String powerPreference = "high-performance";
+
 		// 初始化时的进度条样式（不实现则默认加载）
 		public GWTProgress progress = null;
 
@@ -162,7 +165,7 @@ public final class GWTGame extends LGame {
 	private final static Support support = new NativeSupport();
 
 	static final AgentInfo agentInfo = computeAgentInfo();
-	
+
 	final GWTSetting gwtconfig;
 
 	private final double start;
@@ -232,7 +235,7 @@ public final class GWTGame extends LGame {
 
 	private void init() {
 		if (!initGwt) {
-			if (game != null ) {
+			if (game != null) {
 				game.initialize();
 				LSystem.PAUSED = false;
 				initGwt = true;

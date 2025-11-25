@@ -3,6 +3,7 @@ package loon.html5.gwt.preloader;
 import loon.LSystem;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.utils.ObjectMap;
+import loon.utils.PathUtils;
 
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.NativeEvent;
@@ -87,7 +88,7 @@ public class LocalAssetDownloader extends IDownloader {
 			text = res.get(LSystem.getFileName(path));
 		}
 		if (text == null) {
-			text = res.get(LSystem.getFileName(path = ("assets/" + path)));
+			text = res.get(LSystem.getFileName(path = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path)));
 		}
 		if (text == null) {
 			if (tryInline) {
@@ -156,7 +157,7 @@ public class LocalAssetDownloader extends IDownloader {
 			blob = res.get(LSystem.getFileName(path));
 		}
 		if (blob == null) {
-			blob = res.get(LSystem.getFileName(path = ("assets/" + path)));
+			blob = res.get(LSystem.getFileName(path = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path)));
 		}
 		if (blob == null) {
 			if (tryInline) {

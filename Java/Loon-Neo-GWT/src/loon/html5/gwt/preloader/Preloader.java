@@ -35,6 +35,7 @@ import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.html5.gwt.preloader.IDownloader.AssetLoaderListener;
 import loon.utils.Array;
 import loon.utils.ObjectMap;
+import loon.utils.PathUtils;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
@@ -126,7 +127,8 @@ public class Preloader implements LRelease {
 		} else {
 			loader = new LocalAssetDownloader(localRes);
 		}
-		loader.loadText(baseUrl + assetFileUrl, new AssetLoaderListener<String>() {
+		final String assetPath = PathUtils.getCombinePaths(baseUrl, assetFileUrl);
+		loader.loadText(assetPath, new AssetLoaderListener<String>() {
 			@Override
 			public void onProgress(double amount) {
 			}
@@ -138,7 +140,7 @@ public class Preloader implements LRelease {
 
 			@Override
 			public void onSuccess(String result) {
-				Array<Asset> assets = new Array<Asset>();
+				final Array<Asset> assets = new Array<Asset>();
 				boolean inline = result.startsWith("list:");
 				if (inline) {
 					String context = result.substring(5, result.length());
@@ -195,8 +197,8 @@ public class Preloader implements LRelease {
 						asset.succeed = true;
 						continue;
 					}
-					loader.load(inline ? asset.url : baseUrl + asset.url, asset.type, asset.mimeType,
-							new AssetLoaderListener<Object>() {
+					loader.load(inline ? asset.url : PathUtils.getCombinePaths(baseUrl, asset.url), asset.type,
+							asset.mimeType, new AssetLoaderListener<Object>() {
 								@Override
 								public void onProgress(double amount) {
 									asset.loaded = (long) amount;
