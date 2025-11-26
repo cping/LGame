@@ -1,5 +1,5 @@
 ![LGame Logo](https://raw.github.com/cping/LGame/master/loon_logo.svg)
-## Loon Game Engine (Java Game Framework)
+## 🎮 Loon Game — A Java Game Framework (Java Game Engine)
 ![LGame](https://raw.github.com/cping/LGame/master/engine_logo.png "engine_logo")
 [![License](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 

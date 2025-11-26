@@ -89,31 +89,7 @@ public class TeaImage extends ImageImpl {
 
 	public TeaImage(Graphics gfx, Scale scale, HTMLImageElement elem, String source) {
 		super(gfx, GoPromise.<Image>create(), scale, elem.getWidth(), elem.getHeight(), source);
-		img = elem;
-		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
-		if (Loon.isComplete(img)) {
-			pstate.succeed(this);
-		} else {
-			if (img != null) {
-				pixelWidth = img.getWidth();
-				pixelHeight = img.getHeight();
-			}
-			TeaBase doc = TeaBase.get();
-			doc.addEventListener("load", new EventListener<Event>() {
-				@Override
-				public void handleEvent(Event evt) {
-					pixelWidth = img.getWidth();
-					pixelHeight = img.getHeight();
-					pstate.succeed(TeaImage.this);
-				}
-			});
-			doc.addEventListener("error", new EventListener<Event>() {
-				@Override
-				public void handleEvent(Event evt) {
-					pstate.fail(new RuntimeException("Error loading image " + img.getSrc()));
-				}
-			});
-		}
+		setImageElement(img = elem);
 	}
 
 	public TeaImage(Graphics gfx, Throwable error) {
@@ -123,6 +99,32 @@ public class TeaImage extends ImageImpl {
 
 	public HTMLImageElement imageElement() {
 		return img;
+	}
+
+	protected void setImageElement(HTMLImageElement img) {
+		final GoPromise<Image> pstate = ((GoPromise<Image>) state);
+		if (Loon.isComplete(img)) {
+			pstate.succeed(this);
+		} else {
+			if (img != null) {
+				pixelWidth = img.getWidth();
+				pixelHeight = img.getHeight();
+			}
+			img.addEventListener("load", new EventListener<Event>() {
+				@Override
+				public void handleEvent(Event evt) {
+					pixelWidth = img.getWidth();
+					pixelHeight = img.getHeight();
+					pstate.succeed(TeaImage.this);
+				}
+			});
+			img.addEventListener("error", new EventListener<Event>() {
+				@Override
+				public void handleEvent(Event evt) {
+					pstate.fail(new RuntimeException("Error loading image " + img.getSrc()));
+				}
+			});
+		}
 	}
 
 	TeaImage preload(int prePixelWidth, int prePixelHeight) {

@@ -26,6 +26,7 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSFunctor;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.browser.Location;
+import org.teavm.jso.browser.Window;
 import org.teavm.jso.dom.css.CSSStyleDeclaration;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
@@ -38,10 +39,10 @@ import loon.LSetting;
 import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.events.Updateable;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
-import loon.html5.gwt.GWTResources;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetDownloadImpl;
 import loon.teavm.assets.AssetDownloader;
@@ -288,6 +289,21 @@ public class Loon implements Platform {
 		closeImpl();
 	}
 
+	public void setFullscreen(boolean f) {
+		if (f) {
+			enterFullscreen(_mainCanvasElement, getScreenWidthJSNI(), getScreenHeightJSNI());
+		} else {
+			exitFullscreen();
+		}
+	}
+
+	public boolean isFocused() {
+		return TeaBase.get().getDocument().getActiveElement() == _mainCanvasElement;
+	}
+
+	@JSBody(script = "return (\"ontouchstart\" in window) || navigator.maxTouchPoints > 0;")
+	protected static native boolean isTouchScreen();
+
 	@JSBody(script = "if (!Date.now) {\r\n" + "Date.now = function now() {\r\n" + "return +(new Date);\r\n" + "};\r\n"
 			+ "}\r\n" + "return Date.now();")
 	protected static native double startNow();
@@ -447,18 +463,79 @@ public class Loon implements Platform {
 			+ "return false;}\r\n")
 	public static native boolean isFullscreenJSNI();
 
+	@JSBody(params = { "element", "url", "filename" }, script = "element.href = url;\r\n"
+			+ "element.download = filename;")
+	private static native void downloadFile(HTMLElement element, String url, String filename);
+
+	protected static void download(String fileName, String url) {
+		HTMLElement docAhref = TeaBase.get().getDocument().createElement("a");
+		downloadFile(docAhref, url, fileName);
+		docAhref.click();
+		docAhref.setDir(url);
+	}
+
+	protected static void downloadText(String fileName, String text) {
+		download(fileName, "data:text/plain;charset=utf-8," + text);
+	}
+
 	@Override
 	public LGame getGame() {
-		return null;
+		return _game;
 	}
 
 	@Override
-	public void sysText(TextEvent event, TextType textType, String label, String initialValue) {
+	public void sysText(final TextEvent event, final TextType textType, final String label, final String initialValue) {
+		if (_game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+
+				String result = Window.prompt(label, initialValue);
+				if (_game.input() instanceof TeaInputMake) {
+					((TeaInputMake) _game.input()).emitFakeMouseUp();
+				}
+				if (result != null) {
+					event.input(result);
+				} else {
+					event.cancel();
+				}
+			}
+		});
 
 	}
 
 	@Override
-	public void sysDialog(ClickEvent event, String title, String text, String ok, String cancel) {
+	public void sysDialog(final ClickEvent event, final String title, final String text, final String ok,
+			final String cancel) {
+		if (_game == null) {
+			event.cancel();
+			return;
+		}
+		LSystem.load(new Updateable() {
+
+			@Override
+			public void action(Object a) {
+				boolean result;
+				if (cancel != null)
+					result = Window.confirm(text);
+				else {
+					Window.alert(text);
+					result = true;
+				}
+				if (_game.input() instanceof TeaInputMake) {
+					((TeaInputMake) _game.input()).emitFakeMouseUp();
+				}
+				if (result) {
+					event.clicked();
+				} else {
+					event.cancel();
+				}
+			}
+		});
 
 	}
 }

@@ -606,7 +606,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		root.addEventListener("touchmove", this, true);
 		root.addEventListener("touchcancel", this, true);
 		root.addEventListener("touchend", this, true);
-		
+
 	}
 
 	public boolean isCatchKey(int keycode) {
@@ -1010,6 +1010,10 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 				unlockImpl();
 			}
 		}
+	}
+
+	void emitFakeMouseUp() {
+		mouseEvents.emit(new MouseMake.ButtonEvent(0, game.time(), 0, 0, SysTouch.LEFT, false));
 	}
 
 	@Override

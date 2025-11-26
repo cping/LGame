@@ -27,4 +27,5 @@ public abstract class HTMLElementExt extends HTMLElement {
 
 	@JSProperty
     public abstract HTMLElement getOffsetParent();
+	
 }
