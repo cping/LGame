@@ -21,17 +21,30 @@
 package loon.teavm;
 
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.HTMLImageElement;
 
 import loon.Assets;
 import loon.Asyn;
+import loon.LSystem;
 import loon.Sound;
 import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
+import loon.opengl.TextureSource;
 import loon.teavm.TeaGame.TeaSetting;
+import loon.teavm.assets.AssetData;
+import loon.teavm.assets.AssetPreloader;
+import loon.utils.Base64Coder;
+import loon.utils.CollectionUtils;
+import loon.utils.ObjectMap;
+import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
+import loon.utils.html.HtmlImage;
+import loon.utils.res.loaders.PreloadAssets;
+import loon.utils.res.loaders.PreloadLoader;
 
 public class TeaAssets extends Assets {
 
@@ -43,15 +56,18 @@ public class TeaAssets extends Assets {
 		_imageManifest = manifest;
 	}
 
+	private TeaGame _game;
+
 	private TeaSetting _setting;
 
 	private ImageManifest _imageManifest;
 
 	private Scale _assetScale = null;
-	
+
 	protected TeaAssets(TeaGame g, Asyn s) {
-		super(s);
-		_setting = g.getSetting();
+		super(g.asyn());
+		this._game = g;
+		setPathPrefixEmpty();
 	}
 
 	protected String getURLPath(String fileName) {
@@ -66,19 +82,116 @@ public class TeaAssets extends Assets {
 
 	@Override
 	public String getTextSync(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		final AssetPreloader assets = Loon.self.getPreloader();
+		TeaResourceLoader gwtFile = assets.internal(path);
+		if (gwtFile.exists()) {
+			return gwtFile.readString();
+		}
+		AssetData tmp = assets.getInternal(path = gwtFile.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			_game.log().warn("file " + path + " not found");
+		}
+		return new String(tmp.getBytes(), LSystem.ENCODING);
 	}
 
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		final AssetPreloader assets = Loon.self.getPreloader();
+		TeaResourceLoader gwtFile = assets.internal(path);
+		if (gwtFile.exists()) {
+			return gwtFile.readBytes();
+		}
+		AssetData tmp = assets.getInternal(path = gwtFile.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			_game.log().warn("file " + path + " not found");
+		}
+		return CollectionUtils.copyOf(tmp.getBytes());
+	}
+
+	private Scale assetScale() {
+		return (_assetScale != null) ? _assetScale : _game.graphics().scale();
 	}
 
 	@Override
 	protected Data load(String path) throws Exception {
-		// TODO Auto-generated method stub
+		if (path == null || TextureSource.RenderCanvas.equals(path)) {
+			return null;
+		}
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		Exception error = null;
+		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
+			try {
+				HTMLImageElement image = localImageElement(path);
+				Scale viewScale = _game.graphics().scale(), imageScale = rsrc.scale;
+				float viewImageRatio = viewScale.factor / imageScale.factor;
+				if (viewImageRatio < 1f) {
+					ImageData data = TeaImage.scaleImage(image, viewImageRatio);
+					HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+					img.setWidth(data.getWidth());
+					img.setHeight(data.getHeight());
+					image = img;
+					imageScale = viewScale;
+				}
+				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
+			} catch (Exception fnfe) {
+				error = fnfe;
+			}
+		}
+		_game.log().warn("Could not load image: " + path + " [error=" + error + "]");
+		throw error != null ? error : new Exception(path);
+	}
+
+	private HTMLImageElement localImageElement(String path) {
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		final AssetPreloader assets = Loon.self.getPreloader();
+		TeaResourceLoader files = assets.internal(path);
+		AssetData tmp = assets.getInternal(path = files.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(LSystem.getFileName(path = files.path()));
+		}
+		if (tmp == null) {
+			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			_game.log().warn("file " + path + " not found");
+		} else {
+			return createImage("image/" + PathUtils.getExtension(path), tmp.getBytes());
+		}
 		return null;
 	}
 
@@ -86,6 +199,16 @@ public class TeaAssets extends Assets {
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	private final static String getFixPath(String path) {
+		return PathUtils.normalizeCombinePaths(LSystem.getPathPrefix(), path);
+	}
+
+	private HTMLImageElement createImage(String mimeType, byte[] bytes) {
+		HTMLImageElement imageTmp = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+		imageTmp.setSrc("data:" + mimeType + ";base64," + Base64Coder.encode(bytes));
+		return imageTmp;
 	}
 
 	private HTMLCanvasElement createEmptyCanvas(int w, int h) {

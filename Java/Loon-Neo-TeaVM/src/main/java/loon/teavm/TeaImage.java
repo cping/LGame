@@ -44,13 +44,15 @@ import loon.utils.reply.GoPromise;
 
 public class TeaImage extends ImageImpl {
 
-	public ImageData scaleImage(HTMLImageElement image, float scale) {
+	public static ImageData scaleImage(HTMLImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
 
-	public ImageData scaleImage(HTMLImageElement image, float scaleToRatioh, float scaleToRatiow) {
-		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(setting.canvasName);
-		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp.getContext(setting.canvasMethod);
+	public static ImageData scaleImage(HTMLImageElement image, float scaleToRatioh, float scaleToRatiow) {
+		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current()
+				.createElement(Loon.self._config.canvasName);
+		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp
+				.getContext(Loon.self._config.canvasMethod);
 		float ch = (image.getHeight() * scaleToRatioh);
 		float cw = (image.getWidth() * scaleToRatiow);
 		canvasTmp.setHeight((int) ch);

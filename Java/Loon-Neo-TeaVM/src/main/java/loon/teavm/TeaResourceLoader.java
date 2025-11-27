@@ -30,6 +30,8 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
+import loon.LSystem;
+import loon.teavm.assets.AssetData;
 import loon.teavm.assets.AssetPreloader;
 import loon.teavm.assets.AssetPreloader.FileType;
 import loon.teavm.utils.StreamUtils;
@@ -148,15 +150,12 @@ public class TeaResourceLoader {
 	}
 
 	public String readString() {
-		return readString(null);
+		return readString(LSystem.ENCODING);
 	}
 
 	public String readString(String charset) {
-		if (preloader.isText(file)) {
-			return preloader.loadText(file);
-		}
 		try {
-			return new String(readBytes(), "UTF-8");
+			return new String(readBytes(), charset);
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
@@ -229,7 +228,11 @@ public class TeaResourceLoader {
 	}
 
 	public boolean isDirectory() {
-		return preloader.isDirectory(file);
+		AssetData data = preloader.getInternal(file);
+		if (data != null) {
+			return data.isDirectory();
+		}
+		return false;
 	}
 
 	public TeaResourceLoader child(String name) {

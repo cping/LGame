@@ -457,6 +457,7 @@ public class Line extends Shape {
 		return inRect(rect.getX(), rect.getY(), rect.getZ(), rect.getW());
 	}
 
+	@Override
 	public boolean inRect(float x, float y, float w, float h) {
 		return CollisionHelper.checkLinevsAABB(getX1(), getY1(), getX2(), getY2(), x, y, w, h);
 	}

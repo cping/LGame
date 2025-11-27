@@ -430,6 +430,20 @@ public class Ellipse extends Shape {
 		boundingCircleRadius = MathUtils.max(_radius1, _radius2);
 	}
 
+	public Affine2f toAffine2f() {
+		final float rad = MathUtils.toRadians(rotation);
+		final float cos = MathUtils.cos(rad);
+		final float sin = MathUtils.sin(rad);
+		Affine2f aff = new Affine2f();
+		aff.m00 = cos * this._radius1;
+		aff.m01 = sin * this._radius2;
+		aff.m10 = -sin * this._radius1;
+		aff.m11 = cos * this._radius2;
+		aff.tx = 0f;
+		aff.ty = 0f;
+		return aff;
+	}
+
 	public float getStart() {
 		return _start;
 	}

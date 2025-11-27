@@ -114,6 +114,8 @@ public class TeaGame extends LGame {
 	private boolean initTea = false;
 	private TeaBase teaWindow;
 
+	private int _frameID = 0;
+
 	public TeaGame(Loon loon, TeaSetting config) {
 		super(config, loon);
 		this.loonApp = loon;
@@ -170,22 +172,26 @@ public class TeaGame extends LGame {
 
 	public void start() {
 		init();
-		requestAnimationFrame(loonApp._setting.fps, new Runnable() {
+		_frameID = requestAnimationFrame(loonApp._setting.fps, new Runnable() {
 
 			@Override
 			public void run() {
-				requestAnimationFrame(loonApp._setting.fps, this);
+				_frameID = requestAnimationFrame(loonApp._setting.fps, this);
 				emitFrame();
 			}
 		});
 	}
 
-	private void requestAnimationFrame(float frameRate, Runnable callback) {
+	private int requestAnimationFrame(float frameRate, Runnable callback) {
 		if (frameRate < 60) {
-			teaWindow.setTimeout(callback, 1000 / frameRate);
+			return teaWindow.setTimeout(callback, 1000 / frameRate);
 		} else {
-			teaWindow.requestAnimationFrame(callback);
+			return teaWindow.requestAnimationFrame(callback);
 		}
+	}
+
+	private void cancelLoop() {
+		teaWindow.cancelLoop(_frameID);
 	}
 
 	protected void onError(Throwable error) {

@@ -38,7 +38,6 @@ import org.teavm.jso.typedarrays.Int8Array;
 import loon.LSystem;
 import loon.teavm.Loon;
 import loon.teavm.TeaBlob;
-import loon.teavm.TeaGame;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.TeaResourceLoader;
 import loon.teavm.assets.AssetPreloader.FileType;

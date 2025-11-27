@@ -1667,6 +1667,16 @@ public class RectBox extends Shape implements BoxSize, SetXYZW, XYZW {
 		return this;
 	}
 
+	public float distToPoint(Vector2f p) {
+		return MathUtils.sqrt(this.sdistToPoint(p));
+	}
+
+	public float sdistToPoint(Vector2f p) {
+		float dx = MathUtils.max(getMinX() - p.x, 0, p.x - getMaxX());
+		float dy = MathUtils.max(getMinY() - p.y, 0, p.y - getMaxY());
+		return dx * dx + dy * dy;
+	}
+
 	public DirtyRect getDirtyRect() {
 		return new DirtyRect(this);
 	}

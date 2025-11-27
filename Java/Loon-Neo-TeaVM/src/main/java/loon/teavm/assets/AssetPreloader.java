@@ -28,6 +28,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.html5.gwt.GWTResourcesLoader;
+import loon.html5.gwt.GWTResources.FileType;
 import loon.teavm.TeaResourceLoader;
 import loon.utils.ObjectMap;
 import loon.utils.OrderedMap;
@@ -46,6 +48,14 @@ public class AssetPreloader {
 		Absolute,
 
 		Local;
+	}
+
+	public TeaResourceLoader classpath(String path) {
+		return new TeaResourceLoader(this, path, FileType.Classpath);
+	}
+
+	public TeaResourceLoader internal(String path) {
+		return new TeaResourceLoader(this, path, FileType.Internal);
 	}
 
 	public boolean debug = false;
@@ -189,6 +199,16 @@ public class AssetPreloader {
 		return files;
 	}
 
+	public boolean get(String url) {
+		AssetData fileData = fileMap.get(url);
+		boolean flag = fileData != null;
+		if (debug) {
+			String type = fileData != null && fileData.isDirectory() ? " CONTAINS FOLDER: " : " CONTAINS FILE: ";
+			System.out.println(getClass().getSimpleName() + type + flag + " Path: " + url);
+		}
+		return flag;
+	}
+
 	public boolean contains(String url) {
 		AssetData fileData = fileMap.get(url);
 		boolean flag = fileData != null;
@@ -294,30 +314,6 @@ public class AssetPreloader {
 		return str;
 	}
 
-	public String loadText(String url) {
-		return null;
-	}
-
-	public boolean isText(String url) {
-		return false;
-	}
-
-	public boolean isImage(String url) {
-		return false;
-	}
-
-	public boolean isBinary(String url) {
-		return false;
-	}
-
-	public boolean isAudio(String url) {
-		return false;
-	}
-
-	public boolean isDirectory(String url) {
-		return false;
-	}
-
 	final public AssetData removeInternal(String path) {
 		return removeInternal(path, true);
 	}
@@ -332,7 +328,7 @@ public class AssetPreloader {
 		return fileData;
 	}
 
-	final protected AssetData getInternal(String path) {
+	public final AssetData getInternal(String path) {
 		AssetData fileData = fileMap.get(path);
 		if (debug) {
 			path = "\"" + path + "\"";
