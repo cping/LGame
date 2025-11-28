@@ -190,6 +190,7 @@ public abstract class LGame implements LRelease {
 
 	public LGame(LSetting config, final Platform plat) {
 		LGame._platform = plat;
+		LGame._base = this;
 		this._mesh_all_pools = new TArray<Mesh>(DEF_TEXTURE_CACHE_SIZE);
 		this._shader_all_pools = new TArray<ShaderProgram>(DEF_TEXTURE_CACHE_SIZE);
 		this._framebuffer_all_pools = new TArray<GLFrameBuffer>(DEF_TEXTURE_CACHE_SIZE);
@@ -377,8 +378,6 @@ public abstract class LGame implements LRelease {
 
 	/**
 	 * 刷新Shader数据
-	 * 
-	 * @param game
 	 */
 	public void resetShader() {
 		Mesh.invalidate(this);

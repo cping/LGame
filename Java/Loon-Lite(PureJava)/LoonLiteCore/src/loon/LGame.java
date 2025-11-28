@@ -184,6 +184,7 @@ public abstract class LGame implements LRelease {
 
 	public LGame(LSetting config, final Platform plat) {
 		LGame._platform = plat;
+		LGame._base = this;
 		this._mesh_all_pools = new TArray<Mesh>(DEF_TEXTURE_CACHE_SIZE);
 		this._texture_batch_pools = new IntMap<LTextureBatch>(DEF_TEXTURE_CACHE_SIZE);
 		this._texture_lazys = new ObjectMap<String, LTexture>(DEF_TEXTURE_CACHE_SIZE);

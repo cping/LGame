@@ -31,6 +31,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 
+import loon.LSystem;
 import loon.html5.gwt.GWTResources.FileType;
 import loon.html5.gwt.preloader.Preloader;
 
@@ -138,7 +139,7 @@ public class GWTResourcesLoader {
 			return preloader.texts.get(file);
 		}
 		try {
-			return new String(readBytes(), "UTF-8");
+			return new String(readBytes(), LSystem.ENCODING);
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}

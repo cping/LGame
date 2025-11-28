@@ -482,10 +482,6 @@ public class AndroidAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 		this.assetMgr = game.activity.getResources().getAssets();
-		final String newPath = getPathPrefix();
-		if (newPath.equals("assets\\") || newPath.equals("assets/")) {
-			this.setPathPrefixEmpty();
-		}
 	}
 
 	public void setAssetScale(float scaleFactor) {

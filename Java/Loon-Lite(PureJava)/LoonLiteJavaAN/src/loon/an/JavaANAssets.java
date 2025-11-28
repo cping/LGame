@@ -457,10 +457,6 @@ public class JavaANAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 		this.assetMgr = game.mainPlatform.getResAssets();
-		final String newPath = getPathPrefix();
-		if (newPath.equals("assets\\") || newPath.equals("assets/")) {
-			this.setPathPrefixEmpty();
-		}
 	}
 
 	public void setAssetScale(float scaleFactor) {

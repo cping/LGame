@@ -29,6 +29,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.html5.gwt.GWTResourcesLoader;
 import loon.html5.gwt.GWTResources.FileType;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
@@ -246,7 +247,7 @@ public class Preloader implements LRelease {
 	public InputStream read(String url) {
 		if (texts.containsKey(url)) {
 			try {
-				return new ByteArrayInputStream(texts.get(url).getBytes("UTF-8"));
+				return new ByteArrayInputStream(texts.get(url).getBytes(LSystem.ENCODING));
 			} catch (UnsupportedEncodingException e) {
 				return null;
 			}
@@ -343,7 +344,7 @@ public class Preloader implements LRelease {
 	public long length(String url) {
 		if (texts.containsKey(url)) {
 			try {
-				return texts.get(url).getBytes("UTF-8").length;
+				return texts.get(url).getBytes(LSystem.ENCODING).length;
 			} catch (UnsupportedEncodingException e) {
 				return texts.get(url).getBytes().length;
 			}

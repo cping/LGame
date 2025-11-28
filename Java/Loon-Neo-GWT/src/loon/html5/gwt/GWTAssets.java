@@ -347,8 +347,6 @@ public class GWTAssets extends Assets {
 		this.game = game;
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
 			setPathPrefix(PathUtils.normalizeCombinePaths(GWT.getModuleBaseForStaticFiles(), LSystem.getPathPrefix()));
-		} else {
-			setPathPrefixEmpty();
 		}
 	}
 

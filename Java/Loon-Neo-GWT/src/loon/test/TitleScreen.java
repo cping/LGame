@@ -21,9 +21,9 @@ public class TitleScreen extends Screen {
 
 	public void onLoad() {
 		new AnimationData(new long[] { 0, 0 });
-		setBackground("assets/back1.png");
+		setBackground("back1.png");
 
-		start = new LButton("assets/title_start.png", 191, 57) {
+		start = new LButton("title_start.png", 191, 57) {
 
 			ActionKey action = new ActionKey(ActionKey.DETECT_INITIAL_PRESS_ONLY);
 
@@ -41,7 +41,7 @@ public class TitleScreen extends Screen {
 
 		add(start);
 
-		LButton btn2 = new LButton("assets/title_load.png", 160, 56);
+		LButton btn2 = new LButton("title_load.png", 160, 56);
 
 		btn2.setLocation(2, start.getY() + start.getHeight() + 20);
 
@@ -49,7 +49,7 @@ public class TitleScreen extends Screen {
 
 		add(btn2);
 
-		LButton btn3 = new LButton("assets/title_option.png", 215, 57);
+		LButton btn3 = new LButton("title_option.png", 215, 57);
 
 		btn3.setLocation(2, btn2.getY() + btn2.getHeight() + 20);
 
@@ -57,7 +57,7 @@ public class TitleScreen extends Screen {
 
 		add(btn3);
 
-		end = new LButton("assets/title_end.png", 142, 57) {
+		end = new LButton("title_end.png", 142, 57) {
 			public void doClick() {
 
 			}
@@ -69,7 +69,7 @@ public class TitleScreen extends Screen {
 
 		add(end);
 
-		title = new LPaper("assets/title.png", -200, 0);
+		title = new LPaper("title.png", -200, 0);
 
 		add(title);
 	}
