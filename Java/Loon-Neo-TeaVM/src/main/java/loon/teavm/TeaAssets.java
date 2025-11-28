@@ -25,6 +25,7 @@ import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
+import org.teavm.jso.dom.xml.Document;
 
 import loon.Assets;
 import loon.Asyn;
@@ -36,6 +37,7 @@ import loon.opengl.TextureSource;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetData;
 import loon.teavm.assets.AssetPreloader;
+import loon.teavm.audio.HowlMusic;
 import loon.utils.Base64Coder;
 import loon.utils.CollectionUtils;
 import loon.utils.ObjectMap;
@@ -76,8 +78,30 @@ public class TeaAssets extends Assets {
 
 	@Override
 	public Sound getSound(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		final AssetPreloader assets = Loon.self.getPreloader();
+		TeaResourceLoader gwtFile = assets.internal(path);
+		if (gwtFile.exists()) {
+			return new HowlMusic(gwtFile);
+		}
+		boolean result = assets.contains(path = gwtFile.path());
+		String finalPath = path;
+		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			result = assets.contains(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			result = assets.contains(finalPath = LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (!result) {
+			result = assets.contains(finalPath = LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (!result) {
+			_game.log().warn("file " + path + " not found");
+		}
+		return new HowlMusic(assets.internal(finalPath));
 	}
 
 	@Override
@@ -197,8 +221,9 @@ public class TeaAssets extends Assets {
 
 	@Override
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
-		// TODO Auto-generated method stub
-		return null;
+		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+		img.setSrc(source);
+		return new TeaImage(_game.graphics(), _game.graphics().scale(), img, source);
 	}
 
 	private final static String getFixPath(String path) {

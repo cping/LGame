@@ -152,7 +152,27 @@ public class GWTAssets extends Assets {
 			path = getFixPath(path);
 		}
 		GWTResourcesLoader gwtFile = Loon.self.resources.internal(path);
-		return new GWTSound(gwtFile.path());
+		if (gwtFile.exists()) {
+			return new GWTSound(gwtFile.path());
+		}
+		ObjectMap<String, Void> res = gwtFile.preloader.audio;
+		boolean result = res.containsKey(path = gwtFile.path());
+		String finalPath = path;
+		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			result = res.containsKey(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			result = res.containsKey(finalPath = LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (!result) {
+			result = res.containsKey(finalPath = LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (!result) {
+			game.log().warn("file " + path + " not found");
+			return new GWTSound(path);
+		} else {
+			return new GWTSound(finalPath);
+		}
 	}
 
 	@Override
@@ -288,19 +308,20 @@ public class GWTAssets extends Assets {
 		}
 		ObjectMap<String, Blob> res = gwtFile.preloader.binaries;
 		Blob tmp = res.get(path = gwtFile.path());
+		String finalPath = path;
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+			tmp = res.get(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
 		}
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
+			tmp = res.get(finalPath = LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
+			tmp = res.get(finalPath = LSystem.getFileName(path = (getFixPath(path))));
 		}
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
 		}
-		return Loon.self.resources.internal(path).readBytes();
+		return Loon.self.resources.internal(finalPath).readBytes();
 	}
 
 	@Override

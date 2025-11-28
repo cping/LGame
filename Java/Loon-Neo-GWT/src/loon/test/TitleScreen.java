@@ -41,7 +41,7 @@ public class TitleScreen extends Screen {
 
 		add(start);
 
-		LButton btn2 = new LButton("title_load.png", 160, 56);
+		LButton btn2 = new LButton("assets/title_load.png", 160, 56);
 
 		btn2.setLocation(2, start.getY() + start.getHeight() + 20);
 

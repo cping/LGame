@@ -28,8 +28,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import loon.html5.gwt.GWTResourcesLoader;
-import loon.html5.gwt.GWTResources.FileType;
 import loon.teavm.TeaResourceLoader;
 import loon.utils.ObjectMap;
 import loon.utils.OrderedMap;
