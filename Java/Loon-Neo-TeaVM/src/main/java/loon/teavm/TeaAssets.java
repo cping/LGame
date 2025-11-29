@@ -24,8 +24,8 @@ import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
-import org.teavm.jso.dom.xml.Document;
 
 import loon.Assets;
 import loon.Asyn;
@@ -40,13 +40,9 @@ import loon.teavm.assets.AssetPreloader;
 import loon.teavm.audio.HowlMusic;
 import loon.utils.Base64Coder;
 import loon.utils.CollectionUtils;
-import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
-import loon.utils.html.HtmlImage;
-import loon.utils.res.loaders.PreloadAssets;
-import loon.utils.res.loaders.PreloadLoader;
 
 public class TeaAssets extends Assets {
 
@@ -222,6 +218,8 @@ public class TeaAssets extends Assets {
 	@Override
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
 		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+		img.setWidth(rawWidth);
+		img.setHeight(rawHeight);
 		img.setSrc(source);
 		return new TeaImage(_game.graphics(), _game.graphics().scale(), img, source);
 	}
@@ -230,13 +228,13 @@ public class TeaAssets extends Assets {
 		return PathUtils.normalizeCombinePaths(LSystem.getPathPrefix(), path);
 	}
 
-	private HTMLImageElement createImage(String mimeType, byte[] bytes) {
+	protected HTMLImageElement createImage(String mimeType, byte[] bytes) {
 		HTMLImageElement imageTmp = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
 		imageTmp.setSrc("data:" + mimeType + ";base64," + Base64Coder.encode(bytes));
 		return imageTmp;
 	}
 
-	private HTMLCanvasElement createEmptyCanvas(int w, int h) {
+	protected HTMLCanvasElement createEmptyCanvas(int w, int h) {
 		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(_setting.canvasName);
 		canvasTmp.setWidth(w);
 		canvasTmp.setHeight(h);

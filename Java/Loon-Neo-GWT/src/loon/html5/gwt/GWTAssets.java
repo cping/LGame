@@ -135,17 +135,29 @@ public class GWTAssets extends Assets {
 	public Sound getSound(String path) {
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
 			String url = getFixPath(path);
-			PreloaderBundle clientBundle = getBundle(path);
-			if (clientBundle != null) {
-				String key = toKey(path);
-				DataResource resource = (DataResource) getResource(key, clientBundle);
-				if (resource != null) {
-					url = resource.getSafeUri().asString();
-				}
-			} else {
+			PreloaderBundle clientBundle = getBundle(url);
+			if (clientBundle == null) {
 				url += ".mp3";
+				if (clientBundle == null) {
+					clientBundle = getBundle(url);
+				}
+				if (clientBundle == null) {
+					clientBundle = getBundle(path);
+				}
+				if (clientBundle != null) {
+					String key = toKey(url);
+					if (key == null) {
+						key = toKey(path);
+					}
+					DataResource resource = (DataResource) getResource(key, clientBundle);
+					if (resource != null) {
+						url = resource.getSafeUri().asString();
+					}
+				}
 			}
-			return new GWTSound(url);
+			if (clientBundle != null) {
+				return new GWTSound(url);
+			}
 		}
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {

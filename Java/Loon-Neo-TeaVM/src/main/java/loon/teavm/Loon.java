@@ -34,6 +34,8 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
+import com.google.gwt.dom.client.Element;
+
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
@@ -310,6 +312,10 @@ public class Loon implements Platform {
 
 	@JSBody(script = "return Date.now();")
 	protected static native double nowTime();
+
+	@JSBody(params = "elem,state", script = "if ('crossOrigin' in elem)\r\n"
+			+ "elem.setAttribute('crossOrigin', state);")
+	protected static native void setCrossOrigin(HTMLElement elem, String state);
 
 	@JSBody(params = "img", script = "return img.complete;")
 	protected static native boolean isComplete(HTMLImageElement img);
