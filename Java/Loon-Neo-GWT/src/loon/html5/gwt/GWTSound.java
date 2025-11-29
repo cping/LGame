@@ -20,11 +20,13 @@
  */
 package loon.html5.gwt;
 
+import loon.LSystem;
 import loon.Sound;
 import loon.html5.gwt.soundmanager2.SMSound;
 import loon.html5.gwt.soundmanager2.SMSound.SMSoundCallback;
 import loon.html5.gwt.soundmanager2.SMSoundOptions;
 import loon.html5.gwt.soundmanager2.SoundManager;
+import loon.utils.PathUtils;
 import loon.utils.reply.Callback;
 
 public class GWTSound implements Sound, SMSoundCallback {
@@ -36,9 +38,12 @@ public class GWTSound implements Sound, SMSoundCallback {
 	private float pan = 0f;
 	private SMSoundOptions soundOptions;
 
-	public GWTSound(String path) {
-		GWTResourcesLoader file = new GWTResourcesLoader(path);
-		String url = Loon.self.getBaseUrl() + file.path();
+	public GWTSound(final String path) {
+		final String startAssets = LSystem.getPathPrefix();
+		String url = GWTResourcesLoader.fixSlashes(path);
+		if (!url.startsWith(startAssets)) {
+			url = PathUtils.normalizeCombinePaths(startAssets, url);
+		}
 		sound = SoundManager.createSound(url);
 		soundOptions = new SMSoundOptions();
 		soundOptions.callback = this;

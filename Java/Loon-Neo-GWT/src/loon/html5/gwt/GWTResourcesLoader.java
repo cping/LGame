@@ -252,11 +252,12 @@ public class GWTResourcesLoader {
 		return 0;
 	}
 
+	@Override
 	public String toString() {
 		return file;
 	}
 
-	private static String fixSlashes(String path) {
+	protected static String fixSlashes(String path) {
 		path = path.replace('\\', '/');
 		if (path.endsWith("/")) {
 			path = path.substring(0, path.length() - 1);

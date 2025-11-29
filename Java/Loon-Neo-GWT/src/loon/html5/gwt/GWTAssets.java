@@ -168,7 +168,7 @@ public class GWTAssets extends Assets {
 			result = res.containsKey(finalPath = LSystem.getFileName(path = (getFixPath(path))));
 		}
 		if (!result) {
-			game.log().warn("file " + path + " not found");
+			game.log().warn("file " + path + " not cache found");
 			return new GWTSound(path);
 		} else {
 			return new GWTSound(finalPath);
