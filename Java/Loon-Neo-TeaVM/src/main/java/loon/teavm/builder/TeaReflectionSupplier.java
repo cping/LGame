@@ -61,11 +61,11 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
     }
 
     public static void printReflectionClasses() {
-		TeaBuilder.logHeader("REFLECTION CLASSES: " + clazzList.size());
+		TeaBuilder.begin("REFLECTION CLASSES: " + clazzList.size());
         for(String reflectionClass : clazzList) {
-            TeaBuilder.log(reflectionClass);
+            TeaBuilder.println(reflectionClass);
         }
-        TeaBuilder.logEnd();
+        TeaBuilder.end();
     }
 
     public TeaReflectionSupplier() {

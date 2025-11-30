@@ -34,8 +34,6 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
-import com.google.gwt.dom.client.Element;
-
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
@@ -238,6 +236,20 @@ public class Loon implements Platform {
 		}
 	}
 
+	public boolean isDesktop() {
+		if (_game != null) {
+			return _game.isDesktop();
+		}
+		return false;
+	}
+
+	public boolean isMobile() {
+		if (_game != null) {
+			return _game.isMobile();
+		}
+		return false;
+	}
+
 	protected void setCanvasSize(int width, int height, boolean usePhysicalPixels) {
 		double density = 1;
 		if (usePhysicalPixels) {
@@ -278,7 +290,7 @@ public class Loon implements Platform {
 			+ "					|| window.webkitCancelAnimationFrame\r\n"
 			+ "					|| window.oCancelAnimationFrame || function etime(id) {\r\n"
 			+ "						window.clearTimeout(id);\r\n" + "					};\r\n" + "})();")
-	private native void initRequestAnimFrame();
+	private native static void initRequestAnimFrame();
 
 	@JSBody(params = { "thandler" }, script = "window.requestAnimationFrame(thandler);")
 	public native static void requestAnimationFrame(RenderFrameHandler aHandler);
@@ -313,7 +325,7 @@ public class Loon implements Platform {
 	@JSBody(script = "return Date.now();")
 	protected static native double nowTime();
 
-	@JSBody(params = "elem,state", script = "if ('crossOrigin' in elem)\r\n"
+	@JSBody(params = { "elem", "state" }, script = "if ('crossOrigin' in elem)\r\n"
 			+ "elem.setAttribute('crossOrigin', state);")
 	protected static native void setCrossOrigin(HTMLElement elem, String state);
 
@@ -326,10 +338,10 @@ public class Loon implements Platform {
 	@JSBody(params = "msg", script = "if (typeof (window.alert) === \"function\") {\r\n"
 			+ "        window.alert.call(null, msg); \r\n" + "    }\r\n" + "    else {\r\n"
 			+ "        console.warn(\"alert is not a function\");\r\n" + "    };")
-	private native void alert(String msg);
+	private native static void alert(String msg);
 
 	@JSBody(script = "window.close();")
-	private static native void closeImpl();
+	private native static void closeImpl();
 
 	@JSBody(params = "msg", script = "if (window.console) {\r\n" + "window.console.log(msg);\r\n" + "} else {\r\n"
 			+ "document.title = \"TeaVM Log:\" + msg;\r\n}")
@@ -340,13 +352,13 @@ public class Loon implements Platform {
 			+ "		performance.now = (function() {\r\n"
 			+ "			return performance.now || performance.mozNow || performance.msNow\r\n"
 			+ "					|| performance.oNow || performance.webkitNow || Date.now;\r\n" + "		})();")
-	private static native void initTime();
+	private native static void initTime();
 
 	@JSBody(script = "return window.screen.availWidth || 0;")
-	protected native int getAvailWidthJSNI();
+	protected native static int getAvailWidthJSNI();
 
 	@JSBody(script = "return window.screen.availHeight || 0;")
-	protected native int getAvailHeightJSNI();
+	protected native static int getAvailHeightJSNI();
 
 	public double getNativeScreenDensity() {
 		return getNativeScreenDensityJSNI();
@@ -354,12 +366,12 @@ public class Loon implements Platform {
 
 	@JSBody(script = "var result = false;\r\n" + "	if (window.orientation != null && window.orientation == 0) {\r\n"
 			+ "	result = true;\r\n" + "	}\r\n" + "	return result;")
-	protected native boolean isPortraitJSNI();
+	protected native static boolean isPortraitJSNI();
 
 	@JSBody(script = "var result = false;\r\n" + "	if (window.orientation != null\r\n"
 			+ "	&& (window.orientation == 90 || orientation == -90)) {\r\n" + "	result = true;\r\n" + "	}\r\n"
 			+ "	return result;")
-	protected native boolean isLandscapeJSNI();
+	protected native static boolean isLandscapeJSNI();
 
 	public boolean noSupportOrientation() {
 		return !isPortraitJSNI() && !isLandscapeJSNI();
@@ -388,7 +400,7 @@ public class Loon implements Platform {
 			+ "}\r\n" + "if (\"mozFullScreenEnabled\" in document) {\r\n" + "return document.mozFullScreenEnabled;\r\n"
 			+ "}\r\n" + "if (\"msFullscreenEnabled\" in document) {\r\n" + "return document.msFullscreenEnabled;\r\n"
 			+ "}\r\n" + "return false;")
-	private native boolean supportsFullscreenJSNI();
+	private native static boolean supportsFullscreenJSNI();
 
 	public boolean isHdpi() {
 		return getNativeScreenDensityJSNI() == 1.5;
@@ -399,16 +411,16 @@ public class Loon implements Platform {
 	}
 
 	@JSBody(script = "return window.orientation || 0;")
-	public native float getOrientationValue();
+	public native static float getOrientationValue();
 
 	@JSBody(script = "return window.devicePixelRatio || 1;")
-	private static native int getNativeScreenDensityJSNI();
+	private native static int getNativeScreenDensityJSNI();
 
 	@JSBody(script = "return window.screen.width;")
-	public static native int getScreenWidthJSNI();
+	public native static int getScreenWidthJSNI();
 
 	@JSBody(script = "return window.screen.height;")
-	public static native int getScreenHeightJSNI();
+	public native static int getScreenHeightJSNI();
 
 	@JSBody(params = { "element", "fullscreenChanged" }, script = "" + "if (element.requestFullscreen) {\n"
 			+ "   document.addEventListener(\"fullscreenchange\", fullscreenChanged, false);\n" + "}\n"
@@ -418,7 +430,7 @@ public class Loon implements Platform {
 			+ "   document.addEventListener(\"mozfullscreenchange\", fullscreenChanged, false);\n" + "}\n"
 			+ "if (element.msRequestFullscreen) {\n"
 			+ "   document.addEventListener(\"msfullscreenchange\", fullscreenChanged, false);\n" + "}")
-	protected static native void addFullscreenChangeListener(HTMLCanvasElement element,
+	protected native static void addFullscreenChangeListener(HTMLCanvasElement element,
 			FullscreenChanged fullscreenChanged);
 
 	@JSFunctor
@@ -458,15 +470,13 @@ public class Loon implements Platform {
 		return isFullscreenJSNI();
 	}
 
-	@JSBody(script = "if (\"fullscreenElement\" in document) {\r\n" + "return document.fullscreenElement != null;\r\n"
-			+ "}\r\n" + "if (\"msFullscreenElement\" in document) {\r\n"
-			+ "return document.msFullscreenElement != null;\r\n" + "}\r\n"
-			+ "if (\"webkitFullscreenElement\" in document) {\r\n"
-			+ "return document.webkitFullscreenElement != null;\r\n" + "}\r\n"
-			+ "if (\"mozFullScreenElement\" in document) {\r\n" + "return document.mozFullScreenElement != null;\r\n"
-			+ "}\r\n" + "if (\"webkitIsFullScreen\" in document) {\r\n" + "return document.webkitIsFullScreen;\r\n"
-			+ "}\r\n" + "if (\"mozFullScreen\" in document) {\r\n" + "return document.mozFullScreen;\r\n" + "}\r\n"
-			+ "return false;}\r\n")
+	@JSBody(script = "if (\"fullscreenElement\" in document) {\n" + "  return document.fullscreenElement != null;\n"
+			+ "}" + "if (\"msFullscreenElement\" in document) {\n" + "  return document.msFullscreenElement != null;\n"
+			+ "}" + "if (\"webkitFullscreenElement\" in document) {\n"
+			+ "  return document.webkitFullscreenElement != null;\n" + "}"
+			+ "if (\"mozFullScreenElement\" in document) {\n" + "  return document.mozFullScreenElement != null;\n"
+			+ "}" + "if (\"webkitIsFullScreen\" in document) {\n" + "  return document.webkitIsFullScreen;\n" + "}"
+			+ "if (\"mozFullScreen\" in document) {\n" + "  return document.mozFullScreen;\n" + "}" + "return false;")
 	public static native boolean isFullscreenJSNI();
 
 	@JSBody(params = { "element", "url", "filename" }, script = "element.href = url;\r\n"

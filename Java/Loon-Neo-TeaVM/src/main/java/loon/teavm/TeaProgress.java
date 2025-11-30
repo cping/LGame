@@ -27,11 +27,8 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
-import com.google.gwt.canvas.client.Canvas;
-
 import loon.LSetting;
 import loon.canvas.LColor;
-import loon.html5.gwt.preloader.Preloader.PreloaderState;
 
 public class TeaProgress {
 

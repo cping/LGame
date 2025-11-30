@@ -20,14 +20,60 @@
  */
 package loon.teavm;
 
-import org.teavm.jso.dom.html.HTMLDocument;
+import loon.Screen;
+import loon.Stage;
+import loon.LazyLoading.Data;
+
+import loon.teavm.TeaGame.TeaSetting;
+
 
 public class LauncherMain {
+	
+	public static class TestScreen extends Stage{
+
+		@Override
+		public void create() {
+			// TODO Auto-generated method stub
+			
+		}
+		
+	}
 
 	public static void main(String[] args) {
-		var document = HTMLDocument.current();
+	/*	var document = HTMLDocument.current();
 		var div = document.createElement("div");
 		div.appendChild(document.createTextNode("Loon-TeaVM"));
-		document.getBody().appendChild(div);
+		document.getBody().appendChild(div);*/
+
+		TeaSetting setting = new TeaSetting();
+		setting.fps = 60;
+		setting.isDebug = true;
+		setting.isDisplayLog = false;
+		// source size
+		setting.width = 480;
+		setting.height = 320;
+		// target size
+		setting.width_zoom = 640;
+		setting.height_zoom = 480;
+
+		setting.isFPS = true;
+		setting.fontName = "黑体";
+		setting.isConsoleLog = true;
+		setting.rootId = "embed-loon.test.TestLoon";
+		// 按屏幕缩放比例缩放
+		// setting.useRatioScaleFactor = true;
+		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
+		setting.jsloadRes = false;
+
+		// 设置一个需要的初始化进度条样式（不填则默认）
+		// setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);
+
+		Loon.register(setting, new Data() {
+
+			@Override
+			public Screen onScreen() {
+				return new TestScreen();
+			}
+		});
 	}
 }
