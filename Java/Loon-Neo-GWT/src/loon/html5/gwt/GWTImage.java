@@ -48,10 +48,6 @@ public class GWTImage extends ImageImpl {
 		return img.complete;
 	}-*/;
 
-	private static native void setComplete(ImageElement img) /*-{
-		img.complete = true;
-	}-*/;
-
 	public static ImageData scaleImage(ImageElement image, float scale) {
 		return scaleImage(image, scale, scale);
 	}
@@ -110,7 +106,6 @@ public class GWTImage extends ImageImpl {
 			GWTInputMake.addEventListener(img, "load", new EventHandler() {
 				@Override
 				public void handleEvent(NativeEvent evt) {
-					setComplete(img);
 					pixelWidth = img.getWidth();
 					pixelHeight = img.getHeight();
 					pstate.succeed(GWTImage.this);
@@ -247,9 +242,6 @@ public class GWTImage extends ImageImpl {
 
 	@Override
 	public void upload(Graphics gfx, LTexture tex) {
-		if (!isComplete(img)) {
-			setComplete(img);
-		}
 		((GWTGraphics) gfx).updateTexture(tex.getID(), img);
 	}
 

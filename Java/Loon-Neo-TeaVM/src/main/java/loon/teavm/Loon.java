@@ -33,12 +33,14 @@ import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
+import org.teavm.jso.dom.xml.Element;
 
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
 import loon.LazyLoading;
 import loon.Platform;
+import loon.canvas.LColor;
 import loon.events.Updateable;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
@@ -48,6 +50,7 @@ import loon.teavm.assets.AssetDownloadImpl;
 import loon.teavm.assets.AssetDownloader;
 import loon.teavm.assets.AssetLoadImpl;
 import loon.teavm.assets.AssetLoader;
+import loon.teavm.assets.AssetLoaderListener;
 import loon.teavm.assets.AssetPreloader;
 import loon.teavm.dom.HTMLDocumentExt;
 import loon.utils.PathUtils;
@@ -79,15 +82,17 @@ public class Loon implements Platform {
 
 	private HTMLCanvasElement _mainCanvasElement;
 
-	private AssetDownloadImpl _assetDownloader;
-	private AssetLoadImpl _assetLoader;
-	private AssetPreloader _preloader;
+	private float _progressCount = 0;
 
 	protected TeaProgress _progress;
 
+	protected AssetDownloadImpl _assetDownloader;
+	protected AssetLoadImpl _assetLoader;
+	protected AssetPreloader _preloader;
+
 	protected static Loon self;
 
-	private TeaBase _baseWindow;
+	protected TeaBase _baseWindow;
 
 	private TeaGame _game;
 
@@ -96,6 +101,8 @@ public class Loon implements Platform {
 	protected LSetting _setting = null;
 
 	protected TeaSetting _config = null;
+
+	protected int _frameId = 0;
 
 	private Loon(LSetting setting, LazyLoading.Data lazy) {
 		this._setting = setting;
@@ -131,12 +138,33 @@ public class Loon implements Platform {
 		_setting = _config;
 		_baseWindow = TeaBase.get();
 		_baseWindow.setTitle(_config.appName);
-		setCanvasSize(_config.getShowHeight(), _config.getShowHeight(), _config.usePhysicalPixels);
+		_mainCanvasElement = createCanvas();
+		setCanvasSize(_config.getShowWidth(), _config.getShowHeight(), _config.usePhysicalPixels);
 		_preloader = new AssetPreloader();
 		_assetDownloader = new AssetDownloadImpl(_config.showDownloadLog);
 		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
+		initHowlerScript();
 		_progress = new TeaProgress(this, _config, 100);
-		_assetLoader.setupFileDrop(_mainCanvasElement = createCanvas(), this);
+		_assetLoader.setupFileDrop(_mainCanvasElement, this);
+		initProgress();
+	}
+
+	protected void initProgress() {
+		_progress.startTime();
+		_frameId = _baseWindow.setInterval(new Runnable() {
+
+			@Override
+			public void run() {
+				_progress.update(_mainCanvasElement, _progressCount += 0.1f);
+				if (_progress.isCompleted()) {
+					_baseWindow.cancelInterval(_frameId);
+					if (_mainCanvasElement != null) {
+						TeaCanvasUtils.fillRect(_mainCanvasElement, LColor.black);
+						mainLoop();
+					}
+				}
+			}
+		}, 16.67f);
 	}
 
 	public HTMLCanvasElement getMainCanvas() {
@@ -145,8 +173,17 @@ public class Loon implements Platform {
 
 	protected HTMLCanvasElement createCanvas() {
 		HTMLDocumentExt document = _baseWindow.getDocument();
-		HTMLElement elementID = document.getElementById(_config.canvasID);
-		return (HTMLCanvasElement) elementID;
+		HTMLElement canvasElement = document.getElementById(_config.canvasID);
+		if (canvasElement != null) {
+			return (HTMLCanvasElement) canvasElement;
+		} else {
+			HTMLElement div = (HTMLElement) document.createElement(_config.divName);
+			canvasElement = document.createCanvasElement();
+			canvasElement.setId(_config.canvasID);
+			div.appendChild(canvasElement);
+			document.getBody().appendChild(div);
+			return (HTMLCanvasElement) canvasElement;
+		}
 	}
 
 	protected void mainLoop() {
@@ -332,9 +369,6 @@ public class Loon implements Platform {
 	@JSBody(params = "img", script = "return img.complete;")
 	protected static native boolean isComplete(HTMLImageElement img);
 
-	@JSBody(params = "img", script = "img.complete = true;")
-	protected static native void setComplete(HTMLImageElement img);
-
 	@JSBody(params = "msg", script = "if (typeof (window.alert) === \"function\") {\r\n"
 			+ "        window.alert.call(null, msg); \r\n" + "    }\r\n" + "    else {\r\n"
 			+ "        console.warn(\"alert is not a function\");\r\n" + "    };")
@@ -483,6 +517,56 @@ public class Loon implements Platform {
 			+ "element.download = filename;")
 	private static native void downloadFile(HTMLElement element, String url, String filename);
 
+	@JSBody(script = "!!(document.pointerLockElement || document.webkitPointerLockElement || document.mozPointerLockElement);")
+	public static native boolean isMouseLockedJSNI();
+
+	@JSBody(script = "return \r\n" + "	document.exitPointerLock = document.exitPointerLock\r\n"
+			+ "	|| document.webkitExitPointerLock || document.mozExitPointerLock;\r\n"
+			+ "document.exitPointerLock && document.exitPointerLock();")
+	public static native void unlockImpl();
+
+	@JSBody(params = "element", script = "if (!element.requestPointerLock) {\n"
+			+ "   element.requestPointerLock = (function() {\n"
+			+ "       return element.webkitRequestPointerLock || element.mozRequestPointerLock;" + "   })();\n" + "}\n"
+			+ "element.requestPointerLock();")
+	public static native void setCursorCatchedJSNI(HTMLElement element);
+
+	@JSBody(script = "document.exitPointerLock();")
+	public static native void exitCursorCatchedJSNI();
+
+	@JSBody(params = "canvas", script = "if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {\n"
+			+ "   return true;\n" + "}\n" + "return false;")
+	public static native boolean isCursorCatchedJSNI(HTMLElement canvas);
+
+	@JSBody(script = "return ('ontouchstart' in document.documentElement)\r\n"
+			+ "				|| (window.navigator.userAgent.match(/ipad|iphone|android/i) != null);")
+	public static native boolean hasTouchJSNI();
+
+	@JSBody(script = "return ('onmousedown' in document.documentElement)\r\n"
+			+ "				&& (window.navigator.userAgent.match(/ipad|iphone|android/i) == null);")
+	public static native boolean hasMouseJSNI();
+
+	@JSBody(script = "return !!(document.body.requestPointerLock\r\n"
+			+ "				|| document.body.webkitRequestPointerLock || document.body.mozRequestPointerLock);")
+	public static native boolean hasMouseLockJSNI();
+
+	@JSBody(params = "element", script = "element.requestPointerLock = (element.requestPointerLock\r\n"
+			+ "	|| element.webkitRequestPointerLock || element.mozRequestPointerLock);\r\n"
+			+ "	if (element.requestPointerLock)\r\n" + "	element.requestPointerLock();")
+	public static native void requestMouseLockImplJSNI(Element element);
+
+	@JSBody(params = "evt", script = "return !!evt.altKey;")
+	public static native boolean eventGetAltKeyJSNI(Event evt);
+
+	@JSBody(params = "evt", script = "return !!evt.ctrlKey;")
+	public static native boolean eventGetCtrlKeyJSNI(Event evt);
+
+	@JSBody(params = "evt", script = "return !!evt.shiftKey;")
+	public static native boolean eventGetShiftKeyJSNI(Event evt);
+
+	@JSBody(params = "evt", script = "return !!evt.metaKey;")
+	public static native boolean eventGetMetaKeyJSNI(Event evt);
+
 	protected static void download(String fileName, String url) {
 		HTMLElement docAhref = TeaBase.get().getDocument().createElement("a");
 		downloadFile(docAhref, url, fileName);
@@ -492,6 +576,15 @@ public class Loon implements Platform {
 
 	protected static void downloadText(String fileName, String text) {
 		download(fileName, "data:text/plain;charset=utf-8," + text);
+	}
+
+	protected void initHowlerScript() {
+		_assetLoader.loadScript("howler.js", new AssetLoaderListener<String>() {
+			@Override
+			public void onSuccess(String url, String result) {
+				consoleLog("JavaScript loaded success :" + url);
+			}
+		});
 	}
 
 	@Override

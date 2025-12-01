@@ -24,7 +24,6 @@ import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
-import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
 import loon.Assets;
@@ -46,26 +45,16 @@ import loon.utils.StringUtils;
 
 public class TeaAssets extends Assets {
 
-	public interface ImageManifest {
-		int[] imageSize(String path);
-	}
-
-	public void setImageManifest(ImageManifest manifest) {
-		_imageManifest = manifest;
-	}
-
 	private TeaGame _game;
 
 	private TeaSetting _setting;
-
-	private ImageManifest _imageManifest;
 
 	private Scale _assetScale = null;
 
 	protected TeaAssets(TeaGame g, Asyn s) {
 		super(g.asyn());
 		this._game = g;
-		setPathPrefixEmpty();
+		this._setting = _game.getSetting();
 	}
 
 	protected String getURLPath(String fileName) {

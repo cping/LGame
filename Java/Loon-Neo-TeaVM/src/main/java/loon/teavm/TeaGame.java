@@ -41,6 +41,8 @@ public class TeaGame extends LGame {
 
 	public static class TeaSetting extends LSetting {
 
+		public String divName = "div";
+		
 		public String imageName = "img";
 
 		public String canvasName = "canvas";
@@ -81,8 +83,6 @@ public class TeaGame extends LGame {
 		// 如果此项开启，按照屏幕大小等比缩放
 		public boolean useRatioScaleFactor = false;
 
-		// 需要绑定的层id
-		public String rootId = "loon-root";
 		// 如果此项为true,则仅以异步加载资源
 		public boolean asynResource = false;
 		public TeaWindowListener windowListener;
@@ -119,6 +119,7 @@ public class TeaGame extends LGame {
 	public TeaGame(Loon loon, TeaSetting config) {
 		super(config, loon);
 		this.loonApp = loon;
+		this.teaWindow = loonApp._baseWindow;
 		this.teaconfig = config;
 		this.start = initNow();
 		this.log = new TeaLog(this);

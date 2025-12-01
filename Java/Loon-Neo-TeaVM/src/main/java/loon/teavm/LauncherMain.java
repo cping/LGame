@@ -53,13 +53,12 @@ public class LauncherMain {
 		setting.width = 480;
 		setting.height = 320;
 		// target size
-		setting.width_zoom = 640;
-		setting.height_zoom = 480;
+		setting.width_zoom = 800;
+		setting.height_zoom = 600;
 
 		setting.isFPS = true;
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
-		setting.rootId = "embed-loon.test.TestLoon";
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源

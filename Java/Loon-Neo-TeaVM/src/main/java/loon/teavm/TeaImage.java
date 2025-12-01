@@ -254,9 +254,6 @@ public class TeaImage extends ImageImpl {
 
 	@Override
 	public void upload(Graphics gfx, LTexture tex) {
-		if (!Loon.isComplete(img)) {
-			Loon.setComplete(img);
-		}
 		((TeaGraphics) gfx).updateTexture(tex.getID(), img);
 	}
 

@@ -26,6 +26,7 @@ import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
 
+import loon.canvas.LColor;
 import loon.geom.RectI;
 import loon.utils.MathUtils;
 
@@ -169,6 +170,12 @@ public class TeaCanvasUtils {
 
 	public static void clear(HTMLCanvasElement canvas) {
 		getContext2d(canvas).clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+	}
+
+	public static void fillRect(HTMLCanvasElement canvas, LColor c) {
+		CanvasRenderingContext2D g = getContext2d(canvas);
+		g.setFillStyle("rgba(" + c.r + "," + c.g + "," + c.b + "," + c.a + ")");
+		g.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 	}
 
 	public static void fillRect(HTMLCanvasElement canvas, String style) {

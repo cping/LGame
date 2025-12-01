@@ -87,6 +87,14 @@ public abstract class SoundBox extends BaseIO {
 		}
 	}
 
+	public void playSound() {
+		for (Sound s : _soundCache.values()) {
+			if (s != null && !s.isPlaying()) {
+				s.play();
+			}
+		}
+	}
+
 	public void stopSound() {
 		for (Sound s : _soundCache.values()) {
 			if (s != null) {

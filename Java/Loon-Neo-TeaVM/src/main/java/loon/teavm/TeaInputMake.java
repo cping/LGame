@@ -799,30 +799,13 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 
 	void handleRequestsInUserEventContext() {
 		if (isRequestingMouseLock && !isMouseLocked()) {
-			requestMouseLockImpl(rootElement);
+			Loon.requestMouseLockImplJSNI(rootElement);
 		}
 	}
 
-	@JSBody(params = "element", script = "element.requestPointerLock = (element.requestPointerLock\r\n"
-			+ "	|| element.webkitRequestPointerLock || element.mozRequestPointerLock);\r\n"
-			+ "	if (element.requestPointerLock)\r\n" + "	element.requestPointerLock();")
-	public native void requestMouseLockImpl(Element element);
-
-	@JSBody(params = "evt", script = "return !!evt.altKey;")
-	public native boolean eventGetAltKey(Event evt);
-
-	@JSBody(params = "evt", script = "return !!evt.ctrlKey;")
-	public native boolean eventGetCtrlKey(Event evt);
-
-	@JSBody(params = "evt", script = "return !!evt.shiftKey;")
-	public native boolean eventGetShiftKey(Event evt);
-
-	@JSBody(params = "evt", script = "return !!evt.metaKey;")
-	public native boolean eventGetMetaKey(Event evt);
-
 	private int mods(Event event) {
-		return modifierFlags(eventGetAltKey(event), eventGetCtrlKey(event), eventGetMetaKey(event),
-				eventGetShiftKey(event));
+		return modifierFlags(Loon.eventGetAltKeyJSNI(event), Loon.eventGetCtrlKeyJSNI(event),
+				Loon.eventGetMetaKeyJSNI(event), Loon.eventGetShiftKeyJSNI(event));
 	}
 
 	private int mods(MouseEvent event) {
@@ -1007,7 +990,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			game.log().debug("Requesting mouse unlock");
 			if (hasMouseLock()) {
 				isRequestingMouseLock = false;
-				unlockImpl();
+				Loon.unlockImpl();
 			}
 		}
 	}
@@ -1017,45 +1000,16 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	}
 
 	@Override
-	@JSBody(script = "!!(document.pointerLockElement || document.webkitPointerLockElement || document.mozPointerLockElement);")
-	public native boolean isMouseLocked();
-
-	@JSBody(script = "return \r\n" + "	document.exitPointerLock = document.exitPointerLock\r\n"
-			+ "	|| document.webkitExitPointerLock || document.mozExitPointerLock;\r\n"
-			+ "document.exitPointerLock && document.exitPointerLock();")
-	private native void unlockImpl();
-
-	@JSBody(params = "element", script = "if (!element.requestPointerLock) {\n"
-			+ "   element.requestPointerLock = (function() {\n"
-			+ "       return element.webkitRequestPointerLock || element.mozRequestPointerLock;" + "   })();\n" + "}\n"
-			+ "element.requestPointerLock();")
-	private static native void setCursorCatchedJSNI(HTMLElement element);
-
-	@JSBody(script = "document.exitPointerLock();")
-	private static native void exitCursorCatchedJSNI();
-
-	@JSBody(params = "canvas", script = "if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {\n"
-			+ "   return true;\n" + "}\n" + "return false;")
-	private static native boolean isCursorCatchedJSNI(HTMLElement canvas);
+	public boolean isMouseLocked() {
+		return Loon.isMouseLockedJSNI();
+	}
 
 	@Override
-	@JSBody(script = "return ('ontouchstart' in document.documentElement)\r\n"
-			+ "				|| (window.navigator.userAgent.match(/ipad|iphone|android/i) != null);")
-	public native boolean hasTouch();
-
-	@Override
-	@JSBody(script = "return ('onmousedown' in document.documentElement)\r\n"
-			+ "				&& (window.navigator.userAgent.match(/ipad|iphone|android/i) == null);")
-	public native boolean hasMouse();
-
-	@Override
-	@JSBody(script = "return !!(document.body.requestPointerLock\r\n"
-			+ "				|| document.body.webkitRequestPointerLock || document.body.mozRequestPointerLock);")
-	public native boolean hasMouseLock();;
+	public boolean hasTouch() {
+		return Loon.hasTouchJSNI();
+	}
 
 	@Override
 	public void callback(LObject<?> o) {
-		// TODO Auto-generated method stub
-
 	}
 }

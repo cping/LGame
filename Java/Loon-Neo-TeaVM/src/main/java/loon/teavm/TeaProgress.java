@@ -45,6 +45,7 @@ public class TeaProgress {
 	private float currentStep;
 	private float maxStep = 100;
 	private double startTime;
+
 	protected final int canvasWidth;
 	protected final int canvasHeight;
 
@@ -90,7 +91,7 @@ public class TeaProgress {
 
 				@Override
 				public void handleEvent(Event evt) {
-					Loon.setComplete(TeaProgress.this.logoImage = img);
+					TeaProgress.this.logoImage = img;
 				}
 			});
 		}

@@ -37,7 +37,7 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 		return _teaWinApp;
 	}
 
-	private boolean _requestAnimation = false;
+	private int _requestType = 0;
 	private Window _window;
 	private TeaAgentInfo _agentInfo;
 	private Runnable _runnable;
@@ -67,24 +67,44 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 		return (HTMLDocumentExt) _window.getDocument();
 	}
 
+	public int getRequestType() {
+		return _requestType;
+	}
+
 	public int requestAnimationFrame(Runnable runnable) {
-		this._requestAnimation = true;
+		this._requestType = 0;
 		this._runnable = runnable;
 		return Window.requestAnimationFrame(this);
 	}
 
 	public int setTimeout(Runnable runnable, double delay) {
-		this._requestAnimation = false;
+		this._requestType = 1;
 		this._runnable = runnable;
 		return Window.setTimeout(this, delay);
 	}
 
+	public int setInterval(Runnable runnable, double delay) {
+		this._requestType = 2;
+		this._runnable = runnable;
+		return Window.setInterval(this, delay);
+	}
+
 	public void cancelLoop(int id) {
-		if (_requestAnimation) {
+		switch (_requestType) {
+		case 0:
 			Window.cancelAnimationFrame(id);
-		} else {
+			break;
+		case 1:
 			Window.clearTimeout(id);
+			break;
+		case 2:
+			Window.clearInterval(id);
+			break;
 		}
+	}
+
+	public void cancelInterval(int id) {
+		Window.clearInterval(id);
 	}
 
 	public void cancelTimeout(int id) {
@@ -95,18 +115,24 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 		Window.cancelAnimationFrame(id);
 	}
 
+	public void setRunnable(Runnable r) {
+		_runnable = r;
+	}
+
 	@Override
 	public void onTimer() {
 		final Runnable toRun = _runnable;
-		_runnable = null;
-		toRun.run();
+		if (toRun != null) {
+			toRun.run();
+		}
 	}
 
 	@Override
 	public void onAnimationFrame(double f) {
 		final Runnable toRun = _runnable;
-		_runnable = null;
-		toRun.run();
+		if (toRun != null) {
+			toRun.run();
+		}
 	}
 
 	public Location getLocation() {
