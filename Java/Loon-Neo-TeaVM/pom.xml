@@ -97,13 +97,13 @@
              <goals>
               <goal>compile</goal>
             </goals>
-            <phase>process-classes</phase>
+            <phase>prepare-package</phase>
             <configuration>
               <!-- Directory where TeaVM should put generated files. This configuration conforms to the settings
                    of the WAR plugin -->
               <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
               <!-- Main class, containing static void main(String[]) -->
-              <mainClass>loon.teavm.Main</mainClass>
+              <mainClass>loon.teavm.LauncherMain</mainClass>
               <!-- Whether TeaVM should produce minified JavaScript. Can reduce JavaScript file size more than
                    two times -->
               <minifying>false</minifying>
@@ -120,9 +120,14 @@
                    for compatibility with source maps -->
               <sourceFilesCopied>true</sourceFilesCopied>
               <!-- Optimization level. Valid values are: SIMPLE, ADVANCED, FULL -->
-              <optimizationLevel>ADVANCED</optimizationLevel>
+              <optimizationLevel>SIMPLE</optimizationLevel>
               <!-- What code to generate. Following options are supported -->
               <targetType>JAVASCRIPT</targetType>
+              <properties>
+                <loon.genAssetsDirectory>${project.build.directory}/generated/assets</loon.genAssetsDirectory>
+                <loon.warAssetsDirectory>${basedir}/src/main/webapp/assets</loon.warAssetsDirectory>
+                <loon.assetsPath>${project.build.directory}/generated/assets.txt</loon.assetsPath>
+              </properties>
             </configuration>
           </execution>
         </executions>

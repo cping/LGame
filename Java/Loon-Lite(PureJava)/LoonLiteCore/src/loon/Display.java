@@ -191,6 +191,8 @@ public final class Display extends BaseIO implements LRelease {
 
 	private final long _updateRate;
 
+	private float _tempMaxMemory = -1;
+
 	protected boolean _showLogo = false, _initDrawConfig = false;
 
 	private LColor _debugFontColor = LColor.white;
@@ -575,6 +577,18 @@ public final class Display extends BaseIO implements LRelease {
 		}
 	}
 
+	private final float getMaxMemory(final Runtime r) {
+		if (_tempMaxMemory != -1) {
+			return _tempMaxMemory;
+		}
+		try {
+			_tempMaxMemory = MathUtils.abs((r.maxMemory() * 10) >> 20) / 10f;
+		} catch (Exception e) {
+			_tempMaxMemory = 0;
+		}
+		return _tempMaxMemory;
+	}
+
 	/**
 	 * 渲染debug信息到游戏画面
 	 * 
@@ -620,7 +634,7 @@ public final class Display extends BaseIO implements LRelease {
 					_displayMessage.append(MEMORY_STR);
 					_displayMessage.append(MathUtils.abs((currentMemory * 10) >> 20) / 10f);
 					_displayMessage.append(" of ");
-					_displayMessage.append(MathUtils.abs((_runtime.maxMemory() * 10) >> 20) / 10f);
+					_displayMessage.append(getMaxMemory(_runtime));
 					_displayMessage.append(" MB");
 				}
 				_displayMemony = _displayMessage.toString();

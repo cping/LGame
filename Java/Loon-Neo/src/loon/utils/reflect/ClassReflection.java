@@ -56,13 +56,10 @@ public final class ClassReflection {
 		return Modifier.isStatic(c.getModifiers());
 	}
 
-	@SuppressWarnings("deprecation")
 	static public <T> T newInstance(Class<T> c) throws ReflectionException {
 		try {
-			return c.newInstance();
-		} catch (InstantiationException e) {
-			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
-		} catch (IllegalAccessException e) {
+			return c.getDeclaredConstructor().newInstance();
+		} catch (Exception e) {
 			throw new ReflectionException("Could not instantiate instance of class: " + c.getName(), e);
 		}
 	}

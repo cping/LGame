@@ -20,6 +20,8 @@
  */
 package loon.teavm;
 
+import org.teavm.jso.ajax.ReadyStateChangeHandler;
+import org.teavm.jso.ajax.XMLHttpRequest;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
@@ -42,8 +44,12 @@ import loon.utils.CollectionUtils;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
+import loon.utils.reply.GoFuture;
+import loon.utils.reply.GoPromise;
 
 public class TeaAssets extends Assets {
+
+	private final static boolean LOG_XHR_SUCCESS = false;
 
 	private TeaGame _game;
 
@@ -177,6 +183,41 @@ public class TeaAssets extends Assets {
 		}
 		_game.log().warn("Could not load image: " + path + " [error=" + error + "]");
 		throw error != null ? error : new Exception(path);
+	}
+
+	private GoFuture<XMLHttpRequest> doXhr(final String path, final String responseType) {
+		final GoPromise<XMLHttpRequest> result = GoPromise.create();
+		XMLHttpRequest xhr = XMLHttpRequest.create();
+		if (LOG_XHR_SUCCESS) {
+			_game.log().debug("xhr.open('GET', '" + path + "')...");
+		}
+		xhr.open("GET", path);
+		xhr.setResponseType(responseType);
+
+		xhr.setOnReadyStateChange(new ReadyStateChangeHandler() {
+			@Override
+			public void stateChanged() {
+				int readyState = xhr.getReadyState();
+				if (readyState == XMLHttpRequest.DONE) {
+					int status = xhr.getStatus();
+					if (status != 0 && (status < 200 || status >= 400)) {
+						_game.log().error("xhr::onReadyStateChange[" + path + "]" + "(readyState = " + readyState
+								+ "; status = " + status + ")");
+						result.fail(new Exception("Error getting " + path + " : " + xhr.getStatusText()));
+					} else {
+						if (LOG_XHR_SUCCESS)
+							_game.log().debug("xhr::onReadyStateChange[" + path + "]" + "(readyState = " + readyState
+									+ "; status = " + status + ")");
+						result.succeed(xhr);
+					}
+				}
+			}
+		});
+		if (LOG_XHR_SUCCESS) {
+			_game.log().debug("xhr.send()...");
+		}
+		xhr.send();
+		return result;
 	}
 
 	private HTMLImageElement localImageElement(String path) {

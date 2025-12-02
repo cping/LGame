@@ -94,7 +94,7 @@ public class TeaBuilder {
 
 	public static void config(TeaBuildConfiguration configuration) {
 		TeaBuilder.configuration = configuration;
-		acceptedURL = new ArrayList<>();
+		acceptedURL = new ArrayList<URL>();
 		String webappDirectory = configuration.webappPath;
 
 		configClasspath(configuration, acceptedURL);
@@ -346,7 +346,7 @@ public class TeaBuilder {
 
 		boolean generateAssetPaths = configuration.shouldGenerateAssetFile;
 
-		ArrayList<AssetsCopy.Asset> alLAssets = new ArrayList<>();
+		ArrayList<AssetsCopy.Asset> alLAssets = new ArrayList<AssetsCopy.Asset>();
 		ArrayList<AssetFile> assetsPaths = configuration.assetsPath;
 		for (int i = 0; i < assetsPaths.size(); i++) {
 			AssetFile assetFileHandle = assetsPaths.get(i);
@@ -362,7 +362,7 @@ public class TeaBuilder {
 
 		List<String> resources = TeaProperties.getResources(acceptedURL);
 
-		List<String> scripts = new ArrayList<>();
+		List<String> scripts = new ArrayList<String>();
 
 		for (int i = 0; i < resources.size(); i++) {
 			String asset = resources.get(i);

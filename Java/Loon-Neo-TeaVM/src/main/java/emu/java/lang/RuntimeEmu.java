@@ -22,6 +22,8 @@ package emu.java.lang;
 
 import java.lang.Thread;
 
+import org.teavm.classlib.java.lang.TRuntime;
+
 import loon.teavm.make.Emulate;
 
 @Emulate(java.lang.Runtime.class)
@@ -33,11 +35,13 @@ public class RuntimeEmu {
 		return currentRuntime;
 	}
 
+	private final TRuntime _runtime = new TRuntime();
+
 	private RuntimeEmu() {
 	}
 
 	public void exit(int status) {
-
+		_runtime.exit(status);
 	}
 
 	public void addShutdownHook(Thread hook) {
@@ -49,15 +53,15 @@ public class RuntimeEmu {
 	}
 
 	public int availableProcessors() {
-		return 0;
+		return _runtime.availableProcessors();
 	}
 
 	public long freeMemory() {
-		return 0;
+		return _runtime.freeMemory();
 	}
 
 	public long totalMemory() {
-		return 0;
+		return _runtime.totalMemory();
 	}
 
 	public long maxMemory() {
@@ -65,6 +69,6 @@ public class RuntimeEmu {
 	}
 
 	public void gc() {
-
+		_runtime.gc();
 	}
 }

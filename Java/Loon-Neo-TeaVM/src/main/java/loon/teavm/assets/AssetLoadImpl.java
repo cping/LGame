@@ -46,6 +46,7 @@ import loon.teavm.dom.DataTransferWrapper;
 import loon.teavm.dom.DragEventWrapper;
 import loon.teavm.dom.FileReaderWrapper;
 import loon.teavm.utils.StreamUtils;
+import loon.utils.PathUtils;
 import loon.utils.TArray;
 
 public class AssetLoadImpl implements AssetLoader {
@@ -166,12 +167,12 @@ public class AssetLoadImpl implements AssetLoader {
 
 	@Override
 	public String getAssetUrl() {
-		return baseUrl + ASSET_FOLDER;
+		return PathUtils.normalizeCombinePaths(baseUrl, ASSET_FOLDER);
 	}
 
 	@Override
 	public String getScriptUrl() {
-		return baseUrl + SCRIPTS_FOLDER;
+		return PathUtils.normalizeCombinePaths(baseUrl, SCRIPTS_FOLDER);
 	}
 
 	@Override
