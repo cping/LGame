@@ -48,11 +48,10 @@ public class TeaProgress {
 
 	protected final int canvasWidth;
 	protected final int canvasHeight;
+	private String baseUrl;
 
-	private Loon loonApp;
-
-	public TeaProgress(Loon loon, LSetting config, int step) {
-		this.loonApp = loon;
+	public TeaProgress(String url, LSetting config, int step) {
+		this.baseUrl = url;
 		this.canvasWidth = config.getShowWidth();
 		this.canvasHeight = config.getShowHeight();
 		this.maxStep = step;
@@ -85,7 +84,7 @@ public class TeaProgress {
 	public void render(HTMLCanvasElement g, int tick, final float currentStep, float maxStep) {
 		if (logoImage == null) {
 			final HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement("img");
-			img.setSrc(loonApp.getBaseUrl() + "logo.png");
+			img.setSrc(baseUrl + "logo.png");
 			TeaProgress.this.logoImage = img;
 			img.onLoad(new EventListener<Event>() {
 

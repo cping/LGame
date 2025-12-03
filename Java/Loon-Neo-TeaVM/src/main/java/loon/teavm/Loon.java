@@ -82,8 +82,6 @@ public class Loon implements Platform {
 
 	private HTMLCanvasElement _mainCanvasElement;
 
-	private float _progressCount = 0;
-
 	protected TeaProgress _progress;
 
 	protected AssetDownloadImpl _assetDownloader;
@@ -103,6 +101,8 @@ public class Loon implements Platform {
 	protected TeaSetting _config = null;
 
 	protected int _frameId = 0;
+
+	private int _assetCount = 0;
 
 	private Loon(LSetting setting, LazyLoading.Data lazy) {
 		this._setting = setting;
@@ -143,28 +143,47 @@ public class Loon implements Platform {
 		_preloader = new AssetPreloader();
 		_assetDownloader = new AssetDownloadImpl(_config.showDownloadLog);
 		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
-		initHowlerScript();
-		_progress = new TeaProgress(this, _config, 100);
-		_assetLoader.setupFileDrop(_mainCanvasElement, this);
-		initProgress();
+		initProgress("assets.txt");
 	}
 
-	protected void initProgress() {
-		_progress.startTime();
-		_frameId = _baseWindow.setInterval(new Runnable() {
-
+	protected void initProgress(final String assetPath) {
+		initHowlerScript();
+		_assetLoader.setupFileDrop(_mainCanvasElement, this);
+		_assetLoader.preload(assetPath, new AssetLoaderListener<Void>() {
 			@Override
-			public void run() {
-				_progress.update(_mainCanvasElement, _progressCount += 0.1f);
-				if (_progress.isCompleted()) {
-					_baseWindow.cancelInterval(_frameId);
-					if (_mainCanvasElement != null) {
-						TeaCanvasUtils.fillRect(_mainCanvasElement, LColor.black);
-						mainLoop();
-					}
+			public void onSuccess(String url, Void result) {
+				_assetCount = _assetLoader.getQueue();
+				if (_assetCount > 0) {
+					consoleLog("There are a total of " + _assetCount + " resource files.");
+					_progress = new TeaProgress(getBaseUrl(), _config, 100);
+					_progress.startTime();
+					_frameId = _baseWindow.setInterval(new Runnable() {
+
+						@Override
+						public void run() {
+							final int queue = _assetLoader.getQueue();
+							_progress.update(_mainCanvasElement, ((float) (_assetCount - queue) / _assetCount));
+							if (_progress.isCompleted()) {
+								_baseWindow.cancelInterval(_frameId);
+								if (_mainCanvasElement != null) {
+									mainLoop();
+								}
+							}
+						}
+					}, 16.67f);
+				} else {
+					mainLoop();
 				}
 			}
-		}, 16.67f);
+
+			@Override
+			public void onFailure(String url) {
+				consoleLog("The resource file " + assetPath + " does not exist.");
+				mainLoop();
+			}
+
+		});
+
 	}
 
 	public HTMLCanvasElement getMainCanvas() {
@@ -187,7 +206,8 @@ public class Loon implements Platform {
 	}
 
 	protected void mainLoop() {
-		this.createGame().start();
+		TeaCanvasUtils.fillRect(_mainCanvasElement, LColor.black);
+		createGame().start();
 	}
 
 	protected TeaGame createGame() {

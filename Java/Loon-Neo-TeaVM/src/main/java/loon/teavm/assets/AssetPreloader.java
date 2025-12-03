@@ -28,6 +28,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.teavm.Loon;
 import loon.teavm.TeaResourceLoader;
 import loon.utils.ObjectMap;
 import loon.utils.OrderedMap;
@@ -157,11 +158,9 @@ public class AssetPreloader {
 		if (path.startsWith("./")) {
 			path = path.replace("./", "");
 		}
-
 		if (path.startsWith(".")) {
 			path = path.replaceFirst(".", "");
 		}
-
 		if (!path.startsWith("/")) {
 			path = "/" + path;
 		}
@@ -198,7 +197,8 @@ public class AssetPreloader {
 	}
 
 	public boolean get(String url) {
-		AssetData fileData = fileMap.get(url);
+		String path = fixPath(url);
+		AssetData fileData = fileMap.get(path);
 		boolean flag = fileData != null;
 		if (debug) {
 			String type = fileData != null && fileData.isDirectory() ? " CONTAINS FOLDER: " : " CONTAINS FILE: ";
@@ -208,7 +208,8 @@ public class AssetPreloader {
 	}
 
 	public boolean contains(String url) {
-		AssetData fileData = fileMap.get(url);
+		String path = fixPath(url);
+		AssetData fileData = fileMap.get(path);
 		boolean flag = fileData != null;
 		if (debug) {
 			String type = fileData != null && fileData.isDirectory() ? " CONTAINS FOLDER: " : " CONTAINS FILE: ";
@@ -327,6 +328,7 @@ public class AssetPreloader {
 	}
 
 	public final AssetData getInternal(String path) {
+		path = fixPath(path);
 		AssetData fileData = fileMap.get(path);
 		if (debug) {
 			path = "\"" + path + "\"";

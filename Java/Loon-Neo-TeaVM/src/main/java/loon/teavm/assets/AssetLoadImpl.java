@@ -72,10 +72,10 @@ public class AssetLoadImpl implements AssetLoader {
 	public AssetLoadImpl(AssetPreloader preloader, String newBaseURL, Loon loon, AssetDownloader assetDownloader) {
 		this.preloader = preloader;
 		this.assetDownloader = assetDownloader;
-		loonApp = loon;
-		baseUrl = newBaseURL;
-		assetInQueue = new TArray<QueueAsset>();
-		assetDownloading = new HashSet<String>();
+		this.loonApp = loon;
+		this.baseUrl = newBaseURL;
+		this.assetInQueue = new TArray<QueueAsset>();
+		this.assetDownloading = new HashSet<String>();
 	}
 
 	public Loon getLoonApp() {
@@ -167,12 +167,12 @@ public class AssetLoadImpl implements AssetLoader {
 
 	@Override
 	public String getAssetUrl() {
-		return PathUtils.normalizeCombinePaths(baseUrl, ASSET_FOLDER);
+		return PathUtils.getCombinePaths(baseUrl, ASSET_FOLDER);
 	}
 
 	@Override
 	public String getScriptUrl() {
-		return PathUtils.normalizeCombinePaths(baseUrl, SCRIPTS_FOLDER);
+		return PathUtils.getCombinePaths(baseUrl, SCRIPTS_FOLDER);
 	}
 
 	@Override

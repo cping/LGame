@@ -32,6 +32,7 @@ import loon.Assets;
 import loon.Asyn;
 import loon.LSystem;
 import loon.Sound;
+import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
 import loon.opengl.TextureSource;
@@ -41,9 +42,11 @@ import loon.teavm.assets.AssetPreloader;
 import loon.teavm.audio.HowlMusic;
 import loon.utils.Base64Coder;
 import loon.utils.CollectionUtils;
+import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
+import loon.utils.TArray;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
@@ -65,6 +68,80 @@ public class TeaAssets extends Assets {
 
 	protected String getURLPath(String fileName) {
 		return "url('" + StringUtils.replace(getPathPrefix(), "\\", "/") + fileName + "')";
+	}
+
+	@Override
+	public Image getImageSync(String path) {
+		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
+			return localImage(getFixPath(path), rsrc.scale);
+		}
+		return new TeaImage(_game.graphics(), new Throwable("Image missing from manifest: " + path));
+	}
+
+	@Override
+	public Image getImage(String path) {
+		Scale assetScale = (this._assetScale == null) ? Scale.ONE : this._assetScale;
+		TArray<Scale.ScaledResource> rsrcs = assetScale.getScaledResources(path);
+		return localImage(rsrcs.get(0).path, rsrcs.get(0).scale);
+	}
+
+	@Override
+	public Image getRemoteImage(String path) {
+		return localImage(path, Scale.ONE);
+	}
+
+	@Override
+	public Image getRemoteImage(String path, int width, int height) {
+		return localImage(path, Scale.ONE).preload(width, height);
+	}
+
+	private TeaImage localImage(String path, Scale scale) {
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		final AssetPreloader assets = Loon.self.getPreloader();
+		TeaResourceLoader gwtFile = assets.internal(path);
+		AssetData tmp = assets.getInternal(path = gwtFile.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		return new TeaImage(_game.graphics(), scale, createImage("image/" + PathUtils.getExtension(path), tmp.getBytes()), path);
+	}
+
+	private TeaImage loadUrlImage(String url, Scale scale) {/*
+		final ImageElement image = Document.get().createImageElement();
+		final GWTImage gwtimage = new GWTImage(game.graphics(), scale, image, url);
+		final XMLHttpRequest request = XMLHttpRequest.create();
+		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
+			@Override
+			public void onReadyStateChange(XMLHttpRequest xhr) {
+				if (xhr.getReadyState() == XMLHttpRequest.DONE) {
+					if (xhr.getStatus() == 200) {
+						Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
+						Blob blob = new Blob(data);
+						GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+						final String ext = PathUtils.getExtension(url);
+						if (StringUtils.isEmpty(ext)) {
+							image.setSrc(blob.toBase64("image/png"));
+						} else {
+							image.setSrc(blob.toBase64("image/" + ext));
+						}
+						gwtimage.setImageElement(image);
+					}
+				}
+			}
+		});
+		request.open("GET", url);
+		request.setResponseType(ResponseType.ArrayBuffer);
+		request.send();*/
+		return null;
 	}
 
 	@Override
@@ -227,6 +304,7 @@ public class TeaAssets extends Assets {
 		}
 		final AssetPreloader assets = Loon.self.getPreloader();
 		TeaResourceLoader files = assets.internal(path);
+
 		AssetData tmp = assets.getInternal(path = files.path());
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
@@ -248,8 +326,10 @@ public class TeaAssets extends Assets {
 	@Override
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
 		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
-		img.setWidth(rawWidth);
-		img.setHeight(rawHeight);
+		if (!async) {
+			img.setWidth(rawWidth);
+			img.setHeight(rawHeight);
+		}
 		img.setSrc(source);
 		return new TeaImage(_game.graphics(), _game.graphics().scale(), img, source);
 	}

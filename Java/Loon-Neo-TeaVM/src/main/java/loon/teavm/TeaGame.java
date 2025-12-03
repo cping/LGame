@@ -57,7 +57,7 @@ public class TeaGame extends LGame {
 
 		public String urlBase = null;
 
-		public boolean showDownloadLog = false;
+		public boolean showDownloadLog = true;
 
 		public boolean usePhysicalPixels = false;
 

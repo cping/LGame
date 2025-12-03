@@ -370,8 +370,18 @@ public class GWTAssets extends Assets {
 
 	@Override
 	protected ImageImpl createImage(boolean async, int rwid, int rhei, String source) {
-		ImageElement img = Document.get().createImageElement();
-		img.setSrc(source);
+		ImageElement img = null;
+		if (async) {
+			img = Document.get().createImageElement();
+			img.setWidth(rwid);
+			img.setHeight(rhei);
+			img.setSrc(source);
+		} else {
+			img = localImageElement(source);
+			if (img == null) {
+				return loadUrlImage(source, game.graphics().scale());
+			}
+		}
 		return new GWTImage(game.graphics(), game.graphics().scale(), img, source);
 	}
 
@@ -379,7 +389,7 @@ public class GWTAssets extends Assets {
 		super(game.asyn());
 		this.game = game;
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
-			setPathPrefix(PathUtils.normalizeCombinePaths(GWT.getModuleBaseForStaticFiles(), LSystem.getPathPrefix()));
+			setPathPrefix(PathUtils.getCombinePaths(GWT.getModuleBaseForStaticFiles(), LSystem.getPathPrefix()));
 		}
 	}
 
