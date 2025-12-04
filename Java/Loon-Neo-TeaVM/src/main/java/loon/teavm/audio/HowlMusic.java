@@ -24,7 +24,9 @@ import org.teavm.jso.typedarrays.ArrayBufferView;
 
 import loon.SoundImpl;
 import loon.teavm.TeaResourceLoader;
+import loon.teavm.assets.AssetData;
 import loon.teavm.dom.ConvertUtils;
+import loon.utils.CollectionUtils;
 
 public class HowlMusic extends SoundImpl<Object> {
 
@@ -32,6 +34,12 @@ public class HowlMusic extends SoundImpl<Object> {
 
 	public HowlMusic(TeaResourceLoader f) {
 		byte[] bytes = f.readBytes();
+		ArrayBufferView data = ConvertUtils.getInt8Array(bytes);
+		howl = Howl.create(data);
+	}
+
+	public HowlMusic(AssetData asset) {
+		byte[] bytes = CollectionUtils.copyOf(asset.getBytes());
 		ArrayBufferView data = ConvertUtils.getInt8Array(bytes);
 		howl = Howl.create(data);
 	}

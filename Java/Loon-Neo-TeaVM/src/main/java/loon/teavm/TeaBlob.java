@@ -28,7 +28,9 @@ import org.teavm.jso.file.BlobPropertyBag;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 
-public class TeaBlob {
+import netscape.javascript.JSObject;
+
+public class TeaBlob{
 
 	private ArrayBuffer response;
 

@@ -47,6 +47,7 @@ import loon.teavm.builder.TeaBuilder;
 import loon.utils.PathUtils;
 
 public class AssetsCopy implements RendererListener {
+	
 	private FileDescriptor rootFileDescriptor = new FileDescriptor();
 	private RenderingManager context;
 

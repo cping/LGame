@@ -20,13 +20,17 @@
  */
 package loon.teavm;
 
+import org.teavm.jso.JSObject;
 import org.teavm.jso.ajax.ReadyStateChangeHandler;
 import org.teavm.jso.ajax.XMLHttpRequest;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
+import org.teavm.jso.typedarrays.ArrayBuffer;
+import org.teavm.jso.typedarrays.Int8Array;
 
 import loon.Assets;
 import loon.Asyn;
@@ -40,13 +44,13 @@ import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetData;
 import loon.teavm.assets.AssetPreloader;
 import loon.teavm.audio.HowlMusic;
-import loon.utils.Base64Coder;
+import loon.teavm.dom.ConvertUtils;
 import loon.utils.CollectionUtils;
-import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
 
@@ -100,33 +104,32 @@ public class TeaAssets extends Assets {
 		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = getFixPath(path);
 		}
-		final AssetPreloader assets = Loon.self.getPreloader();
-		TeaResourceLoader gwtFile = assets.internal(path);
-		AssetData tmp = assets.getInternal(path = gwtFile.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
-		}
-		if (tmp == null) {
-			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
-		}
-		return new TeaImage(_game.graphics(), scale, createImage("image/" + PathUtils.getExtension(path), tmp.getBytes()), path);
+		return new TeaImage(_game.graphics(), scale, getAssetData(path).getImageElement(), path);
 	}
 
-	private TeaImage loadUrlImage(String url, Scale scale) {/*
-		final ImageElement image = Document.get().createImageElement();
-		final GWTImage gwtimage = new GWTImage(game.graphics(), scale, image, url);
-		final XMLHttpRequest request = XMLHttpRequest.create();
+	private TeaImage loadUrlImage(String url, Scale scale) {
+		final HTMLImageElement image = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+		final TeaImage gwtimage = new TeaImage(_game.graphics(), scale, image, url);
+		final XMLHttpRequest request = new XMLHttpRequest();
 		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
 			@Override
-			public void onReadyStateChange(XMLHttpRequest xhr) {
-				if (xhr.getReadyState() == XMLHttpRequest.DONE) {
-					if (xhr.getStatus() == 200) {
-						Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
-						Blob blob = new Blob(data);
-						GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
+			public void stateChanged() {
+				if (request.getReadyState() == XMLHttpRequest.DONE) {
+					if (request.getStatus() == 200) {
+						JSObject jsResponse = request.getResponse();
+						Int8Array data = null;
+						ArrayBuffer arrayBuffer = null;
+						if (JSString.isInstance(jsResponse)) {
+							String responseStr = Loon.toString(jsResponse);
+							data = ConvertUtils.getInt8Array(responseStr.getBytes());
+							arrayBuffer = data.getBuffer();
+						} else {
+							ArrayBuffer response = (ArrayBuffer) jsResponse;
+							data = new Int8Array(response);
+							arrayBuffer = response;
+						}
+						final TeaBlob blob = new TeaBlob(arrayBuffer, data);
+						Loon.setCrossOrigin(image, "crossOrigin");
 						final String ext = PathUtils.getExtension(url);
 						if (StringUtils.isEmpty(ext)) {
 							image.setSrc(blob.toBase64("image/png"));
@@ -139,41 +142,17 @@ public class TeaAssets extends Assets {
 			}
 		});
 		request.open("GET", url);
-		request.setResponseType(ResponseType.ArrayBuffer);
-		request.send();*/
+		request.setResponseType("arraybuffer");
+		request.send();
 		return null;
 	}
 
 	@Override
 	public Sound getSound(String path) {
-		path = getPath(path);
-		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = getFixPath(path);
-		}
-		final AssetPreloader assets = Loon.self.getPreloader();
-		TeaResourceLoader gwtFile = assets.internal(path);
-		if (gwtFile.exists()) {
-			return new HowlMusic(gwtFile);
-		}
-		boolean result = assets.contains(path = gwtFile.path());
-		String finalPath = path;
-		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			result = assets.contains(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			result = assets.contains(finalPath = LSystem.getFileName(path = gwtFile.path()));
-		}
-		if (!result) {
-			result = assets.contains(finalPath = LSystem.getFileName(path = (getFixPath(path))));
-		}
-		if (!result) {
-			_game.log().warn("file " + path + " not found");
-		}
-		return new HowlMusic(assets.internal(finalPath));
+		return new HowlMusic(getAssetData(path));
 	}
 
-	@Override
-	public String getTextSync(String path) throws Exception {
+	private final AssetData getAssetData(String path) {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = getFixPath(path);
@@ -181,7 +160,7 @@ public class TeaAssets extends Assets {
 		final AssetPreloader assets = Loon.self.getPreloader();
 		TeaResourceLoader gwtFile = assets.internal(path);
 		if (gwtFile.exists()) {
-			return gwtFile.readString();
+			return assets.getInternal(path = gwtFile.path());
 		}
 		AssetData tmp = assets.getInternal(path = gwtFile.path());
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
@@ -195,8 +174,49 @@ public class TeaAssets extends Assets {
 		}
 		if (tmp == null) {
 			_game.log().warn("file " + path + " not found");
+			tmp = new AssetData(path);
+		} else {
+			return tmp;
 		}
-		return new String(tmp.getBytes(), LSystem.ENCODING);
+		return tmp;
+	}
+
+	@Override
+	public String getTextSync(String path) throws Exception {
+		return new String(getAssetData(path).getBytes(), LSystem.ENCODING);
+	}
+
+	@Override
+	public GoFuture<String> getText(String path) {
+		GoPromise<String> result = GoPromise.create();
+		path = getPath(path);
+		if (path.startsWith(LSystem.getSystemImagePath())) {
+			path = getFixPath(path);
+		}
+		try {
+			return doXhr(path, "text").map(new Function<XMLHttpRequest, String>() {
+				public String apply(XMLHttpRequest xhr) {
+					return xhr.getResponseText();
+				}
+			});
+		} catch (Exception e) {
+			final AssetPreloader assets = Loon.self.getPreloader();
+			TeaResourceLoader gwtFile = assets.internal(path);
+			if (gwtFile.exists()) {
+				try {
+					result.succeed(gwtFile.readString());
+				} catch (Exception ex) {
+					result.succeed(null);
+				}
+			} else {
+				try {
+					result.succeed(new String(getAssetData(path).getBytes(), LSystem.ENCODING));
+				} catch (Exception ex) {
+					result.succeed(null);
+				}
+			}
+		}
+		return result;
 	}
 
 	@Override
@@ -205,25 +225,7 @@ public class TeaAssets extends Assets {
 		if (path.startsWith(LSystem.getSystemImagePath())) {
 			path = getFixPath(path);
 		}
-		final AssetPreloader assets = Loon.self.getPreloader();
-		TeaResourceLoader gwtFile = assets.internal(path);
-		if (gwtFile.exists()) {
-			return gwtFile.readBytes();
-		}
-		AssetData tmp = assets.getInternal(path = gwtFile.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
-		}
-		if (tmp == null) {
-			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
-		}
-		if (tmp == null) {
-			_game.log().warn("file " + path + " not found");
-		}
-		return CollectionUtils.copyOf(tmp.getBytes());
+		return CollectionUtils.copyOf(getAssetData(path).getBytes());
 	}
 
 	private Scale assetScale() {
@@ -264,7 +266,7 @@ public class TeaAssets extends Assets {
 
 	private GoFuture<XMLHttpRequest> doXhr(final String path, final String responseType) {
 		final GoPromise<XMLHttpRequest> result = GoPromise.create();
-		XMLHttpRequest xhr = XMLHttpRequest.create();
+		XMLHttpRequest xhr = new XMLHttpRequest();
 		if (LOG_XHR_SUCCESS) {
 			_game.log().debug("xhr.open('GET', '" + path + "')...");
 		}
@@ -298,50 +300,28 @@ public class TeaAssets extends Assets {
 	}
 
 	private HTMLImageElement localImageElement(String path) {
-		path = getPath(path);
-		if (path.startsWith(LSystem.getSystemImagePath())) {
-			path = getFixPath(path);
-		}
-		final AssetPreloader assets = Loon.self.getPreloader();
-		TeaResourceLoader files = assets.internal(path);
-
-		AssetData tmp = assets.getInternal(path = files.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = assets.getInternal(LSystem.getFileName(path = files.path()));
-		}
-		if (tmp == null) {
-			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
-		}
-		if (tmp == null) {
-			_game.log().warn("file " + path + " not found");
-		} else {
-			return createImage("image/" + PathUtils.getExtension(path), tmp.getBytes());
-		}
-		return null;
+		return getAssetData(path).getImageElement();
 	}
 
 	@Override
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
-		HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
-		if (!async) {
+		HTMLImageElement img = null;
+		if (async) {
+			img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
 			img.setWidth(rawWidth);
 			img.setHeight(rawHeight);
+			img.setSrc(source);
+		} else {
+			img = localImageElement(source);
+			if (img == null) {
+				return loadUrlImage(source, _game.graphics().scale());
+			}
 		}
-		img.setSrc(source);
 		return new TeaImage(_game.graphics(), _game.graphics().scale(), img, source);
 	}
 
 	private final static String getFixPath(String path) {
 		return PathUtils.normalizeCombinePaths(LSystem.getPathPrefix(), path);
-	}
-
-	protected HTMLImageElement createImage(String mimeType, byte[] bytes) {
-		HTMLImageElement imageTmp = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
-		imageTmp.setSrc("data:" + mimeType + ";base64," + Base64Coder.encode(bytes));
-		return imageTmp;
 	}
 
 	protected HTMLCanvasElement createEmptyCanvas(int w, int h) {

@@ -7,7 +7,7 @@
   <packaging>war</packaging>
   <properties>
     <java.version>11</java.version>
-    <teavm.version>0.12.0</teavm.version>
+    <teavm.version>0.13.0</teavm.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <dependencies>
@@ -88,7 +88,7 @@
           <dependency>
             <groupId>org.teavm</groupId>
             <artifactId>teavm-classlib</artifactId>
-            <version>0.12.0</version>
+            <version>${teavm.version}</version>
           </dependency>
         </dependencies>
         <executions>

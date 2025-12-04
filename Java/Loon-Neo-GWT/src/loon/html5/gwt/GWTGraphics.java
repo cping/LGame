@@ -51,6 +51,8 @@ import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
+import com.google.gwt.user.client.Window.ClosingHandler;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.webgl.client.WebGLContextAttributes;
 import com.google.gwt.webgl.client.WebGLRenderingContext;
@@ -124,8 +126,8 @@ public class GWTGraphics extends Graphics {
 		} else {
 			glc.viewport(0, 0, config.width, config.height);
 		}
-
-		if (config.fullscreen) {
+		addEventListeners();
+		if (config.fullscreen || config.allowScreenResize) {
 			Window.addResizeHandler(new ResizeHandler() {
 				@Override
 				public void onResize(ResizeEvent event) {
@@ -151,12 +153,53 @@ public class GWTGraphics extends Graphics {
 		Loon.self.addHandler(new OrientationChangedHandler() {
 			@Override
 			public void onChanged(Orientation newOrientation) {
-				int width = Loon.self.getContainerWidth();
-				int height = Loon.self.getContainerHeight();
-				game.log().info("update screen size width :" + width + " height :" + height);
-				setSize(width, height);
+				final int clientWidth = rootElement.getClientWidth();
+				final int clientHeight = rootElement.getClientHeight();
+
+				if (clientWidth <= 0 || clientHeight <= 0) {
+					return;
+				}
+				game.log().info("update screen size width :" + clientWidth + " height :" + clientHeight);
+				setSize(clientWidth, clientHeight);
 			}
 		});
+		Window.addWindowClosingHandler(new ClosingHandler() {
+
+			@Override
+			public void onWindowClosing(ClosingEvent event) {
+				game.shutdown();
+			}
+		});
+	}
+
+	private native void addEventListeners() /*-{
+		var self = this;
+		var eventName = null;
+		if ("hidden" in $doc) {
+			eventName = "visibilitychange"
+		} else if ("webkitHidden" in $doc) {
+			eventName = "webkitvisibilitychange"
+		} else if ("mozHidden" in $doc) {
+			eventName = "mozvisibilitychange"
+		} else if ("msHidden" in $doc) {
+			eventName = "msvisibilitychange"
+		}
+		if (eventName !== null) {
+			$doc
+					.addEventListener(
+							eventName,
+							function(e) {
+								self.@loon.html5.gwt.GWTGraphics::onVisibilityChange(Z)($doc['hidden'] !== true);
+							});
+		}
+	}-*/;
+
+	private void onVisibilityChange(boolean visible) {
+		if (visible) {
+			game.resume();
+		} else {
+			game.pause();
+		}
 	}
 
 	private boolean isFullscreen() {
@@ -243,7 +286,7 @@ public class GWTGraphics extends Graphics {
 				measureElement.getStyle().setProperty("src", ((GWTAssets) game.assets()).getURLPath(fontName));
 				measureElement.getStyle().setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
 			} else {
-				measureElement.getStyle().setProperty("fontFamily", fontName);
+				measureElement.getStyle().setProperty("fontFamily", GWTFont.getFontName(fontName));
 			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {

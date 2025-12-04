@@ -22,6 +22,7 @@ package loon.teavm;
 
 import loon.font.Font;
 import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
 public class TeaFont {
 
@@ -69,6 +70,53 @@ public class TeaFont {
 		default:
 			break;
 		}
-		return style + " " + size + "px " + fontName;
+		return style + " " + size + "px " + getFontName(fontName);
+	}
+
+	protected final static String getFontName(final String fontName) {
+		if (!StringUtils.isChinaLanguage(fontName)) {
+			return fontName;
+		}
+		if ("微软雅黑".equals(fontName)) {
+			return "Microsoft YaHei";
+		} else if ("宋体".equals(fontName)) {
+			return "SimSun";
+		} else if ("黑体".equals(fontName)) {
+			return "SimHei";
+		} else if ("仿宋".equals(fontName)) {
+			return "FangSong";
+		} else if ("楷体".equals(fontName)) {
+			return "KaiTi";
+		} else if ("隶书".equals(fontName)) {
+			return "LiSu";
+		} else if ("幼圆".equals(fontName)) {
+			return "YouYuan";
+		} else if ("华文细黑".equals(fontName)) {
+			return "STXihei";
+		} else if ("华文华文楷体黑".equals(fontName)) {
+			return "STKaiti";
+		} else if ("华文宋体".equals(fontName)) {
+			return "STSong";
+		} else if ("华文中宋".equals(fontName)) {
+			return "STZhongsong";
+		} else if ("华文仿宋".equals(fontName)) {
+			return "STFangsong";
+		} else if ("方正舒体".equals(fontName)) {
+			return "FZShuTi";
+		} else if ("方正姚体".equals(fontName)) {
+			return "FZYaoti";
+		} else if ("华文彩云".equals(fontName)) {
+			return "STCaiyun";
+		} else if ("华文琥珀".equals(fontName)) {
+			return "STHupo";
+		} else if ("华文隶书".equals(fontName)) {
+			return "STLiti";
+		} else if ("华文行楷".equals(fontName)) {
+			return "STXingkai";
+		} else if ("华文新魏".equals(fontName)) {
+			return "STXinwei";
+		} else {
+			return "sans-serif";
+		}
 	}
 }

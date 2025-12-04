@@ -329,7 +329,9 @@ public class AssetPreloader {
 
 	public final AssetData getInternal(String path) {
 		path = fixPath(path);
+
 		AssetData fileData = fileMap.get(path);
+		
 		if (debug) {
 			path = "\"" + path + "\"";
 			String type = fileData != null && fileData.isDirectory() ? " GET FOLDER: " : " GET FILE: ";

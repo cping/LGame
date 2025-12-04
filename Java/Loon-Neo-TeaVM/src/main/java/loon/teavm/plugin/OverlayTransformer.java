@@ -32,8 +32,6 @@ import org.teavm.model.ReferenceCache;
 import org.teavm.model.util.ModelUtils;
 import org.teavm.parsing.ClassRefsRenamer;
 
-import loon.teavm.builder.TeaBuilder;
-
 public class OverlayTransformer implements ClassHolderTransformer {
 	
 	private ReferenceCache referenceCache = new ReferenceCache();

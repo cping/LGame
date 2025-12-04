@@ -64,12 +64,6 @@ public class TeaGame extends LGame {
 		// 当前浏览器的渲染模式
 		public Mode mode = Mode.AUTODETECT;
 
-		// 当此项存在时，会尝试加载内部资源
-		// public LocalAssetResources internalRes = null;
-
-		// 当此项存在时，同样会尝试加载内部资源
-		public boolean jsloadRes = false;
-
 		public boolean transparentCanvas = false;
 
 		public boolean antiAliasing = true;

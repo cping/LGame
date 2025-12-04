@@ -27,12 +27,13 @@ import org.teavm.vm.spi.TeaVMHost;
 import org.teavm.vm.spi.TeaVMPlugin;
 
 @Before(JSOPlugin.class)
-public class TeaPlugin implements TeaVMPlugin {
-    @Override
-    public void install(TeaVMHost host) {
-        host.add(new OverlayTransformer());
-        host.add(new ObjectDependency());
-        TeaVMJavaScriptHost jsHost = host.getExtension(TeaVMJavaScriptHost.class);
-        jsHost.add(new AssetsCopy());
-    }
+public class TeaPlugin implements TeaVMPlugin{
+	@Override
+	public void install(TeaVMHost host) {
+		host.add(new OverlayTransformer());
+		host.add(new ObjectDependency());
+		TeaVMJavaScriptHost jsHost = host.getExtension(TeaVMJavaScriptHost.class);
+		jsHost.add(new AssetsCopy());
+	}
+
 }

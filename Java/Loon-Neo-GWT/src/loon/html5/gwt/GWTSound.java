@@ -20,6 +20,8 @@
  */
 package loon.html5.gwt;
 
+import com.google.gwt.core.client.GWT;
+
 import loon.LSystem;
 import loon.Sound;
 import loon.html5.gwt.soundmanager2.SMSound;
@@ -44,7 +46,7 @@ public class GWTSound implements Sound, SMSoundCallback {
 		if (!url.startsWith(startAssets)) {
 			url = PathUtils.normalizeCombinePaths(startAssets, url);
 		}
-		sound = SoundManager.createSound(url);
+		sound = SoundManager.createSound(PathUtils.getCombinePaths(GWT.getHostPageBaseURL(), url));
 		soundOptions = new SMSoundOptions();
 		soundOptions.callback = this;
 	}

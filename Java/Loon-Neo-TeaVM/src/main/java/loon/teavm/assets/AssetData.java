@@ -20,11 +20,18 @@
  */
 package loon.teavm.assets;
 
+import org.teavm.jso.dom.html.HTMLImageElement;
+
+import loon.LSystem;
+import loon.teavm.TeaBase;
+import loon.utils.Base64Coder;
+import loon.utils.PathUtils;
+
 public class AssetData {
 
 	public static final int TYPE_DIRECTORY = 1;
 	public static final int TYPE_FILE = 2;
-
+	protected HTMLImageElement imageElement;
 	private final String path;
 	private final byte[] bytes;
 	private final int type;
@@ -45,6 +52,20 @@ public class AssetData {
 		this.path = path;
 		this.bytes = bytes;
 		this.type = type;
+		if (LSystem.isImage(PathUtils.getExtension(path))) {
+			getImageElement();
+		}
+	}
+
+	public HTMLImageElement getImageElement() {
+		if (imageElement == null) {
+			imageElement = (HTMLImageElement) TeaBase.get().getDocument().createElement("img");
+			final String base64 = "data:" + PathUtils.getExtension(path) + ";base64,"
+					+ new String(Base64Coder.encode(bytes));
+			imageElement.getStyle().setProperty("display", "none");
+			imageElement.setSrc(base64);
+		}
+		return imageElement;
 	}
 
 	public String getPath() {

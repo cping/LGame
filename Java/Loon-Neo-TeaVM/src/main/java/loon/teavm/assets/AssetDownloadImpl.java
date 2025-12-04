@@ -20,7 +20,6 @@
  */
 package loon.teavm.assets;
 
-import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.ajax.XMLHttpRequest;
 import org.teavm.jso.browser.Window;
@@ -32,6 +31,7 @@ import org.teavm.jso.dom.html.HTMLScriptElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 
+import loon.teavm.Loon;
 import loon.teavm.TeaBlob;
 import loon.teavm.dom.ConvertUtils;
 
@@ -41,8 +41,6 @@ public class AssetDownloadImpl implements AssetDownloader {
 
 	private final boolean showLogs;
 	
-	private boolean showDownloadProgress;
-
 	public AssetDownloadImpl(boolean showDownloadLogs) {
 		showLogs = showDownloadLogs;
 	}
@@ -160,7 +158,7 @@ public class AssetDownloadImpl implements AssetDownloader {
 					Int8Array data = null;
 					ArrayBuffer arrayBuffer = null;
 					if (JSString.isInstance(jsResponse)) {
-						String responseStr = toString(jsResponse);
+						String responseStr = Loon.toString(jsResponse);
 						data = ConvertUtils.getInt8Array(responseStr.getBytes());
 						arrayBuffer = data.getBuffer();
 					} else {
@@ -193,9 +191,4 @@ public class AssetDownloadImpl implements AssetDownloader {
 		});
 	}
 
-	@JSBody(params = "jsObject", script = "return jsObject;")
-	private static native String toString(JSObject jsObject);
-
-	@JSBody(params = "object", script = "return URL.createObjectURL(object);")
-	private static native String createObjectURL(JSObject object);
 }

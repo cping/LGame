@@ -163,7 +163,7 @@ public class Loon implements Platform {
 						public void run() {
 							final int queue = _assetLoader.getQueue();
 							_progress.update(_mainCanvasElement, ((float) (_assetCount - queue) / _assetCount));
-							if (_progress.isCompleted()) {
+							if (_progress.isCompleted() && !_assetLoader.isDownloading()) {
 								_baseWindow.cancelInterval(_frameId);
 								if (_mainCanvasElement != null) {
 									mainLoop();
@@ -322,6 +322,12 @@ public class Loon implements Platform {
 			style.setProperty("height", height + "px");
 		}
 	}
+
+	@JSBody(params = "jsObject", script = "return jsObject;")
+	public static native String toString(JSObject jsObject);
+
+	@JSBody(params = "object", script = "return URL.createObjectURL(object);")
+	public static native String createObjectURL(JSObject object);
 
 	@JSFunctor
 	public interface RenderFrameHandler extends JSObject {

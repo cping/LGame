@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
+import org.teavm.jso.dom.css.CSSStyleDeclaration;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
@@ -55,13 +56,13 @@ import loon.utils.Scale;
 public class TeaGraphics extends Graphics {
 
 	private final TeaSetting config;
-	private final HTMLCanvasElement dummyCanvas;
+
 	private final CanvasRenderingContext2D dummyCtx;
 
 	private final HTMLElement measureElement;
 	private final Map<Font, TeaFontMetrics> fontMetrics = new HashMap<Font, TeaFontMetrics>();
 
-	final HTMLElement rootElement;
+	private HTMLElement rootElement;
 	final HTMLCanvasElement canvas;
 
 	private final Dimension screenSize = new Dimension();
@@ -71,35 +72,41 @@ public class TeaGraphics extends Graphics {
 
 	static float experimentalScale = 1;
 
-	public TeaGraphics(final HTMLElement root, final LGame game, final TeaSetting cfg) {
+	public TeaGraphics(final HTMLCanvasElement rootCanvas, final LGame game, final TeaSetting cfg) {
 		super(game, new WebGL20(), game.setting.scaling() ? Scale.ONE : new Scale(TeaBase.get().getDevicePixelRatio()));
 
 		final Window mainWindow = TeaBase.get().getWindow();
 		this.config = cfg;
 		HTMLDocumentExt doc = TeaBase.get().getDocument();
-		this.dummyCanvas = doc.createCanvasElement();
-		this.dummyCtx = (CanvasRenderingContext2D) dummyCanvas.getContext(config.canvasMethod);
 
-		this.rootElement = root;
+		this.rootElement = (HTMLElement) rootCanvas.getParentNode();
+		if (rootElement == null) {
+			rootElement = (HTMLElement) TeaBase.get().getDocument().getBody();
+		}
+	
+		this.dummyCtx = TeaCanvasUtils.getContext2d(rootCanvas);
 
 		measureElement = doc.createElement("div");
-		measureElement.getStyle().setProperty("visibility", "hidden");
-		measureElement.getStyle().setProperty("position", "absolute");
-		measureElement.getStyle().setProperty("top", "-500px");
-		measureElement.getStyle().setProperty("overflow", "visible");
-		measureElement.getStyle().setProperty("whiteSpace", "nowrap");
-		root.appendChild(measureElement);
+		CSSStyleDeclaration style = measureElement.getStyle();
+		style.setProperty("visibility", "hidden");
+		style.setProperty("position", "absolute");
+		style.setProperty("top", "-500px");
+		style.setProperty("overflow", "visible");
+		style.setProperty("whiteSpace", "nowrap");
+		rootElement.appendChild(measureElement);
 
-		canvas = (HTMLCanvasElement) TeaBase.get().getDocument().createElement(config.canvasName);
-		root.appendChild(canvas);
+		canvas = doc.createCanvasElement();
+
 		if (config.scaling()) {
-			setSize(config.width_zoom > 0 ? config.width_zoom : root.getOffsetWidth(),
-					config.height_zoom > 0 ? config.height_zoom : root.getOffsetHeight());
+			setSize(config.width_zoom > 0 ? config.width_zoom : rootElement.getOffsetWidth(),
+					config.height_zoom > 0 ? config.height_zoom : rootElement.getOffsetHeight());
 		} else {
-			setSize(config.width > 0 ? config.width : root.getOffsetWidth(),
-					config.height > 0 ? config.height : root.getOffsetHeight());
+			setSize(config.width > 0 ? config.width : rootElement.getOffsetWidth(),
+					config.height > 0 ? config.height : rootElement.getOffsetHeight());
 		}
-		
+
+		rootElement.replaceChild(canvas, rootCanvas);
+
 		WebGLContextAttributesExt attrs = (WebGLContextAttributesExt) WebGLContextAttributes.create();
 		attrs.setAntialias(config.antiAliasing);
 		attrs.setStencil(config.stencil);
@@ -107,7 +114,7 @@ public class TeaGraphics extends Graphics {
 		attrs.setPremultipliedAlpha(config.premultipliedAlpha);
 		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
 		attrs.setPowerPreference(config.powerPreference);
-		
+
 		WebGLContext glc = (WebGLContext) canvas.getContext(config.webglMethod, attrs);
 
 		if (glc == null) {
@@ -121,14 +128,41 @@ public class TeaGraphics extends Graphics {
 		} else {
 			glc.viewport(0, 0, config.width, config.height);
 		}
+		mainWindow.addEventListener("pageshow", new EventListener<Event>() {
+			@Override
+			public void handleEvent(Event evt) {
+				game.resume();
+			}
+		});
+		mainWindow.addEventListener("pagehide", new EventListener<Event>() {
+			@Override
+			public void handleEvent(Event evt) {
+				game.pause();
+			}
+		});
+		mainWindow.addEventListener("visibilitychange", new EventListener<Event>() {
+			@Override
+			public void handleEvent(Event evt) {
+				String state = doc.getVisibilityState();
+				if ("hidden".equals(state)) {
+					game.pause();
+				} else if ("visible".equals(state)) {
+					game.resume();
+				}
+			}
+		});
 
-		if (config.fullscreen) {
+		if (config.fullscreen || config.allowScreenResize) {
 
 			mainWindow.addEventListener("resize", new EventListener<Event>() {
 				@Override
 				public void handleEvent(Event event) {
 					final float clientWidth = mainWindow.getInnerWidth();
 					final float clientHeight = mainWindow.getInnerHeight();
+
+					if (clientWidth <= 0 || clientHeight <= 0) {
+						return;
+					}
 					if (Loon.getScreenWidthJSNI() == clientWidth && Loon.getScreenHeightJSNI() == clientHeight) {
 						float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
 						experimentalScale = Math.min(Loon.getScreenWidthJSNI() / width,
@@ -152,12 +186,14 @@ public class TeaGraphics extends Graphics {
 
 			@Override
 			public void handleEvent(Event evt) {
+				final int clientWidth = rootElement.getClientWidth();
+				final int clientHeight = rootElement.getClientHeight();
 
-				int width = Loon.self.getContainerWidth();
-				int height = Loon.self.getContainerHeight();
-				game.log().info("update screen size width :" + width + " height :" + height);
-				setSize(width, height);
-
+				if (clientWidth <= 0 || clientHeight <= 0) {
+					return;
+				}
+				game.log().info("update screen size width :" + clientWidth + " height :" + clientHeight);
+				setSize(clientWidth, clientHeight);
 			}
 
 		});
@@ -171,6 +207,7 @@ public class TeaGraphics extends Graphics {
 		canvas.setHeight(scale().scaledCeil(height));
 		canvas.getStyle().setProperty("width", width + "px");
 		canvas.getStyle().setProperty("height", height + "px");
+
 		int viewWidth = canvas.getWidth();
 		int viewHeight = canvas.getHeight();
 		if (!isAllowResize(viewWidth, viewHeight)) {
@@ -202,7 +239,7 @@ public class TeaGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		HTMLCanvasElement elem = (HTMLCanvasElement) TeaBase.get().getDocument().createElement("canvas");
+		HTMLCanvasElement elem = (HTMLCanvasElement) TeaBase.get().getDocument().createElement(config.canvasName);
 		elem.setWidth(pixelWidth);
 		elem.setHeight(pixelHeight);
 		return new TeaCanvas(this, new TeaImage(this, scale, elem, TextureSource.RenderCanvas));
@@ -217,27 +254,28 @@ public class TeaGraphics extends Graphics {
 		TeaFontMetrics metrics = fontMetrics.get(font);
 		if (metrics == null) {
 			final String fontName = font.name;
-			measureElement.getStyle().setProperty("fontSize", font.size + "px");
-			measureElement.getStyle().setProperty("fontWeight", "normal");
-			measureElement.getStyle().setProperty("fontStyle", "normal");
+			CSSStyleDeclaration style = measureElement.getStyle();
+			style.setProperty("fontSize", font.size + "px");
+			style.setProperty("fontWeight", "normal");
+			style.setProperty("fontStyle", "normal");
 			final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 			if ((game instanceof TeaGame) && ("ttf".equals(ext) || "otf".equals(ext))) {
-				measureElement.getStyle().setProperty("src", ((TeaAssets) game.assets()).getURLPath(fontName));
-				measureElement.getStyle().setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
+				style.setProperty("src", ((TeaAssets) game.assets()).getURLPath(fontName));
+				style.setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
 			} else {
-				measureElement.getStyle().setProperty("fontFamily", fontName);
+				style.setProperty("fontFamily", TeaFont.getFontName(fontName));
 			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {
 			case BOLD:
-				measureElement.getStyle().setProperty("fontWeight", "bold");
+				style.setProperty("fontWeight", "bold");
 				break;
 			case ITALIC:
-				measureElement.getStyle().setProperty("fontStyle", "italic");
+				style.setProperty("fontStyle", "italic");
 				break;
 			case BOLD_ITALIC:
-				measureElement.getStyle().setProperty("fontWeight", "bold");
-				measureElement.getStyle().setProperty("fontStyle", "italic");
+				style.setProperty("fontWeight", "bold");
+				style.setProperty("fontStyle", "italic");
 				break;
 			default:
 				break;
