@@ -1,6 +1,5 @@
 package loon.test;
 
-import loon.LSystem;
 import loon.Screen;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;
@@ -26,6 +25,7 @@ public class TestLoon extends Loon {
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
 		setting.rootId = "embed-loon.test.TestLoon";
+		setting.allScreenRefresh = true;
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源

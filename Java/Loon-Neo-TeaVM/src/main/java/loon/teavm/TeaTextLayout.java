@@ -28,6 +28,7 @@ import org.teavm.jso.canvas.TextMetrics;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
 
+import loon.LSystem;
 import loon.font.Font;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
@@ -42,7 +43,17 @@ final class TeaTextLayout extends TextLayout {
 	private final CanvasRenderingContext2D _ctx;
 
 	private static int getTextWidth(CanvasRenderingContext2D ctx, TextFormat format, String message) {
-		return MathUtils.min(((int) format.font.size * message.length()), (int) ctx.measureText(message).getWidth());
+		return MathUtils.min(((int) format.font.size * message.length()),
+				fixFontSize(format, ctx.measureText(message).getWidth()));
+	}
+
+	private static int fixFontSize(TextFormat format, double size) {
+		int result = (int) Math.round(size);
+		int fontSize = (int) (format == null ? LSystem.getFontSize() : format.font.size);
+		if (MathUtils.isOdd(result) && result < fontSize) {
+			result += 1;
+		}
+		return result;
 	}
 
 	public static TextLayout layoutText(TeaGraphics gfx, CanvasRenderingContext2D ctx, String text, TextFormat format) {
@@ -140,7 +151,7 @@ final class TeaTextLayout extends TextLayout {
 		}
 
 		if (lineWidth > wrap.width) {
-			StringBuilder remainder = new StringBuilder();
+			final StringBuilder remainder = new StringBuilder();
 			while (lineWidth > wrap.width && line.length() > 1) {
 				int lastIdx = line.length() - 1;
 				remainder.insert(0, line.charAt(lastIdx));
@@ -150,7 +161,7 @@ final class TeaTextLayout extends TextLayout {
 			words[--idx] = remainder.toString();
 		}
 
-		layouts.add(new TeaTextLayout(ctx, line, format, metrics, (float) lineWidth));
+		layouts.add(new TeaTextLayout(ctx, line, format, metrics, lineWidth));
 		return idx;
 	}
 
@@ -164,7 +175,7 @@ final class TeaTextLayout extends TextLayout {
 	@Override
 	public int stringWidth(String message) {
 		if (_ctx != null) {
-			return getTextWidth(_ctx, format, message);
+			return fixFontSize(format, getTextWidth(_ctx, format, message));
 		}
 		return getProperty(message, TeaFont.toCSS(format.font)).getOffsetWidth();
 	}
@@ -173,8 +184,7 @@ final class TeaTextLayout extends TextLayout {
 	public int getHeight() {
 		if (_ctx != null) {
 			TextMetrics metr = _ctx.measureText(text);
-			int fontHeight = (int) (metr.getActualBoundingBoxAscent() + metr.getActualBoundingBoxDescent());
-			return fontHeight;
+			return fixFontSize(format, metr.getActualBoundingBoxAscent() + metr.getActualBoundingBoxDescent());
 		}
 		return getProperty(text, TeaFont.toCSS(format.font)).getOffsetHeight();
 	}
@@ -182,7 +192,7 @@ final class TeaTextLayout extends TextLayout {
 	@Override
 	public int charWidth(char ch) {
 		if (_ctx != null) {
-			return (int) _ctx.measureText(String.valueOf(ch)).getWidth();
+			return fixFontSize(format, _ctx.measureText(String.valueOf(ch)).getWidth());
 		}
 		return getProperty(String.valueOf(ch), TeaFont.toCSS(format.font)).getOffsetWidth();
 	}

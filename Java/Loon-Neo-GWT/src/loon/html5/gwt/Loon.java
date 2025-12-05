@@ -46,6 +46,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
 import com.google.gwt.core.client.ScriptInjector;
+import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.user.client.Window;
@@ -56,6 +57,22 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public abstract class Loon implements Platform, EntryPoint, LazyLoading {
+
+	public enum OrientationLockType {
+		LANDSCAPE("landscape"), PORTRAIT("portrait"), PORTRAIT_PRIMARY("portrait-primary"),
+		PORTRAIT_SECONDARY("portrait-secondary"), LANDSCAPE_PRIMARY("landscape-primary"),
+		LANDSCAPE_SECONDARY("landscape-secondary");
+
+		private final String name;
+
+		private OrientationLockType(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	};
 
 	private static String cur_language = null;
 
@@ -552,6 +569,124 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	public native static float backingStorePixelRatio() /*-{
 		return $wnd.webkitBackingStorePixelRatio || 1;
+	}-*/;
+
+	private void fullscreenChanged() {
+		if (!isFullscreen()) {
+			if (config.isFixedSize()) {
+				game.graphics().restoreSize();
+			}
+			if (config.fullscreenOrientation != null)
+				unlockOrientation();
+		} else {
+			if (config.fullscreenOrientation != null) {
+				lockOrientation(config.fullscreenOrientation);
+			}
+		}
+	}
+
+	public void setFullscreen(boolean f) {
+		if (f) {
+			if (game != null) {
+				setFullscreen(game.graphics().getCanvas(), getContainerWidth(), getContainerHeight());
+			}
+		} else {
+			exitFullscreen();
+		}
+	}
+
+	public boolean setFullscreen(CanvasElement element, int w, int h) {
+		return setFullscreenJSNI(this, element, w, h);
+	}
+
+	private native boolean setFullscreenJSNI(Loon loonApp, CanvasElement element, int screenWidth, int screenHeight)/*-{
+		if (element.requestFullscreen) {
+			element.width = screenWidth;
+			element.height = screenHeight;
+			element.requestFullscreen();
+			$doc.addEventListener("fullscreenchange", function() {
+				loonApp.@loon.html5.gwt.Loon::fullscreenChanged()();
+			}, false);
+			return true;
+		}
+		if (element.webkitRequestFullScreen) {
+			element.width = screenWidth;
+			element.height = screenHeight;
+			element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+			$doc.addEventListener("webkitfullscreenchange", function() {
+				loonApp.@loon.html5.gwt.Loon::fullscreenChanged()();
+			}, false);
+			return true;
+		}
+		if (element.mozRequestFullScreen) {
+			element.width = screenWidth;
+			element.height = screenHeight;
+			element.mozRequestFullScreen();
+			$doc.addEventListener("mozfullscreenchange", function() {
+				loonApp.@loon.html5.gwt.Loon::fullscreenChanged()();
+			}, false);
+			return true;
+		}
+		if (element.msRequestFullscreen) {
+			element.width = screenWidth;
+			element.height = screenHeight;
+			element.msRequestFullscreen();
+			$doc.addEventListener("msfullscreenchange", function() {
+				loonApp.@loon.html5.gwt.Loon::fullscreenChanged()();
+			}, false);
+			return true;
+		}
+
+		return false;
+	}-*/;
+
+	private native void exitFullscreen() /*-{
+		if ($doc.exitFullscreen)
+			$doc.exitFullscreen();
+		if ($doc.msExitFullscreen)
+			$doc.msExitFullscreen();
+		if ($doc.webkitExitFullscreen)
+			$doc.webkitExitFullscreen();
+		if ($doc.mozExitFullscreen)
+			$doc.mozExitFullscreen();
+		if ($doc.webkitCancelFullScreen)
+			$doc.webkitCancelFullScreen();
+	}-*/;
+
+	public boolean lockOrientation(OrientationLockType orientation) {
+		return lockOrientationJSNI(orientation.getName());
+	}
+
+	public boolean unlockOrientation() {
+		return unlockOrientationJSNI();
+	}
+
+	private native boolean lockOrientationJSNI(String orientationEnumValue) /*-{
+		var screen = $wnd.screen;
+		screen.gdxLockOrientation = screen.lockOrientation
+				|| screen.mozLockOrientation || screen.msLockOrientation
+				|| screen.webkitLockOrientation;
+		if (screen.gdxLockOrientation) {
+			return screen.gdxLockOrientation(orientationEnumValue);
+		} else if (screen.orientation && screen.orientation.lock) {
+			screen.orientation.lock(orientationEnumValue);
+			return true;
+		}
+		return false;
+	}-*/;
+
+	private native boolean unlockOrientationJSNI() /*-{
+		var screen = $wnd.screen;
+		screen.gdxUnlockOrientation = screen.unlockOrientation
+				|| screen.mozUnlockOrientation || screen.msUnlockOrientation
+				|| screen.webkitUnlockOrientation;
+		if (screen.gdxUnlockOrientation) {
+			return screen.gdxUnlockOrientation();
+		} else if (screen.orientation && screen.orientation.unlock) {
+			screen.orientation.unlock();
+			return true;
+		}
+		return false;
 	}-*/;
 
 	public boolean supportsDisplayModeChange() {

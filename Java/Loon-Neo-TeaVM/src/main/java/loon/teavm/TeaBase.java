@@ -38,8 +38,11 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 	}
 
 	private int _requestType = 0;
+	
 	private Window _window;
+	
 	private TeaAgentInfo _agentInfo;
+	
 	private Runnable _runnable;
 
 	public TeaBase() {
@@ -49,6 +52,10 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 
 	public Window getWindow() {
 		return _window;
+	}
+
+	public void reload() {
+		_window.getLocation().reload();
 	}
 
 	public void setTitle(String title) {

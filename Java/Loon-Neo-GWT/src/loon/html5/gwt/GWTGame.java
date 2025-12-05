@@ -25,6 +25,7 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
 import loon.Support;
+import loon.html5.gwt.Loon.OrientationLockType;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
 import loon.jni.TimerCallback;
@@ -90,6 +91,8 @@ public final class GWTGame extends LGame {
 		// 如果此项开启，按照屏幕大小等比缩放
 		public boolean useRatioScaleFactor = false;
 
+		public OrientationLockType fullscreenOrientation;
+
 		// 需要绑定的层id
 		public String rootId = "loon-root";
 
@@ -102,6 +105,13 @@ public final class GWTGame extends LGame {
 		// 如果此项为true,则仅以异步加载资源
 		public boolean asynResource = false;
 
+		public boolean isFixedSize() {
+			return width <= 0 && height <= 0;
+		}
+
+		public void notAllowResize() {
+			fullscreen = allowScreenResize = false;
+		}
 	}
 
 	public static enum Mode {

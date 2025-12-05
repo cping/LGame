@@ -20,7 +20,6 @@
  */
 package loon.teavm;
 
-import org.teavm.jso.JSBody;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.core.JSArrayReader;
 import org.teavm.jso.dom.events.Event;
@@ -886,33 +885,21 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	}
 
 	protected int getRelativeX(MouseEvent e, HTMLCanvasElement target) {
-		float xScaleRatio = target.getWidth() * 1f / getClientWidth(target);
-		return Math.round(xScaleRatio * (e.getClientX() - getAbsoluteLeft(target) + getScrollLeft(target)
+		return Math.round((e.getClientX() - getAbsoluteLeft(target) + getScrollLeft(target)
 				+ getScrollLeft(target.getOwnerDocument())));
 	}
 
 	protected int getRelativeY(MouseEvent e, HTMLCanvasElement target) {
-		float yScaleRatio = target.getHeight() * 1f / getClientHeight(target);
-		return Math.round(yScaleRatio * (e.getClientY() - getAbsoluteTop(target) + getScrollTop(target)
+		return Math.round((e.getClientY() - getAbsoluteTop(target) + getScrollTop(target)
 				+ getScrollTop(target.getOwnerDocument())));
 	}
 
 	protected int getRelativeX(Touch touch, HTMLCanvasElement target) {
-		float xScaleRatio = target.getWidth() * 1f / getClientWidth(target);
-		return Math.round(xScaleRatio * getRelativeX(target, touch));
+		return Math.round(getRelativeX(target, touch));
 	}
 
 	protected int getRelativeY(Touch touch, HTMLCanvasElement target) {
-		float yScaleRatio = target.getHeight() * 1f / getClientHeight(target);
-		return Math.round(yScaleRatio * getRelativeY(target, touch));
-	}
-
-	private int getClientWidth(HTMLCanvasElement target) {
-		return target.getClientWidth();
-	}
-
-	private int getClientHeight(HTMLCanvasElement target) {
-		return target.getClientHeight();
+		return Math.round(getRelativeY(target, touch));
 	}
 
 	private int getAbsoluteTop(HTMLCanvasElement target) {

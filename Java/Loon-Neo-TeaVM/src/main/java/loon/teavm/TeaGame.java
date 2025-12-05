@@ -26,7 +26,6 @@ import org.teavm.jso.JSBody;
 import org.teavm.jso.JSExceptions;
 import org.teavm.jso.JSObject;
 import org.teavm.jso.browser.Window;
-import org.teavm.jso.dom.html.HTMLCanvasElement;
 
 import loon.Asyn;
 import loon.LGame;
@@ -42,7 +41,7 @@ public class TeaGame extends LGame {
 	public static class TeaSetting extends LSetting {
 
 		public String divName = "div";
-		
+
 		public String imageName = "img";
 
 		public String canvasName = "canvas";
@@ -55,14 +54,13 @@ public class TeaGame extends LGame {
 
 		public String powerPreference = "high-performance";
 
+		public String canvasImageRendering = "auto";
+
 		public String urlBase = null;
 
 		public boolean showDownloadLog = true;
 
 		public boolean usePhysicalPixels = false;
-
-		// 当前浏览器的渲染模式
-		public Mode mode = Mode.AUTODETECT;
 
 		public boolean transparentCanvas = false;
 
@@ -74,12 +72,17 @@ public class TeaGame extends LGame {
 
 		public boolean preserveDrawingBuffer = false;
 
-		// 如果此项开启，按照屏幕大小等比缩放
 		public boolean useRatioScaleFactor = false;
 
-		// 如果此项为true,则仅以异步加载资源
-		public boolean asynResource = false;
 		public TeaWindowListener windowListener;
+
+		public boolean isFixedSize() {
+			return width <= 0 && height <= 0;
+		}
+
+		public void notAllowResize() {
+			fullscreen = allowScreenResize = false;
+		}
 	}
 
 	public static enum Mode {
@@ -88,7 +91,7 @@ public class TeaGame extends LGame {
 
 	private final static Support support = new NativeSupport();
 
-	static final TeaAgentInfo agentInfo = TeaWebAgent.computeAgentInfo();
+	private static final TeaAgentInfo agentInfo = TeaWebAgent.computeAgentInfo();
 
 	private final double start;
 
@@ -137,11 +140,10 @@ public class TeaGame extends LGame {
 			setting.updateScale();
 		}
 		try {
-			final HTMLCanvasElement rootCanvas = loonApp.getMainCanvas();
-			graphics = new TeaGraphics(rootCanvas, this, config);
+			graphics = new TeaGraphics(loon, this, config);
 			assets = new TeaAssets(this, syn);
 			clipboard = new TeaClipboard();
-			input = new TeaInputMake(this, rootCanvas);
+			input = new TeaInputMake(this, graphics.getCanvas());
 			save = new TeaSave(this);
 		} catch (Throwable e) {
 			log.error("init()", e);
@@ -167,14 +169,16 @@ public class TeaGame extends LGame {
 
 	public void start() {
 		init();
-		_frameID = requestAnimationFrame(loonApp._setting.fps, new Runnable() {
+		final int defFps = loonApp._setting.fps;
+		final Runnable gameLoop = new Runnable() {
 
 			@Override
 			public void run() {
-				_frameID = requestAnimationFrame(loonApp._setting.fps, this);
+				_frameID = requestAnimationFrame(defFps, this);
 				emitFrame();
 			}
-		});
+		};
+		_frameID = requestAnimationFrame(defFps, gameLoop);
 	}
 
 	private int requestAnimationFrame(float frameRate, Runnable callback) {

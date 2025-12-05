@@ -33,11 +33,13 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
+import loon.geom.RectBox;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
 import loon.opengl.TextureSource;
 import loon.utils.GLUtils;
+import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 
@@ -68,13 +70,15 @@ public class GWTGraphics extends Graphics {
 
 	final Element rootElement;
 	final CanvasElement canvas;
+	
+	private final RectBox initSize = new RectBox();
 
 	private final Dimension screenSize = new Dimension();
 
+	private boolean graphicsFullSize;
+
 	private static final String HEIGHT_TEXT = "THEQUICKBROWNFOXJUMPEDOVERTHELAZYDOGthequickbrownfoxjumpedoverthelazydog_-+!.,[]0123456789";
 	private static final String EMWIDTH_TEXT = "m";
-
-	static float experimentalScale = 1;
 
 	public GWTGraphics(final Panel panel, final LGame game, final GWTSetting cfg) {
 		super(game, new GWTGL20(), game.setting.scaling() ? Scale.ONE : new Scale(Loon.devicePixelRatio()));
@@ -98,6 +102,7 @@ public class GWTGraphics extends Graphics {
 
 		canvas = Document.get().createCanvasElement();
 		root.appendChild(canvas);
+
 		if (config.scaling()) {
 			setSize(config.width_zoom > 0 ? config.width_zoom : root.getOffsetWidth(),
 					config.height_zoom > 0 ? config.height_zoom : root.getOffsetHeight());
@@ -105,6 +110,8 @@ public class GWTGraphics extends Graphics {
 			setSize(config.width > 0 ? config.width : root.getOffsetWidth(),
 					config.height > 0 ? config.height : root.getOffsetHeight());
 		}
+		initSize.setSize(config.getShowWidth(), config.getShowHeight());
+
 		WebGLContextAttributes attrs = WebGLContextAttributes.create();
 		attrs.setAntialias(config.antiAliasing);
 		attrs.setStencil(config.stencil);
@@ -127,24 +134,30 @@ public class GWTGraphics extends Graphics {
 			glc.viewport(0, 0, config.width, config.height);
 		}
 		addEventListeners();
-		if (config.fullscreen || config.allowScreenResize) {
+		if (config.fullscreen || config.allowScreenResize || config.isFixedSize()) {
 			Window.addResizeHandler(new ResizeHandler() {
 				@Override
 				public void onResize(ResizeEvent event) {
-					if (getScreenWidthJSNI() == event.getWidth() && getScreenHeightJSNI() == event.getHeight()) {
-						float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
-						experimentalScale = Math.min(getScreenWidthJSNI() / width, getScreenHeightJSNI() / height);
-
-						int yOfs = (int) ((getScreenHeightJSNI() - height * experimentalScale) / 3.f);
-						int xOfs = (int) ((getScreenWidthJSNI() - width * experimentalScale) / 2.f);
+					float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
+					final float clientWidth = event.getWidth();
+					final float clientHeight = event.getHeight();
+					if (clientWidth <= 0 || clientHeight <= 0) {
+						return;
+					}
+					if ((width != clientWidth || height != clientHeight)) {
+						setSize((int) clientWidth, (int) clientHeight);
+						float experimentalScale = Math.min(getScreenWidthJSNI() / width,
+								getScreenHeightJSNI() / height);
 						rootElement.setAttribute("style",
 								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
-										+ "px; " + "position:absolute; left:" + xOfs + "px; top:" + yOfs);
+										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
 						Document.get().getBody().addClassName("fullscreen");
-					} else {
-						experimentalScale = 1;
+						graphicsFullSize = true;
+					} else if (graphicsFullSize && (clientWidth != initSize.width || clientHeight != initSize.height)) {
+						setSize(initSize.width, initSize.height);
 						rootElement.removeAttribute("style");
 						Document.get().getBody().removeClassName("fullscreen");
+						graphicsFullSize = false;
 					}
 				}
 			});
@@ -170,6 +183,18 @@ public class GWTGraphics extends Graphics {
 				game.shutdown();
 			}
 		});
+	}
+
+	public void restoreSize() {
+		setSize(initSize.width, initSize.height);
+	}
+
+	public boolean isGraphicsFullSize() {
+		return graphicsFullSize;
+	}
+
+	public CanvasElement getCanvas() {
+		return canvas;
 	}
 
 	private native void addEventListeners() /*-{
@@ -203,7 +228,7 @@ public class GWTGraphics extends Graphics {
 	}
 
 	private boolean isFullscreen() {
-		return isFullscreenJSNI();
+		return Loon.self.isFullscreen();
 	}
 
 	private native int getScreenWidthJSNI() /*-{
@@ -212,16 +237,6 @@ public class GWTGraphics extends Graphics {
 
 	private native int getScreenHeightJSNI() /*-{
 		return $wnd.screen.height;
-	}-*/;
-
-	private native boolean isFullscreenJSNI() /*-{
-		if ("webkitIsFullScreen" in $doc) {
-			return $doc.webkitIsFullScreen;
-		}
-		if ("mozFullScreen" in $doc) {
-			return $doc.mozFullScreen;
-		}
-		return false
 	}-*/;
 
 	public void setSize(int width, int height) {
@@ -286,7 +301,8 @@ public class GWTGraphics extends Graphics {
 				measureElement.getStyle().setProperty("src", ((GWTAssets) game.assets()).getURLPath(fontName));
 				measureElement.getStyle().setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
 			} else {
-				measureElement.getStyle().setProperty("fontFamily", GWTFont.getFontName(fontName));
+				measureElement.getStyle().setProperty("fontFamily", GWTFont.getFontName(fontName)
+						+ ",'Microsoft YaHei','STHeiti','PingFang SC','WenQuanYi Micro Hei',monospace,sans-serif");
 			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {
@@ -306,6 +322,13 @@ public class GWTGraphics extends Graphics {
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);
 			float emwidth = measureElement.getOffsetWidth();
+
+			if (height == 0) {
+				height = font.size + MathUtils.ifloor(font.size / 6);
+			}
+			if (emwidth == 0) {
+				emwidth = font.size / 2;
+			}
 			metrics = new GWTFontMetrics(font, height, emwidth);
 			fontMetrics.put(font, metrics);
 		}

@@ -74,6 +74,8 @@ public class Loon implements Platform {
 
 	private static String cur_browserType = null;
 
+	protected static Loon self;
+
 	private HashMap<String, OrientationChangedHandler> _handlers = new HashMap<String, OrientationChangedHandler>();
 
 	private Orientation _orientation;
@@ -85,16 +87,12 @@ public class Loon implements Platform {
 	protected TeaProgress _progress;
 
 	protected AssetDownloadImpl _assetDownloader;
+
 	protected AssetLoadImpl _assetLoader;
+
 	protected AssetPreloader _preloader;
 
-	protected static Loon self;
-
 	protected TeaBase _baseWindow;
-
-	private TeaGame _game;
-
-	private LazyLoading.Data _mainData = null;
 
 	protected LSetting _setting = null;
 
@@ -103,6 +101,10 @@ public class Loon implements Platform {
 	protected int _frameId = 0;
 
 	private int _assetCount = 0;
+
+	private TeaGame _game;
+
+	private LazyLoading.Data _mainData = null;
 
 	private Loon(LSetting setting, LazyLoading.Data lazy) {
 		this._setting = setting;
@@ -139,14 +141,15 @@ public class Loon implements Platform {
 		_baseWindow = TeaBase.get();
 		_baseWindow.setTitle(_config.appName);
 		_mainCanvasElement = createCanvas();
+		setMainCanvasElement(_mainCanvasElement);
 		setCanvasSize(_config.getShowWidth(), _config.getShowHeight(), _config.usePhysicalPixels);
-		_preloader = new AssetPreloader();
-		_assetDownloader = new AssetDownloadImpl(_config.showDownloadLog);
-		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
 		initProgress("assets.txt");
 	}
 
 	protected void initProgress(final String assetPath) {
+		_preloader = new AssetPreloader();
+		_assetDownloader = new AssetDownloadImpl(_config.showDownloadLog);
+		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
 		initHowlerScript();
 		_assetLoader.setupFileDrop(_mainCanvasElement, this);
 		_assetLoader.preload(assetPath, new AssetLoaderListener<Void>() {
@@ -188,6 +191,24 @@ public class Loon implements Platform {
 
 	public HTMLCanvasElement getMainCanvas() {
 		return _mainCanvasElement;
+	}
+
+	protected void setMainCanvasElement(HTMLCanvasElement canvas) {
+		if (canvas != null) {
+			_mainCanvasElement = canvas;
+			setImageCanvasRendering(_mainCanvasElement);
+		}
+	}
+
+	protected void setImageCanvasRendering(HTMLCanvasElement canvas) {
+		if ("auto".equals(_config.canvasImageRendering)) {
+			canvas.getStyle().setProperty("imageRendering", "auto");
+		} else {
+			canvas.getStyle().setProperty("imageRendering", "pixelated");
+			if (StringUtils.isEmpty(canvas.getStyle().getPropertyValue("imageRendering"))) {
+				canvas.getStyle().setProperty("imageRendering", "crisp-edges");
+			}
+		}
 	}
 
 	protected HTMLCanvasElement createCanvas() {
@@ -368,7 +389,7 @@ public class Loon implements Platform {
 
 	public void setFullscreen(boolean f) {
 		if (f) {
-			enterFullscreen(_mainCanvasElement, getScreenWidthJSNI(), getScreenHeightJSNI());
+			enterFullscreen(getMainCanvas(), getScreenWidthJSNI(), getScreenHeightJSNI());
 		} else {
 			exitFullscreen();
 		}
@@ -484,7 +505,7 @@ public class Loon implements Platform {
 
 	@JSBody(params = { "element", "fullscreenChanged" }, script = "" + "if (element.requestFullscreen) {\n"
 			+ "   document.addEventListener(\"fullscreenchange\", fullscreenChanged, false);\n" + "}\n"
-			+ "// Attempt to the vendor specific variants of the API\n" + "if (element.webkitRequestFullScreen) {\n"
+			+ "if (element.webkitRequestFullScreen) {\n"
 			+ "   document.addEventListener(\"webkitfullscreenchange\", fullscreenChanged, false);\n" + "}\n"
 			+ "if (element.mozRequestFullScreen) {\n"
 			+ "   document.addEventListener(\"mozfullscreenchange\", fullscreenChanged, false);\n" + "}\n"

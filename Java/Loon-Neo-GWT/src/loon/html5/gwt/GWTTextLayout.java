@@ -27,11 +27,13 @@ import com.google.gwt.dom.client.Element;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.LSystem;
 import loon.font.Font;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
+import loon.utils.MathUtils;
 
 final class GWTTextLayout extends TextLayout {
 
@@ -39,10 +41,24 @@ final class GWTTextLayout extends TextLayout {
 
 	private final Context2d _ctx;
 
+	private static int getTextWidth(Context2d ctx, TextFormat format, String message) {
+		return MathUtils.min(((int) format.font.size * message.length()),
+				fixFontSize(format, ctx.measureText(message).getWidth()));
+	}
+
+	private static int fixFontSize(TextFormat format, double size) {
+		int result = (int) Math.round(size);
+		int fontSize = (int) (format == null ? LSystem.getFontSize() : format.font.size);
+		if (MathUtils.isOdd(result) && result < fontSize) {
+			result += 1;
+		}
+		return result;
+	}
+
 	public static TextLayout layoutText(GWTGraphics gfx, Context2d ctx, String text, TextFormat format) {
 		GWTFontMetrics metrics = gfx.getFontMetrics(getFont(format));
 		configContext(ctx, format);
-		float width = (float) ctx.measureText(text).getWidth();
+		float width = getTextWidth(ctx, format, text);
 		return new GWTTextLayout(ctx, text, format, metrics, width);
 	}
 
@@ -97,6 +113,7 @@ final class GWTTextLayout extends TextLayout {
 		Font font = getFont(format);
 		ctx.setFont(GWTFont.toCSS(font));
 		ctx.setTextBaseline(Context2d.TextBaseline.TOP);
+		ctx.setTextAlign(Context2d.TextAlign.LEFT);
 	}
 
 	static Font getFont(TextFormat format) {
@@ -114,11 +131,11 @@ final class GWTTextLayout extends TextLayout {
 			}
 			line = nline;
 		}
-		double lineWidth = ctx.measureText(line).getWidth();
+		int lineWidth = getTextWidth(ctx, format, line);
 		if (lineWidth < wrap.width) {
 			for (; idx < words.length; idx++) {
 				String nline = line + " " + words[idx];
-				double nlineWidth = ctx.measureText(nline).getWidth();
+				int nlineWidth = getTextWidth(ctx, format, nline);
 				if (nlineWidth > wrap.width) {
 					break;
 				}
@@ -129,7 +146,7 @@ final class GWTTextLayout extends TextLayout {
 
 		while (lineWidth > wrap.width && idx > (startIdx + 1)) {
 			line = line.substring(0, line.length() - words[--idx].length() - 1);
-			lineWidth = ctx.measureText(line).getWidth();
+			lineWidth = getTextWidth(ctx, format, line);
 		}
 
 		if (lineWidth > wrap.width) {
@@ -138,12 +155,12 @@ final class GWTTextLayout extends TextLayout {
 				int lastIdx = line.length() - 1;
 				remainder.insert(0, line.charAt(lastIdx));
 				line = line.substring(0, lastIdx);
-				lineWidth = ctx.measureText(line).getWidth();
+				lineWidth = getTextWidth(ctx, format, line);
 			}
 			words[--idx] = remainder.toString();
 		}
 
-		layouts.add(new GWTTextLayout(ctx, line, format, metrics, (float) lineWidth));
+		layouts.add(new GWTTextLayout(ctx, line, format, metrics, lineWidth));
 		return idx;
 	}
 
@@ -157,7 +174,7 @@ final class GWTTextLayout extends TextLayout {
 	@Override
 	public int stringWidth(String message) {
 		if (_ctx != null) {
-			return (int) _ctx.measureText(message).getWidth();
+			return fixFontSize(format, getTextWidth(_ctx, format, message));
 		}
 		return getProperty(message, GWTFont.toCSS(format.font)).getOffsetWidth();
 	}
@@ -165,7 +182,7 @@ final class GWTTextLayout extends TextLayout {
 	@Override
 	public int getHeight() {
 		if (_ctx != null) {
-			return (int) _ctx.measureText(String.valueOf("H")).getWidth() * 2;
+			return fixFontSize(format, _ctx.measureText(String.valueOf("H")).getWidth() * 2);
 		}
 		return getProperty("H", GWTFont.toCSS(format.font)).getOffsetHeight();
 	}
@@ -173,7 +190,7 @@ final class GWTTextLayout extends TextLayout {
 	@Override
 	public int charWidth(char ch) {
 		if (_ctx != null) {
-			return (int) _ctx.measureText(String.valueOf(ch)).getWidth();
+			return fixFontSize(format, _ctx.measureText(String.valueOf(ch)).getWidth());
 		}
 		return getProperty(String.valueOf(ch), GWTFont.toCSS(format.font)).getOffsetWidth();
 	}

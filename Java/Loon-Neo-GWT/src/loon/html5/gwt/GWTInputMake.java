@@ -329,12 +329,12 @@ public class GWTInputMake extends InputMake {
 
 	static float getRelativeX(NativeEvent e, Element target) {
 		return (e.getClientX() - target.getAbsoluteLeft() + target.getScrollLeft()
-				+ target.getOwnerDocument().getScrollLeft()) / GWTGraphics.experimentalScale;
+				+ target.getOwnerDocument().getScrollLeft());
 	}
 
 	static float getRelativeY(NativeEvent e, Element target) {
 		return (e.getClientY() - target.getAbsoluteTop() + target.getScrollTop()
-				+ target.getOwnerDocument().getScrollTop()) / GWTGraphics.experimentalScale;
+				+ target.getOwnerDocument().getScrollTop());
 	}
 
 	void handleRequestsInUserEventContext() {
