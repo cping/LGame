@@ -33,22 +33,13 @@ import loon.LSetting;
 import loon.LSystem;
 import loon.Support;
 import loon.jni.NativeSupport;
+import loon.teavm.Loon.OrientationLockType;
 
 public class TeaGame extends LGame {
 
 	private static final int MIN_DELAY = 5;
 
 	public static class TeaSetting extends LSetting {
-
-		public String divName = "div";
-
-		public String imageName = "img";
-
-		public String canvasName = "canvas";
-
-		public String canvasMethod = "2d";
-
-		public String webglMethod = "webgl";
 
 		public String canvasID = "maincanvas";
 
@@ -73,6 +64,8 @@ public class TeaGame extends LGame {
 		public boolean preserveDrawingBuffer = false;
 
 		public boolean useRatioScaleFactor = false;
+
+		public OrientationLockType fullscreenOrientation;
 
 		public TeaWindowListener windowListener;
 
@@ -108,16 +101,19 @@ public class TeaGame extends LGame {
 	private final TeaClipboard clipboard;
 
 	private final Loon loonApp;
-	private boolean initTea = false;
-	private TeaBase teaWindow;
 
-	private int _frameID = 0;
+	private boolean _initTea = false;
+
+	private TeaBase _teaWindow;
+
+	private int _frameID = -1;
 
 	public TeaGame(Loon loon, TeaSetting config) {
 		super(config, loon);
 		this.loonApp = loon;
-		this.teaWindow = loonApp._baseWindow;
+		this._teaWindow = loonApp._baseWindow;
 		this.teaconfig = config;
+		this.setting = config;
 		this.start = initNow();
 		this.log = new TeaLog(this);
 		this.syn = new Asyn.Default(log, frame);
@@ -158,24 +154,35 @@ public class TeaGame extends LGame {
 	}
 
 	public void init() {
-		if (!initTea) {
+		if (!_initTea) {
 			if (loonApp != null) {
 				loonApp.initialize();
 				LSystem.PAUSED = false;
-				initTea = true;
+				_initTea = true;
 			}
 		}
 	}
 
 	public void start() {
+		if (this._initTea) {
+			return;
+		}
 		init();
 		final int defFps = loonApp._setting.fps;
 		final Runnable gameLoop = new Runnable() {
 
 			@Override
 			public void run() {
-				_frameID = requestAnimationFrame(defFps, this);
-				emitFrame();
+				if (!_initTea) {
+					return;
+				}
+				try {
+					_frameID = requestAnimationFrame(defFps, this);
+					emitFrame();
+				} catch (Exception e) {
+					_teaWindow.cancelAnimationFrame(_frameID);
+					throw e;
+				}
 			}
 		};
 		_frameID = requestAnimationFrame(defFps, gameLoop);
@@ -183,14 +190,26 @@ public class TeaGame extends LGame {
 
 	private int requestAnimationFrame(float frameRate, Runnable callback) {
 		if (frameRate < 60) {
-			return teaWindow.setTimeout(callback, 1000 / frameRate);
+			return _teaWindow.setTimeout(callback, 1000 / frameRate);
 		} else {
-			return teaWindow.requestAnimationFrame(callback);
+			return _teaWindow.requestAnimationFrame(callback);
 		}
 	}
 
+	@Override
+	public boolean isRunning() {
+		return this._initTea && super.isRunning();
+	}
+
 	private void cancelLoop() {
-		teaWindow.cancelLoop(_frameID);
+		_teaWindow.cancelLoop(_frameID);
+		_initTea = false;
+	}
+
+	@Override
+	public void shutdown() {
+		super.shutdown();
+		_initTea = false;
 	}
 
 	protected void onError(Throwable error) {

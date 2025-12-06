@@ -27,7 +27,6 @@ import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
-import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLImageElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
@@ -40,7 +39,6 @@ import loon.canvas.Image;
 import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
 import loon.opengl.TextureSource;
-import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetData;
 import loon.teavm.assets.AssetPreloader;
 import loon.teavm.audio.HowlMusic;
@@ -60,14 +58,11 @@ public class TeaAssets extends Assets {
 
 	private TeaGame _game;
 
-	private TeaSetting _setting;
-
 	private Scale _assetScale = null;
 
 	protected TeaAssets(TeaGame g, Asyn s) {
 		super(g.asyn());
 		this._game = g;
-		this._setting = _game.getSetting();
 	}
 
 	protected String getURLPath(String fileName) {
@@ -108,7 +103,7 @@ public class TeaAssets extends Assets {
 	}
 
 	private TeaImage loadUrlImage(String url, Scale scale) {
-		final HTMLImageElement image = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+		final HTMLImageElement image = TeaCanvasUtils.createImage();
 		final TeaImage gwtimage = new TeaImage(_game.graphics(), scale, image, url);
 		final XMLHttpRequest request = new XMLHttpRequest();
 		request.setOnReadyStateChange(new ReadyStateChangeHandler() {
@@ -249,7 +244,7 @@ public class TeaAssets extends Assets {
 				float viewImageRatio = viewScale.factor / imageScale.factor;
 				if (viewImageRatio < 1f) {
 					ImageData data = TeaImage.scaleImage(image, viewImageRatio);
-					HTMLImageElement img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+					HTMLImageElement img = TeaCanvasUtils.createImage();
 					img.setWidth(data.getWidth());
 					img.setHeight(data.getHeight());
 					image = img;
@@ -307,7 +302,7 @@ public class TeaAssets extends Assets {
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
 		HTMLImageElement img = null;
 		if (async) {
-			img = (HTMLImageElement) HTMLDocument.current().createElement(_setting.imageName);
+			img = TeaCanvasUtils.createImage();
 			img.setWidth(rawWidth);
 			img.setHeight(rawHeight);
 			img.setSrc(source);
@@ -325,10 +320,10 @@ public class TeaAssets extends Assets {
 	}
 
 	protected HTMLCanvasElement createEmptyCanvas(int w, int h) {
-		HTMLCanvasElement canvasTmp = (HTMLCanvasElement) HTMLDocument.current().createElement(_setting.canvasName);
+		HTMLCanvasElement canvasTmp = TeaCanvasUtils.createCanvas();
 		canvasTmp.setWidth(w);
 		canvasTmp.setHeight(h);
-		CanvasRenderingContext2D context = (CanvasRenderingContext2D) canvasTmp.getContext(_setting.canvasMethod);
+		CanvasRenderingContext2D context = TeaCanvasUtils.getContext2d(canvasTmp);
 		context.setFillStyle("rgba(255,255,255,255)");
 		context.fillRect(0, 0, w, h);
 		return canvasTmp;

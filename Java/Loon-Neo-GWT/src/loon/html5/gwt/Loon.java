@@ -663,11 +663,11 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	private native boolean lockOrientationJSNI(String orientationEnumValue) /*-{
 		var screen = $wnd.screen;
-		screen.gdxLockOrientation = screen.lockOrientation
+		screen.newLockOrientation = screen.lockOrientation
 				|| screen.mozLockOrientation || screen.msLockOrientation
 				|| screen.webkitLockOrientation;
-		if (screen.gdxLockOrientation) {
-			return screen.gdxLockOrientation(orientationEnumValue);
+		if (screen.newLockOrientation) {
+			return screen.newLockOrientation(orientationEnumValue);
 		} else if (screen.orientation && screen.orientation.lock) {
 			screen.orientation.lock(orientationEnumValue);
 			return true;
@@ -677,11 +677,11 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 
 	private native boolean unlockOrientationJSNI() /*-{
 		var screen = $wnd.screen;
-		screen.gdxUnlockOrientation = screen.unlockOrientation
+		screen.newUnlockOrientation = screen.unlockOrientation
 				|| screen.mozUnlockOrientation || screen.msUnlockOrientation
 				|| screen.webkitUnlockOrientation;
-		if (screen.gdxUnlockOrientation) {
-			return screen.gdxUnlockOrientation();
+		if (screen.newUnlockOrientation) {
+			return screen.newUnlockOrientation();
 		} else if (screen.orientation && screen.orientation.unlock) {
 			screen.orientation.unlock();
 			return true;

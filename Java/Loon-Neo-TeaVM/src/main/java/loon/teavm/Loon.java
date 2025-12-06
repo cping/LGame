@@ -58,6 +58,22 @@ import loon.utils.StringUtils;
 
 public class Loon implements Platform {
 
+	public enum OrientationLockType {
+		LANDSCAPE("landscape"), PORTRAIT("portrait"), PORTRAIT_PRIMARY("portrait-primary"),
+		PORTRAIT_SECONDARY("portrait-secondary"), LANDSCAPE_PRIMARY("landscape-primary"),
+		LANDSCAPE_SECONDARY("landscape-secondary");
+
+		private final String name;
+
+		private OrientationLockType(String name) {
+			this.name = name;
+		}
+
+		public String getName() {
+			return name;
+		}
+	};
+
 	public interface OrientationChangedHandler {
 
 		void onChanged(Orientation newOrientation);
@@ -217,7 +233,7 @@ public class Loon implements Platform {
 		if (canvasElement != null) {
 			return (HTMLCanvasElement) canvasElement;
 		} else {
-			HTMLElement div = (HTMLElement) document.createElement(_config.divName);
+			HTMLElement div = TeaCanvasUtils.createDiv(document);
 			canvasElement = document.createCanvasElement();
 			canvasElement.setId(_config.canvasID);
 			div.appendChild(canvasElement);
@@ -328,6 +344,15 @@ public class Loon implements Platform {
 		return false;
 	}
 
+	@JSBody(script = "try {\r\n" + "const noop = () => {\r\n" + "return;\r\n"
+			+ "		    };\r\n" + "window.top.addEventListener('blur', noop);\r\n"
+			+ "		    window.top.removeEventListener('blur', noop);\r\n" + "} catch(ex) {\r\n"
+			+ "		    return true;\r\n" + "}\r\n" + "return false;")
+	public static native boolean isCrossOriginIframe();
+	
+	@JSBody(script = "return window !== window.top;")
+	public static native boolean isIframe();
+	
 	protected void setCanvasSize(int width, int height, boolean usePhysicalPixels) {
 		double density = 1;
 		if (usePhysicalPixels) {
@@ -387,6 +412,20 @@ public class Loon implements Platform {
 		closeImpl();
 	}
 
+	private void fullscreenChanged() {
+		if (!isFullscreen()) {
+			if (_config.isFixedSize()) {
+				_game.graphics().restoreSize();
+			}
+			if (_config.fullscreenOrientation != null)
+				unlockOrientationJSNI();
+		} else {
+			if (_config.fullscreenOrientation != null) {
+				lockOrientationJSNI(_config.fullscreenOrientation.getName());
+			}
+		}
+	}
+
 	public void setFullscreen(boolean f) {
 		if (f) {
 			enterFullscreen(getMainCanvas(), getScreenWidthJSNI(), getScreenHeightJSNI());
@@ -394,6 +433,26 @@ public class Loon implements Platform {
 			exitFullscreen();
 		}
 	}
+
+	@JSBody(params = "orientationEnumValue", script = "\r\n" + "		var screen = window.screen;\r\n"
+			+ "	screen.newLockOrientation = screen.lockOrientation\r\n"
+			+ "|| screen.mozLockOrientation || screen.msLockOrientation\r\n" + "|| screen.webkitLockOrientation;\r\n"
+			+ "		if (screen.newLockOrientation) {\r\n"
+			+ "return screen.newLockOrientation(orientationEnumValue);\r\n"
+			+ "} else if (screen.orientation && screen.orientation.lock) {\r\n"
+			+ "screen.orientation.lock(orientationEnumValue);\r\n" + "			return true;\r\n" + "}\r\n"
+			+ "		return false;")
+	protected static native boolean lockOrientationJSNI(String orientationEnumValue);
+
+	@JSBody(script = "var screen = window.screen;\r\n"
+			+ "		screen.newUnlockOrientation = screen.unlockOrientation\r\n"
+			+ "				|| screen.mozUnlockOrientation || screen.msUnlockOrientation\r\n"
+			+ "				|| screen.webkitUnlockOrientation;\r\n" + "		if (screen.newUnlockOrientation) {\r\n"
+			+ "			return screen.newUnlockOrientation();\r\n"
+			+ "		} else if (screen.orientation && screen.orientation.unlock) {\r\n"
+			+ "			screen.orientation.unlock();\r\n" + "			return true;\r\n" + "}\r\n"
+			+ "		return false;")
+	protected static native boolean unlockOrientationJSNI();
 
 	public boolean isFocused() {
 		return TeaBase.get().getDocument().getActiveElement() == _mainCanvasElement;
@@ -520,7 +579,9 @@ public class Loon implements Platform {
 	}
 
 	public boolean enterFullscreen(HTMLCanvasElement element, int screenWidth, int screenHeight) {
-		return enterFullscreenJSNI(element, screenWidth, screenHeight);
+		boolean result = enterFullscreenJSNI(element, screenWidth, screenHeight);
+		fullscreenChanged();
+		return result;
 	}
 
 	@JSBody(params = { "element", "screenWidth", "screenHeight" }, script = "" + "if (element.requestFullscreen) {\n"
@@ -538,6 +599,7 @@ public class Loon implements Platform {
 
 	public void exitFullscreen() {
 		exitFullscreenJSNI();
+		fullscreenChanged();
 	}
 
 	@JSBody(script = "" + "if (document.exitFullscreen)\n" + "  document.exitFullscreen();\n"

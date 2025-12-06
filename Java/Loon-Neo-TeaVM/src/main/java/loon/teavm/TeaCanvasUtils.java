@@ -21,24 +21,45 @@
 package loon.teavm;
 
 import org.teavm.jso.JSBody;
+import org.teavm.jso.JSObject;
+import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
+import org.teavm.jso.dom.html.HTMLDocument;
+import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
+import org.teavm.jso.dom.html.TextRectangle;
 
 import loon.canvas.LColor;
 import loon.geom.RectI;
+import loon.geom.Vector2f;
+import loon.teavm.dom.HTMLDocumentExt;
 import loon.utils.MathUtils;
 
 public class TeaCanvasUtils {
 
-	public static int ALIGN_CENTER = 0;
-	public static int ALIGN_LEFT = 1;
-	public static int ALIGN_RIGHT = 2;
+	public final static String DIV_NAME = "div";
 
-	public static int VALIGN_MIDDLE = 0;
-	public static int VALIGN_TOP = 1;
-	public static int VALIGN_BOTTOM = 2;
+	public final static String IMAGE_NAME = "img";
+
+	public final static String CANVAS_NAME = "canvas";
+
+	public final static String CANVAS_METHOD = "2d";
+
+	public final static String WEBGL_METHOD = "webgl";
+
+	public final static int ALIGN_CENTER = 0;
+
+	public final static int ALIGN_LEFT = 1;
+
+	public final static int ALIGN_RIGHT = 2;
+
+	public final static int VALIGN_MIDDLE = 0;
+
+	public final static int VALIGN_TOP = 1;
+
+	public final static int VALIGN_BOTTOM = 2;
 
 	public static HTMLCanvasElement createCanvas(HTMLCanvasElement canvas, int w, int h) {
 		if (canvas != null) {
@@ -66,16 +87,40 @@ public class TeaCanvasUtils {
 		return canvas;
 	}
 
+	public static JSObject getContextWebGL(HTMLCanvasElement canvas, JSObject attributes) {
+		return canvas.getContext(WEBGL_METHOD, attributes);
+	}
+
+	public static HTMLElement createDiv(HTMLDocumentExt doc) {
+		return doc.createElement(DIV_NAME);
+	}
+
+	public static HTMLImageElement createImage() {
+		return createImage(IMAGE_NAME);
+	}
+
+	public static HTMLImageElement createImage(String imageName) {
+		return (HTMLImageElement) TeaBase.get().getDocument().createElement(imageName);
+	}
+
 	public static HTMLCanvasElement createCanvas(String methodName) {
 		return (HTMLCanvasElement) TeaBase.get().getDocument().createElement(methodName);
 	}
 
+	public static HTMLCanvasElement createCanvas(HTMLImageElement img) {
+		return createCanvas(img.getOwnerDocument());
+	}
+
+	public static HTMLCanvasElement createCanvas(HTMLDocument doc) {
+		return (HTMLCanvasElement) doc.createElement(CANVAS_NAME);
+	}
+
 	public static HTMLCanvasElement createCanvas() {
-		return createCanvas("canvas");
+		return createCanvas(CANVAS_NAME);
 	}
 
 	public static CanvasRenderingContext2D getContext2d(HTMLCanvasElement canvas) {
-		return getContext2d(canvas, "2d");
+		return getContext2d(canvas, CANVAS_METHOD);
 	}
 
 	public static CanvasRenderingContext2D getContext2d(HTMLCanvasElement canvas, String methodName) {
@@ -105,6 +150,15 @@ public class TeaCanvasUtils {
 		canvas.setHeight(data.getHeight());
 		getContext2d(canvas).putImageData(data, 0, 0);
 		return canvas;
+	}
+
+	public static Vector2f getPosition(HTMLElement el) {
+		if (el != null) {
+			TextRectangle rect = el.getBoundingClientRect();
+			return Vector2f.at(rect.getLeft() + Window.current().getScrollX(),
+					rect.getTop() + Window.current().getScrollY());
+		}
+		return Vector2f.ZERO();
 	}
 
 	public static void drawCenter(HTMLCanvasElement canvas, HTMLImageElement image, int offsetX, int offsetY,

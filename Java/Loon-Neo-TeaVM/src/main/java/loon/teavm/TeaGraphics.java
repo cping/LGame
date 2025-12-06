@@ -36,7 +36,6 @@ import org.teavm.jso.webgl.WebGLContextAttributes;
 
 import loon.Graphics;
 import loon.LGame;
-import loon.LSystem;
 import loon.canvas.Canvas;
 import loon.font.Font;
 import loon.font.TextFormat;
@@ -89,17 +88,17 @@ public class TeaGraphics extends Graphics {
 			rootElement = doc.getDocumentElement();
 		}
 
-		dummyCtx = TeaCanvasUtils.getContext2d(doc.createCanvasElement());
+		dummyCtx = TeaCanvasUtils.getContext2d(TeaCanvasUtils.createCanvas(doc));
 
 		canvas = doc.createCanvasElement();
 		rootElement.replaceChild(canvas, loon.getMainCanvas());
 		loon.setMainCanvasElement(canvas);
 
-		measureElement = doc.createElement(config.divName);
+		measureElement = TeaCanvasUtils.createDiv(doc);
 		CSSStyleDeclaration style = measureElement.getStyle();
 		style.setProperty("visibility", "hidden");
 		style.setProperty("position", "absolute");
-		style.setProperty("top", "-1000px");
+		style.setProperty("top", "-500px");
 		style.setProperty("overflow", "visible");
 		style.setProperty("whiteSpace", "nowrap");
 
@@ -126,7 +125,7 @@ public class TeaGraphics extends Graphics {
 		attrs.setPreserveDrawingBuffer(config.preserveDrawingBuffer);
 		attrs.setPowerPreference(config.powerPreference);
 
-		WebGLContext glc = (WebGLContext) canvas.getContext(config.webglMethod, attrs);
+		WebGLContext glc = (WebGLContext) TeaCanvasUtils.getContextWebGL(canvas, attrs);
 
 		if (glc == null) {
 			webglError(doc);
@@ -168,22 +167,37 @@ public class TeaGraphics extends Graphics {
 			mainWindow.addEventListener("resize", new EventListener<Event>() {
 				@Override
 				public void handleEvent(Event event) {
-					float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
-					final float clientWidth = mainWindow.getInnerWidth();
-					final float clientHeight = mainWindow.getInnerHeight();
+					if (!game.isRunning()) {
+						return;
+					}
+					final float width = config.fullscreen ? config.getShowWidth() : config.width;
+					final float height = config.fullscreen ? config.getShowHeight() : config.height;
+					final int clientWidth = MathUtils.clamp(mainWindow.getInnerWidth(), config.width,
+							Loon.getScreenWidthJSNI());
+					final int clientHeight = MathUtils.clamp(mainWindow.getInnerHeight(), config.height,
+							Loon.getScreenHeightJSNI());
 					if (clientWidth <= 0 || clientHeight <= 0) {
 						return;
 					}
+					final int maxWidth = MathUtils.max(clientWidth, Loon.getScreenWidthJSNI());
+					final int maxHeight = MathUtils.max(clientHeight, Loon.getScreenHeightJSNI());
+					if (config.fullscreen && width >= maxWidth && height >= maxHeight) {
+						return;
+					}
 					if ((width != clientWidth || height != clientHeight)) {
-						setSize((int) clientWidth, (int) clientHeight);
-						float experimentalScale = Math.min(Loon.getScreenWidthJSNI() / width,
-								Loon.getScreenHeightJSNI() / height);
+						if (config.fullscreen) {
+							setSize(maxWidth, maxHeight);
+						} else {
+							setSize(clientWidth, clientHeight);
+						}
+						float experimentalScale = MathUtils.min(maxWidth / width, maxHeight / height);
 						rootElement.setAttribute("style",
 								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
 										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
 						doc.getBody().setClassName("fullscreen");
 						graphicsFullSize = true;
-					} else if (graphicsFullSize && (clientWidth != initSize.width || clientHeight != initSize.height)) {
+					} else if ((config.fullscreen && graphicsFullSize)
+							&& (clientWidth != initSize.width || clientHeight != initSize.height)) {
 						setSize(initSize.width, initSize.height);
 						rootElement.removeAttribute("style");
 						doc.getBody().setClassName(null);
@@ -191,6 +205,7 @@ public class TeaGraphics extends Graphics {
 					}
 				}
 			});
+
 		}
 		mainWindow.addEventListener("deviceorientation", new EventListener<Event>() {
 
@@ -207,11 +222,10 @@ public class TeaGraphics extends Graphics {
 			}
 
 		});
-
 	}
 
 	protected void webglError(HTMLDocumentExt doc) {
-		HTMLElement container = doc.createElement(config.divName);
+		HTMLElement container = TeaCanvasUtils.createDiv(doc);
 		container.setId("webgl-graphics-context-lost");
 		CSSStyleDeclaration style = container.getStyle();
 		style.setProperty("position", "absolute");
@@ -224,7 +238,7 @@ public class TeaGraphics extends Graphics {
 		style.setProperty("backgroundColor", "white");
 		style.setProperty("padding", "10px");
 		style.setProperty("borderStyle", "solid 1px");
-		HTMLElement div = doc.createElement(config.divName);
+		HTMLElement div = TeaCanvasUtils.createDiv(doc);
 		div.setInnerHTML("<h1>There was an issue rendering, please refresh the page.</h1>\r\n" + "<div>\r\n"
 				+ "<p>Loon WebGL Graphics Context Lost</p>\r\n" + "\r\n"
 				+ "<button id=\"webgl-graphics-reload\">Refresh Page</button>\r\n" + "\r\n"
@@ -276,7 +290,6 @@ public class TeaGraphics extends Graphics {
 		canvas.setHeight(scale().scaledCeil(height));
 		canvas.getStyle().setProperty("width", width + "px");
 		canvas.getStyle().setProperty("height", height + "px");
-
 		int viewWidth = canvas.getWidth();
 		int viewHeight = canvas.getHeight();
 		if (!isAllowResize(viewWidth, viewHeight)) {
@@ -308,7 +321,7 @@ public class TeaGraphics extends Graphics {
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		HTMLCanvasElement elem = (HTMLCanvasElement) TeaBase.get().getDocument().createElement(config.canvasName);
+		HTMLCanvasElement elem = TeaCanvasUtils.createCanvas();
 		elem.setWidth(pixelWidth);
 		elem.setHeight(pixelHeight);
 		return new TeaCanvas(this, new TeaImage(this, scale, elem, TextureSource.RenderCanvas));

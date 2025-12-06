@@ -182,7 +182,8 @@ final class GWTTextLayout extends TextLayout {
 	@Override
 	public int getHeight() {
 		if (_ctx != null) {
-			return fixFontSize(format, _ctx.measureText(String.valueOf("H")).getWidth() * 2);
+			return MathUtils.min((format == null ? LSystem.getFontSize() : (int) format.font.size),
+					fixFontSize(format, _ctx.measureText(String.valueOf("H")).getWidth() * 2));
 		}
 		return getProperty("H", GWTFont.toCSS(format.font)).getOffsetHeight();
 	}

@@ -26,6 +26,7 @@ public class TestLoon extends Loon {
 		setting.isConsoleLog = true;
 		setting.rootId = "embed-loon.test.TestLoon";
 		setting.allScreenRefresh = true;
+	//	setting.fullscreen = true;
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源

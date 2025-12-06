@@ -25,7 +25,6 @@ import java.util.HashMap;
 
 import loon.Graphics;
 import loon.LGame;
-import loon.LSystem;
 import loon.Platform.Orientation;
 import loon.canvas.Canvas;
 import loon.font.Font;
@@ -70,7 +69,7 @@ public class GWTGraphics extends Graphics {
 
 	final Element rootElement;
 	final CanvasElement canvas;
-	
+
 	private final RectBox initSize = new RectBox();
 
 	private final Dimension screenSize = new Dimension();
@@ -138,27 +137,42 @@ public class GWTGraphics extends Graphics {
 			Window.addResizeHandler(new ResizeHandler() {
 				@Override
 				public void onResize(ResizeEvent event) {
-					float width = LSystem.viewSize.width(), height = LSystem.viewSize.height();
-					final float clientWidth = event.getWidth();
-					final float clientHeight = event.getHeight();
+					if (!game.isRunning()) {
+						return;
+					}
+					final float width = config.fullscreen ? config.getShowWidth() : config.width;
+					final float height = config.fullscreen ? config.getShowHeight() : config.height;
+					final int clientWidth = MathUtils.clamp(event.getWidth(), config.width, Window.getClientWidth());
+					final int clientHeight = MathUtils.clamp(event.getHeight(), config.height,
+							Window.getClientHeight());
 					if (clientWidth <= 0 || clientHeight <= 0) {
 						return;
 					}
-					if ((width != clientWidth || height != clientHeight)) {
-						setSize((int) clientWidth, (int) clientHeight);
-						float experimentalScale = Math.min(getScreenWidthJSNI() / width,
-								getScreenHeightJSNI() / height);
+					final int maxWidth = MathUtils.max(clientWidth, Loon.self.getJSNIScreenWidth());
+					final int maxHeight = MathUtils.max(clientHeight, Loon.self.getJSNIScreenHeight());
+					if (config.fullscreen && width >= maxWidth && height >= maxHeight) {
+						return;
+					}
+					if (width != clientWidth || height != clientHeight) {
+						if (config.fullscreen) {
+							setSize(maxWidth, maxHeight);
+						} else {
+							setSize(clientWidth, clientHeight);
+						}
+						float experimentalScale = MathUtils.min(maxWidth / width, maxHeight / height);
 						rootElement.setAttribute("style",
 								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
 										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
 						Document.get().getBody().addClassName("fullscreen");
 						graphicsFullSize = true;
-					} else if (graphicsFullSize && (clientWidth != initSize.width || clientHeight != initSize.height)) {
+					} else if ((config.fullscreen && graphicsFullSize)
+							&& (clientWidth != initSize.width || clientHeight != initSize.height)) {
 						setSize(initSize.width, initSize.height);
 						rootElement.removeAttribute("style");
 						Document.get().getBody().removeClassName("fullscreen");
 						graphicsFullSize = false;
 					}
+
 				}
 			});
 		}

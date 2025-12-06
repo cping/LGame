@@ -184,7 +184,8 @@ final class TeaTextLayout extends TextLayout {
 	public int getHeight() {
 		if (_ctx != null) {
 			TextMetrics metr = _ctx.measureText(text);
-			return fixFontSize(format, metr.getActualBoundingBoxAscent() + metr.getActualBoundingBoxDescent());
+			return MathUtils.min((format == null ? LSystem.getFontSize() : (int) format.font.size),
+					fixFontSize(format, metr.getActualBoundingBoxAscent() + metr.getActualBoundingBoxDescent()));
 		}
 		return getProperty(text, TeaFont.toCSS(format.font)).getOffsetHeight();
 	}

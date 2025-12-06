@@ -23,12 +23,8 @@ package loon.teavm;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.teavm.jso.file.Blob;
-import org.teavm.jso.file.BlobPropertyBag;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
-
-import netscape.javascript.JSObject;
 
 public class TeaBlob{
 

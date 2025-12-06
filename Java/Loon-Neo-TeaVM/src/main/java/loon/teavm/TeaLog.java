@@ -46,6 +46,7 @@ public class TeaLog  extends Log {
 
 	@Override
 	public void onError(Throwable e) {
+		_game.onError(e);
 	}
 
 }

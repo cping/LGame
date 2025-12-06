@@ -38,15 +38,19 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 	}
 
 	private int _requestType = 0;
-	
+
 	private Window _window;
-	
+
 	private TeaAgentInfo _agentInfo;
-	
+
 	private Runnable _runnable;
 
 	public TeaBase() {
-		this._window = Window.current();
+		if (Loon.isCrossOriginIframe() || Loon.isIframe()) {
+			this._window = Window.current();
+		} else {
+			this._window = Window.current().getTop();
+		}
 		this._agentInfo = TeaWebAgent.computeAgentInfo();
 	}
 
