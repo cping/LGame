@@ -176,7 +176,8 @@ final class GWTTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return fixFontSize(format, getTextWidth(_ctx, format, message));
 		}
-		return getProperty(message, GWTFont.toCSS(format.font)).getOffsetWidth();
+		return MathUtils.min(((format == null ? LSystem.getFontSize() : (int) format.font.size)) * message.length(),
+				getProperty(message, GWTFont.toCSS(format.font)).getOffsetWidth());
 	}
 
 	@Override
@@ -185,7 +186,8 @@ final class GWTTextLayout extends TextLayout {
 			return MathUtils.min((format == null ? LSystem.getFontSize() : (int) format.font.size),
 					fixFontSize(format, _ctx.measureText(String.valueOf("H")).getWidth() * 2));
 		}
-		return getProperty("H", GWTFont.toCSS(format.font)).getOffsetHeight();
+		return MathUtils.min(((format == null ? LSystem.getFontSize() : (int) format.font.size)),
+				getProperty("H", GWTFont.toCSS(format.font)).getOffsetHeight());
 	}
 
 	@Override
@@ -193,6 +195,7 @@ final class GWTTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return fixFontSize(format, _ctx.measureText(String.valueOf(ch)).getWidth());
 		}
-		return getProperty(String.valueOf(ch), GWTFont.toCSS(format.font)).getOffsetWidth();
+		return MathUtils.min((format == null ? LSystem.getFontSize() : (int) format.font.size),
+				getProperty(String.valueOf(ch), GWTFont.toCSS(format.font)).getOffsetWidth());
 	}
 }

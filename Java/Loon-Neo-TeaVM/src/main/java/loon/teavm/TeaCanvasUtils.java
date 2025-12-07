@@ -155,8 +155,8 @@ public class TeaCanvasUtils {
 	public static Vector2f getPosition(HTMLElement el) {
 		if (el != null) {
 			TextRectangle rect = el.getBoundingClientRect();
-			return Vector2f.at(rect.getLeft() + Window.current().getScrollX(),
-					rect.getTop() + Window.current().getScrollY());
+			Window window = TeaBase.get().getWindow();
+			return Vector2f.at(rect.getLeft() + window.getScrollX(), rect.getTop() + window.getScrollY());
 		}
 		return Vector2f.ZERO();
 	}

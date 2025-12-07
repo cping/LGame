@@ -306,6 +306,46 @@ public class Loon implements Platform {
 		return hostPageBaseURL;
 	}
 
+	@JSBody(script = "var nav = window.navigator;\r\n" + "		var curLanguage = nav.language;\r\n"
+			+ "		curLanguage = curLanguage ? curLanguage : nav.browserLanguage;\r\n"
+			+ "		curLanguage = curLanguage ? curLanguage.split(\"-\")[0] : \"en\";\r\n"
+			+ "		return curLanguage;")
+	private static native String languageImpl();
+
+	public static String language() {
+		if (cur_language == null) {
+			cur_language = languageImpl();
+		}
+		return cur_language;
+	}
+
+	@JSBody(script = "var ua = window.navigator.userAgent;\r\n" + "		var BROWSER_TYPE_WECHAT = \"wechat\";\r\n"
+			+ "		var BROWSER_TYPE_ANDROID = \"androidbrowser\";\r\n" + "		var BROWSER_TYPE_IE = \"ie\";\r\n"
+			+ "		var BROWSER_TYPE_360 = \"360browser\";\r\n" + "		var BROWSER_TYPE_MAXTHON = \"maxthon\";\r\n"
+			+ "		var BROWSER_TYPE_OPERA = \"opera\";\r\n" + "		var BROWSER_TYPE_UNKNOWN = \"unknown\";\r\n"
+			+ "		var typeReg1 = /sogou|qzone|liebao|micromessenger|ucbrowser|360 aphone|360browser|baiduboxapp|baidubrowser|maxthon|mxbrowser|trident|miuibrowser/i;\r\n"
+			+ "		var typeReg2 = /qqbrowser|chrome|safari|firefox|opr|oupeng|opera/i;\r\n"
+			+ "		var browserTypes = typeReg1.exec(ua);\r\n" + "		if (!browserTypes) {\r\n"
+			+ "			browserTypes = typeReg2.exec(ua);\r\n" + "		}\r\n"
+			+ "		var browserType = browserTypes ? browserTypes[0] : BROWSER_TYPE_UNKNOWN;\r\n"
+			+ "		if (browserType === \"micromessenger\") {\r\n" + "			browserType = BROWSER_TYPE_WECHAT;\r\n"
+			+ "		} else if (browserType === \"safari\"\r\n"
+			+ "				&& (ua.match(/android.*applewebkit/))) {\r\n"
+			+ "			browserType = BROWSER_TYPE_ANDROID;\r\n"
+			+ "		} else if (browserType === \"trident\") {\r\n" + "			browserType = BROWSER_TYPE_IE;\r\n"
+			+ "		} else if (browserType === \"360 aphone\") {\r\n" + "			browserType = BROWSER_TYPE_360;\r\n"
+			+ "		} else if (browserType === \"mxbrowser\") {\r\n"
+			+ "			browserType = BROWSER_TYPE_MAXTHON;\r\n" + "		} else if (browserType === \"opr\") {\r\n"
+			+ "			browserType = BROWSER_TYPE_OPERA;\r\n" + "		}\r\n" + "		return browserType;")
+	private static native String browserTypeImpl();
+
+	public static String browserType() {
+		if (cur_browserType == null) {
+			cur_browserType = browserTypeImpl();
+		}
+		return cur_browserType;
+	}
+
 	@Override
 	public int getContainerWidth() {
 		int width = getAvailWidthJSNI() <= 0 ? getScreenWidthJSNI() : getAvailWidthJSNI();
@@ -344,15 +384,15 @@ public class Loon implements Platform {
 		return false;
 	}
 
-	@JSBody(script = "try {\r\n" + "const noop = () => {\r\n" + "return;\r\n"
-			+ "		    };\r\n" + "window.top.addEventListener('blur', noop);\r\n"
+	@JSBody(script = "try {\r\n" + "const noop = () => {\r\n" + "return;\r\n" + "		    };\r\n"
+			+ "window.top.addEventListener('blur', noop);\r\n"
 			+ "		    window.top.removeEventListener('blur', noop);\r\n" + "} catch(ex) {\r\n"
 			+ "		    return true;\r\n" + "}\r\n" + "return false;")
 	public static native boolean isCrossOriginIframe();
-	
+
 	@JSBody(script = "return window !== window.top;")
 	public static native boolean isIframe();
-	
+
 	protected void setCanvasSize(int width, int height, boolean usePhysicalPixels) {
 		double density = 1;
 		if (usePhysicalPixels) {

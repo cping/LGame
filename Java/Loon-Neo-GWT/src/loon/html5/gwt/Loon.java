@@ -349,6 +349,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return this.game = new GWTGame(this, root, config);
 	}
 
+	@Override
 	public LGame getGame() {
 		return game;
 	}
@@ -360,11 +361,13 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return game;
 	}
 
+	@Override
 	public void register(LSetting s, LazyLoading.Data data) {
 		this.setting = s;
 		this.mainData = data;
 	}
 
+	@Override
 	public int getContainerWidth() {
 		int width = getJSNIAvailWidth() <= 0 ? getJSNIScreenWidth() : getJSNIAvailWidth();
 		if (isIOS() && isLandscape()) {
@@ -376,6 +379,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return width;
 	}
 
+	@Override
 	public int getContainerHeight() {
 		int height = getJSNIAvailHeight() <= 0 ? getJSNIScreenHeight() : getJSNIAvailHeight();
 		if (isIOS() && isLandscape()) {
@@ -387,6 +391,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return height;
 	}
 
+	@Override
 	public Orientation getOrientation() {
 		if (_orientation == Orientation.Landscape) {
 			return Orientation.Landscape;
@@ -398,6 +403,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}
 	}
 
+	@Override
 	public void close() {
 		closeImpl();
 	}

@@ -177,7 +177,8 @@ final class TeaTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return fixFontSize(format, getTextWidth(_ctx, format, message));
 		}
-		return getProperty(message, TeaFont.toCSS(format.font)).getOffsetWidth();
+		return MathUtils.min(((format == null ? LSystem.getFontSize() : (int) format.font.size)) * message.length(),
+				getProperty(message, TeaFont.toCSS(format.font)).getOffsetWidth());
 	}
 
 	@Override
@@ -187,7 +188,8 @@ final class TeaTextLayout extends TextLayout {
 			return MathUtils.min((format == null ? LSystem.getFontSize() : (int) format.font.size),
 					fixFontSize(format, metr.getActualBoundingBoxAscent() + metr.getActualBoundingBoxDescent()));
 		}
-		return getProperty(text, TeaFont.toCSS(format.font)).getOffsetHeight();
+		return MathUtils.min(((format == null ? LSystem.getFontSize() : (int) format.font.size)),
+				getProperty(text, TeaFont.toCSS(format.font)).getOffsetHeight());
 	}
 
 	@Override
@@ -195,6 +197,7 @@ final class TeaTextLayout extends TextLayout {
 		if (_ctx != null) {
 			return fixFontSize(format, _ctx.measureText(String.valueOf(ch)).getWidth());
 		}
-		return getProperty(String.valueOf(ch), TeaFont.toCSS(format.font)).getOffsetWidth();
+		return MathUtils.min(((format == null ? LSystem.getFontSize() : (int) format.font.size)),
+				getProperty(String.valueOf(ch), TeaFont.toCSS(format.font)).getOffsetWidth());
 	}
 }

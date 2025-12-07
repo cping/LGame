@@ -71,7 +71,22 @@ public class GWTInputMake extends InputMake {
 			public void handleEvent(NativeEvent nevent) {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
+				switch (key) {
+				case SysKey.DEL:
+					ch = 8;
+					break;
+				case SysKey.FORWARD_DEL:
+					ch = 127;
+					break;
+				}
+				if (key == SysKey.DEL || key == SysKey.FORWARD_DEL) {
+					nevent.preventDefault();
+				}
 				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
+				if (key == SysKey.TAB) {
+					nevent.preventDefault();
+					nevent.stopPropagation();
+				}
 			}
 		});
 		capturePageEvent("keypress", new EventHandler() {
@@ -80,6 +95,10 @@ public class GWTInputMake extends InputMake {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
 				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
+				if (ch == '\t') {
+					nevent.preventDefault();
+					nevent.stopPropagation();
+				}
 			}
 		});
 		capturePageEvent("keyup", new EventHandler() {
@@ -88,6 +107,10 @@ public class GWTInputMake extends InputMake {
 				int key = keyForCode(nevent.getKeyCode());
 				char ch = (char) nevent.getCharCode();
 				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), nevent);
+				if (key == SysKey.TAB) {
+					nevent.preventDefault();
+					nevent.stopPropagation();
+				}
 			}
 		});
 
@@ -138,19 +161,25 @@ public class GWTInputMake extends InputMake {
 			}
 		}, false);
 
-		captureEvent(rootElement, "mousedown", new XYEventHandler() {
+		final XYEventHandler mouseDown = new XYEventHandler() {
+
 			@Override
 			public void handleEvent(NativeEvent ev, float x, float y) {
-
+				rootElement.focus();
 				inDragSequence = true;
 				int btn = getMouseButton(ev);
 				if (btn != -1) {
 					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), ev);
 				}
+				ev.preventDefault();
+				ev.stopPropagation();
 			}
-		});
+		};
+		captureEvent(rootElement, "mousedown", mouseDown);
+		capturePageEvent("mousedown", mouseDown);
 
-		capturePageEvent("mouseup", new XYEventHandler() {
+		final XYEventHandler mouseUp = new XYEventHandler() {
+
 			@Override
 			public void handleEvent(NativeEvent ev, float x, float y) {
 				if (inDragSequence) {
@@ -162,7 +191,9 @@ public class GWTInputMake extends InputMake {
 				}
 				handleRequestsInUserEventContext();
 			}
-		});
+		};
+		captureEvent(rootElement, "mouseup", mouseUp);
+		capturePageEvent("mouseup", mouseUp);
 
 		capturePageEvent("mousemove", new MoveEventHandler() {
 			@Override
@@ -170,7 +201,6 @@ public class GWTInputMake extends InputMake {
 				return true;
 			}
 		});
-
 		captureEvent(rootElement, "mousemove", new MoveEventHandler() {
 			@Override
 			protected boolean wantDragSequence() {
@@ -185,24 +215,34 @@ public class GWTInputMake extends InputMake {
 						ev);
 			}
 		});
+		capturePageEvent("wheel", new EventHandler() {
+			@Override
+			public void handleEvent(NativeEvent ev) {
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(), true),
+						ev);
+			}
+		});
 
 		captureEvent(rootElement, "touchstart", new EventHandler() {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				inTouchSequence = true;
 				dispatch(toTouchEvents(TouchMake.Event.Kind.START, nevent), nevent);
+				nevent.preventDefault();
 			}
 		});
 
-		capturePageEvent("touchmove", new EventHandler() {
+		captureEvent(rootElement, "touchmove", new EventHandler() {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
-				if (inTouchSequence)
+				if (inTouchSequence) {
 					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, nevent), nevent);
+				}
+				nevent.preventDefault();
 			}
 		});
 
-		capturePageEvent("touchend", new EventHandler() {
+		captureEvent(rootElement, "touchend", new EventHandler() {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				if (inTouchSequence) {
@@ -211,10 +251,11 @@ public class GWTInputMake extends InputMake {
 						inTouchSequence = false;
 					}
 				}
+				nevent.preventDefault();
 			}
 		});
 
-		capturePageEvent("touchcancel", new EventHandler() {
+		captureEvent(rootElement, "touchcancel", new EventHandler() {
 			@Override
 			public void handleEvent(NativeEvent nevent) {
 				if (inTouchSequence) {
@@ -223,6 +264,7 @@ public class GWTInputMake extends InputMake {
 						inTouchSequence = false;
 					}
 				}
+				nevent.preventDefault();
 			}
 		});
 	}

@@ -230,7 +230,7 @@ public final class GWTGame extends LGame {
 			graphics = new GWTGraphics(panel, this, config);
 			assets = new GWTAssets(this);
 			clipboard = new GWTClipboard();
-			input = new GWTInputMake(this, graphics.rootElement);
+			input = new GWTInputMake(this, graphics.canvas);
 			save = new GWTSave(this);
 		} catch (Throwable e) {
 			log.error("init()", e);

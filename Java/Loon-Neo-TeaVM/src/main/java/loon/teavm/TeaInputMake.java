@@ -20,7 +20,6 @@
  */
 package loon.teavm;
 
-import org.teavm.jso.browser.Window;
 import org.teavm.jso.core.JSArrayReader;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
@@ -643,7 +642,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			e.preventDefault();
 			e.stopPropagation();
 		} else if (type.equals("mousedown")) {
-			Window.current().focus();
+			TeaBase.get().getWindow().focus();
 			MouseEvent mouseEvent = (MouseEvent) e;
 			float x = getRelativeX(mouseEvent, rootElement);
 			float y = getRelativeY(mouseEvent, rootElement);
@@ -652,8 +651,8 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			if (!equals) {
 				float mouseX = getRelativeX(mouseEvent, rootElement);
 				float mouseY = getRelativeY(mouseEvent, rootElement);
-				if (mouseX < 0 || mouseX > LSystem.viewSize.getWidth() || mouseY < 0
-						|| mouseY > LSystem.viewSize.getHeight()) {
+				if (mouseX < 0 || mouseX > LSystem.viewSize.getZoomWidth() || mouseY < 0
+						|| mouseY > LSystem.viewSize.getZoomHeight()) {
 					hasFocus = false;
 				}
 				return;
@@ -751,7 +750,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		if (type.equals("keydown") && hasFocus) {
 			KeyboardEvent keyboardEvent = (KeyboardEvent) e;
 			int keyCode = keyForCode(keyboardEvent.getKeyCode());
-			char keyChar = 0;
+			char keyChar = (char) keyboardEvent.getCharCode();
 			switch (keyCode) {
 			case SysKey.DEL:
 				keyChar = 8;

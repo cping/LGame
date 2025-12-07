@@ -333,14 +333,20 @@ public class GWTGraphics extends Graphics {
 			default:
 				break;
 			}
+			final float doubleSize = font.size * 2;
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);
 			float emwidth = measureElement.getOffsetWidth();
-
-			if (height == 0) {
+			if (height >= doubleSize) {
+				height = (height - font.size);
+			}
+			if (emwidth >= doubleSize) {
+				emwidth = (emwidth - font.size);
+			}
+			if (height <= 0) {
 				height = font.size + MathUtils.ifloor(font.size / 6);
 			}
-			if (emwidth == 0) {
+			if (emwidth <= 0) {
 				emwidth = font.size / 2;
 			}
 			metrics = new GWTFontMetrics(font, height, emwidth);
