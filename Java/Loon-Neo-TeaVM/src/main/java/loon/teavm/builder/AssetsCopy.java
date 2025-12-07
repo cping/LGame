@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 
 import loon.teavm.assets.AssetFile;
 import loon.teavm.assets.AssetType;
-import loon.teavm.assets.AssetPreloader.FileType;
 
 public class AssetsCopy {
 

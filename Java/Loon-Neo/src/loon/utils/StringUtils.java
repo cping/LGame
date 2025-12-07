@@ -3131,6 +3131,17 @@ final public class StringUtils extends CharUtils {
 		return o == null ? def : o.toString();
 	}
 
+	public static String[] toStrings(TArray<String> list) {
+		if (list == null || list.size == 0) {
+			return null;
+		}
+		final String[] result = new String[list.size];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = list.get(i);
+		}
+		return result;
+	}
+
 	public static String toHexString(final String cs) {
 		try {
 			return toHex(cs.getBytes(LSystem.ENCODING));

@@ -35,41 +35,42 @@ import loon.teavm.make.Emulate;
 
 @Emulate(IDBIndex.class)
 public abstract class IDBIndexEmu implements JSObject, IDBCursorSource {
-    @JSProperty
-    public abstract String getName();
+	@JSProperty
+	public abstract String getName();
 
-    @JSProperty("keyPath")
-    abstract JSObject getKeyPathImpl();
+	@JSProperty("keyPath")
+	abstract JSObject getKeyPathImpl();
 
-    public final String[] getKeyPath() {
-        JSObject result = getKeyPathImpl();
-        if (JSString.isInstance(result)) {
-            return new String[] { result.<JSString>cast().stringValue() };
-        } else {
-            return unwrapStringArray(result);
-        }
-    }
+	@SuppressWarnings("deprecation")
+	public final String[] getKeyPath() {
+		JSObject result = getKeyPathImpl();
+		if (JSString.isInstance(result)) {
+			return new String[] { result.<JSString>cast().stringValue() };
+		} else {
+			return unwrapStringArray(result);
+		}
+	}
 
-    @JSBody(params = "obj", script = "return obj;")
-    private static native String[] unwrapStringArray(JSObject obj);
+	@JSBody(params = "obj", script = "return obj;")
+	private static native String[] unwrapStringArray(JSObject obj);
 
-    @JSProperty
-    public abstract boolean isMultiEntry();
+	@JSProperty
+	public abstract boolean isMultiEntry();
 
-    @JSProperty
-    public abstract boolean isUnique();
+	@JSProperty
+	public abstract boolean isUnique();
 
-    public abstract IDBCursorRequest openCursor();
+	public abstract IDBCursorRequest openCursor();
 
-    public abstract IDBCursorRequest openCursor(IDBKeyRange range);
+	public abstract IDBCursorRequest openCursor(IDBKeyRange range);
 
-    public abstract IDBCursorRequest openKeyCursor();
+	public abstract IDBCursorRequest openKeyCursor();
 
-    public abstract IDBGetRequest get(JSObject key);
+	public abstract IDBGetRequest get(JSObject key);
 
-    public abstract IDBGetRequest getKey(JSObject key);
+	public abstract IDBGetRequest getKey(JSObject key);
 
-    public abstract IDBCountRequest count(JSObject key);
+	public abstract IDBCountRequest count(JSObject key);
 
-    public abstract IDBCountRequest count();
+	public abstract IDBCountRequest count();
 }

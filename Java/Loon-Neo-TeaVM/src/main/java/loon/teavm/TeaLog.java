@@ -21,12 +21,11 @@
 package loon.teavm;
 
 import loon.Log;
-import loon.Log.Level;
 
-public class TeaLog  extends Log {
+public class TeaLog extends Log {
 
 	private TeaGame _game;
-	
+
 	public TeaLog(TeaGame g) {
 		_game = g;
 	}
@@ -42,7 +41,6 @@ public class TeaLog  extends Log {
 			_game.onError(e);
 		}
 	}
-
 
 	@Override
 	public void onError(Throwable e) {

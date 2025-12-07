@@ -332,7 +332,7 @@ public class AssetLoadImpl implements AssetLoader {
 		TeaResourceLoader res = queueAsset.fileResource;
 		assetDownloading.add(assetPath);
 
-		assetDownloader.load(true, getAssetUrl() + assetPath, AssetType.Binary, new AssetLoaderListener<>() {
+		assetDownloader.load(true, getAssetUrl() + assetPath, AssetType.Binary, new AssetLoaderListener<TeaBlob>() {
 
 			@Override
 			public void onFailure(String url) {

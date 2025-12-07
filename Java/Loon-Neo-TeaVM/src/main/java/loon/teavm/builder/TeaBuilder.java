@@ -41,8 +41,6 @@ import java.util.zip.ZipInputStream;
 import org.teavm.diagnostics.DefaultProblemTextConsumer;
 import org.teavm.diagnostics.Problem;
 import org.teavm.diagnostics.ProblemProvider;
-import org.teavm.model.CallLocation;
-import org.teavm.model.MethodReference;
 import org.teavm.tooling.TeaVMProblemRenderer;
 import org.teavm.tooling.TeaVMTargetType;
 import org.teavm.tooling.TeaVMTool;
@@ -137,19 +135,17 @@ public class TeaBuilder {
 
 				for (int i = 0; i < problems.size(); i++) {
 					Problem problem = problems.get(i);
-					CallLocation location = problem.getLocation();
-					MethodReference method = location != null ? location.getMethod() : null;
-
+			
 					if (i > 0) {
 						TeaBuilder.print("");
 						TeaBuilder.print("----");
 						TeaBuilder.print("");
 					}
 					TeaBuilder.print(problem.getSeverity().toString() + "[" + i + "]");
-					var sb = new StringBuilder();
+					final StringBuilder sbr = new StringBuilder();
 					TeaVMProblemRenderer.renderCallStack(tool.getDependencyInfo().getCallGraph(), problem.getLocation(),
-							sb);
-					var locationString = sb.toString();
+							sbr);
+					String locationString = sbr.toString();
 					locationString.lines().forEach(TeaBuilder::print);
 					p.clear();
 					problem.render(p);

@@ -24,31 +24,38 @@ import loon.LTexture;
 import loon.Screen;
 import loon.Stage;
 import loon.LazyLoading.Data;
+import loon.canvas.LColor;
 import loon.component.LComponent;
 import loon.component.LMessageBox;
+import loon.component.LSelect;
 import loon.events.ClickListener;
 import loon.teavm.TeaGame.TeaSetting;
 
-
 public class LauncherMain {
-	
-	public static class TestScreen extends Stage{
+
+	public static class TestScreen extends Stage {
 
 		@Override
 		public void create() {
+
+			setBackground(LColor.red);
+			LSelect select = new LSelect(120, 100, 200, 250);
+
+			select.setMessage(new String[] { "ABDFDFD", "B", "C", "D" });
+			add(select);
 
 			LTexture texture = getGameWinFrame(200, 200);
 			LMessageBox box = new LMessageBox(
 					new String[] { "人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。", "明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" },
 					texture, 66, 66, 180, 180);
-		//	box.setGradientFontColor(true);
+			// box.setGradientFontColor(true);
 			// 行间距3
 			box.setLeading(3);
 			// 偏移10,10
 			box.setBoxOffset(10, 10);
 
-			//box.setFaceImage("ccc.png");
-			
+			// box.setFaceImage("ccc.png");
+
 			add(box);
 			centerOn(box);
 
@@ -76,14 +83,16 @@ public class LauncherMain {
 				}
 			});
 		}
-		
+
 	}
 
 	public static void main(String[] args) {
-	/*	var document = HTMLDocument.current();
-		var div = document.createElement("div");
-		div.appendChild(document.createTextNode("Loon-TeaVM"));
-		document.getBody().appendChild(div);*/
+		/*
+		 * var document = HTMLDocument.current(); var div =
+		 * document.createElement("div");
+		 * div.appendChild(document.createTextNode("Loon-TeaVM"));
+		 * document.getBody().appendChild(div);
+		 */
 
 		TeaSetting setting = new TeaSetting();
 		setting.fps = 60;
@@ -97,14 +106,13 @@ public class LauncherMain {
 		setting.height_zoom = 600;
 
 		setting.isFPS = true;
-		//setting.fontSize = 16;
+		// setting.fontSize = 16;
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
-		//setting.fullscreen = true;
+		// setting.fullscreen = true;
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;
 		// 当此项开启，并且gwt.xml中设置了loon.addtojs为true,会默认从js中加载资源
-
 
 		// 设置一个需要的初始化进度条样式（不填则默认）
 		// setting.progress = GWTProgressDef.newSimpleLogoProcess(setting);

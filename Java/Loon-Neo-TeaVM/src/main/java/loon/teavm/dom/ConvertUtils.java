@@ -201,7 +201,7 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new byte[capacity];
+					byte[] array = new byte[capacity];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
@@ -221,7 +221,7 @@ public class ConvertUtils {
 			if (buff instanceof ByteBuffer) {
 				ByteBuffer buffer = (ByteBuffer) buff;
 				if (buffer.hasArray()) {
-					var typedArray = Int8Array.copyFromJavaArray(buffer.array());
+					Int8Array typedArray = Int8Array.copyFromJavaArray(buffer.array());
 					return new Uint8Array(typedArray.getBuffer());
 				} else {
 					int position = buffer.position();
@@ -229,11 +229,11 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new byte[capacity];
+					byte[] array = new byte[capacity];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
-					var typedArray = Int8Array.copyFromJavaArray(array);
+					Int8Array typedArray = Int8Array.copyFromJavaArray(array);
 					return new Uint8Array(typedArray.getBuffer());
 				}
 			} else {
@@ -257,7 +257,7 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new short[buffer.capacity()];
+					short[] array = new short[buffer.capacity()];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
@@ -281,7 +281,7 @@ public class ConvertUtils {
 			if (buff instanceof ShortBuffer) {
 				ShortBuffer buffer = (ShortBuffer) buff;
 				if (buffer.hasArray()) {
-					var typedArray = Int16Array.copyFromJavaArray(buffer.array());
+					Int16Array typedArray = Int16Array.copyFromJavaArray(buffer.array());
 					return new Uint16Array(typedArray.getBuffer());
 				} else {
 					int position = buffer.position();
@@ -289,11 +289,11 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new short[buffer.capacity()];
+					short[] array = new short[buffer.capacity()];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
-					var typedArray = Int16Array.copyFromJavaArray(array);
+					Int16Array typedArray = Int16Array.copyFromJavaArray(array);
 					return new Uint16Array(typedArray.getBuffer());
 				}
 			} else if (buff instanceof ByteBuffer) {
@@ -321,7 +321,7 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new int[buffer.capacity()];
+					int[] array = new int[buffer.capacity()];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
@@ -352,7 +352,7 @@ public class ConvertUtils {
 					int capacity = buffer.capacity();
 					buffer.position(0);
 					buffer.limit(capacity);
-					var array = new float[buffer.capacity()];
+					float[] array = new float[buffer.capacity()];
 					buffer.get(array);
 					buffer.position(position);
 					buffer.limit(limit);
@@ -378,7 +378,7 @@ public class ConvertUtils {
 			Int8Array array = Int8Array.fromJavaBuffer(out);
 			array.set(in);
 		} else {
-			var data = in.copyToJavaArray();
+			byte[] data = in.copyToJavaArray();
 			out.put(data);
 		}
 	}

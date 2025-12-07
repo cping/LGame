@@ -22,6 +22,8 @@ package loon.component;
 
 import loon.LSystem;
 import loon.LTexture;
+import loon.canvas.Canvas;
+import loon.canvas.Image;
 import loon.canvas.LColor;
 import loon.component.skin.SelectSkin;
 import loon.component.skin.SkinManager;
@@ -31,6 +33,7 @@ import loon.font.FontSet;
 import loon.font.IFont;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 import loon.utils.TArray;
 import loon.utils.timer.LTimer;
 
@@ -39,16 +42,7 @@ import loon.utils.timer.LTimer;
  */
 public class LSelect extends LContainer implements FontSet<LSelect> {
 
-	private static String[] getListToStrings(TArray<String> list) {
-		if (list == null || list.size == 0) {
-			return null;
-		}
-		String[] result = new String[list.size];
-		for (int i = 0; i < result.length; i++) {
-			result[i] = list.get(i);
-		}
-		return result;
-	}
+	private LTexture _tempTexture = null;
 
 	private IFont _messageFont;
 
@@ -80,8 +74,16 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	private ActionKey _eventClick = new ActionKey();
 
+	public LSelect(int x, int y, int width, int height) {
+		this(SkinManager.get().getMessageSkin().getFont(), x, y, width, height);
+	}
+
 	public LSelect(IFont font, int x, int y, int width, int height) {
 		this(font, (LTexture) null, x, y, width, height);
+	}
+
+	public LSelect(String fileName) {
+		this(SkinManager.get().getMessageSkin().getFont(), fileName);
 	}
 
 	public LSelect(IFont font, String fileName) {
@@ -90,6 +92,10 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	public LSelect(IFont font, String fileName, int x, int y) {
 		this(font, LSystem.loadTexture(fileName), x, y);
+	}
+
+	public LSelect(LTexture formImage) {
+		this(SkinManager.get().getMessageSkin().getFont(), formImage);
 	}
 
 	public LSelect(IFont font, LTexture formImage) {
@@ -116,8 +122,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	public LSelect(IFont font, LTexture formImage, int x, int y, int width, int height, LColor fontColor) {
 		super(x, y, width, height);
 		if (formImage == null) {
-			this.setBackground(LSystem.createTexture(width, height));
-			this.setAlpha(0.3F);
+			this.setBackground(createTempTexture(width, height, 0.3f, 15f));
 		} else {
 			this.setBackground(formImage);
 		}
@@ -136,7 +141,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 	}
 
 	public LSelect setMessage(String message, TArray<String> list) {
-		return setMessage(message, getListToStrings(list));
+		return setMessage(message, StringUtils.toStrings(list));
 	}
 
 	public LSelect setMessage(String[] selects) {
@@ -152,9 +157,17 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		this._selects = selects;
 		this._selectSize = selects.length;
 		if (_doubleSizeFont == 0) {
-			_doubleSizeFont = 20;
+			_doubleSizeFont = LSystem.getFontSize();
 		}
 		return this;
+	}
+
+	protected LTexture createTempTexture(int w, int h, float alpha, float r) {
+		Image img = Image.createImage(w, h);
+		Canvas canvas = img.getCanvas();
+		canvas.setAlpha(alpha);
+		canvas.fillRoundRect(0, 0, w, h, r);
+		return (_tempTexture = img.texture());
 	}
 
 	public LSelect setLeftOffset(int left) {
@@ -230,7 +243,7 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 		_sizeFont = _messageFont.getSize();
 		_doubleSizeFont = _sizeFont * 2;
 		if (_doubleSizeFont == 0) {
-			_doubleSizeFont = 20;
+			_doubleSizeFont = LSystem.getFontSize();
 		}
 		_messageLeft = (x + _doubleSizeFont + _sizeFont / 2) + _tmpOffset + _left + _doubleSizeFont;
 		if (_message != null) {
@@ -401,7 +414,10 @@ public class LSelect extends LContainer implements FontSet<LSelect> {
 
 	@Override
 	public void destory() {
-
+		if (_tempTexture != null) {
+			_tempTexture.close(true);
+			_tempTexture = null;
+		}
 	}
 
 }
