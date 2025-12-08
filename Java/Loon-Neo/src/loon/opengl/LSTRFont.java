@@ -164,7 +164,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 				int charwidth = layout.charWidth(ch);
 
 				if (charwidth <= 0) {
-					charwidth = 1;
+					charwidth = strfont._clipFontSize;
 				}
 				int charheight = layout.getHeight();
 				if (charheight <= 0) {
@@ -173,7 +173,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 				final boolean alphabet = StringUtils.isAlphaOrDigit(ch);
 
-				final IntObject newIntObject = new IntObject(clipFont ? (alphabet ? 0 : 1) : 0);
+				final IntObject newIntObject = new IntObject(clipFont ? (alphabet ? 0 : strfont._clipFontSize) : 0);
 
 				if (clipFont) {
 					newIntObject.width = charwidth + newIntObject.offsetX;
@@ -251,7 +251,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 
 				if (newIntObject.height > rowHeight) {
-					rowHeight = newIntObject.height + 1;
+					rowHeight = newIntObject.height + strfont._clipFontSize;
 				}
 
 				positionX += newIntObject.width;
@@ -332,6 +332,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private LSTRFont _childFont = null;
 
+	private int _clipFontSize = 1;
+
 	private int _initDraw = -1;
 
 	private int _drawLimit = 0;
@@ -346,7 +348,7 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 	private boolean useCache, isDrawing, isasyn;
 
-	private float offsetX = 1, offsetY = 1;
+	private float _offsetX = 1, _offsetY = 1;
 
 	private final IntMap<Cache> displays;
 
@@ -445,6 +447,12 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		this._maxTextureWidth = maxWidth;
 		this._maxTextureHeight = maxHeight;
 		this._displayLazy = useCache = true;
+		if (LSystem.base() == null) {
+			this._clipFontSize = 1;
+		} else if (LSystem.base().setting != null) {
+			this._clipFontSize = MathUtils.max(1, LSystem.base().setting.fontSizeClip);
+		}
+		this.setOffset(_clipFontSize);
 		this.textureWidth = tw;
 		this.textureHeight = th;
 		this.font = font;
@@ -760,14 +768,14 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 					if (intObject != null) {
 						if (!checkOutBounds() || containsChar(ch)) {
 							fontBatch.drawQuad(totalWidth, totalHeight,
-									(totalWidth + intObject.getDrawWidth()) - offsetX,
-									(totalHeight + intObject.getDrawHeight()) - offsetY, intObject.storedX,
-									intObject.storedY, intObject.storedX + intObject.getDrawWidth() - offsetX,
-									intObject.storedY + intObject.getDrawHeight() - offsetY);
+									(totalWidth + intObject.getDrawWidth()) - _offsetX,
+									(totalHeight + intObject.getDrawHeight()) - _offsetY, intObject.storedX,
+									intObject.storedY, intObject.storedX + intObject.getDrawWidth() - _offsetX,
+									intObject.storedY + intObject.getDrawHeight() - _offsetY);
 						} else if (checkOutBounds()) {
 							putChildChars(ch, totalWidth, totalHeight,
-									(totalWidth + intObject.getDrawWidth()) - offsetX,
-									(totalHeight + intObject.getDrawHeight()) - offsetY, null);
+									(totalWidth + intObject.getDrawWidth()) - _offsetX,
+									(totalHeight + intObject.getDrawHeight()) - _offsetY, null);
 						}
 						totalWidth += intObject.getDrawWidth();
 					}
@@ -812,13 +820,13 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 
 				if (intObject != null) {
 					if (!checkOutBounds() || containsChar(ch)) {
-						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.getDrawWidth()) - offsetX,
-								(totalHeight + intObject.getDrawHeight()) - offsetY, intObject.storedX,
-								intObject.storedY, intObject.storedX + intObject.getDrawWidth() - offsetX,
-								intObject.storedY + intObject.getDrawHeight() - offsetY);
+						fontBatch.drawQuad(totalWidth, totalHeight, (totalWidth + intObject.getDrawWidth()) - _offsetX,
+								(totalHeight + intObject.getDrawHeight()) - _offsetY, intObject.storedX,
+								intObject.storedY, intObject.storedX + intObject.getDrawWidth() - _offsetX,
+								intObject.storedY + intObject.getDrawHeight() - _offsetY);
 					} else if (checkOutBounds()) {
-						putChildChars(ch, totalWidth, totalHeight, (totalWidth + intObject.getDrawWidth()) - offsetX,
-								(totalHeight + intObject.getDrawHeight()) - offsetY, null);
+						putChildChars(ch, totalWidth, totalHeight, (totalWidth + intObject.getDrawWidth()) - _offsetX,
+								(totalHeight + intObject.getDrawHeight()) - _offsetY, null);
 					}
 					totalWidth += intObject.getDrawWidth();
 				}
@@ -879,8 +887,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 						intObject = customChars.get(ch);
 						if (intObject != null && containsChar(ch)) {
 							fontBatch.drawQuad(rect.x, rect.y, rect.width, rect.height, intObject.storedX,
-									intObject.storedY, intObject.storedX + intObject.getDrawWidth() - offsetX,
-									intObject.storedY + intObject.getDrawHeight() - offsetY);
+									intObject.storedY, intObject.storedX + intObject.getDrawWidth() - _offsetX,
+									intObject.storedY + intObject.getDrawHeight() - _offsetY);
 						} else if (checkOutBounds()) {
 							putChildChars(ch, rect.x, rect.y, rect.width, rect.height, null);
 						}
@@ -904,8 +912,8 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 					intObject = customChars.get(ch);
 					if (intObject != null && containsChar(ch)) {
 						fontBatch.drawQuad(rect.x, rect.y, rect.width, rect.height, intObject.storedX,
-								intObject.storedY, intObject.storedX + intObject.getDrawWidth() - offsetX,
-								intObject.storedY + intObject.getDrawHeight() - offsetY);
+								intObject.storedY, intObject.storedX + intObject.getDrawWidth() - _offsetX,
+								intObject.storedY + intObject.getDrawHeight() - _offsetY);
 					} else if (checkOutBounds()) {
 						putChildChars(ch, rect.x, rect.y, rect.width, rect.height, null);
 					}
@@ -1223,10 +1231,10 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 				}
 				fontBatch.setBlendState(BlendState.AlphaBlend);
 
-				fontBatch.draw(colors, x, y, intObject.getDrawWidth() * fontScale - offsetX,
-						intObject.getDrawHeight() * fontScale - offsetY, intObject.storedX, intObject.storedY,
-						intObject.storedX + intObject.getDrawWidth() - offsetX,
-						intObject.storedY + intObject.getDrawHeight() - offsetY);
+				fontBatch.draw(colors, x, y, intObject.getDrawWidth() * fontScale - _offsetX,
+						intObject.getDrawHeight() * fontScale - _offsetY, intObject.storedX, intObject.storedY,
+						intObject.storedX + intObject.getDrawWidth() - _offsetX,
+						intObject.storedY + intObject.getDrawHeight() - _offsetY);
 
 				if (colors != null) {
 					colors = null;
@@ -1550,21 +1558,27 @@ public final class LSTRFont extends FontTrans implements IFont, LRelease {
 		return this;
 	}
 
+	public LSTRFont setOffset(float off) {
+		setOffsetX(off);
+		setOffsetY(off);
+		return this;
+	}
+
 	public float getOffsetX() {
-		return offsetX;
+		return _offsetX;
 	}
 
 	public LSTRFont setOffsetX(float offsetX) {
-		this.offsetX = offsetX;
+		this._offsetX = offsetX;
 		return this;
 	}
 
 	public float getOffsetY() {
-		return offsetY;
+		return _offsetY;
 	}
 
 	public LSTRFont setOffsetY(float offsetY) {
-		this.offsetY = offsetY;
+		this._offsetY = offsetY;
 		return this;
 	}
 

@@ -403,6 +403,10 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}
 	}
 
+	public GWTGame getHTMLGame() {
+		return game;
+	}
+
 	@Override
 	public void close() {
 		closeImpl();
@@ -481,7 +485,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}-*/;
 
 	public boolean isMobile() {
-		return isAndroid() || isIOS() || isBlackBerry() || getUserAgent().contains("mobile");
+		return isAndroid() || isIOS() || isOpenHarmony() || isWindowsPhone() || isWeiXin() || isBlackBerry()
+				|| getUserAgent().contains("mobile");
 	}
 
 	/**
@@ -753,8 +758,61 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return $wnd.navigator.userAgent.toLowerCase();
 	}-*/;
 
+	public boolean isWindows() {
+		return getUserAgent().contains("win");
+	}
+
+	public boolean isMac() {
+		return getUserAgent().contains("mac");
+	}
+
+	public boolean isLinux() {
+		return getUserAgent().contains("linux");
+	}
+
+	public boolean isBrowser() {
+		return isChrome() || isFirefox() || isSafari() || isEdge() || isQQBrowser() || isMQQBrowser() || isWeiXin();
+	}
+
+	public boolean isChrome() {
+		return getUserAgent().contains("chrome");
+	}
+
+	public boolean isFirefox() {
+		return getUserAgent().contains("firefox");
+	}
+
+	public boolean isSafari() {
+		return getUserAgent().contains("safari") && !isChrome();
+	}
+
+	public boolean isEdge() {
+		return getUserAgent().contains("edge") || getUserAgent().contains("edg");
+	}
+
+	public boolean isWeiXin() {
+		return getUserAgent().contains("micromessenger");
+	}
+
+	public boolean isOpenHarmony() {
+		return getUserAgent().contains("openharmony");
+	}
+
+	public boolean isQQBrowser() {
+		return getUserAgent().contains("qqbrowser");
+	}
+
+	public boolean isMQQBrowser() {
+		final String result = getUserAgent();
+		return result.contains("mqqbrowser") || (result.indexOf("mobile") > -1 && result.indexOf("qq") > -1);
+	}
+
+	public boolean isWindowsPhone() {
+		return getUserAgent().contains("windows phone");
+	}
+
 	public boolean isAndroid() {
-		return isAndroidPhone() || isAndroidTablet();
+		return isAndroidPhone() || isAndroidTablet() || getUserAgent().contains("adr");
 	}
 
 	public boolean isIPhone() {
@@ -774,7 +832,12 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public boolean isIOS() {
-		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
+		return isIPad() || isIPadRetina() || isIPhone() || isRetina() || isIOSPhone();
+	}
+
+	public boolean isIOSPhone() {
+		String userAgent = getUserAgent();
+		return userAgent.matches("/\\(i[^;]+;( U;)? cpu.+mac os x/");
 	}
 
 	public boolean isRetina() {
@@ -794,7 +857,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}
 
 	public boolean isDesktop() {
-		return !isIOS() && !isAndroid() && !isBlackBerry() && !getUserAgent().contains("mobile");
+		return (isWindows() || isMac() || isLinux()) && (!isIOS() && !isAndroid() && !isWindowsPhone()
+				&& !isBlackBerry() && !isOpenHarmony() && !getUserAgent().contains("mobile"));
 	}
 
 	public boolean isTablet() {

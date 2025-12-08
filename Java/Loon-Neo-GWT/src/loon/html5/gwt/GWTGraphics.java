@@ -21,6 +21,7 @@
 package loon.html5.gwt;
 
 import java.util.Map;
+
 import java.util.HashMap;
 
 import loon.Graphics;
@@ -84,6 +85,11 @@ public class GWTGraphics extends Graphics {
 
 		this.config = cfg;
 		Document doc = Document.get();
+
+		Style bodyStyle = doc.getBody().getStyle();
+		bodyStyle.setProperty("margin", "0");
+		bodyStyle.setProperty("overflow", "hidden");
+
 		this.dummyCanvas = doc.createCanvasElement();
 		this.dummyCtx = dummyCanvas.getContext2d();
 
@@ -99,7 +105,13 @@ public class GWTGraphics extends Graphics {
 		measureElement.getStyle().setWhiteSpace(Style.WhiteSpace.NOWRAP);
 		root.appendChild(measureElement);
 
-		canvas = Document.get().createCanvasElement();
+		canvas = doc.createCanvasElement();
+
+		Style canvasStyle = canvas.getStyle();
+		canvasStyle.setProperty("top", "0px");
+		canvasStyle.setProperty("left", "0px");
+		canvasStyle.setProperty("background", "#000000");
+
 		root.appendChild(canvas);
 
 		if (config.scaling()) {
@@ -142,9 +154,8 @@ public class GWTGraphics extends Graphics {
 					}
 					final float width = config.fullscreen ? config.getShowWidth() : config.width;
 					final float height = config.fullscreen ? config.getShowHeight() : config.height;
-					final int clientWidth = MathUtils.clamp(event.getWidth(), config.width, Window.getClientWidth());
-					final int clientHeight = MathUtils.clamp(event.getHeight(), config.height,
-							Window.getClientHeight());
+					final int clientWidth = MathUtils.clamp(event.getWidth(), config.width, getClientWidth());
+					final int clientHeight = MathUtils.clamp(event.getHeight(), config.height, getClientHeight());
 					if (clientWidth <= 0 || clientHeight <= 0) {
 						return;
 					}
@@ -163,13 +174,13 @@ public class GWTGraphics extends Graphics {
 						rootElement.setAttribute("style",
 								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
 										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
-						Document.get().getBody().addClassName("fullscreen");
+						doc.getBody().addClassName("fullscreen");
 						graphicsFullSize = true;
 					} else if ((config.fullscreen && graphicsFullSize)
 							&& (clientWidth != initSize.width || clientHeight != initSize.height)) {
 						setSize(initSize.width, initSize.height);
 						rootElement.removeAttribute("style");
-						Document.get().getBody().removeClassName("fullscreen");
+						doc.getBody().removeClassName("fullscreen");
 						graphicsFullSize = false;
 					}
 
@@ -180,9 +191,14 @@ public class GWTGraphics extends Graphics {
 		Loon.self.addHandler(new OrientationChangedHandler() {
 			@Override
 			public void onChanged(Orientation newOrientation) {
-				final int clientWidth = rootElement.getClientWidth();
-				final int clientHeight = rootElement.getClientHeight();
-
+				int clientWidth = canvas.getClientWidth();
+				int clientHeight = canvas.getClientHeight();
+				if (clientWidth <= 0) {
+					clientWidth = getClientWidth();
+				}
+				if (clientHeight <= 0) {
+					clientHeight = getClientHeight();
+				}
 				if (clientWidth <= 0 || clientHeight <= 0) {
 					return;
 				}
@@ -275,9 +291,46 @@ public class GWTGraphics extends Graphics {
 
 	@Override
 	public Dimension screenSize() {
-		screenSize.setSize(Document.get().getDocumentElement().getClientWidth(),
-				Document.get().getDocumentElement().getClientHeight());
+		screenSize.setSize(getClientWidth(), getClientHeight());
 		return screenSize;
+	}
+
+	public int getClientWidth() {
+		int result = Window.getClientWidth();
+		if (result > 0) {
+			return result;
+		}
+		Document doc = Document.get();
+		if (doc == null) {
+			return Loon.self.getJSNIScreenWidth();
+		}
+		result = doc.getClientWidth();
+		if (result <= 0) {
+			result = doc.getBody().getClientWidth();
+		}
+		if (result <= 0) {
+			result = doc.getDocumentElement().getClientWidth();
+		}
+		return result;
+	}
+
+	public int getClientHeight() {
+		int result = Window.getClientHeight();
+		if (result > 0) {
+			return result;
+		}
+		Document doc = Document.get();
+		if (doc == null) {
+			return Loon.self.getJSNIScreenHeight();
+		}
+		result = doc.getClientHeight();
+		if (result <= 0) {
+			result = doc.getBody().getClientHeight();
+		}
+		if (result <= 0) {
+			result = doc.getDocumentElement().getClientHeight();
+		}
+		return result;
 	}
 
 	@Override
@@ -307,32 +360,35 @@ public class GWTGraphics extends Graphics {
 		GWTFontMetrics metrics = fontMetrics.get(font);
 		if (metrics == null) {
 			final String fontName = font.name;
-			measureElement.getStyle().setFontSize(font.size, Unit.PX);
-			measureElement.getStyle().setFontWeight(Style.FontWeight.NORMAL);
-			measureElement.getStyle().setFontStyle(Style.FontStyle.NORMAL);
+			Style style = measureElement.getStyle();
+			style.setFontSize(font.size, Unit.PX);
+			style.setFontWeight(Style.FontWeight.NORMAL);
+			style.setFontStyle(Style.FontStyle.NORMAL);
 			final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 			if ((game instanceof GWTGame) && ("ttf".equals(ext) || "otf".equals(ext))) {
-				measureElement.getStyle().setProperty("src", ((GWTAssets) game.assets()).getURLPath(fontName));
-				measureElement.getStyle().setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
+				style.setProperty("src", ((GWTAssets) game.assets()).getURLPath(fontName));
+				style.setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
 			} else {
-				measureElement.getStyle().setProperty("fontFamily", GWTFont.getFontName(fontName)
+				style.setProperty("fontFamily", GWTFont.getFontName(fontName)
 						+ ",'Microsoft YaHei','STHeiti','PingFang SC','WenQuanYi Micro Hei',monospace,sans-serif");
 			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {
 			case BOLD:
-				measureElement.getStyle().setFontWeight(Style.FontWeight.BOLD);
+				style.setFontWeight(Style.FontWeight.BOLD);
 				break;
 			case ITALIC:
-				measureElement.getStyle().setFontStyle(Style.FontStyle.ITALIC);
+				style.setFontStyle(Style.FontStyle.ITALIC);
 				break;
 			case BOLD_ITALIC:
-				measureElement.getStyle().setFontWeight(Style.FontWeight.BOLD);
-				measureElement.getStyle().setFontStyle(Style.FontStyle.ITALIC);
+				style.setFontWeight(Style.FontWeight.BOLD);
+				style.setFontStyle(Style.FontStyle.ITALIC);
 				break;
 			default:
 				break;
 			}
+			style.setPaddingTop(0, Unit.PX);
+			style.setPaddingBottom(0, Unit.PX);
 			final float doubleSize = font.size * 2;
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);

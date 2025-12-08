@@ -48,8 +48,14 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 	public TeaBase() {
 		if (Loon.isCrossOriginIframe() || Loon.isIframe()) {
 			this._window = Window.current();
+			if (this._window == null) {
+				this._window = Window.worker();
+			}
 		} else {
 			this._window = Window.current().getTop();
+			if (this._window == null) {
+				this._window = Window.current();
+			}
 		}
 		this._agentInfo = TeaWebAgent.computeAgentInfo();
 	}
@@ -152,11 +158,25 @@ public class TeaBase implements AnimationFrameCallback, TimerHandler {
 	}
 
 	public int getClientWidth() {
-		return _window.getInnerWidth();
+		int result = _window.getInnerWidth();
+		if (result <= 0) {
+			result = _window.getDocument().getBody().getClientWidth();
+		}
+		if (result <= 0) {
+			result = _window.getDocument().getDocumentElement().getClientWidth();
+		}
+		return result;
 	}
 
 	public int getClientHeight() {
-		return _window.getInnerHeight();
+		int result = _window.getInnerHeight();
+		if (result <= 0) {
+			result = _window.getDocument().getBody().getClientHeight();
+		}
+		if (result <= 0) {
+			result = _window.getDocument().getDocumentElement().getClientHeight();
+		}
+		return result;
 	}
 
 	public void addEventListener(String type, EventListener<Event> listener) {

@@ -370,6 +370,22 @@ public class Loon implements Platform {
 		}
 	}
 
+	public TeaGame getHTMLGame() {
+		return _game;
+	}
+
+	public boolean isFirefox() {
+		return _game != null && _game.isFirefox();
+	}
+
+	public boolean isChrome() {
+		return _game != null && _game.isChrome();
+	}
+
+	public boolean isEdge() {
+		return _game != null && _game.isEdge();
+	}
+
 	public boolean isDesktop() {
 		if (_game != null) {
 			return _game.isDesktop();

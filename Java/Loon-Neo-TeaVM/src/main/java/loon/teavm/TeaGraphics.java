@@ -83,6 +83,10 @@ public class TeaGraphics extends Graphics {
 
 		HTMLDocumentExt doc = TeaBase.get().getDocument();
 
+		CSSStyleDeclaration bodyStyle = doc.getBody().getStyle();
+		bodyStyle.setProperty("margin", "0");
+		bodyStyle.setProperty("overflow", "hidden");
+
 		this.rootElement = (HTMLElement) loon.getMainCanvas().getParentNode();
 		if (rootElement == null) {
 			rootElement = doc.getDocumentElement();
@@ -91,6 +95,12 @@ public class TeaGraphics extends Graphics {
 		dummyCtx = TeaCanvasUtils.getContext2d(TeaCanvasUtils.createCanvas(doc));
 
 		canvas = doc.createCanvasElement();
+
+		CSSStyleDeclaration canvasStyle = canvas.getStyle();
+		canvasStyle.setProperty("top", "0px");
+		canvasStyle.setProperty("left", "0px");
+		canvasStyle.setProperty("background", "#000000");
+
 		rootElement.replaceChild(canvas, loon.getMainCanvas());
 		loon.setMainCanvasElement(canvas);
 
@@ -172,10 +182,9 @@ public class TeaGraphics extends Graphics {
 					}
 					final float width = config.fullscreen ? config.getShowWidth() : config.width;
 					final float height = config.fullscreen ? config.getShowHeight() : config.height;
-					final int clientWidth = MathUtils.clamp(mainWindow.getInnerWidth(), config.width,
-							Loon.getScreenWidthJSNI());
+					final int clientWidth = MathUtils.clamp(mainWindow.getInnerWidth(), config.width, getClientWidth());
 					final int clientHeight = MathUtils.clamp(mainWindow.getInnerHeight(), config.height,
-							Loon.getScreenHeightJSNI());
+							getClientHeight());
 					if (clientWidth <= 0 || clientHeight <= 0) {
 						return;
 					}
@@ -211,9 +220,14 @@ public class TeaGraphics extends Graphics {
 
 			@Override
 			public void handleEvent(Event evt) {
-				final int clientWidth = rootElement.getClientWidth();
-				final int clientHeight = rootElement.getClientHeight();
-
+				int clientWidth = canvas.getClientWidth();
+				int clientHeight = canvas.getClientHeight();
+				if (clientWidth <= 0) {
+					clientWidth = getClientWidth();
+				}
+				if (clientHeight <= 0) {
+					clientHeight = getClientHeight();
+				}
 				if (clientWidth <= 0 || clientHeight <= 0) {
 					return;
 				}
@@ -305,8 +319,24 @@ public class TeaGraphics extends Graphics {
 
 	@Override
 	public Dimension screenSize() {
-		screenSize.setSize(TeaBase.get().getClientWidth(), TeaBase.get().getClientHeight());
+		screenSize.setSize(getClientWidth(), getClientHeight());
 		return screenSize;
+	}
+
+	public int getClientWidth() {
+		int result = TeaBase.get().getClientWidth();
+		if (result > 0) {
+			return result;
+		}
+		return Loon.getScreenWidthJSNI();
+	}
+
+	public int getClientHeight() {
+		int result = TeaBase.get().getClientHeight();
+		if (result > 0) {
+			return result;
+		}
+		return Loon.getScreenHeightJSNI();
 	}
 
 	@Override
@@ -363,6 +393,7 @@ public class TeaGraphics extends Graphics {
 			default:
 				break;
 			}
+			style.setProperty("padding", "0 0");
 			final float doubleSize = font.size * 2;
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);

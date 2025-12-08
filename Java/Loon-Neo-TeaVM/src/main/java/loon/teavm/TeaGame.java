@@ -308,21 +308,79 @@ public class TeaGame extends LGame {
 		return support;
 	}
 
+	public String getUserAgent() {
+		return agentInfo.getUserAgent().toLowerCase();
+	}
+
 	@Override
 	public boolean isMobile() {
 		if (loonApp == null) {
 			return false;
 		}
-		return super.isMobile() || isAndroid() || isIOS() || isBlackBerry()
-				|| agentInfo.getUserAgent().contains("mobile");
+		return super.isMobile() || isAndroid() || isIOS() || isOpenHarmony() || isWindowsPhone() || isWeiXin()
+				|| isBlackBerry() || getUserAgent().contains("mobile");
+
+	}
+
+	public boolean isWindows() {
+		return getUserAgent().contains("win");
+	}
+
+	public boolean isMac() {
+		return getUserAgent().contains("mac");
+	}
+
+	public boolean isLinux() {
+		return getUserAgent().contains("linux");
+	}
+
+	public boolean isBrowser() {
+		return isChrome() || isFirefox() || isSafari() || isEdge() || isQQBrowser() || isMQQBrowser() || isWeiXin();
+	}
+
+	public boolean isChrome() {
+		return getUserAgent().contains("chrome");
+	}
+
+	public boolean isFirefox() {
+		return getUserAgent().contains("firefox");
+	}
+
+	public boolean isSafari() {
+		return getUserAgent().contains("safari") && !isChrome();
+	}
+
+	public boolean isEdge() {
+		return getUserAgent().contains("edge") || getUserAgent().contains("edg");
+	}
+
+	public boolean isWeiXin() {
+		return getUserAgent().contains("micromessenger");
+	}
+
+	public boolean isOpenHarmony() {
+		return getUserAgent().contains("openharmony");
+	}
+
+	public boolean isQQBrowser() {
+		return getUserAgent().contains("qqbrowser");
+	}
+
+	public boolean isMQQBrowser() {
+		final String result = getUserAgent();
+		return result.contains("mqqbrowser") || (result.indexOf("mobile") > -1 && result.indexOf("qq") > -1);
+	}
+
+	public boolean isWindowsPhone() {
+		return getUserAgent().contains("windows phone");
 	}
 
 	public boolean isAndroid() {
-		return isAndroidPhone() || isAndroidTablet();
+		return isAndroidPhone() || isAndroidTablet() || getUserAgent().contains("adr");
 	}
 
 	public boolean isIPhone() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("iphone") && loonApp.getNativeScreenDensity() < 2) {
 			return true;
 		}
@@ -330,7 +388,7 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isIPad() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("ipad") && loonApp.getNativeScreenDensity() < 2) {
 			return true;
 		}
@@ -338,11 +396,16 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isIOS() {
-		return isIPad() || isIPadRetina() || isIPhone() || isRetina();
+		return isIPad() || isIPadRetina() || isIPhone() || isRetina() || isIOSPhone();
+	}
+
+	public boolean isIOSPhone() {
+		String userAgent = getUserAgent();
+		return userAgent.matches("/\\(i[^;]+;( U;)? CPU.+Mac OS X/");
 	}
 
 	public boolean isRetina() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("iphone") && loonApp.getNativeScreenDensity() >= 2) {
 			return true;
 		}
@@ -350,15 +413,17 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isIPadRetina() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("ipad") && loonApp.getNativeScreenDensity() >= 2) {
 			return true;
 		}
 		return false;
 	}
 
+	@Override
 	public boolean isDesktop() {
-		return !isIOS() && !isAndroid() && !isBlackBerry() && !agentInfo.getUserAgent().contains("mobile");
+		return (isWindows() || isMac() || isLinux()) && (!isIOS() && !isAndroid() && !isWindowsPhone()
+				&& !isBlackBerry() && !isOpenHarmony() && !getUserAgent().contains("mobile"));
 	}
 
 	public boolean isTablet() {
@@ -366,7 +431,7 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isAndroidTablet() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("android") && !userAgent.contains("mobile")) {
 			return true;
 		}
@@ -374,7 +439,7 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isAndroidPhone() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("android") && userAgent.contains("mobile")) {
 			return true;
 		}
@@ -386,7 +451,7 @@ public class TeaGame extends LGame {
 	}
 
 	public boolean isBlackBerry() {
-		String userAgent = agentInfo.getUserAgent();
+		String userAgent = getUserAgent();
 		if (userAgent.contains("blackberry")) {
 			return true;
 		}

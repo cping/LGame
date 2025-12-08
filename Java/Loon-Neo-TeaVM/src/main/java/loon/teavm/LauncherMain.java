@@ -106,7 +106,8 @@ public class LauncherMain {
 		setting.height_zoom = 600;
 
 		setting.isFPS = true;
-		// setting.fontSize = 16;
+		//setting.fontSizeClip = 3;
+		 setting.fontSize = 21;
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
 		// setting.fullscreen = true;

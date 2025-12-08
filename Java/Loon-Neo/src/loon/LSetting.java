@@ -148,9 +148,14 @@ public class LSetting {
 	public boolean isLogo = false;
 
 	/**
-	 * 生成系统默认的LFont时,是否使用剪切生成
+	 * 生成系统默认的LFont时,是否使用剪切生成(剪切字体会消耗更多资源,不剪切字体可能留有其它字符边缘)
 	 */
 	public boolean useTrueFontClip = false;
+
+	/**
+	 * 生成系统默认的LFont时,文字的四周留边大小(无论是否剪切字体都会预留边缘，只是剪切为单字边缘,不剪切是整行文字边缘)
+	 */
+	public int fontSizeClip = 1;
 
 	/**
 	 * 此项为true时采用全屏刷新,为false则屏幕不会自动刷新
@@ -327,6 +332,7 @@ public class LSetting {
 		this.fixedPaintLoopTime = setting.fixedPaintLoopTime;
 		this.fixedUpdateLoopTime = setting.fixedUpdateLoopTime;
 		this.useTrueFontClip = setting.useTrueFontClip;
+		this.fontSizeClip = setting.fontSizeClip;
 		this.emulatorScale = setting.emulatorScale;
 		this.notAllowDragAndMove = setting.notAllowDragAndMove;
 		this.lockAllTouchEvent = setting.lockAllTouchEvent;

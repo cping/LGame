@@ -37,6 +37,8 @@ import loon.utils.MathUtils;
 
 final class GWTTextLayout extends TextLayout {
 
+	private final static int MAX_FIX_FONT = 20;
+
 	private final GWTFontMetrics _metrics;
 
 	private final Context2d _ctx;
@@ -49,7 +51,7 @@ final class GWTTextLayout extends TextLayout {
 	private static int fixFontSize(TextFormat format, double size) {
 		int result = (int) Math.round(size);
 		int fontSize = (int) (format == null ? LSystem.getFontSize() : format.font.size);
-		if (MathUtils.isOdd(result) && result < fontSize) {
+		if (fontSize < MAX_FIX_FONT && MathUtils.isOdd(result) && result < fontSize) {
 			result += 1;
 		}
 		return result;
