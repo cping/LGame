@@ -70,8 +70,7 @@ public class TeaFont {
 		default:
 			break;
 		}
-		return style + " " + size + "px " + getFontName(fontName)
-				+ ",'Microsoft YaHei','STHeiti','PingFang SC','WenQuanYi Micro Hei',sans-serif";
+		return style + " " + size + "px " + getFontName(fontName);
 	}
 
 	protected final static String getFontName(final String fontName) {

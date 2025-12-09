@@ -125,7 +125,10 @@ public class TeaAssets extends Assets {
 						}
 						final TeaBlob blob = new TeaBlob(arrayBuffer, data);
 						Loon.setCrossOrigin(image, "crossOrigin");
-						final String ext = PathUtils.getExtension(url);
+						String ext = PathUtils.getExtension(url);
+						if ("jpg".equals(ext)) {
+							ext = "jpeg";
+						}
 						if (StringUtils.isEmpty(ext)) {
 							image.setSrc(blob.toBase64("image/png"));
 						} else {

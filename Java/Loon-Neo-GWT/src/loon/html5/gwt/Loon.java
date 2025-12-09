@@ -49,6 +49,7 @@ import com.google.gwt.core.client.ScriptInjector;
 import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -257,7 +258,6 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 						if (LSystem.isText(ext)) {
 							localRes.putText(key, value);
 						} else if (LSystem.isImage(ext)) {
-
 							localRes.putImage(key, value);
 						} else if (LSystem.isAudio(ext)) {
 							// noop
@@ -286,24 +286,29 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 			@Override
 			public void error(String file) {
 				callback.error(file);
+				startMain();
 			}
 
 			@Override
 			public void update(PreloaderState state) {
 				callback.update(state);
 				if (state.hasEnded()) {
-					getRootPanel().clear();
-					if (loadingListener != null) {
-						loadingListener.beforeSetup();
-					}
-					mainLoop();
-					if (loadingListener != null) {
-						loadingListener.afterSetup();
-					}
+					startMain();
 				}
 			}
 		});
 		return this.preloader;
+	}
+
+	private void startMain() {
+		getRootPanel().clear();
+		if (loadingListener != null) {
+			loadingListener.beforeSetup();
+		}
+		mainLoop();
+		if (loadingListener != null) {
+			loadingListener.afterSetup();
+		}
 	}
 
 	void mainLoop() {
@@ -418,7 +423,19 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	}-*/;
 
 	public native static void consoleLog(String message) /*-{
-		console.log("GWT: " + message);
+		if ($wnd.console) {
+			$wnd.console.log(msg);
+		} else {
+			$doc.title = "GWT Log:" + msg;
+		}
+	}-*/;
+
+	public native static void alert(String msg)/*-{
+		if (typeof (window.alert) === "function") {
+			window.alert.call(null, msg);
+		} else {
+			console.warn("alert is not a function");
+		}
 	}-*/;
 
 	@Override
@@ -537,6 +554,11 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		_handlers.put(newHandlerId, handler);
 		return newHandlerId;
 	}
+
+	public native static Style getSystemFontJSNI() /*-{
+		return (document.documentElement.currentStyle ? document.documentElement.currentStyle
+				: window.getComputedStyle(document.documentElement)).fontFamily;
+	}-*/;
 
 	/**
 	 * 屏幕[完整宽度]

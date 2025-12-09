@@ -878,7 +878,7 @@ public final class LSystem {
 
 	public static boolean isImage(String extension) {
 		return extension.equals("jpg") || extension.equals("jpeg") || extension.equals("png") || extension.equals("bmp")
-				|| extension.equals("gif") || extension.equals("tga");
+				|| extension.equals("gif") || extension.equals("webp");
 	}
 
 	public static boolean isText(String extension) {
@@ -888,7 +888,7 @@ public final class LSystem {
 				|| extension.equals("atlas") || extension.equals("g3dj") || extension.equals("tmx")
 				|| extension.equals("tmj") || extension.equals("an") || extension.equals("atlas")
 				|| extension.equals("text") || extension.equals("yaml") || extension.equals("lml")
-				|| extension.equals("cfg") || extension.equals("cvs");
+				|| extension.equals("cfg") || extension.equals("cvs") || extension.equals("tga");
 	}
 
 	public static final boolean isAudio(String extension) {

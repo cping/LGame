@@ -20,6 +20,7 @@
  */
 package loon.teavm;
 
+import org.teavm.jso.canvas.CanvasGradient;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
@@ -36,8 +37,8 @@ public class TeaProgress {
 	private int pWidth = 200, pHeight = 60;
 
 	private String bgColor = LColor.black.toCSS();
-	private String barColor = LColor.red.toCSS();
-	private String barBgColor = "#808080";
+	private String barBgColor = LColor.gray.toCSS();
+	private String barStrokeColor = LColor.lightSlateGray.toCSS();
 
 	private LSetting config;
 	private int centerX = -1, centerY = -1;
@@ -105,12 +106,18 @@ public class TeaProgress {
 			this.logoX = (config.getShowWidth() - logoImage.getWidth()) / 2;
 			this.logoY = (config.getShowHeight() - logoImage.getHeight()) / 2;
 			context.drawImage(logoImage, logoX, logoY - logoImage.getHeight() - 40);
+			context.setLineWidth(5);
+			context.setStrokeStyle(barStrokeColor);
+			context.strokeRect(centerX - 1, centerY - 1, pWidth + 2, pHeight + 2);
 			context.setFillStyle(barBgColor);
 			context.fillRect(centerX, centerY, pWidth, pHeight);
+			CanvasGradient gradient = context.createLinearGradient(0, 0, pWidth, 0);
+			gradient.addColorStop(0, "red");
+			gradient.addColorStop(1, "blue");
+			context.setFillStyle(gradient);
 			if (currentStep >= maxStep) {
 				context.fillRect(centerX, centerY, pWidth, pHeight);
 			} else {
-				context.setFillStyle(barColor);
 				context.fillRect(centerX, centerY, (int) (pWidth / maxStep * currentStep), pHeight);
 			}
 		}

@@ -1,11 +1,71 @@
 package loon.test;
 
+import loon.LTexture;
 import loon.Screen;
+import loon.Stage;
+import loon.canvas.LColor;
+import loon.component.LComponent;
+import loon.component.LMessageBox;
+import loon.component.LSelect;
+import loon.events.ClickListener;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;
 import loon.html5.gwt.Loon;
 
 public class TestLoon extends Loon {
+
+	public static class TestScreen extends Stage {
+
+		@Override
+		public void create() {
+
+			setBackground(LColor.red);
+			LSelect select = new LSelect(120, 100, 200, 250);
+
+			select.setMessage(new String[] { "ABDFDFD", "B", "C", "D" });
+			add(select);
+
+			LTexture texture = getGameWinFrame(200, 200);
+			LMessageBox box = new LMessageBox(
+					new String[] { "人间谁能看尽山色，千里孤行终归寂寞。翻天覆地炙手可热，百年之后有谁记得。", "明月西斜遗珠何落，金乌归海乾坤并合。世事如棋造化难说，能解其中非你非我。" },
+					texture, 66, 66, 180, 180);
+			// box.setGradientFontColor(true);
+			// 行间距3
+			box.setLeading(3);
+			// 偏移10,10
+			box.setBoxOffset(10, 10);
+
+			// box.setFaceImage("ccc.png");
+
+			add(box);
+			centerOn(box);
+
+			box.S(new ClickListener() {
+
+				@Override
+				public void UpClick(LComponent comp, float x, float y) {
+
+				}
+
+				@Override
+				public void DragClick(LComponent comp, float x, float y) {
+
+				}
+
+				@Override
+				public void DownClick(LComponent comp, float x, float y) {
+					LMessageBox box = (LMessageBox) comp;
+					box.loop();
+				}
+
+				@Override
+				public void DoClick(LComponent comp) {
+
+				}
+			});
+		}
+
+	}
 
 	@Override
 	public void onMain() {
@@ -25,7 +85,7 @@ public class TestLoon extends Loon {
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
 		setting.rootId = "embed-loon.test.TestLoon";
-		setting.allScreenRefresh = true;
+	//	setting.allScreenRefresh = true;
 	//	setting.fullscreen = true;
 		// 按屏幕缩放比例缩放
 		// setting.useRatioScaleFactor = true;

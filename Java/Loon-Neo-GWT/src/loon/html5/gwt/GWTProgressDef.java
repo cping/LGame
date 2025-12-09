@@ -6,6 +6,7 @@ import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
 
 import com.google.gwt.canvas.client.Canvas;
+import com.google.gwt.canvas.dom.client.CanvasGradient;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
@@ -21,8 +22,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class GWTProgressDef {
 
 	private static native boolean isImageComplete(ImageElement img) /*-{
-																	return img.complete;
-																	}-*/;
+		return img.complete;
+	}-*/;
 
 	/**
 	 * 一个基于Canvas的进度抽象类，用于让用户自行在Canvas上绘制出自己需要的进度样式.
@@ -76,17 +77,17 @@ public class GWTProgressDef {
 		}
 
 		private static native double startNow() /*-{
-												if (!Date.now) {
-												Date.now = function now() {
-												return +(new Date);
-												};
-												}
-												return Date.now();
-												}-*/;
+			if (!Date.now) {
+				Date.now = function now() {
+					return +(new Date);
+				};
+			}
+			return Date.now();
+		}-*/;
 
 		private static native double nowTime() /*-{
-												return Date.now();
-												}-*/;
+			return Date.now();
+		}-*/;
 
 	}
 
@@ -99,9 +100,8 @@ public class GWTProgressDef {
 		private int pWidth = 200, pHeight = 60;
 
 		private String bgColor = LColor.black.toCSS();
-		private String barColor = LColor.red.toCSS();
-		private String barBgColor = "#808080";
-
+		private String barBgColor = LColor.gray.toCSS();
+		private String barStrokeColor = LColor.lightSlateGray.toCSS();
 		private LSetting config;
 		private int centerX = -1, centerY = -1;
 		private int logoX = -1, logoY = -1;
@@ -127,12 +127,18 @@ public class GWTProgressDef {
 				this.logoX = (config.getShowWidth() - logoImage.getWidth()) / 2;
 				this.logoY = (config.getShowHeight() - logoImage.getHeight()) / 2;
 				context.drawImage(logoImage, logoX, logoY - logoImage.getHeight() - 40);
+				context.setLineWidth(5);
+				context.setStrokeStyle(barStrokeColor);
+				context.strokeRect(centerX - 1, centerY - 1, pWidth + 2, pHeight + 2);
 				context.setFillStyle(barBgColor);
 				context.fillRect(centerX, centerY, pWidth, pHeight);
+				CanvasGradient gradient = context.createLinearGradient(0, 0, pWidth, 0);
+				gradient.addColorStop(0, "red");
+				gradient.addColorStop(1, "blue");
+				context.setFillStyle(gradient);
 				if (currentStep >= maxStep) {
 					context.fillRect(centerX, centerY, pWidth, pHeight);
 				} else {
-					context.setFillStyle(barColor);
 					context.fillRect(centerX, centerY, (int) (pWidth / maxStep * currentStep), pHeight);
 				}
 			}
@@ -144,7 +150,6 @@ public class GWTProgressDef {
 			logo.setStyleName("logo");
 			Element element = logo.getElement();
 			this.logoImage = ImageElement.as(element);
-
 		}
 
 	}

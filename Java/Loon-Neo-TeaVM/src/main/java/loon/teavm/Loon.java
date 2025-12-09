@@ -490,6 +490,9 @@ public class Loon implements Platform {
 		}
 	}
 
+	@JSBody(script = "return (document.documentElement.currentStyle ? document.documentElement.currentStyle : window.getComputedStyle(document.documentElement)).fontFamily;")
+	public static native CSSStyleDeclaration getSystemFontJSNI();
+
 	@JSBody(params = "orientationEnumValue", script = "\r\n" + "		var screen = window.screen;\r\n"
 			+ "	screen.newLockOrientation = screen.lockOrientation\r\n"
 			+ "|| screen.mozLockOrientation || screen.msLockOrientation\r\n" + "|| screen.webkitLockOrientation;\r\n"
@@ -534,7 +537,7 @@ public class Loon implements Platform {
 	@JSBody(params = "msg", script = "if (typeof (window.alert) === \"function\") {\r\n"
 			+ "        window.alert.call(null, msg); \r\n" + "    }\r\n" + "    else {\r\n"
 			+ "        console.warn(\"alert is not a function\");\r\n" + "    };")
-	private native static void alert(String msg);
+	public native static void alert(String msg);
 
 	@JSBody(script = "window.close();")
 	private native static void closeImpl();
@@ -797,7 +800,7 @@ public class Loon implements Platform {
 				if (cancel != null)
 					result = Window.confirm(text);
 				else {
-					Window.alert(text);
+					Loon.alert(text);
 					result = true;
 				}
 				if (_game.input() instanceof TeaInputMake) {

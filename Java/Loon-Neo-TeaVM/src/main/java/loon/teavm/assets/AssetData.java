@@ -60,8 +60,11 @@ public class AssetData {
 	public HTMLImageElement getImageElement() {
 		if (imageElement == null) {
 			imageElement = (HTMLImageElement) TeaBase.get().getDocument().createElement("img");
-			final String base64 = "data:" + PathUtils.getExtension(path) + ";base64,"
-					+ new String(Base64Coder.encode(bytes));
+			String ext = PathUtils.getExtension(path);
+			if ("jpg".equals(ext)) {
+				ext = "jpeg";
+			}
+			final String base64 = "data:" + ext + ";base64," + new String(Base64Coder.encode(bytes));
 			imageElement.getStyle().setProperty("display", "none");
 			imageElement.setSrc(base64);
 		}

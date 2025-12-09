@@ -143,7 +143,7 @@ public class TeaGame extends LGame {
 			save = new TeaSave(this);
 		} catch (Throwable e) {
 			log.error("init()", e);
-			Window.alert("failed to init(): " + e.getMessage());
+			Loon.alert("failed to init(): " + e.getMessage());
 			throw new RuntimeException(e);
 		}
 		this.initProcess();

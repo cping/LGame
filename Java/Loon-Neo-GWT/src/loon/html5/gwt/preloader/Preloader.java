@@ -35,10 +35,14 @@ import loon.html5.gwt.GWTResources.FileType;
 import loon.html5.gwt.preloader.AssetFilter.AssetType;
 import loon.html5.gwt.preloader.IDownloader.AssetLoaderListener;
 import loon.utils.Array;
+import loon.utils.Base64Coder;
 import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
+import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.ImageElement;
 
 public class Preloader implements LRelease {
@@ -75,6 +79,10 @@ public class Preloader implements LRelease {
 
 	public static class PreloaderState {
 
+		protected boolean completed;
+
+		protected final Array<Asset> assets;
+
 		public PreloaderState(Array<Asset> assets) {
 			this.assets = assets;
 		}
@@ -102,11 +110,23 @@ public class Preloader implements LRelease {
 			return total == 0 ? 1 : (getDownloadedSize() / (float) total);
 		}
 
-		public boolean hasEnded() {
-			return getDownloadedSize() == getTotalSize();
+		public boolean isAllSucced() {
+			int count = 0;
+			for (int i = 0; i < assets.size(); i++) {
+				Asset asset = assets.get(i);
+				if (asset.succeed || asset.failed) {
+					count++;
+				}
+			}
+			return count >= assets.size();
 		}
 
-		public final Array<Asset> assets;
+		public boolean hasEnded() {
+			if (completed) {
+				return true;
+			}
+			return (completed = (isAllSucced() || (getDownloadedSize() >= getTotalSize())));
+		}
 
 	}
 
@@ -245,18 +265,41 @@ public class Preloader implements LRelease {
 	}
 
 	public InputStream read(String url) {
+		if (binaries.containsKey(url)) {
+			return binaries.get(url).read();
+		}
 		if (texts.containsKey(url)) {
 			try {
 				return new ByteArrayInputStream(texts.get(url).getBytes(LSystem.ENCODING));
 			} catch (UnsupportedEncodingException e) {
-				return null;
+				return new ByteArrayInputStream(new byte[1]);
 			}
 		}
 		if (images.containsKey(url)) {
-			return new ByteArrayInputStream(new byte[1]);
-		}
-		if (binaries.containsKey(url)) {
-			return binaries.get(url).read();
+			ImageElement img = images.get(url);
+			if (img == null) {
+				return new ByteArrayInputStream(new byte[1]);
+			}
+			CanvasElement canvas = img.getOwnerDocument().createCanvasElement();
+			canvas.setWidth(img.getWidth());
+			canvas.setHeight(img.getHeight());
+			Context2d ctx = canvas.getContext2d();
+			ctx.drawImage(img, 0, 0);
+			String ext = PathUtils.getExtension(url);
+			if ("jpg".equals(ext)) {
+				ext = "jpeg";
+			}
+			String result = canvas.toDataUrl("image/" + ext);
+			if (result == null) {
+				return new ByteArrayInputStream(new byte[1]);
+			} else {
+				result = PathUtils.getExtension(result, ",");
+				if (!StringUtils.isEmpty(result) && Base64Coder.isBase64(result)) {
+					return new ByteArrayInputStream(Base64Coder.decode(result));
+				} else {
+					return new ByteArrayInputStream(new byte[1]);
+				}
+			}
 		}
 		if (audio.containsKey(url)) {
 			return new ByteArrayInputStream(new byte[1]);

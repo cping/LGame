@@ -2840,6 +2840,24 @@ public final class LColor implements Serializable {
 		return v;
 	}
 
+	public static String toHexString(LColor color) {
+		if (color == null) {
+			return "#000000";
+		}
+		String red = CharUtils.componentToHex(color.getRed());
+		String green = CharUtils.componentToHex(color.getGreen());
+		String blue = CharUtils.componentToHex(color.getBlue());
+		String hexRepresentation = "#" + (red + green + blue);
+		if (color.a != 1f) {
+			hexRepresentation += CharUtils.componentToHex(color.getAlpha());
+		}
+		return hexRepresentation;
+	}
+
+	public String toHex() {
+		return toHexString(this);
+	}
+
 	public float getBrightness() {
 		int red = getRed();
 		int green = getGreen();

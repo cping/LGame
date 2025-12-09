@@ -204,7 +204,26 @@ public final class PathUtils {
 		if (index <= 0) {
 			return LSystem.EMPTY;
 		} else {
-			return filename.substring(index, filename.length());
+			return filename.substring(index, filename.length()).trim();
+		}
+	}
+
+	/**
+	 * 获得指定路径扩展名(指定标记后)
+	 * 
+	 * @param filename
+	 * @param flag
+	 * @return
+	 */
+	public static String getExtension(String filename, String flag) {
+		if (StringUtils.isEmpty(filename)) {
+			return LSystem.EMPTY;
+		}
+		int index = filename.lastIndexOf(flag) + 1;
+		if (index <= 0) {
+			return LSystem.EMPTY;
+		} else {
+			return filename.substring(index, filename.length()).trim();
 		}
 	}
 

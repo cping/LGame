@@ -53,6 +53,9 @@ public class CharUtils {
 		static final char[] TABLE = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
 				'e', 'f' };
 
+		static final char[] DIGITS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
+				'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
 		static final char[] ZERO_WIDTH_CHARS = new char[] { '\u200B', '\uFEFF', '\u200C', '\u200D' };
 	}
 
@@ -651,6 +654,53 @@ public class CharUtils {
 		} else {
 			return CharType.CharUnknown;
 		}
+	}
+
+	public static int numberOfLeadingZeros(int i) {
+		if (i <= 0) {
+			return i == 0 ? 32 : 0;
+		}
+		int n = 31;
+		if (i >= 1 << 16) {
+			n -= 16;
+			i >>>= 16;
+		}
+		if (i >= 1 << 8) {
+			n -= 8;
+			i >>>= 8;
+		}
+		if (i >= 1 << 4) {
+			n -= 4;
+			i >>>= 4;
+		}
+		if (i >= 1 << 2) {
+			n -= 2;
+			i >>>= 2;
+		}
+		return n - (i >>> 1);
+	}
+
+	private static void formatUnsignedInt(int val, int shift, byte[] buf, int len) {
+		int charPos = len;
+		int radix = 1 << shift;
+		int mask = radix - 1;
+		do {
+			buf[--charPos] = (byte) HexChars.DIGITS[val & mask];
+			val >>>= shift;
+		} while (charPos > 0);
+	}
+
+	public static String componentToHex(int v) {
+		return componentToHex(v, 4);
+	}
+
+	public static String componentToHex(int v, int shift) {
+		int mag = 32 - numberOfLeadingZeros(v);
+		int chars = Math.max(((mag + (shift - 1)) / shift), 1);
+		byte[] buf = new byte[chars];
+		formatUnsignedInt(v, shift, buf, chars);
+		final String hex = new String(buf);
+		return hex.length() == 1 ? '0' + hex : hex;
 	}
 
 	public static int hex2int(char c) {

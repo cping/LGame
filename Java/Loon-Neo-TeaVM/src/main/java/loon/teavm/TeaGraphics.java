@@ -376,7 +376,7 @@ public class TeaGraphics extends Graphics {
 				style.setProperty("fontFamily", PathUtils.getBaseFileName(fontName));
 			} else {
 				style.setProperty("fontFamily", "'" + TeaFont.getFontName(fontName) + "'"
-						+ ",'Microsoft YaHei','STHeiti','PingFang SC','WenQuanYi Micro Hei',monospace,sans-serif");
+						+ ",'SimHei','Microsoft YaHei','STHeiti','PingFang SC','WenQuanYi Micro Hei','Helvetica Neue',monospace,sans-serif");
 			}
 			measureElement.setInnerText(HEIGHT_TEXT);
 			switch (font.style) {
