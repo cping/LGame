@@ -25,7 +25,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import loon.Graphics;
-import loon.LGame;
 import loon.Platform.Orientation;
 import loon.canvas.Canvas;
 import loon.font.Font;
@@ -34,6 +33,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.Loon.OrientationChangedHandler;
 import loon.opengl.GL20;
@@ -80,7 +80,7 @@ public class GWTGraphics extends Graphics {
 	private static final String HEIGHT_TEXT = "THEQUICKBROWNFOXJUMPEDOVERTHELAZYDOGthequickbrownfoxjumpedoverthelazydog_-+!.,[]0123456789";
 	private static final String EMWIDTH_TEXT = "m";
 
-	public GWTGraphics(final Panel panel, final LGame game, final GWTSetting cfg) {
+	public GWTGraphics(final Panel panel, final GWTGame game, final GWTSetting cfg) {
 		super(game, new GWTGL20(), game.setting.scaling() ? Scale.ONE : new Scale(Loon.devicePixelRatio()));
 
 		this.config = cfg;
@@ -123,6 +123,15 @@ public class GWTGraphics extends Graphics {
 		}
 		initSize.setSize(config.getShowWidth(), config.getShowHeight());
 
+		Vector2f pos = GWTCanvasUtils.getPosition(rootElement);
+
+		if (pos.isEmpty()) {
+			float centerX = (getClientWidth() - initSize.getWidth()) / 2f;
+			float centerY = (getClientHeight() - initSize.getHeight()) / 2f;
+			GWTCanvasUtils.setPosition(rootElement, centerX, centerY);
+			game.setOffsetPos(centerX, centerY);
+		}
+
 		WebGLContextAttributes attrs = WebGLContextAttributes.create();
 		attrs.setAntialias(config.antiAliasing);
 		attrs.setStencil(config.stencil);
@@ -159,8 +168,8 @@ public class GWTGraphics extends Graphics {
 					if (clientWidth <= 0 || clientHeight <= 0) {
 						return;
 					}
-					final int maxWidth = MathUtils.max(clientWidth, Loon.self.getJSNIScreenWidth());
-					final int maxHeight = MathUtils.max(clientHeight, Loon.self.getJSNIScreenHeight());
+					final int maxWidth = MathUtils.max(clientWidth, Loon.getJSNIScreenWidth());
+					final int maxHeight = MathUtils.max(clientHeight, Loon.getJSNIScreenHeight());
 					if (config.fullscreen && width >= maxWidth && height >= maxHeight) {
 						return;
 					}
@@ -171,9 +180,8 @@ public class GWTGraphics extends Graphics {
 							setSize(clientWidth, clientHeight);
 						}
 						float experimentalScale = MathUtils.min(maxWidth / width, maxHeight / height);
-						rootElement.setAttribute("style",
-								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
-										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
+						setLocation(0f, 0f, (experimentalScale * width), (experimentalScale * height));
+						game.setOffsetPos(0f, 0f);
 						doc.getBody().addClassName("fullscreen");
 						graphicsFullSize = true;
 					} else if ((config.fullscreen && graphicsFullSize)
@@ -213,6 +221,24 @@ public class GWTGraphics extends Graphics {
 				game.shutdown();
 			}
 		});
+	}
+
+	protected void setLocation(float x, float y) {
+		if (rootElement != null) {
+			rootElement.setAttribute("style", "position:absolute; left:" + x + "px; top:" + y + "px");
+		} else if (canvas != null) {
+			canvas.setAttribute("style", "position:absolute; left:" + x + "px; top:" + y + "px");
+		}
+	}
+
+	protected void setLocation(float x, float y, float w, float h) {
+		if (rootElement != null) {
+			rootElement.setAttribute("style", "width:" + w + "px; " + "height:" + h + "px; "
+					+ "position:absolute; left:" + x + "px; top:" + y + "px");
+		} else if (canvas != null) {
+			canvas.setAttribute("style", "width:" + w + "px; " + "height:" + h + "px; " + "position:absolute; left:" + x
+					+ "px; top:" + y + "px");
+		}
 	}
 
 	public void restoreSize() {
@@ -296,41 +322,11 @@ public class GWTGraphics extends Graphics {
 	}
 
 	public int getClientWidth() {
-		int result = Window.getClientWidth();
-		if (result > 0) {
-			return result;
-		}
-		Document doc = Document.get();
-		if (doc == null) {
-			return Loon.self.getJSNIScreenWidth();
-		}
-		result = doc.getClientWidth();
-		if (result <= 0) {
-			result = doc.getBody().getClientWidth();
-		}
-		if (result <= 0) {
-			result = doc.getDocumentElement().getClientWidth();
-		}
-		return result;
+		return Loon.getClientWidth();
 	}
 
 	public int getClientHeight() {
-		int result = Window.getClientHeight();
-		if (result > 0) {
-			return result;
-		}
-		Document doc = Document.get();
-		if (doc == null) {
-			return Loon.self.getJSNIScreenHeight();
-		}
-		result = doc.getClientHeight();
-		if (result <= 0) {
-			result = doc.getBody().getClientHeight();
-		}
-		if (result <= 0) {
-			result = doc.getDocumentElement().getClientHeight();
-		}
-		return result;
+		return Loon.getClientHeight();
 	}
 
 	@Override
@@ -389,15 +385,15 @@ public class GWTGraphics extends Graphics {
 			}
 			style.setPaddingTop(0, Unit.PX);
 			style.setPaddingBottom(0, Unit.PX);
-			final float doubleSize = font.size * 2;
+			final float fixSize = font.size * 1.5f;
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);
 			float emwidth = measureElement.getOffsetWidth();
-			if (height >= doubleSize) {
-				height = (height - font.size);
+			for (; height >= fixSize;) {
+				height = MathUtils.ceil(height / 2);
 			}
-			if (emwidth >= doubleSize) {
-				emwidth = (emwidth - font.size);
+			for (; emwidth >= fixSize;) {
+				emwidth = MathUtils.ceil(emwidth / 2);
 			}
 			if (height <= 0) {
 				height = font.size + MathUtils.ifloor(font.size / 6);

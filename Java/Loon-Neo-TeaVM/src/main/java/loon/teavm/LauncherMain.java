@@ -25,9 +25,11 @@ import loon.Screen;
 import loon.Stage;
 import loon.LazyLoading.Data;
 import loon.canvas.LColor;
+import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LMessageBox;
 import loon.component.LSelect;
+import loon.component.LToast;
 import loon.events.ClickListener;
 import loon.teavm.TeaGame.TeaSetting;
 
@@ -58,6 +60,15 @@ public class LauncherMain {
 
 			add(box);
 			centerOn(box);
+
+			LClickButton click = LClickButton.make("DSDSDS");
+
+			click.setLocation(170, 200);
+			click.setToolTipText("DSDSDSFF");
+			click.up((x, y) -> {
+				add(LToast.makeText("AAAAAAAAAAAAAAAA"));
+			});
+			add(click);
 
 			box.S(new ClickListener() {
 
@@ -106,8 +117,7 @@ public class LauncherMain {
 		setting.height_zoom = 600;
 
 		setting.isFPS = true;
-		//setting.fontSizeClip = 3;
-		 setting.fontSize = 21;
+		// setting.fontSizeClip = 3;
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
 		// setting.fullscreen = true;

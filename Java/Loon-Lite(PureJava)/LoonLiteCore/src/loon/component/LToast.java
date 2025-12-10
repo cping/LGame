@@ -177,6 +177,9 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		if (this._cellHeight < 30) {
 			this._cellHeight = 30;
 		}
+		if (MathUtils.isOdd(_cellHeight)) {
+			_cellHeight += 1;
+		}
 		this._timer.setDelay(this._duration);
 		final float displayX = x + ((width / 2) - (_cellWidth / 2));
 		final float displayY = (y + ((height / 2) - (_cellHeight / 2))) - _toastFont.getHeight() / 2;
@@ -203,8 +206,8 @@ public class LToast extends LComponent implements FontSet<LToast> {
 			return;
 		}
 		final boolean cliped = g.isClip();
-		final int w = this.width();
-		final int h = this.height();
+		final int w = MathUtils.iceil(this.getWidth());
+		final int h = MathUtils.iceil(this.getHeight());
 		final int oc = g.color();
 		final float alpha = g.alpha();
 		try {

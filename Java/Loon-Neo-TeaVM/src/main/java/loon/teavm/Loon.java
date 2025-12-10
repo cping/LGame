@@ -45,6 +45,7 @@ import loon.events.Updateable;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
+import loon.geom.Vector2f;
 import loon.teavm.TeaGame.TeaSetting;
 import loon.teavm.assets.AssetDownloadImpl;
 import loon.teavm.assets.AssetDownloader;
@@ -168,6 +169,20 @@ public class Loon implements Platform {
 		_assetLoader = new AssetLoadImpl(_preloader, getBaseUrl(), this, _assetDownloader);
 		initHowlerScript();
 		_assetLoader.setupFileDrop(_mainCanvasElement, this);
+
+		HTMLElement rootElement = (HTMLElement) _mainCanvasElement.getParentNode();
+		if (rootElement == null) {
+			rootElement = TeaBase.get().getDocument().getDocumentElement();
+		}
+
+		Vector2f pos = TeaCanvasUtils.getPosition(rootElement);
+
+		if (pos.isEmpty()) {
+			TeaCanvasUtils.setPosition(rootElement, (getClientWidth() - _config.getShowWidth()) / 2f,
+					(getClientHeight() - _config.getShowHeight()) / 2f);
+		}
+
+		TeaCanvasUtils.setPosition(_mainCanvasElement, _currentHandlerId, _assetCount);
 		_assetLoader.preload(assetPath, new AssetLoaderListener<Void>() {
 			@Override
 			public void onSuccess(String url, Void result) {
@@ -203,6 +218,22 @@ public class Loon implements Platform {
 
 		});
 
+	}
+
+	public static int getClientWidth() {
+		int result = TeaBase.get().getClientWidth();
+		if (result > 0) {
+			return result;
+		}
+		return getScreenWidthJSNI();
+	}
+
+	public static int getClientHeight() {
+		int result = TeaBase.get().getClientHeight();
+		if (result > 0) {
+			return result;
+		}
+		return getScreenHeightJSNI();
 	}
 
 	public HTMLCanvasElement getMainCanvas() {
@@ -615,10 +646,10 @@ public class Loon implements Platform {
 	@JSBody(script = "return window.devicePixelRatio || 1;")
 	private native static int getNativeScreenDensityJSNI();
 
-	@JSBody(script = "return window.screen.width;")
+	@JSBody(script = "return window.screen.width || 0;")
 	public native static int getScreenWidthJSNI();
 
-	@JSBody(script = "return window.screen.height;")
+	@JSBody(script = "return window.screen.height || 0;")
 	public native static int getScreenHeightJSNI();
 
 	@JSBody(params = { "element", "fullscreenChanged" }, script = "" + "if (element.requestFullscreen) {\n"

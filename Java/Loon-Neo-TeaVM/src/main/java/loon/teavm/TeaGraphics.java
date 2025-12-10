@@ -35,7 +35,6 @@ import org.teavm.jso.dom.xml.Node;
 import org.teavm.jso.webgl.WebGLContextAttributes;
 
 import loon.Graphics;
-import loon.LGame;
 import loon.canvas.Canvas;
 import loon.font.Font;
 import loon.font.TextFormat;
@@ -43,6 +42,7 @@ import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.geom.RectBox;
+import loon.geom.Vector2f;
 import loon.opengl.GL20;
 import loon.opengl.TextureSource;
 import loon.teavm.TeaGame.TeaSetting;
@@ -74,7 +74,7 @@ public class TeaGraphics extends Graphics {
 	private static final String HEIGHT_TEXT = "THEQUICKBROWNFOXJUMPEDOVERTHELAZYDOGthequickbrownfoxjumpedoverthelazydog_-+!.,[]0123456789";
 	private static final String EMWIDTH_TEXT = "m";
 
-	public TeaGraphics(final Loon loon, final LGame game, final TeaSetting cfg) {
+	public TeaGraphics(final Loon loon, final TeaGame game, final TeaSetting cfg) {
 		super(game, new WebGL20(), game.setting.scaling() ? Scale.ONE : new Scale(TeaBase.get().getDevicePixelRatio()));
 		this.loonApp = loon;
 		this.config = cfg;
@@ -126,6 +126,15 @@ public class TeaGraphics extends Graphics {
 					config.height > 0 ? config.height : rootElement.getOffsetHeight());
 		}
 		initSize.setSize(config.getShowWidth(), config.getShowHeight());
+
+		Vector2f pos = TeaCanvasUtils.getPosition(rootElement);
+
+		if (pos.isEmpty()) {
+			float centerX = (getClientWidth() - initSize.getWidth()) / 2f;
+			float centerY = (getClientHeight() - initSize.getHeight()) / 2f;
+			TeaCanvasUtils.setPosition(rootElement, centerX, centerY);
+			game.setOffsetPos(centerX, centerY);
+		}
 
 		WebGLContextAttributesExt attrs = (WebGLContextAttributesExt) WebGLContextAttributes.create();
 		attrs.setAntialias(config.antiAliasing);
@@ -200,9 +209,9 @@ public class TeaGraphics extends Graphics {
 							setSize(clientWidth, clientHeight);
 						}
 						float experimentalScale = MathUtils.min(maxWidth / width, maxHeight / height);
-						rootElement.setAttribute("style",
-								"width:" + experimentalScale * width + "px; " + "height:" + experimentalScale * height
-										+ "px; " + "position:absolute; left:" + 0 + "px; top:" + 0 + "px");
+						TeaCanvasUtils.setPosition(rootElement, 0f, 0f, (experimentalScale * width),
+								(experimentalScale * height));
+						game.setOffsetPos(0f, 0f);
 						doc.getBody().setClassName("fullscreen");
 						graphicsFullSize = true;
 					} else if ((config.fullscreen && graphicsFullSize)
@@ -282,7 +291,6 @@ public class TeaGraphics extends Graphics {
 
 			});
 		}
-
 	}
 
 	public void restoreSize() {
@@ -324,19 +332,11 @@ public class TeaGraphics extends Graphics {
 	}
 
 	public int getClientWidth() {
-		int result = TeaBase.get().getClientWidth();
-		if (result > 0) {
-			return result;
-		}
-		return Loon.getScreenWidthJSNI();
+		return Loon.getClientWidth();
 	}
 
 	public int getClientHeight() {
-		int result = TeaBase.get().getClientHeight();
-		if (result > 0) {
-			return result;
-		}
-		return Loon.getScreenHeightJSNI();
+		return Loon.getClientHeight();
 	}
 
 	@Override
@@ -394,15 +394,15 @@ public class TeaGraphics extends Graphics {
 				break;
 			}
 			style.setProperty("padding", "0 0");
-			final float doubleSize = font.size * 2;
+			final float fixSize = font.size * 1.5f;
 			float height = measureElement.getOffsetHeight();
 			measureElement.setInnerText(EMWIDTH_TEXT);
 			float emwidth = measureElement.getOffsetWidth();
-			if (height >= doubleSize) {
-				height = (height - font.size);
+			for (; height >= fixSize;) {
+				height = MathUtils.ceil(height / 2);
 			}
-			if (emwidth >= doubleSize) {
-				emwidth = (emwidth - font.size);
+			for (; emwidth >= fixSize;) {
+				emwidth = MathUtils.ceil(emwidth / 2);
 			}
 			if (height <= 0) {
 				height = font.size + MathUtils.ifloor(font.size / 6);

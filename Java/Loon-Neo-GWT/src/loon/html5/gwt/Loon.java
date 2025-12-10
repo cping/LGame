@@ -30,6 +30,7 @@ import loon.Platform;
 import loon.events.KeyMake;
 import loon.events.SysInput;
 import loon.events.Updateable;
+import loon.geom.Vector2f;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;
 import loon.html5.gwt.soundmanager2.SoundManager;
@@ -173,7 +174,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		}
 		this.setting = config;
 		// gwt中提供的AnimationScheduler默认不能设置间隔，所以转个能设置的默认（走setTimeout）
-		if (config.fps != 60 && config.repaint == Repaint.AnimationScheduler) {
+		if (config.fps < 60 && config.repaint == Repaint.AnimationScheduler) {
 			config.repaint = Repaint.RequestAnimationFrame;
 		}
 		this.progress = config.progress;
@@ -197,22 +198,29 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		Element element = Document.get().getElementById(config.rootId);
 		if (element == null) {
 			VerticalPanel panel = new VerticalPanel();
-			panel.setWidth("" + config.width + "px");
-			panel.setHeight("" + config.height + "px");
+			panel.setWidth(config.getShowWidth() + "px");
+			panel.setHeight(config.getShowHeight() + "px");
 			panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 			RootPanel.get().add(panel);
-			RootPanel.get().setWidth("" + config.width + "px");
-			RootPanel.get().setHeight("" + config.height + "px");
+			RootPanel.get().setWidth(config.getShowWidth() + "px");
+			RootPanel.get().setHeight(config.getShowHeight() + "px");
 			this.root = panel;
 		} else {
 			VerticalPanel panel = new VerticalPanel();
-			panel.setWidth("" + config.width + "px");
-			panel.setHeight("" + config.height + "px");
+			panel.setWidth(config.getShowWidth() + "px");
+			panel.setHeight(config.getShowHeight() + "px");
 			panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 			panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
 			element.appendChild(panel.getElement());
 			this.root = panel;
+		}
+
+		Vector2f pos = GWTCanvasUtils.getPosition(root.getElement());
+
+		if (pos.isEmpty()) {
+			GWTCanvasUtils.setPosition(root.getElement(), (getClientWidth() - config.getShowWidth()) / 2f,
+					(getClientHeight() - config.getShowHeight()) / 2f);
 		}
 
 		SoundManager.init(GWT.getModuleBaseURL(), 9, config.preferFlash, new SoundManager.SoundManagerCallback() {
@@ -412,6 +420,44 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return game;
 	}
 
+	public static int getClientWidth() {
+		int result = Window.getClientWidth();
+		if (result > 0) {
+			return result;
+		}
+		Document doc = Document.get();
+		if (doc == null) {
+			return getJSNIScreenWidth();
+		}
+		result = doc.getClientWidth();
+		if (result <= 0) {
+			result = doc.getBody().getClientWidth();
+		}
+		if (result <= 0) {
+			result = doc.getDocumentElement().getClientWidth();
+		}
+		return result;
+	}
+
+	public static int getClientHeight() {
+		int result = Window.getClientHeight();
+		if (result > 0) {
+			return result;
+		}
+		Document doc = Document.get();
+		if (doc == null) {
+			return getJSNIScreenHeight();
+		}
+		result = doc.getClientHeight();
+		if (result <= 0) {
+			result = doc.getBody().getClientHeight();
+		}
+		if (result <= 0) {
+			result = doc.getDocumentElement().getClientHeight();
+		}
+		return result;
+	}
+
 	@Override
 	public void close() {
 		closeImpl();
@@ -422,7 +468,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		$wnd.close();
 	}-*/;
 
-	public native static void consoleLog(String message) /*-{
+	public native static void consoleLog(String msg) /*-{
 		if ($wnd.console) {
 			$wnd.console.log(msg);
 		} else {
@@ -565,7 +611,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * 
 	 * @return
 	 */
-	protected native int getJSNIScreenWidth() /*-{
+	protected native static int getJSNIScreenWidth() /*-{
 		return $wnd.screen.width || 0;
 	}-*/;
 
@@ -574,7 +620,7 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	 * 
 	 * @return
 	 */
-	protected native int getJSNIScreenHeight() /*-{
+	protected native static int getJSNIScreenHeight() /*-{
 		return $wnd.screen.height || 0;
 	}-*/;
 

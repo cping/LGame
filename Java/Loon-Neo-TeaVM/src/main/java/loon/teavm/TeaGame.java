@@ -32,6 +32,7 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
 import loon.Support;
+import loon.geom.Vector2f;
 import loon.jni.NativeSupport;
 import loon.teavm.Loon.OrientationLockType;
 
@@ -100,6 +101,8 @@ public class TeaGame extends LGame {
 	private final TeaSave save;
 	private final TeaClipboard clipboard;
 
+	private final Vector2f offsetPos = new Vector2f();
+
 	private final Loon loonApp;
 
 	private boolean _initTea = false;
@@ -147,6 +150,15 @@ public class TeaGame extends LGame {
 			throw new RuntimeException(e);
 		}
 		this.initProcess();
+	}
+
+	public Vector2f getOffsetPos() {
+		return offsetPos;
+	}
+
+	public TeaGame setOffsetPos(float x, float y) {
+		offsetPos.set(x, y);
+		return this;
 	}
 
 	public TeaSetting getSetting() {

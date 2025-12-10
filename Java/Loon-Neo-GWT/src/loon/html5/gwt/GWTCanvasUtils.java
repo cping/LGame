@@ -1,13 +1,17 @@
 package loon.html5.gwt;
 
 import loon.geom.RectI;
+import loon.geom.Vector2f;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 import com.google.gwt.canvas.client.Canvas;
 import com.google.gwt.canvas.dom.client.Context2d;
 import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.dom.client.CanvasElement;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style;
 
 public class GWTCanvasUtils {
 
@@ -43,6 +47,46 @@ public class GWTCanvasUtils {
 			canvas.setHeight(h + "px");
 		}
 		return canvas;
+	}
+
+	public static void setPosition(Element root, float x, float y) {
+		if (root != null) {
+			root.setAttribute("style", "position:absolute; left:" + x + "px; top:" + y + "px");
+		}
+	}
+
+	public static void setPosition(Element root, float x, float y, float w, float h) {
+		if (root != null) {
+			root.setAttribute("style", "width:" + w + "px; " + "height:" + h + "px; " + "position:absolute; left:" + x
+					+ "px; top:" + y + "px");
+		}
+	}
+
+	public static Vector2f getStylePosition(Element el) {
+		if (el != null) {
+			Style style = el.getStyle();
+			String left = style.getProperty("left");
+			String top = style.getProperty("top");
+			if (StringUtils.isEmpty(left)) {
+				left = "0";
+			}
+			if (StringUtils.isEmpty(top)) {
+				top = "0";
+			}
+			return Vector2f.at(
+					Float.parseFloat(left.replace("em", "").replace("px", "").replace("pt", "").replace("cm", "")
+							.replace("in", "").replace("%", "")),
+					Float.parseFloat(top.replace("em", "").replace("px", "").replace("pt", "").replace("cm", "")
+							.replace("in", "").replace("%", "")));
+		}
+		return Vector2f.ZERO();
+	}
+
+	public static Vector2f getPosition(Element el) {
+		if (el != null) {
+			return Vector2f.at(el.getAbsoluteLeft(), el.getAbsoluteTop());
+		}
+		return Vector2f.ZERO();
 	}
 
 	public static Canvas createCanvas(int w, int h) {

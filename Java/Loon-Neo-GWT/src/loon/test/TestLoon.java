@@ -4,9 +4,11 @@ import loon.LTexture;
 import loon.Screen;
 import loon.Stage;
 import loon.canvas.LColor;
+import loon.component.LClickButton;
 import loon.component.LComponent;
 import loon.component.LMessageBox;
 import loon.component.LSelect;
+import loon.component.LToast;
 import loon.events.ClickListener;
 import loon.html5.gwt.GWTGame.GWTSetting;
 import loon.html5.gwt.GWTGame.Repaint;
@@ -20,6 +22,7 @@ public class TestLoon extends Loon {
 		public void create() {
 
 			setBackground(LColor.red);
+			
 			LSelect select = new LSelect(120, 100, 200, 250);
 
 			select.setMessage(new String[] { "ABDFDFD", "B", "C", "D" });
@@ -40,6 +43,14 @@ public class TestLoon extends Loon {
 			add(box);
 			centerOn(box);
 
+			LClickButton click = LClickButton.make("DSDSDS");
+
+			click.setLocation(170, 200);
+			click.setToolTipText("DSDSDSFF");
+			click.up((x, y) -> {
+				add(LToast.makeText("AAAAAAAAAAAAAAAA"));
+			});
+			add(click);
 			box.S(new ClickListener() {
 
 				@Override
@@ -63,6 +74,7 @@ public class TestLoon extends Loon {
 
 				}
 			});
+
 		}
 
 	}
@@ -99,7 +111,7 @@ public class TestLoon extends Loon {
 
 			@Override
 			public Screen onScreen() {
-				return new TitleScreen();
+				return new TestScreen();
 			}
 		});
 

@@ -25,6 +25,7 @@ import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
 import loon.Support;
+import loon.geom.Vector2f;
 import loon.html5.gwt.Loon.OrientationLockType;
 import loon.html5.gwt.preloader.LocalAssetResources;
 import loon.jni.NativeSupport;
@@ -190,6 +191,8 @@ public final class GWTGame extends LGame {
 	private final GWTSave save;
 	private final GWTClipboard clipboard;
 
+	private final Vector2f offsetPos = new Vector2f();
+
 	private final Loon game;
 
 	private boolean initGwt = false;
@@ -243,6 +246,15 @@ public final class GWTGame extends LGame {
 		this.initProcess();
 	}
 
+	public Vector2f getOffsetPos() {
+		return offsetPos;
+	}
+
+	public GWTGame setOffsetPos(float x, float y) {
+		offsetPos.set(x, y);
+		return this;
+	}
+
 	private void init() {
 		if (!initGwt) {
 			if (game != null) {
@@ -269,21 +281,22 @@ public final class GWTGame extends LGame {
 			});
 			break;
 		case AnimationScheduler:
-			AnimationScheduler.get().requestAnimationFrame(new AnimationCallback() {
+			final AnimationScheduler scheduler = AnimationScheduler.get();
+			scheduler.requestAnimationFrame(new AnimationCallback() {
 
 				@Override
 				public void execute(double timestamp) {
 					emitFrame();
-					AnimationScheduler.get().requestAnimationFrame(this, graphics.canvas);
+					scheduler.requestAnimationFrame(this, graphics.canvas);
 				}
 			}, graphics.canvas);
 			break;
 		case Schedule:
+			final Duration duration = new Duration();
 			final int framed = (int) ((1f / game.setting.fps) * 1000f);
 			new Timer() {
 				@Override
 				public void run() {
-					Duration duration = new Duration();
 					emitFrame();
 					this.schedule(Math.max(MIN_DELAY, framed - duration.elapsedMillis()));
 

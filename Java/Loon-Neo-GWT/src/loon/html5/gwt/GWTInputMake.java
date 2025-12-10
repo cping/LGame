@@ -33,16 +33,18 @@ import loon.jni.EventHandler;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsArray;
+import com.google.gwt.dom.client.CanvasElement;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.dom.client.Touch;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
 
 public class GWTInputMake extends InputMake {
 
 	private final GWTGame game;
-	private final Element rootElement;
+	private final CanvasElement rootElement;
 
 	private final Vector2f lastMousePt = new Vector2f();
 
@@ -61,212 +63,216 @@ public class GWTInputMake extends InputMake {
 		return touchDY;
 	}
 
-	public GWTInputMake(GWTGame gwtgame, Element root) {
+	public GWTInputMake(GWTGame gwtgame, CanvasElement root) {
 
 		this.game = gwtgame;
 		this.rootElement = root;
 
-		capturePageEvent("keydown", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				int key = keyForCode(nevent.getKeyCode());
-				char ch = (char) nevent.getCharCode();
-				switch (key) {
-				case SysKey.DEL:
-					ch = 8;
-					break;
-				case SysKey.FORWARD_DEL:
-					ch = 127;
-					break;
+		if (rootElement != null) {
+			rootElement.focus();
+			capturePageEvent("keydown", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					int key = keyForCode(nevent.getKeyCode());
+					char ch = (char) nevent.getCharCode();
+					switch (key) {
+					case SysKey.DEL:
+						ch = 8;
+						break;
+					case SysKey.FORWARD_DEL:
+						ch = 127;
+						break;
+					}
+					if (key == SysKey.DEL || key == SysKey.FORWARD_DEL) {
+						nevent.preventDefault();
+					}
+					dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
+					if (key == SysKey.TAB) {
+						nevent.preventDefault();
+						nevent.stopPropagation();
+					}
 				}
-				if (key == SysKey.DEL || key == SysKey.FORWARD_DEL) {
-					nevent.preventDefault();
+			});
+			capturePageEvent("keypress", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					int key = keyForCode(nevent.getKeyCode());
+					char ch = (char) nevent.getCharCode();
+					dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
+					if (ch == '\t') {
+						nevent.preventDefault();
+						nevent.stopPropagation();
+					}
 				}
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
-				if (key == SysKey.TAB) {
-					nevent.preventDefault();
-					nevent.stopPropagation();
+			});
+			capturePageEvent("keyup", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					int key = keyForCode(nevent.getKeyCode());
+					char ch = (char) nevent.getCharCode();
+					dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), nevent);
+					if (key == SysKey.TAB) {
+						nevent.preventDefault();
+						nevent.stopPropagation();
+					}
 				}
+			});
+
+			abstract class XYEventHandler implements EventHandler {
+				public void handleEvent(NativeEvent ev) {
+					handleEvent(ev, getRelativeX(ev, rootElement), getRelativeY(ev, rootElement));
+				}
+
+				public abstract void handleEvent(NativeEvent ev, float x, float y);
 			}
-		});
-		capturePageEvent("keypress", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				int key = keyForCode(nevent.getKeyCode());
-				char ch = (char) nevent.getCharCode();
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, true), nevent);
-				if (ch == '\t') {
-					nevent.preventDefault();
-					nevent.stopPropagation();
-				}
-			}
-		});
-		capturePageEvent("keyup", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				int key = keyForCode(nevent.getKeyCode());
-				char ch = (char) nevent.getCharCode();
-				dispatch(new KeyMake.KeyEvent(0, game.time(), ch, key, false), nevent);
-				if (key == SysKey.TAB) {
-					nevent.preventDefault();
-					nevent.stopPropagation();
-				}
-			}
-		});
 
-		abstract class XYEventHandler implements EventHandler {
-			public void handleEvent(NativeEvent ev) {
-				handleEvent(ev, getRelativeX(ev, rootElement), getRelativeY(ev, rootElement));
-			}
+			abstract class MoveEventHandler extends XYEventHandler {
 
-			public abstract void handleEvent(NativeEvent ev, float x, float y);
-		}
+				private float lastX = -1, lastY = -1;
 
-		abstract class MoveEventHandler extends XYEventHandler {
+				@Override
+				public void handleEvent(NativeEvent ev, float x, float y) {
+					if (lastX == -1) {
+						lastX = x;
+						lastY = y;
+					}
 
-			private float lastX = -1, lastY = -1;
+					if (inDragSequence == wantDragSequence()) {
+						if (isMouseLocked()) {
+							Vector2f pos = game.getOffsetPos();
+							touchDX = getMovementX(ev) - pos.x;
+							touchDY = getMovementY(ev) - pos.y;
+						} else {
+							touchDX = x - lastX;
+							touchDY = y - lastY;
+						}
+					}
 
-			@Override
-			public void handleEvent(NativeEvent ev, float x, float y) {
-				if (lastX == -1) {
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), ev);
+
 					lastX = x;
 					lastY = y;
+					lastMousePt.set(x, y);
 				}
 
-				if (inDragSequence == wantDragSequence()) {
-					if (isMouseLocked()) {
-						touchDX = getMovementX(ev);
-						touchDY = getMovementY(ev);
-					} else {
-						touchDX = x - lastX;
-						touchDY = y - lastY;
-					}
+				protected abstract boolean wantDragSequence();
+			}
+
+			addEventListener(Document.get(), "contextmenu", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent evt) {
+					evt.preventDefault();
+					evt.stopPropagation();
 				}
+			}, false);
 
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), ev);
+			final XYEventHandler mouseDown = new XYEventHandler() {
 
-				lastX = x;
-				lastY = y;
-				lastMousePt.set(x, y);
-			}
-
-			protected abstract boolean wantDragSequence();
-		}
-
-		addEventListener(Document.get(), "contextmenu", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent evt) {
-				evt.preventDefault();
-				evt.stopPropagation();
-			}
-		}, false);
-
-		final XYEventHandler mouseDown = new XYEventHandler() {
-
-			@Override
-			public void handleEvent(NativeEvent ev, float x, float y) {
-				rootElement.focus();
-				inDragSequence = true;
-				int btn = getMouseButton(ev);
-				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), ev);
-				}
-				ev.preventDefault();
-				ev.stopPropagation();
-			}
-		};
-		captureEvent(rootElement, "mousedown", mouseDown);
-		capturePageEvent("mousedown", mouseDown);
-
-		final XYEventHandler mouseUp = new XYEventHandler() {
-
-			@Override
-			public void handleEvent(NativeEvent ev, float x, float y) {
-				if (inDragSequence) {
-					inDragSequence = false;
+				@Override
+				public void handleEvent(NativeEvent ev, float x, float y) {
+					rootElement.focus();
+					inDragSequence = true;
 					int btn = getMouseButton(ev);
 					if (btn != -1) {
-						dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, false), ev);
+						dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), ev);
 					}
+					ev.preventDefault();
+					ev.stopPropagation();
 				}
-				handleRequestsInUserEventContext();
-			}
-		};
-		captureEvent(rootElement, "mouseup", mouseUp);
-		capturePageEvent("mouseup", mouseUp);
+			};
+			captureEvent(rootElement, "mousedown", mouseDown);
+			capturePageEvent("mousedown", mouseDown);
 
-		capturePageEvent("mousemove", new MoveEventHandler() {
-			@Override
-			protected boolean wantDragSequence() {
-				return true;
-			}
-		});
-		captureEvent(rootElement, "mousemove", new MoveEventHandler() {
-			@Override
-			protected boolean wantDragSequence() {
-				return false;
-			}
-		});
+			final XYEventHandler mouseUp = new XYEventHandler() {
 
-		captureEvent(rootElement, getMouseWheelEvent(), new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent ev) {
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(), true),
-						ev);
-			}
-		});
-		capturePageEvent("wheel", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent ev) {
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(), true),
-						ev);
-			}
-		});
-
-		captureEvent(rootElement, "touchstart", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				inTouchSequence = true;
-				dispatch(toTouchEvents(TouchMake.Event.Kind.START, nevent), nevent);
-				nevent.preventDefault();
-			}
-		});
-
-		captureEvent(rootElement, "touchmove", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				if (inTouchSequence) {
-					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, nevent), nevent);
-				}
-				nevent.preventDefault();
-			}
-		});
-
-		captureEvent(rootElement, "touchend", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				if (inTouchSequence) {
-					dispatch(toTouchEvents(TouchMake.Event.Kind.END, nevent), nevent);
-					if (nevent.getTouches().length() == 0) {
-						inTouchSequence = false;
+				@Override
+				public void handleEvent(NativeEvent ev, float x, float y) {
+					if (inDragSequence) {
+						inDragSequence = false;
+						int btn = getMouseButton(ev);
+						if (btn != -1) {
+							dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, false), ev);
+						}
 					}
+					handleRequestsInUserEventContext();
 				}
-				nevent.preventDefault();
-			}
-		});
+			};
+			captureEvent(rootElement, "mouseup", mouseUp);
+			capturePageEvent("mouseup", mouseUp);
 
-		captureEvent(rootElement, "touchcancel", new EventHandler() {
-			@Override
-			public void handleEvent(NativeEvent nevent) {
-				if (inTouchSequence) {
-					dispatch(toTouchEvents(TouchMake.Event.Kind.CANCEL, nevent), nevent);
-					if (nevent.getTouches().length() == 0) {
-						inTouchSequence = false;
-					}
+			capturePageEvent("mousemove", new MoveEventHandler() {
+				@Override
+				protected boolean wantDragSequence() {
+					return true;
 				}
-				nevent.preventDefault();
-			}
-		});
+			});
+			captureEvent(rootElement, "mousemove", new MoveEventHandler() {
+				@Override
+				protected boolean wantDragSequence() {
+					return false;
+				}
+			});
+
+			captureEvent(rootElement, getMouseWheelEvent(), new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent ev) {
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(),
+							true), ev);
+				}
+			});
+			capturePageEvent("wheel", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent ev) {
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, ev.getButton(),
+							true), ev);
+				}
+			});
+
+			captureEvent(rootElement, "touchstart", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					inTouchSequence = true;
+					dispatch(toTouchEvents(TouchMake.Event.Kind.START, nevent), nevent);
+					nevent.preventDefault();
+				}
+			});
+
+			captureEvent(rootElement, "touchmove", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					if (inTouchSequence) {
+						dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, nevent), nevent);
+					}
+					nevent.preventDefault();
+				}
+			});
+
+			captureEvent(rootElement, "touchend", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					if (inTouchSequence) {
+						dispatch(toTouchEvents(TouchMake.Event.Kind.END, nevent), nevent);
+						if (nevent.getTouches().length() == 0) {
+							inTouchSequence = false;
+						}
+					}
+					nevent.preventDefault();
+				}
+			});
+
+			captureEvent(rootElement, "touchcancel", new EventHandler() {
+				@Override
+				public void handleEvent(NativeEvent nevent) {
+					if (inTouchSequence) {
+						dispatch(toTouchEvents(TouchMake.Event.Kind.CANCEL, nevent), nevent);
+						if (nevent.getTouches().length() == 0) {
+							inTouchSequence = false;
+						}
+					}
+					nevent.preventDefault();
+				}
+			});
+		}
 	}
 
 	@Override
@@ -369,14 +375,42 @@ public class GWTInputMake extends InputMake {
 		return addEventListener(target, name, handler, true);
 	}
 
-	static float getRelativeX(NativeEvent e, Element target) {
-		return (e.getClientX() - target.getAbsoluteLeft() + target.getScrollLeft()
-				+ target.getOwnerDocument().getScrollLeft());
+	private int getRelativeX(Touch touch, CanvasElement target) {
+		float xScaleRatio = target.getWidth() * 1f / target.getClientWidth();
+		return Math.round(xScaleRatio * touch.getRelativeX(target)) - game.getOffsetPos().x();
 	}
 
-	static float getRelativeY(NativeEvent e, Element target) {
-		return (e.getClientY() - target.getAbsoluteTop() + target.getScrollTop()
-				+ target.getOwnerDocument().getScrollTop());
+	private int getRelativeY(Touch touch, CanvasElement target) {
+		float yScaleRatio = target.getHeight() * 1f / target.getClientHeight();
+		return Math.round(yScaleRatio * touch.getRelativeY(target)) - game.getOffsetPos().y();
+	}
+
+	private int getRelativeX(NativeEvent e, CanvasElement target) {
+		float xScaleRatio = target.getWidth() * 1f / target.getClientWidth();
+		return Math.round(xScaleRatio * (getClientX(e) - target.getAbsoluteLeft() + target.getScrollLeft()
+				+ target.getOwnerDocument().getScrollLeft())) - game.getOffsetPos().x();
+	}
+
+	private int getRelativeY(NativeEvent e, CanvasElement target) {
+		float yScaleRatio = target.getHeight() * 1f / target.getClientHeight();
+		return Math.round(yScaleRatio * (getClientY(e) - target.getAbsoluteTop() + target.getScrollTop()
+				+ target.getOwnerDocument().getScrollTop())) - game.getOffsetPos().y();
+	}
+
+	private static int getClientX(NativeEvent e) {
+		int moveX = e.getClientX();
+		if (moveX == 0) {
+			moveX = getMovementX(e);
+		}
+		return moveX;
+	}
+
+	private static int getClientY(NativeEvent e) {
+		int moveY = e.getClientY();
+		if (moveY == 0) {
+			moveY = getMovementY(e);
+		}
+		return moveY;
 	}
 
 	void handleRequestsInUserEventContext() {
@@ -422,15 +456,15 @@ public class GWTInputMake extends InputMake {
 		}
 	}
 
-	private native int getMovementX(NativeEvent nevent) /*-{
-		return nevent.webkitMovementX;
+	private static native int getMovementX(NativeEvent nevent) /*-{
+		return nevent.movementX || nevent.webkitMovementX || 0;
 	}-*/;
 
-	private native int getMovementY(NativeEvent nevent) /*-{
-		return nevent.webkitMovementY;
+	private static native int getMovementY(NativeEvent nevent) /*-{
+		return nevent.movementY || nevent.webkitMovementY || 0;
 	}-*/;
 
-	native void requestMouseLockImpl(Element element) /*-{
+	private static native void requestMouseLockImpl(Element element) /*-{
 		element.requestPointerLock = (element.requestPointerLock
 				|| element.webkitRequestPointerLock || element.mozRequestPointerLock);
 		if (element.requestPointerLock)
@@ -502,8 +536,8 @@ public class GWTInputMake extends InputMake {
 		double time = game.time();
 		for (int t = 0; t < nativeTouchesLen; t++) {
 			com.google.gwt.dom.client.Touch touch = nativeTouches.get(t);
-			float x = touch.getRelativeX(rootElement);
-			float y = touch.getRelativeY(rootElement);
+			float x = getRelativeX(touch, rootElement);
+			float y = getRelativeY(touch, rootElement);
 			int id = getTouchIdentifier(nevent, t);
 			touches[t] = new TouchMake.Event(0, time, x, y, kind, id);
 		}

@@ -556,7 +556,6 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 
 	protected static int getMouseButton(MouseEvent evt) {
 		return getButton(evt.getButton());
-
 	}
 
 	public static int getButton(int button) {
@@ -590,21 +589,29 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	public TeaInputMake(TeaGame gwtgame, HTMLCanvasElement root) {
 		this.game = gwtgame;
 		this.rootElement = root;
-		HTMLDocument document = root.getOwnerDocument();
-		document.addEventListener("mousedown", this, false);
-		document.addEventListener("mouseup", this, false);
-		document.addEventListener("mousemove", this, false);
-		document.addEventListener("wheel", this, false);
+		if (rootElement != null) {
+			rootElement.focus();
+			HTMLDocument document = rootElement.getOwnerDocument();
+			if (document != null) {
+				document.addEventListener("mousedown", this, false);
+				document.addEventListener("mouseup", this, false);
+				document.addEventListener("mousemove", this, false);
+				document.addEventListener("wheel", this, false);
 
-		document.addEventListener("keydown", this, false);
-		document.addEventListener("keyup", this, false);
-		document.addEventListener("keypress", this, false);
+				document.addEventListener("keydown", this, false);
+				document.addEventListener("keyup", this, false);
+				document.addEventListener("keypress", this, false);
+			}
+			rootElement.addEventListener("mousedown", this, false);
+			rootElement.addEventListener("mouseup", this, false);
+			rootElement.addEventListener("mousemove", this, false);
+			rootElement.addEventListener("wheel", this, false);
 
-		root.addEventListener("touchstart", this, true);
-		root.addEventListener("touchmove", this, true);
-		root.addEventListener("touchcancel", this, true);
-		root.addEventListener("touchend", this, true);
-
+			rootElement.addEventListener("touchstart", this, true);
+			rootElement.addEventListener("touchmove", this, true);
+			rootElement.addEventListener("touchcancel", this, true);
+			rootElement.addEventListener("touchend", this, true);
+		}
 	}
 
 	public boolean isCatchKey(int keycode) {
@@ -636,8 +643,10 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	}
 
 	private void handleMouseEvents(Event e) {
-		String type = e.getType();
-
+		if (e == null) {
+			return;
+		}
+		final String type = e.getType().toLowerCase();
 		if (type.equals("contextmenu")) {
 			e.preventDefault();
 			e.stopPropagation();
@@ -687,8 +696,9 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			}
 			if (inDragSequence) {
 				if (isMouseLocked()) {
-					touchDX = (float) mouseEvent.getMovementX();
-					touchDY = (float) mouseEvent.getMovementY();
+					Vector2f pos = game.getOffsetPos();
+					touchDX = (float) mouseEvent.getMovementX() - pos.x;
+					touchDY = (float) mouseEvent.getMovementY() - pos.y;
 				} else {
 					touchDX = x - lastX;
 					touchDY = y - lastY;
@@ -851,10 +861,58 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		return element;
 	}
 
+	protected int getRelativeX(Touch touch, HTMLCanvasElement target) {
+		return Math.round(getRelativeX(target, touch));
+	}
+
+	protected int getRelativeY(Touch touch, HTMLCanvasElement target) {
+		return Math.round(getRelativeY(target, touch));
+	}
+
+	private int getRelativeX(HTMLCanvasElement target, Touch touch) {
+		float xScaleRatio = target.getWidth() * 1f / getClientWidth(target);
+		return Math.round((int) (xScaleRatio * (touch.getClientX() - getAbsoluteLeft(target) + getScrollLeft(target)
+				+ getScrollLeft(target.getOwnerDocument())))) - game.getOffsetPos().x();
+	}
+
+	private int getRelativeY(HTMLCanvasElement target, Touch touch) {
+		float yScaleRatio = target.getHeight() * 1f / getClientHeight(target);
+		return Math.round((int) (yScaleRatio * (touch.getClientY() - getAbsoluteTop(target) + getScrollTop(target)
+				+ getScrollTop(target.getOwnerDocument())))) - game.getOffsetPos().y();
+	}
+
+	protected int getRelativeX(MouseEvent e, HTMLCanvasElement target) {
+		float xScaleRatio = target.getWidth() * 1f / getClientWidth(target);
+		return Math.round(xScaleRatio * (getClientX(e) - getAbsoluteLeft(target) + getScrollLeft(target)
+				+ getScrollLeft(target.getOwnerDocument()))) - game.getOffsetPos().x();
+	}
+
+	protected int getRelativeY(MouseEvent e, HTMLCanvasElement target) {
+		float yScaleRatio = target.getHeight() * 1f / getClientHeight(target);
+		return Math.round(yScaleRatio * (getClientY(e) - getAbsoluteTop(target) + getScrollTop(target)
+				+ getScrollTop(target.getOwnerDocument()))) - game.getOffsetPos().y();
+	}
+
+	private static int getClientX(MouseEvent e) {
+		double moveX = e.getClientX();
+		if (moveX == 0) {
+			moveX = e.getMovementX();
+		}
+		return (int) Math.round(moveX);
+	}
+
+	private static int getClientY(MouseEvent e) {
+		double moveY = e.getClientY();
+		if (moveY == 0) {
+			moveY = e.getMovementY();
+		}
+		return (int) Math.round(moveY);
+	}
+
 	private int getScrollTop(Element target) {
 		ElementExt elem = (ElementExt) target;
 		int val = elem.getScrollTop();
-		return (int) val;
+		return toInt32(val);
 	}
 
 	private int getScrollTop(HTMLDocument target) {
@@ -865,7 +923,7 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 	private int getScrollLeft(Element target) {
 		ElementExt elem = (ElementExt) target;
 		int val = elem.getScrollLeft();
-		return (int) val;
+		return toInt32(val);
 	}
 
 	private int getScrollLeft(HTMLDocument target) {
@@ -873,36 +931,16 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		return getScrollLeft(element);
 	}
 
-	private int getRelativeX(HTMLCanvasElement target, Touch touch) {
-		return (int) (touch.getClientX() - getAbsoluteLeft(target) + getScrollLeft(target)
-				+ getScrollLeft(target.getOwnerDocument()));
+	private int getClientWidth(HTMLCanvasElement target) {
+		return target.getClientWidth();
 	}
 
-	private int getRelativeY(HTMLCanvasElement target, Touch touch) {
-		return (int) (touch.getClientY() - getAbsoluteTop(target) + getScrollTop(target)
-				+ getScrollTop(target.getOwnerDocument()));
-	}
-
-	protected int getRelativeX(MouseEvent e, HTMLCanvasElement target) {
-		return Math.round((e.getClientX() - getAbsoluteLeft(target) + getScrollLeft(target)
-				+ getScrollLeft(target.getOwnerDocument())));
-	}
-
-	protected int getRelativeY(MouseEvent e, HTMLCanvasElement target) {
-		return Math.round((e.getClientY() - getAbsoluteTop(target) + getScrollTop(target)
-				+ getScrollTop(target.getOwnerDocument())));
-	}
-
-	protected int getRelativeX(Touch touch, HTMLCanvasElement target) {
-		return Math.round(getRelativeX(target, touch));
-	}
-
-	protected int getRelativeY(Touch touch, HTMLCanvasElement target) {
-		return Math.round(getRelativeY(target, touch));
+	private int getClientHeight(HTMLCanvasElement target) {
+		return target.getClientHeight();
 	}
 
 	private int getAbsoluteTop(HTMLCanvasElement target) {
-		return (int) getSubPixelAbsoluteTop(target);
+		return toInt32(getSubPixelAbsoluteTop(target));
 	}
 
 	private double getSubPixelAbsoluteTop(HTMLElement elem) {
@@ -912,15 +950,17 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			top -= curr.getScrollTop();
 			curr = (HTMLElementExt) curr.getParentNode();
 		}
+
 		while (elem != null) {
 			top += elem.getOffsetTop();
 			elem = curr.getOffsetParent();
 		}
+
 		return top;
 	}
 
 	private int getAbsoluteLeft(HTMLCanvasElement target) {
-		return (int) getSubPixelAbsoluteLeft(target);
+		return toInt32(getSubPixelAbsoluteLeft(target));
 	}
 
 	private double getSubPixelAbsoluteLeft(HTMLElement elem) {
@@ -938,6 +978,10 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 			elem = curr.getOffsetParent();
 		}
 		return left;
+	}
+
+	private static int toInt32(double val) {
+		return (int) val;
 	}
 
 	private static float getMouseWheelVelocity(WheelEvent event) {

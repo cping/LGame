@@ -25,6 +25,7 @@ import org.teavm.jso.JSObject;
 import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
+import org.teavm.jso.dom.css.CSSStyleDeclaration;
 import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
@@ -36,6 +37,7 @@ import loon.geom.RectI;
 import loon.geom.Vector2f;
 import loon.teavm.dom.HTMLDocumentExt;
 import loon.utils.MathUtils;
+import loon.utils.StringUtils;
 
 public class TeaCanvasUtils {
 
@@ -152,11 +154,42 @@ public class TeaCanvasUtils {
 		return canvas;
 	}
 
+	public static void setPosition(HTMLElement root, float x, float y) {
+		if (root != null) {
+			root.setAttribute("style", "position:absolute; left:" + x + "px; top:" + y + "px");
+		}
+	}
+
+	public static void setPosition(HTMLElement root, float x, float y, float w, float h) {
+		if (root != null) {
+			root.setAttribute("style", "width:" + w + "px; " + "height:" + h + "px; " + "position:absolute; left:" + x
+					+ "px; top:" + y + "px");
+		}
+	}
+
+	public static Vector2f getStylePosition(HTMLElement el) {
+		if (el != null) {
+			CSSStyleDeclaration style = el.getStyle();
+			String left = style.getPropertyValue("left");
+			String top = style.getPropertyValue("top");
+			if (StringUtils.isEmpty(left)) {
+				left = "0";
+			}
+			if (StringUtils.isEmpty(top)) {
+				top = "0";
+			}
+			return Vector2f.at(
+					Float.parseFloat(left.replace("em", "").replace("px", "").replace("pt", "").replace("cm", "")
+							.replace("in", "").replace("%", "")),
+					Float.parseFloat(top.replace("em", "").replace("px", "").replace("pt", "").replace("cm", "")
+							.replace("in", "").replace("%", "")));
+		}
+		return Vector2f.ZERO();
+	}
+
 	public static Vector2f getPosition(HTMLElement el) {
 		if (el != null) {
-			TextRectangle rect = el.getBoundingClientRect();
-			Window window = TeaBase.get().getWindow();
-			return Vector2f.at(rect.getLeft() + window.getScrollX(), rect.getTop() + window.getScrollY());
+			return Vector2f.at(el.getAbsoluteLeft(), el.getAbsoluteTop());
 		}
 		return Vector2f.ZERO();
 	}
