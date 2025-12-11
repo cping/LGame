@@ -26,21 +26,22 @@ import org.teavm.jso.browser.Window;
 import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.events.Event;
 import org.teavm.jso.dom.events.EventListener;
-import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLScriptElement;
 import org.teavm.jso.typedarrays.ArrayBuffer;
 import org.teavm.jso.typedarrays.Int8Array;
 
 import loon.teavm.Loon;
+import loon.teavm.TeaBase;
 import loon.teavm.TeaBlob;
 import loon.teavm.dom.ConvertUtils;
+import loon.teavm.dom.HTMLDocumentExt;
 
 public class AssetDownloadImpl implements AssetDownloader {
 
 	private static final int MAX_DOWNLOAD_ATTEMPT = 3;
 
 	private final boolean showLogs;
-	
+
 	public AssetDownloadImpl(boolean showDownloadLogs) {
 		showLogs = showDownloadLogs;
 	}
@@ -92,10 +93,8 @@ public class AssetDownloadImpl implements AssetDownloader {
 		if (showLogs) {
 			System.out.println("Loading script: " + url);
 		}
-		Window current = Window.current();
-		HTMLDocument document = current.getDocument();
+		HTMLDocumentExt document = TeaBase.get().getDocument();
 		HTMLScriptElement scriptElement = (HTMLScriptElement) document.createElement("script");
-
 		scriptElement.addEventListener("load", new EventListener<Event>() {
 			@Override
 			public void handleEvent(Event event) {
@@ -115,6 +114,7 @@ public class AssetDownloadImpl implements AssetDownloader {
 				listener.onFailure(url);
 			}
 		});
+		scriptElement.setType("text/javascript");
 		scriptElement.setSrc(url);
 		document.getBody().appendChild(scriptElement);
 	}
@@ -126,7 +126,6 @@ public class AssetDownloadImpl implements AssetDownloader {
 			}
 			return;
 		}
-
 		if (async) {
 			Window.setTimeout(() -> loadBinaryInternally(true, url, listener, count), 0);
 		} else {

@@ -27,8 +27,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 
 import loon.canvas.LColor;
@@ -41,18 +39,12 @@ public final class NativeSupport {
 	private static final String POSTFIX64BIT = "64";
 
 	private static void doLoadLibrary(final String lib_name) {
-		AccessController.doPrivileged(new PrivilegedAction<Object>() {
-			@Override
-			public Object run() {
-				String library_path = System.getProperty("org.loon.librarypath");
-				if (library_path != null) {
-					System.load(library_path + File.separator + System.mapLibraryName(lib_name));
-				} else {
-					System.loadLibrary(lib_name);
-				}
-				return null;
-			}
-		});
+		String library_path = System.getProperty("org.loon.librarypath");
+		if (library_path != null) {
+			System.load(library_path + File.separator + System.mapLibraryName(lib_name));
+		} else {
+			System.loadLibrary(lib_name);
+		}
 	}
 
 	public static void loadLibrary(final String lib_name) throws UnsatisfiedLinkError {

@@ -22,10 +22,13 @@ package loon.teavm.audio;
 
 import org.teavm.jso.typedarrays.ArrayBufferView;
 
+import loon.SoundImpl;
 import loon.teavm.TeaResourceLoader;
+import loon.teavm.assets.AssetData;
 import loon.teavm.dom.ConvertUtils;
+import loon.utils.CollectionUtils;
 
-public class HowlSound {
+public class HowlSound extends SoundImpl<Object> {
 
 	private Howl howl;
 
@@ -35,7 +38,13 @@ public class HowlSound {
 		howl = Howl.create(data);
 	}
 
-	public long play() {
+	public HowlSound(AssetData asset) {
+		byte[] bytes = CollectionUtils.copyOf(asset.getBytes());
+		ArrayBufferView data = ConvertUtils.getInt8Array(bytes);
+		howl = Howl.create(data);
+	}
+
+	public long playDefault() {
 		return howl.play();
 	}
 
@@ -72,10 +81,6 @@ public class HowlSound {
 		howl.setVolume(volume, soundId);
 		howl.setStereo(volume, soundId);
 		return soundId;
-	}
-
-	public void stop() {
-		howl.stop();
 	}
 
 	public void pause() {
@@ -119,5 +124,33 @@ public class HowlSound {
 		int soundIdd = (int) soundId;
 		howl.setStereo(pan, soundIdd);
 		howl.setVolume(volume, soundIdd);
+	}
+
+	@Override
+	protected boolean playImpl() {
+		playDefault();
+		return isPlaying();
+	}
+
+	@Override
+	protected void stopImpl() {
+		howl.stop();
+	}
+
+	@Override
+	protected void setLoopingImpl(boolean looping) {
+		int soundId = howl.play();
+		howl.setLoop(looping, soundId);
+	}
+
+	@Override
+	protected void setVolumeImpl(float volume) {
+		int soundId = howl.play();
+		howl.setVolume(volume, soundId);
+	}
+
+	@Override
+	protected void releaseImpl() {
+		dispose();
 	}
 }

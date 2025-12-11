@@ -18,32 +18,26 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm;
+package loon.teavm.audio;
 
-import loon.Log;
+import loon.teavm.TeaResourceLoader;
+import loon.teavm.assets.AssetData;
 
-public class TeaLog extends Log {
+public class HowlerAudioManager {
 
-	private TeaGame _game;
-
-	public TeaLog(TeaGame g) {
-		_game = g;
+	public HowlSound createSound(AssetData asset) {
+		return new HowlSound(asset);
 	}
 
-	@Override
-	protected void callNativeLog(Level level, String msg, Throwable e) {
-		String lmsg = level + ": " + msg;
-		if (e != null) {
-			lmsg += ": " + e.getMessage();
-		}
-		Loon.consoleLog(lmsg);
-		if (e != null) {
-			_game.onError(e);
-		}
+	public HowlMusic createMusic(AssetData asset) {
+		return new HowlMusic(asset);
 	}
 
-	@Override
-	public void onError(Throwable e) {
+	public HowlSound createSound(TeaResourceLoader res) {
+		return new HowlSound(res);
 	}
 
+	public HowlMusic createMusic(TeaResourceLoader res) {
+		return new HowlMusic(res);
+	}
 }

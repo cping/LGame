@@ -11,7 +11,7 @@ public class SoundOpenAlEnv {
 
 	private boolean released;
 
-	private static boolean supportNative = false;
+	private static boolean supportNative;
 
 	private static SoundOpenAlEnv instance;
 

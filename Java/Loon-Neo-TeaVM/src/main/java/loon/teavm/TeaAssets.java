@@ -41,7 +41,7 @@ import loon.canvas.ImageImpl.Data;
 import loon.opengl.TextureSource;
 import loon.teavm.assets.AssetData;
 import loon.teavm.assets.AssetPreloader;
-import loon.teavm.audio.HowlMusic;
+import loon.teavm.audio.HowlEmptySound;
 import loon.teavm.dom.ConvertUtils;
 import loon.utils.CollectionUtils;
 import loon.utils.PathUtils;
@@ -147,7 +147,16 @@ public class TeaAssets extends Assets {
 
 	@Override
 	public Sound getSound(String path) {
-		return new HowlMusic(getAssetData(path));
+		TeaAudio audio = Loon.self.getAudio();
+		if (audio != null) {
+			final AssetPreloader assets = Loon.self.getPreloader();
+			TeaResourceLoader gwtFile = assets.internal(path);
+			if (gwtFile.exists()) {
+				return audio.newSound(gwtFile);
+			}
+			return audio.newSound(getAssetData(path));
+		}
+		return new HowlEmptySound();
 	}
 
 	private final AssetData getAssetData(String path) {

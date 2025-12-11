@@ -18,32 +18,31 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm;
+package loon.teavm.audio;
 
-import loon.Log;
+import loon.SoundImpl;
 
-public class TeaLog extends Log {
+public class HowlEmptySound extends SoundImpl<Object> {
 
-	private TeaGame _game;
-
-	public TeaLog(TeaGame g) {
-		_game = g;
+	@Override
+	protected boolean playImpl() {
+		return false;
 	}
 
 	@Override
-	protected void callNativeLog(Level level, String msg, Throwable e) {
-		String lmsg = level + ": " + msg;
-		if (e != null) {
-			lmsg += ": " + e.getMessage();
-		}
-		Loon.consoleLog(lmsg);
-		if (e != null) {
-			_game.onError(e);
-		}
+	protected void stopImpl() {
 	}
 
 	@Override
-	public void onError(Throwable e) {
+	protected void setLoopingImpl(boolean looping) {
+	}
+
+	@Override
+	protected void setVolumeImpl(float volume) {
+	}
+
+	@Override
+	protected void releaseImpl() {
 	}
 
 }

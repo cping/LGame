@@ -121,6 +121,8 @@ public class Loon implements Platform {
 
 	private TeaGame _game;
 
+	private TeaAudio _audio;
+
 	private LazyLoading.Data _mainData = null;
 
 	private Loon(LSetting setting, LazyLoading.Data lazy) {
@@ -781,9 +783,14 @@ public class Loon implements Platform {
 		_assetLoader.loadScript("howler.js", new AssetLoaderListener<String>() {
 			@Override
 			public void onSuccess(String url, String result) {
+				_audio = new TeaAudio();
 				consoleLog("JavaScript loaded success :" + url);
 			}
 		});
+	}
+
+	public TeaAudio getAudio() {
+		return _audio;
 	}
 
 	@Override

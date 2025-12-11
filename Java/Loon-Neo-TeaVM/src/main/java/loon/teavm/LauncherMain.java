@@ -22,6 +22,7 @@ package loon.teavm;
 
 import loon.LTexture;
 import loon.Screen;
+import loon.Sound;
 import loon.Stage;
 import loon.LazyLoading.Data;
 import loon.canvas.LColor;
@@ -66,7 +67,7 @@ public class LauncherMain {
 			click.setLocation(170, 200);
 			click.setToolTipText("DSDSDSFF");
 			click.up((x, y) -> {
-				add(LToast.makeText("AAAAAAAAAAAAAAAA"));
+				playSound("shotgun.wav");
 			});
 			add(click);
 
@@ -118,6 +119,7 @@ public class LauncherMain {
 
 		setting.isFPS = true;
 		// setting.fontSizeClip = 3;
+		setting.fontSize = 20;
 		setting.fontName = "黑体";
 		setting.isConsoleLog = true;
 		// setting.fullscreen = true;

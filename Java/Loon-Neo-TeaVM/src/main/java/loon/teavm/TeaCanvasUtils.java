@@ -22,7 +22,6 @@ package loon.teavm;
 
 import org.teavm.jso.JSBody;
 import org.teavm.jso.JSObject;
-import org.teavm.jso.browser.Window;
 import org.teavm.jso.canvas.CanvasRenderingContext2D;
 import org.teavm.jso.canvas.ImageData;
 import org.teavm.jso.dom.css.CSSStyleDeclaration;
@@ -30,7 +29,6 @@ import org.teavm.jso.dom.html.HTMLCanvasElement;
 import org.teavm.jso.dom.html.HTMLDocument;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLImageElement;
-import org.teavm.jso.dom.html.TextRectangle;
 
 import loon.canvas.LColor;
 import loon.geom.RectI;
