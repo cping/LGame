@@ -32,6 +32,8 @@ import loon.teavm.TeaResourceLoader;
 import loon.utils.ObjectMap;
 import loon.utils.OrderedMap;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
 
 public class AssetPreloader {
 
@@ -326,11 +328,25 @@ public class AssetPreloader {
 		return fileData;
 	}
 
+	public final AssetData getAllInternal(String path) {
+		path = fixPath(path);
+		AssetData fileData = fileMap.get(path);
+		if (fileData == null) {
+			for (Entries<String, AssetData> it = fileMap.iterator(); it.hasNext();) {
+				Entry<String, AssetData> kv = it.next();
+				if (kv != null && (kv.key != null) && kv.key.endsWith(path)) {
+					if (kv.value != null) {
+						return kv.value;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
 	public final AssetData getInternal(String path) {
 		path = fixPath(path);
-
 		AssetData fileData = fileMap.get(path);
-		
 		if (debug) {
 			path = "\"" + path + "\"";
 			String type = fileData != null && fileData.isDirectory() ? " GET FOLDER: " : " GET FILE: ";

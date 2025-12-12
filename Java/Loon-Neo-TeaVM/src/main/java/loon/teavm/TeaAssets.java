@@ -54,15 +54,16 @@ import loon.utils.reply.GoPromise;
 
 public class TeaAssets extends Assets {
 
-	private final static boolean LOG_XHR_SUCCESS = false;
+	private final boolean LOG_XHR_SUCCESS;
 
-	private TeaGame _game;
+	private TeaGame _game = null;
 
 	private Scale _assetScale = null;
 
 	protected TeaAssets(TeaGame g, Asyn s) {
 		super(g.asyn());
 		this._game = g;
+		LOG_XHR_SUCCESS = (this._game.setting != null) ? this._game.setting.isDebug : false;
 	}
 
 	protected String getURLPath(String fileName) {
@@ -172,12 +173,18 @@ public class TeaAssets extends Assets {
 		AssetData tmp = assets.getInternal(path = gwtFile.path());
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = assets.getInternal(path.substring(path.indexOf('/') + 1, path.length()));
+			if (tmp == null) {
+				tmp = assets.getInternal(path.substring(path.indexOf('\\') + 1, path.length()));
+			}
 		}
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = assets.getInternal(LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
 			tmp = assets.getInternal(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			tmp = assets.getAllInternal(path);
 		}
 		if (tmp == null) {
 			_game.log().warn("file " + path + " not found");

@@ -111,7 +111,7 @@ public class TestLoon extends Loon {
 
 			@Override
 			public Screen onScreen() {
-				return new TestScreen();
+				return new TitleScreen();
 			}
 		});
 

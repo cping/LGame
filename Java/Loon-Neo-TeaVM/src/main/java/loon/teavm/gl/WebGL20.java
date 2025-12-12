@@ -399,6 +399,8 @@ public class WebGL20 extends GL20 implements GLExt {
 			return new Float32Array(arrayBuffer, byteOffset, byteSize / 4);
 		case WebGLContext.UNSIGNED_BYTE:
 			return new Uint8Array(arrayBuffer, byteOffset, byteSize);
+		case WebGLContext.UNSIGNED_SHORT_5_6_5:
+		case WebGLContext.UNSIGNED_SHORT_4_4_4_4:
 		case WebGLContext.UNSIGNED_SHORT:
 			return new Uint16Array(arrayBuffer, byteOffset, byteSize / 2);
 		case WebGLContext.INT:

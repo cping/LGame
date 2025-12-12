@@ -22,6 +22,7 @@ package loon.html5.gwt;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import loon.Assets;
 import loon.LSystem;
@@ -39,6 +40,9 @@ import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
 import loon.utils.TArray;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
+import loon.utils.ObjectMap.Keys;
 import loon.utils.reply.Function;
 import loon.utils.reply.GoFuture;
 import loon.utils.reply.GoPromise;
@@ -72,7 +76,7 @@ public class GWTAssets extends Assets {
 		imageManifest = manifest;
 	}
 
-	private final static boolean LOG_XHR_SUCCESS = false;
+	private final boolean LOG_XHR_SUCCESS;
 
 	private final GWTGame game;
 
@@ -137,7 +141,9 @@ public class GWTAssets extends Assets {
 			String url = getFixPath(path);
 			PreloaderBundle clientBundle = getBundle(url);
 			if (clientBundle == null) {
-				url += ".mp3";
+				if (PathUtils.getExtension(url).length() == 0) {
+					url += ".mp3";
+				}
 				if (clientBundle == null) {
 					clientBundle = getBundle(url);
 				}
@@ -172,6 +178,9 @@ public class GWTAssets extends Assets {
 		String finalPath = path;
 		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			result = res.containsKey(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
+			if (!result) {
+				result = res.containsKey(finalPath = path.substring(path.indexOf('\\') + 1, path.length()));
+			}
 		}
 		if (!result && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			result = res.containsKey(finalPath = LSystem.getFileName(path = gwtFile.path()));
@@ -180,11 +189,48 @@ public class GWTAssets extends Assets {
 			result = res.containsKey(finalPath = LSystem.getFileName(path = (getFixPath(path))));
 		}
 		if (!result) {
+			Keys<String> keys = res.keys();
+			for (Iterator<String> it = keys.iterator(); it.hasNext();) {
+				String tmp = it.next();
+				if (tmp != null && tmp.endsWith(path)) {
+					return new GWTSound(tmp);
+				}
+			}
+		}
+		if (!result) {
 			game.log().warn("file " + path + " not cache found");
 			return new GWTSound(path);
 		} else {
 			return new GWTSound(finalPath);
 		}
+	}
+
+	private final static String getTextCache(GWTResourcesLoader gwtFile, String path) {
+		ObjectMap<String, String> res = gwtFile.preloader.texts;
+		String tmp = res.get(path = gwtFile.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+			if (tmp == null) {
+				tmp = res.get(path.substring(path.indexOf('\\') + 1, path.length()));
+			}
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			for (Entries<String, String> it = res.iterator(); it.hasNext();) {
+				Entry<String, String> kv = it.next();
+				if (kv != null && (kv.key != null) && kv.key.endsWith(path)) {
+					if (kv.value != null) {
+						return kv.value;
+					}
+				}
+			}
+		}
+		return tmp;
 	}
 
 	@Override
@@ -197,17 +243,7 @@ public class GWTAssets extends Assets {
 		if (gwtFile.preloader.isText(path)) {
 			return gwtFile.readString();
 		}
-		ObjectMap<String, String> res = gwtFile.preloader.texts;
-		String tmp = res.get(path = gwtFile.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
-		}
-		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
-		}
+		String tmp = getTextCache(gwtFile, path);
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
 		}
@@ -243,20 +279,7 @@ public class GWTAssets extends Assets {
 						result.succeed(null);
 					}
 				} else {
-					ObjectMap<String, String> res = gwtFile.preloader.texts;
-					String tmp = res.get(path = gwtFile.path());
-					if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-						tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
-					}
-					if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-						tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
-					}
-					if (tmp == null) {
-						tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
-					}
-					if (tmp == null) {
-						game.log().warn("file " + path + " not found");
-					}
+					String tmp = getTextCache(gwtFile, path);
 					try {
 						result.succeed(tmp);
 					} catch (Exception ex) {
@@ -323,12 +346,24 @@ public class GWTAssets extends Assets {
 		String finalPath = path;
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(finalPath = path.substring(path.indexOf('/') + 1, path.length()));
+			if (tmp == null) {
+				tmp = res.get(finalPath = path.substring(path.indexOf('\\') + 1, path.length()));
+			}
 		}
 		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
 			tmp = res.get(finalPath = LSystem.getFileName(path = gwtFile.path()));
 		}
 		if (tmp == null) {
 			tmp = res.get(finalPath = LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			for (Keys<String> it = res.keys(); it.hasNext();) {
+				String key = it.next();
+				if (key != null && key.endsWith(path)) {
+					finalPath = key;
+					break;
+				}
+			}
 		}
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
@@ -388,6 +423,7 @@ public class GWTAssets extends Assets {
 	GWTAssets(GWTGame game) {
 		super(game.asyn());
 		this.game = game;
+		LOG_XHR_SUCCESS = (game.gwtconfig != null) ? game.gwtconfig.isDebug : false;
 		if (game.gwtconfig != null && game.gwtconfig.asynResource) {
 			setPathPrefix(PathUtils.getCombinePaths(GWT.getModuleBaseForStaticFiles(), LSystem.getPathPrefix()));
 		}
@@ -473,6 +509,34 @@ public class GWTAssets extends Assets {
 		return result;
 	}
 
+	private final static ImageElement getImageCache(GWTResourcesLoader gwtFile, String path) {
+		ObjectMap<String, ImageElement> res = gwtFile.preloader.images;
+		ImageElement tmp = res.get(path = gwtFile.path());
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
+			if (tmp == null) {
+				tmp = res.get(path.substring(path.indexOf('\\') + 1, path.length()));
+			}
+		}
+		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+			tmp = res.get(LSystem.getFileName(path = gwtFile.path()));
+		}
+		if (tmp == null) {
+			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
+		}
+		if (tmp == null) {
+			for (Entries<String, ImageElement> it = res.iterator(); it.hasNext();) {
+				Entry<String, ImageElement> kv = it.next();
+				if (kv != null && (kv.key != null) && kv.key.endsWith(path)) {
+					if (kv.value != null) {
+						tmp = kv.value;
+					}
+				}
+			}
+		}
+		return tmp;
+	}
+
 	private GWTImage localImage(String path, Scale scale) {
 		path = getPath(path);
 		if (path.startsWith(LSystem.getSystemImagePath())) {
@@ -482,17 +546,7 @@ public class GWTAssets extends Assets {
 		if (files.preloader.isImage(path)) {
 			return new GWTImage(game.graphics(), scale, files.preloader.images.get(path), path);
 		}
-		ObjectMap<String, ImageElement> res = files.preloader.images;
-		ImageElement tmp = res.get(path = files.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(LSystem.getFileName(path = files.path()));
-		}
-		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
-		}
+		ImageElement tmp = getImageCache(files, path);
 		if (tmp == null) {
 			return getBundleImage(PathUtils.getCombinePaths(GWT.getModuleBaseForStaticFiles(), path), scale);
 		}
@@ -511,7 +565,10 @@ public class GWTAssets extends Assets {
 						Int8Array data = TypedArrays.createInt8Array(xhr.getResponseArrayBuffer());
 						Blob blob = new Blob(data);
 						GWTScriptLoader.setCrossOrigin(image, "crossOrigin");
-						final String ext = PathUtils.getExtension(url);
+						String ext = PathUtils.getExtension(url);
+						if ("jpg".equals(ext)) {
+							ext = "jpeg";
+						}
 						if (StringUtils.isEmpty(ext)) {
 							image.setSrc(blob.toBase64("image/png"));
 						} else {
@@ -537,17 +594,7 @@ public class GWTAssets extends Assets {
 		if (files.preloader.isImage(path)) {
 			return files.preloader.images.get(path);
 		}
-		ObjectMap<String, ImageElement> res = files.preloader.images;
-		ImageElement tmp = res.get(path = files.path());
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(path.substring(path.indexOf('/') + 1, path.length()));
-		}
-		if (tmp == null && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
-			tmp = res.get(LSystem.getFileName(path = files.path()));
-		}
-		if (tmp == null) {
-			tmp = res.get(LSystem.getFileName(path = (getFixPath(path))));
-		}
+		ImageElement tmp = getImageCache(files, path);
 		if (tmp == null) {
 			game.log().warn("file " + path + " not found");
 		}

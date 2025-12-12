@@ -35,6 +35,7 @@ import loon.Support;
 import loon.geom.Vector2f;
 import loon.jni.NativeSupport;
 import loon.teavm.Loon.OrientationLockType;
+import loon.utils.StringUtils;
 
 public class TeaGame extends LGame {
 
@@ -108,6 +109,8 @@ public class TeaGame extends LGame {
 	private boolean _initTea = false;
 
 	private TeaBase _teaWindow;
+
+	private String _userAgent;
 
 	private int _frameID = -1;
 
@@ -321,7 +324,10 @@ public class TeaGame extends LGame {
 	}
 
 	public String getUserAgent() {
-		return agentInfo.getUserAgent().toLowerCase();
+		if (!StringUtils.isEmpty(_userAgent)) {
+			return _userAgent;
+		}
+		return _userAgent = agentInfo.getUserAgent().toLowerCase();
 	}
 
 	@Override

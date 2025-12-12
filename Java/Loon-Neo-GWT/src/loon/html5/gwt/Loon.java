@@ -40,6 +40,7 @@ import loon.html5.gwt.preloader.Preloader.PreloaderCallback;
 import loon.html5.gwt.preloader.Preloader.PreloaderState;
 import loon.utils.MathUtils;
 import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.EntryPoint;
@@ -125,6 +126,8 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 	protected static Loon self;
 
 	private LazyLoading.Data mainData = null;
+
+	private String userAgent = null;
 
 	protected GWTResources resources = null;
 
@@ -822,7 +825,14 @@ public abstract class Loon implements Platform, EntryPoint, LazyLoading {
 		return devicePixelRatio() > 1.5;
 	}
 
-	public native String getUserAgent() /*-{
+	public String getUserAgent() {
+		if (!StringUtils.isEmpty(userAgent)) {
+			return userAgent;
+		}
+		return userAgent = getUserAgentJSNI();
+	}
+
+	public native static String getUserAgentJSNI() /*-{
 		return $wnd.navigator.userAgent.toLowerCase();
 	}-*/;
 
