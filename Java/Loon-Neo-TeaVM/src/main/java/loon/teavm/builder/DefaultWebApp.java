@@ -23,13 +23,16 @@ package loon.teavm.builder;
 import java.io.IOException;
 import java.io.InputStream;
 
+import loon.teavm.assets.AssetFile;
+
 public class DefaultWebApp extends WebBaseApp {
 
 	@Override
 	public void setup(TeaClassLoader classLoader, TeaBuildConfiguration config) {
 		InputStream indexSteam = classLoader.getResourceAsStream("webapp/index.html");
 		InputStream webXMLStream = classLoader.getResourceAsStream("webapp/WEB-INF/web.xml");
-
+		InputStream scriptSteam = classLoader.getResourceAsStream("webapp/scripts/howler.js");
+		InputStream logoSteam = classLoader.getResourceAsStream("webapp/logo.png");
 		if (indexSteam != null) {
 			try {
 				byte[] bytes = indexSteam.readAllBytes();
@@ -44,6 +47,65 @@ public class DefaultWebApp extends WebBaseApp {
 				webXML = new String(bytes);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
+			}
+		}
+		if (scriptSteam != null) {
+			try {
+				byte[] bytes = scriptSteam.readAllBytes();
+				audioScript = new String(bytes);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		if (logoSteam != null) {
+			try {
+				byte[] bytes = logoSteam.readAllBytes();
+				logoImage = bytes;
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		if (mainHtml == null) {
+			mainHtml = "<!DOCTYPE html>\r\n" + "<html>\r\n" + "    <head>\r\n" + "        <title>%TITLE%</title>\r\n"
+					+ "        <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\r\n"
+					+ "        <style>\r\n" + "            body {\r\n" + "                display: flex;\r\n"
+					+ "                justify-content: center;\r\n" + "                align-items: center;\r\n"
+					+ "                background: #000;\r\n" + "                height: 100vh;\r\n"
+					+ "                margin: 0;\r\n" + "                padding: 0;\r\n"
+					+ "                overflow: hidden;\r\n" + "            }\r\n" + "            #canvas {\r\n"
+					+ "                border: none;\r\n" + "            }\r\n" + "        </style>\r\n"
+					+ "    </head>\r\n" + "    <body oncontextmenu=\"return false\">\r\n" + "        <div>\r\n"
+					+ "            <canvas id=\"maincanvas\"></canvas>\r\n" + "        </div>\r\n"
+					+ "        <script>\r\n" + "            async function start() {\r\n" + "                %MODE%\r\n"
+					+ "            }\r\n" + "            window.addEventListener(\"load\", start);\r\n"
+					+ "        </script>\r\n" + "        %JS_SCRIPT%\r\n" + "    </body>\r\n" + "</html>";
+		}
+		if (webXML == null) {
+			webXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+					+ "<web-app xmlns=\"http://java.sun.com/xml/ns/javaee\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\r\n"
+					+ "    xsi:schemaLocation=\"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd\"\r\n"
+					+ "    version=\"3.0\">\r\n" + "\r\n" + "</web-app>";
+		}
+		if (audioScript == null) {
+			AssetFile file = new AssetFile("webapp/scripts/howler.js");
+			if (file.exists()) {
+				try {
+					byte[] bytes = file.read().readAllBytes();
+					audioScript = new String(bytes);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
+		if (logoImage == null) {
+			AssetFile file = new AssetFile("webapp/logo.png");
+			if (file.exists()) {
+				try {
+					byte[] bytes = file.read().readAllBytes();
+					logoImage = bytes;
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		String logo = config.logoPath;
@@ -64,6 +126,7 @@ public class DefaultWebApp extends WebBaseApp {
 		mainHtml = mainHtml.replace("%WIDTH%", String.valueOf(config.gameWidth));
 		mainHtml = mainHtml.replace("%HEIGHT%", String.valueOf(config.gameHeight));
 		mainHtml = mainHtml.replace("%ARGS%", config.mainClassArgs);
+
 		if (config.showLoadingLogo) {
 			rootAssets.add(logo);
 		}

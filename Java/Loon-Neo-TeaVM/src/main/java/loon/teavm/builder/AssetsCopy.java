@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import loon.teavm.assets.AssetFile;
 import loon.teavm.assets.AssetType;
+import loon.utils.PathUtils;
 
 public class AssetsCopy {
 
@@ -74,6 +75,7 @@ public class AssetsCopy {
 		if (assetsPath.filter != null) {
 			filter = assetsPath.filter;
 		}
+
 		AssetFilter defaultAssetFilter = filter != null ? filter : new DefaultAssetFilter();
 		if (assetsPath != null && assetsPath.exists() && assetsPath.isDirectory()) {
 			TeaBuilder.print("Copying assets from:");
@@ -149,11 +151,13 @@ public class AssetsCopy {
 
 	private static void setupPreloadAssetFileFormat(Asset asset, StringBuffer buffer, String assetsOutputPath) {
 		AssetFile assetFile = asset.file;
-
 		String path = assetFile.path();
 		path = path.replace(assetsOutputPath, "");
+		if (path.startsWith("/")) {
+			path = path.substring(path.indexOf('/') + 1, path.length());
+		}
+		path = PathUtils.normalize(path);
 		String fileTypeStr = "i";
-
 		buffer.append(fileTypeStr);
 		buffer.append(":");
 		buffer.append(asset.type.code);

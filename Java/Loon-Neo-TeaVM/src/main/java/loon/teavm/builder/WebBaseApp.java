@@ -29,6 +29,10 @@ public abstract class WebBaseApp {
 	public String webXML;
 
 	public String mainHtml;
+	
+	public String audioScript;
+	
+	public byte[] logoImage;
 
 	public abstract void setup(TeaClassLoader classLoader, TeaBuildConfiguration config);
 }

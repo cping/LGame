@@ -72,7 +72,11 @@ public class AssetFile {
 	}
 
 	public String path() {
-		return file.getPath().replace('\\', '/');
+		String path = file.getPath().replace('\\', '/');
+		if (path.startsWith("/")) {
+			path = path.substring(path.indexOf('/') + 1, path.length());
+		}
+		return path;
 	}
 
 	public String name() {

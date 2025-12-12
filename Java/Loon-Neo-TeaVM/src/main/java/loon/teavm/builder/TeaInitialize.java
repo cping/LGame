@@ -60,9 +60,9 @@ public class TeaInitialize {
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/loon/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../../assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../../src/main/java/loon/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../../src/loon/assets"));
+		teaBuildConfiguration.assetsPath.add(new AssetFile("src/main/webapp/assets"));
+		teaBuildConfiguration.assetsPath.add(new AssetFile("src/assets"));
+		teaBuildConfiguration.assetsPath.add(new AssetFile("assets"));
 		if (assetPath != null) {
 			for (int i = 0; i < assetPath.length; i++) {
 				final String pathName = assetPath[i];

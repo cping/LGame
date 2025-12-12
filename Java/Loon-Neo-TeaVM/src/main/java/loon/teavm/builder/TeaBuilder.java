@@ -102,7 +102,13 @@ public class TeaBuilder {
 		TeaBuilder.print("");
 
 		URL[] classPaths = acceptedURL.toArray(new URL[acceptedURL.size()]);
-		classLoader = new TeaClassLoader(classPaths, TeaBuilder.class.getClassLoader());
+		ClassLoader loader = null;
+		try {
+			loader = TeaBuilder.class.getClassLoader();
+		} catch (Exception e) {
+			loader = Thread.currentThread().getContextClassLoader();
+		}
+		classLoader = new TeaClassLoader(classPaths, loader);
 
 		setTargetDirectory = new File(webappDirectory + File.separator + webappName);
 
@@ -135,7 +141,7 @@ public class TeaBuilder {
 
 				for (int i = 0; i < problems.size(); i++) {
 					Problem problem = problems.get(i);
-			
+
 					if (i > 0) {
 						TeaBuilder.print("");
 						TeaBuilder.print("----");
@@ -388,8 +394,14 @@ public class TeaBuilder {
 		configuration.webApp.setup(classLoader, configuration);
 		AssetFile indexHandler = webappDistFolder.child("index.html");
 		AssetFile webXML = webappDistFolder.child("WEB-INF").child("web.xml");
+		AssetFile scriptXML = webappDistFolder.child("scripts").child("howler.js");
+		AssetFile logoImage = webappDistFolder.child("logo.png");
 		indexHandler.writeString(webApp.mainHtml, false);
 		webXML.writeString(webApp.webXML, false);
+		scriptXML.writeString(webApp.audioScript, false);
+		if (webApp.logoImage != null) {
+			logoImage.writeBytes(webApp.logoImage, false);
+		}
 		AssetsCopy.copyResources(classLoader, webApp.rootAssets, null, assetsFolder);
 		if (configuration.targetType == TargetType.WebAssembly) {
 			copyRuntime(setTargetDirectory);

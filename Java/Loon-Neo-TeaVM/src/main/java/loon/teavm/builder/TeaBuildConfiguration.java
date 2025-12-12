@@ -34,7 +34,8 @@ public class TeaBuildConfiguration {
 
 	public boolean shouldGenerateAssetFile = true;
 
-	public String webappPath;
+	public String webappPath = "";
+
 	public final ArrayList<URL> additionalClasspath = new ArrayList<URL>();
 
 	public final ArrayList<String> classesToPreserve = new ArrayList<>();
@@ -50,11 +51,11 @@ public class TeaBuildConfiguration {
 
 	public boolean showLoadingLogo = true;
 
-	public String logoPath = "startup-logo.png";
+	public String logoPath = "logo.png";
 
 	public WebBaseApp webApp;
 	public TargetType targetType = TargetType.JavaScript;
-	public String targetFileName = "app";
+	public String targetFileName = "run";
 
 	public BuildReflectionListener reflectionListener;
 }
