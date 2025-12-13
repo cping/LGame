@@ -646,97 +646,101 @@ public class TeaInputMake extends InputMake implements EventListener<Event> {
 		if (e == null) {
 			return;
 		}
-		final String type = e.getType().toLowerCase();
-		if (type.equals("contextmenu")) {
-			e.preventDefault();
-			e.stopPropagation();
-		} else if (type.equals("mousedown")) {
-			TeaBase.get().getWindow().focus();
-			MouseEvent mouseEvent = (MouseEvent) e;
-			float x = getRelativeX(mouseEvent, rootElement);
-			float y = getRelativeY(mouseEvent, rootElement);
-			EventTarget target = e.getTarget();
-			boolean equals = target == rootElement;
-			if (!equals) {
-				float mouseX = getRelativeX(mouseEvent, rootElement);
-				float mouseY = getRelativeY(mouseEvent, rootElement);
-				if (mouseX < 0 || mouseX > LSystem.viewSize.getZoomWidth() || mouseY < 0
-						|| mouseY > LSystem.viewSize.getZoomHeight()) {
-					hasFocus = false;
+		try {
+			final String type = e.getType().toLowerCase();
+			if (type.equals("contextmenu")) {
+				e.preventDefault();
+				e.stopPropagation();
+			} else if (type.equals("mousedown")) {
+				TeaBase.get().getWindow().focus();
+				MouseEvent mouseEvent = (MouseEvent) e;
+				float x = getRelativeX(mouseEvent, rootElement);
+				float y = getRelativeY(mouseEvent, rootElement);
+				EventTarget target = e.getTarget();
+				boolean equals = target == rootElement;
+				if (!equals) {
+					float mouseX = getRelativeX(mouseEvent, rootElement);
+					float mouseY = getRelativeY(mouseEvent, rootElement);
+					if (mouseX < 0 || mouseX > LSystem.viewSize.getZoomWidth() || mouseY < 0
+							|| mouseY > LSystem.viewSize.getZoomHeight()) {
+						hasFocus = false;
+					}
+					return;
 				}
-				return;
-			}
-			hasFocus = true;
-			inDragSequence = true;
-			int btn = getMouseButton(mouseEvent);
-			if (btn != -1) {
-				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), mouseEvent);
-			}
-			e.preventDefault();
-			e.stopPropagation();
-		} else if (type.equals("mouseup")) {
-			MouseEvent mouseEvent = (MouseEvent) e;
-			float x = getRelativeX(mouseEvent, rootElement);
-			float y = getRelativeY(mouseEvent, rootElement);
-			if (inDragSequence) {
-				inDragSequence = false;
+				hasFocus = true;
+				inDragSequence = true;
 				int btn = getMouseButton(mouseEvent);
 				if (btn != -1) {
-					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, false), mouseEvent);
+					dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, true), mouseEvent);
 				}
-			}
-			handleRequestsInUserEventContext();
-		} else if (type.equals("mousemove")) {
-			MouseEvent mouseEvent = (MouseEvent) e;
-			float x = getRelativeX(mouseEvent, rootElement);
-			float y = getRelativeY(mouseEvent, rootElement);
-			if (lastX == -1) {
+				e.preventDefault();
+				e.stopPropagation();
+			} else if (type.equals("mouseup")) {
+				MouseEvent mouseEvent = (MouseEvent) e;
+				float x = getRelativeX(mouseEvent, rootElement);
+				float y = getRelativeY(mouseEvent, rootElement);
+				if (inDragSequence) {
+					inDragSequence = false;
+					int btn = getMouseButton(mouseEvent);
+					if (btn != -1) {
+						dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, btn, false), mouseEvent);
+					}
+				}
+				handleRequestsInUserEventContext();
+			} else if (type.equals("mousemove")) {
+				MouseEvent mouseEvent = (MouseEvent) e;
+				float x = getRelativeX(mouseEvent, rootElement);
+				float y = getRelativeY(mouseEvent, rootElement);
+				if (lastX == -1) {
+					lastX = x;
+					lastY = y;
+				}
+				if (inDragSequence) {
+					if (isMouseLocked()) {
+						Vector2f pos = game.getOffsetPos();
+						touchDX = (float) mouseEvent.getMovementX() - pos.x;
+						touchDY = (float) mouseEvent.getMovementY() - pos.y;
+					} else {
+						touchDX = x - lastX;
+						touchDY = y - lastY;
+					}
+				}
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), mouseEvent);
 				lastX = x;
 				lastY = y;
+				lastMousePt.set(x, y);
+			} else if (type.equals("wheel")) {
+				WheelEvent wheel = (WheelEvent) e;
+				wheelDelta = getMouseWheelVelocity(wheel);
+				dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, wheel.getButton(),
+						true), wheel);
+			} else if (type.equals("touchstart")) {
+				TouchEvent touchEvent = (TouchEvent) e;
+				inTouchSequence = true;
+				dispatch(toTouchEvents(TouchMake.Event.Kind.START, touchEvent), touchEvent);
+				e.preventDefault();
 			}
-			if (inDragSequence) {
-				if (isMouseLocked()) {
-					Vector2f pos = game.getOffsetPos();
-					touchDX = (float) mouseEvent.getMovementX() - pos.x;
-					touchDY = (float) mouseEvent.getMovementY() - pos.y;
-				} else {
-					touchDX = x - lastX;
-					touchDY = y - lastY;
+			if (type.equals("touchmove")) {
+				TouchEvent touchEvent = (TouchEvent) e;
+				if (inTouchSequence) {
+					dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, touchEvent), touchEvent);
 				}
+				e.preventDefault();
 			}
-			dispatch(new MouseMake.ButtonEvent(0, game.time(), x, y, -1, false), mouseEvent);
-			lastX = x;
-			lastY = y;
-			lastMousePt.set(x, y);
-		} else if (type.equals("wheel")) {
-			WheelEvent wheel = (WheelEvent) e;
-			wheelDelta = getMouseWheelVelocity(wheel);
-			dispatch(new MouseMake.ButtonEvent(0, game.time(), lastMousePt.x, lastMousePt.y, wheel.getButton(), true),
-					wheel);
-		} else if (type.equals("touchstart")) {
-			TouchEvent touchEvent = (TouchEvent) e;
-			inTouchSequence = true;
-			dispatch(toTouchEvents(TouchMake.Event.Kind.START, touchEvent), touchEvent);
-			e.preventDefault();
-		}
-		if (type.equals("touchmove")) {
-			TouchEvent touchEvent = (TouchEvent) e;
-			if (inTouchSequence) {
-				dispatch(toTouchEvents(TouchMake.Event.Kind.MOVE, touchEvent), touchEvent);
-			}
-			e.preventDefault();
-		}
-		if (type.equals("touchcancel") || type.equals("touchend")) {
-			TouchEvent touchEvent = (TouchEvent) e;
-			if (inTouchSequence) {
-				dispatch(toTouchEvents(
-						type.equals("touchcancel") ? TouchMake.Event.Kind.CANCEL : TouchMake.Event.Kind.END,
-						touchEvent), touchEvent);
-				if (touchEvent.getTouches().getLength() == 0) {
-					inTouchSequence = false;
+			if (type.equals("touchcancel") || type.equals("touchend")) {
+				TouchEvent touchEvent = (TouchEvent) e;
+				if (inTouchSequence) {
+					dispatch(toTouchEvents(
+							type.equals("touchcancel") ? TouchMake.Event.Kind.CANCEL : TouchMake.Event.Kind.END,
+							touchEvent), touchEvent);
+					if (touchEvent.getTouches().getLength() == 0) {
+						inTouchSequence = false;
+					}
 				}
+				e.preventDefault();
 			}
-			e.preventDefault();
+		} catch (Throwable ex) {
+			LSystem.error("Tea input exception", ex);
 		}
 	}
 

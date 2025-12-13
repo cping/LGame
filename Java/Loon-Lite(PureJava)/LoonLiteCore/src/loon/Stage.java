@@ -83,6 +83,8 @@ public abstract class Stage extends Screen implements PreloadLoader {
 
 	private PreloadControl _preload;
 
+	private LToast _tmpToast;
+
 	private boolean _stateExisting;
 
 	public abstract void create();
@@ -125,40 +127,78 @@ public abstract class Stage extends Screen implements PreloadLoader {
 		}
 	}
 
+	protected final boolean isCacheToast(LToast toast) {
+		return toast != null && toast.isVisible() && contains(toast);
+	}
+
+	protected final void setTempToast(LToast t) {
+		_tmpToast = t;
+	}
+
 	public LToast toast(String text) {
-		LToast toast = LToast.makeText(text);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setText(text);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(text);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	public LToast toast(String text, Style style) {
-		LToast toast = LToast.makeText(text, style);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setText(text);
+			_tmpToast.setStyle(style);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(text, style);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	public LToast toast(String text, int d) {
-		LToast toast = LToast.makeText(text, d);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setText(text);
+			_tmpToast.setDuration(d);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(text, d);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	public LToast toast(IFont font, String text) {
-		LToast toast = LToast.makeText(font, null, text);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setText(text);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(font, null, text);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	public LToast toast(IFont font, String text, Style style) {
-		LToast toast = LToast.makeText(font, null, text, style);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setFont(font);
+			_tmpToast.setText(text);
+			_tmpToast.setStyle(style);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(font, null, text, style);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	public LToast toast(IFont font, String text, int d) {
-		LToast toast = LToast.makeText(font, null, text, d);
-		add(toast);
-		return toast;
+		if (isCacheToast(_tmpToast)) {
+			_tmpToast.setFont(font);
+			_tmpToast.setText(text);
+			_tmpToast.setDuration(d);
+			return _tmpToast;
+		}
+		_tmpToast = LToast.makeText(font, null, text, d);
+		add(_tmpToast);
+		return _tmpToast;
 	}
 
 	/**

@@ -228,23 +228,27 @@ public class TeaGame extends LGame {
 	}
 
 	protected void onError(Throwable error) {
-		ArrayList<JSObject> errors = new ArrayList<JSObject>();
-		ArrayList<String> throwables = new ArrayList<String>();
+		final ArrayList<JSObject> errors = new ArrayList<JSObject>();
+		final ArrayList<String> throwables = new ArrayList<String>();
 		Throwable root = error;
 		while (root != null) {
 			JSObject jsException = JSExceptions.getJSException(root);
 			errors.add(jsException);
 			String msg = root.getMessage();
-			if (msg == null)
+			if (msg == null) {
 				msg = "";
+			}
 			throwables.add(root.getClass().getSimpleName() + " " + msg);
 			root = root.getCause();
 		}
-		JSObject[] errorsJS = new JSObject[errors.size()];
-		String[] exceptions = new String[errors.size()];
-		errors.toArray(errorsJS);
-		throwables.toArray(exceptions);
-		printStack(errorsJS, exceptions);
+		final int errsize = errors.size();
+		if (errsize > 0) {
+			JSObject[] errorsJS = new JSObject[errsize];
+			String[] exceptions = new String[errsize];
+			errors.toArray(errorsJS);
+			throwables.toArray(exceptions);
+			printStack(errorsJS, exceptions);
+		}
 	}
 
 	@JSBody(script = "if (!Date.now)\r\n" + "Date.now = function now() {\r\n" + "return +(new Date);\r\n" + "};\r\n"

@@ -104,15 +104,7 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		} else {
 			toast = new LToast(f, text, d, 0, 0, LSystem.viewSize.getWidth(), LSystem.viewSize.getHeight());
 		}
-		if (style == Style.SUCCESS) {
-			toast._backgroundColor = SUCCESS_GRAY;
-		}
-		if (style == Style.ERROR) {
-			toast._backgroundColor = ERROR_RED;
-		}
-		if (style == Style.NORMAL) {
-			toast._backgroundColor = NORMAL_ORANGE;
-		}
+		toast.setStyle(style);
 		return toast;
 	}
 
@@ -200,6 +192,18 @@ public class LToast extends LComponent implements FontSet<LToast> {
 		this._objectAlpha = MAX_OPACITY;
 	}
 
+	public void setStyle(Style style) {
+		if (style == Style.SUCCESS) {
+			_backgroundColor = SUCCESS_GRAY;
+		}
+		if (style == Style.ERROR) {
+			_backgroundColor = ERROR_RED;
+		}
+		if (style == Style.NORMAL) {
+			_backgroundColor = NORMAL_ORANGE;
+		}
+	}
+
 	@Override
 	public void createUI(GLEx g, int x, int y) {
 		if (!_component_visible) {
@@ -278,12 +282,12 @@ public class LToast extends LComponent implements FontSet<LToast> {
 				if (_objectAlpha <= OPACITY_INCREMENT) {
 					_toastOutStop = true;
 					setVisible(false);
-					close();
 					if (_desktop != null) {
 						_desktop.remove(this);
 					} else if (getScreen() != null) {
 						getScreen().remove(this);
 					}
+					close();
 				}
 			}
 		}

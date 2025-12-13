@@ -21,5 +21,5 @@
 package loon.teavm.builder;
 
 public enum TargetType {
-	JavaScript,WebAssembly
+	JavaScript, WebAssembly
 }
