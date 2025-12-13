@@ -45,9 +45,10 @@ import org.teavm.vm.spi.RendererListener;
 import loon.LSystem;
 import loon.teavm.builder.TeaBuilder;
 import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
 public class AssetsCopy implements RendererListener {
-	
+
 	private FileDescriptor rootFileDescriptor = new FileDescriptor();
 	private RenderingManager context;
 
@@ -74,30 +75,31 @@ public class AssetsCopy implements RendererListener {
 	}
 
 	private void createFSDescriptor(File dir) throws IOException {
-		String path = PathUtils.normalize(context.getProperties().getProperty("loon.assetsPath", ""));
-		if (path.isEmpty()) {
+		String assetsPath = PathUtils.normalize(context.getProperties().getProperty("loon.assetsPath", ""));
+		if (assetsPath.isEmpty()) {
 			return;
 		}
+		String assetsOutPath = PathUtils.normalize(context.getProperties().getProperty("loon.warAssetsDirectory", ""));
 		if (dir != null) {
-			processFile(dir, rootFileDescriptor);
+			processFile(assetsOutPath, dir, rootFileDescriptor);
 		}
-		String dirName = PathUtils.normalize(context.getProperties().getProperty("loon.warAssetsDirectory", ""));
-		if (!dirName.isEmpty()) {
-			dir = new File(dirName);
-			processFile(dir, rootFileDescriptor);
+		if (!assetsOutPath.isEmpty()) {
+			dir = new File(assetsOutPath);
+			processFile(assetsPath, dir, rootFileDescriptor);
 		}
-		File assetFile = new File(path);
+		File assetFile = new File(assetsPath);
 		if (assetFile.exists()) {
 			assetFile.delete();
 		}
-		TeaBuilder.println("output assets file : " + path);
-		try (FileOutputStream output = new FileOutputStream(new File(path))) {
-			writeAssets(output);
+		TeaBuilder.println("output assets file : " + assetsPath);
+		try (FileOutputStream output = new FileOutputStream(new File(assetsPath))) {
+			writeAssets(output, rootFileDescriptor);
 		}
-		String assetPath = assetFile.getPath();
-		Path source = Paths.get(assetPath);
-		String webAssetPath = PathUtils.normalizeCombinePaths(dirName, PathUtils.getFullFileName(assetPath));
-		Path target = Paths.get(webAssetPath);
+		final String assetPath = assetFile.getPath();
+		final Path source = Paths.get(assetPath);
+		final String webAssetPath = PathUtils.normalizeCombinePaths(assetsOutPath,
+				PathUtils.getFullFileName(assetPath));
+		final Path target = Paths.get(webAssetPath);
 		TeaBuilder.println("copy assets file " + assetPath + " to " + webAssetPath);
 		try {
 			Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
@@ -105,38 +107,58 @@ public class AssetsCopy implements RendererListener {
 		}
 	}
 
-	private void writeAssets(OutputStream output) throws IOException {
-		StringBuilder sbr = new StringBuilder();
-		for (FileDescriptor desc : rootFileDescriptor.getChildFiles()) {
-			final boolean isDir = desc.isDirectory();
-			String path = desc.getName();
-			String fileTypeStr = "i";
-			sbr.append(fileTypeStr);
-			sbr.append(":");
-			sbr.append(isDir ? "d" : "b");
-			sbr.append(":");
-			sbr.append(path);
-			sbr.append(":");
-			sbr.append(isDir ? 0 : desc.getLength());
-			sbr.append(":");
-			sbr.append(1);
-			sbr.append("\n");
+	private void writeAssets(OutputStream output, FileDescriptor root) throws IOException {
+		final StringBuilder sbr = new StringBuilder();
+		for (FileDescriptor desc : root.getChildFiles()) {
+			writeAssetChild(sbr, desc);
 		}
 		output.write(sbr.toString().getBytes(LSystem.ENCODING));
 		output.flush();
 	}
 
-	private void processFile(File file, FileDescriptor desc) {
+	private void writeAssetChild(StringBuilder sbr, FileDescriptor desc) {
+		final boolean isDir = desc.isDirectory();
+		final String path = desc.getPath();
+		sbr.append('i');
+		sbr.append(':');
+		sbr.append(isDir ? "d" : "b");
+		sbr.append(':');
+		sbr.append(path);
+		sbr.append(':');
+		sbr.append(isDir ? 0 : desc.getLength());
+		sbr.append(':');
+		sbr.append(1);
+		sbr.append('\n');
+		for (FileDescriptor file : desc.getChildFiles()) {
+			writeAssetChild(sbr, file);
+		}
+	}
+
+	private FileDescriptor processFile(String assetsPath, File file, FileDescriptor desc) {
 		desc.setName(file.getName());
+		String rootPath = PathUtils.getBaseFileName(assetsPath);
+		if (StringUtils.isEmpty(rootPath)) {
+			rootPath = "assets";
+		}
+		String path = file.getAbsolutePath();
+		int idx = path.indexOf(rootPath);
+		if (idx != -1) {
+			path = path.substring(idx + rootPath.length(), path.length());
+		}
+		if (path.startsWith("\\") || path.startsWith("/")) {
+			path = path.substring(1, path.length());
+		}
+		desc.setPath(path.replace("\\", "/"));
 		desc.setDirectory(file.isDirectory());
 		desc.setLength(file.length());
 		if (file.isDirectory()) {
 			for (File child : file.listFiles()) {
 				FileDescriptor childDesc = new FileDescriptor();
-				processFile(child, childDesc);
+				processFile(assetsPath, child, childDesc);
 				desc.getChildFiles().add(childDesc);
 			}
 		}
+		return desc;
 	}
 
 	private void copyClasspathAssets(File dir) throws IOException {

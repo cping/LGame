@@ -103,7 +103,7 @@
                    of the WAR plugin -->
               <targetDirectory>${project.build.directory}/generated/js/teavm</targetDirectory>
               <!-- Main class, containing static void main(String[]) -->
-              <mainClass>loon.teavm.LauncherMain</mainClass>
+              <mainClass>org.test.LauncherMain</mainClass>
               <!-- Whether TeaVM should produce minified JavaScript. Can reduce JavaScript file size more than
                    two times -->
               <minifying>false</minifying>

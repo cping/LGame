@@ -26,6 +26,7 @@ import java.util.List;
 public class FileDescriptor {
 	private List<FileDescriptor> childFiles = new ArrayList<FileDescriptor>();
 	private String name;
+	private String path;
 	private boolean directory;
 	private long length = 0;
 
@@ -35,6 +36,14 @@ public class FileDescriptor {
 
 	public void setChildFiles(List<FileDescriptor> childFiles) {
 		this.childFiles = childFiles;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String p) {
+		path = p;
 	}
 
 	public String getName() {
