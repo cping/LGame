@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Loon-C-Port/Loon-C-Port.vcxproj" Id="449cace1-a78d-48e1-838f-cc47a6420863" />
+</Solution>

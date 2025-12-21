@@ -29,6 +29,7 @@ import loon.Support;
 import loon.opengl.BaseBufferSupport;
 import loon.utils.MathUtils;
 import loon.utils.NumberUtils;
+import loon.utils.StrBuilder;
 import loon.utils.StringKeyValue;
 import loon.utils.StringUtils;
 
@@ -39,12 +40,302 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 	 */
 	private static final long serialVersionUID = 4331834668907675786L;
 
+	final static Vector3f right = new Vector3f();
+
+	final static Vector3f tmpForward = new Vector3f();
+
+	final static Vector3f tmpUp = new Vector3f();
+
+	final static Vector3f tmpVec = new Vector3f();
+
+	final static Matrix4 tmpMat = new Matrix4();
+
 	public final static Matrix4 TMP() {
 		return new Matrix4();
 	}
 
 	public final static Matrix4 ZERO() {
 		return new Matrix4();
+	}
+
+	public final static Matrix4 ADD(Matrix4 left, Matrix4 right, Matrix4 dst) {
+		if (left == null || right == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		dst.val[M00] = left.val[M00] + right.val[M00];
+		dst.val[M01] = left.val[M01] + right.val[M01];
+		dst.val[M02] = left.val[M02] + right.val[M02];
+		dst.val[M03] = left.val[M03] + right.val[M03];
+		dst.val[M10] = left.val[M10] + right.val[M10];
+		dst.val[M11] = left.val[M11] + right.val[M11];
+		dst.val[M12] = left.val[M12] + right.val[M12];
+		dst.val[M13] = left.val[M13] + right.val[M13];
+		dst.val[M20] = left.val[M20] + right.val[M20];
+		dst.val[M21] = left.val[M21] + right.val[M21];
+		dst.val[M22] = left.val[M22] + right.val[M22];
+		dst.val[M23] = left.val[M23] + right.val[M23];
+		dst.val[M30] = left.val[M30] + right.val[M30];
+		dst.val[M31] = left.val[M31] + right.val[M31];
+		dst.val[M32] = left.val[M32] + right.val[M32];
+		dst.val[M33] = left.val[M33] + right.val[M33];
+		return dst;
+	}
+
+	public final static Matrix4 SUB(Matrix4 left, Matrix4 right, Matrix4 dst) {
+		if (left == null || right == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		dst.val[M00] = left.val[M00] - right.val[M00];
+		dst.val[M01] = left.val[M01] - right.val[M01];
+		dst.val[M02] = left.val[M02] - right.val[M02];
+		dst.val[M03] = left.val[M03] - right.val[M03];
+		dst.val[M10] = left.val[M10] - right.val[M10];
+		dst.val[M11] = left.val[M11] - right.val[M11];
+		dst.val[M12] = left.val[M12] - right.val[M12];
+		dst.val[M13] = left.val[M13] - right.val[M13];
+		dst.val[M20] = left.val[M20] - right.val[M20];
+		dst.val[M21] = left.val[M21] - right.val[M21];
+		dst.val[M22] = left.val[M22] - right.val[M22];
+		dst.val[M23] = left.val[M23] - right.val[M23];
+		dst.val[M30] = left.val[M30] - right.val[M30];
+		dst.val[M31] = left.val[M31] - right.val[M31];
+		dst.val[M32] = left.val[M32] - right.val[M32];
+		dst.val[M33] = left.val[M33] - right.val[M33];
+		return dst;
+	}
+
+	public final static Matrix4 MUL(Matrix4 left, Matrix4 right, Matrix4 dst) {
+		if (left == null || right == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		dst.val[M00] = left.val[M00] * right.val[M00] + left.val[M10] * right.val[M01] + left.val[M20] * right.val[M02]
+				+ left.val[M30] * right.val[M03];
+		dst.val[M01] = left.val[M01] * right.val[M00] + left.val[M11] * right.val[M01] + left.val[M21] * right.val[M02]
+				+ left.val[M31] * right.val[M03];
+		dst.val[M02] = left.val[M02] * right.val[M00] + left.val[M12] * right.val[M01] + left.val[M22] * right.val[M02]
+				+ left.val[M32] * right.val[M03];
+		dst.val[M03] = left.val[M03] * right.val[M00] + left.val[M13] * right.val[M01] + left.val[M23] * right.val[M02]
+				+ left.val[M33] * right.val[M03];
+		dst.val[M10] = left.val[M00] * right.val[M10] + left.val[M10] * right.val[M11] + left.val[M20] * right.val[M12]
+				+ left.val[M30] * right.val[M13];
+		dst.val[M11] = left.val[M01] * right.val[M10] + left.val[M11] * right.val[M11] + left.val[M21] * right.val[M12]
+				+ left.val[M31] * right.val[M13];
+		dst.val[M12] = left.val[M02] * right.val[M10] + left.val[M12] * right.val[M11] + left.val[M22] * right.val[M12]
+				+ left.val[M32] * right.val[M13];
+		dst.val[M13] = left.val[M03] * right.val[M10] + left.val[M13] * right.val[M11] + left.val[M23] * right.val[M12]
+				+ left.val[M33] * right.val[M13];
+		dst.val[M20] = left.val[M00] * right.val[M20] + left.val[M10] * right.val[M21] + left.val[M20] * right.val[M22]
+				+ left.val[M30] * right.val[M23];
+		dst.val[M21] = left.val[M01] * right.val[M20] + left.val[M11] * right.val[M21] + left.val[M21] * right.val[M22]
+				+ left.val[M31] * right.val[M23];
+		dst.val[M22] = left.val[M02] * right.val[M20] + left.val[M12] * right.val[M21] + left.val[M22] * right.val[M22]
+				+ left.val[M32] * right.val[M23];
+		dst.val[M23] = left.val[M03] * right.val[M20] + left.val[M13] * right.val[M21] + left.val[M23] * right.val[M22]
+				+ left.val[M33] * right.val[M23];
+		dst.val[M30] = left.val[M00] * right.val[M30] + left.val[M10] * right.val[M31] + left.val[M20] * right.val[M32]
+				+ left.val[M30] * right.val[M33];
+		dst.val[M31] = left.val[M01] * right.val[M30] + left.val[M11] * right.val[M31] + left.val[M21] * right.val[M32]
+				+ left.val[M31] * right.val[M33];
+		dst.val[M32] = left.val[M02] * right.val[M30] + left.val[M12] * right.val[M31] + left.val[M22] * right.val[M32]
+				+ left.val[M32] * right.val[M33];
+		dst.val[M33] = left.val[M03] * right.val[M30] + left.val[M13] * right.val[M31] + left.val[M23] * right.val[M32]
+				+ left.val[M33] * right.val[M33];
+		return dst;
+	}
+
+	private final static float FMA(float a, float b, float c) {
+		return a * b + c;
+	}
+
+	public final static Matrix4 MULFMA(Matrix4 left, Matrix4 right, Matrix4 dst) {
+		if (left == null || right == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		float nm00 = FMA(left.val[M00], right.val[M00],
+				FMA(left.val[M10], right.val[M01], FMA(left.val[M20], right.val[M02], left.val[M30] * right.val[M03])));
+		float nm01 = FMA(left.val[M01], right.val[M00],
+				FMA(left.val[M11], right.val[M01], FMA(left.val[M21], right.val[M02], left.val[M31] * right.val[M03])));
+		float nm02 = FMA(left.val[M02], right.val[M00],
+				FMA(left.val[M12], right.val[M01], FMA(left.val[M22], right.val[M02], left.val[M32] * right.val[M03])));
+		float nm03 = FMA(left.val[M03], right.val[M00],
+				FMA(left.val[M13], right.val[M01], FMA(left.val[M23], right.val[M02], left.val[M33] * right.val[M03])));
+		float nm10 = FMA(left.val[M00], right.val[M10],
+				FMA(left.val[M10], right.val[M11], FMA(left.val[M20], right.val[M12], left.val[M30] * right.val[M13])));
+		float nm11 = FMA(left.val[M01], right.val[M10],
+				FMA(left.val[M11], right.val[M11], FMA(left.val[M21], right.val[M12], left.val[M31] * right.val[M13])));
+		float nm12 = FMA(left.val[M02], right.val[M10],
+				FMA(left.val[M12], right.val[M11], FMA(left.val[M22], right.val[M12], left.val[M32] * right.val[M13])));
+		float nm13 = FMA(left.val[M03], right.val[M10],
+				FMA(left.val[M13], right.val[M11], FMA(left.val[M23], right.val[M12], left.val[M33] * right.val[M13])));
+		float nm20 = FMA(left.val[M00], right.val[M20],
+				FMA(left.val[M10], right.val[M21], FMA(left.val[M20], right.val[M22], left.val[M30] * right.val[M23])));
+		float nm21 = FMA(left.val[M01], right.val[M20],
+				FMA(left.val[M11], right.val[M21], FMA(left.val[M21], right.val[M22], left.val[M31] * right.val[M23])));
+		float nm22 = FMA(left.val[M02], right.val[M20],
+				FMA(left.val[M12], right.val[M21], FMA(left.val[M22], right.val[M22], left.val[M32] * right.val[M23])));
+		float nm23 = FMA(left.val[M03], right.val[M20],
+				FMA(left.val[M13], right.val[M21], FMA(left.val[M23], right.val[M22], left.val[M33] * right.val[M23])));
+		float nm30 = FMA(left.val[M00], right.val[M30],
+				FMA(left.val[M10], right.val[M31], FMA(left.val[M20], right.val[M32], left.val[M30] * right.val[M33])));
+		float nm31 = FMA(left.val[M01], right.val[M30],
+				FMA(left.val[M11], right.val[M31], FMA(left.val[M21], right.val[M32], left.val[M31] * right.val[M33])));
+		float nm32 = FMA(left.val[M02], right.val[M30],
+				FMA(left.val[M12], right.val[M31], FMA(left.val[M22], right.val[M32], left.val[M32] * right.val[M33])));
+		float nm33 = FMA(left.val[M03], right.val[M30],
+				FMA(left.val[M13], right.val[M31], FMA(left.val[M23], right.val[M32], left.val[M33] * right.val[M33])));
+		dst.val[M00] = (nm00);
+		dst.val[M01] = (nm01);
+		dst.val[M02] = (nm02);
+		dst.val[M03] = (nm03);
+		dst.val[M10] = (nm10);
+		dst.val[M11] = (nm11);
+		dst.val[M12] = (nm12);
+		dst.val[M13] = (nm13);
+		dst.val[M20] = (nm20);
+		dst.val[M21] = (nm21);
+		dst.val[M22] = (nm22);
+		dst.val[M23] = (nm23);
+		dst.val[M30] = (nm30);
+		dst.val[M31] = (nm31);
+		dst.val[M32] = (nm32);
+		dst.val[M33] = (nm33);
+		return dst;
+	}
+
+	public final static Matrix4 setMatrix(Matrix4 src, Matrix4 dst) {
+		if (src == null && dst == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		dst.val[M00] = src.val[M00];
+		dst.val[M01] = src.val[M01];
+		dst.val[M02] = src.val[M02];
+		dst.val[M03] = src.val[M03];
+		dst.val[M10] = src.val[M10];
+		dst.val[M11] = src.val[M11];
+		dst.val[M12] = src.val[M12];
+		dst.val[M13] = src.val[M13];
+		dst.val[M20] = src.val[M20];
+		dst.val[M21] = src.val[M21];
+		dst.val[M22] = src.val[M22];
+		dst.val[M23] = src.val[M23];
+		dst.val[M30] = src.val[M30];
+		dst.val[M31] = src.val[M31];
+		dst.val[M32] = src.val[M32];
+		dst.val[M33] = src.val[M33];
+		return dst;
+	}
+
+	public final static Matrix4 setZero(Matrix4 m) {
+		if (m == null) {
+			return new Matrix4();
+		}
+		m.val[M00] = 0.0f;
+		m.val[M01] = 0.0f;
+		m.val[M02] = 0.0f;
+		m.val[M03] = 0.0f;
+		m.val[M10] = 0.0f;
+		m.val[M11] = 0.0f;
+		m.val[M12] = 0.0f;
+		m.val[M13] = 0.0f;
+		m.val[M20] = 0.0f;
+		m.val[M21] = 0.0f;
+		m.val[M22] = 0.0f;
+		m.val[M23] = 0.0f;
+		m.val[M30] = 0.0f;
+		m.val[M31] = 0.0f;
+		m.val[M32] = 0.0f;
+		m.val[M33] = 0.0f;
+		return m;
+	}
+
+	public final static Matrix4 negate(Matrix4 src, Matrix4 dst) {
+		if (src == null && dst == null) {
+			return new Matrix4();
+		}
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+		dst.val[M00] = -src.val[M00];
+		dst.val[M01] = -src.val[M01];
+		dst.val[M02] = -src.val[M02];
+		dst.val[M03] = -src.val[M03];
+		dst.val[M10] = -src.val[M10];
+		dst.val[M11] = -src.val[M11];
+		dst.val[M12] = -src.val[M12];
+		dst.val[M13] = -src.val[M13];
+		dst.val[M20] = -src.val[M20];
+		dst.val[M21] = -src.val[M21];
+		dst.val[M22] = -src.val[M22];
+		dst.val[M23] = -src.val[M23];
+		dst.val[M30] = -src.val[M30];
+		dst.val[M31] = -src.val[M31];
+		dst.val[M32] = -src.val[M32];
+		dst.val[M33] = -src.val[M33];
+		return dst;
+	}
+
+	protected final static String format(float f, int base) {
+		int baseNum = 1;
+		int baseLead = 1;
+		for (int i = 0; i < base; i++) {
+			baseNum *= 10;
+			baseLead *= 10;
+		}
+		StrBuilder sbr = new StrBuilder();
+		if (f < 0) {
+			sbr.append('-');
+			f = -f;
+		} else {
+			sbr.append(' ');
+		}
+		if (f == 0f) {
+			sbr.append("0.");
+			for (int i = 0; i < base; i++) {
+				sbr.append('0');
+			}
+			sbr.append("E+0");
+		} else if (f > 10) {
+			int i = 1;
+			for (; i < 308; i++) {
+				f = f / 10;
+				if (f < 10f)
+					break;
+			}
+			sbr.append((char) (((int) f) + 0x30)).append('.');
+			f -= (int) f;
+			sbr.append(MathUtils.toString((baseLead + f * baseNum)).substring(1)).append("E+").append(i);
+		} else if (f < 1) {
+			int i = 1;
+			for (; i < 308; i++) {
+				f = f * 10;
+				if (f >= 1)
+					break;
+			}
+			sbr.append((char) (((int) f) + 0x30)).append('.');
+			f -= (int) f;
+			sbr.append(MathUtils.toString((baseLead + f * baseNum)).substring(1)).append("E-").append(i);
+
+		} else {
+			sbr.append((char) (((int) f) + 0x30)).append('.');
+			f -= (int) f;
+			sbr.append(MathUtils.toString((baseLead + f * baseNum)).substring(1)).append("E+").append(0);
+		}
+		return sbr.toString();
 	}
 
 	public static final int M00 = 0;
@@ -180,12 +471,29 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 		set(position, rotation, scale);
 	}
 
+	public Matrix4 setZero() {
+		return setZero(this);
+	}
+
 	public Matrix4 set(Matrix4 matrix) {
 		return this.set(matrix.val);
 	}
 
 	public Matrix4 set(float[] values) {
 		System.arraycopy(values, 0, val, 0, val.length);
+		return this;
+	}
+
+	public Matrix4 getMatrix3f(float[] buf) {
+		buf[0] = (val[M00]);
+		buf[1] = (val[M01]);
+		buf[2] = (val[M02]);
+		buf[3] = (val[M10]);
+		buf[4] = (val[M11]);
+		buf[5] = (val[M12]);
+		buf[6] = (val[M20]);
+		buf[7] = (val[M21]);
+		buf[8] = (val[M22]);
 		return this;
 	}
 
@@ -688,9 +996,6 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 		return this;
 	}
 
-	static final Vector3f tmpVec = new Vector3f();
-	static final Matrix4 tmpMat = new Matrix4();
-
 	public Matrix4 setToLookAt(Vector3f position, Vector3f target, Vector3f up) {
 		tmpVec.set(target).subtractSelf(position);
 		setToLookAt(tmpVec, up);
@@ -698,10 +1003,6 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 
 		return this;
 	}
-
-	static final Vector3f right = new Vector3f();
-	static final Vector3f tmpForward = new Vector3f();
-	static final Vector3f tmpUp = new Vector3f();
 
 	public Matrix4 setToWorld(Vector3f position, Vector3f forward, Vector3f up) {
 		tmpForward.set(forward).norSelf();
@@ -897,6 +1198,14 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 		val[M13] = 0;
 		val[M23] = 0;
 		return inv().tra();
+	}
+
+	public Matrix4 negate() {
+		return negate(this);
+	}
+
+	public Matrix4 negate(Matrix4 dst) {
+		return negate(this, dst);
 	}
 
 	public Matrix4 translate(Vector3f translation) {
@@ -1215,6 +1524,184 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 		return m;
 	}
 
+	public Matrix4 setLookAt(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX,
+			float upY, float upZ) {
+
+		float dirX, dirY, dirZ;
+		dirX = eyeX - centerX;
+		dirY = eyeY - centerY;
+		dirZ = eyeZ - centerZ;
+
+		float invDirLength = MathUtils.fastInvSqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+		dirX *= invDirLength;
+		dirY *= invDirLength;
+		dirZ *= invDirLength;
+
+		float leftX, leftY, leftZ;
+		leftX = upY * dirZ - upZ * dirY;
+		leftY = upZ * dirX - upX * dirZ;
+		leftZ = upX * dirY - upY * dirX;
+
+		float invLeftLength = MathUtils.fastInvSqrt(leftX * leftX + leftY * leftY + leftZ * leftZ);
+		leftX *= invLeftLength;
+		leftY *= invLeftLength;
+		leftZ *= invLeftLength;
+
+		float upnX = dirY * leftZ - dirZ * leftY;
+		float upnY = dirZ * leftX - dirX * leftZ;
+		float upnZ = dirX * leftY - dirY * leftX;
+
+		val[M00] = leftX;
+		val[M01] = upnX;
+		val[M02] = dirX;
+		val[M03] = 0.0f;
+
+		val[M10] = leftY;
+		val[M11] = upnY;
+		val[M12] = dirY;
+		val[M13] = 0.0f;
+
+		val[M20] = leftZ;
+		val[M21] = upnZ;
+		val[M22] = dirZ;
+		val[M23] = 0.0f;
+
+		val[M30] = -(leftX * eyeX + leftY * eyeY + leftZ * eyeZ);
+		val[M31] = -(upnX * eyeX + upnY * eyeY + upnZ * eyeZ);
+		val[M32] = -(dirX * eyeX + dirY * eyeY + dirZ * eyeZ);
+		val[M33] = 1.0f;
+		return this;
+
+	}
+
+	public Matrix4 lookAtPerspective(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ,
+			float upX, float upY, float upZ, Matrix4 dst) {
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+
+		float dirX, dirY, dirZ;
+		dirX = eyeX - centerX;
+		dirY = eyeY - centerY;
+		dirZ = eyeZ - centerZ;
+
+		float invDirLength = MathUtils.fastInvSqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+		dirX *= invDirLength;
+		dirY *= invDirLength;
+		dirZ *= invDirLength;
+
+		float leftX, leftY, leftZ;
+		leftX = upY * dirZ - upZ * dirY;
+		leftY = upZ * dirX - upX * dirZ;
+		leftZ = upX * dirY - upY * dirX;
+
+		float invLeftLength = MathUtils.fastInvSqrt(leftX * leftX + leftY * leftY + leftZ * leftZ);
+		leftX *= invLeftLength;
+		leftY *= invLeftLength;
+		leftZ *= invLeftLength;
+
+		float upnX = dirY * leftZ - dirZ * leftY;
+		float upnY = dirZ * leftX - dirX * leftZ;
+		float upnZ = dirX * leftY - dirY * leftX;
+		float rm30 = -(leftX * eyeX + leftY * eyeY + leftZ * eyeZ);
+		float rm31 = -(upnX * eyeX + upnY * eyeY + upnZ * eyeZ);
+		float rm32 = -(dirX * eyeX + dirY * eyeY + dirZ * eyeZ);
+		float nm10 = val[M00] * leftY;
+		float nm20 = val[M00] * leftZ;
+		float nm21 = val[M11] * upnZ;
+		float nm30 = val[M00] * rm30;
+		float nm31 = val[M11] * rm31;
+		float nm32 = val[M22] * rm32 + val[M32];
+		float nm33 = val[M23] * rm32;
+
+		dst.val[M00] = val[M00] * leftX;
+		dst.val[M01] = val[M11] * upnX;
+		dst.val[M02] = val[M22] * dirX;
+		dst.val[M03] = val[M23] * dirX;
+
+		dst.val[M10] = nm10;
+		dst.val[M11] = val[M11] * upnY;
+		dst.val[M12] = val[M22] * dirY;
+		dst.val[M13] = val[M23] * dirY;
+
+		dst.val[M20] = nm20;
+		dst.val[M21] = nm21;
+		dst.val[M22] = val[M22] * dirZ;
+		dst.val[M23] = val[M23] * dirZ;
+
+		dst.val[M30] = nm30;
+		dst.val[M31] = nm31;
+		dst.val[M32] = nm32;
+		dst.val[M33] = nm33;
+
+		return dst;
+	}
+
+	public Matrix4 lookAtGeneric(float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ,
+			float upX, float upY, float upZ, Matrix4 dst) {
+		if (dst == null) {
+			dst = new Matrix4();
+		}
+
+		float dirX, dirY, dirZ;
+		dirX = eyeX - centerX;
+		dirY = eyeY - centerY;
+		dirZ = eyeZ - centerZ;
+		float invDirLength = MathUtils.fastInvSqrt(dirX * dirX + dirY * dirY + dirZ * dirZ);
+		dirX *= invDirLength;
+		dirY *= invDirLength;
+		dirZ *= invDirLength;
+
+		float leftX, leftY, leftZ;
+		leftX = upY * dirZ - upZ * dirY;
+		leftY = upZ * dirX - upX * dirZ;
+		leftZ = upX * dirY - upY * dirX;
+
+		float invLeftLength = MathUtils.fastInvSqrt(leftX * leftX + leftY * leftY + leftZ * leftZ);
+		leftX *= invLeftLength;
+		leftY *= invLeftLength;
+		leftZ *= invLeftLength;
+
+		float upnX = dirY * leftZ - dirZ * leftY;
+		float upnY = dirZ * leftX - dirX * leftZ;
+		float upnZ = dirX * leftY - dirY * leftX;
+
+		float rm30 = -(leftX * eyeX + leftY * eyeY + leftZ * eyeZ);
+		float rm31 = -(upnX * eyeX + upnY * eyeY + upnZ * eyeZ);
+		float rm32 = -(dirX * eyeX + dirY * eyeY + dirZ * eyeZ);
+
+		float nm00 = val[M00] * leftX + val[M10] * upnX + val[M20] * dirX;
+		float nm01 = val[M01] * leftX + val[M11] * upnX + val[M21] * dirX;
+		float nm02 = val[M02] * leftX + val[M12] * upnX + val[M22] * dirX;
+		float nm03 = val[M03] * leftX + val[M13] * upnX + val[M23] * dirX;
+		float nm10 = val[M00] * leftY + val[M10] * upnY + val[M20] * dirY;
+		float nm11 = val[M01] * leftY + val[M11] * upnY + val[M21] * dirY;
+		float nm12 = val[M02] * leftY + val[M12] * upnY + val[M22] * dirY;
+		float nm13 = val[M03] * leftY + val[M13] * upnY + val[M23] * dirY;
+
+		dst.val[M30] = val[M00] * rm30 + val[M10] * rm31 + val[M20] * rm32 + val[M30];
+		dst.val[M31] = val[M01] * rm30 + val[M11] * rm31 + val[M21] * rm32 + val[M31];
+		dst.val[M32] = val[M02] * rm30 + val[M12] * rm31 + val[M22] * rm32 + val[M32];
+		dst.val[M33] = val[M03] * rm30 + val[M13] * rm31 + val[M23] * rm32 + val[M33];
+
+		dst.val[M20] = val[M00] * leftZ + val[M10] * upnZ + val[M20] * dirZ;
+		dst.val[M21] = val[M01] * leftZ + val[M11] * upnZ + val[M21] * dirZ;
+		dst.val[M22] = val[M02] * leftZ + val[M12] * upnZ + val[M22] * dirZ;
+		dst.val[M23] = val[M03] * leftZ + val[M13] * upnZ + val[M23] * dirZ;
+
+		dst.val[M00] = nm00;
+		dst.val[M01] = nm01;
+		dst.val[M02] = nm02;
+		dst.val[M03] = nm03;
+
+		dst.val[M10] = nm10;
+		dst.val[M11] = nm11;
+		dst.val[M12] = nm12;
+		dst.val[M13] = nm13;
+		return dst;
+
+	}
+
 	public boolean isIdt() {
 		return (this.val[M00] == 1 && this.val[M10] == 0 && this.val[M20] == 0 && this.val[M30] == 0
 				&& this.val[M01] == 0 && this.val[M11] == 1 && this.val[M21] == 0 && this.val[M31] == 0
@@ -1264,6 +1751,16 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 			result += 31 * result + (int) (val ^ (val >>> 32));
 		}
 		return result;
+	}
+
+	public String toString(int v) {
+		StringKeyValue builder = new StringKeyValue("Matrix4");
+		builder.newLine().addValue("[{0},{1},{2},{3}]").newLine().addValue("[{4},{5}.{6},{7}]").newLine()
+				.addValue("[{8},{9},{10},{11}]").newLine().addValue("[{12},{13},{14},{15}]").newLine();
+		return StringUtils.format(builder.toString(), format(val[M00], v), format(val[M01], v), format(val[M02], v),
+				format(val[M03], v), format(val[M10], v), format(val[M11], v), format(val[M12], v), format(val[M13], v),
+				format(val[M20], v), format(val[M21], v), format(val[M22], v), format(val[M23], v), format(val[M30], v),
+				format(val[M31], v), format(val[M32], v), format(val[M33], v));
 	}
 
 	@Override
