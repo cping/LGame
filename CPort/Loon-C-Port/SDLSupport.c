@@ -221,33 +221,15 @@ static void remapPadAxes(float* axes, u32 style) {
 }
 #endif
 
-void Load_SDL_Sound_Finsihed(int channel) {
-}
-
-void Load_SDL_Music_Finsihed() {
-}
-
-void CallSoundFinished(int idx, int (*Callback)(int))
-{
-	Callback(idx);
-}
-
-void CallMusicFinished(int (*Callback)())
-{
-	Callback();
-}
-
 static void OnSoundFinished(int channel) {
 	musicFinishedEvent = true;
-	CallSoundFinished(channel, Load_SDL_Sound_Finsihed);
 }
 
-static void OnMusicFinished() {
+static void OnMusicFinished(void) {
 	musicFinishedEvent = true;
-	CallMusicFinished(Load_SDL_Music_Finsihed);
 }
 
-long Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync) {
+int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync) {
 	atexit(SDL_Quit);
 	for (int i = 0; i < 16; i++) {
 		touches[i * 3] = -1;
@@ -323,8 +305,7 @@ long Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool
 	Mix_AllocateChannels(32);
 	Mix_HookMusicFinished(OnMusicFinished);
 	Mix_ChannelFinished(OnSoundFinished);
-
-	return window;
+	return (intptr_t)window;
 }
 
 bool Load_SDL_Update() {
@@ -429,7 +410,7 @@ bool Load_SDL_Update() {
 }
 
 bool Load_SDL_Exit(const int run) {
-
+	return true;
 }
 
 int* Load_SDL_TouchData(int* data)
@@ -444,14 +425,14 @@ int Load_SDL_GL_SetSwapInterval(int on)
 	return SDL_GL_SetSwapInterval(on);
 }
 
-void Load_SDL_GL_SwapWindow(const long window)
+void Load_SDL_GL_SwapWindow(const int64_t window)
 {
 	SDL_GL_SwapWindow((SDL_Window*)window);
 }
 
-long Load_SDL_GL_CreateContext(const long window)
+int64_t Load_SDL_GL_CreateContext(const int64_t window)
 {
-	return (long)SDL_GL_CreateContext((SDL_Window*)window);
+	return (intptr_t)SDL_GL_CreateContext((SDL_Window*)window);
 }
 
 int Load_SDL_GL_SetAttribute(const int attribute, const int value)
@@ -459,7 +440,7 @@ int Load_SDL_GL_SetAttribute(const int attribute, const int value)
 	return SDL_GL_SetAttribute((SDL_GLattr)attribute, value);
 }
 
-int* Load_SDL_GetDrawableSize(const long window, int* values)
+int* Load_SDL_GetDrawableSize(const int64_t window, int* values)
 {
 	int w, h;
 	SDL_GL_GetDrawableSize((SDL_Window*)window, &w, &h);
@@ -549,7 +530,7 @@ int Load_Buttons()
 
 float* Load_Axes(const int controller, float* axes)
 {
-	#ifdef __SWITCH__
+#ifdef __SWITCH__
     const PadState &pad = controller == -1 ? combinedPad : pads[controller];
 	HidAnalogStickState stickLeft = padGetStickPos(&pad, 0);
 	HidAnalogStickState stickRight = padGetStickPos(&pad, 1);
@@ -566,18 +547,205 @@ float* Load_Axes(const int controller, float* axes)
 	return axes;
 }
 
-int* Load_SDL_GetWindowSize(const long handle)
+int* Load_SDL_GetWindowSize(const int64_t handle)
 {
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(window, &width, &height);
 	int result[2] = { width,height };
-	return result;
+	return &result;
 }
 
-char* Load_SDL_GetWorkingDir() {
-	char* discard = getcwd(curr_dir, sizeof(curr_dir));
-	return curr_dir;
+int Load_SDL_LockSurface(const int64_t handle)
+{
+	return SDL_LockSurface((SDL_Surface*)handle);
+}
+
+void Load_SDL_UnlockSurface(const int64_t handle)
+{
+	 SDL_UnlockSurface((SDL_Surface*)handle);
+}
+
+int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels, const int w, const int h, const int format)
+{
+	Uint32 rmask, gmask, bmask, amask;
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	int shift = (req_format == STBI_rgb) ? 8 : 0;
+	rmask = 0xff000000 >> shift;
+	gmask = 0x00ff0000 >> shift;
+	bmask = 0x0000ff00 >> shift;
+	amask = 0x000000ff >> shift;
+#else 
+	rmask = 0x000000ff;
+	gmask = 0x0000ff00;
+	bmask = 0x00ff0000;
+	amask = (format == 3) ? 0 : 0xff000000;
+#endif
+	int depth, pitch;
+	if (format == 3) {
+		depth = 24;
+		pitch = 3 * w; 
+	}
+	else { // if STBI_rgb_alpha (RGBA)
+		depth = 32;
+		pitch = 4 * w;
+	}
+	return (intptr_t)SDL_CreateRGBSurfaceFrom((void*)pixels, w, h, depth, pitch,
+		rmask, gmask, bmask, amask);
+}
+
+int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags)
+{
+	return SDL_ConvertSurfaceFormat((SDL_Surface*)handle,(Uint32)pixel_format, (Uint32)flags);
+}
+
+int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return -1;
+	if (x >= 0 && y >= 0 && x < surface->w && x < w && y < surface->h && y < h)
+	{
+		int bpp = surface->format->BytesPerPixel;
+		Uint8* pixel = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
+		switch (bpp) {
+		case 1:
+			return *pixel;
+		case 2:
+			return *(Uint16*)pixel;
+		case 3:
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			return pixel[0] << 16 | pixel[1] << 8 | pixel[2];
+#else
+			return pixel[0] | pixel[1] << 8 | pixel[2] << 16;
+#endif
+		case 4:
+			return *(Uint32*)pixel;
+		default:
+			return 0;
+		}
+	}
+	return 0;
+}
+
+void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return;
+	if (x < 0 || y < 0 || x >= surface->w || y >= surface->h) {
+		return;
+	}
+	Uint8* target_pixel = (Uint8*)surface->pixels + y * surface->pitch + x * surface->format->BytesPerPixel;
+	switch (surface->format->BytesPerPixel) {
+	case 1: 
+		*target_pixel = (Uint8)pixel;
+		break;
+	case 2: 
+		*(Uint16*)target_pixel = (Uint16)pixel;
+		break;
+	case 3: 
+		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+			target_pixel[0] = (pixel >> 16) & 0xFF;
+			target_pixel[1] = (pixel >> 8) & 0xFF;
+			target_pixel[2] = pixel & 0xFF;
+		}
+		else {
+			target_pixel[0] = pixel & 0xFF;
+			target_pixel[1] = (pixel >> 8) & 0xFF;
+			target_pixel[2] = (pixel >> 16) & 0xFF;
+		}
+		break;
+	case 4: 
+		*(Uint32*)target_pixel = (Uint32)pixel;
+		break;
+	}
+}
+
+void Load_SDL_SetPixel32(const int64_t handle, int x, int y,int32_t pixel)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return;
+	Uint32* const target_pixel = (Uint32*)((Uint8*)surface->pixels
+		+ y * surface->pitch
+		+ x * surface->format->BytesPerPixel);
+	*target_pixel = (Uint32)pixel;
+}
+
+void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny,int nw,int nh, int32_t* pixels)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface || !pixels) return;
+	Uint8* dst = (Uint8*)surface->pixels;
+	int pitch = surface->pitch; 
+	for (int y = ny; y < nh; y++) {
+		Uint32* pixel = (Uint32*)(dst + y * pitch);
+		for (int x = nx; x < nw; x++) {
+			pixel[x] = (Uint32)pixels[y * nw + x];
+		}
+	}
+}
+
+const int blendModeToInt(SDL_BlendMode mode) {
+	switch (mode) {
+	case SDL_BLENDMODE_NONE:  return 0;
+	case SDL_BLENDMODE_BLEND: return 1;
+	case SDL_BLENDMODE_ADD:   return 2;
+	case SDL_BLENDMODE_MOD:   return 3;
+	case SDL_BLENDMODE_MUL:   return 4;
+	default:                  return -1;
+	}
+}
+const SDL_BlendMode blendIntToMode(int mode) {
+	switch (mode) {
+	case 0: return SDL_BLENDMODE_NONE;
+	case 1: return SDL_BLENDMODE_BLEND;
+	case 2: return SDL_BLENDMODE_ADD;
+	case 3: return SDL_BLENDMODE_MOD;
+	case 4: return SDL_BLENDMODE_MUL;
+	default: return SDL_BLENDMODE_NONE;
+	}
+}
+
+void Load_SDL_SetSurfaceBlendMode(const int64_t handle, const int mode)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return;
+	SDL_SetSurfaceBlendMode(surface, blendIntToMode(mode));
+}
+
+int Load_SDL_GetSurfaceBlendMode(const int64_t handle)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return -1;
+	SDL_BlendMode mode;
+	SDL_GetSurfaceBlendMode(surface, &mode);
+	return blendModeToInt(mode);
+}
+
+void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int w, const int h, const int r, const int g, const int b, const int a)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return;
+	Uint32 color = SDL_MapRGBA(surface->format, r, g, b,a);
+	SDL_Rect rect = { x, y, w, h };
+	SDL_FillRect(surface, &rect, color);
+}
+
+void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const int w, const int h)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return;
+	SDL_Rect clipRect = { x, y, w, h };
+	SDL_SetClipRect(surface, &clipRect);
+}
+
+int* Load_SDL_GetClipRect(const int64_t handle)
+{
+	SDL_Surface* surface = (SDL_Surface*)handle;
+	if (!surface) return 0;
+	SDL_Rect currentClip;
+	SDL_GetClipRect(surface, &currentClip);
+	int rect[] = {currentClip.x,currentClip.y,currentClip.w,currentClip.h};
+	return &rect;
 }
 
 int Load_SDL_Init(const int flags)
@@ -615,42 +783,42 @@ char* Load_SDL_GetClipboardText()
 	return SDL_GetClipboardText();
 }
 
-void Load_SDL_MaximizeWindow(const long handle)
+void Load_SDL_MaximizeWindow(const int64_t handle)
 {
 	SDL_MaximizeWindow((SDL_Window*)handle);
 }
 
-void Load_SDL_MinimizeWindow(const long handle)
+void Load_SDL_MinimizeWindow(const int64_t handle)
 {
 	SDL_MinimizeWindow((SDL_Window*)handle);
 }
 
-int Load_SDL_SetWindowFullscreen(const long handle, const int flags)
+int Load_SDL_SetWindowFullscreen(const int64_t handle, const int flags)
 {
 	return SDL_SetWindowFullscreen((SDL_Window*)handle, flags);
 }
 
-void Load_SDL_SetWindowBordered(const long handle, const bool bordered)
+void Load_SDL_SetWindowBordered(const int64_t handle, const bool bordered)
 {
 	SDL_SetWindowBordered((SDL_Window*)handle, (SDL_bool)bordered);
 }
 
-void Load_SDL_SetWindowSize(const long handle, const int w, const int h)
+void Load_SDL_SetWindowSize(const int64_t handle, const int w, const int h)
 {
 	SDL_SetWindowSize((SDL_Window*)handle, w, h);
 }
 
-void Load_SDL_SetWindowPosition(const long handle, const int x, const int y)
+void Load_SDL_SetWindowPosition(const int64_t handle, const int x, const int y)
 {
 	SDL_SetWindowPosition((SDL_Window*)handle, x, y);
 }
 
-int Load_SDL_GetWindowDisplayIndex(const long handle)
+int Load_SDL_GetWindowDisplayIndex(const int64_t handle)
 {
 	return SDL_GetWindowDisplayIndex((SDL_Window*)handle);
 }
 
-int Load_SDL_GetDisplayUsableBounds(const int display, int* xywh)
+int* Load_SDL_GetDisplayUsableBounds(const int display, int* xywh)
 {
 	SDL_Rect bounds = { 0,0,0,0 };
 	int result = SDL_GetDisplayUsableBounds(display, &bounds);
@@ -660,10 +828,10 @@ int Load_SDL_GetDisplayUsableBounds(const int display, int* xywh)
 	xywh[2] = bounds.w;
 	xywh[3] = bounds.h;
 
-	return result;
+	return xywh;
 }
 
-int Load_SDL_GetDisplayBounds(const int display, int* xywh)
+int* Load_SDL_GetDisplayBounds(const int display, int* xywh)
 {
 	SDL_Rect bounds = { 0,0,0,0 };
 	int result = SDL_GetDisplayBounds(display, &bounds);
@@ -673,7 +841,7 @@ int Load_SDL_GetDisplayBounds(const int display, int* xywh)
 	xywh[2] = bounds.w;
 	xywh[3] = bounds.h;
 
-	return result;
+	return xywh;
 }
 
 int Load_SDL_GetNumVideoDisplays()
@@ -681,47 +849,47 @@ int Load_SDL_GetNumVideoDisplays()
 	return SDL_GetNumVideoDisplays();
 }
 
-int Load_SDL_GetWindowFlags(const long handle)
+int Load_SDL_GetWindowFlags(const int64_t handle)
 {
 	return SDL_GetWindowFlags((SDL_Window*)handle);
 }
 
-void Load_SDL_SetWindowTitle(const long handle, const char* title)
+void Load_SDL_SetWindowTitle(const int64_t handle, const char* title)
 {
 	SDL_SetWindowTitle((SDL_Window*)handle, title);
 }
 
-long Load_SDL_CreateRGBSurfaceFrom(void* pixels, int width, int height)
+int64_t Load_SDL_CreateRGBSurfaceFrom32(void* pixels, int width, int height)
 {
-	return (long)SDL_CreateRGBSurfaceFrom(pixels, width, height, 32, 4 * width, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
+	return (intptr_t)SDL_CreateRGBSurfaceFrom(pixels, width, height, 32, 4 * width, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 }
 
-long Load_SDL_CreateColorCursor(const long surface, const int hotx, const int hoty)
+int64_t Load_SDL_CreateColorCursor(const int64_t surface, const int hotx, const int hoty)
 {
-	return (long)SDL_CreateColorCursor((SDL_Surface*)surface, hotx, hoty);
+	return (intptr_t)SDL_CreateColorCursor((SDL_Surface*)surface, hotx, hoty);
 }
 
-long Load_SDL_CreateSystemCursor(const int type)
+int64_t Load_SDL_CreateSystemCursor(const int type)
 {
-	return (long)SDL_CreateSystemCursor((SDL_SystemCursor)type);
+	return (intptr_t)SDL_CreateSystemCursor((SDL_SystemCursor)type);
 }
 
-void Load_SDL_SetCursor(const long handle)
+void Load_SDL_SetCursor(const int64_t handle)
 {
 	SDL_SetCursor((SDL_Cursor*)handle);
 }
 
-void Load_SDL_FreeCursor(const long handle)
+void Load_SDL_FreeCursor(const int64_t handle)
 {
 	SDL_FreeCursor((SDL_Cursor*)handle);
 }
 
-void Load_SDL_FreeSurface(const long handle)
+void Load_SDL_FreeSurface(const int64_t handle)
 {
 	SDL_FreeSurface((SDL_Surface*)handle);
 }
 
-void Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message)
+int Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message)
 {
 	return SDL_ShowSimpleMessageBox(flags, title, message, NULL);
 }
@@ -755,17 +923,17 @@ void Load_SDL_SetTextInputRect(const int x, const int y, const int w, const int 
 	SDL_SetTextInputRect(&rect);
 }
 
-void Load_SDL_RestoreWindow(const long handle)
+void Load_SDL_RestoreWindow(const int64_t handle)
 {
 	SDL_RestoreWindow((SDL_Window*)handle);
 }
 
-void Load_SDL_SetWindowIcon(const long handle, const long surface)
+void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface)
 {
 	SDL_SetWindowIcon((SDL_Window*)handle, (SDL_Surface*)surface);
 }
 
-void Load_SDL_DestroyWindow(const long handle)
+void Load_SDL_DestroyWindow(const int64_t handle)
 {
 	SDL_DestroyWindow((SDL_Window*)handle);
 }
@@ -775,12 +943,12 @@ bool Load_SDL_SetHint(const char* name, const char* value)
 	return (SDL_SetHint(name, value) == SDL_TRUE);
 }
 
-long Load_SDL_CreateWindow(const char* title, int w, int h, int flags)
+int64_t Load_SDL_CreateWindow(const char* title, int w, int h, int flags)
 {
-	return (long)SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, flags);
+	return (intptr_t)SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, flags);
 }
 
-void Load_SDL_PollEvent(char* data)
+int Load_SDL_PollEvent(char* data)
 {
 	SDL_Event e;
 	if (SDL_PollEvent(&e)) {
@@ -1024,14 +1192,14 @@ int Load_GL_GetError()
 	return glGetError();
 }
 
-void Load_GL_GetIntegerv(const int pname, const void* params)
+void Load_GL_GetIntegerv(const int pname, const int32_t* params)
 {
-	glGetIntegerv(pname, params);
+	glGetIntegerv(pname, (GLint*)params);
 }
 
 char* Load_GL_GetString(const int name)
 {
-	return (const char*)glGetString(name);
+	return (const char*)glGetString((GLenum)name);
 }
 
 void Load_GL_Hint(const int target, const int mode)
@@ -1173,8 +1341,9 @@ int Load_GL_CheckFramebufferStatus(const int target)
 	}
 #ifdef GLEW
 	return glCheckFramebufferStatusEXT(target);
-#endif
+#else
 	return -1;
+#endif
 }
 
 void Load_GL_CompileShader(const int shader)
@@ -1300,18 +1469,19 @@ int Load_GL_GenFramebuffer()
 	GLuint result;
 	glGenFramebuffersEXT(1, &result);
 	return result;
-#endif
+#else
 	return -1;
+#endif
 }
 
-char* Load_GL_GetActiveAttrib(const int program, const int index, const void* size, const void* type)
+char* Load_GL_GetActiveAttrib(const int program, const int index, const int32_t* size, const void* type)
 {
 	char cname[2048];
 	glGetActiveAttrib(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, cname);
 	return cname;
 }
 
-char* Load_GL_GetActiveUniform(const int program, const int index, const void* size, const void* type)
+char* Load_GL_GetActiveUniform(const int program, const int index, const int32_t* size, const void* type)
 {
 	char cname[2048];
 	glGetActiveUniform(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, cname);
@@ -1328,17 +1498,17 @@ void Load_GL_GetBooleanv(const int pname, const void* params)
 	glGetBooleanv(pname, params);
 }
 
-void Load_GL_GetBufferParameteriv(const int target, const int pname, const void* params)
+void Load_GL_GetBufferParameteriv(const int target, const int pname, const int32_t* params)
 {
 	glGetBufferParameteriv(target, pname, params);
 }
 
-void Load_GL_GetFloatv(const int pname, const void* params)
+void Load_GL_GetFloatv(const int pname, const float* params)
 {
 	glGetFloatv(pname, params);
 }
 
-void Load_GL_GetFramebufferAttachmentParameteriv(int target, int attachment, int pname, const void* params)
+void Load_GL_GetFramebufferAttachmentParameteriv(int target, int attachment, int pname, const int32_t* params)
 {
 	if (glGetFramebufferAttachmentParameteriv) {
 		glGetFramebufferAttachmentParameteriv(target, attachment, pname, params);
@@ -1349,7 +1519,7 @@ void Load_GL_GetFramebufferAttachmentParameteriv(int target, int attachment, int
 #endif
 }
 
-void Load_GL_GetProgramiv(int program, int pname, const void* params)
+void Load_GL_GetProgramiv(int program, int pname, const int32_t* params)
 {
 	glGetProgramiv(program, pname, params);
 }
@@ -1362,7 +1532,7 @@ char* Load_GL_GetProgramInfoLog(const int program)
 	return info;
 }
 
-void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const void* params)
+void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const int32_t* params)
 {
 	if (glGetRenderbufferParameteriv) {
 		glGetRenderbufferParameteriv(target, pname, params);
@@ -1373,7 +1543,114 @@ void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const
 #endif
 }
 
-void Load_GL_GetShaderiv(const int shader, const int pname, const void* params)
+void Load_GL_GetShaderiv(const int shader, const int pname, const int32_t* params)
 {
 	glGetShaderiv(shader, pname, params);
+}
+
+char* Load_GL_GetShaderInfoLog(const int shader)
+{
+	char info[1024 * 10]; 
+	int length = 0;
+	glGetShaderInfoLog(shader, 1024 * 10, &length, info);
+	return info;
+}
+
+void Load_GL_GetShaderPrecisionFormat(const int shadertype, const int precisiontype, const int32_t* range, const int32_t* precision)
+{
+	glGetShaderPrecisionFormat(shadertype, precisiontype, range, precision);
+}
+
+void Load_GL_GetTexParameterfv(const int target, const int pname, const float* params)
+{
+	glGetTexParameterfv(target, pname, params);
+}
+
+void Load_GL_GetTexParameteriv(int target, int pname, const int32_t* params)
+{
+	glGetTexParameteriv(target, pname, params);
+}
+
+void Load_GL_GetUniformfv(const int program, const int location, const float* params)
+{
+	glGetUniformfv(program, location, params);
+}
+
+void Load_GL_GetUniformiv(const int program, const int location, const int32_t* params)
+{
+	glGetUniformiv(program, location, (GLint*)params);
+}
+
+int Load_GL_GetUniformLocation(const int program, const char* name)
+{
+	return glGetUniformLocation(program, name);
+}
+
+void Load_GL_GetVertexAttribfv(const int index, const int pname, const float* params)
+{
+	glGetVertexAttribfv(index, pname, params);
+}
+
+void Load_GL_GetVertexAttribiv(const int index, const int pname, const int32_t* params)
+{
+	glGetVertexAttribiv(index, pname, params);
+}
+
+bool Load_GL_IsBuffer(const int buffer)
+{
+	return glIsBuffer(buffer);
+}
+
+bool Load_GL_IsEnabled(const int cap)
+{
+	return glIsEnabled(cap);
+}
+
+bool Load_GL_IsFramebuffer(const int framebuffer)
+{
+	if (glIsFramebuffer) {
+		return glIsFramebuffer(framebuffer);
+	}
+#ifdef GLEW
+	return glIsFramebufferEXT(framebuffer);
+#else
+	return false;
+#endif
+}
+
+bool Load_GL_IsProgram(const int program)
+{
+	return glIsProgram(program);
+}
+
+bool Load_GL_IsRenderbuffer(const int renderbuffer)
+{
+	if (glIsRenderbuffer) {
+		return glIsRenderbuffer(renderbuffer);
+	}
+#ifdef GLEW
+	return glIsRenderbufferEXT(renderbuffer);
+#else
+	return false;
+#endif
+}
+
+bool Load_GL_IsShader(const int shader)
+{
+	return glIsShader(shader);
+}
+
+bool Load_GL_IsTexture(const int texture)
+{
+	return glIsTexture(texture);
+}
+
+void Load_GL_LinkProgram(const int program)
+{
+	glLinkProgram(program);
+}
+
+void Load_GL_ReleaseShaderCompiler()
+{
+	glReleaseShaderCompiler();
 }

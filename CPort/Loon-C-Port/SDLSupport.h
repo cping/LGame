@@ -45,23 +45,43 @@ float* Load_Axes(const int controller, float* axes);
 
 bool Load_SDL_Exit(const int run);
 
-int* Load_SDL_GetDrawableSize(const long window, int* values);
+int* Load_SDL_GetDrawableSize(const int64_t window, int* values);
 
-int* Load_SDL_GetWindowSize(const long handle);
+int* Load_SDL_GetWindowSize(const int64_t handle);
+
+int Load_SDL_LockSurface(const int64_t handle);
+
+void Load_SDL_UnlockSurface(const int64_t handle);
+
+int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels,const int w,const int h,const int format);
+
+int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags);
+
+int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h);
+
+void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel);
+
+void Load_SDL_SetPixel32(const int64_t handle, int x, int y, int32_t pixel);
+
+void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny, int nw, int nh, int32_t* pixels);
+
+void Load_SDL_SetSurfaceBlendMode(const int64_t handle,const int mode);
+
+int Load_SDL_GetSurfaceBlendMode(const int64_t handle);
+
+void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int w, const int h, const int r, const int g, const int b, const int a);
+
+void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const int w, const int h);
+
+int* Load_SDL_GetClipRect(const int64_t handle);
 
 bool Load_SDL_Update();
 
 int* Load_SDL_TouchData(int* data);
 
-char* Load_SDL_GetWorkingDir();
-
 void Load_SDL_Cleanup();
 
-void Load_SDL_Sound_Finsihed(int channel);
-
-void Load_SDL_Music_Finsihed();
-
-long Load_SDL_ScreenInit(const char* title,const int w,const int h, const bool vsync);
+int64_t Load_SDL_ScreenInit(const char* title,const int w,const int h, const bool vsync);
 
 bool Load_SDL_PathIsFile(char* path);
 
@@ -79,43 +99,43 @@ int Load_SDL_SetClipboardText(const char* text);
 
 char* Load_SDL_GetClipboardText();
 
-void Load_SDL_MaximizeWindow(const long handle);
+void Load_SDL_MaximizeWindow(const int64_t handle);
 
-void Load_SDL_MinimizeWindow(const long handle);
+void Load_SDL_MinimizeWindow(const int64_t handle);
 
-int Load_SDL_SetWindowFullscreen(const long handle, const int flags);
+int Load_SDL_SetWindowFullscreen(const int64_t handle, const int flags);
 
-void Load_SDL_SetWindowBordered(const long handle, const bool bordered);
+void Load_SDL_SetWindowBordered(const int64_t handle, const bool bordered);
 
-void Load_SDL_SetWindowSize(const long handle, const int w, const int h);
+void Load_SDL_SetWindowSize(const int64_t handle, const int w, const int h);
 
-void Load_SDL_SetWindowPosition(const long handle, const int x, const int y);
+void Load_SDL_SetWindowPosition(const int64_t handle, const int x, const int y);
 
-int Load_SDL_GetWindowDisplayIndex(const long handle);
+int Load_SDL_GetWindowDisplayIndex(const int64_t handle);
 
-int Load_SDL_GetDisplayUsableBounds(const int display, int* xywh);
+int* Load_SDL_GetDisplayUsableBounds(const int display, int* xywh);
 
-int Load_SDL_GetDisplayBounds(const int display, int* xywh);
+int* Load_SDL_GetDisplayBounds(const int display, int* xywh);
 
 int Load_SDL_GetNumVideoDisplays();
 
-int Load_SDL_GetWindowFlags(const long handle);
+int Load_SDL_GetWindowFlags(const int64_t handle);
 
-void Load_SDL_SetWindowTitle(const long handle,const char* title);
+void Load_SDL_SetWindowTitle(const int64_t handle,const char* title);
 
-long Load_SDL_CreateRGBSurfaceFrom(void* pixels, int width, int height);
+int64_t Load_SDL_CreateRGBSurfaceFrom32(void* pixels, int width, int height);
 
-long Load_SDL_CreateColorCursor(const long surface, const int hotx, const int hoty);
+int64_t Load_SDL_CreateColorCursor(const int64_t surface, const int hotx, const int hoty);
 
-long Load_SDL_CreateSystemCursor(const int type);
+int64_t Load_SDL_CreateSystemCursor(const int type);
 
-void Load_SDL_SetCursor(const long handle);
+void Load_SDL_SetCursor(const int64_t handle);
 
-void Load_SDL_FreeCursor(const long handle);
+void Load_SDL_FreeCursor(const int64_t handle);
 
-void Load_SDL_FreeSurface(const long handle);
+void Load_SDL_FreeSurface(const int64_t handle);
 
-void Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message);
+int Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message);
 
 void Load_SDL_StartTextInput();
 
@@ -127,27 +147,27 @@ bool Load_SDL_GL_ExtensionSupported(const char* exte);
 
 int Load_SDL_GL_SetSwapInterval(int on);
 
-void Load_SDL_GL_SwapWindow(const long window);
+void Load_SDL_GL_SwapWindow(const int64_t window);
 
-long Load_SDL_GL_CreateContext(const long window);
+int64_t Load_SDL_GL_CreateContext(const int64_t window);
 
 int Load_SDL_GL_SetAttribute(const int attribute, const int value);
 
 void Load_SDL_SetTextInputRect(int x, int y, int w, int h);
 
-void Load_SDL_RestoreWindow(const long handle);
+void Load_SDL_RestoreWindow(const int64_t handle);
 
-void Load_SDL_SetWindowIcon(const long handle, const long surface);
+void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface);
 
-void Load_SDL_DestroyWindow(const long handle);
+void Load_SDL_DestroyWindow(const int64_t handle);
 
 bool Load_SDL_SetHint(const char* name,const char* value);
 
-long Load_SDL_CreateWindow(const char* title,
+int64_t Load_SDL_CreateWindow(const char* title,
     const int w,
     const int h, const int flags);
 
-void Load_SDL_PollEvent(char* data);
+int Load_SDL_PollEvent(char* data);
 
 void Load_SDL_GetCompiledVersion(char* data);
 
@@ -209,7 +229,7 @@ int Load_GL_GenTexture();
 
 int Load_GL_GetError();
 
-void Load_GL_GetIntegerv(const int pname, const void* params);
+void Load_GL_GetIntegerv(const int pname, const int32_t* params);
 
 char* Load_GL_GetString(const int name);
 
@@ -297,26 +317,62 @@ void Load_GL_GenerateMipmap(const int target);
 
 int Load_GL_GenFramebuffer();
 
-char* Load_GL_GetActiveAttrib(const int program, const int index,const void* size,const void* type);
+char* Load_GL_GetActiveAttrib(const int program, const int index,const int32_t* size,const void* type);
 
-char* Load_GL_GetActiveUniform(const int program, const int index, const void* size, const void* type);
+char* Load_GL_GetActiveUniform(const int program, const int index, const int32_t* size, const void* type);
 
 int Load_GL_GetAttribLocation(const int program, const char* name);
 
 void Load_GL_GetBooleanv(const int pname, const void* params);
 
-void Load_GL_GetBufferParameteriv(const int target, const int pname, const void* params);
+void Load_GL_GetBufferParameteriv(const int target, const int pname, const int32_t* params);
 
-void Load_GL_GetFloatv(const int pname, const void* params);
+void Load_GL_GetFloatv(const int pname, const float* params);
 
-void Load_GL_GetFramebufferAttachmentParameteriv(const int target, const int attachment, const int pname, const void* params);
+void Load_GL_GetFramebufferAttachmentParameteriv(const int target, const int attachment, const int pname, const int32_t* params);
 
-void Load_GL_GetProgramiv(const int program, const int pname, const void* params);
+void Load_GL_GetProgramiv(const int program, const int pname, const int32_t* params);
 
 char* Load_GL_GetProgramInfoLog(const int program);
 
-void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const void* params);
+void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const int32_t* params);
 
-void Load_GL_GetShaderiv(const int shader, const int pname, const void* params);
+void Load_GL_GetShaderiv(const int shader, const int pname, const int32_t* params);
+
+char* Load_GL_GetShaderInfoLog(const int shader);
+
+void Load_GL_GetShaderPrecisionFormat(const int shadertype, const int precisiontype, const int32_t* range, const int32_t* precision);
+
+void Load_GL_GetTexParameterfv(const int target, const int pname, const float* params);
+
+void Load_GL_GetTexParameteriv(const int target, const int pname, const int32_t* params);
+
+void Load_GL_GetUniformfv(const int program, const int location, const float* params);
+
+void Load_GL_GetUniformiv(const int program, const int location, const int32_t* params);
+
+int Load_GL_GetUniformLocation(const int program, const char* name);
+
+void Load_GL_GetVertexAttribfv(const int index, const int pname, const float* params);
+
+void Load_GL_GetVertexAttribiv(const int index, const int pname, const int32_t* params);
+
+bool Load_GL_IsBuffer(const int buffer);
+
+bool Load_GL_IsEnabled(const int cap);
+
+bool Load_GL_IsFramebuffer(const int framebuffer);
+
+bool Load_GL_IsProgram(const int program);
+
+bool Load_GL_IsRenderbuffer(const int renderbuffer);
+
+bool Load_GL_IsShader(const int shader);
+
+bool Load_GL_IsTexture(const int texture);
+
+void Load_GL_LinkProgram(const int program);
+
+void Load_GL_ReleaseShaderCompiler();
 
 #endif
