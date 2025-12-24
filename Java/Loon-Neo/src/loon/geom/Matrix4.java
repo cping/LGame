@@ -215,8 +215,8 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 	}
 
 	public final static Matrix4 setMatrix(Matrix4 src, Matrix4 dst) {
-		if (src == null && dst == null) {
-			return new Matrix4();
+		if (src == null) {
+			src = new Matrix4();
 		}
 		if (dst == null) {
 			dst = new Matrix4();
@@ -264,8 +264,8 @@ public final class Matrix4 extends BaseBufferSupport implements Serializable, XY
 	}
 
 	public final static Matrix4 negate(Matrix4 src, Matrix4 dst) {
-		if (src == null && dst == null) {
-			return new Matrix4();
+		if (src == null) {
+			src = new Matrix4();
 		}
 		if (dst == null) {
 			dst = new Matrix4();

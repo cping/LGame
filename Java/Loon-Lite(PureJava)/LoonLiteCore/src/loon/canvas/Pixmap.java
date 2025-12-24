@@ -523,7 +523,21 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 		this.set(CollectionUtils.copyOf(pix.getData()), pix.getWidth(), pix.getHeight(), pix.hasAlpha());
 	}
 
-	private void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
+	public void setData(int[] pixelsData, int w, int h) {
+		setData(pixelsData, w, h, _hasAlpha);
+	}
+
+	public void setData(int[] pixelsData, int w, int h, boolean hasAlpha) {
+		if (pixelsData == null) {
+			throw new LSysException("Pixel data in null !");
+		}
+		set(pixelsData, w, h, hasAlpha);
+	}
+
+	protected void set(int[] pixelsData, int w, int h, boolean hasAlpha) {
+		if (_isClosed) {
+			return;
+		}
 		if (w < 0) {
 			throw new LSysException("Width may not be negative !");
 		}
@@ -544,8 +558,16 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			this._transparent = LColor.TRANSPARENT;
 		}
 		this._dirty = true;
-		this.defClip = new RectI(0, 0, _width, _height);
-		this.clip = new RectI(0, 0, _width, _height);
+		if (defClip == null) {
+			defClip = new RectI(0, 0, _width, _height);
+		} else {
+			defClip.set(0, 0, _width, _height);
+		}
+		if (clip == null) {
+			clip = new RectI(0, 0, _width, _height);
+		} else {
+			clip.set(0, 0, _width, _height);
+		}
 	}
 
 	/**
@@ -3072,6 +3094,12 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 	public void setData(int[] pixels) {
 		if (_isClosed) {
 			return;
+		}
+		if (pixels == null) {
+			throw new LSysException("Pixel data is null !");
+		}
+		if (_length > 0 && pixels.length != _length) {
+			throw new LSysException("The set pixel data does not match the size of the pixel data !");
 		}
 		this._drawPixels = pixels;
 		this._dirty = true;

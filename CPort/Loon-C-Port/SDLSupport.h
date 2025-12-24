@@ -53,6 +53,10 @@ int Load_SDL_LockSurface(const int64_t handle);
 
 void Load_SDL_UnlockSurface(const int64_t handle);
 
+void Load_SDL_Delay(const int32_t d);
+
+int64_t Load_SDL_CreateRGBSurface(const int32_t flags, const int width, const int height, const int depth,int32_t rmask, const int32_t gmask, const int32_t bmask, const int32_t amask);
+
 int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels,const int w,const int h,const int format);
 
 int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags);
@@ -173,9 +177,15 @@ void Load_SDL_GetCompiledVersion(char* data);
 
 void Load_SDL_GetVersion(char* data);
 
+int64_t Load_SDL_Mix_LoadMUS(const char* filename);
+
 void Load_SDL_Quit();
 
 char* Load_GL_Init();
+
+void Load_GL_UseProgram(const int program);
+
+void Load_GL_ValidateProgram(const int program);
 
 void Load_GL_ActiveTexture(const int tex);
 
@@ -374,5 +384,99 @@ bool Load_GL_IsTexture(const int texture);
 void Load_GL_LinkProgram(const int program);
 
 void Load_GL_ReleaseShaderCompiler();
+
+void Load_GL_RenderbufferStorage(const int target, const int internalformat, const int width, const int height);
+
+void Load_GL_SampleCoverage(const float value, const bool invert);
+
+void Load_GL_ShaderSource(const int shader, const char* string);
+
+void Load_GL_StencilFuncSeparate(const int face, const int func, const int ref, const int mask);
+
+void Load_GL_StencilMaskSeparate(const int face,const int mask);
+
+void Load_GL_StencilOpSeparate(const int face, const int fail, const int zfail, const int zpass);
+
+void Load_GL_TexParameterfv(const int target, const int pname, const float* params);
+
+void Load_GL_TexParameteri(const int target, const int pname, const int param);
+
+void Load_GL_TexParameteriv(const int target, const int pname, const int32_t* params);
+
+void Load_GL_Uniform1f(const int location, const float x);
+
+void Load_GL_Uniform1fv(const int location, const int count, const float* v);
+
+void Load_GL_Uniform1fvOffset(const int location, const int count, const float* v, const int offset);
+
+void Load_GL_Uniform1i(const int location, const int x);
+
+void Load_GL_Uniform1iv(const int location, const int count, const int32_t* v);
+
+void Load_GL_Uniform1ivOffset(const int location, const int count, const int32_t* v, const int offset);
+
+void Load_GL_Uniform2f(const int location, const float x, const float y);
+
+void Load_GL_Uniform2fv(const int location, const int count, const float* v);
+
+void Load_GL_Uniform2fvOffset(const int location, const int count, const float* v, const int offset);
+
+void Load_GL_Uniform2i(const int location, const int x, const int y);
+
+void Load_GL_Uniform2iv(const int location, const int count, const int32_t* v);
+
+void Load_GL_Uniform2ivOffset(const int location, const int count, const int32_t* v, const int offset);
+
+void Load_GL_Uniform3f(const int location, const float x, const float y, const float z);
+
+void Load_GL_Uniform3fv(const int location, const int count, const float* v);
+
+void Load_GL_Uniform3fvOffset(const int location, const int count, const float* v, const int offset);
+
+void Load_GL_Uniform3i(const int location, const int x, const int y, const int z);
+
+void Load_GL_Uniform3iv(const int location, const int count, const int32_t* v);
+
+void Load_GL_Uniform3ivOffset(const int location, const int count, const int32_t* v, const int offset);
+
+void Load_GL_Uniform4f(const int location, const float x, const float y, const float z, const float w);
+
+void Load_GL_Uniform4fv(const int location, const int count, const float* v);
+
+void Load_GL_Uniform4fvOffset(const int location,const int count,const float* v,const int offset);
+
+void Load_GL_Uniform4i(const int location, const int x, const int y, const int z, const int w);
+
+void Load_GL_Uniform4iv(const int location, const int count, const int32_t* v);
+
+void Load_GL_Uniform4ivOffset(const int location, const int count, const int32_t* v, const int offset);
+
+void Load_GL_UniformMatrix2fv(const int location, const int count, const bool transpose, const float* value);
+
+void Load_GL_UniformMatrix2fvOffset(const int location, const int count, const bool transpose, const float* value, const int offset);
+
+void Load_GL_UniformMatrix3fv(const int location, const int count, const bool transpose, const float* value);
+
+void Load_GL_UniformMatrix4fv(const int location, const int count, const bool transpose, const float* value);
+
+void Load_GL_UniformMatrix4fvOffset(const int location, const int count, const bool transpose, const float* value, const int offset);
+
+void Load_GL_VertexAttrib1f(const int indx, const float x);
+
+void Load_GL_VertexAttrib1fv(const int indx, const float* values);
+
+void Load_GL_VertexAttrib2f(const int indx, const float x, const float y);
+
+void Load_GL_VertexAttrib2fv(const int indx, const float* values);
+
+void Load_GL_VertexAttrib3f(const int indx, const float x, const float y, const float z);
+
+void Load_GL_VertexAttrib3fv(const int indx, const float* values);
+
+void Load_GL_VertexAttrib4f(const int indx, const float x, const float y, const float z, const float w);
+
+void Load_GL_VertexAttrib4fv(const int indx, const float* values);
+
+void Load_GL_VertexAttribPointer(const int indx, const int size, const int type, bool normalized, const int stride, void* ptr);
 
 #endif
