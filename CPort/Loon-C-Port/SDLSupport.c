@@ -15,7 +15,12 @@ static SDL_Window* window;
 static int buttons;
 static float joysticks[4];
 #endif
-
+static const int audio_rate = 44100;
+static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
+static const int audio_channels = MIX_DEFAULT_CHANNELS;
+static const int audio_buffers = 4096;
+static const int fade_time = 5000;
+static const float volume = 1.0;
 static bool musicFinishedEvent;
 static bool soundFinishedEvent;
 static int touches[16 * 3];
@@ -300,11 +305,23 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
     gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
    #endif
 #endif
-	Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
-	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 4096);
-	Mix_AllocateChannels(32);
-	Mix_HookMusicFinished(OnMusicFinished);
-	Mix_ChannelFinished(OnSoundFinished);
+	int err = Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
+	if (err != -1) {
+		err = Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers);
+		if (err != -1) {
+			Mix_QuerySpec(&audio_rate, &audio_format, &audio_channels);
+			Mix_AllocateChannels(32);
+			Mix_HookMusicFinished(OnMusicFinished);
+			Mix_ChannelFinished(OnSoundFinished);
+		}
+	}
+	return (intptr_t)window;
+}
+
+int64_t Load_SDL_WindowHandle() {
+	if (!window) {
+		return -1;
+	}
 	return (intptr_t)window;
 }
 
@@ -680,7 +697,7 @@ void Load_SDL_SetPixel32(const int64_t handle, int x, int y,int32_t pixel)
 	*target_pixel = (Uint32)pixel;
 }
 
-void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny,int nw,int nh, int32_t* pixels)
+void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny, int nw, int nh, int32_t* pixels)
 {
 	SDL_Surface* surface = (SDL_Surface*)handle;
 	if (!surface || !pixels) return;
@@ -1055,6 +1072,154 @@ int64_t Load_SDL_Mix_LoadMUS(const char* filename)
 		return -1;
 	}
 	return (intptr_t)mix;
+}
+
+void Load_SDL_Mix_PlayMusic(const int64_t handle, const bool looping)
+{
+	Mix_Music* mix = (Mix_Music*)handle;
+	if (!mix) {
+		return;
+	}
+	Mix_PlayMusic(mix, looping ? -1 : 0);
+}
+
+void Load_SDL_Mix_PlayFadeInMusic(const int64_t handle, const bool looping)
+{
+	Mix_Music* mix = (Mix_Music*)handle;
+	if (!mix) {
+		return;
+	}
+	Mix_FadeInMusic(mix, looping ? -1 : 0, fade_time);
+}
+
+void Load_SDL_Mix_PlayMusicFadeStop()
+{
+	Mix_FadeOutMusic(fade_time);
+}
+
+void Load_SDL_MIX_SetPosition(const float position)
+{
+	Mix_RewindMusic();
+	Mix_SetMusicPosition(position);
+}
+
+void Load_SDL_Mix_SetMusicVolume(const float volume)
+{
+	Mix_VolumeMusic((int)(volume * MIX_MAX_VOLUME));
+}
+
+float Load_SDL_Mix_GetMusicVolume()
+{
+	return Mix_VolumeMusic(-1) * MIX_MAX_VOLUME;
+}
+
+void Load_SDL_Mix_PauseMusic()
+{
+	Mix_PauseMusic();
+}
+
+void Load_SDL_Mix_ResumeMusic()
+{
+	Mix_ResumeMusic();
+}
+
+void Load_SDL_Mix_HaltMusic()
+{
+	Mix_HaltMusic();
+}
+
+void Load_SDL_Mix_DisposeMusic(const int64_t handle)
+{
+	Mix_Music* mix = (Mix_Music*)handle;
+	if (!mix) {
+		return;
+	}
+	Mix_FreeMusic(mix);
+}
+
+int64_t Load_SDL_Mix_LoadSound(const char* filename)
+{
+	Mix_Chunk* sound = Mix_LoadWAV(filename);
+	if (!sound) {
+		return -1;
+	}
+	return (intptr_t)sound;
+}
+
+int64_t Load_SDL_Mix_LoadSoundFromMem(const void* wavData)
+{
+	SDL_RWops* buffer = SDL_RWFromMem(wavData, sizeof(wavData));
+	Mix_Chunk* sound = Mix_LoadWAV_RW(buffer, true);
+	if (!sound) {
+		return -1;
+	}
+	return (intptr_t)sound;
+}
+
+int Load_SDL_Mix_PlaySound(const int64_t handle, const bool looping)
+{
+	Mix_Chunk* sound = (Mix_Chunk*)handle;
+	if (!sound) {
+		return -1;
+	}
+	return Mix_PlayChannel(-1, sound, looping ? -1 : 0);
+}
+
+int Load_SDL_Mix_SetPlaySoundLooping(const int64_t handle, const int channel, const bool looping)
+{
+	Mix_Chunk* sound = (Mix_Chunk*)handle;
+	if (!sound) {
+		return -1;
+	}
+	return Mix_PlayChannel(channel, sound, looping ? -1 : 0);
+}
+
+void Load_SDL_Mix_PauseSound(const int channel)
+{
+	Mix_Pause(channel);
+}
+
+void Load_SDL_Mix_ResumeSound(const int channel)
+{
+	Mix_Resume(channel);
+}
+
+int Load_SDL_Mix_SetVolume(const int channel, const float volume)
+{
+	return Mix_Volume(channel, (int)(volume * MIX_MAX_VOLUME));
+}
+
+int Load_SDL_Mix_SetPan(const int channel, const float pan)
+{
+	uint8_t left, right;
+	if (pan <= 0) {
+		left = 255;
+		right = (uint8_t)((1 + pan) * 255);
+	}
+	else {
+		left = (uint8_t)((1 - pan) * 255);
+		right = 255;
+	}
+	return Mix_SetPanning(channel, left, right);
+}
+
+int Load_SDL_Mix_HaltSound(const int channel)
+{
+	return Mix_HaltChannel(channel);
+}
+
+void Load_SDL_Mix_DisposeSound(const int64_t handle)
+{
+	Mix_Chunk* sound = (Mix_Chunk*)handle;
+	if (!sound) {
+		return -1;
+	}
+	Mix_FreeChunk(sound);
+}
+
+void Load_SDL_Mix_CloseAudio()
+{
+	Mix_CloseAudio();
 }
 
 void Load_SDL_Quit()

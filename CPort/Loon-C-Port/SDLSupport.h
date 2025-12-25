@@ -1,6 +1,8 @@
 #ifndef LOON_SDL
 #define LOON_SDL
 
+#include <stdint.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
@@ -30,6 +32,13 @@
 
 #include "SDL_mixer.h"
 #include <SDL_gamecontroller.h>
+
+#define true 1
+#define false 0
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 char* GetPathFullName(char* dst, const char* path);
 
@@ -178,6 +187,50 @@ void Load_SDL_GetCompiledVersion(char* data);
 void Load_SDL_GetVersion(char* data);
 
 int64_t Load_SDL_Mix_LoadMUS(const char* filename);
+
+void Load_SDL_Mix_PlayMusic(const int64_t handle, const bool looping);
+
+void Load_SDL_Mix_PlayFadeInMusic(const int64_t handle, const bool looping);
+
+void Load_SDL_Mix_PlayMusicFadeStop();
+
+void Load_SDL_MIX_SetPosition(const float position);
+
+void Load_SDL_Mix_SetMusicVolume(const float volume);
+
+float Load_SDL_Mix_GetMusicVolume();
+
+void Load_SDL_Mix_PauseMusic();
+
+void Load_SDL_Mix_ResumeMusic();
+
+void Load_SDL_Mix_HaltMusic();
+
+void Load_SDL_Mix_DisposeMusic(const int64_t handle);
+
+int64_t Load_SDL_Mix_LoadSound(const char* filename);
+
+int64_t Load_SDL_Mix_LoadSoundFromMem(const void* wavData);
+
+int Load_SDL_Mix_PlaySound(const int64_t handle, const bool looping);
+
+int Load_SDL_Mix_SetPlaySoundLooping(const int64_t handle, const int channel, const bool looping);
+
+void Load_SDL_Mix_PauseSound(const int channel);
+
+void Load_SDL_Mix_ResumeSound(const int channel);
+
+int Load_SDL_Mix_SetVolume(const int channel, const float volume);
+
+int Load_SDL_Mix_SetPan(const int channel, const float pan);
+
+int Load_SDL_Mix_HaltSound(const int channel);
+
+void Load_SDL_Mix_DisposeSound(const int64_t handle);
+
+void Load_SDL_Mix_CloseAudio();
+
+int64_t Load_SDL_WindowHandle();
 
 void Load_SDL_Quit();
 
@@ -478,5 +531,9 @@ void Load_GL_VertexAttrib4f(const int indx, const float x, const float y, const 
 void Load_GL_VertexAttrib4fv(const int indx, const float* values);
 
 void Load_GL_VertexAttribPointer(const int indx, const int size, const int type, bool normalized, const int stride, void* ptr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
