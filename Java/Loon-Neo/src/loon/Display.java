@@ -258,7 +258,7 @@ public final class Display extends BaseIO implements LRelease {
 		this._process = _game.process();
 		this._sinceRefreshMaxInterval = LSystem.SECOND;
 		this._debugTextSpace = 5;
-		this._memorySelf = _game.isHTML5();
+		this._memorySelf = _game.isHTML5() || _game.isCPort() || _game.isCSharpPort();
 		Graphics graphics = _game.graphics();
 		this._glEx = new GLEx(graphics, graphics.defaultRenderTarget, graphics.gl);
 		this._glEx.update();

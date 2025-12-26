@@ -56,7 +56,7 @@ public abstract class LGame implements LRelease {
 	 * 当前依赖的Java运行库
 	 */
 	public static enum Environment {
-		JAVAFX, JAVASE, ANDROID, GWT
+		JAVAFX, JAVASE, ANDROID, TEAVM
 	}
 
 	/**

@@ -408,6 +408,24 @@ public abstract class LGame implements LRelease {
 	}
 
 	/**
+	 * 检查是否已经转译Java代码为C#语言版本后运行(默认无效,此项只有环境为Loon-CSharpPort时才会开启)
+	 * 
+	 * @return
+	 */
+	public boolean isCSharpPort() {
+		return false;
+	}
+	
+	/**
+	 * 检查是否已经转译Java字节码为C语言版本后运行(默认无效,此项只有环境为Loon-CPort时才会开启)
+	 * 
+	 * @return
+	 */
+	public boolean isCPort() {
+		return false;
+	}
+
+	/**
 	 * 检查是否手机环境
 	 * 
 	 * @return

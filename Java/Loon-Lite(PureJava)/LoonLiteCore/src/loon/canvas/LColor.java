@@ -22,6 +22,7 @@ package loon.canvas;
 
 import java.io.Serializable;
 
+import loon.LSysException;
 import loon.LSystem;
 import loon.geom.Vector3f;
 import loon.geom.Vector4f;
@@ -52,6 +53,26 @@ public final class LColor implements Serializable {
 
 	// 最大色彩数值
 	public static final int MAX_COLOR = 255;
+
+	public final static int[] convertBytesToRGBAs(byte[] bytePixels, boolean hasAlpha) {
+		if (bytePixels == null || bytePixels.length == 0) {
+			throw new LSysException("Pixel bytes is empty or null !");
+		}
+		final int bytesPerPixel = hasAlpha ? 4 : 3;
+		if (bytePixels.length % bytesPerPixel != 0) {
+			throw new LSysException("Invalid pixel bytes length for given format !");
+		}
+		final int length = bytePixels.length;
+		final int[] intPixels = new int[length / bytesPerPixel];
+		for (int i = 0, j = 0; i < length; i += bytesPerPixel, j++) {
+			int r = bytePixels[i] & 0xFF;
+			int g = bytePixels[i + 1] & 0xFF;
+			int b = bytePixels[i + 2] & 0xFF;
+			int a = hasAlpha ? (bytePixels[i + 3] & 0xFF) : 255;
+			intPixels[j] = (a << 24) | (r << 16) | (g << 8) | b;
+		}
+		return intPixels;
+	}
 
 	public final static boolean isColorValue(float c) {
 		return (c >= MIN_COLOR && c <= 1f);

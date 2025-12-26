@@ -44,6 +44,8 @@ char* GetPathFullName(char* dst, const char* path);
 
 char* GetSystemProperty(const char* key);
 
+void Call_SDL_DestroyWindow();
+
 void Load_RemapControllers(const int min, const int max, const int dualJoy, const int singleMode);
 
 bool Load_IsConnected(const int controller);

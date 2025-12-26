@@ -181,6 +181,14 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 		return getImage().texture();
 	}
 
+	public static Pixmap createImage(byte[] pixels, int w, int h) {
+		return createImage(pixels, w, h, true);
+	}
+
+	public static Pixmap createImage(byte[] pixels, int w, int h, boolean hasAlpha) {
+		return new Pixmap(pixels, w, h, hasAlpha);
+	}
+
 	public static Pixmap createImage(int[] pixels, int w, int h) {
 		return createImage(pixels, w, h, true);
 	}
@@ -506,6 +514,14 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 
 	public Pixmap(int w, int h, boolean hasAlpha) {
 		this(new int[w * h], w, h, hasAlpha);
+	}
+
+	public Pixmap(byte[] pixelsBytes, int w, int h) {
+		this(pixelsBytes, w, h, true);
+	}
+
+	public Pixmap(byte[] pixelsBytes, int w, int h, boolean hasAlpha) {
+		this(LColor.convertBytesToRGBAs(pixelsBytes, hasAlpha), w, h, hasAlpha);
 	}
 
 	public Pixmap(int[] pixelsData, int w, int h) {

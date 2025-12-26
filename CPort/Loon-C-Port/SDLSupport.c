@@ -965,6 +965,12 @@ void Load_SDL_DestroyWindow(const int64_t handle)
 	SDL_DestroyWindow((SDL_Window*)handle);
 }
 
+void Call_SDL_DestroyWindow() {
+	if (window) {
+		SDL_DestroyWindow(window);
+	}
+}
+
 bool Load_SDL_SetHint(const char* name, const char* value)
 {
 	return (SDL_SetHint(name, value) == SDL_TRUE);
