@@ -18,7 +18,7 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.teavm.builder;
+package loon.cport.builder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +41,9 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class TeaProperties {
+import loon.teavm.builder.TeaProperties;
+
+public class CProperties {
 
 	private static final String OPTION_ADDITIONAL_RESOURCES = "resources";
 	private static final String OPTION_IGNORE_RESOURCES = "ignore-resources";
@@ -51,7 +53,7 @@ public class TeaProperties {
 	public ArrayList<String> additionalPath = new ArrayList<>();
 	public ArrayList<String> ignorePath = new ArrayList<>();
 
-	public TeaProperties(String path, String content) {
+	public CProperties(String path, String content) {
 		this.path = path;
 
 		Scanner scanner = new Scanner(content);
@@ -79,13 +81,13 @@ public class TeaProperties {
 	}
 
 	public static List<String> getResources(ArrayList<URL> acceptedURL) {
-		ArrayList<TeaProperties> propertiesList = getAllProperties(acceptedURL);
+		ArrayList<CProperties> propertiesList = getAllProperties(acceptedURL);
 		ArrayList<URI> filteredUrl = new ArrayList<>();
 		HashSet<String> ignoreResources = new HashSet<>();
 		for (URL url : acceptedURL) {
 			String path = url.getPath();
 			boolean accept = false;
-			for (TeaProperties properties : propertiesList) {
+			for (CProperties properties : propertiesList) {
 				ignoreResources.addAll(properties.ignorePath);
 				if (path.contains(properties.path)) {
 					accept = true;
@@ -129,7 +131,7 @@ public class TeaProperties {
 		return false;
 	}
 
-	private static ArrayList<TeaProperties> getAllProperties(ArrayList<URL> acceptedURL) {
+	private static ArrayList<CProperties> getAllProperties(ArrayList<URL> acceptedURL) {
 		ArrayList<String> filteredUrl = new ArrayList<>();
 		for (URL url : acceptedURL) {
 			String path = url.getPath();
@@ -139,9 +141,9 @@ public class TeaProperties {
 				filteredUrl.add(path);
 			}
 		}
-		ArrayList<TeaProperties> result = new ArrayList<TeaProperties>();
+		ArrayList<CProperties> result = new ArrayList<CProperties>();
 		for (String path : filteredUrl) {
-			TeaProperties properties = getProperties(path);
+			CProperties properties = getProperties(path);
 			if (properties != null) {
 				result.add(properties);
 			}
@@ -149,7 +151,7 @@ public class TeaProperties {
 		return result;
 	}
 
-	private static TeaProperties getProperties(String path) {
+	private static CProperties getProperties(String path) {
 		try {
 			try (ZipFile zipFile = new ZipFile(path)) {
 				ZipEntry propertyEntry = zipFile.getEntry("META-INF/loon-teavm.properties");
@@ -157,7 +159,7 @@ public class TeaProperties {
 					InputStream inputStream = zipFile.getInputStream(propertyEntry);
 					String content = readString(inputStream, null);
 					inputStream.close();
-					return new TeaProperties(path, content);
+					return new CProperties(path, content);
 				}
 			}
 		} catch (IOException e) {

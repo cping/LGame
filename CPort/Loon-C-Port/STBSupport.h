@@ -51,7 +51,9 @@ int32_t Load_STB_Image_GetFormat(const int64_t handle);
 
 const char* Load_STB_Image_FailureReason();
 
-int64_t Load_STB_LoadFontInfo(const char* path, const char* fontName, const int style);
+int64_t Load_STB_LoadFontInfo(const char* path);
+
+int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName, const int style);
 
 int* Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point);
 
@@ -64,6 +66,18 @@ uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle, const int point, con
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height);
 
 void Load_STB_CloseFontInfo(const int64_t handle);
+
+int* Call_STB_GetCodepointBitmapBox(const float fontsize, const int point);
+
+int* Call_STB_GetFontVMetrics(const float fontsize);
+
+int Call_STB_GetCodepointHMetrics(const int point);
+
+uint8_t* Call_STB_MakeCodepointBitmap(const int point, const float scale, const int width, const int height);
+
+uint8_t* Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, const int width, const int height);
+
+void Call_STB_CloseFontInfo();
 
 #ifdef __cplusplus
 }
