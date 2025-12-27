@@ -33,8 +33,6 @@ import org.teavm.model.FieldReader;
 import org.teavm.model.MethodDescriptor;
 import org.teavm.model.MethodReader;
 
-import loon.teavm.builder.TeaBuilder;
-
 public class TeaReflectionSupplier implements ReflectionSupplier {
 
     private static ArrayList<String> clazzList = new ArrayList<String>();
@@ -63,11 +61,11 @@ public class TeaReflectionSupplier implements ReflectionSupplier {
     }
 
     public static void printReflectionClasses() {
-		TeaBuilder.begin("REFLECTION CLASSES: " + clazzList.size());
+		CBuilder.begin("REFLECTION CLASSES: " + clazzList.size());
         for(String reflectionClass : clazzList) {
-            TeaBuilder.println(reflectionClass);
+        	CBuilder.println(reflectionClass);
         }
-        TeaBuilder.end();
+        CBuilder.end();
     }
 
     public TeaReflectionSupplier() {

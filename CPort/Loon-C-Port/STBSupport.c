@@ -1,6 +1,6 @@
 #include "STBSupport.h"
 
-static stbtt_fontinfo _temp_fontinfo;
+static stb_font *_temp_fontinfo;
 
 int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len)
 {
@@ -142,7 +142,7 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 		SDL_RWclose(rw);
 		return -1;
 	}
-	const unsigned char* fontBuffer = malloc(file_size);
+	unsigned char* fontBuffer = malloc(file_size);
 	if (SDL_RWread(rw, fontBuffer, file_size, 1) != 1) {
 		return -1;
 	}
@@ -151,14 +151,15 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 	if (offset < 0) {
 		offset = 0;
 	}
-	stbtt_fontinfo font;
-	if (!stbtt_InitFont(&font, fontBuffer, offset)) {
+	stb_font* temp_font = calloc(sizeof(stb_font), 1);
+	temp_font->info = malloc(sizeof(stbtt_fontinfo));
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
 		return -1;
 	}
-	_temp_fontinfo = font;
-	return *(int64_t*)&font;
+	_temp_fontinfo = temp_font;
+	return (intptr_t)&temp_font;
 }
 
 int64_t Load_STB_LoadFontInfo(const char* path)
@@ -174,49 +175,50 @@ int64_t Load_STB_LoadFontInfo(const char* path)
 		SDL_RWclose(rw);
 		return -1;
 	}
-	const unsigned char* fontBuffer = malloc(file_size);
+	unsigned char* fontBuffer = malloc(file_size);
 	if (SDL_RWread(rw, fontBuffer, file_size, 1) != 1) {
 		return -1;
 	}
 	SDL_RWclose(rw);
-	stbtt_fontinfo font;
-	if (!stbtt_InitFont(&font, fontBuffer, 0)) {
+    stb_font* temp_font = calloc(sizeof(stb_font), 1);
+	temp_font->info = malloc(sizeof(stbtt_fontinfo));
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
 		return -1;
 	}
-	_temp_fontinfo = font;
-	return *(int64_t*)&font;
+	_temp_fontinfo = temp_font;
+	return (intptr_t)&temp_font;
 }
 
 int* Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point)
 {
-	stbtt_fontinfo* fontinfo = (stbtt_fontinfo*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		fontinfo = &_temp_fontinfo;
+		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			return 0;
 		}
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontsize);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
-	stbtt_GetCodepointBitmapBox(&fontinfo, point, scale, scale, &x0, &y0, &x1, &y1);
+	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
 	int rect[] = {x0,y0,x1,y1};
 	return rect;
 }
 
 int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
 {
-	stbtt_fontinfo* fontinfo = (stbtt_fontinfo*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		fontinfo = &_temp_fontinfo;
+		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			return 0;
 		}
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontsize);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(&fontinfo, &ascent, &descent, &lineGap);
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
 	int rect[] = { ascent,descent,lineGap };
@@ -225,15 +227,15 @@ int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
 
 int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
 {
-	stbtt_fontinfo* fontinfo = (stbtt_fontinfo*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		fontinfo = &_temp_fontinfo;
+		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			return 0;
 		}
 	}
 	int height;
-	stbtt_GetCodepointHMetrics(&fontinfo, point, &height, 0);
+	stbtt_GetCodepointHMetrics(fontinfo->info, point, &height, 0);
 	return height;
 }
 
@@ -243,49 +245,49 @@ uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, cons
 	if (!bitmap) {
 		return 0;
 	}
-	stbtt_fontinfo* fontinfo = (stbtt_fontinfo*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		fontinfo = &_temp_fontinfo;
+		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			return 0;
 		}
 	}
-	stbtt_MakeCodepointBitmap(&fontinfo, bitmap, width, height, width, scale, scale, point);
+	stbtt_MakeCodepointBitmap(fontinfo->info, bitmap, width, height, width, scale, scale, point);
 	return bitmap;
 }
 
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height)
 {
-	stbtt_fontinfo* fontinfo = (stbtt_fontinfo*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		return 0;
 	}
 	unsigned char* bitmap = (unsigned char*)calloc(width * height, sizeof(unsigned char));
 	if (!bitmap) {
-		fontinfo = &_temp_fontinfo;
+		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			return 0;
 		}
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontscale);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int x = 0;
 	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(&fontinfo, &ascent, &descent, &lineGap);
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
 	int i;
 	for (i = 0; i < strlen(text); ++i)
 	{
 		int c_x1, c_y1, c_x2, c_y2;
-		stbtt_GetCodepointBitmapBox(&fontinfo, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+		stbtt_GetCodepointBitmapBox(fontinfo->info, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 		int y = ascent + c_y1;
 		int byteOffset = x + (y * width);
-		stbtt_MakeCodepointBitmap(&fontinfo, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
+		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
 		int ax;
-		stbtt_GetCodepointHMetrics(&fontinfo, text[i], &ax, 0);
+		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
 		x += ax * scale;
 		int kern;
-		kern = stbtt_GetCodepointKernAdvance(&fontinfo, text[i], text[i + 1]);
+		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
 		x += kern * scale;
 	}
 	return bitmap;
@@ -293,35 +295,36 @@ uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, c
 
 void Load_STB_CloseFontInfo(const int64_t handle)
 {
-	stbtt_fontinfo* fontinfo = (void*)handle;
+	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-			return 0;
+			return;
 	}
+	free(fontinfo->info);
 	free(fontinfo);
 }
 
 int* Call_STB_GetCodepointBitmapBox(const float fontsize, const int point)
 {
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return 0;
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontsize);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
-	stbtt_GetCodepointBitmapBox(&fontinfo, point, scale, scale, &x0, &y0, &x1, &y1);
+	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
 	int rect[] = { x0,y0,x1,y1 };
 	return rect;
 }
 
 int* Call_STB_GetFontVMetrics(const float fontsize)
 {
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return 0;
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontsize);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(&fontinfo, &ascent, &descent, &lineGap);
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
 	int rect[] = { ascent,descent,lineGap };
@@ -330,12 +333,12 @@ int* Call_STB_GetFontVMetrics(const float fontsize)
 
 int Call_STB_GetCodepointHMetrics(const int point)
 {
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return 0;
 	}
 	int height;
-	stbtt_GetCodepointHMetrics(&fontinfo, point, &height, 0);
+	stbtt_GetCodepointHMetrics(fontinfo->info, point, &height, 0);
 	return height;
 }
 
@@ -345,46 +348,43 @@ uint8_t* Call_STB_MakeCodepointBitmap(const int point, const float scale, const 
 	if (!bitmap) {
 		return 0;
 	}
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return 0;
 	}
-	stbtt_MakeCodepointBitmap(&fontinfo, bitmap, width, height, width, scale, scale, point);
+	stbtt_MakeCodepointBitmap(fontinfo->info, bitmap, width, height, width, scale, scale, point);
 	return bitmap;
 }
 
 uint8_t* Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, const int width, const int height)
 {
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return 0;
 	}
 	unsigned char* bitmap = (unsigned char*)calloc(width * height, sizeof(unsigned char));
 	if (!bitmap) {
-		fontinfo = &_temp_fontinfo;
-		if (!fontinfo) {
-			return 0;
-		}
+		return 0;
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo, fontscale);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int x = 0;
 	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(&fontinfo, &ascent, &descent, &lineGap);
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
 	int i;
 	for (i = 0; i < strlen(text); ++i)
 	{
 		int c_x1, c_y1, c_x2, c_y2;
-		stbtt_GetCodepointBitmapBox(&fontinfo, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+		stbtt_GetCodepointBitmapBox(fontinfo->info, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 		int y = ascent + c_y1;
 		int byteOffset = x + (y * width);
-		stbtt_MakeCodepointBitmap(&fontinfo, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
+		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
 		int ax;
-		stbtt_GetCodepointHMetrics(&fontinfo, text[i], &ax, 0);
+		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
 		x += ax * scale;
 		int kern;
-		kern = stbtt_GetCodepointKernAdvance(&fontinfo, text[i], text[i + 1]);
+		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
 		x += kern * scale;
 	}
 	return bitmap;
@@ -392,9 +392,10 @@ uint8_t* Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, 
 
 void Call_STB_CloseFontInfo()
 {
-	const stbtt_fontinfo* fontinfo = &_temp_fontinfo;
+	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
-		return 0;
+		return;
 	}
+	free(fontinfo->info);
 	free(fontinfo);
 }

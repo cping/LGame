@@ -41,8 +41,6 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import loon.teavm.builder.TeaProperties;
-
 public class CProperties {
 
 	private static final String OPTION_ADDITIONAL_RESOURCES = "resources";

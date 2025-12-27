@@ -288,7 +288,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
 	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 #ifdef __WINRT__
 	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
@@ -459,8 +459,12 @@ int Load_SDL_GL_SetAttribute(const int attribute, const int value)
 
 int* Load_SDL_GetDrawableSize(const int64_t window, int* values)
 {
+	SDL_Window* win = (SDL_Window*)window;
+	if(!win){
+		return 0;
+	}
 	int w, h;
-	SDL_GL_GetDrawableSize((SDL_Window*)window, &w, &h);
+	SDL_GL_GetDrawableSize(win, &w, &h);
 	values[0] = w;
 	values[1] = h;
 	return values;
@@ -564,11 +568,15 @@ float* Load_Axes(const int controller, float* axes)
 	return axes;
 }
 
-int* Load_SDL_GetWindowSize(const int64_t handle)
+int* Load_SDL_GetWindowSize(const int64_t window)
 {
+	SDL_Window* win = (SDL_Window*)window;
+	if (!win) {
+		return 0;
+	}
 	int width = 0;
 	int height = 0;
-	SDL_GetWindowSize(window, &width, &height);
+	SDL_GetWindowSize(win, &width, &height);
 	int result[2] = { width,height };
 	return &result;
 }
@@ -963,6 +971,138 @@ void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface)
 void Load_SDL_DestroyWindow(const int64_t handle)
 {
 	SDL_DestroyWindow((SDL_Window*)handle);
+}
+
+int* Call_SDL_GetDrawableSize(int* values)
+{
+	if (!window) {
+		return 0;
+	}
+	int w, h;
+	SDL_GL_GetDrawableSize(window, &w, &h);
+	values[0] = w;
+	values[1] = h;
+	return values;
+}
+
+int* Call_SDL_GetWindowSize()
+{
+	if (!window) {
+		return 0;
+	}
+	int width = 0;
+	int height = 0;
+	SDL_GetWindowSize(window, &width, &height);
+	int result[2] = { width,height };
+	return &result;
+}
+
+void Call_SDL_MaximizeWindow()
+{
+	if (!window) {
+		return;
+	}
+	SDL_MaximizeWindow(window);
+}
+
+void Call_SDL_MinimizeWindow()
+{
+	if (!window) {
+		return;
+	}
+	SDL_MinimizeWindow(window);
+}
+
+int Call_SDL_SetWindowFullscreen(const int flags)
+{
+	if (!window) {
+		return 0;
+	}
+	return SDL_SetWindowFullscreen(window, flags);
+}
+
+void Call_SDL_SetWindowBordered(const bool bordered)
+{
+	if (!window) {
+		return;
+	}
+	SDL_SetWindowBordered(window, bordered);
+}
+
+void Call_SDL_SetWindowSize(const int w, const int h)
+{
+	if (!window) {
+		return;
+	}
+	SDL_SetWindowSize(window, w,h);
+}
+
+void Call_SDL_SetWindowPosition(const int x, const int y)
+{
+	if (!window) {
+		return;
+	}
+	SDL_SetWindowPosition(window, x, y);
+}
+
+int Call_SDL_GetWindowDisplayIndex()
+{
+	if (!window) {
+		return 0;
+	}
+	return SDL_GetWindowDisplayIndex(window);
+}
+
+int Call_SDL_GetWindowFlags()
+{
+	if (!window) {
+		return 0;
+	}
+	return SDL_GetWindowFlags(window);
+}
+
+void Call_SDL_SetWindowTitle(const char* title)
+{
+	if (!window) {
+		return;
+	}
+	SDL_SetWindowTitle(window, title);
+}
+
+void Call_SDL_RestoreWindow()
+{
+	if (!window) {
+		return;
+	}
+	SDL_RestoreWindow(window);
+}
+
+void Call_SDL_SetWindowIcon(const int64_t hanlde)
+{
+	if (!window) {
+		return;
+	}
+	SDL_Surface* surface = (SDL_Surface*)hanlde;
+	if (!surface) {
+		return;
+	}
+	SDL_SetWindowIcon(window, surface);
+}
+
+void Call_SDL_GL_SwapWindow()
+{
+	if (!window) {
+		return;
+	}
+	SDL_GL_SwapWindow(window);
+}
+
+int64_t Call_SDL_GL_CreateContext()
+{
+	if (!window) {
+		return;
+	}
+	SDL_GL_CreateContext(window);
 }
 
 void Call_SDL_DestroyWindow() {
@@ -1399,7 +1539,7 @@ void Load_GL_GetIntegerv(const int pname, const int32_t* params)
 
 char* Load_GL_GetString(const int name)
 {
-	return (const char*)glGetString((GLenum)name);
+	return (char*)glGetString((GLenum)name);
 }
 
 void Load_GL_Hint(const int target, const int mode)

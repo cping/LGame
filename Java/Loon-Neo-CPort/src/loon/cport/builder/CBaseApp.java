@@ -22,20 +22,11 @@ package loon.cport.builder;
 
 import java.util.ArrayList;
 
-import loon.teavm.builder.TeaBuildConfiguration;
-import loon.teavm.builder.TeaClassLoader;
-
 public abstract class CBaseApp {
 
 	public final ArrayList<String> rootAssets = new ArrayList<String>();
 
-	public String webXML;
-
-	public String mainHtml;
-	
-	public String audioScript;
-	
 	public byte[] logoImage;
 
-	public abstract void setup(TeaClassLoader classLoader, TeaBuildConfiguration config);
+	public abstract void setup(TeaClassLoader classLoader, CBuildConfiguration config);
 }

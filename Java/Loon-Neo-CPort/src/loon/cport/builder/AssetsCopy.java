@@ -37,13 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import loon.teavm.assets.AssetFile;
-import loon.teavm.assets.AssetType;
-import loon.teavm.builder.AssetFilter;
-import loon.teavm.builder.AssetFilterOption;
-import loon.teavm.builder.AssetsCopy;
-import loon.teavm.builder.DefaultAssetFilter;
-import loon.teavm.builder.TeaBuilder;
+import loon.cport.assets.AssetFile;
+import loon.cport.assets.AssetType;
 import loon.utils.PathUtils;
 
 public class AssetsCopy {
@@ -83,18 +78,18 @@ public class AssetsCopy {
 
 		AssetFilter defaultAssetFilter = filter != null ? filter : new DefaultAssetFilter();
 		if (assetsPath != null && assetsPath.exists() && assetsPath.isDirectory()) {
-			TeaBuilder.print("Copying assets from:");
+			CBuilder.print("Copying assets from:");
 			AssetFile source = assetsPath;
 			String path = source.path();
-			TeaBuilder.print(path);
+			CBuilder.print(path);
 			copyDirectory(source, assetsPath.assetsChildDir, target, defaultAssetFilter, assets);
 
-			TeaBuilder.print("to:");
-			TeaBuilder.print(assetsOutputPath);
+			CBuilder.print("to:");
+			CBuilder.print(assetsOutputPath);
 		}
 
-		TeaBuilder.print("to:");
-		TeaBuilder.print(assetsOutputPath);
+		CBuilder.print("to:");
+		CBuilder.print(assetsOutputPath);
 
 		return assets;
 	}
@@ -107,8 +102,8 @@ public class AssetsCopy {
 
 		if (classloader != null && classPathAssetsFiles != null) {
 			addDirectoryClassPathFiles(classPathAssetsFiles);
-			TeaBuilder.print("");
-			TeaBuilder.print("Copying assets from:");
+			CBuilder.print("");
+			CBuilder.print("Copying assets from:");
 			for (String classpathFile : classPathAssetsFiles) {
 				String path = classpathFile;
 				if (path.startsWith("/") == false) {
@@ -119,7 +114,7 @@ public class AssetsCopy {
 				AssetFilterOption op = new AssetFilterOption();
 				if (defaultAssetFilter.accept(path, false, op)) {
 					try {
-						TeaBuilder.print(classpathFile);
+						CBuilder.print(classpathFile);
 						InputStream is = classloader.getResourceAsStream(classpathFile);
 						if (is != null) {
 							AssetFile dest = target.child(classpathFile);
@@ -140,8 +135,8 @@ public class AssetsCopy {
 			}
 		}
 
-		TeaBuilder.print("to:");
-		TeaBuilder.print(assetsOutputPath);
+		CBuilder.print("to:");
+		CBuilder.print(assetsOutputPath);
 
 		return assets;
 	}

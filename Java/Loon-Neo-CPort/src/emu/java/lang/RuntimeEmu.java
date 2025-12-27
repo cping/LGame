@@ -24,7 +24,7 @@ import java.lang.Thread;
 
 import org.teavm.classlib.java.lang.TRuntime;
 
-import loon.teavm.make.Emulate;
+import loon.cport.make.Emulate;
 
 @Emulate(java.lang.Runtime.class)
 public class RuntimeEmu {

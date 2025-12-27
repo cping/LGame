@@ -21,13 +21,6 @@ typedef struct {
 
 typedef struct {
 	stbtt_fontinfo* info;
-	stbtt_packedchar* chars;
-	SDL_Texture* atlas;
-	int texture_size;
-	float size;
-	float scale;
-	int ascent;
-	int baseline;
 } stb_font;
 
 

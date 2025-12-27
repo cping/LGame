@@ -20,8 +20,6 @@
  */
 package loon.cport.builder;
 
-import loon.teavm.builder.AssetFilterOption;
-
 public interface AssetFilter {
 	boolean accept(String file, boolean isDirectory, AssetFilterOption op);
 }

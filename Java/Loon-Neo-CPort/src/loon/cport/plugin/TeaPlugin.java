@@ -18,23 +18,19 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.cport.builder;
+package loon.cport.plugin;
 
-public class DefaultAssetFilter implements AssetFilter {
+import org.teavm.jso.impl.JSOPlugin;
+import org.teavm.vm.spi.Before;
+import org.teavm.vm.spi.TeaVMHost;
+import org.teavm.vm.spi.TeaVMPlugin;
+
+@Before(JSOPlugin.class)
+public class TeaPlugin implements TeaVMPlugin {
 	@Override
-	public boolean accept(String file, boolean isDirectory, AssetFilterOption op) {
-		if (isDirectory && file.endsWith(".svn")) {
-			return false;
-		}
-		if (file.endsWith(".bak")) {
-			return false;
-		}
-		if (file.endsWith(".jar")) {
-			return false;
-		}
-		if (file.endsWith("assets.txt")) {
-			return false;
-		}
-		return true;
+	public void install(TeaVMHost host) {
+		host.add(new OverlayTransformer());
+		host.add(new ObjectDependency());
 	}
+
 }

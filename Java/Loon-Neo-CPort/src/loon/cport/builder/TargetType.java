@@ -21,5 +21,5 @@
 package loon.cport.builder;
 
 public enum TargetType {
-	C
+	CPort
 }

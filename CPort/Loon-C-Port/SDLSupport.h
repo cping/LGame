@@ -58,7 +58,7 @@ bool Load_SDL_Exit(const int run);
 
 int* Load_SDL_GetDrawableSize(const int64_t window, int* values);
 
-int* Load_SDL_GetWindowSize(const int64_t handle);
+int* Load_SDL_GetWindowSize(const int64_t window);
 
 int Load_SDL_LockSurface(const int64_t handle);
 
@@ -175,6 +175,36 @@ void Load_SDL_RestoreWindow(const int64_t handle);
 void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface);
 
 void Load_SDL_DestroyWindow(const int64_t handle);
+
+int* Call_SDL_GetDrawableSize(int* values);
+
+int* Call_SDL_GetWindowSize();
+
+void Call_SDL_MaximizeWindow();
+
+void Call_SDL_MinimizeWindow();
+
+int Call_SDL_SetWindowFullscreen(const int flags);
+
+void Call_SDL_SetWindowBordered(const bool bordered);
+
+void Call_SDL_SetWindowSize(const int w, const int h);
+
+void Call_SDL_SetWindowPosition(const int x, const int y);
+
+int Call_SDL_GetWindowDisplayIndex();
+
+int Call_SDL_GetWindowFlags();
+
+void Call_SDL_SetWindowTitle(const char* title);
+
+void Call_SDL_RestoreWindow();
+
+void Call_SDL_SetWindowIcon(const int64_t handle);
+
+void Call_SDL_GL_SwapWindow();
+
+int64_t Call_SDL_GL_CreateContext();
 
 bool Load_SDL_SetHint(const char* name,const char* value);
 

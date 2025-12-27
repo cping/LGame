@@ -49,15 +49,7 @@ import org.teavm.vm.TeaVMPhase;
 import org.teavm.vm.TeaVMProgressFeedback;
 import org.teavm.vm.TeaVMProgressListener;
 
-import loon.teavm.assets.AssetFile;
-import loon.teavm.builder.AssetFilter;
-import loon.teavm.builder.AssetsCopy;
-import loon.teavm.builder.TargetType;
-import loon.teavm.builder.TeaBuildConfiguration;
-import loon.teavm.builder.TeaBuilder;
-import loon.teavm.builder.TeaClassLoader;
-import loon.teavm.builder.TeaProperties;
-import loon.teavm.builder.TeaReflectionSupplier;
+import loon.cport.assets.AssetFile;
 
 public class CBuilder {
 
@@ -92,21 +84,21 @@ public class CBuilder {
 		ACCEPT, NOT_ACCEPT, NO_MATCH
 	}
 
-	private static String webappName = "webapp";
-	private static TeaBuildConfiguration configuration;
+	private static String cappName = "capp";
+	private static CBuildConfiguration configuration;
 	private static File setTargetDirectory;
 	private static TeaClassLoader classLoader;
 	private static ArrayList<URL> acceptedURL;
 
-	public static void config(TeaBuildConfiguration configuration) {
+	public static void config(CBuildConfiguration configuration) {
 		CBuilder.configuration = configuration;
 		acceptedURL = new ArrayList<URL>();
-		String webappDirectory = configuration.webappPath;
+		String cappDirectory = configuration.cappPath;
 
 		configClasspath(configuration, acceptedURL);
 
 		CBuilder.print("");
-		CBuilder.print("targetDirectory: " + webappDirectory);
+		CBuilder.print("targetDirectory: " + cappDirectory);
 		CBuilder.print("");
 
 		URL[] classPaths = acceptedURL.toArray(new URL[acceptedURL.size()]);
@@ -118,7 +110,7 @@ public class CBuilder {
 		}
 		classLoader = new TeaClassLoader(classPaths, loader);
 
-		setTargetDirectory = new File(webappDirectory + File.separator + webappName);
+		setTargetDirectory = new File(cappDirectory + File.separator + cappName);
 
 		if (configuration.baseApp == null) {
 			configuration.baseApp = new DefaultCPortApp();
@@ -190,7 +182,7 @@ public class CBuilder {
 		return isSuccess;
 	}
 
-	private static void preserveClasses(TeaVMTool tool, TeaBuildConfiguration configuration,
+	private static void preserveClasses(TeaVMTool tool, CBuildConfiguration configuration,
 			TeaClassLoader classLoader) {
 		List<String> classesToPreserve = tool.getClassesToPreserve();
 		ArrayList<String> configClassesToPreserve = configuration.classesToPreserve;
@@ -239,7 +231,7 @@ public class CBuilder {
 		}
 	}
 
-	private static void configClasspath(TeaBuildConfiguration configuration, ArrayList<URL> acceptedURL) {
+	private static void configClasspath(CBuildConfiguration configuration, ArrayList<URL> acceptedURL) {
 		String pathSeparator = System.getProperty("path.separator");
 		String[] classPathEntries = System.getProperty("java.class.path").split(pathSeparator);
 
@@ -271,7 +263,7 @@ public class CBuilder {
 		String tmpdir = System.getProperty("java.io.tmpdir");
 		File setCacheDirectory = new File(tmpdir + File.separator + "TeaVMCache");
 
-		if (configuration.targetType == TargetType.C) {
+		if (configuration.targetType == TargetType.CPort) {
 			tool.setTargetFileName(configuration.targetFileName + ".c");
 			tool.setTargetType(TeaVMTargetType.C);
 		}
@@ -336,12 +328,12 @@ public class CBuilder {
 
 	public static void configAssets() {
 		CBuilder.begin("COPYING ASSETS");
-		String webappDirectory = configuration.webappPath;
+		String cappDirectory = configuration.cappPath;
 
-		AssetFile distFolder = new AssetFile(webappDirectory);
-		AssetFile webappFolder = distFolder.child(webappName);
-		AssetFile assetsFolder = webappFolder.child("assets");
-		AssetFile scriptsFolder = webappFolder.child("scripts");
+		AssetFile distFolder = new AssetFile(cappDirectory);
+		AssetFile cappFolder = distFolder.child(cappName);
+		AssetFile assetsFolder = cappFolder.child("assets");
+		AssetFile scriptsFolder = cappFolder.child("scripts");
 		AssetFile assetFile = assetsFolder.child("assets.txt");
 
 		AssetFilter filter = configuration.assetFilter;
@@ -362,7 +354,7 @@ public class CBuilder {
 			AssetsCopy.generateAssetsFile(alLAssets, assetsFolder, assetFile);
 		}
 
-		List<String> resources = TeaProperties.getResources(acceptedURL);
+		List<String> resources = CProperties.getResources(acceptedURL);
 
 		List<String> scripts = new ArrayList<String>();
 

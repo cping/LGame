@@ -29,36 +29,42 @@ import org.teavm.tooling.TeaVMTool;
 import org.teavm.tooling.sources.DirectorySourceFileProvider;
 import org.teavm.vm.TeaVMOptimizationLevel;
 
-import loon.teavm.assets.AssetFile;
-import loon.teavm.builder.TargetType;
-import loon.teavm.builder.TeaBuildConfiguration;
-import loon.teavm.builder.TeaBuilder;
-import loon.teavm.builder.TeaReflectionSupplier;
+import loon.cport.assets.AssetFile;
 
 public class CInitialize {
 
-	public static void create(Class<?> clazz, boolean obfuscated, boolean debug,
-			TeaVMOptimizationLevel level, TargetType target) throws IOException {
-		create(clazz, obfuscated, debug, level, target, null, null, null);
-	}
-
-	public static void create(Class<?> clazz, boolean obfuscated, boolean debug,
-			TeaVMOptimizationLevel level, TargetType target, String[] assetPath, String[] sourcePath, String[] reflects)
+	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level)
 			throws IOException {
-		create(clazz == null ? "none" : clazz.getName(), obfuscated, debug, level, target,
-				assetPath, sourcePath, reflects);
+		create(clazz, obfuscated, debug, level, "build/dist");
 	}
 
-	public static void create(String mainClassName, boolean obfuscated,
-			boolean debug, TeaVMOptimizationLevel level, TargetType target, String[] assetPath, String[] sourcePath,
-			String[] reflects) throws IOException {
+	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
+			String buildPath) throws IOException {
+		create(clazz, obfuscated, debug, level, TargetType.CPort, null, null, null, buildPath);
+	}
+
+	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
+			TargetType target, String buildPath) throws IOException {
+		create(clazz, obfuscated, debug, level, target, null, null, null, buildPath);
+	}
+
+	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
+			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath)
+			throws IOException {
+		create(clazz == null ? "none" : clazz.getName(), obfuscated, debug, level, target, assetPath, sourcePath,
+				reflects, buildPath);
+	}
+
+	public static void create(String mainClassName, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
+			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath)
+			throws IOException {
 		if (reflects != null) {
 			for (int i = 0; i < reflects.length; i++) {
 				final String refPackName = reflects[i];
 				TeaReflectionSupplier.addReflectionClass(refPackName);
 			}
 		}
-		TeaBuildConfiguration teaBuildConfiguration = new TeaBuildConfiguration();
+		CBuildConfiguration teaBuildConfiguration = new CBuildConfiguration();
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/loon/assets"));
@@ -72,9 +78,9 @@ public class CInitialize {
 			}
 		}
 		teaBuildConfiguration.shouldGenerateAssetFile = true;
-		teaBuildConfiguration.webappPath = new File("build/dist").getCanonicalPath();
+		teaBuildConfiguration.cappPath = new File(buildPath).getCanonicalPath();
 		teaBuildConfiguration.targetType = target;
-		TeaBuilder.config(teaBuildConfiguration);
+		CBuilder.config(teaBuildConfiguration);
 
 		TeaVMTool tool = new TeaVMTool();
 		tool.setObfuscated(obfuscated);
@@ -91,7 +97,7 @@ public class CInitialize {
 				tool.addSourceFileProvider(new DirectorySourceFileProvider(sourceFile));
 			}
 		}
-		TeaBuilder.build(tool);
+		CBuilder.build(tool);
 	}
 
 }

@@ -23,10 +23,7 @@ package loon.cport.builder;
 import java.net.URL;
 import java.util.ArrayList;
 
-import loon.teavm.assets.AssetFile;
-import loon.teavm.builder.AssetFilter;
-import loon.teavm.builder.BuildReflectionListener;
-import loon.teavm.builder.TargetType;
+import loon.cport.assets.AssetFile;
 
 public class CBuildConfiguration {
 
@@ -38,7 +35,7 @@ public class CBuildConfiguration {
 
 	public boolean shouldGenerateAssetFile = true;
 
-	public String webappPath = "";
+	public String cappPath = "";
 
 	public final ArrayList<URL> additionalClasspath = new ArrayList<URL>();
 
@@ -48,7 +45,7 @@ public class CBuildConfiguration {
 
 	public CBaseApp baseApp;
 	
-	public TargetType targetType = TargetType.C;
+	public TargetType targetType = TargetType.CPort;
 	
 	public String targetFileName = "run";
 
