@@ -30,6 +30,10 @@ int64_t Load_STB_Image_LoadPath(const char* path);
 
 int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path);
 
+int64_t Load_STB_Image_LoadSDLSurfaceARGB32(const char* path);
+
+void Load_STB_TempSurfaceFree();
+
 void Load_STB_Image_Free(const int64_t handle);
 
 const uint8_t* Load_STB_Image_GetPixels(const int64_t handle);

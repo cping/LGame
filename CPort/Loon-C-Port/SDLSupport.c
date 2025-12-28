@@ -21,6 +21,7 @@ static const int audio_channels = MIX_DEFAULT_CHANNELS;
 static const int audio_buffers = 4096;
 static const int fade_time = 5000;
 static const float volume = 1.0;
+static cache_surface* _temp_surface;
 static bool musicFinishedEvent;
 static bool soundFinishedEvent;
 static int touches[16 * 3];
@@ -422,7 +423,7 @@ bool Load_SDL_Update() {
 		}
 	}
 	SDL_GL_SwapWindow(window);
-	return  Load_SDL_Exit(running);
+	return Load_SDL_Exit(running);
 #endif
 }
 
@@ -578,17 +579,25 @@ int* Load_SDL_GetWindowSize(const int64_t window)
 	int height = 0;
 	SDL_GetWindowSize(win, &width, &height);
 	int result[2] = { width,height };
-	return &result;
+	return result;
 }
 
 int Load_SDL_LockSurface(const int64_t handle)
 {
-	return SDL_LockSurface((SDL_Surface*)handle);
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) {
+		return -1;
+	}
+	return SDL_LockSurface(surface->surface_data);
 }
 
 void Load_SDL_UnlockSurface(const int64_t handle)
 {
-	 SDL_UnlockSurface((SDL_Surface*)handle);
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) {
+		return;
+	}
+	 SDL_UnlockSurface(surface->surface_data);
 }
 
 void Load_SDL_Delay(const int32_t d)
@@ -598,7 +607,16 @@ void Load_SDL_Delay(const int32_t d)
 
 int64_t Load_SDL_CreateRGBSurface(const int32_t flags, const int width, const int height, const int depth, const int32_t rmask, const int32_t gmask, const int32_t bmask, const int32_t amask)
 {
-	return (intptr_t)SDL_CreateRGBSurface(flags, width, height, depth,	rmask, gmask, bmask, amask);
+	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!newsurface) {
+		return 0;
+	}
+	SDL_Surface* newImage = SDL_CreateRGBSurface(flags, width, height, depth, rmask, gmask, bmask, amask);
+	newsurface->surface_data = newImage;
+	newsurface->width = newImage->w;
+	newsurface->height = newImage->h;
+	_temp_surface = newsurface;
+	return (intptr_t)newsurface;
 }
 
 int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels, const int w, const int h, const int format)
@@ -625,23 +643,51 @@ int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels, const int w, const 
 		depth = 32;
 		pitch = 4 * w;
 	}
-	return (intptr_t)SDL_CreateRGBSurfaceFrom((void*)pixels, w, h, depth, pitch,
+	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!newsurface) {
+		return 0;
+	}
+	SDL_Surface* newImage = SDL_CreateRGBSurfaceFrom((void*)pixels, w, h, depth, pitch,
 		rmask, gmask, bmask, amask);
+	newsurface->surface_data = newImage;
+	newsurface->width = newImage->w;
+	newsurface->height = newImage->h;
+	_temp_surface = newsurface;
+	return (intptr_t)newsurface;
 }
 
 int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags)
 {
-	return SDL_ConvertSurfaceFormat((SDL_Surface*)handle,(Uint32)pixel_format, (Uint32)flags);
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) return -1;
+	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!newsurface) {
+		return 0;
+	}
+	SDL_Surface* newImage = SDL_ConvertSurfaceFormat(surface->surface_data, (Uint32)pixel_format, (Uint32)flags);
+	newsurface->surface_data = newImage;
+	newsurface->width = newImage->w;
+	newsurface->height = newImage->h;
+	_temp_surface = newsurface;
+	return (intptr_t)newsurface;
 }
 
-int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h)
+int* Load_SDL_GetSurfaceSize(const int64_t handle)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
-	if (!surface) return -1;
-	if (x >= 0 && y >= 0 && x < surface->w && x < w && y < surface->h && y < h)
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) return 0;
+	int rect[] = {surface->surface_data->w, surface->surface_data->h };
+	return rect;
+}
+
+int* Load_SDL_GetPixels(const int64_t handle, const int x, const int y, const int w, const int h)
+{
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) return 0;
+	if (x >= 0 && y >= 0 && x < surface->surface_data->w && x < w && y < surface->surface_data->h && y < h)
 	{
-		int bpp = surface->format->BytesPerPixel;
-		Uint8* pixel = (Uint8*)surface->pixels + y * surface->pitch + x * bpp;
+		int bpp = surface->surface_data->format->BytesPerPixel;
+		Uint8* pixel = (Uint8*)surface->surface_data->pixels + y * surface->surface_data->pitch + x * bpp;
 		switch (bpp) {
 		case 1:
 			return *pixel;
@@ -662,15 +708,22 @@ int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h)
 	return 0;
 }
 
-void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel)
+int* Load_SDL_GetPixels32(const int64_t handle)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) return 0;
+	return (uint32_t*)surface->surface_data->pixels;
+}
+
+void Load_SDL_SetPixel(const int64_t handle, const int x, const int y, const int32_t pixel)
+{
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
-	if (x < 0 || y < 0 || x >= surface->w || y >= surface->h) {
+	if (x < 0 || y < 0 || x >= surface->surface_data->w || y >= surface->surface_data->h) {
 		return;
 	}
-	Uint8* target_pixel = (Uint8*)surface->pixels + y * surface->pitch + x * surface->format->BytesPerPixel;
-	switch (surface->format->BytesPerPixel) {
+	Uint8* target_pixel = (Uint8*)surface->surface_data->pixels + y * surface->surface_data->pitch + x * surface->surface_data->format->BytesPerPixel;
+	switch (surface->surface_data->format->BytesPerPixel) {
 	case 1: 
 		*target_pixel = (Uint8)pixel;
 		break;
@@ -695,28 +748,52 @@ void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel)
 	}
 }
 
-void Load_SDL_SetPixel32(const int64_t handle, int x, int y,int32_t pixel)
+void Load_SDL_SetPixel32(const int64_t handle, const int x, const int y, const int32_t pixel)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
-	Uint32* const target_pixel = (Uint32*)((Uint8*)surface->pixels
-		+ y * surface->pitch
-		+ x * surface->format->BytesPerPixel);
+	Uint32* const target_pixel = (Uint32*)((Uint8*)surface->surface_data->pixels
+		+ y * surface->surface_data->pitch
+		+ x * surface->surface_data->format->BytesPerPixel);
 	*target_pixel = (Uint32)pixel;
 }
 
 void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny, int nw, int nh, int32_t* pixels)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface || !pixels) return;
-	Uint8* dst = (Uint8*)surface->pixels;
-	int pitch = surface->pitch; 
+	Uint8* dst = (Uint8*)surface->surface_data->pixels;
+	int pitch = surface->surface_data->pitch;
 	for (int y = ny; y < nh; y++) {
 		Uint32* pixel = (Uint32*)(dst + y * pitch);
 		for (int x = nx; x < nw; x++) {
 			pixel[x] = (Uint32)pixels[y * nw + x];
 		}
 	}
+}
+
+int64_t Load_SDL_LoadBMPHandle(const char* path)
+{
+	SDL_Surface* image = SDL_LoadBMP(path);
+	if (!image) {
+		return 0;
+	}
+	cache_surface* sdlsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!sdlsurface) {
+		return 0;
+	}
+	sdlsurface->surface_data = image;
+	sdlsurface->width = image->w;
+	sdlsurface->height = image->h;
+	_temp_surface = sdlsurface;
+	return (intptr_t)sdlsurface;
+}
+
+bool Load_SDL_MUSTLockSurface(const int64_t handle)
+{
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) return false;
+	return SDL_MUSTLOCK(surface->surface_data);
 }
 
 const int blendModeToInt(SDL_BlendMode mode) {
@@ -742,45 +819,45 @@ const SDL_BlendMode blendIntToMode(int mode) {
 
 void Load_SDL_SetSurfaceBlendMode(const int64_t handle, const int mode)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
-	SDL_SetSurfaceBlendMode(surface, blendIntToMode(mode));
+	SDL_SetSurfaceBlendMode(surface->surface_data, blendIntToMode(mode));
 }
 
 int Load_SDL_GetSurfaceBlendMode(const int64_t handle)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return -1;
 	SDL_BlendMode mode;
-	SDL_GetSurfaceBlendMode(surface, &mode);
+	SDL_GetSurfaceBlendMode(surface->surface_data, &mode);
 	return blendModeToInt(mode);
 }
 
 void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int w, const int h, const int r, const int g, const int b, const int a)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
-	Uint32 color = SDL_MapRGBA(surface->format, r, g, b,a);
+	Uint32 color = SDL_MapRGBA(surface->surface_data->format, r, g, b,a);
 	SDL_Rect rect = { x, y, w, h };
-	SDL_FillRect(surface, &rect, color);
+	SDL_FillRect(surface->surface_data, &rect, color);
 }
 
 void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const int w, const int h)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
 	SDL_Rect clipRect = { x, y, w, h };
-	SDL_SetClipRect(surface, &clipRect);
+	SDL_SetClipRect(surface->surface_data, &clipRect);
 }
 
 int* Load_SDL_GetClipRect(const int64_t handle)
 {
-	SDL_Surface* surface = (SDL_Surface*)handle;
+	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return 0;
 	SDL_Rect currentClip;
-	SDL_GetClipRect(surface, &currentClip);
+	SDL_GetClipRect(surface->surface_data, &currentClip);
 	int rect[] = {currentClip.x,currentClip.y,currentClip.w,currentClip.h};
-	return &rect;
+	return rect;
 }
 
 int Load_SDL_Init(const int flags)
@@ -899,9 +976,13 @@ int64_t Load_SDL_CreateRGBSurfaceFrom32(void* pixels, int width, int height)
 	return (intptr_t)SDL_CreateRGBSurfaceFrom(pixels, width, height, 32, 4 * width, 0x000000ff, 0x0000ff00, 0x00ff0000, 0xff000000);
 }
 
-int64_t Load_SDL_CreateColorCursor(const int64_t surface, const int hotx, const int hoty)
+int64_t Load_SDL_CreateColorCursor(const int64_t handle, const int hotx, const int hoty)
 {
-	return (intptr_t)SDL_CreateColorCursor((SDL_Surface*)surface, hotx, hoty);
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) {
+		return -1;
+	}
+	return (intptr_t)SDL_CreateColorCursor(surface->surface_data, hotx, hoty);
 }
 
 int64_t Load_SDL_CreateSystemCursor(const int type)
@@ -921,7 +1002,21 @@ void Load_SDL_FreeCursor(const int64_t handle)
 
 void Load_SDL_FreeSurface(const int64_t handle)
 {
-	SDL_FreeSurface((SDL_Surface*)handle);
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) {
+		return;
+	}
+	SDL_FreeSurface(surface->surface_data);
+	free(surface);
+}
+
+void Load_SDL_FreeTempSurface()
+{
+	if (!_temp_surface) {
+		return;
+	}
+	SDL_FreeSurface(_temp_surface->surface_data);
+	free(_temp_surface);
 }
 
 int Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message)
@@ -963,9 +1058,13 @@ void Load_SDL_RestoreWindow(const int64_t handle)
 	SDL_RestoreWindow((SDL_Window*)handle);
 }
 
-void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface)
+void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surfaceHandle)
 {
-	SDL_SetWindowIcon((SDL_Window*)handle, (SDL_Surface*)surface);
+	cache_surface* surface = (cache_surface*)surfaceHandle;
+	if (!surface) {
+		return;
+	}
+	SDL_SetWindowIcon((SDL_Window*)handle, surface->surface_data);
 }
 
 void Load_SDL_DestroyWindow(const int64_t handle)
@@ -994,7 +1093,7 @@ int* Call_SDL_GetWindowSize()
 	int height = 0;
 	SDL_GetWindowSize(window, &width, &height);
 	int result[2] = { width,height };
-	return &result;
+	return result;
 }
 
 void Call_SDL_MaximizeWindow()
@@ -1082,11 +1181,11 @@ void Call_SDL_SetWindowIcon(const int64_t hanlde)
 	if (!window) {
 		return;
 	}
-	SDL_Surface* surface = (SDL_Surface*)hanlde;
+	cache_surface* surface = (cache_surface*)hanlde;
 	if (!surface) {
 		return;
 	}
-	SDL_SetWindowIcon(window, surface);
+	SDL_SetWindowIcon(window, surface->surface_data);
 }
 
 void Call_SDL_GL_SwapWindow()
@@ -1100,9 +1199,9 @@ void Call_SDL_GL_SwapWindow()
 int64_t Call_SDL_GL_CreateContext()
 {
 	if (!window) {
-		return;
+		return 0;
 	}
-	SDL_GL_CreateContext(window);
+	return SDL_GL_CreateContext(window);
 }
 
 void Call_SDL_DestroyWindow() {
@@ -1358,7 +1457,7 @@ void Load_SDL_Mix_DisposeSound(const int64_t handle)
 {
 	Mix_Chunk* sound = (Mix_Chunk*)handle;
 	if (!sound) {
-		return -1;
+		return;
 	}
 	Mix_FreeChunk(sound);
 }

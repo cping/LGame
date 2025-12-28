@@ -40,6 +40,12 @@
 extern "C" {
 #endif
 
+typedef struct {
+    SDL_Surface* surface_data;
+    int32_t width;
+    int32_t height;
+} cache_surface;
+
 char* GetPathFullName(char* dst, const char* path);
 
 char* GetSystemProperty(const char* key);
@@ -72,13 +78,21 @@ int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels,const int w,const in
 
 int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags);
 
+int* Load_SDL_GetSurfaceSize(const int64_t handle);
+
 int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h);
+
+int* Load_SDL_GetPixels32(const int64_t handle);
 
 void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel);
 
 void Load_SDL_SetPixel32(const int64_t handle, int x, int y, int32_t pixel);
 
 void Load_SDL_SetPixels32(const int64_t handle, int nx, int ny, int nw, int nh, int32_t* pixels);
+
+int64_t Load_SDL_LoadBMPHandle(const char* path);
+
+bool Load_SDL_MUSTLockSurface(const int64_t handle);
 
 void Load_SDL_SetSurfaceBlendMode(const int64_t handle,const int mode);
 
@@ -149,6 +163,8 @@ void Load_SDL_SetCursor(const int64_t handle);
 void Load_SDL_FreeCursor(const int64_t handle);
 
 void Load_SDL_FreeSurface(const int64_t handle);
+
+void Load_SDL_FreeTempSurface();
 
 int Load_SDL_ShowSimpleMessageBox(const int flags, const char* title, const char* message);
 

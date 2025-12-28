@@ -1,6 +1,7 @@
 #include "STBSupport.h"
 
 static stb_font *_temp_fontinfo;
+static cache_surface* _temp_stbsurface;
 
 int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len)
 {
@@ -60,13 +61,57 @@ int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path)
 	bmask = 0x0000FF00 >> s;
 	amask = 0x000000FF >> s;
 #endif
-	SDL_Surface* surface = SDL_CreateRGBSurfaceFrom(pixels, width, height, format * 8, pitch, rmask, gmask,
-		bmask, amask);
-	if (!surface)
-	{
-		return -1;
+	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!newsurface) {
+		return 0;
 	}
-	return (intptr_t)surface;
+	SDL_Surface* newImage = SDL_CreateRGBSurfaceFrom(pixels, width, height, format * 8, pitch, rmask, gmask,
+		bmask, amask);
+	newsurface->surface_data = newImage;
+	newsurface->width = newImage->w;
+	newsurface->height = newImage->h;
+	_temp_stbsurface = newsurface;
+	return (intptr_t)newsurface;
+}
+
+int64_t Load_STB_Image_LoadSDLSurfaceARGB32(const char* path)
+{
+	int width, height, channels;
+	unsigned char* pixels = stbi_load(path, &width, &height, &channels, STBI_rgb_alpha);
+	if (!pixels) {
+		return 0;
+	}
+	SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormatFrom(
+		pixels,                
+		width, height,         
+		32,                    
+		width * 4,            
+		SDL_PIXELFORMAT_ARGB32
+	);
+	if (!surface) {
+		stbi_image_free(pixels);
+		return 0;
+	}
+	SDL_Surface* converted = SDL_ConvertSurfaceFormat(surface, SDL_PIXELFORMAT_ARGB32, 0);
+	SDL_FreeSurface(surface);
+	stbi_image_free(pixels);
+	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
+	if (!newsurface) {
+		return 0;
+	}
+	newsurface->surface_data = converted;
+	newsurface->width = converted->w;
+	newsurface->height = converted->h;
+	_temp_stbsurface = newsurface;
+	return (intptr_t)converted;
+}
+
+void Load_STB_TempSurfaceFree() {
+	if (!_temp_stbsurface) {
+		return;
+	}
+	SDL_FreeSurface(_temp_stbsurface->surface_data);
+	free(_temp_stbsurface);
 }
 
 void Load_STB_Image_Free(const int64_t handle)
@@ -151,7 +196,10 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 	if (offset < 0) {
 		offset = 0;
 	}
-	stb_font* temp_font = calloc(sizeof(stb_font), 1);
+	stb_font* temp_font = malloc(sizeof(stb_font));
+	if (!temp_font) {
+		return -1;
+	}
 	temp_font->info = malloc(sizeof(stbtt_fontinfo));
 	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
 		fprintf(stderr, "Failed to init font\n");
@@ -180,7 +228,10 @@ int64_t Load_STB_LoadFontInfo(const char* path)
 		return -1;
 	}
 	SDL_RWclose(rw);
-    stb_font* temp_font = calloc(sizeof(stb_font), 1);
+    stb_font* temp_font = malloc(sizeof(stb_font));
+	if (!temp_font) {
+		return -1;
+	}
 	temp_font->info = malloc(sizeof(stbtt_fontinfo));
 	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
 		fprintf(stderr, "Failed to init font\n");
