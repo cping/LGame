@@ -3,6 +3,10 @@
 static stb_font *_temp_fontinfo;
 static cache_surface* _temp_stbsurface;
 
+void ImportSTBInclude()
+{
+}
+
 int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len)
 {
 	int32_t width = 0, height = 0, format = 0;

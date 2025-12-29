@@ -19,6 +19,7 @@ static void sdl_die(const char* message) {
 		
 	     }
 	     std::cout << "SDL_Init OK!!!" << std::endl;
+		 Load_SDL_ScreenInit("testing", 640, 480, true, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN,false);
 		 SDL_Event event;
 		 bool quit = false;
 		 while (!quit) {

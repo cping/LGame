@@ -20,6 +20,16 @@
  */
 package loon.cport.bridge;
 
-public class STB {
+import org.teavm.backend.c.intrinsic.RuntimeInclude;
+import org.teavm.interop.Import;
 
+public final class STBCall {
+
+	private STBCall() {
+		importInclude();
+	}
+
+	@RuntimeInclude("STBSupport.h")
+	@Import(name = "ImportSTBInclude")
+	public final static native void importInclude();
 }

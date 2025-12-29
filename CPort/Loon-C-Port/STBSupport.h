@@ -23,6 +23,7 @@ typedef struct {
 	stbtt_fontinfo* info;
 } stb_font;
 
+void ImportSTBInclude();
 
 int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len);
 
