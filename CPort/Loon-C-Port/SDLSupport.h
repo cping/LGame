@@ -52,6 +52,10 @@ char* GetPathFullName(char* dst, const char* path);
 
 char* GetSystemProperty(const char* key);
 
+char* Load_SDL_GetBasePath();
+
+int32_t Load_SDL_GetTicks();
+
 void Call_SDL_DestroyWindow();
 
 void Load_RemapControllers(const int min, const int max, const int dualJoy, const int singleMode);
@@ -124,7 +128,7 @@ int Load_SDL_WasInit(const int flags);
 
 void Load_SDL_QuitSubSystem(const int flags);
 
-char* Load_SDL_GetError();
+const char* Load_SDL_GetError();
 
 int Load_SDL_SetClipboardText(const char* text);
 
@@ -260,7 +264,7 @@ void Load_SDL_Mix_DisposeMusic(const int64_t handle);
 
 int64_t Load_SDL_Mix_LoadSound(const char* filename);
 
-int64_t Load_SDL_Mix_LoadSoundFromMem(const void* wavData);
+int64_t Load_SDL_Mix_LoadSoundFromMem(void* wavData);
 
 int Load_SDL_Mix_PlaySound(const int64_t handle, const bool looping);
 
@@ -328,8 +332,6 @@ void Load_GL_Disable(const int cap);
 
 void Load_GL_DrawArrays(const int mode, const int first, const int count);
 
-void Load_GL_DrawElements(const int mode, const int count, const int type, const void* indices);
-
 void Load_GL_Enable(const int cap);
 
 void Load_GL_Finish();
@@ -354,7 +356,7 @@ void Load_GL_PixelStorei(const int pname, const int param);
 
 void Load_GL_PolygonOffset(const float factor, const float units);
 
-void Load_GL_ReadPixels(const int x, const int y, const int width, const int height, const int format, const int type, const void* pixels);
+void Load_GL_ReadPixels(const int x, const int y, const int width, const int height, const int format, const int type, void* pixels);
 
 void Load_GL_Scissor(const int x, const int y, const int width, const int height);
 
@@ -415,8 +417,6 @@ void Load_GL_DeleteShader(const int shader);
 void Load_GL_DetachShader(const int program, const int shader);
 
 void Load_GL_DisableVertexAttribArray(const int index);
-
-void Load_GL_DrawElements(const int mode, const int count, const int type, const void* indices);
 
 void Load_GL_EnableVertexAttribArray(const int index);
 

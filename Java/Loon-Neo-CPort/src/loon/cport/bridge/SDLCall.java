@@ -73,8 +73,11 @@ public final class SDLCall {
 	@Import(name = "GetSystemProperty")
 	public final static native String getSystemProperty(String key);
 
-	@Import(name = "Call_SDL_DestroyWindow")
-	public final static native void destroyWindow();
+	@Import(name = "Load_SDL_GetBasePath")
+	public final static native String getBasePath();
+
+	@Import(name = "Load_SDL_GetTicks")
+	public final static native int getTicks();
 
 	@Import(name = "Load_RemapControllers")
 	public final static native void remapControllers(int min, int max, int dualJoy, int singleMode);
@@ -424,6 +427,9 @@ public final class SDLCall {
 	@Import(name = "Load_GL_Init")
 	public final static native String init();
 
+	@Import(name = "Call_SDL_DestroyWindow")
+	public final static native void destroyWindow();
+
 	/// GL
 	@Import(name = "Load_GL_UseProgram")
 	public final static native void glUseProgram(int program);
@@ -520,15 +526,130 @@ public final class SDLCall {
 	public final static native String glGetString(int name);
 
 	@Import(name = "Load_GL_Hint")
-	public final static native String glHint(int target, int mode);
+	public final static native void glHint(int target, int mode);
 
 	@Import(name = "Load_GL_LineWidth")
-	public final static native String glLineWidth(float width);
+	public final static native void glLineWidth(float width);
 
 	@Import(name = "Load_GL_PixelStorei")
-	public final static native String glPixelStorei(int pname, int param);
+	public final static native void glPixelStorei(int pname, int param);
 
 	@Import(name = "Load_GL_PolygonOffset")
-	public final static native String glPolygonOffset(float factor, float units);
+	public final static native void glPolygonOffset(float factor, float units);
 
+	@Import(name = "Load_GL_ReadPixels")
+	public final static native void glReadPixels(int x, int y, int width, int height, int format, int type,
+			Buffer pixels);
+
+	@Import(name = "Load_GL_Scissor")
+	public final static native void glScissor(int x, int y, int width, int height);
+
+	@Import(name = "Load_GL_StencilFunc")
+	public final static native void glStencilFunc(int func, int ref, int mask);
+
+	@Import(name = "Load_GL_StencilMask")
+	public final static native void glStencilMask(int mask);
+
+	@Import(name = "Load_GL_StencilOp")
+	public final static native void glStencilOp(int fail, int zfail, int zpass);
+
+	@Import(name = "Load_GL_TexImage2D")
+	public final static native void glTexImage2D(int target, int level, int internalformat, int width, int height,
+			int border, int format, int type, Buffer pixels);
+
+	@Import(name = "Load_GL_TexParameterf")
+	public final static native void glTexParameterf(int target, int pname, float param);
+
+	@Import(name = "Load_GL_TexSubImage2D")
+	public final static native void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width,
+			int height, int format, int type, Buffer pixels);
+
+	@Import(name = "Load_GL_Viewport")
+	public final static native void glViewport(int x, int y, int width, int height);
+
+	@Import(name = "Load_GL_AttachShader")
+	public final static native void glAttachShader(int program, int shader);
+
+	@Import(name = "Load_GL_BindAttribLocation")
+	public final static native void glBindAttribLocation(int program, int index, String name);
+
+	@Import(name = "Load_GL_BindBuffer")
+	public final static native void glBindBuffer(int target, int buffer);
+
+	@Import(name = "Load_GL_BindFramebuffer")
+	public final static native void glBindFramebuffer(int target, int framebuffer);
+
+	@Import(name = "Load_GL_BindRenderbuffer")
+	public final static native void glBindRenderbuffer(int target, int renderbuffer);
+
+	@Import(name = "Load_GL_BlendColor")
+	public final static native void glBlendColor(float red, float green, float blue, float alpha);
+
+	@Import(name = "Load_GL_BlendEquation")
+	public final static native void glBlendEquation(int mode);
+
+	@Import(name = "Load_GL_BlendEquationSeparate")
+	public final static native void glBlendEquationSeparate(int modeRGB, int modeAlpha);
+
+	@Import(name = "Load_GL_BlendFuncSeparate")
+	public final static native void glBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha);
+
+	@Import(name = "Load_GL_BufferData")
+	public final static native void glBufferData(int target, int size, Buffer data, int usage);
+
+	@Import(name = "Load_GL_BufferSubData")
+	public final static native void glBufferSubData(int target, int offset, int size, Buffer data);
+
+	@Import(name = "Load_GL_CheckFramebufferStatus")
+	public final static native int glCheckFramebufferStatus(int target);
+
+	@Import(name = "Load_GL_CompileShader")
+	public final static native void glCompileShader(int shader);
+
+	@Import(name = "Load_GL_CreateProgram")
+	public final static native int glCreateProgram();
+
+	@Import(name = "Load_GL_CreateShader")
+	public final static native int glCreateShader(int type);
+
+	@Import(name = "Load_GL_DeleteBuffer")
+	public final static native void glDeleteBuffer(int buffer);
+
+	@Import(name = "Load_GL_DeleteFramebuffer")
+	public final static native void glDeleteFramebuffer(int buffer);
+
+	@Import(name = "Load_GL_DeleteProgram")
+	public final static native void glDeleteProgram(int program);
+
+	@Import(name = "Load_GL_DeleteRenderbuffer")
+	public final static native void glDeleteRenderbuffer(int renderbuffer);
+
+	@Import(name = "Load_GL_DeleteShader")
+	public final static native void glDeleteShader(int shader);
+
+	@Import(name = "Load_GL_DetachShader")
+	public final static native void glDetachShader(int program, int shader);
+
+	@Import(name = "Load_GL_DisableVertexAttribArray")
+	public final static native void glDisableVertexAttribArray(int index);
+
+	@Import(name = "Load_GL_EnableVertexAttribArray")
+	public final static native void glEnableVertexAttribArray(int index);
+
+	@Import(name = "Load_GL_FramebufferRenderbuffer")
+	public final static native void glFramebufferRenderbuffer(int target, int attachment, int renderbuffertarget,
+			int renderbuffer);
+
+	@Import(name = "Load_GL_FramebufferTexture2D")
+	public final static native void glFramebufferTexture2D(int target, int attachment, int textarget, int texture,
+			int level);
+
+	@Import(name = "Load_GL_GenBuffer")
+	public final static native int glGenBuffer();
+
+	@Import(name = "Load_GL_GenerateMipmap")
+	public final static native void glGenerateMipmap();
+
+	@Import(name = "Load_GL_GenFramebuffer")
+	public final static native int glGenFramebuffer();
 }
