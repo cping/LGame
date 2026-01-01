@@ -312,7 +312,11 @@ void Load_GL_ColorMask(const bool red, const bool green, const bool blue, const 
 
 void Load_GL_CompressedTexImage2D(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int imageSize, void* data);
 
+void Load_GL_CompressedTexImage2DOffset(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int imageSize, const int64_t offset);
+
 void Load_GL_CompressedTexSubImage2D(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int imageSize, void* data);
+
+void Load_GL_CompressedTexSubImage2DOffset(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int imageSize, const int64_t offset);
 
 void Load_GL_CopyTexImage2D(const int target, const int level, const int internalformat, const int x, const int y, const int width, const int height, const int border);
 
@@ -321,6 +325,8 @@ void Load_GL_CopyTexSubImage2D(const int target, const int level, const int xoff
 void Load_GL_CullFace(const int mode);
 
 void Load_GL_DeleteTexture(const int texture);
+
+void Load_GL_DeleteTextures(const int n, const void* textures);
 
 void Load_GL_DepthFunc(const int func);
 
@@ -332,6 +338,10 @@ void Load_GL_Disable(const int cap);
 
 void Load_GL_DrawArrays(const int mode, const int first, const int count);
 
+void Load_GL_DrawElements(const int mode, const int count, const int type, const void* indices);
+
+void Load_GL_DrawElementsOffset(const int mode, const int count, const int type, const int64_t offset);
+
 void Load_GL_Enable(const int cap);
 
 void Load_GL_Finish();
@@ -341,6 +351,8 @@ void Load_GL_Flush();
 void Load_GL_FrontFace(const int mode);
 
 int Load_GL_GenTexture();
+
+void Load_GL_GenTextures(const int n, const void* textures);
 
 int Load_GL_GetError();
 
@@ -358,6 +370,8 @@ void Load_GL_PolygonOffset(const float factor, const float units);
 
 void Load_GL_ReadPixels(const int x, const int y, const int width, const int height, const int format, const int type, void* pixels);
 
+void Load_GL_ReadPixelsOffset(const int x, const int y, const int width, const int height, const int format, const int type, const int64_t pixelsOffset);
+
 void Load_GL_Scissor(const int x, const int y, const int width, const int height);
 
 void Load_GL_StencilFunc(const int func, const int ref, const int mask);
@@ -368,9 +382,13 @@ void Load_GL_StencilOp(const int fail, const int zfail, const int zpass);
 
 void Load_GL_TexImage2D(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int format, const int type, const void* pixels);
 
+void Load_GL_TexImage2DOffset(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int format, const int type, const int64_t pixelsOffset);
+
 void Load_GL_TexParameterf(const int target, const int pname, const float param);
 
 void Load_GL_TexSubImage2D(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int type, const void* pixels);
+
+void Load_GL_TexSubImage2DOffset(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int type, const int64_t pixelsOffset);
 
 void Load_GL_Viewport(const int x, const int y, const int width, const int height);
 
@@ -406,11 +424,17 @@ int Load_GL_CreateShader(const int type);
 
 void Load_GL_DeleteBuffer(const int buffer);
 
+void Load_GL_DeleteBuffers(const int n, const void* buffers);
+
 void Load_GL_DeleteFramebuffer(const int framebuffer);
+
+void Load_GL_DeleteFramebuffers(const int n, const void* framebuffer);
 
 void Load_GL_DeleteProgram(const int program);
 
 void Load_GL_DeleteRenderbuffer(const int renderbuffer);
+
+void Load_GL_DeleteRenderbuffers(const int n, const void* renderbuffers);
 
 void Load_GL_DeleteShader(const int shader);
 
@@ -426,9 +450,15 @@ void Load_GL_FramebufferTexture2D(const int target, const int attachment, const 
 
 int Load_GL_GenBuffer();
 
+void Load_GL_GenBuffers(const int n, const void* buffers);
+
+void Load_GL_GenRenderbuffers(const int n, const void* buffers);
+
 void Load_GL_GenerateMipmap(const int target);
 
 int Load_GL_GenFramebuffer();
+
+void Load_GL_GenFramebuffers(const int n, const void* buffers);
 
 char* Load_GL_GetActiveAttrib(const int program, const int index,const void* size,const void* type);
 
@@ -438,9 +468,17 @@ int Load_GL_GetAttribLocation(const int program, const char* name);
 
 void Load_GL_GetBooleanv(const int pname, const void* params);
 
+bool Load_GL_GetBooleanvResult(const int pname);
+
 void Load_GL_GetBufferParameteriv(const int target, const int pname, const void* params);
 
 void Load_GL_GetFloatv(const int pname, const void* params);
+
+float Load_GL_GetFloatvResult(const int pname);
+
+void Load_GL_GetIntegerv(const int pname, const void* params);
+
+int Load_GL_GetIntegervResult(const int pname);
 
 void Load_GL_GetFramebufferAttachmentParameteriv(const int target, const int attachment, const int pname, const void* params);
 
@@ -448,13 +486,19 @@ void Load_GL_GetProgramiv(const int program, const int pname, const void* params
 
 char* Load_GL_GetProgramInfoLog(const int program);
 
+const char* Load_GL_GetProgramInfoLogs(const int program, const int bufsize, const void* length, const void* infolog);
+
 void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const void* params);
 
 void Load_GL_GetShaderiv(const int shader, const int pname, const void* params);
 
 char* Load_GL_GetShaderInfoLog(const int shader);
 
+const char* Load_GL_GetShaderInfoLogs(const int shader, const int bufsize, const void* length, const void* infolog);
+
 void Load_GL_GetShaderPrecisionFormat(const int shadertype, const int precisiontype, const void* range, const void* precision);
+
+void Load_GL_ShaderBinary(int count, const void* shaders, int binaryFormat, const void* binary, int length);
 
 void Load_GL_GetTexParameterfv(const int target, const int pname, const void* params);
 
@@ -581,6 +625,12 @@ void Load_GL_VertexAttrib4f(const int indx, const float x, const float y, const 
 void Load_GL_VertexAttrib4fv(const int indx, const void* values);
 
 void Load_GL_VertexAttribPointer(const int indx, const int size, const int type, bool normalized, const int stride, void* ptr);
+
+void Load_GL_VertexAttribPointerOffset(const int indx, const int size, const int type, bool normalized, const int stride, const int64_t offset);
+
+void Load_GL_GetAttachedShaders(const int program, const int maxCount, void* count, void* shaders);
+
+void Load_GL_GetShaderSource(const int shader, const int bufSize, void* length, void* source);
 
 #ifdef __cplusplus
 }

@@ -1579,9 +1579,21 @@ void Load_GL_CompressedTexImage2D(const int target, const int level, const int i
 	glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
 }
 
+void Load_GL_CompressedTexImage2DOffset(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int imageSize, const int64_t offset)
+{
+	intptr_t indices = (intptr_t)offset;
+	glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, (void*)indices);
+}
+
 void Load_GL_CompressedTexSubImage2D(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int imageSize, void* data)
 {
 	glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+}
+
+void Load_GL_CompressedTexSubImage2DOffset(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int imageSize, const int64_t offset)
+{
+	intptr_t indices = (intptr_t)offset;
+	glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, (void*)indices);
 }
 
 void Load_GL_CopyTexImage2D(const int target, const int level, const int internalformat, const int x, const int y, const int width, const int height, const int border)
@@ -1603,6 +1615,11 @@ void Load_GL_DeleteTexture(const int texture)
 {
 	GLuint b = texture;
 	glDeleteTextures(1, &b);
+}
+
+void Load_GL_DeleteTextures(const int n,const void* textures)
+{
+	glDeleteTextures(n, (GLuint*)textures);
 }
 
 void Load_GL_DepthFunc(const int func)
@@ -1635,6 +1652,12 @@ void Load_GL_DrawElements(const int mode, const int count, const int type, const
 	glDrawElements(mode, count, type, indices);
 }
 
+void Load_GL_DrawElementsOffset(const int mode, const int count, const int type, const int64_t offset)
+{
+	intptr_t indices = (intptr_t)offset;
+	glDrawElements(mode, count, type, (void*)indices);
+}
+
 void Load_GL_Enable(const int cap)
 {
 	glEnable(cap);
@@ -1660,6 +1683,11 @@ int Load_GL_GenTexture()
 	GLuint result;
 	glGenTextures(1, &result);
 	return result;
+}
+
+void Load_GL_GenTextures(const int n,const void* textures)
+{
+	glGenTextures(n, (GLuint*)textures);
 }
 
 int Load_GL_GetError()
@@ -1702,6 +1730,12 @@ void Load_GL_ReadPixels(const int x, const int y, const int width, const int hei
 	glReadPixels(x, y, width, height, format, type, pixels);
 }
 
+void Load_GL_ReadPixelsOffset(const int x, const int y, const int width, const int height, const int format, const int type, const int64_t pixelsOffset)
+{
+	intptr_t result = (intptr_t)pixelsOffset;
+	glReadPixels(x, y, width, height, format, type, (void*)result);
+}
+
 void Load_GL_Scissor(const int x, const int y, const int width, const int height)
 {
 	glScissor(x, y, width, height);
@@ -1727,6 +1761,12 @@ void Load_GL_TexImage2D(const int target, const int level, const int internalfor
 	glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 }
 
+void Load_GL_TexImage2DOffset(const int target, const int level, const int internalformat, const int width, const int height, const int border, const int format, const int type, const int64_t pixelsOffset)
+{
+	intptr_t result = (intptr_t)pixelsOffset;
+	glTexImage2D(target, level, internalformat, width, height, border, format, type, (void*)result);
+}
+
 void Load_GL_TexParameterf(const int target, const int pname, const float param)
 {
 	glTexParameterf(target, pname, param);
@@ -1735,6 +1775,12 @@ void Load_GL_TexParameterf(const int target, const int pname, const float param)
 void Load_GL_TexSubImage2D(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int type, const void* pixels)
 {
 	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+}
+
+void Load_GL_TexSubImage2DOffset(const int target, const int level, const int xoffset, const int yoffset, const int width, const int height, const int format, const int type, const int64_t pixelsOffset)
+{
+	intptr_t result = (intptr_t)pixelsOffset;
+	glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (void*)result);
 }
 
 void Load_GL_Viewport(const int x, const int y, const int width, const int height)
@@ -1842,6 +1888,11 @@ void Load_GL_DeleteBuffer(const int buffer)
 	glDeleteBuffers(1, &b);
 }
 
+void Load_GL_DeleteBuffers(const int n, const void* buffers)
+{
+	glDeleteBuffers(n, (GLuint*)buffers);
+}
+
 void Load_GL_DeleteFramebuffer(const int framebuffer)
 {
 	if (glDeleteFramebuffers) {
@@ -1852,6 +1903,17 @@ void Load_GL_DeleteFramebuffer(const int framebuffer)
 #ifdef GLEW
 	GLuint b = framebuffer;
 	glDeleteFramebuffersEXT(1, &b);
+#endif
+}
+
+void Load_GL_DeleteFramebuffers(const int n, const void* framebuffer)
+{
+	if (glDeleteFramebuffers) {
+		glDeleteFramebuffers(n, (GLuint*)framebuffer);
+	}
+#ifdef GLEW
+	GLuint b = framebuffer;
+	glDeleteFramebuffersEXT(n, (GLuint*)framebuffer);
 #endif
 }
 
@@ -1870,6 +1932,17 @@ void Load_GL_DeleteRenderbuffer(const int renderbuffer)
 	}
 #ifdef GLEW
 	glDeleteRenderbuffersEXT(1, &b);
+#endif
+}
+
+void Load_GL_DeleteRenderbuffers(const int n, const void* renderbuffers)
+{
+	if (glDeleteRenderbuffers) {
+		glDeleteRenderbuffers(n, (GLuint*)renderbuffers);
+		return;
+	}
+#ifdef GLEW
+	glDeleteRenderbuffersEXT(n, (GLuint*)renderbuffers);
 #endif
 }
 
@@ -1922,6 +1995,26 @@ int Load_GL_GenBuffer()
 	return result;
 }
 
+void Load_GL_GenBuffers(const int n, const void* buffers)
+{
+	if (glGenBuffers) {
+		glGenBuffers(n, (GLuint*)buffers);
+	}
+	#ifdef GLEW
+		glGenBuffersEXT(n, (GLuint*)buffers);
+	#endif
+}
+
+void Load_GL_GenRenderbuffers(const int n, const void* buffers)
+{
+	if (glGenRenderbuffers) {
+		glGenRenderbuffers(n, (GLuint*)buffers);
+	}
+	#ifdef GLEW
+		glGenRenderbuffersEXT(n, (GLuint*)buffers);
+	#endif
+}
+
 void Load_GL_GenerateMipmap(const int target)
 {
 	if (glGenerateMipmap) {
@@ -1949,6 +2042,16 @@ int Load_GL_GenFramebuffer()
 #endif
 }
 
+void Load_GL_GenFramebuffers(const int n,const void* buffers)
+{
+	if (glGenFramebuffers) {
+		glGenFramebuffers(n, (GLuint*)buffers);
+	}
+	#ifdef GLEW
+		glGenFramebuffersEXT(n, (GLuint*)buffers);
+	#endif
+}
+
 char* Load_GL_GetActiveAttrib(const int program, const int index, const void* size, const void* type)
 {
 	char cname[2048];
@@ -1973,6 +2076,13 @@ void Load_GL_GetBooleanv(const int pname, const void* params)
 	glGetBooleanv(pname, (GLboolean*)params);
 }
 
+bool Load_GL_GetBooleanvResult(const int pname)
+{
+	GLboolean depthTestEnabled = GL_FALSE;
+	glGetBooleanv(GL_DEPTH_TEST, &depthTestEnabled);
+	return depthTestEnabled == GL_TRUE;
+}
+
 void Load_GL_GetBufferParameteriv(const int target, const int pname, const void* params)
 {
 	glGetBufferParameteriv(target, pname, (GLint*)params);
@@ -1983,15 +2093,34 @@ void Load_GL_GetFloatv(const int pname, const void* params)
 	glGetFloatv(pname, (GLfloat*)params);
 }
 
+float Load_GL_GetFloatvResult(const int pname)
+{
+	GLfloat result[1];
+	glGetFloatv(pname, result);
+	return result[0];
+}
+
+void Load_GL_GetInteger(const int pname, const void* params)
+{
+	glGetIntegerv(pname, (GLint*)params);
+}
+
+int Load_GL_GetIntegervResult(const int pname)
+{
+	GLint result[1];
+	glGetIntegerv(pname, result);
+	return result[0];
+}
+
 void Load_GL_GetFramebufferAttachmentParameteriv(int target, int attachment, int pname, const void* params)
 {
 	if (glGetFramebufferAttachmentParameteriv) {
 		glGetFramebufferAttachmentParameteriv(target, attachment, pname, (GLint*)params);
 		return;
 	}
-#ifdef GLEW
-	glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, (GLint*)params);
-#endif
+	#ifdef GLEW
+		glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, (GLint*)params);
+	#endif
 }
 
 void Load_GL_GetProgramiv(int program, int pname, const void* params)
@@ -2005,6 +2134,12 @@ char* Load_GL_GetProgramInfoLog(const int program)
 	int length = 0;
 	glGetProgramInfoLog(program, 1024 * 10, &length, info);
 	return info;
+}
+
+const char* Load_GL_GetProgramInfoLogs(const int program, const int bufsize, const void* length, const void* infolog)
+{
+	glGetProgramInfoLog(program, bufsize, (GLsizei*)length, (GLchar*)infolog);
+	return infolog;
 }
 
 void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const void* params)
@@ -2031,9 +2166,20 @@ char* Load_GL_GetShaderInfoLog(const int shader)
 	return info;
 }
 
+const char* Load_GL_GetShaderInfoLogs(const int shader, const int bufsize, const void* length, const void* infolog)
+{
+	glGetShaderInfoLog(shader, bufsize, (GLsizei*)length, (GLchar*)infolog);
+	return infolog;
+}
+
 void Load_GL_GetShaderPrecisionFormat(const int shadertype, const int precisiontype, const void* range, const void* precision)
 {
 	glGetShaderPrecisionFormat(shadertype, precisiontype, (GLint*)range, (GLint*)precision);
+}
+
+void Load_GL_ShaderBinary(int count, const void* shaders, int binaryFormat, const void* binary, int length)
+{
+	glShaderBinary(count, (GLuint*)shaders, binaryFormat, binary, length);
 }
 
 void Load_GL_GetTexParameterfv(const int target, const int pname, const void* params)
@@ -2385,4 +2531,20 @@ void Load_GL_VertexAttrib4fv(const int indx, const void* values)
 void Load_GL_VertexAttribPointer(const int indx, const int size, const int type, bool normalized, const int stride, void* ptr)
 {
 	glVertexAttribPointer(indx, size, type, normalized, stride, ptr);
+}
+
+void Load_GL_VertexAttribPointerOffset(const int indx, const int size, const int type, bool normalized, const int stride, const int64_t offset)
+{
+	intptr_t indices = (intptr_t)offset;
+	glVertexAttribPointer(indx, size, type, normalized, stride, (void*)indices);
+}
+
+void Load_GL_GetAttachedShaders(const int program, const int maxCount, void* count, void* shaders)
+{
+	glGetAttachedShaders(program, maxCount, (GLsizei*)count, (GLuint*)shaders);
+}
+
+void Load_GL_GetShaderSource(const int shader, const int bufSize, void* length, void* source)
+{
+	glGetShaderSource(shader, bufSize, (GLsizei*)length, (GLchar*)source);
 }
