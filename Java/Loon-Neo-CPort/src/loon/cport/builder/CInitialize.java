@@ -64,6 +64,9 @@ public class CInitialize {
 				TeaReflectionSupplier.addReflectionClass(refPackName);
 			}
 		}
+		if (obfuscated) {
+			debug = false;
+		}
 		CBuildConfiguration teaBuildConfiguration = new CBuildConfiguration();
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../assets"));
 		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));

@@ -23,8 +23,11 @@ package loon.cport;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.LongBuffer;
+import java.nio.ShortBuffer;
 
 import loon.cport.bridge.SDLCall;
 import loon.opengl.GLExt;
@@ -228,12 +231,39 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glBufferData(int target, int size, Buffer data, int usage) {
-		SDLCall.glBufferData(target, size, data, usage);
+		if (data instanceof ByteBuffer)
+			SDLCall.glBufferData(target, size, (ByteBuffer) data, usage);
+		else if (data instanceof ShortBuffer)
+			SDLCall.glBufferData(target, size, (ShortBuffer) data, usage);
+		else if (data instanceof IntBuffer)
+			SDLCall.glBufferData(target, size, (IntBuffer) data, usage);
+		else if (data instanceof FloatBuffer)
+			SDLCall.glBufferData(target, size, (FloatBuffer) data, usage);
+		else if (data instanceof DoubleBuffer)
+			SDLCall.glBufferData(target, size, (DoubleBuffer) data, usage);
+		else if (data instanceof LongBuffer)
+			SDLCall.glBufferData(target, size, (LongBuffer) data, usage);
+		else
+			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+
 	}
 
 	@Override
 	public void glBufferSubData(int target, int offset, int size, Buffer data) {
-		SDLCall.glBufferSubData(target, offset, size, data);
+		if (data instanceof ByteBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (ByteBuffer) data);
+		else if (data instanceof ShortBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (ShortBuffer) data);
+		else if (data instanceof IntBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (IntBuffer) data);
+		else if (data instanceof FloatBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (FloatBuffer) data);
+		else if (data instanceof DoubleBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (DoubleBuffer) data);
+		else if (data instanceof LongBuffer)
+			SDLCall.glBufferSubData(target, offset, size, (LongBuffer) data);
+		else
+			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -274,13 +304,53 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border,
 			int imageSize, Buffer data) {
-		SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, data);
+		if (data instanceof ShortBuffer)
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(ShortBuffer) data);
+		else if (data instanceof ByteBuffer) {
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(ByteBuffer) data);
+		} else if (data instanceof IntBuffer) {
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(IntBuffer) data);
+		} else if (data instanceof FloatBuffer) {
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(FloatBuffer) data);
+		} else if (data instanceof DoubleBuffer) {
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(DoubleBuffer) data);
+		} else if (data instanceof LongBuffer) {
+			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+					(LongBuffer) data);
+		} else {
+			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
 	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
 			int format, int imageSize, Buffer data) {
-		SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize, data);
+		if (data instanceof ShortBuffer)
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(ShortBuffer) data);
+		else if (data instanceof ByteBuffer) {
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(ByteBuffer) data);
+		} else if (data instanceof IntBuffer) {
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(IntBuffer) data);
+		} else if (data instanceof FloatBuffer) {
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(FloatBuffer) data);
+		} else if (data instanceof DoubleBuffer) {
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(DoubleBuffer) data);
+		} else if (data instanceof LongBuffer) {
+			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+					(LongBuffer) data);
+		} else {
+			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
@@ -377,7 +447,24 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glDrawElements(int mode, int count, int type, Buffer indices) {
-		SDLCall.glDrawElements(mode, count, type, indices);
+		if (indices instanceof ShortBuffer && type == GL_UNSIGNED_SHORT)
+			SDLCall.glDrawElements(mode, count, type, (ShortBuffer) indices);
+		else if (indices instanceof ByteBuffer && type == GL_UNSIGNED_SHORT) {
+			SDLCall.glDrawElements(mode, count, type, ((ByteBuffer) indices).asShortBuffer());
+		} else if (indices instanceof ByteBuffer && type == GL_UNSIGNED_BYTE) {
+			SDLCall.glDrawElements(mode, count, type, (ByteBuffer) indices);
+		} else if (indices instanceof IntBuffer) {
+			SDLCall.glDrawElements(mode, count, type, (IntBuffer) indices);
+		} else if (indices instanceof FloatBuffer) {
+			SDLCall.glDrawElements(mode, count, type, (FloatBuffer) indices);
+		} else if (indices instanceof DoubleBuffer) {
+			SDLCall.glDrawElements(mode, count, type, (DoubleBuffer) indices);
+		} else if (indices instanceof LongBuffer) {
+			SDLCall.glDrawElements(mode, count, type, (LongBuffer) indices);
+		} else {
+			throw new RuntimeException(
+					"Can't use " + indices.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
@@ -602,7 +689,21 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glReadPixels(int x, int y, int width, int height, int format, int type, Buffer pixels) {
-		SDLCall.glReadPixels(x, y, width, height, format, type, pixels);
+		if (pixels instanceof ByteBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (ByteBuffer) pixels);
+		else if (pixels instanceof ShortBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (ShortBuffer) pixels);
+		else if (pixels instanceof IntBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (IntBuffer) pixels);
+		else if (pixels instanceof FloatBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (FloatBuffer) pixels);
+		else if (pixels instanceof DoubleBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (DoubleBuffer) pixels);
+		else if (pixels instanceof LongBuffer)
+			SDLCall.glReadPixels(x, y, width, height, format, type, (LongBuffer) pixels);
+		else
+			throw new RuntimeException(
+					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -627,7 +728,22 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glShaderBinary(int n, IntBuffer shaders, int binaryformat, Buffer binary, int length) {
-		SDLCall.glShaderBinary(n, shaders, binaryformat, binary, length);
+		if (binary instanceof ShortBuffer)
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (ShortBuffer) binary, length);
+		else if (binary instanceof ByteBuffer) {
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (ByteBuffer) binary, length);
+		} else if (binary instanceof IntBuffer) {
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (IntBuffer) binary, length);
+		} else if (binary instanceof FloatBuffer) {
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (FloatBuffer) binary, length);
+		} else if (binary instanceof DoubleBuffer) {
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (DoubleBuffer) binary, length);
+		} else if (binary instanceof LongBuffer) {
+			SDLCall.glShaderBinary(n, shaders, binaryformat, (LongBuffer) binary, length);
+		} else {
+			throw new RuntimeException(
+					"Can't use " + binary.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
@@ -663,7 +779,27 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
 			int type, Buffer pixels) {
-		SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
+		if (pixels instanceof ByteBuffer || pixels == null)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(ByteBuffer) pixels);
+		else if (pixels instanceof ShortBuffer)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(ShortBuffer) pixels);
+		else if (pixels instanceof IntBuffer)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(IntBuffer) pixels);
+		else if (pixels instanceof FloatBuffer)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(FloatBuffer) pixels);
+		else if (pixels instanceof DoubleBuffer)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(DoubleBuffer) pixels);
+		else if (pixels instanceof LongBuffer)
+			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
+					(LongBuffer) pixels);
+		else
+			throw new RuntimeException(
+					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -689,7 +825,22 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
 			int type, Buffer pixels) {
-		SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
+		if (pixels instanceof ByteBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (ByteBuffer) pixels);
+		else if (pixels instanceof ShortBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (ShortBuffer) pixels);
+		else if (pixels instanceof IntBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (IntBuffer) pixels);
+		else if (pixels instanceof FloatBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (FloatBuffer) pixels);
+		else if (pixels instanceof DoubleBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type,
+					(DoubleBuffer) pixels);
+		else if (pixels instanceof LongBuffer)
+			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (LongBuffer) pixels);
+		else
+			throw new RuntimeException(
+					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -839,7 +990,21 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glVertexAttribPointer(int indx, int size, int type, boolean normalized, int stride, Buffer ptr) {
-		SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ptr);
+		if (ptr instanceof FloatBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, (FloatBuffer) ptr);
+		} else if (ptr instanceof ByteBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((ByteBuffer) ptr));
+		} else if (ptr instanceof ShortBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((ShortBuffer) ptr));
+		} else if (ptr instanceof IntBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((IntBuffer) ptr));
+		} else if (ptr instanceof DoubleBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((DoubleBuffer) ptr));
+		} else if (ptr instanceof LongBuffer) {
+			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((LongBuffer) ptr));
+		} else {
+			throw new RuntimeException("Can't use " + ptr.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
@@ -1026,12 +1191,40 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public String glGetActiveAttrib(int program, int index, IntBuffer size, Buffer type) {
-		return SDLCall.glGetActiveAttrib(program, index, size, type);
+		if (type instanceof ShortBuffer)
+			return SDLCall.glGetActiveAttrib(program, index, size, (ShortBuffer) type);
+		else if (type instanceof ByteBuffer) {
+			return SDLCall.glGetActiveAttrib(program, index, size, (ByteBuffer) type);
+		} else if (type instanceof IntBuffer) {
+			return SDLCall.glGetActiveAttrib(program, index, size, (IntBuffer) type);
+		} else if (type instanceof FloatBuffer) {
+			return SDLCall.glGetActiveAttrib(program, index, size, (FloatBuffer) type);
+		} else if (type instanceof DoubleBuffer) {
+			return SDLCall.glGetActiveAttrib(program, index, size, (DoubleBuffer) type);
+		} else if (type instanceof LongBuffer) {
+			return SDLCall.glGetActiveAttrib(program, index, size, (LongBuffer) type);
+		} else {
+			throw new RuntimeException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override
 	public String glGetActiveUniform(int program, int index, IntBuffer size, Buffer type) {
-		return SDLCall.glGetActiveUniform(program, index, size, type);
+		if (type instanceof ShortBuffer)
+			return SDLCall.glGetActiveUniform(program, index, size, (ShortBuffer) type);
+		else if (type instanceof ByteBuffer) {
+			return SDLCall.glGetActiveUniform(program, index, size, (ByteBuffer) type);
+		} else if (type instanceof IntBuffer) {
+			return SDLCall.glGetActiveUniform(program, index, size, (IntBuffer) type);
+		} else if (type instanceof FloatBuffer) {
+			return SDLCall.glGetActiveUniform(program, index, size, (FloatBuffer) type);
+		} else if (type instanceof DoubleBuffer) {
+			return SDLCall.glGetActiveUniform(program, index, size, (DoubleBuffer) type);
+		} else if (type instanceof LongBuffer) {
+			return SDLCall.glGetActiveUniform(program, index, size, (LongBuffer) type);
+		} else {
+			throw new RuntimeException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
+		}
 	}
 
 	@Override

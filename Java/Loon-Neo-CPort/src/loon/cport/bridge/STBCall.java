@@ -32,4 +32,34 @@ public final class STBCall {
 	@RuntimeInclude("STBSupport.h")
 	@Import(name = "ImportSTBInclude")
 	public final static native void importInclude();
+
+	@Import(name = "Load_STB_Image_LoadBytes")
+	public final static native long loadBytesToImage(byte[] buffer, int len);
+
+	@Import(name = "Load_STB_Image_LoadPath")
+	public final static native long loadPathToImage(String path);
+
+	@Import(name = "Load_STB_Image_LoadPathToSDLSurface")
+	public final static native long loadPathToSDLSurface(String path);
+
+	@Import(name = "Load_STB_TempSurfaceFree")
+	public final static native void freeSurfaceFree();
+
+	@Import(name = "Load_STB_Image_Free")
+	public final static native void freeImage(long handle);
+
+	@Import(name = "Load_STB_Image_GetPixels")
+	public final static native byte[] getImagePixels(long handle);
+
+	@Import(name = "Load_STB_Image_GetPixels32")
+	public final static native int[] getImagePixels32(long handle);
+
+	@Import(name = "Load_STB_Image_GetWidth")
+	public final static native int getImageWidth(long handle);
+
+	@Import(name = "Load_STB_Image_GetHeight")
+	public final static native int getImageHeight(long handle);
+
+	@Import(name = "Load_STB_Image_GetFormat")
+	public final static native int getImageFormat(long handle);
 }

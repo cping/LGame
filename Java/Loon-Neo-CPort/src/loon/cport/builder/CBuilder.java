@@ -20,15 +20,15 @@
  */
 package loon.cport.builder;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -49,7 +49,14 @@ import org.teavm.vm.TeaVMPhase;
 import org.teavm.vm.TeaVMProgressFeedback;
 import org.teavm.vm.TeaVMProgressListener;
 
+import loon.LSystem;
 import loon.cport.assets.AssetFile;
+import loon.cport.builder.CCodeFix.FileFix;
+import loon.utils.ObjectMap;
+import loon.utils.ObjectMap.Entries;
+import loon.utils.ObjectMap.Entry;
+import loon.utils.StringUtils;
+import loon.utils.TArray;
 
 public class CBuilder {
 
@@ -161,6 +168,51 @@ public class CBuilder {
 				CBuilder.end();
 			} else {
 				isSuccess = true;
+				
+				CBuilder.begin("FIX SOURCE CODE");
+				
+				final CCodeFix fixCFile = new CCodeFix();
+
+				String cappDirectory = configuration.cappPath;
+
+				AssetFile distFolder = new AssetFile(cappDirectory);
+				AssetFile cappFolder = distFolder.child(cappName);
+
+				final TArray<FileFix> fixs = fixCFile.getFixList();
+				for (FileFix fix : fixs) {
+					AssetFile fixFile = cappFolder.child(fix.fileName);
+					if (fixFile.exists()) {
+						CBuilder.println("fix code in source : " + fix.fileName);
+						final StringBuilder content = new StringBuilder();
+						try {
+							try (BufferedReader reader = new BufferedReader(
+									new FileReader(fixFile.file, StandardCharsets.UTF_8))) {
+								String line;
+								while ((line = reader.readLine()) != null) {
+									ObjectMap<String, String> fixContext = fix.fixContexts;
+									Entries<String, String> list = fixContext.entries();
+									for (; list.hasNext();) {
+										Entry<String, String> replaceText = list.next();
+										final String key = replaceText.key;
+										if (line.indexOf(key) != -1) {
+											content.append(StringUtils.replace(line, key, replaceText.value));
+										} else {
+											content.append(line);
+										}
+										content.append(LSystem.NL);
+									}
+								}
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						if (content.length() > 0) {
+							fixFile.writeString(content.toString(), false);
+						}
+					}
+					CBuilder.println("*********************************");
+				}
+
 				CBuilder.begin("Build complete in " + seconds + " seconds. Total Classes: " + classes.size());
 			}
 
@@ -182,8 +234,7 @@ public class CBuilder {
 		return isSuccess;
 	}
 
-	private static void preserveClasses(TeaVMTool tool, CBuildConfiguration configuration,
-			TeaClassLoader classLoader) {
+	private static void preserveClasses(TeaVMTool tool, CBuildConfiguration configuration, TeaClassLoader classLoader) {
 		List<String> classesToPreserve = tool.getClassesToPreserve();
 		ArrayList<String> configClassesToPreserve = configuration.classesToPreserve;
 		List<String> reflectionClasses = TeaReflectionSupplier.getReflectionClasses();
@@ -311,23 +362,9 @@ public class CBuilder {
 		preserveClasses(tool, configuration, classLoader);
 	}
 
-	public static void copyRuntime(File setTargetDirectory) {
-		try {
-			StringBuilder name = new StringBuilder("wasm-gc-runtime.min");
-			setTargetDirectory.mkdirs();
-			String resourceName = "org/teavm/backend/wasm/" + name + ".js";
-			ClassLoader classLoader = CBuilder.class.getClassLoader();
-			try (InputStream input = classLoader.getResourceAsStream(resourceName)) {
-				Files.copy(input, setTargetDirectory.toPath().resolve(name + ".js"),
-						StandardCopyOption.REPLACE_EXISTING);
-			}
-		} catch (Throwable t) {
-			throw new RuntimeException(t);
-		}
-	}
-
 	public static void configAssets() {
 		CBuilder.begin("COPYING ASSETS");
+
 		String cappDirectory = configuration.cappPath;
 
 		AssetFile distFolder = new AssetFile(cappDirectory);
