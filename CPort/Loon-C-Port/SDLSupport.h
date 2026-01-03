@@ -6,8 +6,10 @@
 #include <stdbool.h>
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_main.h>
 #else
 #include <SDL.h>
+#include <SDL_main.h>
 #endif
 
 #ifdef _WIN32
@@ -26,7 +28,19 @@
     #ifdef GLEW
     #include "GL/glew.h"
     #else
-    #include "glad/gles2.h"
+        #ifdef __SWITCH__
+            # include <switch.h>
+            # include <EGL/egl.h>
+            # include <EGL/eglext.h>
+            # include <glad/glad.h>
+            # include <stdio.h>
+            # include <sys/socket.h>
+            # include <arpa/inet.h>
+            # include <sys/errno.h>
+            # include <unistd.h>
+        #else
+            #include "glad/gles2.h"
+        #endif
 #endif
 #endif
 
@@ -88,7 +102,7 @@ int* Load_SDL_GetSurfaceSize(const int64_t handle);
 
 int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h);
 
-int* Load_SDL_GetPixels32(const int64_t handle);
+int* Load_SDL_GetPixels32(const int64_t handle, const int order);
 
 void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel);
 
@@ -109,6 +123,8 @@ void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int
 void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const int w, const int h);
 
 int* Load_SDL_GetClipRect(const int64_t handle);
+
+int32_t Load_SDL_GetFormat(const int64_t handle);
 
 bool Load_SDL_Update();
 

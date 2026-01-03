@@ -20,7 +20,7 @@
  */
 package loon.cport.bridge;
 
-public class SDLWindowFlags {
+public final class SDLWindowFlags {
 
 	public final static int Shown = SDLCall.SDL_WINDOW_SHOWN;
 

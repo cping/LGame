@@ -137,13 +137,52 @@ const uint8_t* Load_STB_Image_GetPixels(const int64_t handle)
 	return pixmap->pixels;
 }
 
-int32_t* Load_STB_Image_GetPixels32(const int64_t handle)
+void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int height, int format) {
+	if (!src || !dst || width <= 0 || height <= 0 || format < 3) {
+		return;
+	}
+	int length = width * height;
+	for (int i = 0; i < length; i++) {
+		uint8_t r = src[i * format + 0];
+		uint8_t g = src[i * format + 1];
+		uint8_t b = src[i * format + 2];
+		uint8_t a = (format >= 4) ? src[i * format + 3] : 255;
+		dst[i] = ((int32_t)a << 24) | ((int32_t)r << 16) | ((int32_t)g << 8) | (int32_t)b;
+	}
+}
+
+int32_t* Load_STB_Image_GetDefaultPixels32(const int64_t handle)
 {
 	stb_pix* pixmap = (stb_pix*)handle;
 	if (!pixmap) {
 		return 0;
 	}
-	return (int32_t*)pixmap->pixels;
+	const uint8_t* bytePixels = pixmap->pixels;
+	int width = pixmap->width, height = pixmap->height;
+	int length = width * height;
+	int32_t* pixelsInt32 = malloc(length * sizeof(int32_t));
+	if (!pixelsInt32) {
+		return 0;
+	}
+	convertSTBUint8ToInt32(bytePixels, pixelsInt32, width, height, pixmap->format);
+	return pixelsInt32;
+}
+
+int32_t* Load_STB_Image_GetPixels32(const int64_t handle, const int32_t format)
+{
+	stb_pix* pixmap = (stb_pix*)handle;
+	if (!pixmap) {
+		return 0;
+	}
+	const uint8_t* bytePixels = pixmap->pixels;
+	int width = pixmap->width, height = pixmap->height;
+	int length = width * height;
+	int32_t* pixelsInt32 = malloc(length * sizeof(int32_t));
+	if (!pixelsInt32) {
+		return 0;
+	}
+	convertSTBUint8ToInt32(bytePixels, pixelsInt32, width, height, format);
+	return pixelsInt32;
 }
 
 int32_t Load_STB_Image_GetWidth(const int64_t handle)
@@ -311,6 +350,35 @@ uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, cons
 	return bitmap;
 }
 
+void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height, int order) {
+	if (!src || !dst || width <= 0 || height <= 0) {
+		return;
+	}
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
+			uint8_t alpha = src[y * width + x];
+			uint8_t r = 255;
+			uint8_t g = 255;
+			uint8_t b = 255;
+			if (order == 0) {
+				dst[y * width + x] = ((int32_t)alpha << 24) | (r << 16) | (g << 8) | b;
+			}
+			else {
+				dst[y * width + x] = (r << 24) | (g << 16) | (b << 8) | (int32_t)alpha;
+			}
+		}
+	}
+}
+
+int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height)
+{
+	uint8_t* bytePixels =  Load_STB_MakeCodepointBitmap(handle, point, scale, width, height);
+	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
+	convertU8toInt32(bytePixels, int32Pixels, width, height, 0);
+	free(bytePixels);
+	return int32Pixels;
+}
+
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height)
 {
 	stb_font* fontinfo = (stb_font*)handle;
@@ -331,13 +399,14 @@ uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, c
 	ascent *= scale;
 	descent *= scale;
 	int i;
+	int newWidth = width;
 	for (i = 0; i < strlen(text); ++i)
 	{
 		int c_x1, c_y1, c_x2, c_y2;
 		stbtt_GetCodepointBitmapBox(fontinfo->info, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 		int y = ascent + c_y1;
-		int byteOffset = x + (y * width);
-		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
+		int byteOffset = x + (y * newWidth);
+		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, newWidth, scale, scale, text[i]);
 		int ax;
 		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
 		x += ax * scale;
@@ -346,6 +415,15 @@ uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, c
 		x += kern * scale;
 	}
 	return bitmap;
+}
+
+int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height)
+{
+	uint8_t* bytePixels = Load_STB_MakeDrawTextToBitmap(handle, text, fontscale, width, height);
+	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
+	convertU8toInt32(bytePixels, int32Pixels, width, height, 0);
+	free(bytePixels);
+	return int32Pixels;
 }
 
 void Load_STB_CloseFontInfo(const int64_t handle)

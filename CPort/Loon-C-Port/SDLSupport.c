@@ -1,9 +1,24 @@
 #include "SDLSupport.h"
 
+#ifdef __WINRT__
+#include "winrt/base.h"
+#include <windows.h>
+#include <winrt/base.h>
+#define main main
+int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+	AllocConsole();
+	FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
+	freopen_s(&fpstdin, "CONIN$", "r", stdin);
+	freopen_s(&fpstdout, "CONOUT$", "w", stdout);
+	freopen_s(&fpstderr, "CONOUT$", "w", stderr);
+	return SDL_WinRTRunApp(SDL_main, NULL);
+}
+#endif
+
 #ifdef __SWITCH__
 static EGLDisplay display;
 static EGLContext context;
-static EGLSurface surface;
+static EGLSurface eglsurface;
 
 static PadState combinedPad;
 static PadState pads[8];
@@ -38,8 +53,8 @@ void Load_SDL_Cleanup() {
 		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		if (context)
 			eglDestroyContext(display, context);
-		if (surface)
-			eglDestroySurface(display, surface);
+		if (eglsurface)
+			eglDestroySurface(display, eglsurface);
 		eglTerminate(display);
 	}
 	Mix_Quit();
@@ -272,7 +287,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 		EGL_NONE
 	};
 	eglChooseConfig(display, framebufferAttributeList, &config, 1, &numConfigs);
-	surface = eglCreateWindowSurface(display, config, nwindowGetDefault(), NULL);
+	eglsurface = eglCreateWindowSurface(display, config, nwindowGetDefault(), NULL);
 	static const EGLint contextAttributeList[] =
 	{
 		EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR, EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR,
@@ -281,7 +296,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 		EGL_NONE
 	};
 	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttributeList);
-	eglMakeCurrent(display, surface, surface, context);
+	eglMakeCurrent(display, eglsurface, eglsurface, context);
 	gladLoadGL();
 	SDL_Init(SDL_INIT_AUDIO);
 #else
@@ -364,7 +379,7 @@ bool Load_SDL_Update() {
 			}
 	}
 
-	eglSwapBuffers(display, surface);
+	eglSwapBuffers(display, eglsurface);
 	return appletMainLoop();
 #else
       int running = 1;
@@ -742,11 +757,32 @@ int* Load_SDL_GetPixels(const int64_t handle, const int x, const int y, const in
 	return 0;
 }
 
-int* Load_SDL_GetPixels32(const int64_t handle)
+int* Load_SDL_GetPixels32(const int64_t handle, int order)
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return 0;
-	return (uint32_t*)surface->surface_data->pixels;
+	int width = surface->surface_data->w;
+	int height = surface->surface_data->h;
+	int32_t* pixelsInt32 = malloc(width * height * sizeof(int32_t));
+	if (!pixelsInt32) {
+		return 0;
+	}
+	Uint8* srcPixels = (Uint8*)surface->surface_data->pixels;
+	SDL_Palette* palette = surface->surface_data->format->palette;
+	for (int y = 0; y < height; y++) {
+		Uint8* row = srcPixels + y * surface->surface_data->pitch;
+		for (int x = 0; x < width; x++) {
+			Uint8 index = row[x];
+			SDL_Color color = palette->colors[index];
+			if (order == 0) {
+				pixelsInt32[y * width + x] =  (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
+			}
+			else {
+				pixelsInt32[y * width + x] =  (color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
+			}
+		}
+	}
+	return pixelsInt32;
 }
 
 void Load_SDL_SetPixel(const int64_t handle, const int x, const int y, const int32_t pixel)
@@ -837,6 +873,7 @@ const int blendModeToInt(SDL_BlendMode mode) {
 	case SDL_BLENDMODE_ADD:   return 2;
 	case SDL_BLENDMODE_MOD:   return 3;
 	case SDL_BLENDMODE_MUL:   return 4;
+	case SDL_BLENDMODE_INVALID: return 5;
 	default:                  return -1;
 	}
 }
@@ -847,6 +884,7 @@ const SDL_BlendMode blendIntToMode(int mode) {
 	case 2: return SDL_BLENDMODE_ADD;
 	case 3: return SDL_BLENDMODE_MOD;
 	case 4: return SDL_BLENDMODE_MUL;
+	case 5: return SDL_BLENDMODE_INVALID;
 	default: return SDL_BLENDMODE_NONE;
 	}
 }
@@ -892,6 +930,14 @@ int* Load_SDL_GetClipRect(const int64_t handle)
 	SDL_GetClipRect(surface->surface_data, &currentClip);
 	int rect[] = {currentClip.x,currentClip.y,currentClip.w,currentClip.h};
 	return rect;
+}
+
+int32_t Load_SDL_GetFormat(const int64_t handle) {
+	cache_surface* surface = (cache_surface*)handle;
+	if (!surface) {
+		return 0;
+	}
+	return (int32_t)surface->surface_data->format->format;
 }
 
 int Load_SDL_Init(const int flags)
@@ -1241,6 +1287,7 @@ int64_t Call_SDL_GL_CreateContext()
 void Call_SDL_DestroyWindow() {
 	if (window) {
 		SDL_DestroyWindow(window);
+		window = NULL;
 	}
 }
 
@@ -1505,6 +1552,8 @@ void Load_SDL_Mix_CloseAudio()
 
 void Load_SDL_Quit()
 {
+	Call_SDL_DestroyWindow();
+	Mix_Quit();
 	SDL_Quit();
 }
 

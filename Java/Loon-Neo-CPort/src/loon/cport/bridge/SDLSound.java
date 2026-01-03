@@ -27,7 +27,7 @@ import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Entries;
 import loon.utils.OrderedMap;
 
-public class SDLSound implements LRelease {
+public final class SDLSound implements LRelease {
 
 	public final static SDLSound createSound(byte[] bytes) {
 		long handle = SDLCall.loadSound(bytes);
@@ -146,6 +146,10 @@ public class SDLSound implements LRelease {
 		}
 		_channels.clear();
 		_lastChannel = -1;
+	}
+
+	public boolean isClosed() {
+		return _closed;
 	}
 
 	@Override

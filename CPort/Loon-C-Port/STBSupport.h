@@ -39,7 +39,9 @@ void Load_STB_Image_Free(const int64_t handle);
 
 const uint8_t* Load_STB_Image_GetPixels(const int64_t handle);
 
-int32_t* Load_STB_Image_GetPixels32(const int64_t handle);
+int32_t* Load_STB_Image_GetDefaultPixels32(const int64_t handle);
+
+int32_t* Load_STB_Image_GetPixels32(const int64_t handle , const int32_t format);
 
 int32_t Load_STB_Image_GetWidth(const int64_t handle);
 
@@ -62,6 +64,10 @@ int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point);
 uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle, const int point, const float scale, const int width, const int height);
 
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height);
+
+int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height);
+
+int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height);
 
 void Load_STB_CloseFontInfo(const int64_t handle);
 

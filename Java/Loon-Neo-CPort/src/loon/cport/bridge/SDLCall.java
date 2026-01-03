@@ -122,13 +122,13 @@ public final class SDLCall {
 	public final static native long convertSurfaceFormat(long handle, int pixel_format, int flags);
 
 	@Import(name = "Load_SDL_GetSurfaceSize")
-	public final static native int[] convertSurfaceFormat(long handle);
+	public final static native int[] getSurfaceSize(long handle);
 
 	@Import(name = "Load_SDL_GetPixels")
 	public final static native int[] getSurfacePixels(long handle, int x, int y, int w, int h);
 
 	@Import(name = "Load_SDL_GetPixels32")
-	public final static native int[] getSurfacePixels32(long handle);
+	public final static native int[] getSurfacePixels32(long handle, int order);
 
 	@Import(name = "Load_SDL_SetPixel")
 	public final static native void setSurfacePixel(long handle, int x, int y, int pixel);
@@ -160,6 +160,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_GetClipRect")
 	public final static native int[] getSurfaceClipRect(long handle);
+
+	@Import(name = "Load_SDL_GetFormat")
+	public final static native int getSurfaceFormat(long handle);
 
 	@Import(name = "Load_SDL_Update")
 	public final static native boolean update();
