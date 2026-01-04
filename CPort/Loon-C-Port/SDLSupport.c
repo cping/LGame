@@ -30,6 +30,7 @@ static SDL_Window* window;
 static int buttons;
 static float joysticks[4];
 #endif
+static game_filesystem* gamefilesys;
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
 static const int audio_channels = MIX_DEFAULT_CHANNELS;
@@ -46,6 +47,55 @@ static char curr_dir[MAX_PATH];
 #else
 #include <dlfcn.h>
 #endif
+
+static void chars_append(char* dest, size_t dest_size, const char* src) {
+	if (!dest || !src || dest_size == 0) {
+		return;
+	}
+	size_t dest_len = strlen(dest);
+	size_t src_len = strlen(src);
+	if (dest_len < dest_size - 1) {
+		size_t copy_len = dest_size - dest_len - 1;
+		if (src_len < copy_len) {
+			copy_len = src_len;
+		}
+		memcpy(dest + dest_len, src, copy_len);
+		dest[dest_len + copy_len] = '\0';
+	}
+}
+
+char* joinLocales(const SDL_Locale* locales) {
+	if (!locales) return 0;
+	size_t total_len = 0;
+	int count = 0;
+	for (const SDL_Locale* loc = locales; loc->language != NULL; loc++) {
+		total_len += strlen(loc->language);
+		if (loc->country) {
+			total_len += 1 + strlen(loc->country);
+		}
+		total_len += 2;
+		count++;
+	}
+	if (count == 0) {
+		return 0;
+	}
+	char* result = (char*)malloc(total_len);
+	if (!result) {
+		return 0;
+	}
+	result[0] = '\0';
+	for (const SDL_Locale* loc = locales; loc->language != NULL; loc++) {
+		chars_append(result, total_len, loc->language);
+		if (loc->country) {
+			chars_append(result, total_len, "_");
+			chars_append(result, total_len, loc->country);
+		}
+		if ((loc + 1)->language != NULL) {
+			chars_append(result, total_len, ", ");
+		}
+	}
+	return result;
+}
 
 void Load_SDL_Cleanup() {
 #ifdef __SWITCH__
@@ -512,6 +562,124 @@ void ImportSDLInclude()
 {
 }
 
+int64_t CreateGameData(char* fileName)
+{
+	game_filesystem* fs = (game_filesystem*)malloc(sizeof(game_filesystem));
+	if (!fs || !fileName) {
+		return false;
+	}
+    chars_append(fs->basepath, MAX_GAMESAVE_PATH_CAHR_LEN - 1, fileName);
+	fs->basepath[MAX_GAMESAVE_PATH_CAHR_LEN - 1] = '\0';
+	fs->filecount = 0;
+	gamefilesys = fs;
+	return (intptr_t)fs;
+}
+
+const char* ReadGameData(const int64_t handle, const char* filename, int64_t* outSize) {
+	game_filesystem* fs = (game_filesystem*)handle;
+	if (!fs) {
+		return 0;
+	}
+	if (!fs || !filename) {
+		return 0;
+	}
+	char fullPath[MAX_GAMESAVE_PATH_CAHR_LEN];
+	snprintf(fullPath, sizeof(fullPath), "%s/%s", fs->basepath, filename);
+	SDL_RWops* rw = SDL_RWFromFile(fullPath, "rb");
+	if (!rw) {
+		return 0;
+	}
+	Sint64 size = SDL_RWsize(rw);
+	if (size <= 0) {
+		SDL_RWclose(rw);
+		return 0;
+	}
+	void* buffer = malloc(size);
+	if (!buffer) {
+		SDL_RWclose(rw);
+		return 0;
+	}
+	if (SDL_RWread(rw, buffer, 1, size) != (size_t)size) {
+		free(buffer);
+		SDL_RWclose(rw);
+		return 0;
+	}
+	SDL_RWclose(rw);
+	if (outSize) {
+		*outSize = (int64_t)size;
+	}
+	return (const char*)buffer;
+}
+
+bool WriteGameData(const int64_t handle, const char* filename, const char* data, int64_t size) {
+	game_filesystem* fs = (game_filesystem*)handle;
+	if (!fs) {
+		return false;
+	}
+	char fullPath[MAX_GAMESAVE_PATH_CAHR_LEN];
+	snprintf(fullPath, sizeof(fullPath), "%s/%s", fs->basepath, filename);
+	SDL_RWops* rw = SDL_RWFromFile(fullPath, "wb");
+	if (!rw) {
+		return false;
+	}
+	if (SDL_RWwrite(rw, data, 1, size) != size) {
+		SDL_RWclose(rw);
+		return false;
+	}
+	SDL_RWclose(rw);
+	return true;
+}
+
+int32_t GetGameDataFileCount(const int64_t handle) {
+	game_filesystem* fs = (game_filesystem*)handle;
+	if (!fs) {
+		return 0;
+	}
+#if defined(_WIN32)
+	WIN32_FIND_DATA findData;
+	char searchPath[MAX_GAMESAVE_PATH_CAHR_LEN];
+	snprintf(searchPath, sizeof(searchPath), "%s\\*", fs->basepath);
+	HANDLE hFind = FindFirstFile((LPCWSTR)searchPath, &findData);
+	if (hFind == INVALID_HANDLE_VALUE) return 0;
+	do {
+		if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+			chars_append(fs->files[fs->filecount].name, MAX_GAMESAVE_PATH_CAHR_LEN - 1, (const char*)findData.cFileName);
+			fs->files[fs->filecount].size = findData.nFileSizeLow;
+			fs->filecount++;
+		}
+	} while (FindNextFile(hFind, &findData) && fs->filecount < MAX_GAMESAVE_FILE_LIST);
+	FindClose(hFind);
+#else
+	DIR* dir = opendir(fs->basePath);
+	if (!dir) return 0;
+	struct dirent* entry;
+	while ((entry = readdir(dir)) != NULL && fs->fileCount < MAX_GAMESAVE_FILE_LIST) {
+		if (entry->d_type == DT_REG) {
+			chars_append(fs->files[fs->fileCount].name, MAX_GAMESAVE_PATH_CAHR_LEN - 1, entry->d_name);
+			char fullPath[MAX_GAMESAVE_PATH_CAHR_LEN];
+			snprintf(fullPath, sizeof(fullPath), "%s/%s", fs->basePath, entry->d_name);
+			FILE* f = fopen(fullPath, "rb");
+			if (f) {
+				fseek(f, 0, SEEK_END);
+				fs->files[fs->fileCount].size = ftell(f);
+				fclose(f);
+			}
+			fs->fileCount++;
+		}
+	}
+	closedir(dir);
+#endif
+	return fs->filecount;
+}
+
+void FreeGameData(const int64_t handle) {
+	game_filesystem* fs = (game_filesystem*)handle;
+	if (!fs) {
+		return;
+	}
+	free(fs);
+}
+
 char* GetPathFullName(char* dst, const char* path) {
 	char buffer[MAX_PATH];
 	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
@@ -557,14 +725,54 @@ char* GetSystemProperty(const char* key)
 	return "null";
 }
 
-char* Load_SDL_GetBasePath()
+const char* Load_SDL_GetPreferredLocales()
+{
+	SDL_Locale* locales = SDL_GetPreferredLocales();
+	if (!locales) {
+		return 0;
+	}
+	const char* langList = joinLocales(locales);
+	return langList;
+}
+
+const char* Load_SDL_GetBasePath()
 {
 	return SDL_GetBasePath();
+}
+
+const char* Load_SDL_GetPrefPath(const char* org, const char* app)
+{
+	return SDL_GetPrefPath(org,app);
+}
+
+const char* Load_SDL_GetPlatform()
+{
+	return SDL_GetPlatform();
+}
+
+bool Load_SDL_IsGameController(int32_t joystickIndex)
+{
+	return SDL_IsGameController(joystickIndex);
+}
+
+const char* Load_SDL_GameControllerNameForIndex(int32_t joystickIndex)
+{
+	return SDL_GameControllerNameForIndex(joystickIndex);
+}
+
+const char* Load_SDL_GameControllerPathForIndex(int32_t joystickIndex)
+{
+	return SDL_GameControllerPathForIndex(joystickIndex);
 }
 
 int32_t Load_SDL_GetTicks()
 {
 	return SDL_GetTicks();
+}
+
+int64_t Load_SDL_GetTicks64()
+{
+	return SDL_GetTicks64();
 }
 
 void Load_RemapControllers(const int min, const int max, const int dualJoy, const int singleMode)
@@ -973,6 +1181,21 @@ int Load_SDL_SetClipboardText(const char* text)
 char* Load_SDL_GetClipboardText()
 {
 	return SDL_GetClipboardText();
+}
+
+bool Load_SDL_HasClipboardText()
+{
+	return SDL_HasClipboardText();
+}
+
+int32_t Load_SDL_SetPrimarySelectionText(const char* text)
+{
+	return SDL_SetPrimarySelectionText(text);
+}
+
+const char* Load_SDL_GetPrimarySelectionText()
+{
+	return SDL_GetPrimarySelectionText();
 }
 
 void Load_SDL_MaximizeWindow(const int64_t handle)
@@ -1438,7 +1661,7 @@ void Load_SDL_Mix_SetMusicVolume(const float volume)
 
 float Load_SDL_Mix_GetMusicVolume()
 {
-	return Mix_VolumeMusic(-1) * MIX_MAX_VOLUME;
+	return (float)(Mix_VolumeMusic(-1) * MIX_MAX_VOLUME);
 }
 
 void Load_SDL_Mix_PauseMusic()
@@ -1555,6 +1778,13 @@ void Load_SDL_Quit()
 	Call_SDL_DestroyWindow();
 	Mix_Quit();
 	SDL_Quit();
+}
+
+bool Load_SDL_QuitRequested()
+{
+	SDL_PumpEvents();
+	int eventCount = SDL_PeepEvents(NULL, 0, SDL_PEEKEVENT, SDL_QUIT, SDL_QUIT);
+	return eventCount > 0;
 }
 
 char* Load_GL_Init() {

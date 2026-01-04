@@ -1,8 +1,12 @@
 #ifndef LOON_SDL
 #define LOON_SDL
 
+#define MAX_GAMESAVE_PATH_CAHR_LEN 256
+#define MAX_GAMESAVE_FILE_LIST 1024
+
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #ifdef __APPLE__
 #include <SDL2/SDL.h>
@@ -33,7 +37,6 @@
             # include <EGL/egl.h>
             # include <EGL/eglext.h>
             # include <glad/glad.h>
-            # include <stdio.h>
             # include <sys/socket.h>
             # include <arpa/inet.h>
             # include <sys/errno.h>
@@ -60,15 +63,50 @@ typedef struct {
     int32_t height;
 } cache_surface;
 
+typedef struct {
+    char name[MAX_GAMESAVE_PATH_CAHR_LEN];
+    long size;
+} game_saveinfo;
+
+typedef struct {
+    char basepath[MAX_GAMESAVE_PATH_CAHR_LEN];
+    game_saveinfo files[MAX_GAMESAVE_FILE_LIST];
+    int filecount;
+} game_filesystem;
+
 void ImportSDLInclude();
+
+int64_t CreateGameData(char* fileName);
+
+const char* ReadGameData(const int64_t handle, const char* filename, int64_t* outSize);
+
+bool WriteGameData(const int64_t handle, const char* filename, const char* data, int64_t size);
+
+int32_t GetGameDataFileCount(const int64_t handle);
+
+void FreeGameData(const int64_t handle);
 
 char* GetPathFullName(char* dst, const char* path);
 
 char* GetSystemProperty(const char* key);
 
-char* Load_SDL_GetBasePath();
+const char* Load_SDL_GetPreferredLocales();
+
+const char* Load_SDL_GetBasePath();
+
+const char* Load_SDL_GetPrefPath(const char* org, const char* app);
+
+const char* Load_SDL_GetPlatform();
+
+bool Load_SDL_IsGameController(int32_t joystickIndex);
+
+const char* Load_SDL_GameControllerNameForIndex(int32_t joystickIndex);
+
+const char* Load_SDL_GameControllerPathForIndex(int32_t joystickIndex);
 
 int32_t Load_SDL_GetTicks();
+
+int64_t Load_SDL_GetTicks64();
 
 void Call_SDL_DestroyWindow();
 
@@ -149,6 +187,12 @@ const char* Load_SDL_GetError();
 int Load_SDL_SetClipboardText(const char* text);
 
 char* Load_SDL_GetClipboardText();
+
+bool Load_SDL_HasClipboardText();
+
+int32_t Load_SDL_SetPrimarySelectionText(const char* text);
+
+const char* Load_SDL_GetPrimarySelectionText();
 
 void Load_SDL_MaximizeWindow(const int64_t handle);
 
@@ -303,6 +347,8 @@ void Load_SDL_Mix_CloseAudio();
 int64_t Load_SDL_WindowHandle();
 
 void Load_SDL_Quit();
+
+bool Load_SDL_QuitRequested();
 
 char* Load_GL_Init();
 

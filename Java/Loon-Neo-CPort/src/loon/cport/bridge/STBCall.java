@@ -42,6 +42,9 @@ public final class STBCall {
 	@Import(name = "Load_STB_Image_LoadPathToSDLSurface")
 	public final static native long loadPathToSDLSurface(String path);
 
+	@Import(name = "Load_STB_Image_LoadSDLSurfaceARGB32")
+	public final static native long loadSDLSurfaceARGB32(String path);
+
 	@Import(name = "Load_STB_TempSurfaceFree")
 	public final static native void freeSurface();
 
@@ -82,7 +85,7 @@ public final class STBCall {
 	public final static native int[] getFontVMetrics(long handle, float fontsize);
 
 	@Import(name = "Load_STB_GetCodepointHMetrics")
-	public final static native int[] getCodepointHMetrics(long handle, int point);
+	public final static native int getCodepointHMetrics(long handle, int point);
 
 	@Import(name = "Load_STB_MakeCodepointBitmap")
 	public final static native byte[] makeCodepointBitmap(long handle, int point, float fontScale, int width,
@@ -93,11 +96,11 @@ public final class STBCall {
 			int height);
 
 	@Import(name = "Load_STB_MakeCodepointBitmap32")
-	public final static native byte[] makeCodepointBitmap32(long handle, int point, float fontScale, int width,
+	public final static native int[] makeCodepointBitmap32(long handle, int point, float fontScale, int width,
 			int height);
 
 	@Import(name = "Load_STB_MakeDrawTextToBitmap32")
-	public final static native byte[] makeDrawTextToBitmap32(long handle, String text, float fontScale, int width,
+	public final static native int[] makeDrawTextToBitmap32(long handle, String text, float fontScale, int width,
 			int height);
 
 	@Import(name = "Load_STB_CloseFontInfo")

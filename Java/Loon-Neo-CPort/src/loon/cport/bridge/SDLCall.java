@@ -30,6 +30,8 @@ import org.teavm.interop.Import;
 
 public final class SDLCall {
 
+	public static final float SDL_STANDARD_GRAVITY = 9.80665f;
+
 	public static final int SDL_INIT_TIMER = 0x00000001, SDL_INIT_AUDIO = 0x00000010, SDL_INIT_VIDEO = 0x00000020,
 			SDL_INIT_JOYSTICK = 0x00000200, SDL_INIT_HAPTIC = 0x00001000, SDL_INIT_GAMECONTROLLER = 0x00002000,
 			SDL_INIT_EVENTS = 0x00004000, SDL_INIT_NOPARACHUTE = 0x00100000,
@@ -69,17 +71,44 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
+	@Import(name = "CreateGameData")
+	public final static native long createGameData(String fileName);
+
+	@Import(name = "ReadGameData")
+	public final static native String readGameData(long handle, String fileName, long outSize);
+
+	@Import(name = "WriteGameData")
+	public final static native boolean writeGameData(long handle, String fileName, String data, long size);
+
+	@Import(name = "GetGameDataFileCount")
+	public final static native int getGameDataFileCount(long handle);
+
+	@Import(name = "FreeGameData")
+	public final static native int freeGameData(long handle);
+
 	@Import(name = "GetPathFullName")
 	public final static native String getPathFullName(String dst, String path);
 
 	@Import(name = "GetSystemProperty")
 	public final static native String getSystemProperty(String key);
 
+	@Import(name = "Load_SDL_GetPreferredLocales")
+	public final static native String getPreferredLocales();
+
 	@Import(name = "Load_SDL_GetBasePath")
 	public final static native String getBasePath();
 
+	@Import(name = "Load_SDL_GetPrefPath")
+	public final static native String getPrefPath(String org, String app);
+
+	@Import(name = "Load_SDL_GetPlatform")
+	public final static native String getPlatform();
+
 	@Import(name = "Load_SDL_GetTicks")
 	public final static native int getTicks();
+
+	@Import(name = "Load_SDL_GetTicks64")
+	public final static native long getTicks64();
 
 	@Import(name = "Load_RemapControllers")
 	public final static native void remapControllers(int min, int max, int dualJoy, int singleMode);
@@ -117,6 +146,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_CreateRGBSurfaceFrom")
 	public final static native long createRGBSurfaceFrom(int[] pixels, int w, int h, int format);
+
+	@Import(name = "Load_SDL_CreateRGBSurfaceFrom32")
+	public final static native long createRGBSurfaceFrom32(byte[] pixels, int w, int h);
 
 	@Import(name = "Load_SDL_ConvertSurfaceFormat")
 	public final static native long convertSurfaceFormat(long handle, int pixel_format, int flags);
@@ -201,6 +233,15 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_GetClipboardText")
 	public final static native String getClipboardText();
 
+	@Import(name = "Load_SDL_HasClipboardText")
+	public final static native boolean hasClipboardText();
+
+	@Import(name = "Load_SDL_SetPrimarySelectionText")
+	public final static native int setPrimarySelectionText(String text);
+
+	@Import(name = "Load_SDL_GetPrimarySelectionText")
+	public final static native String getPrimarySelectionText();
+
 	@Import(name = "Load_SDL_MaximizeWindow")
 	public final static native void maximizeWindow(long handle);
 
@@ -236,9 +277,6 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_SetWindowTitle")
 	public final static native void setWindowTitle(long handle, String title);
-
-	@Import(name = "Load_SDL_CreateRGBSurfaceFrom32")
-	public final static native long createRGBSurfaceFrom32(byte[] pixels, int w, int h);
 
 	@Import(name = "Load_SDL_CreateColorCursor")
 	public final static native long createColorCursor(long handle, int hotx, int hoty);
@@ -428,6 +466,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_Quit")
 	public final static native void quit();
+
+	@Import(name = "Load_SDL_QuitRequested")
+	public final static native boolean quitRequested();
 
 	@Import(name = "Load_GL_Init")
 	public final static native String init();

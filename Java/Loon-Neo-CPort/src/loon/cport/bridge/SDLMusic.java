@@ -73,6 +73,10 @@ public final class SDLMusic implements LRelease {
 		SDLCall.haltMusic();
 	}
 
+	public long getHandle() {
+		return _musicHandle;
+	}
+
 	public boolean isClosed() {
 		return _closed;
 	}

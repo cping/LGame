@@ -148,6 +148,10 @@ public final class SDLSound implements LRelease {
 		_lastChannel = -1;
 	}
 
+	public long getHandle() {
+		return _soundHandle;
+	}
+
 	public boolean isClosed() {
 		return _closed;
 	}

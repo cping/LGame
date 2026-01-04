@@ -36,6 +36,11 @@ public final class SDLSurface implements LRelease {
 		return new SDLSurface(handle);
 	}
 
+	public final static SDLSurface createARGB32(String path) {
+		long handle = STBCall.loadSDLSurfaceARGB32(path);
+		return new SDLSurface(handle);
+	}
+
 	public final static SDLSurface createRGB(int flags, int width, int height, int depth, int rmask, int gmask,
 			int bmask, int amask) {
 		long handle = SDLCall.createRGBSurface(flags, width, height, depth, rmask, gmask, bmask, amask);
@@ -44,6 +49,11 @@ public final class SDLSurface implements LRelease {
 
 	public final static SDLSurface createRGBFrom(int[] pixels, int width, int height, int format) {
 		long handle = SDLCall.createRGBSurfaceFrom(pixels, width, height, format);
+		return new SDLSurface(handle);
+	}
+
+	public final static SDLSurface createRGBSurfaceFromBytes(byte[] pixels, int width, int height) {
+		long handle = SDLCall.createRGBSurfaceFrom32(pixels, width, height);
 		return new SDLSurface(handle);
 	}
 
@@ -136,6 +146,10 @@ public final class SDLSurface implements LRelease {
 
 	public int getFormat() {
 		return SDLCall.getSurfaceFormat(_surfaceHandle);
+	}
+
+	public long getHandle() {
+		return _surfaceHandle;
 	}
 
 	public boolean isClosed() {
