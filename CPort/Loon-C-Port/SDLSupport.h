@@ -1,24 +1,30 @@
 #ifndef LOON_SDL
 #define LOON_SDL
 
-#define MAX_GAMESAVE_PATH_CAHR_LEN 256
-#define MAX_GAMESAVE_FILE_LIST 1024
+#if defined(_WIN32) || defined(__APPLE__) || defined(__linux__) || defined(__unix__) || \
+    defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
+    #define LOON_DESKTOP 1
+#else
+    #define LOON_DESKTOP 0
+#endif
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #ifdef __APPLE__
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_main.h>
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_main.h>
 #else
-#include <SDL.h>
-#include <SDL_main.h>
+    #include <SDL.h>
+    #include <SDL_main.h>
 #endif
 
 #ifdef _WIN32
 #include <windows.h>
 #include <winbase.h>
+#else
+#include <dlfcn.h>
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -30,32 +36,37 @@
 #include "GL/gl.h"
 #else
     #ifdef GLEW
-    #include "GL/glew.h"
-    #else
+      #include "GL/glew.h"
+    #elif !defined(LOON_DESKTOP)
         #ifdef __SWITCH__
-            # include <switch.h>
-            # include <EGL/egl.h>
-            # include <EGL/eglext.h>
-            # include <glad/glad.h>
-            # include <sys/socket.h>
-            # include <arpa/inet.h>
-            # include <sys/errno.h>
-            # include <unistd.h>
-        #else
-            #include "glad/gles2.h"
+            #include <switch.h>
+        #elif defined(__ORBIS__) || defined(__PROSPERO__) 
+           //?
+        #elif defined(_XBOX)
+            #include <xgame.h>
         #endif
+        #include <EGL/egl.h>
+        #include <EGL/eglext.h>
+        #include <glad/glad.h>
+        #include <sys/errno.h>
+    #else
+        #include "glad/gles2.h"
 #endif
 #endif
 
 #include "SDL_mixer.h"
 #include <SDL_gamecontroller.h>
 
-#define true 1
-#define false 0
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define true 1
+#define false 0
+
+#define MAX_GAMESAVE_PATH_CAHR_LEN 256
+#define MAX_GAMESAVE_FILE_LIST 1024
+#define MAX_CHUNK_SIZE 8192
 
 typedef struct {
     SDL_Surface* surface_data;
@@ -86,9 +97,17 @@ int32_t GetGameDataFileCount(const int64_t handle);
 
 void FreeGameData(const int64_t handle);
 
-char* GetPathFullName(char* dst, const char* path);
+const char* GetPathFullName(char* dst, const char* path);
 
-char* GetSystemProperty(const char* key);
+const char* GetSystemProperty(const char* key);
+
+bool FileExists(const char* filename);
+
+const char* Load_SDL_RW_FileToChars(const char* filename);
+
+const uint8_t* Load_SDL_RW_FileToBytes(const char* filename);
+
+bool Load_SDL_RW_FileExists(const char* filename);
 
 const char* Load_SDL_GetPreferredLocales();
 
@@ -100,9 +119,109 @@ const char* Load_SDL_GetPlatform();
 
 bool Load_SDL_IsGameController(int32_t joystickIndex);
 
+int64_t Load_SDL_GameControllerOpen(int32_t joystickIndex);
+
+int64_t Load_SDL_GameControllerTemp();
+
+void Load_SDL_GameControllerClose(const int64_t handle);
+
+const char* Load_SDL_GameControllerName(const int64_t handle);
+
+const char* Load_SDL_GameControllerPath(const int64_t handle);
+
+int32_t Load_SDL_GameControllerGetType(const int64_t handle);
+
+int32_t Load_SDL_GameControllerGetPlayerIndex(const int64_t handle);
+
+void Load_SDL_GameControllerSetPlayerIndex(const int64_t handle, int32_t joystickIndex);
+
+int16_t Load_SDL_GameControllerGetVendor(const int64_t handle);
+
+int32_t Load_SDL_GameControllerGetNumTouchpads(const int64_t handle);
+
 const char* Load_SDL_GameControllerNameForIndex(int32_t joystickIndex);
 
 const char* Load_SDL_GameControllerPathForIndex(int32_t joystickIndex);
+
+const char* Load_SDL_GameControllerMappingForIndex(int32_t mappingIndex);
+
+const char* Load_SDL_GameControllerMappingForDeviceIndex(int32_t joystickIndex);
+
+int32_t Load_SDL_GameControllerTypeForIndex(int32_t joystickIndex);
+
+int32_t Load_SDL_GameControllerEventState(int32_t state);
+
+int32_t Load_SDL_GameControllerAddMapping(const char* mappingString);
+
+int32_t Load_SDL_GameControllerGetAxisFromString(const char* axisString);
+
+int32_t Load_SDL_GameControllerGetButtonFromString(const char* btnString);
+
+int32_t Load_SDL_GameControllerNumMappings();
+
+void Load_SDL_GameControllerUpdate();
+
+int64_t Load_SDL_JoystickOpen(int32_t deviceIndex);
+
+void Load_SDL_JoystickClose(const int64_t handle);
+
+int32_t Load_SDL_JoystickNumAxes(const int64_t handle);
+
+int32_t Load_SDL_JoystickNumBalls(const int64_t handle);
+
+int32_t Load_SDL_JoystickNumHats(const int64_t handle);
+
+int32_t Load_SDL_JoystickNumButtons(const int64_t handle);
+
+void Load_SDL_LockJoysticks();
+
+void Load_SDL_UnlockJoysticks();
+
+int32_t Load_SDL_NumJoysticks();
+
+int16_t Load_SDL_JoystickGetDeviceVendor(int32_t deviceIndex);
+
+int16_t Load_SDL_JoystickGetDeviceProduct(int32_t deviceIndex);
+
+int16_t Load_SDL_JoystickGetDeviceProductVersion(int32_t deviceIndex);
+
+int32_t Load_SDL_JoystickDetachVirtual(int32_t deviceIndex);
+
+bool Load_SDL_JoystickIsVirtual(int32_t deviceIndex);
+
+const char* Load_SDL_JoystickNameForIndex(int32_t deviceIndex);
+
+const char* Load_SDL_JoystickPathForIndex(int32_t deviceIndex);
+
+int32_t Load_SDL_JoystickGetDevicePlayerIndex(int32_t deviceIndex);
+
+int64_t Load_SDL_SensorOpen(int32_t deviceIndex);
+
+void Load_SDL_SensorClose(const int64_t handle);
+
+const char* Load_SDL_SensorGetName(const int64_t handle);
+
+int32_t Load_SDL_SensorGetType(const int64_t handle);
+
+int32_t Load_SDL_SensorGetNonPortableType(const int64_t handle);
+
+int32_t Load_SDL_SensorGetData(const int64_t handle, float* data, int32_t numValues);
+
+void Load_SDL_LockSensors();
+
+void Load_SDL_UnlockSensors();
+
+int32_t Load_SDL_NumSensors();
+
+const char* Load_SDL_SensorGetDeviceName(int32_t deviceIndex);
+
+int32_t Load_SDL_SensorGetDeviceType(int32_t deviceIndex);
+
+int32_t Load_SDL_SensorGetDeviceNonPortableType(int32_t deviceIndex);
+
+void Load_SDL_SensorUpdate();
+
+int32_t Load_SDL_GetPolleventType();
 
 int32_t Load_SDL_GetTicks();
 
@@ -699,3 +818,4 @@ void Load_GL_GetShaderSource(const int shader, const int bufSize, void* length, 
 #endif
 
 #endif
+

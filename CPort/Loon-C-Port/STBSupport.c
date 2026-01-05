@@ -124,8 +124,13 @@ void Load_STB_Image_Free(const int64_t handle)
 	if (!pixmap) {
 		return;
 	}
-	free((void*)pixmap->pixels);
-	free((void*)pixmap);
+	stbi_image_free((void*)pixmap->pixels);
+	if (pixmap->pixels != NULL) {
+		free((void*)pixmap->pixels);
+	}
+	if (pixmap != NULL) {
+		free((void*)pixmap);
+	}
 }
 
 const uint8_t* Load_STB_Image_GetPixels(const int64_t handle)

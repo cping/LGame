@@ -15,21 +15,21 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
 }
 #endif
 
-#ifdef __SWITCH__
-static EGLDisplay display;
-static EGLContext context;
-static EGLSurface eglsurface;
-
-static PadState combinedPad;
-static PadState pads[8];
-
-static int nxlinkSock = -1;
-static bool socketInit;
+#ifndef LOON_DESKTOP
+	static EGLDisplay display;
+	static EGLContext context;
+	static EGLSurface eglsurface;
+	static PadState combinedPad;
+	static PadState pads[8];
 #else
-static SDL_Window* window;
-static int buttons;
-static float joysticks[4];
+	static SDL_Window* window;
+	static SDL_GameController* tempController;
+	static int buttons;
+	static float joysticks[4];
 #endif
+
+static SDL_GLContext* tempContext;
+static uint32_t tempPolleventType;
 static game_filesystem* gamefilesys;
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
@@ -42,11 +42,6 @@ static bool musicFinishedEvent;
 static bool soundFinishedEvent;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
-#ifdef _WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
 
 static void chars_append(char* dest, size_t dest_size, const char* src) {
 	if (!dest || !src || dest_size == 0) {
@@ -98,7 +93,7 @@ char* joinLocales(const SDL_Locale* locales) {
 }
 
 void Load_SDL_Cleanup() {
-#ifdef __SWITCH__
+#ifndef LOON_DESKTOP
 	if (display) {
 		eglMakeCurrent(display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 		if (context)
@@ -107,12 +102,14 @@ void Load_SDL_Cleanup() {
 			eglDestroySurface(display, eglsurface);
 		eglTerminate(display);
 	}
-	Mix_Quit();
-	SDL_Quit();
+	Load_SDL_Quit();
+	#ifdef __SWITCH__
+		romfsExit();
+	#endif
 #endif
 }
 
-#ifndef __SWITCH__
+#ifdef LOON_DESKTOP
 static int keyToButton(int key) {
 	switch (key) {
 	case SDL_SCANCODE_Z:
@@ -210,8 +207,8 @@ static int mapButtonSDL(int button) {
 	}
 }
 #else
-static u64 remapPadButtons(u64 buttons, u32 style) {
-	u64 mapped = buttons;
+static uint64_t remapPadButtons(uint64_t buttons, uint32_t style) {
+	uint64_t mapped = buttons;
 
 	if (style & HidNpadStyleTag_NpadJoyLeft) {
 		mapped &= ~(
@@ -277,7 +274,7 @@ static u64 remapPadButtons(u64 buttons, u32 style) {
 	return mapped;
 }
 
-static void remapPadAxes(float* axes, u32 style) {
+static void remapPadAxes(float* axes, uint32_t style) {
 	if (style & HidNpadStyleTag_NpadJoyLeft) {
 		float temp = axes[0];
 		axes[0] = -axes[1];
@@ -306,7 +303,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 		touches[i * 3] = -1;
 	}
 
-#ifdef __SWITCH__
+#ifndef LOON_DESKTOP
 	padConfigureInput(8, HidNpadStyleSet_NpadStandard);
 	padInitializeAny(&combinedPad);
 
@@ -365,10 +362,14 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #endif
-	SDL_GLContext context = SDL_GL_CreateContext(window);
-	SDL_GL_MakeCurrent(window, context);
+	if (tempContext != NULL) {
+		SDL_GL_DeleteContext(tempContext);
+		tempContext = NULL;
+	}
+	tempContext = SDL_GL_CreateContext(window);
+	SDL_GL_MakeCurrent(window, tempContext);
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
-   #if !defined(GLEW) 
+   #ifdef LOON_DESKTOP
     gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
    #endif
 #endif
@@ -405,9 +406,9 @@ int64_t Load_SDL_WindowHandle() {
 }
 
 bool Load_SDL_Update() {
-#ifdef __SWITCH__
+#ifndef LOON_DESKTOP
 	padUpdate(&combinedPad);
-	u64 kDown = padGetButtonsDown(&combinedPad);
+	uint64_t kDown = padGetButtonsDown(&combinedPad);
 	if (kDown & HidNpadButton_Plus) {
 		return false;
 	}
@@ -428,7 +429,6 @@ bool Load_SDL_Update() {
 				touches[i * 3 + 2] = 0;
 			}
 	}
-
 	eglSwapBuffers(display, eglsurface);
 	return appletMainLoop();
 #else
@@ -436,7 +436,8 @@ bool Load_SDL_Update() {
 	  SDL_Event event;
 	  int axis;
 	  while (SDL_PollEvent(&event)) {
-		  switch (event.type) {
+		  tempPolleventType = event.type;
+		  switch (tempPolleventType) {
 		  case SDL_QUIT:
 			  running = 0;
 			  return Load_SDL_Exit(running);
@@ -482,14 +483,13 @@ bool Load_SDL_Update() {
 				  }
 			  break;
 		  case SDL_CONTROLLERDEVICEADDED:
-			  SDL_GameControllerOpen(event.cdevice.which);
+			  tempController = SDL_GameControllerOpen(event.cdevice.which);
 			  break;
 		  case SDL_CONTROLLERDEVICEREMOVED:
 			  SDL_GameControllerClose(SDL_GameControllerFromPlayerIndex(event.cdevice.which));
 			  break;
 		  }
 	  }
-
 	{
 		if (musicFinishedEvent) {
 			OnMusicFinished();
@@ -505,6 +505,94 @@ bool Load_SDL_Update() {
 #endif
 }
 
+int32_t Load_SDL_GetPolleventType() {
+	return tempPolleventType;
+}
+
+void Load_SDL_GameControllerClose(const int64_t handle) {
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (controller) {
+		SDL_GameControllerClose(controller);
+	}
+}
+
+const char* Load_SDL_GameControllerName(int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return NULL;
+	}
+	return SDL_GameControllerName(controller);
+}
+
+const char* Load_SDL_GameControllerPath(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return NULL;
+	}
+	return SDL_GameControllerPath(controller);
+}
+
+int32_t Load_SDL_GameControllerGetType(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return 0;
+	}
+	return SDL_GameControllerGetType(controller);
+}
+
+int32_t Load_SDL_GameControllerGetPlayerIndex(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return 0;
+	}
+	return SDL_GameControllerGetPlayerIndex(controller);
+}
+
+void Load_SDL_GameControllerSetPlayerIndex(const int64_t handle, int32_t joystickIndex)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return;
+	}
+	SDL_GameControllerSetPlayerIndex(controller, joystickIndex);
+}
+
+int16_t Load_SDL_GameControllerGetVendor(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return 0;
+	}
+	return SDL_GameControllerGetVendor(controller);
+}
+
+int32_t Load_SDL_GameControllerGetNumTouchpads(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (!controller) {
+		return 0;
+	}
+	return SDL_GameControllerGetNumTouchpads(controller);
+}
+
+void FreeTempContext() {
+	if (tempContext != NULL) {
+		SDL_GL_DeleteContext(tempContext);
+		tempContext = NULL;
+	}
+}
+
+void FreeTempController() {
+	if (tempController != NULL) {
+		SDL_GameControllerClose(tempController);
+		tempController = NULL;
+	}
+}
+
 bool Load_SDL_Exit(const int run) {
 	return true;
 }
@@ -514,7 +602,6 @@ int* Load_SDL_TouchData(int* data)
 	memcpy((void*)data, touches, sizeof(touches));
 	return data;
 }
-
 
 int Load_SDL_GL_SetSwapInterval(int on)
 {
@@ -555,8 +642,6 @@ bool Load_SDL_PathIsFile(char* path)
 	if (f == NULL) { return false; }
 	else { SDL_RWclose(f); return true; }
 }
-
-#ifdef _WIN32
 
 void ImportSDLInclude()
 {
@@ -680,7 +765,8 @@ void FreeGameData(const int64_t handle) {
 	free(fs);
 }
 
-char* GetPathFullName(char* dst, const char* path) {
+#ifdef _WIN32
+const char* GetPathFullName(char* dst, const char* path) {
 	char buffer[MAX_PATH];
 	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
 	if(length == 0) {
@@ -690,13 +776,13 @@ char* GetPathFullName(char* dst, const char* path) {
 	return buffer;
 }
 #elif defined(__unix__) || defined(__APPLE__)
-char* GetPathFullName(char* dst, const char* path) {
+const char* GetPathFullName(char* dst, const char* path) {
 	char* ret = realpath(path, dst);
 	return ret;
 }
 #endif
 
-char* GetSystemProperty(const char* key)
+const char* GetSystemProperty(const char* key)
 {
 #if defined(__SWITCH__)
 	if (strcmp(key, "os.name") == 0)
@@ -755,6 +841,23 @@ bool Load_SDL_IsGameController(int32_t joystickIndex)
 	return SDL_IsGameController(joystickIndex);
 }
 
+int64_t Load_SDL_GameControllerTemp() {
+	if (tempController) {
+		return (intptr_t)tempController;
+	}
+	return 0;
+}
+
+int64_t Load_SDL_GameControllerOpen(int32_t joystickIndex)
+{
+	SDL_GameController* controller = SDL_GameControllerOpen(joystickIndex);
+	if (!controller) {
+		return 0;
+	}
+	tempController = controller;
+	return (intptr_t)controller;
+}
+
 const char* Load_SDL_GameControllerNameForIndex(int32_t joystickIndex)
 {
 	return SDL_GameControllerNameForIndex(joystickIndex);
@@ -763,6 +866,247 @@ const char* Load_SDL_GameControllerNameForIndex(int32_t joystickIndex)
 const char* Load_SDL_GameControllerPathForIndex(int32_t joystickIndex)
 {
 	return SDL_GameControllerPathForIndex(joystickIndex);
+}
+
+const char* Load_SDL_GameControllerMappingForIndex(int32_t mappingIndex)
+{
+	return SDL_GameControllerMappingForIndex(mappingIndex);
+}
+
+const char* Load_SDL_GameControllerMappingForDeviceIndex(int32_t joystickIndex)
+{
+	return SDL_GameControllerMappingForDeviceIndex(joystickIndex);
+}
+
+int32_t Load_SDL_GameControllerEventState(int32_t state)
+{
+	return SDL_GameControllerEventState(state);
+}
+
+int32_t Load_SDL_GameControllerAddMapping(const char* mappingString)
+{
+	return SDL_GameControllerAddMapping(mappingString);
+}
+
+int32_t Load_SDL_GameControllerGetAxisFromString(const char* axisString)
+{
+	return SDL_GameControllerGetAxisFromString(axisString);
+}
+
+int32_t Load_SDL_GameControllerGetButtonFromString(const char* btnString)
+{
+	return SDL_GameControllerGetButtonFromString(btnString);
+}
+
+int32_t Load_SDL_GameControllerNumMappings()
+{
+	return SDL_GameControllerNumMappings();
+}
+
+void Load_SDL_GameControllerUpdate()
+{
+	SDL_GameControllerUpdate();
+}
+
+int64_t Load_SDL_JoystickOpen(int32_t deviceIndex)
+{
+	SDL_Joystick* joystick = SDL_JoystickOpen(deviceIndex);
+	if (!joystick) {
+		return 0;
+	}
+	return (intptr_t)joystick;
+}
+
+void Load_SDL_JoystickClose(const int64_t handle)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (joystick) {
+		SDL_JoystickClose(joystick);
+	}
+}
+
+int32_t Load_SDL_JoystickNumAxes(const int64_t handle)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (!joystick) {
+		return 0;
+	}
+	return SDL_JoystickNumAxes(joystick);
+}
+
+int32_t Load_SDL_JoystickNumBalls(const int64_t handle)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (!joystick) {
+		return 0;
+	}
+	return SDL_JoystickNumBalls(joystick);
+}
+
+int32_t Load_SDL_JoystickNumHats(const int64_t handle)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (!joystick) {
+		return 0;
+	}
+	return SDL_JoystickNumHats(joystick);
+}
+
+int32_t Load_SDL_JoystickNumButtons(const int64_t handle)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (!joystick) {
+		return 0;
+	}
+	return SDL_JoystickNumButtons(joystick);
+}
+
+void Load_SDL_LockJoysticks()
+{
+	SDL_LockJoysticks();
+}
+
+void Load_SDL_UnlockJoysticks()
+{
+	SDL_UnlockJoysticks();
+}
+
+int32_t Load_SDL_NumJoysticks()
+{
+	return SDL_NumJoysticks();
+}
+
+int16_t Load_SDL_JoystickGetDeviceVendor(int32_t deviceIndex)
+{
+	return SDL_JoystickGetDeviceVendor(deviceIndex);
+}
+
+int16_t Load_SDL_JoystickGetDeviceProduct(int32_t deviceIndex)
+{
+	return SDL_JoystickGetDeviceProduct(deviceIndex);
+}
+
+int16_t Load_SDL_JoystickGetDeviceProductVersion(int32_t deviceIndex)
+{
+	return SDL_JoystickGetDeviceProductVersion(deviceIndex);
+}
+
+int32_t Load_SDL_JoystickDetachVirtual(int32_t deviceIndex)
+{
+	return SDL_JoystickDetachVirtual(deviceIndex);
+}
+
+bool Load_SDL_JoystickIsVirtual(int32_t deviceIndex)
+{
+	return SDL_JoystickIsVirtual(deviceIndex);
+}
+
+const char* Load_SDL_JoystickNameForIndex(int32_t deviceIndex)
+{
+	return SDL_JoystickNameForIndex(deviceIndex);
+}
+
+const char* Load_SDL_JoystickPathForIndex(int32_t deviceIndex)
+{
+	return SDL_JoystickPathForIndex(deviceIndex);
+}
+
+int32_t Load_SDL_JoystickGetDevicePlayerIndex(int32_t deviceIndex)
+{
+	return SDL_JoystickGetDevicePlayerIndex(deviceIndex);
+}
+
+int64_t Load_SDL_SensorOpen(int32_t deviceIndex)
+{
+	SDL_Sensor* sensor = SDL_SensorOpen(deviceIndex);
+	if (!sensor) {
+		return 0;
+	}
+	return (intptr_t)sensor;
+}
+
+void Load_SDL_SensorClose(const int64_t handle) {
+	SDL_Sensor* sensor = (SDL_Sensor*)handle;
+	if (!sensor) {
+		return;
+	}
+	SDL_SensorClose(sensor);
+}
+
+const char* Load_SDL_SensorGetName(const int64_t handle)
+{
+	SDL_Sensor* sensor = (SDL_Sensor*)handle;
+	if (!sensor) {
+		return "";
+	}
+	return SDL_SensorGetName(sensor);
+}
+
+int32_t Load_SDL_SensorGetType(const int64_t handle)
+{
+	SDL_Sensor* sensor = (SDL_Sensor*)handle;
+	if (!sensor) {
+		return 0;
+	}
+	return SDL_SensorGetType(sensor);
+}
+
+int32_t Load_SDL_SensorGetNonPortableType(const int64_t handle)
+{
+	SDL_Sensor* sensor = (SDL_Sensor*)handle;
+	if (!sensor) {
+		return 0;
+	}
+	return SDL_SensorGetNonPortableType(sensor);
+}
+
+int32_t Load_SDL_SensorGetData(const int64_t handle, float* data, int32_t numValues)
+{
+	SDL_Sensor* sensor = (SDL_Sensor*)handle;
+	if (!sensor) {
+		return 0;
+	}
+	return SDL_SensorGetData(sensor, data, numValues);
+}
+
+void Load_SDL_LockSensors()
+{
+	SDL_LockSensors();
+}
+
+void Load_SDL_UnlockSensors()
+{
+	SDL_UnlockSensors();
+}
+
+int32_t Load_SDL_NumSensors()
+{
+	return SDL_NumSensors();
+}
+
+const char* Load_SDL_SensorGetDeviceName(int32_t deviceIndex)
+{
+	return SDL_SensorGetDeviceName(deviceIndex);
+}
+
+int32_t Load_SDL_SensorGetDeviceType(int32_t deviceIndex)
+{
+	return SDL_SensorGetDeviceType(deviceIndex);
+}
+
+int32_t Load_SDL_SensorGetDeviceNonPortableType(int32_t deviceIndex)
+{
+	return SDL_SensorGetDeviceNonPortableType(deviceIndex);
+}
+
+void Load_SDL_SensorUpdate()
+{
+	SDL_SensorUpdate();
+}
+
+int32_t Load_SDL_GameControllerTypeForIndex(int32_t joystickIndex)
+{
+	return SDL_GameControllerTypeForIndex(joystickIndex);
 }
 
 int32_t Load_SDL_GetTicks()
@@ -1775,6 +2119,8 @@ void Load_SDL_Mix_CloseAudio()
 
 void Load_SDL_Quit()
 {
+	FreeTempController();
+	FreeTempContext();
 	Call_SDL_DestroyWindow();
 	Mix_Quit();
 	SDL_Quit();
@@ -2826,4 +3172,86 @@ void Load_GL_GetAttachedShaders(const int program, const int maxCount, void* cou
 void Load_GL_GetShaderSource(const int shader, const int bufSize, void* length, void* source)
 {
 	glGetShaderSource(shader, bufSize, (GLsizei*)length, (GLchar*)source);
+}
+
+const char* Load_SDL_RW_FileToChars(const char* filename) {
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (!rw) {
+		return NULL;
+	}
+	char* buffer = NULL;
+	size_t totalSize = 0;
+	size_t capacity = 0;
+	char temp[MAX_CHUNK_SIZE];
+	size_t bytesRead;
+	while ((bytesRead = SDL_RWread(rw, temp, 1, MAX_CHUNK_SIZE)) > 0) {
+		if (totalSize + bytesRead + 1 > capacity) {
+			size_t newCapacity = (capacity == 0) ? bytesRead + 1 : capacity * 2;
+			if (newCapacity < totalSize + bytesRead + 1) {
+				newCapacity = totalSize + bytesRead + 1;
+			}
+			char* newBuffer = realloc(buffer, newCapacity);
+			if (!newBuffer) {
+				free(buffer);
+				SDL_RWclose(rw);
+				return NULL;
+			}
+			buffer = newBuffer;
+			capacity = newCapacity;
+		}
+		memcpy(buffer + totalSize, temp, bytesRead);
+		totalSize += bytesRead;
+	}
+	if (buffer) {
+		buffer[totalSize] = '\0';
+	}
+	SDL_RWclose(rw);
+	return buffer;
+}
+
+const uint8_t* Load_SDL_RW_FileToBytes(const char* filename) {
+	if (!filename) {
+		return NULL;
+	}
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (!rw) {
+		return NULL;
+	}
+	Sint64 fileSize = SDL_RWsize(rw);
+	if (fileSize <= 0) {
+		SDL_RWclose(rw);
+		return NULL;
+	}
+	uint8_t* buffer = (uint8_t*)malloc(fileSize);
+	if (!buffer) {
+		SDL_RWclose(rw);
+		return NULL;
+	}
+	size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
+	SDL_RWclose(rw);
+	if (totalRead != (size_t)fileSize) {
+		free(buffer);
+		return NULL;
+	}
+	return buffer;
+}
+
+bool Load_SDL_RW_FileExists(const char* filename) {
+	if (!filename || !*filename) return false;
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (rw) {
+		SDL_RWclose(rw);
+		return true;
+	}
+	return false;
+}
+
+bool FileExists(const char* filename) {
+	if (!filename || !*filename) return false;
+	FILE* f = fopen(filename, "rb");
+	if (f) {
+		fclose(f);
+		return true;
+	}
+	return false;
 }
