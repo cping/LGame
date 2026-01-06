@@ -59,7 +59,7 @@ public abstract class LGame implements LRelease {
 	 * 支持的运行库(Java版不支持的会由C++版和C#版实现)
 	 */
 	public static enum Type {
-		JAVASE, MONO, ANDROID, IOS, WP, HTML5, UNITY, SWITCH, PS, XBOX, STUB
+		JAVASE, ANDROID, IOS, HTML5, NativePC, NativeSTREAM, NativeSWITCH, NativePS, NativeXBOX, STUB
 	}
 
 	/**
@@ -415,7 +415,7 @@ public abstract class LGame implements LRelease {
 	public boolean isCSharpPort() {
 		return false;
 	}
-	
+
 	/**
 	 * 检查是否已经转译Java字节码为C语言版本后运行(默认无效,此项只有环境为Loon-CPort时才会开启)
 	 * 
@@ -432,8 +432,7 @@ public abstract class LGame implements LRelease {
 	 */
 	public boolean isMobile() {
 		Type type = this.type();
-		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS || type == LGame.Type.WP
-				|| type == LGame.Type.SWITCH);
+		return (type == LGame.Type.ANDROID || type == LGame.Type.IOS);
 	}
 
 	/**

@@ -5,7 +5,7 @@
 #include <windows.h>
 #include <winrt/base.h>
 #define main main
-int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+static int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
 	AllocConsole();
 	FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
 	freopen_s(&fpstdin, "CONIN$", "r", stdin);
@@ -28,6 +28,8 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
 	static float joysticks[4];
 #endif
 
+static const char b64_table[] =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static SDL_GLContext* tempContext;
 static uint32_t tempPolleventType;
 static game_filesystem* gamefilesys;
@@ -42,6 +44,67 @@ static bool musicFinishedEvent;
 static bool soundFinishedEvent;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
+
+static int is_printable_text(const unsigned char* data, size_t len) {
+	for (size_t i = 0; i < len; i++) {
+		if (!isprint(data[i]) && !isspace(data[i])) return 0;
+	}
+	return 1;
+}
+
+static char* base64_encode(const unsigned char* data, size_t len) {
+	char* encoded;
+	size_t out_len = 4 * ((len + 2) / 3);
+	encoded = malloc(out_len + 1);
+	if (!encoded) return NULL;
+
+	size_t i, j;
+	for (i = 0, j = 0; i < len;) {
+		unsigned octet_a = i < len ? data[i++] : 0;
+		unsigned octet_b = i < len ? data[i++] : 0;
+		unsigned octet_c = i < len ? data[i++] : 0;
+
+		unsigned triple = (octet_a << 16) | (octet_b << 8) | octet_c;
+
+		encoded[j++] = b64_table[(triple >> 18) & 0x3F];
+		encoded[j++] = b64_table[(triple >> 12) & 0x3F];
+		encoded[j++] = (i > len + 1) ? '=' : b64_table[(triple >> 6) & 0x3F];
+		encoded[j++] = (i > len) ? '=' : b64_table[triple & 0x3F];
+	}
+	encoded[j] = '\0';
+	return encoded;
+}
+
+static unsigned char* base64_decode(const char* data, size_t* out_len) {
+	if (!data) return NULL;
+	size_t len = strlen(data);
+	if (len % 4 != 0) return NULL;
+
+	size_t alloc_len = len / 4 * 3;
+	unsigned char* decoded = malloc(alloc_len);
+	if (!decoded) return NULL;
+
+	int table[256];
+	memset(table, -1, sizeof(table));
+	for (int i = 0; i < 64; i++) table[(unsigned char)b64_table[i]] = i;
+
+	size_t i, j;
+	for (i = 0, j = 0; i < len;) {
+		int sextet_a = data[i] == '=' ? 0 & i++ : table[(unsigned char)data[i++]];
+		int sextet_b = data[i] == '=' ? 0 & i++ : table[(unsigned char)data[i++]];
+		int sextet_c = data[i] == '=' ? 0 & i++ : table[(unsigned char)data[i++]];
+		int sextet_d = data[i] == '=' ? 0 & i++ : table[(unsigned char)data[i++]];
+
+		unsigned triple = (sextet_a << 18) | (sextet_b << 12) |
+			(sextet_c << 6) | sextet_d;
+
+		if (j < alloc_len) decoded[j++] = (triple >> 16) & 0xFF;
+		if (j < alloc_len) decoded[j++] = (triple >> 8) & 0xFF;
+		if (j < alloc_len) decoded[j++] = triple & 0xFF;
+	}
+	*out_len = j;
+	return decoded;
+}
 
 static void chars_append(char* dest, size_t dest_size, const char* src) {
 	if (!dest || !src || dest_size == 0) {
@@ -59,7 +122,7 @@ static void chars_append(char* dest, size_t dest_size, const char* src) {
 	}
 }
 
-char* joinLocales(const SDL_Locale* locales) {
+static char* joinLocales(const SDL_Locale* locales) {
 	if (!locales) return 0;
 	size_t total_len = 0;
 	int count = 0;
@@ -90,6 +153,204 @@ char* joinLocales(const SDL_Locale* locales) {
 		}
 	}
 	return result;
+}
+
+int64_t CreatePrefs() {
+	game_preferences* prefs = malloc(sizeof(game_preferences));
+	if (!prefs) return 0;
+	prefs->head = NULL;
+	return (intptr_t)prefs;
+}
+
+bool LoadPrefs(int64_t handle, const char* filename) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return false;
+	FILE* f = fopen(filename, "r");
+	if (!f) return false;
+
+	char line[512];
+	char current_section[128] = "";
+
+	while (fgets(line, sizeof(line), f)) {
+		char* newline = strchr(line, '\n');
+		if (newline) *newline = '\0';
+		if (line[0] == '\0') continue;
+		if (line[0] == '[') {
+			char* end = strchr(line, ']');
+			if (end) {
+				*end = '\0';
+				chars_append(current_section, sizeof(current_section) - 1, line + 1);
+				current_section[sizeof(current_section) - 1] = '\0';
+			}
+		}
+		else {
+			char* eq = strchr(line, '=');
+			if (!eq) continue;
+			*eq = '\0';
+			char* key = line;
+			char* val_str = eq + 1;
+			char* b64_marker = strstr(key, "|b64");
+			if (b64_marker) {
+				*b64_marker = '\0';
+				size_t val_len;
+				unsigned char* decoded = base64_decode(val_str, &val_len);
+				if (decoded) {
+					SetPrefs(handle, current_section, key, decoded, val_len);
+					free(decoded);
+				}
+			}
+			else {
+				SetPrefs(handle, current_section, key,
+					(const unsigned char*)val_str, strlen(val_str));
+			}
+		}
+	}
+	fclose(f);
+	return true;
+}
+
+void SetPrefs(int64_t handle, const char* section, const char* key,
+	const uint8_t* value, size_t value_len) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return;
+	game_prefnode* prev = NULL, * cur = prefs->head;
+	while (cur && (strcmp(cur->section, section) < 0 ||
+		(strcmp(cur->section, section) == 0 && strcmp(cur->key, key) < 0))) {
+		prev = cur;
+		cur = cur->next;
+	}
+	if (cur && strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
+		free(cur->value);
+		cur->value = malloc(value_len);
+		memcpy(cur->value, value, value_len);
+		cur->value_len = value_len;
+		return;
+	}
+	game_prefnode* newNode = malloc(sizeof(game_prefnode));
+	newNode->section = _strdup(section);
+	newNode->key = _strdup(key);
+	newNode->value = malloc(value_len);
+	memcpy(newNode->value, value, value_len);
+	newNode->value_len = value_len;
+	if (prev) {
+		newNode->next = prev->next;
+		prev->next = newNode;
+	}
+	else {
+		newNode->next = prefs->head;
+		prefs->head = newNode;
+	}
+}
+
+const uint8_t* GetPrefs(int64_t handle, const char* section, const char* key, size_t* len) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return NULL;
+	game_prefnode* cur = prefs->head;
+	while (cur) {
+		if (strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
+			*len = cur->value_len;
+			unsigned char* copy = malloc(cur->value_len);
+			memcpy(copy, cur->value, cur->value_len);
+			return copy;
+		}
+		cur = cur->next;
+	}
+	return NULL;
+}
+
+const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return NULL;
+	game_prefnode* cur = prefs->head;
+	while (cur) {
+		if (strcmp(cur->section, section) == 0) {
+			size_t total_len = 0;
+			size_t delim_len = strlen(delimiter);
+			int count = 0;
+			for (game_prefnode* n = cur->next; n; n = n->next) {
+				total_len += strlen(n->key);
+				if (n->next) total_len += delim_len;
+				count++;
+			}
+			if (count == 0) return _strdup("");
+			char* result = malloc(total_len + 1);
+			if (!result) return NULL;
+			result[0] = '\0';
+			for (game_prefnode* n = cur->next; n; n = n->next) {
+				chars_append(result, total_len + 1, n->key );
+				if (n->next) chars_append(result, total_len + 1, delimiter);
+			}
+			return result;
+		}
+		cur = cur->next;
+	}
+	return NULL;
+}
+
+
+bool SavePrefs(int64_t handle, const char* filename) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return false;
+	FILE* f = fopen(filename, "w");
+	if (!f) return false;
+	char current_section[128] = "";
+	game_prefnode* cur = prefs->head;
+	while (cur) {
+		if (strcmp(current_section, cur->section) != 0) {
+			fprintf(f, "[%s]\n", cur->section);
+			chars_append(current_section, sizeof(current_section) - 1, cur->section);
+			current_section[sizeof(current_section) - 1] = '\0';
+		}
+		if (is_printable_text(cur->value, cur->value_len)) {
+			fprintf(f, "%s=%.*s\n", cur->key, (int)cur->value_len, cur->value);
+		}
+		else {
+			char* encoded = base64_encode(cur->value, cur->value_len);
+			if (!encoded) {
+				fclose(f);
+				return 0;
+			}
+			fprintf(f, "%s|b64=%s\n", cur->key, encoded);
+			free(encoded);
+		}
+		cur = cur->next;
+	}
+	fclose(f);
+	return true;
+}
+
+void RemovePrefs(int64_t handle, const char* section, const char* key) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return;
+	game_prefnode* cur = prefs->head, * prev = NULL;
+	while (cur) {
+		if (strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
+			if (prev) prev->next = cur->next;
+			else prefs->head = cur->next;
+			free(cur->section);
+			free(cur->key);
+			free(cur->value);
+			free(cur);
+			return;
+		}
+		prev = cur;
+		cur = cur->next;
+	}
+}
+
+void FreePrefs(int64_t handle) {
+	game_preferences* prefs = (game_preferences*)handle;
+	if (!prefs) return;
+	game_prefnode* cur = prefs->head;
+	while (cur) {
+		game_prefnode* tmp = cur;
+		cur = cur->next;
+		free(tmp->section);
+		free(tmp->key);
+		free(tmp->value);
+		free(tmp);
+	}
+	free(prefs);
 }
 
 void Load_SDL_Cleanup() {
@@ -1418,7 +1679,7 @@ bool Load_SDL_MUSTLockSurface(const int64_t handle)
 	return SDL_MUSTLOCK(surface->surface_data);
 }
 
-const int blendModeToInt(SDL_BlendMode mode) {
+static const int blendModeToInt(SDL_BlendMode mode) {
 	switch (mode) {
 	case SDL_BLENDMODE_NONE:  return 0;
 	case SDL_BLENDMODE_BLEND: return 1;
@@ -1429,7 +1690,8 @@ const int blendModeToInt(SDL_BlendMode mode) {
 	default:                  return -1;
 	}
 }
-const SDL_BlendMode blendIntToMode(int mode) {
+
+static const SDL_BlendMode blendIntToMode(int mode) {
 	switch (mode) {
 	case 0: return SDL_BLENDMODE_NONE;
 	case 1: return SDL_BLENDMODE_BLEND;
@@ -3255,3 +3517,4 @@ bool FileExists(const char* filename) {
 	}
 	return false;
 }
+

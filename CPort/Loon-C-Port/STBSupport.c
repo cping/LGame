@@ -338,6 +338,61 @@ int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
 	return height;
 }
 
+const int32_t* Load_STB_GetCharsSize(const int64_t handle, float fontSize, const char* text) {
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		fontinfo = _temp_fontinfo;
+		if (!fontinfo) {
+			return 0;
+		}
+	}
+	int max_width = 0;
+	int total_height = 0;
+
+	int line_width = 0;
+	int line_height = 0;
+
+	for (int i = 0; text[i]; i++) {
+		if (text[i] == '\n') {
+			if (line_width > max_width) max_width = line_width;
+			total_height += line_height;
+			line_width = 0;
+			line_height = 0;
+			continue;
+		}
+		int x0, y0, x1, y1;
+		stbtt_GetCodepointBitmapBox(fontinfo->info, text[i], fontSize, fontSize, &x0, &y0, &x1, &y1);
+		line_width += (x1 - x0);
+		if ((y1 - y0) > line_height) {
+			line_height = (y1 - y0);
+		}
+		if (text[i + 1] && text[i + 1] != '\n') {
+			line_width += (int)(stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]) * fontSize);
+		}
+	}
+
+	if (line_width > max_width) max_width = line_width;
+	total_height += line_height;
+
+	int32_t rect[] = { max_width,total_height };
+	return rect;
+}
+
+const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const int point) {
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		fontinfo = _temp_fontinfo;
+		if (!fontinfo) {
+			return 0;
+		}
+	}
+	float scale = stbtt_ScaleForPixelHeight(&fontinfo->info, fontSize);
+	int x0, y0, x1, y1;
+	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
+	int32_t rect[] = { (x1 - x0),(y1 - y0) };
+	return rect;
+}
+
 uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, const float scale, const int width, const int height)
 {
 	unsigned char* bitmap = calloc(width * height, sizeof(unsigned char));

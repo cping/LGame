@@ -87,6 +87,12 @@ public final class STBCall {
 	@Import(name = "Load_STB_GetCodepointHMetrics")
 	public final static native int getCodepointHMetrics(long handle, int point);
 
+	@Import(name = "Load_STB_GetCharsSize")
+	public final static native int[] getCharsSize(long handle, float fontSize, String text);
+
+	@Import(name = "Load_STB_GetCharSize")
+	public final static native int[] getCharSize(long handle, float fontSize, int point);
+
 	@Import(name = "Load_STB_MakeCodepointBitmap")
 	public final static native byte[] makeCodepointBitmap(long handle, int point, float fontScale, int width,
 			int height);

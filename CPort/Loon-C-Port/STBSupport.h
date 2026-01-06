@@ -61,6 +61,10 @@ int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize);
 
 int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point);
 
+const int32_t* Load_STB_GetCharsSize(const int64_t handle, float fontSize, const char* text);
+
+const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const int point);
+
 uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle, const int point, const float scale, const int width, const int height);
 
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height);

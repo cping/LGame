@@ -55,6 +55,14 @@ public abstract class TextLayout {
 		this.size = new Dimension(MathUtils.max(bounds.x(), 0) + bounds.width(), height);
 	}
 
+	protected void setBounds(float x, float y, float w, float h) {
+		bounds.setBounds(x, y, w, h);
+	}
+
+	protected void setHeight(int height) {
+		size.setSize(MathUtils.max(bounds.x(), 0) + bounds.width(), height);
+	}
+
 	public static String normalizeEOL(String text) {
 		return text.replace(LSystem.NL, LSystem.LS).replace(LSystem.CR, LSystem.LF);
 	}

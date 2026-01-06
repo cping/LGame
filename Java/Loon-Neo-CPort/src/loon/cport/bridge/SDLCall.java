@@ -71,6 +71,30 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
+	@Import(name = "CreatePrefs")
+	public final static native long createGamePrefs();
+
+	@Import(name = "LoadPrefs")
+	public final static native boolean loadGamePrefs(long handle, String filename);
+
+	@Import(name = "GetPrefsKeys")
+	public final static native String getGamePrefsKeys(long handle, String section, String delimiter);
+
+	@Import(name = "SetPrefs")
+	public final static native void setGamePrefs(long handle, String section, String key, byte[] value, int value_len);
+
+	@Import(name = "GetPrefs")
+	public final static native byte[] getGamePrefs(long handle, String section, String key, int len);
+
+	@Import(name = "SavePrefs")
+	public final static native boolean saveGamePrefs(long handle, String filename);
+
+	@Import(name = "RemovePrefs")
+	public final static native void removeGamePrefs(long handle, String section, String key);
+
+	@Import(name = "FreePrefs")
+	public final static native void freeGamePrefs(long handle);
+
 	@Import(name = "CreateGameData")
 	public final static native long createGameData(String fileName);
 
@@ -91,6 +115,18 @@ public final class SDLCall {
 
 	@Import(name = "GetSystemProperty")
 	public final static native String getSystemProperty(String key);
+
+	@Import(name = "FileExists")
+	public final static native boolean fileExists(String fileName);
+
+	@Import(name = "Load_SDL_RW_FileExists")
+	public final static native boolean rwFileExists(String fileName);
+
+	@Import(name = "Load_SDL_RW_FileToChars")
+	public final static native String loadRWFileToChars(String fileName);
+
+	@Import(name = "Load_SDL_RW_FileToBytes")
+	public final static native byte[] LoadRWFileToBytes(String fileName);
 
 	@Import(name = "Load_SDL_GetPreferredLocales")
 	public final static native String getPreferredLocales();
@@ -195,6 +231,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_GetFormat")
 	public final static native int getSurfaceFormat(long handle);
+
+	@Import(name = "Load_SDL_GetPolleventType")
+	public final static native int getPolleventType();
 
 	@Import(name = "Load_SDL_Update")
 	public final static native boolean update();
@@ -1009,5 +1048,162 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_GetShaderSource")
 	public final static native void glGetShaderSource(int shader, int bufSize, IntBuffer count, ByteBuffer shaders);
+
+	// Controller
+	@Import(name = "Load_SDL_IsGameController")
+	public final static native boolean isGameController(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerOpen")
+	public final static native long gameControllerOpen(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerTemp")
+	public final static native long gameControllerTemp();
+
+	@Import(name = "Load_SDL_GameControllerClose")
+	public final static native void gameControllerClose(long handle);
+
+	@Import(name = "Load_SDL_GameControllerName")
+	public final static native String gameControllerName(long handle);
+
+	@Import(name = "Load_SDL_GameControllerPath")
+	public final static native String gameControllerPath(long handle);
+
+	@Import(name = "Load_SDL_GameControllerGetType")
+	public final static native int gameControllerGetType(long handle);
+
+	@Import(name = "Load_SDL_GameControllerGetPlayerIndex")
+	public final static native int gameControllerGetPlayerIndex(long handle);
+
+	@Import(name = "Load_SDL_GameControllerSetPlayerIndex")
+	public final static native void gameControllerSetPlayerIndex(long handle, int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerGetVendor")
+	public final static native short gameControllerGetVendor(long handle);
+
+	@Import(name = "Load_SDL_GameControllerGetNumTouchpads")
+	public final static native int gameControllerGetNumTouchpads(long handle);
+
+	@Import(name = "Load_SDL_GameControllerNameForIndex")
+	public final static native String gameControllerNameForIndex(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerPathForIndex")
+	public final static native String gameControllerPathForIndex(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerMappingForIndex")
+	public final static native String gameControllerMappingForIndex(int mappingIndex);
+
+	@Import(name = "Load_SDL_GameControllerMappingForDeviceIndex")
+	public final static native String gameControllerMappingForDeviceIndex(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerTypeForIndex")
+	public final static native int gameControllerTypeForIndex(int joystickIndex);
+
+	@Import(name = "Load_SDL_GameControllerEventState")
+	public final static native int gameControllerEventState(int state);
+
+	@Import(name = "Load_SDL_GameControllerAddMapping")
+	public final static native int gameControllerAddMapping(String mappingString);
+
+	@Import(name = "Load_SDL_GameControllerGetAxisFromString")
+	public final static native int gameControllerGetAxisFromString(String axisString);
+
+	@Import(name = "Load_SDL_GameControllerGetButtonFromString")
+	public final static native int gameControllerGetButtonFromString(String btnString);
+
+	@Import(name = "Load_SDL_GameControllerNumMappings")
+	public final static native int gameControllerNumMappings();
+
+	@Import(name = "Load_SDL_GameControllerUpdate")
+	public final static native void gameControllerUpdate();
+
+	@Import(name = "Load_SDL_JoystickOpen")
+	public final static native long joystickOpen(long handle);
+
+	@Import(name = "Load_SDL_JoystickClose")
+	public final static native void joystickClose(long handle);
+
+	@Import(name = "Load_SDL_JoystickNumAxes")
+	public final static native int joystickNumAxes(long handle);
+
+	@Import(name = "Load_SDL_JoystickNumBalls")
+	public final static native int joystickNumBalls(long handle);
+
+	@Import(name = "Load_SDL_JoystickNumHats")
+	public final static native int joystickNumHats(long handle);
+
+	@Import(name = "Load_SDL_JoystickNumButtons")
+	public final static native int joystickNumButtons(long handle);
+
+	@Import(name = "Load_SDL_LockJoysticks")
+	public final static native void lockJoysticks();
+
+	@Import(name = "Load_SDL_UnlockJoysticks")
+	public final static native void unlockJoysticks();
+
+	@Import(name = "Load_SDL_NumJoysticks")
+	public final static native int numJoysticks();
+
+	@Import(name = "Load_SDL_JoystickGetDeviceVendor")
+	public final static native short joystickGetDeviceVendor(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickGetDeviceProduct")
+	public final static native short joystickGetDeviceProduct(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickGetDeviceProductVersion")
+	public final static native short joystickGetDeviceProductVersion(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickDetachVirtual")
+	public final static native int joystickDetachVirtual(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickIsVirtual")
+	public final static native boolean joystickIsVirtual(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickNameForIndex")
+	public final static native String joystickNameForIndex(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickPathForIndex")
+	public final static native String joystickPathForIndex(int deviceIndex);
+
+	@Import(name = "Load_SDL_JoystickGetDevicePlayerIndex")
+	public final static native int joystickGetDevicePlayerIndex(int deviceIndex);
+
+	@Import(name = "Load_SDL_SensorOpen")
+	public final static native long sensorOpen(int deviceIndex);
+
+	@Import(name = "Load_SDL_SensorClose")
+	public final static native void sensorClose(long handle);
+
+	@Import(name = "Load_SDL_SensorGetName")
+	public final static native String sensorGetName(long handle);
+
+	@Import(name = "Load_SDL_SensorGetType")
+	public final static native int sensorGetType(long handle);
+
+	@Import(name = "Load_SDL_SensorGetNonPortableType")
+	public final static native int sensorGetNonPortableType(long handle);
+
+	@Import(name = "Load_SDL_SensorGetData")
+	public final static native int sensorGetData(long handle, float[] data, int numValues);
+
+	@Import(name = "Load_SDL_LockSensors")
+	public final static native void lockSensors();
+
+	@Import(name = "Load_SDL_UnlockSensors")
+	public final static native void unlockSensors();
+
+	@Import(name = "Load_SDL_NumSensors")
+	public final static native int numSensors();
+
+	@Import(name = "Load_SDL_SensorGetDeviceName")
+	public final static native String sensorGetDeviceName(int deviceIndex);
+
+	@Import(name = "Load_SDL_SensorGetDeviceType")
+	public final static native String sensorGetDeviceType(int deviceIndex);
+
+	@Import(name = "Load_SDL_SensorGetDeviceNonPortableType")
+	public final static native String sensorGetDeviceNonPortableType(int deviceIndex);
+
+	@Import(name = "Load_SDL_SensorUpdate")
+	public final static native void sensorUpdate();
 
 }

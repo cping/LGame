@@ -21,7 +21,9 @@
 package loon.cport.bridge;
 
 import loon.LRelease;
+import loon.LSystem;
 import loon.geom.RectI;
+import loon.utils.PathUtils;
 
 public final class STBFont implements LRelease {
 
@@ -35,13 +37,24 @@ public final class STBFont implements LRelease {
 
 	}
 
+	private final static String convertFontPaht(String path) {
+		String baseFile = PathUtils.getCombinePaths(SDLCall.getBasePath(), LSystem.getPathPrefix(), path);
+		if (!SDLCall.fileExists(baseFile)) {
+			baseFile = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path);
+			if (!SDLCall.fileExists(baseFile)) {
+				baseFile = path;
+			}
+		}
+		return baseFile;
+	}
+
 	public final static STBFont create(String path) {
-		long handle = STBCall.loadFontInfo(path);
+		long handle = STBCall.loadFontInfo(convertFontPaht(path));
 		return new STBFont(handle);
 	}
 
 	public final static STBFont create(String path, String styleName, int style) {
-		long handle = STBCall.loadFontStyleInfo(path, styleName, style);
+		long handle = STBCall.loadFontStyleInfo(convertFontPaht(path), styleName, style);
 		return new STBFont(handle);
 	}
 
@@ -50,6 +63,10 @@ public final class STBFont implements LRelease {
 	private long _fontHandle;
 
 	private final RectI _codepointBitmapBox = new RectI();
+
+	private final RectI _textSize = new RectI();
+
+	private final RectI _charSize = new RectI();
 
 	private final VMetric _metric = new VMetric();
 
@@ -71,6 +88,22 @@ public final class STBFont implements LRelease {
 		_metric.lineGap = ms[2];
 		ms = null;
 		return _metric;
+	}
+
+	public RectI getStringSize(float fontsize, String text) {
+		int[] ms = STBCall.getCharsSize(_fontHandle, fontsize, text);
+		_textSize.width = ms[0];
+		_textSize.height = ms[1];
+		ms = null;
+		return _textSize;
+	}
+
+	public RectI getCharSize(float fontsize, int point) {
+		int[] ms = STBCall.getCharSize(_fontHandle, fontsize, point);
+		_charSize.width = ms[0];
+		_charSize.height = ms[1];
+		ms = null;
+		return _charSize;
 	}
 
 	public int getCodepointHMetrics(int point) {

@@ -1,7 +1,7 @@
 #ifndef LOON_SDL
 #define LOON_SDL
 
-#if defined(_WIN32) || defined(__APPLE__) || defined(__linux__) || defined(__unix__) || \
+#if defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__linux__) || defined(__unix__) || \
     defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
     #define LOON_DESKTOP 1
 #else
@@ -85,7 +85,36 @@ typedef struct {
     int filecount;
 } game_filesystem;
 
+typedef struct game_prefnode{
+    char* section;
+    char* key;
+    uint8_t* value;
+    size_t value_len;
+    struct game_prefnode* next;
+} game_prefnode;
+
+typedef struct {
+    game_prefnode* head;
+} game_preferences;
+
 void ImportSDLInclude();
+
+int64_t CreatePrefs();
+
+bool LoadPrefs(int64_t handle, const char* filename);
+
+void SetPrefs(int64_t handle, const char* section, const char* key,
+    const uint8_t* value, size_t value_len);
+
+const uint8_t* GetPrefs(int64_t handle, const char* section, const char* key, size_t* len);
+
+const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter);
+
+bool SavePrefs(int64_t handle, const char* filename);
+
+void RemovePrefs(int64_t handle, const char* section, const char* key);
+
+void FreePrefs(int64_t handle);
 
 int64_t CreateGameData(char* fileName);
 

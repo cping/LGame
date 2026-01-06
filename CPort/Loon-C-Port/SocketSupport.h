@@ -1,24 +1,32 @@
 #ifndef LOON_SOCKET
 #define LOON_SOCKET
 
-#if defined(_WIN32) || defined(_XBOX)
-	#include <winsock2.h>
-	#include <ws2tcpip.h>
-	#pragma comment(lib, "ws2_32.lib")
+#if defined(_WIN32) || defined(_WIN64) || defined(_XBOX)
+    #include <winsock2.h>
+    #include <ws2tcpip.h>
+    #include <iphlpapi.h>
+    #pragma comment(lib, "ws2_32.lib")
+    #pragma comment(lib, "iphlpapi.lib")
     typedef SOCKET socket_t;
-#elif defined(__SWITCH__) 
-    #include <socket.h> 
-    typedef int socket_t;
-#elif defined(__ORBIS__) || defined(__PROSPERO__)
-    #include <net.h>
-    typedef int socket_t;
 #else
     #include <unistd.h>
-    #include <arpa/inet.h>
-    #include <sys/socket.h>
+    #if defined(__ORBIS__) || defined(__PROSPERO__)
+#       include <net.h>
+    #else
+        #include <arpa/inet.h>
+    #endif
+    #if defined(__SWITCH__) 
+        #include <types.h>
+        #include <socket.h> 
+    #else
+        #include <sys/types.h>
+        #include <sys/socket.h>
+    #endif
     #include <netinet/in.h>
     #include <fcntl.h>
     #include <netdb.h>
+    #include <ifaddrs.h>
+    #include <unistd.h>
     typedef int socket_t;
 #endif
 
@@ -27,6 +35,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    
+void ImportSocketInclude();
 
 int Load_Socket_Init();
 
@@ -43,6 +53,8 @@ socket_t Load_Create_LinkServerToClient(socket_t server_fd);
 int Load_Socket_Send(socket_t sock, const char* msg, const int flags);
 
 int Load_Socket_Recv(socket_t sock, char* buf, int bufsize);
+
+const char* Load_Socket_FirstIP(char* out_ip, int out_size, int prefer_ipv6);
 
 #ifdef __cplusplus
 }
