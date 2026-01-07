@@ -386,7 +386,7 @@ const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const 
 			return 0;
 		}
 	}
-	float scale = stbtt_ScaleForPixelHeight(&fontinfo->info, fontSize);
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontSize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
 	int32_t rect[] = { (x1 - x0),(y1 - y0) };

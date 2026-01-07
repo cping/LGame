@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.geom.RectI;
 import loon.utils.PathUtils;
+import loon.utils.StringUtils;
 
 public final class STBFont implements LRelease {
 
@@ -37,7 +38,33 @@ public final class STBFont implements LRelease {
 
 	}
 
-	private final static String convertFontPaht(String path) {
+	public final static boolean existsSysFont() {
+		return existsFont(LSystem.getSystemGameFontName());
+	}
+
+	public final static boolean existsFont(String fontName) {
+		String path = fontName;
+		final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
+		if (StringUtils.isEmpty(ext)) {
+			path += ".ttf";
+		}
+		String baseFile = path;
+		if (!SDLCall.fileExists(path)) {
+			baseFile = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path);
+			if (!SDLCall.fileExists(baseFile)) {
+				baseFile = path;
+				if (SDLCall.fileExists(baseFile)) {
+					return true;
+				}
+				return false;
+			} else {
+				return true;
+			}
+		}
+		return true;
+	}
+
+	private final static String convertFontPath(String path) {
 		String baseFile = PathUtils.getCombinePaths(SDLCall.getBasePath(), LSystem.getPathPrefix(), path);
 		if (!SDLCall.fileExists(baseFile)) {
 			baseFile = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path);
@@ -49,12 +76,12 @@ public final class STBFont implements LRelease {
 	}
 
 	public final static STBFont create(String path) {
-		long handle = STBCall.loadFontInfo(convertFontPaht(path));
+		long handle = STBCall.loadFontInfo(convertFontPath(path));
 		return new STBFont(handle);
 	}
 
 	public final static STBFont create(String path, String styleName, int style) {
-		long handle = STBCall.loadFontStyleInfo(convertFontPaht(path), styleName, style);
+		long handle = STBCall.loadFontStyleInfo(convertFontPath(path), styleName, style);
 		return new STBFont(handle);
 	}
 

@@ -155,6 +155,139 @@ static char* joinLocales(const SDL_Locale* locales) {
 	return result;
 }
 
+#ifdef _WIN32
+uint8_t* download_url_windows(const wchar_t* host, INTERNET_PORT port, const wchar_t* path,
+	size_t* out_bit_count, long* out_http_code, int* status_code) {
+	HINTERNET hSession = WinHttpOpen(L"WinHTTP Downloader/1.0",
+		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
+		WINHTTP_NO_PROXY_NAME,
+		WINHTTP_NO_PROXY_BYPASS, 0);
+	if (!hSession) { *status_code = -1; return NULL; }
+
+	HINTERNET hConnect = WinHttpConnect(hSession, host, port, 0);
+	if (!hConnect) { WinHttpCloseHandle(hSession); *status_code = -2; return NULL; }
+
+	HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"GET", path,
+		NULL, WINHTTP_NO_REFERER,
+		WINHTTP_DEFAULT_ACCEPT_TYPES,
+		(port == INTERNET_DEFAULT_HTTPS_PORT) ? WINHTTP_FLAG_SECURE : 0);
+	if (!hRequest) {
+		WinHttpCloseHandle(hConnect);
+		WinHttpCloseHandle(hSession);
+		*status_code = -3;
+		return NULL;
+	}
+
+	if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
+		WINHTTP_NO_REQUEST_DATA, 0, 0, 0) ||
+		!WinHttpReceiveResponse(hRequest, NULL)) {
+		WinHttpCloseHandle(hRequest);
+		WinHttpCloseHandle(hConnect);
+		WinHttpCloseHandle(hSession);
+		*status_code = -4;
+		return NULL;
+	}
+
+	DWORD status = 0, size = sizeof(status);
+	WinHttpQueryHeaders(hRequest,
+		WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+		WINHTTP_HEADER_NAME_BY_INDEX,
+		&status, &size, WINHTTP_NO_HEADER_INDEX);
+	*out_http_code = status;
+
+	uint8_t* buffer = NULL;
+	size_t total_size = 0;
+	DWORD bytes_read = 0;
+	do {
+		uint8_t temp[4096];
+		if (!WinHttpReadData(hRequest, temp, sizeof(temp), &bytes_read)) break;
+		if (bytes_read > 0) {
+			uint8_t* new_buf = realloc(buffer, total_size + bytes_read);
+			if (!new_buf) { free(buffer); buffer = NULL; break; }
+			buffer = new_buf;
+			memcpy(buffer + total_size, temp, bytes_read);
+			total_size += bytes_read;
+		}
+	} while (bytes_read > 0);
+
+	WinHttpCloseHandle(hRequest);
+	WinHttpCloseHandle(hConnect);
+	WinHttpCloseHandle(hSession);
+
+	if (!buffer) { *status_code = -5; return NULL; }
+
+	*out_bit_count = total_size * 8;
+	*status_code = 0;
+	return buffer;
+}
+#else
+struct MemoryBlock { uint8_t* data; size_t size; };
+static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
+	size_t totalSize = size * nmemb;
+	struct MemoryBlock* mem = (struct MemoryBlock*)userp;
+	uint8_t* ptr = realloc(mem->data, mem->size + totalSize);
+	if (!ptr) return 0;
+	mem->data = ptr;
+	memcpy(&(mem->data[mem->size]), contents, totalSize);
+	mem->size += totalSize;
+	return totalSize;
+}
+
+uint8_t* download_url_unix(const char* url, size_t* out_bit_count, long* out_http_code, int* status_code) {
+	CURL* curl = curl_easy_init();
+	if (!curl) { *status_code = -1; return NULL; }
+	struct MemoryBlock chunk = { 0 };
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&chunk);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	CURLcode res = curl_easy_perform(curl);
+	if (res != CURLE_OK) { curl_easy_cleanup(curl); free(chunk.data); *status_code = -2; return NULL; }
+	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, out_http_code);
+	curl_easy_cleanup(curl);
+	*out_bit_count = chunk.size * 8;
+	*status_code = 0;
+	return chunk.data;
+}
+
+#endif
+uint8_t* download_with_retry(
+#ifdef _WIN32
+	const wchar_t* host, INTERNET_PORT port, const wchar_t* path,
+#else
+	const char* url,
+#endif
+	size_t* out_bit_count, long* out_http_code, int* status_code,
+	int max_retries, int retry_delay_ms, const long* retry_http_codes, size_t retry_http_codes_count) {
+	for (int attempt = 0; attempt <= max_retries; attempt++) {
+#ifdef _WIN32
+		uint8_t* data = download_url_windows(host, port, path, out_bit_count, out_http_code, status_code);
+#else
+		uint8_t* data = download_url_unix(url, out_bit_count, out_http_code, status_code);
+#endif
+		if (data && *status_code == 0) {
+			int should_retry = 0;
+			if (retry_http_codes && retry_http_codes_count > 0) {
+				for (size_t i = 0; i < retry_http_codes_count; i++) {
+					if (*out_http_code == retry_http_codes[i]) {
+						should_retry = 1;
+						break;
+					}
+				}
+			}
+			if (!should_retry) {
+				return data; 
+			}
+			free(data); 
+		}
+		if (attempt < max_retries) {
+			run_sleep_ms(retry_delay_ms);
+		}
+	}
+	*status_code = -99;
+	return NULL;
+}
+
 int64_t CreatePrefs() {
 	game_preferences* prefs = malloc(sizeof(game_preferences));
 	if (!prefs) return 0;
@@ -906,6 +1039,34 @@ bool Load_SDL_PathIsFile(char* path)
 
 void ImportSDLInclude()
 {
+}
+
+const uint8_t* DownloadURL(const char* url)
+{
+	uint8_t* packed_bits = NULL;
+	size_t bit_count = 0;
+	long http_code = 0;
+	int status = 0;
+	long retry_codes[] = { 500, 502, 503 };
+#ifdef _WIN32
+	packed_bits = download_with_retry(
+		(const wchar_t*)url, INTERNET_DEFAULT_HTTPS_PORT, L"/",
+#else
+	packed_bits = download_with_retry(
+		url,
+#endif
+		& bit_count, &http_code, &status,
+		3,   
+		2000,
+		retry_codes, sizeof(retry_codes) / sizeof(retry_codes[0])
+	);
+	if (packed_bits && status == 0) {
+		return packed_bits;
+	}
+	else {
+		fprintf(stderr, "Download failed after retries. Status code: %d\n", status);
+	}
+	return NULL;
 }
 
 int64_t CreateGameData(char* fileName)

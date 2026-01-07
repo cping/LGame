@@ -71,6 +71,9 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
+	@Import(name = "DownloadURL")
+	public final static native byte[] downloadURL(String url);
+
 	@Import(name = "CreatePrefs")
 	public final static native long createGamePrefs();
 

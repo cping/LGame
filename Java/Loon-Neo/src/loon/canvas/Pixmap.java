@@ -29,6 +29,7 @@ import loon.LSysException;
 import loon.LSystem;
 import loon.LTexture;
 import loon.action.collision.CollisionHelper;
+import loon.geom.PointI;
 import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.RectI;
@@ -41,6 +42,7 @@ import loon.utils.CRC32;
 import loon.utils.CollectionUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
+import loon.utils.SortedList;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
 
@@ -1172,7 +1174,7 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 		if (_isClosed) {
 			return null;
 		}
-		Pixmap pixel = new Pixmap(_width, _height, _hasAlpha);
+		final Pixmap pixel = new Pixmap(_width, _height, _hasAlpha);
 		int[] pixels = pixel._drawPixels;
 		int index = 0;
 		int pixelIndex = (mirror ? _width - 1 : 0) + (flip ? _width * (_height - 1) : 0);
@@ -1192,6 +1194,229 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			pixelIndex += offset;
 		}
 		return pixel;
+	}
+
+	/**
+	 * 产生一个新图像，缩放为指定大小
+	 * 
+	 * @param newWidth
+	 * @param newHeight
+	 * @return
+	 */
+	public Pixmap scale(float scaleX, float scaleY) {
+		return scale(MathUtils.iceil(scaleX * +_width), MathUtils.iceil(scaleY * +_height));
+	}
+
+	/**
+	 * 产生一个新图像，缩放为指定大小
+	 * 
+	 * @param newWidth
+	 * @param newHeight
+	 * @return
+	 */
+	public Pixmap scale(int newWidth, int newHeight) {
+		if (_isClosed) {
+			return null;
+		}
+		final Pixmap scaled = new Pixmap(newWidth, newHeight, _hasAlpha);
+		for (int y = 0; y < newHeight; y++) {
+			for (int x = 0; x < newWidth; x++) {
+				int srcX = x * _width / newWidth;
+				int srcY = y * _height / newHeight;
+				scaled.set(x, y, getPixel(srcX, srcY));
+			}
+		}
+		return scaled;
+	}
+
+	/**
+	 * 从指定X,Y坐标开始，填充满全部图像为指定像素
+	 * 
+	 * @param startX
+	 * @param startY
+	 * @param newColor
+	 */
+	public void floodFill(int startX, int startY, int newColor) {
+		if (_isClosed) {
+			return;
+		}
+		int targetColor = getPixel(startX, startY);
+		if (targetColor == newColor) {
+			return;
+		}
+		SortedList<PointI> queue = new SortedList<PointI>();
+		queue.add(new PointI(startX, startY));
+		while (!queue.isEmpty()) {
+			PointI p = queue.poll();
+			int x = p.x;
+			int y = p.y;
+			if (x < 0 || x >= _width || y < 0 || y >= _height) {
+				continue;
+			}
+			if (getPixel(x, y) != targetColor) {
+				continue;
+			}
+			set(x, y, newColor);
+			queue.add(new PointI(x + 1, y));
+			queue.add(new PointI(x - 1, y));
+			queue.add(new PointI(x, y + 1));
+			queue.add(new PointI(x, y - 1));
+		}
+		queue.clear();
+		queue = null;
+	}
+
+	/**
+	 * 旋转像素为指定角度
+	 * 
+	 * @param degrees
+	 * @return
+	 */
+	public Pixmap rotate(int degrees) {
+		if (_isClosed) {
+			return null;
+		}
+		degrees = ((degrees % 360) + 360) % 360;
+		Pixmap rotated;
+		if (degrees == 90) {
+			rotated = new Pixmap(_height, _width, _hasAlpha);
+			for (int y = 0; y < _height; y++) {
+				for (int x = 0; x < _width; x++) {
+					rotated.set(_height - y - 1, x, getPixel(x, y));
+				}
+			}
+		} else if (degrees == 180) {
+			rotated = new Pixmap(_width, _height, _hasAlpha);
+			for (int y = 0; y < _height; y++) {
+				for (int x = 0; x < _width; x++) {
+					rotated.set(_width - x - 1, _height - y - 1, getPixel(x, y));
+				}
+			}
+		} else if (degrees == 270) {
+			rotated = new Pixmap(_height, _width, _hasAlpha);
+			for (int y = 0; y < _height; y++) {
+				for (int x = 0; x < _width; x++) {
+					rotated.set(y, _width - x - 1, getPixel(x, y));
+				}
+			}
+		} else {
+			rotated = flip();
+		}
+		return rotated;
+	}
+
+	private final static int clamp(int value) {
+		return MathUtils.max(0, MathUtils.min(255, value));
+	}
+
+	private final static int bilerp(int c00, int c10, int c01, int c11, float xWeight, float yWeight) {
+		float top = c00 + (c10 - c00) * xWeight;
+		float bottom = c01 + (c11 - c01) * xWeight;
+		return MathUtils.round(top + (bottom - top) * yWeight);
+	}
+
+	private final int bicubicInterpolateChannel(int x, int y, float xFrac, float yFrac, int shift) {
+		final float[] floatList = new float[4];
+		for (int m = -1; m <= 2; m++) {
+			final float[] row = new float[4];
+			for (int n = -1; n <= 2; n++) {
+				int px = clampIndex(x + n, _width);
+				int py = clampIndex(y + m, _height);
+				row[n + 1] = (getPixel(px, py) >> shift) & 0xFF;
+			}
+			floatList[m + 1] = cubicInterpolate(row[0], row[1], row[2], row[3], xFrac);
+		}
+		return clamp(MathUtils.round(cubicInterpolate(floatList[0], floatList[1], floatList[2], floatList[3], yFrac)));
+	}
+
+	private final static float cubicInterpolate(float p0, float p1, float p2, float p3, float t) {
+		return p1 + 0.5f * t
+				* (p2 - p0 + t * (2.0f * p0 - 5.0f * p1 + 4.0f * p2 - p3 + t * (3.0f * (p1 - p2) + p3 - p0)));
+	}
+
+	private final static int clampIndex(int val, int max) {
+		return Math.max(0, Math.min(max - 1, val));
+	}
+
+	/**
+	 * 以双线性算法让像素平滑过渡
+	 * 
+	 * @param newWidth
+	 * @param newHeight
+	 * @return
+	 */
+	public Pixmap scaleBilinear(int newWidth, int newHeight) {
+		if (_isClosed) {
+			return null;
+		}
+		final Pixmap scaled = new Pixmap(newWidth, newHeight, _hasAlpha);
+		float xRatio = (float) (_width - 1) / newWidth;
+		float yRatio = (float) (_height - 1) / newHeight;
+		for (int y = 0; y < newHeight; y++) {
+			float srcY = y * yRatio;
+			int yFloor = (int) srcY;
+			int yCeil = MathUtils.min(yFloor + 1, _height - 1);
+			float yWeight = srcY - yFloor;
+			for (int x = 0; x < newWidth; x++) {
+				float srcX = x * xRatio;
+				int xFloor = (int) srcX;
+				int xCeil = Math.min(xFloor + 1, _width - 1);
+				float xWeight = srcX - xFloor;
+				int c00 = getPixel(xFloor, yFloor);
+				int c10 = getPixel(xCeil, yFloor);
+				int c01 = getPixel(xFloor, yCeil);
+				int c11 = getPixel(xCeil, yCeil);
+				int a = bilerp((c00 >> 24) & 0xFF, (c10 >> 24) & 0xFF, (c01 >> 24) & 0xFF, (c11 >> 24) & 0xFF, xWeight,
+						yWeight);
+				int r = bilerp((c00 >> 16) & 0xFF, (c10 >> 16) & 0xFF, (c01 >> 16) & 0xFF, (c11 >> 16) & 0xFF, xWeight,
+						yWeight);
+				int g = bilerp((c00 >> 8) & 0xFF, (c10 >> 8) & 0xFF, (c01 >> 8) & 0xFF, (c11 >> 8) & 0xFF, xWeight,
+						yWeight);
+				int b = bilerp(c00 & 0xFF, c10 & 0xFF, c01 & 0xFF, c11 & 0xFF, xWeight, yWeight);
+				scaled.set(x, y, (a << 24) | (r << 16) | (g << 8) | b);
+			}
+		}
+		return scaled;
+	}
+
+	public Pixmap scaleBilinear() {
+		return scaleBilinear(_width, _height);
+	}
+
+	/**
+	 * 以三次插值算法让像素平滑过渡
+	 * 
+	 * @param newWidth
+	 * @param newHeight
+	 * @return
+	 */
+	public Pixmap scaleBicubic(int newWidth, int newHeight) {
+		if (_isClosed) {
+			return null;
+		}
+		final Pixmap scaled = new Pixmap(newWidth, newHeight, _hasAlpha);
+		float xRatio = (float) _width / newWidth;
+		float yRatio = (float) _height / newHeight;
+		for (int y = 0; y < newHeight; y++) {
+			float srcY = y * yRatio;
+			int yInt = (int) srcY;
+			float yFrac = srcY - yInt;
+			for (int x = 0; x < newWidth; x++) {
+				float srcX = x * xRatio;
+				int xInt = (int) srcX;
+				float xFrac = srcX - xInt;
+				int a = bicubicInterpolateChannel(xInt, yInt, xFrac, yFrac, 24);
+				int r = bicubicInterpolateChannel(xInt, yInt, xFrac, yFrac, 16);
+				int g = bicubicInterpolateChannel(xInt, yInt, xFrac, yFrac, 8);
+				int b = bicubicInterpolateChannel(xInt, yInt, xFrac, yFrac, 0);
+				scaled.set(x, y, (a << 24) | (r << 16) | (g << 8) | b);
+			}
+		}
+		return scaled;
+	}
+
+	public Pixmap scaleBicubic() {
+		return scaleBicubic(_width, _height);
 	}
 
 	/**

@@ -20,24 +20,45 @@
  */
 package loon.cport;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import loon.LSystem;
+import loon.canvas.Pixmap;
 import loon.cport.bridge.STBFont;
 import loon.cport.bridge.STBFont.VMetric;
+import loon.cport.bridge.STBFontCache;
 import loon.font.Font;
 import loon.font.TextFormat;
+import loon.font.TextLayout;
+import loon.font.TextWrap;
 import loon.geom.RectBox;
 import loon.geom.RectI;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 
 public class CTextLayout extends loon.font.TextLayout {
 
-	private final static int[] STYLE_TO_STBFONT = { 0, 1, 2, 4, 8 };
+	private final static int MAX_FIX_FONT = 20;
 
-	private final static HashMap<String, STBFont> _fontPools = new HashMap<String, STBFont>();
+	private static int getTextWidth(STBFont font, TextFormat format, String message) {
+		return MathUtils.min(((int) format.font.size * message.length()),
+				fixFontSize(format, font.getStringSize(format.font.size, message).getWidth()));
+	}
+
+	private static int fixFontSize(TextFormat format, double size) {
+		int result = (int) Math.round(size);
+		int fontSize = (int) (format == null ? LSystem.getFontSize() : format.font.size);
+		if (fontSize < MAX_FIX_FONT && MathUtils.isOdd(result) && result < fontSize) {
+			result += 1;
+		}
+		return result;
+	}
+
+	private final static ObjectMap<String, STBFont> _fontPools = new ObjectMap<String, STBFont>();
+	private final static int[] STYLE_TO_STBFONT = { 0, 1, 2, 4, 8 };
 
 	protected static void putSTBFont(String name, STBFont font) {
 		if (_fontPools.size() > LSystem.DEFAULT_MAX_CACHE_SIZE) {
@@ -56,29 +77,123 @@ public class CTextLayout extends loon.font.TextLayout {
 		if (fontCache == null) {
 			final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 			if ("ttf".equals(ext) || !StringUtils.isEmpty(ext)) {
-				fontCache = STBFont.create(fontName);
+				fontCache = STBFontCache.create(fontName);
 			} else {
-				fontCache = STBFont.create(fontName + ".ttf", fontName, STYLE_TO_STBFONT[loonFont.style.ordinal()]);
+				fontCache = STBFontCache.create(fontName + ".ttf", fontName,
+						STYLE_TO_STBFONT[loonFont.style.ordinal()]);
 			}
 			_fontPools.put(keyName, fontCache);
 		}
 		return fontCache;
 	}
 
-	private STBFont _stbFont;
+	public static TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap) {
+		STBFont stbFont = convertLoonFontToSTBFont(format.font);
+		ArrayList<TextLayout> layouts = new ArrayList<TextLayout>();
+		text = normalizeEOL(text);
+		for (String line : text.split("\\n")) {
+			String[] words = line.split("\\s");
+			for (int idx = 0; idx < words.length;) {
+				idx = measureLine(stbFont, format, wrap, stbFont.getFontVMetrics(format.font.size), words, idx,
+						layouts);
+			}
+		}
+		return layouts.toArray(new TextLayout[layouts.size()]);
+	}
 
-	private float _fontSize;
+	static int measureLine(STBFont stbFont, TextFormat format, TextWrap wrap, VMetric metrics, String[] words, int idx,
+			List<TextLayout> layouts) {
+		String line = words[idx++];
+		int startIdx = idx;
+		int emwidth = metrics.ascent + metrics.descent;
+		for (; idx < words.length; idx++) {
+			String nline = line + " " + words[idx];
+			if (nline.length() * emwidth > wrap.width) {
+				break;
+			}
+			line = nline;
+		}
+		int lineWidth = getTextWidth(stbFont, format, line);
+		if (lineWidth < wrap.width) {
+			for (; idx < words.length; idx++) {
+				String nline = line + " " + words[idx];
+				int nlineWidth = getTextWidth(stbFont, format, nline);
+				if (nlineWidth > wrap.width) {
+					break;
+				}
+				line = nline;
+				lineWidth = nlineWidth;
+			}
+		}
 
-	private VMetric _metrics;
+		while (lineWidth > wrap.width && idx > (startIdx + 1)) {
+			line = line.substring(0, line.length() - words[--idx].length() - 1);
+			lineWidth = getTextWidth(stbFont, format, line);
+		}
+
+		if (lineWidth > wrap.width) {
+			final StringBuilder remainder = new StringBuilder();
+			while (lineWidth > wrap.width && line.length() > 1) {
+				int lastIdx = line.length() - 1;
+				remainder.insert(0, line.charAt(lastIdx));
+				line = line.substring(0, lastIdx);
+				lineWidth = getTextWidth(stbFont, format, line);
+			}
+			words[--idx] = remainder.toString();
+		}
+		layouts.add(new CTextLayout(line, format, lineWidth));
+		return idx;
+	}
+
+	public static TextLayout layoutText(String text, TextFormat format) {
+		return new CTextLayout(text, format);
+	}
+
+	private final CPixmapFont _pixmapFont;
+
+	private final STBFont _stbFont;
+
+	private final VMetric _metrics;
+
+	private final float _fontSize;
 
 	protected CTextLayout(String text, TextFormat format) {
+		this(text, format, 0);
+	}
+
+	protected CTextLayout(String text, TextFormat format, int width) {
 		super(text, format, new RectBox(), 0);
-		this._stbFont = convertLoonFontToSTBFont(format.font);
-		this._fontSize = format.font.size;
-		this._metrics = _stbFont.getFontVMetrics(_fontSize);
+		_stbFont = convertLoonFontToSTBFont(format.font);
+		_pixmapFont = new CPixmapFont(_stbFont);
+		_fontSize = format.font.size;
+		_metrics = _stbFont.getFontVMetrics(_fontSize);
 		final RectI size = _stbFont.getStringSize(_fontSize, text);
-		this.setBounds(0, 0, size.getWidth(), size.getHeight());
-		this.setHeight(_metrics.ascent + _metrics.descent);
+		setBounds(0, 0, width == 0 ? size.getWidth() : width, size.getHeight());
+		setHeight(_metrics.ascent + _metrics.descent);
+	}
+
+	void stroke(Pixmap pixmap, float x, float y) {
+		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	void fill(Pixmap pixmap, float x, float y) {
+		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y));
+	}
+
+	public void drawText(Pixmap pixmap, String message, int x, int y) {
+		if (pixmap == null) {
+			return;
+		}
+		int yoff = y + _metrics.ascent;
+		pixmap.drawPixmap(_pixmapFont.textToPixmap(message, _fontSize), x, yoff);
+	}
+
+	public void drawChar(Pixmap pixmap, int point, int x, int y) {
+		if (pixmap == null) {
+			return;
+		}
+		int yoff = y + _metrics.ascent;
+		pixmap.drawPixmap(_pixmapFont.charToPixmap(point, _fontSize), x, yoff);
 	}
 
 	@Override

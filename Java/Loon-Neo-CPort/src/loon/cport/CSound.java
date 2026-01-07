@@ -20,13 +20,6 @@
  */
 package loon.cport;
 
-import loon.canvas.Gradient;
-import loon.canvas.Pixmap;
-
-public class CGradient extends Gradient {
-
-	public CGradient(Pixmap pix,Gradient.Config g) {
-		
-	}
+public class CSound {
 
 }

@@ -29,6 +29,10 @@ public final class STBImage implements LRelease {
 		return new STBImage(handle);
 	}
 
+	public final static STBImage createImage(byte[] buffer) {
+		return createImage(buffer, buffer.length);
+	}
+
 	public final static STBImage createImage(byte[] buffer, int len) {
 		long handle = STBCall.loadBytesToImage(buffer, len);
 		return new STBImage(handle);

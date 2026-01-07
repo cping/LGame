@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+
 #ifdef __APPLE__
     #include <SDL2/SDL.h>
     #include <SDL2/SDL_main.h>
@@ -23,8 +24,22 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <winbase.h>
+#include <winhttp.h>
+#pragma comment(lib, "winhttp.lib")
+static void run_sleep_ms(int ms) {
+    Sleep(ms);
+}
 #else
 #include <dlfcn.h>
+#include <time.h>
+#include <curl/curl.h>
+#include <time.h>
+static void run_sleep_ms(int ms) {
+    struct timespec ts;
+    ts.tv_sec = ms / 1000;
+    ts.tv_nsec = (ms % 1000) * 1000000L;
+    nanosleep(&ts, NULL);
+}
 #endif
 
 #if defined(__unix__) || defined(__APPLE__)
@@ -98,6 +113,8 @@ typedef struct {
 } game_preferences;
 
 void ImportSDLInclude();
+
+const uint8_t* DownloadURL(const char* url);
 
 int64_t CreatePrefs();
 

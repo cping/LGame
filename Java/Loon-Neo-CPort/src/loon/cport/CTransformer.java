@@ -20,13 +20,10 @@
  */
 package loon.cport;
 
-import loon.canvas.Gradient;
-import loon.canvas.Pixmap;
+import loon.canvas.Image;
+import loon.canvas.Image.BitmapTransformer;
 
-public class CGradient extends Gradient {
+public interface CTransformer extends BitmapTransformer {
 
-	public CGradient(Pixmap pix,Gradient.Config g) {
-		
-	}
-
+	Image transform(Image image);
 }

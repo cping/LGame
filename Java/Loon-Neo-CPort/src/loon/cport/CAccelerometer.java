@@ -20,13 +20,8 @@
  */
 package loon.cport;
 
-import loon.canvas.Gradient;
-import loon.canvas.Pixmap;
+import loon.AccelerometerDefault;
 
-public class CGradient extends Gradient {
-
-	public CGradient(Pixmap pix,Gradient.Config g) {
-		
-	}
+public class CAccelerometer extends AccelerometerDefault {
 
 }

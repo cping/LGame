@@ -306,7 +306,7 @@ public class SysKey {
 	final static IntArray keys = new IntArray();
 
 	public static boolean USE_ONLY_DOWN = false;
-
+	
 	public static final int KEY_DOWN = 0;
 
 	public static final int KEY_UP = 1;
