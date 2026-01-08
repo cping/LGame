@@ -103,11 +103,11 @@ public final class STBCall {
 
 	@Import(name = "Load_STB_MakeCodepointBitmap32")
 	public final static native int[] makeCodepointBitmap32(long handle, int point, float fontScale, int width,
-			int height);
+			int height, int r, int g, int b);
 
 	@Import(name = "Load_STB_MakeDrawTextToBitmap32")
 	public final static native int[] makeDrawTextToBitmap32(long handle, String text, float fontScale, int width,
-			int height);
+			int height, int r, int g, int b);
 
 	@Import(name = "Load_STB_CloseFontInfo")
 	public final static native void closeFontInfo(long handle);
@@ -122,10 +122,24 @@ public final class STBCall {
 	public final static native int[] getCodepointHMetrics(int point);
 
 	@Import(name = "Call_STB_MakeCodepointBitmap")
-	public final static native int[] makeCodepointBitmap(int point, float fontScale, int width, int height);
+	public final static native byte[] makeCodepointBitmap(int point, float fontScale, int width, int height);
 
 	@Import(name = "Call_STB_MakeDrawTextToBitmap")
-	public final static native int[] makeDrawTextToBitmap(String text, float fontscale, int width, int height);
+	public final static native byte[] makeDrawTextToBitmap(String text, float fontScale, int width, int height);
+
+	@Import(name = "Load_STB_MeasureTextWidth")
+	public final static native int measureTextWidth(long handle, String text, float fontScale);
+
+	@Import(name = "Load_STB_MeasureTextHieght")
+	public final static native int measureTextHieght(long handle, String text, float fontScale);
+
+	@Import(name = "Load_STB_DrawTextLinesToBytes")
+	public final static native byte[] drawTextLinesToBytes(long handle, String text, float fontScale, int align,
+			int[] outDims);
+
+	@Import(name = "Load_STB_DrawTextLinesToInt32")
+	public final static native int[] drawTextLinesToInt32(long handle, String text, float fontScale, int align, int r,
+			int g, int b, int bgr, int bgg, int bgb, int bgA, int[] outDims);
 
 	@Import(name = "Call_STB_CloseFontInfo")
 	public final static native void closeFontInfo();

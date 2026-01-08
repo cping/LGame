@@ -22,11 +22,22 @@ package loon.cport;
 
 import loon.canvas.Gradient;
 import loon.canvas.Pixmap;
+import loon.canvas.PixmapGradientPaint;
+import loon.canvas.PixmapGradientPaint.CycleMethod;
+import loon.canvas.PixmapGradientPaint.GradientType;
 
 public class CGradient extends Gradient {
 
-	public CGradient(Pixmap pix,Gradient.Config g) {
-		
+	public CGradient(Pixmap pix, Gradient.Config g) {
+		if (g instanceof Linear) {
+			Linear linear = (Linear) g;
+			new PixmapGradientPaint(pix, GradientType.LINEAR, linear.x0, linear.y0, linear.x1, linear.y1,
+					pix.getWidth() / 2f, pix.getHeight() / 2f, linear.colors, CycleMethod.REPEAT, null);
+		} else if (g instanceof Radial) {
+			Radial radial = (Radial) g;
+			new PixmapGradientPaint(pix, GradientType.RADIAL, radial.x, radial.y, radial.x + radial.r,
+					radial.y + radial.r, radial.r, radial.r, radial.colors, CycleMethod.REPEAT, null);
+		}
 	}
 
 }

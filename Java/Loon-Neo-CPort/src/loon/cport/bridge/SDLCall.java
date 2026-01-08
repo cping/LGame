@@ -482,6 +482,24 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_Mix_SetPlaySoundLooping")
 	public final static native int setPlaySoundLooping(long handle, int channel, boolean looping);
 
+	@Import(name = "Load_SDL_Mix_IsLoopingSound")
+	public final static native boolean isLoopingSound(int channel);
+
+	@Import(name = "Load_SDL_Mix_GetVolume")
+	public final static native int getSoundVolume(int channel);
+
+	@Import(name = "Load_SDL_Mix_SetPosition")
+	public final static native void setPosition(int channel, int angle, int distance);
+
+	@Import(name = "Load_SDL_Mix_FadeInChannel")
+	public final static native void fadeInSoundChannel(int channel, int ms);
+
+	@Import(name = "Load_SDL_Mix_FadeOutChannel")
+	public final static native void fadeOutSoundChannel(int channel, int ms);
+
+	@Import(name = "Load_SDL_Mix_Playing")
+	public final static native boolean isSoundPlaying(int channel);
+
 	@Import(name = "Load_SDL_Mix_PauseSound")
 	public final static native void pauseSound(int channel);
 

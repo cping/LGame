@@ -220,7 +220,6 @@ public class CImage extends ImageImpl {
 	@Override
 	protected Object createErrorBitmap(int rawWidth, int rawHeight) {
 		final Pixmap image = new Pixmap(rawWidth, rawHeight, true);
-		image.setColor(LColor.red);
 		final int size = LSystem.getFontSize();
 		if (STBFont.existsSysFont()) {
 			IFont font = LSystem.getSystemGameFont();
@@ -228,11 +227,12 @@ public class CImage extends ImageImpl {
 				CTextLayout layout = (CTextLayout) ((LFont) font).getTextLayout();
 				for (int yy = 0; yy <= rawHeight / 15; yy++) {
 					for (int xx = 0; xx <= rawWidth / 45; xx++) {
-						layout.drawText(image, "Error", xx * 45, yy * 15);
+						layout.drawText(image, "Error", xx * 45, yy * 15, LColor.red);
 					}
 				}
 			}
 		} else {
+			image.setColor(LColor.red);
 			for (int yy = 0; yy <= rawHeight / 15; yy++) {
 				for (int xx = 0; xx <= rawWidth / 45; xx++) {
 					image.drawRect(xx * 45, yy * 15, size + 1, size + 1);

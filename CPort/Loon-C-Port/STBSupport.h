@@ -25,7 +25,7 @@ typedef struct {
 
 void ImportSTBInclude();
 
-int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len);
+int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len);
 
 int64_t Load_STB_Image_LoadPath(const char* path);
 
@@ -69,9 +69,17 @@ uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle, const int point, con
 
 uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height);
 
-int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height);
+int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height, const int r, const int g, const int b);
 
-int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height);
+int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height, const int r,const int g,const int b);
+
+int32_t Load_STB_MeasureTextWidth(const int64_t handle, const char* text, const float fontscale);
+
+int32_t Load_STB_MeasureTextHieght(const int64_t handle, const char* text, const float fontscale);
+
+uint8_t* Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* outDims);
+
+int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t r, int32_t g, int32_t b, int32_t bgR, int32_t bgG, int32_t bgB, int32_t bgA,int32_t* outDims);
 
 void Load_STB_CloseFontInfo(const int64_t handle);
 

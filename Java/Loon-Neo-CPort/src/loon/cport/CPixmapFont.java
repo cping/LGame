@@ -21,6 +21,7 @@
 package loon.cport;
 
 import loon.LRelease;
+import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.STBFont;
 import loon.geom.RectI;
@@ -42,17 +43,13 @@ public class CPixmapFont implements LRelease {
 		_hasAlpha = hasAlpha;
 	}
 
-	public Pixmap textToPixmap(String text, float fontScale) {
-		RectI rect = _stbFont.getStringSize(fontScale, text);
-		return textToPixmap(text, fontScale, rect.width + 1, rect.height + 1);
-	}
-
-	public Pixmap textToPixmap(String text, float fontScale, int width, int height) {
-		final int[] pixels = _stbFont.makeDrawTextPixels32(text, fontScale, width, height);
+	public Pixmap textToPixmap(String text, float fontScale, LColor color) {
+		final int[] pixels = _stbFont.textLinesToInt32(text, fontScale, color);
+		final RectI rect = _stbFont.getOutSize();
 		if (_fontPixmap == null) {
-			_fontPixmap = new Pixmap(pixels, width, height, _hasAlpha);
+			_fontPixmap = new Pixmap(pixels, rect.width, rect.height, _hasAlpha);
 		} else {
-			_fontPixmap.setData(pixels, width, height, _hasAlpha);
+			_fontPixmap.setData(pixels, rect.width, rect.height, _hasAlpha);
 		}
 		return _fontPixmap;
 	}

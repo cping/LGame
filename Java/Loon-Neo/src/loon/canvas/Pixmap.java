@@ -1226,6 +1226,7 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 				scaled.set(x, y, getPixel(srcX, srcY));
 			}
 		}
+		set(scaled);
 		return scaled;
 	}
 
@@ -1300,8 +1301,31 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 				}
 			}
 		} else {
-			rotated = flip();
+			final float radians = MathUtils.toRadians(degrees);
+			final float cos = MathUtils.cos(radians);
+			final float sin = MathUtils.sin(radians);
+			final int newWidth = MathUtils.iceil(MathUtils.abs(_width * cos) + MathUtils.abs(_height * sin));
+			final int newHeight = MathUtils.iceil(MathUtils.abs(_height * cos) + MathUtils.abs(_width * sin));
+			rotated = new Pixmap(newWidth, newHeight, _hasAlpha);
+			final float x0 = _width / 2f;
+			final float y0 = _height / 2f;
+			final float newX0 = newWidth / 2f;
+			final float newY0 = newHeight / 2f;
+			for (int y = 0; y < newHeight; y++) {
+				for (int x = 0; x < newWidth; x++) {
+					float dx = x - newX0;
+					float dy = y - newY0;
+					float srcX = dx * cos + dy * sin + x0;
+					float srcY = -dx * sin + dy * cos + y0;
+					int srcXi = MathUtils.round(srcX);
+					int srcYi = MathUtils.round(srcY);
+					if (srcXi >= 0 && srcXi < _width && srcYi >= 0 && srcYi < _height) {
+						rotated.set(x, y, get(srcXi, srcYi));
+					}
+				}
+			}
 		}
+		set(rotated);
 		return rotated;
 	}
 
@@ -1335,7 +1359,122 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 	}
 
 	private final static int clampIndex(int val, int max) {
-		return Math.max(0, Math.min(max - 1, val));
+		return MathUtils.max(0, MathUtils.min(max - 1, val));
+	}
+
+	/**
+	 * 将PixelTransform转化后的新像素以劣化方式注入当前像素中(自动适配)
+	 * 
+	 * @param transform
+	 */
+	public void transform(PixmapMatrixTransform transform) {
+		final int[] size = calculateBoundingBox(transform);
+		final float scaleX = (float) size[0] / _width;
+		final float scaleY = (float) size[1] / _height;
+		final boolean useNearest = (scaleX > 1.5f || scaleY > 1.5f);
+		if (useNearest) {
+			applyTransformNearest(transform, size[0], size[1]);
+		} else {
+			applyTransformBilinear(transform, size[0], size[1]);
+		}
+	}
+
+	/**
+	 * 将PixelTransform转化后的新像素以劣化方式注入当前像素中
+	 * 
+	 * @param transform
+	 * @param newWidth
+	 * @param newHeight
+	 */
+	public void applyTransformNearest(PixmapTransform transform, int newWidth, int newHeight) {
+		if (_isClosed) {
+			return;
+		}
+		final Pixmap scaled = new Pixmap(newWidth, newHeight, _hasAlpha);
+		float[] src = new float[2];
+		float cx = _width / 2f;
+		float cy = _height / 2f;
+		float ncx = newWidth / 2f;
+		float ncy = newHeight / 2f;
+		for (int y = 0; y < newHeight; y++) {
+			for (int x = 0; x < newWidth; x++) {
+				transform.transform(x - ncx, y - ncy, src);
+				int nearestX = MathUtils.round(src[0] + cx);
+				int nearestY = MathUtils.round(src[1] + cy);
+				scaled.set(x, y, getPixel(nearestX, nearestY));
+			}
+		}
+		set(scaled);
+	}
+
+	/**
+	 * 将PixelTransform转化后的新像以优化方式注入当前像素中
+	 * 
+	 * @param transform
+	 * @param newWidth
+	 * @param newHeight
+	 */
+	public void applyTransformBilinear(PixmapTransform transform, int newWidth, int newHeight) {
+		if (_isClosed) {
+			return;
+		}
+		final Pixmap scaled = new Pixmap(newWidth, newHeight, _hasAlpha);
+		float[] src = new float[2];
+		float cx = _width / 2f;
+		float cy = _height / 2f;
+		float ncx = newWidth / 2f;
+		float ncy = newHeight / 2f;
+		for (int y = 0; y < newHeight; y++) {
+			for (int x = 0; x < newWidth; x++) {
+				transform.transform(x - ncx, y - ncy, src);
+				float srcX = src[0] + cx;
+				float srcY = src[1] + cy;
+				int x1 = MathUtils.floor(srcX);
+				int y1 = MathUtils.floor(srcY);
+				int x2 = x1 + 1;
+				int y2 = y1 + 1;
+				int c00 = getPixel(x1, y1);
+				int c10 = getPixel(x2, y1);
+				int c01 = getPixel(x1, y2);
+				int c11 = getPixel(x2, y2);
+				float dx = srcX - x1;
+				float dy = srcY - y1;
+				int a = bilerp((c00 >> 24) & 0xFF, (c10 >> 24) & 0xFF, (c01 >> 24) & 0xFF, (c11 >> 24) & 0xFF, dx, dy);
+				int r = bilerp((c00 >> 16) & 0xFF, (c10 >> 16) & 0xFF, (c01 >> 16) & 0xFF, (c11 >> 16) & 0xFF, dx, dy);
+				int g = bilerp((c00 >> 8) & 0xFF, (c10 >> 8) & 0xFF, (c01 >> 8) & 0xFF, (c11 >> 8) & 0xFF, dx, dy);
+				int b = bilerp(c00 & 0xFF, c10 & 0xFF, c01 & 0xFF, c11 & 0xFF, dx, dy);
+				scaled.set(x, y, (a << 24) | (r << 16) | (g << 8) | b);
+			}
+		}
+		set(scaled);
+	}
+
+	/**
+	 * 获得像素转化后新像素体最大体积
+	 * 
+	 * @param transform
+	 * @return
+	 */
+	private int[] calculateBoundingBox(PixmapMatrixTransform transform) {
+		float[] cornersX = { 0, _width, _width, 0 };
+		float[] cornersY = { 0, 0, _height, _height };
+
+		float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
+		float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
+
+		float[] out = new float[2];
+		for (int i = 0; i < 4; i++) {
+			float cx = cornersX[i] - _width / 2f;
+			float cy = cornersY[i] - _height / 2f;
+			transform.transform(cx, cy, out);
+			minX = MathUtils.min(minX, out[0]);
+			minY = MathUtils.min(minY, out[1]);
+			maxX = MathUtils.max(maxX, out[0]);
+			maxY = MathUtils.max(maxY, out[1]);
+		}
+		int newWidth = MathUtils.iceil(maxX - minX);
+		int newHeight = MathUtils.iceil(maxY - minY);
+		return new int[] { newWidth, newHeight };
 	}
 
 	/**
@@ -1360,7 +1499,7 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			for (int x = 0; x < newWidth; x++) {
 				float srcX = x * xRatio;
 				int xFloor = (int) srcX;
-				int xCeil = Math.min(xFloor + 1, _width - 1);
+				int xCeil = MathUtils.min(xFloor + 1, _width - 1);
 				float xWeight = srcX - xFloor;
 				int c00 = getPixel(xFloor, yFloor);
 				int c10 = getPixel(xCeil, yFloor);

@@ -493,13 +493,25 @@ int64_t Load_SDL_Mix_LoadSoundFromMem(void* wavData);
 
 int Load_SDL_Mix_PlaySound(const int64_t handle, const bool looping);
 
+bool Load_SDL_Mix_IsLoopingSound(const int32_t channel);
+
 int Load_SDL_Mix_SetPlaySoundLooping(const int64_t handle, const int channel, const bool looping);
+
+void Load_SDL_Mix_SetPosition(const int32_t channel, const int32_t angle, const int32_t distance);
+
+void Load_SDL_Mix_FadeInChannel(const int32_t channel, const int32_t ms);
+
+void Load_SDL_Mix_FadeOutChannel(const int32_t channel, const int32_t ms);
+
+bool Load_SDL_Mix_Playing(const int32_t channel);
 
 void Load_SDL_Mix_PauseSound(const int channel);
 
 void Load_SDL_Mix_ResumeSound(const int channel);
 
 int Load_SDL_Mix_SetVolume(const int channel, const float volume);
+
+int Load_SDL_Mix_GetVolume(const int channel);
 
 int Load_SDL_Mix_SetPan(const int channel, const float pan);
 

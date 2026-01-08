@@ -22,6 +22,7 @@ package loon.cport.bridge;
 
 import loon.LRelease;
 import loon.LSystem;
+import loon.canvas.LColor;
 import loon.geom.RectI;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
@@ -95,10 +96,42 @@ public final class STBFont implements LRelease {
 
 	private final RectI _charSize = new RectI();
 
+	private final RectI _outSize = new RectI();
+
 	private final VMetric _metric = new VMetric();
+
+	private final int[] _outDims = new int[] { 0, 0 };
 
 	private STBFont(long handle) {
 		_fontHandle = handle;
+	}
+
+	public int measureWidth(String text, float fontScale) {
+		return STBCall.measureTextWidth(_fontHandle, text, fontScale);
+	}
+
+	public int measureHieght(String text, float fontScale) {
+		return STBCall.measureTextHieght(_fontHandle, text, fontScale);
+	}
+
+	public byte[] textLinesToBytes(String text, float fontScale, int align) {
+		return STBCall.drawTextLinesToBytes(_fontHandle, text, fontScale, align, _outDims);
+	}
+
+	public int[] textLinesToInt32(String text, float fontScale, LColor fontColor) {
+		return textLinesToInt32(text, fontScale, 0, fontColor, LColor.transparent);
+	}
+
+	public int[] textLinesToInt32(String text, float fontScale, int align, LColor fontColor, LColor bgColor) {
+		return STBCall.drawTextLinesToInt32(_fontHandle, text, fontScale, align, fontColor.getRed(),
+				fontColor.getGreen(), fontColor.getBlue(), bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
+				bgColor.getAlpha(), _outDims);
+	}
+
+	public RectI getOutSize() {
+		_outSize.width = _outDims[0];
+		_outSize.height = _outDims[1];
+		return _outSize;
 	}
 
 	public RectI getCodepointBitmapBox(float fontsize, int point) {
@@ -141,16 +174,18 @@ public final class STBFont implements LRelease {
 		return STBCall.makeCodepointBitmap(_fontHandle, point, fontScale, width, height);
 	}
 
-	public int[] makeCodepointPixels32(int point, float fontScale, int width, int height) {
-		return STBCall.makeCodepointBitmap32(_fontHandle, point, fontScale, width, height);
+	public int[] makeCodepointPixels32(int point, float fontScale, int width, int height, LColor fontColor) {
+		return STBCall.makeCodepointBitmap32(_fontHandle, point, fontScale, width, height, fontColor.getRed(),
+				fontColor.getGreen(), fontColor.getBlue());
 	}
 
 	public byte[] makeDrawTextBytePixels(int point, String text, float fontScale, int width, int height) {
 		return STBCall.makeDrawTextToBitmap(_fontHandle, text, fontScale, width, height);
 	}
 
-	public int[] makeDrawTextPixels32(String text, float fontScale, int width, int height) {
-		return STBCall.makeDrawTextToBitmap32(_fontHandle, text, fontScale, width, height);
+	public int[] makeDrawTextPixels32(String text, float fontScale, int width, int height, LColor fontColor) {
+		return STBCall.makeDrawTextToBitmap32(_fontHandle, text, fontScale, width, height, fontColor.getRed(),
+				fontColor.getGreen(), fontColor.getBlue());
 	}
 
 	public long getHandle() {

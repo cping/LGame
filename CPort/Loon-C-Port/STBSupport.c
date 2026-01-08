@@ -3,14 +3,126 @@
 static stb_font *_temp_fontinfo;
 static cache_surface* _temp_stbsurface;
 
+#if defined(_WIN32) && defined(_MSC_VER)
+static char* chars_secure_strtok(char* str, const char* delim) {
+	static __declspec(thread) char* context = NULL;
+	char* token;
+	if (str != NULL) {
+		context = str;
+	}
+	if (context == NULL) {
+		return NULL;
+	}
+	if (strtok_s(str, delim, &context) != NULL) {
+		token = str;
+	}
+	else {
+		token = NULL;
+	}
+	return token;
+}
+#elif defined(__unix__) || defined(__APPLE__)
+char* chars_secure_strtok(char* str, const char* delim) {
+	static _Thread_local char* saveptr = NULL;
+	return strtok_r(str, delim, &saveptr);
+}
+#else
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+static _Thread_local char* tls_strtok_save = NULL;
+#else
+#if defined(_MSC_VER)
+__declspec(thread) static char* tls_strtok_save = NULL;
+#else
+__thread static char* tls_strtok_save = NULL;
+#endif
+#endif
+char* chars_secure_strtok(char* str, const char* delim) {
+	char* token_start;
+	if (str == NULL) {
+		str = tls_strtok_save;
+	}
+	while (str && *str && strchr(delim, *str)) {
+		str++;
+	}
+	if (str == NULL || *str == '\0') {
+		tls_strtok_save = NULL;
+		return NULL;
+	}
+	token_start = str;
+	while (*str && strchr(delim, *str) == NULL) {
+		str++;
+	}
+	if (*str) {
+		*str = '\0';
+		tls_strtok_save = str + 1;
+	}
+	else {
+		tls_strtok_save = NULL;
+	}
+	return token_start;
+}
+#endif
+
+static char** split_lines(const char* text, int* count) {
+	char* copy = _strdup(text);
+	int lines = 1;
+	for (char* p = copy; *p; p++) if (*p == '\n') lines++;
+
+	char** arr = (char**)malloc(lines * sizeof(char*));
+	int idx = 0;
+	char* token = chars_secure_strtok(copy, "\n");
+	while (token) {
+		arr[idx++] = _strdup(token);
+		token = chars_secure_strtok(NULL, "\n");
+	}
+	*count = lines;
+	free(copy);
+	return arr;
+}
+
+static void free_lines(char** arr, int count) {
+	for (int i = 0; i < count; i++) {
+		free(arr[i]);
+	}
+	free(arr);
+}
+
+static int measure_max_width_lines(stbtt_fontinfo* font, char** lines, int numLines, float scale) {
+	int maxWidth = 0;
+	for (int i = 0; i < numLines; i++) {
+		const char* text = lines[i];
+		int width = 0;
+		const char* p = text;
+		while (*p) {
+			int glyph = stbtt_FindGlyphIndex(font, *p);
+			int advance, lsb;
+			stbtt_GetGlyphHMetrics(font, glyph, &advance, &lsb);
+			width += (int)(advance * scale);
+			if (*(p + 1)) {
+				width += (int)(stbtt_GetGlyphKernAdvance(font, glyph, stbtt_FindGlyphIndex(font, *(p + 1))) * scale);
+			}
+			p++;
+		}
+		if (width > maxWidth) maxWidth = width;
+	}
+	return maxWidth;
+}
+
+enum TextAlign { ALIGN_LEFT = 0, ALIGN_CENTER = 1, ALIGN_RIGHT = 2 };
+static int compute_alignment_offset(int align, int lineWidth, int maxWidth) {
+	if (align == ALIGN_CENTER) return (maxWidth - lineWidth) / 2;
+	if (align == ALIGN_RIGHT) return maxWidth - lineWidth;
+	return 0;
+}
+
 void ImportSTBInclude()
 {
 }
 
-int64_t Load_STB_Image_LoadBytes(const int8_t* buffer, int32_t len)
+int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
 {
 	int32_t width = 0, height = 0, format = 0;
-	const unsigned char* pixels = stbi_load_from_memory((uint8_t*)buffer, len, &width, &height, &format, STBI_default);
+	const unsigned char* pixels = stbi_load_from_memory(buffer, len, &width, &height, &format, STBI_default);
 	if (!pixels || width <= 0 || height <= 0) {
 		return -1;
 	}
@@ -227,35 +339,40 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 	SDL_RWops* rw = SDL_RWFromFile(path, "rb");
 	if (!rw) {
 		SDL_Log("Failed to open file '%s': %s", path, SDL_GetError());
-		return -1;
+		return 0;
 	}
 	Sint64 file_size = SDL_RWsize(rw);
 	if (file_size < 0) {
 		SDL_Log("Failed to get file size: %s", SDL_GetError());
 		SDL_RWclose(rw);
-		return -1;
+		return 0;
 	}
-	unsigned char* fontBuffer = malloc(file_size);
+	unsigned char* fontBuffer = (unsigned char*)malloc(file_size);
 	if (SDL_RWread(rw, fontBuffer, file_size, 1) != 1) {
-		return -1;
+		return 0;
 	}
 	SDL_RWclose(rw);
 	int offset = stbtt_FindMatchingFont(fontBuffer, fontName, style);
 	if (offset < 0) {
 		offset = 0;
 	}
-	stb_font* temp_font = malloc(sizeof(stb_font));
+	stb_font* temp_font = (stb_font*)malloc(sizeof(stb_font));
 	if (!temp_font) {
-		return -1;
+		free(temp_font);
+		return 0;
 	}
-	temp_font->info = malloc(sizeof(stbtt_fontinfo));
-	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
+	temp_font->info = (stbtt_fontinfo*)malloc(sizeof(stbtt_fontinfo));
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, 0))) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
-		return -1;
+		free(temp_font);
+		return 0;
+	}
+	if (temp_font && temp_font->info && fontBuffer) {
+		temp_font->info->userdata = fontBuffer;
 	}
 	_temp_fontinfo = temp_font;
-	return (intptr_t)&temp_font;
+	return (intptr_t)temp_font;
 }
 
 int64_t Load_STB_LoadFontInfo(const char* path)
@@ -263,31 +380,36 @@ int64_t Load_STB_LoadFontInfo(const char* path)
 	SDL_RWops* rw = SDL_RWFromFile(path, "rb");
 	if (!rw) {
 		SDL_Log("Failed to open file '%s': %s", path, SDL_GetError());
-		return -1;
+		return 0;
 	}
 	Sint64 file_size = SDL_RWsize(rw);
 	if (file_size < 0) {
 		SDL_Log("Failed to get file size: %s", SDL_GetError());
 		SDL_RWclose(rw);
-		return -1;
+		return 0;
 	}
-	unsigned char* fontBuffer = malloc(file_size);
+	unsigned char* fontBuffer = (unsigned char*)malloc(file_size);
 	if (SDL_RWread(rw, fontBuffer, file_size, 1) != 1) {
-		return -1;
+		return 0;
 	}
 	SDL_RWclose(rw);
-    stb_font* temp_font = malloc(sizeof(stb_font));
+    stb_font* temp_font = (stb_font*)malloc(sizeof(stb_font));
 	if (!temp_font) {
-		return -1;
+		free(temp_font);
+		return 0;
 	}
-	temp_font->info = malloc(sizeof(stbtt_fontinfo));
-	if (!stbtt_InitFont(temp_font->info, fontBuffer, 0)) {
+	temp_font->info = (stbtt_fontinfo*)malloc(sizeof(stbtt_fontinfo));
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, 0))) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
-		return -1;
+		free(temp_font);
+		return 0;
+	}
+	if (temp_font && temp_font->info && fontBuffer) {
+		temp_font->info->userdata = fontBuffer;
 	}
 	_temp_fontinfo = temp_font;
-	return (intptr_t)&temp_font;
+	return (intptr_t)temp_font;
 }
 
 int* Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point)
@@ -410,16 +532,16 @@ uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, cons
 	return bitmap;
 }
 
-void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height, int order) {
+void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height,int order, int32_t cr, int32_t cg, int32_t cb) {
 	if (!src || !dst || width <= 0 || height <= 0) {
 		return;
 	}
 	for (int y = 0; y < height; y++) {
 		for (int x = 0; x < width; x++) {
 			uint8_t alpha = src[y * width + x];
-			uint8_t r = 255;
-			uint8_t g = 255;
-			uint8_t b = 255;
+			uint8_t r = (uint8_t)cr;
+			uint8_t g = (uint8_t)cg;
+			uint8_t b = (uint8_t)cb;
 			if (order == 0) {
 				dst[y * width + x] = ((int32_t)alpha << 24) | (r << 16) | (g << 8) | b;
 			}
@@ -430,11 +552,11 @@ void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height, i
 	}
 }
 
-int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height)
+int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height,const int r,const int g,const int b)
 {
 	uint8_t* bytePixels =  Load_STB_MakeCodepointBitmap(handle, point, scale, width, height);
 	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
-	convertU8toInt32(bytePixels, int32Pixels, width, height, 0);
+	convertU8toInt32(bytePixels, int32Pixels, width, height, 0,r,g,b);
 	free(bytePixels);
 	return int32Pixels;
 }
@@ -477,13 +599,179 @@ uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, c
 	return bitmap;
 }
 
-int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height)
+int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height,const int r,const int g,const int b)
 {
 	uint8_t* bytePixels = Load_STB_MakeDrawTextToBitmap(handle, text, fontscale, width, height);
 	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
-	convertU8toInt32(bytePixels, int32Pixels, width, height, 0);
+	convertU8toInt32(bytePixels, int32Pixels, width, height, 0,r,g,b);
 	free(bytePixels);
 	return int32Pixels;
+}
+
+int32_t Load_STB_MeasureTextWidth(const int64_t handle, const char* text, const float fontscale) {
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		return 0;
+	}
+	int width = 0;
+	const char* p = text;
+	while (*p) {
+		int glyph = stbtt_FindGlyphIndex(fontinfo->info, *p);
+		int advance, lsb;
+		stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
+		width += (int)(advance * fontscale);
+		if (*(p + 1)) {
+			width += (int)(stbtt_GetGlyphKernAdvance(fontinfo->info, glyph, stbtt_FindGlyphIndex(fontinfo->info, *(p + 1))) * fontscale);
+		}
+		p++;
+	}
+	return width;
+}
+
+int32_t Load_STB_MeasureTextHieght(const int64_t handle, const char* text, const float fontscale)
+{
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		return 0;
+	}
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
+	return (int)((ascent - descent + lineGap) * fontscale);
+}
+
+uint8_t* Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* outDims)
+{
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		return NULL;
+	}
+	int numLines;
+	char** lines = split_lines(text, &numLines);
+
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
+	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int totalHeight = lineHeight * numLines;
+
+	unsigned char* bitmap = (unsigned char*)calloc(maxWidth * totalHeight, sizeof(unsigned char));
+	if (!bitmap) return NULL;
+
+	for (int i = 0; i < numLines; i++) {
+		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, fontscale);
+		int x = compute_alignment_offset(align, lineWidth, maxWidth);
+		int baseline = (int)(ascent * fontscale) + i * lineHeight;
+		const char* p = lines[i];
+
+		while (*p) {
+			int glyph = stbtt_FindGlyphIndex(fontinfo->info, *p);
+			int advance, lsb;
+			stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
+
+			int gw, gh, gxoff, gyoff;
+			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, fontscale, fontscale, glyph, &gw, &gh, &gxoff, &gyoff);
+
+			for (int gy = 0; gy < gh; gy++) {
+				for (int gx = 0; gx < gw; gx++) {
+					int dstX = x + gx + gxoff;
+					int dstY = baseline + gy + gyoff;
+					if (dstX >= 0 && dstX < maxWidth && dstY >= 0 && dstY < totalHeight) {
+						bitmap[dstY * maxWidth + dstX] = gbitmap[gy * gw + gx];
+					}
+				}
+			}
+
+			stbtt_FreeBitmap(gbitmap, NULL);
+			x += (int)(advance * fontscale);
+
+			if (*(p + 1)) {
+				x += (int)(stbtt_GetGlyphKernAdvance(fontinfo->info, glyph,
+					stbtt_FindGlyphIndex(fontinfo->info, *(p + 1))) * fontscale);
+			}
+			p++;
+		}
+	}
+	if (outDims != NULL) {
+		outDims[0] = maxWidth;
+		outDims[1] = totalHeight;
+	}
+	free_lines(lines, numLines);
+
+	return bitmap;
+
+}
+
+int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t r, int32_t g, int32_t b, int32_t bgR, int32_t bgG, int32_t bgB,int32_t bgA, int32_t* outDims)
+{
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		return NULL;
+	}
+	int numLines;
+	char** lines = split_lines(text, &numLines);
+
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
+	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int totalHeight = lineHeight * numLines;
+
+	int32_t* pixels = (int32_t*)malloc(maxWidth * totalHeight * sizeof(int32_t));
+	if (!pixels) return NULL;
+
+	for (int i = 0; i < maxWidth * totalHeight; i++) {
+		pixels[i] = (bgA & 0xFF << 24) | ((bgR & 0xFF) << 16) | ((bgG & 0xFF) << 8) | (bgB & 0xFF);
+	}
+
+	for (int i = 0; i < numLines; i++) {
+		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, fontscale);
+		int x = compute_alignment_offset(align, lineWidth, maxWidth);
+		int baseline = (int)(ascent * fontscale) + i * lineHeight;
+		const char* p = lines[i];
+
+		while (*p) {
+			int glyph = stbtt_FindGlyphIndex(fontinfo->info, *p);
+			int advance, lsb;
+			stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
+
+			int gw, gh, gxoff, gyoff;
+			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, fontscale, fontscale, glyph, &gw, &gh, &gxoff, &gyoff);
+
+			for (int gy = 0; gy < gh; gy++) {
+				for (int gx = 0; gx < gw; gx++) {
+					int dstX = x + gx + gxoff;
+					int dstY = baseline + gy + gyoff;
+					if (dstX >= 0 && dstX < maxWidth && dstY >= 0 && dstY < totalHeight) {
+						unsigned char alpha = gbitmap[gy * gw + gx];
+						if (alpha > 0) {
+							pixels[dstY * maxWidth + dstX] =
+								((alpha & 0xFF) << 24) |
+								((r & 0xFF) << 16) |
+								((g & 0xFF) << 8) |
+								(b & 0xFF);
+						}
+					}
+				}
+			}
+
+			stbtt_FreeBitmap(gbitmap, NULL);
+			x += (int)(advance * fontscale);
+			if (*(p + 1)) {
+				x += (int)(stbtt_GetGlyphKernAdvance(fontinfo->info, glyph,
+					stbtt_FindGlyphIndex(fontinfo->info, *(p + 1))) * fontscale);
+			}
+			p++;
+		}
+	}
+	if (outDims != NULL) {
+		outDims[0] = maxWidth;
+		outDims[1] = totalHeight;
+	}
+	free_lines(lines, numLines);
+
+	return pixels;
 }
 
 void Load_STB_CloseFontInfo(const int64_t handle)
@@ -491,6 +779,9 @@ void Load_STB_CloseFontInfo(const int64_t handle)
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 			return;
+	}
+	if (fontinfo->info->userdata) {
+		free(fontinfo->info->userdata);
 	}
 	free(fontinfo->info);
 	free(fontinfo);
@@ -588,6 +879,9 @@ void Call_STB_CloseFontInfo()
 	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
 		return;
+	}
+	if (fontinfo->info->userdata) {
+		free(fontinfo->info->userdata);
 	}
 	free(fontinfo->info);
 	free(fontinfo);

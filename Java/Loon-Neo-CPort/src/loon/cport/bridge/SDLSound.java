@@ -59,6 +59,54 @@ public final class SDLSound implements LRelease {
 		return channel;
 	}
 
+	public boolean isLoopingSound() {
+		return isLoopingSound(_lastChannel);
+	}
+
+	public boolean isLoopingSound(int channel) {
+		return SDLCall.isLoopingSound(channel);
+	}
+
+	public int getSoundVolume() {
+		return getSoundVolume(_lastChannel);
+	}
+
+	public int getSoundVolume(int channel) {
+		return SDLCall.getSoundVolume(channel);
+	}
+
+	public void setPosition(int angle, int distance) {
+		setPosition(_lastChannel, angle, distance);
+	}
+
+	public void setPosition(int channel, int angle, int distance) {
+		SDLCall.setPosition(channel, angle, distance);
+	}
+
+	public void fadeInSoundChannel(int ms) {
+		fadeInSoundChannel(_lastChannel, ms);
+	}
+
+	public void fadeInSoundChannel(int channel, int ms) {
+		SDLCall.fadeInSoundChannel(channel, ms);
+	}
+
+	public void fadeOutSoundChannel(int ms) {
+		fadeOutSoundChannel(_lastChannel, ms);
+	}
+
+	public void fadeOutSoundChannel(int channel, int ms) {
+		SDLCall.fadeOutSoundChannel(channel, ms);
+	}
+
+	public boolean isSoundPlaying() {
+		return SDLCall.isSoundPlaying(_lastChannel);
+	}
+
+	public boolean isSoundPlaying(int channel) {
+		return SDLCall.isSoundPlaying(channel);
+	}
+
 	public int setPlaySoundLooping(boolean looping) {
 		return setPlaySoundLooping(_lastChannel, looping);
 	}

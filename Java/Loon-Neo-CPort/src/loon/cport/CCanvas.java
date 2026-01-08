@@ -28,6 +28,7 @@ import loon.canvas.LColor;
 import loon.canvas.Path;
 import loon.canvas.Pattern;
 import loon.canvas.Pixmap;
+import loon.canvas.PixmapMatrixTransform;
 import loon.font.LFont;
 import loon.font.TextLayout;
 import loon.opengl.TextureSource;
@@ -45,7 +46,7 @@ public class CCanvas extends Canvas {
 		this._canvas = image.bufferedImage();
 		float scale = image.scale().factor;
 		if (scale != 1f) {
-			_canvas.set(_canvas.scale(scale, scale));
+			_canvas.scale(scale, scale);
 		}
 		_stateStack.push(new CCanvasState());
 	}
@@ -378,6 +379,7 @@ public class CCanvas extends Canvas {
 
 	@Override
 	public Canvas transform(float m11, float m12, float m21, float m22, float dx, float dy) {
+		_canvas.transform(new PixmapMatrixTransform(m11, m12, dx, m21, m22, dy));
 		return this;
 	}
 

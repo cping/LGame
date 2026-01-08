@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import loon.LSystem;
+import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.STBFont;
 import loon.cport.bridge.STBFont.VMetric;
@@ -33,7 +34,6 @@ import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.RectBox;
-import loon.geom.RectI;
 import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
@@ -105,7 +105,7 @@ public class CTextLayout extends loon.font.TextLayout {
 			List<TextLayout> layouts) {
 		String line = words[idx++];
 		int startIdx = idx;
-		int emwidth = metrics.ascent + metrics.descent;
+		int emwidth = (metrics.ascent - metrics.descent + metrics.lineGap);
 		for (; idx < words.length; idx++) {
 			String nline = line + " " + words[idx];
 			if (nline.length() * emwidth > wrap.width) {
@@ -167,33 +167,31 @@ public class CTextLayout extends loon.font.TextLayout {
 		_pixmapFont = new CPixmapFont(_stbFont);
 		_fontSize = format.font.size;
 		_metrics = _stbFont.getFontVMetrics(_fontSize);
-		final RectI size = _stbFont.getStringSize(_fontSize, text);
-		setBounds(0, 0, width == 0 ? size.getWidth() : width, size.getHeight());
-		setHeight(_metrics.ascent + _metrics.descent);
+		setBounds(0, 0, width == 0 ? _stbFont.measureWidth(text, _fontSize) : width,
+				_stbFont.measureHieght(text, _fontSize));
+		setHeight(_metrics.ascent - _metrics.descent + _metrics.lineGap);
 	}
 
-	void stroke(Pixmap pixmap, float x, float y) {
-		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y));
+	void stroke(Pixmap pixmap, float x, float y, LColor fontColor) {
+		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y), fontColor);
 	}
 
-	void fill(Pixmap pixmap, float x, float y) {
-		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y));
+	void fill(Pixmap pixmap, float x, float y, LColor fontColor) {
+		drawText(pixmap, text, MathUtils.ifloor(x), MathUtils.ifloor(y), fontColor);
 	}
 
-	public void drawText(Pixmap pixmap, String message, int x, int y) {
+	public void drawText(Pixmap pixmap, String message, int x, int y, LColor fontColor) {
 		if (pixmap == null) {
 			return;
 		}
-		int yoff = y + _metrics.ascent;
-		pixmap.drawPixmap(_pixmapFont.textToPixmap(message, _fontSize), x, yoff);
+		pixmap.drawPixmap(_pixmapFont.textToPixmap(message, _fontSize, fontColor), x, y);
 	}
 
 	public void drawChar(Pixmap pixmap, int point, int x, int y) {
 		if (pixmap == null) {
 			return;
 		}
-		int yoff = y + _metrics.ascent;
-		pixmap.drawPixmap(_pixmapFont.charToPixmap(point, _fontSize), x, yoff);
+		pixmap.drawPixmap(_pixmapFont.charToPixmap(point, _fontSize), x, y);
 	}
 
 	@Override
@@ -213,7 +211,7 @@ public class CTextLayout extends loon.font.TextLayout {
 
 	@Override
 	public int stringWidth(String message) {
-		return (int) MathUtils.max(_fontSize, _stbFont.getStringSize(_fontSize, text).width);
+		return (int) MathUtils.max(_fontSize, _stbFont.measureWidth(text, _fontSize));
 	}
 
 	@Override
@@ -223,6 +221,6 @@ public class CTextLayout extends loon.font.TextLayout {
 
 	@Override
 	public int charWidth(char ch) {
-		return _stbFont.getCharSize(ch, ch).width;
+		return _stbFont.getCharSize(_fontSize, ch).width;
 	}
 }
