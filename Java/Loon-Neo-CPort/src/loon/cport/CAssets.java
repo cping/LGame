@@ -23,13 +23,13 @@ package loon.cport;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 
 import loon.Assets;
-import loon.Asyn;
 import loon.LRelease;
 import loon.LSystem;
 import loon.Sound;
@@ -39,6 +39,8 @@ import loon.canvas.ImageImpl.Data;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.SDLCall;
 import loon.cport.bridge.STBImage;
+import loon.opengl.TextureSource;
+import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 import loon.utils.Scale;
 import loon.utils.StringUtils;
@@ -416,6 +418,10 @@ public class CAssets extends Assets {
 		this.assetScale = new Scale(scaleFactor);
 	}
 
+	protected Scale assetScale() {
+		return (assetScale != null) ? assetScale : game.graphics().scale();
+	}
+
 	@Override
 	public Image getRemoteImage(final String url, int width, int height) {
 		final CImage image = new CImage(game, true, width, height, url);
@@ -435,34 +441,130 @@ public class CAssets extends Assets {
 		return image;
 	}
 
+	protected final static boolean existsPath(final String path) {
+		return SDLCall.fileExists(path) || SDLCall.rwFileExists(path);
+	}
+
+	protected final static File resolvePath(String path) {
+		File file = new File(path);
+		if (!file.exists()) {
+			path = getPath(path);
+			if (path.startsWith(LSystem.getSystemImagePath())) {
+				path = LSystem.getPathPrefix() + path;
+			}
+			file = new File(path);
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(path.substring(path.indexOf('/') + 1, path.length()));
+			}
+			if (!file.exists() && (path.indexOf('\\') != -1 || path.indexOf('/') != -1)) {
+				file = new File(LSystem.getFileName(path = file.getAbsolutePath()));
+			}
+			if (!file.exists()) {
+				file = new File(LSystem.getFileName(path = (LSystem.getPathPrefix() + path)));
+			}
+		}
+		return file;
+	}
+
+	protected String requirePath(final String path) throws IOException {
+		if (existsPath(path)) {
+			return path;
+		}
+		String serachPath = getPath(path);
+		boolean notExists = !existsPath(serachPath);
+		if (notExists && !path.startsWith("/")) {
+			serachPath = "/" + getPath(path);
+			notExists = existsPath(serachPath);
+		}
+		if (notExists && !path.startsWith("\\")) {
+			serachPath = "\\" + getPath(path);
+			notExists = existsPath(serachPath);
+		}
+		if (notExists) {
+			serachPath = getPath(path);
+			notExists = existsPath(serachPath);
+		}
+		if (!notExists) {
+			return serachPath;
+		} else {
+			File file = resolvePath(serachPath);
+			if (file.exists() || existsPath(serachPath)) {
+				return serachPath;
+			}
+		}
+		for (File dir : directories) {
+			File f = new File(dir, path).getCanonicalFile();
+			if (f.exists() || existsPath(serachPath)) {
+				return serachPath;
+			}
+		}
+		return path;
+	}
+
+	public Sound getSound(byte[] buffer) {
+		return CAudio.createSound(buffer);
+	}
+
+	public Sound getMusic(byte[] buffer) {
+		return CAudio.createMusic(buffer);
+	}
+
 	@Override
 	public Sound getSound(String path) {
-		// TODO Auto-generated method stub
-		return null;
+		return CAudio.createSound(path);
+	}
+
+	@Override
+	public Sound getMusic(String path) {
+		return CAudio.createMusic(path);
 	}
 
 	@Override
 	public String getTextSync(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String newPath = requirePath(path);
+		return SDLCall.loadRWFileToChars(newPath);
 	}
 
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		String newPath = requirePath(path);
+		return SDLCall.LoadRWFileToBytes(newPath);
+	}
+
+	protected Pixmap scaleImage(Pixmap image, float viewImageRatio) {
+		int swidth = MathUtils.iceil(viewImageRatio * image.getWidth());
+		int sheight = MathUtils.iceil(viewImageRatio * image.getHeight());
+		return Pixmap.getResize(image, swidth, sheight).scaleBicubic();
 	}
 
 	@Override
 	protected Data load(String path) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (path == null || TextureSource.RenderCanvas.equals(path)) {
+			return null;
+		}
+		Exception error = null;
+		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
+			try {
+				STBImage stbImage = STBImage.createImage(path);
+				Pixmap image = new Pixmap(stbImage.getImagePixels32(), stbImage.getWidth(), stbImage.getHeight());
+				Scale viewScale = game.graphics().scale(), imageScale = rsrc.scale;
+				float viewImageRatio = viewScale.factor / imageScale.factor;
+				if (viewImageRatio < 1) {
+					image = scaleImage(image, viewImageRatio);
+					imageScale = viewScale;
+				}
+				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
+			} catch (Exception ex) {
+				error = ex;
+			}
+		}
+		game.log().warn("Could not load image: " + path + " [error=" + error + "]");
+		throw error != null ? error : new FileNotFoundException(path);
 	}
 
 	@Override
 	protected ImageImpl createImage(boolean async, int rawWidth, int rawHeight, String source) {
-		// TODO Auto-generated method stub
-		return null;
+		return new CImage(game, async, rawWidth, rawHeight, source);
 	}
 
 }

@@ -372,16 +372,36 @@ public final class Session implements Bundle<String> {
 		return get(name, 0);
 	}
 
+	public String getV(String name, String result) {
+		String v = get(name);
+		return v != null ? v : result;
+	}
+
 	public int getInt(String name) {
 		return getInt(name, 0);
+	}
+
+	public int getIntV(String name, int result) {
+		int v = getInt(name);
+		return v != -1 ? v : result;
 	}
 
 	public float getFloat(String name) {
 		return getFloat(name, 0);
 	}
 
+	public float getFloatV(String name, float result) {
+		float v = getFloat(name);
+		return v != -1f ? v : result;
+	}
+
 	public boolean getBoolean(String name) {
 		return getBoolean(name, 0);
+	}
+
+	public boolean getBooleanV(String name, boolean result) {
+		boolean v = getBoolean(name);
+		return v ? v : result;
 	}
 
 	public Session delete(String name) {

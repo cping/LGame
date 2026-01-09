@@ -20,6 +20,99 @@
  */
 package loon.cport;
 
-public class CSound {
+import loon.SoundImpl;
+import loon.cport.bridge.SDLSound;
+
+public class CSound extends SoundImpl<Object> {
+
+	private SDLSound _sound;
+
+	public CSound(byte[] bytes) {
+		_sound = SDLSound.createSound(bytes);
+	}
+
+	public CSound(String path) {
+		_sound = SDLSound.createSound(path);
+	}
+
+	public int playDefault() {
+		return _sound.playSound(looping);
+	}
+
+	public int play(float volume) {
+		int soundId = _sound.playSound(looping);
+		_sound.setVolume(soundId, volume);
+		return soundId;
+	}
+
+	public int play(float volume, float pitch, float pan) {
+		int soundId = _sound.playSound(looping);
+		_sound.setVolume(soundId, volume);
+		_sound.setPan(soundId, pan);
+		return soundId;
+	}
+
+	public int loop() {
+		looping = true;
+		int soundId = _sound.playSound(looping);
+		_sound.setPlaySoundLooping(soundId, looping);
+		return soundId;
+	}
+
+	public int loop(float volume) {
+		looping = true;
+		int soundId = _sound.playSound(looping);
+		_sound.setPlaySoundLooping(soundId, looping);
+		_sound.setVolume(soundId, volume);
+		return soundId;
+	}
+
+	public long loop(float volume, float pitch, float pan) {
+		looping = true;
+		int soundId = _sound.playSound(looping);
+		_sound.setPlaySoundLooping(soundId, looping);
+		_sound.setVolume(soundId, volume);
+		_sound.setPan(soundId, pan);
+		return soundId;
+	}
+
+	public void pause() {
+		_sound.pauseLastSound();
+	}
+
+	public void resume() {
+		_sound.resumeLastSound();
+	}
+
+	public SDLSound getSDLSound() {
+		return _sound;
+	}
+
+	@Override
+	protected boolean playImpl() {
+		playDefault();
+		return isPlaying();
+	}
+
+	@Override
+	protected void stopImpl() {
+		_sound.stop();
+	}
+
+	@Override
+	protected void setLoopingImpl(boolean l) {
+		looping = l;
+	}
+
+	@Override
+	protected void setVolumeImpl(float volume) {
+		int soundId = _sound.playSound(looping);
+		_sound.setVolume(soundId, volume);
+	}
+
+	@Override
+	protected void releaseImpl() {
+		_sound.close();
+	}
 
 }

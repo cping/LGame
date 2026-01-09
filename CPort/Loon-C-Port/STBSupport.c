@@ -424,8 +424,11 @@ int* Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, 
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	int rect[] = {x0,y0,x1,y1};
-	return rect;
+	global_result[0] = x0;
+	global_result[1] = y0;
+	global_result[2] = x1;
+	global_result[3] = y1;
+	return global_result;
 }
 
 int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
@@ -442,8 +445,10 @@ int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
-	int rect[] = { ascent,descent,lineGap };
-	return rect;
+	global_result[0] = ascent;
+	global_result[1] = descent;
+	global_result[2] = lineGap;
+	return global_result;
 }
 
 int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
@@ -495,9 +500,9 @@ const int32_t* Load_STB_GetCharsSize(const int64_t handle, float fontSize, const
 
 	if (line_width > max_width) max_width = line_width;
 	total_height += line_height;
-
-	int32_t rect[] = { max_width,total_height };
-	return rect;
+	global_result[0] = max_width;
+	global_result[1] = total_height;
+	return global_result;
 }
 
 const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const int point) {
@@ -511,8 +516,9 @@ const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const 
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontSize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	int32_t rect[] = { (x1 - x0),(y1 - y0) };
-	return rect;
+	global_result[0] = (x1 - x0);
+	global_result[1] = (y1 - y0);
+	return global_result;
 }
 
 uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, const float scale, const int width, const int height)
@@ -796,8 +802,11 @@ int* Call_STB_GetCodepointBitmapBox(const float fontsize, const int point)
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	int rect[] = { x0,y0,x1,y1 };
-	return rect;
+	global_result[0] = x0;
+	global_result[1] = y0;
+	global_result[2] = x1;
+	global_result[3] = y1;
+	return global_result;
 }
 
 int* Call_STB_GetFontVMetrics(const float fontsize)
@@ -811,8 +820,10 @@ int* Call_STB_GetFontVMetrics(const float fontsize)
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
-	int rect[] = { ascent,descent,lineGap };
-	return rect;
+	global_result[0] = ascent;
+	global_result[1] = descent;
+	global_result[2] = lineGap;
+	return global_result;
 }
 
 int Call_STB_GetCodepointHMetrics(const int point)

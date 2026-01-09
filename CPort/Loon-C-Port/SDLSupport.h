@@ -23,27 +23,33 @@
 
 #ifdef _WIN32
 #include <windows.h>
+#include <shlobj.h>
 #include <winbase.h>
 #include <winhttp.h>
+#include <VersionHelpers.h>
+#pragma comment(lib, "shell32.lib")
 #pragma comment(lib, "winhttp.lib")
 static void run_sleep_ms(int ms) {
     Sleep(ms);
 }
-#else
+#elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) || defined(__unix__)
 #include <dlfcn.h>
 #include <time.h>
+#include <sys/utsname.h>
+#include <unistd.h>
+#include <pwd.h>
+    #if !defined(__APPLE__)
+    #include <sys/sysinfo.h>
+    #endif
 #include <curl/curl.h>
 #include <time.h>
+#include <execinfo.h>
 static void run_sleep_ms(int ms) {
     struct timespec ts;
     ts.tv_sec = ms / 1000;
     ts.tv_nsec = (ms % 1000) * 1000000L;
     nanosleep(&ts, NULL);
 }
-#endif
-
-#if defined(__unix__) || defined(__APPLE__)
-#include <execinfo.h>
 #endif
 
 #ifdef IN_IDE_PARSER
@@ -111,6 +117,17 @@ typedef struct game_prefnode{
 typedef struct {
     game_prefnode* head;
 } game_preferences;
+
+typedef struct {
+    Mix_Music* handle;
+    int loopCount; 
+} game_music;
+
+static int32_t global_result[8];
+
+static char global_cname[2048];
+
+static char global_info[1024 * 10];
 
 void ImportSDLInclude();
 
@@ -467,13 +484,21 @@ char* Load_SDL_GetVersion(char* data);
 
 int64_t Load_SDL_Mix_LoadMUS(const char* filename);
 
+int64_t Load_SDL_Mix_LoadMUSFromMem(void* musData);
+
 void Load_SDL_Mix_PlayMusic(const int64_t handle, const bool looping);
 
 void Load_SDL_Mix_PlayFadeInMusic(const int64_t handle, const bool looping);
 
+float Load_SDL_Mix_GetMusicPosition(const int64_t handle);
+
+bool Load_SDL_Mix_IsLoopingMusic();
+
+bool Load_SDL_Mix_PlayingMusic();
+
 void Load_SDL_Mix_PlayMusicFadeStop();
 
-void Load_SDL_MIX_SetPosition(const float position);
+void Load_SDL_MIX_SetMusicPosition(const float position);
 
 void Load_SDL_Mix_SetMusicVolume(const float volume);
 

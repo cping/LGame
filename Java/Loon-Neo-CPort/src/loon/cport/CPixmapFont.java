@@ -54,13 +54,13 @@ public class CPixmapFont implements LRelease {
 		return _fontPixmap;
 	}
 
-	public Pixmap charToPixmap(int point, float fontScale) {
+	public Pixmap charToPixmap(int point, float fontScale, LColor color) {
 		RectI rect = _stbFont.getCharSize(fontScale, point);
-		return charToPixmap(point, fontScale, rect.width + 1, rect.height + 1);
+		return charToPixmap(point, fontScale, rect.width + 1, rect.height + 1, color);
 	}
 
-	public Pixmap charToPixmap(int point, float fontScale, int width, int height) {
-		final int[] pixels = _stbFont.makeCodepointPixels32(point, fontScale, width, height);
+	public Pixmap charToPixmap(int point, float fontScale, int width, int height, LColor color) {
+		final int[] pixels = _stbFont.makeCodepointPixels32(point, fontScale, width, height, color);
 		if (_fontPixmap == null) {
 			_fontPixmap = new Pixmap(pixels, width, height, _hasAlpha);
 		} else {

@@ -24,6 +24,11 @@ import loon.LRelease;
 
 public final class SDLMusic implements LRelease {
 
+	public final static SDLMusic createMusic(byte[] bytes) {
+		long handle = SDLCall.loadMUS(bytes);
+		return new SDLMusic(handle);
+	}
+
 	public final static SDLMusic createMusic(String path) {
 		long handle = SDLCall.loadMUS(path);
 		return new SDLMusic(handle);
@@ -33,8 +38,18 @@ public final class SDLMusic implements LRelease {
 
 	private long _musicHandle;
 
+	private float _position;
+
 	private SDLMusic(long handle) {
 		_musicHandle = handle;
+	}
+
+	public boolean isLooping() {
+		return SDLCall.isLoopingMusic();
+	}
+
+	public boolean isPlaying() {
+		return SDLCall.isPlayingMusic();
 	}
 
 	public void play(boolean loop) {
@@ -49,8 +64,16 @@ public final class SDLMusic implements LRelease {
 		SDLCall.playMusicFadeStop();
 	}
 
+	public float getPosition() {
+		if (_position > 0) {
+			return _position;
+		}
+		return SDLCall.getMusicPosition(_musicHandle);
+	}
+
 	public void setPosition(float v) {
-		SDLCall.setPosition(v);
+		SDLCall.setMusicPosition(v);
+		_position = v;
 	}
 
 	public void setVolume(float v) {
@@ -87,6 +110,7 @@ public final class SDLMusic implements LRelease {
 			stop();
 			SDLCall.disposeMusic(_musicHandle);
 			_musicHandle = 0;
+			_position = 0;
 			_closed = true;
 		}
 	}

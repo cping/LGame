@@ -33,6 +33,9 @@ static const char b64_table[] =
 static SDL_GLContext* tempContext;
 static uint32_t tempPolleventType;
 static game_filesystem* gamefilesys;
+static int g_loopCount = 0;
+static bool g_isLooping = false;
+static game_music* g_currentMusic = NULL;
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
 static const int audio_channels = MIX_DEFAULT_CHANNELS;
@@ -44,6 +47,396 @@ static bool musicFinishedEvent;
 static bool soundFinishedEvent;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
+
+static char* chars_strncpy(char* dest, const char* src, size_t n) {
+	if (dest == NULL || src == NULL || n == 0) {
+		return dest;
+	}
+	size_t i = 0;
+	for (; i < n - 1 && src[i] != '\0'; i++) {
+		dest[i] = src[i];
+	}
+	dest[i] = '\0';
+	return dest;
+}
+
+static char* chars_strcat(char* dest, const char* src) {
+	char* d = dest;
+	if (!dest || !src) return dest;
+
+	while (*d != '\0') d++;
+	while (*src != '\0') *d++ = *src++;
+	*d = '\0';
+	return dest;
+}
+
+static char* chars_append(char* dest, size_t dest_size, const char* src) {
+	if (!dest || !src || dest_size == 0) return NULL;
+	char* d = dest;
+	size_t used = 0;
+	while (*d != '\0' && used < dest_size) {
+		d++;
+		used++;
+	}
+	if (used >= dest_size) return NULL;
+	while (*src != '\0' && used < dest_size - 1) {
+		*d++ = *src++;
+		used++;
+	}
+	*d = '\0';
+	if (*src != '\0') return NULL;
+	return dest;
+}
+
+static char* ints_array_to_string(const int64_t* arr, int count, const char* sep) {
+	if (!arr || count <= 0 || !sep) return NULL;
+	size_t sep_len = strlen(sep);
+	size_t total_len = 0;
+	for (int i = 0; i < count; i++) {
+		char temp[32];
+		int len = snprintf(temp, sizeof(temp), "%lld", arr[i]);
+		if (len < 0) return NULL;
+		total_len += (size_t)len;
+		if (i < count - 1) total_len += sep_len;
+	}
+	char* result = (char*)malloc(total_len + 1);
+	if (!result) return NULL;
+	result[0] = '\0';
+	for (int i = 0; i < count; i++) {
+		char temp[32];
+		snprintf(temp, sizeof(temp), "%lld", arr[i]);
+		chars_append(result, sizeof(result), temp);
+		if (i < count - 1) chars_append(result, sizeof(result), sep);
+	}
+	return result;
+}
+
+static char* ints_varargs_to_string(const char* sep, int count, ...) {
+	if (!sep || count <= 0) return NULL;
+	long long* arr = (long long*)malloc(sizeof(long long) * count);
+	if (!arr) return NULL;
+	va_list args;
+	va_start(args, count);
+	for (int i = 0; i < count; i++) {
+		arr[i] = va_arg(args, long long);
+	}
+	va_end(args);
+	char* result = ints_array_to_string(arr, count, sep);
+	free(arr);
+	return result;
+}
+
+static const char* detectPlatformCompileString() {
+	#if defined(__WINRT__)
+		return "winrt";
+	#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+		return "win32";
+	#elif defined(__APPLE__) && defined(__MACH__)
+	#include <TargetConditionals.h>
+	#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+		return "ios-simulator";
+	#elif TARGET_OS_IPHONE
+		return "ios";
+	#else
+		return "macos";
+	#endif
+	#elif defined(__ANDROID__)
+		return "android";
+	#elif defined(__linux__)
+		return "linux";
+	#elif defined(__unix__)
+		return "unix";
+	#elif defined(__SWITCH__)
+		return "nintendo-switch";
+	#elif defined(__ORBIS__) || defined(__PS4__)
+		return "ps4";
+	#elif defined(__PROSPERO__) || defined(__PS5__)
+		return "ps5";
+	#elif defined(_DURANGO) || defined(__XBOX_ONE__)
+		return "xbox-one";
+	#elif defined(_SCARLETT) || defined(__XBOX_SERIES_X__)
+		return "xbox-series-x";
+	#elif defined(__STEAM_DECK__)
+		return "steam-deck";
+	#else
+		return NULL;
+	#endif
+}
+
+static const char* detectPlatformRuntimeString() {
+	#if defined(_WIN32)
+		return "windows";
+	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+		static char buffer[64];
+		struct utsname sysinfo;
+		if (uname(&sysinfo) == 0) {
+			if (strstr(sysinfo.sysname, "Linux")) {
+				if (getenv("ANDROID_ROOT") != NULL) return "android";
+				return "linux";
+			}
+			if (strstr(sysinfo.sysname, "Darwin")) return "macos";
+			if (strstr(sysinfo.sysname, "Unix")) return "unix";
+		}
+		return "unknown-unix";
+	#else
+		return "unknown";
+	#endif
+}
+
+static const char* getOSVersionString() {
+	#if defined(_WIN32)
+		const char* ver_str = "unknown";
+		if (IsWindows10OrGreater()) ver_str = "Windows 10 or later";
+		else if (IsWindows8Point1OrGreater()) ver_str = "Windows 8.1";
+		else if (IsWindows8OrGreater()) ver_str = "Windows 8";
+		else if (IsWindows7SP1OrGreater()) ver_str = "Windows 7 SP1";
+		else if (IsWindows7OrGreater()) ver_str = "Windows 7";
+		else ver_str = "Older than Windows 7";
+	return ver_str;
+	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+		static char version[128];
+		struct utsname sysinfo;
+		if (uname(&sysinfo) == 0) {
+			snprintf(version, sizeof(version), "%s", sysinfo.release);
+			return version;
+		}
+		return "unknown";
+	#else
+		return "unknown";
+	#endif
+}
+
+static const char* getArchitectureString() {
+	#if defined(_WIN64) || defined(__x86_64__) || defined(__amd64__)
+		return "x86_64";
+	#elif defined(_WIN32)
+		return "x86";
+	#elif defined(__aarch64__)
+		return "arm64";
+	#elif defined(__arm__)
+		return "arm";
+	#elif defined(__ppc64__)
+		return "ppc64";
+	#elif defined(__ppc__)
+		return "ppc";
+	#else
+		return "unknown";
+	#endif
+}
+
+static const char* detectVirtualizationString() {
+#if defined(__linux__)
+	FILE* f = fopen("/proc/1/cgroup", "r");
+	if (f) {
+		char line[256];
+		while (fgets(line, sizeof(line), f)) {
+			if (strstr(line, "docker") || strstr(line, "containerd")) {
+				fclose(f);
+				return "docker";
+			}
+			if (strstr(line, "kubepods")) {
+				fclose(f);
+				return "kubernetes";
+			}
+		}
+		fclose(f);
+	}
+	FILE* cpuinfo = fopen("/proc/version", "r");
+	if (cpuinfo) {
+		char buf[256];
+		if (fgets(buf, sizeof(buf), cpuinfo)) {
+			if (strstr(buf, "Microsoft")) {
+				fclose(cpuinfo);
+				return "wsl";
+			}
+		}
+		fclose(cpuinfo);
+	}
+	return "none";
+#elif defined(_WIN32)
+	return "unknown";
+#else
+	return "unknown";
+#endif
+}
+
+static const char* getGpuInfoString() {
+#if defined(_WIN32)
+	static char gpu[128] = "unknown";
+	DISPLAY_DEVICE dd;
+	ZeroMemory(&dd, sizeof(dd));
+	dd.cb = sizeof(dd);
+	if (EnumDisplayDevices(NULL, 0, &dd, 0)) {
+		snprintf(gpu, sizeof(gpu), "%ws", dd.DeviceString);
+	}
+	return gpu;
+#elif defined(__linux__) && !defined(__ANDROID__)
+	FILE* fp = popen("lspci | grep -i 'vga\\|3d\\|2d'", "r");
+	static char gpu[256] = "unknown";
+	if (fp) {
+		if (fgets(gpu, sizeof(gpu), fp)) {
+			gpu[strcspn(gpu, "\n")] = 0;
+		}
+		pclose(fp);
+	}
+	return gpu;
+#else
+	return "unknown";
+#endif
+}
+
+static int getCpuCores() {
+#if defined(_WIN32)
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	return sysinfo.dwNumberOfProcessors;
+#elif defined(_SC_NPROCESSORS_ONLN)
+	return (int)sysconf(_SC_NPROCESSORS_ONLN);
+#else
+	return 1;
+#endif
+}
+
+static void getMemoryInfoInts(int64_t* total, int64_t* free) {
+#if defined(_WIN32)
+	MEMORYSTATUSEX statex;
+	statex.dwLength = sizeof(statex);
+	if (GlobalMemoryStatusEx(&statex)) {
+		*total = statex.ullTotalPhys;
+		*free = statex.ullAvailPhys;
+	}
+	else {
+		*total = *free = 0;
+	}
+#elif defined(__linux__) && !defined(__APPLE__)
+	struct sysinfo info;
+	if (sysinfo(&info) == 0) {
+		*total = (int64_t)info.totalram * info.mem_unit;
+		*free = (int64_t)info.freeram * info.mem_unit;
+	}
+	else {
+		*total = *free = 0;
+	}
+#elif defined(__APPLE__)
+	*total = *free = 0;
+#else
+	* total = *free = 0;
+#endif
+}
+
+#ifdef _WIN32
+const char* GetPathFullName(char* dst, const char* path) {
+	char* buffer = malloc(MAX_PATH * sizeof(char));
+	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
+	if (length == 0) {
+		return "";
+	}
+	dst = buffer;
+	return buffer;
+}
+#elif defined(__unix__) || defined(__APPLE__)
+const char* GetPathFullName(char* dst, const char* path) {
+	char* ret = realpath(path, dst);
+	return ret;
+}
+#endif
+
+static const char* get_path_separator() {
+#ifdef _WIN32
+	return "\\";
+#else
+	return "/";
+#endif
+}
+
+static const char* get_newline_separator() {
+#ifdef _WIN32
+	return "\r\n";
+#else
+	return "\n";
+#endif
+}
+
+#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+static const char* switch_get_username() { return "SwitchUser"; }
+static const char* switch_get_temp_folder() { return "sdmc:/temp"; }
+static const char* switch_get_home_folder() { return "sdmc:/"; }
+#endif
+
+#if defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+static const char* ps5_get_username() { return "PS5User"; }
+static const char* ps5_get_temp_folder() { return "/data/temp"; }
+static const char* ps5_get_home_folder(vid) { return "/data/home"; }
+#endif
+
+#if defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+static const char* xbox_get_username() { return "XboxUser"; }
+static const char* xbox_get_temp_folder() { return "D:/Temp"; }
+static const char* xbox_get_home_folder() { return "D:/Home"; }
+#endif
+
+static const char* get_system_username() {
+	static char username[256] = { 0 };
+	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+		return switch_get_username();
+	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+		return ps5_get_username();
+	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+		return xbox_get_username();
+	#elif defined(_WIN32)
+		DWORD size = sizeof(username);
+		if (GetUserNameA(username, &size)) return username;
+	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+		const char* env_user = getenv("USER");
+		if (env_user && *env_user) { strncpy(username, env_user, sizeof(username) - 1); return username; }
+		struct passwd* pw = getpwuid(getuid());
+		if (pw && pw->pw_name) { strncpy(username, pw->pw_name, sizeof(username) - 1); return username; }
+	#endif
+		return "";
+}
+
+static const char* get_temp_folder() {
+	static char temp_path[512] = { 0 };
+	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+		return switch_get_temp_folder();
+	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+		return ps5_get_temp_folder();
+	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+		return xbox_get_temp_folder();
+	#elif defined(_WIN32)
+		DWORD len = GetTempPathA(sizeof(temp_path), temp_path);
+		if (len > 0 && len < sizeof(temp_path)) return temp_path;
+	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+		const char* tmp = getenv("TMPDIR");
+		if (!tmp) tmp = getenv("TEMP");
+		if (!tmp) tmp = getenv("TMP");
+		if (!tmp) tmp = "/tmp";
+		strncpy(temp_path, tmp, sizeof(temp_path) - 1);
+		return temp_path;
+	#endif
+		return ".";
+}
+
+static const char* get_home_folder(void) {
+	static char home_path[512] = { 0 };
+	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+		return switch_get_home_folder();
+	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+		return ps5_get_home_folder();
+	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+		return xbox_get_home_folder();
+	#elif defined(_WIN32)
+		if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, home_path))) return home_path;
+		const char* env_home = getenv("USERPROFILE");
+		if (env_home && *env_home) { chars_strncpy(home_path, env_home, sizeof(home_path) - 1); return home_path; }
+	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+		const char* home = getenv("HOME");
+		if (home && *home) { chars_strncpy(home_path, home, sizeof(home_path) - 1); return home_path; }
+		struct passwd* pw = getpwuid(getuid());
+		if (pw && pw->pw_dir) { chars_strncpy(home_path, pw->pw_dir, sizeof(home_path) - 1); return home_path; }
+	#endif
+	return ".";
+}
 
 static int is_printable_text(const unsigned char* data, size_t len) {
 	for (size_t i = 0; i < len; i++) {
@@ -104,22 +497,6 @@ static unsigned char* base64_decode(const char* data, size_t* out_len) {
 	}
 	*out_len = j;
 	return decoded;
-}
-
-static void chars_append(char* dest, size_t dest_size, const char* src) {
-	if (!dest || !src || dest_size == 0) {
-		return;
-	}
-	size_t dest_len = strlen(dest);
-	size_t src_len = strlen(src);
-	if (dest_len < dest_size - 1) {
-		size_t copy_len = dest_size - dest_len - 1;
-		if (src_len < copy_len) {
-			copy_len = src_len;
-		}
-		memcpy(dest + dest_len, src, copy_len);
-		dest[dest_len + copy_len] = '\0';
-	}
 }
 
 static char* joinLocales(const SDL_Locale* locales) {
@@ -410,7 +787,7 @@ const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimi
 			if (!result) return NULL;
 			result[0] = '\0';
 			for (game_prefnode* n = cur->next; n; n = n->next) {
-				chars_append(result, total_len + 1, n->key );
+				chars_append(result, total_len + 1, n->key);
 				if (n->next) chars_append(result, total_len + 1, delimiter);
 			}
 			return result;
@@ -484,6 +861,88 @@ void FreePrefs(int64_t handle) {
 		free(tmp);
 	}
 	free(prefs);
+}
+
+const char* Load_SDL_RW_FileToChars(const char* filename) {
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (!rw) {
+		return NULL;
+	}
+	char* buffer = NULL;
+	size_t totalSize = 0;
+	size_t capacity = 0;
+	char temp[MAX_CHUNK_SIZE];
+	size_t bytesRead;
+	while ((bytesRead = SDL_RWread(rw, temp, 1, MAX_CHUNK_SIZE)) > 0) {
+		if (totalSize + bytesRead + 1 > capacity) {
+			size_t newCapacity = (capacity == 0) ? bytesRead + 1 : capacity * 2;
+			if (newCapacity < totalSize + bytesRead + 1) {
+				newCapacity = totalSize + bytesRead + 1;
+			}
+			char* newBuffer = realloc(buffer, newCapacity);
+			if (!newBuffer) {
+				free(buffer);
+				SDL_RWclose(rw);
+				return NULL;
+			}
+			buffer = newBuffer;
+			capacity = newCapacity;
+		}
+		memcpy(buffer + totalSize, temp, bytesRead);
+		totalSize += bytesRead;
+	}
+	if (buffer) {
+		buffer[totalSize] = '\0';
+	}
+	SDL_RWclose(rw);
+	return buffer;
+}
+
+const uint8_t* Load_SDL_RW_FileToBytes(const char* filename) {
+	if (!filename) {
+		return NULL;
+	}
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (!rw) {
+		return NULL;
+	}
+	Sint64 fileSize = SDL_RWsize(rw);
+	if (fileSize <= 0) {
+		SDL_RWclose(rw);
+		return NULL;
+	}
+	uint8_t* buffer = (uint8_t*)malloc(fileSize);
+	if (!buffer) {
+		SDL_RWclose(rw);
+		return NULL;
+	}
+	size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
+	SDL_RWclose(rw);
+	if (totalRead != (size_t)fileSize) {
+		free(buffer);
+		return NULL;
+	}
+	return buffer;
+}
+
+bool Load_SDL_RW_FileExists(const char* filename) {
+	if (!filename || !*filename) return false;
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (rw) {
+		SDL_RWclose(rw);
+		return true;
+	}
+	return false;
+}
+
+bool FileExists(const char* filename) {
+	if (!filename || !*filename) return false;
+	FILE* f = fopen(filename, "rb");
+	if (f) {
+		fclose(f);
+		return true;
+	}
+	return false;
 }
 
 void Load_SDL_Cleanup() {
@@ -689,6 +1148,14 @@ static void OnSoundFinished(int channel) {
 
 static void OnMusicFinished(void) {
 	musicFinishedEvent = true;
+	if (g_isLooping && g_currentMusic && g_loopCount != 0) {
+		if (g_loopCount > 0) g_loopCount--; 
+		Mix_PlayMusic(g_currentMusic->handle, 0);
+	}
+	else {
+		g_isLooping = false;
+		g_currentMusic = NULL;
+	}
 }
 
 int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const int flags , const bool debug) {
@@ -1187,50 +1654,41 @@ void FreeGameData(const int64_t handle) {
 	free(fs);
 }
 
-#ifdef _WIN32
-const char* GetPathFullName(char* dst, const char* path) {
-	char buffer[MAX_PATH];
-	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
-	if(length == 0) {
-		return "";
-	}
-	dst = buffer;
-	return buffer;
-}
-#elif defined(__unix__) || defined(__APPLE__)
-const char* GetPathFullName(char* dst, const char* path) {
-	char* ret = realpath(path, dst);
-	return ret;
-}
-#endif
-
 const char* GetSystemProperty(const char* key)
 {
-#if defined(__SWITCH__)
+	if (strcmp(key, "os.sys") == 0) {
+		const char* platform = detectPlatformCompileString();
+		if (!platform) {
+			platform = detectPlatformRuntimeString();
+		}
+		return platform;
+	}
 	if (strcmp(key, "os.name") == 0)
-		return "horizon";
-	if (strcmp(name, "os.arch") == 0)
-		return "aarch64";
-#elif defined(__WINRT__)
-	if (strcmp(name, "os.name") == 0)
-		return "uwp";
-	if (strcmp(name, "os.arch") == 0)
-		return "x86_64";
-#else
-	if (strcmp(key, "os.name") == 0)
-		return "unknown";
+		return getOSVersionString();
 	if (strcmp(key, "os.arch") == 0)
-		return "x86_64";
-#endif
+		return getArchitectureString();
+	if (strcmp(key, "os.virt") == 0)
+		return detectVirtualizationString();
+	if (strcmp(key, "os.gpu") == 0)
+		return getGpuInfoString();
+	if (strcmp(key, "os.gpu.cores") == 0) 	
+		return ints_varargs_to_string(",",1,getCpuCores());
+	if (strcmp(key, "os.memory") == 0) {
+		int64_t totalRAM = 0, freeRAM = 0;
+		getMemoryInfoInts(&totalRAM, &freeRAM);
+		return ints_varargs_to_string(",", 2, totalRAM, freeRAM);
+	}
 	if (strcmp(key, "line.separator") == 0)
-		return "\n";
+		return get_newline_separator();
+	if (strcmp(key, "file.separator") == 0)
+		return get_path_separator();
 	if (strcmp(key, "java.io.tmpdir") == 0)
-		return "temp";
+		return get_temp_folder();
 	if (strcmp(key, "user.home") == 0)
-		return "home";
+		return get_home_folder();
 	if (strcmp(key, "user.name") == 0)
-		return "user";
-	return "null";
+		return get_system_username();
+	return "";
 }
 
 const char* Load_SDL_GetPreferredLocales()
@@ -1601,8 +2059,9 @@ int* Load_SDL_GetWindowSize(const int64_t window)
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(win, &width, &height);
-	int result[2] = { width,height };
-	return result;
+	global_result[0] = width;
+	global_result[1] = height;
+	return global_result;
 }
 
 int Load_SDL_LockSurface(const int64_t handle)
@@ -1699,8 +2158,9 @@ int* Load_SDL_GetSurfaceSize(const int64_t handle)
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return 0;
-	int rect[] = {surface->surface_data->w, surface->surface_data->h };
-	return rect;
+	global_result[0] = surface->surface_data->w;
+	global_result[1] = surface->surface_data->h;
+	return global_result;
 }
 
 int* Load_SDL_GetPixels(const int64_t handle, const int x, const int y, const int w, const int h)
@@ -1903,8 +2363,11 @@ int* Load_SDL_GetClipRect(const int64_t handle)
 	if (!surface) return 0;
 	SDL_Rect currentClip;
 	SDL_GetClipRect(surface->surface_data, &currentClip);
-	int rect[] = {currentClip.x,currentClip.y,currentClip.w,currentClip.h};
-	return rect;
+	global_result[0] = currentClip.x;
+	global_result[1] = currentClip.y;
+	global_result[2] = currentClip.w;
+	global_result[3] = currentClip.h;
+	return global_result;
 }
 
 int32_t Load_SDL_GetFormat(const int64_t handle) {
@@ -2162,8 +2625,9 @@ int* Call_SDL_GetWindowSize()
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(window, &width, &height);
-	int result[2] = { width,height };
-	return result;
+	global_result[0] = width;
+	global_result[1] = height;
+	return global_result;
 }
 
 void Call_SDL_MaximizeWindow()
@@ -2383,31 +2847,85 @@ char* Load_SDL_GetVersion(char* data)
 	return data;
 }
 
+int64_t Load_SDL_Mix_LoadMUSFromMem(void* musData)
+{
+	if (!musData) return 0;
+	SDL_RWops* buffer = SDL_RWFromMem(musData, sizeof(musData));
+	Mix_Music* mix = Mix_LoadMUS_RW(buffer, true);
+	if (!mix) {
+		return 0;
+	}
+	game_music* music = malloc(sizeof(game_music));
+	if (!music) return 0;
+	music->handle = mix;
+	if (!music->handle) {
+		fprintf(stderr, "Mix_LoadMUS_RW Error: %s\n", Mix_GetError());
+		free(music);
+		return 0;
+	}
+	music->loopCount = 0;
+	return (intptr_t)music;
+}
+
 int64_t Load_SDL_Mix_LoadMUS(const char* filename)
 {
-	Mix_Music* mix = Mix_LoadMUS(filename);
-	if (!mix) {
-		return -1;
+	if (!filename) return 0;
+	game_music* music = malloc(sizeof(game_music));
+	if (!music) return 0;
+	music->handle = Mix_LoadMUS(filename);
+	if (!music->handle) {
+		fprintf(stderr, "Mix_LoadMUS Error: %s\n", Mix_GetError());
+		free(music);
+		return 0;
 	}
-	return (intptr_t)mix;
+	music->loopCount = 0;
+	return (intptr_t)music;
 }
 
 void Load_SDL_Mix_PlayMusic(const int64_t handle, const bool looping)
 {
-	Mix_Music* mix = (Mix_Music*)handle;
-	if (!mix) {
+	game_music* music = (game_music*)handle;
+	if (!music) {
 		return;
 	}
-	Mix_PlayMusic(mix, looping ? -1 : 0);
+	int loopCount = looping ? -1 : 0;
+	Mix_PlayMusic(music->handle, loopCount);
+	music->loopCount = loopCount;
+	g_currentMusic = music;
+	g_loopCount = loopCount;
+	g_isLooping = (loopCount < 0 || loopCount > 0);
+}
+
+bool Load_SDL_Mix_IsLoopingMusic() {
+	return g_isLooping;
 }
 
 void Load_SDL_Mix_PlayFadeInMusic(const int64_t handle, const bool looping)
 {
-	Mix_Music* mix = (Mix_Music*)handle;
-	if (!mix) {
+	game_music* music = (game_music*)handle;
+	if (!music) {
 		return;
 	}
-	Mix_FadeInMusic(mix, looping ? -1 : 0, fade_time);
+	Mix_FadeInMusic(music->handle, looping ? -1 : 0, fade_time);
+}
+
+float Load_SDL_Mix_GetMusicPosition(const int64_t handle)
+{
+	game_music* music = (game_music*)handle;
+	if (!music) {
+		return -1.0;
+	}
+	#if SDL_MIXER_VERSION_ATLEAST(2,6,0)
+		if (music && music->handle) {
+			double pos = Mix_GetMusicPosition(music->handle);
+			if (pos >= 0) return pos;
+		}
+	#endif
+		return -1.0; 
+}
+
+bool Load_SDL_Mix_PlayingMusic() {
+	return Mix_PlayingMusic() != 0;
 }
 
 void Load_SDL_Mix_PlayMusicFadeStop()
@@ -2415,7 +2933,7 @@ void Load_SDL_Mix_PlayMusicFadeStop()
 	Mix_FadeOutMusic(fade_time);
 }
 
-void Load_SDL_MIX_SetPosition(const float position)
+void Load_SDL_MIX_SetMusicPosition(const float position)
 {
 	Mix_RewindMusic();
 	Mix_SetMusicPosition(position);
@@ -2444,15 +2962,18 @@ void Load_SDL_Mix_ResumeMusic()
 void Load_SDL_Mix_HaltMusic()
 {
 	Mix_HaltMusic();
+	g_isLooping = false;
+	g_currentMusic = NULL;
 }
 
 void Load_SDL_Mix_DisposeMusic(const int64_t handle)
 {
-	Mix_Music* mix = (Mix_Music*)handle;
-	if (!mix) {
+	game_music* music = (game_music*)handle;
+	if (!music) {
 		return;
 	}
-	Mix_FreeMusic(mix);
+	Mix_FreeMusic(music->handle);
+	free(music);
 }
 
 int64_t Load_SDL_Mix_LoadSound(const char* filename)
@@ -2535,7 +3056,7 @@ int Load_SDL_Mix_SetVolume(const int channel, const float volume)
 
 int Load_SDL_Mix_GetVolume(const int channel)
 {
-	return Mix_Volume(channel, -1);
+	return (float)Mix_Volume(channel, -1) * MIX_MAX_VOLUME;
 }
 
 int Load_SDL_Mix_SetPan(const int channel, const float pan)
@@ -2575,6 +3096,9 @@ void Load_SDL_Quit()
 {
 	FreeTempController();
 	FreeTempContext();
+	Mix_HookMusicFinished(NULL);
+	Mix_ChannelFinished(NULL);
+	Mix_CloseAudio();
 	Call_SDL_DestroyWindow();
 	Mix_Quit();
 	SDL_Quit();
@@ -3133,16 +3657,16 @@ void Load_GL_GenFramebuffers(const int n,const void* buffers)
 
 char* Load_GL_GetActiveAttrib(const int program, const int index, const void* size, const void* type)
 {
-	char cname[2048];
-	glGetActiveAttrib(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, cname);
-	return cname;
+	memset(global_cname, '\0', sizeof(global_cname));
+	glGetActiveAttrib(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, global_cname);
+	return global_cname;
 }
 
 char* Load_GL_GetActiveUniform(const int program, const int index, const void* size, const void* type)
 {
-	char cname[2048];
-	glGetActiveUniform(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, cname);
-	return cname;
+	memset(global_cname, '\0', sizeof(global_cname));
+	glGetActiveUniform(program, index, 2048, NULL, (GLint*)size, (GLenum*)type, global_cname);
+	return global_cname;
 }
 
 int Load_GL_GetAttribLocation(const int program, const char* name)
@@ -3209,10 +3733,10 @@ void Load_GL_GetProgramiv(int program, int pname, const void* params)
 
 char* Load_GL_GetProgramInfoLog(const int program)
 {
-	char info[1024 * 10]; 
+	memset(global_info, '\0', sizeof(global_info));
 	int length = 0;
-	glGetProgramInfoLog(program, 1024 * 10, &length, info);
-	return info;
+	glGetProgramInfoLog(program, 1024 * 10, &length, global_info);
+	return global_info;
 }
 
 const char* Load_GL_GetProgramInfoLogs(const int program, const int bufsize, const void* length, const void* infolog)
@@ -3239,10 +3763,10 @@ void Load_GL_GetShaderiv(const int shader, const int pname, const void* params)
 
 char* Load_GL_GetShaderInfoLog(const int shader)
 {
-	char info[1024 * 10]; 
+	memset(global_info, '\0', sizeof(global_info));
 	int length = 0;
-	glGetShaderInfoLog(shader, 1024 * 10, &length, info);
-	return info;
+	glGetShaderInfoLog(shader, 1024 * 10, &length, global_info);
+	return global_info;
 }
 
 const char* Load_GL_GetShaderInfoLogs(const int shader, const int bufsize, const void* length, const void* infolog)
@@ -3627,86 +4151,3 @@ void Load_GL_GetShaderSource(const int shader, const int bufSize, void* length, 
 {
 	glGetShaderSource(shader, bufSize, (GLsizei*)length, (GLchar*)source);
 }
-
-const char* Load_SDL_RW_FileToChars(const char* filename) {
-	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
-	if (!rw) {
-		return NULL;
-	}
-	char* buffer = NULL;
-	size_t totalSize = 0;
-	size_t capacity = 0;
-	char temp[MAX_CHUNK_SIZE];
-	size_t bytesRead;
-	while ((bytesRead = SDL_RWread(rw, temp, 1, MAX_CHUNK_SIZE)) > 0) {
-		if (totalSize + bytesRead + 1 > capacity) {
-			size_t newCapacity = (capacity == 0) ? bytesRead + 1 : capacity * 2;
-			if (newCapacity < totalSize + bytesRead + 1) {
-				newCapacity = totalSize + bytesRead + 1;
-			}
-			char* newBuffer = realloc(buffer, newCapacity);
-			if (!newBuffer) {
-				free(buffer);
-				SDL_RWclose(rw);
-				return NULL;
-			}
-			buffer = newBuffer;
-			capacity = newCapacity;
-		}
-		memcpy(buffer + totalSize, temp, bytesRead);
-		totalSize += bytesRead;
-	}
-	if (buffer) {
-		buffer[totalSize] = '\0';
-	}
-	SDL_RWclose(rw);
-	return buffer;
-}
-
-const uint8_t* Load_SDL_RW_FileToBytes(const char* filename) {
-	if (!filename) {
-		return NULL;
-	}
-	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
-	if (!rw) {
-		return NULL;
-	}
-	Sint64 fileSize = SDL_RWsize(rw);
-	if (fileSize <= 0) {
-		SDL_RWclose(rw);
-		return NULL;
-	}
-	uint8_t* buffer = (uint8_t*)malloc(fileSize);
-	if (!buffer) {
-		SDL_RWclose(rw);
-		return NULL;
-	}
-	size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
-	SDL_RWclose(rw);
-	if (totalRead != (size_t)fileSize) {
-		free(buffer);
-		return NULL;
-	}
-	return buffer;
-}
-
-bool Load_SDL_RW_FileExists(const char* filename) {
-	if (!filename || !*filename) return false;
-	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
-	if (rw) {
-		SDL_RWclose(rw);
-		return true;
-	}
-	return false;
-}
-
-bool FileExists(const char* filename) {
-	if (!filename || !*filename) return false;
-	FILE* f = fopen(filename, "rb");
-	if (f) {
-		fclose(f);
-		return true;
-	}
-	return false;
-}
-

@@ -133,14 +133,12 @@ public final class SDLSurface implements LRelease {
 		final RectI rect = new RectI();
 		int[] temp_rect = SDLCall.getSurfaceClipRect(_surfaceHandle);
 		rect.set(temp_rect[0], temp_rect[1], temp_rect[2], temp_rect[3]);
-		temp_rect = null;
 		return rect;
 	}
 
 	public RangeI getSize() {
 		int[] temp_rect = SDLCall.getSurfaceSize(_surfaceHandle);
 		final RangeI size = new RangeI(temp_rect[0], temp_rect[1]);
-		temp_rect = null;
 		return size;
 	}
 

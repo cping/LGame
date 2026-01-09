@@ -21,75 +21,28 @@
 package loon.cport;
 
 import loon.SoundImpl;
-import loon.cport.bridge.SDLMusic;
 
-public class CMusic extends SoundImpl<Object> {
-
-	private SDLMusic _music;
-
-	public CMusic(String path) {
-		_music = SDLMusic.createMusic(path);
-	}
-
-	public CMusic(byte[] bytes) {
-		_music = SDLMusic.createMusic(bytes);
-	}
-
-	public void pause() {
-		_music.pause();
-	}
-
-	public boolean isLooping() {
-		return _music.isLooping();
-	}
-
-	public float getVolume() {
-		return _music.getVolume();
-	}
-
-	public void setPan(float pan, float volume) {
-		_music.setPosition(pan);
-		_music.setVolume(volume);
-	}
-
-	public void setPosition(float position) {
-		_music.setPosition(position);
-	}
-
-	public float getPosition() {
-		return _music.getPosition();
-	}
-
-	public SDLMusic getSDLMusic() {
-		return _music;
-	}
+public class CEmptySound extends SoundImpl<Object> {
 
 	@Override
 	protected boolean playImpl() {
-		if (!isPlaying()) {
-			_music.play(looping);
-		}
-		return isPlaying();
+		return false;
 	}
 
 	@Override
 	protected void stopImpl() {
-		_music.stop();
 	}
 
 	@Override
-	protected void setLoopingImpl(boolean l) {
-		looping = l;
+	protected void setLoopingImpl(boolean looping) {
 	}
 
 	@Override
 	protected void setVolumeImpl(float volume) {
-		_music.setVolume(volume);
 	}
 
 	@Override
 	protected void releaseImpl() {
-		_music.close();
 	}
 
 }

@@ -440,6 +440,9 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_Mix_LoadMUS")
 	public final static native long loadMUS(String filename);
 
+	@Import(name = "Load_SDL_Mix_LoadMUSFromMem")
+	public final static native long loadMUS(byte[] bytes);
+
 	@Import(name = "Load_SDL_Mix_PlayMusic")
 	public final static native void playMusic(long handle, boolean looping);
 
@@ -449,14 +452,23 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_Mix_PlayMusicFadeStop")
 	public final static native void playMusicFadeStop();
 
-	@Import(name = "Load_SDL_MIX_SetPosition")
-	public final static native void setPosition(float position);
+	@Import(name = "Load_SDL_MIX_SetMusicPosition")
+	public final static native void setMusicPosition(float position);
+
+	@Import(name = "Load_SDL_Mix_GetMusicPosition(")
+	public final static native float getMusicPosition(long handle);
 
 	@Import(name = "Load_SDL_Mix_SetMusicVolume")
 	public final static native void setMusicVolume(float volume);
 
 	@Import(name = "Load_SDL_Mix_GetMusicVolume")
 	public final static native float getMusicVolume();
+
+	@Import(name = "Load_SDL_Mix_PlayingMusic")
+	public final static native boolean isPlayingMusic();
+
+	@Import(name = "Load_SDL_Mix_IsLoopingMusic")
+	public final static native boolean isLoopingMusic();
 
 	@Import(name = "Load_SDL_Mix_PauseMusic")
 	public final static native void pauseMusic();

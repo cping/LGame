@@ -50,11 +50,11 @@ public final class STBFont implements LRelease {
 			path += ".ttf";
 		}
 		String baseFile = path;
-		if (!SDLCall.fileExists(path)) {
+		if (!(SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
 			baseFile = PathUtils.getCombinePaths(LSystem.getPathPrefix(), path);
-			if (!SDLCall.fileExists(baseFile)) {
+			if (!(SDLCall.fileExists(baseFile) || SDLCall.rwFileExists(baseFile))) {
 				baseFile = path;
-				if (SDLCall.fileExists(baseFile)) {
+				if ((SDLCall.fileExists(baseFile) || SDLCall.rwFileExists(baseFile))) {
 					return true;
 				}
 				return false;
@@ -137,7 +137,6 @@ public final class STBFont implements LRelease {
 	public RectI getCodepointBitmapBox(float fontsize, int point) {
 		int[] rect = STBCall.getCodepointBitmapBox(_fontHandle, fontsize, point);
 		_codepointBitmapBox.set(rect[0], rect[1], rect[2], rect[3]);
-		rect = null;
 		return _codepointBitmapBox;
 	}
 
@@ -146,7 +145,6 @@ public final class STBFont implements LRelease {
 		_metric.ascent = ms[0];
 		_metric.descent = ms[1];
 		_metric.lineGap = ms[2];
-		ms = null;
 		return _metric;
 	}
 
@@ -154,7 +152,6 @@ public final class STBFont implements LRelease {
 		int[] ms = STBCall.getCharsSize(_fontHandle, fontsize, text);
 		_textSize.width = ms[0];
 		_textSize.height = ms[1];
-		ms = null;
 		return _textSize;
 	}
 
@@ -162,7 +159,6 @@ public final class STBFont implements LRelease {
 		int[] ms = STBCall.getCharSize(_fontHandle, fontsize, point);
 		_charSize.width = ms[0];
 		_charSize.height = ms[1];
-		ms = null;
 		return _charSize;
 	}
 
