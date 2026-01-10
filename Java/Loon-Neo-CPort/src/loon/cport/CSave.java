@@ -39,7 +39,7 @@ public class CSave implements Save {
 
 	CSave(Log log, String storage) {
 		this.log = log;
-		this.storageFileName = storage;
+		this.storageFileName = StringUtils.isEmpty(storage) ? LSystem.getSystemAppName() : storage;
 		this.appName = StringUtils.isEmpty(LSystem.getSystemAppName()) ? PathUtils.getBaseFileName(storageFileName)
 				: LSystem.getSystemAppName();
 	}

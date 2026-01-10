@@ -20,32 +20,36 @@
  */
 package loon.cport;
 
-import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 
 import loon.Graphics;
-import loon.LGame;
+import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Pixmap;
+import loon.cport.bridge.STBFont;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
 import loon.font.TextWrap;
 import loon.geom.Dimension;
 import loon.opengl.GL20;
+import loon.opengl.TextureSource;
 import loon.utils.GLUtils;
 import loon.utils.MathUtils;
 import loon.utils.Scale;
 
 public class CGraphics extends Graphics {
-	protected CGraphics(LGame game, GL20 gl, Scale scale) {
-		super(game, gl, scale);
-		// TODO Auto-generated constructor stub
+
+	private final Dimension screenSize = new Dimension();
+
+	public CGraphics(final CGame game) {
+		super(game, new CGL20(), Scale.ONE);
+		screenSize.setSize(LSystem.viewSize);
 	}
 
 	public void registerFont(String name, String path) {
 		try {
-			CTextLayout.putSTBFont(name, game.assets().requireResource(path).createFont());
+			CTextLayout.putSTBFont(name, STBFont.create(path));
 		} catch (Exception e) {
 			game.reportError("Failed to load font [name=" + name + ", path=" + path + "]", e);
 		}
@@ -53,26 +57,33 @@ public class CGraphics extends Graphics {
 
 	@Override
 	public Dimension screenSize() {
-		// TODO Auto-generated method stub
-		return null;
+		return screenSize;
+	}
+
+	void onSizeChanged(int viewWidth, int viewHeight) {
+		if (!isAllowResize(viewWidth, viewHeight)) {
+			return;
+		}
+		screenSize.width = viewWidth / scale.factor;
+		screenSize.height = viewHeight / scale.factor;
+		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
+		viewportChanged(scale, viewWidth, viewHeight);
 	}
 
 	@Override
 	public TextLayout layoutText(String text, TextFormat format) {
-		// TODO Auto-generated method stub
-		return null;
+		return CTextLayout.layoutText(text, format);
 	}
 
 	@Override
 	public TextLayout[] layoutText(String text, TextFormat format, TextWrap wrap) {
-		// TODO Auto-generated method stub
-		return null;
+		return CTextLayout.layoutText(text, format, wrap);
 	}
 
 	@Override
 	protected Canvas createCanvasImpl(Scale scale, int pixelWidth, int pixelHeight) {
-		// TODO Auto-generated method stub
-		return null;
+		final Pixmap bitmap = new Pixmap(pixelWidth, pixelHeight, true);
+		return new CCanvas(this, new CImage(this, scale, bitmap, TextureSource.RenderCanvas));
 	}
 
 	void copyArea(Pixmap image, int x, int y, int width, int height, int dx, int dy) {
@@ -100,7 +111,6 @@ public class CGraphics extends Graphics {
 			gl.checkError("updateTexture");
 			return;
 		}
-		
 		Pixmap texImage = new Pixmap(texWidth, texHeight, hasAlpha);
 		texImage.drawPixmap(img, 0, 0);
 		if (height < texHeight - 1) {

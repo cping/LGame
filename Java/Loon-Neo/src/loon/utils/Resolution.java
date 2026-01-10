@@ -37,6 +37,26 @@ public class Resolution implements Comparable<Resolution> {
 		return new Resolution(160, 144);
 	}
 
+	public static Resolution XboxSeriesX() {
+		return new Resolution(3840, 2160);
+	}
+
+	public static Resolution XboxSeriesS() {
+		return new Resolution(2560, 1440);
+	}
+
+	public static Resolution XboxOne() {
+		return new Resolution(1920, 1080);
+	}
+
+	public static Resolution PS4() {
+		return new Resolution(1920, 1080);
+	}
+
+	public static Resolution PS5() {
+		return new Resolution(3840, 2160);
+	}
+
 	public static Resolution Switch() {
 		return new Resolution(1920, 1080);
 	}

@@ -20,6 +20,8 @@
  */
 package loon.cport.bridge;
 
+import loon.events.SysKey;
+
 public final class SDLKeyCode {
 
 	public static final int SDLK_SCANCODE_MASK = 1 << 30;
@@ -45,7 +47,7 @@ public final class SDLKeyCode {
 	public static final int SDLK_RIGHTPAREN = ')';
 	public static final int SDLK_ASTERISK = '*';
 	public static final int SDLK_PLUS = '+';
-	public static final int SDLK_COMMA = ';';
+	public static final int SDLK_COMMA = ',';
 	public static final int SDLK_MINUS = '-';
 	public static final int SDLK_PERIOD = '.';
 	public static final int SDLK_SLASH = '/';
@@ -59,7 +61,7 @@ public final class SDLKeyCode {
 	public static final int SDLK_7 = '7';
 	public static final int SDLK_8 = '8';
 	public static final int SDLK_9 = '9';
-	public static final int SDLK_COLON = ':';
+	public static final int SDLK_COLON = ')';
 	public static final int SDLK_SEMICOLON = ';';
 	public static final int SDLK_LESS = '<';
 	public static final int SDLK_EQUALS = '=';
@@ -121,7 +123,7 @@ public final class SDLKeyCode {
 	public static final int SDLK_END = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_END);
 	public static final int SDLK_PAGEDOWN = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_PAGEDOWN);
 	public static final int SDLK_RIGHT = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_RIGHT);
-	public static final int SDLK_LEFT = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_LEFT);
+	public final static int SDLK_LEFT = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_LEFT);
 	public static final int SDLK_DOWN = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_DOWN);
 	public static final int SDLK_UP = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_UP);
 	public static final int SDLK_NUMLOCKCLEAR = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_NUMLOCKCLEAR);
@@ -274,6 +276,188 @@ public final class SDLKeyCode {
 	public static final int SDLK_SOFTRIGHT = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_SOFTRIGHT);
 	public static final int SDLK_CALL = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_CALL);
 	public static final int SDLK_ENDCALL = SDL_SCANCODE_TO_KEYCODE(SDLScanCode.SDL_SCANCODE_ENDCALL);
+
+	public final static int getLoonKeyCode(int code) {
+		if (code == SDLK_UNKNOWN)
+			return SysKey.UNKNOWN;
+		if (code == SDLK_BACKSPACE)
+			return SysKey.BACKSPACE;
+		if (code == SDLK_TAB)
+			return SysKey.TAB;
+		if (code == SDLK_RETURN2 || code == SDLK_RETURN)
+			return SysKey.ENTER;
+		if (code == SDLK_ESCAPE)
+			return SysKey.ESCAPE;
+		if (code == SDLK_SPACE)
+			return SysKey.SPACE;
+		if (code == SDLK_PLUS)
+			return SysKey.PLUS;
+		if (code == SDLK_COMMA)
+			return SysKey.COMMA;
+		if (code == SDLK_MINUS)
+			return SysKey.MINUS;
+		if (code == SDLK_PERIOD)
+			return SysKey.PERIOD;
+		if (code == SDLK_SLASH)
+			return SysKey.SLASH;
+		if (code == SDLK_0)
+			return SysKey.NUM_0;
+		if (code == SDLK_1)
+			return SysKey.NUM_1;
+		if (code == SDLK_2)
+			return SysKey.NUM_2;
+		if (code == SDLK_3)
+			return SysKey.NUM_3;
+		if (code == SDLK_4)
+			return SysKey.NUM_4;
+		if (code == SDLK_5)
+			return SysKey.NUM_5;
+		if (code == SDLK_6)
+			return SysKey.NUM_6;
+		if (code == SDLK_7)
+			return SysKey.NUM_7;
+		if (code == SDLK_8)
+			return SysKey.NUM_8;
+		if (code == SDLK_9)
+			return SysKey.NUM_9;
+		if (code == SDLK_COLON || code == SDLK_SEMICOLON)
+			return SysKey.SEMICOLON;
+		if (code == SDLK_EQUALS)
+			return SysKey.EQUALS;
+		if (code == SDLK_AT)
+			return SysKey.AT;
+		if (code == SDLK_LEFTBRACKET)
+			return SysKey.LEFT_BRACKET;
+		if (code == SDLK_BACKSLASH)
+			return SysKey.BACKSLASH;
+		if (code == SDLK_RIGHTBRACKET)
+			return SysKey.RIGHT_BRACKET;
+		if (code == SDLK_BACKQUOTE)
+			return SysKey.BACK;
+		if (code == SDLK_A)
+			return SysKey.A;
+		if (code == SDLK_B)
+			return SysKey.B;
+		if (code == SDLK_C)
+			return SysKey.C;
+		if (code == SDLK_D)
+			return SysKey.D;
+		if (code == SDLK_E)
+			return SysKey.E;
+		if (code == SDLK_F)
+			return SysKey.F;
+		if (code == SDLK_G)
+			return SysKey.G;
+		if (code == SDLK_H)
+			return SysKey.H;
+		if (code == SDLK_I)
+			return SysKey.I;
+		if (code == SDLK_J)
+			return SysKey.J;
+		if (code == SDLK_K)
+			return SysKey.K;
+		if (code == SDLK_L)
+			return SysKey.L;
+		if (code == SDLK_M)
+			return SysKey.M;
+		if (code == SDLK_N)
+			return SysKey.N;
+		if (code == SDLK_O)
+			return SysKey.O;
+		if (code == SDLK_P)
+			return SysKey.P;
+		if (code == SDLK_Q)
+			return SysKey.Q;
+		if (code == SDLK_R)
+			return SysKey.R;
+		if (code == SDLK_S)
+			return SysKey.S;
+		if (code == SDLK_T)
+			return SysKey.T;
+		if (code == SDLK_U)
+			return SysKey.U;
+		if (code == SDLK_V)
+			return SysKey.V;
+		if (code == SDLK_W)
+			return SysKey.W;
+		if (code == SDLK_X)
+			return SysKey.X;
+		if (code == SDLK_Y)
+			return SysKey.Y;
+		if (code == SDLK_Z)
+			return SysKey.Z;
+		if (code == SDLK_DELETE)
+			return SysKey.FORWARD_DEL;
+		if (code == SDLK_LCTRL)
+			return SysKey.CONTROL_LEFT;
+		if (code == SDLK_RCTRL)
+			return SysKey.CONTROL_RIGHT;
+		if (code == SDLK_LSHIFT)
+			return SysKey.SHIFT_LEFT;
+		if (code == SDLK_RSHIFT)
+			return SysKey.SHIFT_RIGHT;
+		if (code == SDLK_F1)
+			return SysKey.NUM_1;
+		if (code == SDLK_F2)
+			return SysKey.NUM_2;
+		if (code == SDLK_F3)
+			return SysKey.NUM_3;
+		if (code == SDLK_F4)
+			return SysKey.NUM_4;
+		if (code == SDLK_F5)
+			return SysKey.NUM_5;
+		if (code == SDLK_F6)
+			return SysKey.NUM_6;
+		if (code == SDLK_F7)
+			return SysKey.NUM_7;
+		if (code == SDLK_F8)
+			return SysKey.NUM_8;
+		if (code == SDLK_F9)
+			return SysKey.NUM_9;
+		if (code == SDLK_F10)
+			return SysKey.NUM_0;
+		if (code == SDLK_F11)
+			return SysKey.DPAD_DOWN;
+		if (code == SDLK_F12)
+			return SysKey.DPAD_UP;
+		if (code == SDLK_INSERT)
+			return SysKey.INSERT;
+		if (code == SDLK_HOME)
+			return SysKey.HOME;
+		if (code == SDLK_PAGEDOWN)
+			return SysKey.PAGE_DOWN;
+		if (code == SDLK_PAGEUP)
+			return SysKey.PAGE_UP;
+		if (code == SDLK_END)
+			return SysKey.END;
+		if (code == SDLK_RIGHT)
+			return SysKey.RIGHT;
+		if (code == SDLK_LEFT)
+			return SysKey.LEFT;
+		if (code == SDLK_DOWN)
+			return SysKey.DOWN;
+		if (code == SDLK_UP)
+			return SysKey.UP;
+		if (code == SDLK_PAUSE)
+			return SysKey.MEDIA_PLAY_PAUSE;
+		if (code == SDLK_POWER)
+			return SysKey.POWER;
+		if (code == SDLK_MENU)
+			return SysKey.MENU;
+		if (code == SDLK_SELECT)
+			return SysKey.BUTTON_SELECT;
+		if (code == SDLK_STOP)
+			return SysKey.MEDIA_STOP;
+		if (code == SDLK_MUTE)
+			return SysKey.MUTE;
+		if (code == SDLK_CLEAR)
+			return SysKey.CLEAR;
+		if (code == SDLK_LALT)
+			return SysKey.ALT_LEFT;
+		if (code == SDLK_RALT)
+			return SysKey.ALT_RIGHT;
+		return SysKey.ANY_KEY;
+	}
 
 	private SDLKeyCode() {
 	}

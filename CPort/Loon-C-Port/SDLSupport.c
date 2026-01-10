@@ -34,7 +34,14 @@ static SDL_GLContext* tempContext;
 static uint32_t tempPolleventType;
 static game_filesystem* gamefilesys;
 static int g_loopCount = 0;
+static int g_windowSize[2];
+static int g_screenSize[2];
 static bool g_isLooping = false;
+static bool g_isPause = false;
+static int g_keyStates[SDL_NUM_SCANCODES] = { 0 };
+static int g_pressedKeys[SDL_NUM_SCANCODES] = { 0 };
+static int g_releasedKeys[SDL_NUM_SCANCODES] = { 0 };
+static int g_lastPressedScancode = -1;
 static game_music* g_currentMusic = NULL;
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
@@ -760,7 +767,9 @@ const uint8_t* GetPrefs(int64_t handle, const char* section, const char* key, si
 		if (strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
 			*len = cur->value_len;
 			unsigned char* copy = malloc(cur->value_len);
-			memcpy(copy, cur->value, cur->value_len);
+			if (copy) {
+				memcpy(copy, cur->value, cur->value_len);
+			}
 			return copy;
 		}
 		cur = cur->next;
@@ -1293,6 +1302,8 @@ bool Load_SDL_Update() {
 	eglSwapBuffers(display, eglsurface);
 	return appletMainLoop();
 #else
+	  memset(g_pressedKeys, 0, sizeof(g_pressedKeys));
+	  memset(g_releasedKeys, 0, sizeof(g_releasedKeys));
       int running = 1;
 	  SDL_Event event;
 	  int axis;
@@ -1301,7 +1312,24 @@ bool Load_SDL_Update() {
 		  switch (tempPolleventType) {
 		  case SDL_QUIT:
 			  running = 0;
+			  g_keyStates[SDL_SCANCODE_ESCAPE] = 1;
+			  g_lastPressedScancode = -1;
 			  return Load_SDL_Exit(running);
+		  case SDL_WINDOWEVENT:
+			  if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+				  g_isPause = true;
+			  }
+			  else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || event.window.event == SDL_WINDOWEVENT_RESTORED) {
+				  g_isPause = false;
+			  }
+			  if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+				  event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+				  int winWidth = 0, winHeight = 0;
+				  SDL_GetWindowSize(window, &winWidth, &winHeight);
+				  g_windowSize[0] = winWidth;
+				  g_windowSize[1] = winHeight;
+			  }
+			  break;
 		  case SDL_MOUSEMOTION:
 			  touches[1] = event.motion.x;
 			  touches[2] = event.motion.y;
@@ -1315,12 +1343,21 @@ bool Load_SDL_Update() {
 			  touches[0] = -1;
 			  break;
 		  case SDL_KEYDOWN:
+			  //分开存储键盘和游戏手柄事件，避免混淆
+			  if (!g_keyStates[event.key.keysym.scancode]){
+				  g_pressedKeys[event.key.keysym.scancode] = 1;
+				  g_lastPressedScancode = event.key.keysym.scancode;
+			  }
+			  g_keyStates[event.key.keysym.scancode] = 1;
 			  buttons |= keyToButton(event.key.keysym.scancode);
 			  axis = keyToAxis(event.key.keysym.scancode);
 			  if (axis > -1 && !event.key.repeat)
 				  joysticks[axis & 0x3] += axis & 0x4 ? -1 : 1;
 			  break;
 		  case SDL_KEYUP:
+			  //分开存储键盘和游戏手柄事件，避免混淆
+			  g_keyStates[event.key.keysym.scancode] = 0;
+			  g_releasedKeys[event.key.keysym.scancode] = 1;
 			  buttons &= ~keyToButton(event.key.keysym.scancode);
 			  axis = keyToAxis(event.key.keysym.scancode);
 			  if (axis > -1 && !event.key.repeat)
@@ -1364,6 +1401,99 @@ bool Load_SDL_Update() {
 	SDL_GL_SwapWindow(window);
 	return Load_SDL_Exit(running);
 #endif
+}
+
+void GetDisplayResolution(int displayIndex, int* w, int* h) {
+	SDL_DisplayMode mode;
+	if (SDL_GetCurrentDisplayMode(displayIndex, &mode) == 0) {
+		*w = mode.w;
+		*h = mode.h;
+	}
+	else {
+		*w = 1280;
+		*h = 720;
+	}
+}
+
+void GetPlatformDefaultResolution(const char* platform, int* w, int* h) {
+	for (size_t i = 0; i < sizeof(platformResTable) / sizeof(platformResTable[0]); i++) {
+		if (strstr(platform, platformResTable[i].platform)) {
+			*w = platformResTable[i].width;
+			*h = platformResTable[i].height;
+			return;
+		}
+	}
+	*w = 1280;
+	*h = 720;
+}
+
+int SelectBestDisplay() {
+    int numDisplays = SDL_GetNumVideoDisplays();
+    if (numDisplays <= 1) {
+        return 0; 
+    }
+    int bestIndex = 0;
+    int bestArea = 0;
+    for (int i = 0; i < numDisplays; i++) {
+        int w, h;
+        GetDisplayResolution(i, &w, &h);
+        int area = w * h;
+        if (area > bestArea) {
+            bestArea = area;
+            bestIndex = i;
+        }
+    }
+    return bestIndex;
+}
+
+void GetCurrentScreenSize(int* width, int* height) {
+	const char* platform = SDL_GetPlatform();
+	if (strstr(platform, "Nintendo") || strstr(platform, "Xbox") || strstr(platform, "PlayStation") || strstr(platform, "Steam Deck")) {
+		SDL_DisplayMode mode;
+		if (SDL_GetCurrentDisplayMode(0, &mode) == 0) {
+			*width = mode.w;
+			*height = mode.h;
+		}
+		else {
+			GetPlatformDefaultResolution(platform, width, height);
+		}
+		return;
+	}
+	int displayIndex = SelectBestDisplay();
+	GetDisplayResolution(displayIndex, width, height);
+}
+
+int32_t* Load_SDL_Current_Screen_Size() {
+	const char* platform = SDL_GetPlatform();
+	int width, height;
+	GetCurrentScreenSize(&width, &height);
+	g_screenSize[0] = width;
+	g_screenSize[1] = height;
+	return g_screenSize;
+}
+
+int32_t* Load_SDL_Current_Window_Size() {
+	return g_windowSize;
+}
+
+bool Load_SDL_Pause() {
+	return g_isPause;
+}
+
+int32_t* Load_SDL_GetKeyStates() {
+	return g_keyStates;
+}
+
+int32_t* Load_SDL_GetPressedKeys() {
+	return g_pressedKeys;
+}
+
+int32_t* Load_SDL_GetReleasedKeys() {
+	return g_releasedKeys;
+}
+
+int32_t Load_SDL_GetLastPressedScancode() {
+	return g_lastPressedScancode;
 }
 
 int32_t Load_SDL_GetPolleventType() {
@@ -1672,7 +1802,7 @@ const char* GetSystemProperty(const char* key)
 	if (strcmp(key, "os.gpu") == 0)
 		return getGpuInfoString();
 	if (strcmp(key, "os.gpu.cores") == 0) 	
-		return ints_varargs_to_string(",",1,getCpuCores());
+		return ints_varargs_to_string("",1,getCpuCores());
 	if (strcmp(key, "os.memory") == 0) {
 		int64_t totalRAM = 0, freeRAM = 0;
 		getMemoryInfoInts(&totalRAM, &freeRAM);
@@ -2764,6 +2894,19 @@ int Load_SDL_PollEvent(char* data)
 			data[0] = 0;
 			break;
 		case SDL_WINDOWEVENT:
+			if (e.window.event == SDL_WINDOWEVENT_FOCUS_LOST || e.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+				g_isPause = true;
+			}
+			else if (e.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || e.window.event == SDL_WINDOWEVENT_RESTORED) {
+				g_isPause = false;
+			}
+			if (e.window.event == SDL_WINDOWEVENT_RESIZED ||
+				e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+				int winWidth = 0, winHeight = 0;
+				SDL_GetWindowSize(window, &winWidth, &winHeight);
+				g_windowSize[0] = winWidth;
+				g_windowSize[1] = winHeight;
+			}
 			data[0] = 1;
 			data[1] = e.window.event;
 			data[2] = e.window.data1;

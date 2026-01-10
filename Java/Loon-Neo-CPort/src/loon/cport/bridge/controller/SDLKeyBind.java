@@ -20,8 +20,6 @@
  */
 package loon.cport.bridge.controller;
 
-import loon.LSystem;
-import loon.Save;
 import loon.Session;
 import loon.utils.TArray;
 
@@ -29,12 +27,8 @@ public class SDLKeyBind {
 
 	private static final TArray<SDLKeyBind> KEY_LIST = new TArray<SDLKeyBind>();
 
-	public static SDLKeyBind add(String name, SDLKeybindValue defaultValue, String category) {
-		return new SDLKeyBind(name, defaultValue, category);
-	}
-
 	public static SDLKeyBind add(String name, SDLKeybindValue defaultValue) {
-		return new SDLKeyBind(name, defaultValue, null);
+		return new SDLKeyBind(name, defaultValue);
 	}
 
 	public static void resetAll() {
@@ -45,17 +39,13 @@ public class SDLKeyBind {
 
 	private final String _name;
 	private final SDLKeybindValue _defaultValue;
-	private final String _category;
 	private SDLAxis _value;
 
-	protected SDLKeyBind(String name, SDLKeybindValue defaultValue, String category) {
+	protected SDLKeyBind(String name, SDLKeybindValue defaultValue) {
 		this._name = name;
 		this._defaultValue = defaultValue;
-		this._category = category;
 		this._value = defaultValue instanceof SDLAxis ? (SDLAxis) defaultValue : new SDLAxis((SDLKey) defaultValue);
-
 		KEY_LIST.add(this);
-
 		load();
 	}
 
@@ -84,11 +74,11 @@ public class SDLKeyBind {
 		SDLAxis loaded;
 		if (session.isPersisted()) {
 			if (session.getBooleanV(name + "-single", true)) {
-				SDLKey key = SDLKey.byOrdinal(session.getIntV(name + "-key", SDLKey.unset.getIndex()));
+				SDLKey key = SDLKey.getIndex(session.getIntV(name + "-key", SDLKey.unset.getIndex()));
 				loaded = key == SDLKey.unset ? null : new SDLAxis(key);
 			} else {
-				SDLKey min = SDLKey.byIndex(session.getIntV(name + "-min", SDLKey.unset.getIndex()));
-				SDLKey max = SDLKey.byIndex(session.getIntV(name + "-max", SDLKey.unset.getIndex()));
+				SDLKey min = SDLKey.getIndex(session.getIntV(name + "-min", SDLKey.unset.getIndex()));
+				SDLKey max = SDLKey.getIndex(session.getIntV(name + "-max", SDLKey.unset.getIndex()));
 				loaded = min == SDLKey.unset || max.equals(SDLKey.unset) ? null : new SDLAxis(min, max);
 			}
 			if (loaded != null) {

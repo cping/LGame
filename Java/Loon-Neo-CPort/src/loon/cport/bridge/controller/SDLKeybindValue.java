@@ -22,4 +22,6 @@ package loon.cport.bridge.controller;
 
 public interface SDLKeybindValue {
 
+	String getKeyTypeName(); 
+	
 }

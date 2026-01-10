@@ -123,6 +123,26 @@ typedef struct {
     int loopCount; 
 } game_music;
 
+typedef struct {
+    const char* platform;
+    int width;
+    int height;
+} PlatformResolution;
+
+static const PlatformResolution platformResTable[] = {
+    {"Nintendo Switch", 1280, 720},
+    {"Nintendo Switch Docked", 1920, 1080},
+    {"Xbox Series X", 3840, 2160},
+    {"Xbox Series S", 2560, 1440},
+    {"Xbox One", 1920, 1080},
+    {"PlayStation 5", 3840, 2160},
+    {"PlayStation 4", 1920, 1080},
+    {"Steam Deck", 1280, 800},
+    {"Windows", 1920, 1080},
+    {"Linux", 1920, 1080},
+    {"Mac OS X", 2560, 1600}
+};
+
 static int32_t global_result[8];
 
 static char global_cname[2048];
@@ -291,6 +311,20 @@ int32_t Load_SDL_GetTicks();
 int64_t Load_SDL_GetTicks64();
 
 void Call_SDL_DestroyWindow();
+
+int32_t* Load_SDL_GetKeyStates();
+
+int32_t* Load_SDL_GetPressedKeys();
+
+int32_t* Load_SDL_GetReleasedKeys();
+
+int32_t Load_SDL_GetLastPressedScancode();
+
+int32_t* Load_SDL_Current_Screen_Size();
+
+int32_t* Load_SDL_Current_Window_Size();
+
+bool Load_SDL_Pause();
 
 void Load_RemapControllers(const int min, const int max, const int dualJoy, const int singleMode);
 

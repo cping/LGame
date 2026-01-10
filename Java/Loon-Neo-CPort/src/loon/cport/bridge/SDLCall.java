@@ -244,6 +244,27 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_TouchData")
 	public final static native int[] getTouchData(int[] data);
 
+	@Import(name = "Load_SDL_GetKeyStates")
+	public final static native int[] getKeyStates();
+
+	@Import(name = "Load_SDL_GetPressedKeys")
+	public final static native int[] getPressedKeys();
+
+	@Import(name = "Load_SDL_GetReleasedKeys")
+	public final static native int[] getReleasedKeys();
+
+	@Import(name = "Load_SDL_GetLastPressedScancode")
+	public final static native int getLastPressedScancode();
+
+	@Import(name = "Load_SDL_Current_Screen_Size")
+	public final static native int[] getCurrentScreenSize();
+	
+	@Import(name = "Load_SDL_Current_Window_Size")
+	public final static native int[] getCurrentWindowSize();
+
+	@Import(name = "Load_SDL_Pause")
+	public final static native boolean isPaused();
+
 	@Import(name = "Load_SDL_Cleanup")
 	public final static native void cleanup();
 

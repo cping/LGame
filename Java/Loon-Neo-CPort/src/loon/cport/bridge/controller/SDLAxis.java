@@ -20,6 +20,8 @@
  */
 package loon.cport.bridge.controller;
 
+import loon.LSystem;
+
 public class SDLAxis implements SDLKeybindValue {
 
 	public SDLKey min, max;
@@ -38,6 +40,21 @@ public class SDLAxis implements SDLKeybindValue {
 	}
 
 	@Override
+	public int hashCode() {
+		int result = 1;
+		if (key != null) {
+			result = LSystem.unite(result, key.hashCode());
+		}
+		if (min != null) {
+			result = LSystem.unite(result, min.hashCode());
+		}
+		if (max != null) {
+			result = LSystem.unite(result, max.hashCode());
+		}
+		return result;
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
 			return true;
@@ -46,6 +63,12 @@ public class SDLAxis implements SDLKeybindValue {
 			return false;
 		}
 		SDLAxis axis = (SDLAxis) o;
-		return min.equals(axis.min) && max.equals(axis.max) && key.equals(axis.key);
+		return (min == null || min.equals(axis.min)) && (max == null || max.equals(axis.max))
+				&& (key == null || key.equals(axis.key));
+	}
+
+	@Override
+	public String getKeyTypeName() {
+		return "Axis";
 	}
 }
