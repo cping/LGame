@@ -29,18 +29,17 @@ import loon.cport.CGame.CSetting;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
-import loon.utils.Resolution;
 
 public class Loon implements Platform {
 
 	private CGame _game;
 
-	public Loon(CSetting config) {
-		Resolution
-		this._game = new CGame(this, config);
+	private Loon(CSetting config, LazyLoading.Data screenData) {
+		_game = new CGame(this, config, screenData);
+		_game.start();
 	}
 
-	public static void register(LSetting setting, LazyLoading.Data lazy) {
+	public static Loon register(LSetting setting, LazyLoading.Data lazy) {
 		CSetting cset = null;
 		if (setting == null) {
 			cset = new CSetting();
@@ -52,9 +51,7 @@ public class Loon implements Platform {
 				cset.copy(setting);
 			}
 		}
-		final Loon plat = new Loon(cset);
-		plat._game.register(lazy.onScreen());
-		plat._game.start();
+		return new Loon(cset, lazy);
 	}
 
 	@Override

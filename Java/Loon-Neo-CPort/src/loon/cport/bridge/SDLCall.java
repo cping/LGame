@@ -71,9 +71,6 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
-	@Import(name = "DownloadURL")
-	public final static native byte[] downloadURL(String url);
-
 	@Import(name = "CreatePrefs")
 	public final static native long createGamePrefs();
 
@@ -81,13 +78,13 @@ public final class SDLCall {
 	public final static native boolean loadGamePrefs(long handle, String filename);
 
 	@Import(name = "GetPrefsKeys")
-	public final static native String getGamePrefsKeys(long handle, String section, String delimiter);
+	public final static native long getGamePrefsKeys(long handle, String section, String delimiter, char[] chars);
 
 	@Import(name = "SetPrefs")
 	public final static native void setGamePrefs(long handle, String section, String key, byte[] value, int value_len);
 
 	@Import(name = "GetPrefs")
-	public final static native byte[] getGamePrefs(long handle, String section, String key, int len);
+	public final static native long getGamePrefs(long handle, String section, String key, byte[] bytes);
 
 	@Import(name = "SavePrefs")
 	public final static native boolean saveGamePrefs(long handle, String filename);
@@ -102,7 +99,7 @@ public final class SDLCall {
 	public final static native long createGameData(String fileName);
 
 	@Import(name = "ReadGameData")
-	public final static native String readGameData(long handle, String fileName, long outSize);
+	public final static native long readGameData(long handle, String fileName, byte[] bytes);
 
 	@Import(name = "WriteGameData")
 	public final static native boolean writeGameData(long handle, String fileName, String data, long size);
@@ -114,10 +111,10 @@ public final class SDLCall {
 	public final static native int freeGameData(long handle);
 
 	@Import(name = "GetPathFullName")
-	public final static native String getPathFullName(String dst, String path);
+	public final static native int getPathFullName(char[] dst, String path);
 
 	@Import(name = "GetSystemProperty")
-	public final static native String getSystemProperty(String key);
+	public final static native int getSystemProperty(String key, char[] dst);
 
 	@Import(name = "FileExists")
 	public final static native boolean fileExists(String fileName);
@@ -258,7 +255,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_Current_Screen_Size")
 	public final static native int[] getCurrentScreenSize();
-	
+
 	@Import(name = "Load_SDL_Current_Window_Size")
 	public final static native int[] getCurrentWindowSize();
 
@@ -670,7 +667,7 @@ public final class SDLCall {
 	public final static native int glGenTexture();
 
 	@Import(name = "Load_GL_GenTextures")
-	public final static native int glGenTextures(int n, IntBuffer textures);
+	public final static native void glGenTextures(int n, IntBuffer textures);
 
 	@Import(name = "Load_GL_GetError")
 	public final static native int glGetError();
@@ -1170,8 +1167,14 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_GameControllerUpdate")
 	public final static native void gameControllerUpdate();
 
+	@Import(name = "Load_SDL_GameControllerGetJoystick")
+	public final static native long gameControllerGetJoystick(long handle);
+
 	@Import(name = "Load_SDL_JoystickOpen")
 	public final static native long joystickOpen(long handle);
+
+	@Import(name = "Load_SDL_JoystickGetGUIDString")
+	public final static native String joystickGetGUIDString(long handle, char[] guids);
 
 	@Import(name = "Load_SDL_JoystickClose")
 	public final static native void joystickClose(long handle);

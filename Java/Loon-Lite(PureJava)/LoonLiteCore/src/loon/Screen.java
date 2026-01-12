@@ -8223,7 +8223,7 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 				_disposes.close();
 				_conns.close();
 				_steps.close();
-				release();
+				closeSound();
 				if (_currentScreenBackground != null) {
 					_currentScreenBackground.close();
 					_currentScreenBackground = null;

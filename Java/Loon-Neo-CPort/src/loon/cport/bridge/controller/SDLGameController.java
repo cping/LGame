@@ -66,6 +66,10 @@ public final class SDLGameController implements LRelease {
 		return SDLCall.gameControllerGetNumTouchpads(_controllerHandle);
 	}
 
+	public SDLJoystick gameControllerGetJoystick() {
+		return new SDLJoystick(SDLCall.gameControllerGetJoystick(_controllerHandle));
+	}
+
 	public long getHandle() {
 		return _controllerHandle;
 	}

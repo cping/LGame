@@ -39,6 +39,16 @@ public final class STBFont implements LRelease {
 
 	}
 
+	public final static class VFormat {
+
+		protected int width;
+
+		protected int height;
+
+		protected int format;
+
+	}
+	
 	public final static boolean existsSysFont() {
 		return existsFont(LSystem.getSystemGameFontName());
 	}
@@ -99,8 +109,8 @@ public final class STBFont implements LRelease {
 	private final RectI _outSize = new RectI();
 
 	private final VMetric _metric = new VMetric();
-
-	private final int[] _outDims = new int[] { 0, 0 };
+	
+	private final int[] _fontSize = new int[4];
 
 	private STBFont(long handle) {
 		_fontHandle = handle;
@@ -114,8 +124,18 @@ public final class STBFont implements LRelease {
 		return STBCall.measureTextHieght(_fontHandle, text, fontScale);
 	}
 
+	public RectI getTextLinesSize(String text, float fontScale, int align) {
+		STBCall.getTextLinesSize(align, text, fontScale, align, _fontSize);
+		_textSize.width = _fontSize[0];
+		_textSize.height = _fontSize[1];
+		return _textSize;
+	}
+
 	public byte[] textLinesToBytes(String text, float fontScale, int align) {
-		return STBCall.drawTextLinesToBytes(_fontHandle, text, fontScale, align, _outDims);
+		RectI rect = getTextLinesSize(text, fontScale, align);
+		byte[] bytes = new byte[rect.width * rect.height];
+		STBCall.drawTextLinesToBytes(align, text, fontScale, align, _fontSize, bytes);
+		return bytes;
 	}
 
 	public int[] textLinesToInt32(String text, float fontScale, LColor fontColor) {
@@ -123,42 +143,45 @@ public final class STBFont implements LRelease {
 	}
 
 	public int[] textLinesToInt32(String text, float fontScale, int align, LColor fontColor, LColor bgColor) {
-		return STBCall.drawTextLinesToInt32(_fontHandle, text, fontScale, align, fontColor.getRed(),
-				fontColor.getGreen(), fontColor.getBlue(), bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(),
-				bgColor.getAlpha(), _outDims);
+		RectI rect = getTextLinesSize(text, fontScale, align);
+		int[] pixels = new int[rect.width * rect.height];
+		STBCall.drawTextLinesToInt32(_fontHandle, text, fontScale, align, fontColor.getRed(), fontColor.getGreen(),
+				fontColor.getBlue(), bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgColor.getAlpha(),
+				_fontSize, pixels);
+		return pixels;
 	}
 
 	public RectI getOutSize() {
-		_outSize.width = _outDims[0];
-		_outSize.height = _outDims[1];
+		_outSize.width = _fontSize[0];
+		_outSize.height = _fontSize[1];
 		return _outSize;
 	}
 
 	public RectI getCodepointBitmapBox(float fontsize, int point) {
-		int[] rect = STBCall.getCodepointBitmapBox(_fontHandle, fontsize, point);
-		_codepointBitmapBox.set(rect[0], rect[1], rect[2], rect[3]);
+		STBCall.getCodepointBitmapBox(_fontHandle, fontsize, point, _fontSize);
+		_codepointBitmapBox.set(_fontSize[0], _fontSize[1], _fontSize[2], _fontSize[3]);
 		return _codepointBitmapBox;
 	}
 
 	public VMetric getFontVMetrics(float fontsize) {
-		int[] ms = STBCall.getFontVMetrics(_fontHandle, fontsize);
-		_metric.ascent = ms[0];
-		_metric.descent = ms[1];
-		_metric.lineGap = ms[2];
+		STBCall.getFontVMetrics(_fontHandle, fontsize, _fontSize);
+		_metric.ascent = _fontSize[0];
+		_metric.descent = _fontSize[1];
+		_metric.lineGap = _fontSize[2];
 		return _metric;
 	}
 
 	public RectI getStringSize(float fontsize, String text) {
-		int[] ms = STBCall.getCharsSize(_fontHandle, fontsize, text);
-		_textSize.width = ms[0];
-		_textSize.height = ms[1];
+		STBCall.getCharsSize(_fontHandle, fontsize, text, _fontSize);
+		_textSize.width = _fontSize[0];
+		_textSize.height = _fontSize[1];
 		return _textSize;
 	}
 
 	public RectI getCharSize(float fontsize, int point) {
-		int[] ms = STBCall.getCharSize(_fontHandle, fontsize, point);
-		_charSize.width = ms[0];
-		_charSize.height = ms[1];
+		STBCall.getCharSize(_fontHandle, fontsize, point, _fontSize);
+		_charSize.width = _fontSize[0];
+		_charSize.height = _fontSize[1];
 		return _charSize;
 	}
 
@@ -167,21 +190,29 @@ public final class STBFont implements LRelease {
 	}
 
 	public byte[] makeCodepointBytePixels(int point, float fontScale, int width, int height) {
-		return STBCall.makeCodepointBitmap(_fontHandle, point, fontScale, width, height);
+		final byte[] bytes = new byte[width * height];
+		STBCall.makeCodepointBitmap(_fontHandle, point, fontScale, width, height, bytes);
+		return bytes;
 	}
 
 	public int[] makeCodepointPixels32(int point, float fontScale, int width, int height, LColor fontColor) {
-		return STBCall.makeCodepointBitmap32(_fontHandle, point, fontScale, width, height, fontColor.getRed(),
-				fontColor.getGreen(), fontColor.getBlue());
+		final int[] pixels = new int[width * height];
+		STBCall.makeCodepointBitmap32(_fontHandle, point, fontScale, width, height, fontColor.getRed(),
+				fontColor.getGreen(), fontColor.getBlue(), pixels);
+		return pixels;
 	}
 
 	public byte[] makeDrawTextBytePixels(int point, String text, float fontScale, int width, int height) {
-		return STBCall.makeDrawTextToBitmap(_fontHandle, text, fontScale, width, height);
+		final byte[] bytes = new byte[width * height];
+		STBCall.makeDrawTextToBitmap(_fontHandle, text, fontScale, width, height, bytes);
+		return bytes;
 	}
 
 	public int[] makeDrawTextPixels32(String text, float fontScale, int width, int height, LColor fontColor) {
-		return STBCall.makeDrawTextToBitmap32(_fontHandle, text, fontScale, width, height, fontColor.getRed(),
-				fontColor.getGreen(), fontColor.getBlue());
+		final int[] pixels = new int[width * height];
+		STBCall.makeDrawTextToBitmap32(_fontHandle, text, fontScale, width, height, fontColor.getRed(),
+				fontColor.getGreen(), fontColor.getBlue(), pixels);
+		return pixels;
 	}
 
 	public long getHandle() {

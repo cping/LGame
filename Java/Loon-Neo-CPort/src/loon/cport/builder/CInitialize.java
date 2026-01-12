@@ -35,29 +35,34 @@ public class CInitialize {
 
 	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level)
 			throws IOException {
-		create(clazz, obfuscated, debug, level, "build/dist");
+		create(clazz, obfuscated, debug, level, "build/dist", "capp");
 	}
 
 	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
-			String buildPath) throws IOException {
-		create(clazz, obfuscated, debug, level, TargetType.CPort, null, null, null, buildPath);
+			String appName) throws IOException {
+		create(clazz, obfuscated, debug, level, "build/dist", appName);
 	}
 
 	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
-			TargetType target, String buildPath) throws IOException {
-		create(clazz, obfuscated, debug, level, target, null, null, null, buildPath);
+			String buildPath, String appName) throws IOException {
+		create(clazz, obfuscated, debug, level, TargetType.CPort, null, null, null, buildPath, appName);
 	}
 
 	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
-			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath)
-			throws IOException {
-		create(clazz == null ? "none" : clazz.getName(), obfuscated, debug, level, target, assetPath, sourcePath,
-				reflects, buildPath);
+			TargetType target, String buildPath, String appName) throws IOException {
+		create(clazz, obfuscated, debug, level, target, null, null, null, buildPath, appName);
+	}
+
+	public static void create(Class<?> clazz, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
+			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath,
+			String appName) throws IOException {
+		create((clazz == null ? "none" : clazz.getName()), obfuscated, debug, level, target, assetPath, sourcePath,
+				reflects, buildPath, appName);
 	}
 
 	public static void create(String mainClassName, boolean obfuscated, boolean debug, TeaVMOptimizationLevel level,
-			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath)
-			throws IOException {
+			TargetType target, String[] assetPath, String[] sourcePath, String[] reflects, String buildPath,
+			String appName) throws IOException {
 		if (reflects != null) {
 			for (int i = 0; i < reflects.length; i++) {
 				final String refPackName = reflects[i];
@@ -67,23 +72,24 @@ public class CInitialize {
 		if (obfuscated) {
 			debug = false;
 		}
-		CBuildConfiguration teaBuildConfiguration = new CBuildConfiguration();
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("../src/loon/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("src/main/webapp/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("src/assets"));
-		teaBuildConfiguration.assetsPath.add(new AssetFile("assets"));
+		CBuildConfiguration cbuildConfiguration = new CBuildConfiguration();
+		cbuildConfiguration.cappName = appName;
+		cbuildConfiguration.assetsPath.add(new AssetFile("../assets"));
+		cbuildConfiguration.assetsPath.add(new AssetFile("../src/main/java/loon/assets"));
+		cbuildConfiguration.assetsPath.add(new AssetFile("../src/loon/assets"));
+		cbuildConfiguration.assetsPath.add(new AssetFile("src/main/webapp/assets"));
+		cbuildConfiguration.assetsPath.add(new AssetFile("src/assets"));
+		cbuildConfiguration.assetsPath.add(new AssetFile("assets"));
 		if (assetPath != null) {
 			for (int i = 0; i < assetPath.length; i++) {
 				final String pathName = assetPath[i];
-				teaBuildConfiguration.assetsPath.add(new AssetFile(pathName));
+				cbuildConfiguration.assetsPath.add(new AssetFile(pathName));
 			}
 		}
-		teaBuildConfiguration.shouldGenerateAssetFile = true;
-		teaBuildConfiguration.cappPath = new File(buildPath).getCanonicalPath();
-		teaBuildConfiguration.targetType = target;
-		CBuilder.config(teaBuildConfiguration);
+		cbuildConfiguration.shouldGenerateAssetFile = true;
+		cbuildConfiguration.cappPath = new File(buildPath).getCanonicalPath();
+		cbuildConfiguration.targetType = target;
+		CBuilder.config(cbuildConfiguration);
 
 		TeaVMTool tool = new TeaVMTool();
 		tool.setObfuscated(obfuscated);

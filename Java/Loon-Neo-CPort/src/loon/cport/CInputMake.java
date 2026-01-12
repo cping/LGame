@@ -88,7 +88,7 @@ public class CInputMake extends InputMake {
 		_wasJustTouched = false;
 		SDLCall.getTouchData(_touchData);
 		for (int i = 0; i < DEF_MAX_TOUCHES; i++) {
-			int rawIndex = _touchData[i * 3];
+			final int rawIndex = _touchData[i * 3];
 			if (rawIndex == -1) {
 				continue;
 			}

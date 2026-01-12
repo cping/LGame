@@ -21,11 +21,16 @@
 package loon.cport.bridge;
 
 import loon.LRelease;
+import loon.LSystem;
+import loon.cport.bridge.STBFont.VFormat;
 
 public final class STBImage implements LRelease {
 
 	public final static STBImage createImage(String path) {
 		long handle = STBCall.loadPathToImage(path);
+		if (handle == -1) {
+			LSystem.error(path + " not found !");
+		}
 		return new STBImage(handle);
 	}
 
@@ -35,8 +40,15 @@ public final class STBImage implements LRelease {
 
 	public final static STBImage createImage(byte[] buffer, int len) {
 		long handle = STBCall.loadBytesToImage(buffer, len);
+		if (handle == -1) {
+			LSystem.error("create Image " + buffer + " error !");
+		}
 		return new STBImage(handle);
 	}
+
+	private final VFormat _sizeformat = new VFormat();
+
+	private final int[] _formatSize = new int[3];
 
 	private boolean _closed;
 
@@ -50,16 +62,36 @@ public final class STBImage implements LRelease {
 		_imageHandle = handle;
 	}
 
+	public VFormat getSizeFormat() {
+		if (_sizeformat.width > 0 && _sizeformat.height > 0) {
+			return _sizeformat;
+		}
+		STBCall.getSizeFormat(_imageHandle, _formatSize);
+		_sizeformat.width = _formatSize[0];
+		_sizeformat.height = _formatSize[1];
+		_sizeformat.format = _formatSize[2];
+		return _sizeformat;
+	}
+
 	public byte[] getPixels() {
-		return STBCall.getImagePixels(_imageHandle);
+		final VFormat format = getSizeFormat();
+		final byte[] bytes = new byte[format.width * format.height];
+		STBCall.getImagePixels(_imageHandle, bytes);
+		return bytes;
 	}
 
 	public int[] getImagePixels32() {
-		return STBCall.getImagePixels32(_imageHandle);
+		final VFormat format = getSizeFormat();
+		final int[] pixels = new int[format.width * format.height];
+		STBCall.getImagePixels32(_imageHandle, format.width, format.height, pixels);
+		return pixels;
 	}
 
-	public int[] getImageFormatPixels32(int format) {
-		return STBCall.getImagePixels32(_imageHandle, format);
+	public int[] getImageFormatPixels32(int f) {
+		final VFormat format = getSizeFormat();
+		final int[] pixels = new int[format.width * format.height];
+		STBCall.getImagePixels32(_imageHandle, f, pixels);
+		return pixels;
 	}
 
 	public int getWidth() {

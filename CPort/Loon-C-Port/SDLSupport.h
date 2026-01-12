@@ -1,3 +1,4 @@
+#pragma once
 #ifndef LOON_SDL
 #define LOON_SDL
 
@@ -22,13 +23,12 @@
 #endif
 
 #ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <shlobj.h>
 #include <winbase.h>
-#include <winhttp.h>
 #include <VersionHelpers.h>
 #pragma comment(lib, "shell32.lib")
-#pragma comment(lib, "winhttp.lib")
 static void run_sleep_ms(int ms) {
     Sleep(ms);
 }
@@ -41,7 +41,6 @@ static void run_sleep_ms(int ms) {
     #if !defined(__APPLE__)
     #include <sys/sysinfo.h>
     #endif
-#include <curl/curl.h>
 #include <time.h>
 #include <execinfo.h>
 static void run_sleep_ms(int ms) {
@@ -149,9 +148,195 @@ static char global_cname[2048];
 
 static char global_info[1024 * 10];
 
-void ImportSDLInclude();
+#include <stddef.h>
 
-const uint8_t* DownloadURL(const char* url);
+static inline char* chars_strchr(const char* str, int ch, size_t maxlen) {
+    if (!str) {
+        return NULL;
+    }
+    if (maxlen == 0) {
+        return NULL;
+    }
+    const unsigned char target = (unsigned char)ch;
+    size_t i = 0;
+    while (i < maxlen && str[i] != '\0') {
+        if ((unsigned char)str[i] == target) {
+            return (char*)(str + i);
+        }
+        i++;
+    }
+    if (target == '\0' && i < maxlen) {
+        return (char*)(str + i);
+    }
+    return NULL;
+}
+
+static inline  char* chars_strcpy(char* dest, size_t dest_size, const char* src) {
+    if (!dest || !src) {
+        return NULL;
+    }
+    if (dest_size == 0) {
+        return NULL;
+    }
+    if (dest_size > SIZE_MAX) {
+        return NULL;
+    }
+    size_t src_len = 0;
+    while (src[src_len] != '\0') {
+        src_len++;
+    }
+    if (src_len + 1 > dest_size) {
+        return NULL;
+    }
+    memcpy(dest, src, src_len + 1);
+    return dest;
+}
+
+static inline  char* chars_strncpy(char* dest, const char* src, size_t n) {
+    if (!dest || !src) {
+        return NULL;
+    }
+    if (n == 0) {
+        return dest;
+    }
+    if (n > SIZE_MAX) {
+        return NULL;
+    }
+    size_t src_len = 0;
+    while (src_len < n - 1 && src[src_len] != '\0') {
+        src_len++;
+    }
+    if (src_len > 0) {
+        memcpy(dest, src, src_len);
+    }
+    memset(dest + src_len, '\0', n - src_len);
+    return dest;
+}
+
+static inline  char* chars_strcat(char* dest, const char* src) {
+    char* d = dest;
+    if (!dest || !src) return dest;
+
+    while (*d != '\0') d++;
+    while (*src != '\0') *d++ = *src++;
+    *d = '\0';
+    return dest;
+}
+
+static inline char* chars_append(char* dest, size_t dest_size, const char* src) {
+    if (!dest || !src || dest_size == 0) return NULL;
+    char* d = dest;
+    size_t used = 0;
+    while (*d != '\0' && used < dest_size) {
+        d++;
+        used++;
+    }
+    if (used >= dest_size) return NULL;
+    while (*src != '\0' && used < dest_size - 1) {
+        *d++ = *src++;
+        used++;
+    }
+    *d = '\0';
+    if (*src != '\0') return NULL;
+    return dest;
+}
+
+static inline char* ints_array_to_string(const int64_t* arr, int count, const char* sep) {
+    if (!arr || count <= 0 || !sep) return NULL;
+    size_t sep_len = strlen(sep);
+    size_t total_len = 0;
+    for (int i = 0; i < count; i++) {
+        char temp[32];
+        int len = snprintf(temp, sizeof(temp), "%lld", arr[i]);
+        if (len < 0) return NULL;
+        total_len += (size_t)len;
+        if (i < count - 1) total_len += sep_len;
+    }
+    char* result = (char*)malloc(total_len + 1);
+    if (!result) return NULL;
+    result[0] = '\0';
+    for (int i = 0; i < count; i++) {
+        char temp[32];
+        snprintf(temp, sizeof(temp), "%lld", arr[i]);
+        chars_append(result, sizeof(result), temp);
+        if (i < count - 1) chars_append(result, sizeof(result), sep);
+    }
+    return result;
+}
+
+static inline char* ints_varargs_to_string(const char* sep, int count, ...) {
+    if (!sep || count <= 0) return NULL;
+    long long* arr = (long long*)malloc(sizeof(long long) * count);
+    if (!arr) return NULL;
+    va_list args;
+    va_start(args, count);
+    for (int i = 0; i < count; i++) {
+        arr[i] = va_arg(args, long long);
+    }
+    va_end(args);
+    char* result = ints_array_to_string(arr, count, sep);
+    free(arr);
+    return result;
+}
+
+static inline size_t copy_uint8_array(uint8_t* dest, size_t dest_len,
+    const uint8_t* src, size_t src_len) {
+    if (!dest || !src) {
+        return 0;
+    }
+    size_t bytes_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, bytes_to_copy);
+    return bytes_to_copy;
+}
+
+static inline size_t copy_int32_array(int32_t* dest, size_t dest_len,
+    const int32_t* src, size_t src_len) {
+    if (!dest || !src) {
+        return 0;
+    }
+    size_t bytes_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, bytes_to_copy);
+    return bytes_to_copy;
+}
+
+static inline size_t copy_chars_array(char* dest, size_t dest_len,
+    const char* src, size_t src_len) {
+    if (!dest || !src) {
+        return 0;
+    }
+    size_t bytes_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, bytes_to_copy);
+    return bytes_to_copy;
+}
+
+static inline char* chars_strcasestr(const char* haystack, const char* needle, size_t maxlen) {
+    if (!haystack || !needle) {
+        return NULL;
+    }
+    if (maxlen == 0) {
+        return NULL;
+    }
+    if (*needle == '\0') {
+        return (char*)haystack;
+    }
+    size_t i = 0;
+    while (i < maxlen && haystack[i] != '\0') {
+        size_t j = 0;
+        while (needle[j] != '\0' &&
+            i + j < maxlen &&
+            haystack[i + j] != '\0' &&
+            tolower((unsigned char)haystack[i + j]) == tolower((unsigned char)needle[j])) {
+            j++;
+        }
+        if (needle[j] == '\0') {
+            return (char*)(haystack + i);
+        }
+        i++;
+    }
+    return NULL;
+}
+
+void ImportSDLInclude();
 
 int64_t CreatePrefs();
 
@@ -160,9 +345,9 @@ bool LoadPrefs(int64_t handle, const char* filename);
 void SetPrefs(int64_t handle, const char* section, const char* key,
     const uint8_t* value, size_t value_len);
 
-const uint8_t* GetPrefs(int64_t handle, const char* section, const char* key, size_t* len);
+int64_t GetPrefs(int64_t handle, const char* section, const char* key, uint8_t* outBytes);
 
-const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter);
+int64_t GetPrefsKeys(int64_t handle, const char* section, const char* delimiter,char* outChars);
 
 bool SavePrefs(int64_t handle, const char* filename);
 
@@ -172,7 +357,7 @@ void FreePrefs(int64_t handle);
 
 int64_t CreateGameData(char* fileName);
 
-const char* ReadGameData(const int64_t handle, const char* filename, int64_t* outSize);
+int64_t ReadGameData(const int64_t handle, const char* filename, uint8_t* outBytes);
 
 bool WriteGameData(const int64_t handle, const char* filename, const char* data, int64_t size);
 
@@ -180,9 +365,9 @@ int32_t GetGameDataFileCount(const int64_t handle);
 
 void FreeGameData(const int64_t handle);
 
-const char* GetPathFullName(char* dst, const char* path);
+int32_t GetPathFullName(char* dst, const char* path);
 
-const char* GetSystemProperty(const char* key);
+int32_t GetSystemProperty(const char* key, char* dst);
 
 bool FileExists(const char* filename);
 
@@ -247,6 +432,10 @@ void Load_SDL_GameControllerUpdate();
 int64_t Load_SDL_JoystickOpen(int32_t deviceIndex);
 
 void Load_SDL_JoystickClose(const int64_t handle);
+
+int64_t Load_SDL_GameControllerGetJoystick(const int64_t handle);
+
+const char* Load_SDL_JoystickGetGUIDString(const int64_t handle, char* guids);
 
 int32_t Load_SDL_JoystickNumAxes(const int64_t handle);
 

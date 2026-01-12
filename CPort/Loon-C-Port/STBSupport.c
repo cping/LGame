@@ -122,7 +122,7 @@ void ImportSTBInclude()
 int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
 {
 	int32_t width = 0, height = 0, format = 0;
-	const unsigned char* pixels = stbi_load_from_memory(buffer, len, &width, &height, &format, STBI_default);
+	const unsigned char* pixels = stbi_load_from_memory(buffer, len, &width, &height, &format, STBI_rgb_alpha);
 	if (!pixels || width <= 0 || height <= 0) {
 		return -1;
 	}
@@ -140,7 +140,7 @@ int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
 int64_t Load_STB_Image_LoadPath(const char* path)
 {
 	int32_t width = 0 , height = 0, format = 0;
-	uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_default);
+	uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_rgb_alpha);
 	if (!pixels || width <= 0 || height <= 0) {
 		return -1;
 	}
@@ -158,7 +158,7 @@ int64_t Load_STB_Image_LoadPath(const char* path)
 int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path)
 {
 	int32_t width = 0, height = 0, format = 0;
-	void* pixels = stbi_load(path, &width, &height, &format, STBI_default);
+	void* pixels = stbi_load(path, &width, &height, &format, STBI_rgb_alpha);
 	if (!pixels || width <= 0 || height <= 0) {
 		return -1;
 	}
@@ -245,13 +245,23 @@ void Load_STB_Image_Free(const int64_t handle)
 	}
 }
 
-const uint8_t* Load_STB_Image_GetPixels(const int64_t handle)
+void Load_STB_Image_GetSizeFormat(const int64_t handle,int32_t* rect) {
+	stb_pix* pixmap = (stb_pix*)handle;
+	if (!pixmap) {
+		return;
+	}
+	rect[0] = pixmap->width;
+	rect[1] = pixmap->height;
+	rect[2] = pixmap->format;
+}
+
+void Load_STB_Image_GetPixels(const int64_t handle, uint8_t* pixels)
 {
 	stb_pix* pixmap = (stb_pix*)handle;
 	if (!pixmap) {
-		return 0;
+		return;
 	}
-	return pixmap->pixels;
+	copy_uint8_array(pixels, sizeof(pixels), pixmap->pixels, sizeof(pixmap->pixels));
 }
 
 void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int height, int format) {
@@ -268,38 +278,28 @@ void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int hei
 	}
 }
 
-int32_t* Load_STB_Image_GetDefaultPixels32(const int64_t handle)
+void Load_STB_Image_GetDefaultPixels32(const int64_t handle, int width,int height,int32_t* pixels)
 {
 	stb_pix* pixmap = (stb_pix*)handle;
 	if (!pixmap) {
-		return 0;
+		return;
 	}
 	const uint8_t* bytePixels = pixmap->pixels;
-	int width = pixmap->width, height = pixmap->height;
-	int length = width * height;
-	int32_t* pixelsInt32 = malloc(length * sizeof(int32_t));
-	if (!pixelsInt32) {
-		return 0;
-	}
-	convertSTBUint8ToInt32(bytePixels, pixelsInt32, width, height, pixmap->format);
-	return pixelsInt32;
+	convertSTBUint8ToInt32(bytePixels, pixels, width, height, pixmap->format);
 }
 
-int32_t* Load_STB_Image_GetPixels32(const int64_t handle, const int32_t format)
+void Load_STB_Image_GetPixels32(const int64_t handle, const int32_t format,int32_t* pixels)
 {
 	stb_pix* pixmap = (stb_pix*)handle;
 	if (!pixmap) {
-		return 0;
+		return;
 	}
 	const uint8_t* bytePixels = pixmap->pixels;
 	int width = pixmap->width, height = pixmap->height;
-	int length = width * height;
-	int32_t* pixelsInt32 = malloc(length * sizeof(int32_t));
-	if (!pixelsInt32) {
-		return 0;
+	if (!pixels) {
+		return;
 	}
-	convertSTBUint8ToInt32(bytePixels, pixelsInt32, width, height, format);
-	return pixelsInt32;
+	convertSTBUint8ToInt32(bytePixels, pixels, width, height, format);
 }
 
 int32_t Load_STB_Image_GetWidth(const int64_t handle)
@@ -412,32 +412,31 @@ int64_t Load_STB_LoadFontInfo(const char* path)
 	return (intptr_t)temp_font;
 }
 
-int* Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point)
+void Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point,int* rect)
 {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			return 0;
+			return;
 		}
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	global_result[0] = x0;
-	global_result[1] = y0;
-	global_result[2] = x1;
-	global_result[3] = y1;
-	return global_result;
+	rect[0] = x0;
+	rect[1] = y0;
+	rect[2] = x1;
+	rect[3] = y1;
 }
 
-int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
+void Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize, int *rect)
 {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			return 0;
+			return;
 		}
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
@@ -445,10 +444,9 @@ int* Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize)
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
-	global_result[0] = ascent;
-	global_result[1] = descent;
-	global_result[2] = lineGap;
-	return global_result;
+	rect[0] = ascent;
+	rect[1] = descent;
+	rect[2] = lineGap;
 }
 
 int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
@@ -465,12 +463,12 @@ int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
 	return height;
 }
 
-const int32_t* Load_STB_GetCharsSize(const int64_t handle, float fontSize, const char* text) {
+ void Load_STB_GetCharsSize(const int64_t handle, float fontSize, const char* text, int* rect) {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			return 0;
+			return;
 		}
 	}
 	int max_width = 0;
@@ -502,40 +500,38 @@ const int32_t* Load_STB_GetCharsSize(const int64_t handle, float fontSize, const
 	total_height += line_height;
 	global_result[0] = max_width;
 	global_result[1] = total_height;
-	return global_result;
+	rect[0] = max_width;
+	rect[1] = total_height;
 }
 
-const int32_t* Load_STB_GetCharSize(const int64_t handle, float fontSize, const int point) {
+ void Load_STB_GetCharSize(const int64_t handle, float fontSize, const int point,int* rect) {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			return 0;
+			return;
 		}
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontSize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	global_result[0] = (x1 - x0);
-	global_result[1] = (y1 - y0);
-	return global_result;
+	rect[0] = (x1 - x0);
+	rect[1] = (y1 - y0);
 }
 
-uint8_t* Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, const float scale, const int width, const int height)
+void Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, const float scale, const int width, const int height,uint8_t* bitmap)
 {
-	unsigned char* bitmap = calloc(width * height, sizeof(unsigned char));
 	if (!bitmap) {
-		return 0;
+		return;
 	}
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			return 0;
+			return;
 		}
 	}
 	stbtt_MakeCodepointBitmap(fontinfo->info, bitmap, width, height, width, scale, scale, point);
-	return bitmap;
 }
 
 void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height,int order, int32_t cr, int32_t cg, int32_t cb) {
@@ -558,27 +554,19 @@ void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height,in
 	}
 }
 
-int32_t* Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height,const int r,const int g,const int b)
+void Load_STB_MakeCodepointBitmap32(const int64_t handle, const int point, const float scale, const int width, const int height,const int r,const int g,const int b,int32_t* int32Pixels)
 {
-	uint8_t* bytePixels =  Load_STB_MakeCodepointBitmap(handle, point, scale, width, height);
-	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
+	unsigned char* bytePixels = (unsigned char*)calloc(width * height, sizeof(unsigned char));
+	Load_STB_MakeCodepointBitmap(handle, point, scale, width, height, bytePixels);
 	convertU8toInt32(bytePixels, int32Pixels, width, height, 0,r,g,b);
 	free(bytePixels);
-	return int32Pixels;
 }
 
-uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height)
+void Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const float fontscale, const int width, const int height,uint8_t* bitmap)
 {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		return 0;
-	}
-	unsigned char* bitmap = (unsigned char*)calloc(width * height, sizeof(unsigned char));
-	if (!bitmap) {
-		fontinfo = _temp_fontinfo;
-		if (!fontinfo) {
-			return 0;
-		}
+		return;
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int x = 0;
@@ -602,16 +590,14 @@ uint8_t* Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, c
 		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
 		x += kern * scale;
 	}
-	return bitmap;
 }
 
-int32_t* Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height,const int r,const int g,const int b)
+void Load_STB_MakeDrawTextToBitmap32(const int64_t handle, const char* text, const float fontscale, const int width, const int height,const int r,const int g,const int b,int32_t* pixels)
 {
-	uint8_t* bytePixels = Load_STB_MakeDrawTextToBitmap(handle, text, fontscale, width, height);
-	int32_t* int32Pixels = malloc(width * height * sizeof(int32_t));
-	convertU8toInt32(bytePixels, int32Pixels, width, height, 0,r,g,b);
+	unsigned char* bytePixels = (unsigned char*)calloc(width * height, sizeof(unsigned char));
+	Load_STB_MakeDrawTextToBitmap(handle, text, fontscale, width, height, bytePixels);
+	convertU8toInt32(bytePixels, pixels, width, height, 0,r,g,b);
 	free(bytePixels);
-	return int32Pixels;
 }
 
 int32_t Load_STB_MeasureTextWidth(const int64_t handle, const char* text, const float fontscale) {
@@ -645,11 +631,31 @@ int32_t Load_STB_MeasureTextHieght(const int64_t handle, const char* text, const
 	return (int)((ascent - descent + lineGap) * fontscale);
 }
 
-uint8_t* Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* outDims)
+void Load_STB_GetTextLinesSize(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* rect)
 {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		return NULL;
+		return;
+	}
+	int numLines;
+	char** lines = split_lines(text, &numLines);
+
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
+	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int totalHeight = lineHeight * numLines;
+	rect[0] = maxWidth;
+	rect[1] = totalHeight;
+	free_lines(lines, numLines);
+}
+
+void Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* outDims,uint8_t* bitmap)
+{
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		return;
 	}
 	int numLines;
 	char** lines = split_lines(text, &numLines);
@@ -661,8 +667,7 @@ uint8_t* Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, c
 	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
 	int totalHeight = lineHeight * numLines;
 
-	unsigned char* bitmap = (unsigned char*)calloc(maxWidth * totalHeight, sizeof(unsigned char));
-	if (!bitmap) return NULL;
+	if (!bitmap) return;
 
 	for (int i = 0; i < numLines; i++) {
 		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, fontscale);
@@ -703,16 +708,13 @@ uint8_t* Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, c
 		outDims[1] = totalHeight;
 	}
 	free_lines(lines, numLines);
-
-	return bitmap;
-
 }
 
-int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t r, int32_t g, int32_t b, int32_t bgR, int32_t bgG, int32_t bgB,int32_t bgA, int32_t* outDims)
+void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t r, int32_t g, int32_t b, int32_t bgR, int32_t bgG, int32_t bgB,int32_t bgA, int32_t* outDims,int32_t* outPixels)
 {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
-		return NULL;
+		return;
 	}
 	int numLines;
 	char** lines = split_lines(text, &numLines);
@@ -724,11 +726,10 @@ int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, c
 	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
 	int totalHeight = lineHeight * numLines;
 
-	int32_t* pixels = (int32_t*)malloc(maxWidth * totalHeight * sizeof(int32_t));
-	if (!pixels) return NULL;
+	if (!outPixels) return;
 
 	for (int i = 0; i < maxWidth * totalHeight; i++) {
-		pixels[i] = (bgA & 0xFF << 24) | ((bgR & 0xFF) << 16) | ((bgG & 0xFF) << 8) | (bgB & 0xFF);
+		outPixels[i] = (bgA & 0xFF << 24) | ((bgR & 0xFF) << 16) | ((bgG & 0xFF) << 8) | (bgB & 0xFF);
 	}
 
 	for (int i = 0; i < numLines; i++) {
@@ -752,7 +753,7 @@ int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, c
 					if (dstX >= 0 && dstX < maxWidth && dstY >= 0 && dstY < totalHeight) {
 						unsigned char alpha = gbitmap[gy * gw + gx];
 						if (alpha > 0) {
-							pixels[dstY * maxWidth + dstX] =
+							outPixels[dstY * maxWidth + dstX] =
 								((alpha & 0xFF) << 24) |
 								((r & 0xFF) << 16) |
 								((g & 0xFF) << 8) |
@@ -776,8 +777,6 @@ int32_t* Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, c
 		outDims[1] = totalHeight;
 	}
 	free_lines(lines, numLines);
-
-	return pixels;
 }
 
 void Load_STB_CloseFontInfo(const int64_t handle)
@@ -793,37 +792,35 @@ void Load_STB_CloseFontInfo(const int64_t handle)
 	free(fontinfo);
 }
 
-int* Call_STB_GetCodepointBitmapBox(const float fontsize, const int point)
+void Call_STB_GetCodepointBitmapBox(const float fontsize, const int point, int32_t* rect)
 {
 	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
-		return 0;
+		return;
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(fontinfo->info, point, scale, scale, &x0, &y0, &x1, &y1);
-	global_result[0] = x0;
-	global_result[1] = y0;
-	global_result[2] = x1;
-	global_result[3] = y1;
-	return global_result;
+	rect[0] = x0;
+	rect[1] = y0;
+	rect[2] = x1;
+	rect[3] = y1;
 }
 
-int* Call_STB_GetFontVMetrics(const float fontsize)
+void Call_STB_GetFontVMetrics(const float fontsize,int32_t* rect)
 {
 	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
-		return 0;
+		return;
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent *= scale;
 	descent *= scale;
-	global_result[0] = ascent;
-	global_result[1] = descent;
-	global_result[2] = lineGap;
-	return global_result;
+	rect[0] = ascent;
+	rect[1] = descent;
+	rect[2] = lineGap;
 }
 
 int Call_STB_GetCodepointHMetrics(const int point)
@@ -837,29 +834,26 @@ int Call_STB_GetCodepointHMetrics(const int point)
 	return height;
 }
 
-uint8_t* Call_STB_MakeCodepointBitmap(const int point, const float scale, const int width, const int height)
+void Call_STB_MakeCodepointBitmap(const int point, const float scale, const int width, const int height,uint8_t* bitmap)
 {
-	unsigned char* bitmap = calloc(width * height, sizeof(unsigned char));
 	if (!bitmap) {
-		return 0;
+		return;
 	}
 	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
-		return 0;
+		return;
 	}
 	stbtt_MakeCodepointBitmap(fontinfo->info, bitmap, width, height, width, scale, scale, point);
-	return bitmap;
 }
 
-uint8_t* Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, const int width, const int height)
+void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, const int width, const int height, uint8_t* bitmap)
 {
 	stb_font* fontinfo = _temp_fontinfo;
 	if (!fontinfo) {
-		return 0;
+		return;
 	}
-	unsigned char* bitmap = (unsigned char*)calloc(width * height, sizeof(unsigned char));
 	if (!bitmap) {
-		return 0;
+		return;
 	}
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int x = 0;
@@ -882,7 +876,6 @@ uint8_t* Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, 
 		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
 		x += kern * scale;
 	}
-	return bitmap;
 }
 
 void Call_STB_CloseFontInfo()

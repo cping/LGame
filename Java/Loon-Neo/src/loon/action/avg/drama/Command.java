@@ -640,16 +640,16 @@ public class Command extends Conversion implements LRelease {
 					// 已存在变量
 					if (vl != null) {
 						text = StringUtils.replaceMatch(text,
-								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
+								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG), vl.toString());
 						// 设定有随机数生成范围
 					} else if (MathUtils.isNan(key)) {
 						text = StringUtils.replaceMatch(text,
-								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
+								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG),
 								String.valueOf(GLOBAL_RAND.nextInt(Integer.parseInt(key))));
 						// 无设定
 					} else {
 						text = StringUtils.replaceMatch(text,
-								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(),
+								(RAND_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG),
 								String.valueOf(GLOBAL_RAND.nextInt()));
 					}
 				}
@@ -915,10 +915,10 @@ public class Command extends Conversion implements LRelease {
 						Object vl = _setEnvironmentList.get(key);
 						if (vl != null) {
 							_executeCommand = StringUtils.replaceMatch(_executeCommand,
-									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), vl.toString());
+									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG), vl.toString());
 						} else {
 							_executeCommand = StringUtils.replaceMatch(_executeCommand,
-									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG).intern(), key);
+									(PRINT_TAG + BRACKET_LEFT_TAG + key + BRACKET_RIGHT_TAG), key);
 						}
 
 					}

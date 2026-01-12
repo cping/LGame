@@ -103,7 +103,7 @@ public abstract class SoundBox extends BaseIO {
 		}
 	}
 
-	public void release() {
+	public void closeSound() {
 		for (Sound s : _soundCache.values()) {
 			if (s != null) {
 				s.release();

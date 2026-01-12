@@ -99,7 +99,8 @@ public class CBuilder {
 
 	public static void config(CBuildConfiguration configuration) {
 		CBuilder.configuration = configuration;
-		acceptedURL = new ArrayList<URL>();
+		CBuilder.cappName = configuration.cappName;
+		CBuilder.acceptedURL = new ArrayList<URL>();
 		String cappDirectory = configuration.cappPath;
 
 		configClasspath(configuration, acceptedURL);
@@ -168,9 +169,9 @@ public class CBuilder {
 				CBuilder.end();
 			} else {
 				isSuccess = true;
-				
+
 				CBuilder.begin("FIX SOURCE CODE");
-				
+
 				final CCodeFix fixCFile = new CCodeFix();
 
 				String cappDirectory = configuration.cappPath;

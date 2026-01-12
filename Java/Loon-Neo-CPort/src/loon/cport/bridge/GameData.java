@@ -51,15 +51,20 @@ public final class GameData implements LRelease {
 		return SDLCall.writeGameData(_gamedataHandle, fileName, text, size);
 	}
 
-	public String read(String fileName) {
+	public byte[] read(String fileName) {
 		return read(fileName, 0);
 	}
 
-	public String read(String fileName, long size) {
+	public byte[] read(String fileName, long size) {
 		if (fileName == null) {
 			return null;
 		}
-		return SDLCall.readGameData(_gamedataHandle, fileName, size);
+		byte[] buffer = new byte[1024 * 10];
+		int length = (int) SDLCall.readGameData(_gamedataHandle, fileName, buffer);
+		final byte[] newData = new byte[length];
+		System.arraycopy(buffer, 0, newData, 0, length);
+		buffer = null;
+		return newData;
 	}
 
 	public int getFileCount() {

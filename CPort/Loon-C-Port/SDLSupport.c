@@ -2,8 +2,6 @@
 
 #ifdef __WINRT__
 #include "winrt/base.h"
-#include <windows.h>
-#include <winrt/base.h>
 #define main main
 static int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
 	AllocConsole();
@@ -55,85 +53,7 @@ static bool soundFinishedEvent;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
 
-static char* chars_strncpy(char* dest, const char* src, size_t n) {
-	if (dest == NULL || src == NULL || n == 0) {
-		return dest;
-	}
-	size_t i = 0;
-	for (; i < n - 1 && src[i] != '\0'; i++) {
-		dest[i] = src[i];
-	}
-	dest[i] = '\0';
-	return dest;
-}
-
-static char* chars_strcat(char* dest, const char* src) {
-	char* d = dest;
-	if (!dest || !src) return dest;
-
-	while (*d != '\0') d++;
-	while (*src != '\0') *d++ = *src++;
-	*d = '\0';
-	return dest;
-}
-
-static char* chars_append(char* dest, size_t dest_size, const char* src) {
-	if (!dest || !src || dest_size == 0) return NULL;
-	char* d = dest;
-	size_t used = 0;
-	while (*d != '\0' && used < dest_size) {
-		d++;
-		used++;
-	}
-	if (used >= dest_size) return NULL;
-	while (*src != '\0' && used < dest_size - 1) {
-		*d++ = *src++;
-		used++;
-	}
-	*d = '\0';
-	if (*src != '\0') return NULL;
-	return dest;
-}
-
-static char* ints_array_to_string(const int64_t* arr, int count, const char* sep) {
-	if (!arr || count <= 0 || !sep) return NULL;
-	size_t sep_len = strlen(sep);
-	size_t total_len = 0;
-	for (int i = 0; i < count; i++) {
-		char temp[32];
-		int len = snprintf(temp, sizeof(temp), "%lld", arr[i]);
-		if (len < 0) return NULL;
-		total_len += (size_t)len;
-		if (i < count - 1) total_len += sep_len;
-	}
-	char* result = (char*)malloc(total_len + 1);
-	if (!result) return NULL;
-	result[0] = '\0';
-	for (int i = 0; i < count; i++) {
-		char temp[32];
-		snprintf(temp, sizeof(temp), "%lld", arr[i]);
-		chars_append(result, sizeof(result), temp);
-		if (i < count - 1) chars_append(result, sizeof(result), sep);
-	}
-	return result;
-}
-
-static char* ints_varargs_to_string(const char* sep, int count, ...) {
-	if (!sep || count <= 0) return NULL;
-	long long* arr = (long long*)malloc(sizeof(long long) * count);
-	if (!arr) return NULL;
-	va_list args;
-	va_start(args, count);
-	for (int i = 0; i < count; i++) {
-		arr[i] = va_arg(args, long long);
-	}
-	va_end(args);
-	char* result = ints_array_to_string(arr, count, sep);
-	free(arr);
-	return result;
-}
-
-static const char* detectPlatformCompileString() {
+static char* detectPlatformCompileString() {
 	#if defined(__WINRT__)
 		return "winrt";
 	#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -170,7 +90,7 @@ static const char* detectPlatformCompileString() {
 	#endif
 }
 
-static const char* detectPlatformRuntimeString() {
+static char* detectPlatformRuntimeString() {
 	#if defined(_WIN32)
 		return "windows";
 	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
@@ -190,9 +110,9 @@ static const char* detectPlatformRuntimeString() {
 	#endif
 }
 
-static const char* getOSVersionString() {
+static char* getOSVersionString() {
 	#if defined(_WIN32)
-		const char* ver_str = "unknown";
+		char* ver_str = "unknown";
 		if (IsWindows10OrGreater()) ver_str = "Windows 10 or later";
 		else if (IsWindows8Point1OrGreater()) ver_str = "Windows 8.1";
 		else if (IsWindows8OrGreater()) ver_str = "Windows 8";
@@ -213,7 +133,7 @@ static const char* getOSVersionString() {
 	#endif
 }
 
-static const char* getArchitectureString() {
+static char* getArchitectureString() {
 	#if defined(_WIN64) || defined(__x86_64__) || defined(__amd64__)
 		return "x86_64";
 	#elif defined(_WIN32)
@@ -231,7 +151,7 @@ static const char* getArchitectureString() {
 	#endif
 }
 
-static const char* detectVirtualizationString() {
+static char* detectVirtualizationString() {
 #if defined(__linux__)
 	FILE* f = fopen("/proc/1/cgroup", "r");
 	if (f) {
@@ -267,7 +187,7 @@ static const char* detectVirtualizationString() {
 #endif
 }
 
-static const char* getGpuInfoString() {
+static char* getGpuInfoString() {
 #if defined(_WIN32)
 	static char gpu[128] = "unknown";
 	DISPLAY_DEVICE dd;
@@ -332,23 +252,25 @@ static void getMemoryInfoInts(int64_t* total, int64_t* free) {
 }
 
 #ifdef _WIN32
-const char* GetPathFullName(char* dst, const char* path) {
-	char* buffer = malloc(MAX_PATH * sizeof(char));
+int32_t GetPathFullName(char* dst, const char* path) {
+	char* buffer = (char*)malloc(MAX_PATH * sizeof(char));
 	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
 	if (length == 0) {
-		return "";
+		return 0;
 	}
-	dst = buffer;
-	return buffer;
+	copy_chars_array(dst,(size_t)length,buffer,(size_t)length);
+	return length;
 }
 #elif defined(__unix__) || defined(__APPLE__)
-const char* GetPathFullName(char* dst, const char* path) {
-	char* ret = realpath(path, dst);
-	return ret;
+int32_t GetPathFullName(char* dst, const char* path) {
+	char* ret = realpath(path, NULL);
+	int len = strlen(ret);
+	copy_chars_array(dst, (size_t)len, ret, (size_t)len);
+	return len;
 }
 #endif
 
-static const char* get_path_separator() {
+static char* get_path_separator() {
 #ifdef _WIN32
 	return "\\";
 #else
@@ -356,7 +278,7 @@ static const char* get_path_separator() {
 #endif
 }
 
-static const char* get_newline_separator() {
+static char* get_newline_separator() {
 #ifdef _WIN32
 	return "\r\n";
 #else
@@ -365,24 +287,24 @@ static const char* get_newline_separator() {
 }
 
 #if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
-static const char* switch_get_username() { return "SwitchUser"; }
-static const char* switch_get_temp_folder() { return "sdmc:/temp"; }
-static const char* switch_get_home_folder() { return "sdmc:/"; }
+static char* switch_get_username() { return "SwitchUser"; }
+static char* switch_get_temp_folder() { return "sdmc:/temp"; }
+static char* switch_get_home_folder() { return "sdmc:/"; }
 #endif
 
 #if defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
-static const char* ps5_get_username() { return "PS5User"; }
-static const char* ps5_get_temp_folder() { return "/data/temp"; }
-static const char* ps5_get_home_folder(vid) { return "/data/home"; }
+static char* ps5_get_username() { return "PS5User"; }
+static char* ps5_get_temp_folder() { return "/data/temp"; }
+static char* ps5_get_home_folder(vid) { return "/data/home"; }
 #endif
 
 #if defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
-static const char* xbox_get_username() { return "XboxUser"; }
-static const char* xbox_get_temp_folder() { return "D:/Temp"; }
-static const char* xbox_get_home_folder() { return "D:/Home"; }
+static char* xbox_get_username() { return "XboxUser"; }
+static char* xbox_get_temp_folder() { return "D:/Temp"; }
+static char* xbox_get_home_folder() { return "D:/Home"; }
 #endif
 
-static const char* get_system_username() {
+static char* get_system_username() {
 	static char username[256] = { 0 };
 	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 		return switch_get_username();
@@ -402,7 +324,7 @@ static const char* get_system_username() {
 		return "";
 }
 
-static const char* get_temp_folder() {
+static char* get_temp_folder() {
 	static char temp_path[512] = { 0 };
 	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 		return switch_get_temp_folder();
@@ -424,7 +346,7 @@ static const char* get_temp_folder() {
 		return ".";
 }
 
-static const char* get_home_folder(void) {
+static char* get_home_folder(void) {
 	static char home_path[512] = { 0 };
 	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 		return switch_get_home_folder();
@@ -455,7 +377,7 @@ static int is_printable_text(const unsigned char* data, size_t len) {
 static char* base64_encode(const unsigned char* data, size_t len) {
 	char* encoded;
 	size_t out_len = 4 * ((len + 2) / 3);
-	encoded = malloc(out_len + 1);
+	encoded = (char*)malloc(out_len + 1);
 	if (!encoded) return NULL;
 
 	size_t i, j;
@@ -481,7 +403,7 @@ static unsigned char* base64_decode(const char* data, size_t* out_len) {
 	if (len % 4 != 0) return NULL;
 
 	size_t alloc_len = len / 4 * 3;
-	unsigned char* decoded = malloc(alloc_len);
+	unsigned char* decoded = (unsigned char*)malloc(alloc_len);
 	if (!decoded) return NULL;
 
 	int table[256];
@@ -539,141 +461,8 @@ static char* joinLocales(const SDL_Locale* locales) {
 	return result;
 }
 
-#ifdef _WIN32
-uint8_t* download_url_windows(const wchar_t* host, INTERNET_PORT port, const wchar_t* path,
-	size_t* out_bit_count, long* out_http_code, int* status_code) {
-	HINTERNET hSession = WinHttpOpen(L"WinHTTP Downloader/1.0",
-		WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
-		WINHTTP_NO_PROXY_NAME,
-		WINHTTP_NO_PROXY_BYPASS, 0);
-	if (!hSession) { *status_code = -1; return NULL; }
-
-	HINTERNET hConnect = WinHttpConnect(hSession, host, port, 0);
-	if (!hConnect) { WinHttpCloseHandle(hSession); *status_code = -2; return NULL; }
-
-	HINTERNET hRequest = WinHttpOpenRequest(hConnect, L"GET", path,
-		NULL, WINHTTP_NO_REFERER,
-		WINHTTP_DEFAULT_ACCEPT_TYPES,
-		(port == INTERNET_DEFAULT_HTTPS_PORT) ? WINHTTP_FLAG_SECURE : 0);
-	if (!hRequest) {
-		WinHttpCloseHandle(hConnect);
-		WinHttpCloseHandle(hSession);
-		*status_code = -3;
-		return NULL;
-	}
-
-	if (!WinHttpSendRequest(hRequest, WINHTTP_NO_ADDITIONAL_HEADERS, 0,
-		WINHTTP_NO_REQUEST_DATA, 0, 0, 0) ||
-		!WinHttpReceiveResponse(hRequest, NULL)) {
-		WinHttpCloseHandle(hRequest);
-		WinHttpCloseHandle(hConnect);
-		WinHttpCloseHandle(hSession);
-		*status_code = -4;
-		return NULL;
-	}
-
-	DWORD status = 0, size = sizeof(status);
-	WinHttpQueryHeaders(hRequest,
-		WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
-		WINHTTP_HEADER_NAME_BY_INDEX,
-		&status, &size, WINHTTP_NO_HEADER_INDEX);
-	*out_http_code = status;
-
-	uint8_t* buffer = NULL;
-	size_t total_size = 0;
-	DWORD bytes_read = 0;
-	do {
-		uint8_t temp[4096];
-		if (!WinHttpReadData(hRequest, temp, sizeof(temp), &bytes_read)) break;
-		if (bytes_read > 0) {
-			uint8_t* new_buf = realloc(buffer, total_size + bytes_read);
-			if (!new_buf) { free(buffer); buffer = NULL; break; }
-			buffer = new_buf;
-			memcpy(buffer + total_size, temp, bytes_read);
-			total_size += bytes_read;
-		}
-	} while (bytes_read > 0);
-
-	WinHttpCloseHandle(hRequest);
-	WinHttpCloseHandle(hConnect);
-	WinHttpCloseHandle(hSession);
-
-	if (!buffer) { *status_code = -5; return NULL; }
-
-	*out_bit_count = total_size * 8;
-	*status_code = 0;
-	return buffer;
-}
-#else
-struct MemoryBlock { uint8_t* data; size_t size; };
-static size_t WriteMemoryCallback(void* contents, size_t size, size_t nmemb, void* userp) {
-	size_t totalSize = size * nmemb;
-	struct MemoryBlock* mem = (struct MemoryBlock*)userp;
-	uint8_t* ptr = realloc(mem->data, mem->size + totalSize);
-	if (!ptr) return 0;
-	mem->data = ptr;
-	memcpy(&(mem->data[mem->size]), contents, totalSize);
-	mem->size += totalSize;
-	return totalSize;
-}
-
-uint8_t* download_url_unix(const char* url, size_t* out_bit_count, long* out_http_code, int* status_code) {
-	CURL* curl = curl_easy_init();
-	if (!curl) { *status_code = -1; return NULL; }
-	struct MemoryBlock chunk = { 0 };
-	curl_easy_setopt(curl, CURLOPT_URL, url);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)&chunk);
-	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-	CURLcode res = curl_easy_perform(curl);
-	if (res != CURLE_OK) { curl_easy_cleanup(curl); free(chunk.data); *status_code = -2; return NULL; }
-	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, out_http_code);
-	curl_easy_cleanup(curl);
-	*out_bit_count = chunk.size * 8;
-	*status_code = 0;
-	return chunk.data;
-}
-
-#endif
-uint8_t* download_with_retry(
-#ifdef _WIN32
-	const wchar_t* host, INTERNET_PORT port, const wchar_t* path,
-#else
-	const char* url,
-#endif
-	size_t* out_bit_count, long* out_http_code, int* status_code,
-	int max_retries, int retry_delay_ms, const long* retry_http_codes, size_t retry_http_codes_count) {
-	for (int attempt = 0; attempt <= max_retries; attempt++) {
-#ifdef _WIN32
-		uint8_t* data = download_url_windows(host, port, path, out_bit_count, out_http_code, status_code);
-#else
-		uint8_t* data = download_url_unix(url, out_bit_count, out_http_code, status_code);
-#endif
-		if (data && *status_code == 0) {
-			int should_retry = 0;
-			if (retry_http_codes && retry_http_codes_count > 0) {
-				for (size_t i = 0; i < retry_http_codes_count; i++) {
-					if (*out_http_code == retry_http_codes[i]) {
-						should_retry = 1;
-						break;
-					}
-				}
-			}
-			if (!should_retry) {
-				return data; 
-			}
-			free(data); 
-		}
-		if (attempt < max_retries) {
-			run_sleep_ms(retry_delay_ms);
-		}
-	}
-	*status_code = -99;
-	return NULL;
-}
-
 int64_t CreatePrefs() {
-	game_preferences* prefs = malloc(sizeof(game_preferences));
+	game_preferences* prefs = (game_preferences*)malloc(sizeof(game_preferences));
 	if (!prefs) return 0;
 	prefs->head = NULL;
 	return (intptr_t)prefs;
@@ -738,48 +527,62 @@ void SetPrefs(int64_t handle, const char* section, const char* key,
 	}
 	if (cur && strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
 		free(cur->value);
-		cur->value = malloc(value_len);
-		memcpy(cur->value, value, value_len);
-		cur->value_len = value_len;
+		cur->value = (uint8_t*)malloc(value_len);
+		if (cur->value) {
+			memcpy(cur->value, value, value_len);
+			cur->value_len = value_len;
+		}
 		return;
 	}
-	game_prefnode* newNode = malloc(sizeof(game_prefnode));
-	newNode->section = _strdup(section);
-	newNode->key = _strdup(key);
-	newNode->value = malloc(value_len);
-	memcpy(newNode->value, value, value_len);
-	newNode->value_len = value_len;
-	if (prev) {
-		newNode->next = prev->next;
-		prev->next = newNode;
+	game_prefnode* newNode = (game_prefnode*)malloc(sizeof(game_prefnode));
+	if (newNode) {
+		newNode->section = _strdup(section);
+		newNode->key = _strdup(key);
+		newNode->value = (uint8_t*)malloc(value_len);
+		if (newNode->value) {
+			memcpy(newNode->value, value, value_len);
+			newNode->value_len = value_len;
+		}
 	}
-	else {
+	if (prev) {
+		if (newNode && newNode->next) {
+			newNode->next = prev->next;
+			prev->next = newNode;
+		}
+	} else if(newNode && newNode->next){
 		newNode->next = prefs->head;
 		prefs->head = newNode;
 	}
 }
 
-const uint8_t* GetPrefs(int64_t handle, const char* section, const char* key, size_t* len) {
+int64_t GetPrefs(int64_t handle, const char* section, const char* key,uint8_t* outBytes) {
 	game_preferences* prefs = (game_preferences*)handle;
-	if (!prefs) return NULL;
+	if (!prefs) return 0;
 	game_prefnode* cur = prefs->head;
 	while (cur) {
 		if (strcmp(cur->section, section) == 0 && strcmp(cur->key, key) == 0) {
-			*len = cur->value_len;
-			unsigned char* copy = malloc(cur->value_len);
+			size_t len = 0;
+			if (cur->value_len) {
+				len = cur->value_len;
+			}
+			unsigned char* copy = (unsigned char*)malloc(cur->value_len);
 			if (copy) {
 				memcpy(copy, cur->value, cur->value_len);
+				if (copy) {
+					copy_uint8_array(outBytes, len, copy, len);
+				}
+				free(copy);
 			}
-			return copy;
+			return (int32_t)len;
 		}
 		cur = cur->next;
 	}
-	return NULL;
+	return 0;
 }
 
-const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter) {
+int64_t GetPrefsKeys(int64_t handle, const char* section, const char* delimiter,char* outChars) {
 	game_preferences* prefs = (game_preferences*)handle;
-	if (!prefs) return NULL;
+	if (!prefs) return 0;
 	game_prefnode* cur = prefs->head;
 	while (cur) {
 		if (strcmp(cur->section, section) == 0) {
@@ -791,19 +594,20 @@ const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimi
 				if (n->next) total_len += delim_len;
 				count++;
 			}
-			if (count == 0) return _strdup("");
-			char* result = malloc(total_len + 1);
-			if (!result) return NULL;
+			if (count == 0) return 0;
+			char* result = (char*)malloc(total_len + 1);
+			if (!result) return 0;
 			result[0] = '\0';
 			for (game_prefnode* n = cur->next; n; n = n->next) {
 				chars_append(result, total_len + 1, n->key);
 				if (n->next) chars_append(result, total_len + 1, delimiter);
 			}
-			return result;
+			copy_chars_array(outChars, total_len, result, total_len);
+			return strlen(result);
 		}
 		cur = cur->next;
 	}
-	return NULL;
+	return 0;
 }
 
 
@@ -888,7 +692,7 @@ const char* Load_SDL_RW_FileToChars(const char* filename) {
 			if (newCapacity < totalSize + bytesRead + 1) {
 				newCapacity = totalSize + bytesRead + 1;
 			}
-			char* newBuffer = realloc(buffer, newCapacity);
+			char* newBuffer = (char*)realloc(buffer, newCapacity);
 			if (!newBuffer) {
 				free(buffer);
 				SDL_RWclose(rw);
@@ -1217,31 +1021,41 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	gladLoadGL();
 	SDL_Init(SDL_INIT_AUDIO);
 #else
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-#ifdef __WINRT__
 	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+	#ifdef __WINRT__
 	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
+	#endif
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-#endif
-	if (tempContext != NULL) {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | flags);
+    if (!window) {
+        printf("Window creation failed: %s\n", SDL_GetError());
+        return -1;
+    }
+	if (tempContext) {
 		SDL_GL_DeleteContext(tempContext);
 		tempContext = NULL;
 	}
-	tempContext = SDL_GL_CreateContext(window);
+	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(window);
+	if (!tempContext) {
+        printf("GL context creation failed: %s\n", SDL_GetError());
+        return -1;
+    }
+	#ifdef LOON_DESKTOP
+	if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
+        printf("Failed to load GLES2 functions\n");
+        return -1;
+    }
+	#endif
 	SDL_GL_MakeCurrent(window, tempContext);
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
-   #ifdef LOON_DESKTOP
-    gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress);
-   #endif
 #endif
 	int err = Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
 	if (err != -1) {
@@ -1638,34 +1452,6 @@ void ImportSDLInclude()
 {
 }
 
-const uint8_t* DownloadURL(const char* url)
-{
-	uint8_t* packed_bits = NULL;
-	size_t bit_count = 0;
-	long http_code = 0;
-	int status = 0;
-	long retry_codes[] = { 500, 502, 503 };
-#ifdef _WIN32
-	packed_bits = download_with_retry(
-		(const wchar_t*)url, INTERNET_DEFAULT_HTTPS_PORT, L"/",
-#else
-	packed_bits = download_with_retry(
-		url,
-#endif
-		& bit_count, &http_code, &status,
-		3,   
-		2000,
-		retry_codes, sizeof(retry_codes) / sizeof(retry_codes[0])
-	);
-	if (packed_bits && status == 0) {
-		return packed_bits;
-	}
-	else {
-		fprintf(stderr, "Download failed after retries. Status code: %d\n", status);
-	}
-	return NULL;
-}
-
 int64_t CreateGameData(char* fileName)
 {
 	game_filesystem* fs = (game_filesystem*)malloc(sizeof(game_filesystem));
@@ -1679,7 +1465,7 @@ int64_t CreateGameData(char* fileName)
 	return (intptr_t)fs;
 }
 
-const char* ReadGameData(const int64_t handle, const char* filename, int64_t* outSize) {
+int64_t ReadGameData(const int64_t handle, const char* filename, uint8_t* outBytes) {
 	game_filesystem* fs = (game_filesystem*)handle;
 	if (!fs) {
 		return 0;
@@ -1698,7 +1484,7 @@ const char* ReadGameData(const int64_t handle, const char* filename, int64_t* ou
 		SDL_RWclose(rw);
 		return 0;
 	}
-	void* buffer = malloc(size);
+	uint8_t* buffer = (uint8_t*)malloc(size);
 	if (!buffer) {
 		SDL_RWclose(rw);
 		return 0;
@@ -1709,10 +1495,12 @@ const char* ReadGameData(const int64_t handle, const char* filename, int64_t* ou
 		return 0;
 	}
 	SDL_RWclose(rw);
-	if (outSize) {
-		*outSize = (int64_t)size;
+	int64_t outSize = (int64_t)size;
+	if (buffer) {
+		copy_uint8_array(outBytes,(size_t)outSize, buffer, (size_t)outSize);
+		free(buffer);
 	}
-	return (const char*)buffer;
+	return outSize;
 }
 
 bool WriteGameData(const int64_t handle, const char* filename, const char* data, int64_t size) {
@@ -1784,41 +1572,47 @@ void FreeGameData(const int64_t handle) {
 	free(fs);
 }
 
-const char* GetSystemProperty(const char* key)
+int32_t GetSystemProperty(const char* key, char* outchars)
 {
+	char* result = "null";
 	if (strcmp(key, "os.sys") == 0) {
-		const char* platform = detectPlatformCompileString();
+		char* platform = detectPlatformCompileString();
 		if (!platform) {
 			platform = detectPlatformRuntimeString();
 		}
-		return platform;
+		result = platform;
 	}
 	if (strcmp(key, "os.name") == 0)
-		return getOSVersionString();
+		result = getOSVersionString();
 	if (strcmp(key, "os.arch") == 0)
-		return getArchitectureString();
+		result = getArchitectureString();
 	if (strcmp(key, "os.virt") == 0)
-		return detectVirtualizationString();
+		result = detectVirtualizationString();
 	if (strcmp(key, "os.gpu") == 0)
-		return getGpuInfoString();
+		result = getGpuInfoString();
 	if (strcmp(key, "os.gpu.cores") == 0) 	
-		return ints_varargs_to_string("",1,getCpuCores());
+		result = ints_varargs_to_string("",1,getCpuCores());
 	if (strcmp(key, "os.memory") == 0) {
 		int64_t totalRAM = 0, freeRAM = 0;
 		getMemoryInfoInts(&totalRAM, &freeRAM);
-		return ints_varargs_to_string(",", 2, totalRAM, freeRAM);
+		result = ints_varargs_to_string(",", 2, totalRAM, freeRAM);
 	}
 	if (strcmp(key, "line.separator") == 0)
-		return get_newline_separator();
+		result = get_newline_separator();
 	if (strcmp(key, "file.separator") == 0)
-		return get_path_separator();
+		result = get_path_separator();
 	if (strcmp(key, "java.io.tmpdir") == 0)
-		return get_temp_folder();
+		result = get_temp_folder();
 	if (strcmp(key, "user.home") == 0)
-		return get_home_folder();
+		result = get_home_folder();
 	if (strcmp(key, "user.name") == 0)
-		return get_system_username();
-	return "";
+		result = get_system_username();
+	if (result) {
+		size_t len = strlen(result);
+		copy_chars_array(outchars, len, result, len);
+		return (int32_t)len;
+	}
+	return 0;
 }
 
 const char* Load_SDL_GetPreferredLocales()
@@ -1933,6 +1727,29 @@ void Load_SDL_JoystickClose(const int64_t handle)
 	if (joystick) {
 		SDL_JoystickClose(joystick);
 	}
+}
+
+int64_t Load_SDL_GameControllerGetJoystick(const int64_t handle)
+{
+	SDL_GameController* controller = (SDL_GameController*)handle;
+	if (controller) {
+		SDL_Joystick* joystick = SDL_GameControllerGetJoystick(controller);
+		if (joystick) {
+			return (intptr_t)joystick;
+		}
+	}
+	return 0;
+}
+
+const char* Load_SDL_JoystickGetGUIDString(const int64_t handle, char* guids)
+{
+	SDL_Joystick* joystick = (SDL_Joystick*)handle;
+	if (joystick) {
+		SDL_JoystickGUID guid = SDL_JoystickGetGUID(joystick);
+		SDL_JoystickGetGUIDString(guid, guids, sizeof(guids));
+		return guids;
+	}
+	return NULL;
 }
 
 int32_t Load_SDL_JoystickNumAxes(const int64_t handle)
@@ -2327,7 +2144,7 @@ int* Load_SDL_GetPixels32(const int64_t handle, int order)
 	if (!surface) return 0;
 	int width = surface->surface_data->w;
 	int height = surface->surface_data->h;
-	int32_t* pixelsInt32 = malloc(width * height * sizeof(int32_t));
+	int32_t* pixelsInt32 = (int32_t*)malloc(width * height * sizeof(int32_t));
 	if (!pixelsInt32) {
 		return 0;
 	}
@@ -2789,7 +2606,7 @@ void Call_SDL_SetWindowBordered(const bool bordered)
 	if (!window) {
 		return;
 	}
-	SDL_SetWindowBordered(window, bordered);
+	SDL_SetWindowBordered(window, (SDL_bool)bordered);
 }
 
 void Call_SDL_SetWindowSize(const int w, const int h)
@@ -2998,7 +2815,7 @@ int64_t Load_SDL_Mix_LoadMUSFromMem(void* musData)
 	if (!mix) {
 		return 0;
 	}
-	game_music* music = malloc(sizeof(game_music));
+	game_music* music = (game_music*)malloc(sizeof(game_music));
 	if (!music) return 0;
 	music->handle = mix;
 	if (!music->handle) {
@@ -3013,7 +2830,7 @@ int64_t Load_SDL_Mix_LoadMUSFromMem(void* musData)
 int64_t Load_SDL_Mix_LoadMUS(const char* filename)
 {
 	if (!filename) return 0;
-	game_music* music = malloc(sizeof(game_music));
+	game_music* music = (game_music*)malloc(sizeof(game_music));
 	if (!music) return 0;
 	music->handle = Mix_LoadMUS(filename);
 	if (!music->handle) {
@@ -4192,7 +4009,7 @@ void Load_GL_Uniform4i(const int location, const int x, const int y, const int z
 
 void Load_GL_Uniform4iv(const int location, const int count, const void* v)
 {
-	glUniform4iv(location, count, v);
+	glUniform4iv(location, count, (GLint*)v);
 }
 
 void Load_GL_Uniform4ivOffset(const int location, const int count, const void* v, const int offset)

@@ -39,6 +39,8 @@ public class CCanvas extends Canvas {
 
 	private SortedList<CCanvasState> _stateStack = new SortedList<CCanvasState>();
 
+	private final LColor _tempColor = new LColor();
+
 	private final Pixmap _canvas;
 
 	public CCanvas(Graphics gfx, CImage image) {
@@ -236,7 +238,7 @@ public class CCanvas extends Canvas {
 	@Override
 	public Canvas fillText(TextLayout layout, float x, float y) {
 		currentState().prepareFill(_canvas);
-		((CTextLayout) layout).fill(_canvas, x, y);
+		((CTextLayout) layout).fill(_canvas, x, y, _tempColor.setColor(currentState().fillColor));
 		isDirty = true;
 		return this;
 	}
@@ -372,7 +374,7 @@ public class CCanvas extends Canvas {
 	@Override
 	public Canvas strokeText(TextLayout layout, float x, float y) {
 		currentState().prepareStroke(_canvas);
-		((CTextLayout) layout).stroke(_canvas, x, y);
+		((CTextLayout) layout).stroke(_canvas, x, y, _tempColor.setColor(currentState().strokeColor));
 		isDirty = true;
 		return this;
 	}

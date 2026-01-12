@@ -38,6 +38,7 @@ import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.SDLCall;
+import loon.cport.bridge.STBCall;
 import loon.cport.bridge.STBImage;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
@@ -429,10 +430,16 @@ public class CAssets extends Assets {
 			@Override
 			public void run() {
 				try {
-					STBImage stbimage = STBImage.createImage(SDLCall.downloadURL(url));
-					Pixmap pixmap = new Pixmap(stbimage.getImagePixels32(), stbimage.getWidth(), stbimage.getHeight(),
-							stbimage.getFormat() >= 4);
-					image.succeed(new ImageImpl.Data(Scale.ONE, pixmap, pixmap.getWidth(), pixmap.getHeight()));
+					final long count = STBCall.getUrlFileSize(url);
+					if (count > 0) {
+						final int size = (int) count;
+						final byte[] bytes = new byte[size];
+						STBCall.downloadURL(url, bytes, size);
+						STBImage stbimage = STBImage.createImage(bytes);
+						Pixmap pixmap = new Pixmap(stbimage.getImagePixels32(), stbimage.getWidth(),
+								stbimage.getHeight(), stbimage.getFormat() >= 4);
+						image.succeed(new ImageImpl.Data(Scale.ONE, pixmap, pixmap.getWidth(), pixmap.getHeight()));
+					}
 				} catch (Exception error) {
 					image.fail(error);
 				}
@@ -543,9 +550,10 @@ public class CAssets extends Assets {
 			return null;
 		}
 		Exception error = null;
-		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(path)) {
+		String newPath = requirePath(path);
+		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(newPath)) {
 			try {
-				STBImage stbImage = STBImage.createImage(path);
+				STBImage stbImage = STBImage.createImage(newPath);
 				Pixmap image = new Pixmap(stbImage.getImagePixels32(), stbImage.getWidth(), stbImage.getHeight());
 				Scale viewScale = game.graphics().scale(), imageScale = rsrc.scale;
 				float viewImageRatio = viewScale.factor / imageScale.factor;

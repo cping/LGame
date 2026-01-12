@@ -44,10 +44,16 @@ public class CCodeFix {
 	public final TArray<FileFix> fixContexts = new TArray<FileFix>();
 
 	public CCodeFix() {
-
 		FileFix fix1 = new FileFix("file.c", "file, size, 0, where)", "file, size, 0, FILE_BEGIN)");
-
+		FileFix fix2 = new FileFix("core.h", "((char*) teavm_gc_cardTable)[offset] = 0;",
+				"char* result = ((char*)teavm_gc_cardTable);\r\n" + "    size_t len = strlen(result);\r\n"
+						+ "    if (result && (size_t)offset < len) {\r\n" + "        result[offset] = 0;\r\n"
+						+ "    }");
+		FileFix fix3 = new FileFix("config.h", "#pragma once", "#pragma once\r\n" + "#include \"SDLSupport.c\"\r\n"
+				+ "#include \"STBSupport.c\"\r\n" + "#include \"SocketSupport.c\"\r\n" + "#include \"gles2.c\"");
 		fixContexts.add(fix1);
+		fixContexts.add(fix2);
+		fixContexts.add(fix3);
 	}
 
 	public TArray<FileFix> getFixList() {

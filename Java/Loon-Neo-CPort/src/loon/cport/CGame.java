@@ -28,6 +28,7 @@ import loon.Graphics;
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
+import loon.LazyLoading;
 import loon.Log;
 import loon.Save;
 import loon.Support;
@@ -88,18 +89,18 @@ public class CGame extends LGame {
 	private final CSave _save;
 	private final CClipboard _clipboard;
 	private final int _startTime;
+	private final LazyLoading.Data _mainData;
 
-	private boolean _running;
-
-	public CGame(Loon loon, CSetting config) {
+	public CGame(Loon loon, CSetting config, LazyLoading.Data mainData) {
 		super(config, loon);
 		setting = config;
 		setting.updateScale();
+		this._mainData = mainData;
+		this._startTime = SDLCall.getTicks();
 		setWindowFlags(_csetting = config);
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(), _csetting.vsync,
-				_flags.getValue(), _csetting.isDebug);
-		setWindodIcon(_csetting);
-		this._startTime = SDLCall.getTicks();
+				SDLCall.SDL_WINDOW_OPENGL | SDLCall.SDL_WINDOW_SHOWN, _csetting.isDebug);
+		setWindowIcon(_csetting);
 		this._log = new CLog();
 		this._syn = new Asyn.Default(_log, frame);
 		this._accelerometer = new CAccelerometer();
@@ -115,9 +116,9 @@ public class CGame extends LGame {
 		}
 	}
 
-	private void setWindodIcon(CSetting config) {
+	private void setWindowIcon(CSetting config) {
 		final String path = config.iconPath;
-		if (path != null && path.length() > 0) {
+		if (path != null && path.length() > 0 && (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
 			try {
 				SDLSurface surface = SDLSurface.create(path);
 				SDLCall.setWindowIcon(surface.getHandle());
@@ -146,17 +147,27 @@ public class CGame extends LGame {
 		}
 	}
 
+	private void initScreen() {
+		if (!isRunning()) {
+			initProcess();
+			register(_mainData.onScreen());
+			LSystem.PAUSED = false;
+		}
+	}
+
 	public void start() {
-		_running = true;
+		if (isRunning()) {
+			return;
+		}
+		initScreen();
 		final boolean gamePlatform = _csetting.isGamePlatform();
 		final int targetFps = MathUtils.iceil(LSystem.getFPS());
 		final int frameDelay = 1000 / targetFps;
-		initProcess();
 		try {
 			int width = _csetting.getShowWidth(), height = _csetting.getShowHeight();
 			boolean resize = _csetting.fullscreen || _csetting.resizable;
 			boolean paused = false;
-			while (_running) {
+			while (isRunning()) {
 				final int frameStart = SDLCall.getTicks();
 				if (resize) {
 					final int[] size = gamePlatform ? SDLCall.getCurrentScreenSize() : SDLCall.getCurrentWindowSize();
@@ -204,12 +215,6 @@ public class CGame extends LGame {
 			}
 		}
 		shutdown();
-	}
-
-	@Override
-	public void shutdown() {
-		super.shutdown();
-		_running = false;
 	}
 
 	@Override

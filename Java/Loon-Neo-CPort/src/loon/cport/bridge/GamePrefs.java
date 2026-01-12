@@ -64,24 +64,37 @@ public final class GamePrefs implements LRelease {
 	}
 
 	public String getString(String section, String key) {
-		byte[] bytes = SDLCall.getGamePrefs(_prefsHandle, section, key, 0);
+		byte[] buffer = new byte[1024 * 10];
+		int length = (int) SDLCall.getGamePrefs(_prefsHandle, section, key, buffer);
+		final byte[] newData = new byte[length];
+		System.arraycopy(buffer, 0, newData, 0, length);
+		buffer = null;
 		try {
-			return new String(bytes, LSystem.ENCODING);
+			return new String(newData, LSystem.ENCODING);
 		} catch (Exception e) {
-			return new String(bytes);
+			return new String(newData);
 		}
 	}
 
 	public String[] getKeys(String section, String delimiter) {
-		String keys = SDLCall.getGamePrefsKeys(_prefsHandle, section, delimiter);
-		if (keys == null || keys.length() == 0) {
+		char[] buffer = new char[2048];
+		int length = (int) SDLCall.getGamePrefsKeys(_prefsHandle, section, delimiter, buffer);
+		if (length == 0) {
 			return new String[] { "" };
 		}
-		return StringUtils.split(keys, delimiter);
+		final char[] newData = new char[length];
+		System.arraycopy(buffer, 0, newData, 0, length);
+		buffer = null;
+		return StringUtils.split(new String(newData), delimiter);
 	}
 
-	public byte[] get(String section, String key, int len) {
-		return SDLCall.getGamePrefs(_prefsHandle, section, key, len);
+	public byte[] get(String section, String key) {
+		byte[] buffer = new byte[1024 * 10];
+		int length = (int) SDLCall.getGamePrefs(_prefsHandle, section, key, buffer);
+		final byte[] newData = new byte[length];
+		System.arraycopy(buffer, 0, newData, 0, length);
+		buffer = null;
+		return newData;
 	}
 
 	public void remove(String section, String key) {

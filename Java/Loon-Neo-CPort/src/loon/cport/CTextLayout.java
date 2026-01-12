@@ -187,11 +187,11 @@ public class CTextLayout extends loon.font.TextLayout {
 		pixmap.drawPixmap(_pixmapFont.textToPixmap(message, _fontSize, fontColor), x, y);
 	}
 
-	public void drawChar(Pixmap pixmap, int point, int x, int y) {
+	public void drawChar(Pixmap pixmap, int point, int x, int y, LColor fontColor) {
 		if (pixmap == null) {
 			return;
 		}
-		pixmap.drawPixmap(_pixmapFont.charToPixmap(point, _fontSize), x, y);
+		pixmap.drawPixmap(_pixmapFont.charToPixmap(point, _fontSize, fontColor), x, y);
 	}
 
 	@Override

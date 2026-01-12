@@ -49,7 +49,7 @@ public final class SocketCall {
 	public final static native int socketRecv(int sock, char[] msg, int bufsize);
 
 	@Import(name = "Load_Socket_FirstIP")
-	public final static native String socketFirstIP(char[] outips, int outsize, int preferipv6);
+	public final static native void socketFirstIP(char[] outips, int outsize, int preferipv6);
 
 	@Import(name = "Load_Create_Server")
 	public final static native int createServer(int port);

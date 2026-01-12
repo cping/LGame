@@ -526,7 +526,7 @@ public abstract class LObject<T> extends BlendMethod implements Comparator<T>, X
 			_objectName = getClass().getName();
 			int idx = _objectName.lastIndexOf('.');
 			if (idx != -1 && idx > 0) {
-				_objectName = _objectName.substring(idx + 1).intern();
+				_objectName = _objectName.substring(idx + 1);
 			} else {
 				_objectName = "LObject";
 			}

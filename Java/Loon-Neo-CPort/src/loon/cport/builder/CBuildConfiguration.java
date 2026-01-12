@@ -37,6 +37,8 @@ public class CBuildConfiguration {
 
 	public String cappPath = "";
 
+	public String cappName = "capp";
+	
 	public final ArrayList<URL> additionalClasspath = new ArrayList<URL>();
 
 	public final ArrayList<String> classesToPreserve = new ArrayList<>();

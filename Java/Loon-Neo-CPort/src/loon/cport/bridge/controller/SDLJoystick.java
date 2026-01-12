@@ -34,7 +34,7 @@ public final class SDLJoystick implements LRelease {
 
 	private long _joystickHandle;
 
-	private SDLJoystick(long handle) {
+	protected SDLJoystick(long handle) {
 		_joystickHandle = handle;
 	}
 
@@ -52,6 +52,10 @@ public final class SDLJoystick implements LRelease {
 
 	public int numButtons() {
 		return SDLCall.joystickNumButtons(_joystickHandle);
+	}
+
+	public String getGUIDString(char[] guids) {
+		return SDLCall.joystickGetGUIDString(_joystickHandle, guids);
 	}
 
 	public long getHandle() {
