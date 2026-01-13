@@ -22,7 +22,7 @@
     #include <SDL_main.h>
 #endif
 
-#ifdef _WIN32
+#ifdef _WIN32 || _WIN64
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <shlobj.h>
@@ -76,6 +76,19 @@ static void run_sleep_ms(int ms) {
 
 #include "SDL_mixer.h"
 #include <SDL_gamecontroller.h>
+
+#ifdef __WINRT__
+#include "winrt/base.h"
+#define main main
+static int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
+    AllocConsole();
+    FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
+    freopen_s(&fpstdin, "CONIN$", "r", stdin);
+    freopen_s(&fpstdout, "CONOUT$", "w", stdout);
+    freopen_s(&fpstderr, "CONOUT$", "w", stderr);
+    return SDL_WinRTRunApp(SDL_main, NULL);
+}
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -142,13 +155,101 @@ static const PlatformResolution platformResTable[] = {
     {"Mac OS X", 2560, 1600}
 };
 
-static int32_t global_result[8];
-
 static char global_cname[2048];
 
 static char global_info[1024 * 10];
 
 #include <stddef.h>
+
+static inline int utf8_to_utf16(const char* utf8, uint16_t* utf16, size_t max_len) {
+    if (!utf8 || !utf16 || max_len == 0) return -1;
+    size_t i = 0;
+    while (*utf8 && i < max_len - 1) {
+        unsigned char c = (unsigned char)*utf8;
+        uint32_t codepoint = 0;
+        if (c < 0x80) {
+            codepoint = c;
+            utf8++;
+        }
+        else if ((c & 0xE0) == 0xC0) { 
+            if ((utf8[1] & 0xC0) != 0x80) return -1;
+            codepoint = ((c & 0x1F) << 6) | (utf8[1] & 0x3F);
+            utf8 += 2;
+        }
+        else if ((c & 0xF0) == 0xE0) { 
+            if ((utf8[1] & 0xC0) != 0x80 || (utf8[2] & 0xC0) != 0x80) return -1;
+            codepoint = ((c & 0x0F) << 12) |
+                ((utf8[1] & 0x3F) << 6) |
+                (utf8[2] & 0x3F);
+            utf8 += 3;
+        }
+        else if ((c & 0xF8) == 0xF0) { 
+            if ((utf8[1] & 0xC0) != 0x80 || (utf8[2] & 0xC0) != 0x80 || (utf8[3] & 0xC0) != 0x80) return -1;
+            codepoint = ((c & 0x07) << 18) |
+                ((utf8[1] & 0x3F) << 12) |
+                ((utf8[2] & 0x3F) << 6) |
+                (utf8[3] & 0x3F);
+            utf8 += 4;
+        }
+        else {
+            return -1;
+        }
+        if (codepoint <= 0xFFFF) {
+            utf16[i++] = (uint16_t)codepoint;
+        }
+        else if (codepoint <= 0x10FFFF) {
+            if (i + 2 >= max_len) return -1;
+            codepoint -= 0x10000;
+            utf16[i++] = (uint16_t)(0xD800 | (codepoint >> 10));     
+            utf16[i++] = (uint16_t)(0xDC00 | (codepoint & 0x3FF));  
+        }
+        else {
+            return -1; 
+        }
+    }
+    utf16[i] = 0;
+    return (int)i;
+}
+
+static inline int utf16_to_utf8(const uint16_t* utf16, char* utf8, size_t max_len) {
+    if (!utf16 || !utf8 || max_len == 0) return -1;
+    size_t i = 0;
+    while (*utf16 && i < max_len - 1) {
+        uint32_t codepoint;
+        uint16_t ch = *utf16++;
+        if (ch >= 0xD800 && ch <= 0xDBFF) { 
+            uint16_t low = *utf16++;
+            if (low < 0xDC00 || low > 0xDFFF) return -1;
+            codepoint = (((uint32_t)(ch - 0xD800)) << 10) + (low - 0xDC00) + 0x10000;
+        }
+        else {
+            codepoint = ch;
+        }
+        if (codepoint < 0x80) { 
+            utf8[i++] = (char)codepoint;
+        }
+        else if (codepoint < 0x800) { 
+            if (i + 2 >= max_len) return -1;
+            utf8[i++] = (char)(0xC0 | (codepoint >> 6));
+            utf8[i++] = (char)(0x80 | (codepoint & 0x3F));
+        }
+        else if (codepoint < 0x10000) {
+            if (i + 3 >= max_len) return -1;
+            utf8[i++] = (char)(0xE0 | (codepoint >> 12));
+            utf8[i++] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+            utf8[i++] = (char)(0x80 | (codepoint & 0x3F));
+        }
+        else { 
+            if (i + 4 >= max_len) return -1;
+            utf8[i++] = (char)(0xF0 | (codepoint >> 18));
+            utf8[i++] = (char)(0x80 | ((codepoint >> 12) & 0x3F));
+            utf8[i++] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
+            utf8[i++] = (char)(0x80 | (codepoint & 0x3F));
+        }
+    }
+    utf8[i] = '\0';
+    return (int)i;
+}
 
 static inline char* chars_strchr(const char* str, int ch, size_t maxlen) {
     if (!str) {
@@ -347,7 +448,7 @@ void SetPrefs(int64_t handle, const char* section, const char* key,
 
 int64_t GetPrefs(int64_t handle, const char* section, const char* key, uint8_t* outBytes);
 
-int64_t GetPrefsKeys(int64_t handle, const char* section, const char* delimiter,char* outChars);
+const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter);
 
 bool SavePrefs(int64_t handle, const char* filename);
 
@@ -365,15 +466,17 @@ int32_t GetGameDataFileCount(const int64_t handle);
 
 void FreeGameData(const int64_t handle);
 
-int32_t GetPathFullName(char* dst, const char* path);
+char* GetPathFullName(const char* path);
 
-int32_t GetSystemProperty(const char* key, char* dst);
+char* GetSystemProperty(const char* key);
 
 bool FileExists(const char* filename);
 
 const char* Load_SDL_RW_FileToChars(const char* filename);
 
-const uint8_t* Load_SDL_RW_FileToBytes(const char* filename);
+int64_t Load_SDL_RW_FileSize(const char* filename);
+
+int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes);
 
 bool Load_SDL_RW_FileExists(const char* filename);
 
@@ -435,7 +538,7 @@ void Load_SDL_JoystickClose(const int64_t handle);
 
 int64_t Load_SDL_GameControllerGetJoystick(const int64_t handle);
 
-const char* Load_SDL_JoystickGetGUIDString(const int64_t handle, char* guids);
+const char* Load_SDL_JoystickGetGUIDString(const int64_t handle);
 
 int32_t Load_SDL_JoystickNumAxes(const int64_t handle);
 
@@ -501,11 +604,11 @@ int64_t Load_SDL_GetTicks64();
 
 void Call_SDL_DestroyWindow();
 
-int32_t* Load_SDL_GetKeyStates();
+int32_t Load_SDL_GetKeyStates(int32_t* keys);
 
-int32_t* Load_SDL_GetPressedKeys();
+int32_t Load_SDL_GetPressedKeys(int32_t* keys);
 
-int32_t* Load_SDL_GetReleasedKeys();
+int32_t Load_SDL_GetReleasedKeys(int32_t* keys);
 
 int32_t Load_SDL_GetLastPressedScancode();
 
@@ -521,13 +624,13 @@ bool Load_IsConnected(const int controller);
 
 int Load_Buttons();
 
-float* Load_Axes(const int controller, float* axes);
+int32_t Load_Axes(const int controller, float* axes);
 
 bool Load_SDL_Exit(const int run);
 
-int* Load_SDL_GetDrawableSize(const int64_t window, int* values);
+void Load_SDL_GetDrawableSize(const int64_t window, int32_t* values);
 
-int* Load_SDL_GetWindowSize(const int64_t window);
+void Load_SDL_GetWindowSize(const int64_t window, int32_t* values);
 
 int Load_SDL_LockSurface(const int64_t handle);
 
@@ -541,11 +644,9 @@ int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels,const int w,const in
 
 int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format, int32_t flags);
 
-int* Load_SDL_GetSurfaceSize(const int64_t handle);
+void Load_SDL_GetSurfaceSize(const int64_t handle, int32_t* values);
 
-int* Load_SDL_GetPixels(const int64_t handle, int x, int y, int w, int h);
-
-int* Load_SDL_GetPixels32(const int64_t handle, const int order);
+void Load_SDL_GetSurfacePixels32(const int64_t handle, const int order, int32_t* pixels);
 
 void Load_SDL_SetPixel(const int64_t handle, int x, int y, int32_t pixel);
 
@@ -565,13 +666,13 @@ void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int
 
 void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const int w, const int h);
 
-int* Load_SDL_GetClipRect(const int64_t handle);
+void Load_SDL_GetClipRect(const int64_t handle,int32_t* values);
 
 int32_t Load_SDL_GetFormat(const int64_t handle);
 
 bool Load_SDL_Update();
 
-int* Load_SDL_TouchData(int* data);
+int32_t Load_SDL_TouchData(int32_t* data);
 
 void Load_SDL_Cleanup();
 
@@ -613,9 +714,9 @@ void Load_SDL_SetWindowPosition(const int64_t handle, const int x, const int y);
 
 int Load_SDL_GetWindowDisplayIndex(const int64_t handle);
 
-int* Load_SDL_GetDisplayUsableBounds(const int display, int* xywh);
+void Load_SDL_GetDisplayUsableBounds(const int display, int32_t* xywh);
 
-int* Load_SDL_GetDisplayBounds(const int display, int* xywh);
+void Load_SDL_GetDisplayBounds(const int display, int32_t* xywh);
 
 int Load_SDL_GetNumVideoDisplays();
 
@@ -663,9 +764,9 @@ void Load_SDL_SetWindowIcon(const int64_t handle, const int64_t surface);
 
 void Load_SDL_DestroyWindow(const int64_t handle);
 
-int* Call_SDL_GetDrawableSize(int* values);
+void Call_SDL_GetDrawableSize(int* values);
 
-int* Call_SDL_GetWindowSize();
+void Call_SDL_GetWindowSize(int* values);
 
 void Call_SDL_MaximizeWindow();
 
@@ -979,7 +1080,7 @@ void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const
 
 void Load_GL_GetShaderiv(const int shader, const int pname, const void* params);
 
-char* Load_GL_GetShaderInfoLog(const int shader);
+const char* Load_GL_GetShaderInfoLog(const int shader);
 
 const char* Load_GL_GetShaderInfoLogs(const int shader, const int bufsize, const void* length, const void* infolog);
 

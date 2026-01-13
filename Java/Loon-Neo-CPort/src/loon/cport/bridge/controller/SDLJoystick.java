@@ -54,8 +54,8 @@ public final class SDLJoystick implements LRelease {
 		return SDLCall.joystickNumButtons(_joystickHandle);
 	}
 
-	public String getGUIDString(char[] guids) {
-		return SDLCall.joystickGetGUIDString(_joystickHandle, guids);
+	public String getGUIDString() {
+		return SDLCall.joystickGetGUIDString(_joystickHandle);
 	}
 
 	public long getHandle() {

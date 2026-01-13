@@ -28,7 +28,7 @@ import loon.cport.assets.AssetFile;
 public class CBuildConfiguration {
 
 	public AssetFilter assetFilter = null;
-	
+
 	public ArrayList<AssetFile> assetsPath = new ArrayList<AssetFile>();
 
 	public ArrayList<String> assetsClasspath = new ArrayList<String>();
@@ -38,18 +38,26 @@ public class CBuildConfiguration {
 	public String cappPath = "";
 
 	public String cappName = "capp";
-	
+
 	public final ArrayList<URL> additionalClasspath = new ArrayList<URL>();
 
-	public final ArrayList<String> classesToPreserve = new ArrayList<>();
+	public final ArrayList<String> classesToPreserve = new ArrayList<String>();
 
 	public String mainClassArgs = "";
 
 	public CBaseApp baseApp;
-	
+
 	public TargetType targetType = TargetType.CPort;
-	
+
 	public String targetFileName = "run";
 
 	public BuildReflectionListener reflectionListener;
+	
+	public int minHeapSize = 8 * (1 << 20);
+	
+	public int maxHeapSize = 256 * (1 << 20);
+	
+	public int minDirectBuffersSize = 2 * (1 << 20);
+	
+	public int maxDirectBuffersSize = 32 * (1 << 20);
 }

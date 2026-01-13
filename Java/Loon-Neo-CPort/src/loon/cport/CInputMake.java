@@ -65,6 +65,7 @@ public class CInputMake extends InputMake {
 	private int _currentId;
 	private int _lastKeyPressed;
 	private long _currentEventTimeStamp;
+	private final int[] _keyData = new int[SDLCall.SDL_NUM_SCANCODES];
 	private final int[] _touchData = new int[DEF_MAX_TOUCHES * 3];
 	private final int[] _previousTouchData = new int[DEF_MAX_TOUCHES * 3];
 	private final int[] _rawTouchIds = new int[DEF_MAX_TOUCHES];
@@ -161,16 +162,16 @@ public class CInputMake extends InputMake {
 			postTouchEvents(_touchs, true);
 		}
 		System.arraycopy(_touchData, 0, _previousTouchData, 0, DEF_MAX_TOUCHES * 3);
-		final int[] keyPressed = SDLCall.getPressedKeys();
-		final int[] keyReleased = SDLCall.getReleasedKeys();
+		final int keyPressedLen = SDLCall.getPressedKeys(_keyData);
 		_lastKeyPressed = SDLCall.getLastPressedScancode();
-		for (int key = 0; key < keyPressed.length; key++) {
-			if (keyPressed[key] == 1) {
+		for (int key = 0; key < keyPressedLen; key++) {
+			if (_keyData[key] == 1) {
 				postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(key), true, (char) key, 0);
 			}
 		}
-		for (int unkey = 0; unkey < keyReleased.length; unkey++) {
-			if (keyReleased[unkey] == 1) {
+		final int keyReleasedLen = SDLCall.getReleasedKeys(_keyData);
+		for (int unkey = 0; unkey < keyReleasedLen; unkey++) {
+			if (_keyData[unkey] == 1) {
 				postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(unkey), false, (char) unkey, 0);
 			}
 		}

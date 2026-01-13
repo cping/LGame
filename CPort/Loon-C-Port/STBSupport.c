@@ -442,8 +442,8 @@ void Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize, int *r
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	ascent *= scale;
-	descent *= scale;
+	ascent *= (int)scale;
+	descent *= (int)scale;
 	rect[0] = ascent;
 	rect[1] = descent;
 	rect[2] = lineGap;
@@ -498,8 +498,6 @@ int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
 
 	if (line_width > max_width) max_width = line_width;
 	total_height += line_height;
-	global_result[0] = max_width;
-	global_result[1] = total_height;
 	rect[0] = max_width;
 	rect[1] = total_height;
 }
@@ -572,8 +570,8 @@ void Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const
 	int x = 0;
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	ascent *= scale;
-	descent *= scale;
+	ascent *= (int)scale;
+	descent *= (int)scale;
 	int i;
 	int newWidth = width;
 	for (i = 0; i < strlen(text); ++i)
@@ -585,10 +583,10 @@ void Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const
 		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, newWidth, scale, scale, text[i]);
 		int ax;
 		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
-		x += ax * scale;
+		x += (int)(ax * scale);
 		int kern;
 		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
-		x += kern * scale;
+		x += (int)(kern * scale);
 	}
 }
 
@@ -816,8 +814,8 @@ void Call_STB_GetFontVMetrics(const float fontsize,int32_t* rect)
 	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontsize);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	ascent *= scale;
-	descent *= scale;
+	ascent *= (int)scale;
+	descent *= (int)scale;
 	rect[0] = ascent;
 	rect[1] = descent;
 	rect[2] = lineGap;
@@ -859,8 +857,8 @@ void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, cons
 	int x = 0;
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	ascent *= scale;
-	descent *= scale;
+	ascent *= (int)scale;
+	descent *= (int)scale;
 	int i;
 	for (i = 0; i < strlen(text); ++i)
 	{
@@ -871,10 +869,10 @@ void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, cons
 		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, text[i]);
 		int ax;
 		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
-		x += ax * scale;
+		x += (int)(ax * scale);
 		int kern;
 		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
-		x += kern * scale;
+		x += (int)(kern * scale);
 	}
 }
 

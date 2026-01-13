@@ -33,6 +33,12 @@ public final class SocketCall {
 	@Import(name = "ImportSocketInclude")
 	public final static native void importInclude();
 
+	@Import(name = "GetURLFileSize")
+	public final static native long getUrlFileSize(String url);
+
+	@Import(name = "DownloadURL")
+	public final static native void downloadURL(String url, byte[] downloadBytes, int len);
+
 	@Import(name = "Load_Socket_Init")
 	public final static native int socketInit();
 

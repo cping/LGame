@@ -63,29 +63,30 @@ public final class GamePrefs implements LRelease {
 		set(section, key, bytes, bytes.length);
 	}
 
-	public String getString(String section, String key) {
+	public byte[] getBytes(String section, String key) {
 		byte[] buffer = new byte[1024 * 10];
 		int length = (int) SDLCall.getGamePrefs(_prefsHandle, section, key, buffer);
 		final byte[] newData = new byte[length];
 		System.arraycopy(buffer, 0, newData, 0, length);
 		buffer = null;
+		return newData;
+	}
+
+	public String getString(String section, String key) {
+		final byte[] buffer = getBytes(section, key);
 		try {
-			return new String(newData, LSystem.ENCODING);
+			return new String(buffer, LSystem.ENCODING);
 		} catch (Exception e) {
-			return new String(newData);
+			return new String(buffer);
 		}
 	}
 
 	public String[] getKeys(String section, String delimiter) {
-		char[] buffer = new char[2048];
-		int length = (int) SDLCall.getGamePrefsKeys(_prefsHandle, section, delimiter, buffer);
-		if (length == 0) {
+		String result = SDLCall.getGamePrefsKeys(_prefsHandle, section, delimiter);
+		if (result == null || result.length() == 0) {
 			return new String[] { "" };
 		}
-		final char[] newData = new char[length];
-		System.arraycopy(buffer, 0, newData, 0, length);
-		buffer = null;
-		return StringUtils.split(new String(newData), delimiter);
+		return StringUtils.split(result, delimiter);
 	}
 
 	public byte[] get(String section, String key) {

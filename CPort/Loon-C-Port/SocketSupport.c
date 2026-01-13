@@ -63,7 +63,7 @@ int get_remote_file_size_socket(const char* url, int64_t* size) {
 #endif
         return -4;
     }
-    int sock = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    int sock = (int)socket(res->ai_family, res->ai_socktype, res->ai_protocol);
     if (sock < 0) {
         freeaddrinfo(res);
 #ifdef _WIN32

@@ -120,9 +120,10 @@ public class AssetsCopy {
 							AssetFile dest = target.child(classpathFile);
 							dest.write(is, false);
 							String destPath = dest.path();
-							if (!destPath.endsWith(".h") && !destPath.endsWith(".c") && !destPath.endsWith(".cpp")
-									&& !destPath.endsWith(".hpp") && !destPath.endsWith(".dll")
-									&& !destPath.endsWith(".so") && !destPath.endsWith(".lib")) {
+							if (!destPath.endsWith(".h") && !destPath.endsWith(".c") && !destPath.endsWith(".a")
+									&& !destPath.endsWith(".cpp") && !destPath.endsWith(".hpp")
+									&& !destPath.endsWith(".dll") && !destPath.endsWith(".so")
+									&& !destPath.endsWith(".lib")) {
 								AssetFile dest2 = AssetFile.createHandle(dest.file());
 								assets.add(new Asset(dest2, AssetType.Binary, op));
 							}

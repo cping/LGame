@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.teavm.tooling.TeaVMSourceFilePolicy;
+import org.teavm.tooling.TeaVMTargetType;
 import org.teavm.tooling.TeaVMTool;
 import org.teavm.tooling.sources.DirectorySourceFileProvider;
 import org.teavm.vm.TeaVMOptimizationLevel;
@@ -92,7 +93,13 @@ public class CInitialize {
 		CBuilder.config(cbuildConfiguration);
 
 		TeaVMTool tool = new TeaVMTool();
+		tool.setTargetType(TeaVMTargetType.C);
 		tool.setObfuscated(obfuscated);
+		tool.setMinHeapSize(cbuildConfiguration.minHeapSize);
+		tool.setMaxHeapSize(cbuildConfiguration.maxHeapSize);
+		tool.setMinDirectBuffersSize(cbuildConfiguration.minDirectBuffersSize);
+		tool.setMaxDirectBuffersSize(cbuildConfiguration.maxDirectBuffersSize);
+		tool.setHeapDump(false);
 		tool.setOptimizationLevel(level);
 		tool.setMainClass(mainClassName);
 		tool.setDebugInformationGenerated(debug);

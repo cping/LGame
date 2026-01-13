@@ -33,12 +33,6 @@ public final class STBCall {
 	@Import(name = "ImportSTBInclude")
 	public final static native void importInclude();
 
-	@Import(name = "GetURLFileSize")
-	public final static native long getUrlFileSize(String url);
-
-	@Import(name = "DownloadURL")
-	public final static native void downloadURL(String url, byte[] downloadBytes, int len);
-
 	@Import(name = "Load_STB_Image_LoadBytes")
 	public final static native long loadBytesToImage(byte[] buffer, int len);
 

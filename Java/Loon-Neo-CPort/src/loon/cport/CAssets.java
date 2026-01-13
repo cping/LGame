@@ -38,8 +38,8 @@ import loon.canvas.ImageImpl;
 import loon.canvas.ImageImpl.Data;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.SDLCall;
-import loon.cport.bridge.STBCall;
 import loon.cport.bridge.STBImage;
+import loon.cport.bridge.SocketCall;
 import loon.opengl.TextureSource;
 import loon.utils.MathUtils;
 import loon.utils.PathUtils;
@@ -47,6 +47,23 @@ import loon.utils.Scale;
 import loon.utils.StringUtils;
 
 public class CAssets extends Assets {
+
+	public static final byte[] loadRwFile(String path) {
+		if (SDLCall.fileExists(path) || SDLCall.rwFileExists(path)) {
+			final int fileSize = (int) SDLCall.getFileSize(path);
+			if (fileSize > 0) {
+				byte[] buffer = new byte[fileSize];
+				final int length = (int) SDLCall.LoadRWFileToBytes(path, buffer);
+				if (length > 0) {
+					final byte[] newData = new byte[length];
+					System.arraycopy(buffer, 0, newData, 0, length);
+					buffer = null;
+					return newData;
+				}
+			}
+		}
+		return null;
+	}
 
 	public static final URL convertURL(String url) throws Exception {
 		return convertURI(url).toURL();
@@ -104,7 +121,7 @@ public class CAssets extends Assets {
 		@Override
 		public InputStream getInputStream() {
 			try {
-				return in = new ByteArrayInputStream(SDLCall.LoadRWFileToBytes(path));
+				return in = new ByteArrayInputStream(loadRwFile(path));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -167,7 +184,7 @@ public class CAssets extends Assets {
 				if (in != null) {
 					return in;
 				}
-				return in = new ByteArrayInputStream(SDLCall.LoadRWFileToBytes(path));
+				return in = new ByteArrayInputStream(loadRwFile(path));
 			} catch (Exception e) {
 				throw new RuntimeException("file " + name + " not found !", e);
 			}
@@ -293,8 +310,7 @@ public class CAssets extends Assets {
 				String org = "loon";
 				String app = LSystem.getSystemAppName();
 				String prefPath = SDLCall.getPrefPath(org, app);
-				return in = new ByteArrayInputStream(
-						SDLCall.LoadRWFileToBytes(PathUtils.getCombinePaths(prefPath, path)));
+				return in = new ByteArrayInputStream(loadRwFile(PathUtils.getCombinePaths(prefPath, path)));
 			} catch (Exception e) {
 				throw new RuntimeException("file " + name + " not found !", e);
 			}
@@ -368,7 +384,7 @@ public class CAssets extends Assets {
 				if (file.exists()) {
 					return new FileInputStream(file);
 				} else {
-					return new ByteArrayInputStream(SDLCall.LoadRWFileToBytes(path));
+					return new ByteArrayInputStream(loadRwFile(path));
 				}
 			}
 		} catch (Throwable t) {
@@ -430,11 +446,11 @@ public class CAssets extends Assets {
 			@Override
 			public void run() {
 				try {
-					final long count = STBCall.getUrlFileSize(url);
+					final long count = SocketCall.getUrlFileSize(url);
 					if (count > 0) {
 						final int size = (int) count;
 						final byte[] bytes = new byte[size];
-						STBCall.downloadURL(url, bytes, size);
+						SocketCall.downloadURL(url, bytes, size);
 						STBImage stbimage = STBImage.createImage(bytes);
 						Pixmap pixmap = new Pixmap(stbimage.getImagePixels32(), stbimage.getWidth(),
 								stbimage.getHeight(), stbimage.getFormat() >= 4);
@@ -528,14 +544,12 @@ public class CAssets extends Assets {
 
 	@Override
 	public String getTextSync(String path) throws Exception {
-		String newPath = requirePath(path);
-		return SDLCall.loadRWFileToChars(newPath);
+		return SDLCall.loadRWFileToChars(requirePath(path));
 	}
 
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
-		String newPath = requirePath(path);
-		return SDLCall.LoadRWFileToBytes(newPath);
+		return loadRwFile(requirePath(path));
 	}
 
 	protected Pixmap scaleImage(Pixmap image, float viewImageRatio) {

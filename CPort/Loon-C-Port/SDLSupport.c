@@ -1,18 +1,5 @@
 #include "SDLSupport.h"
 
-#ifdef __WINRT__
-#include "winrt/base.h"
-#define main main
-static int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
-	AllocConsole();
-	FILE* fpstdin = stdin, * fpstdout = stdout, * fpstderr = stderr;
-	freopen_s(&fpstdin, "CONIN$", "r", stdin);
-	freopen_s(&fpstdout, "CONOUT$", "w", stdout);
-	freopen_s(&fpstderr, "CONOUT$", "w", stderr);
-	return SDL_WinRTRunApp(SDL_main, NULL);
-}
-#endif
-
 #ifndef LOON_DESKTOP
 	static EGLDisplay display;
 	static EGLContext context;
@@ -111,15 +98,69 @@ static char* detectPlatformRuntimeString() {
 }
 
 static char* getOSVersionString() {
-	#if defined(_WIN32)
+	#if defined(_WIN32) || defined(_WIN64)
 		char* ver_str = "unknown";
-		if (IsWindows10OrGreater()) ver_str = "Windows 10 or later";
-		else if (IsWindows8Point1OrGreater()) ver_str = "Windows 8.1";
-		else if (IsWindows8OrGreater()) ver_str = "Windows 8";
-		else if (IsWindows7SP1OrGreater()) ver_str = "Windows 7 SP1";
-		else if (IsWindows7OrGreater()) ver_str = "Windows 7";
-		else ver_str = "Older than Windows 7";
-	return ver_str;
+		if (IsWindows10OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2016/2019/2022 or newer";
+			}
+			else {
+				ver_str = "Windows 10 or newer";
+			}
+		}
+		else if (IsWindows8Point1OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2012 R2";
+			}
+			else {
+				ver_str = "Windows 8.1";
+			}
+		}
+		else if (IsWindows8OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2012";
+			}
+			else {
+				ver_str = "Windows 8";
+			}
+		}
+		else if (IsWindows7SP1OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2008 R2 SP1";
+			}
+			else {
+				ver_str = "Windows 7 SP1";
+			}
+		}
+		else if (IsWindows7OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2008 R2";
+			}
+			else {
+				ver_str = "Windows 7";
+			}
+		}
+		else if (IsWindowsVistaSP2OrGreater()) {
+			if (IsWindowsServer()) {
+				ver_str = "Windows Server 2008 SP2";
+			}
+			else {
+				ver_str = "Windows Vista SP2";
+			}
+		}
+		else if (IsWindowsVistaSP1OrGreater()) {
+			ver_str = "Windows Vista SP1 / Server 2008";
+		}
+		else if (IsWindowsVistaOrGreater()) {
+			ver_str = "Windows Vista / Server 2008";
+		}
+		else if (IsWindowsXPOrGreater()) {
+			ver_str = "Windows XP or newer";
+		}
+		else {
+			ver_str = "Older than Windows XP";
+		}
+	    return ver_str;
 	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
 		static char version[128];
 		struct utsname sysinfo;
@@ -252,21 +293,18 @@ static void getMemoryInfoInts(int64_t* total, int64_t* free) {
 }
 
 #ifdef _WIN32
-int32_t GetPathFullName(char* dst, const char* path) {
+char* GetPathFullName(const char* path) {
 	char* buffer = (char*)malloc(MAX_PATH * sizeof(char));
 	DWORD length = GetFullPathNameA(path, MAX_PATH, buffer, NULL);
 	if (length == 0) {
 		return 0;
 	}
-	copy_chars_array(dst,(size_t)length,buffer,(size_t)length);
-	return length;
+	return buffer;
 }
 #elif defined(__unix__) || defined(__APPLE__)
-int32_t GetPathFullName(char* dst, const char* path) {
+int32_t GetPathFullName(const char* path) {
 	char* ret = realpath(path, NULL);
-	int len = strlen(ret);
-	copy_chars_array(dst, (size_t)len, ret, (size_t)len);
-	return len;
+	return ret;
 }
 #endif
 
@@ -580,9 +618,9 @@ int64_t GetPrefs(int64_t handle, const char* section, const char* key,uint8_t* o
 	return 0;
 }
 
-int64_t GetPrefsKeys(int64_t handle, const char* section, const char* delimiter,char* outChars) {
+const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimiter) {
 	game_preferences* prefs = (game_preferences*)handle;
-	if (!prefs) return 0;
+	if (!prefs) return NULL;
 	game_prefnode* cur = prefs->head;
 	while (cur) {
 		if (strcmp(cur->section, section) == 0) {
@@ -594,20 +632,19 @@ int64_t GetPrefsKeys(int64_t handle, const char* section, const char* delimiter,
 				if (n->next) total_len += delim_len;
 				count++;
 			}
-			if (count == 0) return 0;
-			char* result = (char*)malloc(total_len + 1);
-			if (!result) return 0;
+			if (count == 0) return _strdup("");
+			char* result = malloc(total_len + 1);
+			if (!result) return NULL;
 			result[0] = '\0';
 			for (game_prefnode* n = cur->next; n; n = n->next) {
 				chars_append(result, total_len + 1, n->key);
 				if (n->next) chars_append(result, total_len + 1, delimiter);
 			}
-			copy_chars_array(outChars, total_len, result, total_len);
-			return strlen(result);
+			return result;
 		}
 		cur = cur->next;
 	}
-	return 0;
+	return NULL;
 }
 
 
@@ -711,31 +748,50 @@ const char* Load_SDL_RW_FileToChars(const char* filename) {
 	return buffer;
 }
 
-const uint8_t* Load_SDL_RW_FileToBytes(const char* filename) {
+int64_t Load_SDL_RW_FileSize(const char* filename)
+{
 	if (!filename) {
-		return NULL;
+		return 0;
 	}
 	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
 	if (!rw) {
-		return NULL;
+		return 0;
 	}
 	Sint64 fileSize = SDL_RWsize(rw);
 	if (fileSize <= 0) {
 		SDL_RWclose(rw);
-		return NULL;
+		return 0;
+	}
+	return (int64_t)fileSize;
+}
+
+int64_t Load_SDL_RW_FileToBytes(const char* filename , uint8_t* outBytes) {
+	if (!filename) {
+		return 0;
+	}
+	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+	if (!rw) {
+		return 0;
+	}
+	Sint64 fileSize = SDL_RWsize(rw);
+	if (fileSize <= 0) {
+		SDL_RWclose(rw);
+		return 0;
 	}
 	uint8_t* buffer = (uint8_t*)malloc(fileSize);
 	if (!buffer) {
 		SDL_RWclose(rw);
-		return NULL;
+		return 0;
 	}
 	size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
 	SDL_RWclose(rw);
 	if (totalRead != (size_t)fileSize) {
 		free(buffer);
-		return NULL;
+		return 0;
 	}
-	return buffer;
+	copy_uint8_array(outBytes, (size_t)fileSize, buffer, (size_t)fileSize);
+	free(buffer);
+	return (int64_t)fileSize;
 }
 
 bool Load_SDL_RW_FileExists(const char* filename) {
@@ -1294,16 +1350,22 @@ bool Load_SDL_Pause() {
 	return g_isPause;
 }
 
-int32_t* Load_SDL_GetKeyStates() {
-	return g_keyStates;
+int32_t Load_SDL_GetKeyStates(int32_t* outKey) {
+	size_t len = sizeof(g_keyStates);
+	copy_int32_array(outKey, len, g_keyStates, len);
+	return (int32_t)len;
 }
 
-int32_t* Load_SDL_GetPressedKeys() {
-	return g_pressedKeys;
+int32_t Load_SDL_GetPressedKeys(int32_t* outKey) {
+	size_t len = sizeof(g_pressedKeys);
+	copy_int32_array(outKey, len, g_pressedKeys, len);
+	return (int32_t)len;
 }
 
-int32_t* Load_SDL_GetReleasedKeys() {
-	return g_releasedKeys;
+int32_t Load_SDL_GetReleasedKeys(int32_t* outKey) {
+	size_t len = sizeof(g_releasedKeys);
+	copy_int32_array(outKey, len, g_releasedKeys, len);
+	return (int32_t)len;
 }
 
 int32_t Load_SDL_GetLastPressedScancode() {
@@ -1402,10 +1464,11 @@ bool Load_SDL_Exit(const int run) {
 	return true;
 }
 
-int* Load_SDL_TouchData(int* data)
+int32_t Load_SDL_TouchData(int32_t* data)
 {
-	memcpy((void*)data, touches, sizeof(touches));
-	return data;
+	size_t len = sizeof(touches);
+	memcpy((void*)data, touches, len);
+	return (int32_t)len;
 }
 
 int Load_SDL_GL_SetSwapInterval(int on)
@@ -1428,17 +1491,16 @@ int Load_SDL_GL_SetAttribute(const int attribute, const int value)
 	return SDL_GL_SetAttribute((SDL_GLattr)attribute, value);
 }
 
-int* Load_SDL_GetDrawableSize(const int64_t window, int* values)
+void Load_SDL_GetDrawableSize(const int64_t window, int32_t* values)
 {
 	SDL_Window* win = (SDL_Window*)window;
 	if(!win){
-		return 0;
+		return;
 	}
 	int w, h;
 	SDL_GL_GetDrawableSize(win, &w, &h);
 	values[0] = w;
 	values[1] = h;
-	return values;
 }
 
 bool Load_SDL_PathIsFile(char* path)
@@ -1572,47 +1634,41 @@ void FreeGameData(const int64_t handle) {
 	free(fs);
 }
 
-int32_t GetSystemProperty(const char* key, char* outchars)
+char* GetSystemProperty(const char* key)
 {
-	char* result = "null";
 	if (strcmp(key, "os.sys") == 0) {
 		char* platform = detectPlatformCompileString();
 		if (!platform) {
 			platform = detectPlatformRuntimeString();
 		}
-		result = platform;
+		return platform;
 	}
 	if (strcmp(key, "os.name") == 0)
-		result = getOSVersionString();
+		return getOSVersionString();
 	if (strcmp(key, "os.arch") == 0)
-		result = getArchitectureString();
+		return getArchitectureString();
 	if (strcmp(key, "os.virt") == 0)
-		result = detectVirtualizationString();
+		return detectVirtualizationString();
 	if (strcmp(key, "os.gpu") == 0)
-		result = getGpuInfoString();
+		return getGpuInfoString();
 	if (strcmp(key, "os.gpu.cores") == 0) 	
-		result = ints_varargs_to_string("",1,getCpuCores());
+		return ints_varargs_to_string("",1,getCpuCores());
 	if (strcmp(key, "os.memory") == 0) {
 		int64_t totalRAM = 0, freeRAM = 0;
 		getMemoryInfoInts(&totalRAM, &freeRAM);
-		result = ints_varargs_to_string(",", 2, totalRAM, freeRAM);
+		return ints_varargs_to_string(",", 2, totalRAM, freeRAM);
 	}
 	if (strcmp(key, "line.separator") == 0)
-		result = get_newline_separator();
+		return get_newline_separator();
 	if (strcmp(key, "file.separator") == 0)
-		result = get_path_separator();
+		return get_path_separator();
 	if (strcmp(key, "java.io.tmpdir") == 0)
-		result = get_temp_folder();
+		return get_temp_folder();
 	if (strcmp(key, "user.home") == 0)
-		result = get_home_folder();
+		return get_home_folder();
 	if (strcmp(key, "user.name") == 0)
-		result = get_system_username();
-	if (result) {
-		size_t len = strlen(result);
-		copy_chars_array(outchars, len, result, len);
-		return (int32_t)len;
-	}
-	return 0;
+		return get_system_username();
+	return "";
 }
 
 const char* Load_SDL_GetPreferredLocales()
@@ -1741,11 +1797,12 @@ int64_t Load_SDL_GameControllerGetJoystick(const int64_t handle)
 	return 0;
 }
 
-const char* Load_SDL_JoystickGetGUIDString(const int64_t handle, char* guids)
+const char* Load_SDL_JoystickGetGUIDString(const int64_t handle)
 {
 	SDL_Joystick* joystick = (SDL_Joystick*)handle;
 	if (joystick) {
 		SDL_JoystickGUID guid = SDL_JoystickGetGUID(joystick);
+		static char guids[33];
 		SDL_JoystickGetGUIDString(guid, guids, sizeof(guids));
 		return guids;
 	}
@@ -1978,7 +2035,7 @@ int Load_Buttons()
 #endif
 }
 
-float* Load_Axes(const int controller, float* axes)
+int32_t Load_Axes(const int controller, float* axes)
 {
 #ifdef __SWITCH__
     const PadState &pad = controller == -1 ? combinedPad : pads[controller];
@@ -1994,21 +2051,20 @@ float* Load_Axes(const int controller, float* axes)
 #else
     memcpy(axes, joysticks, sizeof(joysticks));
 #endif
-	return axes;
+	return sizeof(axes);
 }
 
-int* Load_SDL_GetWindowSize(const int64_t window)
+void Load_SDL_GetWindowSize(const int64_t window,int32_t* values)
 {
 	SDL_Window* win = (SDL_Window*)window;
 	if (!win) {
-		return 0;
+		return;
 	}
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(win, &width, &height);
-	global_result[0] = width;
-	global_result[1] = height;
-	return global_result;
+	values[0] = width;
+	values[1] = height;
 }
 
 int Load_SDL_LockSurface(const int64_t handle)
@@ -2101,52 +2157,22 @@ int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format
 	return (intptr_t)newsurface;
 }
 
-int* Load_SDL_GetSurfaceSize(const int64_t handle)
+void Load_SDL_GetSurfaceSize(const int64_t handle,int32_t* values)
 {
 	cache_surface* surface = (cache_surface*)handle;
-	if (!surface) return 0;
-	global_result[0] = surface->surface_data->w;
-	global_result[1] = surface->surface_data->h;
-	return global_result;
+	if (!surface) return;
+	values[0] = surface->surface_data->w;
+	values[1] = surface->surface_data->h;
 }
 
-int* Load_SDL_GetPixels(const int64_t handle, const int x, const int y, const int w, const int h)
+ void Load_SDL_GetSurfacePixels32(const int64_t handle, int order, int32_t* pixels)
 {
 	cache_surface* surface = (cache_surface*)handle;
-	if (!surface) return 0;
-	if (x >= 0 && y >= 0 && x < surface->surface_data->w && x < w && y < surface->surface_data->h && y < h)
-	{
-		int bpp = surface->surface_data->format->BytesPerPixel;
-		Uint8* pixel = (Uint8*)surface->surface_data->pixels + y * surface->surface_data->pitch + x * bpp;
-		switch (bpp) {
-		case 1:
-			return *pixel;
-		case 2:
-			return *(Uint16*)pixel;
-		case 3:
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-			return pixel[0] << 16 | pixel[1] << 8 | pixel[2];
-#else
-			return pixel[0] | pixel[1] << 8 | pixel[2] << 16;
-#endif
-		case 4:
-			return *(Uint32*)pixel;
-		default:
-			return 0;
-		}
-	}
-	return 0;
-}
-
-int* Load_SDL_GetPixels32(const int64_t handle, int order)
-{
-	cache_surface* surface = (cache_surface*)handle;
-	if (!surface) return 0;
+	if (!surface) return;
 	int width = surface->surface_data->w;
 	int height = surface->surface_data->h;
-	int32_t* pixelsInt32 = (int32_t*)malloc(width * height * sizeof(int32_t));
-	if (!pixelsInt32) {
-		return 0;
+	if (!pixels) {
+		return;
 	}
 	Uint8* srcPixels = (Uint8*)surface->surface_data->pixels;
 	SDL_Palette* palette = surface->surface_data->format->palette;
@@ -2156,14 +2182,14 @@ int* Load_SDL_GetPixels32(const int64_t handle, int order)
 			Uint8 index = row[x];
 			SDL_Color color = palette->colors[index];
 			if (order == 0) {
-				pixelsInt32[y * width + x] =  (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
+				pixels[y * width + x] =  (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 			}
 			else {
-				pixelsInt32[y * width + x] =  (color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
+				pixels[y * width + x] =  (color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
 			}
 		}
 	}
-	return pixelsInt32;
+
 }
 
 void Load_SDL_SetPixel(const int64_t handle, const int x, const int y, const int32_t pixel)
@@ -2304,17 +2330,16 @@ void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const 
 	SDL_SetClipRect(surface->surface_data, &clipRect);
 }
 
-int* Load_SDL_GetClipRect(const int64_t handle)
+void Load_SDL_GetClipRect(const int64_t handle,int32_t* values)
 {
 	cache_surface* surface = (cache_surface*)handle;
-	if (!surface) return 0;
+	if (!surface) return;
 	SDL_Rect currentClip;
 	SDL_GetClipRect(surface->surface_data, &currentClip);
-	global_result[0] = currentClip.x;
-	global_result[1] = currentClip.y;
-	global_result[2] = currentClip.w;
-	global_result[3] = currentClip.h;
-	return global_result;
+	values[0] = currentClip.x;
+	values[1] = currentClip.y;
+	values[2] = currentClip.w;
+	values[3] = currentClip.h;
 }
 
 int32_t Load_SDL_GetFormat(const int64_t handle) {
@@ -2410,7 +2435,7 @@ int Load_SDL_GetWindowDisplayIndex(const int64_t handle)
 	return SDL_GetWindowDisplayIndex((SDL_Window*)handle);
 }
 
-int* Load_SDL_GetDisplayUsableBounds(const int display, int* xywh)
+void Load_SDL_GetDisplayUsableBounds(const int display, int32_t* xywh)
 {
 	SDL_Rect bounds = { 0,0,0,0 };
 	int result = SDL_GetDisplayUsableBounds(display, &bounds);
@@ -2420,10 +2445,9 @@ int* Load_SDL_GetDisplayUsableBounds(const int display, int* xywh)
 	xywh[2] = bounds.w;
 	xywh[3] = bounds.h;
 
-	return xywh;
 }
 
-int* Load_SDL_GetDisplayBounds(const int display, int* xywh)
+void Load_SDL_GetDisplayBounds(const int display, int32_t* xywh)
 {
 	SDL_Rect bounds = { 0,0,0,0 };
 	int result = SDL_GetDisplayBounds(display, &bounds);
@@ -2432,8 +2456,6 @@ int* Load_SDL_GetDisplayBounds(const int display, int* xywh)
 	xywh[1] = bounds.y;
 	xywh[2] = bounds.w;
 	xywh[3] = bounds.h;
-
-	return xywh;
 }
 
 int Load_SDL_GetNumVideoDisplays()
@@ -2552,29 +2574,27 @@ void Load_SDL_DestroyWindow(const int64_t handle)
 	SDL_DestroyWindow((SDL_Window*)handle);
 }
 
-int* Call_SDL_GetDrawableSize(int* values)
+void Call_SDL_GetDrawableSize(int* values)
 {
 	if (!window) {
-		return 0;
+		return;
 	}
 	int w, h;
 	SDL_GL_GetDrawableSize(window, &w, &h);
 	values[0] = w;
 	values[1] = h;
-	return values;
 }
 
-int* Call_SDL_GetWindowSize()
+void Call_SDL_GetWindowSize(int* values)
 {
 	if (!window) {
-		return 0;
+		return;
 	}
 	int width = 0;
 	int height = 0;
 	SDL_GetWindowSize(window, &width, &height);
-	global_result[0] = width;
-	global_result[1] = height;
-	return global_result;
+	values[0] = width;
+	values[1] = height;
 }
 
 void Call_SDL_MaximizeWindow()
@@ -2753,8 +2773,8 @@ int Load_SDL_PollEvent(char* data)
 			data[1] = (e.type == SDL_KEYDOWN);
 			data[2] = e.key.keysym.sym;
 			data[3] = e.key.repeat;
-			data[4] = e.key.keysym.scancode;
-			data[5] = e.key.keysym.mod;
+			data[4] = (char)e.key.keysym.scancode;
+			data[5] = (char)e.key.keysym.mod;
 			data[6] = e.key.timestamp;
 			break;
 		case SDL_TEXTINPUT:
@@ -3016,7 +3036,7 @@ int Load_SDL_Mix_SetVolume(const int channel, const float volume)
 
 int Load_SDL_Mix_GetVolume(const int channel)
 {
-	return (float)Mix_Volume(channel, -1) * MIX_MAX_VOLUME;
+	return (int32_t)((float)Mix_Volume(channel, -1) * MIX_MAX_VOLUME);
 }
 
 int Load_SDL_Mix_SetPan(const int channel, const float pan)
@@ -3721,7 +3741,7 @@ void Load_GL_GetShaderiv(const int shader, const int pname, const void* params)
 	glGetShaderiv(shader, pname, (GLint*)params);
 }
 
-char* Load_GL_GetShaderInfoLog(const int shader)
+const char* Load_GL_GetShaderInfoLog(const int shader)
 {
 	memset(global_info, '\0', sizeof(global_info));
 	int length = 0;

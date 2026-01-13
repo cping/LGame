@@ -21,7 +21,6 @@
 package loon.cport.bridge;
 
 import loon.LRelease;
-import loon.geom.RangeI;
 import loon.geom.RectI;
 
 public final class SDLSurface implements LRelease {
@@ -61,6 +60,10 @@ public final class SDLSurface implements LRelease {
 
 	private long _surfaceHandle;
 
+	private final RectI _rect = new RectI();
+	private final RectI _size = new RectI();
+	private final int[] _rectsize = new int[4];
+
 	private SDLSurface(long handle) {
 		_surfaceHandle = handle;
 	}
@@ -82,16 +85,15 @@ public final class SDLSurface implements LRelease {
 		return new SDLSurface(newHandle);
 	}
 
-	public int[] getPixels(int x, int y, int w, int h) {
-		return SDLCall.getSurfacePixels(_surfaceHandle, x, y, w, h);
-	}
-
 	public int[] getPixels32() {
 		return getPixels32(0);
 	}
 
 	public int[] getPixels32(int order) {
-		return SDLCall.getSurfacePixels32(_surfaceHandle, order);
+		final RectI size = getSize();
+		final int[] pixels = new int[size.width * size.height];
+		SDLCall.getSurfacePixels32(_surfaceHandle, order, pixels);
+		return pixels;
 	}
 
 	public void setPixel(int x, int y, int pixel) {
@@ -130,16 +132,22 @@ public final class SDLSurface implements LRelease {
 	}
 
 	public RectI getClipRect() {
-		final RectI rect = new RectI();
-		int[] temp_rect = SDLCall.getSurfaceClipRect(_surfaceHandle);
-		rect.set(temp_rect[0], temp_rect[1], temp_rect[2], temp_rect[3]);
-		return rect;
+		if (!_rect.isEmpty()) {
+			return _rect;
+		}
+		SDLCall.getSurfaceClipRect(_surfaceHandle, _rectsize);
+		_rect.set(_rectsize[0], _rectsize[1], _rectsize[2], _rectsize[3]);
+		return _rect;
 	}
 
-	public RangeI getSize() {
-		int[] temp_rect = SDLCall.getSurfaceSize(_surfaceHandle);
-		final RangeI size = new RangeI(temp_rect[0], temp_rect[1]);
-		return size;
+	public RectI getSize() {
+		if (!_size.isEmpty()) {
+			return _size;
+		}
+		SDLCall.getSurfaceSize(_surfaceHandle, _rectsize);
+		_rect.width = _rectsize[0];
+		_rect.height = _rectsize[1];
+		return _size;
 	}
 
 	public int getFormat() {

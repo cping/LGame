@@ -30,6 +30,8 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
 
+import loon.LSysException;
+import loon.LSystem;
 import loon.cport.bridge.SDLCall;
 import loon.opengl.GLExt;
 
@@ -39,120 +41,120 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glCompressedTexImage3D(int target, int level, int internalformat, int width, int height, int depth,
 			int border, int imageSize, Buffer data) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexImage3D(int target, int level, int internalformat, int width, int height, int depth,
 			int border, int imageSize, int data) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width,
 			int height, int depth, int format, int imageSize, Buffer data) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width,
 			int height, int depth, int format, int imageSize, int data) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCopyTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int x, int y,
 			int width, int height) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glFramebufferTexture3D(int target, int attachment, int textarget, int texture, int level, int zoffset) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public int glGetBoundBuffer(int buffer) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glGetProgramBinary(int program, int bufSize, IntBuffer length, IntBuffer binaryFormat, Buffer binary) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glIsVBOArrayEnabled() {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glIsVBOElementEnabled() {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public ByteBuffer glMapBuffer(int target, int access) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glProgramBinary(int program, int binaryFormat, Buffer binary, int length) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glShaderBinary(int n, int[] shaders, int offset, int binaryformat, Buffer binary, int length) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean isExtensionAvailable(String extension) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean isFunctionAvailable(String function) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
 			Buffer arg9) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
 			int arg9) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height,
 			int depth, int format, int type, Buffer pixels) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height,
 			int depth, int format, int type, int pixels) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glUnmapBuffer(int target) {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public String getPlatformGLExtensions() {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	@Override
 	public int getSwapInterval() {
-		throw new RuntimeException("NYI - not in CPort.");
+		throw new LSysException("NYI - not in CPort.");
 	}
 
 	public CGL20() {
@@ -168,6 +170,36 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 				return buffer;
 			}
 		}, checkErrors);
+	}
+
+	@Override
+	public void glDeleteFramebuffer(int id) {
+		SDLCall.glDeleteFramebuffer(id);
+	}
+
+	@Override
+	public void glDeleteRenderbuffer(int id) {
+		SDLCall.glDeleteRenderbuffer(id);
+	}
+
+	@Override
+	public void glDeleteTexture(int id) {
+		SDLCall.glDeleteTexture(id);
+	}
+
+	@Override
+	public int glGenBuffer() {
+		return SDLCall.glGenBuffer();
+	}
+
+	@Override
+	public int glGenFramebuffer() {
+		return SDLCall.glGenFramebuffer();
+	}
+
+	@Override
+	public int glGenTexture() {
+		return SDLCall.glGenTexture();
 	}
 
 	@Override
@@ -247,8 +279,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		else if (data instanceof CharBuffer)
 			SDLCall.glBufferData(target, size, (CharBuffer) data, usage);
 		else
-			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
-
+			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -268,7 +299,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		else if (data instanceof CharBuffer)
 			SDLCall.glBufferSubData(target, offset, size, (CharBuffer) data);
 		else
-			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -331,7 +362,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
 					(CharBuffer) data);
 		} else {
-			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
 		}
 	}
 
@@ -360,7 +391,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
 					(CharBuffer) data);
 		} else {
-			throw new RuntimeException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
 		}
 	}
 
@@ -475,8 +506,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		} else if (indices instanceof CharBuffer) {
 			SDLCall.glDrawElements(mode, count, type, (CharBuffer) indices);
 		} else {
-			throw new RuntimeException(
-					"Can't use " + indices.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + indices.getClass().getName() + " with this method. Not supported !");
 		}
 	}
 
@@ -717,8 +747,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		else if (pixels instanceof CharBuffer)
 			SDLCall.glReadPixels(x, y, width, height, format, type, (CharBuffer) pixels);
 		else
-			throw new RuntimeException(
-					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -758,8 +787,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		} else if (binary instanceof CharBuffer) {
 			SDLCall.glShaderBinary(n, shaders, binaryformat, (CharBuffer) binary, length);
 		} else {
-			throw new RuntimeException(
-					"Can't use " + binary.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + binary.getClass().getName() + " with this method. Not supported !");
 		}
 	}
 
@@ -818,8 +846,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
 					(CharBuffer) pixels);
 		else
-			throw new RuntimeException(
-					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -861,8 +888,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		else if (pixels instanceof CharBuffer)
 			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (CharBuffer) pixels);
 		else
-			throw new RuntimeException(
-					"Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
 	}
 
 	@Override
@@ -1027,7 +1053,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		} else if (ptr instanceof CharBuffer) {
 			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((CharBuffer) ptr));
 		} else {
-			throw new RuntimeException("Can't use " + ptr.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + ptr.getClass().getName() + " with this method. Not supported !");
 		}
 	}
 
@@ -1077,7 +1103,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		final String nameString = SDLCall.glGetActiveAttrib(program, index, IntBuffer.allocate(bufsize),
 				bufs.intBuffer);
 		try {
-			final byte[] nameBytes = nameString.getBytes("UTF-8");
+			final byte[] nameBytes = nameString.getBytes(LSystem.ENCODING);
 			final int nameLength = nameBytes.length - nameOffset;
 			bufs.setByteBuffer(nameBytes, nameOffset, nameLength);
 			bufs.byteBuffer.get(name, nameOffset, nameLength);
@@ -1093,10 +1119,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	public void glGetActiveUniform(int program, int index, int bufsize, int[] length, int lengthOffset, int[] size,
 			int sizeOffset, int[] type, int typeOffset, byte[] name, int nameOffset) {
 		bufs.resizeIntBuffer(2);
-		// Return name, length
 		final String nameString = SDLCall.glGetActiveUniform(program, index, IntBuffer.allocate(256), bufs.intBuffer);
 		try {
-			final byte[] nameBytes = nameString.getBytes("UTF-8");
+			final byte[] nameBytes = nameString.getBytes(LSystem.ENCODING);
 			final int nameLength = nameBytes.length - nameOffset;
 			bufs.setByteBuffer(nameBytes, nameOffset, nameLength);
 			bufs.byteBuffer.get(name, nameOffset, nameLength);
@@ -1197,8 +1222,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glGetShaderSource(int shader, int bufsize, int[] length, int lengthOffset, byte[] source,
 			int sourceOffset) {
-		SDLCall.glGetShaderSource(shader, bufsize, IntBuffer.wrap(length).position(lengthOffset),
-				ByteBuffer.wrap(source).position(sourceOffset));
+		IntBuffer intBuffer = IntBuffer.wrap(length).position(lengthOffset);
+		ByteBuffer byteBuffer = ByteBuffer.wrap(source).position(sourceOffset);
+		SDLCall.glGetShaderSource(shader, bufsize, intBuffer, byteBuffer);
 	}
 
 	@Override
@@ -1209,55 +1235,60 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype, int[] range, int rangeOffset,
 			int[] precision, int precisionOffset) {
-		SDLCall.glGetShaderPrecisionFormat(shadertype, precisiontype, IntBuffer.wrap(range).position(rangeOffset),
-				IntBuffer.wrap(precision).position(precisionOffset));
+		IntBuffer int1Buffer = IntBuffer.wrap(range).position(rangeOffset);
+		IntBuffer int2Buffer = IntBuffer.wrap(precision).position(precisionOffset);
+		SDLCall.glGetShaderPrecisionFormat(shadertype, precisiontype, int1Buffer, int2Buffer);
 	}
 
 	@Override
 	public String glGetActiveAttrib(int program, int index, IntBuffer size, Buffer type) {
+		String result = null;
 		if (type instanceof ShortBuffer)
-			return SDLCall.glGetActiveAttrib(program, index, size, (ShortBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (ShortBuffer) type);
 		else if (type instanceof ByteBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (ByteBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (ByteBuffer) type);
 		} else if (type instanceof IntBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (IntBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (IntBuffer) type);
 		} else if (type instanceof FloatBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (FloatBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (FloatBuffer) type);
 		} else if (type instanceof DoubleBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (DoubleBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (DoubleBuffer) type);
 		} else if (type instanceof LongBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (LongBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (LongBuffer) type);
 		} else if (type instanceof CharBuffer) {
-			return SDLCall.glGetActiveAttrib(program, index, size, (CharBuffer) type);
+			result = SDLCall.glGetActiveAttrib(program, index, size, (CharBuffer) type);
 		} else {
-			throw new RuntimeException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
 		}
+		return result;
 	}
 
 	@Override
 	public String glGetActiveUniform(int program, int index, IntBuffer size, Buffer type) {
+		String result = null;
 		if (type instanceof ShortBuffer)
-			return SDLCall.glGetActiveUniform(program, index, size, (ShortBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (ShortBuffer) type);
 		else if (type instanceof ByteBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (ByteBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (ByteBuffer) type);
 		} else if (type instanceof IntBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (IntBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (IntBuffer) type);
 		} else if (type instanceof FloatBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (FloatBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (FloatBuffer) type);
 		} else if (type instanceof DoubleBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (DoubleBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (DoubleBuffer) type);
 		} else if (type instanceof LongBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (LongBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (LongBuffer) type);
 		} else if (type instanceof CharBuffer) {
-			return SDLCall.glGetActiveUniform(program, index, size, (CharBuffer) type);
+			result = SDLCall.glGetActiveUniform(program, index, size, (CharBuffer) type);
 		} else {
-			throw new RuntimeException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
+			throw new LSysException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
 		}
+		return result;
 	}
 
 	@Override
 	public int getGlslVersion() {
-		return 120;
+		return 200;
 	}
 
 	@Override

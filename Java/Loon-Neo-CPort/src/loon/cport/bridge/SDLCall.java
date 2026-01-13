@@ -61,7 +61,7 @@ public final class SDLCall {
 			SDL_GL_DEPTH_SIZE = 6, SDL_GL_STENCIL_SIZE = 7, SDL_GL_CONTEXT_MAJOR_VERSION = 17,
 			SDL_GL_CONTEXT_MINOR_VERSION = 18, SDL_GL_MULTISAMPLEBUFFERS = 13, SDL_GL_MULTISAMPLESAMPLES = 14,
 			SDL_GL_CONTEXT_PROFILE_CORE = 1, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY = 2, SDL_GL_CONTEXT_PROFILE_MASK = 21,
-			SDL_GL_CONTEXT_FLAGS = 20;
+			SDL_GL_CONTEXT_FLAGS = 20, SDL_NUM_SCANCODES = 512;
 
 	private SDLCall() {
 		importInclude();
@@ -78,7 +78,7 @@ public final class SDLCall {
 	public final static native boolean loadGamePrefs(long handle, String filename);
 
 	@Import(name = "GetPrefsKeys")
-	public final static native long getGamePrefsKeys(long handle, String section, String delimiter, char[] chars);
+	public final static native String getGamePrefsKeys(long handle, String section, String delimiter);
 
 	@Import(name = "SetPrefs")
 	public final static native void setGamePrefs(long handle, String section, String key, byte[] value, int value_len);
@@ -111,10 +111,10 @@ public final class SDLCall {
 	public final static native int freeGameData(long handle);
 
 	@Import(name = "GetPathFullName")
-	public final static native int getPathFullName(char[] dst, String path);
+	public final static native String getPathFullName(String path);
 
 	@Import(name = "GetSystemProperty")
-	public final static native int getSystemProperty(String key, char[] dst);
+	public final static native String getSystemProperty(String key);
 
 	@Import(name = "FileExists")
 	public final static native boolean fileExists(String fileName);
@@ -125,8 +125,11 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_RW_FileToChars")
 	public final static native String loadRWFileToChars(String fileName);
 
+	@Import(name = "Load_SDL_RW_FileSize")
+	public final static native long getFileSize(String fileName);
+
 	@Import(name = "Load_SDL_RW_FileToBytes")
-	public final static native byte[] LoadRWFileToBytes(String fileName);
+	public final static native long LoadRWFileToBytes(String fileName, byte[] outBytes);
 
 	@Import(name = "Load_SDL_GetPreferredLocales")
 	public final static native String getPreferredLocales();
@@ -156,16 +159,16 @@ public final class SDLCall {
 	public final static native int getButtons();
 
 	@Import(name = "Load_Axes")
-	public final static native float[] getAxes(int controller, float[] axes);
+	public final static native int getAxes(int controller, float[] axes);
 
 	@Import(name = "Load_SDL_Exit")
 	public final static native boolean exit(int run);
 
 	@Import(name = "Load_SDL_GetDrawableSize")
-	public final static native int[] getDrawableSize(long handle, int[] values);
+	public final static native void getDrawableSize(long handle, int[] values);
 
 	@Import(name = "Load_SDL_GetDrawableSize")
-	public final static native int[] getWindowSize(long handle);
+	public final static native void getWindowSize(long handle, int[] values);
 
 	@Import(name = "Load_SDL_LockSurface")
 	public final static native int lockSurface(long handle);
@@ -190,13 +193,10 @@ public final class SDLCall {
 	public final static native long convertSurfaceFormat(long handle, int pixel_format, int flags);
 
 	@Import(name = "Load_SDL_GetSurfaceSize")
-	public final static native int[] getSurfaceSize(long handle);
+	public final static native void getSurfaceSize(long handle, int[] values);
 
-	@Import(name = "Load_SDL_GetPixels")
-	public final static native int[] getSurfacePixels(long handle, int x, int y, int w, int h);
-
-	@Import(name = "Load_SDL_GetPixels32")
-	public final static native int[] getSurfacePixels32(long handle, int order);
+	@Import(name = "Load_SDL_GetSurfacePixels32")
+	public final static native void getSurfacePixels32(long handle, int order, int[] pixels);
 
 	@Import(name = "Load_SDL_SetPixel")
 	public final static native void setSurfacePixel(long handle, int x, int y, int pixel);
@@ -227,7 +227,7 @@ public final class SDLCall {
 	public final static native void setSurfaceClipRect(long handle, int x, int y, int w, int h);
 
 	@Import(name = "Load_SDL_GetClipRect")
-	public final static native int[] getSurfaceClipRect(long handle);
+	public final static native void getSurfaceClipRect(long handle, int[] values);
 
 	@Import(name = "Load_SDL_GetFormat")
 	public final static native int getSurfaceFormat(long handle);
@@ -239,16 +239,16 @@ public final class SDLCall {
 	public final static native boolean update();
 
 	@Import(name = "Load_SDL_TouchData")
-	public final static native int[] getTouchData(int[] data);
+	public final static native int getTouchData(int[] data);
 
 	@Import(name = "Load_SDL_GetKeyStates")
-	public final static native int[] getKeyStates();
+	public final static native int getKeyStates(int[] data);
 
 	@Import(name = "Load_SDL_GetPressedKeys")
-	public final static native int[] getPressedKeys();
+	public final static native int getPressedKeys(int[] data);
 
 	@Import(name = "Load_SDL_GetReleasedKeys")
-	public final static native int[] getReleasedKeys();
+	public final static native int getReleasedKeys(int[] data);
 
 	@Import(name = "Load_SDL_GetLastPressedScancode")
 	public final static native int getLastPressedScancode();
@@ -324,10 +324,10 @@ public final class SDLCall {
 	public final static native int getWindowDisplayIndex(long handle, int x, int y);
 
 	@Import(name = "Load_SDL_GetDisplayUsableBounds")
-	public final static native int[] getDisplayUsableBounds(long handle, int[] xywh);
+	public final static native void getDisplayUsableBounds(long handle, int[] xywh);
 
 	@Import(name = "Load_SDL_GetDisplayBounds")
-	public final static native int[] getDisplayBounds(long handle, int[] xywh);
+	public final static native void getDisplayBounds(long handle, int[] xywh);
 
 	@Import(name = "Load_SDL_GetNumVideoDisplays")
 	public final static native int getNumVideoDisplays();
@@ -396,10 +396,10 @@ public final class SDLCall {
 	public final static native void destroyWindow(long handle);
 
 	@Import(name = "Call_SDL_GetDrawableSize")
-	public final static native int[] getDrawableSize(int[] values);
+	public final static native void getDrawableSize(int[] values);
 
 	@Import(name = "Call_SDL_GetWindowSize")
-	public final static native int[] getWindowSize();
+	public final static native void getWindowSize(int[] values);
 
 	@Import(name = "Call_SDL_MaximizeWindow")
 	public final static native void maximizeWindow();
@@ -1174,7 +1174,7 @@ public final class SDLCall {
 	public final static native long joystickOpen(long handle);
 
 	@Import(name = "Load_SDL_JoystickGetGUIDString")
-	public final static native String joystickGetGUIDString(long handle, char[] guids);
+	public final static native String joystickGetGUIDString(long handle);
 
 	@Import(name = "Load_SDL_JoystickClose")
 	public final static native void joystickClose(long handle);
