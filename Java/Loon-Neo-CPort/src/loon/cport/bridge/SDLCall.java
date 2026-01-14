@@ -21,11 +21,10 @@
 package loon.cport.bridge;
 
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.teavm.backend.c.intrinsic.RuntimeInclude;
+import org.teavm.interop.Address;
 import org.teavm.interop.Import;
 
 public final class SDLCall {
@@ -236,7 +235,7 @@ public final class SDLCall {
 	public final static native int getPolleventType();
 
 	@Import(name = "Load_SDL_Update")
-	public final static native boolean update();
+	public final static native boolean runSDLUpdate();
 
 	@Import(name = "Load_SDL_TouchData")
 	public final static native int getTouchData(int[] data);
@@ -254,10 +253,10 @@ public final class SDLCall {
 	public final static native int getLastPressedScancode();
 
 	@Import(name = "Load_SDL_Current_Screen_Size")
-	public final static native int[] getCurrentScreenSize();
+	public final static native void getCurrentScreenSize(int[] rect);
 
 	@Import(name = "Load_SDL_Current_Window_Size")
-	public final static native int[] getCurrentWindowSize();
+	public final static native void getCurrentWindowSize(int[] rect);
 
 	@Import(name = "Load_SDL_Pause")
 	public final static native boolean isPaused();
@@ -374,7 +373,10 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_GL_SetSwapInterval")
 	public final static native int setSwapInterval(int on);
 
-	@Import(name = "Load_SDL_GL_SwapWindow")
+	@Import(name = "Load_SDL_GL_SwapScreen")
+	public final static native int swapScreen();
+
+	@Import(name = "Load_SDL_GL_SwapWindowHandle")
 	public final static native void swapWindow(long handle);
 
 	@Import(name = "Load_SDL_GL_CreateContext")
@@ -400,6 +402,9 @@ public final class SDLCall {
 
 	@Import(name = "Call_SDL_GetWindowSize")
 	public final static native void getWindowSize(int[] values);
+
+	@Import(name = "Call_SDL_GetRenderScale")
+	public final static native void getRenderScale(float[] values);
 
 	@Import(name = "Call_SDL_MaximizeWindow")
 	public final static native void maximizeWindow();
@@ -599,7 +604,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_CompressedTexImage2D")
 	public final static native void glCompressedTexImage2D(int target, int level, int internalformat, int width,
-			int height, int border, int imageSize, Buffer data);
+			int height, int border, int imageSize, Address data);
 
 	@Import(name = "Load_GL_CompressedTexImage2DOffset")
 	public final static native void glCompressedTexImage2DOffset(int target, int level, int internalformat, int width,
@@ -607,7 +612,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_CompressedTexSubImage2D")
 	public final static native void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset,
-			int width, int height, int format, int imageSize, Buffer data);
+			int width, int height, int format, int imageSize, Address data);
 
 	@Import(name = "Load_GL_CompressedTexSubImage2DOffset")
 	public final static native void glCompressedTexSubImage2DOffset(int target, int level, int xoffset, int yoffset,
@@ -628,7 +633,7 @@ public final class SDLCall {
 	public final static native void glDeleteTexture(int texture);
 
 	@Import(name = "Load_GL_DeleteTextures")
-	public final static native void glDeleteTextures(int texture, IntBuffer textures);
+	public final static native void glDeleteTextures(int texture, Address textures);
 
 	@Import(name = "Load_GL_DepthFunc")
 	public final static native void glDepthFunc(int func);
@@ -646,7 +651,7 @@ public final class SDLCall {
 	public final static native void glDrawArrays(int mode, int first, int count);
 
 	@Import(name = "Load_GL_DrawElements")
-	public final static native void glDrawElements(int mode, int count, int type, Buffer indices);
+	public final static native void glDrawElements(int mode, int count, int type, Address indices);
 
 	@Import(name = "Load_GL_DrawElementsOffset")
 	public final static native void glDrawElementsOffset(int mode, int count, int type, long offset);
@@ -667,7 +672,7 @@ public final class SDLCall {
 	public final static native int glGenTexture();
 
 	@Import(name = "Load_GL_GenTextures")
-	public final static native void glGenTextures(int n, IntBuffer textures);
+	public final static native void glGenTextures(int n, Address textures);
 
 	@Import(name = "Load_GL_GetError")
 	public final static native int glGetError();
@@ -689,7 +694,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_ReadPixels")
 	public final static native void glReadPixels(int x, int y, int width, int height, int format, int type,
-			Buffer pixels);
+			Address pixels);
 
 	@Import(name = "Load_GL_ReadPixelsOffset")
 	public final static native void glReadPixelsOffset(int x, int y, int width, int height, int format, int type,
@@ -757,10 +762,10 @@ public final class SDLCall {
 	public final static native void glBlendFuncSeparate(int srcRGB, int dstRGB, int srcAlpha, int dstAlpha);
 
 	@Import(name = "Load_GL_BufferData")
-	public final static native void glBufferData(int target, int size, Buffer data, int usage);
+	public final static native void glBufferData(int target, int size, Address data, int usage);
 
 	@Import(name = "Load_GL_BufferSubData")
-	public final static native void glBufferSubData(int target, int offset, int size, Buffer data);
+	public final static native void glBufferSubData(int target, int offset, int size, Address data);
 
 	@Import(name = "Load_GL_CheckFramebufferStatus")
 	public final static native int glCheckFramebufferStatus(int target);
@@ -778,13 +783,13 @@ public final class SDLCall {
 	public final static native void glDeleteBuffer(int buffer);
 
 	@Import(name = "Load_GL_DeleteBuffers")
-	public final static native void glDeleteBuffers(int n, IntBuffer buffers);
+	public final static native void glDeleteBuffers(int n, Address buffers);
 
 	@Import(name = "Load_GL_DeleteFramebuffer")
 	public final static native void glDeleteFramebuffer(int buffer);
 
 	@Import(name = "Load_GL_DeleteFramebuffers")
-	public final static native void glDeleteFramebuffers(int n, IntBuffer framebuffers);
+	public final static native void glDeleteFramebuffers(int n, Address framebuffers);
 
 	@Import(name = "Load_GL_DeleteProgram")
 	public final static native void glDeleteProgram(int program);
@@ -793,7 +798,7 @@ public final class SDLCall {
 	public final static native void glDeleteRenderbuffer(int renderbuffer);
 
 	@Import(name = "Load_GL_DeleteRenderbuffers")
-	public final static native void glDeleteRenderbuffers(int n, IntBuffer renderbuffers);
+	public final static native void glDeleteRenderbuffers(int n, Address renderbuffers);
 
 	@Import(name = "Load_GL_DeleteShader")
 	public final static native void glDeleteShader(int shader);
@@ -819,10 +824,13 @@ public final class SDLCall {
 	public final static native int glGenBuffer();
 
 	@Import(name = "Load_GL_GenBuffers")
-	public final static native void glGenBuffers(int n, IntBuffer buffers);
+	public final static native void glGenBuffers(int n, Address buffers);
+
+	@Import(name = "Load_GL_GenRenderbuffer")
+	public final static native int glGenRenderbuffer();
 
 	@Import(name = "Load_GL_GenRenderbuffers")
-	public final static native void glGenRenderbuffers(int n, IntBuffer buffers);
+	public final static native void glGenRenderbuffers(int n, Address buffers);
 
 	@Import(name = "Load_GL_GenerateMipmap")
 	public final static native void glGenerateMipmap(int target);
@@ -831,93 +839,91 @@ public final class SDLCall {
 	public final static native int glGenFramebuffer();
 
 	@Import(name = "Load_GL_GenFramebuffers")
-	public final static native void glGenFramebuffers(int n, IntBuffer buffers);
+	public final static native void glGenFramebuffers(int n, Address buffers);
 
 	@Import(name = "Load_GL_GetActiveAttrib")
-	public final static native String glGetActiveAttrib(int program, int index, Buffer size, Buffer type);
+	public final static native String glGetActiveAttrib(int program, int index, Address size, Address type);
 
 	@Import(name = "Load_GL_GetActiveUniform")
-	public final static native String glGetActiveUniform(int program, int index, Buffer size, Buffer type);
+	public final static native String glGetActiveUniform(int program, int index, Address size, Address type);
 
 	@Import(name = "Load_GL_GetAttribLocation")
 	public final static native int glGetAttribLocation(int program, String name);
 
 	@Import(name = "Load_GL_GetBooleanv")
-	public final static native void glGetBooleanv(int pname, Buffer params);
+	public final static native void glGetBooleanv(int pname, Address params);
 
 	@Import(name = "Load_GL_GetBooleanvResult")
 	public final static native boolean glGetBooleanvResult(int pname);
 
 	@Import(name = "Load_GL_GetBufferParameteriv")
-	public final static native void glGetBufferParameteriv(int target, int pname, IntBuffer params);
+	public final static native void glGetBufferParameteriv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_GetFloatv")
-	public final static native void glGetFloatv(int pname, FloatBuffer params);
+	public final static native void glGetFloatv(int pname, Address params);
 
 	@Import(name = "Load_GL_GetFloatvResult")
 	public final static native float glFloatvResult(int pname);
 
 	@Import(name = "Load_GL_GetIntegerv")
-	public final static native void glGetIntegerv(int pname, IntBuffer params);
+	public final static native void glGetIntegerv(int pname, Address params);
 
 	@Import(name = "Load_GL_GetIntegervResult")
 	public final static native int glIntegervResult(int pname);
 
 	@Import(name = "Load_GL_GetFramebufferAttachmentParameteriv")
 	public final static native void glGetFramebufferAttachmentParameteriv(int target, int attachment, int pname,
-			IntBuffer params);
+			Address params);
 
 	@Import(name = "Load_GL_GetProgramiv")
-	public final static native void glGetProgramiv(int program, int pname, IntBuffer params);
+	public final static native void glGetProgramiv(int program, int pname, Address params);
 
 	@Import(name = "Load_GL_GetProgramInfoLog")
 	public final static native String glGetProgramInfoLog(int program);
 
 	@Import(name = "Load_GL_GetProgramInfoLogs")
-	public final static native String glGetProgramInfoLogs(int program, int bufsize, IntBuffer length,
-			ByteBuffer infolog);
+	public final static native String glGetProgramInfoLogs(int program, int bufsize, Address length, Address infolog);
 
 	@Import(name = "Load_GL_GetRenderbufferParameteriv")
-	public final static native void glGetRenderbufferParameteriv(int target, int pname, IntBuffer params);
+	public final static native void glGetRenderbufferParameteriv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_GetShaderiv")
-	public final static native void glGetShaderiv(int shader, int pname, IntBuffer params);
+	public final static native void glGetShaderiv(int shader, int pname, Address params);
 
 	@Import(name = "Load_GL_GetShaderInfoLog")
 	public final static native String glGetShaderInfoLog(int shader);
 
 	@Import(name = "Load_GL_GetShaderInfoLogs")
-	public final static native String glGetShaderInfoLogs(int shader, int bufsize, IntBuffer length,
-			ByteBuffer infolog);
+	public final static native String glGetShaderInfoLogs(int shader, int bufsize, Address length, Address infolog);
 
 	@Import(name = "Load_GL_GetShaderPrecisionFormat")
-	public final static native void glGetShaderPrecisionFormat(int shadertype, int precisiontype, IntBuffer range,
-			IntBuffer precision);
+	public final static native void glGetShaderPrecisionFormat(int shadertype, int precisiontype, Address range,
+			Address precision);
 
 	@Import(name = "Load_GL_ShaderBinary")
 	public final static native void glShaderBinary(int count, IntBuffer shaders, int binaryFormat, Buffer binary,
 			int length);
 
 	@Import(name = "Load_GL_GetTexParameterfv")
-	public final static native void glGetTexParameterfv(int target, int pname, FloatBuffer params);
+	public final static native void glGetTexParameterfv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_GetTexParameteriv")
-	public final static native void glGetTexParameteriv(int target, int pname, IntBuffer params);
+	public final static native void glGetTexParameteriv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_GetUniformfv")
-	public final static native void glGetUniformfv(int program, int location, FloatBuffer params);
+	public final static native void glGetUniformfv(int program, int location, Address params);
 
 	@Import(name = "Load_GL_GetUniformiv")
-	public final static native void glGetUniformiv(int program, int location, IntBuffer params);
+	public final static native void glGetUniformiv(int program, int location, Address params);
 
 	@Import(name = "Load_GL_GetUniformLocation")
 	public final static native int glGetUniformLocation(int program, String name);
 
 	@Import(name = "Load_GL_GetVertexAttribfv")
-	public final static native void glGetVertexAttribfv(int index, int pname, FloatBuffer params);
+	public final static native void glGetVertexAttribfv(int index, int pname, Address params);
 
 	@Import(name = "Load_GL_GetVertexAttribiv")
-	public final static native void glGetVertexAttribiv(int index, int pname, IntBuffer params);
+	public final static native void glGetVertexAttribiv(int index, int pname, Address params);
 
 	@Import(name = "Load_GL_IsBuffer")
 	public final static native boolean glIsBuffer(int buffer);
@@ -965,140 +971,140 @@ public final class SDLCall {
 	public final static native void glStencilOpSeparate(int face, int fail, int zfail, int zpass);
 
 	@Import(name = "Load_GL_TexParameterfv")
-	public final static native void glTexParameterfv(int target, int pname, FloatBuffer params);
+	public final static native void glTexParameterfv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_TexParameteri")
 	public final static native void glTexParameteri(int target, int pname, int param);
 
 	@Import(name = "Load_GL_TexParameteriv")
-	public final static native void glTexParameteriv(int target, int pname, IntBuffer params);
+	public final static native void glTexParameteriv(int target, int pname, Address params);
 
 	@Import(name = "Load_GL_Uniform1f")
 	public final static native void glUniform1f(int location, float x);
 
 	@Import(name = "Load_GL_Uniform1fv")
-	public final static native void glUniform1fv(int location, int count, FloatBuffer v);
+	public final static native void glUniform1fv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform1fvOffset")
-	public final static native void glUniform1fvOffset(int location, int count, FloatBuffer v, int offset);
+	public final static native void glUniform1fvOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform1i")
 	public final static native void glUniform1i(int location, int x);
 
 	@Import(name = "Load_GL_Uniform1iv")
-	public final static native void glUniform1iv(int location, int count, IntBuffer v);
+	public final static native void glUniform1iv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform1ivOffset")
-	public final static native void glUniform1ivOffset(int location, int count, IntBuffer v, int offset);
+	public final static native void glUniform1ivOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform2f")
 	public final static native void glUniform2f(int location, float x, float y);
 
 	@Import(name = "Load_GL_Uniform2fv")
-	public final static native void glUniform2fv(int location, int count, FloatBuffer v);
+	public final static native void glUniform2fv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform2fvOffset")
-	public final static native void glUniform2fvOffset(int location, int count, FloatBuffer v, int offset);
+	public final static native void glUniform2fvOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform2i")
 	public final static native void glUniform2i(int location, int x, int y);
 
 	@Import(name = "Load_GL_Uniform2iv")
-	public final static native void glUniform2iv(int location, int count, IntBuffer v);
+	public final static native void glUniform2iv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform2ivOffset")
-	public final static native void glUniform2ivOffset(int location, int count, IntBuffer v, int offset);
+	public final static native void glUniform2ivOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform3f")
 	public final static native void glUniform3f(int location, float x, float y, float z);
 
 	@Import(name = "Load_GL_Uniform3fv")
-	public final static native void glUniform3fv(int location, int count, FloatBuffer v);
+	public final static native void glUniform3fv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform3fvOffset")
-	public final static native void glUniform3fvOffset(int location, int count, FloatBuffer v, int offset);
+	public final static native void glUniform3fvOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform3i")
 	public final static native void glUniform3i(int location, int x, int y, int z);
 
 	@Import(name = "Load_GL_Uniform3iv")
-	public final static native void glUniform3iv(int location, int count, IntBuffer v);
+	public final static native void glUniform3iv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform3ivOffset")
-	public final static native void glUniform3ivOffset(int location, int count, IntBuffer v, int offset);
+	public final static native void glUniform3ivOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform4f")
 	public final static native void glUniform4f(int location, float x, float y, float z, float w);
 
 	@Import(name = "Load_GL_Uniform4fv")
-	public final static native void glUniform4fv(int location, int count, FloatBuffer v);
+	public final static native void glUniform4fv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform4fvOffset")
-	public final static native void glUniform4fvOffset(int location, int count, FloatBuffer v, int offset);
+	public final static native void glUniform4fvOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_Uniform4i")
 	public final static native void glUniform4i(int location, int x, int y, int z, int w);
 
 	@Import(name = "Load_GL_Uniform4iv")
-	public final static native void glUniform4iv(int location, int count, IntBuffer v);
+	public final static native void glUniform4iv(int location, int count, Address v);
 
 	@Import(name = "Load_GL_Uniform4ivOffset")
-	public final static native void glUniform4ivOffset(int location, int count, IntBuffer v, int offset);
+	public final static native void glUniform4ivOffset(int location, int count, Address v, int offset);
 
 	@Import(name = "Load_GL_UniformMatrix2fv")
-	public final static native void glUniformMatrix2fv(int location, int count, boolean transpose, FloatBuffer value);
+	public final static native void glUniformMatrix2fv(int location, int count, boolean transpose, Address value);
 
 	@Import(name = "Load_GL_UniformMatrix2fvOffset")
-	public final static native void glUniformMatrix2fvOffset(int location, int count, boolean transpose,
-			FloatBuffer value, int offset);
+	public final static native void glUniformMatrix2fvOffset(int location, int count, boolean transpose, Address value,
+			int offset);
 
 	@Import(name = "Load_GL_UniformMatrix3fv")
-	public final static native void glUniformMatrix3fv(int location, int count, boolean transpose, FloatBuffer value);
+	public final static native void glUniformMatrix3fv(int location, int count, boolean transpose, Address value);
 
 	@Import(name = "Load_GL_UniformMatrix4fv")
-	public final static native void glUniformMatrix4fv(int location, int count, boolean transpose, FloatBuffer value);
+	public final static native void glUniformMatrix4fv(int location, int count, boolean transpose, Address value);
 
 	@Import(name = "Load_GL_UniformMatrix4fvOffset")
-	public final static native void glUniformMatrix4fvOffset(int location, int count, boolean transpose,
-			FloatBuffer value, int offset);
+	public final static native void glUniformMatrix4fvOffset(int location, int count, boolean transpose, Address value,
+			int offset);
 
 	@Import(name = "Load_GL_VertexAttrib1f")
 	public final static native void glVertexAttrib1f(int index, float x);
 
 	@Import(name = "Load_GL_VertexAttrib1fv")
-	public final static native void glVertexAttrib1fv(int index, FloatBuffer values);
+	public final static native void glVertexAttrib1fv(int index, Address values);
 
 	@Import(name = "Load_GL_VertexAttrib2f")
 	public final static native void glVertexAttrib2f(int index, float x, float y);
 
 	@Import(name = "Load_GL_VertexAttrib2fv")
-	public final static native void glVertexAttrib2fv(int index, FloatBuffer values);
+	public final static native void glVertexAttrib2fv(int index, Address values);
 
 	@Import(name = "Load_GL_VertexAttrib3f")
 	public final static native void glVertexAttrib3f(int index, float x, float y, float z);
 
 	@Import(name = "Load_GL_VertexAttrib3fv")
-	public final static native void glVertexAttrib3fv(int index, FloatBuffer values);
+	public final static native void glVertexAttrib3fv(int index, Address values);
 
 	@Import(name = "Load_GL_VertexAttrib4f")
 	public final static native void glVertexAttrib4f(int index, float x, float y, float z, float w);
 
 	@Import(name = "Load_GL_VertexAttrib4fv")
-	public final static native void glVertexAttrib4fv(int index, FloatBuffer values);
+	public final static native void glVertexAttrib4fv(int index, Address values);
 
 	@Import(name = "Load_GL_VertexAttribPointer")
 	public final static native void glVertexAttribPointer(int index, int size, int type, boolean normalized, int stride,
-			Buffer ptr);
+			Address ptr);
 
 	@Import(name = "Load_GL_VertexAttribPointerOffset")
 	public final static native void glVertexAttribPointerOffset(int index, int size, int type, boolean normalized,
 			int stride, long offset);
 
 	@Import(name = "Load_GL_GetAttachedShaders")
-	public final static native void glGetAttachedShaders(int program, int maxCount, IntBuffer count, IntBuffer shaders);
+	public final static native void glGetAttachedShaders(int program, int maxCount, Address count, Address shaders);
 
 	@Import(name = "Load_GL_GetShaderSource")
-	public final static native void glGetShaderSource(int shader, int bufSize, IntBuffer count, ByteBuffer shaders);
+	public final static native void glGetShaderSource(int shader, int bufSize, Address count, Address shaders);
 
 	// Controller
 	@Import(name = "Load_SDL_IsGameController")

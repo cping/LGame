@@ -1032,7 +1032,11 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	for (int i = 0; i < 16; i++) {
 		touches[i * 3] = -1;
 	}
-
+	for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
+		g_keyStates[i] = -1;
+		g_pressedKeys[i] = -1;
+		g_releasedKeys[i] = -1;
+	}
 #ifndef LOON_DESKTOP
 	padConfigureInput(8, HidNpadStyleSet_NpadStandard);
 	padInitializeAny(&combinedPad);
@@ -1077,20 +1081,21 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	gladLoadGL();
 	SDL_Init(SDL_INIT_AUDIO);
 #else
-	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-	#ifdef __WINRT__
-	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
-	#endif
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+#ifdef __WINRT__
+	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
+#endif
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | flags);
+	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
     if (!window) {
         printf("Window creation failed: %s\n", SDL_GetError());
         return -1;
@@ -1104,7 +1109,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
         printf("GL context creation failed: %s\n", SDL_GetError());
         return -1;
     }
-	#ifdef LOON_DESKTOP
+	#ifdef LOON_DESKTOP && !GLEW
 	if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
         printf("Failed to load GLES2 functions\n");
         return -1;
@@ -1273,6 +1278,26 @@ bool Load_SDL_Update() {
 #endif
 }
 
+void Load_SDL_GL_SwapScreen(){
+#ifndef LOON_DESKTOP
+	if (display && eglsurface) {
+		eglSwapBuffers(display, eglsurface);
+	}
+#else
+  if(window){
+	 SDL_GL_SwapWindow(window);
+  }
+#endif
+}
+
+void Load_SDL_GL_SwapWindowHandle(const int64_t handle){
+  	SDL_Window* win = (SDL_Window*)handle;
+	if (!win) {
+		return;
+	}
+}
+
+
 void GetDisplayResolution(int displayIndex, int* w, int* h) {
 	SDL_DisplayMode mode;
 	if (SDL_GetCurrentDisplayMode(displayIndex, &mode) == 0) {
@@ -1282,6 +1307,26 @@ void GetDisplayResolution(int displayIndex, int* w, int* h) {
 	else {
 		*w = 1280;
 		*h = 720;
+	}
+}
+
+void Call_SDL_GetRenderScale(float* scales) {
+	if (!window || !scales) {
+		return;
+	}
+	int outRenderW, outRenderH;
+	int winW, winH;
+	SDL_GetWindowSize(window, &winW, &winH);
+	SDL_GL_GetDrawableSize(window, &outRenderW, &outRenderH);
+	int displayIndex = SDL_GetWindowDisplayIndex(window);
+	int screenW, screenH;
+	GetDisplayResolution(displayIndex, &screenW, &screenH);
+	if (winW > 0 && winH > 0) {
+		scales[0] = (float)(outRenderW) / (float)winW;
+		scales[1] = (float)(outRenderH) / (float)winH;
+	}
+	else {
+		scales[0] = scales[1] = 1.0f;
 	}
 }
 
@@ -1333,17 +1378,19 @@ void GetCurrentScreenSize(int* width, int* height) {
 	GetDisplayResolution(displayIndex, width, height);
 }
 
-int32_t* Load_SDL_Current_Screen_Size() {
+void Load_SDL_Current_Screen_Size(int32_t* values) {
 	const char* platform = SDL_GetPlatform();
 	int width, height;
 	GetCurrentScreenSize(&width, &height);
-	g_screenSize[0] = width;
-	g_screenSize[1] = height;
-	return g_screenSize;
+	values[0] = width;
+	values[1] = height;
 }
 
-int32_t* Load_SDL_Current_Window_Size() {
-	return g_windowSize;
+void Load_SDL_Current_Window_Size(int32_t* values) {
+	int winWidth, winHeight;
+	SDL_GetWindowSize(window, &winWidth, &winHeight);
+	values[0] = winWidth;
+	values[1] = winHeight;
 }
 
 bool Load_SDL_Pause() {
@@ -1351,19 +1398,19 @@ bool Load_SDL_Pause() {
 }
 
 int32_t Load_SDL_GetKeyStates(int32_t* outKey) {
-	size_t len = sizeof(g_keyStates);
+	size_t len = SDL_NUM_SCANCODES;
 	copy_int32_array(outKey, len, g_keyStates, len);
 	return (int32_t)len;
 }
 
 int32_t Load_SDL_GetPressedKeys(int32_t* outKey) {
-	size_t len = sizeof(g_pressedKeys);
+	size_t len = SDL_NUM_SCANCODES;
 	copy_int32_array(outKey, len, g_pressedKeys, len);
 	return (int32_t)len;
 }
 
 int32_t Load_SDL_GetReleasedKeys(int32_t* outKey) {
-	size_t len = sizeof(g_releasedKeys);
+	size_t len = SDL_NUM_SCANCODES;
 	copy_int32_array(outKey, len, g_releasedKeys, len);
 	return (int32_t)len;
 }
@@ -1474,11 +1521,6 @@ int32_t Load_SDL_TouchData(int32_t* data)
 int Load_SDL_GL_SetSwapInterval(int on)
 {
 	return SDL_GL_SetSwapInterval(on);
-}
-
-void Load_SDL_GL_SwapWindow(const int64_t window)
-{
-	SDL_GL_SwapWindow((SDL_Window*)window);
 }
 
 int64_t Load_SDL_GL_CreateContext(const int64_t window)
@@ -3285,12 +3327,12 @@ void Load_GL_GetIntegerv(const int pname, const void* params)
 
 char* Load_GL_GetString(const int name)
 {
-	return (char*)glGetString(name);
+	return (char*)glGetString((GLenum)name);
 }
 
 void Load_GL_Hint(const int target, const int mode)
 {
-	glHint(target, mode);
+	glHint((GLenum)target, (GLenum)mode);
 }
 
 void Load_GL_LineWidth(const float width)
@@ -3378,7 +3420,7 @@ void Load_GL_AttachShader(const int program, const int shader)
 
 void Load_GL_BindAttribLocation(const int program, const int index, const char* name)
 {
-	glBindAttribLocation(program, index, name);
+	glBindAttribLocation(program, index, (GLchar*)name);
 }
 
 void Load_GL_BindBuffer(const int target, const int buffer)
@@ -3463,6 +3505,18 @@ int Load_GL_CreateProgram()
 int Load_GL_CreateShader(const int type)
 {
 	return glCreateShader(type);
+}
+
+int Load_GL_GenRenderbuffer()
+{
+    GLuint b;
+	if (glGenRenderbuffers) {
+		glGenRenderbuffers(1, &b);
+	}
+	#ifdef GLEW
+		glGenRenderbuffersEXT(1, &b);
+	#endif
+	return b;
 }
 
 void Load_GL_DeleteBuffer(const int buffer)

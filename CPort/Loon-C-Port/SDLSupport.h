@@ -480,6 +480,10 @@ int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes);
 
 bool Load_SDL_RW_FileExists(const char* filename);
 
+void Load_SDL_GL_SwapScreen();
+
+void Load_SDL_GL_SwapWindowHandle(const int64_t handle);
+
 const char* Load_SDL_GetPreferredLocales();
 
 const char* Load_SDL_GetBasePath();
@@ -612,9 +616,9 @@ int32_t Load_SDL_GetReleasedKeys(int32_t* keys);
 
 int32_t Load_SDL_GetLastPressedScancode();
 
-int32_t* Load_SDL_Current_Screen_Size();
+void Load_SDL_Current_Screen_Size(int32_t* values);
 
-int32_t* Load_SDL_Current_Window_Size();
+void Load_SDL_Current_Window_Size(int32_t* values);
 
 bool Load_SDL_Pause();
 
@@ -750,8 +754,6 @@ bool Load_SDL_GL_ExtensionSupported(const char* exte);
 
 int Load_SDL_GL_SetSwapInterval(int on);
 
-void Load_SDL_GL_SwapWindow(const int64_t window);
-
 int64_t Load_SDL_GL_CreateContext(const int64_t window);
 
 int Load_SDL_GL_SetAttribute(const int attribute, const int value);
@@ -791,6 +793,8 @@ void Call_SDL_RestoreWindow();
 void Call_SDL_SetWindowIcon(const int64_t handle);
 
 void Call_SDL_GL_SwapWindow();
+
+void Call_SDL_GetRenderScale(float* scales);
 
 int64_t Call_SDL_GL_CreateContext();
 
@@ -941,6 +945,8 @@ void Load_GL_FrontFace(const int mode);
 int Load_GL_GenTexture();
 
 void Load_GL_GenTextures(const int n, const void* textures);
+
+int Load_GL_GenRenderbuffer();
 
 int Load_GL_GetError();
 

@@ -118,7 +118,7 @@ public class StreamUtils {
 		}
 
 		@Override
-		public synchronized byte[] toByteArray() {
+		public  byte[] toByteArray() {
 			if (count == buf.length)
 				return buf;
 			return super.toByteArray();

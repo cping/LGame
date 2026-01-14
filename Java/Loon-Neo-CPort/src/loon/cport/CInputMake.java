@@ -162,6 +162,7 @@ public class CInputMake extends InputMake {
 			postTouchEvents(_touchs, true);
 		}
 		System.arraycopy(_touchData, 0, _previousTouchData, 0, DEF_MAX_TOUCHES * 3);
+		
 		final int keyPressedLen = SDLCall.getPressedKeys(_keyData);
 		_lastKeyPressed = SDLCall.getLastPressedScancode();
 		for (int key = 0; key < keyPressedLen; key++) {

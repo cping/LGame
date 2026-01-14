@@ -98,7 +98,7 @@ public class LogFormat {
 		return sbr.toString();
 	}
 
-	public synchronized void title(int flag, String msg) {
+	public  void title(int flag, String msg) {
 		switch (flag) {
 		case 0:
 			System.out.print(msg);
@@ -109,7 +109,7 @@ public class LogFormat {
 		}
 	}
 
-	public synchronized void out(String msg) {
+	public  void out(String msg) {
 		if (!show) {
 			return;
 		}
@@ -132,7 +132,7 @@ public class LogFormat {
 		this.limitTagSize = tagSize;
 	}
 
-	public synchronized void out(String tm, String app, String level, String msg) {
+	public  void out(String tm, String app, String level, String msg) {
 		String value[] = { tm, app, level, msg };
 		if (count++ % 9999 == 0) {
 			logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)

@@ -200,7 +200,7 @@ final public class LogImpl {
 		}
 	}
 
-	public synchronized LogMessage[] getLogMessages() {
+	public  LogMessage[] getLogMessages() {
 		int numberOfMessages;
 		if (newestMessageIndex < 0) {
 			numberOfMessages = 0;
@@ -220,7 +220,7 @@ final public class LogImpl {
 		return copy;
 	}
 
-	public static synchronized void clear() {
+	public static  void clear() {
 		oldestMessageIndex = -1;
 		newestMessageIndex = -1;
 		store = new LogMessage[MAX_LOG_MESSAGES];

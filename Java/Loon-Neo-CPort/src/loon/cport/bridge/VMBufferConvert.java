@@ -33,6 +33,7 @@ import org.teavm.interop.Address;
 
 import loon.LSysException;
 import loon.LSystem;
+import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 
@@ -230,8 +231,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(ByteBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getByte());
 		}
@@ -239,8 +240,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(ShortBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getShort());
 		}
@@ -248,8 +249,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(IntBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getInt());
 		}
@@ -257,8 +258,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(LongBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getLong());
 		}
@@ -266,8 +267,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(FloatBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getFloat());
 		}
@@ -275,8 +276,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(DoubleBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getDouble());
 		}
@@ -284,8 +285,8 @@ public final class VMBufferConvert {
 	}
 
 	public static void restore(CharBuffer buffer, Address address) {
-		final int size = buffer.capacity();
 		buffer.rewind();
+		final int size = MathUtils.min(buffer.remaining(), buffer.capacity());
 		for (int a = 0; a < size; a++) {
 			buffer.put(address.getChar());
 		}

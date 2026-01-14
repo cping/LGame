@@ -23,16 +23,14 @@ package loon.cport;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.CharBuffer;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.LongBuffer;
-import java.nio.ShortBuffer;
 
-import loon.LSysException;
+import org.teavm.interop.Address;
+
 import loon.LSystem;
 import loon.cport.bridge.SDLCall;
+import loon.cport.bridge.VMBufferConvert;
 import loon.opengl.GLExt;
 
 public class CGL20 extends loon.opengl.GL20 implements GLExt {
@@ -41,124 +39,124 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glCompressedTexImage3D(int target, int level, int internalformat, int width, int height, int depth,
 			int border, int imageSize, Buffer data) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexImage3D(int target, int level, int internalformat, int width, int height, int depth,
 			int border, int imageSize, int data) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width,
 			int height, int depth, int format, int imageSize, Buffer data) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCompressedTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width,
 			int height, int depth, int format, int imageSize, int data) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glCopyTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int x, int y,
 			int width, int height) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glFramebufferTexture3D(int target, int attachment, int textarget, int texture, int level, int zoffset) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public int glGetBoundBuffer(int buffer) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glGetProgramBinary(int program, int bufSize, IntBuffer length, IntBuffer binaryFormat, Buffer binary) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glIsVBOArrayEnabled() {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glIsVBOElementEnabled() {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public ByteBuffer glMapBuffer(int target, int access) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glProgramBinary(int program, int binaryFormat, Buffer binary, int length) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glShaderBinary(int n, int[] shaders, int offset, int binaryformat, Buffer binary, int length) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean isExtensionAvailable(String extension) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean isFunctionAvailable(String function) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
 			Buffer arg9) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexImage3D(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8,
 			int arg9) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height,
 			int depth, int format, int type, Buffer pixels) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public void glTexSubImage3D(int target, int level, int xoffset, int yoffset, int zoffset, int width, int height,
 			int depth, int format, int type, int pixels) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public boolean glUnmapBuffer(int target) {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public String getPlatformGLExtensions() {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	@Override
 	public int getSwapInterval() {
-		throw new LSysException("NYI - not in CPort.");
+		throw new RuntimeException("NYI - not in CPort.");
 	}
 
 	public CGL20() {
-		this(false);
+		this(true);
 	}
 
 	public CGL20(final boolean checkErrors) {
@@ -170,6 +168,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 				return buffer;
 			}
 		}, checkErrors);
+	}
+
+	@Override
+	public int glGenRenderbuffer() {
+		return SDLCall.glGenRenderbuffer();
+	}
+
+	@Override
+	public void glDeleteBuffer(int id) {
+		SDLCall.glDeleteBuffer(id);
 	}
 
 	@Override
@@ -264,42 +272,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glBufferData(int target, int size, Buffer data, int usage) {
-		if (data instanceof ByteBuffer)
-			SDLCall.glBufferData(target, size, (ByteBuffer) data, usage);
-		else if (data instanceof ShortBuffer)
-			SDLCall.glBufferData(target, size, (ShortBuffer) data, usage);
-		else if (data instanceof IntBuffer)
-			SDLCall.glBufferData(target, size, (IntBuffer) data, usage);
-		else if (data instanceof FloatBuffer)
-			SDLCall.glBufferData(target, size, (FloatBuffer) data, usage);
-		else if (data instanceof DoubleBuffer)
-			SDLCall.glBufferData(target, size, (DoubleBuffer) data, usage);
-		else if (data instanceof LongBuffer)
-			SDLCall.glBufferData(target, size, (LongBuffer) data, usage);
-		else if (data instanceof CharBuffer)
-			SDLCall.glBufferData(target, size, (CharBuffer) data, usage);
-		else
-			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+		Address dataAddress = VMBufferConvert.save(data);
+		SDLCall.glBufferData(target, size, dataAddress, usage);
+		VMBufferConvert.restore(data, dataAddress);
 	}
 
 	@Override
 	public void glBufferSubData(int target, int offset, int size, Buffer data) {
-		if (data instanceof ByteBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (ByteBuffer) data);
-		else if (data instanceof ShortBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (ShortBuffer) data);
-		else if (data instanceof IntBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (IntBuffer) data);
-		else if (data instanceof FloatBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (FloatBuffer) data);
-		else if (data instanceof DoubleBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (DoubleBuffer) data);
-		else if (data instanceof LongBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (LongBuffer) data);
-		else if (data instanceof CharBuffer)
-			SDLCall.glBufferSubData(target, offset, size, (CharBuffer) data);
-		else
-			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
+		Address dataAddress = VMBufferConvert.save(data);
+		SDLCall.glBufferSubData(target, offset, size, dataAddress);
+		VMBufferConvert.restore(data, dataAddress);
 	}
 
 	@Override
@@ -340,59 +322,18 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border,
 			int imageSize, Buffer data) {
-		if (data instanceof ShortBuffer)
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(ShortBuffer) data);
-		else if (data instanceof ByteBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(ByteBuffer) data);
-		} else if (data instanceof IntBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(IntBuffer) data);
-		} else if (data instanceof FloatBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(FloatBuffer) data);
-		} else if (data instanceof DoubleBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(DoubleBuffer) data);
-		} else if (data instanceof LongBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(LongBuffer) data);
-		} else if (data instanceof CharBuffer) {
-			SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
-					(CharBuffer) data);
-		} else {
-			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
-		}
+		Address dataAddress = VMBufferConvert.save(data);
+		SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, dataAddress);
+		VMBufferConvert.restore(data, dataAddress);
 	}
 
 	@Override
 	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
 			int format, int imageSize, Buffer data) {
-		if (data instanceof ShortBuffer)
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(ShortBuffer) data);
-		else if (data instanceof ByteBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(ByteBuffer) data);
-		} else if (data instanceof IntBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(IntBuffer) data);
-		} else if (data instanceof FloatBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(FloatBuffer) data);
-		} else if (data instanceof DoubleBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(DoubleBuffer) data);
-		} else if (data instanceof LongBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(LongBuffer) data);
-		} else if (data instanceof CharBuffer) {
-			SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-					(CharBuffer) data);
-		} else {
-			throw new LSysException("Can't use " + data.getClass().getName() + " with this method. Not supported !");
-		}
+		Address dataAddress = VMBufferConvert.save(data);
+		SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
+				dataAddress);
+		VMBufferConvert.restore(data, dataAddress);
 	}
 
 	@Override
@@ -424,12 +365,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glDeleteBuffers(int n, IntBuffer buffers) {
-		SDLCall.glDeleteBuffers(n, buffers);
+		Address dataAddress = VMBufferConvert.save(buffers);
+		SDLCall.glDeleteBuffers(n, dataAddress);
+		VMBufferConvert.restore(buffers, dataAddress);
 	}
 
 	@Override
 	public void glDeleteFramebuffers(int n, IntBuffer framebuffers) {
-		SDLCall.glDeleteFramebuffers(n, framebuffers);
+		Address dataAddress = VMBufferConvert.save(framebuffers);
+		SDLCall.glDeleteFramebuffers(n, dataAddress);
+		VMBufferConvert.restore(framebuffers, dataAddress);
 	}
 
 	@Override
@@ -439,7 +384,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glDeleteRenderbuffers(int n, IntBuffer renderbuffers) {
-		SDLCall.glDeleteRenderbuffers(n, renderbuffers);
+		Address dataAddress = VMBufferConvert.save(renderbuffers);
+		SDLCall.glDeleteRenderbuffers(n, dataAddress);
+		VMBufferConvert.restore(renderbuffers, dataAddress);
 	}
 
 	@Override
@@ -449,7 +396,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glDeleteTextures(int n, IntBuffer textures) {
-		SDLCall.glDeleteTextures(n, textures);
+		Address dataAddress = VMBufferConvert.save(textures);
+		SDLCall.glDeleteTextures(n, dataAddress);
+		VMBufferConvert.restore(textures, dataAddress);
 	}
 
 	@Override
@@ -489,25 +438,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glDrawElements(int mode, int count, int type, Buffer indices) {
-		if (indices instanceof ShortBuffer && type == GL_UNSIGNED_SHORT)
-			SDLCall.glDrawElements(mode, count, type, (ShortBuffer) indices);
-		else if (indices instanceof ByteBuffer && type == GL_UNSIGNED_SHORT) {
-			SDLCall.glDrawElements(mode, count, type, ((ByteBuffer) indices).asShortBuffer());
-		} else if (indices instanceof ByteBuffer && type == GL_UNSIGNED_BYTE) {
-			SDLCall.glDrawElements(mode, count, type, (ByteBuffer) indices);
-		} else if (indices instanceof IntBuffer) {
-			SDLCall.glDrawElements(mode, count, type, (IntBuffer) indices);
-		} else if (indices instanceof FloatBuffer) {
-			SDLCall.glDrawElements(mode, count, type, (FloatBuffer) indices);
-		} else if (indices instanceof DoubleBuffer) {
-			SDLCall.glDrawElements(mode, count, type, (DoubleBuffer) indices);
-		} else if (indices instanceof LongBuffer) {
-			SDLCall.glDrawElements(mode, count, type, (LongBuffer) indices);
-		} else if (indices instanceof CharBuffer) {
-			SDLCall.glDrawElements(mode, count, type, (CharBuffer) indices);
-		} else {
-			throw new LSysException("Can't use " + indices.getClass().getName() + " with this method. Not supported !");
-		}
+		Address dataAddress = VMBufferConvert.save(indices);
+		SDLCall.glDrawElements(mode, count, type, dataAddress);
+		VMBufferConvert.restore(indices, dataAddress);
 	}
 
 	@Override
@@ -547,22 +480,30 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGenBuffers(int n, IntBuffer buffers) {
-		SDLCall.glGenBuffers(n, buffers);
+		Address dataAddress = VMBufferConvert.save(buffers);
+		SDLCall.glGenBuffers(n, dataAddress);
+		VMBufferConvert.restore(buffers, dataAddress);
 	}
 
 	@Override
 	public void glGenFramebuffers(int n, IntBuffer framebuffers) {
-		SDLCall.glGenFramebuffers(n, framebuffers);
+		Address dataAddress = VMBufferConvert.save(framebuffers);
+		SDLCall.glGenFramebuffers(n, dataAddress);
+		VMBufferConvert.restore(framebuffers, dataAddress);
 	}
 
 	@Override
 	public void glGenRenderbuffers(int n, IntBuffer renderbuffers) {
-		SDLCall.glGenRenderbuffers(n, renderbuffers);
+		Address dataAddress = VMBufferConvert.save(renderbuffers);
+		SDLCall.glGenRenderbuffers(n, dataAddress);
+		VMBufferConvert.restore(renderbuffers, dataAddress);
 	}
 
 	@Override
 	public void glGenTextures(int n, IntBuffer textures) {
-		SDLCall.glGenTextures(n, textures);
+		Address dataAddress = VMBufferConvert.save(textures);
+		SDLCall.glGenTextures(n, dataAddress);
+		VMBufferConvert.restore(textures, dataAddress);
 	}
 
 	@Override
@@ -577,7 +518,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetBufferParameteriv(int target, int pname, IntBuffer params) {
-		SDLCall.glGetBufferParameteriv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetBufferParameteriv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -587,17 +530,23 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetFloatv(int pname, FloatBuffer params) {
-		SDLCall.glGetFloatv(pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetFloatv(pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetFramebufferAttachmentParameteriv(int target, int attachment, int pname, IntBuffer params) {
-		SDLCall.glGetFramebufferAttachmentParameteriv(target, attachment, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetFramebufferAttachmentParameteriv(target, attachment, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetIntegerv(int pname, IntBuffer params) {
-		SDLCall.glGetIntegerv(pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetIntegerv(pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -607,12 +556,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetProgramiv(int program, int pname, IntBuffer params) {
-		SDLCall.glGetProgramiv(program, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetProgramiv(program, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetRenderbufferParameteriv(int target, int pname, IntBuffer params) {
-		SDLCall.glGetRenderbufferParameteriv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetRenderbufferParameteriv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -622,12 +575,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetShaderPrecisionFormat(int shadertype, int precisiontype, IntBuffer range, IntBuffer precision) {
+		Address paramsAddress = VMBufferConvert.save(precision);
 		glGetShaderPrecisionFormat(shadertype, precisiontype, range, precision);
+		VMBufferConvert.restore(precision, paramsAddress);
 	}
 
 	@Override
 	public void glGetShaderiv(int shader, int pname, IntBuffer params) {
-		SDLCall.glGetShaderiv(shader, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetShaderiv(shader, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -637,12 +594,16 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetTexParameterfv(int target, int pname, FloatBuffer params) {
-		SDLCall.glGetTexParameterfv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetTexParameterfv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetTexParameteriv(int target, int pname, IntBuffer params) {
-		SDLCall.glGetTexParameteriv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetTexParameteriv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -652,22 +613,31 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetUniformfv(int program, int location, FloatBuffer params) {
-		SDLCall.glGetUniformfv(program, location, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetUniformfv(program, location, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetUniformiv(int program, int location, IntBuffer params) {
-		SDLCall.glGetUniformiv(program, location, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetUniformiv(program, location, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glGetVertexAttribfv(int index, int pname, FloatBuffer params) {
-		SDLCall.glGetVertexAttribfv(index, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetVertexAttribfv(index, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
+
 	}
 
 	@Override
 	public void glGetVertexAttribiv(int index, int pname, IntBuffer params) {
-		SDLCall.glGetVertexAttribiv(index, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetVertexAttribiv(index, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -732,22 +702,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glReadPixels(int x, int y, int width, int height, int format, int type, Buffer pixels) {
-		if (pixels instanceof ByteBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (ByteBuffer) pixels);
-		else if (pixels instanceof ShortBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (ShortBuffer) pixels);
-		else if (pixels instanceof IntBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (IntBuffer) pixels);
-		else if (pixels instanceof FloatBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (FloatBuffer) pixels);
-		else if (pixels instanceof DoubleBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (DoubleBuffer) pixels);
-		else if (pixels instanceof LongBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (LongBuffer) pixels);
-		else if (pixels instanceof CharBuffer)
-			SDLCall.glReadPixels(x, y, width, height, format, type, (CharBuffer) pixels);
-		else
-			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+		Address pixelsAddress = VMBufferConvert.save(pixels);
+		SDLCall.glReadPixels(x, y, width, height, format, type, pixelsAddress);
+		VMBufferConvert.restore(pixels, pixelsAddress);
 	}
 
 	@Override
@@ -772,23 +729,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glShaderBinary(int n, IntBuffer shaders, int binaryformat, Buffer binary, int length) {
-		if (binary instanceof ShortBuffer)
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (ShortBuffer) binary, length);
-		else if (binary instanceof ByteBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (ByteBuffer) binary, length);
-		} else if (binary instanceof IntBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (IntBuffer) binary, length);
-		} else if (binary instanceof FloatBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (FloatBuffer) binary, length);
-		} else if (binary instanceof DoubleBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (DoubleBuffer) binary, length);
-		} else if (binary instanceof LongBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (LongBuffer) binary, length);
-		} else if (binary instanceof CharBuffer) {
-			SDLCall.glShaderBinary(n, shaders, binaryformat, (CharBuffer) binary, length);
-		} else {
-			throw new LSysException("Can't use " + binary.getClass().getName() + " with this method. Not supported !");
-		}
+		SDLCall.glShaderBinary(n, shaders, binaryformat, binary, length);
 	}
 
 	@Override
@@ -824,29 +765,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
 			int type, Buffer pixels) {
-		if (pixels instanceof ByteBuffer || pixels == null)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(ByteBuffer) pixels);
-		else if (pixels instanceof ShortBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(ShortBuffer) pixels);
-		else if (pixels instanceof IntBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(IntBuffer) pixels);
-		else if (pixels instanceof FloatBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(FloatBuffer) pixels);
-		else if (pixels instanceof DoubleBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(DoubleBuffer) pixels);
-		else if (pixels instanceof LongBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(LongBuffer) pixels);
-		else if (pixels instanceof CharBuffer)
-			SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-					(CharBuffer) pixels);
-		else
-			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+		SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels);
 	}
 
 	@Override
@@ -856,7 +775,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glTexParameterfv(int target, int pname, FloatBuffer params) {
-		SDLCall.glTexParameterfv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glTexParameterfv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -866,29 +787,15 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glTexParameteriv(int target, int pname, IntBuffer params) {
-		SDLCall.glTexParameteriv(target, pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glTexParameteriv(target, pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
 	public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
 			int type, Buffer pixels) {
-		if (pixels instanceof ByteBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (ByteBuffer) pixels);
-		else if (pixels instanceof ShortBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (ShortBuffer) pixels);
-		else if (pixels instanceof IntBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (IntBuffer) pixels);
-		else if (pixels instanceof FloatBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (FloatBuffer) pixels);
-		else if (pixels instanceof DoubleBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type,
-					(DoubleBuffer) pixels);
-		else if (pixels instanceof LongBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (LongBuffer) pixels);
-		else if (pixels instanceof CharBuffer)
-			SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (CharBuffer) pixels);
-		else
-			throw new LSysException("Can't use " + pixels.getClass().getName() + " with this method. Not supported !");
+		SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels);
 	}
 
 	@Override
@@ -898,7 +805,10 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform1fv(int location, int count, FloatBuffer buffer) {
-		SDLCall.glUniform1fv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform1fv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
+
 	}
 
 	@Override
@@ -908,7 +818,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform1iv(int location, int count, IntBuffer buffer) {
-		SDLCall.glUniform1iv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform1iv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -918,7 +830,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform2fv(int location, int count, FloatBuffer buffer) {
-		SDLCall.glUniform2fv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform2fv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -928,7 +842,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform2iv(int location, int count, IntBuffer buffer) {
-		SDLCall.glUniform2iv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform2iv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -938,7 +854,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform3fv(int location, int count, FloatBuffer buffer) {
-		SDLCall.glUniform3fv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform3fv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -948,7 +866,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform3iv(int location, int count, IntBuffer buffer) {
-		SDLCall.glUniform3iv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform3iv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -958,7 +878,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform4fv(int location, int count, FloatBuffer buffer) {
-		SDLCall.glUniform4fv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform4fv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -968,22 +890,30 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glUniform4iv(int location, int count, IntBuffer buffer) {
-		SDLCall.glUniform4iv(location, count, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniform4iv(location, count, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
 	public void glUniformMatrix2fv(int location, int count, boolean transpose, FloatBuffer buffer) {
-		SDLCall.glUniformMatrix2fv(location, count, transpose, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniformMatrix2fv(location, count, transpose, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
 	public void glUniformMatrix3fv(int location, int count, boolean transpose, FloatBuffer buffer) {
-		SDLCall.glUniformMatrix3fv(location, count, transpose, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniformMatrix3fv(location, count, transpose, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
 	public void glUniformMatrix4fv(int location, int count, boolean transpose, FloatBuffer buffer) {
-		SDLCall.glUniformMatrix4fv(location, count, transpose, buffer);
+		Address bufferAddress = VMBufferConvert.save(buffer);
+		SDLCall.glUniformMatrix4fv(location, count, transpose, bufferAddress);
+		VMBufferConvert.restore(buffer, bufferAddress);
 	}
 
 	@Override
@@ -1038,23 +968,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glVertexAttribPointer(int indx, int size, int type, boolean normalized, int stride, Buffer ptr) {
-		if (ptr instanceof FloatBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, (FloatBuffer) ptr);
-		} else if (ptr instanceof ByteBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((ByteBuffer) ptr));
-		} else if (ptr instanceof ShortBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((ShortBuffer) ptr));
-		} else if (ptr instanceof IntBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((IntBuffer) ptr));
-		} else if (ptr instanceof DoubleBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((DoubleBuffer) ptr));
-		} else if (ptr instanceof LongBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((LongBuffer) ptr));
-		} else if (ptr instanceof CharBuffer) {
-			SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ((CharBuffer) ptr));
-		} else {
-			throw new LSysException("Can't use " + ptr.getClass().getName() + " with this method. Not supported !");
-		}
+		Address ptrAddress = VMBufferConvert.save(ptr);
+		SDLCall.glVertexAttribPointer(indx, size, type, normalized, stride, ptrAddress);
+		VMBufferConvert.restore(ptr, ptrAddress);
 	}
 
 	@Override
@@ -1075,6 +991,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glClearDepth(double depth) {
 		SDLCall.glClearDepthf((float) depth);
+
 	}
 
 	@Override
@@ -1100,8 +1017,12 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	public void glGetActiveAttrib(int program, int index, int bufsize, int[] length, int lengthOffset, int[] size,
 			int sizeOffset, int[] type, int typeOffset, byte[] name, int nameOffset) {
 		bufs.resizeIntBuffer(2);
-		final String nameString = SDLCall.glGetActiveAttrib(program, index, IntBuffer.allocate(bufsize),
-				bufs.intBuffer);
+		IntBuffer intBuffer = IntBuffer.allocate(bufsize);
+		Address bufsizeAddress = VMBufferConvert.save(intBuffer);
+		Address intAddress = VMBufferConvert.save(bufs.intBuffer);
+		final String nameString = SDLCall.glGetActiveAttrib(program, index, bufsizeAddress, intAddress);
+		VMBufferConvert.restore(bufs.intBuffer, intAddress);
+		VMBufferConvert.restore(intBuffer, bufsizeAddress);
 		try {
 			final byte[] nameBytes = nameString.getBytes(LSystem.ENCODING);
 			final int nameLength = nameBytes.length - nameOffset;
@@ -1119,7 +1040,12 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	public void glGetActiveUniform(int program, int index, int bufsize, int[] length, int lengthOffset, int[] size,
 			int sizeOffset, int[] type, int typeOffset, byte[] name, int nameOffset) {
 		bufs.resizeIntBuffer(2);
-		final String nameString = SDLCall.glGetActiveUniform(program, index, IntBuffer.allocate(256), bufs.intBuffer);
+		IntBuffer intBuffer = IntBuffer.allocate(bufsize);
+		Address bufsizeAddress = VMBufferConvert.save(intBuffer);
+		Address intAddress = VMBufferConvert.save(bufs.intBuffer);
+		final String nameString = SDLCall.glGetActiveUniform(program, index, bufsizeAddress, intAddress);
+		VMBufferConvert.restore(bufs.intBuffer, intAddress);
+		VMBufferConvert.restore(intBuffer, bufsizeAddress);
 		try {
 			final byte[] nameBytes = nameString.getBytes(LSystem.ENCODING);
 			final int nameLength = nameBytes.length - nameOffset;
@@ -1136,7 +1062,11 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetAttachedShaders(int program, int maxcount, IntBuffer count, IntBuffer shaders) {
-		SDLCall.glGetAttachedShaders(program, maxcount, count, shaders);
+		Address countAddress = VMBufferConvert.save(count);
+		Address shadersAddress = VMBufferConvert.save(shaders);
+		SDLCall.glGetAttachedShaders(program, maxcount, countAddress, shadersAddress);
+		VMBufferConvert.restore(count, countAddress);
+		VMBufferConvert.restore(shaders, shadersAddress);
 	}
 
 	@Override
@@ -1146,7 +1076,9 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetBooleanv(int pname, ByteBuffer params) {
-		SDLCall.glGetBooleanv(pname, params);
+		Address paramsAddress = VMBufferConvert.save(params);
+		SDLCall.glGetBooleanv(pname, paramsAddress);
+		VMBufferConvert.restore(params, paramsAddress);
 	}
 
 	@Override
@@ -1161,12 +1093,20 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 
 	@Override
 	public void glGetProgramInfoLog(int program, int bufsize, IntBuffer length, ByteBuffer infolog) {
-		SDLCall.glGetProgramInfoLogs(program, bufsize, length, infolog);
+		Address lenAddress = VMBufferConvert.save(length);
+		Address infoAddress = VMBufferConvert.save(infolog);
+		SDLCall.glGetProgramInfoLogs(program, bufsize, lenAddress, infoAddress);
+		VMBufferConvert.restore(length, lenAddress);
+		VMBufferConvert.restore(infolog, infoAddress);
 	}
 
 	@Override
 	public void glGetShaderInfoLog(int shader, int bufsize, IntBuffer length, ByteBuffer infolog) {
-		SDLCall.glGetShaderInfoLogs(shader, bufsize, length, infolog);
+		Address lenAddress = VMBufferConvert.save(length);
+		Address infoAddress = VMBufferConvert.save(infolog);
+		SDLCall.glGetShaderInfoLogs(shader, bufsize, lenAddress, infoAddress);
+		VMBufferConvert.restore(length, lenAddress);
+		VMBufferConvert.restore(infolog, infoAddress);
 	}
 
 	@Override
@@ -1224,12 +1164,20 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 			int sourceOffset) {
 		IntBuffer intBuffer = IntBuffer.wrap(length).position(lengthOffset);
 		ByteBuffer byteBuffer = ByteBuffer.wrap(source).position(sourceOffset);
-		SDLCall.glGetShaderSource(shader, bufsize, intBuffer, byteBuffer);
+		Address intAddress = VMBufferConvert.save(intBuffer);
+		Address byteAddress = VMBufferConvert.save(byteBuffer);
+		SDLCall.glGetShaderSource(shader, bufsize, intAddress, byteAddress);
+		VMBufferConvert.restore(intBuffer, intAddress);
+		VMBufferConvert.restore(byteBuffer, byteAddress);
 	}
 
 	@Override
 	public void glGetShaderSource(int shader, int bufsize, IntBuffer length, ByteBuffer source) {
-		SDLCall.glGetShaderSource(shader, bufsize, length, source);
+		Address lenAddress = VMBufferConvert.save(length);
+		Address srcAddress = VMBufferConvert.save(source);
+		SDLCall.glGetShaderSource(shader, bufsize, lenAddress, srcAddress);
+		VMBufferConvert.restore(length, lenAddress);
+		VMBufferConvert.restore(source, srcAddress);
 	}
 
 	@Override
@@ -1237,58 +1185,36 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 			int[] precision, int precisionOffset) {
 		IntBuffer int1Buffer = IntBuffer.wrap(range).position(rangeOffset);
 		IntBuffer int2Buffer = IntBuffer.wrap(precision).position(precisionOffset);
-		SDLCall.glGetShaderPrecisionFormat(shadertype, precisiontype, int1Buffer, int2Buffer);
+		Address int1Address = VMBufferConvert.save(int1Buffer);
+		Address int2Address = VMBufferConvert.save(int2Buffer);
+		SDLCall.glGetShaderPrecisionFormat(shadertype, precisiontype, int1Address, int2Address);
+		VMBufferConvert.restore(int1Buffer, int1Address);
+		VMBufferConvert.restore(int2Buffer, int2Address);
 	}
 
 	@Override
 	public String glGetActiveAttrib(int program, int index, IntBuffer size, Buffer type) {
-		String result = null;
-		if (type instanceof ShortBuffer)
-			result = SDLCall.glGetActiveAttrib(program, index, size, (ShortBuffer) type);
-		else if (type instanceof ByteBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (ByteBuffer) type);
-		} else if (type instanceof IntBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (IntBuffer) type);
-		} else if (type instanceof FloatBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (FloatBuffer) type);
-		} else if (type instanceof DoubleBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (DoubleBuffer) type);
-		} else if (type instanceof LongBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (LongBuffer) type);
-		} else if (type instanceof CharBuffer) {
-			result = SDLCall.glGetActiveAttrib(program, index, size, (CharBuffer) type);
-		} else {
-			throw new LSysException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
-		}
+		Address sizeAddress = VMBufferConvert.save(size);
+		Address typeAddress = VMBufferConvert.save(type);
+		String result = SDLCall.glGetActiveAttrib(program, index, sizeAddress, typeAddress);
+		VMBufferConvert.restore(size, sizeAddress);
+		VMBufferConvert.restore(type, typeAddress);
 		return result;
 	}
 
 	@Override
 	public String glGetActiveUniform(int program, int index, IntBuffer size, Buffer type) {
-		String result = null;
-		if (type instanceof ShortBuffer)
-			result = SDLCall.glGetActiveUniform(program, index, size, (ShortBuffer) type);
-		else if (type instanceof ByteBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (ByteBuffer) type);
-		} else if (type instanceof IntBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (IntBuffer) type);
-		} else if (type instanceof FloatBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (FloatBuffer) type);
-		} else if (type instanceof DoubleBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (DoubleBuffer) type);
-		} else if (type instanceof LongBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (LongBuffer) type);
-		} else if (type instanceof CharBuffer) {
-			result = SDLCall.glGetActiveUniform(program, index, size, (CharBuffer) type);
-		} else {
-			throw new LSysException("Can't use " + type.getClass().getName() + " with this method. Not supported !");
-		}
+		Address sizeAddress = VMBufferConvert.save(size);
+		Address typeAddress = VMBufferConvert.save(type);
+		String result = SDLCall.glGetActiveUniform(program, index, sizeAddress, typeAddress);
+		VMBufferConvert.restore(size, sizeAddress);
+		VMBufferConvert.restore(type, typeAddress);
 		return result;
 	}
 
 	@Override
 	public int getGlslVersion() {
-		return 200;
+		return 100;
 	}
 
 	@Override

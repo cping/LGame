@@ -53,11 +53,11 @@ public class CBuildConfiguration {
 
 	public BuildReflectionListener reflectionListener;
 	
-	public int minHeapSize = 8 * (1 << 20);
-	
-	public int maxHeapSize = 256 * (1 << 20);
-	
-	public int minDirectBuffersSize = 2 * (1 << 20);
-	
-	public int maxDirectBuffersSize = 32 * (1 << 20);
+	public int minHeapSize = 32 * (1 << 20);
+
+	public int maxHeapSize = 512 * (1 << 20);
+
+	public int minDirectBuffersSize = 8 * (1 << 20);
+
+	public int maxDirectBuffersSize = 512 * (1 << 20);
 }

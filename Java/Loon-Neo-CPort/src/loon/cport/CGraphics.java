@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Pixmap;
+import loon.cport.bridge.SDLCall;
 import loon.cport.bridge.STBFont;
 import loon.font.TextFormat;
 import loon.font.TextLayout;
@@ -60,7 +61,9 @@ public class CGraphics extends Graphics {
 		return screenSize;
 	}
 
-	void onSizeChanged(int viewWidth, int viewHeight) {
+	void onSizeChanged(int width, int height) {
+		final int viewWidth = width;
+		final int viewHeight = height;
 		if (!isAllowResize(viewWidth, viewHeight)) {
 			return;
 		}
@@ -68,6 +71,7 @@ public class CGraphics extends Graphics {
 		screenSize.height = viewHeight / scale.factor;
 		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
+		SDLCall.glViewport(0, 0, width, height);
 	}
 
 	@Override

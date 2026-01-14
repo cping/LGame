@@ -1,0 +1,3 @@
+C  lang Version has achieved 70% success. - 20260113
+
+The program runs without crashing and can generate graphics using shaders, but... currently there's an issue with image loading—fonts and graphics aren't loading properly. It's likely a parameter passed incorrectly somewhere. The worst part is that it doesn't crash, forcing me to debug it bit by bit... 

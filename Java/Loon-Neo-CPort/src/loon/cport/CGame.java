@@ -89,7 +89,10 @@ public class CGame extends LGame {
 	private final CSave _save;
 	private final CClipboard _clipboard;
 	private final int _startTime;
+	private final int[] _screenSize = new int[2];
+	private final float[] _screenScale = new float[2];
 	private final LazyLoading.Data _mainData;
+	private final boolean _gamePlatform;
 
 	public CGame(Loon loon, CSetting config, LazyLoading.Data mainData) {
 		super(config, loon);
@@ -101,9 +104,11 @@ public class CGame extends LGame {
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(), _csetting.vsync,
 				SDLCall.SDL_WINDOW_OPENGL | SDLCall.SDL_WINDOW_SHOWN, _csetting.isDebug);
 		setWindowIcon(_csetting);
+		SDLCall.getRenderScale(_screenScale);
 		this._log = new CLog();
 		this._syn = new Asyn.Default(_log, frame);
 		this._accelerometer = new CAccelerometer();
+		this._gamePlatform = _csetting.isGamePlatform();
 		try {
 			_graphics = new CGraphics(this);
 			_assets = new CAssets(this);
@@ -147,12 +152,33 @@ public class CGame extends LGame {
 		}
 	}
 
+	public void setSize(int width, int height) {
+		_graphics.onSizeChanged(width, height);
+	}
+
 	private void initScreen() {
 		if (!isRunning()) {
 			initProcess();
 			register(_mainData.onScreen());
+			final int[] size = getScreenSize();
+			setSize(size[0], size[1]);
 			LSystem.PAUSED = false;
 		}
+	}
+
+	public int[] getScreenSize() {
+		SDLCall.getDrawableSize(_screenSize);
+		if (_screenSize[0] == 0 || _screenSize[1] == 0) {
+			SDLCall.getCurrentWindowSize(_screenSize);
+			if (_screenSize[0] == 0 || _screenSize[1] == 0) {
+				SDLCall.getCurrentScreenSize(_screenSize);
+			}
+		}
+		return _screenSize;
+	}
+
+	public boolean isGamePlatform() {
+		return _gamePlatform;
 	}
 
 	public void start() {
@@ -160,17 +186,19 @@ public class CGame extends LGame {
 			return;
 		}
 		initScreen();
-		final boolean gamePlatform = _csetting.isGamePlatform();
+
 		final int targetFps = MathUtils.iceil(LSystem.getFPS());
 		final int frameDelay = 1000 / targetFps;
 		try {
 			int width = _csetting.getShowWidth(), height = _csetting.getShowHeight();
 			boolean resize = _csetting.fullscreen || _csetting.resizable;
 			boolean paused = false;
-			while (isRunning()) {
+			while (isRunning() && SDLCall.runSDLUpdate()) {
 				final int frameStart = SDLCall.getTicks();
+				int frameTime = SDLCall.getTicks() - frameStart;
+				_input.update();
 				if (resize) {
-					final int[] size = gamePlatform ? SDLCall.getCurrentScreenSize() : SDLCall.getCurrentWindowSize();
+					final int[] size = getScreenSize();
 					if (size[0] != 0 && size[1] != 0) {
 						final int currentWidth = width;
 						final int currentHeight = height;
@@ -197,11 +225,10 @@ public class CGame extends LGame {
 					status.emit(Status.PAUSE);
 				}
 				paused = currentPaused;
-				_input.update();
 				emitFrame();
-				int frameTime = SDLCall.getTicks() - frameStart;
 				if (frameTime < frameDelay) {
-					SDLCall.delay(frameDelay - frameTime);
+					int v = frameDelay - frameTime;
+					SDLCall.delay(v);
 				}
 			}
 		} catch (Exception e) {

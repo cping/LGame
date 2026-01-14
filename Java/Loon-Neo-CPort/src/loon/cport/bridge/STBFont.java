@@ -48,7 +48,7 @@ public final class STBFont implements LRelease {
 		protected int format;
 
 	}
-	
+
 	public final static boolean existsSysFont() {
 		return existsFont(LSystem.getSystemGameFontName());
 	}
@@ -109,7 +109,7 @@ public final class STBFont implements LRelease {
 	private final RectI _outSize = new RectI();
 
 	private final VMetric _metric = new VMetric();
-	
+
 	private final int[] _fontSize = new int[4];
 
 	private STBFont(long handle) {
@@ -125,7 +125,7 @@ public final class STBFont implements LRelease {
 	}
 
 	public RectI getTextLinesSize(String text, float fontScale, int align) {
-		STBCall.getTextLinesSize(align, text, fontScale, align, _fontSize);
+		STBCall.getTextLinesSize(_fontHandle, text, fontScale, align, _fontSize);
 		_textSize.width = _fontSize[0];
 		_textSize.height = _fontSize[1];
 		return _textSize;
@@ -144,6 +144,7 @@ public final class STBFont implements LRelease {
 
 	public int[] textLinesToInt32(String text, float fontScale, int align, LColor fontColor, LColor bgColor) {
 		RectI rect = getTextLinesSize(text, fontScale, align);
+		System.out.println(rect.width + "," + rect.height);
 		int[] pixels = new int[rect.width * rect.height];
 		STBCall.drawTextLinesToInt32(_fontHandle, text, fontScale, align, fontColor.getRed(), fontColor.getGreen(),
 				fontColor.getBlue(), bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgColor.getAlpha(),
