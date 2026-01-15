@@ -149,6 +149,17 @@ public final class STBCall {
 	public final static native void drawTextLinesToInt32(long handle, String text, float fontScale, int align, int r,
 			int g, int b, int bgr, int bgg, int bgb, int bgA, int[] outDims, int[] pixels);
 
+	@Import(name = "Load_STB_DrawChar")
+	public final static native void drawChar(long handle, int codepoint, float fontScale, int color, int[] outsize,
+			int[] outPixels);
+
+	@Import(name = "Load_STB_DrawString")
+	public final static native void drawString(long handle, String text, float fontScale, int color, int[] outsize,
+			int[] outPixels);
+
+	@Import(name = "Call_STB_SaveArgbToPng")
+	public final static native void saveArgbToPngFile(String filename, int[] pixels, int w, int h);
+
 	@Import(name = "Call_STB_CloseFontInfo")
 	public final static native void closeFontInfo();
 }

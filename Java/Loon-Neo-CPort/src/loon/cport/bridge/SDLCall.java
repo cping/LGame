@@ -20,7 +20,6 @@
  */
 package loon.cport.bridge;
 
-import java.nio.Buffer;
 import java.nio.IntBuffer;
 
 import org.teavm.backend.c.intrinsic.RuntimeInclude;
@@ -714,7 +713,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_TexImage2D")
 	public final static native void glTexImage2D(int target, int level, int internalformat, int width, int height,
-			int border, int format, int type, Buffer pixels);
+			int border, int format, int type, Address pixels);
 
 	@Import(name = "Load_GL_TexImage2DOffset")
 	public final static native void glTexImage2DOffset(int target, int level, int internalformat, int width, int height,
@@ -725,7 +724,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_GL_TexSubImage2D")
 	public final static native void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width,
-			int height, int format, int type, Buffer pixels);
+			int height, int format, int type, Address pixels);
 
 	@Import(name = "Load_GL_TexSubImage2DOffset")
 	public final static native void glTexSubImage2DOffset(int target, int level, int xoffset, int yoffset, int width,
@@ -901,7 +900,7 @@ public final class SDLCall {
 			Address precision);
 
 	@Import(name = "Load_GL_ShaderBinary")
-	public final static native void glShaderBinary(int count, IntBuffer shaders, int binaryFormat, Buffer binary,
+	public final static native void glShaderBinary(int count, IntBuffer shaders, int binaryFormat, Address binary,
 			int length);
 
 	@Import(name = "Load_GL_GetTexParameterfv")

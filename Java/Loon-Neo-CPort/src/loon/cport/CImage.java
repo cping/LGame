@@ -255,6 +255,7 @@ public class CImage extends ImageImpl {
 	@Override
 	protected void closeImpl() {
 		if (buffer != null) {
+			buffer.close();
 			buffer = null;
 		}
 	}

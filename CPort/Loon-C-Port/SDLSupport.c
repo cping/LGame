@@ -1109,11 +1109,13 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
         printf("GL context creation failed: %s\n", SDL_GetError());
         return -1;
     }
-	#ifdef LOON_DESKTOP && !GLEW
-	if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
-        printf("Failed to load GLES2 functions\n");
-        return -1;
-    }
+	#ifdef LOON_DESKTOP 
+        #ifndef GLEW
+		if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
+			printf("Failed to load GLES2 functions\n");
+			return -1;
+		}
+       #endif
 	#endif
 	SDL_GL_MakeCurrent(window, tempContext);
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
@@ -3274,7 +3276,7 @@ void Load_GL_DrawArrays(const int mode, const int first, const int count)
 
 void Load_GL_DrawElements(const int mode, const int count, const int type, const void* indices)
 {
-	glDrawElements(mode, count, type, indices);
+	glDrawElements(mode, (GLsizei)count, (GLenum)type, indices);
 }
 
 void Load_GL_DrawElementsOffset(const int mode, const int count, const int type, const int64_t offset)

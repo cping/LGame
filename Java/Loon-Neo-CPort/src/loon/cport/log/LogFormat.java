@@ -21,20 +21,25 @@
 package loon.cport.log;
 
 import loon.LSystem;
+import loon.utils.StringUtils;
 
 public class LogFormat {
 
-	final static private int TIME_INDEX = 0;
+	private final static int TIME_INDEX = 0;
 
-	final static private int APP_INDEX = 1;
+	private final static int APP_INDEX = 1;
 
-	final static private int MODULE_INDEX = 2;
+	private final static int MODULE_INDEX = 2;
 
-	final static private int MESSAGE_INDEX = 3;
+	private final static int MESSAGE_INDEX = 3;
 
-	final static private String[] LOG_TITLE = { "time", "app", "module", "message" };
+	private final static String[] LOG_TITLE = { "time", "app", "module", "message" };
 
-	final static private String[] LOG_TAG = { "-", "-", "-", "-" };
+	private final static String[] LOG_TAG = { "-", "-", "-", "-" };
+
+	private final StringBuffer context = new StringBuffer();
+
+	protected final int[] logTypeStyle;
 
 	private int limitTagSize;
 
@@ -43,8 +48,6 @@ public class LogFormat {
 	private String logMsg;
 
 	private boolean show;
-
-	protected final int[] logTypeStyle;
 
 	protected int logType;
 
@@ -68,48 +71,48 @@ public class LogFormat {
 	}
 
 	private String formatString(String str[], String pad, String sp, boolean tag) {
-		StringBuffer sbr = new StringBuffer();
+		context.setLength(0);
 		if (tag) {
 			for (int i = 0; i < str.length; i++) {
 				int size = str[i].length();
 				if (size > logTypeStyle[i] || size > limitTagSize) {
-					sbr.append(str[i].substring(0, logTypeStyle[i]) + sp);
+					context.append(str[i].substring(0, logTypeStyle[i]) + sp);
 					continue;
 				}
-				sbr.append(str[i]);
+				context.append(str[i]);
 				for (int j = size; j < logTypeStyle[i] && j < limitTagSize; j++) {
-					sbr.append(pad);
+					context.append(pad);
 				}
-				sbr.append(sp);
+				context.append(sp);
 			}
 		} else {
 			for (int i = 0; i < str.length; i++) {
 				if (str[i].length() > logTypeStyle[i]) {
-					sbr.append(str[i].substring(0, logTypeStyle[i]) + sp);
+					context.append(str[i].substring(0, logTypeStyle[i]) + sp);
 					continue;
 				}
-				sbr.append(str[i]);
+				context.append(str[i]);
 				for (int j = str[i].length(); j < logTypeStyle[i]; j++) {
-					sbr.append(pad);
+					context.append(pad);
 				}
-				sbr.append(sp);
+				context.append(sp);
 			}
 		}
-		return sbr.toString();
+		return context.toString();
 	}
 
-	public  void title(int flag, String msg) {
+	public void title(int flag, String msg) {
 		switch (flag) {
 		case 0:
-			System.out.print(msg);
+			System.out.println(msg);
 			break;
 		case 1:
-			System.err.print(msg);
+			System.err.println(msg);
 			break;
 		}
 	}
 
-	public  void out(String msg) {
+	public void out(String msg) {
 		if (!show) {
 			return;
 		}
@@ -132,17 +135,19 @@ public class LogFormat {
 		this.limitTagSize = tagSize;
 	}
 
-	public  void out(String tm, String app, String level, String msg) {
-		String value[] = { tm, app, level, msg };
-		if (count++ % 9999 == 0) {
-			logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
-					.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
-					.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS).append(formatString(value, " ", " "))
-					.append(LSystem.LS).toString();
-		} else {
-			logMsg = formatString(value, " ", " ", false) + LSystem.LS;
+	public void out(String tm, String app, String level, String msg) {
+		if (msg != null && msg.length() > 0) {
+			final String value[] = { tm, app, level, msg };
+			if (count++ % 9999 == 0) {
+				logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
+						.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
+						.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
+						.append(formatString(value, " ", " ")).toString();
+			} else {
+				logMsg = formatString(value, " ", " ", false);
+			}
+			out(logMsg);
 		}
-		out(logMsg);
 	}
 
 }

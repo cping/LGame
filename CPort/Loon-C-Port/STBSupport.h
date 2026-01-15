@@ -2,11 +2,13 @@
 #ifndef LOON_STB
 #define LOON_STB
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_FAILURE_USERMSG
 #define STB_TRUETYPE_IMPLEMENTATION
 
 #include "SDLSupport.h"
 #include "stb_image.h"
+#include "stb_image_write.h"
 #include "stb_truetype.h"
 
 #ifdef __cplusplus
@@ -80,6 +82,10 @@ int32_t Load_STB_MeasureTextWidth(const int64_t handle, const char* text, const 
 
 int32_t Load_STB_MeasureTextHieght(const int64_t handle, const char* text, const float fontscale);
 
+void Load_STB_DrawChar(const int64_t handle, const int32_t codepoint, const float fontSize, const int32_t color, int32_t* outsize, int32_t* outPixels);
+
+void Load_STB_DrawString(const int64_t handle, const char* text, const float fontSize, const int32_t color, int32_t* outsize, int32_t* outPixels);
+
 void Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* outDims, uint8_t* bitmap);
 
 void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t r, int32_t g, int32_t b, int32_t bgR, int32_t bgG, int32_t bgB, int32_t bgA,int32_t* outDims, int32_t* pixels);
@@ -97,6 +103,8 @@ int Call_STB_GetCodepointHMetrics(const int point);
 void Call_STB_MakeCodepointBitmap(const int point, const float scale, const int width, const int height, uint8_t* bitmap);
 
 void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, const int width, const int height, uint8_t* rect);
+
+bool Call_STB_SaveArgbToPng(const char* filename, const int32_t* pixels, int32_t w, int32_t h);
 
 void Call_STB_CloseFontInfo();
 

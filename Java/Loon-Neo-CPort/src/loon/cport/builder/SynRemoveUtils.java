@@ -165,7 +165,7 @@ public class SynRemoveUtils {
 		removeSynchronizedFromFiles(rootDir, "all", false);
 	}
 
-	public static void removeSynchronizedFromFiles(File rootDir, String mode, boolean bakcFile) {
+	public static void removeSynchronizedFromFiles(File rootDir, String mode, boolean backFile) {
 		int totalRemoved = 0;
 		try (Stream<Path> paths = Files.walk(rootDir.toPath())) {
 			List<Path> javaFiles = paths.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
@@ -174,7 +174,7 @@ public class SynRemoveUtils {
 				SyncResult result = removeSynchronized(content, mode);
 				if (result.removedCount > 0) {
 					totalRemoved += result.removedCount;
-					if (bakcFile) {
+					if (backFile) {
 						Files.writeString(Path.of(javaFile.toString() + ".bak"), content, StandardCharsets.UTF_8);
 					}
 					Files.writeString(javaFile, result.updatedContent, StandardCharsets.UTF_8);
@@ -183,7 +183,7 @@ public class SynRemoveUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Removed synchronized count : " + totalRemoved);
+		CBuilder.println("Removed synchronized count : " + totalRemoved);
 	}
 
 	public static void restoreFiles(File rootDir) {
@@ -202,6 +202,6 @@ public class SynRemoveUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Restored synchronized count : " + restoredCount);
+		CBuilder.println("Restored synchronized count : " + restoredCount);
 	}
 }

@@ -28,6 +28,10 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.nio.ShortBuffer;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.teavm.interop.Address;
 
@@ -131,6 +135,156 @@ public final class VMBufferConvert {
 
 	private final static TeaVMBufferStatePool bufferStatePool = new TeaVMBufferStatePool(false);
 
+	private static final Map<ByteBuffer, Map<Integer, byte[]>> byteCache = new WeakHashMap<ByteBuffer, Map<Integer, byte[]>>();
+	private static final Map<ShortBuffer, Map<Integer, short[]>> shortCache = new WeakHashMap<ShortBuffer, Map<Integer, short[]>>();
+	private static final Map<IntBuffer, Map<Integer, int[]>> intCache = new WeakHashMap<IntBuffer, Map<Integer, int[]>>();
+	private static final Map<LongBuffer, Map<Integer, long[]>> longCache = new WeakHashMap<LongBuffer, Map<Integer, long[]>>();
+	private static final Map<FloatBuffer, Map<Integer, float[]>> floatCache = new WeakHashMap<FloatBuffer, Map<Integer, float[]>>();
+	private static final Map<DoubleBuffer, Map<Integer, double[]>> doubleCache = new WeakHashMap<DoubleBuffer, Map<Integer, double[]>>();
+	private static final Map<CharBuffer, Map<Integer, char[]>> charCache = new WeakHashMap<CharBuffer, Map<Integer, char[]>>();
+
+	private static <B, A> Map<Integer, A> getOrCreatePool(Map<B, Map<Integer, A>> cache, B buffer) {
+		Map<Integer, A> pool = cache.get(buffer);
+		if (pool == null) {
+			pool = Collections.synchronizedMap(new LinkedHashMap<Integer, A>(16, 0.75f, true) {
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected boolean removeEldestEntry(Map.Entry<Integer, A> eldest) {
+					return size() > LSystem.DEFAULT_MAX_CACHE_SIZE;
+				}
+			});
+			cache.put(buffer, pool);
+		}
+		return pool;
+	}
+
+	public static byte[] getArray(ByteBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, byte[]> pool = getOrCreatePool(byteCache, buffer);
+		byte[] result = pool.get(size);
+		if (result == null) {
+			result = new byte[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static short[] getArray(ShortBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, short[]> pool = getOrCreatePool(shortCache, buffer);
+		short[] result = pool.get(size);
+		if (result == null) {
+			result = new short[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static int[] getArray(IntBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, int[]> pool = getOrCreatePool(intCache, buffer);
+		int[] result = pool.get(size);
+		if (result == null) {
+			result = new int[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static long[] getArray(LongBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, long[]> pool = getOrCreatePool(longCache, buffer);
+		long[] result = pool.get(size);
+		if (result == null) {
+			result = new long[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static float[] getArray(FloatBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, float[]> pool = getOrCreatePool(floatCache, buffer);
+		float[] result = pool.get(size);
+		if (result == null) {
+			result = new float[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static double[] getArray(DoubleBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, double[]> pool = getOrCreatePool(doubleCache, buffer);
+		double[] result = pool.get(size);
+		if (result == null) {
+			result = new double[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
+	public static char[] getArray(CharBuffer buffer) {
+		final int size = buffer.remaining();
+		final Map<Integer, char[]> pool = getOrCreatePool(charCache, buffer);
+		char[] result = pool.get(size);
+		if (result == null) {
+			result = new char[size];
+			pool.put(size, result);
+		}
+		if (buffer.hasArray()) {
+			System.arraycopy(buffer.array(), buffer.arrayOffset() + buffer.position(), result, 0, size);
+		} else {
+			int pos = buffer.position();
+			buffer.get(result, 0, size);
+			buffer.position(pos);
+		}
+		return result;
+	}
+
 	private VMBufferConvert() {
 	}
 
@@ -140,6 +294,25 @@ public final class VMBufferConvert {
 
 	public void saveState(boolean s) {
 		bufferStatePool.saveAndRestore = s;
+	}
+
+	public static Address ofNAddress(Buffer buffer) {
+		if (buffer instanceof ByteBuffer) {
+			return Address.ofData(getArray((ByteBuffer) buffer));
+		} else if (buffer instanceof ShortBuffer) {
+			return Address.ofData(getArray((ShortBuffer) buffer));
+		} else if (buffer instanceof IntBuffer) {
+			return Address.ofData(getArray((IntBuffer) buffer));
+		} else if (buffer instanceof LongBuffer) {
+			return Address.ofData(getArray((LongBuffer) buffer));
+		} else if (buffer instanceof FloatBuffer) {
+			return Address.ofData(getArray((FloatBuffer) buffer));
+		} else if (buffer instanceof DoubleBuffer) {
+			return Address.ofData(getArray((DoubleBuffer) buffer));
+		} else if (buffer instanceof CharBuffer) {
+			return Address.ofData(getArray((CharBuffer) buffer));
+		}
+		throw new LSysException("Unsupported buffer type : " + buffer.getClass().getName());
 	}
 
 	public static Address save(Buffer buffer) {
@@ -183,51 +356,37 @@ public final class VMBufferConvert {
 
 	public static Address save(ByteBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final byte[] result = new byte[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(ShortBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final short[] result = new short[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(IntBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final int[] result = new int[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(LongBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final long[] result = new long[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(FloatBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final float[] result = new float[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(DoubleBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final double[] result = new double[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static Address save(CharBuffer buffer) {
 		bufferStatePool.save(buffer);
-		final char[] result = new char[buffer.remaining()];
-		buffer.get(result);
-		return Address.ofData(result);
+		return Address.ofData(getArray(buffer));
 	}
 
 	public static void restore(ByteBuffer buffer, Address address) {

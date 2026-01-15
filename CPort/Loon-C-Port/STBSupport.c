@@ -818,6 +818,149 @@ void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const
 	free_lines(lines, numLines);
 }
 
+void Load_STB_DrawChar(const int64_t handle, const int32_t codepoint, const float fontSize, const int32_t color, int32_t* outsize, int32_t* outPixels) {
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		fontinfo = _temp_fontinfo;
+		if (!fontinfo) {
+			fprintf(stderr, "Load_STB_DrawChar Error !\n");
+			return;
+		}
+	}
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontSize);
+	int c_x1, c_y1, c_x2, c_y2;
+	stbtt_GetCodepointBitmapBox(fontinfo->info, codepoint, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+	int out_w = c_x2 - c_x1;
+	int out_h = c_y2 - c_y1;
+	if (out_w <= 0 || out_h <= 0) {
+		return;
+	}
+	uint8_t* char_bitmap = stbtt_GetCodepointBitmap(fontinfo->info, 0, scale, codepoint, NULL, NULL, NULL, NULL);
+	int32_t len = (out_w) * (out_h);
+	int32_t* pixels = (int32_t*)malloc(len * sizeof(int32_t));
+	if (!pixels) {
+		stbtt_FreeBitmap(char_bitmap, NULL);
+		return;
+	}
+    uint8_t r = (color >> 16) & 0xFF;
+	uint8_t g = (color >> 8) & 0xFF;
+	uint8_t b = (color) & 0xFF;
+	for (int i = 0; i < len; i++) {
+		uint8_t alpha = char_bitmap[i];
+		pixels[i] = ((int32_t)alpha << 24) | (r << 16) | (g << 8) | b;
+	}
+	outsize[0] = out_w;
+	outsize[1] = out_h;
+	copy_int32_array(outPixels, len, pixels, len);
+	stbtt_FreeBitmap(char_bitmap, NULL);
+	free(pixels);
+}
+
+void Load_STB_DrawString(const int64_t handle, const char* text, const float fontSize, const int32_t color, int32_t* outsize, int32_t* outPixels)
+{
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		fontinfo = _temp_fontinfo;
+		if (!fontinfo) {
+			fprintf(stderr, "Load_STB_DrawChar Error !\n");
+			return;
+		}
+	}
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontSize);
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
+	int baseline = (int)(ascent * scale);
+	int max_line_width = 0;
+	int total_height = (int)fontSize;
+	int current_line_width = 0;
+	const char* p = text;
+	while (*p) {
+		if (*p == '\n') {
+			if (current_line_width > max_line_width) {
+				max_line_width = current_line_width;
+			}
+			current_line_width = 0;
+			total_height += (int)fontSize;
+			p++;
+			continue;
+		}
+		uint32_t cp = utf8_decode(&p);
+		int ax;
+		stbtt_GetCodepointHMetrics(fontinfo->info, cp, &ax, 0);
+		current_line_width += (int)(ax * scale);
+	}
+	if (current_line_width > max_line_width) max_line_width = current_line_width;
+	int out_w = max_line_width;
+	int out_h = total_height;
+	int len = out_w * out_h;
+	uint8_t* bitmap = (uint8_t*)calloc(len, 1);
+	if (!bitmap) {
+		fprintf(stderr, "Load_STB_DrawString Error !\n");
+		return;
+	}
+	p = text;
+	int pen_x = 0, pen_y = 0;
+	while (*p) {
+		if (*p == '\n') {
+			pen_x = 0;
+			pen_y += (int)fontSize;
+			p++;
+			continue;
+		}
+		uint32_t cp = utf8_decode(&p);
+		int ax, lsb;
+		stbtt_GetCodepointHMetrics(fontinfo->info, cp, &ax, &lsb);
+		int c_x1, c_y1, c_x2, c_y2;
+		stbtt_GetCodepointBitmapBox(fontinfo->info, cp, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+		int x_off = pen_x;
+		int y_off = pen_y + baseline + c_y1;
+
+		uint8_t* char_bitmap = (uint8_t*)stbtt_GetCodepointBitmap(fontinfo->info, 0, scale, cp, NULL, NULL, NULL, NULL);
+		int char_w = c_x2 - c_x1;
+		int char_h = c_y2 - c_y1;
+
+		for (int row = 0; row < char_h; row++) {
+			for (int col = 0; col < char_w; col++) {
+				int dst_x = x_off;
+				int dst_y = y_off + row;
+				if (dst_x >= 0 && dst_x < out_w && dst_y >= 0 && dst_y < out_h) {
+					unsigned char alpha = char_bitmap[row * char_w + col];
+					if (alpha > 0) {
+						unsigned char r = (color >> 16) & 0xFF;
+						unsigned char g = (color >> 8) & 0xFF;
+						unsigned char b = (color) & 0xFF;
+						uint32_t argb_pixel = ((uint32_t)alpha << 24) | (r << 16) | (g << 8) | b;
+						bitmap[dst_y * out_w + dst_x] = alpha;
+					}
+				}
+			}
+		}
+
+		stbtt_FreeBitmap(char_bitmap, NULL);
+		pen_x += (int)(ax * scale);
+
+		int32_t* pixels = (int32_t*)malloc(len * sizeof(int32_t));
+		if (!pixels) {
+			fprintf(stderr, "Load_STB_DrawString Error !\n");
+			free(bitmap);
+			return;
+		}
+
+		uint8_t r = (color >> 16) & 0xFF;
+		uint8_t g = (color >> 8) & 0xFF;
+		uint8_t b = (color) & 0xFF;
+
+		for (int i = 0; i < len; i++) {
+			uint8_t alpha = bitmap[i];
+			pixels[i] = ((int32_t)alpha << 24) | (r << 16) | (g << 8) | b;
+		}
+		copy_int32_array(outPixels, len, pixels, len);
+		free(bitmap);
+		free(pixels);
+	}
+}
+
 void Load_STB_CloseFontInfo(const int64_t handle)
 {
 	stb_font* fontinfo = (stb_font*)handle;
@@ -922,6 +1065,25 @@ void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale, cons
 		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
 		x += (int)(kern * scale);
 	}
+}
+
+bool Call_STB_SaveArgbToPng(const char* filename, const int32_t* pixels, int32_t w, int32_t h) {
+	uint8_t* rgba = (uint8_t*)malloc(w * h * 4);
+	if (!rgba) return false;
+	for (int i = 0; i < w * h; i++) {
+		int32_t argb = pixels[i];
+		uint8_t a = (argb >> 24) & 0xFF;
+		uint8_t r = (argb >> 16) & 0xFF;
+		uint8_t g = (argb >> 8) & 0xFF;
+		uint8_t b = argb & 0xFF;
+		rgba[i * 4 + 0] = r;
+		rgba[i * 4 + 1] = g;
+		rgba[i * 4 + 2] = b;
+		rgba[i * 4 + 3] = a;
+	}
+	int result = stbi_write_png(filename, w, h, 4, rgba, w * 4);
+	free(rgba);
+	return true;
 }
 
 void Call_STB_CloseFontInfo()

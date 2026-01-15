@@ -37,6 +37,7 @@ import loon.cport.bridge.SDLCall;
 import loon.cport.bridge.SDLSurface;
 import loon.cport.bridge.SDLWindowFlags;
 import loon.events.InputMake;
+import loon.geom.RectF;
 import loon.utils.MathUtils;
 
 public class CGame extends LGame {
@@ -46,6 +47,8 @@ public class CGame extends LGame {
 	}
 
 	public static class CSetting extends LSetting {
+
+		public boolean hidden = false;
 
 		public boolean resizable = false;
 
@@ -77,7 +80,6 @@ public class CGame extends LGame {
 	}
 
 	private final static Support _support = new NativeSupport();
-
 	private final SDLWindowFlags _flags = new SDLWindowFlags();
 	private final CSetting _csetting;
 	private final CLog _log;
@@ -93,6 +95,7 @@ public class CGame extends LGame {
 	private final float[] _screenScale = new float[2];
 	private final LazyLoading.Data _mainData;
 	private final boolean _gamePlatform;
+	private final RectF _renderScale = new RectF();
 
 	public CGame(Loon loon, CSetting config, LazyLoading.Data mainData) {
 		super(config, loon);
@@ -102,7 +105,7 @@ public class CGame extends LGame {
 		this._startTime = SDLCall.getTicks();
 		setWindowFlags(_csetting = config);
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(), _csetting.vsync,
-				SDLCall.SDL_WINDOW_OPENGL | SDLCall.SDL_WINDOW_SHOWN, _csetting.isDebug);
+				_flags.getValue(), _csetting.isDebug);
 		setWindowIcon(_csetting);
 		SDLCall.getRenderScale(_screenScale);
 		this._log = new CLog();
@@ -123,7 +126,8 @@ public class CGame extends LGame {
 
 	private void setWindowIcon(CSetting config) {
 		final String path = config.iconPath;
-		if (path != null && path.length() > 0 && (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
+		if (config.autoIconify && path != null && path.length() > 0
+				&& (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
 			try {
 				SDLSurface surface = SDLSurface.create(path);
 				SDLCall.setWindowIcon(surface.getHandle());
@@ -150,6 +154,11 @@ public class CGame extends LGame {
 		if (config.maximized) {
 			_flags.max();
 		}
+		if (config.hidden) {
+			_flags.hide();
+		} else {
+			_flags.show();
+		}
 	}
 
 	public void setSize(int width, int height) {
@@ -164,6 +173,15 @@ public class CGame extends LGame {
 			setSize(size[0], size[1]);
 			LSystem.PAUSED = false;
 		}
+	}
+
+	public RectF getRenderScale() {
+		if (!_renderScale.isEmpty()) {
+			return _renderScale;
+		}
+		_renderScale.width = _screenScale[0];
+		_renderScale.height = _screenScale[1];
+		return _renderScale;
 	}
 
 	public int[] getScreenSize() {
@@ -186,49 +204,48 @@ public class CGame extends LGame {
 			return;
 		}
 		initScreen();
-
 		final int targetFps = MathUtils.iceil(LSystem.getFPS());
 		final int frameDelay = 1000 / targetFps;
 		try {
-			int width = _csetting.getShowWidth(), height = _csetting.getShowHeight();
-			boolean resize = _csetting.fullscreen || _csetting.resizable;
+			final boolean resize = _csetting.fullscreen || _csetting.resizable;
+			final int minSleep = _csetting.fps_time_fixed_min_value;
+			int width = LSystem.viewSize.getZoomWidth(), height = LSystem.viewSize.getZoomHeight();
 			boolean paused = false;
 			while (isRunning() && SDLCall.runSDLUpdate()) {
 				final int frameStart = SDLCall.getTicks();
 				int frameTime = SDLCall.getTicks() - frameStart;
-				_input.update();
-				if (resize) {
-					final int[] size = getScreenSize();
-					if (size[0] != 0 && size[1] != 0) {
+				if (frameTime < frameDelay) {
+					_input.update();
+					if (resize) {
+						final int[] size = getScreenSize();
+						if (size[0] != 0 && size[1] != 0) {
+							final int currentWidth = width;
+							final int currentHeight = height;
+							if ((currentWidth != size[0] || currentHeight != size[1])) {
+								width = currentWidth;
+								height = currentHeight;
+								_graphics.onSizeChanged(width, height);
+							}
+						}
+					} else {
 						final int currentWidth = width;
 						final int currentHeight = height;
-						if ((currentWidth != size[0] || currentHeight != size[1])) {
+						if ((currentWidth != LSystem.viewSize.getZoomWidth()
+								|| currentHeight != LSystem.viewSize.getZoomHeight())) {
 							width = currentWidth;
 							height = currentHeight;
 							_graphics.onSizeChanged(width, height);
 						}
 					}
-				} else {
-					final int currentWidth = width;
-					final int currentHeight = height;
-					if ((currentWidth != LSystem.viewSize.getZoomWidth()
-							|| currentHeight != LSystem.viewSize.getZoomHeight())) {
-						width = currentWidth;
-						height = currentHeight;
-						_graphics.onSizeChanged(width, height);
+					final boolean currentPaused = SDLCall.isPaused();
+					if (paused && !currentPaused) {
+						status.emit(Status.RESUME);
+					} else if (!paused && currentPaused) {
+						status.emit(Status.PAUSE);
 					}
-				}
-				final boolean currentPaused = SDLCall.isPaused();
-				if (paused && !currentPaused) {
-					status.emit(Status.RESUME);
-				} else if (!paused && currentPaused) {
-					status.emit(Status.PAUSE);
-				}
-				paused = currentPaused;
-				emitFrame();
-				if (frameTime < frameDelay) {
-					int v = frameDelay - frameTime;
-					SDLCall.delay(v);
+					paused = currentPaused;
+					emitFrame();
+					SDLCall.delay(minSleep);
 				}
 			}
 		} catch (Exception e) {

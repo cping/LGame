@@ -101,6 +101,11 @@ extern "C" {
 #define MAX_GAMESAVE_FILE_LIST 1024
 #define MAX_CHUNK_SIZE 8192
 
+typedef enum {
+        LAYOUT_HORIZONTAL, 
+        LAYOUT_VERTICAL
+} TextLayout;
+
 typedef struct {
     SDL_Surface* surface_data;
     int32_t width;
@@ -160,6 +165,32 @@ static char global_cname[2048];
 static char global_info[1024 * 10];
 
 #include <stddef.h>
+
+static inline uint32_t utf8_decode(const char** s) {
+    const unsigned char* p = (const unsigned char*)*s;
+    uint32_t cp;
+    if (p[0] < 0x80) {
+        cp = p[0];
+        *s += 1;
+    }
+    else if ((p[0] & 0xE0) == 0xC0) {
+        cp = ((p[0] & 0x1F) << 6) | (p[1] & 0x3F);
+        *s += 2;
+    }
+    else if ((p[0] & 0xF0) == 0xE0) { 
+        cp = ((p[0] & 0x0F) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F);
+        *s += 3;
+    }
+    else if ((p[0] & 0xF8) == 0xF0) {
+        cp = ((p[0] & 0x07) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F);
+        *s += 4;
+    }
+    else {
+        cp = 0xFFFD; 
+        *s += 1;
+    }
+    return cp;
+}
 
 static inline int utf8_to_utf16(const char* utf8, uint16_t* utf16, size_t max_len) {
     if (!utf8 || !utf16 || max_len == 0) return -1;

@@ -144,7 +144,6 @@ public final class STBFont implements LRelease {
 
 	public int[] textLinesToInt32(String text, float fontScale, int align, LColor fontColor, LColor bgColor) {
 		RectI rect = getTextLinesSize(text, fontScale, align);
-		System.out.println(rect.width + "," + rect.height);
 		int[] pixels = new int[rect.width * rect.height];
 		STBCall.drawTextLinesToInt32(_fontHandle, text, fontScale, align, fontColor.getRed(), fontColor.getGreen(),
 				fontColor.getBlue(), bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue(), bgColor.getAlpha(),

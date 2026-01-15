@@ -71,7 +71,8 @@ public class CGraphics extends Graphics {
 		screenSize.height = viewHeight / scale.factor;
 		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
-		SDLCall.glViewport(0, 0, width, height);
+		SDLCall.glViewport(0, 0, MathUtils.iceil(viewWidth * LSystem.getScaleWidth()),
+				MathUtils.iceil(viewHeight * LSystem.getScaleHeight()));
 	}
 
 	@Override
