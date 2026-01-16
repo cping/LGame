@@ -20,6 +20,9 @@
  */
 package loon.lwjgl;
 
+import java.io.File;
+import java.util.Locale;
+
 import loon.LGame;
 import loon.LSetting;
 import loon.LSystem;
@@ -35,6 +38,21 @@ public class Loon implements Platform {
 
 	private static String _prevUser;
 
+	public static boolean isLinuxAndNvidia() {
+		String[] files = new File("/proc/driver").list();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				String path = files[i].toUpperCase(Locale.ROOT);
+				if (path.toUpperCase().contains("NVIDIA")) {
+					return true;
+				}
+			}
+		} else if (files == null) {
+			return false;
+		}
+		return files.length > 0;
+	}
+
 	public static boolean fixJVMTempDir() {
 		final String osName = System.getProperty("os.name").toLowerCase();
 		if (!osName.contains("mac")) {
@@ -49,8 +67,14 @@ public class Loon implements Platform {
 				System.setProperty("java.io.tmpdir", tempDir);
 				System.setProperty("user.name",
 						("User_" + _prevUser.hashCode() + "_Loon" + LSystem.getVersion()).replace('.', '_'));
+				return false;
 			}
-			return false;
+			if (!isLinuxAndNvidia()) {
+				return false;
+			}
+			if ("0".equals(System.getenv("__GL_THREADED_OPTIMIZATIONS"))) {
+				return false;
+			}
 		}
 		if (!System.getProperty("org.graalvm.nativeimage.imagecode", "").isEmpty()) {
 			return false;

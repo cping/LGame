@@ -315,12 +315,12 @@ final class Lwjgl3GL20 extends loon.opengl.GL20 {
 	public void glDisableVertexAttribArray(int index) {
 		GL20.glDisableVertexAttribArray(index);
 	}
-
+///
 	@Override
 	public void glDrawArrays(int mode, int first, int count) {
 		GL11.glDrawArrays(mode, first, count);
 	}
-
+///
 	@Override
 	public void glDrawElements(int mode, int count, int type, Buffer indices) {
 		if (indices instanceof ShortBuffer && type == GL_UNSIGNED_SHORT)
