@@ -21,7 +21,6 @@
 package loon.cport.log;
 
 import loon.LSystem;
-import loon.utils.StringUtils;
 
 public class LogFormat {
 

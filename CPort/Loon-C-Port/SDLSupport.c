@@ -40,6 +40,55 @@ static bool soundFinishedEvent;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
 
+#if defined(_WIN32) || defined(_WIN64)
+HANDLE g_mutex = NULL;
+static bool check_single_instance() {
+    g_mutex = CreateMutex(NULL, TRUE, "MySDLAppMutex");
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {
+        printf("The program is already running !\n");
+        return false;
+    }
+    return true;
+}
+#else
+#define LOCK_FILE "/tmp/my_sdl_app.lock"
+int g_fd = -1;
+bool check_single_instance() {
+    g_fd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);
+    if (g_fd < 0) {
+        return false;
+    }
+    if (lockf(g_fd, F_TLOCK, 0) < 0) {
+        if (errno == EACCES || errno == EAGAIN) {
+            printf("The program is already running !\n");
+            close(g_fd);
+            return false;
+        }
+        close(g_fd);
+        return false;
+    }
+    return true;
+}
+void release_instance_lock() {
+    if (g_fd >= 0) {
+        close(g_fd);
+        unlink(LOCK_FILE);
+    }
+}
+#endif
+
+void release_instance_lock() {
+    if (g_mutex) CloseHandle(g_mutex);
+}
+
+bool CreateSingleInstanceLock(){
+  return check_single_instance();
+}
+
+void FreeSingleLock(){
+  release_instance_lock();
+}
+
 static char* detectPlatformCompileString() {
 	#if defined(__WINRT__)
 		return "winrt";

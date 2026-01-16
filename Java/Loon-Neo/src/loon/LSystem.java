@@ -117,6 +117,9 @@ public final class LSystem {
 	protected static final String APP_DEF_RES_DIRECTORY = "assets/";
 
 	/** 默认帧率 **/
+	protected static final int DEFAULT_MIN_FPS = 1;
+
+	/** 默认帧率 **/
 	protected static final int DEFAULT_MAX_FPS = 60;
 
 	/** 默认纹理大小 **/

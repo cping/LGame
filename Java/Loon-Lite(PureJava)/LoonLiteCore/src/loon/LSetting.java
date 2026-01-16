@@ -188,6 +188,8 @@ public class LSetting {
 	 */
 	public int fps_time_fixed_value = LSystem.DEFAULT_MAX_FPS;
 
+	public int fps_time_fixed_min_value = LSystem.DEFAULT_MIN_FPS;
+
 	/**
 	 * 修正fps帧率,以保证按照要求帧的速度进行运算(此项为true时,会改变全部时间轴,比如最开始设定为60,
 	 * 但是环境只能跑到30帧,设为30游戏变慢,开启此项,则30帧时间轴会被放大为60帧时的时间轴，表面加速游戏,但本质为跳帧)

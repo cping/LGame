@@ -40,13 +40,31 @@ import loon.events.InputMake;
 import loon.geom.RectF;
 import loon.utils.MathUtils;
 
-public class CGame extends LGame {
+public final class CGame extends LGame {
+
+	private final static int SMOOTH_SAMPLES = 15;
+
+	private final static int QUALITY_HIGH = 0;
+
+	private final static int QUALITY_LOW = 1;
+
+	public final static class FPSRepaintController {
+		int[] frameTimes = new int[SMOOTH_SAMPLES];
+		int targetFPS;
+		int baseFPS;
+		int lastTick;
+		int delayAdjust;
+		int fpsMeasure;
+		int frameIndex;
+		int frameCount;
+		int quality;
+	}
 
 	public static enum GameSysPlatform {
 		NONE, WIN, MAC, LINUX, XBOX, SWITCH, STREAM, PS
 	}
 
-	public static class CSetting extends LSetting {
+	public final static class CSetting extends LSetting {
 
 		public boolean hidden = false;
 
@@ -60,9 +78,11 @@ public class CGame extends LGame {
 
 		public boolean fullscreenDesktop = false;
 
-		public boolean autoIconify = true;
-
 		public boolean vsync = true;
+
+		public boolean powerOfTwoTexture = false;
+
+		public int qualityModel = QUALITY_HIGH;
 
 		public String iconPath = null;
 
@@ -79,23 +99,28 @@ public class CGame extends LGame {
 
 	}
 
+	private final static FPSRepaintController _fpsRepaintController = new FPSRepaintController();
 	private final static Support _support = new NativeSupport();
 	private final SDLWindowFlags _flags = new SDLWindowFlags();
-	private final CSetting _csetting;
-	private final CLog _log;
-	private final Asyn _syn;
-	private final CAccelerometer _accelerometer;
-	private final CAssets _assets;
-	private final CGraphics _graphics;
-	private final CInputMake _input;
-	private final CSave _save;
-	private final CClipboard _clipboard;
+	protected final CSetting _csetting;
+	protected final CLog _log;
+	protected final Asyn _syn;
+	protected final CAccelerometer _accelerometer;
+	protected final CAssets _assets;
+	protected final CGraphics _graphics;
+	protected final CInputMake _input;
+	protected final CSave _save;
+	protected final CClipboard _clipboard;
 	private final int _startTime;
 	private final int[] _screenSize = new int[2];
 	private final float[] _screenScale = new float[2];
 	private final LazyLoading.Data _mainData;
 	private final boolean _gamePlatform;
 	private final RectF _renderScale = new RectF();
+	private final int _fixedDelayValue;
+	private int _qualityLowValue;
+	private int _qualityHighValue;
+	private int _lastEventCall;
 
 	public CGame(Loon loon, CSetting config, LazyLoading.Data mainData) {
 		super(config, loon);
@@ -104,10 +129,11 @@ public class CGame extends LGame {
 		this._mainData = mainData;
 		this._startTime = SDLCall.getTicks();
 		setWindowFlags(_csetting = config);
-		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(), _csetting.vsync,
-				_flags.getValue(), _csetting.isDebug);
+		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(),
+				_csetting.fps <= 60 ? _csetting.vsync : false, _flags.getValue(), _csetting.isDebug);
 		setWindowIcon(_csetting);
 		SDLCall.getRenderScale(_screenScale);
+		this._fixedDelayValue = _csetting.fps_time_fixed_min_value;
 		this._log = new CLog();
 		this._syn = new Asyn.Default(_log, frame);
 		this._accelerometer = new CAccelerometer();
@@ -126,8 +152,7 @@ public class CGame extends LGame {
 
 	private void setWindowIcon(CSetting config) {
 		final String path = config.iconPath;
-		if (config.autoIconify && path != null && path.length() > 0
-				&& (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
+		if (path != null && path.length() > 0 && (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
 			try {
 				SDLSurface surface = SDLSurface.create(path);
 				SDLCall.setWindowIcon(surface.getHandle());
@@ -159,6 +184,38 @@ public class CGame extends LGame {
 		} else {
 			_flags.show();
 		}
+	}
+
+	private static int getSmoothedFPS(FPSRepaintController fps) {
+		int sum = 0;
+		int count = fps.frameCount < SMOOTH_SAMPLES ? fps.frameCount : SMOOTH_SAMPLES;
+		for (int i = 0; i < count; i++) {
+			sum += fps.frameTimes[i];
+		}
+		if (sum == 0) {
+			return fps.baseFPS;
+		}
+		return 1000 * count / sum;
+	}
+
+	public void setFPS(int baseFPS) {
+		initFPSRepaintController(_fpsRepaintController, _csetting.qualityModel, baseFPS);
+	}
+
+	private void initFPSRepaintController(FPSRepaintController fps, int quality, int baseFPS) {
+		fps.baseFPS = baseFPS;
+		fps.targetFPS = baseFPS;
+		fps.lastTick = SDLCall.getTicks();
+		fps.delayAdjust = 0;
+		fps.fpsMeasure = baseFPS;
+		fps.frameIndex = 0;
+		fps.frameCount = 0;
+		fps.quality = quality;
+		for (int i = 0; i < fps.frameTimes.length; i++) {
+			fps.frameTimes[i] = 1000 / baseFPS;
+		}
+		this._qualityLowValue = MathUtils.iceil(baseFPS * 0.65f);
+		this._qualityHighValue = MathUtils.iceil(baseFPS * 0.9f);
 	}
 
 	public void setSize(int width, int height) {
@@ -199,23 +256,58 @@ public class CGame extends LGame {
 		return _gamePlatform;
 	}
 
+	private void mainLoop(final FPSRepaintController fps, final int nowTime) {
+		final int elapsed = nowTime - fps.lastTick;
+		fps.lastTick = nowTime;
+		fps.frameTimes[fps.frameIndex] = elapsed;
+		fps.frameIndex = (fps.frameIndex + 1) % SMOOTH_SAMPLES;
+		if (fps.frameCount < SMOOTH_SAMPLES) {
+			fps.frameCount++;
+		}
+		fps.fpsMeasure = getSmoothedFPS(fps);
+		if (fps.fpsMeasure < fps.targetFPS * 85 / 100) {
+			fps.targetFPS -= 1;
+			final int halfFPS = fps.targetFPS / 2;
+			if (fps.targetFPS < halfFPS) {
+				fps.targetFPS = halfFPS;
+			}
+		} else if (fps.fpsMeasure > fps.targetFPS * 105 / 100 && fps.targetFPS < fps.baseFPS) {
+			fps.targetFPS += 1;
+			if (fps.targetFPS > fps.baseFPS) {
+				fps.targetFPS = fps.baseFPS;
+			}
+		}
+		if (fps.fpsMeasure < _qualityLowValue && fps.quality == QUALITY_HIGH) {
+			fps.quality = QUALITY_LOW;
+		} else if (fps.fpsMeasure > _qualityHighValue && fps.quality == QUALITY_LOW) {
+			fps.quality = QUALITY_HIGH;
+		}
+		final int targetMS = 1000 / fps.targetFPS;
+		fps.delayAdjust += (targetMS - elapsed) / 4;
+		if (fps.delayAdjust < 0) {
+			fps.delayAdjust = 0;
+		}
+		emitFrame();
+		if (fps.delayAdjust > 0) {
+			SDLCall.delay(MathUtils.max(_fixedDelayValue, fps.delayAdjust));
+		}
+	}
+
 	public void start() {
 		if (isRunning()) {
 			return;
 		}
 		initScreen();
-		final int targetFps = MathUtils.iceil(LSystem.getFPS());
-		final int frameDelay = 1000 / targetFps;
+		initFPSRepaintController(_fpsRepaintController, QUALITY_HIGH, MathUtils.iceil(LSystem.getFPS()));
 		try {
 			final boolean resize = _csetting.fullscreen || _csetting.resizable;
-			final int minSleep = _csetting.fps_time_fixed_min_value;
 			int width = LSystem.viewSize.getZoomWidth(), height = LSystem.viewSize.getZoomHeight();
+			int currentTime = 0;
 			boolean paused = false;
 			while (isRunning() && SDLCall.runSDLUpdate()) {
-				final int frameStart = SDLCall.getTicks();
-				int frameTime = SDLCall.getTicks() - frameStart;
-				if (frameTime < frameDelay) {
-					_input.update();
+				_input.update();
+				currentTime = SDLCall.getTicks();
+				if (currentTime - _lastEventCall >= 1500) {
 					if (resize) {
 						final int[] size = getScreenSize();
 						if (size[0] != 0 && size[1] != 0) {
@@ -244,9 +336,9 @@ public class CGame extends LGame {
 						status.emit(Status.PAUSE);
 					}
 					paused = currentPaused;
-					emitFrame();
-					SDLCall.delay(minSleep);
+					_lastEventCall = SDLCall.getTicks();
 				}
+				mainLoop(_fpsRepaintController, currentTime);
 			}
 		} catch (Exception e) {
 			System.out.println("Loon Exception:");

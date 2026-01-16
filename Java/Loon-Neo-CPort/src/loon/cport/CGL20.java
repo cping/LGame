@@ -324,18 +324,15 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	@Override
 	public void glCompressedTexImage2D(int target, int level, int internalformat, int width, int height, int border,
 			int imageSize, Buffer data) {
-		Address dataAddress = VMBufferConvert.save(data);
-		SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize, dataAddress);
-		VMBufferConvert.restore(data, dataAddress);
+		SDLCall.glCompressedTexImage2D(target, level, internalformat, width, height, border, imageSize,
+				VMBufferConvert.ofNNCacheAddress(data));
 	}
 
 	@Override
 	public void glCompressedTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height,
 			int format, int imageSize, Buffer data) {
-		Address dataAddress = VMBufferConvert.save(data);
 		SDLCall.glCompressedTexSubImage2D(target, level, xoffset, yoffset, width, height, format, imageSize,
-				dataAddress);
-		VMBufferConvert.restore(data, dataAddress);
+				VMBufferConvert.ofNNCacheAddress(data));
 	}
 
 	@Override
@@ -639,7 +636,6 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		Address paramsAddress = VMBufferConvert.save(params);
 		SDLCall.glGetVertexAttribfv(index, pname, paramsAddress);
 		VMBufferConvert.restore(params, paramsAddress);
-
 	}
 
 	@Override
@@ -775,7 +771,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	public void glTexImage2D(int target, int level, int internalformat, int width, int height, int border, int format,
 			int type, Buffer pixels) {
 		SDLCall.glTexImage2D(target, level, internalformat, width, height, border, format, type,
-				VMBufferConvert.ofNAddress(pixels));
+				VMBufferConvert.ofNNCacheAddress(pixels));
 	}
 
 	@Override
@@ -802,7 +798,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 	public void glTexSubImage2D(int target, int level, int xoffset, int yoffset, int width, int height, int format,
 			int type, Buffer pixels) {
 		SDLCall.glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type,
-				VMBufferConvert.ofNAddress(pixels));
+				VMBufferConvert.ofNNCacheAddress(pixels));
 	}
 
 	@Override

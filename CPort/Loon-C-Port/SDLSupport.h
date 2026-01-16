@@ -470,6 +470,10 @@ static inline char* chars_strcasestr(const char* haystack, const char* needle, s
 
 void ImportSDLInclude();
 
+bool CreateSingleInstanceLock();
+
+void FreeSingleLock();
+
 int64_t CreatePrefs();
 
 bool LoadPrefs(int64_t handle, const char* filename);

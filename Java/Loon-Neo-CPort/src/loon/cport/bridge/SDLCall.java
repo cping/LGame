@@ -69,6 +69,12 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
+	@Import(name = "CreateSingleInstanceLock")
+	public final static native boolean createAppLock();
+
+	@Import(name = "FreeSingleLock")
+	public final static native void freeAppLock();
+
 	@Import(name = "CreatePrefs")
 	public final static native long createGamePrefs();
 

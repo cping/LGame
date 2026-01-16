@@ -102,7 +102,7 @@ public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 
 	final IntBuffer intbuf;
 
-	public ShaderProgram(final String vertexShader,final String fragmentShader) {
+	public ShaderProgram(final String vertexShader, final String fragmentShader) {
 		if (vertexShader == null) {
 			throw new LSysException("vertex shader must not be null");
 		}
@@ -110,7 +110,7 @@ public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 			throw new LSysException("fragment shader must not be null");
 		}
 		String glslVersion = "#version 100\n";
-		if (LSystem.base() != null && LSystem.base().graphics() != null) {
+		if (LSystem.base() != null && !LSystem.isMobile() && LSystem.base().graphics() != null) {
 			glslVersion = "#version " + LSystem.base().graphics().gl.getGlslVersion() + "\n";
 		}
 		this.intbuf = getSupport().newIntBuffer(1);
@@ -126,7 +126,7 @@ public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 		}
 	}
 
-	private void compileShaders(final String vertexShader,final String fragmentShader) {
+	private void compileShaders(final String vertexShader, final String fragmentShader) {
 		vertexShaderHandle = loadShader(GL20.GL_VERTEX_SHADER, vertexShader);
 		fragmentShaderHandle = loadShader(GL20.GL_FRAGMENT_SHADER, fragmentShader);
 		if (vertexShaderHandle == -1 || fragmentShaderHandle == -1) {
@@ -142,7 +142,7 @@ public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 		_compiled = true;
 	}
 
-	private int loadShader(final int type,final String source) {
+	private int loadShader(final int type, final String source) {
 		GL20 gl = LSystem.base().graphics().gl;
 		IntBuffer intbuf = getSupport().newIntBuffer(1);
 

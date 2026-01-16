@@ -27,6 +27,7 @@ import loon.LSystem;
 import loon.LTexture;
 import loon.canvas.Canvas;
 import loon.canvas.Pixmap;
+import loon.cport.CGame.CSetting;
 import loon.cport.bridge.SDLCall;
 import loon.cport.bridge.STBFont;
 import loon.font.TextFormat;
@@ -41,11 +42,14 @@ import loon.utils.Scale;
 
 public class CGraphics extends Graphics {
 
-	private final Dimension screenSize = new Dimension();
+	private final CSetting _csetting;
+
+	private final Dimension _screenSize = new Dimension();
 
 	public CGraphics(final CGame game) {
 		super(game, new CGL20(), Scale.ONE);
-		screenSize.setSize(LSystem.viewSize);
+		_csetting = game._csetting;
+		_screenSize.setSize(LSystem.viewSize);
 	}
 
 	public void registerFont(String name, String path) {
@@ -58,7 +62,7 @@ public class CGraphics extends Graphics {
 
 	@Override
 	public Dimension screenSize() {
-		return screenSize;
+		return _screenSize;
 	}
 
 	void onSizeChanged(int width, int height) {
@@ -67,12 +71,11 @@ public class CGraphics extends Graphics {
 		if (!isAllowResize(viewWidth, viewHeight)) {
 			return;
 		}
-		screenSize.width = viewWidth / scale.factor;
-		screenSize.height = viewHeight / scale.factor;
-		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + screenSize);
+		_screenSize.width = viewWidth / scale.factor;
+		_screenSize.height = viewHeight / scale.factor;
+		game.log().info("Updating size " + viewWidth + "x" + viewHeight + " / " + scale.factor + " -> " + _screenSize);
 		viewportChanged(scale, viewWidth, viewHeight);
-		SDLCall.glViewport(0, 0, MathUtils.iceil(viewWidth * LSystem.getScaleWidth()),
-				MathUtils.iceil(viewHeight * LSystem.getScaleHeight()));
+		SDLCall.glViewport(0, 0, viewWidth, viewHeight);
 	}
 
 	@Override
@@ -116,25 +119,43 @@ public class CGraphics extends Graphics {
 			gl.checkError("updateTexture");
 			return;
 		}
-		Pixmap texImage = new Pixmap(texWidth, texHeight, hasAlpha);
-		texImage.drawPixmap(img, 0, 0);
-		if (height < texHeight - 1) {
-			copyArea(texImage, 0, 0, width, 1, 0, texHeight - 1);
-			copyArea(texImage, 0, height - 1, width, 1, 0, 1);
+		if (_csetting.powerOfTwoTexture) {
+			Pixmap texImage = new Pixmap(texWidth, texHeight, hasAlpha);
+			texImage.drawPixmap(img, 0, 0);
+			if (height < texHeight - 1) {
+				copyArea(texImage, 0, 0, width, 1, 0, texHeight - 1);
+				copyArea(texImage, 0, height - 1, width, 1, 0, 1);
+			}
+			if (width < texWidth - 1) {
+				copyArea(texImage, 0, 0, 1, height, texWidth - 1, 0);
+				copyArea(texImage, width - 1, 0, 1, height, 1, 0);
+			}
+			Pixmap scaleBilinear = texImage.scaleBilinear();
+			ByteBuffer source = scaleBilinear.convertPixmapToByteBuffer();
+			if (texImage != null) {
+				texImage.close();
+				texImage = null;
+			}
+			if (scaleBilinear != null) {
+				scaleBilinear.close();
+				scaleBilinear = null;
+			}
+			GLUtils.bindTexture(gl, tex);
+			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
+					GL20.GL_UNSIGNED_BYTE, source);
+			gl.checkError("updateTexture");
+		} else {
+			Pixmap scaleBilinear = img.scaleBilinear();
+			ByteBuffer source = scaleBilinear.convertPixmapToByteBuffer();
+			if (scaleBilinear != null) {
+				scaleBilinear.close();
+				scaleBilinear = null;
+			}
+			GLUtils.bindTexture(gl, tex);
+			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, width, height, 0, srcPixelFormat,
+					GL20.GL_UNSIGNED_BYTE, source);
+			gl.checkError("updateTexture");
 		}
-		if (width < texWidth - 1) {
-			copyArea(texImage, 0, 0, 1, height, texWidth - 1, 0);
-			copyArea(texImage, width - 1, 0, 1, height, 1, 0);
-		}
-		ByteBuffer source = texImage.convertPixmapToByteBuffer();
-		if (texImage != null) {
-			texImage.close();
-			texImage = null;
-		}
-		GLUtils.bindTexture(gl, tex);
-		gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
-				GL20.GL_UNSIGNED_BYTE, source);
-		gl.checkError("updateTexture");
 	}
 
 }
