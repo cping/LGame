@@ -22,15 +22,20 @@ package loon.cport.log;
 
 import loon.LSystem;
 import loon.Log.Level;
+import loon.utils.StringUtils;
 
 final public class LogImpl {
 
 	public void exception(Object o) {
-		System.err.println(o);
+		if (o != null) {
+			System.err.println(o);
+		}
 	}
 
 	public void debugWrite(String text) {
-		System.out.println(text);
+		if (StringUtils.isNotEmpty(text)) {
+			System.out.println(text);
+		}
 	}
 
 	private static final int MAX_LOG_MESSAGES = 128;
@@ -200,7 +205,7 @@ final public class LogImpl {
 		}
 	}
 
-	public  LogMessage[] getLogMessages() {
+	public LogMessage[] getLogMessages() {
 		int numberOfMessages;
 		if (newestMessageIndex < 0) {
 			numberOfMessages = 0;
@@ -220,7 +225,7 @@ final public class LogImpl {
 		return copy;
 	}
 
-	public static  void clear() {
+	public static void clear() {
 		oldestMessageIndex = -1;
 		newestMessageIndex = -1;
 		store = new LogMessage[MAX_LOG_MESSAGES];

@@ -167,31 +167,21 @@ int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path)
 		fprintf(stderr, "Load_STB_Image_LoadPathToSDLSurface Error !\n");
 		return -1;
 	}
-	int pitch = width * format;
-	pitch = (pitch + 3) & ~3;
-	int32_t rmask, gmask, bmask, amask;
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN
-	rmask = 0x000000FF;
-	gmask = 0x0000FF00;
-	bmask = 0x00FF0000;
-	amask = (format == 4) ? 0xFF000000 : 0;
-#else
-	int s = (bytesPerPixel == 4) ? 0 : 8;
-	rmask = 0xFF000000 >> s;
-	gmask = 0x00FF0000 >> s;
-	bmask = 0x0000FF00 >> s;
-	amask = 0x000000FF >> s;
-#endif
 	cache_surface* newsurface = (cache_surface*)malloc(sizeof(cache_surface));
 	if (!newsurface) {
 		fprintf(stderr, "Load_STB_Image_LoadPathToSDLSurface Error !\n");
 		return 0;
 	}
-	SDL_Surface* newImage = SDL_CreateRGBSurfaceFrom(pixels, width, height, format * 8, pitch, rmask, gmask,
-		bmask, amask);
+	SDL_Surface* newImage = SDL_CreateRGBSurfaceWithFormatFrom(
+		pixels,               
+		width, height,         
+		32,                   
+		width * 4,            
+		SDL_PIXELFORMAT_RGBA32 
+	);
 	newsurface->surface_data = newImage;
-	newsurface->width = newImage->w;
-	newsurface->height = newImage->h;
+	newsurface->width = width;
+	newsurface->height = height;
 	_temp_stbsurface = newsurface;
 	return (intptr_t)newsurface;
 }
@@ -224,8 +214,8 @@ int64_t Load_STB_Image_LoadSDLSurfaceARGB32(const char* path)
 		return 0;
 	}
 	newsurface->surface_data = converted;
-	newsurface->width = converted->w;
-	newsurface->height = converted->h;
+	newsurface->width = width;
+	newsurface->height = height;
 	_temp_stbsurface = newsurface;
 	return (intptr_t)converted;
 }
@@ -636,13 +626,14 @@ int32_t Load_STB_MeasureTextWidth(const int64_t handle, const char* text, const 
 	}
 	int width = 0;
 	const char* p = text;
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	while (*p) {
 		int glyph = stbtt_FindGlyphIndex(fontinfo->info, *p);
 		int advance, lsb;
 		stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
-		width += (int)(advance * fontscale);
+		width += (int)(advance * scale);
 		if (*(p + 1)) {
-			width += (int)(stbtt_GetGlyphKernAdvance(fontinfo->info, glyph, stbtt_FindGlyphIndex(fontinfo->info, *(p + 1))) * fontscale);
+			width += (int)(stbtt_GetGlyphKernAdvance(fontinfo->info, glyph, stbtt_FindGlyphIndex(fontinfo->info, *(p + 1))) * scale);
 		}
 		p++;
 	}
@@ -656,9 +647,10 @@ int32_t Load_STB_MeasureTextHieght(const int64_t handle, const char* text, const
 		fprintf(stderr, "Load_STB_MeasureTextHieght Error !\n");
 		return 0;
 	}
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	return (int)((ascent - descent + lineGap) * fontscale);
+	return (int)((ascent - descent + lineGap) * scale);
 }
 
 void Load_STB_GetTextLinesSize(const int64_t handle, const char* text, const float fontscale, int32_t align, int32_t* rect)
@@ -670,12 +662,12 @@ void Load_STB_GetTextLinesSize(const int64_t handle, const char* text, const flo
 	}
 	int numLines;
 	char** lines = split_lines(text, &numLines);
-
+	float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+	int lineHeight = (int)((ascent - descent + lineGap) * scale);
 
-	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, scale);
 	int totalHeight = lineHeight * numLines;
 	rect[0] = maxWidth;
 	rect[1] = totalHeight;
@@ -691,12 +683,12 @@ void Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const
 	}
 	int numLines;
 	char** lines = split_lines(text, &numLines);
-
+    float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+	int lineHeight = (int)((ascent - descent + lineGap) * scale);
 
-	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, scale);
 	int totalHeight = lineHeight * numLines;
 
 	if (!bitmap) {
@@ -704,9 +696,9 @@ void Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const
 		return;
 	}
 	for (int i = 0; i < numLines; i++) {
-		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, fontscale);
+		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, scale);
 		int x = compute_alignment_offset(align, lineWidth, maxWidth);
-		int baseline = (int)(ascent * fontscale) + i * lineHeight;
+		int baseline = (int)(ascent * scale) + i * lineHeight;
 		const char* p = lines[i];
 
 		while (*p) {
@@ -715,7 +707,7 @@ void Load_STB_DrawTextLinesToBytes(const int64_t handle, const char* text, const
 			stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
 
 			int gw, gh, gxoff, gyoff;
-			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, fontscale, fontscale, glyph, &gw, &gh, &gxoff, &gyoff);
+			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, scale, scale, glyph, &gw, &gh, &gxoff, &gyoff);
 
 			for (int gy = 0; gy < gh; gy++) {
 				for (int gx = 0; gx < gw; gx++) {
@@ -755,12 +747,12 @@ void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const
 	//SetConsoleOutputCP(65001);
 	//SetConsoleCP(65001);
 	char** lines = split_lines(text, &numLines);
-
+    float scale = stbtt_ScaleForPixelHeight(fontinfo->info, fontscale);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
-	int lineHeight = (int)((ascent - descent + lineGap) * fontscale);
+	int lineHeight = (int)((ascent - descent + lineGap) * scale);
 
-	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, fontscale);
+	int maxWidth = measure_max_width_lines(fontinfo->info, lines, numLines, scale);
 	int totalHeight = lineHeight * numLines;
 
 	if (!outPixels) {
@@ -772,9 +764,9 @@ void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const
 	}
 
 	for (int i = 0; i < numLines; i++) {
-		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, fontscale);
+		int lineWidth = measure_max_width_lines(fontinfo->info, &lines[i], 1, scale);
 		int x = compute_alignment_offset(align, lineWidth, maxWidth);
-		int baseline = (int)(ascent * fontscale) + i * lineHeight;
+		int baseline = (int)(ascent * scale) + i * lineHeight;
 		const char* p = lines[i];
 
 		while (*p) {
@@ -783,7 +775,7 @@ void Load_STB_DrawTextLinesToInt32(const int64_t handle, const char* text, const
 			stbtt_GetGlyphHMetrics(fontinfo->info, glyph, &advance, &lsb);
 
 			int gw, gh, gxoff, gyoff;
-			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, fontscale, fontscale, glyph, &gw, &gh, &gxoff, &gyoff);
+			unsigned char* gbitmap = stbtt_GetGlyphBitmap(fontinfo->info, scale, scale, glyph, &gw, &gh, &gxoff, &gyoff);
 
 			for (int gy = 0; gy < gh; gy++) {
 				for (int gx = 0; gx < gw; gx++) {

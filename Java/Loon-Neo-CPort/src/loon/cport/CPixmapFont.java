@@ -24,7 +24,7 @@ import loon.LRelease;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.STBFont;
-import loon.geom.RectI;
+import loon.cport.bridge.STBFont.FontData;
 
 public class CPixmapFont implements LRelease {
 
@@ -44,27 +44,21 @@ public class CPixmapFont implements LRelease {
 	}
 
 	public Pixmap textToPixmap(String text, float fontScale, LColor color) {
-		final int[] pixels = _stbFont.textLinesToInt32(text, fontScale, color);
-		final RectI rect = _stbFont.getOutSize();
+		FontData result = _stbFont.drawString(text, fontScale, color.getARGB());
 		if (_fontPixmap == null) {
-			_fontPixmap = new Pixmap(pixels, rect.width, rect.height, _hasAlpha);
+			_fontPixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
 		} else {
-			_fontPixmap.setData(pixels, rect.width, rect.height, _hasAlpha);
+			_fontPixmap.setData(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
 		}
 		return _fontPixmap;
 	}
 
 	public Pixmap charToPixmap(int point, float fontScale, LColor color) {
-		RectI rect = _stbFont.getCharSize(fontScale, point);
-		return charToPixmap(point, fontScale, rect.width + 1, rect.height + 1, color);
-	}
-
-	public Pixmap charToPixmap(int point, float fontScale, int width, int height, LColor color) {
-		final int[] pixels = _stbFont.makeCodepointPixels32(point, fontScale, width, height, color);
+		FontData result = _stbFont.drawChar(point, fontScale, color.getARGB());
 		if (_fontPixmap == null) {
-			_fontPixmap = new Pixmap(pixels, width, height, _hasAlpha);
+			_fontPixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
 		} else {
-			_fontPixmap.setData(pixels, width, height, _hasAlpha);
+			_fontPixmap.setData(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
 		}
 		return _fontPixmap;
 	}

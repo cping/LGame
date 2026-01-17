@@ -15,9 +15,9 @@
 
 static const char b64_table[] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static SDL_GLContext* tempContext;
-static uint32_t tempPolleventType;
-static game_filesystem* gamefilesys;
+static SDL_GLContext* tempContext = NULL;
+static uint32_t tempPolleventType = 0;
+static game_filesystem* gamefilesys = NULL;
 static int g_loopCount = 0;
 static int g_windowSize[2];
 static int g_screenSize[2];
@@ -27,6 +27,7 @@ static int g_keyStates[SDL_NUM_SCANCODES] = { 0 };
 static int g_pressedKeys[SDL_NUM_SCANCODES] = { 0 };
 static int g_releasedKeys[SDL_NUM_SCANCODES] = { 0 };
 static int g_lastPressedScancode = -1;
+static int console_status = 0;
 static game_music* g_currentMusic = NULL;
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
@@ -34,9 +35,10 @@ static const int audio_channels = MIX_DEFAULT_CHANNELS;
 static const int audio_buffers = 4096;
 static const int fade_time = 5000;
 static const float volume = 1.0;
-static cache_surface* _temp_surface;
-static bool musicFinishedEvent;
-static bool soundFinishedEvent;
+static cache_surface* _temp_surface = NULL;
+static bool musicFinishedEvent = false;
+static bool soundFinishedEvent = false;
+static bool allowExit = true;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
 
@@ -87,6 +89,95 @@ bool CreateSingleInstanceLock(){
 
 void FreeSingleLock(){
   release_instance_lock();
+}
+
+#ifdef _WIN32
+static int is_parent_vs() {
+    DWORD pid = GetCurrentProcessId();
+    DWORD ppid = 0;
+    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap == INVALID_HANDLE_VALUE) return 0;
+    PROCESSENTRY32 pe;
+    pe.dwSize = sizeof(pe);
+    if (Process32First(snap, &pe)) {
+        do {
+            if (pe.th32ProcessID == pid) {
+                ppid = pe.th32ParentProcessID;
+                break;
+            }
+        } while (Process32Next(snap, &pe));
+    }
+    CloseHandle(snap);
+    snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+    if (snap == INVALID_HANDLE_VALUE) return 0;
+    if (Process32First(snap, &pe)) {
+        do {
+            if (pe.th32ProcessID == ppid) {
+                CloseHandle(snap);
+                return (_stricmp(pe.szExeFile, "devenv.exe") == 0);
+            }
+        } while (Process32Next(snap, &pe));
+    }
+    CloseHandle(snap);
+    return 0;
+}
+#endif
+
+int is_debug_console() {
+#ifdef _WIN32
+    if (IsDebuggerPresent()) {
+        if (is_parent_vs()) {
+            return 2; 
+        }
+        return 1; 
+    }
+    return 0; 
+#elif __linux__
+    FILE *f = fopen("/proc/self/status", "r");
+    if (!f) return 0;
+    char line[256];
+    while (fgets(line, sizeof(line), f)) {
+        if (strncmp(line, "TracerPid:", 10) == 0) {
+            int pid = atoi(line + 10);
+            fclose(f);
+            return pid != 0 ? 1 : 0;
+        }
+    }
+    fclose(f);
+    return 0;
+
+#elif __APPLE__
+    #include <sys/types.h>
+    #include <sys/sysctl.h>
+    int mib[4];
+    struct kinfo_proc info;
+    size_t size = sizeof(info);
+    info.kp_proc.p_flag = 0;
+    mib[0] = CTL_KERN;
+    mib[1] = KERN_PROC;
+    mib[2] = KERN_PROC_PID;
+    mib[3] = getpid();
+    sysctl(mib, 4, &info, &size, NULL, 0);
+    return ((info.kp_proc.p_flag & P_TRACED) != 0) ? 1 : 0;
+#else
+    return 0; 
+#endif
+}
+
+bool ISDebugStatus(){
+	return console_status;
+}
+
+void LOG_Println(const char* mes){	
+	if(console_status >= 1){
+		printf("%s\r", mes);
+	}else{
+		printf("%s\n", mes);
+	}
+}
+
+void SDL_AllowExit(bool a){
+	allowExit = a;
 }
 
 static char* detectPlatformCompileString() {
@@ -873,11 +964,11 @@ void Load_SDL_Cleanup() {
 			eglDestroySurface(display, eglsurface);
 		eglTerminate(display);
 	}
-	Load_SDL_Quit();
 	#ifdef __SWITCH__
 		romfsExit();
 	#endif
 #endif
+	Load_SDL_Quit();
 }
 
 #ifdef LOON_DESKTOP
@@ -1078,6 +1169,7 @@ static void OnMusicFinished(void) {
 
 int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const int flags , const bool debug) {
 	atexit(SDL_Quit);
+	console_status = is_debug_console();
 	for (int i = 0; i < 16; i++) {
 		touches[i * 3] = -1;
 	}
@@ -1559,7 +1651,11 @@ void FreeTempController() {
 }
 
 bool Load_SDL_Exit(const int run) {
-	return true;
+	if(allowExit && run != 0){
+	  return true;
+	} else {
+	  return false;
+	}
 }
 
 int32_t Load_SDL_TouchData(int32_t* data)
@@ -2777,6 +2873,11 @@ void Call_SDL_SetWindowIcon(const int64_t hanlde)
 	}
 	cache_surface* surface = (cache_surface*)hanlde;
 	if (!surface) {
+		fprintf(stderr, "surface error !\n");
+		return;
+	}
+	if (!surface->surface_data) {
+		fprintf(stderr, "surface->surface_data error !\n");
 		return;
 	}
 	SDL_SetWindowIcon(window, surface->surface_data);
@@ -3171,10 +3272,26 @@ void Load_SDL_Quit()
 	FreeTempContext();
 	Mix_HookMusicFinished(NULL);
 	Mix_ChannelFinished(NULL);
+    Mix_HaltMusic();
+    Mix_HaltChannel(-1);
 	Mix_CloseAudio();
 	Call_SDL_DestroyWindow();
+    int numJoysticks = SDL_NumJoysticks();
+    for (int i = 0; i < numJoysticks; i++) {
+        SDL_Joystick* joy = SDL_JoystickOpen(i);
+        if (joy) SDL_JoystickClose(joy);
+    }
+    for (int i = 0; i < numJoysticks; i++) {
+        SDL_GameController* ctrl = SDL_GameControllerOpen(i);
+        if (ctrl) SDL_GameControllerClose(ctrl);
+    }
+    int numSensors = SDL_NumSensors();
+    for (int i = 0; i < numSensors; i++) {
+        SDL_Sensor* sensor = SDL_SensorOpen(i);
+        if (sensor) SDL_SensorClose(sensor);
+    }
 	Mix_Quit();
-	SDL_Quit();
+    SDL_Quit();
 }
 
 bool Load_SDL_QuitRequested()

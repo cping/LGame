@@ -21,6 +21,7 @@
 package loon.cport.log;
 
 import loon.LSystem;
+import loon.cport.bridge.SDLCall;
 
 public class LogFormat {
 
@@ -43,6 +44,8 @@ public class LogFormat {
 	private int limitTagSize;
 
 	private int count;
+
+	private int newLineCount;
 
 	private String logMsg;
 
@@ -103,12 +106,16 @@ public class LogFormat {
 	public void title(int flag, String msg) {
 		switch (flag) {
 		case 0:
-			System.out.println(msg);
+			SDLCall.logPrintln(msg);
 			break;
 		case 1:
 			System.err.println(msg);
 			break;
+		case 2:
+			System.out.println(msg);
+			break;
 		}
+		newLineCount++;
 	}
 
 	public void out(String msg) {
@@ -116,6 +123,10 @@ public class LogFormat {
 			return;
 		}
 		title(logType, msg);
+	}
+
+	public int getNewLineCount() {
+		return newLineCount;
 	}
 
 	public boolean isShow() {
@@ -136,14 +147,17 @@ public class LogFormat {
 
 	public void out(String tm, String app, String level, String msg) {
 		if (msg != null && msg.length() > 0) {
-			final String value[] = { tm, app, level, msg };
+			final String values[] = { tm, app, level, msg };
 			if (count++ % 9999 == 0) {
 				logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
 						.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
-						.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
-						.append(formatString(value, " ", " ")).toString();
+						.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS).toString();
+				title(2, logMsg);
+				title(2, formatString(values, " ", " ") + LSystem.LS);
+				newLineCount = 0;
+				return;
 			} else {
-				logMsg = formatString(value, " ", " ", false);
+				logMsg = formatString(values, " ", " ", false);
 			}
 			out(logMsg);
 		}

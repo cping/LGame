@@ -489,7 +489,15 @@ public class CAssets extends Assets {
 		return file;
 	}
 
-	protected String requirePath(final String path) throws IOException {
+	protected final String fixPath(final String path) throws IOException {
+		return requirePath(directories, path);
+	}
+
+	protected final static String requirePath(final String path) throws IOException {
+		return requirePath(null, path);
+	}
+
+	protected final static String requirePath(final File[] dirs, final String path) throws IOException {
 		if (existsPath(path)) {
 			return path;
 		}
@@ -515,10 +523,12 @@ public class CAssets extends Assets {
 				return serachPath;
 			}
 		}
-		for (File dir : directories) {
-			File f = new File(dir, path).getCanonicalFile();
-			if (f.exists() || existsPath(serachPath)) {
-				return serachPath;
+		if (dirs != null) {
+			for (File dir : dirs) {
+				File f = new File(dir, path).getCanonicalFile();
+				if (f.exists() || existsPath(serachPath)) {
+					return serachPath;
+				}
 			}
 		}
 		return path;
@@ -544,12 +554,12 @@ public class CAssets extends Assets {
 
 	@Override
 	public String getTextSync(String path) throws Exception {
-		return SDLCall.loadRWFileToChars(requirePath(path));
+		return SDLCall.loadRWFileToChars(fixPath(path));
 	}
 
 	@Override
 	public byte[] getBytesSync(String path) throws Exception {
-		return loadRwFile(requirePath(path));
+		return loadRwFile(fixPath(path));
 	}
 
 	protected Pixmap scaleImage(Pixmap image, float viewImageRatio) {
@@ -564,7 +574,7 @@ public class CAssets extends Assets {
 			return null;
 		}
 		Exception error = null;
-		String newPath = requirePath(path);
+		String newPath = fixPath(path);
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(newPath)) {
 			try {
 				STBImage stbImage = STBImage.createImage(newPath);

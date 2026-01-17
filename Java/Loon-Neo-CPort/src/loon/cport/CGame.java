@@ -78,6 +78,10 @@ public final class CGame extends LGame {
 
 		public boolean fullscreenDesktop = false;
 
+		public boolean singleAppInstance = true;
+
+		public boolean allowWindowClose = true;
+
 		public boolean vsync = true;
 
 		public boolean powerOfTwoTexture = false;
@@ -118,6 +122,7 @@ public final class CGame extends LGame {
 	private final boolean _gamePlatform;
 	private final RectF _renderScale = new RectF();
 	private final int _fixedDelayValue;
+	private final boolean _appLocked;
 	private int _qualityLowValue;
 	private int _qualityHighValue;
 	private int _lastEventCall;
@@ -126,12 +131,17 @@ public final class CGame extends LGame {
 		super(config, loon);
 		setting = config;
 		setting.updateScale();
+		this._csetting = config;
 		this._mainData = mainData;
 		this._startTime = SDLCall.getTicks();
-		setWindowFlags(_csetting = config);
+		if (_appLocked = _csetting.singleAppInstance) {
+			SDLCall.createAppLock();
+		}
+		setWindowFlags(_csetting);
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(),
 				_csetting.fps <= 60 ? _csetting.vsync : false, _flags.getValue(), _csetting.isDebug);
 		setWindowIcon(_csetting);
+		SDLCall.setAllowExit(_csetting.allowWindowClose);
 		SDLCall.getRenderScale(_screenScale);
 		this._fixedDelayValue = _csetting.fps_time_fixed_min_value;
 		this._log = new CLog();
@@ -152,12 +162,15 @@ public final class CGame extends LGame {
 
 	private void setWindowIcon(CSetting config) {
 		final String path = config.iconPath;
-		if (path != null && path.length() > 0 && (SDLCall.fileExists(path) || SDLCall.rwFileExists(path))) {
+		if (path != null && path.length() > 0) {
 			try {
-				SDLSurface surface = SDLSurface.create(path);
-				SDLCall.setWindowIcon(surface.getHandle());
-				surface.close();
-				surface = null;
+				String newPath = CAssets.requirePath(path);
+				if (CAssets.existsPath(newPath)) {
+					SDLSurface surface = SDLSurface.create(newPath);
+					SDLCall.setWindowIcon(surface.getHandle());
+					surface.close();
+					surface = null;
+				}
 			} catch (Exception e) {
 			}
 		}
@@ -252,10 +265,6 @@ public final class CGame extends LGame {
 		return _screenSize;
 	}
 
-	public boolean isGamePlatform() {
-		return _gamePlatform;
-	}
-
 	private void mainLoop(final FPSRepaintController fps, final int nowTime) {
 		final int elapsed = nowTime - fps.lastTick;
 		fps.lastTick = nowTime;
@@ -341,7 +350,7 @@ public final class CGame extends LGame {
 				mainLoop(_fpsRepaintController, currentTime);
 			}
 		} catch (Exception e) {
-			System.out.println("Loon Exception:");
+			System.out.println("Loon Run Exception:");
 			e.printStackTrace();
 			System.err.println("Message: " + e.getMessage());
 			Throwable cause = e.getCause();
@@ -349,8 +358,21 @@ public final class CGame extends LGame {
 				System.err.println("Message: " + cause.getMessage());
 				cause = cause.getCause();
 			}
+		} finally {
+			shutdown();
+			SDLCall.cleanup();
+			if (_appLocked) {
+				SDLCall.freeAppLock();
+			}
 		}
-		shutdown();
+	}
+
+	public boolean isGamePlatform() {
+		return _gamePlatform;
+	}
+
+	public boolean isSingleAppLocked() {
+		return _appLocked;
 	}
 
 	@Override

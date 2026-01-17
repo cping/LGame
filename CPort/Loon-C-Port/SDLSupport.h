@@ -25,6 +25,7 @@
 #ifdef _WIN32 || _WIN64
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tlhelp32.h>
 #include <shlobj.h>
 #include <winbase.h>
 #include <VersionHelpers.h>
@@ -470,9 +471,15 @@ static inline char* chars_strcasestr(const char* haystack, const char* needle, s
 
 void ImportSDLInclude();
 
+bool ISDebugStatus();
+
 bool CreateSingleInstanceLock();
 
 void FreeSingleLock();
+
+void SDL_AllowExit(bool a);
+
+void LOG_Println(const char* mes);
 
 int64_t CreatePrefs();
 

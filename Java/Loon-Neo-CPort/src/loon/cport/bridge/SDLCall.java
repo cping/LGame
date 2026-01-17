@@ -69,11 +69,20 @@ public final class SDLCall {
 	@Import(name = "ImportSDLInclude")
 	public final static native void importInclude();
 
+	@Import(name = "ISDebugStatus")
+	public final static native boolean isDebugStatus();
+
 	@Import(name = "CreateSingleInstanceLock")
 	public final static native boolean createAppLock();
 
 	@Import(name = "FreeSingleLock")
 	public final static native void freeAppLock();
+
+	@Import(name = "SDL_AllowExit")
+	public final static native void setAllowExit(boolean a);
+
+	@Import(name = "LOG_Println")
+	public final static native void logPrintln(String mes);
 
 	@Import(name = "CreatePrefs")
 	public final static native long createGamePrefs();

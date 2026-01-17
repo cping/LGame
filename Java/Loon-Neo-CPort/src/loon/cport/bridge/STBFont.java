@@ -24,6 +24,7 @@ import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.geom.RectI;
+import loon.utils.MathUtils;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 
@@ -46,6 +47,13 @@ public final class STBFont implements LRelease {
 		protected int height;
 
 		protected int format;
+
+	}
+
+	public static class FontData {
+
+		public final RectI fontSize = new RectI();
+		public int[] pixels;
 
 	}
 
@@ -213,6 +221,38 @@ public final class STBFont implements LRelease {
 		STBCall.makeDrawTextToBitmap32(_fontHandle, text, fontScale, width, height, fontColor.getRed(),
 				fontColor.getGreen(), fontColor.getBlue(), pixels);
 		return pixels;
+	}
+
+	public FontData drawChar(int codepoint, float fontScale, int color) {
+		final int size = MathUtils.iceil(fontScale * 2 + 2);
+		int[] outpixels = new int[size];
+		int[] outsize = new int[2];
+		STBCall.drawChar(_fontHandle, codepoint, fontScale, color, outsize, outpixels);
+		final FontData result = new FontData();
+		result.fontSize.set(outsize[0], outsize[1]);
+		final int length = result.fontSize.width * result.fontSize.height;
+		final int[] newPixels = new int[length];
+		System.arraycopy(outpixels, 0, newPixels, 0, length);
+		result.pixels = newPixels;
+		outpixels = null;
+		outsize = null;
+		return result;
+	}
+
+	public FontData drawString(String text, float fontScale, int color) {
+		final int size = MathUtils.iceil(fontScale * text.length() + text.length() + fontScale + 2);
+		int[] outpixels = new int[size];
+		int[] outsize = new int[2];
+		STBCall.drawString(_fontHandle, text, fontScale, color, outsize, outpixels);
+		final FontData result = new FontData();
+		result.fontSize.set(outsize[0], outsize[1]);
+		final int length = result.fontSize.width * result.fontSize.height;
+		final int[] newPixels = new int[length];
+		System.arraycopy(outpixels, 0, newPixels, 0, length);
+		result.pixels = newPixels;
+		outpixels = null;
+		outsize = null;
+		return result;
 	}
 
 	public long getHandle() {
