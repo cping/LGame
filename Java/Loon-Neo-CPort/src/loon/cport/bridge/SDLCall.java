@@ -25,7 +25,11 @@ import java.nio.IntBuffer;
 import org.teavm.backend.c.intrinsic.RuntimeInclude;
 import org.teavm.interop.Address;
 import org.teavm.interop.Import;
+import org.teavm.interop.StaticInit;
+import org.teavm.interop.Unmanaged;
 
+@Unmanaged
+@StaticInit
 public final class SDLCall {
 
 	public static final float SDL_STANDARD_GRAVITY = 9.80665f;
@@ -71,6 +75,9 @@ public final class SDLCall {
 
 	@Import(name = "ISDebugStatus")
 	public final static native boolean isDebugStatus();
+
+	@Import(name = "ConvertTeaVMString")
+	public final static native String convertString(String chars);
 
 	@Import(name = "CreateSingleInstanceLock")
 	public final static native boolean createAppLock();

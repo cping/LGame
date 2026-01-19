@@ -35,7 +35,7 @@ public class CPixmapFont implements LRelease {
 	private boolean _hasAlpha;
 
 	public CPixmapFont(STBFont font) {
-		this(font, true);
+		this(font, false);
 	}
 
 	public CPixmapFont(STBFont font, boolean hasAlpha) {
@@ -44,6 +44,9 @@ public class CPixmapFont implements LRelease {
 	}
 
 	public Pixmap textToPixmap(String text, float fontScale, LColor color) {
+		if (text.length() == 1) {
+			return charToPixmap(text.charAt(0), fontScale, color);
+		}
 		FontData result = _stbFont.drawString(text, fontScale, color.getARGB());
 		if (_fontPixmap == null) {
 			_fontPixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);

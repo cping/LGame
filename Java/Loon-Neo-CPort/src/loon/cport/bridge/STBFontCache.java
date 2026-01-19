@@ -35,13 +35,37 @@ public final class STBFontCache {
 		return font;
 	}
 
+	private final static STBFont createCache(int hashCodeKey, String path, String fontName, int style) {
+		STBFont font = _fontCache.get(hashCodeKey);
+		if (font == null) {
+			font = STBFont.create(path, fontName, style);
+			_fontCache.put(hashCodeKey, font);
+		}
+		return font;
+	}
+
+	private final static STBFont createSystemCache(int hashCodeKey, String styleName, String path, String defStyle,
+			int style) {
+		STBFont font = _fontCache.get(hashCodeKey);
+		if (font == null) {
+			font = STBFont.createSystemFont(styleName, path, defStyle, style);
+			_fontCache.put(hashCodeKey, font);
+		}
+		return font;
+	}
+
 	public final static STBFont create(String path) {
 		return createCache(path.hashCode(), path);
 	}
 
 	public final static STBFont create(String path, String fontName, int style) {
 		final int hashCodeKey = (path + "|" + fontName + "|" + style).hashCode();
-		return createCache(hashCodeKey, path);
+		return createCache(hashCodeKey, path, fontName, style);
+	}
+
+	public final static STBFont createSystemFont(String styleName, String path, String fontName, int style) {
+		final int hashCodeKey = (styleName + "|" + path + "|" + fontName + "|" + style).hashCode();
+		return createSystemCache(hashCodeKey, styleName, path, fontName, style);
 	}
 
 	public final static void close() {

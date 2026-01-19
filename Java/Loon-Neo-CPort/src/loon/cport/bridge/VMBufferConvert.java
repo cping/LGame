@@ -33,6 +33,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.teavm.interop.Address;
+import org.teavm.interop.StaticInit;
+import org.teavm.interop.Unmanaged;
 
 import loon.LSysException;
 import loon.LSystem;
@@ -40,9 +42,11 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 
+@Unmanaged
+@StaticInit
 public final class VMBufferConvert {
 
-	static class TeaVMBufferState {
+	final static class TeaVMBufferState {
 
 		final int position;
 		final int limit;
@@ -66,7 +70,7 @@ public final class VMBufferConvert {
 		}
 	}
 
-	static class TeaVMBufferStatePool {
+	final static class TeaVMBufferStatePool {
 
 		boolean saveAndRestore;
 
@@ -291,7 +295,7 @@ public final class VMBufferConvert {
 		return bufferStatePool.saveAndRestore;
 	}
 
-	public void saveState(boolean s) {
+	public static void saveState(boolean s) {
 		bufferStatePool.saveAndRestore = s;
 	}
 

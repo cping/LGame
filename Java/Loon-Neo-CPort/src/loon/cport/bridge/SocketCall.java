@@ -22,7 +22,11 @@ package loon.cport.bridge;
 
 import org.teavm.backend.c.intrinsic.RuntimeInclude;
 import org.teavm.interop.Import;
+import org.teavm.interop.StaticInit;
+import org.teavm.interop.Unmanaged;
 
+@Unmanaged
+@StaticInit
 public final class SocketCall {
 
 	private SocketCall() {

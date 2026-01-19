@@ -95,8 +95,18 @@ public class CInitialize {
 		TeaVMTool tool = new TeaVMTool();
 		tool.setTargetType(TeaVMTargetType.C);
 		tool.setObfuscated(obfuscated);
-		tool.setMinHeapSize(cbuildConfiguration.minHeapSize);
-		tool.setMaxHeapSize(cbuildConfiguration.maxHeapSize);
+		final int defMinHeapSize = 64 * (1 << 20);
+		if (cbuildConfiguration.minHeapSize < defMinHeapSize) {
+			tool.setMinHeapSize(defMinHeapSize);
+		} else {
+			tool.setMinHeapSize(cbuildConfiguration.minHeapSize);
+		}
+		final int defMaxHeapSize = 128 * (1 << 20);
+		if (cbuildConfiguration.maxHeapSize < defMaxHeapSize) {
+			tool.setMaxHeapSize(defMaxHeapSize);
+		} else {
+			tool.setMaxHeapSize(cbuildConfiguration.maxHeapSize);
+		}
 		tool.setMinDirectBuffersSize(cbuildConfiguration.minDirectBuffersSize);
 		tool.setMaxDirectBuffersSize(cbuildConfiguration.maxDirectBuffersSize);
 		tool.setHeapDump(false);

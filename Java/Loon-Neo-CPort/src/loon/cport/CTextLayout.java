@@ -79,7 +79,11 @@ public class CTextLayout extends loon.font.TextLayout {
 			if ("ttf".equals(ext) || !StringUtils.isEmpty(ext)) {
 				fontCache = STBFontCache.create(fontName);
 			} else {
-				fontCache = STBFontCache.create(fontName + ".ttf", fontName,
+				String sysFontName = fontName;
+				if ("dialog".equalsIgnoreCase(fontName)) {
+					sysFontName = "黑体";
+				}
+				fontCache = STBFontCache.createSystemFont(sysFontName, fontName + ".ttf", sysFontName,
 						STYLE_TO_STBFONT[loonFont.style.ordinal()]);
 			}
 			_fontPools.put(keyName, fontCache);
@@ -169,7 +173,7 @@ public class CTextLayout extends loon.font.TextLayout {
 		_metrics = _stbFont.getFontVMetrics(_fontSize);
 		setBounds(0, 0, width == 0 ? _stbFont.measureWidth(text, _fontSize) : width,
 				_stbFont.measureHieght(text, _fontSize));
-		setHeight(_metrics.ascent - _metrics.descent + _metrics.lineGap);
+		setHeight(MathUtils.ifloor(_metrics.ascent - _metrics.descent + _metrics.lineGap));
 	}
 
 	void stroke(Pixmap pixmap, float x, float y, LColor fontColor) {
@@ -210,8 +214,8 @@ public class CTextLayout extends loon.font.TextLayout {
 	}
 
 	@Override
-	public int stringWidth(String message) {
-		return (int) MathUtils.max(_fontSize, _stbFont.measureWidth(text, _fontSize));
+	public int stringWidth(final String message) {
+		return (int) MathUtils.max(_fontSize, _stbFont.measureWidth(message, _fontSize));
 	}
 
 	@Override

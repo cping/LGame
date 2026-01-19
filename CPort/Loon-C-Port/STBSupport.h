@@ -60,6 +60,8 @@ int64_t Load_STB_LoadFontInfo(const char* path);
 
 int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName, const int style);
 
+int64_t Load_STB_LoadSystemFontStyleInfo(const char* sysfontName, const char* path, const char* fontName , const int style);
+
 void Load_STB_GetCodepointBitmapBox(const int64_t handle, const float fontsize, const int point,int* rect);
 
 void Load_STB_GetFontVMetrics(const int64_t handle, const float fontsize,int* rect);

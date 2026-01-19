@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef LOON_SDL
 #define LOON_SDL
 
@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 #ifdef __APPLE__
     #include <SDL2/SDL.h>
@@ -147,25 +148,75 @@ typedef struct {
     int height;
 } PlatformResolution;
 
+typedef struct {
+    const char* name;  
+    const char* path; 
+} FontEntry;
+
 static const PlatformResolution platformResTable[] = {
     {"Nintendo Switch", 1280, 720},
+    {"Nintendo Switch OLED",1280, 720},
     {"Nintendo Switch Docked", 1920, 1080},
     {"Xbox Series X", 3840, 2160},
     {"Xbox Series S", 2560, 1440},
     {"Xbox One", 1920, 1080},
+    {"Xbox One X", 3840, 2160},
+    {"PlayStation 4 Pro", 3840, 2160},
     {"PlayStation 5", 3840, 2160},
     {"PlayStation 4", 1920, 1080},
+    {"Google Stadia", 1920, 1080},
     {"Steam Deck", 1280, 800},
+    {"Amazon Luna", 1920, 1080},
+    {"PS Vita", 960, 544},
+    {"PSP", 480, 272},
+    {"Nintendo 3DS", 400, 240},
+    {"Wii U",1920, 1080},
+    {"Wii",720, 480},
     {"Windows", 1920, 1080},
     {"Linux", 1920, 1080},
-    {"Mac OS X", 2560, 1600}
+    {"Mac OS X", 2560, 1600},
+    {"iOS", 2532, 1170 },
+    {"iPadOS", 2732, 2048},
+    {"Android", 2400, 1080}
 };
 
 static char global_cname[2048];
 
 static char global_info[1024 * 10];
 
-#include <stddef.h>
+static inline int float_to_int_threshold(float value) {
+    return (int)(value);
+}
+
+static inline int is_cjk(uint32_t cp) {
+    return (cp >= 0x4E00 && cp <= 0x9FFF) || 
+           (cp >= 0x3040 && cp <= 0x30FF) || 
+           (cp >= 0xAC00 && cp <= 0xD7AF); 
+}
+
+static inline int utf8_decode_codepoint(const char *text, int *out_cp) {
+    if (!text || !out_cp) return 1; 
+    const unsigned char *s = (const unsigned char *)text;
+    unsigned char c = s[0];
+    if (c < 0x80) { 
+        *out_cp = c;
+        return 1;
+    }
+    else if ((c >> 5) == 0x6) {
+        *out_cp = ((c & 0x1F) << 6) | (s[1] & 0x3F);
+        return 2;
+    }
+    else if ((c >> 4) == 0xE) { 
+        *out_cp = ((c & 0x0F) << 12) | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F);
+        return 3;
+    }
+    else if ((c >> 3) == 0x1E) { 
+        *out_cp = ((c & 0x07) << 18) | ((s[1] & 0x3F) << 12) | ((s[2] & 0x3F) << 6) | (s[3] & 0x3F);
+        return 4;
+    }
+    *out_cp = c;
+    return 1;
+}
 
 static inline uint32_t utf8_decode(const char** s) {
     const unsigned char* p = (const unsigned char*)*s;
@@ -469,7 +520,131 @@ static inline char* chars_strcasestr(const char* haystack, const char* needle, s
     return NULL;
 }
 
+static inline bool is_digit_char(uint32_t ch) {
+    return (ch >= '0' && ch <= '9') ||      
+        (ch >= 0xFF10 && ch <= 0xFF19);   
+}
+
+static inline bool is_lowercase(char c) {
+    return (c >= 'a' && c <= 'z');
+}
+
+static inline bool is_uppercase(char c) {
+    return (c >= 'A' && c <= 'Z');
+}
+
+static inline bool is_other_char(uint32_t ch) {
+    return (ch >= 0xFF21 && ch <= 0xFF3A) || 
+        (ch >= 0xFF41 && ch <= 0xFF5A);   
+}
+
+static inline  bool is_fullwidth_symbol(uint32_t ch) {
+    if ((ch >= 0xFF01 && ch <= 0xFF0F) || 
+        (ch >= 0xFF1A && ch <= 0xFF20) || 
+        (ch >= 0xFF3B && ch <= 0xFF40) || 
+        (ch >= 0xFF5B && ch <= 0xFF5E) ||
+        (ch >= 0xFFE0 && ch <= 0xFFE6))
+    {
+        return true;
+    }
+    return false;
+}
+
+static inline  bool is_halfwidth_symbol(uint32_t ch) {
+    if ((ch >= 33 && ch <= 47) ||   
+        (ch >= 58 && ch <= 64) || 
+        (ch >= 91 && ch <= 96) || 
+        (ch >= 123 && ch <= 126)) { 
+        return true;
+    }
+    return false;
+}
+
+static inline bool is_symbol(uint32_t ch) {
+    return is_halfwidth_symbol(ch) || is_fullwidth_symbol(ch);
+}
+
+static inline int fix_font_char_size(uint32_t ch,float fontSize,int size) {
+    float newSize = size;
+    if (is_cjk(ch)) {
+        return newSize + 1;
+    }
+    if (is_digit_char(ch)) {
+      return newSize += 2;
+    } else if (is_lowercase(ch)) {
+        return newSize += 1;
+    } else if (is_uppercase(ch)) {
+        return newSize += 2;
+    } else if (is_other_char(ch)) {
+        return newSize += 2;
+    } else if (is_symbol(ch)) {
+        return newSize += 1;
+    }
+    return newSize + 2;
+}
+
+static inline void fill_pixels_u8(uint8_t* pixels, size_t length, uint8_t v) {
+    if (!pixels||length == 0) return;
+    memset(pixels, v, length);
+}
+
+static inline void replace_pixels_u8(uint8_t* pixels, size_t length, uint8_t src_pixel, uint8_t dst_pixel) {
+    if (!pixels||length == 0) return; 
+    if (src_pixel == dst_pixel) {
+        return;
+    }
+    uint8_t* end = pixels + length;
+    for (uint8_t* p = pixels; p < end; ++p) {
+        if (*p == src_pixel) {
+            *p = dst_pixel;
+        }
+    }
+}
+
+static inline void fill_pixels(uint32_t* pixels, size_t length, uint32_t v) {
+    if (!pixels||length == 0) return; 
+    uint32_t* end = pixels + length;
+    while (pixels + 4 <= end) {
+        pixels[0] = v;
+        pixels[1] = v;
+        pixels[2] = v;
+        pixels[3] = v;
+        pixels += 4;
+    }
+    while (pixels < end) {
+        *pixels++ = v;
+    }
+}
+
+static inline void replace_pixels(uint32_t* pixels, size_t length, uint32_t target, uint32_t replacement) {
+    if (!pixels||length == 0) return; 
+    uint32_t* end = pixels + length;
+    while (pixels + 4 <= end) {
+        if (pixels[0] == target) {
+            pixels[0] = replacement;
+        }
+        if (pixels[1] == target) {
+            pixels[1] = replacement;
+        }
+        if (pixels[2] == target) {
+            pixels[2] = replacement;
+        }
+        if (pixels[3] == target) {
+            pixels[3] = replacement;
+        }
+        pixels += 4;
+    }
+    while (pixels < end) {
+        if (*pixels == target) {
+            *pixels = replacement;
+        }
+        pixels++;
+    }
+}
+
 void ImportSDLInclude();
+
+char* ConvertTeaVMString(uint16_t* chars);
 
 bool ISDebugStatus();
 

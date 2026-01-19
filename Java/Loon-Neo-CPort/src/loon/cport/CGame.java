@@ -135,7 +135,10 @@ public final class CGame extends LGame {
 		this._mainData = mainData;
 		this._startTime = SDLCall.getTicks();
 		if (_appLocked = _csetting.singleAppInstance) {
-			SDLCall.createAppLock();
+			boolean notexists = SDLCall.createAppLock();
+			if (!notexists) {
+				throw new RuntimeException("The App has been forcibly interrupted !");
+			}
 		}
 		setWindowFlags(_csetting);
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(),

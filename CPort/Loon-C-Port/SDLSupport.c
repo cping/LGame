@@ -1,4 +1,4 @@
-#include "SDLSupport.h"
+ï»¿#include "SDLSupport.h"
 
 #ifndef LOON_DESKTOP
 	static EGLDisplay display;
@@ -164,16 +164,16 @@ int is_debug_console() {
 #endif
 }
 
+char* ConvertTeaVMString(uint16_t* chars){
+   return (char*)chars;
+}
+
 bool ISDebugStatus(){
 	return console_status;
 }
 
 void LOG_Println(const char* mes){	
-	if(console_status >= 1){
-		printf("%s\r", mes);
-	}else{
-		printf("%s\n", mes);
-	}
+	printf("%s\n", mes);
 }
 
 void SDL_AllowExit(bool a){
@@ -1169,6 +1169,8 @@ static void OnMusicFinished(void) {
 
 int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const int flags , const bool debug) {
 	atexit(SDL_Quit);
+	SetConsoleOutputCP(65001);
+	SetConsoleCP(65001);
 	console_status = is_debug_console();
 	for (int i = 0; i < 16; i++) {
 		touches[i * 3] = -1;
@@ -1361,7 +1363,7 @@ bool Load_SDL_Update() {
 			  touches[0] = -1;
 			  break;
 		  case SDL_KEYDOWN:
-			  //·Ö¿ª´æ´¢¼üÅÌºÍÓÎÏ·ÊÖ±úÊÂ¼þ£¬±ÜÃâ»ìÏý
+			  //åˆ†å¼€å­˜å‚¨é”®ç›˜å’Œæ¸¸æˆæ‰‹æŸ„äº‹ä»¶ï¼Œé¿å…æ··æ·†
 			  if (!g_keyStates[event.key.keysym.scancode]){
 				  g_pressedKeys[event.key.keysym.scancode] = 1;
 				  g_lastPressedScancode = event.key.keysym.scancode;
@@ -1373,7 +1375,7 @@ bool Load_SDL_Update() {
 				  joysticks[axis & 0x3] += axis & 0x4 ? -1 : 1;
 			  break;
 		  case SDL_KEYUP:
-			  //·Ö¿ª´æ´¢¼üÅÌºÍÓÎÏ·ÊÖ±úÊÂ¼þ£¬±ÜÃâ»ìÏý
+			  //åˆ†å¼€å­˜å‚¨é”®ç›˜å’Œæ¸¸æˆæ‰‹æŸ„äº‹ä»¶ï¼Œé¿å…æ··æ·†
 			  g_keyStates[event.key.keysym.scancode] = 0;
 			  g_releasedKeys[event.key.keysym.scancode] = 1;
 			  buttons &= ~keyToButton(event.key.keysym.scancode);

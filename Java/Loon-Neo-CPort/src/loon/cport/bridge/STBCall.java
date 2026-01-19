@@ -22,7 +22,11 @@ package loon.cport.bridge;
 
 import org.teavm.backend.c.intrinsic.RuntimeInclude;
 import org.teavm.interop.Import;
+import org.teavm.interop.StaticInit;
+import org.teavm.interop.Unmanaged;
 
+@Unmanaged
+@StaticInit
 public final class STBCall {
 
 	private STBCall() {
@@ -80,6 +84,10 @@ public final class STBCall {
 
 	@Import(name = "Load_STB_LoadFontStyleInfo")
 	public final static native long loadFontStyleInfo(String path, String fontName, int style);
+
+	@Import(name = "Load_STB_LoadSystemFontStyleInfo")
+	public final static native long loadSystemFontStyleInfo(String sysfontName, String path, String fontName,
+			int style);
 
 	@Import(name = "Load_STB_GetTextLinesSize")
 	public final static native void getTextLinesSize(long handle, String text, float fontScale, int align, int[] rect);

@@ -104,6 +104,11 @@ public final class STBFont implements LRelease {
 		return new STBFont(handle);
 	}
 
+	public final static STBFont createSystemFont(String styleName, String path, String defStyle, int style) {
+		long handle = STBCall.loadSystemFontStyleInfo(styleName, convertFontPath(path), defStyle, style);
+		return new STBFont(handle);
+	}
+
 	private boolean _closed;
 
 	private long _fontHandle;
@@ -114,11 +119,13 @@ public final class STBFont implements LRelease {
 
 	private final RectI _charSize = new RectI();
 
-	private final RectI _outSize = new RectI();
+	private final RectI _rectSize = new RectI();
 
 	private final VMetric _metric = new VMetric();
 
 	private final int[] _fontSize = new int[4];
+
+	private final int[] _outsize = new int[2];
 
 	private STBFont(long handle) {
 		_fontHandle = handle;
@@ -160,9 +167,9 @@ public final class STBFont implements LRelease {
 	}
 
 	public RectI getOutSize() {
-		_outSize.width = _fontSize[0];
-		_outSize.height = _fontSize[1];
-		return _outSize;
+		_rectSize.width = _fontSize[0];
+		_rectSize.height = _fontSize[1];
+		return _rectSize;
 	}
 
 	public RectI getCodepointBitmapBox(float fontsize, int point) {
@@ -224,34 +231,33 @@ public final class STBFont implements LRelease {
 	}
 
 	public FontData drawChar(int codepoint, float fontScale, int color) {
-		final int size = MathUtils.iceil(fontScale * 2 + 2);
+		final int maxFontSize = (int) (fontScale * fontScale);
+		final int size = MathUtils.iceil(maxFontSize * 4);
 		int[] outpixels = new int[size];
-		int[] outsize = new int[2];
-		STBCall.drawChar(_fontHandle, codepoint, fontScale, color, outsize, outpixels);
+		STBCall.drawChar(_fontHandle, codepoint, fontScale, color, _outsize, outpixels);
 		final FontData result = new FontData();
-		result.fontSize.set(outsize[0], outsize[1]);
+		result.fontSize.set(_outsize[0], _outsize[1]);
 		final int length = result.fontSize.width * result.fontSize.height;
 		final int[] newPixels = new int[length];
 		System.arraycopy(outpixels, 0, newPixels, 0, length);
 		result.pixels = newPixels;
 		outpixels = null;
-		outsize = null;
 		return result;
 	}
 
 	public FontData drawString(String text, float fontScale, int color) {
-		final int size = MathUtils.iceil(fontScale * text.length() + text.length() + fontScale + 2);
+		final int maxFontSize = (int) (fontScale * fontScale);
+		final int size = MathUtils.iceil(maxFontSize * text.length() + (maxFontSize / 2 * text.length()));
 		int[] outpixels = new int[size];
-		int[] outsize = new int[2];
-		STBCall.drawString(_fontHandle, text, fontScale, color, outsize, outpixels);
+		STBCall.drawString(_fontHandle, text, fontScale, color, _outsize, outpixels);
 		final FontData result = new FontData();
-		result.fontSize.set(outsize[0], outsize[1]);
+		result.fontSize.set(_outsize[0], _outsize[1]);
 		final int length = result.fontSize.width * result.fontSize.height;
 		final int[] newPixels = new int[length];
 		System.arraycopy(outpixels, 0, newPixels, 0, length);
+		System.out.println(length + "," + outpixels.length);
 		result.pixels = newPixels;
 		outpixels = null;
-		outsize = null;
 		return result;
 	}
 

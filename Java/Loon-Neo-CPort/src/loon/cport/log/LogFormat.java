@@ -103,26 +103,12 @@ public class LogFormat {
 		return context.toString();
 	}
 
-	public void title(int flag, String msg) {
-		switch (flag) {
-		case 0:
-			SDLCall.logPrintln(msg);
-			break;
-		case 1:
-			System.err.println(msg);
-			break;
-		case 2:
-			System.out.println(msg);
-			break;
-		}
-		newLineCount++;
-	}
-
 	public void out(String msg) {
 		if (!show) {
 			return;
 		}
-		title(logType, msg);
+		SDLCall.logPrintln(msg);
+		newLineCount++;
 	}
 
 	public int getNewLineCount() {
@@ -152,8 +138,8 @@ public class LogFormat {
 				logMsg = new StringBuffer(formatString(LOG_TAG, "-", " ")).append(LSystem.LS)
 						.append(formatString(LOG_TITLE, " ", " ")).append(LSystem.LS)
 						.append(formatString(LOG_TAG, "-", " ")).append(LSystem.LS).toString();
-				title(2, logMsg);
-				title(2, formatString(values, " ", " ") + LSystem.LS);
+				out(logMsg);
+				out(formatString(values, " ", " ") + LSystem.LS);
 				newLineCount = 0;
 				return;
 			} else {
