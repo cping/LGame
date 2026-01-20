@@ -12,6 +12,14 @@
 	static int buttons;
 	static float joysticks[4];
 #endif
+	
+PlayerController players[MAX_CONTROLLERS];
+GamepadState gpStates[MAX_CONTROLLERS];
+
+static int debugMode = 0;
+static ButtonCallback buttonCallbacks[BTN_MAX] = { 0 };
+static AxisCallback axisCallbacks[AXIS_MAX] = { 0 };
+static TriggerCallback triggerCallbacks[TRIGGER_MAX] = { 0 };
 
 static const char b64_table[] =
 		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -41,6 +49,201 @@ static bool soundFinishedEvent = false;
 static bool allowExit = true;
 static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
+static int eventBuffer[MAX_EVENTS * 4]; 
+static int eventCount = 0;
+
+static float NormalizeAxis(Sint16 value) {
+	float f = value / 32767.0f;
+	return (fabsf(f) < DEADZONE) ? 0.0f : f;
+}
+
+static float NormalizeTrigger(Sint16 value) {
+	float f = value / 32767.0f;
+	return (f < TRIGGER_THRESHOLD) ? 0.0f : f;
+}
+
+static LogicalButton MapSDLButton(Uint16 vendor, SDL_GameControllerButton sdlBtn) {
+	if (vendor == 0x057E) { // Nintendo Switch
+		switch (sdlBtn) {
+		case SDL_CONTROLLER_BUTTON_A: return BTN_CANCEL;
+		case SDL_CONTROLLER_BUTTON_B: return BTN_CONFIRM;
+		case SDL_CONTROLLER_BUTTON_X: return BTN_SHOOT;
+		case SDL_CONTROLLER_BUTTON_Y: return BTN_JUMP;
+		case SDL_CONTROLLER_BUTTON_START: return BTN_MENU;
+		default: return BTN_MAX;
+		}
+	}
+	switch (sdlBtn) {
+	case SDL_CONTROLLER_BUTTON_A: return BTN_CONFIRM;
+	case SDL_CONTROLLER_BUTTON_B: return BTN_CANCEL;
+	case SDL_CONTROLLER_BUTTON_X: return BTN_JUMP;
+	case SDL_CONTROLLER_BUTTON_Y: return BTN_SHOOT;
+	case SDL_CONTROLLER_BUTTON_START: return BTN_MENU;
+	default: return BTN_MAX;
+	}
+}
+
+static LogicalAxis MapSDLAxis(SDL_GameControllerAxis sdlAxis) {
+	switch (sdlAxis) {
+	case SDL_CONTROLLER_AXIS_LEFTX: return AXIS_MOVE_X;
+	case SDL_CONTROLLER_AXIS_LEFTY: return AXIS_MOVE_Y;
+	case SDL_CONTROLLER_AXIS_RIGHTX: return AXIS_LOOK_X;
+	case SDL_CONTROLLER_AXIS_RIGHTY: return AXIS_LOOK_Y;
+	default: return AXIS_MAX;
+	}
+}
+
+static LogicalTrigger MapSDLTrigger(SDL_GameControllerAxis sdlAxis) {
+	switch (sdlAxis) {
+	case SDL_CONTROLLER_AXIS_TRIGGERLEFT: return TRIGGER_LEFT;
+	case SDL_CONTROLLER_AXIS_TRIGGERRIGHT: return TRIGGER_RIGHT;
+	default: return TRIGGER_MAX;
+	}
+}
+
+void GameController_Init(int dbg) {
+	debugMode = dbg;
+	memset(players, 0, sizeof(players));
+	memset(gpStates, 0, sizeof(gpStates));
+	for (int i = 0; i < SDL_NumJoysticks() && i < MAX_CONTROLLERS; i++) {
+		if (SDL_IsGameController(i)) {
+			players[i].controller = SDL_GameControllerOpen(i);
+			SDL_Joystick* joy = SDL_GameControllerGetJoystick(players[i].controller);
+			players[i].vendor = SDL_JoystickGetVendor(joy);
+			players[i].product = SDL_JoystickGetProduct(joy);
+			if (debugMode) {
+				printf("Player %d Link: %s (Vendor: 0x%04X, Product: 0x%04X)\n",
+					i, SDL_GameControllerName(players[i].controller),
+					players[i].vendor, players[i].product);
+			}
+		}
+	}
+}
+
+void GameController_ProcessEvent(SDL_Event* e) {
+	if (e->type == SDL_CONTROLLERBUTTONDOWN || e->type == SDL_CONTROLLERBUTTONUP) {
+		int playerIndex = e->cbutton.which;
+		if (playerIndex >= MAX_CONTROLLERS || !players[playerIndex].controller) {
+			return;
+		}
+		LogicalButton btn = MapSDLButton(players[playerIndex].vendor, e->cbutton.button);
+		if (btn < BTN_MAX) {
+			if (e->type == SDL_CONTROLLERBUTTONDOWN) {
+				players[playerIndex].buttonState[btn] = 1;
+				gpStates[playerIndex].buttons[btn] = 1;
+				players[playerIndex].buttonDownTime[btn] = SDL_GetTicks();
+				if (buttonCallbacks[btn]) {
+					buttonCallbacks[btn](playerIndex, btn, EVENT_PRESS);
+				}
+			}
+			else {
+				players[playerIndex].buttonState[btn] = 0;
+				gpStates[playerIndex].buttons[btn] = 0;
+				if (buttonCallbacks[btn]) {
+					buttonCallbacks[btn](playerIndex, btn, EVENT_RELEASE);
+				}
+			}
+		}
+	} else if (e->type == SDL_CONTROLLERAXISMOTION) {
+		int playerIndex = e->caxis.which;
+		if (playerIndex >= MAX_CONTROLLERS || !players[playerIndex].controller) {
+			return;
+		}
+		LogicalAxis axis = MapSDLAxis(e->caxis.axis);
+		LogicalTrigger trigger = MapSDLTrigger(e->caxis.axis);
+
+		if (axis < AXIS_MAX) {
+			float value = NormalizeAxis(e->caxis.value);
+			gpStates[playerIndex].axes[axis] = value;
+			if (axisCallbacks[axis]) {
+				axisCallbacks[axis](playerIndex, axis, value);
+			}
+		}
+		else if (trigger < TRIGGER_MAX) {
+			float value = NormalizeTrigger(e->caxis.value);
+			gpStates[playerIndex].triggers[trigger] = value;
+			if (triggerCallbacks[trigger]) {
+				triggerCallbacks[trigger](playerIndex, trigger, value);
+			}
+		}
+	} else if (e->type == SDL_CONTROLLERDEVICEADDED) {
+		int index = e->cdevice.which;
+		for (int i = 0; i < MAX_CONTROLLERS; i++) {
+			if (!players[i].controller && SDL_IsGameController(index)) {
+				players[i].controller = SDL_GameControllerOpen(index);
+				SDL_Joystick* joy = SDL_GameControllerGetJoystick(players[i].controller);
+				players[i].vendor = SDL_JoystickGetVendor(joy);
+				players[i].product = SDL_JoystickGetProduct(joy);
+				if (debugMode) {
+					printf("Player %d New Link : %s (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
+						players[i].vendor, players[i].product);
+				}
+				break;
+			}
+		}
+	} else if (e->type == SDL_CONTROLLERDEVICEREMOVED) {
+		SDL_JoystickID joyId = e->cdevice.which;
+		for (int i = 0; i < MAX_CONTROLLERS; i++) {
+			if (players[i].controller &&
+				SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(players[i].controller)) == joyId) {
+				SDL_GameControllerClose(players[i].controller);
+				players[i].controller = NULL;
+				memset(&gpStates[i], 0, sizeof(GamepadState));
+				if (debugMode) {
+					printf("Player %d GameController Closed\n", i);
+				}
+				break;
+			}
+		}
+	}
+	Uint32 nowTime = SDL_GetTicks();
+	for (int i = 0; i < MAX_CONTROLLERS; i++) {
+		for (int b = 0; b < BTN_MAX; b++) {
+			if (players[i].buttonState[b] && buttonCallbacks[b]) {
+				if (nowTime - players[i].buttonDownTime[b] > 500) {
+					buttonCallbacks[b](i, b, EVENT_HOLD);
+				}
+			}
+		}
+	}
+}
+
+void GameController_RegisterButtonCallback(LogicalButton btn, ButtonCallback cb) {
+	if (btn < BTN_MAX) {
+		buttonCallbacks[btn] = cb;
+	}
+}
+
+void GameController_RegisterAxisCallback(LogicalAxis axis, AxisCallback cb) {
+	if (axis < AXIS_MAX) {
+		axisCallbacks[axis] = cb;
+	}
+}
+
+void GameController_RegisterTriggerCallback(LogicalTrigger trigger, TriggerCallback cb) {
+	if (trigger < TRIGGER_MAX) {
+		triggerCallbacks[trigger] = cb;
+	}
+}
+
+void GameController_Close() {
+	for (int i = 0; i < MAX_CONTROLLERS; i++) {
+		if (players[i].controller) {
+			SDL_GameControllerClose(players[i].controller);
+			players[i].controller = NULL;
+		}
+	}
+}
+static void GamePad_PushEvent(int player, int btn, int type) {
+	if (eventCount < MAX_EVENTS) {
+		int idx = eventCount * 4;
+		eventBuffer[idx] = player;
+		eventBuffer[idx + 1] = btn;
+		eventBuffer[idx + 2] = type;
+		eventBuffer[idx + 3] = SDL_GetTicks();
+		eventCount++;
+	}
+}
 
 #if defined(_WIN32) || defined(_WIN64)
 HANDLE g_mutex = NULL;
@@ -2232,13 +2435,13 @@ int32_t Load_Axes(const int controller, float* axes)
     const PadState &pad = controller == -1 ? combinedPad : pads[controller];
 	HidAnalogStickState stickLeft = padGetStickPos(&pad, 0);
 	HidAnalogStickState stickRight = padGetStickPos(&pad, 1);
-    array[0] = (float)stickLeft.x / JOYSTICK_MAX;
-    array[1] = (float)stickLeft.y / JOYSTICK_MAX;
-    array[2] = (float)stickRight.x / JOYSTICK_MAX;
-    array[3] = (float)stickRight.y / JOYSTICK_MAX;
-    remapPadAxes(array, padGetStyleSet(&pad));
-    array[1] *= -1;
-    array[3] *= -1;
+	axes[0] = (float)stickLeft.x / JOYSTICK_MAX;
+	axes[1] = (float)stickLeft.y / JOYSTICK_MAX;
+	axes[2] = (float)stickRight.x / JOYSTICK_MAX;
+	axes[3] = (float)stickRight.y / JOYSTICK_MAX;
+    remapPadAxes(axes, padGetStyleSet(&pad));
+	axes[1] *= -1;
+	axes[3] *= -1;
 #else
     memcpy(axes, joysticks, sizeof(joysticks));
 #endif

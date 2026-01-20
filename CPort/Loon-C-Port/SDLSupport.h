@@ -9,11 +9,17 @@
     #define LOON_DESKTOP 0
 #endif
 
+#define MAX_CONTROLLERS 8
+#define DEADZONE 0.2f
+#define TRIGGER_THRESHOLD 0.05f
+#define MAX_EVENTS 1024
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <math.h>
 
 #ifdef __APPLE__
     #include <SDL2/SDL.h>
@@ -23,7 +29,7 @@
     #include <SDL_main.h>
 #endif
 
-#ifdef _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tlhelp32.h>
@@ -153,6 +159,51 @@ typedef struct {
     const char* path; 
 } FontEntry;
 
+typedef enum {
+    BTN_CONFIRM,
+    BTN_CANCEL,
+    BTN_JUMP,
+    BTN_SHOOT,
+    BTN_MENU,
+    BTN_MAX
+} LogicalButton;
+
+typedef enum {
+    AXIS_MOVE_X,
+    AXIS_MOVE_Y,
+    AXIS_LOOK_X,
+    AXIS_LOOK_Y,
+    AXIS_MAX
+} LogicalAxis;
+
+typedef enum {
+    TRIGGER_LEFT,
+    TRIGGER_RIGHT,
+    TRIGGER_MAX
+} LogicalTrigger;
+
+typedef enum {
+    EVENT_PRESS,
+    EVENT_RELEASE,
+    EVENT_HOLD
+} ButtonEventType;
+
+typedef struct {
+    float axes[AXIS_MAX];
+    float triggers[TRIGGER_MAX];
+    int buttons[BTN_MAX];
+} GamepadState;
+
+extern GamepadState gpStates[MAX_CONTROLLERS];
+
+typedef struct {
+    SDL_GameController* controller;
+    Uint16 vendor;
+    Uint16 product;
+    Uint32 buttonDownTime[BTN_MAX];
+    int buttonState[BTN_MAX];
+} PlayerController;
+
 static const PlatformResolution platformResTable[] = {
     {"Nintendo Switch", 1280, 720},
     {"Nintendo Switch OLED",1280, 720},
@@ -216,6 +267,40 @@ static inline int utf8_decode_codepoint(const char *text, int *out_cp) {
     }
     *out_cp = c;
     return 1;
+}
+
+uint32_t inline utf8_to_codepoint_full(const char* utf8, int* bytes) {
+    const unsigned char* s = (const unsigned char*)utf8;
+    uint32_t cp;
+    *bytes = 0;
+    if (s[0] < 0x80) { 
+        *bytes = 1;
+        return s[0];
+    }
+    else if ((s[0] & 0xE0) == 0xC0) {
+        if ((s[1] & 0xC0) != 0x80) goto error;
+        cp = ((s[0] & 0x1F) << 6) | (s[1] & 0x3F);
+        if (cp < 0x80) goto error; 
+        *bytes = 2;
+        return cp;
+    }
+    else if ((s[0] & 0xF0) == 0xE0) {
+        if ((s[1] & 0xC0) != 0x80 || (s[2] & 0xC0) != 0x80) goto error;
+        cp = ((s[0] & 0x0F) << 12) | ((s[1] & 0x3F) << 6) | (s[2] & 0x3F);
+        if (cp < 0x800 || (cp >= 0xD800 && cp <= 0xDFFF)) goto error;
+        *bytes = 3;
+        return cp;
+    }
+    else if ((s[0] & 0xF8) == 0xF0) { 
+        if ((s[1] & 0xC0) != 0x80 || (s[2] & 0xC0) != 0x80 || (s[3] & 0xC0) != 0x80) goto error;
+        cp = ((s[0] & 0x07) << 18) | ((s[1] & 0x3F) << 12) | ((s[2] & 0x3F) << 6) | (s[3] & 0x3F);
+        if (cp < 0x10000 || cp > 0x10FFFF) goto error; 
+        *bytes = 4;
+        return cp;
+    }
+error:
+    *bytes = 1;
+    return 0xFFFD; 
 }
 
 static inline uint32_t utf8_decode(const char** s) {
@@ -564,8 +649,8 @@ static inline bool is_symbol(uint32_t ch) {
     return is_halfwidth_symbol(ch) || is_fullwidth_symbol(ch);
 }
 
-static inline int fix_font_char_size(uint32_t ch,float fontSize,int size) {
-    float newSize = size;
+static inline int fix_font_char_size(const uint32_t ch, float fontSize, int size) {
+    int newSize = size;
     if (is_cjk(ch)) {
         return newSize + 1;
     }
@@ -573,9 +658,7 @@ static inline int fix_font_char_size(uint32_t ch,float fontSize,int size) {
       return newSize += 2;
     } else if (is_lowercase(ch)) {
         return newSize += 1;
-    } else if (is_uppercase(ch)) {
-        return newSize += 2;
-    } else if (is_other_char(ch)) {
+    }  else if (is_other_char(ch)) {
         return newSize += 2;
     } else if (is_symbol(ch)) {
         return newSize += 1;
@@ -641,6 +724,10 @@ static inline void replace_pixels(uint32_t* pixels, size_t length, uint32_t targ
         pixels++;
     }
 }
+
+typedef void (*ButtonCallback)(int playerIndex, LogicalButton btn, ButtonEventType type);
+typedef void (*AxisCallback)(int playerIndex, LogicalAxis axis, float value);
+typedef void (*TriggerCallback)(int playerIndex, LogicalTrigger trigger, float value);
 
 void ImportSDLInclude();
 

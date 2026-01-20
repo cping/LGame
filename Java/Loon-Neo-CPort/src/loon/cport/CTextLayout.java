@@ -77,10 +77,11 @@ public class CTextLayout extends loon.font.TextLayout {
 		if (fontCache == null) {
 			final String ext = PathUtils.getExtension(fontName).trim().toLowerCase();
 			if ("ttf".equals(ext) || !StringUtils.isEmpty(ext)) {
-				fontCache = STBFontCache.create(fontName);
+				fontCache = STBFontCache.create(fontName, PathUtils.getBaseFileName(fontName),
+						STYLE_TO_STBFONT[loonFont.style.ordinal()]);
 			} else {
 				String sysFontName = fontName;
-				if ("dialog".equalsIgnoreCase(fontName)) {
+				if ("dialog".equalsIgnoreCase(fontName) || "default".equalsIgnoreCase(fontName)) {
 					sysFontName = "黑体";
 				}
 				fontCache = STBFontCache.createSystemFont(sysFontName, fontName + ".ttf", sysFontName,

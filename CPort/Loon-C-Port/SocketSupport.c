@@ -1,4 +1,4 @@
-#include "SocketSupport.h"
+﻿#include "SocketSupport.h"
 #define BUFFER_SIZE 1024
 
 static inline void close_socket(int sock) {
@@ -71,7 +71,7 @@ int get_remote_file_size_socket(const char* url, int64_t* size) {
 #endif
         return -5;
     }
-    if (connect(sock, res->ai_addr, res->ai_addrlen) != 0) {
+    if (connect(sock, res->ai_addr, (int)res->ai_addrlen) != 0) {
         close_socket(sock);
         freeaddrinfo(res);
 #ifdef _WIN32
@@ -86,7 +86,7 @@ int get_remote_file_size_socket(const char* url, int64_t* size) {
         "Host: %s\r\n"
         "Connection: close\r\n\r\n",
         path, host);
-    if (send(sock, request, strlen(request), 0) < 0) {
+    if (send(sock, request, (int)strlen(request), 0) < 0) {
         close_socket(sock);
 #ifdef _WIN32
         WSACleanup();
