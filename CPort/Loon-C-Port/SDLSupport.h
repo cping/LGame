@@ -2,7 +2,7 @@
 #ifndef LOON_SDL
 #define LOON_SDL
 
-#if defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__linux__) || defined(__unix__) || \
+#if defined(_PURE_SDL) || defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__linux__) || defined(__unix__) || \
     defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
     #define LOON_DESKTOP 1
 #else
@@ -20,14 +20,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <math.h>
-
-#ifdef __APPLE__
-    #include <SDL2/SDL.h>
-    #include <SDL2/SDL_main.h>
-#else
-    #include <SDL.h>
-    #include <SDL_main.h>
-#endif
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
@@ -58,32 +50,61 @@ static void run_sleep_ms(int ms) {
     nanosleep(&ts, NULL);
 }
 #endif
+#ifdef __APPLE__
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_main.h>
+    #include <SDL2/SDL_gamecontroller.h>
+#else
+    #include <SDL.h>
+    #include <SDL_main.h>
+    #include <SDL_gamecontroller.h>
+#endif
+#include "SDL_mixer.h"
 
 #ifdef IN_IDE_PARSER
 #define GL_GLEXT_PROTOTYPES
 #include "GL/gl.h"
 #else
     #ifdef GLEW
-      #include "GL/glew.h"
-    #elif !defined(LOON_DESKTOP)
-        #ifdef __SWITCH__
-            #include <switch.h>
-        #elif defined(__ORBIS__) || defined(__PROSPERO__) 
-           //?
-        #elif defined(_XBOX)
-            #include <xgame.h>
-        #endif
-        #include <EGL/egl.h>
-        #include <EGL/eglext.h>
-        #include <glad/glad.h>
-        #include <sys/errno.h>
-    #else
+        #include "GL/glew.h"
+    #elif defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__MACH__) || defined(__linux__) || defined(__unix__)
         #include "glad/gles2.h"
-#endif
+    #else
+        #include "glad/glad.h"
+    #endif
 #endif
 
-#include "SDL_mixer.h"
-#include <SDL_gamecontroller.h>
+#if defined(__SWITCH__)
+    #include <switch.h>
+    #include <EGL/egl.h>
+    #include <EGL/eglext.h>
+    #include <sys/errno.h>
+#elif defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+    #include <xdk.h>
+#elif defined(__ANDROID__)
+    #include <jni.h>
+    #include <android/log.h>
+#elif defined(__APPLE__)
+    #include "TargetConditionals.h"
+    #if TARGET_OS_IPHONE
+        #include <UIKit/UIKit.h>
+        #include <AVFoundation/AVFoundation.h>
+    #endif
+#elif defined(STEAM_DECK) || defined(__STEAMOS__)
+    #include "steam/steam_api.h"
+#elif defined(__3DS__)
+    #include <3ds.h>
+#elif defined(__PSV__)
+    #include <psp2/kernel/processmgr.h>
+    #include <psp2/io/fcntl.h>
+#elif defined(__ORBIS__) || defined(__PROSPERO__) 
+    #include <orbis/SystemService.h>
+    #include <orbis/UserService.h>
+#elif defined(__PSP__)
+    #include <pspkernel.h>
+    #include <pspdebug.h>
+    #include <pspctrl.h>
+#endif
 
 #ifdef __WINRT__
 #include "winrt/base.h"
@@ -108,6 +129,7 @@ extern "C" {
 #define MAX_GAMESAVE_PATH_CAHR_LEN 256
 #define MAX_GAMESAVE_FILE_LIST 1024
 #define MAX_CHUNK_SIZE 8192
+#define MAX_TOUCH_DEVICES 16
 
 typedef enum {
         LAYOUT_HORIZONTAL, 
@@ -203,6 +225,12 @@ typedef struct {
     Uint32 buttonDownTime[BTN_MAX];
     int buttonState[BTN_MAX];
 } PlayerController;
+
+typedef struct {
+    SDL_TouchID* ids;
+    int count;
+    int capacity;
+} TouchIdMap;
 
 static const PlatformResolution platformResTable[] = {
     {"Nintendo Switch", 1280, 720},

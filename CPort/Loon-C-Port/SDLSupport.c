@@ -29,6 +29,8 @@ static game_filesystem* gamefilesys = NULL;
 static int g_loopCount = 0;
 static int g_windowSize[2];
 static int g_screenSize[2];
+static int g_initWidth = 0;
+static int g_initHeight = 0;
 static bool g_isLooping = false;
 static bool g_isPause = false;
 static int g_keyStates[SDL_NUM_SCANCODES] = { 0 };
@@ -37,6 +39,8 @@ static int g_releasedKeys[SDL_NUM_SCANCODES] = { 0 };
 static int g_lastPressedScancode = -1;
 static int console_status = 0;
 static game_music* g_currentMusic = NULL;
+static TouchIdMap g_touchMap = { NULL, 0, 0 };
+static int g_touches[MAX_TOUCH_DEVICES * 3];
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
 static const int audio_channels = MIX_DEFAULT_CHANNELS;
@@ -47,10 +51,42 @@ static cache_surface* _temp_surface = NULL;
 static bool musicFinishedEvent = false;
 static bool soundFinishedEvent = false;
 static bool allowExit = true;
-static int touches[16 * 3];
 static char curr_dir[MAX_PATH];
 static int eventBuffer[MAX_EVENTS * 4]; 
 static int eventCount = 0;
+
+void SDL_InitTouchIdMap() {
+	g_touchMap.ids = NULL;
+	g_touchMap.count = 0;
+	g_touchMap.capacity = 0;
+}
+
+void SDL_FreeTouchIdMap() {
+	free(g_touchMap.ids);
+	g_touchMap.ids = NULL;
+	g_touchMap.count = 0;
+	g_touchMap.capacity = 0;
+}
+
+int SDL_ConvertMapTouchIdToIndex(SDL_TouchID touchId) {
+	for (int i = 0; i < g_touchMap.count; i++) {
+		if (g_touchMap.ids[i] == touchId) {
+			return i;
+		}
+	}
+	if (g_touchMap.count >= g_touchMap.capacity) {
+		int newCapacity = (g_touchMap.capacity == 0) ? 4 : g_touchMap.capacity * 2;
+		SDL_TouchID* newIds = realloc(g_touchMap.ids, newCapacity * sizeof(SDL_TouchID));
+		if (!newIds) {
+			return -1;
+		}
+		g_touchMap.ids = newIds;
+		g_touchMap.capacity = newCapacity;
+	}
+	g_touchMap.ids[g_touchMap.count] = touchId;
+	return g_touchMap.count++;
+}
+
 
 static float NormalizeAxis(Sint16 value) {
 	float f = value / 32767.0f;
@@ -234,6 +270,7 @@ void GameController_Close() {
 		}
 	}
 }
+
 static void GamePad_PushEvent(int player, int btn, int type) {
 	if (eventCount < MAX_EVENTS) {
 		int idx = eventCount * 4;
@@ -242,6 +279,302 @@ static void GamePad_PushEvent(int player, int btn, int type) {
 		eventBuffer[idx + 2] = type;
 		eventBuffer[idx + 3] = SDL_GetTicks();
 		eventCount++;
+	}
+}
+
+// load and exit
+// 初始化SDL前需要预加载，以及离开SDL前需要释放的平台函数在此调用
+static int init_switch() {
+	#if defined(__SWITCH__)
+	    socketInitializeDefault();
+		nxlinkStdio();
+		romfsInit();
+		padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_switch() {
+	#if defined(__SWITCH__)
+		romfsExit();
+		socketExit();
+	#endif
+}
+
+static int init_3ds() {
+	#if defined(__3DS__)
+		gfxInitDefault();
+		hidInit();
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_3ds() {
+	#if defined(__3DS__)
+		hidExit();
+		gfxExit();
+	#endif
+}
+
+static int init_psp() {
+	#if defined(__PSP__)
+		pspDebugScreenInit();
+		sceCtrlSetSamplingCycle(0);
+		sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_psp() 
+{
+}
+
+static int init_psv() {
+	#if defined(__PSV__)
+		sceIoInit();
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_psv() 
+{
+}
+
+static int init_ps4_ps5() {
+	#if defined(__ORBIS__) || defined(__PROSPERO__)
+		sceSystemServiceInitialize();
+		sceUserServiceInitialize(NULL);
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_ps4_ps5() {
+	#if defined(__ORBIS__) || defined(__PROSPERO__)
+		sceUserServiceTerminate();
+		sceSystemServiceTerminate();
+	#endif
+}
+
+static int init_luna() {
+	#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
+		if (!SteamAPI_Init()) return -1;
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_luna() {
+	#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
+		SteamAPI_Shutdown();
+	#endif
+}
+
+static int init_xbox() {
+	#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+		if (XGameRuntimeInitialize() != S_OK) {
+			return -1;
+		}
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_xbox() {
+	#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+		XGameRuntimeUninitialize();
+	#endif
+}
+
+static int init_steam_linux() {
+	#if defined(__linux__)
+		if (!SteamAPI_Init()) return -1;
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_steam_linux() {
+	#if defined(__linux__)
+		SteamAPI_Shutdown();
+	#endif
+}
+
+static int init_bsd() {
+	#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+		return 0; 
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_bsd() 
+{
+}
+
+static int init_android() {
+	#if defined(__ANDROID__)
+		__android_log_print(ANDROID_LOG_INFO, "SDL Running", "Android pre-init done");
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_android() 
+{
+}
+
+static int init_ios() {
+	#if defined(__APPLE__) && TARGET_OS_IPHONE
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_ios() 
+{
+}
+
+static int init_macos() {
+	#if defined(__APPLE__) && !TARGET_OS_IPHONE
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_macos() 
+{
+}
+
+static int init_linux() {
+	#if defined(__linux__)
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_linux() 
+{
+}
+
+static int init_web() {
+	#if defined(__EMSCRIPTEN__)
+		printf("INFO: Initializing WebAssembly (Emscripten)...\n");
+		return 0;
+	#else
+		return -1;
+	#endif
+}
+
+static void quit_web() 
+{
+}
+
+static int init_windows() {
+		return 0;
+}
+
+static void quit_windows() {
+}
+
+static int SDL_platform_pre_init(bool debug) {
+	const char* platform = SDL_GetPlatform();
+	if (debug) {
+		printf("INFO: SDL_GetPlatform() detected: %s\n", platform);
+	}
+	if (strcmp(platform, "Nintendo Switch") == 0) return init_switch();
+	if (strcmp(platform, "Xbox") == 0) return init_xbox();
+	if (strcmp(platform, "Steam") == 0) return init_steam_linux();
+	if (strcmp(platform, "Windows") == 0) return init_windows();
+	if (strcmp(platform, "Linux") == 0) return init_linux();
+	if (strcmp(platform, "Android") == 0) return init_android();
+	if (strcmp(platform, "iOS") == 0) return init_ios();
+	if (strcmp(platform, "Mac OS X") == 0) return init_macos();
+	if (strcmp(platform, "Nintendo 3DS") == 0) return init_3ds();
+	if (strcmp(platform, "PSVita") == 0) return init_psv();
+	if (strcmp(platform, "PS4") == 0 || strcmp(platform, "PS5") == 0) return init_ps4_ps5();
+	if (strcmp(platform, "Luna") == 0) return init_luna();
+	if (strcmp(platform, "PSP") == 0) return init_psp();
+	if (strcmp(platform, "FreeBSD") == 0 || strcmp(platform, "OpenBSD") == 0 || strcmp(platform, "NetBSD") == 0) return init_bsd();
+	if (strcmp(platform, "Emscripten") == 0) return init_web();
+	if (debug) {
+		printf("WARN: Unknown platform, no pre-init performed.\n");
+	}
+	return 0;
+}
+
+static void SDL_platform_free_quit() {
+	const char* platform = SDL_GetPlatform();
+	if (strcmp(platform, "Nintendo Switch") == 0) { quit_switch(); return; }
+	if (strcmp(platform, "Xbox") == 0) { quit_xbox(); return; }
+	if (strcmp(platform, "Steam") == 0) { quit_steam_linux(); return; }
+	if (strcmp(platform, "Windows") == 0) { quit_windows(); return; }
+	if (strcmp(platform, "Linux") == 0) return quit_linux();
+	if (strcmp(platform, "Android") == 0) { quit_android(); return; }
+	if (strcmp(platform, "iOS") == 0) { quit_ios(); return; }
+	if (strcmp(platform, "Mac OS X") == 0) { quit_macos(); return; }
+	if (strcmp(platform, "Nintendo 3DS") == 0) { quit_3ds(); return; }
+	if (strcmp(platform, "PSVita") == 0) { quit_psv(); return; }
+	if (strcmp(platform, "PS4") == 0 || strcmp(platform, "PS5") == 0) { quit_ps4_ps5(); return; }
+	if (strcmp(platform, "Luna") == 0) { quit_luna(); return; }
+	if (strcmp(platform, "PSP") == 0) { quit_psp(); return; }
+	if (strcmp(platform, "FreeBSD") == 0 || strcmp(platform, "OpenBSD") == 0 || strcmp(platform, "NetBSD") == 0) { quit_bsd(); return; }
+	if (strcmp(platform, "Emscripten") == 0) { quit_web(); return; }
+}
+
+static int SDL_check_required_conditions() {
+	printf("INFO: Checking required runtime conditions...\n");
+	if (SDL_GetNumVideoDrivers() <= 0) {
+		return -1;
+	}
+	int num_render_drivers = SDL_GetNumRenderDrivers();
+	if (num_render_drivers <= 0) return -1;
+	if (SDL_GetNumAudioDrivers() <= 0) {
+		return -1;
+	}
+	char* base_path = SDL_GetBasePath();
+	if (!base_path) {
+		return -1;
+	}
+	SDL_free(base_path);
+	char* pref_path = SDL_GetPrefPath("TestCompany", "TestGame");
+	if (!pref_path) {
+		return -1;
+	}
+	SDL_free(pref_path);
+	SDL_Locale* locales = SDL_GetPreferredLocales();
+	if (locales) {
+		SDL_free(locales);
+	}
+	printf("INFO: All required runtime conditions passed.\n");
+	return 0;
+}
+
+static void SDL_pre_init(bool debug) {
+	if (debug) {
+		printf("INFO: Starting SDL Pre Initialization...\n");
+	}
+	if (SDL_platform_pre_init(debug) != 0) {
+		if (debug) {
+			fprintf(stderr, "ERROR: SDL Pre Initialization failed.\n");
+		}
+		return -1;
 	}
 }
 
@@ -376,7 +709,9 @@ bool ISDebugStatus(){
 }
 
 void LOG_Println(const char* mes){	
-	printf("%s\n", mes);
+	if (mes && strlen(mes) > 0) {
+		printf("%s\n", mes);
+	}
 }
 
 void SDL_AllowExit(bool a){
@@ -1375,14 +1710,17 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SetConsoleOutputCP(65001);
 	SetConsoleCP(65001);
 	console_status = is_debug_console();
-	for (int i = 0; i < 16; i++) {
-		touches[i * 3] = -1;
+	for (int i = 0; i < MAX_TOUCH_DEVICES; i++) {
+		g_touches[i * 3] = -1;
 	}
 	for (int i = 0; i < SDL_NUM_SCANCODES; i++) {
 		g_keyStates[i] = -1;
 		g_pressedKeys[i] = -1;
 		g_releasedKeys[i] = -1;
 	}
+	g_initWidth = w;
+	g_initHeight = h;
+	SDL_InitTouchIdMap();
 #ifndef LOON_DESKTOP
 	padConfigureInput(8, HidNpadStyleSet_NpadStandard);
 	padInitializeAny(&combinedPad);
@@ -1427,7 +1765,19 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	gladLoadGL();
 	SDL_Init(SDL_INIT_AUDIO);
 #else
+	SDL_pre_init(debug);
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
+	if (SDL_check_required_conditions() != 0) {
+		if (debug) {
+			fprintf(stderr, "ERROR: Required runtime conditions not met.\n");
+		}
+		SDL_Quit();
+		SDL_platform_free_quit();
+		return -1;
+	}
+	if (debug) {
+		printf("INFO: SDL initialized successfully.\n");
+	}
 	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 #ifdef __WINRT__
 	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
@@ -1441,7 +1791,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
+	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags == 0 ? SDL_WINDOW_OPENGL : SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
     if (!window) {
         printf("Window creation failed: %s\n", SDL_GetError());
         return -1;
@@ -1498,6 +1848,20 @@ int64_t Load_SDL_WindowHandle() {
 	return (intptr_t)window;
 }
 
+static void udate_init_window_size() {
+	int winWidth = 0, winHeight = 0;
+	SDL_GetWindowSize(window, &winWidth, &winHeight);
+	g_windowSize[0] = winWidth;
+	g_windowSize[1] = winHeight;
+	g_initWidth = winWidth;
+	g_initHeight = winHeight;
+	if (g_initWidth == 0 || g_initHeight == 0) {
+		SDL_GL_GetDrawableSize(window, &winWidth, &winHeight);
+		g_initWidth = winWidth;
+		g_initHeight = winHeight;
+	}
+}
+
 bool Load_SDL_Update() {
 #ifndef LOON_DESKTOP
 	padUpdate(&combinedPad);
@@ -1510,16 +1874,16 @@ bool Load_SDL_Update() {
 	}
 	HidTouchScreenState touchState;
 	if (hidGetTouchScreenStates(&touchState, 1)) {
-		for (int i = 0; i < 16; i++)
+		for (int i = 0; i < MAX_TOUCH_DEVICES; i++)
 			if (i < touchState.count) {
-				touches[i * 3 + 0] = touchState.touches[i].finger_id;
-				touches[i * 3 + 1] = touchState.touches[i].x;
-				touches[i * 3 + 2] = touchState.touches[i].y;
+				g_touches[i * 3 + 0] = touchState.g_touches[i].finger_id;
+				g_touches[i * 3 + 1] = touchState.g_touches[i].x;
+				g_touches[i * 3 + 2] = touchState.g_touches[i].y;
 			}
 			else {
-				touches[i * 3 + 0] = -1;
-				touches[i * 3 + 1] = 0;
-				touches[i * 3 + 2] = 0;
+				g_touches[i * 3 + 0] = -1;
+				g_touches[i * 3 + 1] = 0;
+				g_touches[i * 3 + 2] = 0;
 			}
 	}
 	eglSwapBuffers(display, eglsurface);
@@ -1529,7 +1893,13 @@ bool Load_SDL_Update() {
 	  memset(g_releasedKeys, 0, sizeof(g_releasedKeys));
       int running = 1;
 	  SDL_Event event;
-	  int axis;
+	  int axis = 0;
+	  int touchId = -1;
+	  int touchX = 0;
+	  int touchY = 0;
+	  if (g_initWidth == 0 || g_initHeight == 0) {
+		  udate_init_window_size();
+	  }
 	  while (SDL_PollEvent(&event)) {
 		  tempPolleventType = event.type;
 		  switch (tempPolleventType) {
@@ -1547,23 +1917,53 @@ bool Load_SDL_Update() {
 			  }
 			  if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
 				  event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-				  int winWidth = 0, winHeight = 0;
-				  SDL_GetWindowSize(window, &winWidth, &winHeight);
-				  g_windowSize[0] = winWidth;
-				  g_windowSize[1] = winHeight;
+				  udate_init_window_size();
 			  }
 			  break;
 		  case SDL_MOUSEMOTION:
-			  touches[1] = event.motion.x;
-			  touches[2] = event.motion.y;
+			  g_touches[1] = event.motion.x;
+			  g_touches[2] = event.motion.y;
 			  break;
 		  case SDL_MOUSEBUTTONDOWN:
-			  touches[0] = 0;
-			  touches[1] = event.button.x;
-			  touches[2] = event.button.y;
+			  g_touches[0] = 0;
+			  g_touches[1] = event.button.x;
+			  g_touches[2] = event.button.y;
 			  break;
 		  case SDL_MOUSEBUTTONUP:
-			  touches[0] = -1;
+			  g_touches[0] = -1;
+			  g_touches[1] = event.button.x;
+			  g_touches[2] = event.button.y;
+			  break;
+		  case SDL_FINGERMOTION:
+			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				  g_touches[touchId * 3] = touchId;
+				  g_touches[touchId * 3 + 1] = touchX;
+				  g_touches[touchId * 3 + 2] = touchY;
+			  }
+			  break;
+		  case SDL_FINGERDOWN:
+			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				  g_touches[touchId * 3] = touchId;
+				  g_touches[touchId * 3 + 1] = touchX;
+				  g_touches[touchId * 3 + 2] = touchY;
+			  }
+			  break;
+		  case SDL_FINGERUP:
+		  case SDL_MULTIGESTURE:
+			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				  g_touches[touchId * 3] = -1;
+				  g_touches[touchId * 3 + 1] = touchX;
+				  g_touches[touchId * 3 + 2] = touchY;
+			  }
 			  break;
 		  case SDL_KEYDOWN:
 			  //分开存储键盘和游戏手柄事件，避免混淆
@@ -1593,8 +1993,13 @@ bool Load_SDL_Update() {
 			  buttons &= ~mapButtonSDL(event.cbutton.button);
 			  break;
 		  case SDL_CONTROLLERAXISMOTION:
-			  if (event.caxis.axis >= 0 && event.caxis.axis < 4)
-				  joysticks[event.caxis.axis] = (float)event.caxis.value / 32768.f;
+			  if (event.caxis.axis >= 0 && event.caxis.axis < 4) {
+				  float normValue = (float)event.caxis.value / 32767.0f;
+				  if (fabsf(normValue) < 0.0f) {
+					  normValue = 0.0f;
+				  }
+				  joysticks[event.caxis.axis] = normValue;
+			  }
 			  for (int i = 0; i < 2; i++)
 				  if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT + i) {
 					  if (event.caxis.value > 512)
@@ -1865,8 +2270,8 @@ bool Load_SDL_Exit(const int run) {
 
 int32_t Load_SDL_TouchData(int32_t* data)
 {
-	size_t len = sizeof(touches);
-	memcpy((void*)data, touches, len);
+	size_t len = sizeof(g_touches);
+	memcpy((void*)data, g_touches, len);
 	return (int32_t)len;
 }
 
@@ -3480,6 +3885,7 @@ void Load_SDL_Quit()
     Mix_HaltMusic();
     Mix_HaltChannel(-1);
 	Mix_CloseAudio();
+	SDL_FreeTouchIdMap();
 	Call_SDL_DestroyWindow();
     int numJoysticks = SDL_NumJoysticks();
     for (int i = 0; i < numJoysticks; i++) {
@@ -3497,6 +3903,7 @@ void Load_SDL_Quit()
     }
 	Mix_Quit();
     SDL_Quit();
+	SDL_platform_free_quit();
 }
 
 bool Load_SDL_QuitRequested()

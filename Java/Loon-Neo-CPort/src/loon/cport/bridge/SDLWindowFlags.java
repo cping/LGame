@@ -52,8 +52,15 @@ public final class SDLWindowFlags {
 
 	private boolean _isFullDesktp;
 
+	private boolean _isOnlyOpenGL;
+
 	public SDLWindowFlags() {
 
+	}
+
+	public SDLWindowFlags onlyOpenGL() {
+		_isOnlyOpenGL = true;
+		return this;
 	}
 
 	public SDLWindowFlags show() {
@@ -127,6 +134,9 @@ public final class SDLWindowFlags {
 	}
 
 	public int getValue() {
+		if (_isOnlyOpenGL) {
+			return 0;
+		}
 		_defaultType = Shown;
 		if (!_isShow) {
 			_defaultType |= Hidden;

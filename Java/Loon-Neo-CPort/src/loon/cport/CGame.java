@@ -86,6 +86,8 @@ public final class CGame extends LGame {
 
 		public boolean powerOfTwoTexture = false;
 
+		public boolean onlyOpenGL = false;
+
 		public int qualityModel = QUALITY_HIGH;
 
 		public String iconPath = null;
@@ -180,6 +182,10 @@ public final class CGame extends LGame {
 	}
 
 	private void setWindowFlags(CSetting config) {
+		if (config.onlyOpenGL) {
+			_flags.onlyOpenGL();
+			return;
+		}
 		if (config.resizable) {
 			_flags.resize();
 		}

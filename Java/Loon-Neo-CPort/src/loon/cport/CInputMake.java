@@ -107,7 +107,7 @@ public class CInputMake extends InputMake {
 						_touchY[j] = _touchData[i * 3 + 2];
 						_touched[j] = true;
 						_rawTouchIds[j] = rawIndex;
-						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], j,
+						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], rawIndex,
 								TouchMake.Event.Kind.START, _currentEventTimeStamp));
 						break;
 					}
@@ -121,7 +121,7 @@ public class CInputMake extends InputMake {
 						_deltaY[j] = _touchData[i * 3 + 2] - _touchY[j];
 						_touchX[j] = _touchData[i * 3 + 1];
 						_touchY[j] = _touchData[i * 3 + 2];
-						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], j,
+						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], rawIndex,
 								TouchMake.Event.Kind.MOVE, _currentEventTimeStamp));
 						break;
 					}
@@ -150,7 +150,7 @@ public class CInputMake extends InputMake {
 						_deltaY[j] = 0;
 						_touched[j] = false;
 						_rawTouchIds[j] = -1;
-						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], j,
+						_touchs.add(new CTouch(_touchData[i * 3 + 1], _touchData[i * 3 + 2], -1,
 								TouchMake.Event.Kind.END, _currentEventTimeStamp));
 						break;
 					}
@@ -162,7 +162,7 @@ public class CInputMake extends InputMake {
 			postTouchEvents(_touchs, true);
 		}
 		System.arraycopy(_touchData, 0, _previousTouchData, 0, DEF_MAX_TOUCHES * 3);
-		
+
 		final int keyPressedLen = SDLCall.getPressedKeys(_keyData);
 		_lastKeyPressed = SDLCall.getLastPressedScancode();
 		for (int key = 0; key < keyPressedLen; key++) {
