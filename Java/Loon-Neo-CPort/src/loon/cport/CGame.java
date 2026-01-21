@@ -424,7 +424,7 @@ public final class CGame extends LGame {
 
 	@Override
 	public void openURL(String url) {
-
+		SDLCall.openURL(url);
 	}
 
 	@Override

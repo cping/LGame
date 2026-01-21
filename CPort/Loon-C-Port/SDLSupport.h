@@ -804,6 +804,8 @@ char* GetSystemProperty(const char* key);
 
 bool FileExists(const char* filename);
 
+int Load_SDL_OpenURL(const char* url);
+
 const char* Load_SDL_RW_FileToChars(const char* filename);
 
 int64_t Load_SDL_RW_FileSize(const char* filename);

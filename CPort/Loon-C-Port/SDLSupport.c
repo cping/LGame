@@ -55,6 +55,51 @@ static char curr_dir[MAX_PATH];
 static int eventBuffer[MAX_EVENTS * 4]; 
 static int eventCount = 0;
 
+static int is_valid_url(const char* url) {
+	if (!url) return 0;
+	return (strncmp(url, "http://", 7) == 0 || strncmp(url, "https://", 8) == 0);
+}
+
+static int safe_system_open(const char* cmd, const char* url) {
+	char buf[1024];
+	if (snprintf(buf, sizeof(buf), "%s \"%s\"", cmd, url) >= (int)sizeof(buf)) {
+		SDL_Log("openURL: URL too long");
+		return -1;
+	}
+	return system(buf) == 0 ? 0 : -1;
+}
+
+int Load_SDL_OpenURL(const char* url) {
+	if (!is_valid_url(url)) {
+		SDL_Log("openURL: Invalid or unsupported URL format: %s", url ? url : "(null)");
+		return -1;
+	}
+	#if SDL_VERSION_ATLEAST(2,0,14)
+		if (SDL_OpenURL(url) == 0) {
+			return 0;
+		}
+	#endif
+    #if defined(_WIN32) || defined(_WIN64)
+	if ((intptr_t)ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) > 32) {
+		return 0;
+	}
+    #elif defined(__APPLE__)
+	if (safe_system_open("open", url) == 0) {
+		return 0;
+	}
+    #elif defined(__linux__)
+	if (safe_system_open("xdg-open", url) == 0) {
+		return 0;
+	}
+    #else
+		if (SDL_OpenURL(url) == 0) {
+			return 0;
+		}
+    #endif
+	SDL_Log("openURL: Failed to open URL on this platform");
+	return -1;
+}
+
 void SDL_InitTouchIdMap() {
 	g_touchMap.ids = NULL;
 	g_touchMap.count = 0;
@@ -1766,6 +1811,12 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_Init(SDL_INIT_AUDIO);
 #else
 	SDL_pre_init(debug);
+	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
+	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+	#ifdef __WINRT__
+		SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
+	#endif
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
 	if (SDL_check_required_conditions() != 0) {
 		if (debug) {
@@ -1778,10 +1829,6 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	if (debug) {
 		printf("INFO: SDL initialized successfully.\n");
 	}
-	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-#ifdef __WINRT__
-	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
-#endif
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);

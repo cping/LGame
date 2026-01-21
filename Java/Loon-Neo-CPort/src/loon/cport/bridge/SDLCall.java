@@ -139,6 +139,9 @@ public final class SDLCall {
 	@Import(name = "FileExists")
 	public final static native boolean fileExists(String fileName);
 
+	@Import(name = "Load_SDL_OpenURL")
+	public final static native int openURL(String url);
+
 	@Import(name = "Load_SDL_RW_FileExists")
 	public final static native boolean rwFileExists(String fileName);
 
