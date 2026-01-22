@@ -26,6 +26,7 @@ import java.util.List;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
+import loon.cport.bridge.STBCall;
 import loon.cport.bridge.STBFont;
 import loon.cport.bridge.STBFont.VMetric;
 import loon.cport.bridge.STBFontCache;
@@ -40,6 +41,24 @@ import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 
 public class CTextLayout extends loon.font.TextLayout {
+
+	protected static void inputDialog(STBFont font, int dialogType, int width, int height, String title, String text,
+			String textA, String textB) {
+		if (font != null && !font.isClosed()) {
+			STBCall.inputDialog(font.getHandle(), dialogType, width, height, title, text, textA, textB);
+		} else {
+			STBCall.inputDialog(0, dialogType, width, height, title, text, textA, textB);
+		}
+	}
+
+	protected static void inputDialog(int dialogType, int width, int height, String title, String text, String textA,
+			String textB) {
+		if (_fontPools.size() > 0) {
+			inputDialog(_fontPools.values().next(), dialogType, width, height, title, text, textA, textB);
+		} else {
+			STBCall.inputDialog(0, dialogType, width, height, title, text, textA, textB);
+		}
+	}
 
 	private final static int MAX_FIX_FONT = 20;
 

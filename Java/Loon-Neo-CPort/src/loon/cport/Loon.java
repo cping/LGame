@@ -29,6 +29,7 @@ import loon.cport.CGame.CSetting;
 import loon.events.KeyMake.TextType;
 import loon.events.SysInput.ClickEvent;
 import loon.events.SysInput.TextEvent;
+import loon.utils.MathUtils;
 
 public class Loon implements Platform {
 
@@ -93,12 +94,14 @@ public class Loon implements Platform {
 
 	@Override
 	public void sysText(TextEvent event, TextType textType, String label, String initialValue) {
-
+		CTextLayout.inputDialog(1, getContainerWidth() / 2, MathUtils.iceil(getContainerHeight() / 2.5f), label,
+				initialValue, "Ok", "Cancel");
 	}
 
 	@Override
 	public void sysDialog(ClickEvent event, String title, String text, String ok, String cancel) {
-
+		CTextLayout.inputDialog(0, getContainerWidth() / 2, MathUtils.iceil(getContainerHeight() / 2.5f), title, text,
+				ok, cancel);
 	}
 
 }

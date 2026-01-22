@@ -25,6 +25,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <tlhelp32.h>
+#include <shellapi.h>
 #include <shlobj.h>
 #include <winbase.h>
 #include <VersionHelpers.h>
@@ -130,6 +131,7 @@ extern "C" {
 #define MAX_GAMESAVE_FILE_LIST 1024
 #define MAX_CHUNK_SIZE 8192
 #define MAX_TOUCH_DEVICES 16
+#define MAX_TEXTINPUT_CAHR_LEN 32
 
 typedef enum {
         LAYOUT_HORIZONTAL, 
@@ -468,7 +470,7 @@ static inline char* chars_strchr(const char* str, int ch, size_t maxlen) {
     return NULL;
 }
 
-static inline  char* chars_strcpy(char* dest, size_t dest_size, const char* src) {
+static inline char* chars_strcpy(char* dest, size_t dest_size, const char* src) {
     if (!dest || !src) {
         return NULL;
     }
@@ -489,7 +491,7 @@ static inline  char* chars_strcpy(char* dest, size_t dest_size, const char* src)
     return dest;
 }
 
-static inline  char* chars_strncpy(char* dest, const char* src, size_t n) {
+static inline char* chars_strncpy(char* dest, const char* src, size_t n) {
     if (!dest || !src) {
         return NULL;
     }
@@ -510,7 +512,15 @@ static inline  char* chars_strncpy(char* dest, const char* src, size_t n) {
     return dest;
 }
 
-static inline  char* chars_strcat(char* dest, const char* src) {
+void chars_copy(char *dest, const char *src, size_t dest_size) {
+    if (!dest || !src || dest_size == 0) {
+        return; 
+    }
+    chars_strncpy(dest, src, dest_size - 1);
+    dest[dest_size - 1] = '\0';
+}
+
+static inline char* chars_strcat(char* dest, const char* src) {
     char* d = dest;
     if (!dest || !src) return dest;
 
@@ -812,11 +822,17 @@ int64_t Load_SDL_RW_FileSize(const char* filename);
 
 int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes);
 
+int Load_SDL_GetNumTouchDevices();
+
 bool Load_SDL_RW_FileExists(const char* filename);
 
 void Load_SDL_GL_SwapScreen();
 
 void Load_SDL_GL_SwapWindowHandle(const int64_t handle);
+
+int Load_SDL_WindowWidth();
+
+int Load_SDL_WindowHeight();
 
 const char* Load_SDL_GetPreferredLocales();
 
@@ -926,6 +942,8 @@ void Load_SDL_UnlockSensors();
 
 int32_t Load_SDL_NumSensors();
 
+const char* Load_SDL_GetText();
+
 const char* Load_SDL_SensorGetDeviceName(int32_t deviceIndex);
 
 int32_t Load_SDL_SensorGetDeviceType(int32_t deviceIndex);
@@ -1014,7 +1032,7 @@ int32_t Load_SDL_TouchData(int32_t* data);
 
 void Load_SDL_Cleanup();
 
-int64_t Load_SDL_ScreenInit(const char* title,const int w,const int h, const bool vsync , const int flags, const bool debug);
+int64_t Load_SDL_ScreenInit(const char* title,const int w,const int h, const bool vsync, const bool emTouch, const int flags, const bool debug);
 
 bool Load_SDL_PathIsFile(char* path);
 

@@ -28,6 +28,12 @@ typedef struct {
 
 void ImportSTBInclude();
 
+void Load_STB_InputDialog(int64_t handle,const int dialogType,const int width,const int height, const char* title, const char* text, const char* textA, const char* textB);
+
+bool Load_STB_Dialog_YesOrNO();
+
+const char* Load_STB_Dialog_InputText();
+
 int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len);
 
 int64_t Load_STB_Image_LoadPath(const char* path);

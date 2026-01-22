@@ -144,7 +144,8 @@ public final class CGame extends LGame {
 		}
 		setWindowFlags(_csetting);
 		SDLCall.screenInit(_csetting.title, _csetting.getShowWidth(), _csetting.getShowHeight(),
-				_csetting.fps <= 60 ? _csetting.vsync : false, _flags.getValue(), _csetting.isDebug);
+				_csetting.fps <= 60 ? _csetting.vsync : false, _csetting.emulateTouch, _flags.getValue(),
+				_csetting.isDebug);
 		setWindowIcon(_csetting);
 		SDLCall.setAllowExit(_csetting.allowWindowClose);
 		SDLCall.getRenderScale(_screenScale);
@@ -325,26 +326,18 @@ public final class CGame extends LGame {
 			while (isRunning() && SDLCall.runSDLUpdate()) {
 				_input.update();
 				currentTime = SDLCall.getTicks();
-				if (currentTime - _lastEventCall >= 1500) {
+				if (currentTime - _lastEventCall >= 1000) {
 					if (resize) {
-						final int[] size = getScreenSize();
-						if (size[0] != 0 && size[1] != 0) {
+						final int newWidth = SDLCall.getWindowWidth();
+						final int newHeight = SDLCall.getWindowHeight();
+						if (newWidth != 0 && newHeight != 0) {
 							final int currentWidth = width;
 							final int currentHeight = height;
-							if ((currentWidth != size[0] || currentHeight != size[1])) {
-								width = currentWidth;
-								height = currentHeight;
+							if ((currentWidth != newWidth || currentHeight != newHeight)) {
+								width = newWidth;
+								height = newHeight;
 								_graphics.onSizeChanged(width, height);
 							}
-						}
-					} else {
-						final int currentWidth = width;
-						final int currentHeight = height;
-						if ((currentWidth != LSystem.viewSize.getZoomWidth()
-								|| currentHeight != LSystem.viewSize.getZoomHeight())) {
-							width = currentWidth;
-							height = currentHeight;
-							_graphics.onSizeChanged(width, height);
 						}
 					}
 					final boolean currentPaused = SDLCall.isPaused();

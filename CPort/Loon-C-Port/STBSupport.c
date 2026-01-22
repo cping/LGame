@@ -2,6 +2,8 @@
 
 static stb_font *_temp_fontinfo;
 static cache_surface* _temp_stbsurface;
+static bool g_YesOrNo = false;
+static char g_input_text[256] = "";
 
 #if defined(_WIN32)
 FontEntry system_font_paths[] = {
@@ -99,6 +101,35 @@ FontEntry system_font_paths[] = {
 	{NULL, NULL}
 };
 #endif
+
+typedef enum {
+	DIALOG_TYPE_YESNO,
+	DIALOG_TYPE_INPUT
+} DialogType;
+
+typedef struct {
+	SDL_Color bg_color;
+	SDL_Color text_color;
+	SDL_Color btn_yes_color;
+	SDL_Color btn_no_color;
+	SDL_Color btn_text_color;
+} DialogTheme;
+
+typedef struct {
+	DialogType type;
+	const char* title;
+	const char* message;
+	int win_w, win_h;
+	DialogTheme theme;
+} DialogConfig;
+
+static DialogTheme dialog_light_theme = {
+   {240, 240, 240, 255},
+   {0, 0, 0, 255},
+   {0, 200, 0, 255},
+   {200, 0, 0, 255},
+   {255, 255, 255, 255}
+};
 
 #if defined(_WIN32) && defined(_MSC_VER)
 static char* chars_secure_strtok(char* str, const char* delim) {
@@ -216,6 +247,262 @@ static int compute_alignment_offset(int align, int lineWidth, int maxWidth) {
 
 void ImportSTBInclude()
 {
+}
+
+SDL_Texture* render_text_stb(stbtt_fontinfo* font, SDL_Renderer* renderer, const char* text, float fontSize, SDL_Color color) {
+	int width = 0, height = 0;
+	int ascent, descent, lineGap;
+	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
+	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
+	ascent = (int)(ascent * scale);
+	descent = (int)(descent * scale);
+	for (const char* p = text; *p; p++) {
+		int ax;
+		stbtt_GetCodepointHMetrics(font, *p, &ax, 0);
+		width += (int)(ax * scale);
+	}
+	height = ascent - descent;
+	width += 8;
+	height += 8;
+	unsigned char* bitmap = (unsigned char*)calloc(width * height, 1);
+	int x = 0;
+	while (*text) {
+		uint32_t cp = utf8_decode(&text);
+		int ax, lsb;
+		stbtt_GetCodepointHMetrics(font, cp, &ax, &lsb);
+		int c_x1, c_y1, c_x2, c_y2;
+		stbtt_GetCodepointBitmapBox(font, cp, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+		int yoff = ascent + c_y1;
+		stbtt_MakeCodepointBitmap(font, bitmap + x + yoff * width, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, cp);
+		x += (int)(ax * scale);
+	}
+	SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32,
+		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+	Uint32* pixels = (Uint32*)surface->pixels;
+	for (int i = 0; i < width * height; i++) {
+		Uint8 alpha = bitmap[i];
+		pixels[i] = SDL_MapRGBA(surface->format, color.r, color.g, color.b, alpha);
+	}
+	free(bitmap);
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+	SDL_FreeSurface(surface);
+	return texture;
+}
+
+static void draw_text(stbtt_fontinfo* font, SDL_Renderer* ren, const char* text, int x, int y, float size, SDL_Color color) {
+	SDL_Texture* tex = render_text_stb(font, ren, text, size, color);
+	if (!tex) return;
+	int w, h;
+	SDL_QueryTexture(tex, NULL, NULL, &w, &h);
+	SDL_Rect dst = { x + 10, y - 5, w, h };
+	SDL_RenderCopy(ren, tex, NULL, &dst);
+	SDL_DestroyTexture(tex);
+}
+
+void show_input_dialog(stbtt_fontinfo* font, DialogConfig cfg, const char* textA, const char* textB) {
+	if (!font) {
+		return;
+	}
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) < 0) {
+		SDL_Log("SDL Init Error: %s", SDL_GetError());
+		return;
+	}
+	SDL_Window* win = SDL_CreateWindow(cfg.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		cfg.win_w, cfg.win_h, SDL_WINDOW_SHOWN);
+	#if SDL_VERSION_ATLEAST(2,0,16)
+		SDL_SetWindowAlwaysOnTop(win, SDL_TRUE);
+	#endif
+	SDL_Renderer* ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+	int is_touch_device = SDL_GetNumTouchDevices() > 0;
+	float btn_height_ratio = is_touch_device ? 0.18f : 0.16f;
+	float btn_width_ratio = is_touch_device ? 0.25f : 0.20f;
+
+	int running = 1;
+	int yesno_choice = -1;
+	int confirmed = 0;
+	int selected = -1;
+	int pressed_button = -1;
+	char input_text[256] = { 0 };
+
+	if (cfg.type == DIALOG_TYPE_INPUT) {
+		SDL_StartTextInput();
+	}
+
+	SDL_Event e;
+	while (running) {
+		while (SDL_PollEvent(&e)) {
+			if (e.type == SDL_QUIT) {
+				running = 0;
+			}
+			else if (e.type == SDL_FINGERDOWN) {
+				int mx = (int)(e.tfinger.x * cfg.win_w);
+				int my = (int)(e.tfinger.y * cfg.win_h);
+				pressed_button = -1;
+				if (cfg.type == DIALOG_TYPE_YESNO) {
+					if (mx > cfg.win_w * 0.24f && mx < cfg.win_w * (0.24f + btn_width_ratio) &&
+						my > cfg.win_h * 0.64f && my < cfg.win_h * (0.64f + btn_height_ratio)) {
+						yesno_choice = 1;
+						running = 0;
+					}
+					else if (mx > cfg.win_w * 0.56f && mx < cfg.win_w * (0.56f + btn_width_ratio) &&
+						my > cfg.win_h * 0.64f && my < cfg.win_h * (0.64f + btn_height_ratio)) {
+						yesno_choice = 0;
+						running = 0;
+					}
+				}
+				else if (cfg.type == DIALOG_TYPE_INPUT) {
+					if (mx > cfg.win_w * 0.24f && mx < cfg.win_w * (0.24f + btn_width_ratio) &&
+						my > cfg.win_h * 0.72f && my < cfg.win_h * (0.72f + btn_height_ratio)) {
+						confirmed = 1;
+						running = 0;
+					}
+					else if (mx > cfg.win_w * 0.56f && mx < cfg.win_w * (0.56f + btn_width_ratio) &&
+						my > cfg.win_h * 0.72f && my < cfg.win_h * (0.72f + btn_height_ratio)) {
+						running = 0;
+					}
+				}
+			} else if (e.type == SDL_MOUSEBUTTONDOWN) {
+				int mx = e.button.x;
+				int my = e.button.y;
+				if (cfg.type == DIALOG_TYPE_YESNO) {
+					if (mx > cfg.win_w * 0.24f && mx < cfg.win_w * (0.24f + btn_width_ratio) &&
+						my > cfg.win_h * 0.64f && my < cfg.win_h * (0.64f + btn_height_ratio)) {
+						yesno_choice = 1;
+						running = 0;
+					}
+					else if (mx > cfg.win_w * 0.56f && mx < cfg.win_w * (0.56f + btn_width_ratio) &&
+						my > cfg.win_h * 0.64f && my < cfg.win_h * (0.64f + btn_height_ratio)) {
+						yesno_choice = 0;
+						running = 0;
+					}
+				}
+				else if (cfg.type == DIALOG_TYPE_INPUT) {
+					if (mx > cfg.win_w * 0.24f && mx < cfg.win_w * (0.24f + btn_width_ratio) &&
+						my > cfg.win_h * 0.72f && my < cfg.win_h * (0.72f + btn_height_ratio)) {
+						confirmed = 1;
+						running = 0;
+					}
+					else if (mx > cfg.win_w * 0.56f && mx < cfg.win_w * (0.56f + btn_width_ratio) &&
+						my > cfg.win_h * 0.72f && my < cfg.win_h * (0.72f + btn_height_ratio)) {
+						running = 0;
+					}
+				} 
+			} else if (e.type == SDL_TEXTINPUT && cfg.type == DIALOG_TYPE_INPUT) {
+				if (strlen(input_text) + strlen(e.text.text) < sizeof(input_text) - 1) {
+					chars_strcat(input_text, e.text.text);
+				}
+			}
+			else if (e.type == SDL_KEYDOWN && cfg.type == DIALOG_TYPE_INPUT) {
+				if (e.key.keysym.sym == SDLK_BACKSPACE && strlen(input_text) > 0) {
+					input_text[strlen(input_text) - 1] = '\0';
+				}
+				else if (e.key.keysym.sym == SDLK_RETURN) {
+					confirmed = 1;
+					running = 0;
+				}
+			}
+		}
+
+		SDL_SetRenderDrawColor(ren, cfg.theme.bg_color.r, cfg.theme.bg_color.g, cfg.theme.bg_color.b, 255);
+		SDL_RenderClear(ren);
+		
+		if (cfg.message) {
+			draw_text(font, ren, cfg.message, (int)(cfg.win_w * 0.1f), (int)(cfg.win_h * 0.15f), is_touch_device ? 28.0f : 22.0f, cfg.theme.text_color);
+		}
+
+		if (cfg.type == DIALOG_TYPE_YESNO) {
+			SDL_Rect yes_btn = { (int)(cfg.win_w * 0.24f), (int)(cfg.win_h * 0.64f), (int)(cfg.win_w * btn_width_ratio), (int)(cfg.win_h * btn_height_ratio) };
+			SDL_Rect no_btn = { (int)(cfg.win_w * 0.56f), (int)(cfg.win_h * 0.64f), (int)(cfg.win_w * btn_width_ratio), (int)(cfg.win_h * btn_height_ratio) };
+
+			SDL_Color yes_color = cfg.theme.btn_yes_color;
+			SDL_Color no_color = cfg.theme.btn_no_color;
+
+			SDL_SetRenderDrawColor(ren, yes_color.r, yes_color.g, yes_color.b, 255);
+			SDL_RenderFillRect(ren, &yes_btn);
+			if (textA) {
+				draw_text(font, ren, textA, yes_btn.x + 10, yes_btn.y + 10, is_touch_device ? 28.0f : 20.0f, cfg.theme.btn_text_color);
+			}
+			SDL_SetRenderDrawColor(ren, no_color.r, no_color.g, no_color.b, 255);
+			SDL_RenderFillRect(ren, &no_btn);
+			if (textB) {
+				draw_text(font, ren, textB, no_btn.x + 10, no_btn.y + 10, is_touch_device ? 28.0f : 20.0f, cfg.theme.btn_text_color);
+			}
+		}
+		else if (cfg.type == DIALOG_TYPE_INPUT) {
+
+			SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
+
+			if (cfg.message) {
+				SDL_Rect input_box = { (int)(cfg.win_w * 0.2f) ,(int)(cfg.win_h * 0.5f),(int)(cfg.win_w * 0.6f),(int)(cfg.win_h * 0.1f) };
+				SDL_RenderFillRect(ren, &input_box);
+				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, (SDL_Color) { 0, 0, 0, 255 });
+			}
+			else {
+				SDL_Rect input_box = { (int)(cfg.win_w * 0.2f) ,(int)(cfg.win_h * 0.2f),(int)(cfg.win_w * 0.6f),(int)(cfg.win_h * 0.2f) };
+				SDL_RenderFillRect(ren, &input_box);
+				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, (SDL_Color) { 0, 0, 0, 255 });
+			}
+
+			SDL_Rect ok_btn = { (int)(cfg.win_w * 0.24f), (int)(cfg.win_h * 0.72f), (int)(cfg.win_w * btn_width_ratio), (int)(cfg.win_h * btn_height_ratio) };
+			SDL_SetRenderDrawColor(ren, cfg.theme.btn_yes_color.r, cfg.theme.btn_yes_color.g, cfg.theme.btn_yes_color.b, 255);
+			SDL_RenderFillRect(ren, &ok_btn);
+			draw_text(font, ren, textA, ok_btn.x + 10, ok_btn.y + 10, is_touch_device ? 28.0f : 20.0f, cfg.theme.btn_text_color);
+
+			SDL_Rect cancel_btn = { (int)(cfg.win_w * 0.56f), (int)(cfg.win_h * 0.72f), (int)(cfg.win_w * btn_width_ratio), (int)(cfg.win_h * btn_height_ratio)};
+			SDL_SetRenderDrawColor(ren, cfg.theme.btn_no_color.r, cfg.theme.btn_no_color.g, cfg.theme.btn_no_color.b, 255);
+			SDL_RenderFillRect(ren, &cancel_btn);
+			draw_text(font, ren, textB, cancel_btn.x + 10, cancel_btn.y + 10, is_touch_device ? 28.0f : 20.0f, cfg.theme.btn_text_color);
+		}
+
+		SDL_RenderPresent(ren);
+	}
+
+	if (cfg.type == DIALOG_TYPE_INPUT) {
+		SDL_StopTextInput();
+	}
+
+	if (cfg.type == DIALOG_TYPE_YESNO ) {
+		g_YesOrNo = (yesno_choice == 1);
+	}
+	else if (cfg.type == DIALOG_TYPE_INPUT) {
+		if (confirmed) {
+			chars_copy(g_input_text, input_text, 256);
+		}
+		else {
+			memset(g_input_text, '\0', sizeof(g_input_text));
+		}
+	}
+	SDL_DestroyRenderer(ren);
+	SDL_DestroyWindow(win);
+	SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
+}
+
+bool Load_STB_Dialog_YesOrNO() {
+	return g_YesOrNo;
+}
+
+const char* Load_STB_Dialog_InputText() {
+	return g_input_text;
+}
+
+void Load_STB_InputDialog(int64_t handle, const int dialogType, const int width, const int height, const char* title, const char* text, const char* textA, const char* textB) {
+	stb_font* fontinfo = (stb_font*)handle;
+	if (!fontinfo) {
+		fontinfo = _temp_fontinfo;
+		if (!fontinfo) {
+			fprintf(stderr, "Load_STB_InputDialog Error !\n");
+			return;
+		}
+	}
+	DialogConfig dcfg = {
+	 dialogType,
+	 title,
+	 text,
+	 width, height,
+	 dialog_light_theme
+	};
+	show_input_dialog(fontinfo->info, dcfg, textA, textB);
 }
 
 int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
@@ -703,9 +990,9 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 		}
 		float cw, ch, baseline;
 		get_char_size_subpixel(fontinfo->info, point, fontSize, 0.0f, 0.0f, &cw, &ch, &baseline);
-		line_width += cw;
+		line_width += (int)cw;
 		if (ch > line_height) {
-			line_height = ch;
+			line_height = (int)ch;
 		}
 		if (text[i + 1] && text[i + 1] != '\n') {
 			line_width += float_to_int_threshold(stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]) * scale);

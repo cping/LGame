@@ -41,6 +41,7 @@ static int console_status = 0;
 static game_music* g_currentMusic = NULL;
 static TouchIdMap g_touchMap = { NULL, 0, 0 };
 static int g_touches[MAX_TOUCH_DEVICES * 3];
+static char g_texts[MAX_TEXTINPUT_CAHR_LEN] = "";
 static const int audio_rate = 44100;
 static const Uint16 audio_format = MIX_DEFAULT_FORMAT;
 static const int audio_channels = MIX_DEFAULT_CHANNELS;
@@ -570,7 +571,7 @@ static void SDL_platform_free_quit() {
 	if (strcmp(platform, "Xbox") == 0) { quit_xbox(); return; }
 	if (strcmp(platform, "Steam") == 0) { quit_steam_linux(); return; }
 	if (strcmp(platform, "Windows") == 0) { quit_windows(); return; }
-	if (strcmp(platform, "Linux") == 0) return quit_linux();
+	if (strcmp(platform, "Linux") == 0) { quit_linux(); return; }
 	if (strcmp(platform, "Android") == 0) { quit_android(); return; }
 	if (strcmp(platform, "iOS") == 0) { quit_ios(); return; }
 	if (strcmp(platform, "Mac OS X") == 0) { quit_macos(); return; }
@@ -611,7 +612,7 @@ static int SDL_check_required_conditions() {
 	return 0;
 }
 
-static void SDL_pre_init(bool debug) {
+static int SDL_pre_init(bool debug) {
 	if (debug) {
 		printf("INFO: Starting SDL Pre Initialization...\n");
 	}
@@ -621,6 +622,7 @@ static void SDL_pre_init(bool debug) {
 		}
 		return -1;
 	}
+	return 0;
 }
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -1750,7 +1752,7 @@ static void OnMusicFinished(void) {
 	}
 }
 
-int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const int flags , const bool debug) {
+int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const bool emTouch, const int flags , const bool debug) {
 	atexit(SDL_Quit);
 	SetConsoleOutputCP(65001);
 	SetConsoleCP(65001);
@@ -1812,7 +1814,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 #else
 	SDL_pre_init(debug);
 	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
-	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, "0");
+	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, emTouch ? "1" : "0");
 	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
 	#ifdef __WINRT__
 		SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
@@ -1897,16 +1899,26 @@ int64_t Load_SDL_WindowHandle() {
 
 static void udate_init_window_size() {
 	int winWidth = 0, winHeight = 0;
-	SDL_GetWindowSize(window, &winWidth, &winHeight);
+	SDL_GL_GetDrawableSize(window, &winWidth, &winHeight);
 	g_windowSize[0] = winWidth;
 	g_windowSize[1] = winHeight;
 	g_initWidth = winWidth;
 	g_initHeight = winHeight;
 	if (g_initWidth == 0 || g_initHeight == 0) {
-		SDL_GL_GetDrawableSize(window, &winWidth, &winHeight);
+		SDL_GetWindowSize(window, &winWidth, &winHeight);
+		g_windowSize[0] = winWidth;
+		g_windowSize[1] = winHeight;
 		g_initWidth = winWidth;
 		g_initHeight = winHeight;
 	}
+}
+
+int Load_SDL_WindowWidth() {
+	return g_initWidth;
+}
+
+int Load_SDL_WindowHeight() {
+	return g_initHeight;
 }
 
 bool Load_SDL_Update() {
@@ -1968,6 +1980,7 @@ bool Load_SDL_Update() {
 			  }
 			  break;
 		  case SDL_MOUSEMOTION:
+			  g_touches[0] = 1;
 			  g_touches[1] = event.motion.x;
 			  g_touches[2] = event.motion.y;
 			  break;
@@ -2061,6 +2074,22 @@ bool Load_SDL_Update() {
 		  case SDL_CONTROLLERDEVICEREMOVED:
 			  SDL_GameControllerClose(SDL_GameControllerFromPlayerIndex(event.cdevice.which));
 			  break;
+		  case SDL_TEXTINPUT:
+			  for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
+				  g_texts[i] = event.text.text[i];
+				  if (event.text.text[i] == '\0') {
+					  break;
+				  }
+			  }
+			  break;
+		  case SDL_TEXTEDITING:
+			  for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
+				  g_texts[i] = event.edit.text[i];
+				  if (event.edit.text[i] == '\0') {
+					  break;
+				  }
+			  }
+			  break;
 		  }
 	  }
 	{
@@ -2076,6 +2105,10 @@ bool Load_SDL_Update() {
 	SDL_GL_SwapWindow(window);
 	return Load_SDL_Exit(running);
 #endif
+}
+
+const char* Load_SDL_GetText() {
+	return g_texts;
 }
 
 void Load_SDL_GL_SwapScreen(){
@@ -2096,7 +2129,6 @@ void Load_SDL_GL_SwapWindowHandle(const int64_t handle){
 		return;
 	}
 }
-
 
 void GetDisplayResolution(int displayIndex, int* w, int* h) {
 	SDL_DisplayMode mode;
@@ -2179,7 +2211,6 @@ void GetCurrentScreenSize(int* width, int* height) {
 }
 
 void Load_SDL_Current_Screen_Size(int32_t* values) {
-	const char* platform = SDL_GetPlatform();
 	int width, height;
 	GetCurrentScreenSize(&width, &height);
 	values[0] = width;
@@ -3216,6 +3247,10 @@ void Load_SDL_QuitSubSystem(const int flags)
 	SDL_QuitSubSystem(flags);
 }
 
+int Load_SDL_GetNumTouchDevices() {
+	return SDL_GetNumTouchDevices();
+}
+
 const char* Load_SDL_GetError()
 {
 	return SDL_GetError();
@@ -3630,7 +3665,7 @@ int Load_SDL_PollEvent(char* data)
 			break;
 		case SDL_TEXTINPUT:
 			data[0] = 6;
-			for (int i = 0; i < 32; i++) {
+			for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
 				data[i + 1] = e.text.text[i];
 				if (e.text.text[i] == '\0') {
 					break;
@@ -3641,13 +3676,12 @@ int Load_SDL_PollEvent(char* data)
 			data[0] = 8;
 			data[1] = e.edit.start;
 			data[2] = e.edit.length;
-			for (int i = 0; i < 32; i++) {
+			for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
 				data[i + 3] = e.edit.text[i];
 				if (e.edit.text[i] == '\0') {
 					break;
 				}
 			}
-
 			break;
 		default:
 			data[0] = 7;

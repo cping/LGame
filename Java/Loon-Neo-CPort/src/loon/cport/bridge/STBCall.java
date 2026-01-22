@@ -37,6 +37,16 @@ public final class STBCall {
 	@Import(name = "ImportSTBInclude")
 	public final static native void importInclude();
 
+	@Import(name = "Load_STB_InputDialog")
+	public final static native void inputDialog(long handle, int dialogType, int width, int height, String title,
+			String text, String textA, String textB);
+
+	@Import(name = "Load_STB_Dialog_YesOrNO")
+	public final static native boolean getDialogYesOrNO();
+
+	@Import(name = "Load_STB_Dialog_InputText")
+	public final static native String getDialogInputText();
+
 	@Import(name = "Load_STB_Image_LoadBytes")
 	public final static native long loadBytesToImage(byte[] buffer, int len);
 

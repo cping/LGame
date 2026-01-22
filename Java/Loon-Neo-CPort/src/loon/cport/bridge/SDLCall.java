@@ -282,6 +282,12 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_Current_Window_Size")
 	public final static native void getCurrentWindowSize(int[] rect);
 
+	@Import(name = "Load_SDL_WindowWidth")
+	public final static native int getWindowWidth();
+
+	@Import(name = "Load_SDL_WindowHeight")
+	public final static native int getWindowHeight();
+
 	@Import(name = "Load_SDL_Pause")
 	public final static native boolean isPaused();
 
@@ -290,7 +296,8 @@ public final class SDLCall {
 
 	@RuntimeInclude("SDLSupport.h")
 	@Import(name = "Load_SDL_ScreenInit")
-	public final static native long screenInit(String title, int w, int h, boolean vsync, int flags, boolean debug);
+	public final static native long screenInit(String title, int w, int h, boolean vsync, boolean emTouch, int flags,
+			boolean debug);
 
 	@Import(name = "Load_SDL_PathIsFile")
 	public final static native boolean pathIsFile(String path);
@@ -357,6 +364,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_GetWindowFlags")
 	public final static native int getWindowFlags(long handle);
+
+	@Import(name = "Load_SDL_GetText")
+	public final static native String getText();
 
 	@Import(name = "Load_SDL_SetWindowTitle")
 	public final static native void setWindowTitle(long handle, String title);
@@ -477,6 +487,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_PollEvent")
 	public final static native int pollEvent(String data);
+
+	@Import(name = "Load_SDL_GetNumTouchDevices")
+	public final static native int getNumTouchDevices();
 
 	@Import(name = "Load_SDL_GetCompiledVersion")
 	public final static native String getCompiledVersion(String data);
