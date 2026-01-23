@@ -24,6 +24,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeArcEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeCheckerboardEffect;
 import loon.action.sprite.effect.FadeDoorEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.FadeDotEffect;
@@ -120,6 +121,11 @@ public final class ScreenExitEffect {
 	public final static int TILES_FADE = 14;
 
 	/**
+	 * 西洋棋淡出,淡入
+	 */
+	public final static int CHECKER_FADE = 15;
+
+	/**
 	 * 转换过渡效果字符串为对应的索引
 	 * 
 	 * @param name
@@ -159,6 +165,8 @@ public final class ScreenExitEffect {
 		} else if (key.equals("arc_fade") || key.equals("arcfade")) {
 			return ARC_FADE;
 		} else if (key.equals("tiles_fade") || key.equals("tilesfade")) {
+			return TILES_FADE;
+		} else if (key.equals("checker_fade") || key.equals("checkerfade")) {
 			return TILES_FADE;
 		}
 		return STANDARD_FADE;
@@ -274,6 +282,9 @@ public final class ScreenExitEffect {
 				case TILES_FADE:
 					dstScreen.setTransition(LTransition.newFadeTile(effectType, color));
 					break;
+				case CHECKER_FADE:
+					dstScreen.setTransition(LTransition.newFadeCheckerBoard(effectType, color));
+					break;
 				}
 				srcScreen.setScreen(dstScreen);
 			} catch (Exception ex) {
@@ -377,6 +388,9 @@ public final class ScreenExitEffect {
 		case TILES_FADE:
 			baseEffect = new FadeTileEffect(effectType, color);
 			break;
+		case CHECKER_FADE:
+			baseEffect = new FadeCheckerboardEffect(effectType, color);
+			break;
 		}
 		baseEffect.setCompletedAfterBlack(true);
 		// 把渐变效果渲染层级调到最高,避免被其它效果遮挡
@@ -440,7 +454,7 @@ public final class ScreenExitEffect {
 	}
 
 	public void gotoEffectExitRand(final LColor color, final Screen src, final Screen dst) {
-		gotoEffectExit(MathUtils.random(0, TILES_FADE), color, src, dst, _effectLocked, _hideUI);
+		gotoEffectExit(MathUtils.random(0, CHECKER_FADE), color, src, dst, _effectLocked, _hideUI);
 	}
 
 	public LColor getEffectExitColor() {

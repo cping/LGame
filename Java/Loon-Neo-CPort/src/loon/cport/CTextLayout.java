@@ -64,7 +64,7 @@ public class CTextLayout extends loon.font.TextLayout {
 
 	private static int getTextWidth(STBFont font, TextFormat format, String message) {
 		return MathUtils.min(((int) format.font.size * message.length()),
-				fixFontSize(format, font.getStringSize(format.font.size, message).getWidth()));
+				fixFontSize(format, font.measureWidth(message, format.font.size)));
 	}
 
 	private static int fixFontSize(TextFormat format, double size) {

@@ -38,7 +38,7 @@ public final class STBCall {
 	public final static native void importInclude();
 
 	@Import(name = "Load_STB_InputDialog")
-	public final static native void inputDialog(long handle, int dialogType, int width, int height, String title,
+	public final static native int inputDialog(long handle, int dialogType, int width, int height, String title,
 			String text, String textA, String textB);
 
 	@Import(name = "Load_STB_Dialog_YesOrNO")

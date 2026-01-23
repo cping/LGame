@@ -249,7 +249,7 @@ void ImportSTBInclude()
 {
 }
 
-SDL_Texture* render_text_stb(stbtt_fontinfo* font, SDL_Renderer* renderer, const char* text, float fontSize, SDL_Color color) {
+static SDL_Texture* render_text_stb(stbtt_fontinfo* font, SDL_Renderer* renderer, const char* text, float fontSize, SDL_Color color) {
 	int width = 0, height = 0;
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
@@ -299,13 +299,13 @@ static void draw_text(stbtt_fontinfo* font, SDL_Renderer* ren, const char* text,
 	SDL_DestroyTexture(tex);
 }
 
-void show_input_dialog(stbtt_fontinfo* font, DialogConfig cfg, const char* textA, const char* textB) {
+static int show_input_dialog(stbtt_fontinfo* font, DialogConfig cfg, const char* textA, const char* textB) {
 	if (!font) {
-		return;
+		return 0;
 	}
 	if (SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER) < 0) {
 		SDL_Log("SDL Init Error: %s", SDL_GetError());
-		return;
+		return 0;
 	}
 	SDL_Window* win = SDL_CreateWindow(cfg.title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		cfg.win_w, cfg.win_h, SDL_WINDOW_SHOWN);
@@ -476,6 +476,7 @@ void show_input_dialog(stbtt_fontinfo* font, DialogConfig cfg, const char* textA
 	SDL_DestroyRenderer(ren);
 	SDL_DestroyWindow(win);
 	SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS | SDL_INIT_TIMER);
+	return 1;
 }
 
 bool Load_STB_Dialog_YesOrNO() {
@@ -486,13 +487,13 @@ const char* Load_STB_Dialog_InputText() {
 	return g_input_text;
 }
 
-void Load_STB_InputDialog(int64_t handle, const int dialogType, const int width, const int height, const char* title, const char* text, const char* textA, const char* textB) {
+int Load_STB_InputDialog(int64_t handle, const int dialogType, const int width, const int height, const char* title, const char* text, const char* textA, const char* textB) {
 	stb_font* fontinfo = (stb_font*)handle;
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
 			fprintf(stderr, "Load_STB_InputDialog Error !\n");
-			return;
+			return 0;
 		}
 	}
 	DialogConfig dcfg = {
@@ -502,7 +503,7 @@ void Load_STB_InputDialog(int64_t handle, const int dialogType, const int width,
 	 width, height,
 	 dialog_light_theme
 	};
-	show_input_dialog(fontinfo->info, dcfg, textA, textB);
+	return show_input_dialog(fontinfo->info, dcfg, textA, textB);
 }
 
 int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
@@ -968,7 +969,6 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 	if (!fontinfo) {
 		fontinfo = _temp_fontinfo;
 		if (!fontinfo) {
-			fprintf(stderr, "Load_STB_GetCharsSize Error !\n");
 			return;
 		}
 	}
@@ -979,9 +979,12 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 	int line_width = 0;
 	int line_height = 0;
 
-	for (int i = 0; text[i]; i++) {
-		int point = text[i];
-		if (point == '\n') {
+	int i = 0;
+	while (text[i] && text[i] != '\n') {
+		int bytes;
+		uint32_t cp = utf8_to_codepoint_full(&text[i], &bytes);
+		i += bytes;
+		if (cp == '\n') {
 			if (line_width > max_width) max_width = line_width;
 			total_height += line_height;
 			line_width = 0;
@@ -989,13 +992,13 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 			continue;
 		}
 		float cw, ch, baseline;
-		get_char_size_subpixel(fontinfo->info, point, fontSize, 0.0f, 0.0f, &cw, &ch, &baseline);
+		get_char_size_subpixel(fontinfo->info, cp, fontSize, 0.0f, 0.0f, &cw, &ch, &baseline);
 		line_width += (int)cw;
 		if (ch > line_height) {
 			line_height = (int)ch;
 		}
 		if (text[i + 1] && text[i + 1] != '\n') {
-			line_width += float_to_int_threshold(stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]) * scale);
+			line_width += float_to_int_threshold(stbtt_GetCodepointKernAdvance(fontinfo->info, cp, text[i + 1]) * scale);
 		}
 	}
 
@@ -1078,20 +1081,22 @@ void Load_STB_MakeDrawTextToBitmap(const int64_t handle, const char* text, const
 	stbtt_GetFontVMetrics(fontinfo->info, &ascent, &descent, &lineGap);
 	ascent = float_to_int_threshold(ascent * scale);
 	descent = float_to_int_threshold(descent * scale);
-	int i;
+	int i = 0;
 	int newWidth = width;
-	for (i = 0; i < strlen(text); ++i)
-	{
+	while (text[i] && text[i] != '\n') {
+		int bytes;
+		uint32_t cp = utf8_to_codepoint_full(&text[i], &bytes);
+		i += bytes;
 		int c_x1, c_y1, c_x2, c_y2;
-		stbtt_GetCodepointBitmapBox(fontinfo->info, text[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+		stbtt_GetCodepointBitmapBox(fontinfo->info, cp, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
 		int y = ascent + c_y1;
 		int byteOffset = x + (y * newWidth);
-		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, newWidth, scale, scale, text[i]);
+		stbtt_MakeCodepointBitmap(fontinfo->info, bitmap + byteOffset, c_x2 - c_x1, c_y2 - c_y1, newWidth, scale, scale, cp);
 		int ax;
-		stbtt_GetCodepointHMetrics(fontinfo->info, text[i], &ax, 0);
+		stbtt_GetCodepointHMetrics(fontinfo->info, cp, &ax, 0);
 		x += float_to_int_threshold(ax * scale);
 		int kern;
-		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, text[i], text[i + 1]);
+		kern = stbtt_GetCodepointKernAdvance(fontinfo->info, cp, text[i + 1]);
 		x += float_to_int_threshold(kern * scale);
 	}
 }
@@ -1433,7 +1438,6 @@ void Load_STB_DrawString(const int64_t handle, const char* text, const float fon
 	while (*line_start) {
 		float line_width = 0.0f;
 		float max_above = 0.0f, max_below = 0.0f;
-
 		int i = 0;
 		while (line_start[i] && line_start[i] != '\n') {
 			int bytes; uint32_t codepoint = utf8_to_codepoint_full(&line_start[i], &bytes);
@@ -1451,7 +1455,6 @@ void Load_STB_DrawString(const int64_t handle, const char* text, const float fon
 
 		int x_cursor = 0;
 		int j = 0;
-
 		while (line_start[j] && line_start[j] != '\n') {
 			int bytes;
 			uint32_t codepoint = utf8_to_codepoint_full(&line_start[j], &bytes);

@@ -1,18 +1,18 @@
 ﻿#include "SDLSupport.h"
 
 #ifndef LOON_DESKTOP
-	static EGLDisplay display;
-	static EGLContext context;
-	static EGLSurface eglsurface;
-	static PadState combinedPad;
-	static PadState pads[8];
+static EGLDisplay display;
+static EGLContext context;
+static EGLSurface eglsurface;
+static PadState combinedPad;
+static PadState pads[8];
 #else
-	static SDL_Window* window;
-	static SDL_GameController* tempController;
-	static int buttons;
-	static float joysticks[4];
+static SDL_Window* tempWindow;
+static SDL_GameController* tempController;
+static int buttons;
+static float joysticks[4];
 #endif
-	
+
 PlayerController players[MAX_CONTROLLERS];
 GamepadState gpStates[MAX_CONTROLLERS];
 
@@ -22,7 +22,7 @@ static AxisCallback axisCallbacks[AXIS_MAX] = { 0 };
 static TriggerCallback triggerCallbacks[TRIGGER_MAX] = { 0 };
 
 static const char b64_table[] =
-		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static SDL_GLContext* tempContext = NULL;
 static uint32_t tempPolleventType = 0;
 static game_filesystem* gamefilesys = NULL;
@@ -53,7 +53,7 @@ static bool musicFinishedEvent = false;
 static bool soundFinishedEvent = false;
 static bool allowExit = true;
 static char curr_dir[MAX_PATH];
-static int eventBuffer[MAX_EVENTS * 4]; 
+static int eventBuffer[MAX_EVENTS * 4];
 static int eventCount = 0;
 
 static int is_valid_url(const char* url) {
@@ -75,39 +75,39 @@ int Load_SDL_OpenURL(const char* url) {
 		SDL_Log("openURL: Invalid or unsupported URL format: %s", url ? url : "(null)");
 		return -1;
 	}
-	#if SDL_VERSION_ATLEAST(2,0,14)
-		if (SDL_OpenURL(url) == 0) {
-			return 0;
-		}
-	#endif
-    #if defined(_WIN32) || defined(_WIN64)
+#if SDL_VERSION_ATLEAST(2,0,14)
+	if (SDL_OpenURL(url) == 0) {
+		return 0;
+	}
+#endif
+#if defined(_WIN32) || defined(_WIN64)
 	if ((intptr_t)ShellExecuteA(NULL, "open", url, NULL, NULL, SW_SHOWNORMAL) > 32) {
 		return 0;
 	}
-    #elif defined(__APPLE__)
+#elif defined(__APPLE__)
 	if (safe_system_open("open", url) == 0) {
 		return 0;
 	}
-    #elif defined(__linux__)
+#elif defined(__linux__)
 	if (safe_system_open("xdg-open", url) == 0) {
 		return 0;
 	}
-    #else
-		if (SDL_OpenURL(url) == 0) {
-			return 0;
-		}
-    #endif
+#else
+	if (SDL_OpenURL(url) == 0) {
+		return 0;
+	}
+#endif
 	SDL_Log("openURL: Failed to open URL on this platform");
 	return -1;
 }
 
-void SDL_InitTouchIdMap() {
+static void SDL_InitTouchIdMap() {
 	g_touchMap.ids = NULL;
 	g_touchMap.count = 0;
 	g_touchMap.capacity = 0;
 }
 
-void SDL_FreeTouchIdMap() {
+static void SDL_FreeTouchIdMap() {
 	free(g_touchMap.ids);
 	g_touchMap.ids = NULL;
 	g_touchMap.count = 0;
@@ -226,7 +226,8 @@ void GameController_ProcessEvent(SDL_Event* e) {
 				}
 			}
 		}
-	} else if (e->type == SDL_CONTROLLERAXISMOTION) {
+	}
+	else if (e->type == SDL_CONTROLLERAXISMOTION) {
 		int playerIndex = e->caxis.which;
 		if (playerIndex >= MAX_CONTROLLERS || !players[playerIndex].controller) {
 			return;
@@ -248,7 +249,8 @@ void GameController_ProcessEvent(SDL_Event* e) {
 				triggerCallbacks[trigger](playerIndex, trigger, value);
 			}
 		}
-	} else if (e->type == SDL_CONTROLLERDEVICEADDED) {
+	}
+	else if (e->type == SDL_CONTROLLERDEVICEADDED) {
 		int index = e->cdevice.which;
 		for (int i = 0; i < MAX_CONTROLLERS; i++) {
 			if (!players[i].controller && SDL_IsGameController(index)) {
@@ -257,13 +259,14 @@ void GameController_ProcessEvent(SDL_Event* e) {
 				players[i].vendor = SDL_JoystickGetVendor(joy);
 				players[i].product = SDL_JoystickGetProduct(joy);
 				if (debugMode) {
-					printf("Player %d New Link : %s (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
+					printf("Player %s New Link : %d (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
 						players[i].vendor, players[i].product);
 				}
 				break;
 			}
 		}
-	} else if (e->type == SDL_CONTROLLERDEVICEREMOVED) {
+	}
+	else if (e->type == SDL_CONTROLLERDEVICEREMOVED) {
 		SDL_JoystickID joyId = e->cdevice.which;
 		for (int i = 0; i < MAX_CONTROLLERS; i++) {
 			if (players[i].controller &&
@@ -331,209 +334,209 @@ static void GamePad_PushEvent(int player, int btn, int type) {
 // load and exit
 // 初始化SDL前需要预加载，以及离开SDL前需要释放的平台函数在此调用
 static int init_switch() {
-	#if defined(__SWITCH__)
-	    socketInitializeDefault();
-		nxlinkStdio();
-		romfsInit();
-		padConfigureInput(1, HidNpadStyleSet_NpadStandard);
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__SWITCH__)
+	socketInitializeDefault();
+	nxlinkStdio();
+	romfsInit();
+	padConfigureInput(1, HidNpadStyleSet_NpadStandard);
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_switch() {
-	#if defined(__SWITCH__)
-		romfsExit();
-		socketExit();
-	#endif
+#if defined(__SWITCH__)
+	romfsExit();
+	socketExit();
+#endif
 }
 
 static int init_3ds() {
-	#if defined(__3DS__)
-		gfxInitDefault();
-		hidInit();
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__3DS__)
+	gfxInitDefault();
+	hidInit();
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_3ds() {
-	#if defined(__3DS__)
-		hidExit();
-		gfxExit();
-	#endif
+#if defined(__3DS__)
+	hidExit();
+	gfxExit();
+#endif
 }
 
 static int init_psp() {
-	#if defined(__PSP__)
-		pspDebugScreenInit();
-		sceCtrlSetSamplingCycle(0);
-		sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__PSP__)
+	pspDebugScreenInit();
+	sceCtrlSetSamplingCycle(0);
+	sceCtrlSetSamplingMode(PSP_CTRL_MODE_ANALOG);
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_psp() 
+static void quit_psp()
 {
 }
 
 static int init_psv() {
-	#if defined(__PSV__)
-		sceIoInit();
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__PSV__)
+	sceIoInit();
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_psv() 
+static void quit_psv()
 {
 }
 
 static int init_ps4_ps5() {
-	#if defined(__ORBIS__) || defined(__PROSPERO__)
-		sceSystemServiceInitialize();
-		sceUserServiceInitialize(NULL);
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__ORBIS__) || defined(__PROSPERO__)
+	sceSystemServiceInitialize();
+	sceUserServiceInitialize(NULL);
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_ps4_ps5() {
-	#if defined(__ORBIS__) || defined(__PROSPERO__)
-		sceUserServiceTerminate();
-		sceSystemServiceTerminate();
-	#endif
+#if defined(__ORBIS__) || defined(__PROSPERO__)
+	sceUserServiceTerminate();
+	sceSystemServiceTerminate();
+#endif
 }
 
 static int init_luna() {
-	#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
-		if (!SteamAPI_Init()) return -1;
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
+	if (!SteamAPI_Init()) return -1;
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_luna() {
-	#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
-		SteamAPI_Shutdown();
-	#endif
+#if defined(__LUNA__) || (defined(__linux__) && defined(LUNA_SDK))
+	SteamAPI_Shutdown();
+#endif
 }
 
 static int init_xbox() {
-	#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
-		if (XGameRuntimeInitialize() != S_OK) {
-			return -1;
-		}
-		return 0;
-	#else
+#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+	if (XGameRuntimeInitialize() != S_OK) {
 		return -1;
-	#endif
+	}
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_xbox() {
-	#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
-		XGameRuntimeUninitialize();
-	#endif
+#if defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+	XGameRuntimeUninitialize();
+#endif
 }
 
 static int init_steam_linux() {
-	#if defined(__linux__)
-		if (!SteamAPI_Init()) return -1;
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__linux__)
+	if (!SteamAPI_Init()) return -1;
+	return 0;
+#else
+	return -1;
+#endif
 }
 
 static void quit_steam_linux() {
-	#if defined(__linux__)
-		SteamAPI_Shutdown();
-	#endif
+#if defined(__linux__)
+	SteamAPI_Shutdown();
+#endif
 }
 
 static int init_bsd() {
-	#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-		return 0; 
-	#else
-		return -1;
-	#endif
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_bsd() 
+static void quit_bsd()
 {
 }
 
 static int init_android() {
-	#if defined(__ANDROID__)
-		__android_log_print(ANDROID_LOG_INFO, "SDL Running", "Android pre-init done");
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__ANDROID__)
+	__android_log_print(ANDROID_LOG_INFO, "SDL Running", "Android pre-init done");
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_android() 
+static void quit_android()
 {
 }
 
 static int init_ios() {
-	#if defined(__APPLE__) && TARGET_OS_IPHONE
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_ios() 
+static void quit_ios()
 {
 }
 
 static int init_macos() {
-	#if defined(__APPLE__) && !TARGET_OS_IPHONE
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__APPLE__) && !TARGET_OS_IPHONE
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_macos() 
+static void quit_macos()
 {
 }
 
 static int init_linux() {
-	#if defined(__linux__)
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__linux__)
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_linux() 
+static void quit_linux()
 {
 }
 
 static int init_web() {
-	#if defined(__EMSCRIPTEN__)
-		printf("INFO: Initializing WebAssembly (Emscripten)...\n");
-		return 0;
-	#else
-		return -1;
-	#endif
+#if defined(__EMSCRIPTEN__)
+	printf("INFO: Initializing WebAssembly (Emscripten)...\n");
+	return 0;
+#else
+	return -1;
+#endif
 }
 
-static void quit_web() 
+static void quit_web()
 {
 }
 
 static int init_windows() {
-		return 0;
+	return 0;
 }
 
 static void quit_windows() {
@@ -628,293 +631,293 @@ static int SDL_pre_init(bool debug) {
 #if defined(_WIN32) || defined(_WIN64)
 HANDLE g_mutex = NULL;
 static bool check_single_instance() {
-    g_mutex = CreateMutex(NULL, TRUE, "MySDLAppMutex");
-    if (GetLastError() == ERROR_ALREADY_EXISTS) {
-        printf("The program is already running !\n");
-        return false;
-    }
-    return true;
+	g_mutex = CreateMutex(NULL, TRUE, (LPCWSTR)"MySDLAppMutex");
+	if (GetLastError() == ERROR_ALREADY_EXISTS) {
+		printf("The program is already running !\n");
+		return false;
+	}
+	return true;
 }
 #else
 #define LOCK_FILE "/tmp/my_sdl_app.lock"
 int g_fd = -1;
 bool check_single_instance() {
-    g_fd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);
-    if (g_fd < 0) {
-        return false;
-    }
-    if (lockf(g_fd, F_TLOCK, 0) < 0) {
-        if (errno == EACCES || errno == EAGAIN) {
-            printf("The program is already running !\n");
-            close(g_fd);
-            return false;
-        }
-        close(g_fd);
-        return false;
-    }
-    return true;
+	g_fd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);
+	if (g_fd < 0) {
+		return false;
+	}
+	if (lockf(g_fd, F_TLOCK, 0) < 0) {
+		if (errno == EACCES || errno == EAGAIN) {
+			printf("The program is already running !\n");
+			close(g_fd);
+			return false;
+		}
+		close(g_fd);
+		return false;
+	}
+	return true;
 }
 void release_instance_lock() {
-    if (g_fd >= 0) {
-        close(g_fd);
-        unlink(LOCK_FILE);
-    }
+	if (g_fd >= 0) {
+		close(g_fd);
+		unlink(LOCK_FILE);
+	}
 }
 #endif
 
 void release_instance_lock() {
-    if (g_mutex) CloseHandle(g_mutex);
+	if (g_mutex) CloseHandle(g_mutex);
 }
 
-bool CreateSingleInstanceLock(){
-  return check_single_instance();
+bool CreateSingleInstanceLock() {
+	return check_single_instance();
 }
 
-void FreeSingleLock(){
-  release_instance_lock();
+void FreeSingleLock() {
+	release_instance_lock();
 }
 
 #ifdef _WIN32
 static int is_parent_vs() {
-    DWORD pid = GetCurrentProcessId();
-    DWORD ppid = 0;
-    HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (snap == INVALID_HANDLE_VALUE) return 0;
-    PROCESSENTRY32 pe;
-    pe.dwSize = sizeof(pe);
-    if (Process32First(snap, &pe)) {
-        do {
-            if (pe.th32ProcessID == pid) {
-                ppid = pe.th32ParentProcessID;
-                break;
-            }
-        } while (Process32Next(snap, &pe));
-    }
-    CloseHandle(snap);
-    snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
-    if (snap == INVALID_HANDLE_VALUE) return 0;
-    if (Process32First(snap, &pe)) {
-        do {
-            if (pe.th32ProcessID == ppid) {
-                CloseHandle(snap);
-                return (_stricmp(pe.szExeFile, "devenv.exe") == 0);
-            }
-        } while (Process32Next(snap, &pe));
-    }
-    CloseHandle(snap);
-    return 0;
+	DWORD pid = GetCurrentProcessId();
+	DWORD ppid = 0;
+	HANDLE snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (snap == INVALID_HANDLE_VALUE) return 0;
+	PROCESSENTRY32 pe;
+	pe.dwSize = sizeof(pe);
+	if (Process32First(snap, &pe)) {
+		do {
+			if (pe.th32ProcessID == pid) {
+				ppid = pe.th32ParentProcessID;
+				break;
+			}
+		} while (Process32Next(snap, &pe));
+	}
+	CloseHandle(snap);
+	snap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+	if (snap == INVALID_HANDLE_VALUE) return 0;
+	if (Process32First(snap, &pe)) {
+		do {
+			if (pe.th32ProcessID == ppid) {
+				CloseHandle(snap);
+				return (_stricmp((const char*)pe.szExeFile, "devenv.exe") == 0);
+			}
+		} while (Process32Next(snap, &pe));
+	}
+	CloseHandle(snap);
+	return 0;
 }
 #endif
 
-int is_debug_console() {
+static int is_debug_console() {
 #ifdef _WIN32
-    if (IsDebuggerPresent()) {
-        if (is_parent_vs()) {
-            return 2; 
-        }
-        return 1; 
-    }
-    return 0; 
+	if (IsDebuggerPresent()) {
+		if (is_parent_vs()) {
+			return 2;
+		}
+		return 1;
+	}
+	return 0;
 #elif __linux__
-    FILE *f = fopen("/proc/self/status", "r");
-    if (!f) return 0;
-    char line[256];
-    while (fgets(line, sizeof(line), f)) {
-        if (strncmp(line, "TracerPid:", 10) == 0) {
-            int pid = atoi(line + 10);
-            fclose(f);
-            return pid != 0 ? 1 : 0;
-        }
-    }
-    fclose(f);
-    return 0;
+	FILE* f = fopen("/proc/self/status", "r");
+	if (!f) return 0;
+	char line[256];
+	while (fgets(line, sizeof(line), f)) {
+		if (strncmp(line, "TracerPid:", 10) == 0) {
+			int pid = atoi(line + 10);
+			fclose(f);
+			return pid != 0 ? 1 : 0;
+		}
+	}
+	fclose(f);
+	return 0;
 
 #elif __APPLE__
-    #include <sys/types.h>
-    #include <sys/sysctl.h>
-    int mib[4];
-    struct kinfo_proc info;
-    size_t size = sizeof(info);
-    info.kp_proc.p_flag = 0;
-    mib[0] = CTL_KERN;
-    mib[1] = KERN_PROC;
-    mib[2] = KERN_PROC_PID;
-    mib[3] = getpid();
-    sysctl(mib, 4, &info, &size, NULL, 0);
-    return ((info.kp_proc.p_flag & P_TRACED) != 0) ? 1 : 0;
+#include <sys/types.h>
+#include <sys/sysctl.h>
+	int mib[4];
+	struct kinfo_proc info;
+	size_t size = sizeof(info);
+	info.kp_proc.p_flag = 0;
+	mib[0] = CTL_KERN;
+	mib[1] = KERN_PROC;
+	mib[2] = KERN_PROC_PID;
+	mib[3] = getpid();
+	sysctl(mib, 4, &info, &size, NULL, 0);
+	return ((info.kp_proc.p_flag & P_TRACED) != 0) ? 1 : 0;
 #else
-    return 0; 
+	return 0;
 #endif
 }
 
-char* ConvertTeaVMString(uint16_t* chars){
-   return (char*)chars;
+char* ConvertTeaVMString(uint16_t* chars) {
+	return (char*)chars;
 }
 
-bool ISDebugStatus(){
+bool ISDebugStatus() {
 	return console_status;
 }
 
-void LOG_Println(const char* mes){	
+void LOG_Println(const char* mes) {
 	if (mes && strlen(mes) > 0) {
 		printf("%s\n", mes);
 	}
 }
 
-void SDL_AllowExit(bool a){
+void SDL_AllowExit(bool a) {
 	allowExit = a;
 }
 
 static char* detectPlatformCompileString() {
-	#if defined(__WINRT__)
-		return "winrt";
-	#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-		return "win32";
-	#elif defined(__APPLE__) && defined(__MACH__)
-	#include <TargetConditionals.h>
-	#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
-		return "ios-simulator";
-	#elif TARGET_OS_IPHONE
-		return "ios";
-	#else
-		return "macos";
-	#endif
-	#elif defined(__ANDROID__)
-		return "android";
-	#elif defined(__linux__)
-		return "linux";
-	#elif defined(__unix__)
-		return "unix";
-	#elif defined(__SWITCH__)
-		return "nintendo-switch";
-	#elif defined(__ORBIS__) || defined(__PS4__)
-		return "ps4";
-	#elif defined(__PROSPERO__) || defined(__PS5__)
-		return "ps5";
-	#elif defined(_DURANGO) || defined(__XBOX_ONE__)
-		return "xbox-one";
-	#elif defined(_SCARLETT) || defined(__XBOX_SERIES_X__)
-		return "xbox-series-x";
-	#elif defined(__STEAM_DECK__)
-		return "steam-deck";
-	#else
-		return NULL;
-	#endif
+#if defined(__WINRT__)
+	return "winrt";
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+	return "win32";
+#elif defined(__APPLE__) && defined(__MACH__)
+#include <TargetConditionals.h>
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+	return "ios-simulator";
+#elif TARGET_OS_IPHONE
+	return "ios";
+#else
+	return "macos";
+#endif
+#elif defined(__ANDROID__)
+	return "android";
+#elif defined(__linux__)
+	return "linux";
+#elif defined(__unix__)
+	return "unix";
+#elif defined(__SWITCH__)
+	return "nintendo-switch";
+#elif defined(__ORBIS__) || defined(__PS4__)
+	return "ps4";
+#elif defined(__PROSPERO__) || defined(__PS5__)
+	return "ps5";
+#elif defined(_DURANGO) || defined(__XBOX_ONE__)
+	return "xbox-one";
+#elif defined(_SCARLETT) || defined(__XBOX_SERIES_X__)
+	return "xbox-series-x";
+#elif defined(__STEAM_DECK__)
+	return "steam-deck";
+#else
+	return SDL_GetPlatform();
+#endif
 }
 
 static char* detectPlatformRuntimeString() {
-	#if defined(_WIN32)
-		return "windows";
-	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
-		static char buffer[64];
-		struct utsname sysinfo;
-		if (uname(&sysinfo) == 0) {
-			if (strstr(sysinfo.sysname, "Linux")) {
-				if (getenv("ANDROID_ROOT") != NULL) return "android";
-				return "linux";
-			}
-			if (strstr(sysinfo.sysname, "Darwin")) return "macos";
-			if (strstr(sysinfo.sysname, "Unix")) return "unix";
+#if defined(_WIN32)
+	return "windows";
+#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+	static char buffer[64];
+	struct utsname sysinfo;
+	if (uname(&sysinfo) == 0) {
+		if (strstr(sysinfo.sysname, "Linux")) {
+			if (getenv("ANDROID_ROOT") != NULL) return "android";
+			return "linux";
 		}
-		return "unknown-unix";
-	#else
-		return "unknown";
-	#endif
+		if (strstr(sysinfo.sysname, "Darwin")) return "macos";
+		if (strstr(sysinfo.sysname, "Unix")) return "unix";
+	}
+	return "unknown-unix";
+#else
+	return "unknown";
+#endif
 }
 
 static char* getOSVersionString() {
-	#if defined(_WIN32) || defined(_WIN64)
-		char* ver_str = "unknown";
-		if (IsWindows10OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2016/2019/2022 or newer";
-			}
-			else {
-				ver_str = "Windows 10 or newer";
-			}
-		}
-		else if (IsWindows8Point1OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2012 R2";
-			}
-			else {
-				ver_str = "Windows 8.1";
-			}
-		}
-		else if (IsWindows8OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2012";
-			}
-			else {
-				ver_str = "Windows 8";
-			}
-		}
-		else if (IsWindows7SP1OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2008 R2 SP1";
-			}
-			else {
-				ver_str = "Windows 7 SP1";
-			}
-		}
-		else if (IsWindows7OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2008 R2";
-			}
-			else {
-				ver_str = "Windows 7";
-			}
-		}
-		else if (IsWindowsVistaSP2OrGreater()) {
-			if (IsWindowsServer()) {
-				ver_str = "Windows Server 2008 SP2";
-			}
-			else {
-				ver_str = "Windows Vista SP2";
-			}
-		}
-		else if (IsWindowsVistaSP1OrGreater()) {
-			ver_str = "Windows Vista SP1 / Server 2008";
-		}
-		else if (IsWindowsVistaOrGreater()) {
-			ver_str = "Windows Vista / Server 2008";
-		}
-		else if (IsWindowsXPOrGreater()) {
-			ver_str = "Windows XP or newer";
+#if defined(_WIN32) || defined(_WIN64)
+	char* ver_str = "unknown";
+	if (IsWindows10OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2016/2019/2022 or newer";
 		}
 		else {
-			ver_str = "Older than Windows XP";
+			ver_str = "Windows 10 or newer";
 		}
-	    return ver_str;
-	#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
-		static char version[128];
-		struct utsname sysinfo;
-		if (uname(&sysinfo) == 0) {
-			snprintf(version, sizeof(version), "%s", sysinfo.release);
-			return version;
+	}
+	else if (IsWindows8Point1OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2012 R2";
 		}
-		return "unknown";
-	#else
-		return "unknown";
-	#endif
+		else {
+			ver_str = "Windows 8.1";
+		}
+	}
+	else if (IsWindows8OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2012";
+		}
+		else {
+			ver_str = "Windows 8";
+		}
+	}
+	else if (IsWindows7SP1OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2008 R2 SP1";
+		}
+		else {
+			ver_str = "Windows 7 SP1";
+		}
+	}
+	else if (IsWindows7OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2008 R2";
+		}
+		else {
+			ver_str = "Windows 7";
+		}
+	}
+	else if (IsWindowsVistaSP2OrGreater()) {
+		if (IsWindowsServer()) {
+			ver_str = "Windows Server 2008 SP2";
+		}
+		else {
+			ver_str = "Windows Vista SP2";
+		}
+	}
+	else if (IsWindowsVistaSP1OrGreater()) {
+		ver_str = "Windows Vista SP1 / Server 2008";
+	}
+	else if (IsWindowsVistaOrGreater()) {
+		ver_str = "Windows Vista / Server 2008";
+	}
+	else if (IsWindowsXPOrGreater()) {
+		ver_str = "Windows XP or newer";
+	}
+	else {
+		ver_str = "Older than Windows XP";
+	}
+	return ver_str;
+#elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
+	static char version[128];
+	struct utsname sysinfo;
+	if (uname(&sysinfo) == 0) {
+		snprintf(version, sizeof(version), "%s", sysinfo.release);
+		return version;
+	}
+	return "unknown";
+#else
+	return "unknown";
+#endif
 }
 
 static char* getArchitectureString() {
-	#if defined(_WIN64) || defined(__x86_64__) || defined(__amd64__)
-		return "x86_64";
-	#elif defined(_WIN32)
-		return "x86";
-	#elif defined(__aarch64__)
-		return "arm64";
-	#elif defined(__arm__)
-		return "arm";
-	#elif defined(__ppc64__)
-		return "ppc64";
-	#elif defined(__ppc__)
-		return "ppc";
-	#else
-		return "unknown";
-	#endif
+#if defined(_WIN64) || defined(__x86_64__) || defined(__amd64__)
+	return "x86_64";
+#elif defined(_WIN32)
+	return "x86";
+#elif defined(__aarch64__)
+	return "arm64";
+#elif defined(__arm__)
+	return "arm";
+#elif defined(__ppc64__)
+	return "ppc64";
+#elif defined(__ppc__)
+	return "ppc";
+#else
+	return "unknown";
+#endif
 }
 
 static char* detectVirtualizationString() {
@@ -1069,64 +1072,64 @@ static char* xbox_get_home_folder() { return "D:/Home"; }
 
 static char* get_system_username() {
 	static char username[256] = { 0 };
-	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
-		return switch_get_username();
-	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
-		return ps5_get_username();
-	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
-		return xbox_get_username();
-	#elif defined(_WIN32)
-		DWORD size = sizeof(username);
-		if (GetUserNameA(username, &size)) return username;
-	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
-		const char* env_user = getenv("USER");
-		if (env_user && *env_user) { strncpy(username, env_user, sizeof(username) - 1); return username; }
-		struct passwd* pw = getpwuid(getuid());
-		if (pw && pw->pw_name) { strncpy(username, pw->pw_name, sizeof(username) - 1); return username; }
-	#endif
-		return "";
+#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+	return switch_get_username();
+#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+	return ps5_get_username();
+#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+	return xbox_get_username();
+#elif defined(_WIN32)
+	DWORD size = sizeof(username);
+	if (GetUserNameA(username, &size)) return username;
+#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+	const char* env_user = getenv("USER");
+	if (env_user && *env_user) { strncpy(username, env_user, sizeof(username) - 1); return username; }
+	struct passwd* pw = getpwuid(getuid());
+	if (pw && pw->pw_name) { strncpy(username, pw->pw_name, sizeof(username) - 1); return username; }
+#endif
+	return "";
 }
 
 static char* get_temp_folder() {
 	static char temp_path[512] = { 0 };
-	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
-		return switch_get_temp_folder();
-	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
-		return ps5_get_temp_folder();
-	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
-		return xbox_get_temp_folder();
-	#elif defined(_WIN32)
-		DWORD len = GetTempPathA(sizeof(temp_path), temp_path);
-		if (len > 0 && len < sizeof(temp_path)) return temp_path;
-	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
-		const char* tmp = getenv("TMPDIR");
-		if (!tmp) tmp = getenv("TEMP");
-		if (!tmp) tmp = getenv("TMP");
-		if (!tmp) tmp = "/tmp";
-		strncpy(temp_path, tmp, sizeof(temp_path) - 1);
-		return temp_path;
-	#endif
-		return ".";
+#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+	return switch_get_temp_folder();
+#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+	return ps5_get_temp_folder();
+#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+	return xbox_get_temp_folder();
+#elif defined(_WIN32)
+	DWORD len = GetTempPathA(sizeof(temp_path), temp_path);
+	if (len > 0 && len < sizeof(temp_path)) return temp_path;
+#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+	const char* tmp = getenv("TMPDIR");
+	if (!tmp) tmp = getenv("TEMP");
+	if (!tmp) tmp = getenv("TMP");
+	if (!tmp) tmp = "/tmp";
+	strncpy(temp_path, tmp, sizeof(temp_path) - 1);
+	return temp_path;
+#endif
+	return ".";
 }
 
 static char* get_home_folder(void) {
 	static char home_path[512] = { 0 };
-	#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
-		return switch_get_home_folder();
-	#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
-		return ps5_get_home_folder();
-	#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
-		return xbox_get_home_folder();
-	#elif defined(_WIN32)
-		if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, home_path))) return home_path;
-		const char* env_home = getenv("USERPROFILE");
-		if (env_home && *env_home) { chars_strncpy(home_path, env_home, sizeof(home_path) - 1); return home_path; }
-	#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
-		const char* home = getenv("HOME");
-		if (home && *home) { chars_strncpy(home_path, home, sizeof(home_path) - 1); return home_path; }
-		struct passwd* pw = getpwuid(getuid());
-		if (pw && pw->pw_dir) { chars_strncpy(home_path, pw->pw_dir, sizeof(home_path) - 1); return home_path; }
-	#endif
+#if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
+	return switch_get_home_folder();
+#elif defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
+	return ps5_get_home_folder();
+#elif defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
+	return xbox_get_home_folder();
+#elif defined(_WIN32)
+	if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, home_path))) return home_path;
+	const char* env_home = getenv("USERPROFILE");
+	if (env_home && *env_home) { chars_strncpy(home_path, env_home, sizeof(home_path) - 1); return home_path; }
+#elif defined(__unix__) || defined(__APPLE__) || defined(__MACH__)
+	const char* home = getenv("HOME");
+	if (home && *home) { chars_strncpy(home_path, home, sizeof(home_path) - 1); return home_path; }
+	struct passwd* pw = getpwuid(getuid());
+	if (pw && pw->pw_dir) { chars_strncpy(home_path, pw->pw_dir, sizeof(home_path) - 1); return home_path; }
+#endif
 	return ".";
 }
 
@@ -1312,13 +1315,14 @@ void SetPrefs(int64_t handle, const char* section, const char* key,
 			newNode->next = prev->next;
 			prev->next = newNode;
 		}
-	} else if(newNode && newNode->next){
+	}
+	else if (newNode && newNode->next) {
 		newNode->next = prefs->head;
 		prefs->head = newNode;
 	}
 }
 
-int64_t GetPrefs(int64_t handle, const char* section, const char* key,uint8_t* outBytes) {
+int64_t GetPrefs(int64_t handle, const char* section, const char* key, uint8_t* outBytes) {
 	game_preferences* prefs = (game_preferences*)handle;
 	if (!prefs) return 0;
 	game_prefnode* cur = prefs->head;
@@ -1490,7 +1494,7 @@ int64_t Load_SDL_RW_FileSize(const char* filename)
 	return (int64_t)fileSize;
 }
 
-int64_t Load_SDL_RW_FileToBytes(const char* filename , uint8_t* outBytes) {
+int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes) {
 	if (!filename) {
 		return 0;
 	}
@@ -1549,9 +1553,9 @@ void Load_SDL_Cleanup() {
 			eglDestroySurface(display, eglsurface);
 		eglTerminate(display);
 	}
-	#ifdef __SWITCH__
-		romfsExit();
-	#endif
+#ifdef __SWITCH__
+	romfsExit();
+#endif
 #endif
 	Load_SDL_Quit();
 }
@@ -1743,7 +1747,7 @@ static void OnSoundFinished(int channel) {
 static void OnMusicFinished(void) {
 	musicFinishedEvent = true;
 	if (g_isLooping && g_currentMusic && g_loopCount != 0) {
-		if (g_loopCount > 0) g_loopCount--; 
+		if (g_loopCount > 0) g_loopCount--;
 		Mix_PlayMusic(g_currentMusic->handle, 0);
 	}
 	else {
@@ -1752,7 +1756,59 @@ static void OnMusicFinished(void) {
 	}
 }
 
-int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const bool emTouch, const int flags , const bool debug) {
+static int test_create_gles2_context() {
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(tempWindow);
+	if (!tempContext) {
+		printf("GL context creation failed: %s\n", SDL_GetError());
+		return -1;
+	}
+	return tempContext != NULL;
+}
+
+static int test_create_core_profile_context() {
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(tempWindow);
+	if (!tempContext) {
+		printf("GL context creation failed: %s\n", SDL_GetError());
+		return -1;
+	}
+	return tempContext != NULL;
+}
+
+static int test_load_angle_and_create_context(bool debug) {
+#if defined(_WIN32) || defined(_WIN64)
+	HMODULE eglLib = LoadLibraryA("libEGL.dll");
+	HMODULE glesLib = LoadLibraryA("libGLESv2.dll");
+	if (!eglLib || !glesLib) {
+		if (debug) {
+			printf("INFO: ANGLE libraries not found on Windows.\n");
+		}
+		return 0;
+	}
+#elif defined(__linux__)
+	void* eglLib = dlopen("libEGL.so", RTLD_LAZY);
+	void* glesLib = dlopen("libGLESv2.so", RTLD_LAZY);
+	if (!eglLib || !glesLib) {
+		if (debug) {
+			printf("INFO: ANGLE libraries not found on Linux.\n");
+		}
+		return 0;
+	}
+#elif defined(__APPLE__) && defined(__MACH__)
+	//?
+#endif
+	if (debug) {
+		printf("INFO: Using ANGLE for GLES2 context...\n");
+	}
+	return test_create_gles2_context();
+}
+
+int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const bool vsync, const bool emTouch, const int flags, const bool debug) {
 	atexit(SDL_Quit);
 	SetConsoleOutputCP(65001);
 	SetConsoleCP(65001);
@@ -1815,23 +1871,27 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_pre_init(debug);
 	SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 	SDL_SetHint(SDL_HINT_MOUSE_TOUCH_EVENTS, emTouch ? "1" : "0");
-	SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
-	#ifdef __WINRT__
-		SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
-	#endif
+#ifdef __WINRT__
+	SDL_SetHint("SDL_WINRT_HANDLE_BACK_BUTTON", "1");
+#endif
 	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER);
 	if (SDL_check_required_conditions() != 0) {
 		if (debug) {
 			fprintf(stderr, "ERROR: Required runtime conditions not met.\n");
 		}
-		SDL_Quit();
-		SDL_platform_free_quit();
+		Load_SDL_Cleanup();
 		return -1;
 	}
 	if (debug) {
 		printf("INFO: SDL initialized successfully.\n");
 	}
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    //运行不了请注意这段代码，非Win，非Linux默认使用GLES2，并且优先用Angle，跑不了记得带libGLESv2依赖库，原生支持就快灭亡了……
+	#if defined(__ANDROID__) || defined(__IPHONEOS__) || defined(__SWITCH__) || defined(_XBOX_ONE) || defined(__EMSCRIPTEN__) || defined(__HAIKU__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__) || defined(__RPI__) || defined(__ORBIS__) || defined(__PROSPERO__) || defined(__vita__) || defined(__3DS__) || defined(__NGAGE__) || (defined(__APPLE__) && defined(__MACH__))
+		SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	#else
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	#endif
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
@@ -1840,29 +1900,42 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	window = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags == 0 ? SDL_WINDOW_OPENGL : SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
-    if (!window) {
-        printf("Window creation failed: %s\n", SDL_GetError());
-        return -1;
-    }
+	tempWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags == 0 ? SDL_WINDOW_OPENGL : SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
+	if (!tempWindow) {
+		printf("Window creation failed: %s\n", SDL_GetError());
+		return -1;
+	}
 	if (tempContext) {
 		SDL_GL_DeleteContext(tempContext);
 		tempContext = NULL;
 	}
-	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(window);
-	if (!tempContext) {
-        printf("GL context creation failed: %s\n", SDL_GetError());
-        return -1;
-    }
-	#ifdef LOON_DESKTOP 
-        #ifndef GLEW
+    if (test_create_gles2_context()) { 	// 尝试本地GLES2
+		if (debug) {
+			printf("INFO: Using native GLES2 context.\n");
+		}
+	} else if (test_load_angle_and_create_context(debug)) { //尝试ANGLE
+		if (debug) {
+			printf("INFO: Using ANGLE GLES2 context.\n");
+		}
+	} else if (test_create_core_profile_context()) { //最后尝试本地OpenGL
+		if (debug) {
+			printf("INFO: Falling back to OpenGL Core Profile.\n");
+		}
+	}
+	else {
+		if (debug) {
+			printf("INFO: Failed to create any GL context.\n");
+		}
+		Load_SDL_Cleanup();
+		return -1;
+	}
+	#ifndef GLEW
 		if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
 			printf("Failed to load GLES2 functions\n");
 			return -1;
 		}
-       #endif
 	#endif
-	SDL_GL_MakeCurrent(window, tempContext);
+	SDL_GL_MakeCurrent(tempWindow, tempContext);
 	SDL_GL_SetSwapInterval(vsync ? 1 : 0);
 #endif
 	int err = Mix_Init(MIX_INIT_MP3 | MIX_INIT_OGG);
@@ -1887,25 +1960,25 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 			Mix_ChannelFinished(OnSoundFinished);
 		}
 	}
-	return (intptr_t)window;
+	return (intptr_t)tempWindow;
 }
 
 int64_t Load_SDL_WindowHandle() {
-	if (!window) {
+	if (!tempWindow) {
 		return -1;
 	}
-	return (intptr_t)window;
+	return (intptr_t)tempWindow;
 }
 
 static void udate_init_window_size() {
 	int winWidth = 0, winHeight = 0;
-	SDL_GL_GetDrawableSize(window, &winWidth, &winHeight);
+	SDL_GL_GetDrawableSize(tempWindow, &winWidth, &winHeight);
 	g_windowSize[0] = winWidth;
 	g_windowSize[1] = winHeight;
 	g_initWidth = winWidth;
 	g_initHeight = winHeight;
 	if (g_initWidth == 0 || g_initHeight == 0) {
-		SDL_GetWindowSize(window, &winWidth, &winHeight);
+		SDL_GetWindowSize(tempWindow, &winWidth, &winHeight);
 		g_windowSize[0] = winWidth;
 		g_windowSize[1] = winHeight;
 		g_initWidth = winWidth;
@@ -1948,150 +2021,150 @@ bool Load_SDL_Update() {
 	eglSwapBuffers(display, eglsurface);
 	return appletMainLoop();
 #else
-	  memset(g_pressedKeys, 0, sizeof(g_pressedKeys));
-	  memset(g_releasedKeys, 0, sizeof(g_releasedKeys));
-      int running = 1;
-	  SDL_Event event;
-	  int axis = 0;
-	  int touchId = -1;
-	  int touchX = 0;
-	  int touchY = 0;
-	  if (g_initWidth == 0 || g_initHeight == 0) {
-		  udate_init_window_size();
-	  }
-	  while (SDL_PollEvent(&event)) {
-		  tempPolleventType = event.type;
-		  switch (tempPolleventType) {
-		  case SDL_QUIT:
-			  running = 0;
-			  g_keyStates[SDL_SCANCODE_ESCAPE] = 1;
-			  g_lastPressedScancode = -1;
-			  return Load_SDL_Exit(running);
-		  case SDL_WINDOWEVENT:
-			  if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
-				  g_isPause = true;
-			  }
-			  else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || event.window.event == SDL_WINDOWEVENT_RESTORED) {
-				  g_isPause = false;
-			  }
-			  if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
-				  event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-				  udate_init_window_size();
-			  }
-			  break;
-		  case SDL_MOUSEMOTION:
-			  g_touches[0] = 1;
-			  g_touches[1] = event.motion.x;
-			  g_touches[2] = event.motion.y;
-			  break;
-		  case SDL_MOUSEBUTTONDOWN:
-			  g_touches[0] = 0;
-			  g_touches[1] = event.button.x;
-			  g_touches[2] = event.button.y;
-			  break;
-		  case SDL_MOUSEBUTTONUP:
-			  g_touches[0] = -1;
-			  g_touches[1] = event.button.x;
-			  g_touches[2] = event.button.y;
-			  break;
-		  case SDL_FINGERMOTION:
-			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
-			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
-			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
-			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
-				  g_touches[touchId * 3] = touchId;
-				  g_touches[touchId * 3 + 1] = touchX;
-				  g_touches[touchId * 3 + 2] = touchY;
-			  }
-			  break;
-		  case SDL_FINGERDOWN:
-			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
-			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
-			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
-			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
-				  g_touches[touchId * 3] = touchId;
-				  g_touches[touchId * 3 + 1] = touchX;
-				  g_touches[touchId * 3 + 2] = touchY;
-			  }
-			  break;
-		  case SDL_FINGERUP:
-		  case SDL_MULTIGESTURE:
-			  touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
-			  touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
-			  touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
-			  if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
-				  g_touches[touchId * 3] = -1;
-				  g_touches[touchId * 3 + 1] = touchX;
-				  g_touches[touchId * 3 + 2] = touchY;
-			  }
-			  break;
-		  case SDL_KEYDOWN:
-			  //分开存储键盘和游戏手柄事件，避免混淆
-			  if (!g_keyStates[event.key.keysym.scancode]){
-				  g_pressedKeys[event.key.keysym.scancode] = 1;
-				  g_lastPressedScancode = event.key.keysym.scancode;
-			  }
-			  g_keyStates[event.key.keysym.scancode] = 1;
-			  buttons |= keyToButton(event.key.keysym.scancode);
-			  axis = keyToAxis(event.key.keysym.scancode);
-			  if (axis > -1 && !event.key.repeat)
-				  joysticks[axis & 0x3] += axis & 0x4 ? -1 : 1;
-			  break;
-		  case SDL_KEYUP:
-			  //分开存储键盘和游戏手柄事件，避免混淆
-			  g_keyStates[event.key.keysym.scancode] = 0;
-			  g_releasedKeys[event.key.keysym.scancode] = 1;
-			  buttons &= ~keyToButton(event.key.keysym.scancode);
-			  axis = keyToAxis(event.key.keysym.scancode);
-			  if (axis > -1 && !event.key.repeat)
-				  joysticks[axis & 0x3] = 0;
-			  break;
-		  case SDL_CONTROLLERBUTTONDOWN:
-			  buttons |= mapButtonSDL(event.cbutton.button);
-			  break;
-		  case SDL_CONTROLLERBUTTONUP:
-			  buttons &= ~mapButtonSDL(event.cbutton.button);
-			  break;
-		  case SDL_CONTROLLERAXISMOTION:
-			  if (event.caxis.axis >= 0 && event.caxis.axis < 4) {
-				  float normValue = (float)event.caxis.value / 32767.0f;
-				  if (fabsf(normValue) < 0.0f) {
-					  normValue = 0.0f;
-				  }
-				  joysticks[event.caxis.axis] = normValue;
-			  }
-			  for (int i = 0; i < 2; i++)
-				  if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT + i) {
-					  if (event.caxis.value > 512)
-						  buttons |= 1 << (8 + i);
-					  else
-						  buttons &= ~(1 << (8 + i));
-				  }
-			  break;
-		  case SDL_CONTROLLERDEVICEADDED:
-			  tempController = SDL_GameControllerOpen(event.cdevice.which);
-			  break;
-		  case SDL_CONTROLLERDEVICEREMOVED:
-			  SDL_GameControllerClose(SDL_GameControllerFromPlayerIndex(event.cdevice.which));
-			  break;
-		  case SDL_TEXTINPUT:
-			  for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
-				  g_texts[i] = event.text.text[i];
-				  if (event.text.text[i] == '\0') {
-					  break;
-				  }
-			  }
-			  break;
-		  case SDL_TEXTEDITING:
-			  for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
-				  g_texts[i] = event.edit.text[i];
-				  if (event.edit.text[i] == '\0') {
-					  break;
-				  }
-			  }
-			  break;
-		  }
-	  }
+	memset(g_pressedKeys, 0, sizeof(g_pressedKeys));
+	memset(g_releasedKeys, 0, sizeof(g_releasedKeys));
+	int running = 1;
+	SDL_Event event;
+	int axis = 0;
+	int touchId = -1;
+	int touchX = 0;
+	int touchY = 0;
+	if (g_initWidth == 0 || g_initHeight == 0) {
+		udate_init_window_size();
+	}
+	while (SDL_PollEvent(&event)) {
+		tempPolleventType = event.type;
+		switch (tempPolleventType) {
+		case SDL_QUIT:
+			running = 0;
+			g_keyStates[SDL_SCANCODE_ESCAPE] = 1;
+			g_lastPressedScancode = -1;
+			return Load_SDL_Exit(running);
+		case SDL_WINDOWEVENT:
+			if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST || event.window.event == SDL_WINDOWEVENT_MINIMIZED) {
+				g_isPause = true;
+			}
+			else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED || event.window.event == SDL_WINDOWEVENT_RESTORED) {
+				g_isPause = false;
+			}
+			if (event.window.event == SDL_WINDOWEVENT_RESIZED ||
+				event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+				udate_init_window_size();
+			}
+			break;
+		case SDL_MOUSEMOTION:
+			g_touches[0] = 1;
+			g_touches[1] = event.motion.x;
+			g_touches[2] = event.motion.y;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			g_touches[0] = 0;
+			g_touches[1] = event.button.x;
+			g_touches[2] = event.button.y;
+			break;
+		case SDL_MOUSEBUTTONUP:
+			g_touches[0] = -1;
+			g_touches[1] = event.button.x;
+			g_touches[2] = event.button.y;
+			break;
+		case SDL_FINGERMOTION:
+			touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				g_touches[touchId * 3] = touchId;
+				g_touches[touchId * 3 + 1] = touchX;
+				g_touches[touchId * 3 + 2] = touchY;
+			}
+			break;
+		case SDL_FINGERDOWN:
+			touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				g_touches[touchId * 3] = touchId;
+				g_touches[touchId * 3 + 1] = touchX;
+				g_touches[touchId * 3 + 2] = touchY;
+			}
+			break;
+		case SDL_FINGERUP:
+		case SDL_MULTIGESTURE:
+			touchId = SDL_ConvertMapTouchIdToIndex(event.tfinger.touchId);
+			touchX = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.x, 1.0f)) * g_initWidth);
+			touchY = (int)roundf(fmaxf(0.0f, fminf(event.tfinger.y, 1.0f)) * g_initHeight);
+			if (touchId > -1 && touchId < MAX_TOUCH_DEVICES) {
+				g_touches[touchId * 3] = -1;
+				g_touches[touchId * 3 + 1] = touchX;
+				g_touches[touchId * 3 + 2] = touchY;
+			}
+			break;
+		case SDL_KEYDOWN:
+			//分开存储键盘和游戏手柄事件，避免混淆
+			if (!g_keyStates[event.key.keysym.scancode]) {
+				g_pressedKeys[event.key.keysym.scancode] = 1;
+				g_lastPressedScancode = event.key.keysym.scancode;
+			}
+			g_keyStates[event.key.keysym.scancode] = 1;
+			buttons |= keyToButton(event.key.keysym.scancode);
+			axis = keyToAxis(event.key.keysym.scancode);
+			if (axis > -1 && !event.key.repeat)
+				joysticks[axis & 0x3] += axis & 0x4 ? -1 : 1;
+			break;
+		case SDL_KEYUP:
+			//分开存储键盘和游戏手柄事件，避免混淆
+			g_keyStates[event.key.keysym.scancode] = 0;
+			g_releasedKeys[event.key.keysym.scancode] = 1;
+			buttons &= ~keyToButton(event.key.keysym.scancode);
+			axis = keyToAxis(event.key.keysym.scancode);
+			if (axis > -1 && !event.key.repeat)
+				joysticks[axis & 0x3] = 0;
+			break;
+		case SDL_CONTROLLERBUTTONDOWN:
+			buttons |= mapButtonSDL(event.cbutton.button);
+			break;
+		case SDL_CONTROLLERBUTTONUP:
+			buttons &= ~mapButtonSDL(event.cbutton.button);
+			break;
+		case SDL_CONTROLLERAXISMOTION:
+			if (event.caxis.axis >= 0 && event.caxis.axis < 4) {
+				float normValue = (float)event.caxis.value / 32767.0f;
+				if (fabsf(normValue) < 0.0f) {
+					normValue = 0.0f;
+				}
+				joysticks[event.caxis.axis] = normValue;
+			}
+			for (int i = 0; i < 2; i++)
+				if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT + i) {
+					if (event.caxis.value > 512)
+						buttons |= 1 << (8 + i);
+					else
+						buttons &= ~(1 << (8 + i));
+				}
+			break;
+		case SDL_CONTROLLERDEVICEADDED:
+			tempController = SDL_GameControllerOpen(event.cdevice.which);
+			break;
+		case SDL_CONTROLLERDEVICEREMOVED:
+			SDL_GameControllerClose(SDL_GameControllerFromPlayerIndex(event.cdevice.which));
+			break;
+		case SDL_TEXTINPUT:
+			for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
+				g_texts[i] = event.text.text[i];
+				if (event.text.text[i] == '\0') {
+					break;
+				}
+			}
+			break;
+		case SDL_TEXTEDITING:
+			for (int i = 0; i < MAX_TEXTINPUT_CAHR_LEN; i++) {
+				g_texts[i] = event.edit.text[i];
+				if (event.edit.text[i] == '\0') {
+					break;
+				}
+			}
+			break;
+		}
+	}
 	{
 		if (musicFinishedEvent) {
 			OnMusicFinished();
@@ -2102,7 +2175,7 @@ bool Load_SDL_Update() {
 			soundFinishedEvent = false;
 		}
 	}
-	SDL_GL_SwapWindow(window);
+	SDL_GL_SwapWindow(tempWindow);
 	return Load_SDL_Exit(running);
 #endif
 }
@@ -2111,20 +2184,20 @@ const char* Load_SDL_GetText() {
 	return g_texts;
 }
 
-void Load_SDL_GL_SwapScreen(){
+void Load_SDL_GL_SwapScreen() {
 #ifndef LOON_DESKTOP
 	if (display && eglsurface) {
 		eglSwapBuffers(display, eglsurface);
 	}
 #else
-  if(window){
-	 SDL_GL_SwapWindow(window);
-  }
+	if (tempWindow) {
+		SDL_GL_SwapWindow(tempWindow);
+	}
 #endif
 }
 
-void Load_SDL_GL_SwapWindowHandle(const int64_t handle){
-  	SDL_Window* win = (SDL_Window*)handle;
+void Load_SDL_GL_SwapWindowHandle(const int64_t handle) {
+	SDL_Window* win = (SDL_Window*)handle;
 	if (!win) {
 		return;
 	}
@@ -2143,14 +2216,14 @@ void GetDisplayResolution(int displayIndex, int* w, int* h) {
 }
 
 void Call_SDL_GetRenderScale(float* scales) {
-	if (!window || !scales) {
+	if (!tempWindow || !scales) {
 		return;
 	}
 	int outRenderW, outRenderH;
 	int winW, winH;
-	SDL_GetWindowSize(window, &winW, &winH);
-	SDL_GL_GetDrawableSize(window, &outRenderW, &outRenderH);
-	int displayIndex = SDL_GetWindowDisplayIndex(window);
+	SDL_GetWindowSize(tempWindow, &winW, &winH);
+	SDL_GL_GetDrawableSize(tempWindow, &outRenderW, &outRenderH);
+	int displayIndex = SDL_GetWindowDisplayIndex(tempWindow);
 	int screenW, screenH;
 	GetDisplayResolution(displayIndex, &screenW, &screenH);
 	if (winW > 0 && winH > 0) {
@@ -2162,7 +2235,7 @@ void Call_SDL_GetRenderScale(float* scales) {
 	}
 }
 
-void GetPlatformDefaultResolution(const char* platform, int* w, int* h) {
+static void GetPlatformDefaultResolution(const char* platform, int* w, int* h) {
 	for (size_t i = 0; i < sizeof(platformResTable) / sizeof(platformResTable[0]); i++) {
 		if (strstr(platform, platformResTable[i].platform)) {
 			*w = platformResTable[i].width;
@@ -2174,23 +2247,23 @@ void GetPlatformDefaultResolution(const char* platform, int* w, int* h) {
 	*h = 720;
 }
 
-int SelectBestDisplay() {
-    int numDisplays = SDL_GetNumVideoDisplays();
-    if (numDisplays <= 1) {
-        return 0; 
-    }
-    int bestIndex = 0;
-    int bestArea = 0;
-    for (int i = 0; i < numDisplays; i++) {
-        int w, h;
-        GetDisplayResolution(i, &w, &h);
-        int area = w * h;
-        if (area > bestArea) {
-            bestArea = area;
-            bestIndex = i;
-        }
-    }
-    return bestIndex;
+static int SelectBestDisplay() {
+	int numDisplays = SDL_GetNumVideoDisplays();
+	if (numDisplays <= 1) {
+		return 0;
+	}
+	int bestIndex = 0;
+	int bestArea = 0;
+	for (int i = 0; i < numDisplays; i++) {
+		int w, h;
+		GetDisplayResolution(i, &w, &h);
+		int area = w * h;
+		if (area > bestArea) {
+			bestArea = area;
+			bestIndex = i;
+		}
+	}
+	return bestIndex;
 }
 
 void GetCurrentScreenSize(int* width, int* height) {
@@ -2219,7 +2292,7 @@ void Load_SDL_Current_Screen_Size(int32_t* values) {
 
 void Load_SDL_Current_Window_Size(int32_t* values) {
 	int winWidth, winHeight;
-	SDL_GetWindowSize(window, &winWidth, &winHeight);
+	SDL_GetWindowSize(tempWindow, &winWidth, &winHeight);
 	values[0] = winWidth;
 	values[1] = winHeight;
 }
@@ -2339,10 +2412,11 @@ void FreeTempController() {
 }
 
 bool Load_SDL_Exit(const int run) {
-	if(allowExit && run != 0){
-	  return true;
-	} else {
-	  return false;
+	if (allowExit && run != 0) {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 
@@ -2371,7 +2445,7 @@ int Load_SDL_GL_SetAttribute(const int attribute, const int value)
 void Load_SDL_GetDrawableSize(const int64_t window, int32_t* values)
 {
 	SDL_Window* win = (SDL_Window*)window;
-	if(!win){
+	if (!win) {
 		return;
 	}
 	int w, h;
@@ -2397,7 +2471,7 @@ int64_t CreateGameData(char* fileName)
 	if (!fs || !fileName) {
 		return false;
 	}
-    chars_append(fs->basepath, MAX_GAMESAVE_PATH_CAHR_LEN - 1, fileName);
+	chars_append(fs->basepath, MAX_GAMESAVE_PATH_CAHR_LEN - 1, fileName);
 	fs->basepath[MAX_GAMESAVE_PATH_CAHR_LEN - 1] = '\0';
 	fs->filecount = 0;
 	gamefilesys = fs;
@@ -2436,7 +2510,7 @@ int64_t ReadGameData(const int64_t handle, const char* filename, uint8_t* outByt
 	SDL_RWclose(rw);
 	int64_t outSize = (int64_t)size;
 	if (buffer) {
-		copy_uint8_array(outBytes,(size_t)outSize, buffer, (size_t)outSize);
+		copy_uint8_array(outBytes, (size_t)outSize, buffer, (size_t)outSize);
 		free(buffer);
 	}
 	return outSize;
@@ -2528,8 +2602,8 @@ char* GetSystemProperty(const char* key)
 		return detectVirtualizationString();
 	if (strcmp(key, "os.gpu") == 0)
 		return getGpuInfoString();
-	if (strcmp(key, "os.gpu.cores") == 0) 	
-		return ints_varargs_to_string("",1,getCpuCores());
+	if (strcmp(key, "os.gpu.cores") == 0)
+		return ints_varargs_to_string("", 1, getCpuCores());
 	if (strcmp(key, "os.memory") == 0) {
 		int64_t totalRAM = 0, freeRAM = 0;
 		getMemoryInfoInts(&totalRAM, &freeRAM);
@@ -2565,7 +2639,7 @@ const char* Load_SDL_GetBasePath()
 
 const char* Load_SDL_GetPrefPath(const char* org, const char* app)
 {
-	return SDL_GetPrefPath(org,app);
+	return SDL_GetPrefPath(org, app);
 }
 
 const char* Load_SDL_GetPlatform()
@@ -2915,23 +2989,23 @@ int Load_Buttons()
 int32_t Load_Axes(const int controller, float* axes)
 {
 #ifdef __SWITCH__
-    const PadState &pad = controller == -1 ? combinedPad : pads[controller];
+	const PadState& pad = controller == -1 ? combinedPad : pads[controller];
 	HidAnalogStickState stickLeft = padGetStickPos(&pad, 0);
 	HidAnalogStickState stickRight = padGetStickPos(&pad, 1);
 	axes[0] = (float)stickLeft.x / JOYSTICK_MAX;
 	axes[1] = (float)stickLeft.y / JOYSTICK_MAX;
 	axes[2] = (float)stickRight.x / JOYSTICK_MAX;
 	axes[3] = (float)stickRight.y / JOYSTICK_MAX;
-    remapPadAxes(axes, padGetStyleSet(&pad));
+	remapPadAxes(axes, padGetStyleSet(&pad));
 	axes[1] *= -1;
 	axes[3] *= -1;
 #else
-    memcpy(axes, joysticks, sizeof(joysticks));
+	memcpy(axes, joysticks, sizeof(joysticks));
 #endif
 	return sizeof(axes);
 }
 
-void Load_SDL_GetWindowSize(const int64_t window,int32_t* values)
+void Load_SDL_GetWindowSize(const int64_t window, int32_t* values)
 {
 	SDL_Window* win = (SDL_Window*)window;
 	if (!win) {
@@ -2959,7 +3033,7 @@ void Load_SDL_UnlockSurface(const int64_t handle)
 	if (!surface) {
 		return;
 	}
-	 SDL_UnlockSurface(surface->surface_data);
+	SDL_UnlockSurface(surface->surface_data);
 }
 
 void Load_SDL_Delay(const int32_t d)
@@ -2999,7 +3073,7 @@ int64_t Load_SDL_CreateRGBSurfaceFrom(const int32_t* pixels, const int w, const 
 	int depth, pitch;
 	if (format == 3) {
 		depth = 24;
-		pitch = 3 * w; 
+		pitch = 3 * w;
 	}
 	else { // if STBI_rgb_alpha (RGBA)
 		depth = 32;
@@ -3034,7 +3108,7 @@ int64_t Load_SDL_ConvertSurfaceFormat(const int64_t handle, int32_t pixel_format
 	return (intptr_t)newsurface;
 }
 
-void Load_SDL_GetSurfaceSize(const int64_t handle,int32_t* values)
+void Load_SDL_GetSurfaceSize(const int64_t handle, int32_t* values)
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
@@ -3042,7 +3116,7 @@ void Load_SDL_GetSurfaceSize(const int64_t handle,int32_t* values)
 	values[1] = surface->surface_data->h;
 }
 
- void Load_SDL_GetSurfacePixels32(const int64_t handle, int order, int32_t* pixels)
+void Load_SDL_GetSurfacePixels32(const int64_t handle, int order, int32_t* pixels)
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
@@ -3059,10 +3133,10 @@ void Load_SDL_GetSurfaceSize(const int64_t handle,int32_t* values)
 			Uint8 index = row[x];
 			SDL_Color color = palette->colors[index];
 			if (order == 0) {
-				pixels[y * width + x] =  (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
+				pixels[y * width + x] = (color.a << 24) | (color.r << 16) | (color.g << 8) | color.b;
 			}
 			else {
-				pixels[y * width + x] =  (color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
+				pixels[y * width + x] = (color.r << 24) | (color.g << 16) | (color.b << 8) | color.a;
 			}
 		}
 	}
@@ -3078,13 +3152,13 @@ void Load_SDL_SetPixel(const int64_t handle, const int x, const int y, const int
 	}
 	Uint8* target_pixel = (Uint8*)surface->surface_data->pixels + y * surface->surface_data->pitch + x * surface->surface_data->format->BytesPerPixel;
 	switch (surface->surface_data->format->BytesPerPixel) {
-	case 1: 
+	case 1:
 		*target_pixel = (Uint8)pixel;
 		break;
-	case 2: 
+	case 2:
 		*(Uint16*)target_pixel = (Uint16)pixel;
 		break;
-	case 3: 
+	case 3:
 		if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
 			target_pixel[0] = (pixel >> 16) & 0xFF;
 			target_pixel[1] = (pixel >> 8) & 0xFF;
@@ -3096,7 +3170,7 @@ void Load_SDL_SetPixel(const int64_t handle, const int x, const int y, const int
 			target_pixel[2] = (pixel >> 16) & 0xFF;
 		}
 		break;
-	case 4: 
+	case 4:
 		*(Uint32*)target_pixel = (Uint32)pixel;
 		break;
 	}
@@ -3194,7 +3268,7 @@ void Load_SDL_FillRect(const int64_t handle, const int x, const int y, const int
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
-	Uint32 color = SDL_MapRGBA(surface->surface_data->format, r, g, b,a);
+	Uint32 color = SDL_MapRGBA(surface->surface_data->format, r, g, b, a);
 	SDL_Rect rect = { x, y, w, h };
 	SDL_FillRect(surface->surface_data, &rect, color);
 }
@@ -3207,7 +3281,7 @@ void Load_SDL_SetClipRect(const int64_t handle, const int x, const int y, const 
 	SDL_SetClipRect(surface->surface_data, &clipRect);
 }
 
-void Load_SDL_GetClipRect(const int64_t handle,int32_t* values)
+void Load_SDL_GetClipRect(const int64_t handle, int32_t* values)
 {
 	cache_surface* surface = (cache_surface*)handle;
 	if (!surface) return;
@@ -3457,110 +3531,110 @@ void Load_SDL_DestroyWindow(const int64_t handle)
 
 void Call_SDL_GetDrawableSize(int* values)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
 	int w, h;
-	SDL_GL_GetDrawableSize(window, &w, &h);
+	SDL_GL_GetDrawableSize(tempWindow, &w, &h);
 	values[0] = w;
 	values[1] = h;
 }
 
 void Call_SDL_GetWindowSize(int* values)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
 	int width = 0;
 	int height = 0;
-	SDL_GetWindowSize(window, &width, &height);
+	SDL_GetWindowSize(tempWindow, &width, &height);
 	values[0] = width;
 	values[1] = height;
 }
 
 void Call_SDL_MaximizeWindow()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_MaximizeWindow(window);
+	SDL_MaximizeWindow(tempWindow);
 }
 
 void Call_SDL_MinimizeWindow()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_MinimizeWindow(window);
+	SDL_MinimizeWindow(tempWindow);
 }
 
 int Call_SDL_SetWindowFullscreen(const int flags)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return 0;
 	}
-	return SDL_SetWindowFullscreen(window, flags);
+	return SDL_SetWindowFullscreen(tempWindow, flags);
 }
 
 void Call_SDL_SetWindowBordered(const bool bordered)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_SetWindowBordered(window, (SDL_bool)bordered);
+	SDL_SetWindowBordered(tempWindow, (SDL_bool)bordered);
 }
 
 void Call_SDL_SetWindowSize(const int w, const int h)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_SetWindowSize(window, w,h);
+	SDL_SetWindowSize(tempWindow, w, h);
 }
 
 void Call_SDL_SetWindowPosition(const int x, const int y)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_SetWindowPosition(window, x, y);
+	SDL_SetWindowPosition(tempWindow, x, y);
 }
 
 int Call_SDL_GetWindowDisplayIndex()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return 0;
 	}
-	return SDL_GetWindowDisplayIndex(window);
+	return SDL_GetWindowDisplayIndex(tempWindow);
 }
 
 int Call_SDL_GetWindowFlags()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return 0;
 	}
-	return SDL_GetWindowFlags(window);
+	return SDL_GetWindowFlags(tempWindow);
 }
 
 void Call_SDL_SetWindowTitle(const char* title)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_SetWindowTitle(window, title);
+	SDL_SetWindowTitle(tempWindow, title);
 }
 
 void Call_SDL_RestoreWindow()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_RestoreWindow(window);
+	SDL_RestoreWindow(tempWindow);
 }
 
 void Call_SDL_SetWindowIcon(const int64_t hanlde)
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
 	cache_surface* surface = (cache_surface*)hanlde;
@@ -3572,29 +3646,29 @@ void Call_SDL_SetWindowIcon(const int64_t hanlde)
 		fprintf(stderr, "surface->surface_data error !\n");
 		return;
 	}
-	SDL_SetWindowIcon(window, surface->surface_data);
+	SDL_SetWindowIcon(tempWindow, surface->surface_data);
 }
 
 void Call_SDL_GL_SwapWindow()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return;
 	}
-	SDL_GL_SwapWindow(window);
+	SDL_GL_SwapWindow(tempWindow);
 }
 
 int64_t Call_SDL_GL_CreateContext()
 {
-	if (!window) {
+	if (!tempWindow) {
 		return 0;
 	}
-	return (intptr_t)SDL_GL_CreateContext(window);
+	return (intptr_t)SDL_GL_CreateContext(tempWindow);
 }
 
 void Call_SDL_DestroyWindow() {
-	if (window) {
-		SDL_DestroyWindow(window);
-		window = NULL;
+	if (tempWindow) {
+		SDL_DestroyWindow(tempWindow);
+		tempWindow = NULL;
 	}
 }
 
@@ -3626,7 +3700,7 @@ int Load_SDL_PollEvent(char* data)
 			if (e.window.event == SDL_WINDOWEVENT_RESIZED ||
 				e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 				int winWidth = 0, winHeight = 0;
-				SDL_GetWindowSize(window, &winWidth, &winHeight);
+				SDL_GetWindowSize(tempWindow, &winWidth, &winHeight);
 				g_windowSize[0] = winWidth;
 				g_windowSize[1] = winHeight;
 			}
@@ -3780,13 +3854,13 @@ float Load_SDL_Mix_GetMusicPosition(const int64_t handle)
 	if (!music) {
 		return -1.0;
 	}
-	#if SDL_MIXER_VERSION_ATLEAST(2,6,0)
-		if (music && music->handle) {
-			double pos = Mix_GetMusicPosition(music->handle);
-			if (pos >= 0) return pos;
-		}
-	#endif
-		return -1.0; 
+#if SDL_MIXER_VERSION_ATLEAST(2,6,0)
+	if (music && music->handle) {
+		double pos = Mix_GetMusicPosition(music->handle);
+		if (pos >= 0) return pos;
+	}
+#endif
+	return -1.0;
 }
 
 bool Load_SDL_Mix_PlayingMusic() {
@@ -3963,27 +4037,27 @@ void Load_SDL_Quit()
 	FreeTempContext();
 	Mix_HookMusicFinished(NULL);
 	Mix_ChannelFinished(NULL);
-    Mix_HaltMusic();
-    Mix_HaltChannel(-1);
+	Mix_HaltMusic();
+	Mix_HaltChannel(-1);
 	Mix_CloseAudio();
 	SDL_FreeTouchIdMap();
 	Call_SDL_DestroyWindow();
-    int numJoysticks = SDL_NumJoysticks();
-    for (int i = 0; i < numJoysticks; i++) {
-        SDL_Joystick* joy = SDL_JoystickOpen(i);
-        if (joy) SDL_JoystickClose(joy);
-    }
-    for (int i = 0; i < numJoysticks; i++) {
-        SDL_GameController* ctrl = SDL_GameControllerOpen(i);
-        if (ctrl) SDL_GameControllerClose(ctrl);
-    }
-    int numSensors = SDL_NumSensors();
-    for (int i = 0; i < numSensors; i++) {
-        SDL_Sensor* sensor = SDL_SensorOpen(i);
-        if (sensor) SDL_SensorClose(sensor);
-    }
+	int numJoysticks = SDL_NumJoysticks();
+	for (int i = 0; i < numJoysticks; i++) {
+		SDL_Joystick* joy = SDL_JoystickOpen(i);
+		if (joy) SDL_JoystickClose(joy);
+	}
+	for (int i = 0; i < numJoysticks; i++) {
+		SDL_GameController* ctrl = SDL_GameControllerOpen(i);
+		if (ctrl) SDL_GameControllerClose(ctrl);
+	}
+	int numSensors = SDL_NumSensors();
+	for (int i = 0; i < numSensors; i++) {
+		SDL_Sensor* sensor = SDL_SensorOpen(i);
+		if (sensor) SDL_SensorClose(sensor);
+	}
 	Mix_Quit();
-    SDL_Quit();
+	SDL_Quit();
 	SDL_platform_free_quit();
 }
 
@@ -4025,7 +4099,7 @@ void Load_GL_ActiveTexture(const int tex)
 	glActiveTexture(tex);
 }
 
-void Load_GL_BindTexture(const int target,const int tex)
+void Load_GL_BindTexture(const int target, const int tex)
 {
 	glBindTexture(target, tex);
 }
@@ -4103,7 +4177,7 @@ void Load_GL_DeleteTexture(const int texture)
 	glDeleteTextures(1, &b);
 }
 
-void Load_GL_DeleteTextures(const int n,const void* textures)
+void Load_GL_DeleteTextures(const int n, const void* textures)
 {
 	glDeleteTextures(n, (GLuint*)textures);
 }
@@ -4171,7 +4245,7 @@ int Load_GL_GenTexture()
 	return result;
 }
 
-void Load_GL_GenTextures(const int n,const void* textures)
+void Load_GL_GenTextures(const int n, const void* textures)
 {
 	glGenTextures(n, (GLuint*)textures);
 }
@@ -4370,13 +4444,13 @@ int Load_GL_CreateShader(const int type)
 
 int Load_GL_GenRenderbuffer()
 {
-    GLuint b;
+	GLuint b;
 	if (glGenRenderbuffers) {
 		glGenRenderbuffers(1, &b);
 	}
-	#ifdef GLEW
-		glGenRenderbuffersEXT(1, &b);
-	#endif
+#ifdef GLEW
+	glGenRenderbuffersEXT(1, &b);
+#endif
 	return b;
 }
 
@@ -4498,9 +4572,9 @@ void Load_GL_GenBuffers(const int n, const void* buffers)
 	if (glGenBuffers) {
 		glGenBuffers(n, (GLuint*)buffers);
 	}
-	#ifdef GLEW
-		glGenBuffersEXT(n, (GLuint*)buffers);
-	#endif
+#ifdef GLEW
+	glGenBuffersEXT(n, (GLuint*)buffers);
+#endif
 }
 
 void Load_GL_GenRenderbuffers(const int n, const void* buffers)
@@ -4508,9 +4582,9 @@ void Load_GL_GenRenderbuffers(const int n, const void* buffers)
 	if (glGenRenderbuffers) {
 		glGenRenderbuffers(n, (GLuint*)buffers);
 	}
-	#ifdef GLEW
-		glGenRenderbuffersEXT(n, (GLuint*)buffers);
-	#endif
+#ifdef GLEW
+	glGenRenderbuffersEXT(n, (GLuint*)buffers);
+#endif
 }
 
 void Load_GL_GenerateMipmap(const int target)
@@ -4540,14 +4614,14 @@ int Load_GL_GenFramebuffer()
 #endif
 }
 
-void Load_GL_GenFramebuffers(const int n,const void* buffers)
+void Load_GL_GenFramebuffers(const int n, const void* buffers)
 {
 	if (glGenFramebuffers) {
 		glGenFramebuffers(n, (GLuint*)buffers);
 	}
-	#ifdef GLEW
-		glGenFramebuffersEXT(n, (GLuint*)buffers);
-	#endif
+#ifdef GLEW
+	glGenFramebuffersEXT(n, (GLuint*)buffers);
+#endif
 }
 
 char* Load_GL_GetActiveAttrib(const int program, const int index, const void* size, const void* type)
@@ -4616,9 +4690,9 @@ void Load_GL_GetFramebufferAttachmentParameteriv(int target, int attachment, int
 		glGetFramebufferAttachmentParameteriv(target, attachment, pname, (GLint*)params);
 		return;
 	}
-	#ifdef GLEW
-		glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, (GLint*)params);
-	#endif
+#ifdef GLEW
+	glGetFramebufferAttachmentParameterivEXT(target, attachment, pname, (GLint*)params);
+#endif
 }
 
 void Load_GL_GetProgramiv(int program, int pname, const void* params)

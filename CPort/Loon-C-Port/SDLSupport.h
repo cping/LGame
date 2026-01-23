@@ -68,10 +68,8 @@ static void run_sleep_ms(int ms) {
 #else
     #ifdef GLEW
         #include "GL/glew.h"
-    #elif defined(_WIN32) || defined(_WIN64) || defined(__APPLE__) || defined(__MACH__) || defined(__linux__) || defined(__unix__)
-        #include "glad/gles2.h"
     #else
-        #include "glad/glad.h"
+        #include "glad/gles2.h"
     #endif
 #endif
 
@@ -105,6 +103,8 @@ static void run_sleep_ms(int ms) {
     #include <pspkernel.h>
     #include <pspdebug.h>
     #include <pspctrl.h>
+#elif defined(__EMSCRIPTEN__)
+    #include <emscripten/emscripten.h>
 #endif
 
 #ifdef __WINRT__

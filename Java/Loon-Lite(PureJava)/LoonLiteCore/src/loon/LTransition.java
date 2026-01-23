@@ -25,6 +25,7 @@ import loon.action.sprite.ISprite;
 import loon.action.sprite.effect.FadeArcEffect;
 import loon.action.sprite.effect.BaseAbstractEffect;
 import loon.action.sprite.effect.FadeBoardEffect;
+import loon.action.sprite.effect.FadeCheckerboardEffect;
 import loon.action.sprite.effect.FadeDoorEffect;
 import loon.action.sprite.effect.FadeDoorIrregularEffect;
 import loon.action.sprite.effect.CrossEffect;
@@ -700,6 +701,13 @@ public final class LTransition {
 	public static final LTransition newFadeSwipe(final int t, final LColor c, final long delay) {
 		if (LSystem.base() != null) {
 			return createEffectTransition(new FadeSwipeEffect(t, c), delay);
+		}
+		return null;
+	}
+
+	public static final LTransition newFadeCheckerBoard(final int t, final LColor c) {
+		if (LSystem.base() != null) {
+			return createEffectTransition(new FadeCheckerboardEffect(t, c));
 		}
 		return null;
 	}

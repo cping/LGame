@@ -28,7 +28,7 @@ typedef struct {
 
 void ImportSTBInclude();
 
-void Load_STB_InputDialog(int64_t handle,const int dialogType,const int width,const int height, const char* title, const char* text, const char* textA, const char* textB);
+int Load_STB_InputDialog(int64_t handle,const int dialogType,const int width,const int height, const char* title, const char* text, const char* textA, const char* textB);
 
 bool Load_STB_Dialog_YesOrNO();
 
