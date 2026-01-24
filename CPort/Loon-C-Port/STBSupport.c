@@ -5,12 +5,23 @@ static cache_surface* _temp_stbsurface;
 static bool g_YesOrNo = false;
 static char g_input_text[256] = "";
 
+typedef struct {
+	stbtt_fontinfo font;
+	unsigned char* fontBuffer;
+} FontData;
+
+typedef struct {
+	const char* name;
+	const char* path;
+} FontEntry;
+
+// 默认的字体文件位置
 #if defined(_WIN32)
 FontEntry system_font_paths[] = {
-	{"微软雅黑", "C:\\Windows\\Fonts\\msyh.ttc"},
-	{"微软雅黑 Bold", "C:\\Windows\\Fonts\\msyhbd.ttc"},
-	{"黑体", "C:\\Windows\\Fonts\\simhei.ttf"},
-	{"宋体", "C:\\Windows\\Fonts\\simsun.ttc"},
+	{"Microsoft YaHei", "C:\\Windows\\Fonts\\msyh.ttc"},
+	{"Microsoft YaHei Bold", "C:\\Windows\\Fonts\\msyhbd.ttc"},
+	{"SimHei", "C:\\Windows\\Fonts\\simhei.ttf"},
+	{"SimSun", "C:\\Windows\\Fonts\\simsun.ttc"},
 	{"Arial", "C:\\Windows\\Fonts\\arial.ttf"},
 	{"Arial Bold", "C:\\Windows\\Fonts\\arialbd.ttf"},
 	{"Calibri", "C:\\Windows\\Fonts\\calibri.ttf"},
@@ -24,12 +35,12 @@ FontEntry system_font_paths[] = {
 FontEntry system_font_paths[] = {
 	{"Arial", "/System/Library/Fonts/Supplemental/Arial.ttf"},
 	{"Arial Bold", "/System/Library/Fonts/Supplemental/Arial Bold.ttf"},
-	{"宋体", "/System/Library/Fonts/Supplemental/Songti.ttc"},
-	{"黑体", "/System/Library/Fonts/Supplemental/Heiti.ttc"},
+	{"SimSun", "/System/Library/Fonts/Supplemental/Songti.ttc"},
+	{"SimHei", "/System/Library/Fonts/Supplemental/Heiti.ttc"},
 	{"Times New Roman", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"},
 	{"Courier New", "/System/Library/Fonts/Supplemental/Courier New.ttf"},
 	{"Apple Color Emoji", "/System/Library/Fonts/Supplemental/Apple Color Emoji.ttc"},
-	{"苹方", "/System/Library/Fonts/Supplemental/PingFang.ttc"},
+	{"PingFang", "/System/Library/Fonts/Supplemental/PingFang.ttc"},
 	{NULL, NULL}
 };
 #elif defined(__linux__)
@@ -38,7 +49,7 @@ FontEntry system_font_paths[] = {
 	{"DejaVu Sans Bold", "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"},
 	{"Liberation Sans", "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"},
 	{"Liberation Sans Bold", "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"},
-	{"黑体", "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"},
+	{"SimHei", "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"},
 	{"Noto Sans CJK", "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"},
 	{"Noto Color Emoji", "/usr/share/fonts/truetype/noto/NotoColorEmoji.ttf"},
 	{"FreeSans", "/usr/share/fonts/truetype/freefont/FreeSans.ttf"},
@@ -47,7 +58,7 @@ FontEntry system_font_paths[] = {
 };
 #elif defined(__ANDROID__)
 FontEntry system_font_paths[] = {
-	{"黑体", "/system/fonts/NotoSansCJK-Regular.ttc"},
+	{"SimHei", "/system/fonts/NotoSansCJK-Regular.ttc"},
 	{"Noto Sans CJK", "/system/fonts/NotoSansCJK-Regular.ttc"},
 	{"Noto Sans", "/system/fonts/NotoSans-Regular.ttf"},
 	{"Droid Sans", "/system/fonts/DroidSans.ttf"},
@@ -61,28 +72,29 @@ FontEntry system_font_paths[] = {
 	{"Arial", "/System/Library/Fonts/Core/Arial.ttf"},
 	{"Arial Bold", "/System/Library/Fonts/Core/Arial Bold.ttf"},
 	{"Apple Color Emoji", "/System/Library/Fonts/Core/AppleColorEmoji.ttf"},
-	{"黑体", "/System/Library/Fonts/Core/Heiti.ttc"},
-	{"苹方", "/System/
+	{"SimHei", "/System/Library/Fonts/Core/Heiti.ttc"},
+	{"PingFang", "/System/Library/Fonts/Core/PingFang.ttc"},
+	{NULL, NULL}
 #elif defined(__IPHONE_OS__) || defined(__IOS__)
 FontEntry system_font_paths[] = {
 	{"Arial", "/System/Library/Fonts/Core/Arial.ttf"},
 	{"Arial Bold", "/System/Library/Fonts/Core/Arial Bold.ttf"},
 	{"Apple Color Emoji", "/System/Library/Fonts/Core/AppleColorEmoji.ttf"},
-	{"黑体", "/System/Library/Fonts/Core/Heiti.ttc"},
-	{"苹方", "/System/Library/Fonts/Core/PingFang.ttc"},
+	{"SimHei", "/System/Library/Fonts/Core/Heiti.ttc"},
+	{"PingFang", "/System/Library/Fonts/Core/PingFang.ttc"},
 	{NULL, NULL}
 };
 #elif defined(__SWITCH__)
 FontEntry system_font_paths[] = {
 	{"Nintendo Standard", "romfs:/font/nintendo_std.ttf"},
 	{"Nintendo Extended", "romfs:/font/nintendo_ext.ttf"},
-	{"黑体", "sdmc:/switch/fonts/NotoSansCJK-Regular.ttc"},
+	{"SimHei", "sdmc:/switch/fonts/NotoSansCJK-Regular.ttc"},
 	{"Noto Sans CJK", "sdmc:/switch/fonts/NotoSansCJK-Regular.ttc"},
 	{NULL, NULL}
 };
 #elif defined(__ORBIS__) || defined(__PROSPERO__) 
 FontEntry system_font_paths[] = {
-	{"黑体", "/app0/fonts/SCE-PS5-UI-Bold.otf"},
+	{"SimHei", "/app0/fonts/SCE-PS5-UI-Bold.otf"},
 	{"SCE UI Regular", "/app0/fonts/SCE-PS5-UI-Regular.otf"},
 	{"SCE UI Bold", "/app0/fonts/SCE-PS5-UI-Bold.otf"},
 	{"SCE Emoji", "/app0/fonts/SCE-PS5-Emoji.ttf"},
@@ -90,7 +102,7 @@ FontEntry system_font_paths[] = {
 };
 #elif defined(_XBOX_ONE) || defined(_GAMING_XBOX)
 FontEntry system_font_paths[] = {
-	{"黑体", "D:\\Windows\\Fonts\\segoeui.ttf"},
+	{"SimHei", "D:\\Windows\\Fonts\\segoeui.ttf"},
 	{"Segoe UI", "D:\\Windows\\Fonts\\segoeui.ttf"},
 	{"Segoe UI Symbol", "D:\\Windows\\Fonts\\seguisym.ttf"},
 	{"Arial", "D:\\Windows\\Fonts\\arial.ttf"},
@@ -130,6 +142,84 @@ static DialogTheme dialog_light_theme = {
    {200, 0, 0, 255},
    {255, 255, 255, 255}
 };
+
+static void ensure_font_extension(char* name, size_t size) {
+	size_t len = strlen(name);
+	if (!strstr(name, ".ttf") && !strstr(name, ".otf")) {
+		if (len + 4 < size) {
+			chars_append(name, size - len - 1, ".ttf");
+		}
+	}
+}
+#ifdef __linux__
+static char* find_font_path_fc(const char* fontName) {
+	static char path[512];
+	FcInit();
+	FcPattern* pat = FcNameParse((const FcChar8*)fontName);
+	FcConfigSubstitute(NULL, pat, FcMatchPattern);
+	FcDefaultSubstitute(pat);
+
+	FcResult result;
+	FcPattern* match = FcFontMatch(NULL, pat, &result);
+	if (match) {
+		FcChar8* file = NULL;
+		if (FcPatternGetString(match, FC_FILE, 0, &file) == FcResultMatch) {
+			snprintf(path, sizeof(path), "%s", file);
+			FcPatternDestroy(match);
+			FcPatternDestroy(pat);
+			FcFini();
+			return path;
+		}
+		FcPatternDestroy(match);
+	}
+	FcPatternDestroy(pat);
+	FcFini();
+	return NULL;
+}
+#endif
+
+static char* find_font_path(const char* fontName) {
+static char path[512];
+#ifdef __linux__
+	return find_font_path_fc(fontName);
+#elif _WIN32
+	const char* win_font_dirs[] = {
+		"C:\\Windows\\Fonts\\",
+		"C:\\Windows\\Fonts\\subdir\\"
+	};
+	for (int i = 0; i < sizeof(win_font_dirs) / sizeof(win_font_dirs[0]); i++) {
+		snprintf(path, sizeof(path), "%s%s", win_font_dirs[i], fontName);
+		ensure_font_extension(path, sizeof(path));
+		FILE* f = fopen(path, "rb");
+		if (f) { fclose(f); return path; }
+	}
+#elif __APPLE__
+	const char* mac_font_dirs[] = {
+		"/System/Library/Fonts/",
+		"/Library/Fonts/",
+		"~/Library/Fonts/"
+	};
+	for (int i = 0; i < sizeof(mac_font_dirs) / sizeof(mac_font_dirs[0]); i++) {
+		snprintf(path, sizeof(path), "%s%s", mac_font_dirs[i], fontName);
+		ensure_font_extension(path, sizeof(path));
+		FILE* f = fopen(path, "rb");
+		if (f) { fclose(f); return path; }
+	}
+#elif __ANDROID__
+	snprintf(path, sizeof(path), "/system/fonts/%s", fontName);
+	ensure_font_extension(path, sizeof(path));
+#elif __SWITCH__
+	snprintf(path, sizeof(path), "/switch/system/fonts/%s", fontName);
+	ensure_font_extension(path, sizeof(path));
+#elif __PS4__ || __PS5__
+	snprintf(path, sizeof(path), "/app0/fonts/%s", fontName);
+	ensure_font_extension(path, sizeof(path));
+#else
+	snprintf(path, sizeof(path), "%s", fontName);
+	ensure_font_extension(path, sizeof(path));
+#endif
+	return path;
+}
 
 #if defined(_WIN32) && defined(_MSC_VER)
 static char* chars_secure_strtok(char* str, const char* delim) {
@@ -759,7 +849,7 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 		return 0;
 	}
 	temp_font->info = (stbtt_fontinfo*)malloc(sizeof(stbtt_fontinfo));
-	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, 0))) {
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, offset))) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
 		free(temp_font);
@@ -774,22 +864,26 @@ int64_t Load_STB_LoadFontStyleInfo(const char* path, const char* fontName , cons
 
 int64_t Load_STB_LoadSystemFontStyleInfo(const char* sysfontName, const char* path, const char* fontName , const int style)
 {
-	 if (sysfontName && sysfontName[0] != '\0') {
+	if (sysfontName && sysfontName[0] != '\0') { 	//有默认则优先尝试默认字体路径
         for (int i = 0; system_font_paths[i].name != NULL; i++) {
-            if (strcmp(system_font_paths[i].name, sysfontName) == 0) {
-                int64_t result = Load_STB_LoadFontStyleInfo(system_font_paths[i].path, sysfontName, style);
+            if (strcmp(system_font_paths[i].name, fontName) == 0) {
+                int64_t result = Load_STB_LoadFontStyleInfo(system_font_paths[i].path, fontName, style);
 				if(result != 0){
                    return result;
 				}
             }
         }
+		//没有默认，穷举当前系统字体文件夹下对应字体
+		char* fontPath = find_font_path(sysfontName);
+		if (fontPath) {
+			int64_t result = Load_STB_LoadFontStyleInfo(fontPath, fontName, style);
+			if (result != 0) {
+				return result;
+			}
+		}
     }
-    for (int i = 0; system_font_paths[i].name != NULL; i++) {
-        int64_t result = Load_STB_LoadFontStyleInfo(system_font_paths[i].path, sysfontName, style);
-        if (result != 0) {
-            return result;
-        }
-    }
+	
+	//完全没有，尝试使用自备字体文件
 	SDL_RWops* rw = SDL_RWFromFile(path, "rb");
 	if (!rw) {
 		fprintf(stderr, "Load_STB_LoadSystemFontStyleInfo Error !\n");
@@ -818,7 +912,7 @@ int64_t Load_STB_LoadSystemFontStyleInfo(const char* sysfontName, const char* pa
 		return 0;
 	}
 	temp_font->info = (stbtt_fontinfo*)malloc(sizeof(stbtt_fontinfo));
-	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, 0))) {
+	if (!stbtt_InitFont(temp_font->info, fontBuffer, stbtt_GetFontOffsetForIndex(fontBuffer, offset))) {
 		fprintf(stderr, "Failed to init font\n");
 		free(fontBuffer);
 		free(temp_font);

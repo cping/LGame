@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <string.h>
 #include <math.h>
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -39,6 +40,9 @@ static void run_sleep_ms(int ms) {
 #include <sys/utsname.h>
 #include <unistd.h>
 #include <pwd.h>
+    #ifdef __linux__
+    #include <fontconfig/fontconfig.h>
+    #endif
     #if !defined(__APPLE__)
     #include <sys/sysinfo.h>
     #endif
@@ -51,16 +55,6 @@ static void run_sleep_ms(int ms) {
     nanosleep(&ts, NULL);
 }
 #endif
-#ifdef __APPLE__
-    #include <SDL2/SDL.h>
-    #include <SDL2/SDL_main.h>
-    #include <SDL2/SDL_gamecontroller.h>
-#else
-    #include <SDL.h>
-    #include <SDL_main.h>
-    #include <SDL_gamecontroller.h>
-#endif
-#include "SDL_mixer.h"
 
 #ifdef IN_IDE_PARSER
 #define GL_GLEXT_PROTOTYPES
@@ -105,6 +99,37 @@ static void run_sleep_ms(int ms) {
     #include <pspctrl.h>
 #elif defined(__EMSCRIPTEN__)
     #include <emscripten/emscripten.h>
+#endif
+
+#if defined(_WIN32) || defined(_WIN64) || \
+    defined(__ANDROID__) || \
+    defined(__XBOX_ONE__) || defined(_DURANGO) || defined(_GAMING_XBOX) || \
+    defined(__PS4__) || defined(__PS5__) || defined(__PS3__) || \
+    defined(__PSP__) || defined(__vita__) || defined(__3DS__) || \
+    defined(__WII__) || defined(__WIIU__) || \
+    defined(__EMSCRIPTEN__) || \
+    defined(__QNX__) || defined(__OS2__) || \
+    (defined(__APPLE__) && TARGET_OS_IPHONE)
+    #include <SDL.h>
+    #include <SDL_main.h>
+    #include <SDL_mixer.h>
+    #include <SDL_gamecontroller.h>
+#elif defined(__APPLE__) || defined(__linux__) || defined(__SWITCH__) || \
+      defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || \
+      defined(__DragonFly__) || defined(__STEAMOS__) || defined(__STEAM_DECK__) || \
+      defined(__HAIKU__) || \
+      (defined(__sun) && defined(__SVR4)) || \
+      defined(_AIX) || defined(__riscos__) || \
+      defined(__MORPHOS__) || defined(__amigaos4__)
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_main.h>
+    #include <SDL2/SDL_mixer.h>
+    #include <SDL2/SDL_gamecontroller.h>
+#else
+    #include <SDL.h>
+    #include <SDL_main.h>
+    #include <SDL_mixer.h>
+    #include <SDL_gamecontroller.h>
 #endif
 
 #ifdef __WINRT__
@@ -177,11 +202,6 @@ typedef struct {
     int width;
     int height;
 } PlatformResolution;
-
-typedef struct {
-    const char* name;  
-    const char* path; 
-} FontEntry;
 
 typedef enum {
     BTN_CONFIRM,
@@ -695,8 +715,14 @@ static inline int fix_font_char_size(const uint32_t ch, float fontSize, int size
     if (is_digit_char(ch)) {
       return newSize += 2;
     } else if (is_lowercase(ch)) {
-        return newSize += 1;
-    }  else if (is_other_char(ch)) {
+        if ('i' == ch) {
+            return newSize;
+        }
+        return newSize += 2;
+    } else if (is_uppercase(ch)) {
+        if ('I' == ch) {
+            return newSize;
+        }
         return newSize += 2;
     } else if (is_symbol(ch)) {
         return newSize += 1;

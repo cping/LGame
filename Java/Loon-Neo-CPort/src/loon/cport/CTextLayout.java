@@ -42,6 +42,89 @@ import loon.utils.StringUtils;
 
 public class CTextLayout extends loon.font.TextLayout {
 
+	protected final static String getSystemFontName(final String fontName) {
+		if (StringUtils.isEnglishAndNumeric(fontName)) {
+			return fontName;
+		}
+		if ("微软雅黑".equals(fontName)) {
+			return "Microsoft YaHei";
+		} else if ("宋体".equals(fontName)) {
+			return "SimSun";
+		} else if ("黑体".equals(fontName)) {
+			return "SimHei";
+		} else if ("仿宋".equals(fontName)) {
+			return "SimFang";
+		} else if ("楷体".equals(fontName)) {
+			return "SimKai";
+		} else if ("隶书".equals(fontName)) {
+			return "LiSu";
+		} else if ("幼圆".equals(fontName)) {
+			return "YouYuan";
+		} else if ("华文细黑".equals(fontName)) {
+			return "STXihei";
+		} else if ("华文黑体".equals(fontName)) {
+			return "STHeiti";
+		} else if ("华文华文楷体黑".equals(fontName)) {
+			return "STKaiti";
+		} else if ("华文宋体".equals(fontName)) {
+			return "STSong";
+		} else if ("华文中宋".equals(fontName)) {
+			return "STZhongsong";
+		} else if ("华文仿宋".equals(fontName)) {
+			return "STFangsong";
+		} else if ("方正舒体".equals(fontName)) {
+			return "FZShuTi";
+		} else if ("方正姚体".equals(fontName)) {
+			return "FZYaoti";
+		} else if ("华文彩云".equals(fontName)) {
+			return "STCaiyun";
+		} else if ("华文琥珀".equals(fontName)) {
+			return "STHupo";
+		} else if ("华文隶书".equals(fontName)) {
+			return "STLiti";
+		} else if ("华文行楷".equals(fontName)) {
+			return "STXingkai";
+		} else if ("华文新魏".equals(fontName)) {
+			return "STXinwei";
+		} else if ("苹方".equals(fontName)) {
+			return "PingFang";
+		} else if ("Arial黑体".equals(fontName)) {
+			return "Arial Black";
+		} else if ("Times新罗马".equals(fontName)) {
+			return "Times New Roman";
+		} else if ("游明朝".equals(fontName)) {
+			return "Yu Mincho";
+		} else if ("游ゴシック".equals(fontName)) {
+			return "Yu Gothic";
+		} else if ("メイリオ".equals(fontName)) {
+			return "Meiryo";
+		} else if ("ヒラギノ角ゴ".equals(fontName)) {
+			return "Hiragino Kaku Gothic Pro";
+		} else if ("ヒラギノ明朝".equals(fontName)) {
+			return "Hiragino Mincho Pro";
+		} else if ("ＭＳ ゴシック".equals(fontName)) {
+			return "MS Gothic";
+		} else if ("ＭＳ 明朝".equals(fontName)) {
+			return "MS Mincho";
+		} else if ("맑은 고딕".equals(fontName)) {
+			return "Malgun Gothic";
+		} else if ("굴림".equals(fontName)) {
+			return "Gulim";
+		} else if ("돋움".equals(fontName)) {
+			return "Dotum";
+		} else if ("바탕".equals(fontName)) {
+			return "Batang";
+		} else if ("HY견고딕".equals(fontName)) {
+			return "HYgothic";
+		} else if ("HY중고딕".equals(fontName)) {
+			return "HYHeadLine";
+		} else if ("HY신명조".equals(fontName)) {
+			return "HYMyeongJo";
+		} else {
+			return "sans-serif";
+		}
+	}
+
 	protected static void inputDialog(STBFont font, int dialogType, int width, int height, String title, String text,
 			String textA, String textB) {
 		if (font != null && !font.isClosed()) {
@@ -101,7 +184,9 @@ public class CTextLayout extends loon.font.TextLayout {
 			} else {
 				String sysFontName = fontName;
 				if ("dialog".equalsIgnoreCase(fontName) || "default".equalsIgnoreCase(fontName)) {
-					sysFontName = "黑体";
+					sysFontName = "SimHei";
+				} else {
+					sysFontName = getSystemFontName(sysFontName);
 				}
 				fontCache = STBFontCache.createSystemFont(sysFontName, fontName + ".ttf", sysFontName,
 						STYLE_TO_STBFONT[loonFont.style.ordinal()]);
