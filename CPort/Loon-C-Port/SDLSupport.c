@@ -16,7 +16,7 @@ static float joysticks[4];
 PlayerController players[MAX_CONTROLLERS];
 GamepadState gpStates[MAX_CONTROLLERS];
 
-static int debugMode = 0;
+static int g_debugMode = false;
 static ButtonCallback buttonCallbacks[BTN_MAX] = { 0 };
 static AxisCallback axisCallbacks[AXIS_MAX] = { 0 };
 static TriggerCallback triggerCallbacks[TRIGGER_MAX] = { 0 };
@@ -33,6 +33,7 @@ static int g_initWidth = 0;
 static int g_initHeight = 0;
 static bool g_isLooping = false;
 static bool g_isPause = false;
+static bool g_isTextInput = false;
 static int g_keyStates[SDL_NUM_SCANCODES] = { 0 };
 static int g_pressedKeys[SDL_NUM_SCANCODES] = { 0 };
 static int g_releasedKeys[SDL_NUM_SCANCODES] = { 0 };
@@ -53,8 +54,8 @@ static bool musicFinishedEvent = false;
 static bool soundFinishedEvent = false;
 static bool allowExit = true;
 static char curr_dir[MAX_PATH];
-static int eventBuffer[MAX_EVENTS * 4];
-static int eventCount = 0;
+static int g_eventBuffer[MAX_EVENTS * 4];
+static int g_eventCount = 0;
 
 static int is_valid_url(const char* url) {
 	if (!url) return 0;
@@ -114,7 +115,7 @@ static void SDL_FreeTouchIdMap() {
 	g_touchMap.capacity = 0;
 }
 
-int SDL_ConvertMapTouchIdToIndex(SDL_TouchID touchId) {
+static int SDL_ConvertMapTouchIdToIndex(SDL_TouchID touchId) {
 	for (int i = 0; i < g_touchMap.count; i++) {
 		if (g_touchMap.ids[i] == touchId) {
 			return i;
@@ -122,7 +123,7 @@ int SDL_ConvertMapTouchIdToIndex(SDL_TouchID touchId) {
 	}
 	if (g_touchMap.count >= g_touchMap.capacity) {
 		int newCapacity = (g_touchMap.capacity == 0) ? 4 : g_touchMap.capacity * 2;
-		SDL_TouchID* newIds = realloc(g_touchMap.ids, newCapacity * sizeof(SDL_TouchID));
+		SDL_TouchID* newIds = (SDL_TouchID*)realloc(g_touchMap.ids, newCapacity * sizeof(SDL_TouchID));
 		if (!newIds) {
 			return -1;
 		}
@@ -183,8 +184,8 @@ static LogicalTrigger MapSDLTrigger(SDL_GameControllerAxis sdlAxis) {
 	}
 }
 
-void GameController_Init(int dbg) {
-	debugMode = dbg;
+static void GameController_Init(const bool dbg) {
+	g_debugMode = dbg;
 	memset(players, 0, sizeof(players));
 	memset(gpStates, 0, sizeof(gpStates));
 	for (int i = 0; i < SDL_NumJoysticks() && i < MAX_CONTROLLERS; i++) {
@@ -193,7 +194,7 @@ void GameController_Init(int dbg) {
 			SDL_Joystick* joy = SDL_GameControllerGetJoystick(players[i].controller);
 			players[i].vendor = SDL_JoystickGetVendor(joy);
 			players[i].product = SDL_JoystickGetProduct(joy);
-			if (debugMode) {
+			if (g_debugMode) {
 				printf("Player %d Link: %s (Vendor: 0x%04X, Product: 0x%04X)\n",
 					i, SDL_GameControllerName(players[i].controller),
 					players[i].vendor, players[i].product);
@@ -202,13 +203,13 @@ void GameController_Init(int dbg) {
 	}
 }
 
-void GameController_ProcessEvent(SDL_Event* e) {
+static void GameController_ProcessEvent(SDL_Event* e) {
 	if (e->type == SDL_CONTROLLERBUTTONDOWN || e->type == SDL_CONTROLLERBUTTONUP) {
 		int playerIndex = e->cbutton.which;
 		if (playerIndex >= MAX_CONTROLLERS || !players[playerIndex].controller) {
 			return;
 		}
-		LogicalButton btn = MapSDLButton(players[playerIndex].vendor, e->cbutton.button);
+		LogicalButton btn = MapSDLButton(players[playerIndex].vendor, (SDL_GameControllerButton)e->cbutton.button);
 		if (btn < BTN_MAX) {
 			if (e->type == SDL_CONTROLLERBUTTONDOWN) {
 				players[playerIndex].buttonState[btn] = 1;
@@ -232,8 +233,8 @@ void GameController_ProcessEvent(SDL_Event* e) {
 		if (playerIndex >= MAX_CONTROLLERS || !players[playerIndex].controller) {
 			return;
 		}
-		LogicalAxis axis = MapSDLAxis(e->caxis.axis);
-		LogicalTrigger trigger = MapSDLTrigger(e->caxis.axis);
+		LogicalAxis axis = MapSDLAxis((SDL_GameControllerAxis)e->caxis.axis);
+		LogicalTrigger trigger = MapSDLTrigger((SDL_GameControllerAxis)e->caxis.axis);
 
 		if (axis < AXIS_MAX) {
 			float value = NormalizeAxis(e->caxis.value);
@@ -258,7 +259,7 @@ void GameController_ProcessEvent(SDL_Event* e) {
 				SDL_Joystick* joy = SDL_GameControllerGetJoystick(players[i].controller);
 				players[i].vendor = SDL_JoystickGetVendor(joy);
 				players[i].product = SDL_JoystickGetProduct(joy);
-				if (debugMode) {
+				if (g_debugMode) {
 					printf("Player %s New Link : %d (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
 						players[i].vendor, players[i].product);
 				}
@@ -274,7 +275,7 @@ void GameController_ProcessEvent(SDL_Event* e) {
 				SDL_GameControllerClose(players[i].controller);
 				players[i].controller = NULL;
 				memset(&gpStates[i], 0, sizeof(GamepadState));
-				if (debugMode) {
+				if (g_debugMode) {
 					printf("Player %d GameController Closed\n", i);
 				}
 				break;
@@ -286,32 +287,32 @@ void GameController_ProcessEvent(SDL_Event* e) {
 		for (int b = 0; b < BTN_MAX; b++) {
 			if (players[i].buttonState[b] && buttonCallbacks[b]) {
 				if (nowTime - players[i].buttonDownTime[b] > 500) {
-					buttonCallbacks[b](i, b, EVENT_HOLD);
+					buttonCallbacks[b](i, (LogicalButton)b, EVENT_HOLD);
 				}
 			}
 		}
 	}
 }
 
-void GameController_RegisterButtonCallback(LogicalButton btn, ButtonCallback cb) {
-	if (btn < BTN_MAX) {
+static void GameController_RegisterButtonCallback(LogicalButton btn, ButtonCallback cb) {
+	if (buttonCallbacks && btn < BTN_MAX) {
 		buttonCallbacks[btn] = cb;
 	}
 }
 
-void GameController_RegisterAxisCallback(LogicalAxis axis, AxisCallback cb) {
-	if (axis < AXIS_MAX) {
+static void GameController_RegisterAxisCallback(LogicalAxis axis, AxisCallback cb) {
+	if (axisCallbacks && axis < AXIS_MAX) {
 		axisCallbacks[axis] = cb;
 	}
 }
 
-void GameController_RegisterTriggerCallback(LogicalTrigger trigger, TriggerCallback cb) {
-	if (trigger < TRIGGER_MAX) {
+static void GameController_RegisterTriggerCallback(LogicalTrigger trigger, TriggerCallback cb) {
+	if (triggerCallbacks && trigger < TRIGGER_MAX) {
 		triggerCallbacks[trigger] = cb;
 	}
 }
 
-void GameController_Close() {
+static void GameController_Close() {
 	for (int i = 0; i < MAX_CONTROLLERS; i++) {
 		if (players[i].controller) {
 			SDL_GameControllerClose(players[i].controller);
@@ -321,14 +322,48 @@ void GameController_Close() {
 }
 
 static void GamePad_PushEvent(int player, int btn, int type) {
-	if (eventCount < MAX_EVENTS) {
-		int idx = eventCount * 4;
-		eventBuffer[idx] = player;
-		eventBuffer[idx + 1] = btn;
-		eventBuffer[idx + 2] = type;
-		eventBuffer[idx + 3] = SDL_GetTicks();
-		eventCount++;
+	if (g_eventCount < MAX_EVENTS) {
+		int idx = g_eventCount * 4;
+		g_eventBuffer[idx] = player;
+		g_eventBuffer[idx + 1] = btn;
+		g_eventBuffer[idx + 2] = type;
+		g_eventBuffer[idx + 3] = SDL_GetTicks();
+		g_eventCount++;
 	}
+}
+
+static void OnCallButton(int player, LogicalButton btn, ButtonEventType type) {
+	GamePad_PushEvent(player, btn, type);
+}
+
+void Load_SDL_Gamepad_Init(const bool debugMode) {
+	GameController_Init(debugMode);
+	for (int i = 0; i < BTN_MAX; i++) {
+		GameController_RegisterButtonCallback((LogicalButton)i, OnCallButton);
+	}
+}
+
+void Load_SDL_Gamepad_Close() {
+	GameController_Close();
+}
+
+void Load_SDL_Gamepad_GetState(int32_t playerIndex, float* axesOut, float* triggersOut, int* buttonsOut) {
+	if (playerIndex < 0 || playerIndex >= MAX_CONTROLLERS) {
+		return;
+	}
+	copy_float_array(axesOut, AXIS_MAX, gpStates[playerIndex].axes, AXIS_MAX);
+	copy_float_array(triggersOut, TRIGGER_MAX, gpStates[playerIndex].triggers, TRIGGER_MAX);
+	copy_int32_array(buttonsOut, BTN_MAX, gpStates[playerIndex].buttons, BTN_MAX);
+}
+
+int32_t Load_SDL_Gamepad_PollEvents(int32_t* outData) {
+	int count = g_eventCount;
+	if (count > 0) {
+		size_t size = count * 4;
+		copy_int32_array(outData, size, g_eventBuffer, size);
+		g_eventCount = 0; 
+	}
+	return g_eventCount;
 }
 
 // load and exit
@@ -629,9 +664,9 @@ static int SDL_pre_init(bool debug) {
 }
 
 #if defined(_WIN32) || defined(_WIN64)
-HANDLE g_mutex = NULL;
+static HANDLE g_mutex = NULL;
 static bool check_single_instance() {
-	g_mutex = CreateMutex(NULL, TRUE, (LPCWSTR)"MySDLAppMutex");
+	g_mutex = CreateMutex(NULL, TRUE, _T("MySDLAppMutex"));
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
 		printf("The program is already running !\n");
 		return false;
@@ -640,8 +675,8 @@ static bool check_single_instance() {
 }
 #else
 #define LOCK_FILE "/tmp/my_sdl_app.lock"
-int g_fd = -1;
-bool check_single_instance() {
+static int g_fd = -1;
+static bool check_single_instance() {
 	g_fd = open(LOCK_FILE, O_CREAT | O_RDWR, 0666);
 	if (g_fd < 0) {
 		return false;
@@ -657,7 +692,7 @@ bool check_single_instance() {
 	}
 	return true;
 }
-void release_instance_lock() {
+static void release_instance_lock() {
 	if (g_fd >= 0) {
 		close(g_fd);
 		unlink(LOCK_FILE);
@@ -665,7 +700,7 @@ void release_instance_lock() {
 }
 #endif
 
-void release_instance_lock() {
+static void release_instance_lock() {
 	if (g_mutex) CloseHandle(g_mutex);
 }
 
@@ -768,7 +803,7 @@ void SDL_AllowExit(bool a) {
 	allowExit = a;
 }
 
-static char* detectPlatformCompileString() {
+static const char* detectPlatformCompileString() {
 #if defined(__WINRT__)
 	return "winrt";
 #elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -805,7 +840,7 @@ static char* detectPlatformCompileString() {
 #endif
 }
 
-static char* detectPlatformRuntimeString() {
+static const char* detectPlatformRuntimeString() {
 #if defined(_WIN32)
 	return "windows";
 #elif defined(__unix__) || defined(__APPLE__) || defined(__linux__)
@@ -825,9 +860,9 @@ static char* detectPlatformRuntimeString() {
 #endif
 }
 
-static char* getOSVersionString() {
+static const char* getOSVersionString() {
 #if defined(_WIN32) || defined(_WIN64)
-	char* ver_str = "unknown";
+	const char* ver_str = "unknown";
 	if (IsWindows10OrGreater()) {
 		if (IsWindowsServer()) {
 			ver_str = "Windows Server 2016/2019/2022 or newer";
@@ -902,7 +937,7 @@ static char* getOSVersionString() {
 #endif
 }
 
-static char* getArchitectureString() {
+static const char* getArchitectureString() {
 #if defined(_WIN64) || defined(__x86_64__) || defined(__amd64__)
 	return "x86_64";
 #elif defined(_WIN32)
@@ -920,7 +955,7 @@ static char* getArchitectureString() {
 #endif
 }
 
-static char* detectVirtualizationString() {
+static const char* detectVirtualizationString() {
 #if defined(__linux__)
 	FILE* f = fopen("/proc/1/cgroup", "r");
 	if (f) {
@@ -956,7 +991,7 @@ static char* detectVirtualizationString() {
 #endif
 }
 
-static char* getGpuInfoString() {
+static const char* getGpuInfoString() {
 #if defined(_WIN32)
 	static char gpu[128] = "unknown";
 	DISPLAY_DEVICE dd;
@@ -981,7 +1016,7 @@ static char* getGpuInfoString() {
 #endif
 }
 
-static int getCpuCores() {
+static const int getCpuCores() {
 #if defined(_WIN32)
 	SYSTEM_INFO sysinfo;
 	GetSystemInfo(&sysinfo);
@@ -993,7 +1028,7 @@ static int getCpuCores() {
 #endif
 }
 
-static void getMemoryInfoInts(int64_t* total, int64_t* free) {
+static const void getMemoryInfoInts(int64_t* total, int64_t* free) {
 #if defined(_WIN32)
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof(statex);
@@ -1036,7 +1071,7 @@ int32_t GetPathFullName(const char* path) {
 }
 #endif
 
-static char* get_path_separator() {
+static const char* get_path_separator() {
 #ifdef _WIN32
 	return "\\";
 #else
@@ -1044,7 +1079,7 @@ static char* get_path_separator() {
 #endif
 }
 
-static char* get_newline_separator() {
+static const char* get_newline_separator() {
 #ifdef _WIN32
 	return "\r\n";
 #else
@@ -1053,24 +1088,24 @@ static char* get_newline_separator() {
 }
 
 #if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
-static char* switch_get_username() { return "SwitchUser"; }
-static char* switch_get_temp_folder() { return "sdmc:/temp"; }
-static char* switch_get_home_folder() { return "sdmc:/"; }
+static const char* switch_get_username() { return "SwitchUser"; }
+static const char* switch_get_temp_folder() { return "sdmc:/temp"; }
+static const char* switch_get_home_folder() { return "sdmc:/"; }
 #endif
 
 #if defined(PS5) || defined(__ORBIS__) || defined(__PROSPERO__)
-static char* ps5_get_username() { return "PS5User"; }
-static char* ps5_get_temp_folder() { return "/data/temp"; }
-static char* ps5_get_home_folder(vid) { return "/data/home"; }
+static const char* ps5_get_username() { return "PS5User"; }
+static const char* ps5_get_temp_folder() { return "/data/temp"; }
+static const char* ps5_get_home_folder(vid) { return "/data/home"; }
 #endif
 
 #if defined(XBOX) || defined(_DURANGO) || defined(_GAMING_XBOX)
-static char* xbox_get_username() { return "XboxUser"; }
-static char* xbox_get_temp_folder() { return "D:/Temp"; }
-static char* xbox_get_home_folder() { return "D:/Home"; }
+static const char* xbox_get_username() { return "XboxUser"; }
+static const char* xbox_get_temp_folder() { return "D:/Temp"; }
+static const char* xbox_get_home_folder() { return "D:/Home"; }
 #endif
 
-static char* get_system_username() {
+static const char* get_system_username() {
 	static char username[256] = { 0 };
 #if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 	return switch_get_username();
@@ -1090,7 +1125,7 @@ static char* get_system_username() {
 	return "";
 }
 
-static char* get_temp_folder() {
+static const char* get_temp_folder() {
 	static char temp_path[512] = { 0 };
 #if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 	return switch_get_temp_folder();
@@ -1112,7 +1147,7 @@ static char* get_temp_folder() {
 	return ".";
 }
 
-static char* get_home_folder(void) {
+static const char* get_home_folder(void) {
 	static char home_path[512] = { 0 };
 #if defined(__SWITCH__) || defined(NINTENDO_SWITCH)
 	return switch_get_home_folder();
@@ -1362,7 +1397,7 @@ const char* GetPrefsKeys(int64_t handle, const char* section, const char* delimi
 				count++;
 			}
 			if (count == 0) return _strdup("");
-			char* result = malloc(total_len + 1);
+			char* result = (char*)malloc(total_len + 1);
 			if (!result) return NULL;
 			result[0] = '\0';
 			for (game_prefnode* n = cur->next; n; n = n->next) {
@@ -2032,6 +2067,9 @@ bool Load_SDL_Update() {
 	if (g_initWidth == 0 || g_initHeight == 0) {
 		udate_init_window_size();
 	}
+	if (g_isTextInput) {
+		SDL_StartTextInput();
+	}
 	while (SDL_PollEvent(&event)) {
 		tempPolleventType = event.type;
 		switch (tempPolleventType) {
@@ -2164,6 +2202,10 @@ bool Load_SDL_Update() {
 			}
 			break;
 		}
+		GameController_ProcessEvent(&event);
+	}
+	if (g_isTextInput) {
+		SDL_StopTextInput();
 	}
 	{
 		if (musicFinishedEvent) {
@@ -2178,6 +2220,14 @@ bool Load_SDL_Update() {
 	SDL_GL_SwapWindow(tempWindow);
 	return Load_SDL_Exit(running);
 #endif
+}
+
+bool  Load_SDL_IsTextInput() {
+	return g_isTextInput;
+}
+
+void Load_SDL_SetTextInput(bool b) {
+	g_isTextInput = b;
 }
 
 const char* Load_SDL_GetText() {
@@ -2203,7 +2253,7 @@ void Load_SDL_GL_SwapWindowHandle(const int64_t handle) {
 	}
 }
 
-void GetDisplayResolution(int displayIndex, int* w, int* h) {
+static void GetDisplayResolution(int displayIndex, int* w, int* h) {
 	SDL_DisplayMode mode;
 	if (SDL_GetCurrentDisplayMode(displayIndex, &mode) == 0) {
 		*w = mode.w;
@@ -2266,7 +2316,7 @@ static int SelectBestDisplay() {
 	return bestIndex;
 }
 
-void GetCurrentScreenSize(int* width, int* height) {
+static void GetCurrentScreenSize(int* width, int* height) {
 	const char* platform = SDL_GetPlatform();
 	if (strstr(platform, "Nintendo") || strstr(platform, "Xbox") || strstr(platform, "PlayStation") || strstr(platform, "Steam Deck")) {
 		SDL_DisplayMode mode;
@@ -2397,14 +2447,14 @@ int32_t Load_SDL_GameControllerGetNumTouchpads(const int64_t handle)
 	return SDL_GameControllerGetNumTouchpads(controller);
 }
 
-void FreeTempContext() {
+static void FreeTempContext() {
 	if (tempContext != NULL) {
 		SDL_GL_DeleteContext(tempContext);
 		tempContext = NULL;
 	}
 }
 
-void FreeTempController() {
+static void FreeTempController() {
 	if (tempController != NULL) {
 		SDL_GameControllerClose(tempController);
 		tempController = NULL;
@@ -2585,10 +2635,10 @@ void FreeGameData(const int64_t handle) {
 	free(fs);
 }
 
-char* GetSystemProperty(const char* key)
+const char* GetSystemProperty(const char* key)
 {
 	if (strcmp(key, "os.sys") == 0) {
-		char* platform = detectPlatformCompileString();
+		const char* platform = detectPlatformCompileString();
 		if (!platform) {
 			platform = detectPlatformRuntimeString();
 		}
@@ -3857,7 +3907,7 @@ float Load_SDL_Mix_GetMusicPosition(const int64_t handle)
 #if SDL_MIXER_VERSION_ATLEAST(2,6,0)
 	if (music && music->handle) {
 		double pos = Mix_GetMusicPosition(music->handle);
-		if (pos >= 0) return pos;
+		if (pos >= 0) return (float)pos;
 	}
 #endif
 	return -1.0;
@@ -4068,7 +4118,7 @@ bool Load_SDL_QuitRequested()
 	return eventCount > 0;
 }
 
-char* Load_GL_Init() {
+const char* Load_GL_Init() {
 #ifdef GLEW
 	GLenum glewError = glewInit();
 	if (glewError != GLEW_OK) {
@@ -4444,7 +4494,7 @@ int Load_GL_CreateShader(const int type)
 
 int Load_GL_GenRenderbuffer()
 {
-	GLuint b;
+	GLuint b = 0;
 	if (glGenRenderbuffers) {
 		glGenRenderbuffers(1, &b);
 	}
@@ -4711,7 +4761,7 @@ char* Load_GL_GetProgramInfoLog(const int program)
 const char* Load_GL_GetProgramInfoLogs(const int program, const int bufsize, const void* length, const void* infolog)
 {
 	glGetProgramInfoLog(program, bufsize, (GLsizei*)length, (GLchar*)infolog);
-	return infolog;
+	return (const char*)infolog;
 }
 
 void Load_GL_GetRenderbufferParameteriv(const int target, const int pname, const void* params)
@@ -4741,7 +4791,7 @@ const char* Load_GL_GetShaderInfoLog(const int shader)
 const char* Load_GL_GetShaderInfoLogs(const int shader, const int bufsize, const void* length, const void* infolog)
 {
 	glGetShaderInfoLog(shader, bufsize, (GLsizei*)length, (GLchar*)infolog);
-	return infolog;
+	return (const char*)infolog;
 }
 
 void Load_GL_GetShaderPrecisionFormat(const int shadertype, const int precisiontype, const void* range, const void* precision)

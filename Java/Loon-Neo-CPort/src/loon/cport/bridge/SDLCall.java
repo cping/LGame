@@ -139,6 +139,12 @@ public final class SDLCall {
 	@Import(name = "FileExists")
 	public final static native boolean fileExists(String fileName);
 
+	@Import(name = "Load_SDL_IsTextInput")
+	public final static native boolean isTextInput();
+
+	@Import(name = "Load_SDL_SetTextInput")
+	public final static native void setTextInput(boolean b);
+
 	@Import(name = "Load_SDL_OpenURL")
 	public final static native int openURL(String url);
 
@@ -301,7 +307,20 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_PathIsFile")
 	public final static native boolean pathIsFile(String path);
+	
+	@Import(name = "Load_SDL_Gamepad_Init")
+	public final static native void gamepadInit(boolean debugMode);
 
+	@Import(name = "Load_SDL_Gamepad_Close")
+	public final static native void gamepadClose();
+
+	@Import(name = "Load_SDL_Gamepad_GetState")
+	public final static native void gamepadGetState(int playerIndex, float[] axesOut, float[] triggersOut,
+			int[] buttonsOut);
+	
+	@Import(name = "Load_SDL_Gamepad_PollEvents")
+	public final static native int gamepadPollEvents(int[] outData);
+	
 	@Import(name = "Load_SDL_Init")
 	public final static native int init(int flags);
 

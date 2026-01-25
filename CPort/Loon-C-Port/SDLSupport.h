@@ -25,6 +25,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <tchar.h>
 #include <tlhelp32.h>
 #include <shellapi.h>
 #include <shlobj.h>
@@ -621,9 +622,19 @@ static inline size_t copy_int32_array(int32_t* dest, size_t dest_len,
     if (!dest || !src) {
         return 0;
     }
-    size_t bytes_to_copy = (dest_len < src_len) ? dest_len : src_len;
-    memcpy(dest, src, bytes_to_copy);
-    return bytes_to_copy;
+    size_t int_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, int_to_copy * sizeof(int));
+    return int_to_copy;
+}
+
+static inline size_t copy_float_array(float* dest, size_t dest_len,
+    const float* src, size_t src_len) {
+    if (!dest || !src) {
+        return 0;
+    }
+    size_t float_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, float_to_copy * sizeof(float));
+    return float_to_copy;
 }
 
 static inline size_t copy_chars_array(char* dest, size_t dest_len,
@@ -631,9 +642,9 @@ static inline size_t copy_chars_array(char* dest, size_t dest_len,
     if (!dest || !src) {
         return 0;
     }
-    size_t bytes_to_copy = (dest_len < src_len) ? dest_len : src_len;
-    memcpy(dest, src, bytes_to_copy);
-    return bytes_to_copy;
+    size_t chars_to_copy = (dest_len < src_len) ? dest_len : src_len;
+    memcpy(dest, src, chars_to_copy * sizeof(char));
+    return chars_to_copy;
 }
 
 static inline char* chars_strcasestr(const char* haystack, const char* needle, size_t maxlen) {
@@ -836,7 +847,7 @@ void FreeGameData(const int64_t handle);
 
 char* GetPathFullName(const char* path);
 
-char* GetSystemProperty(const char* key);
+const char* GetSystemProperty(const char* key);
 
 bool FileExists(const char* filename);
 
@@ -849,6 +860,10 @@ int64_t Load_SDL_RW_FileSize(const char* filename);
 int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes);
 
 int Load_SDL_GetNumTouchDevices();
+
+bool  Load_SDL_IsTextInput();
+
+void Load_SDL_SetTextInput(bool b);
 
 bool Load_SDL_RW_FileExists(const char* filename);
 
@@ -1106,6 +1121,14 @@ int Load_SDL_GetWindowFlags(const int64_t handle);
 
 void Load_SDL_SetWindowTitle(const int64_t handle,const char* title);
 
+void Load_SDL_Gamepad_Init(const bool debugMode);
+
+void Load_SDL_Gamepad_Close();
+
+void Load_SDL_Gamepad_GetState(int32_t playerIndex, float* axesOut, float* triggersOut, int* buttonsOut);
+
+int32_t Load_SDL_Gamepad_PollEvents(int32_t* outData);
+
 int64_t Load_SDL_CreateRGBSurfaceFrom32(void* pixels, int width, int height);
 
 int64_t Load_SDL_CreateColorCursor(const int64_t surface, const int hotx, const int hoty);
@@ -1258,7 +1281,7 @@ void Load_SDL_Quit();
 
 bool Load_SDL_QuitRequested();
 
-char* Load_GL_Init();
+const char* Load_GL_Init();
 
 void Load_GL_UseProgram(const int program);
 
@@ -1327,6 +1350,8 @@ void Load_GL_GenTextures(const int n, const void* textures);
 int Load_GL_GenRenderbuffer();
 
 int Load_GL_GetError();
+
+void Load_GL_GetInteger(const int pname, const void* params);
 
 void Load_GL_GetIntegerv(const int pname, const void* params);
 
@@ -1447,6 +1472,8 @@ void Load_GL_GetBufferParameteriv(const int target, const int pname, const void*
 void Load_GL_GetFloatv(const int pname, const void* params);
 
 float Load_GL_GetFloatvResult(const int pname);
+
+void Load_GL_GetInteger(const int pname, const void* params);
 
 void Load_GL_GetIntegerv(const int pname, const void* params);
 
@@ -1575,6 +1602,8 @@ void Load_GL_UniformMatrix2fv(const int location, const int count, const bool tr
 void Load_GL_UniformMatrix2fvOffset(const int location, const int count, const bool transpose, const void* value, const int offset);
 
 void Load_GL_UniformMatrix3fv(const int location, const int count, const bool transpose, const void* value);
+
+void Load_GL_UniformMatrix3fvOffset(const int location, const int count, const bool transpose, const void* value, const int offset);
 
 void Load_GL_UniformMatrix4fv(const int location, const int count, const bool transpose, const void* value);
 

@@ -526,12 +526,14 @@ static int show_input_dialog(stbtt_fontinfo* font, DialogConfig cfg, const char*
 			if (cfg.message) {
 				SDL_Rect input_box = { (int)(cfg.win_w * 0.2f) ,(int)(cfg.win_h * 0.5f),(int)(cfg.win_w * 0.6f),(int)(cfg.win_h * 0.1f) };
 				SDL_RenderFillRect(ren, &input_box);
-				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, (SDL_Color) { 0, 0, 0, 255 });
+				SDL_Color newColor = { 0, 0, 0, 255 };
+				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, newColor);
 			}
 			else {
 				SDL_Rect input_box = { (int)(cfg.win_w * 0.2f) ,(int)(cfg.win_h * 0.2f),(int)(cfg.win_w * 0.6f),(int)(cfg.win_h * 0.2f) };
 				SDL_RenderFillRect(ren, &input_box);
-				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, (SDL_Color) { 0, 0, 0, 255 });
+				SDL_Color newColor = { 0, 0, 0, 255 };
+				draw_text(font, ren, input_text, input_box.x + 5, input_box.y + 5, is_touch_device ? 26.0f : 18.0f, newColor);
 			}
 
 			SDL_Rect ok_btn = { (int)(cfg.win_w * 0.24f), (int)(cfg.win_h * 0.72f), (int)(cfg.win_w * btn_width_ratio), (int)(cfg.win_h * btn_height_ratio) };
@@ -587,7 +589,7 @@ int Load_STB_InputDialog(int64_t handle, const int dialogType, const int width, 
 		}
 	}
 	DialogConfig dcfg = {
-	 dialogType,
+	 (DialogType)dialogType,
 	 title,
 	 text,
 	 width, height,
@@ -1534,7 +1536,8 @@ void Load_STB_DrawString(const int64_t handle, const char* text, const float fon
 		float max_above = 0.0f, max_below = 0.0f;
 		int i = 0;
 		while (line_start[i] && line_start[i] != '\n') {
-			int bytes; uint32_t codepoint = utf8_to_codepoint_full(&line_start[i], &bytes);
+			int bytes; 
+			uint32_t codepoint = utf8_to_codepoint_full(&line_start[i], &bytes);
 			i += bytes;
 
 			float cw, ch, baseline;

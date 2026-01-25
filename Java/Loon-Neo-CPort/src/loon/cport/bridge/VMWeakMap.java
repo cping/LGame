@@ -79,6 +79,8 @@ public class VMWeakMap<K, V> {
 
 	private final int _maxCapacity;
 
+	private final long _defaultCleanIntervalMillis;
+
 	private final LinkedHashMap<WeakKey<K>, Boolean> _accessOrderMap;
 
 	public VMWeakMap() {
@@ -91,6 +93,7 @@ public class VMWeakMap<K, V> {
 
 	public VMWeakMap(int maxCapacity, long cleanIntervalMillis) {
 		this._maxCapacity = maxCapacity;
+		this._defaultCleanIntervalMillis = cleanIntervalMillis;
 		this._accessOrderMap = new LinkedHashMap<WeakKey<K>, Boolean>(16, 0.75f, true);
 	}
 
@@ -119,8 +122,12 @@ public class VMWeakMap<K, V> {
 		}
 	}
 
+	public long getCleanIntervalMillis() {
+		return _defaultCleanIntervalMillis;
+	}
+
 	public void put(K key, V value) {
-		put(key, value, LSystem.MINUTE * 30);
+		put(key, value, _defaultCleanIntervalMillis);
 	}
 
 	public void put(K key, V value, long millis) {
