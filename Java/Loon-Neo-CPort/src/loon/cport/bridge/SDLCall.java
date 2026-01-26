@@ -311,6 +311,9 @@ public final class SDLCall {
 	@Import(name = "Load_SDL_Gamepad_Init")
 	public final static native void gamepadInit(boolean debugMode);
 
+	@Import(name = "Load_SDL_Gamepad_IsSupported")
+	public final static native boolean gamepadIsSupported();
+	
 	@Import(name = "Load_SDL_Gamepad_Close")
 	public final static native void gamepadClose();
 

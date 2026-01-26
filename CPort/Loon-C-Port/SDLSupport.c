@@ -9,7 +9,7 @@ static PadState pads[8];
 #else
 static SDL_Window* tempWindow;
 static SDL_GameController* tempController;
-static int buttons;
+static int g_buttons;
 static float joysticks[4];
 #endif
 
@@ -148,20 +148,40 @@ static float NormalizeTrigger(Sint16 value) {
 static LogicalButton MapSDLButton(Uint16 vendor, SDL_GameControllerButton sdlBtn) {
 	if (vendor == 0x057E) { // Nintendo Switch
 		switch (sdlBtn) {
+		case SDL_CONTROLLER_BUTTON_DPAD_UP: return BTN_UP;
+		case SDL_CONTROLLER_BUTTON_DPAD_DOWN: return BTN_DOWN;
+		case SDL_CONTROLLER_BUTTON_DPAD_LEFT: return BTN_LEFT;
+		case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: return BTN_RIGHT;
 		case SDL_CONTROLLER_BUTTON_A: return BTN_CANCEL;
 		case SDL_CONTROLLER_BUTTON_B: return BTN_CONFIRM;
 		case SDL_CONTROLLER_BUTTON_X: return BTN_SHOOT;
 		case SDL_CONTROLLER_BUTTON_Y: return BTN_JUMP;
 		case SDL_CONTROLLER_BUTTON_START: return BTN_MENU;
+		case SDL_CONTROLLER_BUTTON_BACK: return BTN_BACK;
+		case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: return BTN_LB;
+		case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: return BTN_RB;
+		case SDL_CONTROLLER_BUTTON_LEFTSTICK: return BTN_LS;
+		case SDL_CONTROLLER_BUTTON_RIGHTSTICK: return BTN_RS;
+		case SDL_CONTROLLER_BUTTON_MISC1: return BTN_MISC;
 		default: return BTN_MAX;
 		}
 	}
 	switch (sdlBtn) {
+	case SDL_CONTROLLER_BUTTON_DPAD_UP: return BTN_UP;
+	case SDL_CONTROLLER_BUTTON_DPAD_DOWN: return BTN_DOWN;
+	case SDL_CONTROLLER_BUTTON_DPAD_LEFT: return BTN_LEFT;
+	case SDL_CONTROLLER_BUTTON_DPAD_RIGHT: return BTN_RIGHT;
 	case SDL_CONTROLLER_BUTTON_A: return BTN_CONFIRM;
 	case SDL_CONTROLLER_BUTTON_B: return BTN_CANCEL;
 	case SDL_CONTROLLER_BUTTON_X: return BTN_JUMP;
 	case SDL_CONTROLLER_BUTTON_Y: return BTN_SHOOT;
 	case SDL_CONTROLLER_BUTTON_START: return BTN_MENU;
+	case SDL_CONTROLLER_BUTTON_BACK: return BTN_BACK;
+	case SDL_CONTROLLER_BUTTON_LEFTSHOULDER: return BTN_LB;
+	case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER: return BTN_RB;
+	case SDL_CONTROLLER_BUTTON_LEFTSTICK: return BTN_LS;
+	case SDL_CONTROLLER_BUTTON_RIGHTSTICK: return BTN_RS;
+	case SDL_CONTROLLER_BUTTON_MISC1: return BTN_MISC;
 	default: return BTN_MAX;
 	}
 }
@@ -195,7 +215,7 @@ static void GameController_Init(const bool dbg) {
 			players[i].vendor = SDL_JoystickGetVendor(joy);
 			players[i].product = SDL_JoystickGetProduct(joy);
 			if (g_debugMode) {
-				printf("Player %d Link: %s (Vendor: 0x%04X, Product: 0x%04X)\n",
+				printf("INFO: Player %d Link: %s (Vendor: 0x%04X, Product: 0x%04X)\n",
 					i, SDL_GameControllerName(players[i].controller),
 					players[i].vendor, players[i].product);
 			}
@@ -221,7 +241,7 @@ static void GameController_ProcessEvent(SDL_Event* e) {
 			}
 			else {
 				players[playerIndex].buttonState[btn] = 0;
-				gpStates[playerIndex].buttons[btn] = 0;
+				gpStates[playerIndex].buttons[btn] = -1;
 				if (buttonCallbacks[btn]) {
 					buttonCallbacks[btn](playerIndex, btn, EVENT_RELEASE);
 				}
@@ -260,7 +280,7 @@ static void GameController_ProcessEvent(SDL_Event* e) {
 				players[i].vendor = SDL_JoystickGetVendor(joy);
 				players[i].product = SDL_JoystickGetProduct(joy);
 				if (g_debugMode) {
-					printf("Player %s New Link : %d (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
+					printf("INFO: Player %s New Link : %d (Vendor: 0x%04X, Product:", SDL_GameControllerName(players[i].controller),
 						players[i].vendor, players[i].product);
 				}
 				break;
@@ -276,7 +296,7 @@ static void GameController_ProcessEvent(SDL_Event* e) {
 				players[i].controller = NULL;
 				memset(&gpStates[i], 0, sizeof(GamepadState));
 				if (g_debugMode) {
-					printf("Player %d GameController Closed\n", i);
+					printf("INFO: Player %d GameController Closed\n", i);
 				}
 				break;
 			}
@@ -343,6 +363,22 @@ void Load_SDL_Gamepad_Init(const bool debugMode) {
 	}
 }
 
+bool Load_SDL_Gamepad_IsSupported() {
+	int numJoysticks = SDL_NumJoysticks();
+	if (numJoysticks <= 0) {
+		SDL_QuitSubSystem(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER);
+		return false;
+	}
+	bool hasController = false;
+	for (int i = 0; i < numJoysticks; ++i) {
+		if (SDL_IsGameController(i)) {
+			hasController = true;
+			break;
+		}
+	}
+	return hasController;
+}
+
 void Load_SDL_Gamepad_Close() {
 	GameController_Close();
 }
@@ -363,7 +399,7 @@ int32_t Load_SDL_Gamepad_PollEvents(int32_t* outData) {
 		copy_int32_array(outData, size, g_eventBuffer, size);
 		g_eventCount = 0; 
 	}
-	return g_eventCount;
+	return count;
 }
 
 // load and exit
@@ -668,7 +704,7 @@ static HANDLE g_mutex = NULL;
 static bool check_single_instance() {
 	g_mutex = CreateMutex(NULL, TRUE, _T("MySDLAppMutex"));
 	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-		printf("The program is already running !\n");
+		printf("INFO: The program is already running !\n");
 		return false;
 	}
 	return true;
@@ -683,7 +719,7 @@ static bool check_single_instance() {
 	}
 	if (lockf(g_fd, F_TLOCK, 0) < 0) {
 		if (errno == EACCES || errno == EAGAIN) {
-			printf("The program is already running !\n");
+			printf("INFO: The program is already running !\n");
 			close(g_fd);
 			return false;
 		}
@@ -1797,7 +1833,7 @@ static int test_create_gles2_context() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(tempWindow);
 	if (!tempContext) {
-		printf("GL context creation failed: %s\n", SDL_GetError());
+		printf("ERROR: GL context creation failed: %s\n", SDL_GetError());
 		return -1;
 	}
 	return tempContext != NULL;
@@ -1809,7 +1845,7 @@ static int test_create_core_profile_context() {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	tempContext = (SDL_GLContext*)SDL_GL_CreateContext(tempWindow);
 	if (!tempContext) {
-		printf("GL context creation failed: %s\n", SDL_GetError());
+		printf("ERROR: GL context creation failed: %s\n", SDL_GetError());
 		return -1;
 	}
 	return tempContext != NULL;
@@ -1937,7 +1973,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	tempWindow = SDL_CreateWindow(title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h, flags == 0 ? SDL_WINDOW_OPENGL : SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI | flags);
 	if (!tempWindow) {
-		printf("Window creation failed: %s\n", SDL_GetError());
+		printf("ERROR: Window creation failed: %s\n", SDL_GetError());
 		return -1;
 	}
 	if (tempContext) {
@@ -1966,7 +2002,7 @@ int64_t Load_SDL_ScreenInit(const char* title, const int w, const int h, const b
 	}
 	#ifndef GLEW
 		if (!gladLoadGLES2((GLADloadfunc)SDL_GL_GetProcAddress)) {
-			printf("Failed to load GLES2 functions\n");
+			printf("ERROR: Failed to load GLES2 functions\n");
 			return -1;
 		}
 	#endif
@@ -2143,7 +2179,7 @@ bool Load_SDL_Update() {
 				g_lastPressedScancode = event.key.keysym.scancode;
 			}
 			g_keyStates[event.key.keysym.scancode] = 1;
-			buttons |= keyToButton(event.key.keysym.scancode);
+			g_buttons |= keyToButton(event.key.keysym.scancode);
 			axis = keyToAxis(event.key.keysym.scancode);
 			if (axis > -1 && !event.key.repeat)
 				joysticks[axis & 0x3] += axis & 0x4 ? -1 : 1;
@@ -2152,16 +2188,16 @@ bool Load_SDL_Update() {
 			//分开存储键盘和游戏手柄事件，避免混淆
 			g_keyStates[event.key.keysym.scancode] = 0;
 			g_releasedKeys[event.key.keysym.scancode] = 1;
-			buttons &= ~keyToButton(event.key.keysym.scancode);
+			g_buttons &= ~keyToButton(event.key.keysym.scancode);
 			axis = keyToAxis(event.key.keysym.scancode);
 			if (axis > -1 && !event.key.repeat)
 				joysticks[axis & 0x3] = 0;
 			break;
 		case SDL_CONTROLLERBUTTONDOWN:
-			buttons |= mapButtonSDL(event.cbutton.button);
+			g_buttons |= mapButtonSDL(event.cbutton.button);
 			break;
 		case SDL_CONTROLLERBUTTONUP:
-			buttons &= ~mapButtonSDL(event.cbutton.button);
+			g_buttons &= ~mapButtonSDL(event.cbutton.button);
 			break;
 		case SDL_CONTROLLERAXISMOTION:
 			if (event.caxis.axis >= 0 && event.caxis.axis < 4) {
@@ -2174,9 +2210,9 @@ bool Load_SDL_Update() {
 			for (int i = 0; i < 2; i++)
 				if (event.caxis.axis == SDL_CONTROLLER_AXIS_TRIGGERLEFT + i) {
 					if (event.caxis.value > 512)
-						buttons |= 1 << (8 + i);
+						g_buttons |= 1 << (8 + i);
 					else
-						buttons &= ~(1 << (8 + i));
+						g_buttons &= ~(1 << (8 + i));
 				}
 			break;
 		case SDL_CONTROLLERDEVICEADDED:
@@ -3032,7 +3068,7 @@ int Load_Buttons()
 	PadState pad = controller == -1 ? combinedPad : pads[controller];
 	return remapPadButtons(padGetButtons(&pad), padGetStyleSet(&pad));
 #else
-	return buttons;
+	return g_buttons;
 #endif
 }
 

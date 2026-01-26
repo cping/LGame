@@ -21,6 +21,7 @@
 package loon.cport;
 
 import loon.LObject;
+import loon.LRelease;
 import loon.cport.bridge.SDLCall;
 import loon.cport.bridge.SDLScanCode;
 import loon.events.InputMake;
@@ -29,7 +30,7 @@ import loon.events.SysKey;
 import loon.events.TouchMake;
 import loon.utils.TArray;
 
-public class CInputMake extends InputMake {
+public class CInputMake extends InputMake implements LRelease {
 
 	private static class CTouch {
 
@@ -63,6 +64,7 @@ public class CInputMake extends InputMake {
 
 	private static final int DEF_MAX_TOUCHES = 16;
 	private final CGame _game;
+	private final CGamepad _gamepad;
 	private final TArray<CTouch> _touchs = new TArray<CInputMake.CTouch>(DEF_MAX_TOUCHES);
 	private int _lastKeyPressed;
 	private long _currentEventTimeStamp;
@@ -77,6 +79,10 @@ public class CInputMake extends InputMake {
 	private final boolean[] _touched = new boolean[DEF_MAX_TOUCHES];
 	private boolean _wasJustTouched;
 	private boolean _useTouched;
+	private boolean _useGamepad;
+	private boolean _onlyGamepad;
+	private boolean _initedGamepad;
+	private boolean _convertGamepadToKeys;
 
 	public CInputMake(CGame game) {
 		this._game = game;
@@ -84,10 +90,18 @@ public class CInputMake extends InputMake {
 			_previousTouchData[i * 3] = -1;
 			_rawTouchIds[i] = -1;
 		}
-		this._useTouched = (SDLCall.getNumTouchDevices() > 0) || _game.setting.emulateTouch;
+		this._useTouched = _game._csetting.emulateTouch || (SDLCall.getNumTouchDevices() > 0);
+		this._useGamepad = _game._csetting.allowGamePad || SDLCall.gamepadIsSupported();
+		this._onlyGamepad = _useGamepad && _game._csetting.onlyOpenGL;
+		this._convertGamepadToKeys = _game._csetting.convertGamepadToKeys;
+		this._gamepad = new CGamepad(0);
 	}
 
 	public void update() {
+		if (_useGamepad && !_initedGamepad) {
+			_gamepad.start();
+			_initedGamepad = true;
+		}
 		_currentEventTimeStamp = SDLCall.getTicks64();
 		_wasJustTouched = false;
 		SDLCall.getTouchData(_touchData);
@@ -185,19 +199,139 @@ public class CInputMake extends InputMake {
 			}
 		}
 		System.arraycopy(_touchData, 0, _previousTouchData, 0, DEF_MAX_TOUCHES * 3);
-		final int keyPressedLen = SDLCall.getPressedKeys(_keyData);
-		_lastKeyPressed = SDLCall.getLastPressedScancode();
-		for (int key = 0; key < keyPressedLen; key++) {
-			if (_keyData[key] == 1) {
-				postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(key), true, (char) key, 0);
+		if (!_onlyGamepad) {
+			final int keyPressedLen = SDLCall.getPressedKeys(_keyData);
+			_lastKeyPressed = SDLCall.getLastPressedScancode();
+			for (int key = 0; key < keyPressedLen; key++) {
+				if (_keyData[key] == 1) {
+					postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(key), true, (char) key, 0);
+				}
+			}
+			final int keyReleasedLen = SDLCall.getReleasedKeys(_keyData);
+			for (int unkey = 0; unkey < keyReleasedLen; unkey++) {
+				if (_keyData[unkey] == 1) {
+					postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(unkey), false, (char) unkey, 0);
+				}
 			}
 		}
-		final int keyReleasedLen = SDLCall.getReleasedKeys(_keyData);
-		for (int unkey = 0; unkey < keyReleasedLen; unkey++) {
-			if (_keyData[unkey] == 1) {
-				postKey(_currentEventTimeStamp, SDLScanCode.getLoonKeyCode(unkey), false, (char) unkey, 0);
+		if (_initedGamepad) {
+			if (!_onlyGamepad) {
+				_gamepad.pollEvents();
+			}
+			_gamepad.getState();
+			if (_convertGamepadToKeys) {
+				// 这项属于Loon特有功能，默认会将游戏手柄0索引的按键Button映射到键盘事件上，方便开发，也可禁用
+				convertGampadButtonToKeys(_gamepad);
 			}
 		}
+	}
+
+	protected final void convertGampadButtonToKeys(CGamepad pad) {
+		if (pad != null) {
+
+			if (_gamepad.isUp()) {
+				postKey(_currentEventTimeStamp, SysKey.W, true, (char) 87, 0);
+				postKey(_currentEventTimeStamp, SysKey.UP, true, (char) 38, 0);
+			} else if (_gamepad.isUnUp()) {
+				postKey(_currentEventTimeStamp, SysKey.W, false, (char) 87, 0);
+				postKey(_currentEventTimeStamp, SysKey.UP, false, (char) 38, 0);
+			}
+
+			if (_gamepad.isDown()) {
+				postKey(_currentEventTimeStamp, SysKey.S, true, (char) 83, 0);
+				postKey(_currentEventTimeStamp, SysKey.DOWN, true, (char) 40, 0);
+			} else if (_gamepad.isUnDown()) {
+				postKey(_currentEventTimeStamp, SysKey.S, false, (char) 83, 0);
+				postKey(_currentEventTimeStamp, SysKey.DOWN, false, (char) 40, 0);
+			}
+
+			if (_gamepad.isLeft()) {
+				postKey(_currentEventTimeStamp, SysKey.A, true, (char) 65, 0);
+				postKey(_currentEventTimeStamp, SysKey.LEFT, true, (char) 37, 0);
+			} else if (_gamepad.isUnLeft()) {
+				postKey(_currentEventTimeStamp, SysKey.A, false, (char) 65, 0);
+				postKey(_currentEventTimeStamp, SysKey.LEFT, false, (char) 37, 0);
+			}
+
+			if (_gamepad.isRight()) {
+				postKey(_currentEventTimeStamp, SysKey.D, true, (char) 68, 0);
+				postKey(_currentEventTimeStamp, SysKey.RIGHT, true, (char) 39, 0);
+			} else if (_gamepad.isUnRight()) {
+				postKey(_currentEventTimeStamp, SysKey.D, false, (char) 68, 0);
+				postKey(_currentEventTimeStamp, SysKey.RIGHT, false, (char) 39, 0);
+			}
+
+			if (_gamepad.isConfirm()) {
+				postKey(_currentEventTimeStamp, SysKey.ENTER, true, (char) 13, 0);
+			} else if (_gamepad.isUnConfirm()) {
+				postKey(_currentEventTimeStamp, SysKey.ENTER, false, (char) 13, 0);
+			}
+
+			if (_gamepad.isCancel()) {
+				postKey(_currentEventTimeStamp, SysKey.ESCAPE, true, (char) 27, 0);
+			} else if (_gamepad.isUnCancel()) {
+				postKey(_currentEventTimeStamp, SysKey.ESCAPE, false, (char) 27, 0);
+			}
+
+			if (_gamepad.isJump()) {
+				postKey(_currentEventTimeStamp, SysKey.SPACE, true, (char) 32, 0);
+			} else if (_gamepad.isUnJump()) {
+				postKey(_currentEventTimeStamp, SysKey.SPACE, false, (char) 32, 0);
+			}
+
+			if (_gamepad.isShot()) {
+				postKey(_currentEventTimeStamp, SysKey.X, true, (char) 88, 0);
+			} else if (_gamepad.isUnShot()) {
+				postKey(_currentEventTimeStamp, SysKey.X, false, (char) 88, 0);
+			}
+
+			if (_gamepad.isMenu()) {
+				postKey(_currentEventTimeStamp, SysKey.MENU, true, (char) 93, 0);
+			} else if (_gamepad.isUnMenu()) {
+				postKey(_currentEventTimeStamp, SysKey.MENU, false, (char) 93, 0);
+			}
+
+			if (_gamepad.isBack()) {
+				postKey(_currentEventTimeStamp, SysKey.BACK, true, (char) 8, 0);
+			} else if (_gamepad.isUnBack()) {
+				postKey(_currentEventTimeStamp, SysKey.BACK, false, (char) 8, 0);
+			}
+
+			if (_gamepad.isMisc()) {
+				postKey(_currentEventTimeStamp, SysKey.P, true, (char) 44, 0);
+			} else if (_gamepad.isUnMisc()) {
+				postKey(_currentEventTimeStamp, SysKey.P, false, (char) 44, 0);
+			}
+
+			if (_gamepad.isLeftShoulder()) {
+				postKey(_currentEventTimeStamp, SysKey.I, true, (char) 73, 0);
+			} else if (_gamepad.isUnLeftShoulder()) {
+				postKey(_currentEventTimeStamp, SysKey.I, false, (char) 73, 0);
+			}
+
+			if (_gamepad.isRightShoulder()) {
+				postKey(_currentEventTimeStamp, SysKey.O, true, (char) 79, 0);
+			} else if (_gamepad.isUnRightShoulder()) {
+				postKey(_currentEventTimeStamp, SysKey.O, false, (char) 79, 0);
+			}
+
+			if (_gamepad.isLeftStick()) {
+				postKey(_currentEventTimeStamp, SysKey.K, true, (char) 75, 0);
+			} else if (_gamepad.isUnLeftStick()) {
+				postKey(_currentEventTimeStamp, SysKey.K, false, (char) 75, 0);
+			}
+
+			if (_gamepad.isRightStick()) {
+				postKey(_currentEventTimeStamp, SysKey.L, true, (char) 76, 0);
+			} else if (_gamepad.isUnRightStick()) {
+				postKey(_currentEventTimeStamp, SysKey.L, false, (char) 76, 0);
+			}
+
+		}
+	}
+
+	public final boolean isGamepadToKeys() {
+		return _convertGamepadToKeys;
 	}
 
 	public final int getLastKeyPressed() {
@@ -208,7 +342,7 @@ public class CInputMake extends InputMake {
 		return _currentEventTimeStamp;
 	}
 
-	public void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
+	public synchronized final void postKey(long time, int keyCode, boolean pressed, char typedCh, int modFlags) {
 		if (keyCode == SysKey.BACKSPACE) {
 			typedCh = ((char) 8);
 		}
@@ -226,11 +360,11 @@ public class CInputMake extends InputMake {
 		keyboardEvents.emit(event);
 	}
 
-	private final void postTouchEvents(TArray<CTouch> touchs) {
+	private synchronized final void postTouchEvents(TArray<CTouch> touchs) {
 		postTouchEvents(touchs, false);
 	}
 
-	private final void postTouchEvents(TArray<CTouch> touchs, boolean cancel) {
+	private synchronized final void postTouchEvents(TArray<CTouch> touchs, boolean cancel) {
 		final int touchsLenght = touchs.size;
 		if (_useTouched) {
 			final TouchMake.Event[] events = new TouchMake.Event[touchsLenght];
@@ -272,6 +406,10 @@ public class CInputMake extends InputMake {
 	@Override
 	public boolean hasTouch() {
 		return _useTouched;
+	}
+
+	public boolean hasGamepad() {
+		return _useGamepad;
 	}
 
 	@Override
@@ -325,6 +463,18 @@ public class CInputMake extends InputMake {
 
 	public long getCurrentEventTime() {
 		return _currentEventTimeStamp;
+	}
+
+	public CGamepad getGamepad() {
+		return _gamepad;
+	}
+
+	@Override
+	public void close() {
+		if (_useGamepad) {
+			_gamepad.close();
+		}
+		_initedGamepad = false;
 	}
 
 }

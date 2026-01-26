@@ -205,11 +205,21 @@ typedef struct {
 } PlatformResolution;
 
 typedef enum {
+    BTN_UP,
+    BTN_DOWN,
+    BTN_LEFT,
+    BTN_RIGHT,
     BTN_CONFIRM,
     BTN_CANCEL,
     BTN_JUMP,
     BTN_SHOOT,
     BTN_MENU,
+    BTN_BACK,
+    BTN_LB,
+    BTN_RB,
+    BTN_LS,
+    BTN_RS,
+    BTN_MISC,
     BTN_MAX
 } LogicalButton;
 
@@ -1123,6 +1133,8 @@ void Load_SDL_SetWindowTitle(const int64_t handle,const char* title);
 
 void Load_SDL_Gamepad_Init(const bool debugMode);
 
+bool Load_SDL_Gamepad_IsSupported();
+
 void Load_SDL_Gamepad_Close();
 
 void Load_SDL_Gamepad_GetState(int32_t playerIndex, float* axesOut, float* triggersOut, int* buttonsOut);
@@ -1350,10 +1362,6 @@ void Load_GL_GenTextures(const int n, const void* textures);
 int Load_GL_GenRenderbuffer();
 
 int Load_GL_GetError();
-
-void Load_GL_GetInteger(const int pname, const void* params);
-
-void Load_GL_GetIntegerv(const int pname, const void* params);
 
 char* Load_GL_GetString(const int name);
 

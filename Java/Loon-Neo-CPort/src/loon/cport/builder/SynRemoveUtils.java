@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import loon.utils.PathUtils;
+
 /**
  * The synchronized flag in teavm C version blocks the normal loop and must be
  * cleared completely...
@@ -170,14 +172,17 @@ public class SynRemoveUtils {
 		try (Stream<Path> paths = Files.walk(rootDir.toPath())) {
 			List<Path> javaFiles = paths.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
 			for (Path javaFile : javaFiles) {
-				String content = Files.readString(javaFile, StandardCharsets.UTF_8);
-				SyncResult result = removeSynchronized(content, mode);
-				if (result.removedCount > 0) {
-					totalRemoved += result.removedCount;
-					if (backFile) {
-						Files.writeString(Path.of(javaFile.toString() + ".bak"), content, StandardCharsets.UTF_8);
+				String dirName = PathUtils.getLastDirName(javaFile.toAbsolutePath().toString());
+				if (!"reply".equals(dirName)) {
+					String content = Files.readString(javaFile, StandardCharsets.UTF_8);
+					SyncResult result = removeSynchronized(content, mode);
+					if (result.removedCount > 0) {
+						totalRemoved += result.removedCount;
+						if (backFile) {
+							Files.writeString(Path.of(javaFile.toString() + ".bak"), content, StandardCharsets.UTF_8);
+						}
+						Files.writeString(javaFile, result.updatedContent, StandardCharsets.UTF_8);
 					}
-					Files.writeString(javaFile, result.updatedContent, StandardCharsets.UTF_8);
 				}
 			}
 		} catch (IOException e) {

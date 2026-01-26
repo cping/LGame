@@ -61,7 +61,7 @@ public final class CGame extends LGame {
 	}
 
 	public static enum GameSysPlatform {
-		NONE, WIN, MAC, LINUX, XBOX, SWITCH, STREAM, PS
+		NONE, WIN, MAC, LINUX, XBOX, SWITCH, STREAM, PS, PSV, LUNA
 	}
 
 	public final static class CSetting extends LSetting {
@@ -82,11 +82,17 @@ public final class CGame extends LGame {
 
 		public boolean allowWindowClose = true;
 
+		public boolean allowGamePad = true;
+
 		public boolean vsync = true;
 
 		public boolean powerOfTwoTexture = false;
 
 		public boolean onlyOpenGL = false;
+
+		public boolean onlyGamepad = false;
+
+		public boolean convertGamepadToKeys = true;
 
 		public int qualityModel = QUALITY_HIGH;
 
@@ -100,7 +106,8 @@ public final class CGame extends LGame {
 
 		public boolean isGamePlatform() {
 			return (GameSysPlatform.XBOX == gamePlatform || GameSysPlatform.SWITCH == gamePlatform
-					|| GameSysPlatform.STREAM == gamePlatform || GameSysPlatform.PS == gamePlatform);
+					|| GameSysPlatform.STREAM == gamePlatform || GameSysPlatform.PS == gamePlatform
+					|| GameSysPlatform.PSV == gamePlatform || GameSysPlatform.LUNA == gamePlatform);
 		}
 
 	}
@@ -362,6 +369,9 @@ public final class CGame extends LGame {
 			}
 		} finally {
 			shutdown();
+			if (_input != null) {
+				_input.close();
+			}
 			SDLCall.cleanup();
 			if (_appLocked) {
 				SDLCall.freeAppLock();
