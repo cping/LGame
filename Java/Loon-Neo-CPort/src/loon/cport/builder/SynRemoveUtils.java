@@ -173,7 +173,7 @@ public class SynRemoveUtils {
 			List<Path> javaFiles = paths.filter(p -> p.toString().endsWith(".java")).collect(Collectors.toList());
 			for (Path javaFile : javaFiles) {
 				String dirName = PathUtils.getLastDirName(javaFile.toAbsolutePath().toString());
-				if (!"reply".equals(dirName)) {
+				if (!"reply".equals(dirName) && !"cport".equals(dirName)) {
 					String content = Files.readString(javaFile, StandardCharsets.UTF_8);
 					SyncResult result = removeSynchronized(content, mode);
 					if (result.removedCount > 0) {

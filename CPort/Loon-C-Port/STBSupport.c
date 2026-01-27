@@ -621,7 +621,7 @@ int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
 int64_t Load_STB_Image_LoadPath(const char* path)
 {
 	int32_t width = 0 , height = 0, format = 0;
-	uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_rgb_alpha);
+	uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_default);
 	if (!pixels || width <= 0 || height <= 0) {
 		fprintf(stderr, "Load_STB_Image_LoadPath Error !\n");
 		return -1;
@@ -667,8 +667,8 @@ int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path)
 
 int64_t Load_STB_Image_LoadSDLSurfaceARGB32(const char* path)
 {
-	int width, height, channels;
-	unsigned char* pixels = stbi_load(path, &width, &height, &channels, STBI_rgb_alpha);
+	int width, height, format;
+	unsigned char* pixels = stbi_load(path, &width, &height, &format, STBI_rgb_alpha);
 	if (!pixels) {
 		fprintf(stderr, "Load_STB_Image_LoadSDLSurfaceARGB32 Error !\n");
 		return 0;
@@ -715,12 +715,9 @@ void Load_STB_Image_Free(const int64_t handle)
 		fprintf(stderr, "Load_STB_Image_Free Error !\n");
 		return;
 	}
-	stbi_image_free((void*)pixmap->pixels);
-	if (pixmap->pixels != NULL) {
-		free((void*)pixmap->pixels);
-	}
+	stbi_image_free(pixmap->pixels);
 	if (pixmap != NULL) {
-		free((void*)pixmap);
+		free(pixmap);
 	}
 }
 
@@ -752,11 +749,24 @@ void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int hei
 	}
 	int length = width * height;
 	for (int i = 0; i < length; i++) {
-		uint8_t r = src[i * format + 0];
-		uint8_t g = src[i * format + 1];
-		uint8_t b = src[i * format + 2];
-		uint8_t a = (format >= 4) ? src[i * format + 3] : 255;
-		dst[i] = ((int32_t)a << 24) | ((int32_t)r << 16) | ((int32_t)g << 8) | (int32_t)b;
+		uint8_t r = 0, g = 0, b = 0, a = 255;
+		if (format == 1) { 
+			r = g = b = src[i];
+		} else if (format == 2) { 
+			r = g = b = src[i * 2 + 0];
+			a = src[i * 2 + 1];
+		} else if (format == 3) { 
+			r = src[i * 3 + 0];
+			g = src[i * 3 + 1];
+			b = src[i * 3 + 2];
+		} else if (format == 4) {
+			r = src[i * 4 + 0];
+			g = src[i * 4 + 1];
+			b = src[i * 4 + 2];
+			a = src[i * 4 + 3];
+		}
+		dst[i] = ((int32_t)a << 24) | ((int32_t)r << 16) |
+			((int32_t)g << 8) | (int32_t)b;
 	}
 }
 

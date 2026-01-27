@@ -455,6 +455,10 @@ public class CAssets extends Assets {
 						Pixmap pixmap = new Pixmap(stbimage.getImagePixels32(), stbimage.getWidth(),
 								stbimage.getHeight(), stbimage.getFormat() >= 4);
 						image.succeed(new ImageImpl.Data(Scale.ONE, pixmap, pixmap.getWidth(), pixmap.getHeight()));
+						if (stbimage != null) {
+							stbimage.close();
+							stbimage = null;
+						}
 					}
 				} catch (Exception error) {
 					image.fail(error);
@@ -576,8 +580,8 @@ public class CAssets extends Assets {
 		Exception error = null;
 		String newPath = fixPath(path);
 		for (Scale.ScaledResource rsrc : assetScale().getScaledResources(newPath)) {
+			STBImage stbImage = STBImage.createImage(newPath);
 			try {
-				STBImage stbImage = STBImage.createImage(newPath);
 				Pixmap image = new Pixmap(stbImage.getImagePixels32(), stbImage.getWidth(), stbImage.getHeight());
 				Scale viewScale = game.graphics().scale(), imageScale = rsrc.scale;
 				float viewImageRatio = viewScale.factor / imageScale.factor;
@@ -588,6 +592,9 @@ public class CAssets extends Assets {
 				return new ImageImpl.Data(imageScale, image, image.getWidth(), image.getHeight());
 			} catch (Exception ex) {
 				error = ex;
+			} finally {
+				stbImage.close();
+				stbImage = null;
 			}
 		}
 		game.log().warn("Could not load image: " + path + " [error=" + error + "]");

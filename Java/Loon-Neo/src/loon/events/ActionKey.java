@@ -24,7 +24,9 @@ import loon.utils.HelperUtils;
 
 public class ActionKey {
 
-	private EventAction _function;
+	private EventAction _downFunction;
+
+	private EventAction _upFunction;
 
 	public static final int NORMAL = 0;
 
@@ -62,9 +64,14 @@ public class ActionKey {
 		this(mode, null);
 	}
 
-	public ActionKey(int mode, EventAction ea) {
+	public ActionKey(int mode, EventAction e) {
+		this(mode, e, e);
+	}
+
+	public ActionKey(int mode, EventAction keyDown, EventAction keyUp) {
 		this._mode = mode;
-		this._function = ea;
+		this._downFunction = keyDown;
+		this._upFunction = keyUp;
 		this.reset();
 	}
 
@@ -75,11 +82,15 @@ public class ActionKey {
 	public void act(long elapsed) {
 		this._elapsedTime = elapsed;
 		if (isAllStateCallFun()) {
-			HelperUtils.callEventAction(_function, this);
+			if (_keyPressDown) {
+				HelperUtils.callEventAction(_downFunction, this);
+			} else {
+				HelperUtils.callEventAction(_upFunction, this);
+			}
 		} else if (_keyPressDown && isPressCallFun()) {
-			HelperUtils.callEventAction(_function, this);
+			HelperUtils.callEventAction(_downFunction, this);
 		} else if (!_keyPressDown && isReleaseCallFun()) {
-			HelperUtils.callEventAction(_function, this);
+			HelperUtils.callEventAction(_upFunction, this);
 		}
 	}
 
@@ -164,11 +175,33 @@ public class ActionKey {
 	}
 
 	public EventAction getFunction() {
-		return _function;
+		if (_downFunction != null) {
+			return _downFunction;
+		}
+		return _upFunction;
 	}
 
 	public ActionKey setFunction(EventAction f) {
-		this._function = f;
+		this._downFunction = f;
+		this._upFunction = f;
+		return this;
+	}
+
+	public EventAction getDownFunction() {
+		return _downFunction;
+	}
+
+	public ActionKey setDownFunction(EventAction f) {
+		this._downFunction = f;
+		return this;
+	}
+
+	public EventAction getUpFunction() {
+		return _upFunction;
+	}
+
+	public ActionKey setUpFunction(EventAction f) {
+		this._upFunction = f;
 		return this;
 	}
 

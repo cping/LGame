@@ -333,7 +333,7 @@ public final class CGame extends LGame {
 			while (isRunning() && SDLCall.runSDLUpdate()) {
 				_input.update();
 				currentTime = SDLCall.getTicks();
-				if (currentTime - _lastEventCall >= 1000) {
+				if (currentTime - _lastEventCall >= 500) {
 					if (resize) {
 						final int newWidth = SDLCall.getWindowWidth();
 						final int newHeight = SDLCall.getWindowHeight();
