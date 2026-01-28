@@ -795,6 +795,10 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 		return containsActionKey(SysKey.toIntKey(keyName));
 	}
 
+	protected ActionKey getActionKey(int keyCode) {
+		return _keyActions.get(keyCode);
+	}
+
 	public Screen addActionKey(int keyCode, ActionKey e) {
 		_keyActions.put(keyCode, e);
 		return this;
@@ -897,7 +901,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen keyPress(int keyCode, EventActionN f) {
-		addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(0));
+		ActionKey action = getActionKey(keyCode);
+		if (action == null) {
+			addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(0));
+		} else {
+			if (action.isPressCallFun()) {
+				action.setDownFunction(f);
+			} else {
+				action.setKeyCallFunState(-1);
+				action.setDownFunction(f);
+			}
+		}
 		return this;
 	}
 
@@ -909,7 +923,17 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen keyRelease(int keyCode, EventActionN f) {
-		addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(1));
+		ActionKey action = getActionKey(keyCode);
+		if (action == null) {
+			addActionKey(keyCode, new ActionKey(f).setKeyCallFunState(1));
+		} else {
+			if (!action.isPressCallFun()) {
+				action.setUpFunction(f);
+			} else {
+				action.setKeyCallFunState(-1);
+				action.setUpFunction(f);
+			}
+		}
 		return this;
 	}
 
@@ -943,10 +967,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen keyEachPress(EventActionN f, String... keys) {
-		final ActionKey key = new ActionKey(f).setKeyCallFunState(0);
 		for (int i = 0; i < keys.length; i++) {
 			final String keyName = keys[i];
-			addActionKey(SysKey.toIntKey(keyName), key);
+			final int keyIndex = SysKey.toIntKey(keyName);
+			ActionKey action = getActionKey(keyIndex);
+			if (action == null) {
+				addActionKey(keyIndex, new ActionKey(f).setKeyCallFunState(0));
+			} else {
+				if (action.isPressCallFun()) {
+					action.setDownFunction(f);
+				} else {
+					action.setKeyCallFunState(-1);
+					action.setDownFunction(f);
+				}
+			}
 		}
 		return this;
 	}
@@ -959,10 +993,20 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 	 * @return
 	 */
 	public Screen keyEachRelease(EventActionN f, String... keys) {
-		final ActionKey key = new ActionKey(f).setKeyCallFunState(1);
 		for (int i = 0; i < keys.length; i++) {
 			final String keyName = keys[i];
-			addActionKey(SysKey.toIntKey(keyName), key);
+			final int keyIndex = SysKey.toIntKey(keyName);
+			ActionKey action = getActionKey(keyIndex);
+			if (action == null) {
+				addActionKey(keyIndex, new ActionKey(f).setKeyCallFunState(1));
+			} else {
+				if (!action.isPressCallFun()) {
+					action.setUpFunction(f);
+				} else {
+					action.setKeyCallFunState(-1);
+					action.setUpFunction(f);
+				}
+			}
 		}
 		return this;
 	}
@@ -1786,16 +1830,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			return false;
 		}
 		for (int i = rectSize - 1; i > -1; i--) {
-			final RectBox rectLimit = _rectLimits.get(i);
-			if (rectLimit.contains(x, y)) {
+			final RectBox rectLimit = (RectBox) _rectLimits.get(i);
+			if (rectLimit != null && rectLimit.contains(x, y)) {
 				return true;
 			}
 		}
 		for (int i = actionSize - 1; i > -1; i--) {
-			final ActionBind actionLimit = _actionLimits.get(i);
-			final boolean show = (actionLimit.isVisible() && actionLimit.getAlpha() > 0f);
-			if (show && actionLimit.getRectBox().contains(x, y)) {
-				return true;
+			final ActionBind actionLimit = (ActionBind) _actionLimits.get(i);
+			if (actionLimit != null) {
+				final boolean show = (actionLimit.isVisible() && actionLimit.getAlpha() > 0f);
+				if (show && actionLimit.getRectBox().contains(x, y)) {
+					return true;
+				}
 			}
 		}
 		return false;

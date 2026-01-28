@@ -1109,21 +1109,19 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (!this._component_visible) {
 			return;
 		}
-		synchronized (_childs) {
-			try {
-				super.update(elapsedTime);
-				LComponent component;
-				final int size = this._childCount;
-				final LComponent[] childs = this._childs;
-				for (int i = 0; i < size; i++) {
-					component = childs[i];
-					if (component != null && component != this) {
-						component.update(elapsedTime);
-					}
+		try {
+			super.update(elapsedTime);
+			LComponent component;
+			final int size = this._childCount;
+			final LComponent[] childs = this._childs;
+			for (int i = 0; i < size; i++) {
+				component = childs[i];
+				if (component != null && component != this) {
+					component.update(elapsedTime);
 				}
-			} catch (Throwable cause) {
-				LSystem.error("LContainer update() exception", cause);
 			}
+		} catch (Throwable cause) {
+			LSystem.error("LContainer update() exception", cause);
 		}
 	}
 
@@ -1180,18 +1178,14 @@ public abstract class LContainer extends LComponent implements IArray {
 		if (update) {
 			g.translate(startX, startY);
 		}
-		synchronized (_childs) {
-			super.createUI(g);
-			if (this._component_elastic) {
-				g.setClip(this.getScreenComponentLeft(), this.getScreenComponentTop(), this.getWidth(),
-						this.getHeight());
-			}
-			this.renderComponents(g);
-			if (this._component_elastic) {
-				g.clearClip();
-			}
+		super.createUI(g);
+		if (this._component_elastic) {
+			g.setClip(this.getScreenComponentLeft(), this.getScreenComponentTop(), this.getWidth(), this.getHeight());
 		}
-
+		this.renderComponents(g);
+		if (this._component_elastic) {
+			g.clearClip();
+		}
 		if (update) {
 			g.translate(-startX, -startY);
 		}

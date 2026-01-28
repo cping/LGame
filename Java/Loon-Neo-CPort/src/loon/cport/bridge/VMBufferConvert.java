@@ -33,8 +33,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.teavm.interop.Address;
-import org.teavm.interop.StaticInit;
-import org.teavm.interop.Unmanaged;
 
 import loon.LSysException;
 import loon.LSystem;
@@ -42,8 +40,6 @@ import loon.utils.MathUtils;
 import loon.utils.ObjectMap;
 import loon.utils.ObjectMap.Keys;
 
-@Unmanaged
-@StaticInit
 public final class VMBufferConvert {
 
 	final static class TeaVMBufferState {
@@ -300,6 +296,9 @@ public final class VMBufferConvert {
 	}
 
 	public static Address ofNNCacheAddress(Buffer buffer) {
+		if (buffer == null) {
+			return Address.fromInt(0);
+		}
 		final int size = buffer.remaining();
 		if (buffer instanceof ByteBuffer) {
 			final ByteBuffer arrayBuffer = (ByteBuffer) buffer;
@@ -390,6 +389,9 @@ public final class VMBufferConvert {
 	}
 
 	public static Address ofNAddress(Buffer buffer) {
+		if (buffer == null) {
+			return Address.fromInt(0);
+		}
 		if (buffer instanceof ByteBuffer) {
 			return Address.ofData(getArray((ByteBuffer) buffer));
 		} else if (buffer instanceof ShortBuffer) {
@@ -409,6 +411,9 @@ public final class VMBufferConvert {
 	}
 
 	public static Address save(Buffer buffer) {
+		if (buffer == null) {
+			return Address.fromInt(0);
+		}
 		if (buffer instanceof ByteBuffer) {
 			return save((ByteBuffer) buffer);
 		} else if (buffer instanceof ShortBuffer) {

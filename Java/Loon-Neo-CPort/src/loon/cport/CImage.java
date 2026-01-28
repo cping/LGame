@@ -63,12 +63,18 @@ public class CImage extends ImageImpl {
 
 	@Override
 	public void draw(Object ctx, float x, float y, float w, float h) {
+		if (ctx == null) {
+			return;
+		}
 		Pixmap gfx = (Pixmap) ctx;
 		gfx.drawPixmap(buffer, MathUtils.ifloor(x), MathUtils.ifloor(y), MathUtils.ifloor(w), MathUtils.ifloor(h));
 	}
 
 	@Override
 	public void draw(Object ctx, float dx, float dy, float dw, float dh, float sx, float sy, float sw, float sh) {
+		if (ctx == null) {
+			return;
+		}
 		float f = scale().factor;
 		sx *= f;
 		sy *= f;

@@ -57,7 +57,7 @@ public final class Display extends BaseIO implements LRelease {
 
 		@Override
 		public void onEmit(final LTimerContext clock) {
-			synchronized (clock) {
+			if (clock != null) {
 				if (!LSystem.PAUSED) {
 					RealtimeProcessManager.get().tick(clock);
 					_display.draw(clock);
@@ -77,7 +77,7 @@ public final class Display extends BaseIO implements LRelease {
 
 		@Override
 		public void onEmit(final LTimerContext clock) {
-			synchronized (clock) {
+			if (clock != null) {
 				if (!LSystem.PAUSED) {
 					RealtimeProcessManager.get().tick(clock);
 					ActionControl.get().call(clock.timeSinceLastUpdate);
@@ -95,7 +95,7 @@ public final class Display extends BaseIO implements LRelease {
 
 		@Override
 		public void onEmit(final LTimerContext clock) {
-			synchronized (clock) {
+			if (clock != null) {
 				if (!LSystem.PAUSED) {
 					ActionControl.get().call(clock.timeSinceLastUpdate);
 				}

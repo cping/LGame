@@ -715,7 +715,7 @@ void Load_STB_Image_Free(const int64_t handle)
 		fprintf(stderr, "Load_STB_Image_Free Error !\n");
 		return;
 	}
-	stbi_image_free(pixmap->pixels);
+	stbi_image_free((void*)pixmap->pixels);
 	if (pixmap != NULL) {
 		free(pixmap);
 	}
@@ -1439,7 +1439,9 @@ void Load_STB_DrawChar(const int64_t handle, const int32_t codepoint, const floa
 	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
-	int baseline = float_to_int_threshold(ascent * scale);
+
+	int lineHeight = float_to_int_threshold((ascent - descent + lineGap) * scale);
+	int offset = float_to_int_threshold(lineHeight - fontSize) * 2;
 	
 	int x0, y0, x1, y1;
 	stbtt_GetCodepointBitmapBox(font, codepoint, scale, scale, &x0, &y0, &x1, &y1);
@@ -1453,8 +1455,8 @@ void Load_STB_DrawChar(const int64_t handle, const int32_t codepoint, const floa
 	
 	if (!bitmap) return;
 
-	stbtt_MakeCodepointBitmap(font, bitmap + (baseline + y0 + 2) * width + 2,
-		x1 - x0, y1 - y0, width, scale, scale, codepoint);
+	stbtt_MakeCodepointBitmap(font, bitmap + (lineHeight + y0 - offset) * width,
+		oldW, oldH, width, scale, scale, codepoint);
 
 	uint8_t A = (color >> 24) & 0xFF;
 	uint8_t R = (color >> 16) & 0xFF;

@@ -313,9 +313,17 @@ public final class LTexture extends Painter implements LRelease {
 		this.loadTexture();
 	}
 
+	public boolean loadingTexture() {
+		return !_isLoaded && !_isReload && _drawing && !isDrawCanvas() && !isImageCanvas() && _image == null
+				&& _childs == null;
+	}
+
 	public void loadTexture() {
 		if (_parent != null) {
 			_parent.loadTexture();
+			return;
+		}
+		if (loadingTexture()) {
 			return;
 		}
 		if (!_isLoaded && _childs != null) {
@@ -324,7 +332,6 @@ public final class LTexture extends Painter implements LRelease {
 				tex._closed = false;
 				tex._disposed = false;
 				tex._drawing = false;
-				tex._isLoaded = false;
 				tex._isReload = true;
 			}
 		}

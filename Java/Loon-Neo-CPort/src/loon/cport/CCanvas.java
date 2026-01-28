@@ -72,7 +72,6 @@ public class CCanvas extends Canvas {
 		int argb = color.getARGB();
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
-		this.setAlpha(color.a);
 		return this;
 	}
 
@@ -81,7 +80,6 @@ public class CCanvas extends Canvas {
 		int argb = LColor.getARGB(r, g, b, a);
 		this.setStrokeColor(argb);
 		this.setFillColor(argb);
-		this.setAlpha(a);
 		return this;
 	}
 
@@ -273,6 +271,7 @@ public class CCanvas extends Canvas {
 			alpha = 1f;
 		}
 		currentState().alpha = alpha;
+		_canvas.setAlpha(alpha);
 		return this;
 	}
 
@@ -393,7 +392,6 @@ public class CCanvas extends Canvas {
 
 	@Override
 	protected Pixmap gc() {
-		currentState().prepareFill(_canvas);
 		return _canvas;
 	}
 

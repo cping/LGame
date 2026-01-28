@@ -1873,16 +1873,18 @@ public abstract class Screen extends PlayerUtils implements SysInput, IArray, LR
 			return false;
 		}
 		for (int i = rectSize - 1; i > -1; i--) {
-			final RectBox rectLimit = _rectLimits.get(i);
-			if (rectLimit.contains(x, y)) {
+			final RectBox rectLimit = (RectBox) _rectLimits.get(i);
+			if (rectLimit != null && rectLimit.contains(x, y)) {
 				return true;
 			}
 		}
 		for (int i = actionSize - 1; i > -1; i--) {
-			final ActionBind actionLimit = _actionLimits.get(i);
-			final boolean show = (actionLimit.isVisible() && actionLimit.getAlpha() > 0f);
-			if (show && actionLimit.getRectBox().contains(x, y)) {
-				return true;
+			final ActionBind actionLimit = (ActionBind) _actionLimits.get(i);
+			if (actionLimit != null) {
+				final boolean show = (actionLimit.isVisible() && actionLimit.getAlpha() > 0f);
+				if (show && actionLimit.getRectBox().contains(x, y)) {
+					return true;
+				}
 			}
 		}
 		return false;

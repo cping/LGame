@@ -358,7 +358,7 @@ public final class CGame extends LGame {
 				}
 				mainLoop(_fpsRepaintController, currentTime);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			System.out.println("Loon Run Exception:");
 			e.printStackTrace();
 			System.err.println("Message: " + e.getMessage());
