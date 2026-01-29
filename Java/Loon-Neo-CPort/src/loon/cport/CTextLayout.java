@@ -320,12 +320,15 @@ public class CTextLayout extends loon.font.TextLayout {
 
 	@Override
 	public int stringWidth(final String message) {
-		return (int) MathUtils.max(_fontSize, _stbFont.measureWidth(message, _fontSize));
+		if (message == null) {
+			return 0;
+		}
+		return MathUtils.iceil(MathUtils.max(_fontSize, _stbFont.measureWidth(message, _fontSize))) + message.length();
 	}
 
 	@Override
 	public int getHeight() {
-		return (int) MathUtils.min(_fontSize, size.getHeight());
+		return MathUtils.iceil(MathUtils.min(_fontSize, size.getHeight()));
 	}
 
 	@Override

@@ -240,7 +240,7 @@ static char* chars_secure_strtok(char* str, const char* delim) {
 	return token;
 }
 #elif defined(__unix__) || defined(__APPLE__)
-char* chars_secure_strtok(char* str, const char* delim) {
+static char* chars_secure_strtok(char* str, const char* delim) {
 	static _Thread_local char* saveptr = NULL;
 	return strtok_r(str, delim, &saveptr);
 }
@@ -254,7 +254,7 @@ __declspec(thread) static char* tls_strtok_save = NULL;
 __thread static char* tls_strtok_save = NULL;
 #endif
 #endif
-char* chars_secure_strtok(char* str, const char* delim) {
+static char* chars_secure_strtok(char* str, const char* delim) {
 	char* token_start;
 	if (str == NULL) {
 		str = tls_strtok_save;
@@ -742,7 +742,7 @@ void Load_STB_Image_GetPixels(const int64_t handle, uint8_t* pixels)
 	copy_uint8_array(pixels, sizeof(pixels), pixmap->pixels, sizeof(pixmap->pixels));
 }
 
-void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int height, int format) {
+static void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, int height, int format) {
 	if (!src || !dst || width <= 0 || height <= 0 || format < 3) {
 		fprintf(stderr, "convertSTBUint8ToInt32 Error !\n");
 		return;
@@ -1063,6 +1063,10 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 
 	float baseline_offset = (float) - y0;
 
+	if (codepoint == 0x3010 || codepoint == 0x3011) {
+		w = w / 2 + 2;
+	}
+
 	*out_w = (float)fix_font_char_size(codepoint, pixel_size, (int)w);
 	*out_h = h;
 	*out_baseline_offset = baseline_offset;
@@ -1145,7 +1149,7 @@ void Load_STB_MakeCodepointBitmap(const int64_t handle,const int point, const fl
 	stbtt_MakeCodepointBitmap(fontinfo->info, bitmap, width, height, width, scale, scale, point);
 }
 
-void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height,int order, int32_t cr, int32_t cg, int32_t cb) {
+static void convertU8toInt32(const uint8_t* src, int32_t* dst, int width, int height,int order, int32_t cr, int32_t cg, int32_t cb) {
 	if (!src || !dst || width <= 0 || height <= 0) {
 		fprintf(stderr, "convertU8toInt32 Error !\n");
 		return;
@@ -1225,12 +1229,12 @@ static float MeasureTextWidth(const stbtt_fontinfo* font, float pixel_height, co
 		if (is_cjk(cp)) {
 			int x0, y0, x1, y1;
 			stbtt_GetCodepointBitmapBox(font, cp, scale, scale, &x0, &y0, &x1, &y1);
-			width += (x1 - x0);
+			width += fix_font_char_size(cp, pixel_height,(x1 - x0));
 		}
 		else {
 			int advance, lsb;
 			stbtt_GetCodepointHMetrics(font, cp, &advance, &lsb);
-			width += advance * scale;
+			width += fix_font_char_size(cp, pixel_height, advance * scale);
 		}
 		prev_cp = cp;
 	}
@@ -1536,6 +1540,8 @@ void Load_STB_DrawString(const int64_t handle, const char* text, const float fon
 	
 	int img_w = (int)ceilf(max_width) + 4;
 	int img_h = (int)ceilf(total_height) + 4;
+
+	const int length = img_w * img_h;
 	
 	outsize[0] = img_w;
 	outsize[1] = img_h;
@@ -1591,8 +1597,8 @@ void Load_STB_DrawString(const int64_t handle, const char* text, const float fon
 
 			for (int py = 0; py < gh; py++) {
 				for (int px = 0; px < gw; px++) {
-					int dst_index = (dst_y + py) * img_w + (dst_x + px);
-					if (dst_index < 0 || dst_index >= img_w * img_h) {
+					int dst_index = (dst_y + py) * img_w + (dst_x + px + 1);
+					if (dst_index < 0 || dst_index >= length) {
 						continue;
 					}
 					uint8_t alpha = bitmap[py * gw + px];

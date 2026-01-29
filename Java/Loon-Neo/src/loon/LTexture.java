@@ -461,10 +461,10 @@ public final class LTexture extends Painter implements LRelease {
 	}
 
 	public boolean loadingTexture() {
-		return !_isLoaded && !_isReload && _drawing && !isDrawCanvas() && !isImageCanvas() && _image == null
-				&& _childs == null;
+		return (!_isLoaded && !_isReload && !isDrawCanvas() && !isImageCanvas() && _image == null && _childs == null)
+				|| _drawing;
 	}
-	
+
 	public void loadTexture() {
 		if (_parent != null) {
 			_parent.loadTexture();
