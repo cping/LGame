@@ -38,9 +38,11 @@ static void run_sleep_ms(int ms) {
 #elif defined(__linux__) || defined(__APPLE__) || defined(__MACH__) || defined(__unix__)
 #include <dlfcn.h>
 #include <time.h>
-#include <sys/utsname.h>
 #include <unistd.h>
 #include <pwd.h>
+#include <pthread.h>
+#include <sys/utsname.h>
+#include <sys/mman.h>
     #ifdef __linux__
     #include <fontconfig/fontconfig.h>
     #endif
@@ -73,8 +75,9 @@ static void run_sleep_ms(int ms) {
     #include <EGL/egl.h>
     #include <EGL/eglext.h>
     #include <sys/errno.h>
-#elif defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
+#elif  defined(XBOX) || defined(_XBOX_ONE) || defined(_XBOX_SERIES_X)
     #include <xdk.h>
+	#include <xmem.h>
 #elif defined(__ANDROID__)
     #include <jni.h>
     #include <android/log.h>
@@ -90,12 +93,15 @@ static void run_sleep_ms(int ms) {
     #include <3ds.h>
 #elif defined(__PSV__)
     #include <psp2/kernel/processmgr.h>
+	#include <psp2/kernel/sysmem.h>
+    #include <psp2/kernel/threadmgr.h>
     #include <psp2/io/fcntl.h>
 #elif defined(__ORBIS__) || defined(__PROSPERO__) 
     #include <orbis/SystemService.h>
     #include <orbis/UserService.h>
 #elif defined(__PSP__)
     #include <pspkernel.h>
+	#include <pspmemory.h>
     #include <pspdebug.h>
     #include <pspctrl.h>
 #elif defined(__EMSCRIPTEN__)
@@ -158,6 +164,392 @@ extern "C" {
 #define MAX_CHUNK_SIZE 8192
 #define MAX_TOUCH_DEVICES 16
 #define MAX_TEXTINPUT_CAHR_LEN 32
+
+// 通用虚拟内存开始构建(用于在不支持虚拟内存的平台，替换TeaVM提供的虚拟内存内部实现)
+// 只有不支持原生虚拟内存API时(主要是游戏机平台)，下列代码才生效
+#if defined(__PSP__) || defined(__PSV__) || defined(__VITA__) || defined(__SWITCH__) || defined(__ORBIS__) || defined(__PROSPERO__) || defined(__EMSCRIPTEN__)
+#define USE_CONSOLE_PLATFORM 1
+#else
+#define USE_CONSOLE_PLATFORM 0
+#endif
+
+#if USE_CONSOLE_PLATFORM
+
+// 权限定义
+#define GC_PROT_NONE   0x0
+#define GC_PROT_READ   0x1
+#define GC_PROT_WRITE  0x2
+#define GC_PROT_EXEC   0x4
+#define GC_MAP_FAILED ((void*)-1)
+
+// 只有特定环境下，使用自定义虚拟内存
+#if USE_CONSOLE_PLATFORM
+#if defined(__PSP__)
+static SceUID region_lock;
+#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 0, NULL)
+#define GC_LOCK() sceKernelLockMutex(region_lock, 1, NULL)
+#define GC_UNLOCK() sceKernelUnlockMutex(region_lock, 1)
+#elif defined(__PSV__) || defined(__VITA__)
+static SceUID region_lock;
+#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 0, NULL)
+#define GC_LOCK() sceKernelLockMutex(region_lock, 1, NULL)
+#define GC_UNLOCK() sceKernelUnlockMutex(region_lock, 1)
+#elif defined(__SWITCH__)
+static Mutex region_lock;
+#define GC_LOCK_INIT() mutexInit(&region_lock)
+#define GC_LOCK() mutexLock(&region_lock)
+#define GC_UNLOCK() mutexUnlock(&region_lock)
+#else
+#define GC_LOCK_INIT()
+#define GC_LOCK()
+#define GC_UNLOCK()
+#endif
+#else
+#include <pthread.h>
+static pthread_mutex_t region_lock = PTHREAD_MUTEX_INITIALIZER;
+#define GC_LOCK_INIT()
+#define GC_LOCK() pthread_mutex_lock(&region_lock)
+#define GC_UNLOCK() pthread_mutex_unlock(&region_lock)
+#endif
+
+// 虚拟内存存储用结构
+typedef struct {
+        void* addr;
+        size_t len;
+        int prot;
+        int used;
+        int uid;
+        int is_native;
+} GCRegion;
+
+static GCRegion* regions = NULL;
+static size_t region_capacity = 0;
+
+static inline void init_regions() {
+        if (!regions) {
+            region_capacity = 128;
+            regions = calloc(region_capacity, sizeof(GCRegion));
+            GC_LOCK_INIT();
+        }
+}
+
+static inline void expand_regions() {
+        size_t new_capacity = region_capacity * 2;
+        GCRegion* new_regions = calloc(new_capacity, sizeof(GCRegion));
+        memcpy(new_regions, regions, region_capacity * sizeof(GCRegion));
+        free(regions);
+        regions = new_regions;
+        region_capacity = new_capacity;
+}
+
+static inline void* gc_mmap_virtual(size_t len, int prot) {
+        if (len == 0) return GC_MAP_FAILED;
+        void* mem = calloc(1, len);
+        if (!mem) return GC_MAP_FAILED;
+
+        GC_LOCK();
+        init_regions();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (!regions[i].used) {
+                regions[i].addr = mem;
+                regions[i].len = len;
+                regions[i].prot = prot;
+                regions[i].used = 1;
+                regions[i].uid = -1;
+                regions[i].is_native = 0;
+                GC_UNLOCK();
+                return mem;
+            }
+        }
+        expand_regions();
+        regions[region_capacity / 2].addr = mem;
+        regions[region_capacity / 2].len = len;
+        regions[region_capacity / 2].prot = prot;
+        regions[region_capacity / 2].used = 1;
+        regions[region_capacity / 2].uid = -1;
+        regions[region_capacity / 2].is_native = 0;
+        GC_UNLOCK();
+        return mem;
+}
+
+static inline int gc_munmap_virtual(void* addr, size_t len) {
+        GC_LOCK();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+                free(addr);
+                regions[i].used = 0;
+                regions[i].addr = NULL;
+                regions[i].len = 0;
+                regions[i].prot = GC_PROT_NONE;
+                regions[i].uid = -1;
+                regions[i].is_native = 0;
+                GC_UNLOCK();
+                return 0;
+            }
+        }
+        GC_UNLOCK();
+        return -1;
+}
+
+static inline int gc_mprotect_virtual(void* addr, size_t len, int prot) {
+        GC_LOCK();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+                regions[i].prot = prot;
+                GC_UNLOCK();
+                return 0;
+            }
+        }
+        GC_UNLOCK();
+        return -1;
+}
+// 分表数量
+static inline size_t gc_regionCount() {
+    size_t count = 0;
+    pthread_mutex_lock(&region_lock);
+    if (!regions) {
+        pthread_mutex_unlock(&region_lock);
+        return 0;
+    }
+    for (size_t i = 0; i < region_capacity; i++) {
+        if (regions[i].used) {
+            count++;
+        }
+    }
+    pthread_mutex_unlock(&region_lock);
+    return count;
+}
+
+// 虚拟内存占用信息
+static inline void gc_regionInfo() {
+    pthread_mutex_lock(&region_lock);
+    if (!regions) {
+        printf("No regions allocated.\n");
+        pthread_mutex_unlock(&region_lock);
+        return;
+    }
+    printf("=== Region Info ===\n");
+    for (size_t i = 0; i < region_capacity; i++) {
+        if (regions[i].used) {
+            printf("Region %zu: addr=%p, size=%zu, prot=", i, regions[i].addr, regions[i].len);
+            if (regions[i].prot & GC_PROT_READ)  printf("R");
+            if (regions[i].prot & GC_PROT_WRITE) printf("W");
+            if (regions[i].prot & GC_PROT_EXEC)  printf("X");
+            if (regions[i].prot == GC_PROT_NONE) printf("NONE");
+            printf("\n");
+        }
+    }
+    printf("===================\n");
+    pthread_mutex_unlock(&region_lock);
+}
+#endif
+
+// PSP平台实现
+#if defined(__PSP__)
+static inline void* gc_mmap(size_t len, int prot) {
+    if (len == 0) return GC_MAP_FAILED;
+    SceUID uid = sceKernelAllocPartitionMemory(
+        PSP_MEMORY_PARTITION_USER,
+        "gc_mmap_block",
+        PSP_SMEM_Low,
+        len,
+        NULL
+    );
+    if (uid >= 0) {
+        void* mem = sceKernelGetBlockHeadAddr(uid);
+        if (mem) {
+            GC_LOCK();
+            init_regions();
+            for (size_t i = 0; i < region_capacity; i++) {
+                if (!regions[i].used) {
+                    regions[i].addr = mem;
+                    regions[i].len = len;
+                    regions[i].prot = prot;
+                    regions[i].used = 1;
+                    regions[i].uid = uid;
+                    regions[i].is_native = 1;
+                    break;
+                }
+            }
+            GC_UNLOCK();
+            return mem;
+        }
+        sceKernelFreePartitionMemory(uid);
+    }
+    return gc_mmap_virtual(len, prot);
+}
+
+static inline int gc_munmap(void* addr, size_t len) {
+    GC_LOCK();
+    for (size_t i = 0; i < region_capacity; i++) {
+        if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+            if (regions[i].is_native) {
+                sceKernelFreePartitionMemory(regions[i].uid);
+            }
+            else {
+                free(addr);
+            }
+            regions[i].used = 0;
+            regions[i].addr = NULL;
+            regions[i].len = 0;
+            regions[i].prot = GC_PROT_NONE;
+            regions[i].uid = -1;
+            regions[i].is_native = 0;
+            GC_UNLOCK();
+            return 0;
+        }
+    }
+    GC_UNLOCK();
+    return -1;
+}
+
+static inline int gc_mprotect(void* addr, size_t len, int prot) {
+    return gc_mprotect_virtual(addr, len, prot);
+}
+#endif
+
+// PSV平台实现
+#if defined(__PSV__) || defined(__VITA__)
+static inline void* gc_mmap(size_t len, int prot) {
+    if (len == 0) return GC_MAP_FAILED;
+    SceUID uid = sceKernelAllocMemBlock("gc_mmap_block", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW, len, NULL);
+    if (uid >= 0) {
+        void* mem = NULL;
+        if (sceKernelGetMemBlockBase(uid, &mem) == 0 && mem) {
+            GC_LOCK();
+            init_regions();
+            for (size_t i = 0; i < region_capacity; i++) {
+                if (!regions[i].used) {
+                    regions[i].addr = mem;
+                    regions[i].len = len;
+                    regions[i].prot = prot;
+                    regions[i].used = 1;
+                    regions[i].uid = uid;
+                    regions[i].is_native = 1;
+                    break;
+                }
+            }
+            GC_UNLOCK();
+            return mem;
+        }
+        sceKernelFreeMemBlock(uid);
+    }
+    return gc_mmap_virtual(len, prot);
+}
+
+static inline int gc_munmap(void* addr, size_t len) {
+    GC_LOCK();
+    for (size_t i = 0; i < region_capacity; i++) {
+        if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+            if (regions[i].is_native) {
+                sceKernelFreeMemBlock(regions[i].uid);
+            }
+            else {
+                free(addr);
+            }
+            regions[i].used = 0;
+            regions[i].addr = NULL;
+            regions[i].len = 0;
+            regions[i].prot = GC_PROT_NONE;
+            regions[i].uid = -1;
+            regions[i].is_native = 0;
+            GC_UNLOCK();
+            return 0;
+        }
+    }
+    GC_UNLOCK();
+    return -1;
+}
+
+static inline int gc_mprotect(void* addr, size_t len, int prot) {
+        return gc_mprotect_virtual(addr, len, prot);
+}
+#endif
+
+//Switch平台实现
+#if defined(__SWITCH__)
+static inline void* gc_mmap(size_t len, int prot) {
+    if (len == 0) return GC_MAP_FAILED;
+    void* addr = NULL;
+    Result rc = svcControlMemory(
+        (uint64_t*)&addr,
+        0,
+        0,
+        len,
+        MemOperation_Commit,
+        MemPermission_ReadWrite
+    );
+    if (R_SUCCEEDED(rc) && addr) {
+        GC_LOCK();
+        init_regions();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (!regions[i].used) {
+                regions[i].addr = addr;
+                regions[i].len = len;
+                regions[i].prot = prot;
+                regions[i].used = 1;
+                regions[i].uid = -1;
+                regions[i].is_native = 1;
+                break;
+            }
+        }
+        GC_UNLOCK();
+        return addr;
+    }
+    return gc_mmap_virtual(len, prot);
+}
+static inline int gc_munmap(void* addr, size_t len) {
+    Result rc = svcControlMemory(
+        NULL,
+        (uint64_t)addr,
+        0,
+        len,
+        MemOperation_Free,
+        MemPermission_None
+    );
+    if (R_SUCCEEDED(rc)) {
+        GC_LOCK();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+                regions[i].used = 0;
+                regions[i].addr = NULL;
+                regions[i].len = 0;
+                regions[i].prot = GC_PROT_NONE;
+                regions[i].is_native = 0;
+                break;
+            }
+        }
+        GC_UNLOCK();
+        return 0;
+    }
+    return gc_munmap_virtual(addr, len);
+}
+
+static inline int gc_mprotect(void* addr, size_t len, int prot) {
+    u32 perm = MemPermission_None;
+    if (prot & GC_PROT_READ)  perm |= MemPermission_Read;
+    if (prot & GC_PROT_WRITE) perm |= MemPermission_Write;
+    if (prot & GC_PROT_EXEC)  perm |= MemPermission_Execute;
+    Result rc = svcSetMemoryPermission((uint64_t)addr, len, perm);
+    if (R_SUCCEEDED(rc)) {
+        return 0;
+    }
+    return gc_mprotect_virtual(addr, len, prot);
+}
+#endif 
+
+//若非允许使用虚拟内存，则使用平台对等API，完成虚拟内存API的操作
+#if !USE_CONSOLE_PLATFORM
+    #if defined(_WIN32) || defined(_WIN64)
+        #define gc_mmap(len, prot) VirtualAlloc(NULL, len, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE)
+        #define gc_munmap(addr, len) (VirtualFree(addr, 0, MEM_RELEASE) ? 0 : -1)
+        #define gc_mprotect(addr, len, prot) VirtualAlloc(addr, len, MEM_COMMIT, PAGE_READWRITE);
+    #else
+        #define gc_mmap(len, prot) mmap(NULL, len, prot, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0)
+        #define gc_munmap(addr, len) munmap(addr, len)
+        #define gc_mprotect(addr, len, prot) mprotect(addr, len, prot)
+    #endif
+#endif
 
 typedef enum {
         LAYOUT_HORIZONTAL, 

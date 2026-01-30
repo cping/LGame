@@ -102,7 +102,7 @@ public class CInputMake extends InputMake implements LRelease {
 			_gamepad.start();
 			_initedGamepad = true;
 		}
-		_currentEventTimeStamp = SDLCall.getTicks64();
+		_currentEventTimeStamp = SDLCall.getTicks();
 		_wasJustTouched = false;
 		SDLCall.getTouchData(_touchData);
 		if (_useTouched) { // touch

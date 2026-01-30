@@ -1063,8 +1063,9 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 
 	float baseline_offset = (float) - y0;
 
-	if (codepoint == 0x3010 || codepoint == 0x3011) {
-		w = w / 2 + 2;
+	if (codepoint == 0x49 || codepoint == 0x69 ||
+		codepoint == 0x3010 || codepoint == 0x3011) {
+		w = w / 2 + 1;
 	}
 
 	*out_w = (float)fix_font_char_size(codepoint, pixel_size, (int)w);
@@ -1234,7 +1235,7 @@ static float MeasureTextWidth(const stbtt_fontinfo* font, float pixel_height, co
 		else {
 			int advance, lsb;
 			stbtt_GetCodepointHMetrics(font, cp, &advance, &lsb);
-			width += fix_font_char_size(cp, pixel_height, advance * scale);
+			width += fix_font_char_size(cp, pixel_height, (int)(advance * scale));
 		}
 		prev_cp = cp;
 	}

@@ -171,10 +171,12 @@ public class CBuilder {
 				isSuccess = true;
 
 				CBuilder.begin("FIX SOURCE CODE");
-
+				
 				final CCodeFix fixCFile = new CCodeFix();
 
 				String cappDirectory = configuration.cappPath;
+
+				CCodeFix.fixAllFiles(cappDirectory);
 
 				AssetFile distFolder = new AssetFile(cappDirectory);
 				AssetFile cappFolder = distFolder.child(cappName);
