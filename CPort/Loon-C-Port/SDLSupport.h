@@ -303,12 +303,13 @@ static inline int gc_mprotect_virtual(void* addr, size_t len, int prot) {
         GC_UNLOCK();
         return -1;
 }
+
 // 分表数量
 static inline size_t gc_regionCount() {
     size_t count = 0;
-    pthread_mutex_lock(&region_lock);
+    GC_LOCK();
     if (!regions) {
-        pthread_mutex_unlock(&region_lock);
+        GC_UNLOCK();
         return 0;
     }
     for (size_t i = 0; i < region_capacity; i++) {
@@ -316,16 +317,16 @@ static inline size_t gc_regionCount() {
             count++;
         }
     }
-    pthread_mutex_unlock(&region_lock);
+    GC_UNLOCK();
     return count;
 }
 
 // 虚拟内存占用信息
 static inline void gc_regionInfo() {
-    pthread_mutex_lock(&region_lock);
+    GC_LOCK();
     if (!regions) {
         printf("No regions allocated.\n");
-        pthread_mutex_unlock(&region_lock);
+        GC_UNLOCK();
         return;
     }
     printf("=== Region Info ===\n");
@@ -340,7 +341,7 @@ static inline void gc_regionInfo() {
         }
     }
     printf("===================\n");
-    pthread_mutex_unlock(&region_lock);
+    GC_UNLOCK();
 }
 #endif
 
@@ -1123,7 +1124,7 @@ static inline bool is_symbol(uint32_t ch) {
 static inline int fix_font_char_size(const uint32_t ch, float fontSize, int size) {
     int newSize = size;
     if (is_cjk(ch)) {
-        return newSize + 1;
+        return newSize;
     }
     if (is_digit_char(ch)) {
       return newSize += 2;

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef LOON_STB
 #define LOON_STB
 #define STB_IMAGE_IMPLEMENTATION

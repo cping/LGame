@@ -765,8 +765,10 @@ static void convertSTBUint8ToInt32(const uint8_t* src, int32_t* dst, int width, 
 			b = src[i * 4 + 2];
 			a = src[i * 4 + 3];
 		}
-		dst[i] = ((int32_t)a << 24) | ((int32_t)r << 16) |
-			((int32_t)g << 8) | (int32_t)b;
+		if (a != 0){
+			dst[i] = ((int32_t)a << 24) | ((int32_t)r << 16) |
+					((int32_t)g << 8) | (int32_t)b;
+		}
 	}
 }
 
@@ -1026,6 +1028,82 @@ int Load_STB_GetCodepointHMetrics(const int64_t handle, const int point)
 	return height;
 }
 
+static inline bool is_min_en_char(uint32_t codepoint) {
+	switch (codepoint) {
+	case 0x0069:
+	case 0x006A: 
+	case 0x006C: 
+	case 0x0049:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static inline bool is_min_cn_char(uint32_t codepoint) {
+	switch (codepoint) {
+	case 0x4E00:
+	case 0x4E8C: 
+	case 0x4E09: 
+	case 0x5341: 
+	case 0x4EBA: 
+	case 0x5C0F: 
+	case 0x5927: 
+	case 0x5DE5: 
+	case 0x535C: 
+	case 0x53E3: 
+	case 0x65E5: 
+	case 0x76EE: 
+	case 0x81EA: 
+	case 0x7530: 
+	case 0x5DDD: 
+	case 0x5C71: 
+		return true;
+	default:
+		return false;
+	}
+}
+
+static inline bool is_flag_symbol(uint32_t codepoint) {
+	switch (codepoint) {
+	case 0x007C: 
+	case 0x002E:
+	case 0x002C:
+	case 0x003A: 
+	case 0x003B: 
+	case 0x0027: 
+	case 0x0022:
+	case 0x0028:
+	case 0x0029: 
+	case 0x005B: 
+	case 0x005D: 
+	case 0x007B: 
+	case 0x007D: 
+	case 0x3002: 
+	case 0xFF0C: 
+	case 0x3001: 
+	case 0xFF1B: 
+	case 0xFF1A: 
+	case 0x201C: 
+	case 0x201D: 
+	case 0x2018: 
+	case 0x2019:
+	case 0xFF08: 
+	case 0xFF09: 
+	case 0x3010: 
+	case 0x3011: 
+	case 0x300A: 
+	case 0x300B: 
+	case 0x2014: 
+	case 0x00B7: 
+	case 0xFF1F: 
+	case 0xFF01: 
+		return true;
+	default:
+		return false;
+	}
+}
+
 static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoint, float pixel_size,
 	float shift_x, float shift_y,
 	float* out_w, float* out_h, float* out_baseline_offset) {
@@ -1061,11 +1139,14 @@ static inline int get_char_size_subpixel(stbtt_fontinfo* font, uint32_t codepoin
 		h = (float)rounded_h;
 	}
 
-	float baseline_offset = (float) - y0;
+	float baseline_offset = -y0;
 
-	if (codepoint == 0x49 || codepoint == 0x69 ||
-		codepoint == 0x3010 || codepoint == 0x3011) {
-		w = w / 2 + 1;
+	if (is_flag_symbol(codepoint)) {
+		w = w / 2 + 4;
+	}else if (is_min_en_char(codepoint)) {
+		w = w / 2 + 2;
+	}else if (is_min_cn_char(codepoint)) {
+		w = w / 2 + 7;
 	}
 
 	*out_w = (float)fix_font_char_size(codepoint, pixel_size, (int)w);
@@ -1441,51 +1522,49 @@ void Load_STB_DrawChar(const int64_t handle, const int32_t codepoint, const floa
 	}
 	if (codepoint <= 0) return;
 	stbtt_fontinfo* font = fontinfo->info;
+	float img_w, img_h, baseline;
+	if (get_char_size_subpixel(font, codepoint, fontSize, 0.0f, 0.0f, &img_w, &img_h, &baseline) != 0) {
+		return;
+	}
 	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
+	int glyph_index = stbtt_FindGlyphIndex(font, codepoint);
 	int ascent, descent, lineGap;
 	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
-
-	int lineHeight = float_to_int_threshold((ascent - descent + lineGap) * scale);
-	int offset = float_to_int_threshold(lineHeight - fontSize) * 2;
-	
-	int x0, y0, x1, y1;
-	stbtt_GetCodepointBitmapBox(font, codepoint, scale, scale, &x0, &y0, &x1, &y1);
-	int oldW = (x1 - x0);
-	int oldH = (y1 - y0);
-	int width = oldW + 20;
-	int height = oldH + 20;
-
-	int length = width * height;
-	unsigned char* bitmap = (unsigned char*)calloc(length, 1);
-	
-	if (!bitmap) return;
-
-	stbtt_MakeCodepointBitmap(font, bitmap + (lineHeight + y0 - offset) * width,
-		oldW, oldH, width, scale, scale, codepoint);
-
-	uint8_t A = (color >> 24) & 0xFF;
-	uint8_t R = (color >> 16) & 0xFF;
-	uint8_t G = (color >> 8) & 0xFF;
-	uint8_t B = color & 0xFF;
-	for (int i = 0; i < width * height; i++) {
-		uint8_t glyph_alpha = bitmap[i];
-		if (glyph_alpha == 0) {
-			outPixels[i] = 0;
-		}
-		else {
-			uint8_t final_a = (uint8_t)((glyph_alpha * A) / 255);
-			uint8_t final_r = (uint8_t)((R * final_a) / 255);
-			uint8_t final_g = (uint8_t)((G * final_a) / 255);
-			uint8_t final_b = (uint8_t)((B * final_a) / 255);
-			outPixels[i] = ((final_a & 0xFF) << 24) |
-				((final_r & 0xFF) << 16) |
-				((final_g & 0xFF) << 8) |
-				(final_b & 0xFF);
+	int maxBaseLine = float_to_int_threshold(ascent * scale);
+	img_w += 4;
+	img_h += (fontSize - baseline) + 8;
+	int length = float_to_int_threshold(img_w * img_h);
+	int gw, gh;
+	unsigned char* bitmap = stbtt_GetGlyphBitmapSubpixel(font, scale, scale, 0.0f, 0.0f,
+		glyph_index, &gw, &gh, 0, 0);
+	int dst_x = 0;
+	int dst_y = float_to_int_threshold(maxBaseLine - baseline);
+	uint8_t a = (color >> 24) & 0xFF;
+	uint8_t r = (color >> 16) & 0xFF;
+	uint8_t g = (color >> 8) & 0xFF;
+	uint8_t b = color & 0xFF;
+	for (int py = 0; py < gh; py++) {
+		for (int px = 0; px < gw; px++) {
+			int dst_index = (dst_y + py) * img_w + (dst_x + px);
+			if (dst_index < 0 || dst_index >= length) {
+				continue;
+			}
+			uint8_t alpha = bitmap[py * gw + px];
+			if (alpha > 0) {
+				uint8_t final_a = (uint8_t)((alpha / 255.0f) * a);
+				outPixels[dst_index] =
+					(final_a << 24) |
+					((r * final_a / 255) << 16) |
+					((g * final_a / 255) << 8) |
+					(b * final_a / 255);
+			}
 		}
 	}
-	outsize[0] = width;
-	outsize[1] = height;
-	free(bitmap);
+	outsize[0] = img_w;
+	outsize[1] = img_h;
+	if (bitmap) {
+		free(bitmap);
+	}
 }
 
 void Load_STB_DrawString(const int64_t handle, const char* text, const float fontSize, const int32_t color, int32_t* outsize, int32_t* outPixels)
