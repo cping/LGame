@@ -20,19 +20,77 @@
  */
 package loon.cport;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import loon.LRelease;
+import loon.LSystem;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
 import loon.cport.bridge.STBFont;
 import loon.cport.bridge.STBFont.FontData;
+import loon.utils.StringUtils;
 
 public class CPixmapFont implements LRelease {
 
-	private Pixmap _fontPixmap;
+	private static class CacheKey {
+		private final String text;
+		private final float fontScale;
+		private final int colorARGB;
+
+		CacheKey(String text, float fontScale, LColor color) {
+			this.text = text;
+			this.fontScale = fontScale;
+			this.colorARGB = color.getARGB();
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (!(o instanceof CacheKey)) {
+				return false;
+			}
+			CacheKey key = (CacheKey) o;
+			return Float.compare(key.fontScale, fontScale) == 0 && colorARGB == key.colorARGB
+					&& Objects.equals(text, key.text);
+		}
+
+		@Override
+		public int hashCode() {
+			int hashCode = 1;
+			hashCode = LSystem.unite(hashCode, text);
+			hashCode = LSystem.unite(hashCode, fontScale);
+			hashCode = LSystem.unite(hashCode, colorARGB);
+			return hashCode;
+		}
+	}
+
+	private static final int MAX_CACHE_SIZE = LSystem.DEFAULT_MAX_CACHE_SIZE;
 
 	private STBFont _stbFont;
-
 	private boolean _hasAlpha;
+
+	private Map<CacheKey, Pixmap> _fontCache = new LinkedHashMap<CacheKey, Pixmap>(16, 0.75f, true) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected boolean removeEldestEntry(Map.Entry<CacheKey, Pixmap> v) {
+			if (size() > MAX_CACHE_SIZE) {
+				Pixmap pix = v.getValue();
+				if (pix != null) {
+					pix.close();
+				}
+				return true;
+			}
+			return false;
+		}
+	};
 
 	public CPixmapFont(STBFont font) {
 		this(font, false);
@@ -44,26 +102,35 @@ public class CPixmapFont implements LRelease {
 	}
 
 	public Pixmap textToPixmap(String text, float fontScale, LColor color) {
+		if (StringUtils.isEmpty(text)) {
+			return null;
+		}
 		if (text.length() == 1) {
 			return charToPixmap(text.charAt(0), fontScale, color);
 		}
-		FontData result = _stbFont.drawString(text, fontScale, color.getARGB());
-		if (_fontPixmap == null) {
-			_fontPixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
-		} else {
-			_fontPixmap.setData(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
+		CacheKey key = new CacheKey(text, fontScale, color);
+		Pixmap pixmap = _fontCache.get(key);
+		if (pixmap != null) {
+
+			return pixmap;
 		}
-		return _fontPixmap;
+		FontData result = _stbFont.drawString(text, fontScale, color.getARGB());
+		pixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
+		_fontCache.put(key, pixmap);
+		return pixmap;
 	}
 
 	public Pixmap charToPixmap(int point, float fontScale, LColor color) {
-		FontData result = _stbFont.drawChar(point, fontScale, color.getARGB());
-		if (_fontPixmap == null) {
-			_fontPixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
-		} else {
-			_fontPixmap.setData(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
+		String text = String.valueOf((char) point);
+		CacheKey key = new CacheKey(text, fontScale, color);
+		Pixmap pixmap = _fontCache.get(key);
+		if (pixmap != null) {
+			return pixmap;
 		}
-		return _fontPixmap;
+		FontData result = _stbFont.drawChar(point, fontScale, color.getARGB());
+		pixmap = new Pixmap(result.pixels, result.fontSize.width, result.fontSize.height, _hasAlpha);
+		_fontCache.put(key, pixmap);
+		return pixmap;
 	}
 
 	public boolean hasAlpha() {
@@ -72,9 +139,10 @@ public class CPixmapFont implements LRelease {
 
 	@Override
 	public void close() {
-		if (_fontPixmap != null) {
-			_fontPixmap.close();
-			_fontPixmap = null;
+		for (Pixmap pixmap : _fontCache.values()) {
+			pixmap.close();
 		}
+		_fontCache.clear();
 	}
+
 }

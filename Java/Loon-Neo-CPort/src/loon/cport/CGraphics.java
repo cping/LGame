@@ -113,10 +113,13 @@ public class CGraphics extends Graphics {
 		if (MathUtils.isPowerOfTwo(srcWidth) && MathUtils.isPowerOfTwo(srcHeight)) {
 			texHeight = srcHeight;
 			texWidth = srcWidth;
+			ByteBuffer source = convertToByteBuffer(img, hasAlpha);
 			GLUtils.bindTexture(gl, tex);
 			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
-					GL20.GL_UNSIGNED_BYTE, convertToByteBuffer(img, hasAlpha));
+					GL20.GL_UNSIGNED_BYTE, source);
 			gl.checkError("updateTexture");
+			source.clear();
+			source = null;
 			return;
 		}
 		if (_csetting.powerOfTwoTexture) {
@@ -144,6 +147,8 @@ public class CGraphics extends Graphics {
 			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, texWidth, texHeight, 0, srcPixelFormat,
 					GL20.GL_UNSIGNED_BYTE, source);
 			gl.checkError("updateTexture");
+			source.clear();
+			source = null;
 		} else {
 			ByteBuffer source = null;
 			if (!tex.isDrawCanvas() && !tex.isImageCanvas()) {
@@ -155,6 +160,8 @@ public class CGraphics extends Graphics {
 			gl.glTexImage2D(GL20.GL_TEXTURE_2D, 0, srcPixelFormat, width, height, 0, srcPixelFormat,
 					GL20.GL_UNSIGNED_BYTE, source);
 			gl.checkError("updateTexture");
+			source.clear();
+			source = null;
 		}
 	}
 

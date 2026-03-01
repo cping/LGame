@@ -340,43 +340,59 @@ void ImportSTBInclude()
 }
 
 static SDL_Texture* render_text_stb(stbtt_fontinfo* font, SDL_Renderer* renderer, const char* text, float fontSize, SDL_Color color) {
-	int width = 0, height = 0;
-	int ascent, descent, lineGap;
-	stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
-	float scale = stbtt_ScaleForPixelHeight(font, fontSize);
-	ascent = (int)(ascent * scale);
-	descent = (int)(descent * scale);
-	for (const char* p = text; *p; p++) {
-		int ax;
-		stbtt_GetCodepointHMetrics(font, *p, &ax, 0);
-		width += (int)(ax * scale);
-	}
-	height = ascent - descent;
-	width += 8;
-	height += 8;
-	unsigned char* bitmap = (unsigned char*)calloc(width * height, 1);
-	int x = 0;
-	while (*text) {
-		uint32_t cp = utf8_decode(&text);
-		int ax, lsb;
-		stbtt_GetCodepointHMetrics(font, cp, &ax, &lsb);
-		int c_x1, c_y1, c_x2, c_y2;
-		stbtt_GetCodepointBitmapBox(font, cp, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
-		int yoff = ascent + c_y1;
-		stbtt_MakeCodepointBitmap(font, bitmap + x + yoff * width, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, cp);
-		x += (int)(ax * scale);
-	}
-	SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32,
-		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-	Uint32* pixels = (Uint32*)surface->pixels;
-	for (int i = 0; i < width * height; i++) {
-		Uint8 alpha = bitmap[i];
-		pixels[i] = SDL_MapRGBA(surface->format, color.r, color.g, color.b, alpha);
-	}
-	free(bitmap);
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-	SDL_FreeSurface(surface);
-	return texture;
+    int width = 0, height = 0;
+    int ascent, descent, lineGap;
+    stbtt_GetFontVMetrics(font, &ascent, &descent, &lineGap);
+    float scale = stbtt_ScaleForPixelHeight(font, fontSize);
+    ascent = (int)(ascent * scale);
+    descent = (int)(descent * scale);
+
+    for (const char* p = text; *p; p++) {
+        int ax;
+        stbtt_GetCodepointHMetrics(font, *p, &ax, 0);
+        width += (int)(ax * scale);
+    }
+    height = ascent - descent;
+    width += 8;
+    height += 8;
+
+    unsigned char* bitmap = (unsigned char*)calloc(width * height, 1);
+    if (!bitmap) return NULL;
+
+    int x = 0;
+    while (*text) {
+        uint32_t cp = utf8_decode(&text);
+        int ax, lsb;
+        stbtt_GetCodepointHMetrics(font, cp, &ax, &lsb);
+        int c_x1, c_y1, c_x2, c_y2;
+        stbtt_GetCodepointBitmapBox(font, cp, scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+        int yoff = ascent + c_y1;
+        stbtt_MakeCodepointBitmap(font, bitmap + x + yoff * width, c_x2 - c_x1, c_y2 - c_y1, width, scale, scale, cp);
+        x += (int)(ax * scale);
+    }
+
+    SDL_Surface* surface = SDL_CreateRGBSurface(0, width, height, 32,
+        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    if (!surface) {
+        free(bitmap);
+        return NULL;
+    }
+
+    Uint32* pixels = (Uint32*)surface->pixels;
+    for (int i = 0; i < width * height; i++) {
+        Uint8 alpha = bitmap[i];
+        pixels[i] = SDL_MapRGBA(surface->format, color.r, color.g, color.b, alpha);
+    }
+    free(bitmap);
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+
+    if (!texture) {
+        return NULL; 
+    }
+
+    return texture;
 }
 
 static void draw_text(stbtt_fontinfo* font, SDL_Renderer* ren, const char* text, int x, int y, float size, SDL_Color color) {
@@ -600,43 +616,52 @@ int Load_STB_InputDialog(int64_t handle, const int dialogType, const int width, 
 
 int64_t Load_STB_Image_LoadBytes(const uint8_t* buffer, int32_t len)
 {
-	int32_t width = 0, height = 0, format = 0;
-	const unsigned char* pixels = stbi_load_from_memory(buffer, len, &width, &height, &format, STBI_rgb_alpha);
-	if (!pixels || width <= 0 || height <= 0) {
-		fprintf(stderr, "Load_STB_Image_LoadBytes Error !\n");
-		return -1;
-	}
-	stb_pix* pixmap = (stb_pix*)malloc(sizeof(stb_pix));
-	if (!pixmap) {
-		fprintf(stderr, "Load_STB_Image_LoadBytes Error !\n");
-		return -1;
-	}
-	pixmap->width = width;
-	pixmap->height = height;
-	pixmap->format = format;
-	pixmap->pixels = pixels;
-	return (intptr_t)pixmap;
+    int32_t width = 0, height = 0, format = 0;
+    unsigned char* pixels = stbi_load_from_memory(buffer, len, &width, &height, &format, STBI_rgb_alpha);
+    if (!pixels || width <= 0 || height <= 0) {
+        fprintf(stderr, "Load_STB_Image_LoadBytes Error !\n");
+        if (pixels) stbi_image_free(pixels); 
+        return -1;
+    }
+
+    stb_pix* pixmap = (stb_pix*)malloc(sizeof(stb_pix));
+    if (!pixmap) {
+        fprintf(stderr, "Load_STB_Image_LoadBytes Error !\n");
+        stbi_image_free(pixels); 
+        return -1;
+    }
+
+    pixmap->width = width;
+    pixmap->height = height;
+    pixmap->format = format;
+    pixmap->pixels = pixels; 
+
+    return (intptr_t)pixmap;
 }
 
 int64_t Load_STB_Image_LoadPath(const char* path)
 {
-	int32_t width = 0, height = 0, format = 0;
-	uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_default);
-	if (!pixels || width <= 0 || height <= 0) {
-		fprintf(stderr, "Load_STB_Image_LoadPath Error: failed to load image!\n");
-		return -1; 
-	}
-	stb_pix* pixmap = (stb_pix*)malloc(sizeof(stb_pix));
-	if (!pixmap) {
-		fprintf(stderr, "Load_STB_Image_LoadPath Error: malloc failed!\n");
-		stbi_image_free(pixels);
-		return 0;
-	}
-	pixmap->width = width;
-	pixmap->height = height;
-	pixmap->format = format;
-	pixmap->pixels = pixels;
-	return (intptr_t)pixmap;
+    int32_t width = 0, height = 0, format = 0;
+    uint8_t* pixels = stbi_load(path, &width, &height, &format, STBI_default);
+    if (!pixels || width <= 0 || height <= 0) {
+        fprintf(stderr, "Load_STB_Image_LoadPath Error: failed to load image!\n");
+        if (pixels) stbi_image_free(pixels); 
+        return -1; 
+    }
+
+    stb_pix* pixmap = (stb_pix*)malloc(sizeof(stb_pix));
+    if (!pixmap) {
+        fprintf(stderr, "Load_STB_Image_LoadPath Error: malloc failed!\n");
+        stbi_image_free(pixels); 
+        return -1; 
+    }
+
+    pixmap->width = width;
+    pixmap->height = height;
+    pixmap->format = format;
+    pixmap->pixels = pixels;
+
+    return (intptr_t)pixmap;
 }
 
 int64_t Load_STB_Image_LoadPathToSDLSurface(const char* path)
@@ -2052,24 +2077,24 @@ void Call_STB_MakeDrawTextToBitmap(const char* text, const float fontscale,
 	}
 }
 
-
 bool Call_STB_SaveArgbToPng(const char* filename, const int32_t* pixels, int32_t w, int32_t h) {
-	uint8_t* rgba = (uint8_t*)malloc(w * h * 4);
-	if (!rgba) return false;
-	for (int i = 0; i < w * h; i++) {
-		int32_t argb = pixels[i];
-		uint8_t a = (argb >> 24) & 0xFF;
-		uint8_t r = (argb >> 16) & 0xFF;
-		uint8_t g = (argb >> 8) & 0xFF;
-		uint8_t b = argb & 0xFF;
-		rgba[i * 4 + 0] = r;
-		rgba[i * 4 + 1] = g;
-		rgba[i * 4 + 2] = b;
-		rgba[i * 4 + 3] = a;
-	}
-	int result = stbi_write_png(filename, w, h, 4, rgba, w * 4);
-	free(rgba);
-	return true;
+    uint8_t* rgba = (uint8_t*)malloc(w * h * 4);
+    if (!rgba) return false;
+
+    for (int i = 0; i < w * h; i++) {
+        int32_t argb = pixels[i];
+        uint8_t a = (argb >> 24) & 0xFF;
+        uint8_t r = (argb >> 16) & 0xFF;
+        uint8_t g = (argb >> 8) & 0xFF;
+        uint8_t b = argb & 0xFF;
+        rgba[i * 4 + 0] = r;
+        rgba[i * 4 + 1] = g;
+        rgba[i * 4 + 2] = b;
+        rgba[i * 4 + 3] = a;
+    }
+    int result = stbi_write_png(filename, w, h, 4, rgba, w * 4);
+    free(rgba);
+    return result != 0; 
 }
 
 void Call_STB_CloseFontInfo()

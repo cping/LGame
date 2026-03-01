@@ -187,28 +187,28 @@ public final class NativeSupport implements Support {
 
 	@Override
 	public ByteBuffer newByteBuffer(int numBytes) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numBytes);
+		ByteBuffer buffer = ByteBuffer.allocate(numBytes);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer;
 	}
 
 	@Override
 	public FloatBuffer newFloatBuffer(int numFloats) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numFloats * 4);
+		ByteBuffer buffer = ByteBuffer.allocate(numFloats * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asFloatBuffer();
 	}
 
 	@Override
 	public ShortBuffer newShortBuffer(int numShorts) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numShorts * 2);
+		ByteBuffer buffer = ByteBuffer.allocate(numShorts * 2);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asShortBuffer();
 	}
 
 	@Override
 	public IntBuffer newIntBuffer(int numInts) {
-		ByteBuffer buffer = ByteBuffer.allocateDirect(numInts * 4);
+		ByteBuffer buffer = ByteBuffer.allocate(numInts * 4);
 		buffer.order(ByteOrder.nativeOrder());
 		return buffer.asIntBuffer();
 	}

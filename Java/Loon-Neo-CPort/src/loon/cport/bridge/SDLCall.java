@@ -174,7 +174,7 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_RW_FileToBytes")
 	public final static native long LoadRWFileToBytes(String fileName, byte[] outBytes);
-	
+
 	@Import(name = "Load_SDL_GetSystemLanguage")
 	public final static native String getSystemLanguage();
 
@@ -325,6 +325,9 @@ public final class SDLCall {
 
 	@Import(name = "Load_SDL_PathIsFile")
 	public final static native boolean pathIsFile(String path);
+
+	@Import(name = "Load_FreeResource")
+	public final static native void freeResource(Address obj);
 
 	@Import(name = "Load_SDL_Gamepad_Init")
 	public final static native void gamepadInit(boolean debugMode);

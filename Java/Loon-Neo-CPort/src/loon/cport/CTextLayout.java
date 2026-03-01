@@ -23,6 +23,7 @@ package loon.cport;
 import java.util.ArrayList;
 import java.util.List;
 
+import loon.LRelease;
 import loon.LSystem;
 import loon.canvas.LColor;
 import loon.canvas.Pixmap;
@@ -40,7 +41,7 @@ import loon.utils.ObjectMap;
 import loon.utils.PathUtils;
 import loon.utils.StringUtils;
 
-public class CTextLayout extends loon.font.TextLayout {
+public class CTextLayout extends loon.font.TextLayout implements LRelease {
 
 	protected final static String getSystemFontName(final String fontName) {
 		if (StringUtils.isEnglishAndNumeric(fontName)) {
@@ -334,5 +335,12 @@ public class CTextLayout extends loon.font.TextLayout {
 	@Override
 	public int charWidth(char ch) {
 		return _stbFont.getCharSize(_fontSize, ch).width;
+	}
+
+	@Override
+	public void close() {
+		if (_stbFont != null) {
+			_stbFont.close();
+		}
 	}
 }

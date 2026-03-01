@@ -1660,38 +1660,43 @@ const char* ListSections(int64_t handle, const char* delimiter) {
 }
 
 const char* Load_SDL_RW_FileToChars(const char* filename) {
-	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
-	if (!rw) {
-		return NULL;
-	}
-	char* buffer = NULL;
-	size_t totalSize = 0;
-	size_t capacity = 0;
-	char temp[MAX_CHUNK_SIZE];
-	size_t bytesRead;
-	while ((bytesRead = SDL_RWread(rw, temp, 1, MAX_CHUNK_SIZE)) > 0) {
-		if (totalSize + bytesRead + 1 > capacity) {
-			size_t newCapacity = (capacity == 0) ? bytesRead + 1 : capacity * 2;
-			if (newCapacity < totalSize + bytesRead + 1) {
-				newCapacity = totalSize + bytesRead + 1;
-			}
-			char* newBuffer = (char*)realloc(buffer, newCapacity);
-			if (!newBuffer) {
-				free(buffer);
-				SDL_RWclose(rw);
-				return NULL;
-			}
-			buffer = newBuffer;
-			capacity = newCapacity;
-		}
-		memcpy(buffer + totalSize, temp, bytesRead);
-		totalSize += bytesRead;
-	}
-	if (buffer) {
-		buffer[totalSize] = '\0';
-	}
-	SDL_RWclose(rw);
-	return buffer;
+    if (!filename) return NULL;
+
+    SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+    if (!rw) return NULL;
+
+    char* buffer = NULL;
+    size_t totalSize = 0;
+    size_t capacity = 0;
+    char temp[MAX_CHUNK_SIZE];
+    size_t bytesRead;
+
+    while ((bytesRead = SDL_RWread(rw, temp, 1, MAX_CHUNK_SIZE)) > 0) {
+        if (totalSize + bytesRead + 1 > capacity) {
+            size_t newCapacity = (capacity == 0) ? bytesRead + 1 : capacity * 2;
+            if (newCapacity < totalSize + bytesRead + 1) {
+                newCapacity = totalSize + bytesRead + 1;
+            }
+            char* newBuffer = (char*)realloc(buffer, newCapacity);
+            if (!newBuffer) {
+                free(buffer);
+                SDL_RWclose(rw);
+                return NULL;
+            }
+            buffer = newBuffer;
+            capacity = newCapacity;
+        }
+        memcpy(buffer + totalSize, temp, bytesRead);
+        totalSize += bytesRead;
+    }
+
+    SDL_RWclose(rw);
+
+    if (buffer) {
+        buffer[totalSize] = '\0';
+    }
+
+    return buffer; 
 }
 
 int64_t Load_SDL_RW_FileSize(const char* filename)
@@ -1712,32 +1717,34 @@ int64_t Load_SDL_RW_FileSize(const char* filename)
 }
 
 int64_t Load_SDL_RW_FileToBytes(const char* filename, uint8_t* outBytes) {
-	if (!filename) {
-		return 0;
-	}
-	SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
-	if (!rw) {
-		return 0;
-	}
-	Sint64 fileSize = SDL_RWsize(rw);
-	if (fileSize <= 0) {
-		SDL_RWclose(rw);
-		return 0;
-	}
-	uint8_t* buffer = (uint8_t*)malloc(fileSize);
-	if (!buffer) {
-		SDL_RWclose(rw);
-		return 0;
-	}
-	size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
-	SDL_RWclose(rw);
-	if (totalRead != (size_t)fileSize) {
-		free(buffer);
-		return 0;
-	}
-	copy_uint8_array(outBytes, (size_t)fileSize, buffer, (size_t)fileSize);
-	free(buffer);
-	return (int64_t)fileSize;
+    if (!filename) {
+        return -1;
+    }
+    SDL_RWops* rw = SDL_RWFromFile(filename, "rb");
+    if (!rw) {
+        return -1;
+    }
+    Sint64 fileSize = SDL_RWsize(rw);
+    if (fileSize <= 0) {
+        SDL_RWclose(rw);
+        return -1;
+    }
+    uint8_t* buffer = (uint8_t*)malloc(fileSize);
+    if (!buffer) {
+        SDL_RWclose(rw);
+        return -1;
+    }
+    size_t totalRead = SDL_RWread(rw, buffer, 1, fileSize);
+    SDL_RWclose(rw);
+    if (totalRead != (size_t)fileSize) {
+        free(buffer);
+        return -1;
+    }
+
+    copy_uint8_array(outBytes, (size_t)fileSize, buffer, (size_t)fileSize);
+
+    free(buffer);
+    return (int64_t)fileSize;
 }
 
 bool Load_SDL_RW_FileExists(const char* filename) {
@@ -2210,6 +2217,12 @@ int Load_SDL_WindowWidth() {
 
 int Load_SDL_WindowHeight() {
 	return g_initHeight;
+}
+
+void Load_FreeResource(void* ptr) {
+	if (ptr != NULL) {
+		free(ptr);
+    }
 }
 
 bool Load_SDL_Update() {

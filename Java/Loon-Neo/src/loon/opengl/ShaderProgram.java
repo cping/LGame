@@ -180,7 +180,7 @@ public final class ShaderProgram extends BaseBufferSupport implements LRelease {
 		gl.glAttachShader(programId, fragmentShaderHandle);
 		gl.glLinkProgram(programId);
 
-		final ByteBuffer tmp = ByteBuffer.allocateDirect(4);
+		final ByteBuffer tmp = LSystem.base().isCPort() ? ByteBuffer.allocate(4) : ByteBuffer.allocateDirect(4);
 		tmp.order(ByteOrder.nativeOrder());
 		IntBuffer intbuf = tmp.asIntBuffer();
 

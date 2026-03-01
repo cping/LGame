@@ -1365,6 +1365,8 @@ int Load_SDL_WindowWidth();
 
 int Load_SDL_WindowHeight();
 
+void Load_FreeResource(void* ptr);
+
 const char* Load_SDL_GetSystemLanguage();
 
 const char* Load_SDL_GetPreferredLocales();

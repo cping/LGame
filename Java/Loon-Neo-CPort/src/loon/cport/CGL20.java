@@ -165,7 +165,7 @@ public class CGL20 extends loon.opengl.GL20 implements GLExt {
 		super(new Buffers() {
 			@Override
 			public ByteBuffer createByteBuffer(int size) {
-				ByteBuffer buffer = ByteBuffer.allocateDirect(size);
+				ByteBuffer buffer = ByteBuffer.allocate(size);
 				buffer.order(ByteOrder.nativeOrder());
 				return buffer;
 			}
