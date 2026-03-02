@@ -330,6 +330,7 @@ public final class CGame extends LGame {
 		initScreen();
 		initFPSRepaintController(_fpsRepaintController, QUALITY_HIGH, MathUtils.iceil(LSystem.getFPS()));
 		try {
+			final int pauseSleep = MathUtils.iceil(LSystem.SECOND);
 			final boolean resize = _csetting.fullscreen || _csetting.resizable;
 			int width = LSystem.viewSize.getZoomWidth(), height = LSystem.viewSize.getZoomHeight();
 			int currentTime = 0;
@@ -360,7 +361,12 @@ public final class CGame extends LGame {
 					paused = currentPaused;
 					_lastEventCall = SDLCall.getTicks();
 				}
-				mainLoop(_fpsRepaintController, currentTime);
+				if (paused) {
+					emitFrame();
+					SDLCall.delay(pauseSleep);
+				} else {
+					mainLoop(_fpsRepaintController, currentTime);
+				}
 			}
 		} catch (Throwable e) {
 			System.out.println("Loon Run Exception:");

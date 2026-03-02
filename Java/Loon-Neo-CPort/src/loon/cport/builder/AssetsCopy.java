@@ -28,10 +28,13 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -129,6 +132,45 @@ public class AssetsCopy {
 				}
 			}
 		}
+	}
+
+	public static void delete(Path path) throws IOException {
+		if (!Files.exists(path)) {
+			return;
+		}
+		Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.delete(file);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				Files.delete(dir);
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	public static void copy(Path source, Path target) throws IOException {
+		Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+				Path relative = source.relativize(dir);
+				Path targetDir = target.resolve(relative);
+				Files.createDirectories(targetDir);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Path relative = source.relativize(file);
+				Path targetFile = target.resolve(relative);
+				Files.copy(file, targetFile, StandardCopyOption.REPLACE_EXISTING);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 
 	public static ArrayList<Asset> copyResources(ClassLoader classLoader, List<String> classPathAssetsFiles,

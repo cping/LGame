@@ -21,13 +21,26 @@
 package loon.cport.builder;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarOutputStream;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.teavm.asm.ClassReader;
+import org.teavm.asm.ClassVisitor;
+import org.teavm.asm.ClassWriter;
+import org.teavm.asm.Label;
+import org.teavm.asm.MethodVisitor;
+import org.teavm.asm.Opcodes;
+import org.teavm.asm.util.CheckClassAdapter;
 
 import loon.utils.PathUtils;
 
@@ -45,6 +58,71 @@ public class SynRemoveUtils {
 			this.updatedContent = updatedContent;
 			this.removedCount = removedCount;
 		}
+	}
+
+	public static void processJar(File inputJar, File outputJar, String packageName) throws Exception {
+		try (JarFile jarFile = new JarFile(inputJar);
+				JarOutputStream jos = new JarOutputStream(new FileOutputStream(outputJar))) {
+			for (JarEntry entry : jarFile.stream().toList()) {
+				InputStream is = jarFile.getInputStream(entry);
+				byte[] data = is.readAllBytes();
+				if (entry.getName().endsWith(".class") && entry.getName().replace('/', '.').startsWith(packageName)) {
+					data = removeAllSynchronized(data);
+				}
+				JarEntry newEntry = new JarEntry(entry.getName());
+				jos.putNextEntry(newEntry);
+				jos.write(data);
+				jos.closeEntry();
+			}
+		}
+	}
+
+	public static byte[] removeAllSynchronized(byte[] source) throws Exception {
+		return removeAllSynchronized(source);
+	}
+
+	public static byte[] removeAllSynchronized(Class<?> clazz) throws Exception {
+		return removeAllSynchronized(new ClassReader(clazz.getName()));
+	}
+
+	public static byte[] removeAllSynchronized(ClassReader reader) throws Exception {
+		ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_FRAMES);
+
+		ClassVisitor visitor = new ClassVisitor(Opcodes.ASM9, writer) {
+			@Override
+			public MethodVisitor visitMethod(int access, String name, String desc, String signature,
+					String[] exceptions) {
+				access = access & ~Opcodes.ACC_SYNCHRONIZED;
+				MethodVisitor mv = super.visitMethod(access, name, desc, signature, exceptions);
+				return new MethodVisitor(Opcodes.ASM9, mv) {
+					@Override
+					public void visitInsn(int opcode) {
+						if (opcode == Opcodes.MONITORENTER || opcode == Opcodes.MONITOREXIT) {
+							return;
+						}
+						super.visitInsn(opcode);
+					}
+
+					@Override
+					public void visitVarInsn(int opcode, int var) {
+						super.visitVarInsn(opcode, var);
+					}
+
+					@Override
+					public void visitTryCatchBlock(Label start, Label end, Label handler, String type) {
+						return;
+					}
+				};
+			}
+		};
+
+		reader.accept(visitor, ClassReader.EXPAND_FRAMES);
+
+		byte[] modifiedBytes = writer.toByteArray();
+		ClassReader checkReader = new ClassReader(modifiedBytes);
+		CheckClassAdapter.verify(checkReader, false, new java.io.PrintWriter(System.out));
+
+		return modifiedBytes;
 	}
 
 	protected static SyncResult removeSynchronized(String src, String mode) {
