@@ -23,6 +23,7 @@ package loon.cport;
 import loon.LObject;
 import loon.LRelease;
 import loon.cport.bridge.SDLCall;
+import loon.cport.bridge.SDLMouse;
 import loon.cport.bridge.SDLScanCode;
 import loon.events.InputMake;
 import loon.events.KeyMake;
@@ -206,15 +207,17 @@ public class CInputMake extends InputMake implements LRelease {
 					_touched[0] = true;
 					_rawTouchIds[0] = -1;
 					_wasJustTouched = true;
-					emitMouseButton(_currentEventTimeStamp, touchX, touchY, 0, true, 0);
+					emitMouseButton(_currentEventTimeStamp, touchX, touchY, SDLMouse.getLoonButton(buttonState), true,
+							0);
 				}
 				break;
 			case -1:
-				if (_previousTouchData[0] != -1) {
+				if (_touched[0] || _previousTouchData[0] != -1) {
 					_touched[0] = false;
 					_rawTouchIds[0] = -1;
 					_wasJustTouched = false;
-					emitMouseButton(_currentEventTimeStamp, touchX, touchY, 0, false, 0);
+					emitMouseButton(_currentEventTimeStamp, touchX, touchY, SDLMouse.getLoonButton(buttonState), false,
+							0);
 				}
 				break;
 			case 1:
@@ -222,6 +225,13 @@ public class CInputMake extends InputMake implements LRelease {
 					if (_touched[0] && buttonState != 0) {
 						emitMouseButton(_currentEventTimeStamp, touchX, touchY, -1, true, 1);
 					} else {
+						if (_touched[0]) {
+							_touched[0] = false;
+							_rawTouchIds[0] = -1;
+							_wasJustTouched = false;
+							emitMouseButton(_currentEventTimeStamp, touchX, touchY, SDLMouse.getLoonButton(buttonState),
+									false, 0);
+						}
 						emitMouseButton(_currentEventTimeStamp, touchX, touchY, -1, false, 2);
 					}
 				}

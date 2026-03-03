@@ -2298,6 +2298,10 @@ bool Load_SDL_Update() {
 					lastX = event.motion.x;
 					lastY = event.motion.y;
 				}
+				else {
+					g_touches[0] = -1;
+					g_touches[3] = 0;
+				}
 			}
 			break;
 		case SDL_MOUSEBUTTONDOWN:

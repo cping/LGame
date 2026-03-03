@@ -362,6 +362,60 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 	}
 
 	/**
+	 * 指定像素是否全黑
+	 * 
+	 * @param pixels
+	 * @return
+	 */
+	public static boolean isAllBlack(int[] pixels) {
+		if (pixels == null || pixels.length == 0) {
+			return false;
+		}
+		final int len = pixels.length;
+		for (int i = 0; i < len; i++) {
+			int p = pixels[i];
+			if (p != 0xFF000000) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 指定像素是否全白
+	 * 
+	 * @param pixels
+	 * @return
+	 */
+	public static boolean isAllWhite(int[] pixels) {
+		if (pixels == null || pixels.length == 0) {
+			return false;
+		}
+		final int len = pixels.length;
+		for (int i = 0; i < len; i++) {
+			int p = pixels[i];
+			if (p != 0xFFFFFFFF) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * 判断一个像素是否为黑色
+	 */
+	public static boolean isBlack(int pixel) {
+		return pixel == 0xFF000000;
+	}
+
+	/**
+	 * 判断一个像素是否为白色
+	 */
+	public static boolean isWhite(int pixel) {
+		return pixel == 0xFFFFFFFF;
+	}
+
+	/**
 	 * 模糊化指定像素
 	 * 
 	 * @param srcPixels
@@ -2539,9 +2593,56 @@ public final class Pixmap extends PixmapComposite implements Canvas.ColorPixel, 
 			return this;
 		}
 		if (transparent < 0) {
-			for (int row = 0; row < h; row++) {
-				System.arraycopy(currentPixels, (offsetY + row) * pixel._width + offsetX, _drawPixels,
-						(y + row) * _width + x, w);
+			if (_hasAlpha != pixel._hasAlpha) {
+				int destIndex = y * _width + x;
+				int srcIndex = offsetY * pixel._width + offsetX;
+				final int onWhite = 0xFFFFFFFF;
+				final int onTrans = transparent;
+				for (int row = 0; row < h; row++) {
+					boolean allOpaque = true;
+					boolean allTransparent = true;
+					for (int col = 0; col < w; col++) {
+						int srcPixel = currentPixels[srcIndex + col];
+						int srcA = srcPixel >>> 24;
+						if (srcPixel != onTrans) {
+							allTransparent = false;
+							if (srcA < 255) {
+								allOpaque = false;
+								break;
+							}
+						}
+					}
+					if (allOpaque) {
+						System.arraycopy(currentPixels, srcIndex, _drawPixels, destIndex, w);
+					} else if (!allTransparent) {
+						int di = destIndex;
+						int si = srcIndex;
+						for (int col = 0; col < w; col++) {
+							int srcPixel = currentPixels[si++];
+							if (srcPixel != onTrans) {
+								int dstPixel = _drawPixels[di];
+								int srcA = srcPixel >>> 24;
+								int dstA = dstPixel >>> 24;
+								if (srcA > 0 && dstA > 0) {
+									_drawPixels[di] = srcPixel;
+								} else {
+									if (dstPixel == onWhite) {
+										dstA = 0;
+									}
+									_drawPixels[di] = (dstA == 0) ? srcPixel : dstPixel;
+								}
+							}
+							di++;
+						}
+					}
+					destIndex += _width;
+					srcIndex += pixel._width;
+				}
+			} else {
+				for (int row = 0; row < h; row++) {
+					System.arraycopy(currentPixels, (offsetY + row) * pixel._width + offsetX, _drawPixels,
+							(y + row) * _width + x, w);
+				}
 			}
 			_dirty = true;
 		} else {

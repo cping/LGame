@@ -22,26 +22,25 @@ package emu.java.lang;
 
 import java.lang.Thread;
 
-import org.teavm.classlib.java.lang.TRuntime;
+import org.teavm.runtime.GC;
 
 import loon.cport.make.Emulate;
 
 @Emulate(java.lang.Runtime.class)
 public class RuntimeEmu {
 
-	private static RuntimeEmu currentRuntime = new RuntimeEmu();
+	private final static long defaultMinMemory = 256 * 1024 * 1024;
+
+	private final static RuntimeEmu currentRuntime = new RuntimeEmu();
 
 	public static RuntimeEmu getRuntime() {
 		return currentRuntime;
 	}
 
-	private final TRuntime _runtime = new TRuntime();
-
 	private RuntimeEmu() {
 	}
 
 	public void exit(int status) {
-		_runtime.exit(status);
 	}
 
 	public void addShutdownHook(Thread hook) {
@@ -53,22 +52,22 @@ public class RuntimeEmu {
 	}
 
 	public int availableProcessors() {
-		return _runtime.availableProcessors();
+		return 1;
 	}
 
 	public long freeMemory() {
-		return _runtime.freeMemory();
+		return GC.getFreeMemory();
 	}
 
 	public long totalMemory() {
-		return _runtime.totalMemory();
+		return GC.availableBytes();
 	}
 
 	public long maxMemory() {
-		return _runtime.totalMemory();
+		return Math.min(defaultMinMemory, GC.availableBytes());
 	}
 
 	public void gc() {
-		_runtime.gc();
+		System.gc();
 	}
 }
