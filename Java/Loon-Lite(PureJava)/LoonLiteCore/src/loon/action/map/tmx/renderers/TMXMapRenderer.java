@@ -807,28 +807,40 @@ public abstract class TMXMapRenderer extends LObject<ISprite> implements Sized, 
 		return getRectBox().intersects(e.getCollisionBox());
 	}
 
-	@Override
-	public boolean collidesX(ISprite other) {
+	public boolean collidesX(ISprite other, int epsilon) {
 		if (other == null || !other.isVisible()) {
 			return false;
 		}
 		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(rectSelf.getX(), 0, rectSelf.getWidth(), rectSelf.getHeight());
-		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(rectDst.getX(), 0, rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
+		float selfLeft = rectSelf.getX();
+		float selfRight = selfLeft + MathUtils.max(1, rectSelf.getWidth());
+		RectBox rectOther = other.getRectBox();
+		float otherLeft = rectOther.getX();
+		float otherRight = otherLeft + MathUtils.max(1, rectOther.getWidth());
+		return selfRight + epsilon >= otherLeft && otherRight + epsilon >= selfLeft;
+	}
+
+	public boolean collidesY(ISprite other, int epsilon) {
+		if (other == null || !other.isVisible()) {
+			return false;
+		}
+		RectBox rectSelf = getRectBox();
+		float selfTop = rectSelf.getY();
+		float selfBottom = selfTop + MathUtils.max(1, rectSelf.getHeight());
+		RectBox rectOther = other.getRectBox();
+		float otherTop = rectOther.getY();
+		float otherBottom = otherTop + MathUtils.max(1, rectOther.getHeight());
+		return selfBottom + epsilon >= otherTop && otherBottom + epsilon >= selfTop;
+	}
+
+	@Override
+	public boolean collidesX(ISprite other) {
+		return collidesX(other, 1);
 	}
 
 	@Override
 	public boolean collidesY(ISprite other) {
-		if (other == null || !other.isVisible()) {
-			return false;
-		}
-		RectBox rectSelf = getRectBox();
-		RectBox a = new RectBox(0, rectSelf.getY(), rectSelf.getWidth(), rectSelf.getHeight());
-		RectBox rectDst = getRectBox();
-		RectBox b = new RectBox(0, rectDst.getY(), rectDst.getWidth(), rectDst.getHeight());
-		return a.intersects(b);
+		return collidesY(other, 1);
 	}
 
 	@Override

@@ -238,12 +238,12 @@ extern "C" {
 #if USE_CONSOLE_PLATFORM
 #if defined(__PSP__)
 static SceUID region_lock;
-#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 0, NULL)
+#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 1, NULL)
 #define GC_LOCK() sceKernelLockMutex(region_lock, 1, NULL)
 #define GC_UNLOCK() sceKernelUnlockMutex(region_lock, 1)
 #elif defined(__PSV__) || defined(__VITA__)
 static SceUID region_lock;
-#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 0, NULL)
+#define GC_LOCK_INIT() region_lock = sceKernelCreateMutex("region_lock", 0, 1, NULL)
 #define GC_LOCK() sceKernelLockMutex(region_lock, 1, NULL)
 #define GC_UNLOCK() sceKernelUnlockMutex(region_lock, 1)
 #elif defined(__SWITCH__)
@@ -421,9 +421,17 @@ static inline void* gc_mmap(size_t len, int prot) {
                     regions[i].used = 1;
                     regions[i].uid = uid;
                     regions[i].is_native = 1;
-                    break;
+                    GC_UNLOCK();
+                    return mem;
                 }
             }
+            expand_regions();
+            regions[region_capacity / 2].addr = mem;
+            regions[region_capacity / 2].len = len;
+            regions[region_capacity / 2].prot = prot;
+            regions[region_capacity / 2].used = 1;
+            regions[region_capacity / 2].uid = uid;
+            regions[region_capacity / 2].is_native = 1;
             GC_UNLOCK();
             return mem;
         }
@@ -463,9 +471,15 @@ static inline int gc_mprotect(void* addr, size_t len, int prot) {
 
 // PSV平台实现
 #if defined(__PSV__) || defined(__VITA__)
+
 static inline void* gc_mmap(size_t len, int prot) {
     if (len == 0) return GC_MAP_FAILED;
-    SceUID uid = sceKernelAllocMemBlock("gc_mmap_block", SCE_KERNEL_MEMBLOCK_TYPE_USER_RW, len, NULL);
+    SceUID uid = sceKernelAllocMemBlock(
+        "gc_mmap_block",
+        SCE_KERNEL_MEMBLOCK_TYPE_USER_RW,
+        len,
+        NULL
+    );
     if (uid >= 0) {
         void* mem = NULL;
         if (sceKernelGetMemBlockBase(uid, &mem) == 0 && mem) {
@@ -479,9 +493,17 @@ static inline void* gc_mmap(size_t len, int prot) {
                     regions[i].used = 1;
                     regions[i].uid = uid;
                     regions[i].is_native = 1;
-                    break;
+                    GC_UNLOCK();
+                    return mem;
                 }
             }
+            expand_regions();
+            regions[region_capacity / 2].addr = mem;
+            regions[region_capacity / 2].len = len;
+            regions[region_capacity / 2].prot = prot;
+            regions[region_capacity / 2].used = 1;
+            regions[region_capacity / 2].uid = uid;
+            regions[region_capacity / 2].is_native = 1;
             GC_UNLOCK();
             return mem;
         }
@@ -515,7 +537,7 @@ static inline int gc_munmap(void* addr, size_t len) {
 }
 
 static inline int gc_mprotect(void* addr, size_t len, int prot) {
-        return gc_mprotect_virtual(addr, len, prot);
+    return gc_mprotect_virtual(addr, len, prot);
 }
 #endif
 
@@ -543,14 +565,23 @@ static inline void* gc_mmap(size_t len, int prot) {
                 regions[i].used = 1;
                 regions[i].uid = -1;
                 regions[i].is_native = 1;
-                break;
+                GC_UNLOCK();
+                return addr;
             }
         }
+        expand_regions();
+        regions[region_capacity / 2].addr = addr;
+        regions[region_capacity / 2].len = len;
+        regions[region_capacity / 2].prot = prot;
+        regions[region_capacity / 2].used = 1;
+        regions[region_capacity / 2].uid = -1;
+        regions[region_capacity / 2].is_native = 1;
         GC_UNLOCK();
         return addr;
     }
     return gc_mmap_virtual(len, prot);
 }
+
 static inline int gc_munmap(void* addr, size_t len) {
     Result rc = svcControlMemory(
         NULL,
@@ -568,12 +599,13 @@ static inline int gc_munmap(void* addr, size_t len) {
                 regions[i].addr = NULL;
                 regions[i].len = 0;
                 regions[i].prot = GC_PROT_NONE;
+                regions[i].uid = -1;
                 regions[i].is_native = 0;
-                break;
+                GC_UNLOCK();
+                return 0;
             }
         }
         GC_UNLOCK();
-        return 0;
     }
     return gc_munmap_virtual(addr, len);
 }
@@ -585,6 +617,14 @@ static inline int gc_mprotect(void* addr, size_t len, int prot) {
     if (prot & GC_PROT_EXEC)  perm |= MemPermission_Execute;
     Result rc = svcSetMemoryPermission((uint64_t)addr, len, perm);
     if (R_SUCCEEDED(rc)) {
+        GC_LOCK();
+        for (size_t i = 0; i < region_capacity; i++) {
+            if (regions[i].used && regions[i].addr == addr && regions[i].len == len) {
+                regions[i].prot = prot;
+                break;
+            }
+        }
+        GC_UNLOCK();
         return 0;
     }
     return gc_mprotect_virtual(addr, len, prot);
