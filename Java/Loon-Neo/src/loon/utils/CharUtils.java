@@ -32,7 +32,14 @@ public class CharUtils {
 		CharWhitespace, CharAlphaNumeric, CharJapanese, CharKorean, CharChinese, CharUnknown
 	}
 
-	public static final String fullflags = "．，。？；：“‘”【】{}《》＜＞（）~！＠·￥＃＄％＆＇（）＊＋－／｛｜｝～［＼］＿＾｀└├─↓→…";
+	public static final String fullflags = 
+			"．，。？！；：“”‘’（）【】｛｝《》＜＞［］『』「」｜＼／" +
+			"＋－＊＝％＃＠＆＾＿｀～＄￥￡￠" +
+			"ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ" +
+			"ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ" +
+			"０１２３４５６７８９" +
+			"─━│┃┌┐└┘├┤┬┴┼←↑→↓↔↕…";
+
 
 	public static final String halfflags = ",.~:;\"'?[]{}\\|!`^_~@#$%^&*()-+<=>#";
 
