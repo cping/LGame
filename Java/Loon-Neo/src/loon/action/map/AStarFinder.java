@@ -236,7 +236,7 @@ public class AStarFinder implements Updateable, LRelease {
 
 	private int _algorithm = ASTAR;
 
-	private int _overflow = 4096;
+	private int _overflow = 8192;
 
 	private int _startX, _startY, _endX, _endY;
 

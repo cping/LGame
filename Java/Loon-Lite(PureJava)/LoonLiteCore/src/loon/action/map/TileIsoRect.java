@@ -36,17 +36,40 @@ public class TileIsoRect implements LRelease {
 
 	public static class TileIsoImage {
 
-		public LTexture image;
+		public LTexture image = null;
 
-		public float x;
+		public int layer = 0;
 
-		public float y;
+		public float alpha = 1f;
 
-		public float width;
+		public float x = 0f;
 
-		public float height;
+		public float y = 0f;
 
-		public float rotation;
+		public float width = 0f;
+
+		public float height = 0f;
+
+		public float rotation = 0f;
+
+		public LColor color = null;
+
+		public TileIsoImage() {
+			this(null, 0, 0, 0, 0, 0, 0, 1f, null);
+		}
+
+		public TileIsoImage(LColor color, float x, float y, float w, float h, float r, int layer, float alpha,
+				LTexture texture) {
+			this.color = color;
+			this.x = x;
+			this.y = y;
+			this.width = w;
+			this.height = h;
+			this.rotation = r;
+			this.layer = layer;
+			this.alpha = alpha;
+			this.image = texture;
+		}
 	}
 
 	public static TileIsoRect createPos(float x, float y, float tileW, float tileH) {
@@ -180,9 +203,12 @@ public class TileIsoRect implements LRelease {
 
 	private void drawImage(GLEx g) {
 		if (_isoImage != null) {
+			float oldAlpha = g.alpha();
+			g.setAlpha(_isoImage.alpha);
 			if (_isoImage.width > 0f && _isoImage.height > 0f) {
 				g.draw(_isoImage.image, _centerX + _isoImage.x - _isoImage.width / 2f,
 						_centerY + _isoImage.y - _isoImage.height / 2f, _isoImage.width, _isoImage.height,
+						_isoImage.color,
 						(_isoImage.rotation == -1f ? MathUtils.toDegrees(_sinAngle) : _isoImage.rotation) + _rotation);
 			} else {
 				float newW = _diagonalWidth;
@@ -195,8 +221,9 @@ public class TileIsoRect implements LRelease {
 					newH = (_diagonalHeight * _sinAngle) + _diagonalHeight / 2f;
 				}
 				g.draw(_isoImage.image, _centerX + _isoImage.x - newW / 2f, _centerY + _isoImage.y - newH / 2f, newW,
-						newH, (_isoImage.rotation == -1f ? 45f : _isoImage.rotation) + _rotation);
+						newH, _isoImage.color, (_isoImage.rotation == -1f ? 45f : _isoImage.rotation) + _rotation);
 			}
+			g.setAlpha(oldAlpha);
 		}
 	}
 

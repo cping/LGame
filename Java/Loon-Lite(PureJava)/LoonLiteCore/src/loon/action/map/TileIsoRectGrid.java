@@ -20,6 +20,8 @@
  */
 package loon.action.map;
 
+import java.util.Comparator;
+
 import loon.LObject;
 import loon.LSystem;
 import loon.LTexture;
@@ -28,6 +30,7 @@ import loon.Screen;
 import loon.Director.Origin;
 import loon.action.ActionBind;
 import loon.action.ActionTween;
+import loon.action.map.TileIsoRect.TileIsoImage;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.SpriteCollisionListener;
 import loon.action.sprite.Sprites;
@@ -39,17 +42,46 @@ import loon.font.IFont;
 import loon.geom.Affine2f;
 import loon.geom.PointF;
 import loon.geom.PointI;
+import loon.geom.Polygon;
 import loon.geom.RectBox;
 import loon.geom.Sized;
 import loon.geom.Vector2f;
 import loon.opengl.GLEx;
 import loon.utils.MathUtils;
+import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 /**
  * 工具用类,同时绘制多个斜角网格区域用
  */
 public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite {
+
+	private static class TileDrawInfo {
+		int row, col;
+		TileIsoImage tile;
+
+		TileDrawInfo(int row, int col, TileIsoImage tile) {
+			this.row = row;
+			this.col = col;
+			this.tile = tile;
+		}
+	}
+
+	private static class TileComparator implements Comparator<TileDrawInfo> {
+
+		public TileComparator() {
+		}
+
+		@Override
+		public int compare(final TileDrawInfo ta, final TileDrawInfo tb) {
+			return MathUtils.compare(ta.tile.layer, tb.tile.layer);
+		}
+
+	}
+
+	private final static TileComparator TILE_COMPARATOR = new TileComparator();
+
+	private final ObjectMap<String, Polygon> cache = new ObjectMap<String, Polygon>();
 
 	private final PointF _scrollDrag = new PointF();
 
@@ -123,6 +155,16 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 
 	private IFont _font;
 
+	private float lastAngle = -1f;
+
+	private float lastScaleX = -1f;
+
+	private float lastScaleY = -1f;
+
+	private int lastOffsetX = -1;
+
+	private int lastOffsetY = -1;
+
 	public TileIsoRectGrid(int row, int col, float px, float py, float tw, float th) {
 		this(row, col, px, py, tw, th, 0.5f);
 	}
@@ -145,6 +187,84 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		this._origin = Origin.CENTER;
 		this.setLocation(px, py);
 		this.setAngle(angle, row, col, px, py, tw, th, sin);
+	}
+
+	private String makeKey(int row, int col, float angle, float scaleX, float scaleY, int offsetX, int offsetY,
+			int layer) {
+		return row + "_" + col + "_" + angle + "_" + scaleX + "_" + scaleY + "_" + offsetX + "_" + offsetY + "_"
+				+ layer;
+	}
+
+	private void checkAndClearCache(float angle, float scaleX, float scaleY, int offsetX, int offsetY) {
+		if (angle != lastAngle || scaleX != lastScaleX || scaleY != lastScaleY || offsetX != lastOffsetX
+				|| offsetY != lastOffsetY) {
+			cache.clear();
+			lastAngle = angle;
+			lastScaleX = scaleX;
+			lastScaleY = scaleY;
+			lastOffsetX = offsetX;
+			lastOffsetY = offsetY;
+		}
+	}
+
+	public void drawIsoGrid(GLEx g, TileIsoImage[] tiles, int mapWidth, int mapHeight, int spacing, float rotationAngle,
+			float scaleX, float scaleY, int offsetX, int offsetY, boolean fill) {
+		if (tiles == null || tiles.length == 0) {
+			return;
+		}
+		checkAndClearCache(rotationAngle, scaleX, scaleY, offsetX, offsetY);
+
+		float centerX = mapWidth * tiles[0].width / 2;
+		float centerY = mapHeight * tiles[0].height / 2;
+
+		float rad = MathUtils.toRadians(rotationAngle);
+		float cos = MathUtils.cos(rad);
+		float sin = MathUtils.sin(rad);
+
+		TArray<TileDrawInfo> drawList = new TArray<TileDrawInfo>();
+		for (int row = 0; row < mapHeight; row++) {
+			for (int col = 0; col < mapWidth; col++) {
+				int index = row * mapWidth + col;
+				if (index >= tiles.length) {
+					continue;
+				}
+				TileIsoImage tile = tiles[index];
+				drawList.add(new TileDrawInfo(row, col, tile));
+			}
+		}
+
+		drawList.sort(TILE_COMPARATOR);
+
+		for (TileDrawInfo info : drawList) {
+			float oldAlpha = g.alpha();
+			TileIsoImage tile = info.tile;
+			String key = makeKey(info.row, info.col, rotationAngle, scaleX, scaleY, offsetX, offsetY, tile.layer);
+			Polygon diamond = cache.get(key);
+			if (diamond == null) {
+				float x = (info.col - info.row) * (tile.width / 2 + spacing);
+				float y = (info.col + info.row) * (tile.height / 2 + spacing);
+				float[][] points = { { x, y }, { (x + tile.width / 2), (y + tile.height / 2) },
+						{ x, (y + tile.height) }, { (x - tile.width / 2), y + tile.height / 2 } };
+				diamond = new Polygon();
+				for (float[] p : points) {
+					float rx = ((cos * (p[0] - centerX) - sin * (p[1] - centerY)) * scaleX + centerX + offsetX);
+					float ry = ((sin * (p[0] - centerX) + cos * (p[1] - centerY)) * scaleY + centerY + offsetY);
+					diamond.addPoint(rx, ry);
+				}
+				cache.put(key, diamond);
+			}
+			g.setAlpha(tile.alpha);
+			if (fill) {
+				g.fill(diamond, tile.color);
+			} else {
+				g.draw(diamond, tile.color);
+			}
+			if (tile.image != null) {
+				g.draw(tile.image, tile.x, tile.y, tile.width * scaleX, tile.height * scaleY, tile.color,
+						tile.rotation);
+			}
+			g.setAlpha(oldAlpha);
+		}
 	}
 
 	public Origin getOrigin() {
