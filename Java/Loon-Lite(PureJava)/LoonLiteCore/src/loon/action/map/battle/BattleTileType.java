@@ -20,13 +20,16 @@
  */
 package loon.action.map.battle;
 
+import loon.action.map.battle.BattleType.MoveState;
 import loon.action.map.battle.BattleType.UnitType;
 import loon.utils.IntMap;
 
 /**
- * 主要供战棋或回合制游戏使用的地形参数类
+ * 主要供战棋或回合制游戏使用的地形参数类(具体地形的瓦片属性只是模板，具体多少可自行修正或建立新瓦片类型)
  */
 public class BattleTileType {
+
+	private static final IntMap<BattleTileType> TILE_MAP = new IntMap<BattleTileType>();
 
 	public static BattleTileType getById(int id) {
 		return TILE_MAP.get(id);
@@ -34,74 +37,107 @@ public class BattleTileType {
 
 	// 基础地形
 	// 平原
-	public static final BattleTileType PLAIN = new BattleTileType(1, 101, "PLAIN", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType PLAIN = new BattleTileType(1, 1, MoveState.NORMAL, "PLAIN", 1, 0, 0, true, false,
+			1, 1.0f, 0.0f);
 	// 草地
-	public static final BattleTileType GRASSLAND = new BattleTileType(2, 102, "GRASSLAND", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType GRASSLAND = new BattleTileType(2, 2, MoveState.NORMAL, "GRASSLAND", 1, 0, 0,
+			true, false, 1, 1.0f, 0.0f);
 	// 沙漠
-	public static final BattleTileType DESERT = new BattleTileType(3, 103, "DESERT", true, false, 2, 1.1f, 0.1f);
+	public static final BattleTileType DESERT = new BattleTileType(3, 3, MoveState.DIFFICULT, "DESERT", 0.8f, 0, 0,
+			true, false, 2, 1.1f, 0.1f);
 	// 森林
-	public static final BattleTileType FOREST = new BattleTileType(4, 104, "FOREST", true, true, 2, 0.9f, 0.2f);
+	public static final BattleTileType FOREST = new BattleTileType(4, 4, MoveState.NORMAL, "FOREST", 0.7f, 0, 0, true,
+			true, 2, 0.9f, 0.2f);
 	// 密林
-	public static final BattleTileType DENSE_FOREST = new BattleTileType(5, 105, "DENSE_FOREST", true, true, 3, 0.8f,
-			0.3f);
+	public static final BattleTileType DENSE_FOREST = new BattleTileType(5, 5, MoveState.DIFFICULT, "DENSE_FOREST",
+			0.5f, 0, 0, true, true, 3, 0.8f, 0.3f);
 	// 山地
-	public static final BattleTileType MOUNTAIN = new BattleTileType(6, 106, "MOUNTAIN", false, true, 3, 0.7f, 0.5f);
+	public static final BattleTileType MOUNTAIN = new BattleTileType(6, 6, MoveState.CLIMB, "MOUNTAIN", 0.5f, 0, 0,
+			false, true, 3, 0.7f, 0.5f);
 	// 丘陵
-	public static final BattleTileType HILL = new BattleTileType(7, 107, "HILL", true, true, 2, 0.9f, 0.25f);
+	public static final BattleTileType HILL = new BattleTileType(7, 7, MoveState.CLIMB, "HILL", 0.5f, 0, 0, true, true,
+			2, 0.9f, 0.25f);
 	// 河流
-	public static final BattleTileType RIVER = new BattleTileType(8, 108, "RIVER", true, false, 2, 1.0f, 0.0f);
+	public static final BattleTileType RIVER = new BattleTileType(8, 8, MoveState.SWIM, "RIVER", 0.7f, 0, 0, true,
+			false, 2, 1.0f, 0.0f);
 	// 浅滩
-	public static final BattleTileType FORD = new BattleTileType(9, 109, "FORD", true, false, 3, 1.0f, 0.0f);
+	public static final BattleTileType FORD = new BattleTileType(9, 9, MoveState.NORMAL, "FORD", 0.9f, 0, 0, true,
+			false, 3, 1.0f, 0.0f);
 	// 沙洲
-	public static final BattleTileType SHOAL = new BattleTileType(10, 110, "SHOAL", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType SHOAL = new BattleTileType(10, 10, MoveState.DIFFICULT, "SHOAL", 0.85f, 0, 0,
+			true, false, 1, 1.0f, 0.0f);
 	// 海洋
-	public static final BattleTileType SEA = new BattleTileType(11, 111, "SEA", true, false, 2, 1.0f, 0.0f);
+	public static final BattleTileType SEA = new BattleTileType(11, 11, MoveState.SWIM, "SEA", 0.6f, 0, 0, true, false,
+			2, 1.0f, 0.0f);
 	// 海岸
-	public static final BattleTileType COAST = new BattleTileType(12, 112, "COAST", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType COAST = new BattleTileType(12, 12, MoveState.NORMAL, "COAST", 0.9f, 0, 0, true,
+			false, 1, 1.0f, 0.0f);
 	// 沼泽
-	public static final BattleTileType SWAMP = new BattleTileType(13, 113, "SWAMP", true, false, 3, 0.8f, 0.1f);
+	public static final BattleTileType SWAMP = new BattleTileType(13, 13, MoveState.DIFFICULT, "SWAMP", 0.2f, 0, 0,
+			true, false, 3, 0.8f, 0.1f);
 	// 湿地
-	public static final BattleTileType MARSH = new BattleTileType(14, 114, "MARSH", true, false, 4, 0.7f, 0.15f);
+	public static final BattleTileType MARSH = new BattleTileType(14, 14, MoveState.DIFFICULT, "MARSH", 0.6f, 0, 0,
+			true, false, 4, 0.7f, 0.15f);
 	// 火山
-	public static final BattleTileType VOLCANO = new BattleTileType(15, 301, "VOLCANO", false, true, 5, 0.0f, 0.0f);
+	public static final BattleTileType VOLCANO = new BattleTileType(15, 15, MoveState.FLY, "VOLCANO", 0.3f, 0, 0, false,
+			true, 5, 0.0f, 0.0f);
 	// 断崖
-	public static final BattleTileType CLIFF = new BattleTileType(16, 302, "CLIFF", false, true, 4, 0.0f, 0.0f);
+	public static final BattleTileType CLIFF = new BattleTileType(16, 16, MoveState.CLIMB, "CLIFF", 0.1f, 0, 0, false,
+			true, 4, 0.0f, 0.0f);
+	// 天空
+	public static final BattleTileType SKY = new BattleTileType(17, 17, MoveState.FLY, "SKY", 1f, 0, 0, false, true, 4,
+			0.0f, 0.0f);
 
 	// 建筑地形
 	// 道路
-	public static final BattleTileType ROAD = new BattleTileType(17, 201, "ROAD", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType ROAD = new BattleTileType(18, 18, MoveState.NORMAL, "ROAD", 1, 0, 0, true, false,
+			1, 1.0f, 0.0f);
 	// 桥梁
-	public static final BattleTileType BRIDGE = new BattleTileType(18, 202, "BRIDGE", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType BRIDGE = new BattleTileType(19, 19, MoveState.NORMAL, "BRIDGE", 1, 0, 0, true,
+			false, 1, 1.0f, 0.0f);
 	// 砦
-	public static final BattleTileType FORT = new BattleTileType(19, 203, "FORT", true, true, 1, 0.8f, 0.4f);
+	public static final BattleTileType FORT = new BattleTileType(20, 20, MoveState.NORMAL, "FORT", 1, 0, 0, true, true,
+			1, 0.8f, 0.4f);
 	// 城塞
-	public static final BattleTileType CASTLE = new BattleTileType(20, 204, "CASTLE", true, true, 1, 0.7f, 0.6f);
+	public static final BattleTileType CASTLE = new BattleTileType(21, 21, MoveState.NORMAL, "CASTLE", 1, 0, 0, true,
+			true, 1, 0.7f, 0.6f);
 	// 城池
-	public static final BattleTileType CITY = new BattleTileType(21, 205, "CITY", true, true, 1, 0.6f, 0.8f);
+	public static final BattleTileType CITY = new BattleTileType(22, 22, MoveState.NORMAL, "CITY", 1, 0, 0, true, true,
+			1, 0.6f, 0.8f);
 	// 城墙
-	public static final BattleTileType WALL = new BattleTileType(22, 206, "WALL", true, true, 2, 0.7f, 0.7f);
+	public static final BattleTileType WALL = new BattleTileType(23, 23, MoveState.NORMAL, "WALL", 1, 0, 0, true, true,
+			2, 0.7f, 0.7f);
 	// 城门
-	public static final BattleTileType GATE = new BattleTileType(23, 207, "GATE", true, true, 1, 0.7f, 0.7f);
+	public static final BattleTileType GATE = new BattleTileType(24, 24, MoveState.NORMAL, "GATE", 1, 0, 0, true, true,
+			1, 0.7f, 0.7f);
 	// 岗哨
-	public static final BattleTileType TOWER = new BattleTileType(24, 208, "TOWER", true, true, 1, 0.8f, 0.5f);
+	public static final BattleTileType TOWER = new BattleTileType(25, 25, MoveState.NORMAL, "TOWER", 1, 0, 0, true,
+			true, 1, 0.8f, 0.5f);
 	// 木栅
-	public static final BattleTileType PALISADE = new BattleTileType(25, 209, "PALISADE", true, true, 1, 0.85f, 0.3f);
+	public static final BattleTileType PALISADE = new BattleTileType(26, 26, MoveState.NORMAL, "PALISADE", 1, 0, 0,
+			true, true, 1, 0.85f, 0.3f);
 	// 渡口
-	public static final BattleTileType FERRY = new BattleTileType(26, 303, "FERRY", true, false, 2, 1.0f, 0.0f);
+	public static final BattleTileType FERRY = new BattleTileType(27, 27, MoveState.NORMAL, "FERRY", 1, 0, 0, true,
+			false, 2, 1.0f, 0.0f);
 	// 港口
-	public static final BattleTileType PORT = new BattleTileType(27, 304, "PORT", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType PORT = new BattleTileType(28, 28, MoveState.NORMAL, "PORT", 1, 0, 0, true, false,
+			1, 1.0f, 0.0f);
 	// 堤坝
-	public static final BattleTileType DAM = new BattleTileType(28, 305, "DAM", true, false, 2, 1.0f, 0.0f);
+	public static final BattleTileType DAM = new BattleTileType(29, 29, MoveState.NORMAL, "DAM", 1, 0, 0, true, false,
+			2, 1.0f, 0.0f);
 	// 矿坑
-	public static final BattleTileType MINE = new BattleTileType(29, 306, "MINE", true, false, 2, 1.0f, 0.0f);
+	public static final BattleTileType MINE = new BattleTileType(30, 30, MoveState.NORMAL, "MINE", 1, 0, 0, true, false,
+			2, 1.0f, 0.0f);
 	// 农田
-	public static final BattleTileType FARM = new BattleTileType(30, 307, "FARM", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType FARM = new BattleTileType(31, 31, MoveState.NORMAL, "FARM", 1, 0, 0, true, false,
+			1, 1.0f, 0.0f);
 	// 市场
-	public static final BattleTileType MARKET = new BattleTileType(31, 308, "MARKET", true, false, 1, 1.0f, 0.0f);
+	public static final BattleTileType MARKET = new BattleTileType(32, 32, MoveState.NORMAL, "MARKET", 1, 0, 0, true,
+			false, 1, 1.0f, 0.0f);
 	// 唯一标识（地形类型）
 	private final int id;
 	// 用于和其它物体绑定
-	private final int bindingId;
+	private int bindingId;
 	// 地形名称
 	private final String name;
 	// 是否可通行
@@ -109,25 +145,35 @@ public class BattleTileType {
 	// 是否有防御加成
 	private final boolean defensive;
 	// 基础行动点消耗
-	private final int baseActionCost; 
+	private final int baseActionCost;
 	// 攻击倍率
-	private final float attackMultiplier;
+	private float attackMultiplier;
 	// 防御加成
-	private final float defenseBonus; 
+	private final float defenseBonus;
+	// 移动速度倍率
+	public float moveSpeedMultiplier;
+	// 宽度偏移
+	public int widthOffset;
+	// 高度偏移
+	public int heightOffset;
+	// 该地形默认移动状态
+	public MoveState defaultMoveState;
 
-	private static final IntMap<BattleTileType> TILE_MAP = new IntMap<BattleTileType>();
-
-	private BattleTileType(int id, int bindingId, String name, boolean passable, boolean defensive, int baseActionCost,
-			float attackMultiplier, float defenseBonus) {
+	private BattleTileType(int id, int bindingId, MoveState state, String name, float multiplier, int widthOffset,
+			int heightOffset, boolean passable, boolean defensive, int baseActionCost, float attackMultiplier,
+			float defenseBonus) {
 		this.id = id;
 		this.bindingId = bindingId;
+		this.defaultMoveState = state;
 		this.name = name;
+		this.moveSpeedMultiplier = multiplier;
+		this.widthOffset = widthOffset;
+		this.heightOffset = heightOffset;
 		this.passable = passable;
 		this.defensive = defensive;
 		this.baseActionCost = baseActionCost;
 		this.attackMultiplier = attackMultiplier;
 		this.defenseBonus = defenseBonus;
-
 		TILE_MAP.put(id, this);
 	}
 
@@ -161,6 +207,46 @@ public class BattleTileType {
 
 	public float getDefenseBonus() {
 		return defenseBonus;
+	}
+
+	public float getMoveSpeedMultiplier() {
+		return moveSpeedMultiplier;
+	}
+
+	public int getWidthOffset() {
+		return widthOffset;
+	}
+
+	public int getHeightOffset() {
+		return heightOffset;
+	}
+
+	public MoveState getDefaultMoveState() {
+		return defaultMoveState;
+	}
+
+	public void setBindingId(int bindingId) {
+		this.bindingId = bindingId;
+	}
+
+	public void setAttackMultiplier(float attackMultiplier) {
+		this.attackMultiplier = attackMultiplier;
+	}
+
+	public void setMoveSpeedMultiplier(float moveSpeedMultiplier) {
+		this.moveSpeedMultiplier = moveSpeedMultiplier;
+	}
+
+	public void setWidthOffset(int widthOffset) {
+		this.widthOffset = widthOffset;
+	}
+
+	public void setHeightOffset(int heightOffset) {
+		this.heightOffset = heightOffset;
+	}
+
+	public void setDefaultMoveState(MoveState defaultMoveState) {
+		this.defaultMoveState = defaultMoveState;
 	}
 
 	public int getActionPointCost(UnitType unitType) {
@@ -217,4 +303,5 @@ public class BattleTileType {
 	public float getTalentBonus(String talentId) {
 		return BettleTalentTileRegistry.getTalentBonus(talentId, this);
 	}
+
 }

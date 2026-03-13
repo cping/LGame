@@ -88,7 +88,9 @@ public class Team implements LRelease {
 
 	public final static int Npc = 2;
 
-	public final static int Other = 3;
+	public final static int Ally = 3;
+
+	public final static int Other = 4;
 
 	protected boolean dirty;
 
@@ -279,7 +281,7 @@ public class Team implements LRelease {
 		_characters.removeAll(dieRoles);
 		return count;
 	}
-	
+
 	public int getDeadCount() {
 		int count = 0;
 		for (Role c : _characters) {

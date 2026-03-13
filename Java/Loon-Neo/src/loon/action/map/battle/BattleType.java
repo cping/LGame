@@ -39,7 +39,7 @@ public class BattleType {
 	public static enum ObjectState {
 		IDLE, MOVING, ATTACKING, CASTING, CASTING_SKILL, DEAD, FLEEING, PANICKED, FAKE_RETREAT, CONFUSED, STUNNED,
 		FROZEN, BURNING, POISONED, SILENCED, FATIGUED, RESTING, HIDING, DEFENDING, WAITING, PATROLLING, AUTO_ATTACK,
-		GARRISONED
+		GARRISONED, BLOCKED, SKILL, PREPARE_ATTACK, PREPARE_SKILL
 	}
 
 	public static enum UnitType {
@@ -52,5 +52,9 @@ public class BattleType {
 
 	public static enum WeatherType {
 		CLEAR, RAINY, WINDY, FOGGY, SNOWY
+	}
+
+	public static enum MoveState {
+		NORMAL, LIGHTNESS, DIFFICULT, SWIM, CLIMB, FLY
 	}
 }
