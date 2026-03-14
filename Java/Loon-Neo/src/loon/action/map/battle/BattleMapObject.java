@@ -20,10 +20,31 @@
  */
 package loon.action.map.battle;
 
-public class BattleMapObject {
+import loon.action.map.Direction;
+import loon.action.map.items.Role;
+import loon.action.map.items.RoleEquip;
+
+public class BattleMapObject extends Role {
 
 	public int gridX;
 
 	public int gridY;
 
+	public Direction currentDirection = Direction.DOWN;
+
+	public BattleMapObject(int id, String name) {
+		super(id, null, name);
+	}
+
+	public BattleMapObject(int id, RoleEquip e, String name) {
+		super(id, e, name);
+	}
+
+	public Direction getDirection() {
+		return currentDirection;
+	}
+
+	public RoleEquip getRoleEquip() {
+		return getInfo();
+	}
 }

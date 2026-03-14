@@ -268,6 +268,10 @@ public class Direction {
 		return "unknown";
 	}
 
+	public final static TArray<Direction> values() {
+		return ALL_DIRECTIONS;
+	}
+
 	@Override
 	public String toString() {
 		return name + " (" + fullName + ")";

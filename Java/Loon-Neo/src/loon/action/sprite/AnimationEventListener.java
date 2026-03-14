@@ -18,33 +18,26 @@
  * @email：javachenpeng@yahoo.com
  * @version 0.5
  */
-package loon.action.map.battle;
+package loon.action.sprite;
 
 import loon.action.map.Direction;
-import loon.action.map.items.Role;
-import loon.action.map.items.RoleEquip;
+import loon.action.map.battle.BattleType.ObjectState;
 
-public class BattleMapObject extends Role {
+/**
+ * 动画事件监听接口，用于接收动画播放过程中的各种事件回调(并非所有游戏类型都必须开动画按帧监听，基本上上这个就证明动画效果很复杂，为魂类游戏准备的)
+ */
+public interface AnimationEventListener {
 
-	public int gridX;
+	void onStateEnter(ObjectState state, Direction dir);
 
-	public int gridY;
+	void onStateExit(ObjectState state, Direction dir);
 
-	public Direction currentDirection = Direction.DOWN;
+	void onAnimationComplete(ObjectState state, Direction dir);
 
-	public BattleMapObject(int id, String name) {
-		super(id, null, name);
-	}
+	void onInterrupted(ObjectState from, ObjectState to);
 
-	public BattleMapObject(int id, RoleEquip e, String name) {
-		super(id, e, name);
-	}
+	void onTransition(ObjectState from, ObjectState to);
 
-	public Direction getDirection() {
-		return currentDirection;
-	}
+	void onKeyFrame(ObjectState state, Direction dir, int frameIndex, String eventType);
 
-	public RoleEquip getRoleEquip() {
-		return getInfo();
-	}
 }

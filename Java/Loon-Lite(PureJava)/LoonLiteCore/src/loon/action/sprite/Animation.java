@@ -153,7 +153,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int width, int height, int timer) {
+	public static Animation getDefaultAnimation(String fileName, int width, int height, long timer) {
 		return Animation.getDefaultAnimation(TextureUtils.getSplitTextures(fileName, width, height), -1, timer);
 	}
 
@@ -167,7 +167,8 @@ public class Animation implements IArray, LRelease {
 	 * @param filterColor
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int width, int height, int timer, LColor filterColor) {
+	public static Animation getDefaultAnimation(String fileName, int width, int height, long timer,
+			LColor filterColor) {
 		return Animation.getDefaultAnimation(
 				TextureUtils.getSplitTextures(TextureUtils.filterColor(fileName, filterColor), width, height), -1,
 				timer);
@@ -183,7 +184,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int maxFrame, int width, int height, int timer) {
+	public static Animation getDefaultAnimation(String fileName, int maxFrame, int width, int height, long timer) {
 		return Animation.getDefaultAnimation(TextureUtils.getSplitTextures(fileName, width, height), maxFrame, timer);
 	}
 
@@ -197,7 +198,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(LTexture[] images, int maxFrame, int timer) {
+	public static Animation getDefaultAnimation(LTexture[] images, int maxFrame, long timer) {
 		if (images == null) {
 			return new Animation();
 		}
@@ -224,7 +225,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String[] paths, int maxFrame, int timer) {
+	public static Animation getDefaultAnimation(String[] paths, int maxFrame, long timer) {
 		LTexture[] res = new LTexture[paths.length];
 		for (int i = 0; i < paths.length; i++) {
 			res[i] = LSystem.loadTexture(paths[i]);
@@ -239,7 +240,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String[] paths, int timer) {
+	public static Animation getDefaultAnimation(String[] paths, long timer) {
 		return getDefaultAnimation(paths, paths.length, timer);
 	}
 
@@ -280,7 +281,7 @@ public class Animation implements IArray, LRelease {
 	 * @param timer
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(MovieSpriteSheet sheet, int maxFrame, int timer) {
+	public static Animation getDefaultAnimation(MovieSpriteSheet sheet, int maxFrame, long timer) {
 		return getDefaultAnimation(sheet.getTextures(), maxFrame, timer);
 	}
 
@@ -292,27 +293,27 @@ public class Animation implements IArray, LRelease {
 		return getDefaultAnimation(texture);
 	}
 
-	public static Animation of(String fileName, int width, int height, int timer) {
+	public static Animation of(String fileName, int width, int height, long timer) {
 		return getDefaultAnimation(fileName, width, height, timer);
 	}
 
-	public static Animation of(String fileName, int width, int height, int timer, LColor filterColor) {
+	public static Animation of(String fileName, int width, int height, long timer, LColor filterColor) {
 		return getDefaultAnimation(fileName, width, height, timer, filterColor);
 	}
 
-	public static Animation of(String fileName, int maxFrame, int width, int height, int timer) {
+	public static Animation of(String fileName, int maxFrame, int width, int height, long timer) {
 		return getDefaultAnimation(fileName, maxFrame, width, height, timer);
 	}
 
-	public static Animation of(LTexture[] images, int maxFrame, int timer) {
+	public static Animation of(LTexture[] images, int maxFrame, long timer) {
 		return getDefaultAnimation(images, maxFrame, timer);
 	}
 
-	public static Animation of(String[] paths, int maxFrame, int timer) {
+	public static Animation of(String[] paths, int maxFrame, long timer) {
 		return getDefaultAnimation(paths, maxFrame, timer);
 	}
 
-	public static Animation of(String[] paths, int timer) {
+	public static Animation of(String[] paths, long timer) {
 		return getDefaultAnimation(paths, paths.length, timer);
 	}
 
@@ -324,7 +325,7 @@ public class Animation implements IArray, LRelease {
 		return getDefaultAnimation(frames, totalDuration, reversed);
 	}
 
-	public static Animation of(MovieSpriteSheet sheet, int maxFrame, int timer) {
+	public static Animation of(MovieSpriteSheet sheet, int maxFrame, long timer) {
 		return getDefaultAnimation(sheet, maxFrame, timer);
 	}
 

@@ -22,6 +22,9 @@ package loon.action.map.battle;
 
 import loon.action.map.battle.BattleType.MoveState;
 import loon.action.sprite.Animation;
+import loon.geom.Vector2f;
+import loon.utils.ISOUtils;
+import loon.utils.ISOUtils.IsoConfig;
 
 public class BattleTile implements Cloneable {
 
@@ -39,6 +42,7 @@ public class BattleTile implements Cloneable {
 
 	public int cellWidth, cellHeight;
 
+	private BattleTerrainEffect terrainEffect;
 	private BattleTileType tiletype;
 	private boolean hasUnit;
 	private BattleTileType originalType;
@@ -60,30 +64,37 @@ public class BattleTile implements Cloneable {
 	public float pathCost = 1.0f;
 	// 光照亮度
 	public float brightness = 1.0f;
-	// 地形移动状态
-	public MoveState moveState;
+
 	// 瓦片可操作标记
 	public boolean isInteractable = false;
 	// 瓦片已破坏
 	public boolean isDestroyed = false;
 	// 耐久度
 	public int durability = 100;
+	// 斜视参数基本设置状态
+	private final IsoConfig isoCofing;
 
-	public BattleTile(int x, int y, int w, int h) {
-		this(x, y, w, h, BattleTileType.PLAIN, BattleTileType.PLAIN, null, null);
+	public BattleTile(int x, int y, int w, int h, IsoConfig config) {
+		this(x, y, w, h, config, null, null);
 	}
 
-	public BattleTile(int x, int y, int w, int h, BattleTileType t, EffectService effectService,
+	public BattleTile(int x, int y, int w, int h, IsoConfig config, EffectService effectService,
 			SkillService skillService) {
-		this(x, y, w, h, t, t, effectService, skillService);
+		this(x, y, w, h, config, BattleTileType.PLAIN, BattleTileType.PLAIN, effectService, skillService, 1f, 1f, 100);
 	}
 
-	public BattleTile(int x, int y, int w, int h, BattleTileType t, BattleTileType o, EffectService effectService,
+	public BattleTile(int x, int y, int w, int h, IsoConfig config, BattleTileType t, EffectService effectService,
 			SkillService skillService) {
+		this(x, y, w, h, config, t, t, effectService, skillService, 1f, 1f, 100);
+	}
+
+	public BattleTile(int x, int y, int w, int h, IsoConfig config, BattleTileType t, BattleTileType o,
+			EffectService effectService, SkillService skillService, float pathCost, float brightness, int durability) {
 		this.gridX = x;
 		this.gridY = y;
 		this.cellWidth = w + t.widthOffset;
 		this.cellHeight = h + t.heightOffset;
+		this.isoCofing = config;
 		this.tiletype = t;
 		this.originalType = o;
 		this.hasUnit = false;
@@ -91,10 +102,18 @@ public class BattleTile implements Cloneable {
 		this.skillDuration = 0;
 		this.effectService = effectService;
 		this.skillService = skillService;
+		this.pathCost = pathCost;
+		this.brightness = brightness;
+		this.isInteractable = false;
+		this.isDestroyed = false;
+		this.durability = durability;
+		if (pathCost <= 0) {
+			this.pathCost = calculatePathCost();
+		}
 	}
 
 	public BattleTile cpy() {
-		BattleTile copy = new BattleTile(gridX, gridY, cellWidth, cellHeight);
+		BattleTile copy = new BattleTile(gridX, gridY, cellWidth, cellHeight, isoCofing);
 		copy.tiletype = this.tiletype;
 		copy.originalType = this.originalType;
 		copy.hasUnit = this.hasUnit;
@@ -105,7 +124,39 @@ public class BattleTile implements Cloneable {
 		copy.skillUnit = this.skillUnit;
 		copy.effectService = this.effectService;
 		copy.skillService = this.skillService;
+		copy.pathCost = this.pathCost;
+		copy.brightness = this.brightness;
+		copy.isInteractable = this.isInteractable;
+		copy.isDestroyed = this.isDestroyed;
+		copy.durability = this.durability;
 		return copy;
+	}
+
+	private float calculatePathCost() {
+		float baseCost = 1.0f / tiletype.moveSpeedMultiplier;
+		baseCost *= (1.0f + (cellHeight * 0.2f));
+		if (terrainEffect != null) {
+			if (terrainEffect == BattleTerrainEffect.SLOW) {
+				baseCost *= 1.5f;
+			} else if (terrainEffect == BattleTerrainEffect.POISON) {
+				baseCost *= 2.0f;
+			}
+		}
+		if (tiletype != null) {
+			if (tiletype.defaultMoveState == MoveState.DIFFICULT) {
+				baseCost *= 2.0f;
+			} else if (tiletype.defaultMoveState == MoveState.CLIMB) {
+				baseCost *= 1.5f;
+			}
+		}
+		if (isDestroyed) {
+			baseCost *= 1.8f;
+		}
+		return baseCost;
+	}
+
+	public Vector2f getScreenPosition() {
+		return ISOUtils.isoTransform(gridX, gridY, cellWidth, cellHeight, isoCofing).screenPos;
 	}
 
 	public void activateSpecialEffect(BattleTileType newType, float duration) {
@@ -115,6 +166,31 @@ public class BattleTile implements Cloneable {
 		if (effectService != null) {
 			effectService.applyEffect(this, newType, duration);
 		}
+	}
+
+	/**
+	 * 更新瓦片亮度
+	 */
+	public void updateBrightness() {
+		ISOUtils.IsoResult result = ISOUtils.isoTransform(gridX, gridY, cellWidth, cellHeight, isoCofing);
+		this.brightness = result.brightness;
+	}
+
+	/**
+	 * 检测点击
+	 * 
+	 * @param screenX
+	 * @param screenY
+	 * @return
+	 */
+	public boolean isClicked(int screenX, int screenY) {
+		return ISOUtils.isTileClicked(gridX, gridY, cellWidth, cellHeight, screenX, screenY, isoCofing);
+	}
+
+	public void adaptToTileSize(int width, int height) {
+		this.cellWidth = width;
+		this.cellHeight = height;
+		pathCost = calculatePathCost();
 	}
 
 	public void update(float deltaTime) {
@@ -333,11 +409,7 @@ public class BattleTile implements Cloneable {
 	}
 
 	public MoveState getMoveState() {
-		return moveState;
-	}
-
-	public void setMoveState(MoveState moveState) {
-		this.moveState = moveState;
+		return tiletype.getDefaultMoveState();
 	}
 
 	public boolean isInteractable() {
@@ -366,5 +438,17 @@ public class BattleTile implements Cloneable {
 
 	public void setSkillDuration(float skillDuration) {
 		this.skillDuration = skillDuration;
+	}
+
+	public IsoConfig getIsoCofing() {
+		return isoCofing;
+	}
+
+	public BattleTerrainEffect getTerrainEffect() {
+		return terrainEffect;
+	}
+
+	public void setTerrainEffect(BattleTerrainEffect terrainEffect) {
+		this.terrainEffect = terrainEffect;
 	}
 }

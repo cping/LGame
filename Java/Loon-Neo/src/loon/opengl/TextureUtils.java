@@ -139,6 +139,27 @@ public final class TextureUtils {
 		return images;
 	}
 
+	public static LTexture[][] split(String fileName, int tileWidth, int tileHeight) {
+		return split(LSystem.loadTexture(fileName), tileWidth, tileHeight);
+	}
+
+	public static LTexture[][] split(LTexture image, int tileWidth, int tileHeight) {
+		if (image == null) {
+			return null;
+		}
+		int width = image.getWidth();
+		int height = image.getHeight();
+		int rows = height / tileHeight;
+		int cols = width / tileWidth;
+		LTexture[][] textures = new LTexture[rows][cols];
+		for (int y = 0; y < rows; y++) {
+			for (int x = 0; x < cols; x++) {
+				textures[x][y] = image.copy((x * tileWidth), (y * tileHeight), tileWidth, tileHeight);
+			}
+		}
+		return textures;
+	}
+
 	public static LTexture[][] getSplit2Textures(String fileName, int tileWidth, int tileHeight) {
 		return getSplit2Textures(LSystem.loadTexture(fileName), tileWidth, tileHeight);
 	}

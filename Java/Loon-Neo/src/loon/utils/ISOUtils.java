@@ -22,6 +22,7 @@ package loon.utils;
 
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
+import loon.geom.Vector3f;
 
 /**
  * 斜视地图坐标换算统一处理用类
@@ -57,6 +58,8 @@ public final class ISOUtils {
 		// 闪烁范围
 		public float flickerRange;
 
+		private float elapsedTime = 0f;
+
 		public IsoLight(float x, float y, float z, float intensity, float diffuse, float specular, float shininess) {
 			this(x, y, z, intensity, diffuse, specular, shininess, false, 0f, 0f);
 		}
@@ -75,10 +78,10 @@ public final class ISOUtils {
 			this.flickerRange = flickerRange;
 		}
 
-		// 动态光源更新
 		public void update(float deltaTime) {
 			if (isDynamic) {
-				float flicker = MathUtils.sin(deltaTime * flickerSpeed) * flickerRange;
+				elapsedTime += deltaTime;
+				float flicker = MathUtils.sin(elapsedTime * flickerSpeed) * flickerRange;
 				intensity = MathUtils.max(0, intensity + flicker);
 			}
 		}
@@ -138,7 +141,7 @@ public final class ISOUtils {
 			this.cameraDistance = cameraDistance;
 			this.tiltAngle = tiltAngle;
 			this.renderLayerCount = renderLayerCount;
-			this.layerScale = layerScale != null ? layerScale.clone() : null;
+			this.layerScale = layerScale != null ? layerScale : null;
 		}
 
 		public IsoConfig(IsoConfig other) {
@@ -166,7 +169,7 @@ public final class ISOUtils {
 		public void setTileSize(int width, int height) {
 			this.tileWidth = width;
 			this.tileHeight = height;
-			this.heightScale = height / 2f;
+			this.heightScale = (float) height / (float) width;
 		}
 
 		public IsoConfig cpy() {
@@ -264,16 +267,34 @@ public final class ISOUtils {
 	 * 
 	 * @param gx
 	 * @param gy
-	 * @param height
+	 * @param cheight
 	 * @param config
 	 * @return
 	 */
-	public static IsoResult isoTransform(int gx, int gy, float height, IsoConfig config) {
+	public static IsoResult isoTransform(int gx, int gy, float cheight, IsoConfig config) {
+		return isoTransform(gx, gy, 0f, cheight, config);
+	}
+
+	/**
+	 * 正向投影
+	 * 
+	 * @param gx
+	 * @param gy
+	 * @param cwidth
+	 * @param cheight
+	 * @param config
+	 * @return
+	 */
+	public static IsoResult isoTransform(int gx, int gy, float cwidth, float cheight, IsoConfig config) {
 		float cosA = MathUtils.cos(config.rotationAngle);
 		float sinA = MathUtils.sin(config.rotationAngle);
 		float x = gx * cosA - gy * sinA;
 		float y = gx * sinA + gy * cosA;
-		float z = height * config.heightScale;
+
+		float cellWidth = cwidth <= 0 ? config.tileWidth : cwidth;
+		float cellHeight = cheight <= 0 ? config.tileHeight : cheight;
+
+		float z = cellHeight * config.heightScale;
 
 		switch (config.mirror) {
 		case HORIZONTAL:
@@ -293,18 +314,18 @@ public final class ISOUtils {
 		float isoX, isoY;
 		switch (config.projectionMode) {
 		case ORTHOGRAPHIC:
-			isoX = (float) (x * config.tileWidth);
-			isoY = (float) (y * config.tileHeight - z);
+			isoX = (float) (x * cellWidth);
+			isoY = (float) (y * cellHeight - z);
 			break;
 		case OBLIQUE:
 			float cosOb = MathUtils.cos(config.obliqueAngle);
 			float sinOb = MathUtils.sin(config.obliqueAngle);
-			isoX = (float) (x * config.tileWidth + z * config.obliqueScale * cosOb);
-			isoY = (float) (y * config.tileHeight - z * config.obliqueScale * sinOb);
+			isoX = (float) (x * cellWidth + z * config.obliqueScale * cosOb);
+			isoY = (float) (y * cellHeight - z * config.obliqueScale * sinOb);
 			break;
 		default: // ISOMETRIC
-			isoX = (float) ((x - y) * config.tileWidth / 2.0);
-			isoY = (float) ((x + y) * config.tileHeight / 2.0 - z);
+			isoX = ((x - y) * cellWidth / 2f);
+			isoY = ((x + y) * cellHeight / 2f - z);
 		}
 
 		isoX = isoX * config.scale + config.offsetX;
@@ -331,11 +352,9 @@ public final class ISOUtils {
 
 	public static Vector2f isoTransform(int gx, int gy, int cellSizeX, int cellSizeY, int rotationMode, float height,
 			int heightScale) {
-		defaultConfig.tileWidth = cellSizeX;
-		defaultConfig.tileHeight = cellSizeY;
 		defaultConfig.heightScale = heightScale;
 		defaultConfig.rotationAngle = rotationModeToAngle(rotationMode);
-		return isoTransform(gx, gy, height, defaultConfig).screenPos;
+		return isoTransform(gx, gy, cellSizeX, cellSizeY, defaultConfig).screenPos;
 	}
 
 	/**
@@ -347,31 +366,31 @@ public final class ISOUtils {
 	 * @param config
 	 * @return
 	 */
-	public static Vector2f screenToGrid(float screenX, float screenY, float height, IsoConfig config) {
+	public static Vector3f screenToGrid(float screenX, float screenY, float cwidth, float cheight, IsoConfig config) {
 		float x = (screenX - config.offsetX) / config.scale;
 		float y = (screenY - config.offsetY) / config.scale;
-
+		float cellWidth = cwidth <= 0 ? config.tileWidth : cwidth;
+		float cellHeight = cheight <= 0 ? config.tileHeight : cheight;
 		float gx, gy;
+		float z = cellHeight * config.heightScale;
 		switch (config.projectionMode) {
 		case ORTHOGRAPHIC:
-			gx = x / config.tileWidth;
-			gy = (y + height * config.heightScale) / config.tileHeight;
+			gx = x / cellWidth;
+			gy = (y + z) / cellHeight;
 			break;
 		case OBLIQUE:
 			float cosOb = MathUtils.cos(config.obliqueAngle);
 			float sinOb = MathUtils.sin(config.obliqueAngle);
-			float adjX = x - height * config.heightScale * config.obliqueScale * cosOb;
-			float adjY = y + height * config.heightScale * config.obliqueScale * sinOb;
-			gx = adjX / config.tileWidth;
-			gy = adjY / config.tileHeight;
+			float adjX = x - z * config.obliqueScale * cosOb;
+			float adjY = y + z * config.obliqueScale * sinOb;
+			gx = adjX / cellWidth;
+			gy = adjY / cellHeight;
 			break;
 		default: // ISOMETRIC
-			gx = (x / (config.tileWidth / 2f) + y / (config.tileHeight / 2f)
-					+ height * config.heightScale / (config.tileHeight / 2f)) / 2f;
-			gy = (-x / (config.tileWidth / 2f) + y / (config.tileHeight / 2f)
-					+ height * config.heightScale / (config.tileHeight / 2f)) / 2f;
+			gx = (x / (cellWidth / 2f) + y / (cellHeight / 2f)) / 2f;
+			gy = (-x / (cellWidth / 2f) + y / (cellHeight / 2f)) / 2f;
 		}
-		return new Vector2f(gx, gy);
+		return new Vector3f(gx, gy, z);
 	}
 
 	private static float rotationModeToAngle(int rotationMode) {
@@ -392,7 +411,7 @@ public final class ISOUtils {
 		for (float[] c : coords) {
 			int gx = (int) c[0], gy = (int) c[1];
 			float h = c.length > 2 ? c[2] : 0f;
-			results.add(isoTransform(gx, gy, h, config).screenPos);
+			results.add(isoTransform(gx, gy, 0, h, config).screenPos);
 		}
 		return results;
 	}
@@ -402,7 +421,7 @@ public final class ISOUtils {
 		for (float[] c : coords) {
 			int gx = (int) c[0], gy = (int) c[1];
 			float h = c.length > 2 ? c[2] : 0f;
-			results.add(isoTransform(gx, gy, h, config));
+			results.add(isoTransform(gx, gy, 0, h, config));
 		}
 		return results;
 	}
@@ -422,31 +441,34 @@ public final class ISOUtils {
 	 * 
 	 * @param gx
 	 * @param gy
+	 * @param width
 	 * @param height
 	 * @param config
 	 * @return
 	 */
-	public static RectBox getTileBounds(int gx, int gy, float height, IsoConfig config) {
-		IsoResult result = isoTransform(gx, gy, height, config);
-		float scaledWidth = config.tileWidth * config.scale;
-		float scaledHeight = config.tileHeight * config.scale;
+	public static RectBox getTileBounds(int gx, int gy, float width, float height, IsoConfig config) {
+		IsoResult result = isoTransform(gx, gy, width, height, config);
+		float scaledWidth = width * config.scale;
+		float scaledHeight = height * config.scale;
 		return new RectBox(result.screenPos.x - scaledWidth / 2, result.screenPos.y - scaledHeight / 2, scaledWidth,
 				scaledHeight);
 	}
 
-	/***
+	/**
 	 * 是否点击了指定瓦片
 	 * 
 	 * @param gx
 	 * @param gy
+	 * @param width
 	 * @param height
 	 * @param screenX
 	 * @param screenY
 	 * @param config
 	 * @return
 	 */
-	public static boolean isTileClicked(int gx, int gy, float height, float screenX, float screenY, IsoConfig config) {
-		RectBox bounds = getTileBounds(gx, gy, height, config);
+	public static boolean isTileClicked(int gx, int gy, float width, float height, float screenX, float screenY,
+			IsoConfig config) {
+		RectBox bounds = getTileBounds(gx, gy, width, height, config);
 		float dx = MathUtils.abs(screenX - (bounds.x + bounds.width / 2)) / (bounds.width / 2);
 		float dy = MathUtils.abs(screenY - (bounds.y + bounds.height / 2)) / (bounds.height / 2);
 		return (dx + dy) <= 1.0f + 0.05f;
@@ -457,16 +479,18 @@ public final class ISOUtils {
 	 * 
 	 * @param gx
 	 * @param gy
+	 * @param width
 	 * @param height
 	 * @param layerIndex
 	 * @param config
 	 * @return
 	 */
-	public static Vector2f getLayeredScreenPos(int gx, int gy, float height, int layerIndex, IsoConfig config) {
-		IsoResult baseResult = isoTransform(gx, gy, height, config);
+	public static Vector2f getLayeredScreenPos(int gx, int gy, float width, float height, int layerIndex,
+			IsoConfig config) {
+		IsoResult baseResult = isoTransform(gx, gy, width, height, config);
 		Vector2f pos = baseResult.layerOffsets[Math.min(layerIndex, config.renderLayerCount - 1)];
-		float snapX = config.tileWidth * config.scale / 2;
-		float snapY = config.tileHeight * config.scale / 2;
+		float snapX = width * config.scale / 2;
+		float snapY = height * config.scale / 2;
 		pos.x = MathUtils.round(pos.x / snapX) * snapX;
 		pos.y = MathUtils.round(pos.y / snapY) * snapY;
 		return pos;
@@ -479,15 +503,14 @@ public final class ISOUtils {
 	 * @param gy
 	 * @param cellWidth
 	 * @param cellHeight
-	 * @param height
 	 * @param config
 	 * @param offsetX
 	 * @param offsetY
 	 * @return
 	 */
-	public static Vector2f getEffectScreenPos(int gx, int gy, float cellWidth, float cellHeight, float height,
-			IsoConfig config, float offsetX, float offsetY) {
-		IsoResult baseResult = isoTransform(gx, gy, height, config);
+	public static Vector2f getEffectScreenPos(int gx, int gy, float cellWidth, float cellHeight, IsoConfig config,
+			float offsetX, float offsetY) {
+		IsoResult baseResult = isoTransform(gx, gy, cellWidth, cellHeight, config);
 		Vector2f effectPos = new Vector2f(baseResult.screenPos);
 		// 基于瓦片尺寸的偏移适配
 		effectPos.x += offsetX * (config.tileWidth / cellWidth);
@@ -503,15 +526,16 @@ public final class ISOUtils {
 	 * 
 	 * @param gx
 	 * @param gy
+	 * @param width
 	 * @param height
 	 * @param config
 	 * @return
 	 */
-	public static Vector2f fixCharacterPosition(int gx, int gy, float height, IsoConfig config) {
-		Vector2f pos = isoTransform(gx, gy, height, config).screenPos;
+	public static Vector2f fixCharacterPosition(int gx, int gy, float width, float height, IsoConfig config) {
+		Vector2f pos = isoTransform(gx, gy, width, height, config).screenPos;
 		// 角色锚点修正
-		pos.x -= config.tileWidth * config.scale / 2;
-		pos.y -= config.tileHeight * config.scale / 2;
+		pos.x -= width * config.scale / 2;
+		pos.y -= height * config.scale / 2;
 		// 像素对齐
 		pos.x = MathUtils.round(pos.x);
 		pos.y = MathUtils.round(pos.y);
