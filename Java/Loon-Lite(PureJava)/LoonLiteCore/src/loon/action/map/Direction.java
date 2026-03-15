@@ -274,6 +274,6 @@ public class Direction {
 
 	@Override
 	public String toString() {
-		return name + " (" + fullName + ")";
+		return name.toUpperCase();
 	}
 }

@@ -114,73 +114,72 @@ import loon.utils.TArray;
  */
 public class AnimationLoader {
 
-	public static class StateRule {
-
-		public String param;
-
-		public Object value;
-
-		public String target;
-
-	}
-
-	public static class TransitionConfig {
-		public float blendTime;
-	}
-
-	/**
-	 * 区域配置类，定义从大图中裁剪的起始坐标和行列数。
-	 */
-	public static class RegionConfig {
-		// 起始X坐标
-		public int x;
-
-		// 起始Y坐标
-		public int y;
-
-		// 行数
-		public int rows;
-
-		// 列数
-		public int cols;
-	}
-
-	/**
-	 * 动画配置类
-	 */
-	public class AnimationConfig {
-		// 基础路径，例如 "assets/anim/"，所有filePattern都会拼接在这个路径下
-		public static String basePath = "";
-
-		// 文件路径模式，例如"idle_{0}.png","big_sheet.png"/
-		public String filePattern;
-
-		// 播放速度
-		public float speed;
-
-		// 是否循环播放
-		public boolean looping;
-
-		// 是否为spritesheet
-		public boolean isSheet;
-
-		// 用于从大图中裁剪指定区域，若不需要剪切的单图或者一组动作一个图拆分，则不必设置
-		public RegionConfig region;
-
-		// 帧序列：指定播放哪些帧(仅在RegionConfig被设置后生效)
-		public IntArray frames;
-
-		/**
-		 * 拼合并获取完整路径
-		 * 
-		 * @param directionSuffix
-		 * @return
-		 */
-		public String getFullPath(String directionSuffix) {
-			if (directionSuffix != null) {
-				return basePath + StringUtils.format(filePattern, directionSuffix);
-			}
-			return basePath + filePattern;
+	public static String toString(ObjectState state) {
+		switch (state) {
+		case IDLE:
+			return "IDLE";
+		case MOVING:
+			return "MOVING";
+		case ATTACKING:
+			return "ATTACKING";
+		case CASTING:
+			return "CASTING";
+		case CASTING_SKILL:
+			return "CASTING_SKILL";
+		case DEAD:
+			return "DEAD";
+		case FLEEING:
+			return "FLEEING";
+		case PANICKED:
+			return "PANICKED";
+		case FAKE_RETREAT:
+			return "FAKE_RETREAT";
+		case CONFUSED:
+			return "CONFUSED";
+		case STUNNED:
+			return "STUNNED";
+		case FROZEN:
+			return "FROZEN";
+		case BURNING:
+			return "BURNING";
+		case POISONED:
+			return "POISONED";
+		case SILENCED:
+			return "SILENCED";
+		case FATIGUED:
+			return "FATIGUED";
+		case RESTING:
+			return "RESTING";
+		case HIDING:
+			return "HIDING";
+		case DEFENDING:
+			return "DEFENDING";
+		case WAITING:
+			return "WAITING";
+		case PATROLLING:
+			return "PATROLLING";
+		case AUTO_ATTACK:
+			return "AUTO_ATTACK";
+		case GARRISONED:
+			return "GARRISONED";
+		case BLOCKED:
+			return "BLOCKED";
+		case SKILL:
+			return "SKILL";
+		case PREPARE_ATTACK:
+			return "PREPARE_ATTACK";
+		case PREPARE_SKILL:
+			return "PREPARE_SKILL";
+		case LEFT:
+			return "LEFT";
+		case RIGHT:
+			return "RIGHT";
+		case UP:
+			return "UP";
+		case DOWN:
+			return "DOWN";
+		default:
+			return "UNKNOWN";
 		}
 	}
 
@@ -248,23 +247,120 @@ public class AnimationLoader {
 			return ObjectState.CASTING;
 		case "SPELL":
 			return ObjectState.CASTING_SKILL;
+		case "LEFT":
+			return ObjectState.LEFT;
+		case "RIGHT":
+			return ObjectState.RIGHT;
+		case "UP":
+			return ObjectState.UP;
+		case "DOWN":
+			return ObjectState.DOWN;
 		default:
 			return ObjectState.IDLE;
+		}
+	}
+
+	public static class StateKeySet {
+
+		public String key;
+
+		public ObjectState state;
+
+		public StateKeySet(String key) {
+			this.key = key;
+			this.state = parse(key);
+		}
+
+		@Override
+		public String toString() {
+			return key;
+		}
+
+	}
+
+	public static class StateRule {
+
+		public String param;
+
+		public Object value;
+
+		public String target;
+
+	}
+
+	public static class TransitionConfig {
+		public float blendTime;
+	}
+
+	/**
+	 * 区域配置类，定义从大图中裁剪的起始坐标和行列数。
+	 */
+	public static class RegionConfig {
+		// 起始X坐标
+		public int x;
+
+		// 起始Y坐标
+		public int y;
+
+		// 行数
+		public int rows;
+
+		// 列数
+		public int cols;
+	}
+
+	/**
+	 * 动画配置类
+	 */
+	public class AnimationConfig {
+		// 基础路径，例如 "assets/anim/"，所有filePattern都会拼接在这个路径下
+		public String basePath = "";
+
+		// 文件路径模式，例如"idle_{0}.png","big_sheet.png"/
+		public String filePattern;
+
+		// 播放速度
+		public float speed;
+
+		// 是否循环播放
+		public boolean looping;
+
+		// 是否为spritesheet
+		public boolean isSheet;
+
+		// 用于从大图中裁剪指定区域，若不需要剪切的单图或者一组动作一个图拆分，则不必设置
+		public RegionConfig region;
+
+		// 帧序列：指定播放哪些帧(仅在RegionConfig被设置后生效)
+		public IntArray frames;
+
+		/**
+		 * 拼合并获取完整路径
+		 * 
+		 * @param directionSuffix
+		 * @return
+		 */
+		public String getFullPath(String directionSuffix) {
+			if (directionSuffix != null) {
+				return basePath + StringUtils.format(filePattern, directionSuffix);
+			}
+			return basePath + filePattern;
 		}
 	}
 
 	private final ObjectMap<String, TArray<StateRule>> stateMachineMap = new ObjectMap<String, TArray<StateRule>>();
 	private final ObjectMap<String, ObjectMap<String, Object>> eventActionsMap = new ObjectMap<String, ObjectMap<String, Object>>();
 	private final ObjectMap<String, TransitionConfig> transitionsMap = new ObjectMap<>();
-	private final ObjectMap<ObjectState, AnimationConfig> configMap = new ObjectMap<ObjectState, AnimationConfig>();
+	private final ObjectMap<String, AnimationConfig> animationMap = new ObjectMap<String, AnimationConfig>();
 	private final ObjectMap<ObjectState, IntMap<String>> eventsMap = new ObjectMap<ObjectState, IntMap<String>>();
 	private final int frameWidth;
 	private final int frameHeight;
 
 	public AnimationLoader(Object jsonObject) {
 		Json.Object root = (Json.Object) jsonObject;
+		String basePath = LSystem.EMPTY;
 		if (root.containsKey("basePath")) {
-			AnimationConfig.basePath = root.getString("basePath");
+			basePath = root.getString("basePath");
 		}
 		frameWidth = root.getInt("frameWidth", 64);
 		frameHeight = root.getInt("frameHeight", 64);
@@ -274,15 +370,16 @@ public class AnimationLoader {
 			if (keys != null) {
 				int keySize = keys.length();
 				for (int i = 0; i < keySize; i++) {
-					AnimationConfig cfg = new AnimationConfig();
+					AnimationConfig aniCfg = new AnimationConfig();
+					aniCfg.basePath = basePath;
 					String key = keys.get(i);
 					Json.Object entry = anims.getObject(key);
 					if (entry != null) {
-						ObjectState state = parse(key);
-						cfg.filePattern = entry.getString("filePattern");
-						cfg.speed = entry.getNumber("speed", 0.1f);
-						cfg.looping = entry.getBoolean("looping", true);
-						cfg.isSheet = entry.getBoolean("isSheet", false);
+						StateKeySet state = new StateKeySet(key);
+						aniCfg.filePattern = entry.getString("filePattern");
+						aniCfg.speed = entry.getNumber("speed", 0.1f);
+						aniCfg.looping = entry.getBoolean("looping", true);
+						aniCfg.isSheet = entry.getBoolean("isSheet", false);
 						if (entry.containsKey("region")) {
 							RegionConfig regionConfig = new RegionConfig();
 							Json.Object region = entry.getObject("region");
@@ -291,7 +388,7 @@ public class AnimationLoader {
 								regionConfig.y = region.getInt("y", 0);
 								regionConfig.rows = region.getInt("rows", 1);
 								regionConfig.cols = region.getInt("cols", 1);
-								cfg.region = regionConfig;
+								aniCfg.region = regionConfig;
 							}
 						}
 						if (entry.containsKey("frames")) {
@@ -302,9 +399,9 @@ public class AnimationLoader {
 									frames.add(arrays.getInt(j));
 								}
 							}
-							cfg.frames = frames;
+							aniCfg.frames = frames;
 						}
-						configMap.put(state, cfg);
+						animationMap.put(state.toString(), aniCfg);
 					}
 				}
 			}
@@ -405,8 +502,8 @@ public class AnimationLoader {
 	 * @param dir
 	 * @return
 	 */
-	public Animation loadAnimation(ObjectState state, Direction dir, String textureSuffix) {
-		AnimationConfig cfg = configMap.get(state);
+	public Animation loadAnimation(String key, Direction dir, String textureSuffix) {
+		AnimationConfig cfg = animationMap.get(key);
 		if (cfg == null) {
 			return null;
 		}
@@ -415,18 +512,18 @@ public class AnimationLoader {
 		Animation anim = null;
 		if (cfg.region != null) {
 			// 拆分图片
-			LTexture[][] textureList = TextureUtils.split(path, frameWidth, frameHeight);
+			LTexture[] textureList = TextureUtils.getSplitTextures(path, cfg.region.x, cfg.region.y, frameWidth,
+					frameHeight);
 			Animation animation = new Animation();
-			int startRow = cfg.region.y / frameHeight;
-			int startCol = cfg.region.x / frameWidth;
-			for (int row = 0; row < cfg.region.rows; row++) {
-				for (int col = 0; col < cfg.region.cols; col++) {
-					int frameIndex = row * cfg.region.cols + col;
-					if (cfg.frames == null || cfg.frames.contains(frameIndex)) {
-						animation.addFrame(textureList[startRow + row][startCol + col], timer);
+			for (int i = 0; i < textureList.length; i++) {
+				if (cfg.frames == null || cfg.frames.contains(i)) {
+					LTexture tex = textureList[i];
+					if (tex != null) {
+						animation.addFrame(tex, timer);
 					}
 				}
 			}
+			anim = animation;
 		} else if (cfg.isSheet) {
 			// 读取单独的序列spritesheet（一般都是用单一方向动作图，比如纯向左，右，上，下之类的任何一个相仿，总之必须单一体系的。简单说就是魂类游戏的单独大招序列图。
 			// 需要跳帧的，什么样子都有用到的，参考示例用region设定）

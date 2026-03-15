@@ -133,7 +133,7 @@ public class BattleTile implements Cloneable {
 	}
 
 	private float calculatePathCost() {
-		float baseCost = 1.0f / tiletype.moveSpeedMultiplier;
+		float baseCost = 1f / tiletype.moveSpeedMultiplier;
 		baseCost *= (1.0f + (cellHeight * 0.2f));
 		if (terrainEffect != null) {
 			if (terrainEffect == BattleTerrainEffect.SLOW) {

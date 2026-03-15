@@ -33,7 +33,7 @@ public class BattleMapObject extends Role {
 	public Direction currentDirection = Direction.DOWN;
 
 	public BattleMapObject(int id, String name) {
-		super(id, null, name);
+		super(id, new RoleEquip(0, 0, 0, 0, 0, 0, 0, 0, 0, 0), name);
 	}
 
 	public BattleMapObject(int id, RoleEquip e, String name) {

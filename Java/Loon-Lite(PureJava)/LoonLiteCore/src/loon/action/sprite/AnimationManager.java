@@ -34,6 +34,7 @@ import loon.action.sprite.AnimationEventExecutor.ISoundService;
 import loon.action.sprite.AnimationLoader.StateRule;
 import loon.utils.HelperUtils;
 import loon.utils.ObjectMap;
+import loon.utils.SortedList;
 import loon.utils.TArray;
 
 /**
@@ -41,9 +42,69 @@ import loon.utils.TArray;
  */
 public class AnimationManager implements LRelease {
 
+	private final static String MOVE_FLAG = "->";
+
+	private static class QueuedAnimation {
+
+		int layerIndex;
+		ObjectState state;
+		Direction dir;
+		AnimationLoader.TransitionConfig transition;
+
+		QueuedAnimation(int layerIndex, ObjectState state, Direction dir) {
+			this(layerIndex, state, dir, null);
+		}
+
+		QueuedAnimation(int layerIndex, ObjectState state, Direction dir, AnimationLoader.TransitionConfig transition) {
+			this.layerIndex = layerIndex;
+			this.state = state;
+			this.dir = dir;
+			this.transition = transition;
+		}
+
+		public void execute(AnimationManager manager) {
+			if (layerIndex < 0 || layerIndex >= manager.layers.size) {
+				return;
+			}
+			AnimationLayer layer = manager.layers.get(layerIndex);
+			if (manager.eventListener != null) {
+				manager.eventListener.onTransition(layer.currentState, state);
+				manager.eventListener.onStateExit(layer.currentState, layer.currentDirection);
+			}
+			layer.setState(state, dir, transition);
+			if (manager.eventListener != null) {
+				manager.eventListener.onStateEnter(state, dir);
+			}
+		}
+	}
+
+	private static class CrossFadeState {
+		int layerIndex;
+		ObjectState sourceState;
+		ObjectState targetState;
+		Direction dir;
+		float duration;
+		float elapsed;
+		float weight;
+
+		CrossFadeState(int layerIndex, ObjectState sourceState, ObjectState targetState, Direction dir,
+				float duration) {
+			this.layerIndex = layerIndex;
+			this.sourceState = sourceState;
+			this.targetState = targetState;
+			this.dir = dir;
+			this.duration = duration;
+			this.elapsed = 0f;
+			this.weight = 0f;
+		}
+	}
+
 	private final ObjectMap<String, Object> parameters = new ObjectMap<String, Object>();
 
 	private final TArray<AnimationLayer> layers = new TArray<AnimationLayer>();
+
+	// 播放队列
+	private final SortedList<QueuedAnimation> playQueue = new SortedList<QueuedAnimation>();
 
 	private final AnimationLoader loader;
 
@@ -52,6 +113,10 @@ public class AnimationManager implements LRelease {
 	private final AnimationEventExecutor eventExecutor;
 
 	private final BattleMapObject owner;
+
+	private CrossFadeState crossFadeState;
+
+	private int currentLayerIndex = 0;
 
 	public AnimationManager(String configPath, BattleMapObject owner, ISoundService soundService,
 			ICombatService combatService, ISkillService skillService, IOtherService otherService) {
@@ -64,43 +129,123 @@ public class AnimationManager implements LRelease {
 		this.owner = owner;
 		this.eventExecutor = new AnimationEventExecutor(soundService, combatService, skillService, otherService,
 				loader.getEventActions());
-		initDefaultLayers(textureSuffix);
+	}
+
+	public AnimationManager addLayer(Direction dir, String key) {
+		return addLayer(LSystem.EMPTY, dir, key);
+	}
+
+	public AnimationManager addLayer(String textureSuffix, Direction dir, String key) {
+		AnimationLayer layer = createLayer(textureSuffix, dir, key);
+		layers.add(layer);
+		return this;
+	}
+
+	public AnimationManager addLayer(Direction dir, ObjectState state) {
+		return addLayer(LSystem.EMPTY, dir, state);
+	}
+
+	public AnimationManager addLayer(String textureSuffix, Direction dir, ObjectState state) {
+		AnimationLayer layer = createLayer(textureSuffix, dir, state);
+		layers.add(layer);
+		return this;
+	}
+
+	public int findLayerIndex(String key) {
+		int idx = 0;
+		for (AnimationLayer layer : layers) {
+			if (layer != null && key.equalsIgnoreCase(layer.currentStateKey)) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
+	}
+
+	public int findLayerIndex(ObjectState state) {
+		int idx = 0;
+		for (AnimationLayer layer : layers) {
+			if (layer != null && state.equals(layer.currentState)) {
+				return idx;
+			}
+			idx++;
+		}
+		return -1;
 	}
 
 	/**
-	 * 默认参数分组设置，可自行添加修改
+	 * 每个AnimationLayer其实可以设置8个不同方向的动画，创建为省事默认值只能填一个，多了自己构建AnimationLayer再addLayer……
 	 * 
 	 * @param textureSuffix
+	 * @param dir
+	 * @param key
+	 * @return
 	 */
-	private void initDefaultLayers(String textureSuffix) {
-		layers.add(createLayer(textureSuffix, ObjectState.IDLE, ObjectState.MOVING, ObjectState.RESTING,
-				ObjectState.WAITING));
-		layers.add(createLayer(textureSuffix, ObjectState.ATTACKING, ObjectState.SKILL, ObjectState.CASTING,
-				ObjectState.PREPARE_ATTACK, ObjectState.PREPARE_SKILL));
-		layers.add(createLayer(textureSuffix, ObjectState.BURNING, ObjectState.POISONED, ObjectState.FROZEN,
-				ObjectState.FATIGUED));
-		layers.add(createLayer(textureSuffix, ObjectState.STUNNED, ObjectState.PANICKED, ObjectState.DEAD,
-				ObjectState.CONFUSED));
+	public AnimationLayer createLayer(String textureSuffix, Direction dir, String key) {
+		ObjectMap<String, ObjectMap<Direction, Animation>> anims = new ObjectMap<String, ObjectMap<Direction, Animation>>();
+		ObjectMap<Direction, Animation> stateAnims = new ObjectMap<Direction, Animation>();
+		Animation anim = loader.loadAnimation(key, dir, textureSuffix);
+		if (anim != null) {
+			stateAnims.put(dir, anim);
+		}
+		if (!stateAnims.isEmpty()) {
+			anims.put(key, stateAnims);
+		}
+		return new AnimationLayer(anims, loader, key);
 	}
 
-	private AnimationLayer createLayer(String textureSuffix, ObjectState... states) {
-		ObjectMap<ObjectState, ObjectMap<Direction, Animation>> anims = new ObjectMap<ObjectState, ObjectMap<Direction, Animation>>();
-		for (ObjectState state : states) {
-			ObjectMap<Direction, Animation> stateAnims = new ObjectMap<>();
-			TArray<Direction> dirs = Direction.values();
-			for (Direction dir : dirs) {
-				if (dir != Direction.NONE) {
-					Animation anim = loader.loadAnimation(state, dir, textureSuffix);
-					if (anim != null) {
-						stateAnims.put(dir, anim);
-					}
-				}
-			}
-			if (!stateAnims.isEmpty()) {
-				anims.put(state, stateAnims);
-			}
+	public AnimationLayer createLayer(String textureSuffix, Direction dir, ObjectState state) {
+		ObjectMap<String, ObjectMap<Direction, Animation>> anims = new ObjectMap<String, ObjectMap<Direction, Animation>>();
+		String stateKey = AnimationLoader.toString(state);
+		ObjectMap<Direction, Animation> stateAnims = new ObjectMap<Direction, Animation>();
+		Animation anim = loader.loadAnimation(stateKey, dir, textureSuffix);
+		if (anim != null) {
+			stateAnims.put(dir, anim);
 		}
-		return new AnimationLayer(anims, loader);
+		if (!stateAnims.isEmpty()) {
+			anims.put(stateKey, stateAnims);
+		}
+		return new AnimationLayer(anims, loader, state);
+	}
+
+	public AnimationManager play(int layerIndex, String state, Direction dir) {
+		if (layerIndex < 0 || layerIndex >= layers.size) {
+			return this;
+		}
+		AnimationLayer layer = layers.get(layerIndex);
+		AnimationLoader.TransitionConfig trans = loader.getTransition(layer.currentStateKey + MOVE_FLAG + state);
+		if (eventListener != null) {
+			eventListener.onTransition(layer.currentState, AnimationLoader.parse(state));
+			eventListener.onStateExit(layer.currentState, layer.currentDirection);
+		}
+		layer.setState(state, dir, trans);
+		if (eventListener != null) {
+			eventListener.onStateEnter(AnimationLoader.parse(state), dir);
+		}
+		return this;
+	}
+
+	public AnimationManager play(int layerIndex, ObjectState state, Direction dir) {
+		if (layerIndex < 0 || layerIndex >= layers.size) {
+			return this;
+		}
+		AnimationLayer layer = layers.get(layerIndex);
+		AnimationLoader.TransitionConfig trans = loader.getTransition(
+				AnimationLoader.toString(layer.currentState) + MOVE_FLAG + AnimationLoader.toString(state));
+		if (eventListener != null) {
+			eventListener.onTransition(layer.currentState, state);
+			eventListener.onStateExit(layer.currentState, layer.currentDirection);
+		}
+		layer.setState(state, dir, trans);
+		if (eventListener != null) {
+			eventListener.onStateEnter(state, dir);
+		}
+		return this;
+	}
+
+	public void playQueue(int layerIndex, ObjectState transitionState, ObjectState targetState, Direction dir) {
+		play(layerIndex, transitionState, dir);
+		playQueue.add(new QueuedAnimation(layerIndex, targetState, dir));
 	}
 
 	public void setParameter(String key, Object value) {
@@ -149,7 +294,7 @@ public class AnimationManager implements LRelease {
 		}
 		AnimationLayer layer = layers.get(layerIndex);
 		// 特殊定义，用字符A->B这样自动跳动画
-		String key = layer.currentState.name() + "->" + newState.name();
+		String key = AnimationLoader.toString(layer.currentState) + MOVE_FLAG + AnimationLoader.toString(newState);
 		AnimationLoader.TransitionConfig trans = loader.getTransition(key);
 		if (eventListener != null) {
 			eventListener.onTransition(layer.currentState, newState);
@@ -159,6 +304,69 @@ public class AnimationManager implements LRelease {
 		if (eventListener != null) {
 			eventListener.onStateEnter(newState, newDir);
 		}
+		currentLayerIndex = layerIndex;
+	}
+
+	public void setState(int layerIndex, String newState, Direction newDir) {
+		if (layerIndex < 0 || layerIndex >= layers.size) {
+			return;
+		}
+		AnimationLayer layer = layers.get(layerIndex);
+		// 特殊定义，用字符A->B这样自动跳动画
+		String key = layer.currentStateKey + MOVE_FLAG + newState;
+		AnimationLoader.TransitionConfig trans = loader.getTransition(key);
+		if (eventListener != null) {
+			eventListener.onTransition(layer.currentState, AnimationLoader.parse(newState));
+			eventListener.onStateExit(layer.currentState, layer.currentDirection);
+		}
+		layer.setState(newState, newDir, trans);
+		if (eventListener != null) {
+			eventListener.onStateEnter(AnimationLoader.parse(newState), newDir);
+		}
+		currentLayerIndex = layerIndex;
+	}
+
+	public void setState(String newState, Direction newDir) {
+		setState(findLayerIndex(newState), newState, newDir);
+	}
+
+	public void setState(ObjectState newState, Direction newDir) {
+		setState(findLayerIndex(newState), newState, newDir);
+	}
+
+	public void crossFade(int layerIndex, ObjectState targetState, Direction dir, float duration) {
+		if (layerIndex < 0 || layerIndex >= layers.size)
+			return;
+		AnimationLayer layer = layers.get(layerIndex);
+		crossFadeState = new CrossFadeState(layerIndex, layer.currentState, targetState, dir, duration);
+		if (eventListener != null) {
+			eventListener.onTransition(layer.currentState, targetState);
+			eventListener.onStateExit(layer.currentState, layer.currentDirection);
+		}
+		currentLayerIndex = layerIndex;
+	}
+
+	public LTexture getCurrentFrame(int idx, String textureSuffix) {
+		if (crossFadeState != null) {
+			AnimationLayer layer = layers.get(crossFadeState.layerIndex);
+			Animation sourceAnim = loader.loadAnimation(AnimationLoader.toString(crossFadeState.sourceState),
+					layer.currentDirection, textureSuffix);
+			Animation targetAnim = loader.loadAnimation(AnimationLoader.toString(crossFadeState.targetState),
+					crossFadeState.dir, textureSuffix);
+			LTexture sourceFrame = sourceAnim.getSpriteImage(idx);
+			LTexture targetFrame = targetAnim.getSpriteImage(idx);
+			float weight = crossFadeState.weight;
+			return weight < 0.5f ? sourceFrame : targetFrame;
+		}
+		AnimationLayer topLayer = null;
+		float maxWeight = -1f;
+		for (AnimationLayer layer : layers) {
+			if (layer.getWeight() > maxWeight) {
+				maxWeight = layer.getWeight();
+				topLayer = layer;
+			}
+		}
+		return topLayer != null ? topLayer.getCurrentFrame() : null;
 	}
 
 	/**
@@ -169,15 +377,62 @@ public class AnimationManager implements LRelease {
 	public void update(float deltaTime) {
 		for (AnimationLayer layer : layers) {
 			layer.update(deltaTime, eventListener, eventExecutor, owner);
+			if (layer.isFinished() && !playQueue.isEmpty()) {
+				QueuedAnimation next = playQueue.poll();
+				next.execute(this);
+			}
+		}
+		if (crossFadeState != null) {
+			crossFadeState.elapsed += deltaTime;
+			float t = crossFadeState.elapsed / crossFadeState.duration;
+			if (t >= 1f) {
+				setState(crossFadeState.layerIndex, crossFadeState.targetState, crossFadeState.dir);
+				if (eventListener != null) {
+					eventListener.onStateEnter(crossFadeState.targetState, crossFadeState.dir);
+				}
+				crossFadeState = null;
+			} else {
+				crossFadeState.weight = t;
+			}
+		}
+	}
+
+	public void start() {
+		for (AnimationLayer layer : layers) {
+			layer.start();
+		}
+	}
+
+	public void stop() {
+		for (AnimationLayer layer : layers) {
+			layer.stop();
+		}
+	}
+
+	public void resume() {
+		for (AnimationLayer layer : layers) {
+			layer.resume();
+		}
+	}
+
+	public void reset() {
+		for (AnimationLayer layer : layers) {
+			layer.reset();
+		}
+	}
+
+	public void pause() {
+		for (AnimationLayer layer : layers) {
+			layer.pause();
 		}
 	}
 
 	/**
-	 * 获取最终帧 (按权重选择最高层)
+	 * 获取最终帧 (若不设置，按权重选择最高层)
 	 * 
 	 * @return
 	 */
-	public LTexture getCurrentFrame() {
+	public LTexture getTopLayerFrame() {
 		AnimationLayer topLayer = null;
 		float maxWeight = -1f;
 		for (AnimationLayer layer : layers) {
@@ -187,6 +442,11 @@ public class AnimationManager implements LRelease {
 			}
 		}
 		return topLayer != null ? topLayer.getCurrentFrame() : null;
+	}
+
+	public LTexture getCurrentFrame() {
+		AnimationLayer layer = layers.get(currentLayerIndex);
+		return layer != null ? layer.getCurrentFrame() : getTopLayerFrame();
 	}
 
 	/**
@@ -238,7 +498,7 @@ public class AnimationManager implements LRelease {
 	@Override
 	public void close() {
 		for (AnimationLayer layer : layers) {
-			for (ObjectMap<Direction, Animation> stateAnims : layer.animations.values()) {
+			for (ObjectMap<Direction, Animation> stateAnims : layer.animationObjects.values()) {
 				for (Animation anim : stateAnims.values()) {
 					anim.close();
 				}

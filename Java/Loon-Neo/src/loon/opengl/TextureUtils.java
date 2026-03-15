@@ -114,10 +114,18 @@ public final class TextureUtils {
 	}
 
 	public static LTexture[] getSplitTextures(String fileName, int tileWidth, int tileHeight) {
-		return getSplitTextures(LSystem.loadTexture(fileName), tileWidth, tileHeight);
+		return getSplitTextures(fileName, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[] getSplitTextures(String fileName, int startX, int startY, int tileWidth, int tileHeight) {
+		return getSplitTextures(LSystem.loadTexture(fileName), startX, startY, tileWidth, tileHeight);
 	}
 
 	public static LTexture[] getSplitTextures(LTexture image, int tileWidth, int tileHeight) {
+		return getSplitTextures(image, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[] getSplitTextures(LTexture image, int startX, int startY, int tileWidth, int tileHeight) {
 		if (image == null) {
 			return null;
 		}
@@ -130,8 +138,8 @@ public final class TextureUtils {
 		int total = wlength * hlength;
 
 		LTexture[] images = new LTexture[total];
-		for (int y = 0; y < hlength; y++) {
-			for (int x = 0; x < wlength; x++) {
+		for (int y = startY; y < hlength; y++) {
+			for (int x = startX; x < wlength; x++) {
 				images[frame] = image.copy((x * tileWidth), (y * tileHeight), tileWidth, tileHeight);
 				frame++;
 			}
@@ -140,10 +148,18 @@ public final class TextureUtils {
 	}
 
 	public static LTexture[][] split(String fileName, int tileWidth, int tileHeight) {
-		return split(LSystem.loadTexture(fileName), tileWidth, tileHeight);
+		return split(fileName, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[][] split(String fileName, int startX, int startY, int tileWidth, int tileHeight) {
+		return split(LSystem.loadTexture(fileName), startX, startY, tileWidth, tileHeight);
 	}
 
 	public static LTexture[][] split(LTexture image, int tileWidth, int tileHeight) {
+		return split(image, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[][] split(LTexture image, int startX, int startY, int tileWidth, int tileHeight) {
 		if (image == null) {
 			return null;
 		}
@@ -152,8 +168,8 @@ public final class TextureUtils {
 		int rows = height / tileHeight;
 		int cols = width / tileWidth;
 		LTexture[][] textures = new LTexture[rows][cols];
-		for (int y = 0; y < rows; y++) {
-			for (int x = 0; x < cols; x++) {
+		for (int y = startY; y < rows; y++) {
+			for (int x = startX; x < cols; x++) {
 				textures[x][y] = image.copy((x * tileWidth), (y * tileHeight), tileWidth, tileHeight);
 			}
 		}
@@ -161,18 +177,28 @@ public final class TextureUtils {
 	}
 
 	public static LTexture[][] getSplit2Textures(String fileName, int tileWidth, int tileHeight) {
-		return getSplit2Textures(LSystem.loadTexture(fileName), tileWidth, tileHeight);
+		return getSplit2Textures(fileName, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[][] getSplit2Textures(String fileName, int startX, int startY, int tileWidth,
+			int tileHeight) {
+		return getSplit2Textures(LSystem.loadTexture(fileName), startX, startY, tileWidth, tileHeight);
 	}
 
 	public static LTexture[][] getSplit2Textures(LTexture image, int tileWidth, int tileHeight) {
+		return getSplit2Textures(image, 0, 0, tileWidth, tileHeight);
+	}
+
+	public static LTexture[][] getSplit2Textures(LTexture image, int startX, int startY, int tileWidth,
+			int tileHeight) {
 		if (image == null) {
 			return null;
 		}
 		int wlength = (int) (image.width() / tileWidth);
 		int hlength = (int) (image.height() / tileHeight);
 		LTexture[][] textures = new LTexture[wlength][hlength];
-		for (int y = 0; y < hlength; y++) {
-			for (int x = 0; x < wlength; x++) {
+		for (int y = startY; y < hlength; y++) {
+			for (int x = startX; x < wlength; x++) {
 				textures[x][y] = image.copy((x * tileWidth), (y * tileHeight), tileWidth, tileHeight);
 			}
 		}
