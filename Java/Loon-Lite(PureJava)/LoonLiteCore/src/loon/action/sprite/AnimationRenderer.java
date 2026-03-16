@@ -42,17 +42,33 @@ import loon.utils.timer.Duration;
 public class AnimationRenderer extends Entity {
 
 	public static class RenderData {
-		AnimationManager animManager;
+
+		final ObjectMap<String, float[]> animationSizes = new ObjectMap<String, float[]>();
+
+		final AnimationManager animManager;
+
 		float x, y;
+
 		float scale;
 
-		private final ObjectMap<String, float[]> animationSizes = new ObjectMap<String, float[]>();
+		boolean flipX;
 
-		RenderData(AnimationManager animManager, float x, float y, float scale) {
+		boolean flipY;
+
+		LColor color;
+
+		RenderData(AnimationManager animManager, float x, float y, float scale, boolean fx, boolean fy, LColor color) {
 			this.animManager = animManager;
 			this.x = x;
 			this.y = y;
 			this.scale = scale;
+			this.flipX = fx;
+			this.flipY = fy;
+			this.color = color;
+		}
+
+		public LColor getColor() {
+			return color;
 		}
 
 		public float getWidth() {
@@ -95,16 +111,39 @@ public class AnimationRenderer extends Entity {
 	}
 
 	public void addCharacter(AnimationManager animManager, float x, float y) {
-		this.addCharacter(animManager, x, y, 1f, 0);
+		this.addCharacter(animManager, x, y, LColor.white);
 	}
 
-	public void addCharacter(AnimationManager animManager, float x, float y, float scale, int layerIndex) {
+	public void addCharacter(AnimationManager animManager, float x, float y, LColor color) {
+		this.addCharacter(animManager, x, y, 1f, color);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scale) {
+		this.addCharacter(animManager, x, y, scale, LColor.white);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scale, LColor color) {
+		this.addCharacter(animManager, x, y, scale, false, false, color, 0);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scale, boolean flipX,
+			boolean flipY) {
+		this.addCharacter(animManager, x, y, scale, flipX, flipY, LColor.white, 0);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scale, boolean flipX, boolean flipY,
+			LColor color) {
+		this.addCharacter(animManager, x, y, scale, flipX, flipY, color, 0);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scale, boolean flipX, boolean flipY,
+			LColor color, int layerIndex) {
 		TArray<RenderData> list = layers.get(layerIndex);
 		if (list == null) {
 			list = new TArray<RenderData>();
 			layers.put(layerIndex, list);
 		}
-		list.add(new RenderData(animManager, x, y, scale));
+		list.add(new RenderData(animManager, x, y, scale, flipX, flipY, color));
 		list.sort(sortRenderEntry);
 		layersDirty = true;
 	}
@@ -195,8 +234,9 @@ public class AnimationRenderer extends Entity {
 				LTexture frame = entry.animManager.getCurrentFrame();
 				if (frame != null) {
 					g.draw(frame, entry.x + drawX, entry.y + drawY, MathUtils.min(getWidth(), frame.getWidth()),
-							MathUtils.min(getHeight(), frame.getHeight()), _baseColor, 0f, entry.scale, entry.scale,
-							false, false);
+							MathUtils.min(getHeight(), frame.getHeight()),
+							LColor.white.equals(entry.color) ? _baseColor : entry.color, 0f, entry.scale, entry.scale,
+							entry.flipX, entry.flipY);
 				}
 			}
 		}
@@ -223,7 +263,8 @@ public class AnimationRenderer extends Entity {
 				LTexture frame = entry.animManager.getCurrentFrame();
 				if (frame != null) {
 					g.draw(frame, entry.x + x, entry.y + y, w >= 0 ? w : frame.getWidth(),
-							h >= 0 ? h : frame.getHeight(), color, rotation, entry.scale, entry.scale, flipX, flipY);
+							h >= 0 ? h : frame.getHeight(), LColor.white.equals(entry.color) ? color : entry.color,
+							rotation, entry.scale, entry.scale, flipX, flipY);
 				}
 			}
 		}

@@ -332,7 +332,7 @@ public class AnimationLoader {
 		public RegionConfig region;
 
 		// 帧序列：指定播放哪些帧(仅在RegionConfig被设置后生效)
-		public IntArray frames;
+		public ObjectMap<Direction, IntArray> frames = new ObjectMap<Direction, IntArray>();
 
 		/**
 		 * 拼合并获取完整路径
@@ -352,7 +352,7 @@ public class AnimationLoader {
 	private final ObjectMap<String, ObjectMap<String, Object>> eventActionsMap = new ObjectMap<String, ObjectMap<String, Object>>();
 	private final ObjectMap<String, TransitionConfig> transitionsMap = new ObjectMap<>();
 	private final ObjectMap<String, AnimationConfig> animationMap = new ObjectMap<String, AnimationConfig>();
-	private final ObjectMap<ObjectState, IntMap<String>> eventsMap = new ObjectMap<ObjectState, IntMap<String>>();
+	private final ObjectMap<String, IntMap<String>> eventsMap = new ObjectMap<String, IntMap<String>>();
 	private final int frameWidth;
 	private final int frameHeight;
 
@@ -391,15 +391,37 @@ public class AnimationLoader {
 								aniCfg.region = regionConfig;
 							}
 						}
-						if (entry.containsKey("frames")) {
-							IntArray frames = new IntArray();
-							Json.Array arrays = entry.getArray("frames");
-							if (arrays != null) {
-								for (int j = 0; j < arrays.length(); j++) {
-									frames.add(arrays.getInt(j));
+						final String frameName = "frames";
+						if (entry.containsKey(frameName)) {
+							boolean frameArray = entry.isArray(frameName);
+							if (frameArray) {
+								// 单一帧序列
+								IntArray frameArrayList = new IntArray();
+								Json.Array arrays = entry.getArray(frameName);
+								if (arrays != null) {
+									for (int j = 0; j < arrays.length(); j++) {
+										frameArrayList.add(arrays.getInt(j));
+									}
+								}
+								aniCfg.frames.put(Direction.NONE, frameArrayList);
+							} else if (entry.isObject(frameName)) { // 多序列帧(最多设置八方向,要随意设置更细分参数比较麻烦，会牵扯更复杂的调用指令，我不想提供，所以这里设定为只能用方向设置。如果有奇怪的设定就用方向设定即可，反正就是个标记罢了……)
+								Json.Object frames = entry.getObject(frameName);
+								if (frames != null) {
+									TypedArray<String> frameKeys = frames.keys();
+									for (int k = 0; k < frameKeys.length(); k++) {
+										String frameKey = frameKeys.get(k);
+										Json.Array dirs = frames.getArray(frameKey);
+										if (dirs != null) {
+											IntArray frameArrayList = new IntArray();
+											for (int j = 0; j < dirs.length(); j++) {
+												frameArrayList.add(dirs.getInt(j));
+											}
+											aniCfg.frames.put(Direction.fromString(frameKey), frameArrayList);
+										}
+									}
 								}
 							}
-							aniCfg.frames = frames;
+
 						}
 						animationMap.put(state.toString(), aniCfg);
 					}
@@ -429,7 +451,7 @@ public class AnimationLoader {
 						String key = eveKeys.get(n);
 						Json.Object stateEvents = events.getObject(key);
 						if (stateEvents != null) {
-							ObjectState state = parse(eveKeys.get(n));
+							String stateKey = eveKeys.get(n);
 							IntMap<String> map = new IntMap<String>();
 							TypedArray<String> stateKeys = stateEvents.keys();
 							if (stateKeys != null) {
@@ -438,7 +460,7 @@ public class AnimationLoader {
 									map.put(HelperUtils.toInt(statekey), stateEvents.getString(statekey));
 								}
 							}
-							eventsMap.put(state, map);
+							eventsMap.put(stateKey, map);
 						}
 					}
 				}
@@ -515,9 +537,14 @@ public class AnimationLoader {
 			LTexture[] textureList = TextureUtils.getSplitTextures(path, cfg.region.x, cfg.region.y, frameWidth,
 					frameHeight);
 			Animation animation = new Animation();
+			IntArray frames = cfg.frames.get(dir);
+			if (frames == null) {
+				frames = cfg.frames.get(Direction.NONE);
+			}
 			for (int i = 0; i < textureList.length; i++) {
-				if (cfg.frames == null || cfg.frames.contains(i)) {
+				if (frames == null || frames.contains(i)) {
 					LTexture tex = textureList[i];
+				;
 					if (tex != null) {
 						animation.addFrame(tex, timer);
 					}
@@ -537,7 +564,7 @@ public class AnimationLoader {
 		return anim;
 	}
 
-	public IntMap<String> getEvents(ObjectState state) {
+	public IntMap<String> getEvents(String state) {
 		return eventsMap.get(state);
 	}
 

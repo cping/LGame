@@ -21,23 +21,22 @@
 package loon.action.sprite;
 
 import loon.action.map.Direction;
-import loon.action.map.battle.BattleType.ObjectState;
 
 /**
  * 动画事件监听接口，用于接收动画播放过程中的各种事件回调(并非所有游戏类型都必须开动画按帧监听，基本上上这个就证明动画效果很复杂，为魂类游戏准备的)
  */
 public interface AnimationEventListener {
 
-	void onStateEnter(ObjectState state, Direction dir);
+	void onStateEnter(String state, Direction dir);
 
-	void onStateExit(ObjectState state, Direction dir);
+	void onStateExit(String state, Direction dir);
 
-	void onAnimationComplete(ObjectState state, Direction dir);
+	void onAnimationComplete(String state, Direction dir);
 
-	void onInterrupted(ObjectState from, ObjectState to);
+	void onInterrupted(String from, String to);
 
-	void onTransition(ObjectState from, ObjectState to);
+	void onTransition(String from, String to);
 
-	void onKeyFrame(ObjectState state, Direction dir, int frameIndex, String eventType);
+	void onKeyFrame(String state, Direction dir, int frameIndex, String eventType);
 
 }

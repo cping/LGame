@@ -1,0 +1,26 @@
+{
+  "frameWidth": 64,
+  "frameHeight": 64,
+  "basePath": "assets/",
+  "animations": {
+    "IDLE": {
+      "filePattern": "wolf-idle.png",
+      "speed": 0.22,
+      "looping": true,
+      "isSheet": true,
+      "region": { "x": 0, "y": 0, "rows": 4, "cols": 4 },
+      "frames": {
+	    "LEFT": [0,1,2,3],
+	    "RIGHT": [4,5,6,7]
+      }   
+    },
+    "RIGHT": {
+      "filePattern": "wolf-idle.png",
+      "speed": 0.22,
+      "looping": true,
+      "isSheet": true,
+      "region": { "x": 0, "y": 0, "rows": 4, "cols": 4 },
+      "frames": [4,5,6,7]           
+    }
+  }
+}

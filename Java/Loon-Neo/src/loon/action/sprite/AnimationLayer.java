@@ -20,6 +20,7 @@
  */
 package loon.action.sprite;
 
+import loon.LSystem;
 import loon.LTexture;
 import loon.action.map.Direction;
 import loon.action.map.battle.BattleMapObject;
@@ -36,9 +37,9 @@ public class AnimationLayer {
 	final ObjectMap<String, ObjectMap<Direction, Animation>> animationObjects = new ObjectMap<String, ObjectMap<Direction, Animation>>();
 
 	// 当前状态和方向
-	ObjectState currentState = ObjectState.IDLE;
+	String currentStateKey = LSystem.UNKNOWN;
+
 	Direction currentDirection = Direction.DOWN;
-	String currentStateKey = null;
 
 	// 层权重，用于混合选择
 	private float weight = 1.0f;
@@ -53,36 +54,14 @@ public class AnimationLayer {
 
 	public AnimationLayer(ObjectMap<String, ObjectMap<Direction, Animation>> animations, AnimationLoader loader,
 			ObjectState state) {
-		this.animationObjects.putAll(animations);
-		this.loader = loader;
-		this.currentState = state;
+		this(animations, loader, AnimationLoader.toString(state));
 	}
 
 	public AnimationLayer(ObjectMap<String, ObjectMap<Direction, Animation>> animations, AnimationLoader loader,
 			String key) {
 		this.animationObjects.putAll(animations);
 		this.loader = loader;
-		this.currentStateKey = key;
-	}
-
-	/**
-	 * 设置状态并处理过渡
-	 * 
-	 * @param newState
-	 * @param newDir
-	 * @param trans
-	 */
-	public void setState(ObjectState newState, Direction newDir, AnimationLoader.TransitionConfig trans) {
-		if (newState == currentState && newDir == currentDirection) {
-			return;
-		}
-		if (trans != null) {
-			blendingFrom = getAnimation(AnimationLoader.toString(currentState), currentDirection);
-			blendingTo = getAnimation(AnimationLoader.toString(newState), newDir);
-			blendTimer = trans.blendTime;
-		}
-		currentState = newState != null ? newState : ObjectState.IDLE;
-		currentDirection = newDir != null ? newDir : Direction.DOWN;
+		this.currentStateKey = StringUtils.isEmpty(key) ? AnimationLoader.toString(ObjectState.IDLE) : key;
 	}
 
 	/**
@@ -101,7 +80,7 @@ public class AnimationLayer {
 			blendingTo = getAnimation(newState, newDir);
 			blendTimer = trans.blendTime;
 		}
-		currentStateKey = newState;
+		currentStateKey = newState != null ? newState : AnimationLoader.toString(ObjectState.IDLE);
 		currentDirection = newDir != null ? newDir : Direction.DOWN;
 	}
 
@@ -112,11 +91,7 @@ public class AnimationLayer {
 	 * @param newDir
 	 */
 	public void setState(ObjectState newState, Direction newDir) {
-		if (newState == currentState && newDir == currentDirection) {
-			return;
-		}
-		currentState = newState != null ? newState : ObjectState.IDLE;
-		currentDirection = newDir != null ? newDir : Direction.DOWN;
+		setState(AnimationLoader.toString(newState), newDir);
 	}
 
 	/**
@@ -129,7 +104,7 @@ public class AnimationLayer {
 		if (StringUtils.equals(currentStateKey, newState) && newDir == currentDirection) {
 			return;
 		}
-		currentStateKey = newState;
+		currentStateKey = newState != null ? newState : AnimationLoader.toString(ObjectState.IDLE);
 		currentDirection = newDir != null ? newDir : Direction.DOWN;
 	}
 
@@ -144,25 +119,20 @@ public class AnimationLayer {
 	 */
 	public void update(float deltaTime, AnimationEventListener listener, AnimationEventExecutor executor,
 			BattleMapObject character) {
-		Animation anim = null;
-		if (currentStateKey != null) {
-			anim = getAnimation(currentStateKey, currentDirection);
-		} else {
-			anim = getAnimation(currentState, currentDirection);
-		}
+		Animation anim = getAnimation(currentStateKey, currentDirection);
 		if (anim != null) {
 			int prevFrame = anim.getCurrentFrameIndex();
 			anim.update(deltaTime);
 			int newFrame = anim.getCurrentFrameIndex();
 			// 检查关键帧事件
-			IntMap<String> events = loader.getEvents(currentState);
+			IntMap<String> events = loader.getEvents(currentStateKey);
 			if (events != null) {
 				for (int frame = prevFrame + 1; frame <= newFrame; frame++) {
 					if (events.containsKey(frame)) {
 						String eventType = events.get(frame);
 						// 回调监听器
 						if (listener != null) {
-							listener.onKeyFrame(currentState, currentDirection, frame, eventType);
+							listener.onKeyFrame(currentStateKey, currentDirection, frame, eventType);
 						}
 						// 配置驱动执行器
 						if (executor != null) {
@@ -175,7 +145,7 @@ public class AnimationLayer {
 			// 动画事件完毕
 			if (anim.isFinished()) {
 				if (listener != null) {
-					listener.onAnimationComplete(currentState, currentDirection);
+					listener.onAnimationComplete(currentStateKey, currentDirection);
 				}
 			}
 		}
@@ -197,12 +167,7 @@ public class AnimationLayer {
 		if (blendTimer > 0 && blendingFrom != null && blendingTo != null) {
 			return blendingTo.getSpriteImage();
 		}
-		Animation anim = null;
-		if (currentStateKey != null) {
-			anim = getAnimation(currentStateKey, currentDirection);
-		} else {
-			anim = getAnimation(AnimationLoader.toString(currentState), currentDirection);
-		}
+		Animation anim = getAnimation(currentStateKey, currentDirection);
 		return anim != null ? anim.getSpriteImage() : getFallbackFrame();
 	}
 
@@ -234,16 +199,7 @@ public class AnimationLayer {
 	 * @return
 	 */
 	public Animation getAnimation(ObjectState state, Direction direction) {
-		ObjectMap<Direction, Animation> stateAnims = animationObjects.get(AnimationLoader.toString(state));
-		if (stateAnims != null) {
-			Animation anim = stateAnims.get(direction);
-			if (anim != null) {
-				return anim;
-			}
-		}
-		// 回退到默认待机动画
-		ObjectMap<Direction, Animation> idleAnims = animationObjects.get(AnimationLoader.toString(ObjectState.IDLE));
-		return idleAnims != null ? idleAnims.get(Direction.DOWN) : null;
+		return getAnimation(AnimationLoader.toString(state), direction);
 	}
 
 	public void putAnimation(ObjectState state, Direction direction, Animation ani) {
@@ -379,7 +335,7 @@ public class AnimationLayer {
 	}
 
 	public boolean isFinished() {
-		Animation anim = getAnimation(AnimationLoader.toString(currentState), currentDirection);
+		Animation anim = getAnimation(currentStateKey, currentDirection);
 		if (anim != null && anim.isFinished()) {
 			return blendTimer <= 0;
 		}

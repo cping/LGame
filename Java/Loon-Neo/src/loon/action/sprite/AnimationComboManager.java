@@ -50,16 +50,16 @@ public abstract class AnimationComboManager implements AnimationEventListener {
 		}
 	}
 
-	public abstract void onTransition(ObjectState from, ObjectState to);
+	public abstract void onTransition(String from, ObjectState to);
 
-	public abstract void onStateExit(ObjectState state, Direction dir);
+	public abstract void onStateExit(String state, Direction dir);
 
-	public abstract void onStateEnter(ObjectState state, Direction dir);
+	public abstract void onStateEnter(String state, Direction dir);
 
-	public abstract void onKeyFrame(ObjectState state, Direction dir, int frame, String eventType);
+	public abstract void onKeyFrame(String state, Direction dir, int frame, String eventType);
 
 	@Override
-	public void onAnimationComplete(ObjectState state, Direction dir) {
+	public void onAnimationComplete(String state, Direction dir) {
 		if (!comboQueue.isEmpty()) {
 			String nextSkill = comboQueue.poll();
 			animManager.setParameter(nextSkill, true);
