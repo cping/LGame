@@ -25,6 +25,7 @@ import loon.action.map.Direction;
 import loon.action.map.battle.BattleType.ObjectState;
 import loon.action.sprite.AnimationManager;
 import loon.action.sprite.AnimationRenderer;
+import loon.component.LClickButton;
 
 public class AnimationManagerTest extends Stage {
 
@@ -57,6 +58,9 @@ public class AnimationManagerTest extends Stage {
 			    // 闪电术施法与释放
 			    "CASTING_LIGHTNING": { "filePattern": "cast_lightning_{0}_sheet.png", "speed": 0.12, "looping": false, "isSheet": true },
 			    "LIGHTNING": { "filePattern": "lightning_{0}_sheet.png", "speed": 0.15, "looping": false, "isSheet": true },
+			    
+			    // 若某图桢的宽高大小与基础桢设定不一致，可以添加单独的 clipWidth 和 clipHeight 属性单独设定大小, 这项全图设置通用
+                "ATTACK": { "filePattern": "attack_{0}_sheet.png", "speed": 0.22, "clipWidth": 100, "clipHeight": 100, "looping": true, "isSheet": true },
 			    
 			    // 大图拆分：如果我们设定一张大图包含多个动作时，分组时这样进行(不同方向可以细分frames子项，但不细分也支持直接写frames:[0,1,2,3]这种)
 			    "BIG_SHEET_MUL": {
@@ -178,6 +182,7 @@ public class AnimationManagerTest extends Stage {
 		// PS: 默认不添加的动画标识不会执行，因为json中可以配置大量不同图片与标识，不清楚具体执行哪一个
 		// 插入图层IDLE标识动画，同时添加动作标识LEFT和RIGHT(任何状态标识都是json中设置了才能执行，没有对应名称则无效，另外此处使用字符串或者枚举类型的效果一样，只是用枚举方便用我自定义的模板，若自定义字符串则只能自行定义具体触发的事件)
 		mang.addLayer(ObjectState.IDLE, Direction.LEFT, Direction.RIGHT);
+		mang.addLayer("ATTACK", Direction.RIGHT);
 
 		// 将动画播放状态设定为播放IDLE动画，状态向右
 		mang.setState("IDLE", Direction.RIGHT);
@@ -186,5 +191,30 @@ public class AnimationManagerTest extends Stage {
 		renderer.addCharacter(mang, 125, 100, 2f);
 
 		add(renderer);
+		
+		//在屏幕底部添加向左按钮
+		LClickButton leftBtn = LClickButton.make("LEFT");
+		leftBtn.up((x,y) -> {
+			mang.setState("IDLE", Direction.LEFT);
+		});
+		bottomLeftOn(leftBtn, 25, -25);
+		add(leftBtn);
+		
+		//在屏幕底部添加中间按钮
+		LClickButton centerBtn = LClickButton.make("CENTER");
+		centerBtn.up((x,y) -> {
+			mang.setState("ATTACK", Direction.RIGHT);
+		});
+		centerBottomOn(centerBtn, 0, -25);
+		add(centerBtn);
+		
+		//在屏幕底部添加向右按钮
+		LClickButton rightBtn = LClickButton.make("RIGHT");
+		rightBtn.up((x,y) -> {
+			mang.setState("IDLE", Direction.RIGHT);
+		});
+		bottomRightOn(rightBtn, -25, -25);
+		add(rightBtn);
+
 	}
 }

@@ -328,6 +328,11 @@ public class AnimationLoader {
 		// 是否为spritesheet
 		public boolean isSheet;
 
+		// 具体动画帧的切分大小
+		public int clipWidth = -1;
+
+		public int clipHeight = -1;
+
 		// 用于从大图中裁剪指定区域，若不需要剪切的单图或者一组动作一个图拆分，则不必设置
 		public RegionConfig region;
 
@@ -380,6 +385,8 @@ public class AnimationLoader {
 						aniCfg.speed = entry.getNumber("speed", 0.1f);
 						aniCfg.looping = entry.getBoolean("looping", true);
 						aniCfg.isSheet = entry.getBoolean("isSheet", false);
+						aniCfg.clipWidth = entry.getInt("clipWidth", -1);
+						aniCfg.clipHeight = entry.getInt("clipHeight", -1);
 						if (entry.containsKey("region")) {
 							RegionConfig regionConfig = new RegionConfig();
 							Json.Object region = entry.getObject("region");
@@ -530,12 +537,14 @@ public class AnimationLoader {
 			return null;
 		}
 		final long timer = MathUtils.max(1, (long) (cfg.speed * LSystem.SECOND));
-		String path = cfg.getFullPath(StringUtils.isEmpty(textureSuffix) ? LSystem.EMPTY : textureSuffix);
+		final String path = cfg.getFullPath(StringUtils.isEmpty(textureSuffix) ? LSystem.EMPTY : textureSuffix);
+		final int clipAniWidth = cfg.clipWidth > 0 ? cfg.clipWidth : frameWidth;
+		final int clipAniHeight = cfg.clipHeight > 0 ? cfg.clipHeight : frameHeight;
 		Animation anim = null;
 		if (cfg.region != null) {
 			// 拆分图片
-			LTexture[] textureList = TextureUtils.getSplitTextures(path, cfg.region.x, cfg.region.y, frameWidth,
-					frameHeight);
+			LTexture[] textureList = TextureUtils.getSplitTextures(path, cfg.region.x, cfg.region.y, clipAniWidth,
+					clipAniHeight);
 			Animation animation = new Animation();
 			IntArray frames = cfg.frames.get(dir);
 			if (frames == null) {
@@ -544,7 +553,6 @@ public class AnimationLoader {
 			for (int i = 0; i < textureList.length; i++) {
 				if (frames == null || frames.contains(i)) {
 					LTexture tex = textureList[i];
-				;
 					if (tex != null) {
 						animation.addFrame(tex, timer);
 					}
@@ -554,7 +562,7 @@ public class AnimationLoader {
 		} else if (cfg.isSheet) {
 			// 读取单独的序列spritesheet（一般都是用单一方向动作图，比如纯向左，右，上，下之类的任何一个相仿，总之必须单一体系的。简单说就是魂类游戏的单独大招序列图。
 			// 需要跳帧的，什么样子都有用到的，参考示例用region设定）
-			anim = Animation.getDefaultAnimation(path, frameWidth, frameHeight, timer);
+			anim = Animation.getDefaultAnimation(path, clipAniWidth, clipAniHeight, timer);
 		} else {
 			// 单图模式
 			anim = Animation.getDefaultAnimation(path);

@@ -14,6 +14,7 @@
 	    "RIGHT": [4,5,6,7]
       }   
     },
+    "ATTACK": { "filePattern": "attack01.png", "speed": 0.22, "clipWidth": 100, "clipHeight": 100, "looping": true, "isSheet": true },
     "RIGHT": {
       "filePattern": "wolf-idle.png",
       "speed": 0.22,

@@ -23,14 +23,16 @@ package loon.utils.json;
 import loon.Json;
 import loon.Json.TypedArray;
 import loon.utils.ObjectMap.Entry;
+import loon.utils.HelperUtils;
 import loon.utils.OrderedMap;
+import loon.utils.StringUtils;
 
 class JsonObject implements Json.Object {
 
 	private final OrderedMap<String, Object> _orderedMap;
 
 	public JsonObject() {
-		_orderedMap = new OrderedMap<>();
+		_orderedMap = new OrderedMap<String, Object>();
 	}
 
 	public final static JsonBuilder<JsonObject> at() {
@@ -38,7 +40,7 @@ class JsonObject implements Json.Object {
 	}
 
 	public final static JsonBuilder<JsonObject> builder() {
-		return new JsonBuilder<>(new JsonObject());
+		return new JsonBuilder<JsonObject>(new JsonObject());
 	}
 
 	@Override
@@ -49,6 +51,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public Json.Array getArray(String key, Json.Array def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return (o instanceof Json.Array) ? (Json.Array) o : def;
 	}
 
@@ -60,7 +65,10 @@ class JsonObject implements Json.Object {
 	@Override
 	public boolean getBoolean(String key, boolean def) {
 		Object o = get(key);
-		return o instanceof Boolean ? (Boolean) o : def;
+		if (o == null) {
+			return def;
+		}
+		return StringUtils.isBoolean(HelperUtils.toStr(o));
 	}
 
 	@Override
@@ -71,6 +79,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public double getDouble(String key, double def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return o instanceof Number ? ((Number) o).doubleValue() : def;
 	}
 
@@ -82,6 +93,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public float getNumber(String key, float def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return o instanceof Number ? ((Number) o).floatValue() : def;
 	}
 
@@ -93,6 +107,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public int getInt(String key, int def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return o instanceof Number ? ((Number) o).intValue() : def;
 	}
 
@@ -104,6 +121,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public long getLong(String key, long def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return o instanceof Number ? ((Number) o).longValue() : def;
 	}
 
@@ -115,6 +135,9 @@ class JsonObject implements Json.Object {
 	@Override
 	public Json.Object getObject(String key, Json.Object def) {
 		Object o = get(key);
+		if (o == null) {
+			return def;
+		}
 		return (o instanceof JsonObject) ? (JsonObject) o : def;
 	}
 
@@ -126,7 +149,10 @@ class JsonObject implements Json.Object {
 	@Override
 	public String getString(String key, String def) {
 		Object o = get(key);
-		return (o instanceof String) ? (String) o : def;
+		if (o == null) {
+			return def;
+		}
+		return HelperUtils.toStr(o);
 	}
 
 	@Override
@@ -170,9 +196,9 @@ class JsonObject implements Json.Object {
 	}
 
 	@Override
-	public JsonObject put(String key, Object vl) {
-		JsonImpl.checkJsonType(vl);
-		_orderedMap.put(key, vl);
+	public JsonObject put(String key, Object v) {
+		JsonImpl.checkJsonType(v);
+		_orderedMap.put(key, v);
 		return this;
 	}
 
