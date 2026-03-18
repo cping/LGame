@@ -329,7 +329,7 @@ public class AnimationLoader {
 		public boolean isSheet;
 
 		// 播放次数
-		public int loopCount = -1;
+		public int loopCount = 0;
 
 		// 具体动画帧的切分大小
 		public int clipWidth = -1;
@@ -386,7 +386,7 @@ public class AnimationLoader {
 						StateKeySet state = new StateKeySet(key);
 						aniCfg.filePattern = entry.getString("filePattern");
 						aniCfg.speed = entry.getNumber("speed", 0.1f);
-						aniCfg.loopCount = entry.getInt("loopCount", -1);
+						aniCfg.loopCount = entry.getInt("loopCount", 0);
 						aniCfg.looping = entry.getBoolean("looping", true);
 						aniCfg.isSheet = entry.getBoolean("isSheet", false);
 						aniCfg.clipWidth = entry.getInt("clipWidth", -1);

@@ -451,4 +451,9 @@ public class BattleTile implements Cloneable {
 	public void setTerrainEffect(BattleTerrainEffect terrainEffect) {
 		this.terrainEffect = terrainEffect;
 	}
+
+	public boolean isPassable() {
+		return tiletype.isPassable();
+	}
+
 }
