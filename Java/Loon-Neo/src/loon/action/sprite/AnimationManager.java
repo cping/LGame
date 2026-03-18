@@ -117,25 +117,33 @@ public class AnimationManager implements LRelease {
 
 	private int currentLayerIndex = 0;
 
-	public AnimationManager(String configPath, BattleMapObject owner, ISoundService soundService,
-			ICombatService combatService) {
-		this(configPath, owner, soundService, combatService, null);
+	public AnimationManager(String configPath, BattleMapObject owner, AnimationEventListener aniEventListener) {
+		this(configPath, owner, aniEventListener, null, null);
 	}
 
-	public AnimationManager(String configPath, BattleMapObject owner, ISoundService soundService,
-			ICombatService combatService, ISkillService skillService) {
-		this(configPath, owner, soundService, combatService, skillService, null);
+	public AnimationManager(String configPath, BattleMapObject owner, AnimationEventListener aniEventListener,
+			ISoundService soundService, ICombatService combatService) {
+		this(configPath, owner, aniEventListener, soundService, combatService, null);
 	}
 
-	public AnimationManager(String configPath, BattleMapObject owner, ISoundService soundService,
-			ICombatService combatService, ISkillService skillService, IOtherService otherService) {
-		this(configPath, LSystem.EMPTY, owner, soundService, combatService, skillService, otherService);
+	public AnimationManager(String configPath, BattleMapObject owner, AnimationEventListener aniEventListener,
+			ISoundService soundService, ICombatService combatService, ISkillService skillService) {
+		this(configPath, owner, aniEventListener, soundService, combatService, skillService, null);
 	}
 
-	public AnimationManager(String configPath, String textureSuffix, BattleMapObject owner, ISoundService soundService,
-			ICombatService combatService, ISkillService skillService, IOtherService otherService) {
+	public AnimationManager(String configPath, BattleMapObject owner, AnimationEventListener aniEventListener,
+			ISoundService soundService, ICombatService combatService, ISkillService skillService,
+			IOtherService otherService) {
+		this(configPath, LSystem.EMPTY, owner, aniEventListener, soundService, combatService, skillService,
+				otherService);
+	}
+
+	public AnimationManager(String configPath, String textureSuffix, BattleMapObject owner,
+			AnimationEventListener aniEventListener, ISoundService soundService, ICombatService combatService,
+			ISkillService skillService, IOtherService otherService) {
 		this.loader = new AnimationLoader(BaseIO.loadJsonObject(configPath));
 		this.owner = owner;
+		this.eventListener = aniEventListener;
 		this.eventExecutor = new AnimationEventExecutor(soundService, combatService, skillService, otherService,
 				loader.getEventActions());
 	}

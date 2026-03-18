@@ -495,7 +495,8 @@ public class Animation implements IArray, LRelease {
 		if (length == 0) {
 			return;
 		}
-		if (loopCount != -1 && loopPlay > loopCount) {
+		if (isRunning && loopCount != -1 && loopPlay > loopCount) {
+			stop();
 			return;
 		}
 		if (totalDuration == 0) {
@@ -748,7 +749,7 @@ public class Animation implements IArray, LRelease {
 		if (isRunning) {
 			return false;
 		}
-		if (currentFrameIndex != frames.size - 1) {
+		if (loopCount != -1 && loopPlay <= loopCount) {
 			return false;
 		}
 		return true;
@@ -845,6 +846,9 @@ public class Animation implements IArray, LRelease {
 			currentFrameIndex = 0;
 		} else {
 			currentFrameIndex = maxFrame - 1;
+		}
+		if (frameListener != null) {
+			frameListener.onFrameStopped(this.currentFrameIndex);
 		}
 		isRunning = false;
 		return this;

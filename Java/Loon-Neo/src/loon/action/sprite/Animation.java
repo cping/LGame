@@ -167,7 +167,8 @@ public class Animation implements IArray, LRelease {
 	 * @param filterColor
 	 * @return
 	 */
-	public static Animation getDefaultAnimation(String fileName, int width, int height, long timer, LColor filterColor) {
+	public static Animation getDefaultAnimation(String fileName, int width, int height, long timer,
+			LColor filterColor) {
 		return Animation.getDefaultAnimation(
 				TextureUtils.getSplitTextures(TextureUtils.filterColor(fileName, filterColor), width, height), -1,
 				timer);
@@ -494,7 +495,8 @@ public class Animation implements IArray, LRelease {
 		if (length == 0) {
 			return;
 		}
-		if (loopCount != -1 && loopPlay > loopCount) {
+		if (isRunning && loopCount != -1 && loopPlay > loopCount) {
+			stop();
 			return;
 		}
 		if (totalDuration == 0) {
@@ -747,7 +749,7 @@ public class Animation implements IArray, LRelease {
 		if (isRunning) {
 			return false;
 		}
-		if (currentFrameIndex != frames.size - 1) {
+		if (loopCount != -1 && loopPlay <= loopCount) {
 			return false;
 		}
 		return true;
@@ -844,6 +846,9 @@ public class Animation implements IArray, LRelease {
 			currentFrameIndex = 0;
 		} else {
 			currentFrameIndex = maxFrame - 1;
+		}
+		if (frameListener != null) {
+			frameListener.onFrameStopped(this.currentFrameIndex);
 		}
 		isRunning = false;
 		return this;

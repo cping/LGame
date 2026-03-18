@@ -35,7 +35,7 @@ public class AnimationManagerTest extends Stage {
 		AnimationRenderer renderer = new AnimationRenderer(0, 0, 128, 128);
 
 		// 加载json动画配置资源到纹理动画管理器，不绑定任何对象(若绑定具体战斗对象或事件，则在执行对应命令时会回调触发)
-		AnimationManager mang = new AnimationManager("anitest.json", null, null, null);
+		AnimationManager mang = new AnimationManager("anitest.json", null, null);
 
 		// 完整json配置格式
 		/* sample:

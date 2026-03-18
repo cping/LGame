@@ -68,7 +68,7 @@ class JsonObject implements Json.Object {
 		if (o == null) {
 			return def;
 		}
-		return StringUtils.isBoolean(HelperUtils.toStr(o));
+		return StringUtils.toBoolean(HelperUtils.toStr(o));
 	}
 
 	@Override
