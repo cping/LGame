@@ -872,4 +872,32 @@ public final class Easing {
 			return 0.5f * bounceEaseOut(t * 2f - 1f) + 0.5f;
 		}
 	}
+
+	public static float inOutQuadEase(float t) {
+		return t < 0.5f ? 2 * t * t : -1 + (4 - 2 * t) * t;
+	}
+
+	public static float outElasticEase(float t) {
+		float p = 0.3f;
+		return MathUtils.pow(2, -10 * t) * MathUtils.sin((t - p / 4) * (2 * MathUtils.PI) / p) + 1;
+	}
+
+	public static float outCubicEase(float t) {
+		return 1f - MathUtils.pow(1 - t, 3);
+	}
+
+	public static float outBounceEase(float t) {
+		if (t < 1 / 2.75) {
+			return 7.5625f * t * t;
+		} else if (t < 2 / 2.75) {
+			t -= 1.5f / 2.75f;
+			return 7.5625f * t * t + 0.75f;
+		} else if (t < 2.5 / 2.75) {
+			t -= 2.25f / 2.75f;
+			return 7.5625f * t * t + 0.9375f;
+		} else {
+			t -= 2.625f / 2.75f;
+			return 7.5625f * t * t + 0.984375f;
+		}
+	}
 }

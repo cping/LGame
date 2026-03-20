@@ -20,13 +20,13 @@
  */
 package loon.action.map.battle;
 
+import loon.LSystem;
 import loon.events.GameEvent;
 import loon.events.GameEventBus;
 import loon.events.GameEventType;
 import loon.geom.Vector2f;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
-import loon.utils.ObjectMap.Keys;
 import loon.utils.TArray;
 
 /**
@@ -80,7 +80,7 @@ public class BattlePathFinder {
 	private int[][] gCost, hCost, parentX, parentY;
 	private boolean[][] closed;
 	// 路径缓存
-	private final ObjectMap<String, TArray<Vector2f>> pathCache = new ObjectMap<String, TArray<Vector2f>>();
+	private final IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>();
 	// 寻径启发函数权重
 	private final float heuristicWeight = 1.0f;
 
@@ -124,8 +124,11 @@ public class BattlePathFinder {
 		list.set(low, node);
 	}
 
-	private final static String setKey(int x, int y) {
-		return x + "," + y;
+	private final static int setKey(int x, int y) {
+		int result = 1;
+		result = LSystem.unite(result, x);
+		result = LSystem.unite(result, y);
+		return result;
 	}
 
 	/**
@@ -150,7 +153,12 @@ public class BattlePathFinder {
 			return path;
 		}
 
-		String cacheKey = sx + "," + sy + "->" + ex + "," + ey;
+		int cacheKey = 1;
+		cacheKey = LSystem.unite(cacheKey, sx);
+		cacheKey = LSystem.unite(cacheKey, sy);
+		cacheKey = LSystem.unite(cacheKey, ex);
+		cacheKey = LSystem.unite(cacheKey, ey);
+
 		if (pathCache.containsKey(cacheKey)) {
 			TArray<Vector2f> cachedPath = new TArray<Vector2f>(pathCache.get(cacheKey));
 			publishPathEvent(true, "Using cached path", cachedPath);
@@ -160,7 +168,7 @@ public class BattlePathFinder {
 		resetCostArrays();
 
 		TArray<Node> open = new TArray<Node>();
-		ObjectMap<String, Node> openMap = new ObjectMap<String, Node>();
+		IntMap<Node> openMap = new IntMap<Node>();
 		gCost[sx][sy] = 0;
 		hCost[sx][sy] = calculateHeuristic(sx, sy, ex, ey);
 		Node startNode = new Node(sx, sy, gCost[sx][sy], hCost[sx][sy]);
@@ -208,7 +216,7 @@ public class BattlePathFinder {
 					parentX[nx][ny] = cx;
 					parentY[nx][ny] = cy;
 
-					String nodeKey = setKey(nx, ny);
+					int nodeKey = setKey(nx, ny);
 					Node newNode = new Node(nx, ny, gCost[nx][ny], hCost[nx][ny]);
 					if (!openMap.containsKey(nodeKey)) {
 						insertSorted(open, newNode);
@@ -250,13 +258,12 @@ public class BattlePathFinder {
 	 * @param key
 	 * @param path
 	 */
-	private void cachePath(String key, TArray<Vector2f> path) {
+	private void cachePath(int key, TArray<Vector2f> path) {
 		if (pathCache.size() >= PATH_CACHE_SIZE) {
 			// 移除最旧的缓存项
-			Keys<String> it = pathCache.keys();
-			if (it.hasNext()) {
-				it.next();
-				it.remove();
+			if (pathCache.size > 0) {
+				int oldestKey = pathCache.keys()[0];
+				pathCache.remove(oldestKey);
 			}
 		}
 		pathCache.put(key, new TArray<Vector2f>(path));
