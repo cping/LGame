@@ -75,6 +75,10 @@ public class BattleMap {
 
 	private final LColor _lightColor = new LColor();
 
+	private float _widthScale = 1f;
+
+	private float _heightScale = 1f;
+
 	public BattleMap(GameEventBus<GameEventType> events, IsoConfig config, int maxMapWidth, int maxMapHeight,
 			int screenWidth, int screenHeight) {
 		this._eventBus = events;
@@ -126,18 +130,18 @@ public class BattleMap {
 					_lightColor.setColor(tile.brightness, tile.brightness, tile.brightness, 1f);
 					// 绘制背景层
 					if (tile.bgAnim != null) {
-						g.draw(tile.bgAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth,
-								_isoConfig.tileHeight / 2, _lightColor);
+						g.draw(tile.bgAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth * _widthScale,
+								_isoConfig.tileHeight * _heightScale, _lightColor);
 					}
 					// 绘制地表层
 					if (tile.groundAnim != null) {
-						g.draw(tile.groundAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth,
-								_isoConfig.tileHeight / 2, _lightColor);
+						g.draw(tile.groundAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth * _widthScale,
+								_isoConfig.tileHeight * _heightScale, _lightColor);
 					}
 					// 绘制特效层
 					if (tile.effectAnim != null) {
-						g.draw(tile.effectAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth,
-								_isoConfig.tileHeight / 2, _lightColor);
+						g.draw(tile.effectAnim.getSpriteImage(), drawX, drawY, _isoConfig.tileWidth * _widthScale,
+								_isoConfig.tileHeight * _heightScale, _lightColor);
 					}
 
 				}
@@ -155,11 +159,11 @@ public class BattleMap {
 			_isoConfig.offsetX += (targetOffsetX - _isoConfig.offsetX) * CAMERA_SMOOTH_FACTOR;
 			_isoConfig.offsetY += (targetOffsetY - _isoConfig.offsetY) * CAMERA_SMOOTH_FACTOR;
 
-			float maxOffsetX = (_map_width * _isoConfig.tileWidth) - _screenWidth;
-			float maxOffsetY = (_map_height * _isoConfig.tileHeight / 2) - _screenHeight;
+			float maxOffsetX = (_map_width * _isoConfig.tileWidth * _widthScale) - _screenWidth;
+			float maxOffsetY = (_map_height * _isoConfig.tileHeight * _heightScale) - _screenHeight;
 
-			_isoConfig.offsetX = Math.max(0, MathUtils.min(_isoConfig.offsetX, maxOffsetX));
-			_isoConfig.offsetY = Math.max(0, MathUtils.min(_isoConfig.offsetY, maxOffsetY));
+			_isoConfig.offsetX = MathUtils.max(0, MathUtils.min(_isoConfig.offsetX, maxOffsetX));
+			_isoConfig.offsetY = MathUtils.max(0, MathUtils.min(_isoConfig.offsetY, maxOffsetY));
 		}
 	}
 
@@ -223,4 +227,25 @@ public class BattleMap {
 		this._isoConfig = s;
 	}
 
+	public float getWidthScale() {
+		return _widthScale;
+	}
+
+	public void setWidthScale(float widthScale) {
+		this._widthScale = widthScale;
+	}
+
+	public float getHeightScale() {
+		return _heightScale;
+	}
+
+	public void setHeightScale(float heightScale) {
+		this._heightScale = heightScale;
+	}
+
+	public BattleMap resizeScreen(int width, int height) {
+		_screenWidth = width;
+		_screenHeight = height;
+		return this;
+	}
 }
