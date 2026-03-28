@@ -137,11 +137,11 @@ public class PerlinNoise {
 	}
 
 	public final void set(int seed, float persistence, float frequency, float amplitude, int octaves) {
-		this._seed = 2 + seed * seed;
-		this._octaves = octaves;
-		this._amplitude = amplitude;
-		this._frequency = frequency;
-		this._persistence = persistence;
+		this._seed = seed;
+	    this._octaves = octaves;
+	    this._amplitude = amplitude;
+	    this._frequency = frequency;
+	    this._persistence = persistence;
 	}
 
 	public PerlinNoise setSeed(int seed) {
@@ -236,4 +236,9 @@ public class PerlinNoise {
 		int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff;
 		return 1f - (float) (t) * (9.313226E-10f);
 	}
+
+	public float getMaxAmplitude() {
+		return _amplitude;
+	}
+
 }

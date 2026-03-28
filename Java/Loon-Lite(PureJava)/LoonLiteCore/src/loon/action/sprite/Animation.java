@@ -582,7 +582,7 @@ public class Animation implements IArray, LRelease {
 			return null;
 		} else {
 			final LTexture texture = getFrame(currentFrameIndex).image;
-			if (!texture.isLoaded()) {
+			if (texture != null && !texture.isLoaded()) {
 				texture.loadTexture();
 			}
 			return texture;
@@ -600,7 +600,7 @@ public class Animation implements IArray, LRelease {
 			return null;
 		} else {
 			LTexture texture = getFrame(index).image;
-			if (!texture.isLoaded()) {
+			if (texture != null && !texture.isLoaded()) {
 				texture.loadTexture();
 			}
 			return texture;

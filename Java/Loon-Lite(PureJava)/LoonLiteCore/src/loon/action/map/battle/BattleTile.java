@@ -22,9 +22,12 @@ package loon.action.map.battle;
 
 import loon.action.map.battle.BattleType.MoveState;
 import loon.action.sprite.Animation;
+import loon.canvas.LColor;
 import loon.geom.Vector2f;
+import loon.opengl.GLEx;
 import loon.utils.ISOUtils;
 import loon.utils.ISOUtils.IsoConfig;
+import loon.utils.ISOUtils.IsoResult;
 
 public class BattleTile implements Cloneable {
 
@@ -41,6 +44,8 @@ public class BattleTile implements Cloneable {
 	public int gridX, gridY;
 
 	public int cellWidth, cellHeight;
+
+	private final Vector2f tempResult = new Vector2f();
 
 	private BattleTerrainEffect terrainEffect;
 	private BattleTileType tiletype;
@@ -129,6 +134,9 @@ public class BattleTile implements Cloneable {
 		copy.isInteractable = this.isInteractable;
 		copy.isDestroyed = this.isDestroyed;
 		copy.durability = this.durability;
+		copy.bgAnim = this.bgAnim.cpy();
+		copy.effectAnim = this.effectAnim.cpy();
+		copy.groundAnim = this.groundAnim.cpy();
 		return copy;
 	}
 
@@ -155,8 +163,8 @@ public class BattleTile implements Cloneable {
 		return baseCost;
 	}
 
-	public Vector2f getScreenPosition() {
-		return ISOUtils.isoTransform(gridX, gridY, cellWidth, cellHeight, isoCofing).screenPos;
+	public Vector2f getScreenPosition(Vector2f result, IsoResult iso) {
+		return ISOUtils.isoTransform(gridX, gridY, cellWidth, cellHeight, isoCofing, result, iso).screenPos;
 	}
 
 	public void activateSpecialEffect(BattleTileType newType, float duration) {
@@ -184,7 +192,7 @@ public class BattleTile implements Cloneable {
 	 * @return
 	 */
 	public boolean isClicked(int screenX, int screenY) {
-		return ISOUtils.isTileClicked(gridX, gridY, cellWidth, cellHeight, screenX, screenY, isoCofing);
+		return ISOUtils.isTileClicked(gridX, gridY, cellWidth, cellHeight, screenX, screenY, isoCofing, tempResult);
 	}
 
 	public void adaptToTileSize(int width, int height) {
@@ -206,6 +214,31 @@ public class BattleTile implements Cloneable {
 				hasSkill = false;
 				skillUnit = null;
 			}
+		}
+		if (bgAnim != null) {
+			bgAnim.update(deltaTime);
+		}
+		if (groundAnim != null) {
+			groundAnim.update(deltaTime);
+		}
+		if (effectAnim != null) {
+			effectAnim.update(deltaTime);
+		}
+	}
+
+	public void paint(GLEx g, float drawX, float drawY, float tileWidth, float tileHeight, LColor color) {
+
+		// 绘制背景层
+		if (bgAnim != null) {
+			g.draw(bgAnim.getSpriteImage(), drawX, drawY, tileWidth, tileHeight, color);
+		}
+		// 绘制地表层
+		if (groundAnim != null) {
+			g.draw(groundAnim.getSpriteImage(), drawX, drawY, tileWidth, tileHeight, color);
+		}
+		// 绘制特效层
+		if (effectAnim != null) {
+			g.draw(effectAnim.getSpriteImage(), drawX, drawY, tileWidth, tileHeight, color);
 		}
 	}
 
@@ -294,14 +327,6 @@ public class BattleTile implements Cloneable {
 
 	public void setCellHeight(int cellHeight) {
 		this.cellHeight = cellHeight;
-	}
-
-	public BattleTileType getTiletype() {
-		return tiletype;
-	}
-
-	public void setTiletype(BattleTileType tiletype) {
-		this.tiletype = tiletype;
 	}
 
 	public boolean isHasUnit() {
@@ -455,5 +480,4 @@ public class BattleTile implements Cloneable {
 	public boolean isPassable() {
 		return tiletype.isPassable();
 	}
-
 }

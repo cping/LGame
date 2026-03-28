@@ -55,6 +55,13 @@ public class IntMap<T> implements IArray, Iterable<T>, LRelease {
 			value = v;
 		}
 
+		public int getKeyInt() {
+			if (key != 0) {
+				return (int) (key >> 32);
+			}
+			return -1;
+		}
+
 		public long getKey() {
 			return key;
 		}

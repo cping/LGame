@@ -286,7 +286,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		if (pos.x < 0f) {
 			pos.x += getWidth();
 		}
-		if (pos.x < 0f) {
+		if (pos.y < 0f) {
 			pos.y += getHeight();
 		}
 		return pos;

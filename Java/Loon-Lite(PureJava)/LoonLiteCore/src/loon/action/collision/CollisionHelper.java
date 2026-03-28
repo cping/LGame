@@ -1300,6 +1300,19 @@ public final class CollisionHelper extends ShapeUtils {
 		return MathUtils.equal(area1 + area2 + area3, areaOrig);
 	}
 
+	public static final boolean checkPointvsPolygon(float px, float py, float[] xs, float[] ys) {
+		boolean inside = false;
+		int n = xs.length;
+		for (int i = 0, j = n - 1; i < n; j = i++) {
+			boolean intersect = ((ys[i] > py) != (ys[j] > py))
+					&& (px < (xs[j] - xs[i]) * (py - ys[i]) / (ys[j] - ys[i]) + xs[i]);
+			if (intersect) {
+				inside = !inside;
+			}
+		}
+		return inside;
+	}
+
 	public static final <T extends XY> boolean checkPointvsPolygon(XY pos, TArray<T> vertices) {
 		return checkPointvsPolygon(pos.getX(), pos.getY(), vertices);
 	}

@@ -1042,7 +1042,7 @@ public class HexagonMap extends LObject<ISprite> implements FontSet<HexagonMap>,
 		if (pos.x < 0f) {
 			pos.x += getViewRect().width;
 		}
-		if (pos.x < 0f) {
+		if (pos.y < 0f) {
 			pos.y += getViewRect().height;
 		}
 		return pos;

@@ -1278,7 +1278,7 @@ public class TileMap extends LObject<ISprite> implements TileMapCollision, Sized
 		if (pos.x < 0f) {
 			pos.x += _field2d.getViewWidth();
 		}
-		if (pos.x < 0f) {
+		if (pos.y < 0f) {
 			pos.y += _field2d.getViewHeight();
 		}
 		return pos;

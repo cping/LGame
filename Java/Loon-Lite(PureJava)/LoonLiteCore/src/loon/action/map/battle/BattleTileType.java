@@ -31,11 +31,22 @@ public class BattleTileType {
 
 	private static final IntMap<BattleTileType> TILE_MAP = new IntMap<BattleTileType>();
 
-	public static BattleTileType getById(int id) {
+	public final static int[] getIds() {
+		return TILE_MAP.keys();
+	}
+
+	public final static BattleTileType getById(int id) {
 		return TILE_MAP.get(id);
 	}
 
+	public final static void putTileType(int id, BattleTileType tileType) {
+		TILE_MAP.put(id, tileType);
+	}
+
 	// 基础地形
+	// 未知
+	public static final BattleTileType UNKNOWN = new BattleTileType(0, 0, MoveState.NORMAL, "UNKNOWN", 1, 0, 0, false,
+			false, 0, 0f, 0.0f);
 	// 平原
 	public static final BattleTileType PLAIN = new BattleTileType(1, 1, MoveState.NORMAL, "PLAIN", 1, 0, 0, true, false,
 			1, 1.0f, 0.0f);
@@ -87,52 +98,78 @@ public class BattleTileType {
 	// 天空
 	public static final BattleTileType SKY = new BattleTileType(17, 17, MoveState.FLY, "SKY", 1f, 0, 0, false, true, 4,
 			0.0f, 0.0f);
+	// 雪地
+	public static final BattleTileType SNOW = new BattleTileType(18, 18, MoveState.DIFFICULT, "SNOW", 0.7f, 0, 0, true,
+			true, 2, 0.9f, 0.3f);
+
+	// 冰川
+	public static final BattleTileType GLACIER = new BattleTileType(19, 19, MoveState.DIFFICULT, "GLACIER", 0.3f, 0, 0,
+			false, true, 4, 0.7f, 0.5f);
+
+	// 荒原
+	public static final BattleTileType WASTELAND = new BattleTileType(20, 20, MoveState.NORMAL, "WASTELAND", 1.0f, 0, 0,
+			true, false, 1, 1.0f, 0.0f);
+
+	// 熔岩地带
+	public static final BattleTileType LAVA_FIELD = new BattleTileType(21, 21, MoveState.FLY, "LAVA_FIELD", 0.2f, 0, 0,
+			false, false, 5, 0.5f, 0.0f);
+
+	// 草原
+	public static final BattleTileType STEPPE = new BattleTileType(22, 22, MoveState.NORMAL, "STEPPE", 1.2f, 0, 0, true,
+			false, 1, 1.0f, 0.0f);
+	// 绿洲
+	public static final BattleTileType OASIS = new BattleTileType(23, 23, MoveState.NORMAL, "OASIS", 1.0f, 0, 0, true,
+			true, 1, 1.0f, 0.4f);
+
+	// 废墟
+	public static final BattleTileType RUINS = new BattleTileType(24, 24, MoveState.NORMAL, "RUINS", 0.9f, 0, 0, true,
+			true, 2, 0.8f, 0.4f);
 
 	// 建筑地形
 	// 道路
-	public static final BattleTileType ROAD = new BattleTileType(18, 18, MoveState.NORMAL, "ROAD", 1, 0, 0, true, false,
+	public static final BattleTileType ROAD = new BattleTileType(25, 25, MoveState.NORMAL, "ROAD", 1, 0, 0, true, false,
 			1, 1.0f, 0.0f);
 	// 桥梁
-	public static final BattleTileType BRIDGE = new BattleTileType(19, 19, MoveState.NORMAL, "BRIDGE", 1, 0, 0, true,
+	public static final BattleTileType BRIDGE = new BattleTileType(26, 26, MoveState.NORMAL, "BRIDGE", 1, 0, 0, true,
 			false, 1, 1.0f, 0.0f);
 	// 砦
-	public static final BattleTileType FORT = new BattleTileType(20, 20, MoveState.NORMAL, "FORT", 1, 0, 0, true, true,
+	public static final BattleTileType FORT = new BattleTileType(27, 27, MoveState.NORMAL, "FORT", 1, 0, 0, true, true,
 			1, 0.8f, 0.4f);
 	// 城塞
-	public static final BattleTileType CASTLE = new BattleTileType(21, 21, MoveState.NORMAL, "CASTLE", 1, 0, 0, true,
+	public static final BattleTileType CASTLE = new BattleTileType(28, 28, MoveState.NORMAL, "CASTLE", 1, 0, 0, true,
 			true, 1, 0.7f, 0.6f);
 	// 城池
-	public static final BattleTileType CITY = new BattleTileType(22, 22, MoveState.NORMAL, "CITY", 1, 0, 0, true, true,
+	public static final BattleTileType CITY = new BattleTileType(29, 29, MoveState.NORMAL, "CITY", 1, 0, 0, true, true,
 			1, 0.6f, 0.8f);
 	// 城墙
-	public static final BattleTileType WALL = new BattleTileType(23, 23, MoveState.NORMAL, "WALL", 1, 0, 0, true, true,
+	public static final BattleTileType WALL = new BattleTileType(30, 30, MoveState.NORMAL, "WALL", 1, 0, 0, true, true,
 			2, 0.7f, 0.7f);
 	// 城门
-	public static final BattleTileType GATE = new BattleTileType(24, 24, MoveState.NORMAL, "GATE", 1, 0, 0, true, true,
+	public static final BattleTileType GATE = new BattleTileType(31, 31, MoveState.NORMAL, "GATE", 1, 0, 0, true, true,
 			1, 0.7f, 0.7f);
 	// 岗哨
-	public static final BattleTileType TOWER = new BattleTileType(25, 25, MoveState.NORMAL, "TOWER", 1, 0, 0, true,
+	public static final BattleTileType TOWER = new BattleTileType(32, 32, MoveState.NORMAL, "TOWER", 1, 0, 0, true,
 			true, 1, 0.8f, 0.5f);
 	// 木栅
-	public static final BattleTileType PALISADE = new BattleTileType(26, 26, MoveState.NORMAL, "PALISADE", 1, 0, 0,
+	public static final BattleTileType PALISADE = new BattleTileType(33, 33, MoveState.NORMAL, "PALISADE", 1, 0, 0,
 			true, true, 1, 0.85f, 0.3f);
 	// 渡口
-	public static final BattleTileType FERRY = new BattleTileType(27, 27, MoveState.NORMAL, "FERRY", 1, 0, 0, true,
+	public static final BattleTileType FERRY = new BattleTileType(34, 34, MoveState.NORMAL, "FERRY", 1, 0, 0, true,
 			false, 2, 1.0f, 0.0f);
 	// 港口
-	public static final BattleTileType PORT = new BattleTileType(28, 28, MoveState.NORMAL, "PORT", 1, 0, 0, true, false,
+	public static final BattleTileType PORT = new BattleTileType(35, 35, MoveState.NORMAL, "PORT", 1, 0, 0, true, false,
 			1, 1.0f, 0.0f);
 	// 堤坝
-	public static final BattleTileType DAM = new BattleTileType(29, 29, MoveState.NORMAL, "DAM", 1, 0, 0, true, false,
+	public static final BattleTileType DAM = new BattleTileType(36, 36, MoveState.NORMAL, "DAM", 1, 0, 0, true, false,
 			2, 1.0f, 0.0f);
 	// 矿坑
-	public static final BattleTileType MINE = new BattleTileType(30, 30, MoveState.NORMAL, "MINE", 1, 0, 0, true, false,
+	public static final BattleTileType MINE = new BattleTileType(37, 37, MoveState.NORMAL, "MINE", 1, 0, 0, true, false,
 			2, 1.0f, 0.0f);
 	// 农田
-	public static final BattleTileType FARM = new BattleTileType(31, 31, MoveState.NORMAL, "FARM", 1, 0, 0, true, false,
+	public static final BattleTileType FARM = new BattleTileType(38, 38, MoveState.NORMAL, "FARM", 1, 0, 0, true, false,
 			1, 1.0f, 0.0f);
 	// 市场
-	public static final BattleTileType MARKET = new BattleTileType(32, 32, MoveState.NORMAL, "MARKET", 1, 0, 0, true,
+	public static final BattleTileType MARKET = new BattleTileType(39, 39, MoveState.NORMAL, "MARKET", 1, 0, 0, true,
 			false, 1, 1.0f, 0.0f);
 	// 唯一标识（地形类型）
 	private final int id;

@@ -457,7 +457,7 @@ public class LDTKTileLayer extends LDTKLayer implements TileMapCollision, Change
 		if (pos.x < 0f) {
 			pos.x += _widthInPixels;
 		}
-		if (pos.x < 0f) {
+		if (pos.y < 0f) {
 			pos.y += _heightInPixels;
 		}
 		return pos;
