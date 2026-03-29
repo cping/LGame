@@ -282,8 +282,8 @@ public class BattleMapGenerator implements LRelease {
 			if (!appearedTiles.contains(id)) {
 				int count = MathUtils.random(1, 3);
 				for (int j = 0; j < count; j++) {
-					int rx = MathUtils.random(width);
-					int ry = MathUtils.random(height);
+					int rx = MathUtils.random(width - 1);
+					int ry = MathUtils.random(height - 1);
 					mapGrid[ry][rx] = id;
 				}
 			}
@@ -485,8 +485,8 @@ public class BattleMapGenerator implements LRelease {
 			ids.add(BattleTileType.SEA.getId());
 			ids.add(BattleTileType.MOUNTAIN.getId());
 		}
-		int outerTileId = ids.get(MathUtils.nextInt(ids.size()));
-		int innerTileId = ids.get(MathUtils.nextInt(ids.size()));
+		int outerTileId = ids.get(MathUtils.nextInt(ids.size() - 1));
+		int innerTileId = ids.get(MathUtils.nextInt(ids.size() - 1));
 		// 随机生成坐标
 		if ("circle".equals(shape)) {
 			int cx = width / 2;
@@ -552,8 +552,8 @@ public class BattleMapGenerator implements LRelease {
 			float innerTarget = MathUtils.random() * totalTileWeight;
 			int innerTileId = tiles.get(binarySearch(tileCumulative, innerTarget));
 			// 随机位置
-			int offsetX = MathUtils.nextInt(width);
-			int offsetY = MathUtils.nextInt(height);
+			int offsetX = MathUtils.nextInt(width - 1);
+			int offsetY = MathUtils.nextInt(height - 1);
 			if ("circle".equals(shape)) {
 				int outerRadius = MathUtils.nextInt(MathUtils.min(width, height) / 5) + 5;
 				int innerRadius = MathUtils.max(2, outerRadius / 2);
@@ -921,14 +921,14 @@ public class BattleMapGenerator implements LRelease {
 	 * @param tiles
 	 */
 	public void generateRandomBorderCombination(int... tiles) {
-		final int size = tiles.length;
+		final int size = tiles.length - 1;
 		// 随机选择四边地形
 		int topTileId = tiles[MathUtils.nextInt(size)];
 		int bottomTileId = tiles[MathUtils.nextInt(size)];
 		int leftTileId = tiles[MathUtils.nextInt(size)];
 		int rightTileId = tiles[MathUtils.nextInt(size)];
 		// 随机厚度（1~3层）
-		int thickness = MathUtils.nextInt(3) + 1;
+		int thickness = MathUtils.nextInt(1, 3);
 		// 调用组合边界生成
 		generateBorderCombination(topTileId, bottomTileId, leftTileId, rightTileId, thickness);
 	}
@@ -992,13 +992,13 @@ public class BattleMapGenerator implements LRelease {
 	 */
 	public void generateRandomGradientBorder(int... tiles) {
 		// 随机选择渐变层数（2~4层）
-		int layers = MathUtils.nextInt(3) + 2;
+		int layers = MathUtils.nextInt(2, 4);
 		// 随机选择厚度（3~6层）
-		int thickness = MathUtils.nextInt(4) + 3;
+		int thickness = MathUtils.nextInt(3, 6);
 		// 随机生成地形序列
 		IntArray gradientTiles = new IntArray();
 		for (int i = 0; i < layers; i++) {
-			gradientTiles.add(tiles[MathUtils.nextInt(tiles.length)]);
+			gradientTiles.add(tiles[MathUtils.nextInt(tiles.length - 1)]);
 		}
 		// 调用多层渐变边界生成
 		generateMultiGradientBorder(gradientTiles, thickness);
@@ -1007,7 +1007,7 @@ public class BattleMapGenerator implements LRelease {
 	/** 随机边界生成器 */
 	public void generateRandomBorderMaster() {
 		// 随机厚度（1~5层）
-		int thickness = MathUtils.nextInt(5) + 1;
+		int thickness = MathUtils.nextInt(1, 5);
 		// 随机选择边界类型
 		int choice = MathUtils.nextInt(7);
 		switch (choice) {
@@ -1031,20 +1031,21 @@ public class BattleMapGenerator implements LRelease {
 			int[] tileOptions = { BattleTileType.SEA.getId(), BattleTileType.MOUNTAIN.getId(),
 					BattleTileType.FOREST.getId(), BattleTileType.WALL.getId(), BattleTileType.DESERT.getId(),
 					BattleTileType.PLAIN.getId() };
-			int topTileId = tileOptions[MathUtils.nextInt(tileOptions.length)];
-			int bottomTileId = tileOptions[MathUtils.nextInt(tileOptions.length)];
-			int leftTileId = tileOptions[MathUtils.nextInt(tileOptions.length)];
-			int rightTileId = tileOptions[MathUtils.nextInt(tileOptions.length)];
+			int size = tileOptions.length - 1;
+			int topTileId = tileOptions[MathUtils.nextInt(size)];
+			int bottomTileId = tileOptions[MathUtils.nextInt(size)];
+			int leftTileId = tileOptions[MathUtils.nextInt(size)];
+			int rightTileId = tileOptions[MathUtils.nextInt(size)];
 			generateBorderCombination(topTileId, bottomTileId, leftTileId, rightTileId, thickness);
 			break;
 		case 6:
 			// 渐变边界
-			int layers = MathUtils.nextInt(3) + 2; // 2~4层渐变
+			int layers = MathUtils.nextInt(2, 4);
 			IntArray gradientTiles = new IntArray();
 			int[] gradientOptions = { BattleTileType.SEA.getId(), BattleTileType.MOUNTAIN.getId(),
 					BattleTileType.FOREST.getId(), BattleTileType.DESERT.getId(), BattleTileType.PLAIN.getId() };
 			for (int i = 0; i < layers; i++) {
-				gradientTiles.add(gradientOptions[MathUtils.nextInt(gradientOptions.length)]);
+				gradientTiles.add(gradientOptions[MathUtils.nextInt(gradientOptions.length - 1)]);
 			}
 			generateMultiGradientBorder(gradientTiles, thickness);
 			break;
@@ -1054,7 +1055,7 @@ public class BattleMapGenerator implements LRelease {
 	public void generateRandomMap() {
 		// 随机噪声参数
 		int seed = MathUtils.nextInt(100000);
-		int octaves = MathUtils.nextInt(3) + 3; // 3~5
+		int octaves = MathUtils.nextInt(3, 5); // 3~5
 		float persistence = 0.3f + MathUtils.random() * 0.4f; // 0.3~0.7
 		float frequency = 0.005f + MathUtils.random() * 0.02f; // 0.005~0.025
 		float amplitude = 0.8f + MathUtils.random() * 0.4f; // 0.8~1.2
@@ -1063,7 +1064,7 @@ public class BattleMapGenerator implements LRelease {
 		// 随机边界风格
 		generateRandomBorderMaster();
 		// 随机嵌套区域数量（0~5）
-		int nestedCount = MathUtils.nextInt(6);
+		int nestedCount = MathUtils.nextInt(0, 5);
 		if (nestedCount > 0) {
 			// 随机形状比例
 			ObjectMap<String, Float> shapeRatio = new ObjectMap<String, Float>();

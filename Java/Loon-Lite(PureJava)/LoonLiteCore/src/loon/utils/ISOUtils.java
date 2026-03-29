@@ -453,6 +453,56 @@ public final class ISOUtils {
 		return isoResult;
 	}
 
+	/**
+	 * 计算斜角地图的整地包围盒，并返回不同对齐方式的偏移量
+	 *
+	 * @param mapWidth     地图宽度（瓦片数）
+	 * @param mapHeight    地图高度（瓦片数）
+	 * @param screenWidth  屏幕宽度
+	 * @param screenHeight 屏幕高度
+	 * @param config       等角投影配置
+	 * @return
+	 */
+	public static ObjectMap<String, Vector2f> alignIsoMapOffsets(int mapWidth, int mapHeight, int screenWidth,
+			int screenHeight, IsoConfig config) {
+		int[][] corners = { { 0, 0 }, { mapWidth, 0 }, { 0, mapHeight }, { mapWidth, mapHeight } };
+		float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
+		float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
+		for (int[] corner : corners) {
+			IsoResult result = isoTransform(corner[0], corner[1], config.tileWidth, config.tileHeight, config, null,
+					null);
+			Vector2f pos = result.screenPos;
+			if (pos.x < minX) {
+				minX = pos.x;
+			}
+			if (pos.y < minY) {
+				minY = pos.y;
+			}
+			if (pos.x > maxX) {
+				maxX = pos.x;
+			}
+			if (pos.y > maxY) {
+				maxY = pos.y;
+			}
+		}
+		ObjectMap<String, Vector2f> offsets = new ObjectMap<String, Vector2f>();
+		offsets.put("leftTop",
+				new Vector2f(-minX + (config.tileWidth / 1.5f - 2), -minY + (config.tileHeight / 4f - 2)));
+		offsets.put("leftBottom", new Vector2f(-minX + (config.tileWidth / 1.5f - 2),
+				screenHeight - maxY + (config.tileHeight / 4f - 2)));
+		offsets.put("rightBottom", new Vector2f(screenWidth - maxX + (config.tileWidth / 1.5f - 2),
+				screenHeight - maxY + (config.tileHeight / 4f - 2)));
+		offsets.put("rightTop",
+				new Vector2f(screenWidth - maxX + (config.tileWidth / 1.5f - 2), -minY + (config.tileHeight / 4f - 2)));
+		float mapCenterX = (minX + maxX) / 2f;
+		float mapCenterY = (minY + maxY) / 2f;
+		float screenCenterX = screenWidth / 2f;
+		float screenCenterY = screenHeight / 2f;
+		offsets.put("center", new Vector2f(screenCenterX - mapCenterX + (config.tileWidth / 1.5f - 2),
+				screenCenterY - mapCenterY + (config.tileHeight / 4f - 2)));
+		return offsets;
+	}
+
 	private final static IsoConfig defaultConfig = IsoConfig.defaultConfig();
 
 	public static Vector2f isoTransform(int gx, int gy, int cellSizeX, int cellSizeY, int rotationMode, float height,
@@ -472,12 +522,41 @@ public final class ISOUtils {
 	 * @return
 	 */
 	public static Vector3f screenToGrid(float screenX, float screenY, float cwidth, float cheight, IsoConfig config) {
-		float x = (screenX - config.offsetX) / config.scaleX;
-		float y = (screenY - config.offsetY) / config.scaleY;
+		return screenToGrid(screenX, screenY, config.offsetX, config.offsetY, cwidth, cheight, config);
+	}
+
+	/**
+	 * 反算为正常坐标
+	 * 
+	 * @param screenX
+	 * @param screenY
+	 * @param config
+	 * @return
+	 */
+	public static Vector3f screenToGrid(float screenX, float screenY, IsoConfig config) {
+		return screenToGrid(screenX, screenY, 0, 0, 0, 0, config);
+	}
+
+	/**
+	 * 反算为正常坐标
+	 * 
+	 * @param screenX
+	 * @param screenY
+	 * @param offsetX
+	 * @param offsetY
+	 * @param cwidth
+	 * @param cheight
+	 * @param config
+	 * @return
+	 */
+	public static Vector3f screenToGrid(float screenX, float screenY, float offsetX, float offsetY, float cwidth,
+			float cheight, IsoConfig config) {
+		float x = (screenX - offsetX) / config.scaleX;
+		float y = (screenY - offsetY) / config.scaleY;
 		float cellWidth = cwidth <= 0 ? config.tileWidth : cwidth;
 		float cellHeight = cheight <= 0 ? config.tileHeight : cheight;
-		float gx, gy;
 		float z = cellHeight * config.heightScale;
+		float gx, gy;
 		switch (config.projectionMode) {
 		case ORTHOGRAPHIC:
 			gx = x / cellWidth;
@@ -495,8 +574,11 @@ public final class ISOUtils {
 			Vector2f isoSize = config.getIsoTileSize(cellWidth, cellHeight, null);
 			float isoTileWidth = isoSize.x;
 			float isoTileHeight = isoSize.y;
-			gx = (x / isoTileWidth + y / isoTileHeight) / 2f;
-			gy = (-x / isoTileWidth + y / isoTileHeight) / 2f;
+			gx = (x / isoTileWidth + (y + z) / isoTileHeight) / 2f;
+			gy = ((y + z) / isoTileHeight - x / isoTileWidth) / 2f;
+			gx = MathUtils.floor(gx + 0.5f) - 1f;
+			gy = MathUtils.floor(gy + 0.5f);
+			break;
 		}
 		return new Vector3f(gx, gy, z);
 	}
