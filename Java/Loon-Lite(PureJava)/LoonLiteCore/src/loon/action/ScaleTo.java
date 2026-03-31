@@ -101,13 +101,11 @@ public class ScaleTo extends ActionEvent {
 	public void update(long elapsedTime) {
 		if (original != null) {
 			_easeTimer.update(elapsedTime);
-			synchronized (original) {
-				if (original != null) {
-					_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
-					original.setScale(_startX + (_deltaX * _delta), _startY + (_deltaY * _delta));
-					_isCompleted = (_deltaX > 0 ? (original.getScaleX() >= _endX) : (original.getScaleX() <= _endX))
-							&& (_deltaY > 0 ? (original.getScaleY() >= _endY) : (original.getScaleY() <= _endY));
-				}
+			if (original != null) {
+				_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
+				original.setScale(_startX + (_deltaX * _delta), _startY + (_deltaY * _delta));
+				_isCompleted = (_deltaX > 0 ? (original.getScaleX() >= _endX) : (original.getScaleX() <= _endX))
+						&& (_deltaY > 0 ? (original.getScaleY() >= _endY) : (original.getScaleY() <= _endY));
 			}
 		} else {
 			_isCompleted = true;

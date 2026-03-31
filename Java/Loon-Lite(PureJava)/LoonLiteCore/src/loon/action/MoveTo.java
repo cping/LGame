@@ -236,7 +236,7 @@ public class MoveTo extends ActionEvent {
 		_processed = false;
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
-				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
+				&& layerMap != null && !layerMap.insidePixel(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
 			setMoveByMode(true);
 			return this;
 		} else if (moveByMode) {
@@ -248,19 +248,17 @@ public class MoveTo extends ActionEvent {
 		}
 		if (!(original.x() == endLocation.x() && original.y() == endLocation.y())) {
 			if (useCache) {
-				synchronized (_PATH_CACHE) {
-					if (_PATH_CACHE.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
-						_PATH_CACHE.clear();
-					}
-					final int key = hashCode();
-					TArray<Vector2f> final_path = _PATH_CACHE.get(key);
-					if (final_path == null) {
-						final_path = findPath();
-						_PATH_CACHE.put(key, final_path);
-					}
-					pActorPath = new TArray<Vector2f>();
-					pActorPath.addAll(final_path);
+				if (_PATH_CACHE.size > LSystem.DEFAULT_MAX_CACHE_SIZE * 10) {
+					_PATH_CACHE.clear();
 				}
+				final int key = hashCode();
+				TArray<Vector2f> final_path = _PATH_CACHE.get(key);
+				if (final_path == null) {
+					final_path = findPath();
+					_PATH_CACHE.put(key, final_path);
+				}
+				pActorPath = new TArray<Vector2f>();
+				pActorPath.addAll(final_path);
 			} else {
 				findPath();
 			}
@@ -270,10 +268,8 @@ public class MoveTo extends ActionEvent {
 
 	public MoveTo clearPath() {
 		if (pActorPath != null) {
-			synchronized (pActorPath) {
-				if (pActorPath != null) {
-					pActorPath.clear();
-				}
+			if (pActorPath != null) {
+				pActorPath.clear();
 			}
 			clearPathCache();
 		}
@@ -281,9 +277,7 @@ public class MoveTo extends ActionEvent {
 	}
 
 	public static void clearPathCache() {
-		synchronized (_PATH_CACHE) {
-			_PATH_CACHE.clear();
-		}
+		_PATH_CACHE.clear();
 	}
 
 	@Override
@@ -513,192 +507,188 @@ public class MoveTo extends ActionEvent {
 			if (original == null || pActorPath == null || pActorPath.size == 0) {
 				return;
 			}
-			synchronized (pActorPath) {
-				if (synchroLayerField) {
-					if (original != null) {
-						Field2D field = original.getField2D();
-						if (field != null && layerMap != field) {
-							this.layerMap = field;
-						}
+			if (synchroLayerField) {
+				if (original != null) {
+					Field2D field = original.getField2D();
+					if (field != null && layerMap != field) {
+						this.layerMap = field;
 					}
 				}
+			}
 
-				if (endX == startX && endY == startY) {
-					if (pActorPath.size > 1) {
-						Vector2f moveStart = pActorPath.get(0);
-						Vector2f moveEnd = pActorPath.get(1);
-						if (layerMap != null) {
-							startX = layerMap.tilesToWidthPixels(moveStart.x());
-							startY = layerMap.tilesToHeightPixels(moveStart.y());
-							endX = layerMap.tilesToWidthPixels(moveEnd.x());
-							endY = layerMap.tilesToHeightPixels(moveEnd.y());
-						} else {
-							startX = moveStart.getX() * original.getWidth();
-							startY = moveStart.getY() * original.getHeight();
-							endX = moveEnd.getX() * original.getWidth();
-							endY = moveEnd.getY() * original.getHeight();
-						}
-						moveX = moveEnd.x() - moveStart.x();
-						moveY = moveEnd.y() - moveStart.y();
-						updateDirection(moveX, moveY);
-					} else if (pActorPath.size == 1) {
-						Vector2f moveEnd = pActorPath.pop();
-						float newEndX = endX;
-						float newEndY = endY;
-						if (layerMap != null) {
-							newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
-							newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
-						} else {
-							newEndX = moveEnd.getX() * original.getWidth();
-							newEndY = moveEnd.getY() * original.getHeight();
-						}
-						moveX = newEndX - endX;
-						moveY = newEndY - endY;
+			if (endX == startX && endY == startY) {
+				if (pActorPath.size > 1) {
+					Vector2f moveStart = pActorPath.get(0);
+					Vector2f moveEnd = pActorPath.get(1);
+					if (layerMap != null) {
+						startX = layerMap.tilesToWidthPixels(moveStart.x());
+						startY = layerMap.tilesToHeightPixels(moveStart.y());
+						endX = layerMap.tilesToWidthPixels(moveEnd.x());
+						endY = layerMap.tilesToHeightPixels(moveEnd.y());
+					} else {
+						startX = moveStart.getX() * original.getWidth();
+						startY = moveStart.getY() * original.getHeight();
+						endX = moveEnd.getX() * original.getWidth();
+						endY = moveEnd.getY() * original.getHeight();
 					}
-					if (pActorPath.size > 0) {
-						pActorPath.removeIndex(0);
-					}
-				} else {
-					moveX = endX - startX;
-					moveY = endY - startY;
+					moveX = moveEnd.x() - moveStart.x();
+					moveY = moveEnd.y() - moveStart.y();
 					updateDirection(moveX, moveY);
+				} else if (pActorPath.size == 1) {
+					Vector2f moveEnd = pActorPath.pop();
+					float newEndX = endX;
+					float newEndY = endY;
+					if (layerMap != null) {
+						newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
+						newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
+					} else {
+						newEndX = moveEnd.getX() * original.getWidth();
+						newEndY = moveEnd.getY() * original.getHeight();
+					}
+					moveX = newEndX - endX;
+					moveY = newEndY - endY;
 				}
+				if (pActorPath.size > 0) {
+					pActorPath.removeIndex(0);
+				}
+			} else {
+				moveX = endX - startX;
+				moveY = endY - startY;
+				updateDirection(moveX, moveY);
+			}
 
-				newX = original.getX() - offsetX;
-				newY = original.getY() - offsetY;
-				switch (direction) {
-				case Config.TUP:
-					startY -= moveSpeed;
-					newY -= moveSpeed;
-					if (startY < endY) {
-						startY = endY;
-					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Config.TDOWN:
-					startY += moveSpeed;
-					newY += moveSpeed;
-					if (startY > endY) {
-						startY = endY;
-					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Config.TLEFT:
-					startX -= moveSpeed;
-					newX -= moveSpeed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					break;
-				case Config.TRIGHT:
-					startX += moveSpeed;
-					newX += moveSpeed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					break;
-				case Config.UP:
-					startX += moveSpeed;
-					startY -= moveSpeed;
-					newX += moveSpeed;
-					newY -= moveSpeed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Config.DOWN:
-					startX -= moveSpeed;
-					startY += moveSpeed;
-					newX -= moveSpeed;
-					newY += moveSpeed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Config.LEFT:
-					startX -= moveSpeed;
-					startY -= moveSpeed;
-					newX -= moveSpeed;
-					newY -= moveSpeed;
-					if (startX < endX) {
-						startX = endX;
-					}
-					if (startY < endY) {
-						startY = endY;
-					}
-					if (newX < endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY < endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
-				case Config.RIGHT:
-					startX += moveSpeed;
-					startY += moveSpeed;
-					newX += moveSpeed;
-					newY += moveSpeed;
-					if (startX > endX) {
-						startX = endX;
-					}
-					if (startY > endY) {
-						startY = endY;
-					}
-					if (newX > endX) {
-						newX = endX;
-						isMoved = false;
-					}
-					if (newY > endY) {
-						newY = endY;
-						isMoved = false;
-					}
-					break;
+			newX = original.getX() - offsetX;
+			newY = original.getY() - offsetY;
+			switch (direction) {
+			case Config.TUP:
+				startY -= moveSpeed;
+				newY -= moveSpeed;
+				if (startY < endY) {
+					startY = endY;
 				}
-				if (!checkTileCollision(layerMap, original, newX, newY)) {
-					synchronized (original) {
-						newX += offsetX;
-						newY += offsetY;
-						movePathPos(newX, newY);
-					}
+				if (newY < endY) {
+					newY = endY;
+					isMoved = false;
 				}
+				break;
+			case Config.TDOWN:
+				startY += moveSpeed;
+				newY += moveSpeed;
+				if (startY > endY) {
+					startY = endY;
+				}
+				if (newY > endY) {
+					newY = endY;
+					isMoved = false;
+				}
+				break;
+			case Config.TLEFT:
+				startX -= moveSpeed;
+				newX -= moveSpeed;
+				if (startX < endX) {
+					startX = endX;
+				}
+				if (newX < endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				break;
+			case Config.TRIGHT:
+				startX += moveSpeed;
+				newX += moveSpeed;
+				if (startX > endX) {
+					startX = endX;
+				}
+				if (newX > endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				break;
+			case Config.UP:
+				startX += moveSpeed;
+				startY -= moveSpeed;
+				newX += moveSpeed;
+				newY -= moveSpeed;
+				if (startX > endX) {
+					startX = endX;
+				}
+				if (startY < endY) {
+					startY = endY;
+				}
+				if (newX > endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				if (newY < endY) {
+					newY = endY;
+					isMoved = false;
+				}
+				break;
+			case Config.DOWN:
+				startX -= moveSpeed;
+				startY += moveSpeed;
+				newX -= moveSpeed;
+				newY += moveSpeed;
+				if (startX < endX) {
+					startX = endX;
+				}
+				if (startY > endY) {
+					startY = endY;
+				}
+				if (newX < endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				if (newY > endY) {
+					newY = endY;
+					isMoved = false;
+				}
+				break;
+			case Config.LEFT:
+				startX -= moveSpeed;
+				startY -= moveSpeed;
+				newX -= moveSpeed;
+				newY -= moveSpeed;
+				if (startX < endX) {
+					startX = endX;
+				}
+				if (startY < endY) {
+					startY = endY;
+				}
+				if (newX < endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				if (newY < endY) {
+					newY = endY;
+					isMoved = false;
+				}
+				break;
+			case Config.RIGHT:
+				startX += moveSpeed;
+				startY += moveSpeed;
+				newX += moveSpeed;
+				newY += moveSpeed;
+				if (startX > endX) {
+					startX = endX;
+				}
+				if (startY > endY) {
+					startY = endY;
+				}
+				if (newX > endX) {
+					newX = endX;
+					isMoved = false;
+				}
+				if (newY > endY) {
+					newY = endY;
+					isMoved = false;
+				}
+				break;
+			}
+			if (!checkTileCollision(layerMap, original, newX, newY)) {
+				newX += offsetX;
+				newY += offsetY;
+				movePathPos(newX, newY);
 			}
 		}
 		if (process_delay_time <= 0) {
@@ -741,15 +731,13 @@ public class MoveTo extends ActionEvent {
 
 	public Vector2f nextPos() {
 		if (pActorPath != null) {
-			synchronized (pActorPath) {
-				int size = pActorPath.size;
-				if (size > 0) {
-					pLocation.set(endX, endY);
-				} else {
-					pLocation.set(original.getX(), original.getY());
-				}
-				return pLocation;
+			int size = pActorPath.size;
+			if (size > 0) {
+				pLocation.set(endX, endY);
+			} else {
+				pLocation.set(original.getX(), original.getY());
 			}
+			return pLocation;
 		} else {
 			pLocation.set(original.getX(), original.getY());
 			return pLocation;

@@ -144,7 +144,7 @@ public class DefineMoveTo extends ActionEvent {
 	public void updatePath() {
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
-				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
+				&& layerMap != null && !layerMap.insidePixel(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
 			setMoveByMode(true);
 			return;
 		} else if (moveByMode) {

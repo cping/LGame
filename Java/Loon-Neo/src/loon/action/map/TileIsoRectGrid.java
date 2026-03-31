@@ -174,7 +174,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TileIsoRectGrid(int row, int col, float px, float py, float tw, float th, float angle, boolean sin) {
-		this._grids = new TileIsoRect[col][row];
+		this._grids = new TileIsoRect[row][col];
 		this._rows = row;
 		this._cols = col;
 		this._initAngle = angle;
@@ -364,8 +364,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		if (updateTrans) {
 			g.translate(offx, offy);
 		}
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				if (_showCoordinate) {
 					_grids[x][y].draw(g, x + "," + y, _fontColor);
 				} else {
@@ -437,8 +437,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 			newHalfTileWidth = tw / 2f + newX / 2f;
 			newHalfTileHeight = th / 2f + newY / 2f;
 		}
-		for (int x = 0; x < col; x++) {
-			for (int y = 0; y < row; y++) {
+		for (int x = 0; x < row; x++) {
+			for (int y = 0; y < col; y++) {
 				float hx = px + (x + y) * newHalfTileWidth;
 				float hy = 0;
 				if (newAngle < 1f) {
@@ -491,8 +491,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TileIsoRect pixelToTile(float px, float py) {
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && rect.isVisible() && rect.getRect().contains(px, py)) {
 					return rect;
@@ -503,8 +503,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TileIsoRectGrid displayIDs(int id, boolean v) {
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && id == rect.getId()) {
 					rect.setVisible(v);
@@ -515,8 +515,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TileIsoRectGrid displayFlags(int flag, boolean v) {
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && flag == rect.getFlag()) {
 					rect.setVisible(v);
@@ -530,8 +530,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		if (tag == null) {
 			return this;
 		}
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && (tag == rect.getTag() || tag.equals(rect.getTag()))) {
 					rect.setVisible(v);
@@ -543,8 +543,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 
 	public TArray<TileIsoRect> findID(int id) {
 		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && rect.isVisible() && id == rect.getId()) {
 					rects.add(rect);
@@ -556,8 +556,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 
 	public TArray<TileIsoRect> findFlag(int flag) {
 		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && rect.isVisible() && flag == rect.getFlag()) {
 					rects.add(rect);
@@ -572,8 +572,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 			return new TArray<TileIsoRect>();
 		}
 		final TArray<TileIsoRect> rects = new TArray<TileIsoRect>();
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				TileIsoRect rect = _grids[x][y];
 				if (rect != null && rect.isVisible() && (tag == rect.getTag() || tag.equals(rect.getTag()))) {
 					rects.add(rect);
@@ -816,8 +816,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	}
 
 	public TileIsoRectGrid setFill(boolean f) {
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				_grids[x][y].setFill(f);
 			}
 		}
@@ -846,9 +846,9 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	@Override
 	public Field2D getField2D() {
 		if (_field2d == null) {
-			int[][] maps = new int[_cols][_rows];
-			for (int x = 0; x < _cols; x++) {
-				for (int y = 0; y < _rows; y++) {
+			int[][] maps = new int[_rows][_cols];
+			for (int x = 0; x < _rows; x++) {
+				for (int y = 0; y < _cols; y++) {
 					TileIsoRect rect = _grids[x][y];
 					if (rect != null) {
 						if (!rect.isVisible()) {
@@ -864,7 +864,7 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 		} else {
 			for (int x = 0; x < _rows; x++) {
 				for (int y = 0; y < _cols; y++) {
-					TileIsoRect rect = _grids[y][x];
+					TileIsoRect rect = _grids[x][y];
 					if (rect != null) {
 						if (!rect.isVisible()) {
 							_field2d.setTileType(x, y, -1);
@@ -1321,8 +1321,8 @@ public class TileIsoRectGrid extends LObject<ISprite> implements Sized, ISprite 
 	protected void _onDestroy() {
 		_visible = false;
 		_roll = false;
-		for (int x = 0; x < _cols; x++) {
-			for (int y = 0; y < _rows; y++) {
+		for (int x = 0; x < _rows; x++) {
+			for (int y = 0; y < _cols; y++) {
 				_grids[x][y].close();
 			}
 		}

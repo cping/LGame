@@ -1337,6 +1337,12 @@ public final class LColor implements Serializable {
 
 	public static final LColor darkGray = new LColor(0.3f, 0.3f, 0.3f, 1.0f, true);
 
+	public static final LColor darkRed = new LColor(0.55f, 0f, 0f, 1.0f, true);
+
+	public static final LColor darkYellow = new LColor(0.8f, 0.8f, 0f, 1.0f, true);
+
+	public static final LColor darkBlue = new LColor(0f, 0f, 0.55f, 1.0f, true);
+
 	public static final LColor lightGray = new LColor(0.7f, 0.7f, 0.7f, 1.0f, true);
 
 	public static final LColor pink = new LColor(1.0f, 0.7f, 0.7f, 1.0f, true);

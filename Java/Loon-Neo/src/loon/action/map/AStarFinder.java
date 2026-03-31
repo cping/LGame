@@ -427,10 +427,11 @@ public class AStarFinder implements Updateable, LRelease {
 				} else {
 					_openList.add(next);
 				}
-
 				TArray<Vector2f> pathList = new TArray<Vector2f>(spath.pathList);
 				pathList.add(next);
-				float score = spath.score + _findHeuristic.getScore(_goal.x, _goal.y, next.x, next.y);
+				float score = spath.score + _findHeuristic.getScore(_goal.x, _goal.y, next.x, next.y)
+						+ map.getCost(next.x(), next.y());
+				;
 				insert(score, pathList);
 			}
 		}

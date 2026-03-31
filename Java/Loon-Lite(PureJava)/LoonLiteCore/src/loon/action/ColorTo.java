@@ -116,9 +116,7 @@ public class ColorTo extends ActionEvent {
 		currentBlue = slopeBlue * easeTimer.getTimeInAfter() + startBlue;
 		currentAlpha = slopeAlpha * easeTimer.getTimeInAfter() + startAlpha;
 
-		synchronized (original) {
-			original.setColor(getCurrentColor());
-		}
+		original.setColor(getCurrentColor());
 	}
 
 	private void setColors(LColor startColor, LColor endColor) {

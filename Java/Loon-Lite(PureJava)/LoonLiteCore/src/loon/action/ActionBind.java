@@ -27,67 +27,67 @@ import loon.geom.RectBox;
 /**
  * Loon核心接口之一，实现此接口者，才可以通过action包统一操作(接口不要求全部实现 ，但只有实现了的部分，才能进行相应的动作)
  */
- public interface ActionBind {
+public interface ActionBind {
 
-	 Field2D getField2D();
+	Field2D getField2D();
 
-	 void setVisible(boolean v);
+	void setVisible(boolean v);
 
-	 boolean isVisible();
+	boolean isVisible();
 
-	 int x();
+	int x();
 
-	 int y();
+	int y();
 
-	 float getX();
+	float getX();
 
-	 float getY();
+	float getY();
 
-	 float getScaleX();
+	float getScaleX();
 
-	 float getScaleY();
+	float getScaleY();
 
-	 void setColor(LColor color);
+	void setColor(LColor color);
 
-	 LColor getColor();
+	LColor getColor();
 
-	 void setScale(float sx, float sy);
+	void setScale(float sx, float sy);
 
-	 float getRotation();
+	float getRotation();
 
-	 void setRotation(float r);
+	void setRotation(float r);
 
-	 float getWidth();
+	float getWidth();
 
-	 float getHeight();
+	float getHeight();
 
-	 ActionBind setSize(float w, float h);
+	ActionBind setSize(float w, float h);
 
-	 float getAlpha();
+	float getAlpha();
 
-	 void setAlpha(float alpha);
+	void setAlpha(float alpha);
 
-	 void setLocation(float x, float y);
+	void setLocation(float x, float y);
 
-	 void setX(float x);
+	void setX(float x);
 
-	 void setY(float y);
+	void setY(float y);
 
-	 boolean isBounded();
+	boolean isBounded();
 
-	 boolean isContainer();
+	boolean isContainer();
 
-	 boolean inContains(float x, float y, float w, float h);
+	boolean inContains(float x, float y, float w, float h);
 
-	 RectBox getRectBox();
+	RectBox getRectBox();
 
-	 float getContainerWidth();
+	float getContainerWidth();
 
-	 float getContainerHeight();
+	float getContainerHeight();
 
-	 ActionTween selfAction();
+	ActionTween selfAction();
 
-	 boolean isActionCompleted();
-	
-	 int getLayer();
+	boolean isActionCompleted();
+
+	int getLayer();
 }

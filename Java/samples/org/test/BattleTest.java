@@ -23,6 +23,8 @@ package org.test;
 import loon.LTexture;
 import loon.Stage;
 import loon.action.map.Field2D;
+import loon.action.map.TileIsoHighlighter;
+import loon.action.map.TileIsoHighlighter.EffectType;
 import loon.action.map.battle.BattleMap;
 import loon.action.map.battle.BattleMapGenerator;
 import loon.action.map.battle.BattleMapObject;
@@ -30,10 +32,12 @@ import loon.action.map.battle.BattlePathFinder.PathResult;
 import loon.action.map.battle.BattleTileMake;
 import loon.action.map.battle.BattleTileMake.TileAnimation;
 import loon.action.map.battle.BattleTileType;
+import loon.action.map.battle.BattleType.RangeType;
 import loon.action.sprite.Animation;
 import loon.canvas.LColor;
 import loon.events.GameEventBus;
 import loon.events.GameEventType;
+import loon.geom.Vector2f;
 import loon.opengl.TextureUtils;
 import loon.utils.ISOUtils.IsoConfig;
 
@@ -50,7 +54,7 @@ public class BattleTest extends Stage {
 		// 瓦片大小32x32
 		config.setTileSize(32, 32);
 		// 显示时按照缩放2倍处理
-	    // config.setScale(2f);
+		// config.setScale(2f);
 		// 构建一个随机地图，瓦片数量32x24
 		BattleMapGenerator generator = new BattleMapGenerator(32, 24);
 
@@ -75,7 +79,7 @@ public class BattleTest extends Stage {
 		// int[][] maps = TileMapConfig.loadAthwartArray("battle.txt");
 
 		Field2D map = new Field2D(maps, 32, 32);
-		
+
 		// 构建一个简易的 BattleTileMake 类，用于绑定斜视瓦片与地图的映射关系(非必须，只是为了省事避免自己做地图时有用……)
 		BattleTileMake make = new BattleTileMake();
 		// 拆分图片为纹理数组
@@ -107,14 +111,21 @@ public class BattleTest extends Stage {
 		BattleMap newMap = new BattleMap(make, map, this, bus, config);
 		// 实际构建地图(因为构建方式可能不同，所以不会自动构建。比如目前演示为随机地图，但也允许直接注入BattleTile数组制作固定地图,精确设定每块瓦片的图片样式参数等)
 		newMap.createMap(new GameEventBus<PathResult>(), new GameEventBus<BattleMapObject>());
-		
+		// 获得瓦片高亮特效控制器
+		// TileIsoHighlighter highlighter= newMap.getTileHighlighter();
+
+		// newMap.setOtherGrid(true);
+		// newMap.setDrawGrid(true);
 		// 拖拽地图
 		drag((x, y) -> {
 			newMap.scroll(x, y);
 		});
 		// 获得点中瓦片坐标
 		up((x, y) -> {
-			System.out.println(newMap.findTileXY(x, y));
+			// 以像素坐标,获得实际瓦片坐标
+			Vector2f pos = newMap.findTileXY(x, y);
+			// 产生一个圆形，范围大小为3，颜色象征攻击状态的高亮区域
+			newMap.highlighterRange(pos.x(), pos.y(), RangeType.CIRCLE, 3, EffectType.ATTACK);
 		});
 
 		add(newMap);

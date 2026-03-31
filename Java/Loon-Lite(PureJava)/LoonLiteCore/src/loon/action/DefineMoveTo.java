@@ -144,7 +144,7 @@ public class DefineMoveTo extends ActionEvent {
 	public void updatePath() {
 		if (!moveByMode && original != null && LSystem.getProcess() != null && LSystem.getProcess().getScreen() != null
 				&& !LSystem.getProcess().getScreen().getRectBox().contains(original.x(), original.y())
-				&& layerMap != null && !layerMap.inside(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
+				&& layerMap != null && !layerMap.insidePixel(original.x(), original.y())) { // 处理越界出Field2D二维数组的移动
 			setMoveByMode(true);
 			return;
 		} else if (moveByMode) {
@@ -324,267 +324,263 @@ public class DefineMoveTo extends ActionEvent {
 			if (original == null || layerPath == null || layerPath.size() == 0) {
 				return;
 			}
-			synchronized (layerPath) {
-				if (synchroLayerField) {
-					if (original != null) {
-						Field2D field = original.getField2D();
-						if (field != null && layerMap != field) {
-							this.layerMap = field;
-						}
+			if (synchroLayerField) {
+				if (original != null) {
+					Field2D field = original.getField2D();
+					if (field != null && layerMap != field) {
+						this.layerMap = field;
 					}
 				}
-				if (MathUtils.equal(startX, endX) && MathUtils.equal(startY, endY)) {
-					if (layerPath.size() > 1) {
-						Vector2f moveStart = layerPath.get(0);
-						Vector2f moveEnd = layerPath.get(1);
-						if (layerMap != null) {
-							startX = layerMap.tilesToWidthPixels(moveStart.x());
-							startY = layerMap.tilesToHeightPixels(moveStart.y());
-							endX = layerMap.tilesToWidthPixels(moveEnd.x());
-							endY = layerMap.tilesToHeightPixels(moveEnd.y());
-						} else {
-							startX = moveStart.getX();
-							startY = moveStart.getY();
-							endX = moveEnd.getX();
-							endY = moveEnd.getY();
-						}
-						moveX = moveEnd.getX() - moveStart.getX();
-						moveY = moveEnd.getY() - moveStart.getY();
-						updateDirection(moveX, moveY);
-					} else if (layerPath.size() == 1) {
-						Vector2f moveEnd = layerPath.pop();
-						float newEndX = endX;
-						float newEndY = endY;
-						if (layerMap != null) {
-							newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
-							newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
-						} else {
-							newEndX = moveEnd.getX();
-							newEndY = moveEnd.getY();
-						}
-						moveX = newEndX - endX;
-						moveY = newEndY - endY;
+			}
+			if (MathUtils.equal(startX, endX) && MathUtils.equal(startY, endY)) {
+				if (layerPath.size() > 1) {
+					Vector2f moveStart = layerPath.get(0);
+					Vector2f moveEnd = layerPath.get(1);
+					if (layerMap != null) {
+						startX = layerMap.tilesToWidthPixels(moveStart.x());
+						startY = layerMap.tilesToHeightPixels(moveStart.y());
+						endX = layerMap.tilesToWidthPixels(moveEnd.x());
+						endY = layerMap.tilesToHeightPixels(moveEnd.y());
+					} else {
+						startX = moveStart.getX();
+						startY = moveStart.getY();
+						endX = moveEnd.getX();
+						endY = moveEnd.getY();
 					}
-					if (layerPath.size() > 0) {
-						layerPath.removeIndex(0);
-					}
-				} else {
-					moveX = endX - startX;
-					moveY = endY - startY;
+					moveX = moveEnd.getX() - moveStart.getX();
+					moveY = moveEnd.getY() - moveStart.getY();
 					updateDirection(moveX, moveY);
+				} else if (layerPath.size() == 1) {
+					Vector2f moveEnd = layerPath.pop();
+					float newEndX = endX;
+					float newEndY = endY;
+					if (layerMap != null) {
+						newEndX = layerMap.tilesToWidthPixels(moveEnd.x());
+						newEndY = layerMap.tilesToHeightPixels(moveEnd.y());
+					} else {
+						newEndX = moveEnd.getX();
+						newEndY = moveEnd.getY();
+					}
+					moveX = newEndX - endX;
+					moveY = newEndY - endY;
 				}
+				if (layerPath.size() > 0) {
+					layerPath.removeIndex(0);
+				}
+			} else {
+				moveX = endX - startX;
+				moveY = endY - startY;
+				updateDirection(moveX, moveY);
+			}
 
-				newX = original.getX() - offsetX;
-				newY = original.getY() - offsetY;
+			newX = original.getX() - offsetX;
+			newY = original.getY() - offsetY;
 
-				if (allDir) {
-					switch (direction) {
-					case Field2D.TUP:
-						startY -= moveSpeed;
-						newY -= moveSpeed;
-						if (startY < endY) {
-							startY = endY;
-						}
-						if (newY < endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TDOWN:
-						startY += moveSpeed;
-						newY += moveSpeed;
-						if (startY > endY) {
-							startY = endY;
-						}
-						if (newY > endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TLEFT:
-						startX -= moveSpeed;
-						newX -= moveSpeed;
-						if (startX < endX) {
-							startX = endX;
-						}
-						if (newX < endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TRIGHT:
-						startX += moveSpeed;
-						newX += moveSpeed;
-						if (startX > endX) {
-							startX = endX;
-						}
-						if (newX > endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						break;
-					case Field2D.UP:
-						startX += moveSpeed;
-						startY -= moveSpeed;
-						newX += moveSpeed;
-						newY -= moveSpeed;
-						if (startX > endX) {
-							startX = endX;
-						}
-						if (startY < endY) {
-							startY = endY;
-						}
-						if (newX > endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						if (newY < endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.DOWN:
-						startX -= moveSpeed;
-						startY += moveSpeed;
-						newX -= moveSpeed;
-						newY += moveSpeed;
-						if (startX < endX) {
-							startX = endX;
-						}
-						if (startY > endY) {
-							startY = endY;
-						}
-						if (newX < endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						if (newY > endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.LEFT:
-						startX -= moveSpeed;
-						startY -= moveSpeed;
-						newX -= moveSpeed;
-						newY -= moveSpeed;
-						if (startX < endX) {
-							startX = endX;
-						}
-						if (startY < endY) {
-							startY = endY;
-						}
-						if (newX < endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						if (newY < endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.RIGHT:
-						startX += moveSpeed;
-						startY += moveSpeed;
-						newX += moveSpeed;
-						newY += moveSpeed;
-						if (startX > endX) {
-							startX = endX;
-						}
-						if (startY > endY) {
-							startY = endY;
-						}
-						if (newX > endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						if (newY > endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
+			if (allDir) {
+				switch (direction) {
+				case Field2D.TUP:
+					startY -= moveSpeed;
+					newY -= moveSpeed;
+					if (startY < endY) {
+						startY = endY;
 					}
-				} else {
-					switch (direction) {
-					case Field2D.TUP:
-					case Field2D.UP:
-						startY -= moveSpeed;
-						newY -= moveSpeed;
-						if (startY < endY) {
-							startY = endY;
-						}
-						if (newY < endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TDOWN:
-					case Field2D.DOWN:
-						startY += moveSpeed;
-						newY += moveSpeed;
-						if (startY > endY) {
-							startY = endY;
-						}
-						if (newY > endY) {
-							newY = endY;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TLEFT:
-					case Field2D.LEFT:
-						startX -= moveSpeed;
-						newX -= moveSpeed;
-						if (startX < endX) {
-							startX = endX;
-						}
-						if (newX < endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						break;
-					case Field2D.TRIGHT:
-					case Field2D.RIGHT:
-						startX += moveSpeed;
-						newX += moveSpeed;
-						if (startX > endX) {
-							startX = endX;
-						}
-						if (newX > endX) {
-							newX = endX;
-							isMoved = false;
-						}
-						break;
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
 					}
-					if (!isMoved) {
-						float offV = 0f;
-						if (!MathUtils.equal(endX, startX)) {
-							offV = (endX - startX);
-							if (offV > 0) {
-								direction = Field2D.TRIGHT;
-							}
-							if (offV < 0) {
-								direction = Field2D.TLEFT;
-							}
+					break;
+				case Field2D.TDOWN:
+					startY += moveSpeed;
+					newY += moveSpeed;
+					if (startY > endY) {
+						startY = endY;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TLEFT:
+					startX -= moveSpeed;
+					newX -= moveSpeed;
+					if (startX < endX) {
+						startX = endX;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TRIGHT:
+					startX += moveSpeed;
+					newX += moveSpeed;
+					if (startX > endX) {
+						startX = endX;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					break;
+				case Field2D.UP:
+					startX += moveSpeed;
+					startY -= moveSpeed;
+					newX += moveSpeed;
+					newY -= moveSpeed;
+					if (startX > endX) {
+						startX = endX;
+					}
+					if (startY < endY) {
+						startY = endY;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.DOWN:
+					startX -= moveSpeed;
+					startY += moveSpeed;
+					newX -= moveSpeed;
+					newY += moveSpeed;
+					if (startX < endX) {
+						startX = endX;
+					}
+					if (startY > endY) {
+						startY = endY;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.LEFT:
+					startX -= moveSpeed;
+					startY -= moveSpeed;
+					newX -= moveSpeed;
+					newY -= moveSpeed;
+					if (startX < endX) {
+						startX = endX;
+					}
+					if (startY < endY) {
+						startY = endY;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.RIGHT:
+					startX += moveSpeed;
+					startY += moveSpeed;
+					newX += moveSpeed;
+					newY += moveSpeed;
+					if (startX > endX) {
+						startX = endX;
+					}
+					if (startY > endY) {
+						startY = endY;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				}
+			} else {
+				switch (direction) {
+				case Field2D.TUP:
+				case Field2D.UP:
+					startY -= moveSpeed;
+					newY -= moveSpeed;
+					if (startY < endY) {
+						startY = endY;
+					}
+					if (newY < endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TDOWN:
+				case Field2D.DOWN:
+					startY += moveSpeed;
+					newY += moveSpeed;
+					if (startY > endY) {
+						startY = endY;
+					}
+					if (newY > endY) {
+						newY = endY;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TLEFT:
+				case Field2D.LEFT:
+					startX -= moveSpeed;
+					newX -= moveSpeed;
+					if (startX < endX) {
+						startX = endX;
+					}
+					if (newX < endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					break;
+				case Field2D.TRIGHT:
+				case Field2D.RIGHT:
+					startX += moveSpeed;
+					newX += moveSpeed;
+					if (startX > endX) {
+						startX = endX;
+					}
+					if (newX > endX) {
+						newX = endX;
+						isMoved = false;
+					}
+					break;
+				}
+				if (!isMoved) {
+					float offV = 0f;
+					if (!MathUtils.equal(endX, startX)) {
+						offV = (endX - startX);
+						if (offV > 0) {
+							direction = Field2D.TRIGHT;
 						}
-						if (!MathUtils.equal(endY, startY)) {
-							offV = (endY - startY);
-							if (offV > 0) {
-								direction = Field2D.TDOWN;
-							}
-							if (offV < 0) {
-								direction = Field2D.TUP;
-							}
+						if (offV < 0) {
+							direction = Field2D.TLEFT;
+						}
+					}
+					if (!MathUtils.equal(endY, startY)) {
+						offV = (endY - startY);
+						if (offV > 0) {
+							direction = Field2D.TDOWN;
+						}
+						if (offV < 0) {
+							direction = Field2D.TUP;
 						}
 					}
 				}
+			}
 
-				if (!checkTileCollision(layerMap, original, newX, newY)) {
-					synchronized (original) {
-						newX += offsetX;
-						newY += offsetY;
-						movePathPos(newX, newY);
-					}
-				}
+			if (!checkTileCollision(layerMap, original, newX, newY)) {
+				newX += offsetX;
+				newY += offsetY;
+				movePathPos(newX, newY);
 			}
 		}
 		isMoved = !_isCompleted;
@@ -623,15 +619,13 @@ public class DefineMoveTo extends ActionEvent {
 
 	public Vector2f nextPos() {
 		if (layerPath != null) {
-			synchronized (layerPath) {
-				int size = layerPath.size();
-				if (size > 0) {
-					pLocation.set(endX, endY);
-				} else {
-					pLocation.set(original.getX(), original.getY());
-				}
-				return pLocation;
+			int size = layerPath.size();
+			if (size > 0) {
+				pLocation.set(endX, endY);
+			} else {
+				pLocation.set(original.getX(), original.getY());
 			}
+			return pLocation;
 		} else {
 			pLocation.set(original.getX(), original.getY());
 			return pLocation;

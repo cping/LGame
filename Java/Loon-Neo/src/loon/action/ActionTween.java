@@ -528,7 +528,7 @@ public final class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float endX, float endY, boolean flag, float speed, float offsetX,
 			float offsetY, int delayTime, ActionListener l) {
-		if (map != null && map.inside(endX, endY)) {
+		if (map != null && map.insidePixel(endX, endY)) {
 			MoveTo move = new MoveTo(map, endX, endY, flag, speed, delayTime);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);
@@ -559,7 +559,7 @@ public final class ActionTween extends ActionTweenBase<ActionTween> {
 
 	public ActionTween moveTo(Field2D map, float startX, float startY, float endX, float endY, int delayTime,
 			boolean flag, float speed, float offsetX, float offsetY, ActionListener l) {
-		if (map != null && map.inside(endX, endY)) {
+		if (map != null && map.insidePixel(endX, endY)) {
 			MoveTo move = new MoveTo(map, startX, startY, endX, endY, flag, speed, true, false, delayTime);
 			move.setDelay(0);
 			move.setOffset(offsetX, offsetY);

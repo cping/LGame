@@ -89,43 +89,40 @@ public class FollowTo extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		synchronized (original) {
-
-			if (!this._started) {
-				this._started = true;
-				this._dir = this._end.sub(this._currentPos).normalizeNew();
-			}
-
-			float actorToFollowSpeed = MathUtils
-					.sqrt(MathUtils.pow(this._velocityX, 2) + MathUtils.pow(this._velocityY, 2));
-			if (actorToFollowSpeed != 0f) {
-				this._speed = actorToFollowSpeed;
-			}
-
-			this._currentPos.x = this.original.getX();
-			this._currentPos.y = this.original.getY();
-
-			this._end.x = this._actorToFollow.getX();
-			this._end.y = this._actorToFollow.getY();
+		if (!this._started) {
+			this._started = true;
 			this._dir = this._end.sub(this._currentPos).normalizeNew();
+		}
 
-			Vector2f v = this._dir.scale(this._speed);
+		float actorToFollowSpeed = MathUtils
+				.sqrt(MathUtils.pow(this._velocityX, 2) + MathUtils.pow(this._velocityY, 2));
+		if (actorToFollowSpeed != 0f) {
+			this._speed = actorToFollowSpeed;
+		}
 
-			_newX = (_currentPos.x + v.x);
-			_newY = (_currentPos.y + v.y);
+		this._currentPos.x = this.original.getX();
+		this._currentPos.y = this.original.getY();
 
-			updateDirection(MathUtils.ifloor(_newX - this._currentPos.x), MathUtils.ifloor(_newY - this._currentPos.y));
-			if (original.getRectBox().intersects(_actorToFollow.getRectBox())
-					|| original.getRectBox().contains(_actorToFollow.getRectBox())) {
-				_isCompleted = true;
-			} else {
-				if (_field2d != null) {
-					if (!checkTileCollision(_field2d, original, _newX, _newY)) {
-						movePos(_newX + offsetX, _newY + offsetY);
-					}
-				} else {
+		this._end.x = this._actorToFollow.getX();
+		this._end.y = this._actorToFollow.getY();
+		this._dir = this._end.sub(this._currentPos).normalizeNew();
+
+		Vector2f v = this._dir.scale(this._speed);
+
+		_newX = (_currentPos.x + v.x);
+		_newY = (_currentPos.y + v.y);
+
+		updateDirection(MathUtils.ifloor(_newX - this._currentPos.x), MathUtils.ifloor(_newY - this._currentPos.y));
+		if (original.getRectBox().intersects(_actorToFollow.getRectBox())
+				|| original.getRectBox().contains(_actorToFollow.getRectBox())) {
+			_isCompleted = true;
+		} else {
+			if (_field2d != null) {
+				if (!checkTileCollision(_field2d, original, _newX, _newY)) {
 					movePos(_newX + offsetX, _newY + offsetY);
 				}
+			} else {
+				movePos(_newX + offsetX, _newY + offsetY);
 			}
 		}
 	}

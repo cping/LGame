@@ -125,20 +125,17 @@ public class TransferTo extends ActionEvent {
 		}
 		currentPosition = _easeTimer.getProgress() * travelDistance + startPos;
 		if (original != null) {
-			synchronized (original) {
-				if (this.controllingX && this.controllingY) {
-					movePos(getCurrentPos() + offsetX, getCurrentPos() + offsetY);
-					return;
-				}
-				if (this.controllingX) {
-					movePos(getCurrentPos() + offsetX, original.getY());
-				}
-				if (this.controllingY) {
-					movePos(original.getX(), getCurrentPos() + offsetY);
-				}
+			if (this.controllingX && this.controllingY) {
+				movePos(getCurrentPos() + offsetX, getCurrentPos() + offsetY);
+				return;
+			}
+			if (this.controllingX) {
+				movePos(getCurrentPos() + offsetX, original.getY());
+			}
+			if (this.controllingY) {
+				movePos(original.getX(), getCurrentPos() + offsetY);
 			}
 		}
-
 	}
 
 	public float getCurrentPos() {

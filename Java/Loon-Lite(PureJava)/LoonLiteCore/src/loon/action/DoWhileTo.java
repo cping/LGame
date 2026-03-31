@@ -28,13 +28,9 @@ import loon.utils.StringKeyValue;
  * 
  * example:
  * 
- * Counter count = new Counter();
- *				e.selfAction().sizeTo(80, 80).doWhile(ref -> {
- *					if (ref.update(count.getValue() <= 100)) {
- *						label.setText("testing:" + count.getValue());
- *						count.increment();
- *					}
- *				}).sizeTo(32, 32).start();
+ * Counter count = new Counter(); e.selfAction().sizeTo(80, 80).doWhile(ref -> {
+ * if (ref.update(count.getValue() <= 100)) { label.setText("testing:" +
+ * count.getValue()); count.increment(); } }).sizeTo(32, 32).start();
  */
 public class DoWhileTo extends ActionEvent {
 

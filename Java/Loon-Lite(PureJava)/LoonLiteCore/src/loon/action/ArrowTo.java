@@ -125,14 +125,12 @@ public class ArrowTo extends ActionEvent {
 		if (this._isCompleted) {
 			return;
 		}
-		synchronized (original) {
-			float slope = vy / vx;
-			float theta = MathUtils.atan(slope);
-			original.setRotation(MathUtils.toDegrees(theta));
-			movePos(currentX + offsetX, currentY + offsetY);
-		}
+		float slope = vy / vx;
+		float theta = MathUtils.atan(slope);
+		original.setRotation(MathUtils.toDegrees(theta));
+		movePos(currentX + offsetX, currentY + offsetY);
 	}
-	
+
 	public int getDirection() {
 		return dir;
 	}

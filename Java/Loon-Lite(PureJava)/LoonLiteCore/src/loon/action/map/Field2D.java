@@ -36,6 +36,7 @@ import loon.geom.Vector2f;
 import loon.utils.CollectionUtils;
 import loon.utils.IArray;
 import loon.utils.IntArray;
+import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.StrBuilder;
 import loon.utils.TArray;
@@ -84,6 +85,8 @@ public class Field2D implements IArray, Config, LRelease {
 	private boolean _mapDirty;
 
 	private TileCollisionListener _tileCollisionListener;
+
+	private IntMap<Integer> _costMap;
 
 	public Object Tag;
 
@@ -1159,12 +1162,20 @@ public class Field2D implements IArray, Config, LRelease {
 		return this._allowMove;
 	}
 
-	public boolean inside(int x, int y) {
+	public boolean insidePixel(int x, int y) {
 		return CollisionHelper.intersects(0, 0, getDrawWidth(), getDrawHeight(), x, y);
 	}
 
+	public boolean insidePixel(float x, float y) {
+		return insidePixel((int) x, (int) y);
+	}
+
+	public boolean inside(int x, int y) {
+		return contains(x, y);
+	}
+
 	public boolean inside(float x, float y) {
-		return inside((int) x, (int) y);
+		return contains((int) x, (int) y);
 	}
 
 	public boolean isHit(Vector2f point) {
@@ -1740,6 +1751,40 @@ public class Field2D implements IArray, Config, LRelease {
 		return y + row * _tileHeight + (midpoint ? _tileHeight * 0.5f : 0f);
 	}
 
+	public Field2D clearCost() {
+		if (_costMap != null) {
+			_costMap.clear();
+		}
+		return this;
+	}
+
+	public Field2D setCost(int x, int y, int cost) {
+		if (contains(x, y)) {
+			if (_costMap == null) {
+				_costMap = new IntMap<Integer>();
+			}
+			int hashCode = 1;
+			hashCode = LSystem.unite(hashCode, x);
+			hashCode = LSystem.unite(hashCode, y);
+			_costMap.put(hashCode, Integer.valueOf(cost));
+		}
+		return this;
+	}
+
+	public int getCost(int x, int y) {
+		if (contains(x, y) && _costMap != null) {
+			int hashCode = 1;
+			hashCode = LSystem.unite(hashCode, x);
+			hashCode = LSystem.unite(hashCode, y);
+			Integer v = _costMap.get(hashCode);
+			if (v != null) {
+				return v.intValue();
+			}
+			return 0;
+		}
+		return 0;
+	}
+
 	@Override
 	public boolean isEmpty() {
 		return _mapArrays == null || _mapArrays.length == 0;
@@ -1798,6 +1843,9 @@ public class Field2D implements IArray, Config, LRelease {
 	public void close() {
 		if (_mapArrays != null) {
 			_mapArrays = null;
+		}
+		if (_costMap != null) {
+			_costMap = null;
 		}
 	}
 

@@ -35,11 +35,15 @@ import loon.action.map.Direction;
 import loon.action.map.Field2D;
 import loon.action.map.TileMapCollision;
 import loon.action.map.Field2D.MapSwitchMaker;
+import loon.action.map.TileIsoHighlighter;
+import loon.action.map.TileIsoHighlighter.EffectType;
+import loon.action.map.TileIsoRectGrid;
 import loon.action.map.battle.BattlePathFinder.PathResult;
 import loon.action.map.battle.BattleTile.EffectService;
 import loon.action.map.battle.BattleTile.SkillService;
 import loon.action.map.battle.BattleTileMake.TileAnimation;
 import loon.action.map.battle.BattleType.ObjectState;
+import loon.action.map.battle.BattleType.RangeType;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.SpriteCollisionListener;
@@ -150,6 +154,18 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 
 	private IsoResult _tempIsoResult = new IsoResult();
 
+	private final float[] _tempPx = new float[4];
+
+	private final float[] _tempPy = new float[4];
+
+	private LColor _drawGridColor = LColor.red;
+
+	private boolean _drawGrid, _useOtherGrid;
+
+	private TileIsoRectGrid _otherIsoGrid;
+
+	private final TileIsoHighlighter _highlighter = new TileIsoHighlighter();
+
 	public BattleMap(BattleTileMake make, Field2D field2d, Screen screen, GameEventBus<GameEventType> events,
 			IsoConfig config) {
 		this(make, field2d, 0, 0, screen, events, config);
@@ -171,7 +187,12 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		if (config == null) {
 			config = IsoConfig.defaultConfig();
 		}
-		this._field2d = field2d;
+		if (field2d != null) {
+			this._field2d = field2d;
+		} else {
+			this._field2d = new Field2D((int) (screenWidth / config.tileWidth),
+					(int) (screenHeight / config.tileHeight), (int) config.tileWidth, (int) config.tileHeight);
+		}
 		if (field2d != null && screenWidth == -1 && screenHeight == -1) {
 			this._pixelInWidth = field2d.getViewWidth();
 			this._pixelInHeight = field2d.getViewHeight();
@@ -191,11 +212,19 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		this._visible = _playAnimation = true;
 		this._mapSprites = new Sprites("BattleMapSprites", screen == null ? LSystem.getProcess().getScreen() : screen,
 				_pixelInWidth, _pixelInHeight);
+		final int row = _field2d == null ? MathUtils.iceil(_pixelInWidth / config.tileWidth) : _field2d.getWidth();
+		final int col = _field2d == null ? MathUtils.iceil(_pixelInHeight / config.tileHeight) : _field2d.getHeight();
 		if (x == 0 && y == 0) {
 			this.fixMapLocationToCenter();
 		} else {
 			this.setLocation(x, y);
 		}
+		this._otherIsoGrid = new TileIsoRectGrid(row, col, x, y, config.tileWidth * config.scaleX,
+				(config.tileHeight * config.scaleY) / 2f);
+	}
+
+	public TileIsoHighlighter getTileHighlighter() {
+		return _highlighter;
 	}
 
 	public void fixMapLocationToLeftTop() {
@@ -219,19 +248,115 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 	}
 
 	public void fixMapLocationToOrigin(String style) {
-		ObjectMap<String, Vector2f> offsets = ISOUtils.alignIsoMapOffsets(_field2d.getWidth(), _field2d.getHeight(),
-				_pixelInWidth, _pixelInHeight, _isoConfig);
+		setLocation(getMapLocationToOrigin(style));
+	}
+
+	public Vector2f getMapLocationToOrigin(String style) {
+		ObjectMap<String, Vector2f> offsets = _field2d != null
+				? ISOUtils.alignIsoMapOffsets(_field2d.getWidth(), _field2d.getHeight(), _pixelInWidth, _pixelInHeight,
+						_isoConfig)
+				: ISOUtils.alignIsoMapOffsets(MathUtils.ifloor(_pixelInWidth / _isoConfig.tileWidth),
+						MathUtils.ifloor(_pixelInHeight / _isoConfig.tileHeight), _pixelInWidth, _pixelInHeight,
+						_isoConfig);
 		if (offsets != null) {
 			Vector2f centerOffset = offsets.get(style);
 			if (centerOffset != null) {
-				setLocation(centerOffset);
+				return centerOffset;
 			}
 		}
+		return new Vector2f();
+	}
+
+	public TileIsoRectGrid getTileIsoRectGrid() {
+		return _otherIsoGrid;
+	}
+
+	public boolean isDrawGrid() {
+		return _drawGrid;
+	}
+
+	public BattleMap setDrawGrid(boolean v) {
+		this._drawGrid = v;
+		return this;
+	}
+
+	public boolean isOtherGrid() {
+		return _useOtherGrid;
+	}
+
+	public BattleMap setOtherGrid(boolean v) {
+		this._useOtherGrid = v;
+		return this;
+	}
+
+	public float getTileHighlighterSpeed() {
+		return _highlighter.getSpeed();
+	}
+
+	public TileIsoHighlighter setHighlighterSpeed(float v) {
+		return _highlighter.setSpeed(v);
+	}
+
+	public TileIsoHighlighter clearHighlighterEffect() {
+		_highlighter.clearEffect();
+		return _highlighter;
+	}
+
+	public TileIsoHighlighter updateAllHighlighterEffect(boolean fadeOut, boolean fadeIn, boolean breath,
+			LColor borderColor) {
+		_highlighter.updateAllEffect(fadeOut, fadeIn, breath, borderColor);
+		return _highlighter;
+	}
+
+	public void addHighlighterEffect(int x, int y, EffectType type) {
+		_highlighter.addEffect(x, y, type);
+	}
+
+	public void addHighlighterEffects(EffectType e, Vector2f... coords) {
+		_highlighter.addEffects(e, coords);
+	}
+
+	public void addHighlighterEffects(ObjectMap<TileIsoHighlighter.EffectType, TArray<Vector2f>> typeToCoords) {
+		_highlighter.addEffects(typeToCoords);
+	}
+
+	public void highlighterMoveRange(int startX, int startY, int movePower) {
+		_highlighter.generateMoveRange(startX, startY, movePower, _field2d);
+	}
+
+	public void highlighterMoveRange(int startX, int startY, int movePower, boolean allDir) {
+		_highlighter.generateMoveRange(startX, startY, movePower, _field2d, allDir);
+	}
+
+	public void highlighterRange(int centerX, int centerY, RangeType rangeType, int size, EffectType effect) {
+		_highlighter.generateRange(centerX, centerY, rangeType, size, _field2d, effect);
+	}
+
+	public void highlighterRange(int centerX, int centerY, RangeType rangeType, int size, EffectType effect,
+			boolean allDir) {
+		highlighterRange(centerX, centerY, rangeType, size, effect, null, allDir);
+	}
+
+	public void highlighterRange(int centerX, int centerY, RangeType rangeType, int size, EffectType effect,
+			TArray<PointI> paths, boolean allDir) {
+		_highlighter.generateRange(centerX, centerY, rangeType, size, _field2d, effect, paths, allDir);
+	}
+
+	public void highlighterRange(EffectType type, int startX, int startY, int minRange, int maxRange) {
+		_highlighter.generateRange(type, startX, startY, minRange, maxRange, _field2d);
+	}
+
+	public void highlighterRadius(EffectType type, int startX, int startY, int radius) {
+		_highlighter.generateRadius(type, startX, startY, radius, _field2d);
 	}
 
 	@Override
 	public void update(long elapsedTime) {
 		_deltaTime = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
+		_highlighter.update(_deltaTime);
+		if (_useOtherGrid && _otherIsoGrid != null) {
+			_otherIsoGrid.update(elapsedTime);
+		}
 		if (_mapSprites != null) {
 			_mapSprites.update(elapsedTime);
 		}
@@ -245,6 +370,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		createUI(g, 0f, 0f);
 	}
 
+	@Override
 	public void createUI(GLEx g, float offsetX, float offsetY) {
 		if (!_visible) {
 			return;
@@ -284,12 +410,12 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		endY += dynamicMarginY;
 		endX = MathUtils.min(endX, mapTileW);
 		endY = MathUtils.min(endY, mapTileH);
-		for (int i = startX; i < endX; i++) {
-			for (int j = startY; j < endY; j++) {
-				if (i < 0 || j < 0 || i >= mapTileW || j >= mapTileH) {
+		for (int x = startX; x < endX; x++) {
+			for (int y = startY; y < endY; y++) {
+				if (x < 0 || y < 0 || x >= mapTileW || y >= mapTileH) {
 					continue;
 				}
-				BattleTile tile = _mapTiles[i][j];
+				BattleTile tile = _mapTiles[x][y];
 				if (tile == null || !tile.isVisible) {
 					continue;
 				}
@@ -305,11 +431,46 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 					_lightColor.setColor(tile.brightness, tile.brightness, tile.brightness, 1f);
 				}
 				tile.paint(g, drawX, drawY, tileWidth, tileHeight, _lightColor);
+				_highlighter.renderTileHighlight(g, x, y, drawX, drawY, tileWidth, tileHeight);
+				if (_drawGrid) {
+					drawIsoTileBorder(g, drawX + tileWidth / 2 - 2, drawY + tileHeight / 2 - 2, tileWidth + 1,
+							tileHeight + 1, _drawGridColor);
+				}
 			}
+		}
+		if (_useOtherGrid && _otherIsoGrid != null) {
+			_otherIsoGrid.createUI(g, posOffsetX, posOffsetY);
 		}
 		if (_mapSprites != null) {
 			_mapSprites.paintPos(g, posOffsetX, posOffsetY);
 		}
+	}
+
+	public void drawIsoTileBorder(GLEx g, float centerX, float centerY, float tileWidth, float tileHeight,
+			LColor color) {
+		final float halfW = tileWidth / 2;
+		final float halfH = tileHeight / 4;
+		_tempPx[0] = centerX;
+		_tempPy[0] = centerY - halfH;
+		_tempPx[1] = centerX + halfW;
+		_tempPy[1] = centerY;
+		_tempPx[2] = centerX;
+		_tempPy[2] = centerY + halfH;
+		_tempPx[3] = centerX - halfW;
+		_tempPy[3] = centerY;
+		final int oldColor = g.color();
+		g.setColor(color);
+		g.drawPolygon(_tempPx, _tempPy, 4);
+		g.setColor(oldColor);
+	}
+
+	public LColor getDrawGridColor() {
+		return _drawGridColor;
+	}
+
+	public BattleMap setDrawGridColor(LColor c) {
+		_drawGridColor = c;
+		return this;
 	}
 
 	public void createMap(GameEventBus<PathResult> pathResult, GameEventBus<BattleMapObject> bus) {

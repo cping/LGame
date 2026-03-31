@@ -88,29 +88,26 @@ public class FlashScaleTo extends ActionEvent {
 	public void update(long elapsedTime) {
 		if (original != null) {
 			_easeTimer.update(elapsedTime);
-			synchronized (original) {
-				if (original != null) {
-					if (!_zooming && _startScale <= _endScale) {
-						_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
-						_scaleValue = _startScale + (_deltaScale * _delta);
-						original.setScale(_scaleValue, _scaleValue);
-						setAnchor(_scaleValue);
-						final float oldScaleValue = MathUtils.max(original.getScaleX(), original.getScaleY());
-						_zooming = (_deltaScale > 0 ? (oldScaleValue >= _endScale) : (oldScaleValue <= _endScale));
-						if (_zooming) {
-							_easeTimer.restart();
-							_delta = 0;
-							_deltaScale = _endScale - _startScale;
-						}
-					} else if (_zooming && _scaleValue >= _startScale) {
-						_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
-						_scaleValue = _endScale - (_deltaScale * _delta);
-						original.setScale(_scaleValue, _scaleValue);
-						setAnchor(_scaleValue);
-						final float oldScaleValue = MathUtils.max(original.getScaleX(), original.getScaleY());
-						_isCompleted = (_deltaScale > 0 ? (oldScaleValue <= _startScale)
-								: (oldScaleValue >= _startScale));
+			if (original != null) {
+				if (!_zooming && _startScale <= _endScale) {
+					_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
+					_scaleValue = _startScale + (_deltaScale * _delta);
+					original.setScale(_scaleValue, _scaleValue);
+					setAnchor(_scaleValue);
+					final float oldScaleValue = MathUtils.max(original.getScaleX(), original.getScaleY());
+					_zooming = (_deltaScale > 0 ? (oldScaleValue >= _endScale) : (oldScaleValue <= _endScale));
+					if (_zooming) {
+						_easeTimer.restart();
+						_delta = 0;
+						_deltaScale = _endScale - _startScale;
 					}
+				} else if (_zooming && _scaleValue >= _startScale) {
+					_delta += (MathUtils.max(Duration.toS(elapsedTime), _speed) * _easeTimer.getProgress());
+					_scaleValue = _endScale - (_deltaScale * _delta);
+					original.setScale(_scaleValue, _scaleValue);
+					setAnchor(_scaleValue);
+					final float oldScaleValue = MathUtils.max(original.getScaleX(), original.getScaleY());
+					_isCompleted = (_deltaScale > 0 ? (oldScaleValue <= _startScale) : (oldScaleValue >= _startScale));
 				}
 			}
 		} else {

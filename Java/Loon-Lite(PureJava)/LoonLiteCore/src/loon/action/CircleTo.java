@@ -30,7 +30,7 @@ public class CircleTo extends ActionEvent {
 	private float currentX;
 
 	private float currentY;
-	
+
 	private float startX = -1;
 
 	private float startY = -1;
@@ -91,9 +91,7 @@ public class CircleTo extends ActionEvent {
 		final float angle = MathUtils.toRadians(this.velocity * delta);
 		this.currentX = (this.startX + this.radius * MathUtils.cos(angle));
 		this.currentY = (this.startY + this.radius * MathUtils.sin(angle));
-		synchronized (original) {
-			movePos(currentX + offsetX, currentY + offsetY);
-		}
+		movePos(currentX + offsetX, currentY + offsetY);
 	}
 
 	@Override

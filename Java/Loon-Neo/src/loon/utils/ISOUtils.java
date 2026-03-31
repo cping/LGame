@@ -503,6 +503,27 @@ public final class ISOUtils {
 		return offsets;
 	}
 
+	/**
+	 * 计算斜视地图的四角坐标（屏幕投影位置）
+	 *
+	 * @param mapWidth  地图宽度
+	 * @param mapHeight 地图高度
+	 * @param config    等角投影配置
+	 * @return
+	 */
+	public static ObjectMap<String, Vector2f> getIsoMapCorners(int mapWidth, int mapHeight, IsoConfig config) {
+		ObjectMap<String, Vector2f> cornersMap = new ObjectMap<>();
+		IsoResult lt = isoTransform(0, 0, config.tileWidth, config.tileHeight, config, null, null);
+		cornersMap.put("leftTop", lt.screenPos);
+		IsoResult lb = isoTransform(0, mapHeight, config.tileWidth, config.tileHeight, config, null, null);
+		cornersMap.put("leftBottom", lb.screenPos);
+		IsoResult rb = isoTransform(mapWidth, mapHeight, config.tileWidth, config.tileHeight, config, null, null);
+		cornersMap.put("rightBottom", rb.screenPos);
+		IsoResult rt = isoTransform(mapWidth, 0, config.tileWidth, config.tileHeight, config, null, null);
+		cornersMap.put("rightTop", rt.screenPos);
+		return cornersMap;
+	}
+
 	private final static IsoConfig defaultConfig = IsoConfig.defaultConfig();
 
 	public static Vector2f isoTransform(int gx, int gy, int cellSizeX, int cellSizeY, int rotationMode, float height,
@@ -576,11 +597,19 @@ public final class ISOUtils {
 			float isoTileHeight = isoSize.y;
 			gx = (x / isoTileWidth + (y + z) / isoTileHeight) / 2f;
 			gy = ((y + z) / isoTileHeight - x / isoTileWidth) / 2f;
-			gx = MathUtils.floor(gx + 0.5f) - 1f;
+			gx = MathUtils.floor(gx + 0.5f) - config.heightScale;
 			gy = MathUtils.floor(gy + 0.5f);
 			break;
 		}
 		return new Vector3f(gx, gy, z);
+	}
+
+	public static float getTileToScreenX(float gridX, float gridY, float tileWidth, float tileHeight) {
+		return (gridX - gridY) * (tileWidth / 2f);
+	}
+
+	public static float getTileToScreenY(float gridX, float gridY, float tileWidth, float tileHeight) {
+		return (gridX + gridY) * (tileHeight / 2f);
 	}
 
 	private static float rotationModeToAngle(int rotationMode) {

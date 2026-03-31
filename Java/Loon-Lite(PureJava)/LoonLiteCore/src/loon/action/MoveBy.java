@@ -84,66 +84,64 @@ public class MoveBy extends ActionEvent {
 
 	@Override
 	public void update(long elapsedTime) {
-		synchronized (original) {
-			if (_speed == 0) {
-				_easeTimer.update(elapsedTime);
-				if (_easeTimer.isCompleted()) {
-					_isCompleted = true;
-					return;
-				}
-				float dirX = (_endX - _startX);
-				float dirY = (_endY - _startY);
-				float newX = _startX + dirX * _easeTimer.getProgress() + offsetX;
-				float newY = _startY + dirY * _easeTimer.getProgress() + offsetY;
-				float lastX = original.getX();
-				float lastY = original.getY();
-				updateDirection((newX - lastX), (newY - lastY));
-				movePos(newX, newY);
-			} else {
-				final float moveSpeed = getMoveSpeed(elapsedTime);
-				float x = original.getX();
-				float y = original.getY();
-				int dirX = MathUtils.ifloor(_endX - _startX);
-				int dirY = MathUtils.ifloor(_endY - _startY);
-				int count = 0;
-				if (dirX > 0) {
-					if (x >= _endX) {
-						count++;
-					} else {
-						x += moveSpeed;
-					}
-				} else if (dirX < 0) {
-					if (x <= _endX) {
-						count++;
-					} else {
-						x -= moveSpeed;
-					}
-				} else {
-					count++;
-				}
-				if (dirY > 0) {
-					if (y >= _endY) {
-						count++;
-					} else {
-						y += moveSpeed;
-					}
-				} else if (dirY < 0) {
-					if (y <= _endY) {
-						count++;
-					} else {
-						y -= moveSpeed;
-					}
-				} else {
-					count++;
-				}
-				float lastX = original.getX();
-				float lastY = original.getY();
-				float newX = x + offsetX;
-				float newY = y + offsetY;
-				updateDirection((newX - lastX), (newY - lastY));
-				movePos(newX, newY);
-				_isCompleted = (count == 2);
+		if (_speed == 0) {
+			_easeTimer.update(elapsedTime);
+			if (_easeTimer.isCompleted()) {
+				_isCompleted = true;
+				return;
 			}
+			float dirX = (_endX - _startX);
+			float dirY = (_endY - _startY);
+			float newX = _startX + dirX * _easeTimer.getProgress() + offsetX;
+			float newY = _startY + dirY * _easeTimer.getProgress() + offsetY;
+			float lastX = original.getX();
+			float lastY = original.getY();
+			updateDirection((newX - lastX), (newY - lastY));
+			movePos(newX, newY);
+		} else {
+			final float moveSpeed = getMoveSpeed(elapsedTime);
+			float x = original.getX();
+			float y = original.getY();
+			int dirX = MathUtils.ifloor(_endX - _startX);
+			int dirY = MathUtils.ifloor(_endY - _startY);
+			int count = 0;
+			if (dirX > 0) {
+				if (x >= _endX) {
+					count++;
+				} else {
+					x += moveSpeed;
+				}
+			} else if (dirX < 0) {
+				if (x <= _endX) {
+					count++;
+				} else {
+					x -= moveSpeed;
+				}
+			} else {
+				count++;
+			}
+			if (dirY > 0) {
+				if (y >= _endY) {
+					count++;
+				} else {
+					y += moveSpeed;
+				}
+			} else if (dirY < 0) {
+				if (y <= _endY) {
+					count++;
+				} else {
+					y -= moveSpeed;
+				}
+			} else {
+				count++;
+			}
+			float lastX = original.getX();
+			float lastY = original.getY();
+			float newX = x + offsetX;
+			float newY = y + offsetY;
+			updateDirection((newX - lastX), (newY - lastY));
+			movePos(newX, newY);
+			_isCompleted = (count == 2);
 		}
 	}
 

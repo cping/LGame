@@ -20,12 +20,14 @@
  */
 package loon.action.map.battle;
 
-import loon.action.map.battle.BattleType.AttackRangeType;
+import loon.action.map.battle.BattleType.RangeType;
 import loon.action.map.battle.BattleType.SkillType;
 import loon.action.map.battle.BattleType.UnitType;
 import loon.action.map.battle.BattleType.WeatherType;
 import loon.geom.Vector2f;
+import loon.utils.MathUtils;
 import loon.utils.SortedList;
+import loon.utils.TArray;
 
 public class BattleSkill {
 	// 唯一标识
@@ -61,7 +63,7 @@ public class BattleSkill {
 	// 行动点消耗
 	int actionPointCost = 2;
 	// 攻击范围
-	AttackRangeType rangeType = AttackRangeType.SINGLE;
+	RangeType rangeType = RangeType.SINGLE;
 	// 攻击距离
 	int rangeDistance = 1;
 	// 范围半径
@@ -70,7 +72,7 @@ public class BattleSkill {
 	public BattleSkill(String id, String name, String description, SkillType skilltype, UnitType[] limitUnits,
 			BattleTileType[] limitTiles, WeatherType[] limitWeathers, int minLevel, boolean needCity, int priority,
 			float baseSuccessRate, int moraleCost, int cooldown, long lastUseTime, int mpCost, int actionPointCost,
-			AttackRangeType rangeType, int rangeDistance, int rangeRadius) {
+			RangeType rangeType, int rangeDistance, int rangeRadius) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
@@ -92,151 +94,197 @@ public class BattleSkill {
 		this.rangeRadius = rangeRadius;
 	}
 
-	public SortedList<Vector2f> getSkillRange(BattleMapObject caster, BattleTile[][] map, int mapWidth, int mapHeight) {
-		SortedList<Vector2f> range = new SortedList<Vector2f>();
+	public SortedList<Vector2f> getSkillRange(BattleMapObject caster, BattleTile[][] map, int mapWidth, int mapHeight,
+			RangeType rangeType, int rangeRadius, int rangeDistance) {
+		return getSkillRange(caster, map, mapWidth, mapHeight, rangeType, rangeRadius, rangeDistance, true, null);
+	}
 
+	public SortedList<Vector2f> getSkillRange(BattleMapObject caster, BattleTile[][] map, int mapWidth, int mapHeight,
+			RangeType rangeType, int rangeRadius, int rangeDistance, boolean allDir, TArray<Vector2f> pathList) {
+		SortedList<Vector2f> range = new SortedList<Vector2f>();
+		final int[][] dirs4 = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+		final int[][] dirs8 = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+		final int[][] dirs = allDir ? dirs8 : dirs4;
 		switch (rangeType) {
 		case SINGLE:
-			// 单点范围
+		case SELF:
 			range.add(new Vector2f(caster.gridX, caster.gridY));
 			break;
-
+		case ADJACENT:
+			for (int[] d : dirs) {
+				int nx = caster.gridX + d[0], ny = caster.gridY + d[1];
+				if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+					range.add(new Vector2f(nx, ny));
+				}
+			}
+			break;
+		case CROSS:
+			for (int i = 1; i <= rangeDistance; i++) {
+				for (int[] d : dirs) {
+					int nx = caster.gridX + d[0] * i;
+					int ny = caster.gridY + d[1] * i;
+					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+						range.add(new Vector2f(nx, ny));
+					}
+				}
+			}
+			break;
+		case DIAGONAL:
+			for (int i = 1; i <= rangeDistance; i++) {
+				int[][] diagDirs = { { i, i }, { i, -i }, { -i, i }, { -i, -i } };
+				for (int[] d : diagDirs) {
+					int nx = caster.gridX + d[0], ny = caster.gridY + d[1];
+					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+						range.add(new Vector2f(nx, ny));
+					}
+				}
+			}
+			break;
 		case CIRCLE:
-			// 圆形范围
+			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
+				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
+					if (dx * dx + dy * dy <= rangeDistance * rangeDistance) {
+						int nx = caster.gridX + dx, ny = caster.gridY + dy;
+						if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+							range.add(new Vector2f(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+		case AOE:
 			for (int x = 0; x < mapWidth; x++) {
 				for (int y = 0; y < mapHeight; y++) {
-					double distance = Math.sqrt(Math.pow(x - caster.gridX, 2) + Math.pow(y - caster.gridY, 2));
-					if (distance <= rangeRadius) {
-						range.add(new Vector2f(x, y));
+					range.add(new Vector2f(x, y));
+				}
+			}
+			break;
+		case SQUARE:
+		case AREA:
+			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
+				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
+					int nx = caster.gridX + dx, ny = caster.gridY + dy;
+					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+						range.add(new Vector2f(nx, ny));
 					}
 				}
 			}
 			break;
 
 		case LINE:
-			// 横向直线范围（默认向右）
 			for (int i = 1; i <= rangeDistance; i++) {
-				int nx = caster.gridX + i;
-				int ny = caster.gridY;
+				int nx = caster.gridX + i, ny = caster.gridY;
 				if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
 					range.add(new Vector2f(nx, ny));
 				}
 			}
 			break;
-
-		case CROSS:
-			// 十字范围
-			for (int i = 1; i <= rangeDistance; i++) {
-				int nx1 = caster.gridX + i, ny1 = caster.gridY;
-				int nx2 = caster.gridX - i, ny2 = caster.gridY;
-				int nx3 = caster.gridX, ny3 = caster.gridY + i;
-				int nx4 = caster.gridX, ny4 = caster.gridY - i;
-
-				if (nx1 >= 0 && nx1 < mapWidth)
-					range.add(new Vector2f(nx1, ny1));
-				if (nx2 >= 0 && nx2 < mapWidth)
-					range.add(new Vector2f(nx2, ny2));
-				if (ny3 >= 0 && ny3 < mapHeight)
-					range.add(new Vector2f(nx3, ny3));
-				if (ny4 >= 0 && ny4 < mapHeight)
-					range.add(new Vector2f(nx4, ny4));
-			}
-			break;
-
-		case AREA:
-			// 小范围区域（以 caster 为中心的矩形）
-			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
-				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
-					int nx = caster.gridX + dx;
-					int ny = caster.gridY + dy;
-					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
-						range.add(new Vector2f(nx, ny));
-					}
-				}
-			}
-			break;
-
-		case SELF:
-			// 自身格子
-			range.add(new Vector2f(caster.gridX, caster.gridY));
-			break;
-
-		case ADJACENT:
-			// 四方向相邻格子
-			int[][] dirs = { { -1, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 } };
-			for (int[] dir : dirs) {
-				int nx = caster.gridX + dir[0];
-				int ny = caster.gridY + dir[1];
-				if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
-					range.add(new Vector2f(nx, ny));
-				}
-			}
-			break;
-
-		case GLOBAL:
-			// 全图范围
-			for (int x = 0; x < mapWidth; x++) {
-				for (int y = 0; y < mapHeight; y++) {
-					range.add(new Vector2f(x, y));
-				}
-			}
-			break;
-		case DIAGONAL:
-			// 对角线范围
-			for (int i = 1; i <= rangeDistance; i++) {
-				int nx1 = caster.gridX + i, ny1 = caster.gridY + i;
-				int nx2 = caster.gridX + i, ny2 = caster.gridY - i;
-				int nx3 = caster.gridX - i, ny3 = caster.gridY + i;
-				int nx4 = caster.gridX - i, ny4 = caster.gridY - i;
-
-				if (nx1 >= 0 && nx1 < mapWidth && ny1 >= 0 && ny1 < mapHeight)
-					range.add(new Vector2f(nx1, ny1));
-				if (nx2 >= 0 && nx2 < mapWidth && ny2 >= 0 && ny2 < mapHeight)
-					range.add(new Vector2f(nx2, ny2));
-				if (nx3 >= 0 && nx3 < mapWidth && ny3 >= 0 && ny3 < mapHeight)
-					range.add(new Vector2f(nx3, ny3));
-				if (nx4 >= 0 && nx4 < mapWidth && ny4 >= 0 && ny4 < mapHeight)
-					range.add(new Vector2f(nx4, ny4));
-			}
-			break;
-
-		case SQUARE:
-			// 方形范围
-			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
-				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
-					int nx = caster.gridX + dx;
-					int ny = caster.gridY + dy;
-					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
-						range.add(new Vector2f(nx, ny));
-					}
-				}
-			}
-			break;
-
 		case LINE_AOE:
-			// 直线范围 + 横向宽度（直线AOE）
 			for (int i = 1; i <= rangeDistance; i++) {
 				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
-					int nx = caster.gridX + i;
-					int ny = caster.gridY + dy;
+					int nx = caster.gridX + i, ny = caster.gridY + dy;
 					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
 						range.add(new Vector2f(nx, ny));
 					}
 				}
 			}
 			break;
-
-		case AOE:
-			// 全屏范围
+		case GLOBAL:
 			for (int x = 0; x < mapWidth; x++) {
 				for (int y = 0; y < mapHeight; y++) {
 					range.add(new Vector2f(x, y));
 				}
 			}
 			break;
+		case ROW:
+			for (int x = 0; x < mapWidth; x++) {
+				range.add(new Vector2f(x, caster.gridY));
+			}
+			break;
 
+		case COLUMN:
+			for (int y = 0; y < mapHeight; y++) {
+				range.add(new Vector2f(caster.gridX, y));
+			}
+			break;
+		case RING:
+			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
+				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
+					int dist2 = dx * dx + dy * dy;
+					if (dist2 <= rangeRadius * rangeRadius && dist2 >= (rangeRadius - 1) * (rangeRadius - 1)) {
+						int nx = caster.gridX + dx, ny = caster.gridY + dy;
+						if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+							range.add(new Vector2f(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+		case SECTOR:
+			for (int dx = 0; dx <= rangeDistance; dx++) {
+				for (int dy = -dx; dy <= dx; dy++) {
+					int nx = caster.gridX + dx, ny = caster.gridY + dy;
+					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+						range.add(new Vector2f(nx, ny));
+					}
+				}
+			}
+			break;
+		case DIAMOND:
+			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
+				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
+					if (Math.abs(dx) + Math.abs(dy) <= rangeRadius) {
+						int nx = caster.gridX + dx, ny = caster.gridY + dy;
+						if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+							range.add(new Vector2f(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+		case PLUS:
+			for (int i = -rangeRadius; i <= rangeRadius; i++) {
+				int nx1 = caster.gridX + i, ny1 = caster.gridY;
+				int nx2 = caster.gridX, ny2 = caster.gridY + i;
+				if (nx1 >= 0 && nx1 < mapWidth && ny1 >= 0 && ny1 < mapHeight) {
+					range.add(new Vector2f(nx1, ny1));
+				}
+				if (nx2 >= 0 && nx2 < mapWidth && ny2 >= 0 && ny2 < mapHeight) {
+					range.add(new Vector2f(nx2, ny2));
+				}
+			}
+			break;
+		case CHECKER:
+			for (int dx = -rangeRadius; dx <= rangeRadius; dx++) {
+				for (int dy = -rangeRadius; dy <= rangeRadius; dy++) {
+					if ((dx + dy) % 2 == 0) {
+						int nx = caster.gridX + dx, ny = caster.gridY + dy;
+						if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+							range.add(new Vector2f(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+		case RANDOM:
+			for (int i = 0; i < rangeRadius; i++) {
+				int nx = caster.gridX + MathUtils.nextInt(rangeRadius * 2 + 1) - rangeRadius;
+				int ny = caster.gridY + MathUtils.nextInt(rangeRadius * 2 + 1) - rangeRadius;
+				if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
+					range.add(new Vector2f(nx, ny));
+				}
+			}
+			break;
+		case PATH:
+			if (pathList != null) {
+				for (Vector2f p : pathList) {
+					if (p.x >= 0 && p.x < mapWidth && p.y >= 0 && p.y < mapHeight) {
+						range.add(p);
+					}
+				}
+			}
+			break;
 		default:
-			// 默认单格
 			range.add(new Vector2f(caster.gridX, caster.gridY));
 			break;
 		}
@@ -371,11 +419,11 @@ public class BattleSkill {
 		this.actionPointCost = actionPointCost;
 	}
 
-	public AttackRangeType getRangeType() {
+	public RangeType getRangeType() {
 		return rangeType;
 	}
 
-	public void setRangeType(AttackRangeType rangeType) {
+	public void setRangeType(RangeType rangeType) {
 		this.rangeType = rangeType;
 	}
 

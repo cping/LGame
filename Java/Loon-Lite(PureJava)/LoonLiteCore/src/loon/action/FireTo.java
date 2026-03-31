@@ -95,9 +95,7 @@ public class FireTo extends ActionEvent {
 		}
 		if (original.isContainer() && original.isBounded()) {
 			if (original.inContains(startX, startY, original.getWidth(), original.getHeight())) {
-				synchronized (original) {
-					movePos(startX + offsetX, startY + offsetY);
-				}
+				movePos(startX + offsetX, startY + offsetY);
 			} else {
 				_isCompleted = true;
 			}
@@ -112,9 +110,7 @@ public class FireTo extends ActionEvent {
 			} else if (startY > original.getContainerHeight() + original.getHeight()) {
 				_isCompleted = true;
 			}
-			synchronized (original) {
-				movePos(startX + offsetX, startY + offsetY);
-			}
+			movePos(startX + offsetX, startY + offsetY);
 		}
 	}
 
