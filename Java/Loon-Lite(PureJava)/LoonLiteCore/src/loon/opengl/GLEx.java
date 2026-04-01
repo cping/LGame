@@ -760,8 +760,8 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		// fix alpha
-		if (alpha < 0.01f) {
-			alpha = 0.01f;
+		if (alpha < 0.0f) {
+			alpha = 0.0f;
 			this.lastBrush.baseAlpha = 0;
 		} else if (alpha > 1f) {
 			alpha = 1f;
@@ -881,7 +881,10 @@ public class GLEx implements LRelease {
 			return this;
 		}
 		this.setTint(c);
-		this.setAlpha(LColor.getAlpha(this.lastBrush.baseColor));
+		float a = LColor.getAlphaFloat(c);
+		if (this.lastBrush.baseAlpha != a) {
+			this.setAlpha(a);
+		}
 		this.lastBrush.fillColor = c;
 		this.lastBrush.patternTex = null;
 		return this;

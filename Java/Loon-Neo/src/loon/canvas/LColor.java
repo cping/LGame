@@ -452,6 +452,11 @@ public final class LColor implements Serializable {
 		return color >>> 24;
 	}
 
+	public static final float getAlphaFloat(int color) {
+		int alpha = (color >> 24) & 0xFF;
+		return alpha / 255.0f;
+	}
+
 	/**
 	 * 获得Red
 	 * 

@@ -118,8 +118,8 @@ public class LSelectorIcon extends LComponent {
 		this._maxX = getScreenWidth() / tw;
 		this._maxY = getScreenHeight() / th;
 		this._step = 1;
-		this._minAlpha = 35;
-		this._maxAlpha = 235;
+		this._minAlpha = 75;
+		this._maxAlpha = 255;
 		this._tileWidth = tw;
 		this._tileHeight = th;
 		this.setAlphaRate(1f);

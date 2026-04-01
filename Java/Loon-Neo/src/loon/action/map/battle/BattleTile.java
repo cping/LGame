@@ -29,7 +29,7 @@ import loon.utils.ISOUtils;
 import loon.utils.ISOUtils.IsoConfig;
 import loon.utils.ISOUtils.IsoResult;
 
-public class BattleTile implements Cloneable {
+public class BattleTile {
 
 	public interface EffectService {
 		void applyEffect(BattleTile tile, BattleTileType newType, float duration);

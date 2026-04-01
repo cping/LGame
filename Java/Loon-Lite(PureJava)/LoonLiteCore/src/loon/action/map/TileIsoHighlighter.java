@@ -66,8 +66,8 @@ public class TileIsoHighlighter implements LRelease {
 		public void update(float deltaTime) {
 			if (fadingIn) {
 				alpha += deltaTime * 2f;
-				if (alpha >= 0.35f) {
-					alpha = 0.35f;
+				if (alpha >= 0.65f) {
+					alpha = 0.65f;
 					fadingIn = false;
 				}
 			}

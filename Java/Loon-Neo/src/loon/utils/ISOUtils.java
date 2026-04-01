@@ -22,7 +22,6 @@ package loon.utils;
 
 import loon.geom.RectBox;
 import loon.geom.Vector2f;
-import loon.geom.Vector3f;
 
 /**
  * 斜视地图坐标换算统一处理用类
@@ -542,8 +541,9 @@ public final class ISOUtils {
 	 * @param config
 	 * @return
 	 */
-	public static Vector3f screenToGrid(float screenX, float screenY, float cwidth, float cheight, IsoConfig config) {
-		return screenToGrid(screenX, screenY, config.offsetX, config.offsetY, cwidth, cheight, config);
+	public static Vector2f screenToGrid(float screenX, float screenY, float cwidth, float cheight, IsoConfig config,
+			Vector2f result) {
+		return screenToGrid(screenX, screenY, config.offsetX, config.offsetY, cwidth, cheight, config, result);
 	}
 
 	/**
@@ -554,8 +554,13 @@ public final class ISOUtils {
 	 * @param config
 	 * @return
 	 */
-	public static Vector3f screenToGrid(float screenX, float screenY, IsoConfig config) {
-		return screenToGrid(screenX, screenY, 0, 0, 0, 0, config);
+	public static Vector2f screenToGrid(float screenX, float screenY, IsoConfig config, Vector2f result) {
+		return screenToGrid(screenX, screenY, 0, 0, 0, 0, config, result);
+	}
+
+	public static Vector2f screenToGrid(float screenX, float screenY, float offsetX, float offsetY, float cwidth,
+			float cheight, IsoConfig config) {
+		return screenToGrid(screenX, screenY, offsetX, offsetY, cwidth, cheight, config, null);
 	}
 
 	/**
@@ -570,8 +575,11 @@ public final class ISOUtils {
 	 * @param config
 	 * @return
 	 */
-	public static Vector3f screenToGrid(float screenX, float screenY, float offsetX, float offsetY, float cwidth,
-			float cheight, IsoConfig config) {
+	public static Vector2f screenToGrid(float screenX, float screenY, float offsetX, float offsetY, float cwidth,
+			float cheight, IsoConfig config, Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
 		float x = (screenX - offsetX) / config.scaleX;
 		float y = (screenY - offsetY) / config.scaleY;
 		float cellWidth = cwidth <= 0 ? config.tileWidth : cwidth;
@@ -601,7 +609,7 @@ public final class ISOUtils {
 			gy = MathUtils.floor(gy + 0.5f);
 			break;
 		}
-		return new Vector3f(gx, gy, z);
+		return result.set(gx, gy);
 	}
 
 	public static float getTileToScreenX(float gridX, float gridY, float tileWidth, float tileHeight) {
@@ -610,6 +618,327 @@ public final class ISOUtils {
 
 	public static float getTileToScreenY(float gridX, float gridY, float tileWidth, float tileHeight) {
 		return (gridX + gridY) * (tileHeight / 2f);
+	}
+
+	/**
+	 * 地图格子 -> 像素坐标
+	 * 
+	 * @param config
+	 * @param mapX
+	 * @param mapY
+	 * @param charWidth
+	 * @param charHeight
+	 * @param result
+	 * @return
+	 */
+	public static Vector2f getTileToScreen(IsoConfig config, int mapX, int mapY, int charWidth, int charHeight,
+			Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		final float tileWidth = config.tileWidth * config.scaleX;
+		final float tileHeight = config.tileHeight * config.scaleY;
+		float pixelX = (mapX - mapY) * (tileWidth / 2f);
+		float pixelY = (mapX + mapY) * (tileHeight / 2f);
+		pixelX -= charWidth / 2f;
+		pixelY -= charHeight - tileHeight;
+		return result.set(pixelX, pixelY);
+	}
+
+	/**
+	 * 像素坐标 -> 地图坐标
+	 * 
+	 * @param config
+	 * @param pixelX
+	 * @param pixelY
+	 * @param charWidth
+	 * @param charHeight
+	 * @param result
+	 * @return
+	 */
+	public static Vector2f getScreenToTile(IsoConfig config, float pixelX, float pixelY, int charWidth, int charHeight,
+			Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		final float tileWidth = config.tileWidth * config.scaleX;
+		final float tileHeight = config.tileHeight * config.scaleY;
+		pixelX += charWidth / 2f;
+		pixelY += charHeight - tileHeight;
+		float mapX = (pixelY / tileHeight) + (pixelX / tileWidth);
+		float mapY = (pixelY / tileHeight) - (pixelX / tileWidth);
+		return result.set(mapX, mapY);
+	}
+
+	/**
+	 * 判断点击是否在格子内部
+	 * 
+	 * @param config
+	 * @param pixelX
+	 * @param pixelY
+	 * @param mapX
+	 * @param mapY
+	 * @param result
+	 * @return
+	 */
+	public boolean isInsideTile(IsoConfig config, float pixelX, float pixelY, int mapX, int mapY, Vector2f result) {
+		if (result == null) {
+			result = new Vector2f();
+		}
+		final float tileWidth = config.tileWidth * config.scaleX;
+		final float tileHeight = config.tileHeight * config.scaleY;
+		result.set((mapX - mapY) * (tileWidth / 2f), (mapX + mapY) * (tileHeight / 2f));
+		float dx = pixelX - result.x;
+		float dy = pixelY - result.y;
+		return (MathUtils.abs(dx) / (tileWidth / 2f) + MathUtils.abs(dy) / (tileHeight / 2f)) <= 1;
+	}
+
+	/**
+	 * 获取相邻格子
+	 * 
+	 * @param mapX
+	 * @param mapY
+	 * @param includeDiagonal
+	 * @return
+	 */
+	public TArray<Vector2f> getNeighborTiles(int mapX, int mapY, boolean includeDiagonal) {
+		TArray<Vector2f> neighbors = new TArray<Vector2f>();
+		neighbors.add(new Vector2f(mapX + 1, mapY));
+		neighbors.add(new Vector2f(mapX - 1, mapY));
+		neighbors.add(new Vector2f(mapX, mapY + 1));
+		neighbors.add(new Vector2f(mapX, mapY - 1));
+		if (includeDiagonal) {
+			neighbors.add(new Vector2f(mapX + 1, mapY + 1));
+			neighbors.add(new Vector2f(mapX - 1, mapY - 1));
+			neighbors.add(new Vector2f(mapX + 1, mapY - 1));
+			neighbors.add(new Vector2f(mapX - 1, mapY + 1));
+		}
+		return neighbors;
+	}
+
+	public Vector2f autoSelectTile(IsoConfig config, float pixelX, float pixelY, int charWidth, int charHeight,
+			boolean includeDiagonal, Vector2f result) {
+		Vector2f tile = getScreenToTile(config, pixelX, pixelY, charWidth, charHeight, result);
+		if (isInsideTile(config, pixelX, pixelY, tile.x(), tile.y(), result)) {
+			return tile;
+		} else {
+			final float tileWidth = config.tileWidth * config.scaleX;
+			final float tileHeight = config.tileHeight * config.scaleY;
+			TArray<Vector2f> neighbors = getNeighborTiles(tile.x(), tile.y(), includeDiagonal);
+			Vector2f closest = tile;
+			float minDist = Float.MAX_VALUE;
+			for (Vector2f n : neighbors) {
+				Vector2f center = new Vector2f((n.x - n.y) * (tileWidth / 2f), (n.x + n.y) * (tileHeight / 2f));
+				float dist = MathUtils.hypot(pixelX - center.x, pixelY - center.y);
+				if (dist < minDist) {
+					minDist = dist;
+					closest = n;
+				}
+			}
+			return closest;
+		}
+	}
+
+	/**
+	 * 矩形范围选择
+	 * 
+	 * @param config
+	 * @param x1
+	 * @param y1
+	 * @param x2
+	 * @param y2
+	 * @param charWidth
+	 * @param charHeight
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInArea(IsoConfig config, float x1, float y1, float x2, float y2, int charWidth,
+			int charHeight) {
+		Vector2f start = getScreenToTile(config, x1, y1, charWidth, charHeight, null);
+		Vector2f end = getScreenToTile(config, x2, y2, charWidth, charHeight, null);
+		int minX = MathUtils.min(start.x(), end.x());
+		int maxX = MathUtils.max(start.x(), end.x());
+		int minY = MathUtils.min(start.y(), end.y());
+		int maxY = MathUtils.max(start.y(), end.y());
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		for (int i = minX; i <= maxX; i++) {
+			for (int j = minY; j <= maxY; j++) {
+				selected.add(new Vector2f(i, j));
+			}
+		}
+		return selected;
+	}
+
+	public TArray<Vector2f> selectTilesInCircle(int centerX, int centerY, int radius) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		for (int x = centerX - radius; x <= centerX + radius; x++) {
+			for (int y = centerY - radius; y <= centerY + radius; y++) {
+				int dx = x - centerX;
+				int dy = y - centerY;
+				if (dx * dx + dy * dy <= radius * radius) {
+					selected.add(new Vector2f(x, y));
+				}
+			}
+		}
+		return selected;
+	}
+
+	/**
+	 * 菱形范围选择
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param radius
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInDiamond(int centerX, int centerY, int radius) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		for (int x = centerX - radius; x <= centerX + radius; x++) {
+			for (int y = centerY - radius; y <= centerY + radius; y++) {
+				int dx = MathUtils.abs(x - centerX);
+				int dy = MathUtils.abs(y - centerY);
+				if (dx + dy <= radius) {
+					selected.add(new Vector2f(x, y));
+				}
+			}
+		}
+		return selected;
+	}
+
+	/**
+	 * 环形范围选择
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param minRadius
+	 * @param maxRadius
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInRing(int centerX, int centerY, int minRadius, int maxRadius) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		for (int x = centerX - maxRadius; x <= centerX + maxRadius; x++) {
+			for (int y = centerY - maxRadius; y <= centerY + maxRadius; y++) {
+				int dx = x - centerX;
+				int dy = y - centerY;
+				double dist = MathUtils.sqrt(dx * dx + dy * dy);
+				if (dist >= minRadius && dist <= maxRadius) {
+					selected.add(new Vector2f(x, y));
+				}
+			}
+		}
+		return selected;
+	}
+
+	/**
+	 * 环形范围选择
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param minRadius
+	 * @param maxRadius
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInRingDiamond(int centerX, int centerY, int minRadius, int maxRadius) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		for (int x = centerX - maxRadius; x <= centerX + maxRadius; x++) {
+			for (int y = centerY - maxRadius; y <= centerY + maxRadius; y++) {
+				int dx = MathUtils.abs(x - centerX);
+				int dy = MathUtils.abs(y - centerY);
+				int manhattan = dx + dy;
+				if (manhattan >= minRadius && manhattan <= maxRadius) {
+					selected.add(new Vector2f(x, y));
+				}
+			}
+		}
+		return selected;
+	}
+
+	/**
+	 * 扇形范围选择
+	 * 
+	 * @param centerX
+	 * @param centerY
+	 * @param radius
+	 * @param angleDeg
+	 * @param spreadDeg
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInSector(int centerX, int centerY, int radius, float angleDeg, float spreadDeg) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		float angleRad = MathUtils.toRadians(angleDeg);
+		float spreadRad = MathUtils.toRadians(spreadDeg / 2.0f);
+		for (int x = centerX - radius; x <= centerX + radius; x++) {
+			for (int y = centerY - radius; y <= centerY + radius; y++) {
+				int dx = x - centerX;
+				int dy = y - centerY;
+				float dist = MathUtils.sqrt(dx * dx + dy * dy);
+				if (dist <= radius) {
+					float pointAngle = MathUtils.atan2(dy, dx);
+					float diff = normalizeAngle(pointAngle - angleRad);
+					if (MathUtils.abs(diff) <= spreadRad) {
+						selected.add(new Vector2f(x, y));
+					}
+				}
+			}
+		}
+		return selected;
+	}
+
+	private float normalizeAngle(float angle) {
+		while (angle > MathUtils.PI) {
+			angle -= 2 * MathUtils.PI;
+		}
+		while (angle < -MathUtils.PI) {
+			angle += 2 * MathUtils.PI;
+		}
+		return angle;
+	}
+
+	/**
+	 * 多边形范围选择
+	 * 
+	 * @param polygonVertices
+	 * @return
+	 */
+	public TArray<Vector2f> selectTilesInPolygon(TArray<Vector2f> polygonVertices) {
+		TArray<Vector2f> selected = new TArray<Vector2f>();
+		float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
+		float maxX = Float.MIN_VALUE, maxY = Float.MIN_VALUE;
+		for (Vector2f v : polygonVertices) {
+			minX = MathUtils.min(minX, v.x);
+			minY = MathUtils.min(minY, v.y);
+			maxX = MathUtils.max(maxX, v.x);
+			maxY = MathUtils.max(maxY, v.y);
+		}
+		for (int x = (int) minX; x <= (int) maxX; x++) {
+			for (int y = (int) minY; y <= (int) maxY; y++) {
+				Vector2f point = new Vector2f(x, y);
+				if (isPointInPolygon(point, polygonVertices)) {
+					selected.add(new Vector2f(x, y));
+				}
+			}
+		}
+		return selected;
+	}
+
+	/**
+	 * 点是否在多边形内
+	 * 
+	 * @param point
+	 * @param vertices
+	 * @return
+	 */
+	private boolean isPointInPolygon(Vector2f point, TArray<Vector2f> vertices) {
+		boolean inside = false;
+		int n = vertices.size();
+		for (int i = 0, j = n - 1; i < n; j = i++) {
+			Vector2f vi = vertices.get(i);
+			Vector2f vj = vertices.get(j);
+			if (((vi.y > point.y) != (vj.y > point.y))
+					&& (point.x < (vj.x - vi.x) * (point.y - vi.y) / (vj.y - vi.y) + vi.x)) {
+				inside = !inside;
+			}
+		}
+		return inside;
 	}
 
 	private static float rotationModeToAngle(int rotationMode) {
@@ -712,7 +1041,7 @@ public final class ISOUtils {
 	public static Vector2f getLayeredScreenPos(int gx, int gy, float width, float height, int layerIndex,
 			IsoConfig config, Vector2f result) {
 		IsoResult baseResult = isoTransform(gx, gy, width, height, config, result, null);
-		Vector2f pos = baseResult.layerOffsets[Math.min(layerIndex, config.renderLayerCount - 1)];
+		Vector2f pos = baseResult.layerOffsets[MathUtils.min(layerIndex, config.renderLayerCount - 1)];
 		Vector2f isoSize = config.getIsoTileSize(width, height, result);
 		float snapX = isoSize.x * config.scaleX;
 		float snapY = isoSize.y * config.scaleY;

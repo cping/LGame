@@ -2735,6 +2735,21 @@ public final class MathUtils {
 		return v > 0 ? v * -1 : v;
 	}
 
+	public static float hypot(float x, float y) {
+		x = MathUtils.abs(x);
+		y = MathUtils.abs(y);
+		if (x < y) {
+			float temp = x;
+			x = y;
+			y = temp;
+		}
+		if (y == 0.0f) {
+			return x;
+		}
+		float r = y / x;
+		return x * MathUtils.sqrt(1.0f + r * r);
+	}
+
 	/**
 	 * 让两值做加法,若大于第三值则返回第三值
 	 * 
@@ -2919,4 +2934,5 @@ public final class MathUtils {
 	public static boolean isSuccess(final float p) {
 		return chanceRoll(p);
 	}
+
 }

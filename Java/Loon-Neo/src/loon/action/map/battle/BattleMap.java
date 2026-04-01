@@ -58,7 +58,6 @@ import loon.geom.PointI;
 import loon.geom.RectBox;
 import loon.geom.Sized;
 import loon.geom.Vector2f;
-import loon.geom.Vector3f;
 import loon.opengl.GLEx;
 import loon.utils.ISOUtils;
 import loon.utils.ISOUtils.IsoConfig;
@@ -350,6 +349,13 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		_highlighter.generateRadius(type, startX, startY, radius, _field2d);
 	}
 
+	public BattleTile getMapTile(int tx, int ty) {
+		if (_field2d.contains(tx, ty)) {
+			return _mapTiles[tx][ty];
+		}
+		return null;
+	}
+
 	@Override
 	public void update(long elapsedTime) {
 		_deltaTime = MathUtils.max(Duration.toS(elapsedTime), LSystem.MIN_SECONE_SPEED_FIXED);
@@ -533,10 +539,8 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 	public Vector2f findTileXY(float touchX, float touchY) {
 		int tx = MathUtils.floor(touchX - _offset.x - _objectLocation.x - _isoConfig.offsetX);
 		int ty = MathUtils.floor(touchY - _offset.y - _objectLocation.y - _isoConfig.offsetY);
-		Vector3f gridPos = ISOUtils.screenToGrid(tx, ty, _isoConfig);
-		int gx = gridPos.x();
-		int gy = gridPos.y();
-		return _tempPosition.set(gx, gy);
+		Vector2f gridPos = ISOUtils.screenToGrid(tx, ty, _isoConfig, _tempPosition);
+		return gridPos;
 	}
 
 	public void handleCameraMovement(float deltaTime, Direction d) {
