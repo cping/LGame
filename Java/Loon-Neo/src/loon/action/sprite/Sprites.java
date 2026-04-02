@@ -1832,12 +1832,17 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 		return this;
 	}
 
+	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
+		paint(g, 0f, 0f, minX, minY, maxX, maxY);
+	}
+
 	/**
 	 * 单纯渲染精灵
 	 * 
 	 * @param g
 	 */
-	public void paint(final GLEx g, final float minX, final float minY, final float maxX, final float maxY) {
+	public void paint(final GLEx g, final float offsetX, final float offsetY, final float minX, final float minY,
+			final float maxX, final float maxY) {
 		if (!_visible || _closed) {
 			return;
 		}
@@ -1868,9 +1873,9 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 							}
 						}
 						if (_createShadow && spr.showShadow()) {
-							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+							_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
 						}
-						spr.createUI(g);
+						spr.createUI(g, offsetX, offsetY);
 					}
 				}
 				lightMask.popBatch(g);
@@ -1892,9 +1897,9 @@ public final class Sprites extends PlaceActions implements Visible, ZIndex, IArr
 							}
 						}
 						if (_createShadow && spr.showShadow()) {
-							_spriteShadow.drawShadow(g, spr, 0f, 0f);
+							_spriteShadow.drawShadow(g, spr, offsetX, offsetY);
 						}
-						spr.createUI(g);
+						spr.createUI(g, offsetX, offsetY);
 					}
 				}
 				if (_useShaderMask) {

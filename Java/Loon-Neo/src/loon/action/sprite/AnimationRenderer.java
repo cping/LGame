@@ -49,7 +49,9 @@ public class AnimationRenderer extends Entity {
 
 		float x, y;
 
-		float scale;
+		float scaleX;
+
+		float scaleY;
 
 		boolean flipX;
 
@@ -57,11 +59,13 @@ public class AnimationRenderer extends Entity {
 
 		LColor color;
 
-		RenderData(AnimationManager animManager, float x, float y, float scale, boolean fx, boolean fy, LColor color) {
+		RenderData(AnimationManager animManager, float x, float y, float scaleX, float scaleY, boolean fx, boolean fy,
+				LColor color) {
 			this.animManager = animManager;
 			this.x = x;
 			this.y = y;
-			this.scale = scale;
+			this.scaleX = scaleX;
+			this.scaleY = scaleY;
 			this.flipX = fx;
 			this.flipY = fy;
 			this.color = color;
@@ -73,12 +77,12 @@ public class AnimationRenderer extends Entity {
 
 		public float getWidth() {
 			LTexture frame = animManager.getCurrentFrame();
-			return frame != null ? frame.getWidth() * scale : 0;
+			return frame != null ? frame.getWidth() * scaleX : 0;
 		}
 
 		public float getHeight() {
 			LTexture frame = animManager.getCurrentFrame();
-			return frame != null ? frame.getHeight() * scale : 0;
+			return frame != null ? frame.getHeight() * scaleY : 0;
 		}
 
 		public AnimationManager playAnimation(int layerIndex, ObjectState state, Direction dir) {
@@ -138,12 +142,17 @@ public class AnimationRenderer extends Entity {
 
 	public void addCharacter(AnimationManager animManager, float x, float y, float scale, boolean flipX, boolean flipY,
 			LColor color, int layerIndex) {
+		addCharacter(animManager, x, y, scale, scale, flipX, flipY, color, layerIndex);
+	}
+
+	public void addCharacter(AnimationManager animManager, float x, float y, float scaleX, float scaleY, boolean flipX,
+			boolean flipY, LColor color, int layerIndex) {
 		TArray<RenderData> list = layers.get(layerIndex);
 		if (list == null) {
 			list = new TArray<RenderData>();
 			layers.put(layerIndex, list);
 		}
-		list.add(new RenderData(animManager, x, y, scale, flipX, flipY, color));
+		list.add(new RenderData(animManager, x, y, scaleX, scaleY, flipX, flipY, color));
 		list.sort(sortRenderEntry);
 		layersDirty = true;
 	}
@@ -160,6 +169,18 @@ public class AnimationRenderer extends Entity {
 				}
 			}
 		}
+	}
+
+	public TArray<RenderData> getCharacterLayer(int layerIndex) {
+		return layers.get(layerIndex);
+	}
+
+	public RenderData getCharacterLayer(int layerIndex, int idx) {
+		TArray<RenderData> list = layers.get(layerIndex);
+		if (list != null) {
+			return list.get(idx);
+		}
+		return null;
 	}
 
 	public void playCharacterAnimation(AnimationManager animManager, int layerIndex, ObjectState state, Direction dir) {
@@ -235,7 +256,7 @@ public class AnimationRenderer extends Entity {
 				if (frame != null) {
 					g.draw(frame, entry.x + drawX, entry.y + drawY, MathUtils.min(getWidth(), frame.getWidth()),
 							MathUtils.min(getHeight(), frame.getHeight()),
-							LColor.white.equals(entry.color) ? _baseColor : entry.color, 0f, entry.scale, entry.scale,
+							LColor.white.equals(entry.color) ? _baseColor : entry.color, 0f, entry.scaleX, entry.scaleY,
 							entry.flipX, entry.flipY);
 				}
 			}
@@ -264,7 +285,7 @@ public class AnimationRenderer extends Entity {
 				if (frame != null) {
 					g.draw(frame, entry.x + x, entry.y + y, w >= 0 ? w : frame.getWidth(),
 							h >= 0 ? h : frame.getHeight(), LColor.white.equals(entry.color) ? color : entry.color,
-							rotation, entry.scale, entry.scale, flipX, flipY);
+							rotation, entry.scaleX, entry.scaleY, flipX, flipY);
 				}
 			}
 		}

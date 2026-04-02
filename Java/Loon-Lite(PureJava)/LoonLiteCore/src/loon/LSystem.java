@@ -109,7 +109,7 @@ public final class LSystem {
 
 	/** 默认帧率 **/
 	protected static final int DEFAULT_MAX_FPS = 60;
-	
+
 	/** 默认纹理大小 **/
 	protected static final int DEFAULT_BUILD_TEXTURE_SIZE = 512;
 
@@ -204,6 +204,10 @@ public final class LSystem {
 
 	// 屏幕大小
 	public static final Dimension viewSize = new Dimension(480, 320);
+
+	private static final int PRIME = 16777619;
+
+	private static final int SEPARATOR = 256;
 
 	public static final int MODE_NORMAL = 1;
 
@@ -856,7 +860,7 @@ public final class LSystem {
 	}
 
 	public static final int unite(int hashCode, int value) {
-		return 31 * hashCode + value;
+		return ((hashCode + SEPARATOR) * PRIME) ^ value;
 	}
 
 	public static final int set(int v, int[] ids) {

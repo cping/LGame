@@ -34,12 +34,16 @@ public class BattleScriptEventManager {
 			return MathUtils.compare(o1.getPriority(), o2.getPriority());
 		}
 	};
-
-	private static BattleScriptEventManager instance;
+	
+	private static volatile BattleScriptEventManager instance;
 
 	public static BattleScriptEventManager getInstance() {
 		if (instance == null) {
-			instance = new BattleScriptEventManager();
+			synchronized (BattleScriptEventManager.class) {
+				if (instance == null) {
+					instance = new BattleScriptEventManager();
+				}
+			}
 		}
 		return instance;
 	}

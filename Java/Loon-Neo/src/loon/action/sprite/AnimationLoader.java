@@ -358,7 +358,7 @@ public class AnimationLoader {
 
 	private final ObjectMap<String, TArray<StateRule>> stateMachineMap = new ObjectMap<String, TArray<StateRule>>();
 	private final ObjectMap<String, ObjectMap<String, Object>> eventActionsMap = new ObjectMap<String, ObjectMap<String, Object>>();
-	private final ObjectMap<String, TransitionConfig> transitionsMap = new ObjectMap<>();
+	private final ObjectMap<String, TransitionConfig> transitionsMap = new ObjectMap<String, TransitionConfig>();
 	private final ObjectMap<String, AnimationConfig> animationMap = new ObjectMap<String, AnimationConfig>();
 	private final ObjectMap<String, IntMap<String>> eventsMap = new ObjectMap<String, IntMap<String>>();
 	private final int frameWidth;

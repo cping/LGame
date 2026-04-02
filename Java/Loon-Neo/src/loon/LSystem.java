@@ -212,6 +212,10 @@ public final class LSystem {
 	// 默认屏幕大小(初始化时数值会被改变)
 	public static final Dimension viewSize = new Dimension(480, 320);
 
+	private static final int PRIME = 16777619;
+
+	private static final int SEPARATOR = 256;
+
 	/**
 	 * 允许的最小时间计数变动值(这个值会影响缓动动画,普通动画,计时器之类,比如默认的60FPS换算成数值显示就是1/60==0.0166666666666667,<br>
 	 * 即每1/60秒增加数值0.0166666666666667(换算成毫秒就是16.66666666666667),而这个变量就是规定这类取值的最小值,也就是即便显示0FPS时,
@@ -1246,7 +1250,7 @@ public final class LSystem {
 	}
 
 	public static final int unite(int hashCode, int value) {
-		return 31 * hashCode + value;
+		return ((hashCode + SEPARATOR) * PRIME) ^ value;
 	}
 
 	public static final int set(int v, int[] ids) {

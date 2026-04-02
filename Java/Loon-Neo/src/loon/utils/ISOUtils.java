@@ -629,45 +629,84 @@ public final class ISOUtils {
 	 * @param charWidth
 	 * @param charHeight
 	 * @param result
+	 * @param v
 	 * @return
 	 */
 	public static Vector2f getTileToScreen(IsoConfig config, int mapX, int mapY, int charWidth, int charHeight,
-			Vector2f result) {
+			Vector2f result, IsoResult v) {
+		return getTileToScreen(config, mapX, mapY, charWidth, charHeight, 0f, 0f, result, v);
+	}
+
+	/**
+	 * 地图格子 -> 像素坐标
+	 * 
+	 * @param config
+	 * @param mapX
+	 * @param mapY
+	 * @param charWidth
+	 * @param charHeight
+	 * @param result
+	 * @return
+	 */
+	public static Vector2f getTileToScreen(IsoConfig config, int mapX, int mapY, int charWidth, int charHeight,
+			float offsetX, float offsetY, Vector2f result, IsoResult v) {
 		if (result == null) {
 			result = new Vector2f();
 		}
-		final float tileWidth = config.tileWidth * config.scaleX;
-		final float tileHeight = config.tileHeight * config.scaleY;
-		float pixelX = (mapX - mapY) * (tileWidth / 2f);
-		float pixelY = (mapX + mapY) * (tileHeight / 2f);
-		pixelX -= charWidth / 2f;
-		pixelY -= charHeight - tileHeight;
-		return result.set(pixelX, pixelY);
+		IsoResult isoPos = isoTransform(mapX, mapY, 0, 0, config, result, v);
+		if (charWidth == config.tileWidth && charHeight == config.tileHeight) {
+			return isoPos.screenPos;
+		}
+		Vector2f screenPos = isoPos.screenPos;
+		float scaledTileW = config.tileWidth * config.scaleX;
+		float scaledTileH = config.tileHeight * config.scaleY;
+		float drawX = screenPos.x - charWidth / 2f + scaledTileW / 2f;
+		float drawY = screenPos.y - charHeight + (scaledTileH * 3f / 4f);
+		return result.set(drawX + offsetX, drawY + offsetY);
 	}
 
 	/**
 	 * 像素坐标 -> 地图坐标
 	 * 
 	 * @param config
-	 * @param pixelX
-	 * @param pixelY
+	 * @param drawX
+	 * @param drawY
 	 * @param charWidth
 	 * @param charHeight
 	 * @param result
 	 * @return
 	 */
-	public static Vector2f getScreenToTile(IsoConfig config, float pixelX, float pixelY, int charWidth, int charHeight,
+	public static Vector2f getScreenToTile(IsoConfig config, float drawX, float drawY, int charWidth, int charHeight,
 			Vector2f result) {
+		return getScreenToTile(config, drawX, drawY, charWidth, charHeight, 0f, 0f, result);
+	}
+
+	/**
+	 * 像素坐标 -> 地图坐标
+	 * 
+	 * @param config
+	 * @param drawX
+	 * @param drawY
+	 * @param charWidth
+	 * @param charHeight
+	 * @param offsetX
+	 * @param offsetY
+	 * @param result
+	 * @return
+	 */
+	public static Vector2f getScreenToTile(IsoConfig config, float drawX, float drawY, int charWidth, int charHeight,
+			float offsetX, float offsetY, Vector2f result) {
 		if (result == null) {
 			result = new Vector2f();
 		}
-		final float tileWidth = config.tileWidth * config.scaleX;
-		final float tileHeight = config.tileHeight * config.scaleY;
-		pixelX += charWidth / 2f;
-		pixelY += charHeight - tileHeight;
-		float mapX = (pixelY / tileHeight) + (pixelX / tileWidth);
-		float mapY = (pixelY / tileHeight) - (pixelX / tileWidth);
-		return result.set(mapX, mapY);
+		if (charWidth == config.tileWidth && charHeight == config.tileHeight) {
+			return screenToGrid(drawX, drawY, offsetX, offsetY, 0, 0, config);
+		}
+		float scaledTileW = config.tileWidth * config.scaleX;
+		float scaledTileH = config.tileHeight * config.scaleY;
+		float screenX = drawX + charWidth / 2f - scaledTileW / 2f;
+		float screenY = drawY + charHeight - (scaledTileH * 3f / 4f);
+		return screenToGrid(screenX, screenY, offsetX, offsetY, 0, 0, config);
 	}
 
 	/**

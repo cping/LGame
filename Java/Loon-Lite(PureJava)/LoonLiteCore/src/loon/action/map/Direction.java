@@ -272,6 +272,10 @@ public class Direction {
 		return ALL_DIRECTIONS;
 	}
 
+	public final static TArray<Direction> baseValues() {
+		return TArray.with(UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT);
+	}
+
 	@Override
 	public String toString() {
 		return name.toUpperCase();

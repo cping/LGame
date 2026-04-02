@@ -38,12 +38,16 @@ import loon.action.map.Field2D.MapSwitchMaker;
 import loon.action.map.TileIsoHighlighter;
 import loon.action.map.TileIsoHighlighter.EffectType;
 import loon.action.map.TileIsoRectGrid;
+import loon.action.map.battle.BattleMovementManager.MovementListener;
 import loon.action.map.battle.BattlePathFinder.PathResult;
 import loon.action.map.battle.BattleTile.EffectService;
 import loon.action.map.battle.BattleTile.SkillService;
 import loon.action.map.battle.BattleTileMake.TileAnimation;
 import loon.action.map.battle.BattleType.ObjectState;
 import loon.action.map.battle.BattleType.RangeType;
+import loon.action.map.items.RoleEquip;
+import loon.action.sprite.AnimationManager;
+import loon.action.sprite.AnimationRenderer;
 import loon.action.sprite.ISprite;
 import loon.action.sprite.MoveControl;
 import loon.action.sprite.SpriteCollisionListener;
@@ -85,6 +89,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 	private boolean _playAnimation;
 
 	private ActionBind _follow;
+
 	private boolean _visible;
 
 	private final static ObjectComparator OBJ_COMPARATOR = new ObjectComparator();
@@ -220,6 +225,87 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		}
 		this._otherIsoGrid = new TileIsoRectGrid(row, col, x, y, config.tileWidth * config.scaleX,
 				(config.tileHeight * config.scaleY) / 2f);
+	}
+
+	public BattleMap addMapObject(int gx, int gy, int cw, int ch, String name, ISprite sprite, MovementListener l) {
+		_objects.add(new BattleMapObject(_isoConfig, this, sprite, _objects.size(), name, gx, gy, cw, ch, l));
+		if (sprite != null) {
+			_mapSprites.add(sprite);
+		}
+		return this;
+	}
+
+	public BattleMap addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch, ISprite sprite,
+			MovementListener l) {
+		_objects.add(new BattleMapObject(_isoConfig, this, sprite, _objects.size(), e, name, gx, gy, cw, ch, l));
+		if (sprite != null) {
+			_mapSprites.add(sprite);
+		}
+		return this;
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l) {
+		return addMapObject(gx, gy, cw, ch, name, manager, l, LColor.white);
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l, LColor color) {
+		return addMapObject(gx, gy, cw, ch, name, manager, l, 0f, 0f, color);
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l, float x, float y, LColor color) {
+		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, 1f, 1f, color);
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l, float x, float y, float scaleX, float scaleY, LColor color) {
+		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, scaleX, scaleY, false, false, color);
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l, float x, float y, float scaleX, float scaleY, boolean flipX, boolean flipY,
+			LColor color) {
+		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, scaleX, scaleY, flipX, flipY, color, 0);
+	}
+
+	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+			MovementListener l, float x, float y, float scaleX, float scaleY, boolean flipX, boolean flipY,
+			LColor color, int layerIndex) {
+		AnimationRenderer renderer = new AnimationRenderer(0, 0, cw, ch);
+		_objects.add(new BattleMapObject(_isoConfig, this, renderer, _objects.size(), name, gx, gy, cw, ch, l));
+		if (manager != null) {
+			renderer.addCharacter(manager, x, y, scaleX, scaleY, flipX, flipY, color, layerIndex);
+		}
+		if (renderer != null) {
+			_mapSprites.add(renderer);
+		}
+		return renderer;
+	}
+
+	public AnimationRenderer addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch,
+			AnimationManager manager, MovementListener l) {
+		AnimationRenderer renderer = new AnimationRenderer(0, 0, cw, ch);
+		_objects.add(new BattleMapObject(_isoConfig, this, renderer, _objects.size(), e, name, gx, gy, cw, ch, l));
+		if (manager != null) {
+			renderer.addCharacter(manager, 0, 0);
+		}
+		if (renderer != null) {
+			_mapSprites.add(renderer);
+		}
+		return renderer;
+	}
+
+	public boolean removeMapObject(BattleMapObject o) {
+		if (o == null) {
+			return false;
+		}
+		boolean result = _objects.remove(o);
+		if (result) {
+			_mapSprites.remove(o.getRoleObject());
+		}
+		return result;
 	}
 
 	public TileIsoHighlighter getTileHighlighter() {
@@ -448,7 +534,8 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 			_otherIsoGrid.createUI(g, posOffsetX, posOffsetY);
 		}
 		if (_mapSprites != null) {
-			_mapSprites.paintPos(g, posOffsetX, posOffsetY);
+			_mapSprites.paint(g, posOffsetX, posOffsetY, startX * tileWidth, startY * tileHeight, endX * tileWidth,
+					endY * tileHeight);
 		}
 	}
 
@@ -606,7 +693,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		Vector2f pos = findTileXY(touchX, touchY);
 		int tx = pos.x();
 		int ty = pos.y();
-		if (tx >= 0 && tx < _field2d.getWidth() && ty >= 0 && ty < _field2d.getHeight()) {
+		if (_field2d.contains(tx, ty)) {
 			return _mapTiles[tx][ty];
 		}
 		return null;
@@ -639,7 +726,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 	}
 
 	public TArray<BattleMapObject> getObjects() {
-		return _objects;
+		return new TArray<BattleMapObject>(_objects);
 	}
 
 	public BattleMapObject getCameraTarget() {
@@ -891,6 +978,10 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 	@Override
 	public int[][] getMap() {
 		return _field2d.getMap();
+	}
+
+	public BattleTile[][] getTileMap() {
+		return _mapTiles;
 	}
 
 	public boolean isValid(int x, int y) {

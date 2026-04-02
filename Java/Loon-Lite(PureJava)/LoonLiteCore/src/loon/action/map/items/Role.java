@@ -33,6 +33,7 @@ import loon.canvas.LColor;
 import loon.events.EventActionN;
 import loon.events.EventActionT;
 import loon.geom.RectBox;
+import loon.geom.XY;
 import loon.utils.TArray;
 import loon.utils.reply.Callback;
 
@@ -59,9 +60,9 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 
 	private final TArray<Item<Object>> _items = new TArray<Item<Object>>();
 
-	private BattleProcess _battleProcess;
+	protected ISprite _roleObject;
 
-	private ISprite _roleObject;
+	private BattleProcess _battleProcess;
 
 	private RoleActionType _lastActionType = null;
 
@@ -527,6 +528,13 @@ public class Role extends RoleValue implements ActionBind, EventActionN {
 		if (_roleObject != null) {
 			_roleObject.setAlpha(alpha);
 		}
+	}
+
+	public void setLocation(XY pos) {
+		if (pos == null) {
+			return;
+		}
+		setLocation(pos.getX(), pos.getY());
 	}
 
 	@Override

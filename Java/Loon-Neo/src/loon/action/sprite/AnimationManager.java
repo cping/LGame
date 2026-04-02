@@ -170,6 +170,18 @@ public class AnimationManager implements LRelease {
 		return addLayer(LSystem.EMPTY, state, dirs);
 	}
 
+	public AnimationManager addLayerDirs(ObjectState state) {
+		return addLayer(state, Direction.baseValues());
+	}
+
+	public AnimationManager addLayer(ObjectState state, TArray<Direction> dirs) {
+		final Direction[] dirList = new Direction[dirs.size];
+		for (int i = 0; i < dirList.length; i++) {
+			dirList[i] = dirs.get(i);
+		}
+		return addLayer(LSystem.EMPTY, state, dirList);
+	}
+
 	public AnimationManager addLayer(String textureSuffix, ObjectState state, Direction... dirs) {
 		AnimationLayer layer = createLayer(textureSuffix, state, dirs);
 		layers.add(layer);
