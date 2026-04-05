@@ -64,7 +64,7 @@ public class BattleTileType {
 			0.5f, 0, 0, true, true, 3, 0.8f, 0.3f);
 	// 山地
 	public static final BattleTileType MOUNTAIN = new BattleTileType(6, 6, MoveState.CLIMB, "MOUNTAIN", 0.5f, 0, 0,
-			false, true, 3, 0.7f, 0.5f);
+			true, true, 3, 0.7f, 0.5f);
 	// 丘陵
 	public static final BattleTileType HILL = new BattleTileType(7, 7, MoveState.CLIMB, "HILL", 0.5f, 0, 0, true, true,
 			2, 0.9f, 0.25f);

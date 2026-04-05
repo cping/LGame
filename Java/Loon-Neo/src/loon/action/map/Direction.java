@@ -25,6 +25,38 @@ import loon.utils.ObjectMap;
 import loon.utils.TArray;
 
 public class Direction {
+
+	public final static Direction getNewDirectionName(String name) {
+		return getNewDirectionName(name, name);
+	}
+
+	public final static Direction getNewDirectionName(String name, String fullName) {
+		return getNewDirectionName(0, 0, name, fullName);
+	}
+
+	public final static Direction getNewDirectionName(int dx, int dy, String name, String fullName) {
+		return new Direction(dx, dy, name, fullName);
+	}
+
+	/**
+	 * 映射精灵图朝向坐标为实际斜角朝向坐标(若匹配好了斜角地图朝向关系不要调用)
+	 * 
+	 * @param d
+	 * @return
+	 */
+	public final static Direction toDisplayDirection(Direction d) {
+		if (d == Direction.DOWN_RIGHT) {
+			d = Direction.DOWN;
+		} else if (d == Direction.RIGHT) {
+			d = Direction.DOWN_RIGHT;
+		} else if (d == Direction.LEFT) {
+			d = Direction.UP_LEFT;
+		} else if (d == Direction.UP_LEFT) {
+			d = Direction.UP;
+		}
+		return d;
+	}
+
 	// 基本方向
 	// 北 (90°)
 	public static final Direction UP = new Direction(0, -1, "up", "north");
@@ -60,6 +92,7 @@ public class Direction {
 			MAP_BY_NAME.put(d.getFullName(), d);
 		}
 	}
+
 	// x方向位移
 	private final int dx;
 	// y方向位移

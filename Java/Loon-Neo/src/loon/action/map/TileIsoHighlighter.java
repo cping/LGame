@@ -536,13 +536,191 @@ public class TileIsoHighlighter implements LRelease {
 			break;
 
 		case PATH:
-			if (paths != null) {
-				for (PointI p : paths) {
-					addEffect(p.x, p.y, effect);
+			generateRangePathToEffect(effect, paths);
+			break;
+		}
+	}
+
+	public void generateRangePathToEffect(EffectType effect, TArray<PointI> paths) {
+		clearEffect();
+		if (paths != null) {
+			for (PointI p : paths) {
+				addEffect(p.x, p.y, effect);
+			}
+		}
+	}
+
+	public TArray<PointI> generateRangeResult(int centerX, int centerY, RangeType rangeType, int size, Field2D field,
+			boolean allDir) {
+
+		TArray<PointI> result = new TArray<PointI>();
+
+		final int[][] dirs4 = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
+		final int[][] dirs8 = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
+		final int[][] dirs = allDir ? dirs8 : dirs4;
+
+		switch (rangeType) {
+		default:
+		case SINGLE:
+		case SELF:
+			result.add(new PointI(centerX, centerY));
+			break;
+		case ADJACENT:
+			for (int[] d : dirs) {
+				int nx = centerX + d[0], ny = centerY + d[1];
+				if (field.contains(nx, ny)) {
+					result.add(new PointI(nx, ny));
 				}
 			}
 			break;
+		case CROSS:
+			for (int i = 1; i <= size; i++) {
+				for (int[] d : dirs) {
+					int nx = centerX + d[0] * i;
+					int ny = centerY + d[1] * i;
+					if (field.contains(nx, ny)) {
+						result.add(new PointI(nx, ny));
+					}
+				}
+			}
+			break;
+		case DIAMOND:
+			for (int i = 1; i <= size; i++) {
+				int[][] diagDirs = { { i, i }, { i, -i }, { -i, i }, { -i, -i } };
+				for (int[] d : diagDirs) {
+					int nx = centerX + d[0], ny = centerY + d[1];
+					if (field.contains(nx, ny)) {
+						result.add(new PointI(nx, ny));
+					}
+				}
+			}
+			break;
+		case CIRCLE:
+			for (int dx = -size; dx <= size; dx++) {
+				for (int dy = -size; dy <= size; dy++) {
+					if (dx * dx + dy * dy <= size * size) {
+						int nx = centerX + dx, ny = centerY + dy;
+						if (field.contains(nx, ny)) {
+							result.add(new PointI(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+		case AOE:
+			for (int nx = 0; nx < field.getWidth(); nx++) {
+				for (int ny = 0; ny < field.getHeight(); ny++) {
+					result.add(new PointI(nx, ny));
+				}
+			}
+		case LINE:
+			for (int i = 1; i <= size; i++) {
+				int nx = centerX + i, ny = centerY;
+				if (field.contains(nx, ny)) {
+					result.add(new PointI(nx, ny));
+				}
+			}
+			break;
+		case LINE_AOE:
+			for (int i = 1; i <= size; i++) {
+				for (int dy = -1; dy <= 1; dy++) {
+					int nx = centerX + i, ny = centerY + dy;
+					if (field.contains(nx, ny)) {
+						result.add(new PointI(nx, ny));
+					}
+				}
+			}
+			break;
+		case SQUARE:
+		case AREA:
+			for (int dx = -size; dx <= size; dx++) {
+				for (int dy = -size; dy <= size; dy++) {
+					int nx = centerX + dx, ny = centerY + dy;
+					if (field.contains(nx, ny)) {
+						result.add(new PointI(nx, ny));
+					}
+				}
+			}
+			break;
+
+		case GLOBAL:
+			for (int x = 0; x < field.getWidth(); x++) {
+				for (int y = 0; y < field.getHeight(); y++) {
+					result.add(new PointI(x, y));
+				}
+			}
+			break;
+
+		case ROW:
+			for (int x = 0; x < field.getWidth(); x++) {
+				result.add(new PointI(x, centerY));
+			}
+			break;
+
+		case COLUMN:
+			for (int y = 0; y < field.getHeight(); y++) {
+				result.add(new PointI(centerX, y));
+			}
+			break;
+
+		case RING:
+			for (int dx = -size; dx <= size; dx++) {
+				for (int dy = -size; dy <= size; dy++) {
+					int dist2 = dx * dx + dy * dy;
+					if (dist2 <= size * size && dist2 >= (size - 1) * (size - 1)) {
+						int nx = centerX + dx, ny = centerY + dy;
+						if (field.contains(nx, ny)) {
+							result.add(new PointI(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+
+		case SECTOR:
+			for (int dx = 0; dx <= size; dx++) {
+				for (int dy = -dx; dy <= dx; dy++) {
+					int nx = centerX + dx, ny = centerY + dy;
+					if (field.contains(nx, ny)) {
+						result.add(new PointI(nx, ny));
+					}
+				}
+			}
+			break;
+
+		case PLUS:
+			for (int i = -size; i <= size; i++) {
+				result.add(new PointI(centerX + i, centerY));
+				result.add(new PointI(centerX, centerY + i));
+			}
+			break;
+
+		case CHECKER:
+			for (int dx = -size; dx <= size; dx++) {
+				for (int dy = -size; dy <= size; dy++) {
+					if ((dx + dy) % 2 == 0) {
+						int nx = centerX + dx, ny = centerY + dy;
+						if (field.contains(nx, ny)) {
+							result.add(new PointI(nx, ny));
+						}
+					}
+				}
+			}
+			break;
+
+		case RANDOM:
+			for (int i = 0; i < size; i++) {
+				int nx = centerX + MathUtils.nextInt(size * 2 + 1) - size;
+				int ny = centerY + MathUtils.nextInt(size * 2 + 1) - size;
+				if (field.contains(nx, ny)) {
+					result.add(new PointI(nx, ny));
+				}
+			}
+			break;
+		case PATH:
+			break;
 		}
+		return result;
 	}
 
 	public void generateRange(EffectType type, int startX, int startY, int minRange, int maxRange, Field2D field) {

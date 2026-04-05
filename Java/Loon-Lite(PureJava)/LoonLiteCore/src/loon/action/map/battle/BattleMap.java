@@ -227,74 +227,81 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 				(config.tileHeight * config.scaleY) / 2f);
 	}
 
-	public BattleMap addMapObject(int gx, int gy, int cw, int ch, String name, ISprite sprite, MovementListener l) {
-		_objects.add(new BattleMapObject(_isoConfig, this, sprite, _objects.size(), name, gx, gy, cw, ch, l));
-		if (sprite != null) {
-			_mapSprites.add(sprite);
-		}
-		return this;
-	}
-
-	public BattleMap addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch, ISprite sprite,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, ISprite sprite,
 			MovementListener l) {
-		_objects.add(new BattleMapObject(_isoConfig, this, sprite, _objects.size(), e, name, gx, gy, cw, ch, l));
+		BattleMapObject obj = new BattleMapObject(_isoConfig, this, sprite, _objects.size(), name, gx, gy, cw, ch, l);
+		_objects.add(obj);
 		if (sprite != null) {
 			_mapSprites.add(sprite);
 		}
-		return this;
+		return obj;
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch, ISprite sprite,
+			MovementListener l) {
+		BattleMapObject obj = new BattleMapObject(_isoConfig, this, sprite, _objects.size(), e, name, gx, gy, cw, ch,
+				l);
+		_objects.add(obj);
+		if (sprite != null) {
+			_mapSprites.add(sprite);
+		}
+		return obj;
+	}
+
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l) {
 		return addMapObject(gx, gy, cw, ch, name, manager, l, LColor.white);
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l, LColor color) {
 		return addMapObject(gx, gy, cw, ch, name, manager, l, 0f, 0f, color);
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l, float x, float y, LColor color) {
 		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, 1f, 1f, color);
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l, float x, float y, float scaleX, float scaleY, LColor color) {
 		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, scaleX, scaleY, false, false, color);
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l, float x, float y, float scaleX, float scaleY, boolean flipX, boolean flipY,
 			LColor color) {
 		return addMapObject(gx, gy, cw, ch, name, manager, l, x, y, scaleX, scaleY, flipX, flipY, color, 0);
 	}
 
-	public AnimationRenderer addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
+	public BattleMapObject addMapObject(int gx, int gy, int cw, int ch, String name, AnimationManager manager,
 			MovementListener l, float x, float y, float scaleX, float scaleY, boolean flipX, boolean flipY,
 			LColor color, int layerIndex) {
 		AnimationRenderer renderer = new AnimationRenderer(0, 0, cw, ch);
-		_objects.add(new BattleMapObject(_isoConfig, this, renderer, _objects.size(), name, gx, gy, cw, ch, l));
+		BattleMapObject obj = new BattleMapObject(_isoConfig, this, renderer, _objects.size(), name, gx, gy, cw, ch, l);
+		_objects.add(obj);
 		if (manager != null) {
 			renderer.addCharacter(manager, x, y, scaleX, scaleY, flipX, flipY, color, layerIndex);
 		}
 		if (renderer != null) {
 			_mapSprites.add(renderer);
 		}
-		return renderer;
+		return obj;
 	}
 
-	public AnimationRenderer addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch,
+	public BattleMapObject addMapObject(RoleEquip e, String name, int gx, int gy, int cw, int ch,
 			AnimationManager manager, MovementListener l) {
 		AnimationRenderer renderer = new AnimationRenderer(0, 0, cw, ch);
-		_objects.add(new BattleMapObject(_isoConfig, this, renderer, _objects.size(), e, name, gx, gy, cw, ch, l));
+		BattleMapObject obj = new BattleMapObject(_isoConfig, this, renderer, _objects.size(), e, name, gx, gy, cw, ch,
+				l);
+		_objects.add(obj);
 		if (manager != null) {
 			renderer.addCharacter(manager, 0, 0);
 		}
 		if (renderer != null) {
 			_mapSprites.add(renderer);
 		}
-		return renderer;
+		return obj;
 	}
 
 	public boolean removeMapObject(BattleMapObject o) {
@@ -435,6 +442,10 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		_highlighter.generateRadius(type, startX, startY, radius, _field2d);
 	}
 
+	public void highlighterRangePathToEffect(TArray<PointI> paths, EffectType effect) {
+		_highlighter.generateRangePathToEffect(effect, paths);
+	}
+
 	public BattleTile getMapTile(int tx, int ty) {
 		if (_field2d.contains(tx, ty)) {
 			return _mapTiles[tx][ty];
@@ -448,6 +459,11 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		_highlighter.update(_deltaTime);
 		if (_useOtherGrid && _otherIsoGrid != null) {
 			_otherIsoGrid.update(elapsedTime);
+		}
+		for (BattleMapObject o : _objects) {
+			if (o != null) {
+				o.update(_deltaTime);
+			}
 		}
 		if (_mapSprites != null) {
 			_mapSprites.update(elapsedTime);
@@ -630,6 +646,15 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		return gridPos;
 	}
 
+	public TArray<PointI> findObjectMovePathToTile(BattleMapObject obj, float touchX, float touchY) {
+		if (_pathFinder == null) {
+			return null;
+		}
+		Vector2f pos = findTileXY(touchX, touchY);
+		TArray<PointI> result = _pathFinder.findPath(obj.getGridX(), obj.getGridY(), pos.x(), pos.y());
+		return result;
+	}
+
 	public void handleCameraMovement(float deltaTime, Direction d) {
 		if (d == Direction.LEFT) {
 			_offset.x -= cameraMoveSpeed * deltaTime;
@@ -654,7 +679,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 		if (clickedTile != null && !_selectionManager._selectedObjects.isEmpty()) {
 			clickedTile.isHighlighted = !clickedTile.isHighlighted;
 			BattleMapObject selected = _selectionManager._selectedObjects.get(0);
-			TArray<Vector2f> path = _pathFinder.findPath(selected.gridX, selected.gridY, clickedTile.gridX,
+			TArray<PointI> path = _pathFinder.findPath(selected.gridX, selected.gridY, clickedTile.gridX,
 					clickedTile.gridY);
 			selected.setPath(path);
 		}
@@ -1795,6 +1820,7 @@ public class BattleMap extends LObject<ISprite> implements TileMapCollision, Siz
 
 	@Override
 	protected void _onDestroy() {
+		_objects.clear();
 		_visible = false;
 		_playAnimation = false;
 		_roll = false;

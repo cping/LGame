@@ -20,11 +20,14 @@
  */
 package loon.action.map.battle;
 
+import java.util.Comparator;
+
+import loon.LRelease;
 import loon.LSystem;
 import loon.events.GameEvent;
 import loon.events.GameEventBus;
 import loon.events.GameEventType;
-import loon.geom.Vector2f;
+import loon.geom.PointI;
 import loon.utils.IntMap;
 import loon.utils.MathUtils;
 import loon.utils.TArray;
@@ -32,7 +35,7 @@ import loon.utils.TArray;
 /**
  * 战斗地图专属寻径工具类
  */
-public class BattlePathFinder {
+public class BattlePathFinder implements LRelease {
 
 	// 封装坐标和成本
 	public static class Node {
@@ -54,18 +57,59 @@ public class BattlePathFinder {
 
 		public final String message;
 
-		public TArray<Vector2f> path;
+		public TArray<PointI> path;
 
 		public PathResult(boolean success, String message) {
 			this.success = success;
 			this.message = message;
 		}
 
-		public PathResult(boolean success, String message, TArray<Vector2f> path) {
+		public PathResult(boolean success, String message, TArray<PointI> path) {
 			this.success = success;
 			this.message = message;
 			this.path = path;
 		}
+	}
+
+	// 排序模式
+	public static enum SortMode {
+		// 只按x排序
+		BY_X,
+		// 只按y排序
+		BY_Y,
+		// 同时考虑x与y
+		BY_XY
+	}
+
+	public static TArray<PointI> sortVectors(TArray<PointI> list) {
+		return sortVectors(list, true, SortMode.BY_XY);
+	}
+
+	public static TArray<PointI> sortVectors(TArray<PointI> list, final boolean ascending, final SortMode mode) {
+		list.sort(new Comparator<PointI>() {
+
+			@Override
+			public int compare(PointI o1, PointI o2) {
+				int cmp = 0;
+				switch (mode) {
+				case BY_X:
+					cmp = MathUtils.compare(o1.x, o2.x);
+					break;
+				case BY_Y:
+					cmp = MathUtils.compare(o1.y, o2.y);
+					break;
+				case BY_XY:
+					cmp = MathUtils.compare(o1.x, o2.x);
+					if (cmp == 0) {
+						cmp = MathUtils.compare(o1.y, o2.y);
+					}
+					break;
+				}
+				return ascending ? cmp : -cmp;
+
+			}
+		});
+		return list;
 	}
 
 	private final static int PATH_MAX_ITERATIONS = 10000;
@@ -80,17 +124,24 @@ public class BattlePathFinder {
 	private int[][] gCost, hCost, parentX, parentY;
 	private boolean[][] closed;
 	// 路径缓存
-	private final IntMap<TArray<Vector2f>> pathCache = new IntMap<TArray<Vector2f>>();
+	private final IntMap<TArray<PointI>> pathCache = new IntMap<TArray<PointI>>();
 	// 寻径启发函数权重
 	private final float heuristicWeight = 1.0f;
 
 	private final GameEventBus<PathResult> eventBus;
 
+	private boolean allowSmoothPath = true;
+
 	public BattlePathFinder(GameEventBus<PathResult> bus, BattleTile[][] map, int width, int height) {
+		this(bus, map, width, height, true);
+	}
+
+	public BattlePathFinder(GameEventBus<PathResult> bus, BattleTile[][] map, int width, int height, boolean smooth) {
 		this.eventBus = bus;
 		this.map = map;
 		this.width = width;
 		this.height = height;
+		this.allowSmoothPath = smooth;
 		initCostArrays();
 	}
 
@@ -104,12 +155,12 @@ public class BattlePathFinder {
 
 	/**
 	 * 使用二分查找插入，保持有序
-	 * 
+	 *
 	 * @param list
 	 * @param node
 	 */
 	private void insertSorted(TArray<Node> list, Node node) {
-		int low = 0, high = list.size() - 1;
+		int low = 0, high = list.size - 1;
 		while (low <= high) {
 			int mid = (low + high) >>> 1;
 			Node midNode = list.get(mid);
@@ -120,8 +171,19 @@ public class BattlePathFinder {
 				low = mid + 1;
 			}
 		}
-		// 插入到正确位置
+		list.add(node);
+		for (int i = list.size - 1; i > low; i--) {
+			list.set(i, list.get(i - 1));
+		}
 		list.set(low, node);
+	}
+
+	public boolean isAllowSmoothPath() {
+		return allowSmoothPath;
+	}
+
+	public void setAllowSmoothPath(boolean s) {
+		allowSmoothPath = s;
 	}
 
 	private final static int setKey(int x, int y) {
@@ -140,15 +202,15 @@ public class BattlePathFinder {
 	 * @param ey
 	 * @return
 	 */
-	public TArray<Vector2f> findPath(int sx, int sy, int ex, int ey) {
+	public TArray<PointI> findPath(int sx, int sy, int ex, int ey) {
 		if (!isValid(sx, sy) || !isValid(ex, ey) || !map[ex][ey].isPassable()) {
 			publishPathEvent(false, "Invalid or impassable start/end point", null);
-			return new TArray<Vector2f>();
+			return new TArray<PointI>();
 		}
 
 		if (sx == ex && sy == ey) {
-			TArray<Vector2f> path = new TArray<Vector2f>();
-			path.add(new Vector2f(sx, sy));
+			TArray<PointI> path = new TArray<PointI>();
+			path.add(new PointI(sx, sy));
 			publishPathEvent(true, "Start and end are the same", path);
 			return path;
 		}
@@ -160,7 +222,7 @@ public class BattlePathFinder {
 		cacheKey = LSystem.unite(cacheKey, ey);
 
 		if (pathCache.containsKey(cacheKey)) {
-			TArray<Vector2f> cachedPath = new TArray<Vector2f>(pathCache.get(cacheKey));
+			TArray<PointI> cachedPath = new TArray<PointI>(pathCache.get(cacheKey));
 			publishPathEvent(true, "Using cached path", cachedPath);
 			return cachedPath;
 		}
@@ -189,11 +251,16 @@ public class BattlePathFinder {
 			closed[cx][cy] = true;
 
 			if (cx == ex && cy == ey) {
-				TArray<Vector2f> path = reconstructPath(ex, ey);
-				TArray<Vector2f> smoothPath = smoothPath(path);
-				cachePath(cacheKey, smoothPath);
-				publishPathEvent(true, "Path found", smoothPath);
-				return smoothPath;
+				TArray<PointI> path = reconstructPath(ex, ey);
+				if (allowSmoothPath) {
+					TArray<PointI> smoothPath = smoothPath(path);
+					cachePath(cacheKey, smoothPath);
+					publishPathEvent(true, "Path found", smoothPath);
+					return smoothPath;
+				} else {
+					publishPathEvent(true, "Path found", path);
+					return path;
+				}
 			}
 
 			for (int[] dir : dirs) {
@@ -203,7 +270,12 @@ public class BattlePathFinder {
 				if (!isValid(nx, ny) || closed[nx][ny] || !map[nx][ny].isPassable()) {
 					continue;
 				}
-
+				// 斜向移动合法性检查
+				if (dir[0] != 0 && dir[1] != 0) {
+					if (!map[cx + dir[0]][cy].isPassable() || !map[cx][cy + dir[1]].isPassable()) {
+						continue;
+					}
+				}
 				BattleTile tile = map[nx][ny];
 				float terrainMultiplier = tile.pathCost;
 
@@ -236,7 +308,31 @@ public class BattlePathFinder {
 		String message = iterations >= PATH_MAX_ITERATIONS ? "Pathfinding iteration limit exceeded"
 				: "No valid path found";
 		publishPathEvent(false, message, null);
-		return new TArray<Vector2f>();
+		return new TArray<PointI>();
+	}
+
+	/**
+	 * 检测三点是否共线
+	 * 
+	 * @param p0
+	 * @param p1
+	 * @param p2
+	 * @return
+	 */
+	private boolean isStraightLine(PointI p0, PointI p1, PointI p2) {
+		return MathUtils.equal((p1.x - p0.x) * (p2.y - p0.y), (p2.x - p0.x) * (p1.y - p0.y));
+	}
+
+	private boolean isValid(int x, int y) {
+		return x >= 0 && x < width && y >= 0 && y < height;
+	}
+
+	private int calculateHeuristic(int x, int y, int ex, int ey) {
+		int dx = MathUtils.abs(x - ex);
+		int dy = MathUtils.abs(y - ey);
+		int manhattan = dx + dy;
+		float euclidean = MathUtils.sqrt(dx * dx + dy * dy);
+		return (int) ((manhattan + euclidean) * heuristicWeight);
 	}
 
 	/**
@@ -246,7 +342,7 @@ public class BattlePathFinder {
 	 * @param message
 	 * @param path
 	 */
-	private void publishPathEvent(boolean success, String message, TArray<Vector2f> path) {
+	private void publishPathEvent(boolean success, String message, TArray<PointI> path) {
 		PathResult result = new PathResult(success, message, path);
 		eventBus.publish(new GameEvent<PathResult>(success ? GameEventType.PATH_FOUND : GameEventType.PATH_FAILED, this,
 				null, result));
@@ -258,7 +354,7 @@ public class BattlePathFinder {
 	 * @param key
 	 * @param path
 	 */
-	private void cachePath(int key, TArray<Vector2f> path) {
+	private void cachePath(int key, TArray<PointI> path) {
 		if (pathCache.size() >= PATH_CACHE_SIZE) {
 			// 移除最旧的缓存项
 			if (pathCache.size > 0) {
@@ -266,7 +362,7 @@ public class BattlePathFinder {
 				pathCache.remove(oldestKey);
 			}
 		}
-		pathCache.put(key, new TArray<Vector2f>(path));
+		pathCache.put(key, new TArray<PointI>(path));
 	}
 
 	/**
@@ -275,26 +371,40 @@ public class BattlePathFinder {
 	 * @param path
 	 * @return
 	 */
-	private TArray<Vector2f> smoothPath(TArray<Vector2f> path) {
+	private TArray<PointI> smoothPath(TArray<PointI> path) {
 		if (path.size() < 3) {
-			return new TArray<Vector2f>(path);
+			return new TArray<PointI>(path);
 		}
-		TArray<Vector2f> smooth = new TArray<Vector2f>();
+		TArray<PointI> smooth = new TArray<PointI>();
 		smooth.add(path.get(0));
 		int lastIndex = 0;
-
-		for (int i = 2; i < path.size(); i++) {
-			Vector2f p0 = path.get(lastIndex);
-			Vector2f p1 = path.get(i - 1);
-			Vector2f p2 = path.get(i);
-			// 检测是否为直线且无障碍物
-			if (!isStraightLine(p0, p1, p2) || !isPathClear(p0, p2)) {
-				smooth.add(p1);
+		for (int i = 1; i < path.size(); i++) {
+			PointI last = path.get(lastIndex);
+			PointI curr = path.get(i);
+			if (isPathClear(last, curr)) {
+				continue;
+			} else {
+				smooth.add(path.get(i - 1));
 				lastIndex = i - 1;
 			}
 		}
 		smooth.add(path.get(path.size() - 1));
-		return smooth;
+		TArray<PointI> finalSmooth = new TArray<PointI>();
+		finalSmooth.add(smooth.get(0));
+		for (int i = 1; i < smooth.size() - 1; i++) {
+			PointI prev = smooth.get(i - 1);
+			PointI curr = smooth.get(i);
+			PointI next = smooth.get(i + 1);
+			if (!isStraightLine(prev, curr, next)) {
+				finalSmooth.add(curr);
+			}
+		}
+		finalSmooth.add(smooth.get(smooth.size() - 1));
+		int minPoints = MathUtils.max(3, path.size() / 3);
+		if (finalSmooth.size() < minPoints) {
+			return path;
+		}
+		return finalSmooth;
 	}
 
 	/**
@@ -304,11 +414,11 @@ public class BattlePathFinder {
 	 * @param end
 	 * @return
 	 */
-	private boolean isPathClear(Vector2f start, Vector2f end) {
-		int sx = (int) start.x;
-		int sy = (int) start.y;
-		int ex = (int) end.x;
-		int ey = (int) end.y;
+	private boolean isPathClear(PointI start, PointI end) {
+		int sx = start.x;
+		int sy = start.y;
+		int ex = end.x;
+		int ey = end.y;
 
 		int dx = MathUtils.abs(ex - sx);
 		int dy = MathUtils.abs(ey - sy);
@@ -340,46 +450,23 @@ public class BattlePathFinder {
 	}
 
 	/**
-	 * 检测三点是否共线
-	 * 
-	 * @param p0
-	 * @param p1
-	 * @param p2
-	 * @return
-	 */
-	private boolean isStraightLine(Vector2f p0, Vector2f p1, Vector2f p2) {
-		return MathUtils.equal((p1.x - p0.x) * (p2.y - p0.y), (p2.x - p0.x) * (p1.y - p0.y));
-	}
-
-	private boolean isValid(int x, int y) {
-		return x >= 0 && x < width && y >= 0 && y < height;
-	}
-
-	private int calculateHeuristic(int x, int y, int ex, int ey) {
-		int dx = MathUtils.abs(x - ex);
-		int dy = MathUtils.abs(y - ey);
-		int manhattan = dx + dy;
-		float euclidean = (float) MathUtils.sqrt(dx * dx + dy * dy);
-		return (int) ((manhattan + euclidean) * heuristicWeight);
-	}
-
-	/**
 	 * 重构路径
-	 * 
-	 * @param ex
-	 * @param ey
-	 * @return
+	 *
+	 * @param ex 终点x
+	 * @param ey 终点y
+	 * @return 路径列表
 	 */
-	private TArray<Vector2f> reconstructPath(int ex, int ey) {
-		TArray<Vector2f> path = new TArray<Vector2f>();
+	private TArray<PointI> reconstructPath(int ex, int ey) {
+		TArray<PointI> path = new TArray<PointI>();
 		int cx = ex, cy = ey;
 		while (cx != -1 && cy != -1) {
-			path.set(0, new Vector2f(cx, cy));
+			path.add(new PointI(cx, cy));
 			int px = parentX[cx][cy];
 			int py = parentY[cx][cy];
 			cx = px;
 			cy = py;
 		}
+		path.reverse();
 		return path;
 	}
 
@@ -403,5 +490,10 @@ public class BattlePathFinder {
 	 */
 	public void clearCache() {
 		pathCache.clear();
+	}
+
+	@Override
+	public void close() {
+		clearCache();
 	}
 }

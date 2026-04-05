@@ -696,17 +696,14 @@ public final class ISOUtils {
 	 */
 	public static Vector2f getScreenToTile(IsoConfig config, float drawX, float drawY, int charWidth, int charHeight,
 			float offsetX, float offsetY, Vector2f result) {
-		if (result == null) {
-			result = new Vector2f();
-		}
 		if (charWidth == config.tileWidth && charHeight == config.tileHeight) {
-			return screenToGrid(drawX, drawY, offsetX, offsetY, 0, 0, config);
+			return screenToGrid(drawX, drawY, offsetX, offsetY, 0, 0, config, result);
 		}
 		float scaledTileW = config.tileWidth * config.scaleX;
 		float scaledTileH = config.tileHeight * config.scaleY;
 		float screenX = drawX + charWidth / 2f - scaledTileW / 2f;
 		float screenY = drawY + charHeight - (scaledTileH * 3f / 4f);
-		return screenToGrid(screenX, screenY, offsetX, offsetY, 0, 0, config);
+		return screenToGrid(screenX, screenY, offsetX, offsetY, 0, 0, config, result);
 	}
 
 	/**

@@ -31,13 +31,15 @@ import loon.action.map.battle.BattleType.ObjectState;
 import loon.action.map.items.Role;
 import loon.action.map.items.RoleEquip;
 import loon.action.sprite.ISprite;
+import loon.geom.PointI;
 import loon.geom.Vector2f;
+import loon.geom.XY;
 import loon.utils.Easing;
 import loon.utils.ISOUtils;
 import loon.utils.ISOUtils.IsoConfig;
 import loon.utils.ISOUtils.IsoResult;
 import loon.utils.MathUtils;
-import loon.utils.ObjectMap;
+import loon.utils.ObjectBundle;
 import loon.utils.TArray;
 
 /**
@@ -45,76 +47,77 @@ import loon.utils.TArray;
  */
 public class BattleMapObject extends Role {
 
-	public int gridX, gridY;
-
-	public int targetX, targetY;
-
-	public Direction currentDirection = Direction.DOWN;
-
-	public ObjectState state = ObjectState.IDLE;
-
-	public float renderPriority = 0f;
-
+	/** 最大惯性值 */
 	public static final float MAX_INERTIA = 0.1f;
 
+	/** 默认缓动函数 */
+	private static final Easing DEFAULT_EASING = Easing.TIME_LINEAR;
+
+	// 初始(当前)坐标
+	public int gridX, gridY;
+	// 目标(移动后到达)坐标
+	public int targetX, targetY;
+
+	// 方向与状态
+	public Direction currentDirection = Direction.DOWN;
+	public ObjectState state = ObjectState.IDLE;
+
+	// 渲染与移动基础参数
+	public float renderPriority = 0f;
 	private boolean isMoving;
-
 	public float moveInertia = 0f;
+	public float moveSpeedMultiplier = 1f;
 
-	public float moveSpeedMultiplier = 1f; // 地形/效果倍率
+	// 斜角地图配置
+	public final IsoConfig isoConfig;
+	private final int charWidth, charHeight;
 
-	public IsoConfig isoConfig;
+	// 速度系统
+	private float baseSpeed;
+	private float currentSpeed;
+	private float targetSpeed;
 
-	private int charWidth, charHeight;
-
-	private float baseSpeed, currentSpeed, targetSpeed;
-
-	// 路径与移动状态
-	private TArray<Vector2f> path = new TArray<Vector2f>();
+	// 路径系统
+	private final TArray<PointI> path = new TArray<PointI>();
 	private int currentStep;
-
 	private boolean paused;
-
 	private Easing easing;
-	private Vector2f startPixel, targetPixel;
+
+	// 坐标缓存对象
+	private final Vector2f startPixel = new Vector2f();
+	private final Vector2f targetPixel = new Vector2f();
+	private final Vector2f movePixel = new Vector2f();
+	private final Vector2f moveOffsetPixel = new Vector2f();
+	private final Vector2f gxTempResult = new Vector2f();
+	private final IsoResult isoTempResult = new IsoResult();
 
 	// 移动模式
 	private MovementMode currentMode = MovementMode.WALK;
 
-	// 地图与地形特殊影响
+	// 地图阻挡配置
+	private final TArray<PointI> blockedTiles = new TArray<PointI>();
+	private final TArray<PointI> allowedTiles = new TArray<PointI>();
 
-	private TArray<Vector2f> blockedTiles = new TArray<Vector2f>();
-	private TArray<Vector2f> allowedTiles = new TArray<Vector2f>();
-
-	private final Vector2f gxTempResult = new Vector2f();
-
-	private final IsoResult isoTempResult = new IsoResult();
-
+	// 地图引用
 	private BattleMap battleMap;
 
-	// 移动资源
+	// 移动点数系统
 	private int maxMovementPoints;
 	private int remainingMovementPoints;
 
-	private final Vector2f movePixel = new Vector2f();
-
-	private final Vector2f moveOffsetPixel = new Vector2f();
-
-	// 移动系统
+	// 移动管理器
 	private final BattleMovementManager moveManager;
-
-	// 可碰撞对应集合
 	private final TArray<BattleMapObject> otherCharacters = new TArray<BattleMapObject>();
-
 	private MovementListener listener;
 
-	private Vector2f currentMapTile;
+	// 当前所在瓦片
+	private final PointI currentMapTile = new PointI();
 
 	public float moveProgress = 0f;
 
 	public BattleMapObject(IsoConfig cfg, BattleMap map, ISprite sprite, int id, String name, int gx, int gy, int w,
 			int h, MovementListener l) {
-		this(cfg, map, sprite, id, name, gx, gy, w, h, l, Easing.TIME_LINEAR);
+		this(cfg, map, sprite, id, name, gx, gy, w, h, l, DEFAULT_EASING);
 	}
 
 	public BattleMapObject(IsoConfig cfg, BattleMap map, ISprite sprite, int id, String name, int gx, int gy, int w,
@@ -124,144 +127,301 @@ public class BattleMapObject extends Role {
 
 	public BattleMapObject(IsoConfig cfg, BattleMap map, ISprite sprite, int id, RoleEquip e, String name, int gx,
 			int gy, int w, int h, MovementListener l) {
-		this(cfg, map, sprite, id, e, name, gx, gy, w, h, l, Easing.TIME_LINEAR);
+		this(cfg, map, sprite, id, e, name, gx, gy, w, h, l, DEFAULT_EASING);
 	}
 
 	public BattleMapObject(IsoConfig cfg, BattleMap map, ISprite sprite, int id, RoleEquip e, String name, int gx,
 			int gy, int w, int h, MovementListener l, Easing ease) {
 		super(id, e, name);
+		// 非空校验
+		this.isoConfig = (cfg == null) ? new IsoConfig() : cfg;
 		this.battleMap = map;
-		this.easing = ease;
-		this.gridX = gx;
-		this.gridY = gy;
-		this.targetX = gx;
-		this.targetY = gy;
-		this.charWidth = w;
-		this.charHeight = h;
+		this.easing = (ease == null) ? DEFAULT_EASING : ease;
+
+		// 初始化坐标
+		this.gridX = MathUtils.max(0, gx);
+		this.gridY = MathUtils.max(0, gy);
+		this.targetX = gridX;
+		this.targetY = gridY;
+
+		// 尺寸校验
+		this.charWidth = MathUtils.max(1, w);
+		this.charHeight = MathUtils.max(1, h);
 		this.listener = l;
-		this.isoConfig = cfg;
-		this.currentMapTile = new Vector2f(gridX, gridY);
+
+		// 初始化移动管理器
 		this.moveManager = new BattleMovementManager(listener);
-		this.startPixel = getTileToScreen(gridX, gridY);
-		this.targetPixel = startPixel.cpy();
+		this.currentMapTile.set(gridX, gridY);
+
+		// 初始化像素坐标
+		this.startPixel.set(getTileToScreen(gridX, gridY));
+		this.targetPixel.set(startPixel);
+
+		// 基础速度
+		this.baseSpeed = MathUtils.max(MAX_INERTIA, 5f);
 		this.renderPriority = calculateRenderPriority();
-		resetState();
+
+		// 重置移动路径状态与初始移动点为100
+		resetPathState(100);
+
+		// 精灵初始化
 		if (sprite != null) {
-			sprite.setSize(w, h);
+			sprite.setSize(charWidth, charHeight);
 			sprite.setLocation(startPixel.x, startPixel.y);
 			setRoleObject(sprite);
 		}
 	}
 
+	public MovementListener getMovementListener() {
+		return listener;
+	}
+
+	public BattleMapObject setMovementListener(MovementListener l) {
+		listener = l;
+		return this;
+	}
+
+	public Easing getEasing() {
+		return easing;
+	}
+
+	public BattleMapObject setEasing(Easing e) {
+		easing = e;
+		if (listener != null) {
+			listener.onEasingChanged(this, e);
+		}
+		return this;
+	}
+
 	private float calculateRenderPriority() {
-		Vector2f screenPos = getScreenPosition();
+		Vector2f screenPos = getTileToScreenPosition();
 		return screenPos.y + (getLayer() * 100) + (charHeight * isoConfig.heightScale);
 	}
 
 	public Vector2f getInterpolatedPosition() {
-		if (state == ObjectState.MOVING && targetX != gridX && targetY != gridY) {
+		if (state == ObjectState.MOVING) {
 			float easedProgress = Easing.outCubicEase(moveProgress);
-			float interpGridX = gridX + (targetX - gridX) * easedProgress;
-			float interpGridY = gridY + (targetY - gridY) * easedProgress;
-			return getTileToScreen(MathUtils.ifloor(interpGridX), MathUtils.ifloor(interpGridY));
-		} else {
-			// 非移动状态直接返回当前位置
-			return getScreenPosition();
+			float interpX = gridX + (targetX - gridX) * easedProgress;
+			float interpY = gridY + (targetY - gridY) * easedProgress;
+			return getTileToScreen(MathUtils.ifloor(interpX), MathUtils.ifloor(interpY));
 		}
+		return getTileToScreenPosition();
+	}
+
+	public Vector2f getOffsetPixel() {
+		return moveOffsetPixel;
+	}
+
+	public BattleMapObject setOffsetPixel(XY pos) {
+		if (pos != null) {
+			moveOffsetPixel.set(pos);
+		}
+		return this;
+	}
+
+	public Vector2f getStartPixel() {
+		return startPixel;
+	}
+
+	public Vector2f getTargetPixel() {
+		return targetPixel;
+	}
+
+	public void setStartTile(int gx, int gy) {
+		setStartTile(gx, gy, charWidth, charHeight);
+	}
+
+	public void setStartTile(int gx, int gy, int cw, int ch) {
+		this.gridX = MathUtils.max(0, gx);
+		this.gridY = MathUtils.max(0, gy);
+		this.startPixel.set(getTileToScreen(gridX, gridY));
+		this.currentMapTile.set(gridX, gridY);
+		setLocation(startPixel.x, startPixel.y);
+	}
+
+	public void setTargetTile(int gx, int gy) {
+		setTargetTile(gx, gy, charWidth, charHeight);
+	}
+
+	public void setTargetTile(int gx, int gy, int cw, int ch) {
+		this.targetX = MathUtils.max(0, gx);
+		this.targetY = MathUtils.max(0, gy);
+		this.targetPixel.set(getTileToScreen(targetX, targetY));
+	}
+
+	public Vector2f getScreenToTile() {
+		return getScreenToTile(getX(), getY());
+	}
+
+	public Vector2f getScreenToTile(float px, float py) {
+		return getScreenToTile(px, py, charWidth, charHeight);
+	}
+
+	public Vector2f getScreenToTile(float px, float py, int cw, int ch) {
+		return ISOUtils.getScreenToTile(isoConfig, px, py, cw, ch, moveOffsetPixel.x, moveOffsetPixel.y, gxTempResult);
 	}
 
 	public Vector2f getTileToScreen(int gx, int gy) {
-		return ISOUtils.getTileToScreen(isoConfig, gx, gy, charWidth, charHeight, moveOffsetPixel.x, moveOffsetPixel.y,
-				gxTempResult, isoTempResult);
+		return getTileToScreen(gx, gy, charWidth, charHeight);
 	}
 
-	public Vector2f getScreenPosition() {
+	public Vector2f getTileToScreen(int gx, int gy, int cw, int ch) {
+		return ISOUtils.getTileToScreen(isoConfig, gx, gy, cw, ch, moveOffsetPixel.x, moveOffsetPixel.y, gxTempResult,
+				isoTempResult);
+	}
+
+	public Vector2f getTileToScreenPosition() {
 		return getTileToScreen(gridX, gridY);
 	}
 
-	public Vector2f getTilePosition() {
-		return ISOUtils.getScreenToTile(isoConfig, startPixel.x, startPixel.y, charWidth, charHeight, moveOffsetPixel.x,
-				moveOffsetPixel.y, gxTempResult);
+	public int getGridX() {
+		return gridX;
+	}
+
+	public int getGridY() {
+		return gridY;
 	}
 
 	public void setLayer(int l) {
 		if (_roleObject != null) {
 			_roleObject.setLayer(l);
 		}
+		renderPriority = calculateRenderPriority();
 	}
 
-	public void setPath(TArray<Vector2f> newPath) {
-		if (path == null || path.isEmpty()) {
-			this.path = new TArray<Vector2f>();
+	/**
+	 * 重置并设置新路径
+	 * 
+	 * @param newPath
+	 */
+	public void setResetPath(TArray<PointI> newPath) {
+		resetPathState();
+		setPath(newPath);
+	}
+
+	/**
+	 * 设置移动路径
+	 * 
+	 * @param newPath
+	 */
+	public void setPath(TArray<PointI> newPath) {
+		// 空值，死亡状态拦截
+		if (newPath == null || newPath.isEmpty() || state == ObjectState.DEAD) {
 			return;
-		} else {
-			this.path.clear();
 		}
-		this.path.addAll(newPath);
-		if (!newPath.isEmpty() && state != ObjectState.DEAD) {
-			Vector2f firstPos = newPath.peek();
-			targetX = (int) firstPos.x;
-			targetY = (int) firstPos.y;
-		}
-		// 过滤不可通行瓦片
-		this.path = filterValidPath(path);
-		this.currentStep = 0;
-		this.paused = false;
-		this.moveProgress = 0f;
 
-		// 获得目标像素坐标
-		targetPixel = getTileToScreen(this.path.get(0).x(), this.path.get(0).y());
+		path.clear();
+		path.addAll(newPath);
+
+		// 设置最终目标点
+		PointI lastPos = path.last();
+		if (lastPos != null) {
+			setTargetTile(lastPos.x, lastPos.y);
+		}
+
+		// 过滤无效路径
+		TArray<PointI> validPath = filterValidPath(path);
+		path.clear();
+		path.addAll(validPath);
+
+		if (path.isEmpty()) {
+			endMovement();
+			return;
+		}
+
+		// 初始化移动状态
+		currentStep = 0;
+		paused = false;
+		moveProgress = 0f;
+		targetPixel.set(getTileToScreen(path.get(0).x, path.get(0).y));
+
+		// 矫正角色初始方向
+		if (path.size() > 1) {
+			PointI start = path.get(0);
+			PointI next = path.get(1);
+			Direction newDir = Direction.fromDelta(next.x - start.x, next.y - start.y);
+			if (listener != null) {
+				listener.onDirectionChanged(this, newDir);
+			}
+		}
+
+		// 回调通知
 		if (listener != null) {
-			listener.onPathUpdated(this.path);
+			listener.onPathUpdated(this, path);
 		}
-
-		// 触发移动动画变更，获得新状态后用户即可改编播放的纹理
 		triggerAnimation(AnimationState.WALK);
 	}
 
 	public void update(float deltaTime) {
-		if (paused || path.isEmpty()) {
+		// 死亡/暂停/无路径，直接返回，不予执行
+		if (state == ObjectState.DEAD || paused || path.isEmpty()) {
+			handleIdleState(deltaTime);
 			return;
 		}
-		// 更新移动状态
-		moveManager.update(deltaTime);
-		// 应用速度计算
-		updateSpeed();
 
-		// 传送状态直接生效
-		for (MovementState skill : moveManager.getActiveStates()) {
-			if (skill.isTeleport()) {
+		// 更新移动管理器
+		moveManager.update(deltaTime, this);
+
+		// 传送技能直接执行
+		for (MovementState state : moveManager.getActiveStates()) {
+			if (state.isTeleport()) {
 				performTeleport(this);
 				return;
 			}
 		}
 
-		// 平滑移动
-		currentSpeed += (targetSpeed - currentSpeed) * 0.1f;
+		// 更新速度
+		updateSpeed();
+		// 平滑惯性移动
+		currentSpeed += (targetSpeed - currentSpeed) * MAX_INERTIA;
 		moveProgress += currentSpeed * deltaTime;
-		float eased = easing.apply(moveProgress, 1f);
+
+		float eased = MathUtils.min(easing.apply(moveProgress), 1f);
 		movePixel.set(startPixel.x + (targetPixel.x - startPixel.x) * eased,
 				startPixel.y + (targetPixel.y - startPixel.y) * eased);
 
+		// 更新像素位置
 		setPixelPosition(movePixel);
-		updateMapTile(charWidth, charHeight);
 
-		// 完成单步移动
+		// 更新瓦片位置
+		updateCurrentMapTile(movePixel.x, movePixel.y);
+
+		// 单步移动完成
 		if (moveProgress >= 1f) {
 			completeStep();
 		}
+
+		// 更新渲染优先级
+		renderPriority = calculateRenderPriority();
 	}
 
-	public void updateMapTile(int charW, int charH) {
-		this.currentMapTile = ISOUtils.getScreenToTile(isoConfig, getX(), getY(), charW, charH, moveOffsetPixel.x,
-				moveOffsetPixel.y, gxTempResult);
+	public void updateCurrentMapTile() {
+		updateCurrentMapTile(getX(), getY());
 	}
 
+	public void updateCurrentMapTile(float x, float y) {
+		updateCurrentMapTile(x, y, charWidth, charHeight);
+	}
+
+	public void updateCurrentMapTile(float x, float y, int charW, int charH) {
+		Vector2f p = getScreenToTile(x, y, charW, charH);
+		this.gridX = p.x();
+		this.gridY = p.y();
+		this.currentMapTile.set(gridX, gridY);
+	}
+
+	/**
+	 * 速度计算（移动模式+技能+地形倍率）
+	 */
 	private void updateSpeed() {
 		float multiplier = 1f;
+
+		// 特殊状态速度倍率
 		for (MovementState skill : moveManager.getActiveStates()) {
 			multiplier = MathUtils.max(multiplier, skill.getSpeedMultiplier());
 		}
+
+		// 移动模式倍率
 		switch (currentMode) {
 		case RUN:
 			multiplier *= 2f;
@@ -276,106 +436,136 @@ public class BattleMapObject extends Role {
 			multiplier = 1f;
 			break;
 		}
-		currentSpeed += (baseSpeed * multiplier - currentSpeed) * 0.1f;
+
+		// 地形速度倍率
+		if (battleMap != null) {
+			BattleTile tile = battleMap.getMapTile(gridX, gridY);
+			if (tile != null) {
+				multiplier *= tile.getTileType().getMoveSpeedMultiplier();
+			}
+		}
+
+		targetSpeed = baseSpeed * multiplier;
 	}
 
-	private void performTeleport(BattleMapObject o) {
-		Vector2f end = path.get(path.size() - 1);
-		targetPixel = getTileToScreen(end.x(), end.y());
-		o.setPixelPosition(targetPixel);
-		o.setCurrentMapTile(end);
+	/**
+	 * 传送执行
+	 * 
+	 * @param obj
+	 */
+	private void performTeleport(BattleMapObject obj) {
+		if (path.isEmpty()) {
+			return;
+		}
+		PointI end = path.peek();
+		targetPixel.set(getTileToScreen(end.x, end.y));
+		obj.setPixelPosition(targetPixel);
+		obj.setCurrentMapTile(end);
 		currentStep = path.size();
-		finishPath(o);
+		finishPath();
 	}
 
+	/**
+	 * 获取最大可移动步数
+	 */
 	public int getMaxReachableSteps() {
 		int steps = 0;
-		int points = remainingMovementPoints;
-		for (Vector2f tile : path) {
-			int cost = 0;
-			if (battleMap != null) {
-				BattleTile battleTile = battleMap.getMapTile(tile.x(), tile.y());
-				cost = battleTile == null ? 0 : (int) battleTile.getPathCost();
-			}
-			if (points < cost) {
+		int tempPoints = remainingMovementPoints;
+		for (PointI tile : path) {
+			int cost = getTileCost(tile);
+			if (tempPoints < cost) {
 				break;
 			}
-			points -= cost;
+			tempPoints -= cost;
 			steps++;
 		}
 		return steps;
 	}
 
 	/**
-	 * 动态修改路径
-	 * 
-	 * @param extraPath
-	 */
-	public void updatePath(TArray<Vector2f> extraPath) {
-		if (extraPath == null || extraPath.isEmpty()) {
-			return;
-		}
-		TArray<Vector2f> filtered = filterValidPath(extraPath);
-		path.addAll(filtered);
-		if (listener != null) {
-			listener.onPathUpdated(path);
-		}
-	}
-
-	/**
-	 * 添加新的移动路径
+	 * 追加路径
 	 * 
 	 * @param newPath
 	 */
-	public void appendPath(TArray<Vector2f> newPath) {
-		if (newPath == null || newPath.isEmpty()) {
+	public void appendPath(TArray<PointI> newPath) {
+		if (newPath == null || newPath.isEmpty() || state == ObjectState.DEAD) {
 			return;
 		}
-		TArray<Vector2f> filtered = filterValidPath(newPath);
-		path.addAll(filtered);
+		TArray<PointI> valid = filterValidPath(newPath);
+		path.addAll(valid);
+
 		if (listener != null) {
-			listener.onPathUpdated(path);
+			listener.onPathUpdated(this, path);
 		}
-	}
-
-	public Vector2f simulateFuturePosition(int steps) {
-		int idx = MathUtils.min(currentStep + steps, path.size() - 1);
-		return getTileToScreen(path.get(idx).x(), path.get(idx).y());
-	}
-
-	public TArray<Vector2f> previewFullPath() {
-		TArray<Vector2f> pixels = new TArray<Vector2f>();
-		for (Vector2f p : filterValidPath(path)) {
-			pixels.add(getTileToScreen(p.x(), p.y()));
-		}
-		return pixels;
 	}
 
 	/**
-	 * 清空移动路径
+	 * 模拟未来位置
+	 * 
+	 * @param steps
+	 * @return
+	 */
+	public Vector2f simulateFuturePosition(int steps) {
+		if (path.isEmpty()) {
+			return getPixelPosition();
+		}
+		int idx = MathUtils.clamp(currentStep + steps, 0, path.size() - 1);
+		return getTileToScreen(path.get(idx).x, path.get(idx).y);
+	}
+
+	/**
+	 * 预览全路径（屏幕坐标）
+	 */
+	public TArray<Vector2f> previewScreenFullPath() {
+		TArray<Vector2f> result = new TArray<Vector2f>();
+		for (PointI p : filterValidPath(path)) {
+			result.add(new Vector2f(getTileToScreen(p.x, p.y)));
+		}
+		return result;
+	}
+
+	/**
+	 * 预览全路径（瓦片坐标）
+	 * 
+	 * @return
+	 */
+	public TArray<PointI> previewTileFullPath() {
+		TArray<PointI> result = new TArray<PointI>();
+		for (PointI p : filterValidPath(path)) {
+			result.add(new PointI(getTileToScreen(p.x, p.y)));
+		}
+		return result;
+	}
+
+	/**
+	 * 清空路径
 	 */
 	public void clearPath() {
 		path.clear();
 		paused = true;
-		triggerAnimation(AnimationState.IDLE);
+		endMovement();
 	}
 
 	public void addMoveEffect(MovementEffect effect) {
-		moveManager.addEffect(effect);
+		if (effect != null) {
+			moveManager.addEffect(effect);
+		}
 	}
 
-	public void setBlockedTiles(TArray<Vector2f> blocked) {
+	public void setBlockedTiles(TArray<PointI> blocked) {
 		blockedTiles.clear();
-		blockedTiles.addAll(blocked);
+		if (blocked != null)
+			blockedTiles.addAll(blocked);
 	}
 
-	public void setAllowedTiles(TArray<Vector2f> allowed) {
+	public void setAllowedTiles(TArray<PointI> allowed) {
 		allowedTiles.clear();
-		allowedTiles.addAll(allowed);
+		if (allowed != null)
+			allowedTiles.addAll(allowed);
 	}
 
 	public void addCharacter(BattleMapObject o) {
-		if (!otherCharacters.contains(o)) {
+		if (o != null && !otherCharacters.contains(o)) {
 			otherCharacters.add(o);
 		}
 	}
@@ -384,24 +574,28 @@ public class BattleMapObject extends Role {
 		otherCharacters.remove(o);
 	}
 
-	public TArray<Vector2f> getPath() {
-		return new TArray<Vector2f>(path);
+	public TArray<PointI> getPath() {
+		return new TArray<>(path);
 	}
 
 	public int getRemainingSteps() {
-		return path.size() - currentStep;
+		return MathUtils.max(0, path.size() - currentStep);
 	}
 
 	public boolean isPaused() {
 		return paused;
 	}
 
-	public Vector2f getCurrentMapTile() {
-		return currentMapTile;
+	public PointI getCurrentMapTile() {
+		return new PointI(currentMapTile);
 	}
 
-	public void setCurrentMapTile(Vector2f tile) {
-		this.currentMapTile = tile;
+	public void setCurrentMapTile(PointI tile) {
+		if (tile != null) {
+			this.currentMapTile.set(tile);
+			this.gridX = tile.x;
+			this.gridY = tile.y;
+		}
 	}
 
 	public Vector2f getPixelPosition() {
@@ -409,58 +603,90 @@ public class BattleMapObject extends Role {
 	}
 
 	public void setPixelPosition(Vector2f pos) {
-		setLocation(pos);
+		if (pos != null) {
+			setLocation(pos.x, pos.y);
+		}
 	}
 
 	public int getCharacterId() {
 		return getID();
 	}
 
+	public BattleMapObject pause() {
+		paused = true;
+		if (listener != null) {
+			listener.onPathInterrupted(this);
+		}
+		return this;
+	}
+
+	public BattleMapObject resume() {
+		paused = false;
+		if (listener != null) {
+			listener.onPathResumed(this);
+		}
+		return this;
+	}
+
 	public void setMoving(boolean moving) {
-		isMoving = moving;
+		this.isMoving = moving;
 	}
 
 	private void triggerAnimation(AnimationState state) {
-		if (listener != null) {
-			listener.onAnimationStateChanged(state.name());
+		if (listener != null && state != null) {
+			listener.onAnimationStateChanged(this, state.name());
 		}
 	}
 
-	private void deductMovementCost(Vector2f tile) {
+	/**
+	 * 扣除移动点数
+	 * 
+	 * @param tile
+	 */
+	private void deductMovementCost(PointI tile) {
 		int cost = 0;
 		if (battleMap != null) {
-			BattleTile battleTile = battleMap.getMapTile(tile.x(), tile.y());
+			BattleTile battleTile = battleMap.getMapTile(tile.x, tile.y);
 			cost = battleTile == null ? 0 : (int) battleTile.getPathCost();
 		}
 		remainingMovementPoints = MathUtils.max(0, remainingMovementPoints - cost);
 		if (listener != null) {
-			listener.onTerrainCostDeducted(cost, remainingMovementPoints);
-			listener.onMovementPointChanged(remainingMovementPoints);
+			listener.onTerrainCostDeducted(this, cost, remainingMovementPoints);
+			listener.onMovementPointChanged(this, remainingMovementPoints);
 		}
 		if (remainingMovementPoints <= 0) {
-			paused = true;
-			if (listener != null) {
-				listener.onPathInterrupted();
-			}
+			pause();
 		}
 	}
 
-	private void applyTerrainEffects(Vector2f tile) {
-		if (battleMap != null) {
-			BattleTile battleTile = battleMap.getMapTile(tile.x(), tile.y());
-			if (listener != null) {
-				BattleTileType tileType = battleTile.getTileType();
-				listener.onTerrainEffectApplied(tileType.getName(), tileType);
-				targetSpeed = baseSpeed * tileType.getMoveSpeedMultiplier();
-			}
+	/**
+	 * 应用地形效果
+	 * 
+	 * @param tile
+	 */
+	private void applyTerrainEffects(PointI tile) {
+		if (battleMap == null || tile == null) {
+			return;
 		}
-
+		BattleTile battleTile = battleMap.getMapTile(tile.x, tile.y);
+		if (battleTile == null || listener == null) {
+			return;
+		}
+		BattleTileType tileType = battleTile.getTileType();
+		listener.onTerrainEffectApplied(this, tileType.getName(), tileType);
+		targetSpeed = baseSpeed * tileType.getMoveSpeedMultiplier();
 	}
 
+	/**
+	 * 碰撞检测
+	 */
 	public CollisionResponse checkCollision() {
-		Vector2f selfTile = getCurrentMapTile();
+		if (otherCharacters.isEmpty()) {
+			return CollisionResponse.CONTINUE;
+		}
+		PointI selfTile = getCurrentMapTile();
 		for (BattleMapObject other : otherCharacters) {
-			if (this == other) {
+			if (this == other || other == null) {
 				continue;
 			}
 			if (selfTile.equals(other.getCurrentMapTile())) {
@@ -473,97 +699,123 @@ public class BattleMapObject extends Role {
 		return CollisionResponse.CONTINUE;
 	}
 
-	private boolean handleCollision(CollisionResponse response, BattleMapObject character) {
-		switch (response) {
-		case STOP:
-			paused = true;
-			triggerAnimation(AnimationState.IDLE);
-			return true;
-		case BACKWARD:
-			currentStep = MathUtils.max(0, currentStep - 1);
-			targetPixel = getTileToScreen(path.get(currentStep).x(), path.get(currentStep).y());
-			character.setPixelPosition(targetPixel);
-			return true;
-		default:
+	/**
+	 * 碰撞处理
+	 */
+	private boolean handleCollision(CollisionResponse response) {
+		if (response == CollisionResponse.CONTINUE) {
 			return false;
 		}
+		paused = true;
+		triggerAnimation(AnimationState.IDLE);
+		// 后退处理
+		if (response == CollisionResponse.BACKWARD && currentStep > 0) {
+			currentStep = MathUtils.max(0, currentStep - 1);
+			targetPixel.set(getTileToScreen(path.get(currentStep).x, path.get(currentStep).y));
+			setPixelPosition(targetPixel);
+		}
+		return true;
 	}
 
-	private void finishPath(BattleMapObject character) {
-		paused = true;
-		character.setMoving(false);
-		triggerAnimation(AnimationState.ARRIVED);
+	/**
+	 * 路径完成
+	 */
+	private void finishPath() {
+		endMovement();
 		if (listener != null) {
-			listener.onPathCompleted();
+			listener.onPathCompleted(this);
 		}
 	}
 
+	/**
+	 * 更新朝向
+	 */
 	private void updateDirection() {
 		if (currentStep <= 0 || currentStep >= path.size()) {
 			return;
 		}
-		Vector2f prev = path.get(currentStep - 1);
-		Vector2f curr = path.get(currentStep);
-		Direction dir = Direction.fromDelta(curr.x() - prev.x(), curr.y() - prev.y());
-		if (dir != currentDirection) {
-			currentDirection = dir;
+		PointI prev = path.get(currentStep - 1);
+		PointI curr = path.get(currentStep);
+		if (prev == null || curr == null) {
+			return;
+		}
+		Direction newDir = Direction.fromDelta(curr.x - prev.x, curr.y - prev.y);
+		if (newDir != null && newDir != currentDirection) {
+			currentDirection = newDir;
 			if (listener != null) {
-				listener.onDirectionChanged(dir);
+				listener.onDirectionChanged(this, currentDirection);
 			}
 		}
 	}
 
+	/**
+	 * 移动模式设置
+	 * 
+	 * @param newMode
+	 */
 	public void setMovementMode(MovementMode newMode) {
+		if (newMode == null || state == ObjectState.DEAD) {
+			return;
+		}
 		MovementMode old = this.currentMode;
 		this.currentMode = newMode;
 		if (listener != null) {
-			listener.onMovementModeChanged(old, newMode);
+			listener.onMovementModeChanged(this, old, newMode);
 		}
 	}
 
-	public ObjectMap<String, Object> getSyncPacket() {
-		ObjectMap<String, Object> packet = new ObjectMap<String, Object>();
+	public ObjectBundle getSyncPacket() {
+		ObjectBundle packet = new ObjectBundle();
 		packet.put("speed", currentSpeed);
 		packet.put("step", currentStep);
 		packet.put("paused", paused);
-		packet.put("mode", currentMode.name());
+		packet.put("mode", currentMode);
 		packet.put("points", remainingMovementPoints);
 		packet.put("x", startPixel.x);
 		packet.put("y", startPixel.y);
 		return packet;
 	}
 
-	public void applySyncPacket(ObjectMap<String, Object> packet, Character character) {
-		this.currentSpeed = (float) packet.get("speed");
-		this.currentStep = (int) packet.get("step");
-		this.paused = (boolean) packet.get("paused");
-		this.currentMode = MovementMode.valueOf((String) packet.get("mode"));
-		this.remainingMovementPoints = (int) packet.get("points");
-		float x = (float) packet.get("x");
-		float y = (float) packet.get("y");
+	public void applySyncPacket(ObjectBundle packet) {
+		if (packet == null) {
+			return;
+		}
+		this.currentSpeed = MathUtils.max(MAX_INERTIA, packet.getFloat("speed", baseSpeed));
+		this.currentStep = MathUtils.max(0, packet.getInt("step", 0));
+		this.paused = packet.getBool("paused", false);
+		this.currentMode = (MovementMode) packet.get("mode", MovementMode.WALK);
+		this.remainingMovementPoints = MathUtils.max(0, packet.getInt("points", 0));
+		float x = packet.getFloat("x", getX());
+		float y = packet.getFloat("y", getY());
 		setPixelPosition(new Vector2f(x, y));
 	}
 
+	/**
+	 * 单步移动完成
+	 */
 	private void completeStep() {
-		Vector2f tile = path.get(currentStep);
+		if (currentStep >= path.size()) {
+			finishPath();
+			return;
+		}
+
+		PointI tile = path.get(currentStep);
 		setPixelPosition(targetPixel);
 		setCurrentMapTile(tile);
 
-		// 触发事件
+		// 事件回调
 		if (listener != null) {
-			listener.onStepReached(tile.x(), tile.y());
-			listener.onTileEntered(tile.x(), tile.y());
+			listener.onStepReached(this, tile.x, tile.y);
+			listener.onTileEntered(this, tile.x, tile.y);
 		}
 
-		// 消耗移动力
+		// 消耗移动力 + 地形效果 + 碰撞检测
 		deductMovementCost(tile);
-		// 应用地形效果
 		applyTerrainEffects(tile);
-		// 碰撞检测
-		CollisionResponse response = checkCollision();
-		if (handleCollision(response, this)) {
+		if (handleCollision(checkCollision())) {
 			return;
 		}
+
 		// 更新方向
 		updateDirection();
 
@@ -572,63 +824,104 @@ public class BattleMapObject extends Role {
 		moveProgress = 0f;
 
 		if (currentStep >= path.size()) {
-			finishPath(this);
+			finishPath();
 		} else {
-			startPixel = targetPixel;
-			targetPixel = getTileToScreen(path.get(currentStep).x(), path.get(currentStep).y());
+			startPixel.set(targetPixel);
+			targetPixel.set(getTileToScreen(path.get(currentStep).x, path.get(currentStep).y));
 		}
 	}
 
-	public boolean canMoveTo(Vector2f tile) {
-		// 特殊移动
+	/**
+	 * 判断是否可移动到目标瓦片
+	 */
+	public boolean canMoveTo(PointI tile) {
+		if (tile == null || state == ObjectState.DEAD) {
+			return false;
+		}
+		// 技能强制可移动
 		for (MovementState state : moveManager.getActiveStates()) {
 			if (state.canOverrideBlocked(tile)) {
 				return true;
 			}
 		}
-		// 地形阻挡
+		// 地图边界检查
 		if (battleMap != null) {
-			BattleTile battleTile = battleMap.getMapTile(tile.x(), tile.y());
-
-			if (battleTile != null && !battleTile.isPassable()) {
+			BattleTile battleTile = battleMap.getMapTile(tile.x, tile.y);
+			if (battleTile == null || !battleTile.isPassable()) {
 				return false;
 			}
 		}
-		// 瓦片阻挡
-		if (blockedTiles.contains(tile) && !allowedTiles.contains(tile)) {
-			return false;
-		}
-		return true;
+		// 自定义阻挡检查
+		return !blockedTiles.contains(tile) || allowedTiles.contains(tile);
 	}
 
-	private TArray<Vector2f> filterValidPath(TArray<Vector2f> paths) {
-		TArray<Vector2f> valid = new TArray<Vector2f>();
+	/**
+	 * 过滤路径，判定是否合规
+	 * 
+	 * @param paths
+	 * @return
+	 */
+	private TArray<PointI> filterValidPath(TArray<PointI> paths) {
+		TArray<PointI> valid = new TArray<PointI>();
+		if (paths == null || paths.isEmpty()) {
+			return valid;
+		}
 		int tempPoints = remainingMovementPoints;
-		for (Vector2f tile : paths) {
+		for (PointI tile : paths) {
 			if (!canMoveTo(tile)) {
 				break;
 			}
-			if (battleMap != null) {
-				BattleTile battleTile = battleMap.getMapTile(tile.x(), tile.y());
-				float cost = battleTile != null ? battleTile.getPathCost() : 1f;
-				if (tempPoints < cost) {
-					break;
-				}
-				tempPoints -= cost;
-				valid.add(tile);
+			int cost = getTileCost(tile);
+			if (tempPoints < cost) {
+				break;
 			}
-
+			tempPoints -= cost;
+			valid.add(tile);
 		}
 		return valid;
 	}
 
-	public void resetState() {
+	/**
+	 * 获取瓦片消耗
+	 * 
+	 * @param tile
+	 * @return
+	 */
+	private int getTileCost(PointI tile) {
+		if (battleMap == null || tile == null) {
+			return 0;
+		}
+		BattleTile battleTile = battleMap.getMapTile(tile.x, tile.y);
+		return battleTile == null ? 0 : MathUtils.max(0, (int) battleTile.getPathCost());
+	}
+
+	public int getMaxMovementPoints() {
+		return maxMovementPoints;
+	}
+
+	public void setMaxMovementPoints(int points) {
+		this.maxMovementPoints = MathUtils.max(0, points);
+	}
+
+	public void resetPathState() {
+		resetPathState(maxMovementPoints);
+	}
+
+	public void resetPathState(int points) {
 		currentStep = 0;
 		moveProgress = 0f;
 		paused = false;
-		maxMovementPoints = 10;
+		maxMovementPoints = MathUtils.max(0, points);
 		remainingMovementPoints = maxMovementPoints;
 		path.clear();
+	}
+
+	public void setRemainingMovementPoints(int points) {
+		this.remainingMovementPoints = MathUtils.clamp(points, 0, maxMovementPoints);
+	}
+
+	public int getRemainingMovementPoints() {
+		return remainingMovementPoints;
 	}
 
 	public Direction getDirection() {
@@ -644,9 +937,14 @@ public class BattleMapObject extends Role {
 	}
 
 	public void setState(ObjectState state) {
+		if (state == null) {
+			return;
+		}
 		this.state = state;
-		if (ObjectState.MOVING == state) {
-			isMoving = true;
+		this.isMoving = (state == ObjectState.MOVING);
+		// 死亡状态强制停止移动
+		if (state == ObjectState.DEAD) {
+			clearPath();
 		}
 	}
 
@@ -654,98 +952,55 @@ public class BattleMapObject extends Role {
 		return isMoving;
 	}
 
-	protected void handleMoveState(float deltaTime, int w, int h) {
-		if (path.isEmpty()) {
-			endMovement();
-			return;
-		}
-		// 计算实际移动速度（基础速度 * 地形倍率）
-		float tileSpeedMultiplier = 1f;
-		if (gridX >= 0 && gridX < w && gridY >= 0 && gridY < h) {
-			tileSpeedMultiplier = battleMap == null ? 1f
-					: battleMap.getMapTile(gridX, gridY).getTileType().moveSpeedMultiplier;
-		}
-		float actualSpeed = baseSpeed * moveSpeedMultiplier * tileSpeedMultiplier;
-
-		// 应用移动惯性
-		actualSpeed += moveInertia * 5;
-
-		// 更新移动进度（使用缓动函数）
-		moveProgress += deltaTime * actualSpeed;
-		moveProgress = MathUtils.min(1.0f, moveProgress);
-
-		// 计算插值位置
-		float easedProgress = easing.apply(moveProgress, 1f);
-
-		// 更新目标坐标
-		if (targetX == gridX && targetY == gridY && !path.isEmpty()) {
-			Vector2f nextPos = path.peek();
-			targetX = (int) (nextPos.x * easedProgress);
-			targetY = (int) (nextPos.y * easedProgress);
-
-			// 更新移动方向
-			currentDirection = Direction.fromDelta(targetX - gridX, targetY - gridY);
-
-			// 检测目标位置是否可通行
-			if (!isPositionPassable(targetX, targetY, w, h, battleMap.getTileMap())) {
-				path.pop(); // 移除不可通行的点
-				state = ObjectState.BLOCKED;
-
-				return;
-			}
-		}
-
-		// 移动完成判断
-		if (moveProgress >= 1.0f) {
-			// 更新实际坐标
-			gridX = targetX;
-			gridY = targetY;
-			path.pop(); // 移除已完成的路径点
-
-			// 重置进度
-			moveProgress = 0f;
-
-			// 增加移动惯性
-			moveInertia = MathUtils.min(MAX_INERTIA, moveInertia + 0.05f);
-
-			// 检查路径是否结束
-			if (path.isEmpty()) {
-				endMovement();
-			}
-		}
-	}
-
-	// 待机状态处理
+	/**
+	 * 待机状态：惯性衰减+路径检测
+	 * 
+	 * @param deltaTime
+	 */
 	protected void handleIdleState(float deltaTime) {
-		// 重置移动惯性
 		moveInertia = MathUtils.max(0, moveInertia - deltaTime * 2);
-		// 检测是否有路径需要执行
 		if (!path.isEmpty() && state != ObjectState.DEAD) {
 			startMoving();
 		}
 	}
 
+	/**
+	 * 开始移动(死亡状态默认不可触发)
+	 */
 	protected void startMoving() {
-		if (state != ObjectState.DEAD) {
-			state = ObjectState.MOVING;
-			isMoving = true;
-			moveProgress = 0f;
+		if (state == ObjectState.DEAD) {
+			return;
 		}
+		state = ObjectState.MOVING;
+		isMoving = true;
+		moveProgress = 0f;
 	}
 
+	/**
+	 * 结束移动
+	 */
 	protected void endMovement() {
+		paused = true;
 		state = ObjectState.IDLE;
 		isMoving = false;
 		moveProgress = 0f;
 		targetX = gridX;
 		targetY = gridY;
+		if (listener != null) {
+			listener.onPathCompleted(this);
+		}
+		triggerAnimation(AnimationState.ARRIVED);
 	}
 
-	public boolean isPositionPassable(int x, int y, int w, int h, BattleTile[][] map) {
-		if (x < 0 || x >= w || y < 0 || y >= h) {
+	/**
+	 * 位置通行性检查
+	 */
+	public boolean isPositionPassable(int x, int y) {
+		if (battleMap == null) {
 			return false;
 		}
-		return map[x][y].isPassable();
+		BattleTile tile = battleMap.getMapTile(x, y);
+		return tile != null && tile.isPassable();
 	}
 
 	public BattleMap getBattleMap() {
@@ -756,4 +1011,14 @@ public class BattleMapObject extends Role {
 		this.battleMap = battleMap;
 	}
 
+	public float getBaseSpeed() {
+		return baseSpeed;
+	}
+
+	public void setBaseSpeed(float baseSpeed) {
+		this.baseSpeed = MathUtils.max(MAX_INERTIA, baseSpeed);
+		if (listener != null) {
+			listener.onSpeedChanged(this, baseSpeed);
+		}
+	}
 }

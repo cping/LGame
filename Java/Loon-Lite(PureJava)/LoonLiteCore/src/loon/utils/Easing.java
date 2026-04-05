@@ -298,6 +298,10 @@ public final class Easing {
 		this(easing.name, easing.type, easing.function, strength);
 	}
 
+	public final float apply(float time) {
+		return call(function, time);
+	}
+
 	public final float apply(float time, float duration) {
 		return apply(time, duration, true);
 	}

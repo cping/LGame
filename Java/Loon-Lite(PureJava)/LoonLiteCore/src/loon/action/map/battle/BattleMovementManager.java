@@ -24,7 +24,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import loon.action.map.Direction;
-import loon.geom.Vector2f;
+import loon.geom.PointI;
 import loon.utils.Easing;
 import loon.utils.TArray;
 
@@ -47,51 +47,47 @@ public class BattleMovementManager {
 
 	public static interface MovementListener {
 		// 基础移动事件
-		void onDirectionChanged(Direction newDirection);
+		void onDirectionChanged(BattleMapObject o, Direction newDirection);
 
-		void onStepReached(int mapX, int mapY);
+		void onStepReached(BattleMapObject o, int mapX, int mapY);
 
-		void onTileEntered(int mapX, int mapY);
+		void onTileEntered(BattleMapObject o, int mapX, int mapY);
 
-		void onPathCompleted();
+		void onPathCompleted(BattleMapObject o);
 
-		void onPathInterrupted();
+		void onPathInterrupted(BattleMapObject o);
 
-		void onPathResumed();
+		void onPathResumed(BattleMapObject o);
 
-		void onPaused();
+		void onSpeedChanged(BattleMapObject o, float newSpeed);
 
-		void onResumed();
+		void onEasingChanged(BattleMapObject o, Easing newEasing);
 
-		void onSpeedChanged(float newSpeed);
-
-		void onEasingChanged(Easing newEasing);
-
-		void onAnimationStateChanged(String state);
+		void onAnimationStateChanged(BattleMapObject o, String state);
 
 		// 特殊移动状态
-		void onStateExpired(MovementState state);
+		void onStateExpired(BattleMapObject o, MovementState state);
 
-		void onStateCooldown(MovementState state);
+		void onStateCooldown(BattleMapObject o, MovementState state);
 
-		void onTerrainEffectApplied(String terrain, BattleTileType effect);
+		void onTerrainEffectApplied(BattleMapObject o, String terrain, BattleTileType effect);
 
-		void onTerrainCostDeducted(int cost, int remainingPoints);
+		void onTerrainCostDeducted(BattleMapObject o, int cost, int remainingPoints);
 
 		void onCollision(BattleMapObject self, BattleMapObject other, CollisionResponse response);
 
-		void onPathUpdated(TArray<Vector2f> newPath);
+		void onPathUpdated(BattleMapObject o, TArray<PointI> newPath);
 
-		void onMovementPointChanged(int remainingPoints);
+		void onMovementPointChanged(BattleMapObject o, int remainingPoints);
 
-		void onMovementModeChanged(MovementMode oldMode, MovementMode newMode);
+		void onMovementModeChanged(BattleMapObject o, MovementMode oldMode, MovementMode newMode);
 	}
 
 	public static interface MovementState {
 
-		boolean canOverrideBlocked(Vector2f tile);
+		boolean canOverrideBlocked(PointI tile);
 
-		boolean canOverrideAllowed(Vector2f tile);
+		boolean canOverrideAllowed(PointI tile);
 
 		boolean isTeleport();
 
@@ -105,12 +101,12 @@ public class BattleMovementManager {
 	public static class FlyState implements MovementState {
 
 		@Override
-		public boolean canOverrideBlocked(Vector2f tile) {
+		public boolean canOverrideBlocked(PointI tile) {
 			return true;
 		}
 
 		@Override
-		public boolean canOverrideAllowed(Vector2f tile) {
+		public boolean canOverrideAllowed(PointI tile) {
 			return false;
 		}
 
@@ -138,12 +134,12 @@ public class BattleMovementManager {
 	public static class ChargeState implements MovementState {
 
 		@Override
-		public boolean canOverrideBlocked(Vector2f tile) {
+		public boolean canOverrideBlocked(PointI tile) {
 			return true;
 		}
 
 		@Override
-		public boolean canOverrideAllowed(Vector2f tile) {
+		public boolean canOverrideAllowed(PointI tile) {
 			return true;
 		}
 
@@ -171,12 +167,12 @@ public class BattleMovementManager {
 	public static class TeleportState implements MovementState {
 
 		@Override
-		public boolean canOverrideBlocked(Vector2f tile) {
+		public boolean canOverrideBlocked(PointI tile) {
 			return true;
 		}
 
 		@Override
-		public boolean canOverrideAllowed(Vector2f tile) {
+		public boolean canOverrideAllowed(PointI tile) {
 			return true;
 		}
 
@@ -216,14 +212,14 @@ public class BattleMovementManager {
 			this.active = true;
 		}
 
-		public void update(float deltaTime, MovementListener listener) {
+		public void update(float deltaTime, BattleMapObject o, MovementListener listener) {
 			if (active) {
 				elapsed += deltaTime;
 				if (elapsed >= duration) {
 					active = false;
 					elapsed = 0f;
 					if (listener != null) {
-						listener.onStateExpired(state);
+						listener.onStateExpired(o, state);
 					}
 				}
 			} else {
@@ -231,8 +227,9 @@ public class BattleMovementManager {
 				if (elapsed >= cooldown) {
 					active = true;
 					elapsed = 0f;
-					if (listener != null)
-						listener.onStateCooldown(state);
+					if (listener != null) {
+						listener.onStateCooldown(o, state);
+					}
 				}
 			}
 		}
@@ -280,9 +277,9 @@ public class BattleMovementManager {
 		}
 	}
 
-	public void update(float deltaTime) {
+	public void update(float deltaTime, BattleMapObject o) {
 		for (MovementEffect effect : activeEffects) {
-			effect.update(deltaTime, listener);
+			effect.update(deltaTime, o, listener);
 		}
 	}
 
