@@ -316,7 +316,7 @@ namespace Loon.Java
             int offset = 0;
             while (offset < count)
             {
-                int num2 = this.stream.Read(this.buff, offset, count);
+                int num2 = this.stream.Read(this.buff, offset, count - offset);
                 if (num2 == 0)
                 {
                     return num2;
